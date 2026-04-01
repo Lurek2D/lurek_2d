@@ -58,7 +58,51 @@ Every Developer output includes:
 2. **Plan** — Identify minimal set of changes. Check module boundaries and dependency direction.
 3. **Implement** — Write the code. Follow Rust conventions from system prompt.
 4. **Verify** — Run `cargo build`, `cargo clippy`, `cargo test`.
-5. **Report** — List changed files, what was verified, any caveats.
+5. **Quality gates** — After every feature implementation, run the post-implementation checklist below.
+6. **Report** — List changed files, what was verified, any caveats.
+
+## POST-IMPLEMENTATION QUALITY CHECKLIST
+
+Run these checks after every feature implementation, in order:
+
+### 1. Docstring coverage
+- Every new `pub struct / pub fn / pub enum / pub trait` MUST have a `///` doc comment
+- Run: `python tools/collect_docs.py --report-missing` — must exit 0
+- Run: `python tools/doc_coverage.py --report-missing` — lists any Lua API gaps too
+
+### 2. API documentation regeneration
+- If ANY Lua API binding changed (new function, renamed, removed):
+  ```powershell
+  python tools/gen_lua_api.py
+  python tools/gen_all_docs.py --skip-legacy
+  ```
+- If only Rust internals changed: `python tools/collect_docs.py`
+
+### 3. Test coverage
+- New public Rust API items need at least one test in `tests/<module>_tests.rs`
+- New `luna.*` API functions need at least one Lua test in `tests/lua/`
+- Run `cargo test` — all tests must pass
+- Run `python tools/test_coverage.py` to check for regressions in coverage %
+
+### 4. CAG review
+- New `luna.*` module → check if a new `.github/instructions/<module>.instructions.md` is needed
+- New major feature area → check if a new `.github/skills/<feature>/SKILL.md` is needed
+- Validate: `python tools/cag_validate.py`
+
+### 5. Wiki update
+- New `luna.*` API functions → update `wiki/API-Reference.md`:
+  ```powershell
+  python tools/gen_wiki_api.py
+  git -C wiki add API-Reference.md
+  git -C wiki commit -m "docs(api): describe what changed"
+  ```
+- New examples added → update `wiki/Examples.md` with name, description, run command
+
+### Testing policy
+- Run `cargo test` directly — do NOT run `cargo build` first; `cargo test` builds what it needs
+- Never prefix test runs with a separate `cargo build` step
+- For a single module: `cargo test <module>_tests`
+- For the full suite: `cargo test`
 
 ## DECISION GATES
 

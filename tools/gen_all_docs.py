@@ -7,11 +7,14 @@ Steps:
     3. gen_docs_rust.py         -> docs/rust-api.md           (compact Rust API reference)
     4. gen_docs_tests.py        -> docs/test-docs.md          (test catalog)
     5. gen_wiki_api.py          -> wiki/API-Reference.md      (game-developer cheatsheet)
-    6. gen_lua_api.py           -> docs/lua_api_reference_generated.md  (legacy — kept for VS Code ext)
+    6. doc_coverage.py          -> docs/doc_coverage.json     (docstring coverage analytics)
+    7. test_coverage.py         -> docs/test_coverage.json    (test coverage analytics)
+    8. gen_test_docs.py         -> docs/test_docs.md          (human-readable test docs)
+    9. gen_lua_api.py           -> docs/lua_api_reference_generated.md  (legacy — kept for VS Code ext)
 
 Usage:
     python tools/gen_all_docs.py          # run all steps
-    python tools/gen_all_docs.py --skip-legacy   # skip step 6
+    python tools/gen_all_docs.py --skip-legacy   # skip step 9
 """
 
 import subprocess
@@ -20,11 +23,14 @@ import time
 from pathlib import Path
 
 SCRIPTS = [
-    ("gen_api_data.py",   "Master JSON (docs/api_data.json)"),
-    ("gen_docs_lua.py",   "Lua API reference (docs/lua-api.md)"),
-    ("gen_docs_rust.py",  "Rust API reference (docs/rust-api.md)"),
-    ("gen_docs_tests.py", "Test catalog (docs/test-docs.md)"),
-    ("gen_wiki_api.py",   "Wiki cheatsheet (wiki/API-Reference.md)"),
+    ("gen_api_data.py",    "Master JSON (docs/api_data.json)"),
+    ("gen_docs_lua.py",    "Lua API reference (docs/lua-api.md)"),
+    ("gen_docs_rust.py",   "Rust API reference (docs/rust-api.md)"),
+    ("gen_docs_tests.py",  "Test catalog (docs/test-docs.md)"),
+    ("gen_wiki_api.py",    "Wiki cheatsheet (wiki/API-Reference.md)"),
+    ("doc_coverage.py",    "Doc coverage analytics (docs/doc_coverage.json)"),
+    ("test_coverage.py",   "Test coverage analytics (docs/test_coverage.json)"),
+    ("gen_test_docs.py",   "Test documentation (docs/test_docs.md)"),
 ]
 
 LEGACY_SCRIPT = ("gen_lua_api.py", "Legacy Lua ref (docs/lua_api_reference_generated.md)")

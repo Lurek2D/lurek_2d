@@ -29,6 +29,7 @@ WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = WORKSPACE_ROOT / "src"
 TESTS_DIR = WORKSPACE_ROOT / "tests"
 LUA_TESTS_DIR = TESTS_DIR / "lua"
+DEFAULT_JSON_OUTPUT = WORKSPACE_ROOT / "docs" / "test_coverage.json"
 
 
 def _snake_to_parts(name: str) -> Set[str]:
@@ -423,6 +424,46 @@ def main() -> int:
             lua_covered, lua_uncovered,
             args.module,
         )
+
+    # Always write JSON metadata to docs/test_coverage.json (unless --json stdout mode)
+    if not args.json:
+        json_payload = {
+            "rust": {
+                "total": rust_total,
+                "covered": len(rust_covered),
+                "uncovered": len(rust_uncovered),
+                "coverage_pct": rust_pct,
+                "covered_items": [
+                    {"module": f["module"], "name": f["full_name"],
+                     "file": f["file"], "line": f["line"]}
+                    for f in rust_covered
+                ],
+                "uncovered_items": [
+                    {"module": f["module"], "name": f["full_name"],
+                     "file": f["file"], "line": f["line"]}
+                    for f in rust_uncovered
+                ],
+            },
+            "lua": {
+                "total": lua_total,
+                "covered": len(lua_covered),
+                "uncovered": len(lua_uncovered),
+                "coverage_pct": lua_pct,
+                "covered_items": [
+                    {"module": f["module"], "lua_name": f["lua_name"],
+                     "kind": f["kind"], "file": f["file"], "line": f["line"]}
+                    for f in lua_covered
+                ],
+                "uncovered_items": [
+                    {"module": f["module"], "lua_name": f["lua_name"],
+                     "kind": f["kind"], "file": f["file"], "line": f["line"]}
+                    for f in lua_uncovered
+                ],
+            },
+        }
+        DEFAULT_JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+        DEFAULT_JSON_OUTPUT.write_text(json.dumps(json_payload, indent=2), encoding="utf-8")
+        print(f"[OK] Coverage JSON written to docs/test_coverage.json", file=sys.stderr)
 
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)

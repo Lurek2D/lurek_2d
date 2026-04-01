@@ -47,6 +47,17 @@ cargo run -- examples/hello_world     # Run example
 cargo run -- path/to/my_game          # Run custom game
 ```
 
+### Running Tests
+
+```powershell
+cargo test                            # All tests — DO NOT run cargo build first
+cargo test physics_tests              # Single module
+cargo test -- --nocapture             # Show stdout from tests
+RUST_LOG=debug cargo test -- --nocapture  # Debug output
+```
+
+> **Policy**: Run `cargo test` directly. Never prefix with `cargo build` — `cargo test` builds what it needs automatically. Do not create a separate build step before running tests.
+
 ### Quality Gates
 
 ```powershell
@@ -54,6 +65,14 @@ cargo clippy                          # Lint — must pass with 0 warnings
 cargo fmt --check                     # Format check
 cargo test                            # All tests must pass
 ```
+
+### Tool Directory Policy
+
+`tools/` contains **permanent** CLI scripts only. Temporary session scripts go in `work/{session}/scripts/`. See `tools/README.md` for the full index.
+
+- **Permanent** (goes in `tools/`): reusable CLI utilities, doc generators, validators
+- **Temporary** (goes in `work/{session}/scripts/`): one-off migration scripts, session helpers
+- **Never** create `_*.py` or similar temp files in `tools/`
 
 ### CAG Validation (tools/)
 
@@ -272,15 +291,24 @@ work/{session}/
 
 ### CLI Tools (tools/)
 
+> **Tool directory policy**: `tools/` contains **permanent** CLI scripts only. Temporary or session-scoped scripts go in `work/{session}/scripts/` — never in `tools/`. See `tools/README.md` for the full policy and a complete tool index.
+
 | Command | Purpose |
 |---|---|
+| `python tools/gen_all_docs.py` | Run the full documentation pipeline (all formats + coverage) |
 | `python tools/cag_validate.py` | Validate all `.github/` CAG files |
 | `python tools/cag_validate.py --type agent\|skill\|prompt\|instruction` | Validate one family |
 | `python tools/cag_validate.py --file <path>` | Validate a single file |
 | `python tools/collect_docs.py` | Generate `docs/api_generated.md` from `///` comments |
-| `python tools/collect_docs.py --report-missing` | List public items missing `///` docs |
+| `python tools/collect_docs.py --report-missing` | List public items missing `///` docs (exit 1 if any) |
 | `python tools/collect_docs.py --suggest` | Print starter `///` lines for undocumented items |
+| `python tools/doc_coverage.py` | Docstring coverage analytics → `docs/doc_coverage.json` |
+| `python tools/doc_coverage.py --report-missing` | List all Rust + Lua API items missing doc comments |
+| `python tools/test_coverage.py` | Test coverage analytics → `docs/test_coverage.json` |
+| `python tools/test_coverage.py --suggest` | Print test stubs for uncovered items |
+| `python tools/gen_test_docs.py` | Generate `docs/test_docs.md` from coverage metadata |
 | `python tools/gen_lua_api.py` | Generate `docs/lua_api_reference_generated.md` |
+| `python tools/gen_wiki_api.py` | Regenerate `wiki/API-Reference.md` cheatsheet |
 | `python tools/gen_splash.py` | Regenerate splash screen asset |
 | `python tools/gen_icon.py` | Regenerate window icon asset |
 | `powershell tools/dist.ps1` | Build + package release binary (Windows) |
