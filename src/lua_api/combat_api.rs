@@ -406,6 +406,20 @@ impl LuaUserData for LuaCombatant {
         methods.add_method("setMeta", |_, this, (k, v): (String, String)| {
             this.0.borrow_mut().metadata.insert(k, v); Ok(())
         });
+        /// Returns hp as a fraction of max hp (0.0..=1.0).
+        methods.add_method("getHpPercent", |_, this, ()| Ok(this.0.borrow().hp_percent()));
+        /// Returns mp as a fraction of max mp (0.0..=1.0).
+        methods.add_method("getMpPercent", |_, this, ()| Ok(this.0.borrow().mp_percent()));
+        /// Returns a list of action names owned by this combatant.
+        methods.add_method("getActionNames", |lua, this, ()| {
+            let names = this.0.borrow().action_names();
+            lua.create_sequence_from(names.into_iter())
+        });
+        /// Returns a list of active status effect names on this combatant.
+        methods.add_method("getStatusNames", |lua, this, ()| {
+            let names = this.0.borrow().status_names();
+            lua.create_sequence_from(names.into_iter())
+        });
     }
 }
 
@@ -622,47 +636,7 @@ impl LuaUserData for LuaCombatBattle {
             this.0.borrow_mut().force_end(winner);
             Ok(())
         });
-        /// Returns the log.
-        ///
-        /// # Parameters
-        /// - `msg` — `string`.
-        ///
-        /// # Returns
-        /// The current log.
-        methods.add_method("getLog", |lua, this, ()| {
-            let t = lua.create_table()?;
-            for (i, msg) in this.0.borrow().log.iter().enumerate() {
-                t.set(i + 1, msg.clone())?;
-            }
-            Ok(t)
-        });
-        /// Adds to log to the collection.
-        ///
-        /// # Parameters
-        /// - `msg` — `string`.
-        methods.add_method("addToLog", |_, this, msg: String| {
-            this.0.borrow_mut().push_log(msg);
-            Ok(())
-        });
-        /// Removes combatant from the collection.
-        ///
-        /// # Parameters
-        /// - `name` — `string`.
-        methods.add_method("removeCombatant", |_, this, name: String| {
-            Ok(this.0.borrow_mut().remove_combatant(&name))
-        });
-        /// Force end on this CombatBattle.
-        ///
-        /// # Parameters
-        /// - `winner` — `string` optional.
-        methods.add_method("forceEnd", |_, this, winner: Option<String>| {
-            this.0.borrow_mut().force_end(winner);
-            Ok(())
-        });
-        /// Returns the all names.
-        ///
-        /// # Returns
-        /// The current all names.
+        /// Returns all combatant names in the battle (alive and dead).
         methods.add_method("getAllNames", |lua, this, ()| {
             let names = this.0.borrow().get_all_names();
             let t = lua.create_sequence_from(names.into_iter())?;

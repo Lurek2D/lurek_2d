@@ -421,12 +421,18 @@ impl Container {
         remaining == 0
     }
 
-    /// Returns a summary of all occupied slots as (item_type, quantity) pairs.
+    /// Returns a summary of all occupied slots as (item_type, total_quantity) pairs,
+    /// aggregating stacks of the same item type.
     pub fn to_item_list(&self) -> Vec<(String, u32)> {
-        self.slots.iter()
-            .filter_map(|s| s.stack.as_ref())
-            .map(|st| (st.item.item_type.clone(), st.quantity))
-            .collect()
+        let mut map: std::collections::HashMap<String, u32> = std::collections::HashMap::new();
+        for slot in &self.slots {
+            if let Some(stack) = &slot.stack {
+                *map.entry(stack.item.item_type.clone()).or_insert(0) += stack.quantity;
+            }
+        }
+        let mut result: Vec<(String, u32)> = map.into_iter().collect();
+        result.sort_by(|a, b| a.0.cmp(&b.0));
+        result
     }
 }
 

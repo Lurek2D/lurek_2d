@@ -508,9 +508,8 @@ fn inventory_type_method() {
 fn container_count_item() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("pack")
-        inv:getContainer("main"):addItem(luna.inventory.newItem("sword"), 3)
-        local c = inv:getContainer("main")
+        local c = luna.inventory.newContainer("main")
+        c:addItem(luna.inventory.newItem("sword"), 3)
         assert(c:countItem("sword") == 3, "count 3 swords")
         assert(c:countItem("shield") == 0, "0 shields")
     "#).exec().unwrap();
@@ -520,9 +519,8 @@ fn container_count_item() {
 fn container_has_item() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("pack")
-        inv:getContainer("main"):addItem(luna.inventory.newItem("potion"), 5)
-        local c = inv:getContainer("main")
+        local c = luna.inventory.newContainer("main")
+        c:addItem(luna.inventory.newItem("potion"), 5)
         assert(c:hasItem("potion"), "has at least 1")
         assert(c:hasItem("potion", 5), "has 5")
         assert(not c:hasItem("potion", 6), "doesn't have 6")
@@ -533,9 +531,8 @@ fn container_has_item() {
 fn container_remove_item() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("pack")
-        inv:getContainer("main"):addItem(luna.inventory.newItem("arrow"), 10)
-        local c = inv:getContainer("main")
+        local c = luna.inventory.newContainer("main")
+        c:addItem(luna.inventory.newItem("arrow"), 10)
         local ok = c:removeItem("arrow", 4)
         assert(ok, "remove 4 ok")
         assert(c:countItem("arrow") == 6, "6 arrows left")
@@ -549,8 +546,7 @@ fn container_remove_item() {
 fn container_to_list() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("pack")
-        local c = inv:getContainer("main")
+        local c = luna.inventory.newContainer("main")
         c:addItem(luna.inventory.newItem("gem"), 2)
         c:addItem(luna.inventory.newItem("herb"), 7)
         local list = c:toList()
@@ -568,11 +564,12 @@ fn container_to_list() {
 fn inventory_has_item_cross_container() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("full")
-        local c1 = inv:getContainer("main")
-        c1:addItem(luna.inventory.newItem("coin"), 50)
-        assert(inv:hasItem("coin", 50), "has 50 coins")
-        assert(not inv:hasItem("coin", 51), "not 51")
+        local inv = luna.inventory.newInventory()
+        local c1 = luna.inventory.newContainer("main")
+        c1:addItem(luna.inventory.newItem("coin"), 5)
+        inv:addContainer("main", c1)
+        assert(inv:hasItem("coin", 5), "has 5 coins")
+        assert(not inv:hasItem("coin", 6), "not 6")
     "#).exec().unwrap();
 }
 
@@ -580,8 +577,10 @@ fn inventory_has_item_cross_container() {
 fn inventory_remove_from_any() {
     let lua = make_vm();
     lua.load(r#"
-        local inv = luna.inventory.newInventory("full")
-        inv:getContainer("main"):addItem(luna.inventory.newItem("grain"), 8)
+        local inv = luna.inventory.newInventory()
+        local c = luna.inventory.newContainer("main")
+        c:addItem(luna.inventory.newItem("grain"), 8)
+        inv:addContainer("main", c)
         assert(inv:countItem("grain") == 8, "8 grain")
         local ok = inv:removeFromAny("grain", 5)
         assert(ok, "remove ok")

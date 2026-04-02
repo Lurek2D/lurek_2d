@@ -512,14 +512,9 @@ fn upgrade_tree_reset_node() {
 fn craft_queue_clear() {
     let lua = make_vm();
     lua.load(r#"
-        local reg = luna.crafting.newRegistry()
-        local r = luna.crafting.newRecipe("plank")
-        r:setTime(10.0)
-        reg:add(r)
-        local station = luna.crafting.newStation("sawmill")
-        local q = luna.crafting.newQueue(3)
-        q:enqueue(reg, "plank", station)
-        q:enqueue(reg, "plank", station)
+        local q = luna.crafting.newCraftQueue(3)
+        q:enqueue("plank", 10.0, 1)
+        q:enqueue("plank", 10.0, 1)
         assert(q:count() == 2, "2 jobs")
         q:clear()
         assert(q:count() == 0, "0 after clear")
@@ -530,13 +525,9 @@ fn craft_queue_clear() {
 fn craft_queue_get_all_jobs() {
     let lua = make_vm();
     lua.load(r#"
-        local reg = luna.crafting.newRegistry()
-        local r1 = luna.crafting.newRecipe("bolt"); r1:setTime(5.0); reg:add(r1)
-        local r2 = luna.crafting.newRecipe("nut"); r2:setTime(3.0); reg:add(r2)
-        local station = luna.crafting.newStation("workshop")
-        local q = luna.crafting.newQueue(5)
-        q:enqueue(reg, "bolt", station)
-        q:enqueue(reg, "nut", station)
+        local q = luna.crafting.newCraftQueue(5)
+        q:enqueue("bolt", 5.0, 1)
+        q:enqueue("nut", 3.0, 1)
         local jobs = q:getAllJobs()
         assert(#jobs == 2, "2 jobs in getAllJobs")
         local recipes = {}

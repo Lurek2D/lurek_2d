@@ -542,6 +542,59 @@ impl LuaUserData for LuaQuest {
             this.0.borrow_mut().visible = v;
             Ok(())
         });
+        /// Adds an objective directly (creates a default stage if none exists).
+        ///
+        /// # Parameters
+        /// - `id` — `string`.
+        /// - `description` — `string`.
+        /// - `required` — `integer`.
+        methods.add_method("addObjective", |_, this, (id, description, required): (String, String, u32)| {
+            let mut borrow = this.0.borrow_mut();
+            if borrow.stages.is_empty() {
+                borrow.stages.push(QuestStage::new("main", "Main"));
+            }
+            let obj = Objective::new(id, description, required);
+            borrow.stages[0].add_objective(obj);
+            Ok(())
+        });
+        /// Returns the completion percentage (0.0–100.0) based on mandatory objectives.
+        ///
+        /// # Returns
+        /// `number`.
+        methods.add_method("completionPercent", |_, this, ()| {
+            Ok(this.0.borrow().completion_percent())
+        });
+        /// Returns the IDs of all Active objectives across all stages.
+        ///
+        /// # Returns
+        /// `table` of strings.
+        methods.add_method("getActiveObjectiveIds", |lua, this, ()| {
+            let borrow = this.0.borrow();
+            let t = lua.create_table()?;
+            let mut idx = 1i64;
+            for stage in &borrow.stages {
+                for obj in &stage.objectives {
+                    if obj.status != ObjectiveStatus::Done
+                        && obj.status != ObjectiveStatus::Failed
+                        && obj.status != ObjectiveStatus::Skipped
+                    {
+                        t.raw_set(idx, obj.id.clone())?;
+                        idx += 1;
+                    }
+                }
+            }
+            Ok(t)
+        });
+        /// Resets an objective back to Active. Returns `true` if found.
+        ///
+        /// # Parameters
+        /// - `id` — `string`.
+        ///
+        /// # Returns
+        /// `boolean`.
+        methods.add_method("resetObjective", |_, this, id: String| {
+            Ok(this.0.borrow_mut().reset_objective(&id))
+        });
     }
 }
 
@@ -727,7 +780,8 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
 
     module.set(
         "newQuest",
-        lua.create_function(|_, (id, title): (String, String)| {
+        lua.create_function(|_, (id, title): (String, Option<String>)| {
+            let title = title.unwrap_or_else(|| id.clone());
             Ok(LuaQuest(Rc::new(RefCell::new(Quest::new(id, title)))))
         })?,
     )?;
