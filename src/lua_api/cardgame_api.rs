@@ -1114,22 +1114,22 @@ impl LuaUserData for LuaPot {
         });
         /// Contributes from a `ResourcePool` player balance.  Errors if insufficient.
         methods.add_method("anteFrom", |_, this, (pool_ud, pid, amount): (LuaAnyUserData, String, f64)| {
-            let pool_rc: Rc<RefCell<ResourcePool>> = { pool_ud.borrow::<LuaResourcePool>()?.0.clone() };
+            let pool_rc = pool_ud.borrow::<LuaResourcePool>()?.0.clone();
             let mut rp = pool_rc.borrow_mut();
             this.0.borrow_mut().ante_from(&mut rp, &pid, amount)
                 .map_err(LuaError::RuntimeError)
         });
         /// Awards the entire pot to `player_id` in `pool`, clears the pot, returns amount won.
         methods.add_method("award", |_, this, (pool_ud, pid): (LuaAnyUserData, String)| {
-            let pool_rc: Rc<RefCell<ResourcePool>> = { pool_ud.borrow::<LuaResourcePool>()?.0.clone() };
+            let pool_rc = pool_ud.borrow::<LuaResourcePool>()?.0.clone();
             let mut rp = pool_rc.borrow_mut();
             Ok(this.0.borrow_mut().award(&mut rp, pid))
         });
         /// Splits the pot evenly among `winners` (Lua sequence of player IDs).  Returns share per winner.
         methods.add_method("splitAward", |_, this, (pool_ud, winners_t): (LuaAnyUserData, LuaTable)| {
-            let pool_rc: Rc<RefCell<ResourcePool>> = { pool_ud.borrow::<LuaResourcePool>()?.0.clone() };
+            let pool_rc = pool_ud.borrow::<LuaResourcePool>()?.0.clone();
             let mut winners: Vec<String> = Vec::new();
-            for v in winners_t.sequence_values::<String>() { winners.push(v?); }
+            for v in winners_t.clone().sequence_values::<String>() { winners.push(v?); }
             let refs: Vec<&str> = winners.iter().map(String::as_str).collect();
             let mut rp = pool_rc.borrow_mut();
             Ok(this.0.borrow_mut().split_award(&mut rp, &refs))
@@ -1799,7 +1799,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
 
 fn lua_table_to_cards(t: LuaTable<'_>) -> LuaResult<Vec<Card>> {
     let mut cards = Vec::new();
-    for v in t.sequence_values::<LuaAnyUserData>() {
+    for v in t.clone().sequence_values::<LuaAnyUserData>() {
         let ud = v?;
         let card = ud.borrow::<LuaCard>()?.0.borrow().clone();
         cards.push(card);

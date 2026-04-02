@@ -8,6 +8,7 @@ use mlua::prelude::*;
 use slotmap::SlotMap;
 use winit::window::Window;
 
+use crate::audio::midi::MidiState;
 use crate::audio::Mixer;
 use crate::engine::resource_keys::{
     CanvasKey, FontKey, MeshKey, ParticleKey, ShaderKey, SpriteBatchKey, TextureKey,
@@ -24,7 +25,6 @@ use crate::input::KeyboardState;
 use crate::input::MouseState;
 use crate::input::TouchState;
 use crate::particle::ParticleSystem;
-use crate::audio::midi::MidiState;
 use crate::timer::Clock;
 
 /// Fullscreen mode type for window management.
@@ -162,10 +162,12 @@ pub mod compute_api;
 pub mod data_api;
 /// Registers the `luna.dataframe.*` tabular data API.
 pub mod dataframe_api;
-/// Registers the `luna.debugbridge.*` TCP debug server API.
-pub mod debugbridge_api;
 /// Registers the `luna.debug.*` runtime diagnostics and developer tools API.
 pub mod debug_api;
+/// Registers the `luna.debugbridge.*` TCP debug server API.
+pub mod debugbridge_api;
+/// Registers the `luna.dialog.*` dialog sequencer API.
+pub mod dialog_api;
 /// Registers the `luna.docs.*` documentation management API.
 pub mod docs_api;
 /// Registers the `luna.entity.*` ECS universe API.
@@ -182,16 +184,18 @@ pub mod graphics_api;
 pub mod graphics_ext_api;
 /// Registers the `luna.image.*` pixel-level image manipulation API.
 pub mod image_api;
-/// Registers the `luna.log.*` structured game-level logging API.
-pub mod log_api;
-/// Registers the `luna.localization.*` internationalization API.
-pub mod localization_api;
 /// Registers the `luna.keyboard.*` and `luna.mouse.*` input API.
 pub mod input_api;
+/// Registers the `luna.localization.*` internationalization API.
+pub mod localization_api;
+/// Registers the `luna.log.*` structured game-level logging API.
+pub mod log_api;
 /// Registers the `luna.math.*` vector and math helper API.
 pub mod math_api;
 /// Registers Phase 25 `luna.math.*` extension types (Vec2, Grid, Noise, etc.).
 pub mod math_ext_api;
+/// Registers the `luna.minimap.*` minimap API.
+pub mod minimap_api;
 /// Registers the `luna.modding.*` mod management API.
 pub mod modding_api;
 /// Registers the `luna.particle.*` particle-effects API.
@@ -202,10 +206,6 @@ pub mod pathfinding_api;
 pub mod patterns_api;
 /// Registers the `luna.physics.*` rigid-body simulation API.
 pub mod physics_api;
-/// Registers the `luna.minimap.*` minimap API.
-pub mod minimap_api;
-/// Registers the `luna.dialog.*` dialog sequencer API.
-pub mod dialog_api;
 /// Registers the `luna.postfx.*` post-processing effects API.
 pub mod postfx_api;
 /// Registers the `luna.savegame.*` save/load system API.
@@ -222,28 +222,30 @@ pub mod thread_api;
 pub use crate::thread::channel as thread_channel;
 /// Re-export thread worker from src/thread.
 pub use crate::thread::worker as thread_worker;
-/// Registers the `luna.tilemap.*` tile map, tileset, autotile, and procedural generation API.
-pub mod tilemap_api;
-/// Registers the `luna.timer.*` frame-timing API.
-pub mod timer_api;
-/// UserData type utilities for Luna2D Lua objects.
-pub mod lua_types;
-/// Registers the `luna.window.*` window management API.
-pub mod window_api;
 /// Registers the `luna.cardgame.*` card game API.
 pub mod cardgame_api;
 /// Registers the `luna.combat.*` combat system API.
 pub mod combat_api;
+/// Registers the `luna.crafting.*` crafting system API.
+pub mod crafting_api;
+/// Registers the `luna.inventory.*` inventory system API.
+pub mod inventory_api;
+/// UserData type utilities for Luna2D Lua objects.
+pub mod lua_types;
+/// Registers the `luna.province.*` province map API.
+pub mod province_api;
+/// Registers the `luna.quest.*` quest tracking API.
+pub mod quest_api;
 /// Registers the `luna.resource.*` resource management API.
 pub mod resource_api;
 /// Registers the `luna.stats.*` character stats API.
 pub mod stats_api;
-/// Registers the `luna.inventory.*` inventory system API.
-pub mod inventory_api;
-/// Registers the `luna.quest.*` quest tracking API.
-pub mod quest_api;
-/// Registers the `luna.crafting.*` crafting system API.
-pub mod crafting_api;
+/// Registers the `luna.tilemap.*` tile map, tileset, autotile, and procedural generation API.
+pub mod tilemap_api;
+/// Registers the `luna.timer.*` frame-timing API.
+pub mod timer_api;
+/// Registers the `luna.window.*` window management API.
+pub mod window_api;
 
 /// Structured error information for the last engine error.
 ///
@@ -501,6 +503,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>) -> LuaResult<Lua> {
     inventory_api::register(&lua, &luna)?;
     quest_api::register(&lua, &luna)?;
     crafting_api::register(&lua, &luna)?;
+    province_api::register(&lua, &luna)?;
 
     /// Luna on this Object.
     ///

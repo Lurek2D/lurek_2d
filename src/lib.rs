@@ -49,8 +49,14 @@
 pub mod ai;
 /// Audio playback system backed by rodio.
 pub mod audio;
+/// Card game system: cards, decks, zones, pools, stack managers.
+pub mod cardgame;
+/// Turn-based combat engine: battles, combatants, abilities, statuses.
+pub mod combat;
 /// Dense N-dimensional numerical arrays (luna.compute).
 pub mod compute;
+/// Crafting system: recipes, queues, upgrade trees.
+pub mod crafting;
 /// Binary data manipulation, compression, hashing, and encoding.
 pub mod data;
 /// In-memory column-major tabular data (luna.dataframe).
@@ -73,25 +79,35 @@ pub mod graphics;
 pub mod image;
 /// Keyboard, mouse, and gamepad input state.
 pub mod input;
+/// Item container and equip-slot inventory system.
+pub mod inventory;
 /// Lua VM creation and the luna.* API bindings.
 pub mod lua_api;
 /// Foundational math types: Vec2, Mat3, Rect.
 pub mod math;
-pub mod pathfinding;
 /// Mod management framework: metadata, dependencies, load ordering, hooks.
 pub mod modding;
 /// Emitter-based 2D particle effects.
 pub mod particle;
+pub mod pathfinding;
 /// Physics simulation with rigid bodies (rect and circle shapes), collision events, sensors, and layer filtering.
 pub mod physics;
+/// Province-based map system for grand strategy games: provinces, terrain, adjacency.
+pub mod province;
+/// Quest tracking: stages, objectives, quest log.
+pub mod quest;
+/// Numeric resource management: current/max pools with delta tracking.
+pub mod resource;
 /// Slot-based save/load system with collectors, schema versioning, and auto-save.
 pub mod savegame;
 /// Scene stack for managing game scene lifecycle, transitions, and depth-sorted rendering.
 pub mod scene;
-/// Tilemap engine: TileSet, TileMap, autotile, coords, and procedural generation.
-pub mod tilemap;
+/// Character attribute and buff system.
+pub mod stats;
 /// Frame timing and delta-time clock.
 pub mod thread;
+/// Tilemap engine: TileSet, TileMap, autotile, coords, and procedural generation.
+pub mod tilemap;
 pub mod timer;
 /// Window event loop placeholder.
 pub mod window;

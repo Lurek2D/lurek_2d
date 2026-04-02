@@ -167,3 +167,168 @@ path = "tests/stress/image_stress_tests.rs"
 [[test]]
 name = "physics_stress_tests"
 path = "tests/stress/physics_stress_tests.rs"
+
+# === Unit tests ===
+[[test]]
+name = "audio_tests"
+path = "tests/unit/audio_tests.rs"
+
+[[test]]
+name = "compute_tests"
+path = "tests/unit/compute_tests.rs"
+
+[[test]]
+name = "config_tests"
+path = "tests/unit/config_tests.rs"
+
+[[test]]
+name = "data_tests"
+path = "tests/unit/data_tests.rs"
+
+[[test]]
+name = "dataframe_tests"
+path = "tests/unit/dataframe_tests.rs"
+
+[[test]]
+name = "dialog_tests"
+path = "tests/unit/dialog_tests.rs"
+
+[[test]]
+name = "engine_tests"
+path = "tests/unit/engine_tests.rs"
+
+[[test]]
+name = "entity_tests"
+path = "tests/unit/entity_tests.rs"
+
+[[test]]
+name = "event_tests"
+path = "tests/unit/event_tests.rs"
+
+[[test]]
+name = "filesystem_tests"
+path = "tests/unit/filesystem_tests.rs"
+
+[[test]]
+name = "graph_tests"
+path = "tests/unit/graph_tests.rs"
+
+[[test]]
+name = "graphics_tests"
+path = "tests/unit/graphics_tests.rs"
+
+[[test]]
+name = "image_tests"
+path = "tests/unit/image_tests.rs"
+
+[[test]]
+name = "input_tests"
+path = "tests/unit/input_tests.rs"
+
+[[test]]
+name = "math_tests"
+path = "tests/unit/math_tests.rs"
+
+[[test]]
+name = "modding_tests"
+path = "tests/unit/modding_tests.rs"
+
+[[test]]
+name = "particle_tests"
+path = "tests/unit/particle_tests.rs"
+
+[[test]]
+name = "pathfinding_tests"
+path = "tests/unit/pathfinding_tests.rs"
+
+[[test]]
+name = "physics_tests"
+path = "tests/unit/physics_tests.rs"
+
+[[test]]
+name = "postfx_tests"
+path = "tests/unit/postfx_tests.rs"
+
+[[test]]
+name = "savegame_tests"
+path = "tests/unit/savegame_tests.rs"
+
+[[test]]
+name = "scene_tests"
+path = "tests/unit/scene_tests.rs"
+
+[[test]]
+name = "sound_tests"
+path = "tests/unit/sound_tests.rs"
+
+[[test]]
+name = "thread_tests"
+path = "tests/unit/thread_tests.rs"
+
+[[test]]
+name = "tilemap_tests"
+path = "tests/unit/tilemap_tests.rs"
+
+[[test]]
+name = "timer_tests"
+path = "tests/unit/timer_tests.rs"
+
+# === Extension tests ===
+[[test]]
+name = "graphics_ext_tests"
+path = "tests/ext/graphics_ext_tests.rs"
+
+[[test]]
+name = "math_ext_tests"
+path = "tests/ext/math_ext_tests.rs"
+
+# === Game-system tests ===
+[[test]]
+name = "ai_tests"
+path = "tests/game/ai_tests.rs"
+
+[[test]]
+name = "cardgame_tests"
+path = "tests/game/cardgame_tests.rs"
+
+[[test]]
+name = "combat_tests"
+path = "tests/game/combat_tests.rs"
+
+[[test]]
+name = "crafting_tests"
+path = "tests/game/crafting_tests.rs"
+
+[[test]]
+name = "inventory_tests"
+path = "tests/game/inventory_tests.rs"
+
+[[test]]
+name = "minimap_tests"
+path = "tests/game/minimap_tests.rs"
+
+[[test]]
+name = "province_tests"
+path = "tests/game/province_tests.rs"
+
+[[test]]
+name = "quest_tests"
+path = "tests/game/quest_tests.rs"
+
+[[test]]
+name = "resource_tests"
+path = "tests/game/resource_tests.rs"
+
+[[test]]
+name = "stats_tests"
+path = "tests/game/stats_tests.rs"
+
+# === Harnesses ===
+[[test]]
+name = "golden_tests"
+path = "tests/golden/harness.rs"
+
+[[test]]
+name = "lua_tests"
+path = "tests/lua/harness.rs"
+
