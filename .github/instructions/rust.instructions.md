@@ -18,15 +18,25 @@ All Rust files in `src/` must follow safe-Rust conventions, use absolute import 
 
 ## Layer / Boundary Rules
 
-Module dependency direction — only these imports are allowed:
-- `engine` may depend on all modules
-- `lua_api` may depend on `engine` types and all domain modules
-- Domain modules (`graphics`, `physics`, `audio`, `input`, `timer`, `filesystem`, `math`, `window`) must **NOT** depend on each other except through `math`
-- `math` depends on nothing; it is the foundation layer
+Luna2D uses a **four-tier module system** plus two foundation layers. The tier of a module determines what it may import. Violating these rules creates circular dependencies.
+
+**Foundation layers** (always importable by all tiers):
+- `math` — leaf, no Luna2D dependencies; all modules may freely import it
+- `engine` — app lifecycle, may import all modules
+
+**Import rules by tier:**
+- **Tier 1 Basic Core** (`graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread`): may only import `math` and `engine`. No Tier 1 ↔ Tier 1 cross-imports.
+- **Tier 2 Engine Extensions** (`particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource`): may import `math`, `engine`, and Tier 1 modules. No Tier 2 ↔ Tier 2 cross-imports.
+- **Tier 3 Gameplay Systems** (`combat`, `crafting`, `dialog`, `inventory`, `item`, `quest`, `stats`, `province_map`): may import Tier 1 and Tier 2 modules. No Tier 3 ↔ Tier 3 cross-imports.
+- **Tier 4 Platform Integrations** (future): wraps external SDKs; must not be imported by lower tiers.
+- `lua_api` is the integration layer and may import any module. Domain modules must **never** import `lua_api`.
 
 Forbidden patterns:
-- `use crate::graphics::` inside `src/physics/`
-- `use crate::audio::` inside `src/input/`
+- `use crate::graphics::` inside `src/physics/` (Tier 1 → Tier 1 cross-import)
+- `use crate::audio::` inside `src/input/` (Tier 1 → Tier 1 cross-import)
+- `use crate::tilemap::` inside `src/particle/` (Tier 2 → Tier 2 cross-import)
+- `use crate::combat::` inside `src/inventory/` (Tier 3 → Tier 3 cross-import)
+- `use crate::lua_api::` inside any domain module
 - `use super::super::` for cross-module navigation
 
 ## Compliance

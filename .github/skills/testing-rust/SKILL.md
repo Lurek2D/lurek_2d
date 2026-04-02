@@ -98,19 +98,19 @@ fn zero_input_returns_identity() {
 cargo test --test <module>_tests
 ```
 
-**Naming rules:**  
+**Naming rules:**
 - Function name: `<subject>_<scenario>_<expected>` — e.g., `body_zero_velocity_stays_still`
 - No `test_` prefix — redundant; hurts `cargo test` output readability
 - Section headers: `// ── Category ───────────...` for grouping
 
 **Float rule:** `assert!((actual - expected).abs() < 1e-5)` — NEVER `assert_eq!` on `f32`/`f64`.
 
-**Boundary conditions required:**  
-- Zero values  
-- Negative values  
-- Large values  
-- Empty collections  
-- Single-element collections  
+**Boundary conditions required:**
+- Zero values
+- Negative values
+- Large values
+- Empty collections
+- Single-element collections
 
 ---
 
@@ -331,7 +331,7 @@ python tools/collect_docs.py --suggest         # starter /// lines for undocumen
 
 Golden tests compare deterministic binary/text output against a committed baseline file.
 
-**Baseline files:** `tests/golden/expected/<category>/<name>.<ext>`  
+**Baseline files:** `tests/golden/expected/<category>/<name>.<ext>`
 **Runtime output:** `tests/golden/actual/<category>/` (git-ignored)
 
 Categories: `encoding/`, `hashes/`, `compression/`, `images/`, `config/`, `sound/`

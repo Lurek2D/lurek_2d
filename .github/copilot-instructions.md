@@ -5,7 +5,7 @@ This file is the always-on backbone for AI-assisted development in the Luna2D re
 
 - **CAG load order**: System Prompt → Instructions (auto-load by file glob) → Skills (load on-demand) → Prompts → Agents
 - **Tech baseline**: Rust stable ≥1.78 | LuaJIT vendored via mlua 0.9 (Lua 5.4 `lua54` feature = non-shipping fallback) | wgpu 22 | winit 0.30 | rapier2d 0.32 | rodio 0.17 | fontdue 0.9
-- **Source of truth**: [`docs/zen-of-luna.md`](../docs/zen-of-luna.md) (first principles) · [`docs/design-assumptions.md`](../docs/design-assumptions.md) (binding constraints) · [`docs/architecture.md`](../docs/architecture.md) (module structure + dependency graph). Consult all three before implementing any feature or making an architectural decision.
+- **Source of truth**: [`docs/zen-of-luna.md`](../docs/zen-of-luna.md) (first principles) · [`docs/design-assumptions.md`](../docs/design-assumptions.md) (binding constraints) · [`docs/architecture.md`](../docs/architecture.md) (module structure, tier system, dependency graph). Consult all three before implementing any feature or making an architectural decision.
 - **API namespace**: All Lua bindings live under `luna.*` — never external engine prefixes, never bare globals
 - **Design inspiration**: Similar Lua-based 2D game engines — single exe, loads `main.lua`, callback model (`luna.load/update/draw`). User writes Lua; engine owns GPU, threading, and batching.
 - **IDE**: VS Code first-party extension — MCP server, CAG docs, IntelliSense, webview panels, AI-first workflow
@@ -28,7 +28,7 @@ The following are **active, binding decisions** from `docs/design-assumptions.md
 | A-01 | Luna2D is a **runtime only** — no embedded visual editor or IDE |
 | A-02 | **Desktop only** — Windows/Linux/macOS x86_64 + ARM. Mobile (iOS/Android) and WASM are out of scope |
 | A-03 | **2D graphics only** — no 3D scene graph or perspective pipeline. Raycasting columns and isometric projection are acceptable (they use 2D draw calls) |
-| A-04 | No distribution platform SDK integration (Steam, Epic, itch.io store APIs) |
+| A-04 | No distribution platform SDK integration (Steam, Epic, itch.io store APIs) in the core engine binary. Platform integrations are Tier 4 — out of scope for Tier 1–3 modules |
 | B-01 | **LuaJIT** is the primary scripting runtime. Lua 5.4 (`lua54` cargo feature) is a non-shipping development fallback |
 | B-02 | **wgpu 22** is the only renderer backend (Vulkan / DX12 / Metal). No raw OpenGL path |
 | B-03 | Games must run acceptably on **integrated GPUs** (Intel UHD, AMD APU) |
@@ -123,7 +123,13 @@ python tools/cag_validate.py --file .github/agents/developer.agent.md  # Single 
 - **GPU rendering**: wgpu → `wgpu::Surface` → `GpuRenderer::render_frame()` → swapchain present. No CPU pixel buffer. `renderer.rs` contains shared draw types (`DrawCommand`, `BlendMode`, etc.).
 - **Draw command queue**: Lua calls push `DrawCommand` variants during `luna.draw()`. Engine processes them after the callback returns. Never render inside a Lua closure.
 - **SharedState**: `Rc<RefCell<SharedState>>` shared between Lua closures and the engine loop. Never use raw pointers or `unsafe` for state sharing. Resource pools use `SlotMap` with typed keys.
-- **Module direction**: `engine` may depend on all modules. `lua_api` depends on engine types and all domain modules. Domain modules must NOT depend on each other except through `math`.
+- **Module direction and tier system**: All source modules belong to one of four tiers plus two foundation layers. See the full tier table in [`docs/architecture.md`](../docs/architecture.md). Short form:
+  - **Foundation**: `math` (leaf, no deps), `engine` (may import all)
+  - **Tier 1 Basic Core**: `graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread` — may only import `math` + `engine`; no Tier 1 ↔ Tier 1 cross-imports
+  - **Tier 2 Engine Extensions**: `particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource` — may import math, engine, and Tier 1; no Tier 2 ↔ Tier 2 cross-imports
+  - **Tier 3 Gameplay Systems**: `combat`, `crafting`, `dialog`, `inventory`, `item`, `quest`, `stats`, `province_map` — may import Tier 1 and Tier 2; no Tier 3 ↔ Tier 3 cross-imports
+  - **Tier 4 Platform Integrations** (future): Steam, Epic, etc. — must not be imported by lower tiers
+  - `lua_api` is the bridge layer above all tiers; domain modules never import it
 - **Physics backend**: rapier2d 0.32 provides rigid-body simulation with circles, rectangles, sensors, raycasting, joints, and collision event recording via `src/physics/`.
 
 ### Module Dependency Graph
@@ -131,20 +137,27 @@ python tools/cag_validate.py --file .github/agents/developer.agent.md  # Single 
 ```
 math (leaf — no internal deps)
   ↑
-engine ← physics ← lua_api
-engine ← graphics ← lua_api
-engine ← audio    ← lua_api
-engine ← input    ← lua_api
-engine ← timer    ← lua_api
-engine ← ai       ← lua_api
-engine ← entity   ← lua_api
-... (all domain modules ← lua_api)
+engine ← Tier 1 (graphics, audio, physics, input, timer, filesystem,
+  ↑              compute, data, image, sound, event, entity, window, thread)
+  ↑
+  ← Tier 2 (particle, tilemap, scene, savegame, modding, graph,
+  ↑          pathfinding, ai, dataframe, resource)
+  ↑
+  ← Tier 3 (combat, crafting, dialog, inventory, item, quest, stats, province_map)
+  ↑
+  ← Tier 4 (future: Steam, Epic, platform SDKs)
+  ↑
+lua_api (integration layer — imports all tiers)
 ```
 
-- `math` is the only module all others may freely import
-- Domain modules (physics, graphics, audio, ...) are **peers** — no cross-imports
+- `math` is the only module all other modules may freely import
+- Tier 1 modules may only import `math` and `engine` — no Tier 1 ↔ Tier 1 cross-imports
+- Tier 2 modules may import `math`, `engine`, and Tier 1 — no Tier 2 ↔ Tier 2 cross-imports
+- Tier 3 modules may import Tier 1 and Tier 2 — no Tier 3 ↔ Tier 3 cross-imports
+- Tier 4 (future) wraps external platform SDKs — not imported by lower tiers
 - `lua_api` is the integration layer; it may import any module
 - `engine` provides `SharedState`, `EngineError`, `Config`, `App`
+- Domain modules never import `lua_api`
 
 ### Boot Sequence
 

@@ -190,10 +190,6 @@ name = "dataframe_tests"
 path = "tests/unit/dataframe_tests.rs"
 
 [[test]]
-name = "dialog_tests"
-path = "tests/unit/dialog_tests.rs"
-
-[[test]]
 name = "engine_tests"
 path = "tests/unit/engine_tests.rs"
 
@@ -312,16 +308,12 @@ name = "minimap_tests"
 path = "tests/game/minimap_tests.rs"
 
 [[test]]
-name = "province_tests"
-path = "tests/game/province_tests.rs"
+name = "quest_tests"
+path = "tests/game/quest_tests.rs"
 
 [[test]]
 name = "province_map_tests"
 path = "tests/game/province_map_tests.rs"
-
-[[test]]
-name = "quest_tests"
-path = "tests/game/quest_tests.rs"
 
 [[test]]
 name = "resource_tests"

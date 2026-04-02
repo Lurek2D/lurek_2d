@@ -38,26 +38,46 @@ Every Architect output includes:
 ## SUCCESS METRICS
 
 - Module dependency graph is acyclic
-- Domain modules only depend on `math` (foundational) — not on each other
+- All modules are assigned to exactly one tier (see `docs/architecture.md`)
+- No same-tier cross-imports at any tier level
+- No upward imports across tiers
 - `engine` may depend on all modules; `lua_api` depends on engine + all domain modules
 - Each module has a clear, single responsibility
 - Public API is minimal — `pub(crate)` when cross-crate visibility isn't needed
 - New modules follow the existing `mod.rs` + subfile pattern
 
-## MODULE DEPENDENCY RULES
+## MODULE TIER SYSTEM
 
-```
-math           ← foundational, no dependencies on other Luna2D modules
-graphics       ← depends on math only
-physics        ← depends on math only
-audio          ← depends on math only (if needed)
-input          ← no Luna2D dependencies
-timer          ← no Luna2D dependencies
-filesystem     ← no Luna2D dependencies
-window         ← no Luna2D dependencies
-engine         ← may depend on ALL above modules
-lua_api        ← depends on engine + all domain modules
-```
+Luna2D uses a four-tier module system. See [`docs/architecture.md`](../../docs/architecture.md) for the full tier tables.
+
+**Foundation layers** (always importable):
+- `math` — leaf, no Luna2D deps; all tiers may freely import
+- `engine` — app lifecycle; may import all modules
+
+**Tier 1 — Basic Core** (import: `math` + `engine` only, no cross-Tier-1):
+`graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread`
+
+**Tier 2 — Engine Extensions** (import: Tier 1 + math + engine, no cross-Tier-2):
+`particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource`
+
+**Tier 3 — Gameplay Systems** (import: Tier 1 + Tier 2, no cross-Tier-3):
+`combat`, `crafting`, `dialog`, `inventory`, `item`, `quest`, `stats`, `province_map`
+
+**Tier 4 — Platform Integrations** (future; not imported by lower tiers):
+Reserved for Steam, Epic, and other external platform SDK wrappers.
+
+**Rules**:
+- A new module must be assigned a tier before any implementation begins
+- Same-tier cross-imports are forbidden at all tiers
+- Upward imports (Tier N importing Tier N+1) are forbidden
+- Domain modules must never import `lua_api`
+- `lua_api` is the integration layer; it may import any module
+
+**Planned build variants** (future Cargo feature flag work):
+- Light = Foundation + Tier 1
+- Standard = Foundation + Tier 1 + Tier 2
+- Extended = Foundation + Tier 1 + Tier 2 + Tier 3
+- Platform = All tiers + Tier 4
 
 ## WORKFLOW
 
