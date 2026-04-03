@@ -296,6 +296,34 @@
             "command": "luna",
             "problemMatcher": []
         },
+        {
+            "label": "Run Debug: Splash (drag-drop ready)",
+            "detail": "⚡ Launch the debug binary splash screen WITHOUT rebuilding — fast startup for drag-drop folder loading. Build once first with 'Build: Debug'.",
+            "type": "shell",
+            "command": "${workspaceFolder}/target/debug/luna2d",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Release: Splash (drag-drop ready)",
+            "detail": "⚡ Launch the release binary splash screen WITHOUT rebuilding — fastest startup for drag-drop testing. Build once first with 'Build: Release'.",
+            "type": "shell",
+            "command": "${workspaceFolder}/target/release/luna2d",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build + Run Debug: Splash",
+            "detail": "🔨 Rebuild debug binary then launch splash screen — guarantees you run the latest code. Use this when in doubt about stale binaries.",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Build: Debug", "Run Debug: Splash (drag-drop ready)"],
+            "problemMatcher": []
+        },
+        {
+            "label": "Build + Run Release: Splash",
+            "detail": "🔨 Rebuild release binary then launch splash screen — use before drag-drop testing after code changes.",
+            "dependsOrder": "sequence",
+            "dependsOn": ["Build: Release", "Run Release: Splash (drag-drop ready)"],
+            "problemMatcher": []
+        },
         // ─── 🎨 ASSETS ────────────────────────────────────────────────────────
         {
             "label": "Assets: Generate Splash",

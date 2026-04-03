@@ -51,6 +51,7 @@ use std::path::Path;
 /// - `version` — Target engine version string.
 /// - `log_file` — Path to the log file, relative to the game directory.
 /// - `log_append` — If `true`, appends to an existing log file instead of truncating it.
+/// - `log_level` — Minimum log level written to both stderr and the log file (`"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`). Overrides the build-mode default when set.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub window: WindowConfig,
@@ -63,6 +64,10 @@ pub struct Config {
     pub log_file: Option<String>,
     /// If `true`, appends to an existing log file instead of truncating it on startup.
     pub log_append: bool,
+    /// Minimum log level for both stderr and the log file.
+    /// Valid values: `"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`.
+    /// When `None`, falls back to the build-mode default (debug builds: `debug`, release builds: `error`).
+    pub log_level: Option<String>,
 }
 
 /// GPU backend and power-preference settings resolved once at engine startup.
@@ -181,6 +186,7 @@ impl Default for Config {
             version: None,
             log_file: None,
             log_append: false,
+            log_level: None,
         }
     }
 }
@@ -313,6 +319,9 @@ impl Config {
             .set("file", config.log_file.as_deref().unwrap_or(""))
             .unwrap();
         log_tbl.set("append", config.log_append).unwrap();
+        log_tbl
+            .set("level", config.log_level.as_deref().unwrap_or(""))
+            .unwrap();
         t.set("log", log_tbl).unwrap();
 
         t
@@ -412,6 +421,14 @@ impl Config {
             }
             if let Ok(v) = log_tbl.get::<_, bool>("append") {
                 config.log_append = v;
+            }
+            if let Ok(v) = log_tbl.get::<_, String>("level") {
+                let v = v.to_lowercase();
+                config.log_level = if v.is_empty() {
+                    None
+                } else {
+                    Some(v)
+                };
             }
         }
 

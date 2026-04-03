@@ -1534,7 +1534,8 @@ impl ApplicationHandler for LunaApp {
             }
 
             // Drag-and-drop: allow loading a game folder by dropping it onto the window.
-            WindowEvent::HoveredFile(_) => {
+            WindowEvent::HoveredFile(path) => {
+                log::debug!("HoveredFile: {}", path.display());
                 if !self.has_game {
                     self.drag_hover = true;
                     if let Some(win) = &self.window {
@@ -1544,8 +1545,9 @@ impl ApplicationHandler for LunaApp {
             }
 
             WindowEvent::HoveredFileCancelled => {
-                self.drag_hover = false;
-                if !self.has_game {
+                log::debug!("HoveredFileCancelled");
+                if self.drag_hover {
+                    self.drag_hover = false;
                     if let Some(win) = &self.window {
                         win.request_redraw();
                     }
@@ -1553,7 +1555,14 @@ impl ApplicationHandler for LunaApp {
             }
 
             WindowEvent::DroppedFile(path) => {
-                self.drag_hover = false;
+                eprintln!("[luna2d drag-drop] DroppedFile: {}", path.display());
+                log::info!("DroppedFile: {}", path.display());
+                if self.drag_hover {
+                    self.drag_hover = false;
+                    if let Some(win) = &self.window {
+                        win.request_redraw();
+                    }
+                }
                 if !self.has_game {
                     let main_lua = path.join("main.lua");
                     if path.is_dir() && main_lua.exists() {
@@ -1579,6 +1588,8 @@ impl ApplicationHandler for LunaApp {
                             self.restart_game();
                         }
                     }
+                } else {
+                    log::info!("Drag-drop ignored: game already running");
                 }
             }
 
@@ -1641,6 +1652,7 @@ impl App {
             &game_dir,
             self.config.log_file.as_deref(),
             self.config.log_append,
+            self.config.log_level.as_deref(),
         );
         log::info!(
             "Luna2D Engine v{} starting (wgpu GPU backend)",
@@ -1667,7 +1679,9 @@ impl App {
 /// `log_file` is a path relative to `game_dir` (or absolute). When `None`,
 /// the file is placed at `cwd/luna2d.log`.  When `log_append` is `true` the
 /// file is opened in append mode instead of being truncated.
-fn init_logging(game_dir: &Path, log_file: Option<&str>, log_append: bool) {
+/// `log_level` overrides the build-mode default level when `Some` — valid values:
+/// `"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`.
+fn init_logging(game_dir: &Path, log_file: Option<&str>, log_append: bool, log_level: Option<&str>) {
     use std::io::Write as _;
 
     // Resolve log file path: custom path relative to game_dir, or cwd/luna2d.log default.
@@ -1698,12 +1712,21 @@ fn init_logging(game_dir: &Path, log_file: Option<&str>, log_append: bool) {
             .open(&log_path)
     };
 
-    // Debug builds log everything (debug + info + warn + error) to aid bug
-    // hunting.  Release builds log errors only to keep the log file lean.
-    let level = if cfg!(debug_assertions) {
-        log::LevelFilter::Debug
-    } else {
-        log::LevelFilter::Error
+    // Use explicit log_level from conf.lua if provided; otherwise fall back to
+    // build-mode default (debug builds: Debug, release builds: Error).
+    let level = match log_level {
+        Some("error") => log::LevelFilter::Error,
+        Some("warn") => log::LevelFilter::Warn,
+        Some("info") => log::LevelFilter::Info,
+        Some("debug") => log::LevelFilter::Debug,
+        Some("trace") => log::LevelFilter::Trace,
+        _ => {
+            if cfg!(debug_assertions) {
+                log::LevelFilter::Debug
+            } else {
+                log::LevelFilter::Error
+            }
+        }
     };
 
     // wgpu/wgpu_hal emit noisy INFO ("Device::maintain", "Adapter Vulkan AdapterInfo")

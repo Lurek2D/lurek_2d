@@ -45,6 +45,31 @@
             "stopAtEntry": false,
             "environment": [],
             "console": "integratedTerminal"
+        },
+        // ─── ⚡ RUN DEBUG (from source) ───────────────────────────────────────
+        // Uses CodeLLDB cargo integration — compiles incrementally then runs.
+        // No separate build step needed.
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "⚡ Run Debug Splash (cargo run)",
+            "cargo": {
+                "args": ["run", "--bin", "luna2d"]
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        // ─── ⚡ RUN RELEASE (from source) ────────────────────────────────────
+        // Uses CodeLLDB cargo integration — release build, compiles then runs.
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "⚡ Run Release Splash (cargo run)",
+            "cargo": {
+                "args": ["run", "--bin", "luna2d", "--release"]
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
