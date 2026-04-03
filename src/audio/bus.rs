@@ -23,6 +23,7 @@
 /// - `paused` — `bool`.
 #[derive(Debug, Clone)]
 pub struct Bus {
+    pub effects: std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<crate::audio::dsp::EffectParams>>>>,
     name: String,
     volume: f32,
     pitch: f32,
@@ -43,6 +44,7 @@ impl Bus {
             volume: 1.0,
             pitch: 1.0,
             paused: false,
+            effects: std::sync::Arc::new(std::sync::RwLock::new(Vec::new())),
         }
     }
 

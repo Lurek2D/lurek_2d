@@ -2,7 +2,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Integration Layer |
+| **Tier** | Bridge Layer |
 | **Lua API** | `N/A — this IS the binding layer` |
 | **Source** | `src/lua_api/` |
 | **Tests** | `tests/lua_api_tests.rs` |

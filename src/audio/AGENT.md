@@ -2,11 +2,13 @@
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 1 — Basic Core |
+| **Tier** | Tier 1 |
+| **Status** | Implemented — Full |
 | **Lua API** | `luna.audio` |
 | **Source** | `src/audio/` |
-| **Tests** | `tests/audio_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_audio.lua` |
+| **Rust Tests** | `tests/ext/audio_tests.rs` |
+| **Lua Tests** | `tests/lua/unit/test_audio.lua`, `tests/lua/unit/test_audio_dsp.lua` |
+| **Architecture** | `docs/API/audio-dsp-design.md` |
 
 ## Summary
 
@@ -117,6 +119,14 @@ Audio source type and playback state enums for the audio subsystem.
 
 ### Structs
 
+#### `audio::dsp::DynamicEffectSource`
+
+Real-time audio DSP effect source wrapped around rodio streams.
+
+#### `audio::dsp::SharedEffectGraph`
+
+Thread-safe effect chain enabling parameter mutation during playback.
+
 #### `audio::source::AudioSource`
 
 Handle for a loaded audio asset (legacy compatibility shim).
@@ -157,7 +167,7 @@ Type of audio source. Consult the module-level documentation for the broader usa
 
 ## Lua API
 
-Exposed under `luna.audio.*` by `src/lua_api/audio_api/`.
+Exposed under `luna.audio.*` by `src/lua_api/audio_api/`. Includes functions for playback (`play`, `stop`, `pause`, `set_volume`), bus management (`set_bus_volume`, `get_bus_volume`, `pause_bus`), and real-time DSP effects (`add_effect`, `remove_effect`, `set_effect_param`).
 
 ## Item Summary
 

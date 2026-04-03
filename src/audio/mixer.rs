@@ -43,6 +43,7 @@ use slotmap::SlotMap;
 use crate::audio::bus::Bus;
 use crate::engine::error::EngineError;
 use crate::engine::resource_keys::BusKey;
+use crate::audio::dsp::{DynamicEffectSource, EffectParams};
 use crate::engine::resource_keys::QueueableKey;
 use crate::engine::resource_keys::SoundKey;
 
@@ -384,6 +385,7 @@ impl Mixer {
                 lowpass_cutoff,
                 highpass_cutoff,
                 fade_in_duration,
+                self.sources.get(key).and_then(|e| e.bus_key).and_then(|bk| self.buses.get(bk)).map(|b| std::sync::Arc::clone(&b.effects)),
             )
         });
 
@@ -817,6 +819,38 @@ impl Mixer {
     ///
     /// # Returns
     /// `Option<&Bus>`.
+    pub fn get_bus_by_name(&self, name: &str) -> Option<BusKey> {
+        self.buses.iter().find(|(_, b)| b.name() == name).map(|(k, _)| k)
+    }
+
+    /// Gets a bus by key.
+    ///
+    /// # Parameters
+    /// - key — BusKey.
+    ///
+    /// # Returns
+    /// Option<&Bus>.
+    /// Gets bus.
+    ///
+    /// # Parameters
+    /// - key — BusKey.
+    ///
+    /// # Returns
+    /// Option<&Bus>.
+    /// Gets bus.
+    ///
+    /// # Parameters
+    /// - key — BusKey.
+    ///
+    /// # Returns
+    /// Option<&Bus>.
+    /// Gets bus.
+    ///
+    /// # Parameters
+    /// - key — BusKey.
+    ///
+    /// # Returns
+    /// Option<&Bus>.
     pub fn get_bus(&self, key: BusKey) -> Option<&Bus> {
         self.buses.get(key)
     }
@@ -916,6 +950,7 @@ impl Mixer {
         lowpass_cutoff: Option<u32>,
         highpass_cutoff: Option<u32>,
         fade_in_duration: Option<f32>,
+        bus_effects: Option<std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<EffectParams>>>>>,
     ) -> Option<(rodio::Sink, Option<f32>)> {
         // Decode audio and extract metadata
         let (source, duration, channels) = if source_type == SourceType::Static {
@@ -953,7 +988,7 @@ impl Mixer {
 
         // Lowpass / highpass filters — require f32 samples
         let source: Box<dyn rodio::Source<Item = i16> + Send> =
-            if lowpass_cutoff.is_some() || highpass_cutoff.is_some() {
+            if lowpass_cutoff.is_some() || highpass_cutoff.is_some() || bus_effects.is_some() {
                 let f32_src: Box<dyn rodio::Source<Item = f32> + Send> =
                     Box::new(source.convert_samples::<f32>());
                 let f32_src: Box<dyn rodio::Source<Item = f32> + Send> =
@@ -965,6 +1000,12 @@ impl Mixer {
                 let f32_src: Box<dyn rodio::Source<Item = f32> + Send> =
                     if let Some(cutoff) = highpass_cutoff {
                         Box::new(f32_src.high_pass(cutoff))
+                    } else {
+                        f32_src
+                    };
+                let f32_src: Box<dyn rodio::Source<Item = f32> + Send> = 
+                    if let Some(effects) = bus_effects {
+                        Box::new(DynamicEffectSource::new(f32_src, effects))
                     } else {
                         f32_src
                     };
@@ -1082,6 +1123,7 @@ impl Mixer {
                     lowpass_cutoff,
                     highpass_cutoff,
                     fade_in_dur,
+                    bus_key.and_then(|bk| self.buses.get(bk)).map(|b| std::sync::Arc::clone(&b.effects)),
                 );
                 if let Some((sink, duration)) = maybe {
                     if let Some(entry) = self.sources.get_mut(key) {

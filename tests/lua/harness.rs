@@ -124,6 +124,11 @@ fn lua_test_audio_bus() {
 }
 
 #[test]
+fn lua_test_audio_dsp() {
+    run_lua_test("unit/test_audio_dsp.lua");
+}
+
+#[test]
 fn lua_test_compute() {
     run_lua_test("unit/test_compute.lua");
 }
@@ -181,18 +186,6 @@ fn lua_test_debugbridge() {
 #[test]
 fn lua_test_docs() {
     run_lua_test("unit/test_docs.lua");
-}
-
-#[test]
-fn lua_test_battle() {
-    run_lua_test("unit/test_battle.lua");
-}
-
-// === luna.crafting tests ===
-
-#[test]
-fn lua_test_crafting() {
-    run_lua_test("unit/test_crafting.lua");
 }
 
 // === luna.log tests ===
@@ -320,11 +313,6 @@ fn lua_test_audio() {
 }
 
 #[test]
-fn lua_test_dialog() {
-    run_lua_test("unit/test_dialog.lua");
-}
-
-#[test]
 fn lua_test_drawlayer() {
     run_lua_test("unit/test_drawlayer.lua");
 }
@@ -402,6 +390,63 @@ fn lua_stress_physics() {
 }
 
 // === Additional Integration Tests ===
+
+// === Library module tests (tests/lua/library/) ===
+
+#[test]
+fn lua_test_library_dialog() {
+    run_lua_test("library/test_library_dialog.lua");
+}
+
+#[test]
+fn lua_test_library_quest() {
+    run_lua_test("library/test_library_quest.lua");
+}
+
+#[test]
+fn lua_test_library_economy() {
+    run_lua_test("library/test_library_economy.lua");
+}
+
+#[test]
+fn lua_test_library_battle() {
+    run_lua_test("library/test_library_battle.lua");
+}
+
+#[test]
+fn lua_test_library_stats() {
+    run_lua_test("library/test_library_stats.lua");
+}
+
+#[test]
+fn lua_test_library_crafting() {
+    run_lua_test("library/test_library_crafting.lua");
+}
+
+#[test]
+fn lua_test_library_cardgame() {
+    run_lua_test("library/test_library_cardgame.lua");
+}
+
+#[test]
+fn lua_test_library_combat() {
+    run_lua_test("library/test_library_combat.lua");
+}
+
+#[test]
+fn lua_test_library_province_map() {
+    run_lua_test("library/test_library_province_map.lua");
+}
+
+#[test]
+fn lua_test_library_inventory() {
+    run_lua_test("library/test_library_inventory.lua");
+}
+
+#[test]
+fn lua_test_library_item() {
+    run_lua_test("library/test_library_item.lua");
+}
 
 #[test]
 fn lua_integration_data_system() {

@@ -25,6 +25,12 @@
 //! invalidation when sources are released.
 
 /// Named audio bus for grouping sources under shared volume/pitch/pause controls.
+/// DSP logic
+pub mod dsp;
+/// Named audio buses for grouping sources.
+/// Bus module.
+/// Bus module.
+/// Bus module.
 pub mod bus;
 /// Streaming audio decoder for chunked PCM reading.
 pub mod decoder;
