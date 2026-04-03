@@ -17,6 +17,7 @@ pub mod touch;
 
 pub use gamepad::gilrs_axis_to_string;
 pub use gamepad::gilrs_button_to_string;
+pub use gamepad::GamepadMappings;
 pub use gamepad::GamepadState;
 pub use keyboard::winit_scancode_to_string;
 pub use keyboard::KeyboardState;

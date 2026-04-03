@@ -2,13 +2,15 @@
 //!
 //! This module is part of Luna2D's `input` subsystem and provides the implementation
 //! details for gamepad-related operations and data management.
-//! Key types exported from this module: `GamepadState`.
+//! Key types exported from this module: `GamepadState`, `GamepadMappings`.
 //! Primary functions: `new()`, `update_button()`, `update_axis()`, `is_button_pressed()`.
 //!
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 //!
+use crate::engine::EngineError;
 use std::collections::HashMap;
+use std::io::{BufRead, Write};
 
 /// Holds the current button and axis state for a single gamepad identified by its id.
 ///
@@ -212,5 +214,104 @@ pub fn gilrs_axis_to_string(axis: gilrs::Axis) -> &'static str {
         gilrs::Axis::LeftZ => "triggerleft",
         gilrs::Axis::RightZ => "triggerright",
         _ => "unknown",
+    }
+}
+
+/// Stores SDL2 GameControllerDB-format mapping strings keyed by GUID.
+///
+/// Each entry is a single line in the `guid,name,mappings` format used by
+/// SDL's game controller database. Call `load_from_file` to populate from disk
+/// and `save_to_file` to persist accumulated mappings.
+///
+/// # Fields
+/// - `map` — GUID → mapping-string dictionary.
+pub struct GamepadMappings {
+    map: HashMap<String, String>,
+}
+
+impl Default for GamepadMappings {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl GamepadMappings {
+    /// Creates an empty `GamepadMappings` store.
+    ///
+    /// # Returns
+    /// `GamepadMappings`.
+    pub fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+        }
+    }
+
+    /// Inserts or replaces the mapping string for the given GUID.
+    ///
+    /// # Parameters
+    /// - `guid` — SDL-format GUID string (32 hex characters).
+    /// - `mapping` — Full mapping line (`guid,name,mappings`).
+    pub fn set_mapping(&mut self, guid: &str, mapping: &str) {
+        self.map.insert(guid.to_string(), mapping.to_string());
+    }
+
+    /// Returns the mapping string for `guid`, or `None` if unknown.
+    ///
+    /// # Parameters
+    /// - `guid` — SDL-format GUID string.
+    ///
+    /// # Returns
+    /// `Option<&str>`.
+    pub fn get_mapping_string(&self, guid: &str) -> Option<&str> {
+        self.map.get(guid).map(|s| s.as_str())
+    }
+
+    /// Parses a plain-text GameControllerDB file and merges entries into this store.
+    ///
+    /// Lines that start with `#` are treated as comments and skipped.
+    /// Empty lines are also skipped.  Returns the number of mappings loaded.
+    ///
+    /// # Parameters
+    /// - `path` — File system path to the mapping database.
+    ///
+    /// # Returns
+    /// `Result<usize, EngineError>` — count of entries loaded, or I/O error.
+    pub fn load_from_file(&mut self, path: &str) -> Result<usize, EngineError> {
+        let file = std::fs::File::open(path)
+            .map_err(|e| EngineError::FileSystemError(format!("Cannot open {}: {}", path, e)))?;
+        let reader = std::io::BufReader::new(file);
+        let mut count = 0usize;
+        for line in reader.lines() {
+            let line = line.map_err(|e| {
+                EngineError::FileSystemError(format!("Read error in {}: {}", path, e))
+            })?;
+            let trimmed = line.trim();
+            if trimmed.is_empty() || trimmed.starts_with('#') {
+                continue;
+            }
+            // Extract GUID (first comma-delimited field)
+            if let Some(guid) = trimmed.split(',').next() {
+                self.map.insert(guid.to_string(), trimmed.to_string());
+                count += 1;
+            }
+        }
+        Ok(count)
+    }
+
+    /// Writes all stored mappings to a plain-text file, one per line.
+    ///
+    /// # Parameters
+    /// - `path` — Destination file path.
+    ///
+    /// # Returns
+    /// `Result<(), EngineError>`.
+    pub fn save_to_file(&self, path: &str) -> Result<(), EngineError> {
+        let mut file = std::fs::File::create(path)
+            .map_err(|e| EngineError::FileSystemError(format!("Cannot create {}: {}", path, e)))?;
+        for mapping in self.map.values() {
+            writeln!(file, "{}", mapping)
+                .map_err(|e| EngineError::FileSystemError(format!("Write error: {}", e)))?;
+        }
+        Ok(())
     }
 }

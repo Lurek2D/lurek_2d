@@ -215,4 +215,38 @@ describe("mouse cursor userdata", function()
     end)
 end)
 
+-- Phase 10: Gamepad Mapping Persistence
+describe("luna.gamepad mapping persistence", function()
+    it("mapping API functions exist", function()
+        expect_type("function", luna.gamepad.setGamepadMapping)
+        expect_type("function", luna.gamepad.getGamepadMappingString)
+        expect_type("function", luna.gamepad.loadGamepadMappings)
+        expect_type("function", luna.gamepad.saveGamepadMappings)
+    end)
+
+    it("setGamepadMapping does not error for valid guid", function()
+        luna.gamepad.setGamepadMapping(
+            "000000000000000000000000504944564d",
+            "000000000000000000000000504944564d,TestPad,a:b0"
+        )
+    end)
+
+    it("getGamepadMappingString returns nil for unknown guid", function()
+        expect_equal(nil, luna.gamepad.getGamepadMappingString("unknown_guid_xyz"))
+    end)
+
+    it("getGamepadMappingString returns a string after set", function()
+        local guid = "030000005e0400008e02000014010000"
+        luna.gamepad.setGamepadMapping(guid, guid .. ",XInput,a:b0")
+        local s = luna.gamepad.getGamepadMappingString(guid)
+        expect_type("string", s)
+    end)
+
+    it("loadGamepadMappings errors on missing file", function()
+        expect_error(function()
+            luna.gamepad.loadGamepadMappings("__nonexistent_mappings_file_.txt")
+        end)
+    end)
+end)
+
 test_summary()

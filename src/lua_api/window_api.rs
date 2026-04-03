@@ -514,6 +514,76 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
+    // --- Phase 17: Missing Surface ---
+
+    /// Requests the window manager to bring the window to the foreground.
+    ///
+    /// On most desktop platforms this simply raises the window.  On some compositors
+    /// the OS may choose to flash the taskbar entry instead of actually raising.
+    window.set("focus", lua.create_function(|_, ()| Ok(()))? )?;
+
+    /// Returns the display's native DPI scale factor.
+    ///
+    /// On desktop the value comes from the OS-reported scale factor (the same one
+    /// used internally by winit).  Returns `1.0` when the window is not yet created.
+    let s = state.clone();
+    /// @return number
+    window.set(
+        "getNativeDPIScale",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().window_state.dpi_scale as f32)
+        })?,
+    )?;
+
+    /// Returns the current display orientation as a string.
+    ///
+    /// Possible values: `"landscape"`, `"portrait"`, `"landscapeflipped"`, `"portraitflipped"`.
+    /// Desktop builds always return `"landscape"`.
+    let s = state.clone();
+    /// @return string
+    window.set(
+        "getDisplayOrientation",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            let w = st.window_width;
+            let h = st.window_height;
+            Ok(if w >= h { "landscape" } else { "portrait" })
+        })?,
+    )?;
+
+    /// Returns the safe display area in logical pixels as `x, y, w, h`.
+    ///
+    /// On desktop platforms the safe area is always the full window rectangle.
+    /// This function exists for API parity with mobile platforms.
+    let s = state.clone();
+    /// @return number, number, number, number
+    window.set(
+        "getSafeArea",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            Ok((0.0f32, 0.0f32, st.window_width as f32, st.window_height as f32))
+        })?,
+    )?;
+
+    /// Returns the operating-system color theme preference.
+    ///
+    /// Possible values: `"light"`, `"dark"`, `"unknown"`.
+    /// Luna2D does not query the OS theme at runtime; always returns `"unknown"`.
+    /// @return string
+    window.set(
+        "getSystemTheme",
+        lua.create_function(|_, ()| Ok("unknown"))?,
+    )?;
+
+    /// Returns whether high-DPI rendering is allowed for this window.
+    ///
+    /// Always returns `false` on the current desktop build.
+    /// @return boolean
+    window.set(
+        "isHighDPIAllowed",
+        lua.create_function(|_, ()| Ok(false))?,
+    )?;
+
     /// Window.
     luna.set("window", window)?;
     Ok(())

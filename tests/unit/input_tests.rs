@@ -881,3 +881,100 @@ fn keyboard_lua_is_modifier_active_returns_bool() {
     .exec()
     .unwrap();
 }
+
+// ── Phase 10 — Gamepad Mapping Persistence ───────────────────────
+
+use luna2d::input::GamepadMappings;
+
+#[test]
+fn gamepad_mapping_set_and_get() {
+    let mut m = GamepadMappings::new();
+    m.set_mapping(
+        "000000000000000000000000504944564d",
+        "000000000000000000000000504944564d,TestPad,a:b0",
+    );
+    assert_eq!(
+        m.get_mapping_string("000000000000000000000000504944564d"),
+        Some("000000000000000000000000504944564d,TestPad,a:b0")
+    );
+}
+
+#[test]
+fn gamepad_mapping_unknown_guid_returns_none() {
+    let m = GamepadMappings::new();
+    assert!(m.get_mapping_string("unknown_guid").is_none());
+}
+
+#[test]
+fn gamepad_mapping_load_from_nonexistent_file_errors() {
+    let mut m = GamepadMappings::new();
+    let result = m.load_from_file("__nonexistent_mappings_file__.txt");
+    assert!(result.is_err());
+}
+
+#[test]
+fn gamepad_mapping_save_and_load_round_trip() {
+    let tmp = std::env::temp_dir().join("luna2d_test_mappings.txt");
+    let path_str = tmp.to_str().unwrap();
+
+    let mut m1 = GamepadMappings::new();
+    m1.set_mapping(
+        "030000005e0400008e02000014010000",
+        "030000005e0400008e02000014010000,XInput Gamepad,a:b0,b:b1",
+    );
+    m1.set_mapping(
+        "030000004c050000c405000011810000",
+        "030000004c050000c405000011810000,DualShock 4,a:b1,b:b2",
+    );
+    m1.save_to_file(path_str).expect("save failed");
+
+    let mut m2 = GamepadMappings::new();
+    let count = m2.load_from_file(path_str).expect("load failed");
+    assert_eq!(count, 2);
+    assert!(m2
+        .get_mapping_string("030000005e0400008e02000014010000")
+        .is_some());
+    assert!(m2
+        .get_mapping_string("030000004c050000c405000011810000")
+        .is_some());
+
+    let _ = std::fs::remove_file(tmp);
+}
+
+#[test]
+fn gamepad_mapping_lua_set_and_get() {
+    let (_state, lua) = make_vm();
+    lua.load(
+        r#"
+        local guid = "030000005e0400008e02000014010000"
+        luna.gamepad.setGamepadMapping(guid, guid .. ",XInput,a:b0")
+        local s = luna.gamepad.getGamepadMappingString(guid)
+        assert(type(s) == "string")
+        assert(s:find("XInput") ~= nil)
+        "#,
+    )
+    .exec()
+    .unwrap();
+}
+
+#[test]
+fn gamepad_mapping_lua_get_unknown_returns_nil() {
+    let (_state, lua) = make_vm();
+    lua.load(
+        r#"
+        local s = luna.gamepad.getGamepadMappingString("unknown")
+        assert(s == nil)
+        "#,
+    )
+    .exec()
+    .unwrap();
+}
+
+#[test]
+fn gamepad_mapping_lua_load_nonexistent_errors() {
+    let (_state, lua) = make_vm();
+    let ok = lua
+        .load(r#"luna.gamepad.loadGamepadMappings("__no_such_file__.txt")"#)
+        .exec();
+    assert!(ok.is_err());
+}

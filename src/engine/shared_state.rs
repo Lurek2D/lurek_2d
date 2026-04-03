@@ -24,7 +24,7 @@ use crate::filesystem::GameFS;
 use crate::graphics::gpu_renderer::RenderStats;
 use crate::graphics::renderer::{BlendMode, DepthMode, DrawCommand, StencilMode, TextureData};
 use crate::graphics::{Camera, Canvas, Mesh, Shader};
-use crate::input::{GamepadState, KeyboardState, MouseState, TouchState};
+use crate::input::{GamepadMappings, GamepadState, KeyboardState, MouseState, TouchState};
 use crate::particle::ParticleSystem;
 use crate::timer::Clock;
 
@@ -239,6 +239,8 @@ pub struct SharedState {
     pub gamepads: Vec<GamepadState>,
     /// Whether gamepad events are received when the window is not focused.
     pub gamepad_background_events: bool,
+    /// Stored SDL2 GameControllerDB-format mapping strings keyed by GUID.
+    pub gamepad_mappings: GamepadMappings,
     /// 2D camera controlling the world-to-screen view transform.
     pub camera: Camera,
     /// Visual size of drawn points in pixels.
@@ -343,6 +345,7 @@ impl SharedState {
             particle_systems: SlotMap::with_key(),
             gamepads: Vec::new(),
             gamepad_background_events: false,
+            gamepad_mappings: GamepadMappings::new(),
             camera: Camera::default(),
             point_size: 1.0,
             transform_stack_depth: 1,

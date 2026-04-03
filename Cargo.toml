@@ -271,6 +271,10 @@ path = "tests/unit/tilemap_tests.rs"
 name = "timer_tests"
 path = "tests/unit/timer_tests.rs"
 
+[[test]]
+name = "window_tests"
+path = "tests/unit/window_tests.rs"
+
 # === Extension tests ===
 [[test]]
 name = "graphics_ext_tests"

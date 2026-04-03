@@ -539,6 +539,65 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().gamepad_background_events))?,
     )?;
 
+    /// Stores or replaces the SDL2 GameControllerDB mapping string for the given GUID.
+    let s = state.clone();
+    /// @param guid : string
+    /// @param mapping : string
+    gamepad.set(
+        "setGamepadMapping",
+        lua.create_function(move |_, (guid, mapping): (String, String)| {
+            s.borrow_mut().gamepad_mappings.set_mapping(&guid, &mapping);
+            Ok(())
+        })?,
+    )?;
+
+    /// Returns the stored mapping string for the gamepad with the given GUID, or nil.
+    let s = state.clone();
+    /// @param guid : string
+    /// @return string?
+    gamepad.set(
+        "getGamepadMappingString",
+        lua.create_function(move |_, guid: String| {
+            let st = s.borrow();
+            Ok(st
+                .gamepad_mappings
+                .get_mapping_string(&guid)
+                .map(|m| m.to_string()))
+        })?,
+    )?;
+
+    /// Loads SDL2 GameControllerDB-format mappings from a file.
+    ///
+    /// Returns the number of entries loaded, or raises a Lua error on I/O failure.
+    let s = state.clone();
+    /// @param path : string
+    /// @return integer
+    gamepad.set(
+        "loadGamepadMappings",
+        lua.create_function(move |_, path: String| {
+            let count = s
+                .borrow_mut()
+                .gamepad_mappings
+                .load_from_file(&path)
+                .map_err(LuaError::external)?;
+            Ok(count)
+        })?,
+    )?;
+
+    /// Saves all stored gamepad mappings to a plain-text file, one entry per line.
+    let s = state.clone();
+    /// @param path : string
+    gamepad.set(
+        "saveGamepadMappings",
+        lua.create_function(move |_, path: String| {
+            s.borrow()
+                .gamepad_mappings
+                .save_to_file(&path)
+                .map_err(LuaError::external)?;
+            Ok(())
+        })?,
+    )?;
+
     /// Gamepad.
     luna.set("gamepad", gamepad)?;
 

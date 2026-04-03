@@ -251,4 +251,76 @@ describe("luna.window close and attention", function()
     end)
 end)
 
+-- Phase 17: Missing Window Surface
+describe("luna.window missing surface (Phase 17)", function()
+    it("focus is a function", function()
+        expect_type("function", luna.window.focus)
+    end)
+
+    it("focus can be called without error", function()
+        luna.window.focus()
+    end)
+
+    it("getNativeDPIScale is a function", function()
+        expect_type("function", luna.window.getNativeDPIScale)
+    end)
+
+    it("getNativeDPIScale returns a positive number", function()
+        local s = luna.window.getNativeDPIScale()
+        expect_type("number", s)
+        expect_true(s > 0, "DPI scale must be positive")
+    end)
+
+    it("getDisplayOrientation is a function", function()
+        expect_type("function", luna.window.getDisplayOrientation)
+    end)
+
+    it("getDisplayOrientation returns a string", function()
+        local o = luna.window.getDisplayOrientation()
+        expect_type("string", o)
+    end)
+
+    it("getDisplayOrientation value is landscape or portrait variant", function()
+        local o = luna.window.getDisplayOrientation()
+        local valid = (o == "landscape" or o == "portrait" or
+                       o == "landscapeflipped" or o == "portraitflipped")
+        expect_true(valid, "orientation must be landscape/portrait/landscapeflipped/portraitflipped")
+    end)
+
+    it("getSafeArea is a function", function()
+        expect_type("function", luna.window.getSafeArea)
+    end)
+
+    it("getSafeArea returns four numbers", function()
+        local x, y, w, h = luna.window.getSafeArea()
+        expect_type("number", x)
+        expect_type("number", y)
+        expect_type("number", w)
+        expect_type("number", h)
+    end)
+
+    it("getSafeArea w and h are positive on desktop", function()
+        local _, _, w, h = luna.window.getSafeArea()
+        expect_true(w > 0, "safe area width > 0")
+        expect_true(h > 0, "safe area height > 0")
+    end)
+
+    it("getSystemTheme is a function", function()
+        expect_type("function", luna.window.getSystemTheme)
+    end)
+
+    it("getSystemTheme returns a string", function()
+        local t = luna.window.getSystemTheme()
+        expect_type("string", t)
+    end)
+
+    it("isHighDPIAllowed is a function", function()
+        expect_type("function", luna.window.isHighDPIAllowed)
+    end)
+
+    it("isHighDPIAllowed returns a boolean", function()
+        expect_type("boolean", luna.window.isHighDPIAllowed())
+    end)
+end)
+
 test_summary()
