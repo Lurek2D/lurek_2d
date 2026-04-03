@@ -13,6 +13,7 @@ use crate::audio::Decoder;
 use crate::audio::MidiPlayer;
 use crate::audio::SourceType;
 use crate::engine::resource_keys::BusKey;
+use crate::engine::resource_keys::QueueableKey;
 use crate::engine::resource_keys::SoundKey;
 use crate::lua_api::lua_types::{add_type_methods, LunaType};
 use crate::audio::sound_data::SoundData;
@@ -945,6 +946,11 @@ fn require_sound_key(
 ) -> LuaResult<SoundKey> {
     let key = sound_key_from_value(val)?;
     ensure_source_exists(&state.mixer, key, function_name)
+}
+
+/// Reconstructs a `QueueableKey` from the packed `u64` representation used in Lua.
+fn queueable_key_from_u64(raw: u64) -> QueueableKey {
+    QueueableKey::from(slotmap::KeyData::from_ffi(raw))
 }
 
 /// Lua UserData wrapper for a streaming audio `Decoder`.
@@ -2051,6 +2057,162 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let decoder = Decoder::from_file(path_str, buf)
                 .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
             Ok(LuaDecoder { inner: decoder })
+        })?,
+    )?;
+
+    // ── Phase 15 — Queueable Sources ─────────────────────────────────────────
+
+    // luna.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count?) -> id
+    /// Creates a queueable audio source that accepts manually-pushed PCM buffers.
+    ///
+    /// # Parameters
+    /// - `sample_rate` — `u32`. Sample rate in Hz (e.g. 44100).
+    /// - `bit_depth` — `u8`. Bit depth (8 or 16).
+    /// - `channels` — `u8`. Channel count (1 = mono, 2 = stereo).
+    /// - `buffer_count` — `usize?`. Max queued buffer slots (default 4).
+    ///
+    /// # Returns
+    /// Queueable source ID (integer).
+    let s = state.clone();
+    /// @param sample_rate : integer
+    /// @param bit_depth : integer
+    /// @param channels : integer
+    /// @param buffer_count : integer?
+    /// @return any
+    audio.set(
+        "newQueueableSource",
+        lua.create_function(
+            move |_,
+                  (sample_rate, bit_depth, channels, buffer_count): (
+                u32,
+                u8,
+                u8,
+                Option<usize>,
+            )| {
+                let buf = buffer_count.unwrap_or(4);
+                let key = s
+                    .borrow_mut()
+                    .mixer
+                    .new_queueable(sample_rate, bit_depth, channels, buf);
+                // Encode the QueueableKey as a u64 using slotmap's FFI representation.
+                Ok(slotmap::Key::data(&key).as_ffi())
+            },
+        )?,
+    )?;
+
+    // luna.audio.queueSource(qsource_id, sounddata)
+    /// Pushes a SoundData buffer into a queueable source.
+    ///
+    /// # Parameters
+    /// - `qsource_id` — integer returned by `newQueueableSource`.
+    /// - `sounddata` — `SoundData` userdata with the PCM samples to enqueue.
+    let s = state.clone();
+    /// @param qsource_id : integer
+    /// @param sounddata : userdata
+    audio.set(
+        "queueSource",
+        lua.create_function(move |_, (qsource_id, sd): (u64, mlua::AnyUserData)| {
+            let key = queueable_key_from_u64(qsource_id);
+            let sd_ref = sd.borrow::<crate::audio::sound_data::SoundData>()?;
+            s.borrow_mut()
+                .mixer
+                .queue_buffer(key, sd_ref.samples())
+                .map_err(|e| mlua::Error::RuntimeError(e.to_string()))
+        })?,
+    )?;
+
+    // luna.audio.getFreeBufferCount(qsource_id) -> n
+    /// Returns the number of free buffer slots remaining in a queueable source.
+    ///
+    /// # Parameters
+    /// - `qsource_id` — integer returned by `newQueueableSource`.
+    ///
+    /// # Returns
+    /// `integer`.
+    let s = state.clone();
+    /// @param qsource_id : integer
+    /// @return any
+    audio.set(
+        "getFreeBufferCount",
+        lua.create_function(move |_, qsource_id: u64| {
+            let key = queueable_key_from_u64(qsource_id);
+            Ok(s.borrow().mixer.queueable_free_buffer_count(key) as u32)
+        })?,
+    )?;
+
+    // luna.audio.playQueueable(qsource_id)
+    /// Starts playback of a queueable source. PCM output is driven by queued buffers.
+    ///
+    /// # Parameters
+    /// - `qsource_id` — integer returned by `newQueueableSource`.
+    let s = state.clone();
+    /// @param qsource_id : integer
+    audio.set(
+        "playQueueable",
+        lua.create_function(move |_, qsource_id: u64| {
+            let key = queueable_key_from_u64(qsource_id);
+            s.borrow_mut().mixer.play_queueable(key);
+            Ok(())
+        })?,
+    )?;
+
+    // luna.audio.stopQueueable(qsource_id)
+    /// Stops playback and drains all queued buffers in a queueable source.
+    ///
+    /// # Parameters
+    /// - `qsource_id` — integer returned by `newQueueableSource`.
+    let s = state.clone();
+    /// @param qsource_id : integer
+    audio.set(
+        "stopQueueable",
+        lua.create_function(move |_, qsource_id: u64| {
+            let key = queueable_key_from_u64(qsource_id);
+            s.borrow_mut().mixer.stop_queueable(key);
+            Ok(())
+        })?,
+    )?;
+
+    // ── Phase 18 — Playback Device Selection ─────────────────────────────────
+
+    // luna.audio.getPlaybackDevices() -> table of string names
+    /// Returns a table containing the names of all available audio output devices.
+    ///
+    /// # Returns
+    /// `table` — array of device name strings.
+    audio.set(
+        "getPlaybackDevices",
+        lua.create_function(|lua, ()| {
+            let devices = crate::audio::get_playback_devices();
+            let tbl = lua.create_table()?;
+            for (i, name) in devices.into_iter().enumerate() {
+                tbl.set(i + 1, name)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+
+    // luna.audio.getPlaybackDevice() -> string
+    /// Returns the name of the currently active audio output device.
+    ///
+    /// # Returns
+    /// `string`.
+    audio.set(
+        "getPlaybackDevice",
+        lua.create_function(|_, ()| Ok(crate::audio::get_playback_device()))?,
+    )?;
+
+    // luna.audio.setPlaybackDevice(name)
+    /// Selects the audio output device by name.
+    ///
+    /// Errors if `name` is not in the list returned by `getPlaybackDevices`.
+    ///
+    /// # Parameters
+    /// - `name` — `string`. Device name to activate.
+    audio.set(
+        "setPlaybackDevice",
+        lua.create_function(|_, name: String| {
+            crate::audio::set_playback_device(&name)
+                .map_err(|e| mlua::Error::RuntimeError(e.to_string()))
         })?,
     )?;
 

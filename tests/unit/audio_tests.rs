@@ -1050,3 +1050,75 @@ fn decoder_seek_then_tell_round_trips() {
     d.seek(target);
     assert!((d.tell() - target).abs() < 0.001);
 }
+
+// ── Phase 15 — QueueableSource ────────────────────────────────────────────────
+
+#[test]
+fn queueable_source_new_has_full_free_buffers() {
+    let mut mixer = Mixer::new();
+    let key = mixer.new_queueable(44100, 16, 1, 4);
+    assert_eq!(mixer.queueable_free_buffer_count(key), 4);
+}
+
+#[test]
+fn queueable_source_queue_reduces_free_count() {
+    let mut mixer = Mixer::new();
+    let key = mixer.new_queueable(44100, 16, 1, 4);
+    let pcm = vec![0.0f32; 128];
+    mixer.queue_buffer(key, &pcm).expect("queue_buffer should succeed");
+    assert_eq!(mixer.queueable_free_buffer_count(key), 3);
+}
+
+#[test]
+fn queueable_source_free_buffer_count_max() {
+    let mut mixer = Mixer::new();
+    let key = mixer.new_queueable(44100, 16, 2, 8);
+    assert_eq!(mixer.queueable_free_buffer_count(key), 8);
+}
+
+#[test]
+fn queueable_source_queue_full_returns_error() {
+    let mut mixer = Mixer::new();
+    let key = mixer.new_queueable(44100, 16, 1, 2);
+    let pcm = vec![0.0f32; 64];
+    mixer.queue_buffer(key, &pcm).expect("first queue should succeed");
+    mixer.queue_buffer(key, &pcm).expect("second queue should succeed");
+    let err = mixer.queue_buffer(key, &pcm);
+    assert!(err.is_err(), "queueing beyond capacity must return an error");
+}
+
+#[test]
+fn queueable_source_stop_drains_buffers() {
+    let mut mixer = Mixer::new();
+    let key = mixer.new_queueable(44100, 16, 1, 4);
+    let pcm = vec![0.0f32; 16];
+    mixer.queue_buffer(key, &pcm).unwrap();
+    mixer.queue_buffer(key, &pcm).unwrap();
+    mixer.stop_queueable(key);
+    assert_eq!(mixer.queueable_free_buffer_count(key), 4);
+}
+
+// ── Phase 18 — Playback Device Selection ─────────────────────────────────────
+
+#[test]
+fn audio_get_playback_devices_returns_at_least_one() {
+    let devs = luna2d::audio::get_playback_devices();
+    assert!(!devs.is_empty(), "must return at least one device");
+}
+
+#[test]
+fn audio_get_playback_device_returns_string() {
+    let name = luna2d::audio::get_playback_device();
+    assert!(!name.is_empty(), "device name must not be empty");
+}
+
+#[test]
+fn audio_set_playback_device_default_ok() {
+    luna2d::audio::set_playback_device("Default").expect("setting Default device should succeed");
+}
+
+#[test]
+fn audio_set_playback_device_unknown_errors() {
+    let result = luna2d::audio::set_playback_device("NonExistentDevice___XYZ");
+    assert!(result.is_err(), "unknown device name should return an error");
+}

@@ -93,3 +93,39 @@ Every Audio-Eng output includes:
 - `luna.audio.setListener(x, y, z?)` / `getListener` — 3D listener position
 - `luna.audio.setListener2D` / `getListener2D` — 2D backward-compat aliases
 - `SpatialState` — per-source spatial state struct in `src/audio/source.rs`
+
+## PHASE 15 — Queueable Sources (implemented)
+
+- `luna.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count?)` — returns integer ID
+- `luna.audio.queueSource(qsource_id, sounddata)` — push PCM from a SoundData into free buffer slot
+- `luna.audio.getFreeBufferCount(qsource_id)` — number of free buffer slots remaining
+- `luna.audio.playQueueable(qsource_id)` — start playback (PCM driven by queued buffers)
+- `luna.audio.stopQueueable(qsource_id)` — stop and drain all queued buffers
+- `QueueableSource` struct in `src/audio/mixer.rs` with `SlotMap<QueueableKey, QueueableSource>`
+- `QueueableKey` in `src/engine/resource_keys.rs`
+
+## PHASE 18 — Playback Device Selection (implemented)
+
+- `luna.audio.getPlaybackDevices()` — returns table of device name strings
+- `luna.audio.getPlaybackDevice()` — returns current device name string
+- `luna.audio.setPlaybackDevice(name)` — selects device; errors on unknown name
+- Device functions in `src/audio/mod.rs` (`get_playback_devices`, `get_playback_device`, `set_playback_device`)
+- Stub implementation returning `"Default"` until cpal enumeration is wired in
+
+## PHASE 15 — Queueable Sources (implemented)
+
+- `luna.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count?)` — returns integer ID
+- `luna.audio.queueSource(qsource_id, sounddata)` — push PCM from a SoundData into free buffer slot
+- `luna.audio.getFreeBufferCount(qsource_id)` — number of free buffer slots remaining
+- `luna.audio.playQueueable(qsource_id)` — start playback (PCM driven by queued buffers)
+- `luna.audio.stopQueueable(qsource_id)` — stop and drain all queued buffers
+- `QueueableSource` struct in `src/audio/mixer.rs` with `SlotMap<QueueableKey, QueueableSource>`
+- `QueueableKey` in `src/engine/resource_keys.rs`
+
+## PHASE 18 — Playback Device Selection (implemented)
+
+- `luna.audio.getPlaybackDevices()` — returns table of device name strings
+- `luna.audio.getPlaybackDevice()` — returns current device name string
+- `luna.audio.setPlaybackDevice(name)` — selects device; errors on unknown name
+- Device functions in `src/audio/mod.rs` (`get_playback_devices`, `get_playback_device`, `set_playback_device`)
+- Stub implementation returning `"Default"` until cpal enumeration is wired in

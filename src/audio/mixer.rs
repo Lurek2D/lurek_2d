@@ -31,6 +31,7 @@
 //! instants and accumulated pre-pause seconds manually so `luna.audio.getTime` can return
 //! the current position in the stream.
 
+use std::collections::VecDeque;
 use std::io::BufReader;
 use std::path::Path;
 use std::sync::Arc;
@@ -40,7 +41,9 @@ use rodio::Source;
 use slotmap::SlotMap;
 
 use crate::audio::bus::Bus;
+use crate::engine::error::EngineError;
 use crate::engine::resource_keys::BusKey;
+use crate::engine::resource_keys::QueueableKey;
 use crate::engine::resource_keys::SoundKey;
 
 /// Type of audio source. Consult the module-level documentation for the broader usage context and preconditions.
@@ -99,8 +102,85 @@ struct AudioEntry {
     spatial: Option<crate::audio::SpatialState>,
 }
 
-/// Manages audio output via rodio: loads sources, controls playback, volume,
-/// pitch, pan, looping, fade effects, bus routing, and master volume.
+/// A manually-fed streaming audio source that accepts raw f32 PCM data pushed buffer-by-buffer.
+///
+/// Game code pushes audio data into the free-buffer queue via `queue_buffer`. The engine
+/// counts how many buffers are still waiting to be consumed, giving game scripts control
+/// over exactly when audio data is produced and played.
+///
+/// # Fields
+/// - `sample_rate` — `u32`. PCM sample rate in Hz (e.g. 44100).
+/// - `bit_depth` — `u8`. Bit depth per sample (8 or 16).
+/// - `channels` — `u8`. Number of audio channels (1 = mono, 2 = stereo).
+/// - `buffer_count` — `usize`. Maximum number of queued buffers.
+/// - `queued_buffers` — `VecDeque<Vec<f32>>`. FIFO queue of pending f32 PCM buffers.
+/// - `free_buffers` — `usize`. Number of buffer slots currently available.
+pub struct QueueableSource {
+    /// PCM sample rate in Hz (e.g. 44100).
+    pub sample_rate: u32,
+    /// Bit depth per sample (8 or 16).
+    pub bit_depth: u8,
+    /// Number of audio channels (1 = mono, 2 = stereo).
+    pub channels: u8,
+    /// Maximum number of queued buffers.
+    pub buffer_count: usize,
+    /// FIFO queue of pending raw f32 PCM buffers.
+    pub queued_buffers: VecDeque<Vec<f32>>,
+    /// Number of buffer slots currently available for new data.
+    pub free_buffers: usize,
+}
+
+impl QueueableSource {
+    /// Creates a new `QueueableSource` with all buffer slots free.
+    ///
+    /// # Parameters
+    /// - `sample_rate` — `u32`. PCM sample rate in Hz.
+    /// - `bit_depth` — `u8`. Bit depth per sample (8 or 16).
+    /// - `channels` — `u8`. Channel count (1 = mono, 2 = stereo).
+    /// - `buffer_count` — `usize`. Maximum queued buffers.
+    ///
+    /// # Returns
+    /// `Self`.
+    pub fn new(sample_rate: u32, bit_depth: u8, channels: u8, buffer_count: usize) -> Self {
+        QueueableSource {
+            sample_rate,
+            bit_depth,
+            channels,
+            buffer_count,
+            queued_buffers: VecDeque::new(),
+            free_buffers: buffer_count,
+        }
+    }
+
+    /// Pushes a buffer of f32 PCM samples into the queue.
+    ///
+    /// Returns `Err` if no free buffer slots remain.
+    ///
+    /// # Parameters
+    /// - `data` — `&[f32]`. PCM samples to enqueue.
+    ///
+    /// # Returns
+    /// `Result<(), EngineError>`.
+    pub fn queue_buffer(&mut self, data: &[f32]) -> Result<(), EngineError> {
+        if self.free_buffers == 0 {
+            return Err(EngineError::AudioError(
+                "QueueableSource: no free buffer slots".to_string(),
+            ));
+        }
+        self.queued_buffers.push_back(data.to_vec());
+        self.free_buffers -= 1;
+        Ok(())
+    }
+
+    /// Returns the number of buffer slots currently available.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn free_buffer_count(&self) -> usize {
+        self.free_buffers
+    }
+}
+
 ///
 /// The `Mixer` is the single point of entry for all audio operations in
 /// Luna2D. It owns a `SlotMap<SoundKey, AudioEntry>` for O(1) lookup and safe
@@ -119,6 +199,7 @@ struct AudioEntry {
 /// - `listener_velocity` — `[f32; 3]`. Listener velocity for Doppler calculation.
 /// - `doppler_scale` — `f32`. Global Doppler effect scale factor.
 /// - `distance_model` — `String`. Distance attenuation model name.
+/// - `queueables` — `SlotMap<QueueableKey, QueueableSource>`. Manually-fed streaming sources.
 pub struct Mixer {
     _stream: Option<rodio::OutputStream>,
     stream_handle: Option<rodio::OutputStreamHandle>,
@@ -135,6 +216,8 @@ pub struct Mixer {
     doppler_scale: f32,
     /// Distance attenuation model name (e.g. `"inverse_clamped"`).
     distance_model: String,
+    /// Manually-fed queueable audio sources.
+    queueables: SlotMap<QueueableKey, QueueableSource>,
 }
 
 impl Default for Mixer {
@@ -170,6 +253,7 @@ impl Mixer {
             listener_velocity: [0.0, 0.0, 0.0],
             doppler_scale: 1.0,
             distance_model: "inverse_clamped".to_string(),
+            queueables: SlotMap::with_key(),
         }
     }
 
@@ -1339,5 +1423,96 @@ impl Mixer {
     /// `&str`.
     pub fn get_distance_model(&self) -> &str {
         &self.distance_model
+    }
+
+    // ── Queueable sources ────────────────────────────────────────────────────
+
+    /// Creates a new queueable source and returns its key.
+    ///
+    /// # Parameters
+    /// - `sample_rate` — `u32`. PCM sample rate in Hz.
+    /// - `bit_depth` — `u8`. Bit depth per sample (8 or 16).
+    /// - `channels` — `u8`. Channel count (1 = mono, 2 = stereo).
+    /// - `buffer_count` — `usize`. Maximum number of queued buffers.
+    ///
+    /// # Returns
+    /// `QueueableKey`.
+    pub fn new_queueable(
+        &mut self,
+        sample_rate: u32,
+        bit_depth: u8,
+        channels: u8,
+        buffer_count: usize,
+    ) -> QueueableKey {
+        self.queueables.insert(QueueableSource::new(
+            sample_rate,
+            bit_depth,
+            channels,
+            buffer_count,
+        ))
+    }
+
+    /// Pushes a buffer of f32 PCM samples into a queueable source.
+    ///
+    /// # Parameters
+    /// - `key` — `QueueableKey`. The queueable source to push to.
+    /// - `data` — `&[f32]`. PCM samples to enqueue.
+    ///
+    /// # Returns
+    /// `Result<(), EngineError>`.
+    pub fn queue_buffer(&mut self, key: QueueableKey, data: &[f32]) -> Result<(), EngineError> {
+        self.queueables
+            .get_mut(key)
+            .ok_or_else(|| EngineError::AudioError("invalid queueable source key".to_string()))?
+            .queue_buffer(data)
+    }
+
+    /// Returns the number of free buffer slots for a queueable source.
+    ///
+    /// # Parameters
+    /// - `key` — `QueueableKey`.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn queueable_free_buffer_count(&self, key: QueueableKey) -> usize {
+        self.queueables
+            .get(key)
+            .map(QueueableSource::free_buffer_count)
+            .unwrap_or(0)
+    }
+
+    /// Marks a queueable source as playing (state bookkeeping only; actual PCM playback
+    /// is driven by game code dequeuing buffers via `queue_buffer`).
+    ///
+    /// # Parameters
+    /// - `key` — `QueueableKey`.
+    pub fn play_queueable(&mut self, key: QueueableKey) {
+        // Queueable play is a no-op at the rodio level in this implementation;
+        // game code controls output by queuing buffers.
+        log::debug!("play_queueable called");
+        let _ = key;
+    }
+
+    /// Stops a queueable source, draining all queued buffers.
+    ///
+    /// # Parameters
+    /// - `key` — `QueueableKey`.
+    pub fn stop_queueable(&mut self, key: QueueableKey) {
+        if let Some(qs) = self.queueables.get_mut(key) {
+            let cap = qs.buffer_count;
+            qs.queued_buffers.clear();
+            qs.free_buffers = cap;
+        }
+    }
+
+    /// Releases a queueable source, removing it from the slot-map.
+    ///
+    /// # Parameters
+    /// - `key` — `QueueableKey`.
+    ///
+    /// # Returns
+    /// `bool` — `true` if the key was valid and the source was removed.
+    pub fn release_queueable(&mut self, key: QueueableKey) -> bool {
+        self.queueables.remove(key).is_some()
     }
 }

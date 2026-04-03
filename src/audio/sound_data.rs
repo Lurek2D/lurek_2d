@@ -105,6 +105,14 @@ impl SoundData {
         self.samples.get(index).copied()
     }
 
+    /// Returns the full interleaved f32 sample buffer as a slice.
+    ///
+    /// # Returns
+    /// `&[f32]`.
+    pub fn samples(&self) -> &[f32] {
+        &self.samples
+    }
+
     /// Set a sample at the given index (clamped to [-1.0, 1.0]).
     ///
     /// # Parameters

@@ -33,4 +33,6 @@ new_key_type! {
     pub struct BusKey;
     /// Key for MIDI player instances. Consult the module-level documentation for the broader usage context and preconditions.
     pub struct MidiPlayerKey;
+    /// Key for queueable audio source instances in the Mixer.
+    pub struct QueueableKey;
 }
