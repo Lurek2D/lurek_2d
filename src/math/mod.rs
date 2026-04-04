@@ -10,10 +10,10 @@
 //! All public items are documented. See `docs/architecture.md` for tier context
 //! and the `luna.*` Lua API for the scripting interface.
 //!
-/// RGBA color value type: named constants, `f32` and `u8` construction, packed `u32` output.
-pub mod color;
 /// Bezier curve evaluation using De Casteljau's algorithm.
 pub mod bezier;
+/// RGBA color value type: named constants, `f32` and `u8` construction, packed `u32` output.
+pub mod color;
 /// Standard easing functions for smooth animation and interpolation.
 pub mod easing;
 /// 2D geometry utility functions: intersections, containment, polygon ops, rasterization.

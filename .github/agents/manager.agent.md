@@ -1,6 +1,6 @@
 ---
 description: "**Manager** — Orchestrate multi-step Luna2D tasks across agents. Route work to specialists, define acceptance gates, track progress. Must not implement code directly."
-tools: [vscode, execute, read, agent, edit, search, web, browser, 'github/*', vadimcn.vscode-lldb/codelldb_session_info, vadimcn.vscode-lldb/codelldb, todo]
+tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 name: Manager
 ---
 

@@ -4,16 +4,14 @@
 //!         Tween, geometry, raycasting, procgen.
 
 use luna2d::math::geometry;
-use luna2d::pathfinding::grid::Grid;
-use luna2d::math::noise::{
-    DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind,
-};
-use luna2d::procgen::{self, CellularOpts, VoronoiOpts};
+use luna2d::math::noise::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use luna2d::math::raycasting::Raycaster2D;
 use luna2d::math::raycasting::{self, Segment};
 use luna2d::math::spatial_hash::SpatialHash;
-use luna2d::tilemap::tile_walker::{Facing, TileWalker};
 use luna2d::math::tween::Tween;
+use luna2d::pathfinding::grid::Grid;
+use luna2d::procgen::{self, CellularOpts, VoronoiOpts};
+use luna2d::tilemap::tile_walker::{Facing, TileWalker};
 
 // ═════════════════════════════════════════════════════════════════════════
 // 1. NoiseGenerator
@@ -578,7 +576,6 @@ fn test_tile_walker_facing_direction() {
     assert_eq!(Facing::West.dx(), -1);
     assert_eq!(Facing::West.dy(), 0);
 }
-
 
 #[test]
 fn test_tile_walker_interpolation() {
