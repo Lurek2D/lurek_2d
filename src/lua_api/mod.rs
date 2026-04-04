@@ -21,18 +21,18 @@ pub mod ai_api;
 pub mod audio_api;
 /// Registers the `luna.simulator.*` automated input simulation API.
 pub mod automation_api;
-/// Registers the `luna.compute.*` array computation API.
-pub mod compute_api;
 /// Registers the `luna.binary.*` binary buffers, compression, hashing, encoding, and packed binary I/O API.
 pub mod binary_api;
-/// Registers the `luna.serial.*` JSON, TOML, CSV, and YAML serialization API.
-pub mod serial_api;
+/// Registers the `luna.compute.*` array computation API.
+pub mod compute_api;
 /// Registers the `luna.dataframe.*` tabular data API.
 pub mod dataframe_api;
 /// Registers the `luna.debug.*` runtime diagnostics and developer tools API.
 pub mod debug_api;
 /// Registers the `luna.debugbridge.*` TCP debug server API.
 pub mod debugbridge_api;
+/// Registers the `luna.serial.*` JSON, TOML, CSV, and YAML serialization API.
+pub mod serial_api;
 // dialog_api removed — dialog system is now library/dialog/init.lua
 /// Registers the `luna.docs.*` documentation management API.
 pub mod docs_api;
@@ -72,12 +72,12 @@ pub mod overlay_api;
 pub mod particle_api;
 /// Registers the `luna.pathfinding.*` grid-based pathfinding API.
 pub mod pathfinding_api;
-/// Registers the `luna.pipeline.*` DAG pipeline orchestrator API.
-pub mod pipeline_api;
 /// Registers the `luna.patterns.*` software design patterns API.
 pub mod patterns_api;
 /// Registers the `luna.physics.*` rigid-body simulation API.
 pub mod physics_api;
+/// Registers the `luna.pipeline.*` DAG pipeline orchestrator API.
+pub mod pipeline_api;
 /// Registers the `luna.postfx.*` post-processing effects API.
 pub mod postfx_api;
 /// Registers the `luna.savegame.*` save/load system API.

@@ -27,12 +27,10 @@ polynomial evaluation; Catmull-Rom and B-Spline curve interpolation; geometry
 algorithms (convex hull, Delaunay triangulation, Bresenham line); and a spatial
 hash table for broad-phase overlap queries.
 
-The pathfinding subsystem — A*, Dijkstra, BFS, hierarchical A* (HPA*), and
-async flow fields via a thread pool — lives in `math/pathfinding/` because it
-depends on grid math and predates the dedicated `ai/` module.  The math module
-is the sole exception to the no-cross-module-dependency rule and is explicitly
-permitted as a direct import by `physics/`, `graphics/`, `tilemap/`, `ai/`,
-and every other domain module.
+The math module is the sole exception to the no-cross-module-dependency rule
+and is explicitly permitted as a direct import by all other domain modules.
+The pathfinding subsystem (A*, HPA*, flow fields) previously lived here; it has
+been moved to `src/pathfinding/`.
 
 ## Architecture
 
@@ -72,35 +70,34 @@ math/
   ├── Random
   │     └── RandomGenerator ── seeded PRNG with normal distribution
   │
-  └── pathfinding/ ── advanced pathfinding subsystem
-        ├── astar.rs ── A* with line-of-sight smoothing
-        ├── nav_grid.rs ── NavGrid with diagonal modes and chunk dirty tracking
-        ├── unit_pathfinder.rs ── cached pathfinder with partial paths
-        ├── flow_field.rs ── BFS flow fields for group movement
-        ├── hpa.rs ── Hierarchical Pathfinding A* (HPA*)
-        └── async_pool.rs ── thread pool for background pathfinding
+  └── (advanced pathfinding moved to src/pathfinding/)
 ```
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
+| `mod.rs` | Module root; re-exports all public API items |
 | `bezier.rs` | Bezier curve evaluation using De Casteljau's algorithm |
+| `color.rs` | sRGB gamma ↔ linear color space conversion; Color type |
 | `easing.rs` | Standard easing functions for smooth animation and interpolation |
 | `geometry.rs` | 2D geometry utility functions |
 | `grid.rs` | 2D pathfinding grid with A*, Dijkstra, BFS, and flow field generation |
-| `mat3.rs` | Mat3 implementation for the `math` subsystem |
+| `mat3.rs` | Mat3 3×3 matrix for affine transforms |
 | `noise.rs` | 2D Perlin and Simplex noise generators for procedural content |
+| `noise_generator.rs` | Configurable multi-octave noise generator |
 | `polygon.rs` | Polygon utilities: ear-clipping triangulation and convexity testing |
 | `procgen.rs` | Procedural generation utility functions |
 | `random.rs` | Seedable random number generator for reproducible sequences |
+| `raycaster2d.rs` | Wolfenstein-style DDA grid raycaster (math layer) |
 | `raycasting.rs` | 2D raycasting and visibility utility functions |
-| `rect.rs` | Rect implementation for the `math` subsystem |
+| `rect.rs` | Axis-aligned rectangle type |
 | `spatial_hash.rs` | Spatial hash for efficient broad-phase AABB collision queries |
-| `srgb.rs` | sRGB gamma ↔ linear color space conversion |
+| `srgb.rs` | sRGB ↔ linear color space utilities |
+| `tile_walker.rs` | Grid-based first-person movement with Facing enum |
 | `transform.rs` | 2D affine transform wrapping Mat3 with chainable methods |
 | `tween.rs` | Value interpolator with easing curves |
-| `vec2.rs` | Vec2 implementation for the `math` subsystem |
+| `vec2.rs` | 2D vector type (x, y: f32) |
 
 ## Submodules
 

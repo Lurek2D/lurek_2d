@@ -6,6 +6,13 @@
 use std::collections::HashMap;
 
 /// A named rectangular region packed into the atlas.
+///
+/// # Fields
+/// - `name` — `String`.
+/// - `x` — `u32`.
+/// - `y` — `u32`.
+/// - `w` — `u32`.
+/// - `h` — `u32`.
 #[derive(Debug, Clone)]
 pub struct AtlasRegion {
     /// Name identifying this region.
@@ -32,6 +39,11 @@ struct Shelf {
 
 /// CPU-side bin-packing atlas for sprite regions.
 ///
+/// # Fields
+/// - `width` — `u32`.
+/// - `height` — `u32`.
+/// - `padding` — `u32`.
+///
 /// Uses a shelf-packing algorithm: regions are placed left-to-right on
 /// horizontal shelves. When a region does not fit on any existing shelf a
 /// new shelf is opened below the last one.
@@ -50,6 +62,14 @@ pub struct TextureAtlas {
 
 impl TextureAtlas {
     /// Creates an empty atlas with the given pixel dimensions and inter-region padding.
+    ///
+    /// # Parameters
+    /// - `width` — `u32`.
+    /// - `height` — `u32`.
+    /// - `padding` — `u32`.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(width: u32, height: u32, padding: u32) -> Self {
         Self {
             width,
@@ -61,6 +81,14 @@ impl TextureAtlas {
     }
 
     /// Packs a named region of size `w` x `h` into the atlas.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    /// - `w` — `u32`.
+    /// - `h` — `u32`.
+    ///
+    /// # Returns
+    /// `bool`.
     ///
     /// Returns `true` if the region was placed successfully, or `false` if
     /// the atlas does not have enough remaining space.
@@ -118,26 +146,41 @@ impl TextureAtlas {
     }
 
     /// Looks up a previously packed region by name.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    ///
+    /// # Returns
+    /// `Option<&AtlasRegion>`.
     pub fn get_region(&self, name: &str) -> Option<&AtlasRegion> {
         self.regions.get(name)
     }
 
-    /// Returns the number of packed regions.
+    /// Returns the number of packed regions. This accessor incurs no allocation; call it freely in hot paths.
+    ///
+    /// # Returns
+    /// `usize`.
     pub fn get_region_count(&self) -> usize {
         self.regions.len()
     }
 
     /// Returns the atlas dimensions as `(width, height)`.
+    ///
+    /// # Returns
+    /// `(u32, u32)`.
     pub fn get_dimensions(&self) -> (u32, u32) {
         (self.width, self.height)
     }
 
     /// Returns all packed regions in arbitrary order.
+    ///
+    /// # Returns
+    /// `Vec<&AtlasRegion>`.
     pub fn get_regions(&self) -> Vec<&AtlasRegion> {
         self.regions.values().collect()
     }
 
-    /// Removes all packed regions and shelves.
+    /// Removes all packed regions and shelves. After this call the container is in the same state as immediately after construction.
     pub fn clear(&mut self) {
         self.regions.clear();
         self.shelves.clear();

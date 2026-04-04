@@ -18,7 +18,7 @@ use crate::scene::depth_sorter::DepthSorter;
 use crate::scene::stack::{SceneId, SceneStack};
 use crate::scene::transition::TransitionType;
 
-use super::userdata::{add_type_methods, LunaType};
+use super::lua_types::{add_type_methods, LunaType};
 
 // ---------------------------------------------------------------------------
 // Internal state
@@ -56,7 +56,13 @@ impl LuaUserData for LuaDepthSorter {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         add_type_methods(methods);
 
-        /// depthSorter:add(callback, depth)
+        /// Registers a draw callback at the given depth layer. Higher `depth` values draw in front.
+        /// @param callback : function
+        /// @param depth : number
+        ///
+        /// # Parameters
+        /// - `callback` — `function`: Draw callback `function()` called when flushing this layer.
+        /// - `depth` — `number`: Depth value determining draw order (lower = drawn first).
         methods.add_method("add", |lua, this, (callback, depth): (LuaFunction, f32)| {
             let key = lua.create_registry_value(callback)?;
             let mut cbs = this.callbacks.borrow_mut();
@@ -66,7 +72,11 @@ impl LuaUserData for LuaDepthSorter {
             Ok(())
         });
 
-        /// depthSorter:addObject(obj)
+        /// Registers a table object with a `draw` method at the given depth.
+        /// @param obj : table
+        ///
+        /// # Parameters
+        /// - `obj` — `table`: Object with a `draw()` method. Uses `obj.depth` if no explicit depth is provided.
         methods.add_method("addObject", |lua, this, obj: LuaTable| {
             let depth: f32 = obj.get::<_, f32>("depth").unwrap_or(0.0);
             let key = lua.create_registry_value(obj)?;
@@ -77,13 +87,13 @@ impl LuaUserData for LuaDepthSorter {
             Ok(())
         });
 
-        /// depthSorter:sort()
+        /// Sorts all registered callbacks and objects by their depth values (ascending).
         methods.add_method("sort", |_, this, ()| {
             this.inner.borrow_mut().sort();
             Ok(())
         });
 
-        /// depthSorter:flush()
+        /// Calls all registered draw callbacks and object `draw()` methods in sorted depth order, then clears the list.
         methods.add_method("flush", |lua, this, ()| {
             let entries: Vec<(usize, bool)> = {
                 let mut sorter = this.inner.borrow_mut();
@@ -116,14 +126,18 @@ impl LuaUserData for LuaDepthSorter {
             Ok(())
         });
 
-        /// depthSorter:clear()
+        /// Removes all registered callbacks and objects without calling them.
         methods.add_method("clear", |_, this, ()| {
             this.inner.borrow_mut().clear();
             this.callbacks.borrow_mut().clear();
             Ok(())
         });
 
-        /// depthSorter:getCount()
+        /// Returns the number of callbacks and objects currently registered.
+        /// @return any
+        ///
+        /// # Returns
+        /// `integer` — number of registered draw entries.
         methods.add_method("getCount", |_, this, ()| {
             Ok(this.inner.borrow().get_count())
         });
@@ -156,6 +170,13 @@ fn call_scene_method<'a>(
 // ---------------------------------------------------------------------------
 
 /// Registers the `luna.scene` table with scene stack, registry, data store,
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+///
+/// # Returns
+/// `LuaResult<()>`.
 /// and depth-sorter factory functions.
 pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     let scene_table = lua.create_table()?;
@@ -173,6 +194,11 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.push(scene [, transition [, duration]])
     {
         let st = state.clone();
+        /// Adds an item.
+        ///
+        /// @param scene : table
+        /// @param transition : string?
+        /// @param duration : number?
         scene_table.set(
             "push",
             lua.create_function(
@@ -211,6 +237,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.pop([transition [, duration]])
     {
         let st = state.clone();
+        /// Removes an item.
+        ///
+        /// @param transition : string?
+        /// @param duration : number?
         scene_table.set(
             "pop",
             lua.create_function(
@@ -222,10 +252,8 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
                     let dur = duration.unwrap_or(0.0);
 
                     let mut s = st.borrow_mut();
-                    let (popped_id, revealed_id) = s
-                        .stack
-                        .pop(trans, dur)
-                        .map_err(LuaError::RuntimeError)?;
+                    let (popped_id, revealed_id) =
+                        s.stack.pop(trans, dur).map_err(LuaError::RuntimeError)?;
 
                     // Call leave() on the popped scene
                     if let Some(popped_key) = s.scene_refs.remove(&popped_id) {
@@ -248,6 +276,11 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.switchTo(scene [, transition [, duration]])
     {
         let st = state.clone();
+        /// Switch to.
+        ///
+        /// @param scene : table
+        /// @param transition : string?
+        /// @param duration : number?
         scene_table.set(
             "switchTo",
             lua.create_function(
@@ -286,6 +319,8 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.clear()
     {
         let st = state.clone();
+        /// Clears the state.
+        ///
         scene_table.set(
             "clear",
             lua.create_function(move |lua, ()| {
@@ -307,6 +342,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.popTo(name) → bool
     {
         let st = state.clone();
+        /// Removes to.
+        ///
+        /// @param name : string
+        /// @return boolean
         scene_table.set(
             "popTo",
             lua.create_function(move |lua, name: String| {
@@ -338,6 +377,9 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.update(dt)
     {
         let st = state.clone();
+        /// Update.
+        ///
+        /// @param dt : number
         scene_table.set(
             "update",
             lua.create_function(move |lua, dt: f32| {
@@ -359,6 +401,8 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.draw()
     {
         let st = state.clone();
+        /// Draw.
+        ///
         scene_table.set(
             "draw",
             lua.create_function(move |lua, ()| {
@@ -384,28 +428,33 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.getStackSize() → number
     {
         let st = state.clone();
+        /// Returns the stack size.
+        ///
+        /// @return any
         scene_table.set(
             "getStackSize",
-            lua.create_function(move |_, ()| {
-                Ok(st.borrow().stack.get_stack_size())
-            })?,
+            lua.create_function(move |_, ()| Ok(st.borrow().stack.get_stack_size()))?,
         )?;
     }
 
     // luna.scene.isEmpty() → bool
     {
         let st = state.clone();
+        /// Returns true if empty.
+        ///
+        /// @return boolean
         scene_table.set(
             "isEmpty",
-            lua.create_function(move |_, ()| {
-                Ok(st.borrow().stack.is_empty())
-            })?,
+            lua.create_function(move |_, ()| Ok(st.borrow().stack.is_empty()))?,
         )?;
     }
 
     // luna.scene.getCurrent() → table|nil
     {
         let st = state.clone();
+        /// Returns the current.
+        ///
+        /// @return any
         scene_table.set(
             "getCurrent",
             lua.create_function(move |lua, ()| {
@@ -428,22 +477,24 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.isTransitioning() → bool
     {
         let st = state.clone();
+        /// Returns true if transitioning.
+        ///
+        /// @return any
         scene_table.set(
             "isTransitioning",
-            lua.create_function(move |_, ()| {
-                Ok(st.borrow().stack.is_transitioning())
-            })?,
+            lua.create_function(move |_, ()| Ok(st.borrow().stack.is_transitioning()))?,
         )?;
     }
 
     // luna.scene.getTransitionProgress() → number [0,1]
     {
         let st = state.clone();
+        /// Returns the transition progress.
+        ///
+        /// @return any
         scene_table.set(
             "getTransitionProgress",
-            lua.create_function(move |_, ()| {
-                Ok(st.borrow().stack.get_transition_progress())
-            })?,
+            lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress()))?,
         )?;
     }
 
@@ -454,6 +505,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.registerScene(name, scene)
     {
         let st = state.clone();
+        /// Register scene.
+        ///
+        /// @param name : string
+        /// @param scene : table
         scene_table.set(
             "registerScene",
             lua.create_function(move |lua, (name, scene): (String, LuaTable)| {
@@ -470,6 +525,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.getRegistered(name) → table|nil
     {
         let st = state.clone();
+        /// Returns the registered.
+        ///
+        /// @param name : string
+        /// @return any
         scene_table.set(
             "getRegistered",
             lua.create_function(move |lua, name: String| {
@@ -488,6 +547,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.hasRegistered(name) → bool
     {
         let st = state.clone();
+        /// Returns true if registered.
+        ///
+        /// @param name : string
+        /// @return any
         scene_table.set(
             "hasRegistered",
             lua.create_function(move |_, name: String| {
@@ -499,6 +562,9 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.unregisterScene(name)
     {
         let st = state.clone();
+        /// Unregister scene.
+        ///
+        /// @param name : string
         scene_table.set(
             "unregisterScene",
             lua.create_function(move |_, name: String| {
@@ -511,11 +577,12 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.getRegisteredNames() → {string}
     {
         let st = state.clone();
+        /// Returns the registered names.
+        ///
+        /// @return any
         scene_table.set(
             "getRegisteredNames",
-            lua.create_function(move |_, ()| {
-                Ok(st.borrow().stack.get_registered_names())
-            })?,
+            lua.create_function(move |_, ()| Ok(st.borrow().stack.get_registered_names()))?,
         )?;
     }
 
@@ -526,6 +593,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.setData(key, value)
     {
         let st = state.clone();
+        /// Sets the data.
+        ///
+        /// @param key : string
+        /// @param value : any
         scene_table.set(
             "setData",
             lua.create_function(move |lua, (key, value): (String, LuaValue)| {
@@ -542,6 +613,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.getData(key) → any|nil
     {
         let st = state.clone();
+        /// Returns the data.
+        ///
+        /// @param key : string
+        /// @return any
         scene_table.set(
             "getData",
             lua.create_function(move |lua, key: String| {
@@ -558,17 +633,22 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // luna.scene.hasData(key) → bool
     {
         let st = state.clone();
+        /// Returns true if data.
+        ///
+        /// @param key : string
+        /// @return any
         scene_table.set(
             "hasData",
-            lua.create_function(move |_, key: String| {
-                Ok(st.borrow().stack.has_data(&key))
-            })?,
+            lua.create_function(move |_, key: String| Ok(st.borrow().stack.has_data(&key)))?,
         )?;
     }
 
     // luna.scene.removeData(key)
     {
         let st = state.clone();
+        /// Removes data.
+        ///
+        /// @param key : string
         scene_table.set(
             "removeData",
             lua.create_function(move |_, key: String| {
@@ -585,6 +665,9 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     // =======================================================================
 
     // luna.scene.newDepthSorter() → DepthSorter
+    /// New depth sorter.
+    ///
+    /// @return any
     scene_table.set(
         "newDepthSorter",
         lua.create_function(|_, ()| {
@@ -595,6 +678,10 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
+    /// Scene on this DepthSorter.
+    ///
+    /// # Returns
+    /// The result.
     luna.set("scene", scene_table)?;
     Ok(())
 }

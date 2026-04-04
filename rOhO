@@ -1,5 +1,0 @@
-.vscode/**
-src/**
-node_modules/**
-!node_modules/@modelcontextprotocol/**
-tsconfig.json

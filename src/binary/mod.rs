@@ -22,4 +22,4 @@ pub use compress::{compress, decompress, CompressFormat};
 pub use dataview::DataView;
 pub use encode::{decode, encode, EncodeFormat};
 pub use hash::{hash, HashAlgorithm};
-pub use pack::{write, read, measure_size, BinValue};
+pub use pack::{measure_size, read, write, BinValue};

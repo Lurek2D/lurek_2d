@@ -45,14 +45,13 @@ data/
 
 | File | Purpose |
 |------|---------|
+| `mod.rs` | Module root; re-exports all public API items |
 | `byte_data.rs` | Contiguous byte buffer accessible from Lua |
 | `compress.rs` | Data compression and decompression using deflate, gzip, zlib, and LZ4 |
+| `dataview.rs` | Read-only windowed view into a shared byte buffer |
 | `encode.rs` | Base64 and hex encoding/decoding for data serialization |
 | `hash.rs` | Cryptographic hash functions for data integrity verification |
-| `toml_convert.rs` | TOML parsing and encoding for Luna2D |
-
-## Submodules
-
+| `pack.rs` | Binary pack/unpack utilities compatible with LÖVE2D `data.pack` API |
 ### `data::byte_data`
 
 Contiguous byte buffer accessible from Lua.
@@ -82,6 +81,21 @@ Cryptographic hash functions for data integrity verification.
 - **`HashAlgorithm`** (enum): Supported hash algorithms. Consult the module-level documentation for the broader usage context and preconditions.
 - **`hash`** (fn): Compute the hash of data using the specified algorithm, returned as a hex string.
 
+### `data::dataview`
+
+Read-only windowed view into a shared byte buffer.
+
+- **`DataView`** (struct): Typed accessor over a byte slice; supports `get_u8`, `get_u16`, `get_u32`, `get_i8`, `get_i16`, `get_i32`, `get_f32`, `get_f64`, and `get_bytes`.
+
+### `data::pack`
+
+Binary pack/unpack utilities compatible with LÖVE2D `data.pack` API.
+
+- **`PackValue`** (enum): Typed value that can be packed or unpacked: Bool, Int, Float, String, Bytes.
+- **`pack`** (fn): Serialize a slice of `PackValue` to `ByteData` using a format string.
+- **`unpack`** (fn): Deserialize bytes at `offset` into a `Vec<PackValue>` using a format string.
+- **`get_packed_size`** (fn): Return the byte size a set of values would occupy without allocating.
+
 ### `data::toml_convert`
 
 TOML parsing and encoding for Luna2D.
@@ -95,21 +109,29 @@ TOML parsing and encoding for Luna2D.
 
 #### `data::byte_data::ByteData`
 
-Contiguous byte buffer for binary data manipulation.  Wraps a `Vec<u8>` with indexed get/set operations and string...
+Contiguous byte buffer for binary data manipulation. Wraps a `Vec<u8>` with indexed get/set operations and string conversion.
+
+#### `data::dataview::DataView`
+
+Read-only windowed view into a shared byte buffer. Typed accessors (`get_u8`, `get_u16`, `get_f32`, etc.) operate on a sub-slice at a given offset.
 
 ### Enums
 
 #### `data::compress::CompressFormat`
 
-Supported compression formats. Consult the module-level documentation for the broader usage context and preconditions.
+Supported compression formats.
 
 #### `data::encode::EncodeFormat`
 
-Supported encoding formats. Consult the module-level documentation for the broader usage context and preconditions.
+Supported encoding formats.
 
 #### `data::hash::HashAlgorithm`
 
-Supported hash algorithms. Consult the module-level documentation for the broader usage context and preconditions.
+Supported hash algorithms.
+
+#### `data::pack::PackValue`
+
+Typed value that can be packed or unpacked: Bool, Int, Float, String, Bytes.
 
 ## Public Functions
 
@@ -118,8 +140,11 @@ Supported hash algorithms. Consult the module-level documentation for the broade
 - **`decompress()`** `compress::` — Decompress data using the specified format.
 - **`encode()`** `encode::` — Encode bytes into a string using the specified format.
 - **`encode_toml()`** `toml_convert::` — Encode a `toml::Value` into a TOML string.
+- **`get_packed_size()`** `pack::` — Return the byte size a set of values would occupy without allocating.
 - **`hash()`** `hash::` — Compute the hash of data using the specified algorithm, returned as a hex string.
+- **`pack()`** `pack::` — Serialize a slice of `PackValue` to `ByteData` using a format string.
 - **`parse_toml()`** `toml_convert::` — Parse a TOML string into a `toml::Value`.
+- **`unpack()`** `pack::` — Deserialize bytes at `offset` into a `Vec<PackValue>` using a format string.
 
 ## Lua API
 
@@ -129,9 +154,9 @@ Exposed under `luna.data.*` by `src/lua_api/data_api/`.
 
 | Kind | Count |
 |------|-------|
-| `enum` | 3 |
-| `fn` | 7 |
-| `mod` | 5 |
-| `struct` | 1 |
-| **Total** | **16** |
+| `enum` | 4 |
+| `fn` | 10 |
+| `mod` | 7 |
+| `struct` | 2 |
+| **Total** | **23** |
 
