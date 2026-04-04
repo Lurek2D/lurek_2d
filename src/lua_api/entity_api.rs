@@ -587,6 +587,43 @@ impl LuaUserData for LuaUniverse {
         methods.add_method("getBlueprintComponents", |lua, this, name: String| {
             this.inner.borrow().get_blueprint_components(lua, &name)
         });
+
+        // === Parent-Child Hierarchy ===
+
+        /// Sets or clears the parent of an entity.
+        ///
+        /// @param child_id integer
+        /// @param parent_id integer|nil  Pass nil to detach.
+        methods.add_method(
+            "setParent",
+            |_, this, (child_id, parent_id): (u32, Option<u32>)| {
+                this.inner.borrow_mut().set_parent(child_id, parent_id);
+                Ok(())
+            },
+        );
+
+        /// Returns the packed entity ID of the parent, or nil if the entity has no parent.
+        ///
+        /// @param child_id integer
+        /// @return integer|nil
+        methods.add_method("getParent", |_, this, child_id: u32| {
+            Ok(this.inner.borrow().get_parent(child_id))
+        });
+
+        /// Returns an array of packed entity IDs for all direct children.
+        ///
+        /// @param parent_id integer
+        /// @return table
+        methods.add_method("getChildren", |_, this, parent_id: u32| {
+            Ok(this.inner.borrow().get_children(parent_id))
+        });
+
+        /// Kills an entity and all its descendants recursively (post-order).
+        ///
+        /// @param id integer
+        methods.add_method("killRecursive", |lua, this, id: u32| {
+            this.inner.borrow_mut().kill_recursive(id, lua)
+        });
     }
 }
 

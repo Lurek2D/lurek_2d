@@ -29,11 +29,13 @@ fn test_spawn_recycled_lifo() {
     assert_eq!(b, 2);
     u.kill(b, &lua).unwrap();
     u.kill(a, &lua).unwrap();
-    // LIFO — last killed (a=1) should be recycled first
+    // LIFO — same SLOT is recycled, but generation increments so packed IDs differ
     let c = u.spawn();
-    assert_eq!(c, a);
+    assert_eq!(c & 0x00FF_FFFF, a & 0x00FF_FFFF, "same slot recycled (LIFO)");
+    assert_ne!(c, a, "packed ID must differ after gen increment");
     let d = u.spawn();
-    assert_eq!(d, b);
+    assert_eq!(d & 0x00FF_FFFF, b & 0x00FF_FFFF, "same slot recycled (LIFO)");
+    assert_ne!(d, b, "packed ID must differ after gen increment");
 }
 
 #[test]
@@ -459,10 +461,11 @@ fn test_kill_removes_components() {
         .unwrap();
 
     u.kill(id, &lua).unwrap();
-    // Respawn with same ID
+    // Respawn reuses the same slot but with incremented generation
     let id2 = u.spawn();
-    assert_eq!(id2, id);
-    // Components should not carry over
+    assert_eq!(id2 & 0x00FF_FFFF, id & 0x00FF_FFFF, "same slot should be recycled");
+    assert_ne!(id2, id, "generation must differ for recycled slot");
+    // Components should not carry over to the new entity at the same slot
     let val = u.get_component(&lua, id2, "hp").unwrap();
     assert!(val.is_nil());
 }
@@ -480,9 +483,10 @@ fn test_kill_clears_tags_and_layers() {
     // All metadata should be cleaned up
     assert!(!u.has_tag(id, "enemy"));
     assert!(!u.has_bitmap_tag(id, "fast"));
-    // After respawn, layer defaults to 0
+    // After respawn, same slot is reused (different gen), layer defaults to 0
     let id2 = u.spawn();
-    assert_eq!(id2, id);
+    assert_eq!(id2 & 0x00FF_FFFF, id & 0x00FF_FFFF, "same slot should be recycled");
+    assert_ne!(id2, id, "generation must differ for recycled slot");
     assert_eq!(u.get_layer(id2), 0);
 }
 
@@ -730,4 +734,146 @@ fn test_clear_resets_systems() {
 
     u.clear(&lua).unwrap();
     assert_eq!(u.get_system_count(&lua).unwrap(), 0);
+}
+
+// ============================================================
+// [RED] Generational IDs — NOT yet implemented
+// These tests compile but FAIL until generation packing lands.
+// ============================================================
+
+#[test]
+fn test_stale_id_after_recycle_detects_as_dead() {
+    // After kill + re-spawn of same slot, old packed ID must report is_alive=false.
+    // Requires: generation packing in spawn() — not yet implemented.
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let old_id = u.spawn();
+    u.kill(old_id, &lua).unwrap();
+    let new_id = u.spawn(); // recycles same slot with incremented generation
+    // The OLD id (stale generation) must not be alive.
+    // This test PASSES only when generational IDs are implemented.
+    assert!(!u.is_alive(old_id), "old ID must be dead after recycle");
+    assert!(u.is_alive(new_id), "new ID must be alive");
+    // The two IDs must be different once generations are tracked.
+    assert_ne!(old_id, new_id, "recycled slot must produce different packed ID");
+}
+
+#[test]
+fn test_stale_id_component_access_errors() {
+    // Accessing a stale (recycled) entity for component ops must return error/nil.
+    // Requires: generation packing in spawn() — not yet implemented.
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let old_id = u.spawn();
+    u.kill(old_id, &lua).unwrap();
+    let _new_id = u.spawn(); // recycles slot
+    // Getting a component on the stale ID should not return data from the new entity.
+    // (returns nil is acceptable — must not return new entity's data)
+    let result = u.get_component(&lua, old_id, "health");
+    // Should be Ok(Nil) or Err — must not panic.
+    assert!(result.is_ok() || result.is_err(), "should not panic");
+    if let Ok(val) = result {
+        assert!(val.is_nil(), "stale ID must not see new entity's components");
+    }
+}
+
+// ============================================================
+// [RED/GREEN] Inverted Tag Index — guards against regression
+// These compile and currently pass — guards against future regression.
+// ============================================================
+
+#[test]
+fn test_inverted_tag_index_remove_on_kill() {
+    // After kill, entity is removed from inverted index — not just from alive set.
+    // passes today — guards against regression
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let a = u.spawn();
+    let b = u.spawn();
+    u.add_tag(a, "enemy");
+    u.add_tag(b, "enemy");
+    u.kill(a, &lua).unwrap();
+    // After kill, a must NOT appear in tag results.
+    let enemies = u.get_entities_by_tag("enemy");
+    assert!(!enemies.contains(&a), "dead entity must not appear in tag query");
+    assert!(enemies.contains(&b), "alive entity must still appear");
+}
+
+#[test]
+fn test_inverted_tag_index_consistent_after_tag_remove() {
+    // Removing a tag must update the inverted index.
+    // passes today — guards against regression
+    let mut u = Universe::new();
+    let a = u.spawn();
+    u.add_tag(a, "visible");
+    u.remove_tag(a, "visible");
+    let visible = u.get_entities_by_tag("visible");
+    assert!(
+        !visible.contains(&a),
+        "entity must leave inverted index after tag removal"
+    );
+}
+
+// ============================================================
+// [RED] Parent-Child Hierarchy — NOT yet implemented
+// These tests WILL NOT COMPILE until set_parent/get_parent/
+// get_children/kill_recursive are added to Universe.
+// Add them now; they will be red until Phase 3 lands.
+// ============================================================
+
+#[test]
+fn test_parent_set_and_get() {
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let parent = u.spawn();
+    let child = u.spawn();
+    u.set_parent(child, Some(parent));
+    assert_eq!(u.get_parent(child), Some(parent));
+    // detach
+    u.set_parent(child, None);
+    assert_eq!(u.get_parent(child), None);
+}
+
+#[test]
+fn test_get_children_returns_direct_children() {
+    let mut u = Universe::new();
+    let parent = u.spawn();
+    let c1 = u.spawn();
+    let c2 = u.spawn();
+    let other = u.spawn();
+    u.set_parent(c1, Some(parent));
+    u.set_parent(c2, Some(parent));
+    let children = u.get_children(parent);
+    assert!(children.contains(&c1));
+    assert!(children.contains(&c2));
+    assert!(!children.contains(&other));
+}
+
+#[test]
+fn test_kill_recursive_kills_all_descendants() {
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let root = u.spawn();
+    let child = u.spawn();
+    let grandchild = u.spawn();
+    u.set_parent(child, Some(root));
+    u.set_parent(grandchild, Some(child));
+    u.kill_recursive(root, &lua).unwrap();
+    assert!(!u.is_alive(root));
+    assert!(!u.is_alive(child));
+    assert!(!u.is_alive(grandchild));
+}
+
+#[test]
+fn test_kill_parent_detaches_children() {
+    let lua = make_lua();
+    let mut u = Universe::new();
+    let parent = u.spawn();
+    let child = u.spawn();
+    u.set_parent(child, Some(parent));
+    // Regular kill (not recursive) should detach child but not kill it.
+    u.kill(parent, &lua).unwrap();
+    assert!(!u.is_alive(parent));
+    assert!(u.is_alive(child), "child must survive non-recursive kill of parent");
+    assert_eq!(u.get_parent(child), None, "child must be detached after parent dies");
 }

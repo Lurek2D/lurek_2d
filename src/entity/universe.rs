@@ -27,17 +27,28 @@ const MAX_BITMAP_TAGS: usize = 63;
 /// - `bitmap_tag_names` — `Vec<String>`.
 /// - `bitmap_masks` — `HashMap<u32`.
 /// - `layers` — `HashMap<u32`.
+/// - `generations` — `HashMap<u32, u8>`: per-slot generation counter.
+/// - `tag_index` — `HashMap<String, Vec<u32>>`: inverted tag → packed entity IDs.
+/// - `parents` — `HashMap<u32, u32>`: child slot → parent slot.
+/// - `children` — `HashMap<u32, Vec<u32>>`: parent slot → child slots.
 /// - `component_store` — `Option<RegistryKey>`.
 /// - `blueprint_store` — `Option<RegistryKey>`.
 /// - `system_store` — `Option<RegistryKey>`.
 pub struct Universe {
     next_id: u32,
     free_list: Vec<u32>,
+    /// Slot-indexed set of alive entity slots (not packed IDs).
     alive: HashSet<u32>,
+    /// Per-slot generation counter; slot absent means generation 0.
+    generations: HashMap<u32, u8>,
     string_tags: HashMap<u32, Vec<String>>,
+    /// Inverted tag → packed entity IDs index for O(1) tag queries.
+    tag_index: HashMap<String, Vec<u32>>,
     bitmap_tag_names: Vec<String>,
     bitmap_masks: HashMap<u32, u64>,
     layers: HashMap<u32, i32>,
+    parents: HashMap<u32, u32>,
+    children: HashMap<u32, Vec<u32>>,
     component_store: Option<RegistryKey>,
     blueprint_store: Option<RegistryKey>,
     system_store: Option<RegistryKey>,
@@ -53,10 +64,14 @@ impl Universe {
             next_id: 1,
             free_list: Vec::new(),
             alive: HashSet::new(),
+            generations: HashMap::new(),
             string_tags: HashMap::new(),
+            tag_index: HashMap::new(),
             bitmap_tag_names: Vec::new(),
             bitmap_masks: HashMap::new(),
             layers: HashMap::new(),
+            parents: HashMap::new(),
+            children: HashMap::new(),
             component_store: None,
             blueprint_store: None,
             system_store: None,
@@ -108,6 +123,58 @@ impl Universe {
         lua.registry_value::<Table>(key)
     }
 
+    // === Generational ID Helpers ===
+
+    /// Packs a slot and generation counter into a single entity ID.
+    /// Upper 8 bits = generation, lower 24 bits = slot index.
+    ///
+    /// # Parameters
+    /// - `slot` — `u32`.
+    /// - `gen` — `u8`.
+    ///
+    /// # Returns
+    /// `u32`.
+    #[inline]
+    pub(crate) fn pack_id(slot: u32, gen: u8) -> u32 {
+        ((gen as u32) << 24) | (slot & 0x00FF_FFFF)
+    }
+
+    /// Extracts the slot index from a packed entity ID.
+    ///
+    /// # Parameters
+    /// - `id` — `u32`.
+    ///
+    /// # Returns
+    /// `u32`.
+    #[inline]
+    pub(crate) fn unpack_slot(id: u32) -> u32 {
+        id & 0x00FF_FFFF
+    }
+
+    /// Extracts the generation counter from a packed entity ID.
+    ///
+    /// # Parameters
+    /// - `id` — `u32`.
+    ///
+    /// # Returns
+    /// `u8`.
+    #[inline]
+    pub(crate) fn unpack_gen(id: u32) -> u8 {
+        (id >> 24) as u8
+    }
+
+    /// Returns the current generation for a slot (0 if never used).
+    ///
+    /// # Parameters
+    /// - `slot` — `u32`.
+    ///
+    /// # Returns
+    /// `u8`.
+    #[inline]
+    fn current_gen(&self, slot: u32) -> u8 {
+        *self.generations.get(&slot).unwrap_or(&0)
+    }
+
     // === Entity Lifecycle ===
 
     /// Spawns a new entity and returns its ID. Recycles from the free list when possible.
@@ -115,15 +182,15 @@ impl Universe {
     /// # Returns
     /// `u32`.
     pub fn spawn(&mut self) -> u32 {
-        let id = if let Some(recycled) = self.free_list.pop() {
+        let slot = if let Some(recycled) = self.free_list.pop() {
             recycled
         } else {
-            let id = self.next_id;
+            let s = self.next_id;
             self.next_id += 1;
-            id
+            s
         };
-        self.alive.insert(id);
-        id
+        self.alive.insert(slot);
+        Self::pack_id(slot, self.current_gen(slot))
     }
 
     /// Kills an entity, cleaning up all associated data and recycling the ID.
@@ -135,20 +202,127 @@ impl Universe {
     /// # Returns
     /// `LuaResult<()>`.
     pub fn kill(&mut self, id: u32, lua: &Lua) -> LuaResult<()> {
-        if !self.alive.remove(&id) {
+        let slot = Self::unpack_slot(id);
+        let gen = Self::unpack_gen(id);
+        // Reject stale handles — generation mismatch means entity already dead/recycled
+        if !self.alive.contains(&slot) || self.current_gen(slot) != gen {
             return Ok(());
         }
-        // Clean up component data
+        self.alive.remove(&slot);
+        // Clean up component data (stored by slot)
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            store.set(id, LuaValue::Nil)?;
+            store.set(slot, LuaValue::Nil)?;
         }
-        // Clean up tags and layers
-        self.string_tags.remove(&id);
-        self.bitmap_masks.remove(&id);
-        self.layers.remove(&id);
-        // Recycle
-        self.free_list.push(id);
+        // Clean up inverted tag index before removing string_tags
+        if let Some(tags) = self.string_tags.remove(&slot) {
+            for tag in &tags {
+                if let Some(entries) = self.tag_index.get_mut(tag) {
+                    entries.retain(|&tid| tid != id);
+                }
+            }
+        }
+        self.bitmap_masks.remove(&slot);
+        self.layers.remove(&slot);
+        // Detach from parent (maps use slots)
+        if let Some(parent_slot) = self.parents.remove(&slot) {
+            if let Some(siblings) = self.children.get_mut(&parent_slot) {
+                siblings.retain(|&c| c != slot);
+            }
+        }
+        // Orphan children (they survive, just become root entities)
+        if let Some(child_slots) = self.children.remove(&slot) {
+            for cs in child_slots {
+                self.parents.remove(&cs);
+            }
+        }
+        // Increment generation so old packed IDs are invalidated
+        *self.generations.entry(slot).or_insert(0) += 1;
+        self.free_list.push(slot);
+        Ok(())
+    }
+
+    /// Sets or clears the parent of `entity`. Pass `Some(parent_id)` to attach, `None` to detach.
+    ///
+    /// # Parameters
+    /// - `entity` — `u32`.
+    /// - `parent` — `Option<u32>`.
+    pub fn set_parent(&mut self, entity: u32, parent: Option<u32>) {
+        let entity_slot = Self::unpack_slot(entity);
+        // Remove from old parent's children list
+        if let Some(old_parent_slot) = self.parents.remove(&entity_slot) {
+            if let Some(siblings) = self.children.get_mut(&old_parent_slot) {
+                siblings.retain(|&c| c != entity_slot);
+            }
+        }
+        // Attach to new parent
+        if let Some(new_parent) = parent {
+            let parent_slot = Self::unpack_slot(new_parent);
+            self.parents.insert(entity_slot, parent_slot);
+            self.children.entry(parent_slot).or_default().push(entity_slot);
+        }
+    }
+
+    /// Returns the parent of `entity`, or `None` if unparented.
+    ///
+    /// # Parameters
+    /// - `entity` — `u32`.
+    ///
+    /// # Returns
+    /// `Option<u32>`.
+    pub fn get_parent(&self, entity: u32) -> Option<u32> {
+        let entity_slot = Self::unpack_slot(entity);
+        self.parents.get(&entity_slot).copied().map(|parent_slot| {
+            Self::pack_id(parent_slot, self.current_gen(parent_slot))
+        })
+    }
+
+    /// Returns the direct children of `entity`. Returns an empty `Vec` if none.
+    ///
+    /// # Parameters
+    /// - `entity` — `u32`.
+    ///
+    /// # Returns
+    /// `Vec<u32>`.
+    pub fn get_children(&self, entity: u32) -> Vec<u32> {
+        let entity_slot = Self::unpack_slot(entity);
+        self.children
+            .get(&entity_slot)
+            .map(|slots| {
+                slots
+                    .iter()
+                    .filter(|&&s| self.alive.contains(&s))
+                    .map(|&s| Self::pack_id(s, self.current_gen(s)))
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    /// Kills `root` and all of its descendants recursively.
+    ///
+    /// # Parameters
+    /// - `root` — `u32`.
+    /// - `lua` — `&Lua`.
+    ///
+    /// # Returns
+    /// `LuaResult<()>`.
+    pub fn kill_recursive(&mut self, root: u32, lua: &Lua) -> LuaResult<()> {
+        // Collect all descendants first to avoid borrow-during-mutate.
+        // children are keyed by slot; re-pack them so kill() receives valid packed IDs.
+        let mut to_kill: Vec<u32> = Vec::new();
+        let mut stack: Vec<u32> = vec![root];
+        while let Some(id) = stack.pop() {
+            to_kill.push(id);
+            let slot = Self::unpack_slot(id);
+            if let Some(child_slots) = self.children.get(&slot) {
+                for &cs in child_slots {
+                    stack.push(Self::pack_id(cs, self.current_gen(cs)));
+                }
+            }
+        }
+        for id in to_kill {
+            self.kill(id, lua)?;
+        }
         Ok(())
     }
 
@@ -160,7 +334,9 @@ impl Universe {
     /// # Returns
     /// `bool`.
     pub fn is_alive(&self, id: u32) -> bool {
-        self.alive.contains(&id)
+        let slot = Self::unpack_slot(id);
+        let gen = Self::unpack_gen(id);
+        self.alive.contains(&slot) && self.current_gen(slot) == gen
     }
 
     /// Returns the number of alive entities. This accessor incurs no allocation; call it freely in hot paths.
@@ -176,7 +352,13 @@ impl Universe {
     /// # Returns
     /// `Vec<u32>`.
     pub fn get_entities(&self) -> Vec<u32> {
-        self.alive.iter().copied().collect()
+        let mut ids: Vec<u32> = self
+            .alive
+            .iter()
+            .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
+            .collect();
+        ids.sort();
+        ids
     }
 
     // === Component Operations ===
@@ -203,11 +385,12 @@ impl Universe {
         }
         self.ensure_stores(lua)?;
         let store = self.get_component_store(lua)?;
-        let entity_table: Table = match store.get::<_, Table>(id) {
+        let slot = Self::unpack_slot(id);
+        let entity_table: Table = match store.get::<_, Table>(slot) {
             Ok(t) => t,
             Err(_) => {
                 let t = lua.create_table()?;
-                store.set(id, t.clone())?;
+                store.set(slot, t.clone())?;
                 t
             }
         };
@@ -233,9 +416,10 @@ impl Universe {
         if !self.is_alive(id) {
             return Ok(LuaValue::Nil);
         }
+        let slot = Self::unpack_slot(id);
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            if let Ok(entity_table) = store.get::<_, Table>(id) {
+            if let Ok(entity_table) = store.get::<_, Table>(slot) {
                 return entity_table.get::<_, LuaValue>(name);
             }
         }
@@ -255,9 +439,10 @@ impl Universe {
         if !self.is_alive(id) {
             return Ok(false);
         }
+        let slot = Self::unpack_slot(id);
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            if let Ok(entity_table) = store.get::<_, Table>(id) {
+            if let Ok(entity_table) = store.get::<_, Table>(slot) {
                 let val: LuaValue = entity_table.get(name)?;
                 return Ok(!val.is_nil());
             }
@@ -275,9 +460,10 @@ impl Universe {
     /// # Returns
     /// `LuaResult<()>`.
     pub fn remove_component(&self, lua: &Lua, id: u32, name: &str) -> LuaResult<()> {
+        let slot = Self::unpack_slot(id);
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            if let Ok(entity_table) = store.get::<_, Table>(id) {
+            if let Ok(entity_table) = store.get::<_, Table>(slot) {
                 entity_table.set(name, LuaValue::Nil)?;
             }
         }
@@ -293,10 +479,11 @@ impl Universe {
     /// # Returns
     /// `LuaResult<Vec<String>>`.
     pub fn get_component_names(&self, lua: &Lua, id: u32) -> LuaResult<Vec<String>> {
+        let slot = Self::unpack_slot(id);
         let mut names = Vec::new();
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            if let Ok(entity_table) = store.get::<_, Table>(id) {
+            if let Ok(entity_table) = store.get::<_, Table>(slot) {
                 for pair in entity_table.pairs::<String, LuaValue>() {
                     let (k, _) = pair?;
                     names.push(k);
@@ -321,8 +508,8 @@ impl Universe {
         }
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            for &id in &self.alive {
-                if let Ok(entity_table) = store.get::<_, Table>(id) {
+            for &slot in &self.alive {
+                if let Ok(entity_table) = store.get::<_, Table>(slot) {
                     let mut all = true;
                     for name in names {
                         let val: LuaValue = entity_table.get(name.as_str())?;
@@ -332,7 +519,7 @@ impl Universe {
                         }
                     }
                     if all {
-                        result.push(id);
+                        result.push(Self::pack_id(slot, self.current_gen(slot)));
                     }
                 }
             }
@@ -353,13 +540,13 @@ impl Universe {
     pub fn each(&self, lua: &Lua, name: &str, callback: Function) -> LuaResult<()> {
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
-            let mut ids: Vec<u32> = self.alive.iter().copied().collect();
-            ids.sort();
-            for id in ids {
-                if let Ok(entity_table) = store.get::<_, Table>(id) {
+            let mut slots: Vec<u32> = self.alive.iter().copied().collect();
+            slots.sort();
+            for slot in slots {
+                if let Ok(entity_table) = store.get::<_, Table>(slot) {
                     let val: LuaValue = entity_table.get(name)?;
                     if !val.is_nil() {
-                        callback.call::<_, ()>((id, val))?;
+                        callback.call::<_, ()>((Self::pack_id(slot, self.current_gen(slot)), val))?;
                     }
                 }
             }
@@ -378,10 +565,13 @@ impl Universe {
         if !self.is_alive(id) {
             return;
         }
-        let tags = self.string_tags.entry(id).or_default();
+        let slot = Self::unpack_slot(id);
         let tag_str = tag.to_string();
+        let tags = self.string_tags.entry(slot).or_default();
         if !tags.contains(&tag_str) {
-            tags.push(tag_str);
+            tags.push(tag_str.clone());
+            // Maintain inverted index with the current packed id
+            self.tag_index.entry(tag_str).or_default().push(id);
         }
     }
 
@@ -391,8 +581,13 @@ impl Universe {
     /// - `id` — `u32`.
     /// - `tag` — `&str`.
     pub fn remove_tag(&mut self, id: u32, tag: &str) {
-        if let Some(tags) = self.string_tags.get_mut(&id) {
+        let slot = Self::unpack_slot(id);
+        if let Some(tags) = self.string_tags.get_mut(&slot) {
             tags.retain(|t| t != tag);
+        }
+        // Keep inverted index consistent
+        if let Some(entries) = self.tag_index.get_mut(tag) {
+            entries.retain(|&tid| tid != id);
         }
     }
 
@@ -405,8 +600,9 @@ impl Universe {
     /// # Returns
     /// `bool`.
     pub fn has_tag(&self, id: u32, tag: &str) -> bool {
+        let slot = Self::unpack_slot(id);
         self.string_tags
-            .get(&id)
+            .get(&slot)
             .map(|tags| tags.iter().any(|t| t == tag))
             .unwrap_or(false)
     }
@@ -419,7 +615,8 @@ impl Universe {
     /// # Returns
     /// `Vec<String>`.
     pub fn get_tags(&self, id: u32) -> Vec<String> {
-        self.string_tags.get(&id).cloned().unwrap_or_default()
+        let slot = Self::unpack_slot(id);
+        self.string_tags.get(&slot).cloned().unwrap_or_default()
     }
 
     /// Returns all alive entities that have the given string tag.
@@ -430,12 +627,9 @@ impl Universe {
     /// # Returns
     /// `Vec<u32>`.
     pub fn get_entities_by_tag(&self, tag: &str) -> Vec<u32> {
-        let mut result: Vec<u32> = self
-            .alive
-            .iter()
-            .filter(|&&id| self.has_tag(id, tag))
-            .copied()
-            .collect();
+        // O(1) lookup via inverted index; filter out any stale entries for safety
+        let mut result = self.tag_index.get(tag).cloned().unwrap_or_default();
+        result.retain(|&id| self.is_alive(id));
         result.sort();
         result
     }
@@ -480,8 +674,9 @@ impl Universe {
         if !self.is_alive(id) {
             return Ok(());
         }
+        let slot = Self::unpack_slot(id);
         let bit = self.get_or_define_tag_bit(name)?;
-        let mask = self.bitmap_masks.entry(id).or_insert(0);
+        let mask = self.bitmap_masks.entry(slot).or_insert(0);
         *mask |= 1u64 << bit;
         Ok(())
     }
@@ -492,8 +687,9 @@ impl Universe {
     /// - `id` — `u32`.
     /// - `name` — `&str`.
     pub fn bitmap_untag(&mut self, id: u32, name: &str) {
+        let slot = Self::unpack_slot(id);
         if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
-            if let Some(mask) = self.bitmap_masks.get_mut(&id) {
+            if let Some(mask) = self.bitmap_masks.get_mut(&slot) {
                 *mask &= !(1u64 << pos);
             }
         }
@@ -508,8 +704,9 @@ impl Universe {
     /// # Returns
     /// `bool`.
     pub fn has_bitmap_tag(&self, id: u32, name: &str) -> bool {
+        let slot = Self::unpack_slot(id);
         if let Some(pos) = self.bitmap_tag_names.iter().position(|n| n == name) {
-            if let Some(mask) = self.bitmap_masks.get(&id) {
+            if let Some(mask) = self.bitmap_masks.get(&slot) {
                 return (*mask & (1u64 << pos)) != 0;
             }
         }
@@ -529,13 +726,13 @@ impl Universe {
             let mut result: Vec<u32> = self
                 .alive
                 .iter()
-                .filter(|&&id| {
+                .filter(|&&slot| {
                     self.bitmap_masks
-                        .get(&id)
+                        .get(&slot)
                         .map(|m| m & bit != 0)
                         .unwrap_or(false)
                 })
-                .copied()
+                .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
                 .collect();
             result.sort();
             result
@@ -564,13 +761,13 @@ impl Universe {
         let mut result: Vec<u32> = self
             .alive
             .iter()
-            .filter(|&&id| {
+            .filter(|&&slot| {
                 self.bitmap_masks
-                    .get(&id)
+                    .get(&slot)
                     .map(|m| m & combined != 0)
                     .unwrap_or(false)
             })
-            .copied()
+            .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
             .collect();
         result.sort();
         result
@@ -598,13 +795,13 @@ impl Universe {
         let mut result: Vec<u32> = self
             .alive
             .iter()
-            .filter(|&&id| {
+            .filter(|&&slot| {
                 self.bitmap_masks
-                    .get(&id)
+                    .get(&slot)
                     .map(|m| m & combined == combined)
                     .unwrap_or(false)
             })
-            .copied()
+            .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
             .collect();
         result.sort();
         result
@@ -633,7 +830,7 @@ impl Universe {
     /// - `layer` — `i32`.
     pub fn set_layer(&mut self, id: u32, layer: i32) {
         if self.is_alive(id) {
-            self.layers.insert(id, layer);
+            self.layers.insert(Self::unpack_slot(id), layer);
         }
     }
 
@@ -645,7 +842,7 @@ impl Universe {
     /// # Returns
     /// `i32`.
     pub fn get_layer(&self, id: u32) -> i32 {
-        self.layers.get(&id).copied().unwrap_or(0)
+        self.layers.get(&Self::unpack_slot(id)).copied().unwrap_or(0)
     }
 
     /// Returns all alive entities on a specific layer.
@@ -659,8 +856,8 @@ impl Universe {
         let mut result: Vec<u32> = self
             .alive
             .iter()
-            .filter(|&&id| self.get_layer(id) == layer)
-            .copied()
+            .filter(|&&slot| self.get_layer(slot) == layer)
+            .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
             .collect();
         result.sort();
         result
@@ -671,11 +868,15 @@ impl Universe {
     /// # Returns
     /// `Vec<u32>`.
     pub fn get_entities_sorted(&self) -> Vec<u32> {
-        let mut entities: Vec<u32> = self.alive.iter().copied().collect();
+        let mut entities: Vec<u32> = self
+            .alive
+            .iter()
+            .map(|&slot| Self::pack_id(slot, self.current_gen(slot)))
+            .collect();
         entities.sort_by(|a, b| {
             let la = self.get_layer(*a);
             let lb = self.get_layer(*b);
-            la.cmp(&lb).then(a.cmp(b))
+            la.cmp(&lb).then(Self::unpack_slot(*a).cmp(&Self::unpack_slot(*b)))
         });
         entities
     }
@@ -762,7 +963,7 @@ impl Universe {
                 entity_comps.set(k, v)?;
             }
         }
-        store.set(id, entity_comps)?;
+        store.set(Self::unpack_slot(id), entity_comps)?;
         Ok(id)
     }
 
@@ -917,8 +1118,12 @@ impl Universe {
         self.free_list.clear();
         self.next_id = 1;
         self.string_tags.clear();
+        self.tag_index.clear();
+        self.generations.clear();
         self.bitmap_masks.clear();
         self.layers.clear();
+        self.parents.clear();
+        self.children.clear();
         // Clear component store
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
