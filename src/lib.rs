@@ -73,10 +73,10 @@ pub mod ai;
 pub mod animation;
 /// Audio playback system backed by rodio.
 pub mod audio;
-/// Camera and viewport types for 2D rendering.
-pub mod camera;
 /// Automated input simulation via timed step scripts for testing and replay.
 pub mod automation;
+/// Camera and viewport types for 2D rendering.
+pub mod camera;
 // migration-state: pub mod battle; — now library/battle/init.lua
 // migration-state: pub mod cardgame; — now library/cardgame/init.lua
 // migration-state: pub mod combat; — now library/combat/init.lua
@@ -85,10 +85,10 @@ pub mod compute;
 // migration-state: pub mod crafting; — now library/crafting/init.lua
 /// LÖVE2D-compatible binary data API: ByteData, compress, hash, encode, and LÖVE2D pack format.
 pub mod data;
-/// Format-agnostic serialization: JSON, TOML, CSV, and YAML via shared SerialValue.
-pub mod serial;
 /// In-memory column-major tabular data (luna.dataframe).
 pub mod dataframe;
+/// Format-agnostic serialization: JSON, TOML, CSV, and YAML via shared SerialValue.
+pub mod serial;
 // migration-state: pub mod dialog; — now library/dialog/init.lua
 // migration-state: pub mod economy; — now library/economy/init.lua
 /// Core engine lifecycle, configuration, and error types.
@@ -195,7 +195,8 @@ pub fn luna_run() {
         .map(PathBuf::from)
         .unwrap_or_else(|| env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
 
-    let (config, conf_error) = Config::load_from_conf_lua(&game_dir);
+    let (mut config, conf_error) = Config::load_from_conf_lua(&game_dir);
+    config.modules.validate_and_fix();
     let app = App::new(config, conf_error);
     app.run(game_dir, explicit_game_dir);
 }

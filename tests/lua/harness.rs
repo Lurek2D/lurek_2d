@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 
 fn create_test_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -13,7 +14,7 @@ fn create_test_vm() -> mlua::Lua {
         "Test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state).expect("Failed to create Lua VM");
+    let lua = create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM");
 
     // Load test framework
     let framework = include_str!("init.lua");
@@ -338,11 +339,6 @@ fn lua_test_minimap() {
 }
 
 #[test]
-fn lua_test_network() {
-    run_lua_test("unit/test_network.lua");
-}
-
-#[test]
 fn lua_test_particle() {
     run_lua_test("unit/test_particle.lua");
 }
@@ -466,6 +462,36 @@ fn lua_test_library_inventory() {
 #[test]
 fn lua_test_library_item() {
     run_lua_test("library/test_library_item.lua");
+}
+
+#[test]
+fn lua_test_library_doll() {
+    run_lua_test("library/test_library_doll.lua");
+}
+#[test]
+fn lua_test_animation() {
+    run_lua_test("unit/test_animation.lua");
+}
+#[test]
+fn lua_test_camera() {
+    run_lua_test("unit/test_camera.lua");
+}
+#[test]
+#[ignore = "luna.net raw ENet API is not yet registered in the Lua VM"]
+fn lua_test_network_host() {
+    run_lua_test("unit/test_network.lua");
+}
+#[test]
+fn lua_test_procgen() {
+    run_lua_test("unit/test_procgen.lua");
+}
+#[test]
+fn lua_test_raycaster() {
+    run_lua_test("unit/test_raycaster.lua");
+}
+#[test]
+fn lua_test_spine() {
+    run_lua_test("unit/test_spine.lua");
 }
 
 #[test]

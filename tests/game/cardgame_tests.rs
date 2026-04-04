@@ -3,6 +3,7 @@
 
 
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 
 use std::cell::RefCell;
 
@@ -16,7 +17,7 @@ fn make_vm() -> mlua::Lua {
 
     let state = Rc::new(RefCell::new(SharedState::new(800, 600, "Test", PathBuf::from("."))));
 
-    create_lua_vm(state).unwrap()
+    create_lua_vm(state, &Config::default().modules).unwrap()
 
 }
 

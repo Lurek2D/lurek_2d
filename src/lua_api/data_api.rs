@@ -95,13 +95,13 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     data_table.set(
         "compress",
         lua.create_function(
-            |_, (format_str, raw_data, level): (String, LuaString, Option<u32>)| {
+            |lua, (format_str, raw_data, level): (String, LuaString, Option<u32>)| {
                 let format =
                     data::CompressFormat::parse_str(&format_str).map_err(LuaError::RuntimeError)?;
                 let level = level.unwrap_or(6);
                 let result = data::compress(raw_data.as_bytes(), format, level)
                     .map_err(LuaError::RuntimeError)?;
-                Ok(result)
+                lua.create_string(&result)
             },
         )?,
     )?;
@@ -113,12 +113,12 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     /// @return any
     data_table.set(
         "decompress",
-        lua.create_function(|_, (format_str, compressed_data): (String, LuaString)| {
+        lua.create_function(|lua, (format_str, compressed_data): (String, LuaString)| {
             let format =
                 data::CompressFormat::parse_str(&format_str).map_err(LuaError::RuntimeError)?;
             let result = data::decompress(compressed_data.as_bytes(), format)
                 .map_err(LuaError::RuntimeError)?;
-            Ok(result)
+            lua.create_string(&result)
         })?,
     )?;
 

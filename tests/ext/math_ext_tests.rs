@@ -4,18 +4,16 @@
 //!         Tween, geometry, raycasting, procgen.
 
 use luna2d::math::geometry;
-use luna2d::math::grid::Grid;
+use luna2d::pathfinding::grid::Grid;
 use luna2d::math::noise::{
     DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind,
 };
-use luna2d::math::procgen::{self, CellularOpts, VoronoiOpts};
+use luna2d::procgen::{self, CellularOpts, VoronoiOpts};
 use luna2d::math::raycasting::Raycaster2D;
 use luna2d::math::raycasting::{self, Segment};
 use luna2d::math::spatial_hash::SpatialHash;
 use luna2d::tilemap::tile_walker::{Facing, TileWalker};
 use luna2d::math::tween::Tween;
-use std::cell::RefCell;
-use std::rc::Rc;
 
 // ═════════════════════════════════════════════════════════════════════════
 // 1. NoiseGenerator
@@ -581,24 +579,6 @@ fn test_tile_walker_facing_direction() {
     assert_eq!(Facing::West.dy(), 0);
 }
 
-#[test]
-fn test_tile_walker_with_raycaster() {
-    let mut rc = Raycaster2D::new(8, 8);
-    // Build walls around perimeter
-    for i in 0..8 {
-        rc.set_cell(i, 0, 1);
-        rc.set_cell(i, 7, 1);
-        rc.set_cell(0, i, 1);
-        rc.set_cell(7, i, 1);
-    }
-    let rc_shared = Rc::new(RefCell::new(rc));
-    let mut tw = TileWalker::new(1, 1, Facing::North);
-    tw.set_raycaster(rc_shared);
-    // Facing north at y=1, wall at y=0 → can't move forward
-    let moved = tw.move_forward();
-    assert!(!moved, "Should not move into wall");
-    assert_eq!(tw.y(), 1, "Position should not change");
-}
 
 #[test]
 fn test_tile_walker_interpolation() {

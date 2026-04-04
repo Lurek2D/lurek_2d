@@ -7,6 +7,7 @@ use std::rc::Rc;
 
 use luna2d::ai::*;
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 
 // ===========================================================================
 // Helpers
@@ -20,7 +21,7 @@ fn make_lua() -> mlua::Lua {
         "Test",
         PathBuf::from("."),
     )));
-    create_lua_vm(state).expect("Failed to create Lua VM")
+    create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM")
 }
 
 /// Creates a dummy Command with the given kind using a Lua VM registry key.
@@ -539,12 +540,12 @@ fn steering_manager_calculate_weighted() {
 }
 
 // ===========================================================================
-// SimpleGrid
+// PathGrid
 // ===========================================================================
 
 #[test]
 fn pathgrid_new() {
-    let grid = SimpleGrid::new(10, 8, 32.0);
+    let grid = PathGrid::new(10, 8, 32.0);
     assert_eq!(grid.width, 10);
     assert_eq!(grid.height, 8);
     assert!((grid.cell_size - 32.0).abs() < 1e-5);
@@ -552,7 +553,7 @@ fn pathgrid_new() {
 
 #[test]
 fn pathgrid_walkable() {
-    let mut grid = SimpleGrid::new(5, 5, 16.0);
+    let mut grid = PathGrid::new(5, 5, 16.0);
     // All cells start walkable
     assert!(grid.is_walkable(0, 0));
     assert!(grid.is_walkable(4, 4));
@@ -565,7 +566,7 @@ fn pathgrid_walkable() {
 
 #[test]
 fn pathgrid_cost() {
-    let mut grid = SimpleGrid::new(5, 5, 16.0);
+    let mut grid = PathGrid::new(5, 5, 16.0);
     // Default cost is 1.0
     assert!((grid.get_cost(0, 0) - 1.0).abs() < 1e-5);
     grid.set_cost(1, 1, 3.0);
@@ -576,7 +577,7 @@ fn pathgrid_cost() {
 
 #[test]
 fn pathgrid_find_path_simple() {
-    let grid = SimpleGrid::new(5, 5, 16.0);
+    let grid = PathGrid::new(5, 5, 16.0);
     let path = grid.find_path(0, 0, 4, 0);
     assert!(path.is_some());
     let waypoints = path.unwrap();
@@ -590,7 +591,7 @@ fn pathgrid_find_path_simple() {
 
 #[test]
 fn pathgrid_find_path_blocked() {
-    let mut grid = SimpleGrid::new(5, 1, 16.0);
+    let mut grid = PathGrid::new(5, 1, 16.0);
     // Block the only row between start and goal
     grid.set_walkable(2, 0, false);
     let path = grid.find_path(0, 0, 4, 0);
@@ -599,7 +600,7 @@ fn pathgrid_find_path_blocked() {
 
 #[test]
 fn pathgrid_find_path_start_blocked() {
-    let mut grid = SimpleGrid::new(5, 5, 16.0);
+    let mut grid = PathGrid::new(5, 5, 16.0);
     grid.set_walkable(0, 0, false);
     let path = grid.find_path(0, 0, 4, 4);
     assert!(path.is_none());
@@ -607,7 +608,7 @@ fn pathgrid_find_path_start_blocked() {
 
 #[test]
 fn pathgrid_find_path_goal_blocked() {
-    let mut grid = SimpleGrid::new(5, 5, 16.0);
+    let mut grid = PathGrid::new(5, 5, 16.0);
     grid.set_walkable(4, 4, false);
     let path = grid.find_path(0, 0, 4, 4);
     assert!(path.is_none());
@@ -615,7 +616,7 @@ fn pathgrid_find_path_goal_blocked() {
 
 #[test]
 fn pathgrid_find_path_same_cell() {
-    let grid = SimpleGrid::new(5, 5, 16.0);
+    let grid = PathGrid::new(5, 5, 16.0);
     let path = grid.find_path(2, 2, 2, 2);
     assert!(path.is_some());
     let waypoints = path.unwrap();
@@ -624,7 +625,7 @@ fn pathgrid_find_path_same_cell() {
 
 #[test]
 fn pathgrid_out_of_bounds() {
-    let grid = SimpleGrid::new(5, 5, 16.0);
+    let grid = PathGrid::new(5, 5, 16.0);
     let path = grid.find_path(0, 0, 10, 10);
     assert!(path.is_none());
 }

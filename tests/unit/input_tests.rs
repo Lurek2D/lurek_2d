@@ -61,6 +61,7 @@ fn gamepad_axis_value() {
 // ── Gamepad Lua API tests ──────────────────────────────────────────
 
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -72,7 +73,7 @@ fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
         "test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state.clone()).unwrap();
+    let lua = create_lua_vm(state.clone(), &Config::default().modules).unwrap();
     (state, lua)
 }
 

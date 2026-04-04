@@ -13,7 +13,7 @@
 
 use std::collections::HashMap;
 
-use crate::graphics::Color;
+use crate::math::Color;
 
 /// A named polygon region. Consult the module-level documentation for the broader usage context and preconditions.
 ///

@@ -15,9 +15,10 @@ describe("Spawn and lifecycle", function()
         expect_false(world:isAlive(a))
         expect_equal(1, world:getEntityCount())
 
-        -- LIFO recycling
+        -- LIFO recycling: recycled slot gets incremented generation (stale detection)
         local c = world:spawn()
-        expect_equal(a, c)
+        expect_true(world:isAlive(c), "recycled entity is alive")
+        expect_true(c ~= a, "recycled id differs from stale id (generational)")
     end)
 end)
 

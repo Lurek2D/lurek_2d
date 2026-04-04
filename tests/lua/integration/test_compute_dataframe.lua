@@ -34,16 +34,16 @@ describe("integration: compute statistics to dataframe", function()
         expect_equal(3, df:nrows(), "3 dataset rows")
         expect_equal(6, df:ncols(), "6 stat columns")
 
-        -- Verify linear dataset stats
-        expect_near(100, df:getValue(0, "count"), 0.01, "linear count")
-        expect_near(5050, df:getValue(0, "sum"), 1.0, "linear sum")
-        expect_near(50.5, df:getValue(0, "mean"), 0.1, "linear mean")
-        expect_near(1, df:getValue(0, "min"), 0.01, "linear min")
-        expect_near(100, df:getValue(0, "max"), 0.01, "linear max")
+        -- Verify linear dataset stats (row 1 = "linear": 1..100, sum=5050)
+        expect_near(100, df:getValue(1, "count"), 0.01, "linear count")
+        expect_near(5050, df:getValue(1, "sum"), 1.0, "linear sum")
+        expect_near(50.5, df:getValue(1, "mean"), 0.1, "linear mean")
+        expect_near(1, df:getValue(1, "min"), 0.01, "linear min")
+        expect_near(100, df:getValue(1, "max"), 0.01, "linear max")
 
-        -- Verify uniform dataset
-        expect_near(100, df:getValue(1, "sum"), 0.01, "uniform sum")
-        expect_near(1.0, df:getValue(1, "mean"), 0.001, "uniform mean")
+        -- Verify uniform dataset (row 2 = "uniform": all ones, sum=100)
+        expect_near(100, df:getValue(2, "sum"), 0.01, "uniform sum")
+        expect_near(1.0, df:getValue(2, "mean"), 0.001, "uniform mean")
     end)
 end)
 
@@ -70,7 +70,7 @@ describe("integration: image data to compute array", function()
         end
 
         -- Create compute array from red channel
-        local arr = luna.compute.fromTable(red_values, "float32")
+        local arr = luna.compute.fromTable(red_values, nil, "float32")
         expect_equal(256, arr:getSize(), "256 pixels")
 
         -- Analyze

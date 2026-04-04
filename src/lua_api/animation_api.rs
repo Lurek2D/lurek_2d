@@ -14,8 +14,8 @@ use std::rc::Rc;
 use mlua::prelude::*;
 
 use crate::animation::{AnimEvent, Animation};
-use crate::math::Rect;
 use crate::lua_api::lua_types::{add_type_methods, LunaType};
+use crate::math::Rect;
 
 // ── UserData wrapper ──────────────────────────────────────────────────────────
 
@@ -112,9 +112,9 @@ impl LuaUserData for LuaAnimation {
                 f32,
                 bool,
             )| {
-                this.inner.borrow_mut().add_clip_from_grid(
-                    &name, tw, th, fw, fh, start, count, fps, looping,
-                );
+                this.inner
+                    .borrow_mut()
+                    .add_clip_from_grid(&name, tw, th, fw, fh, start, count, fps, looping);
                 Ok(())
             },
         );
@@ -187,11 +187,7 @@ impl LuaUserData for LuaAnimation {
         /// Returns the name of the currently playing clip, or `nil`.
         /// @return string|nil
         methods.add_method("getClip", |_, this, ()| {
-            Ok(this
-                .inner
-                .borrow()
-                .get_current_clip()
-                .map(|s| s.to_owned()))
+            Ok(this.inner.borrow().get_current_clip().map(|s| s.to_owned()))
         });
 
         /// Returns the playback speed multiplier.

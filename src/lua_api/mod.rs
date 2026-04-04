@@ -13,6 +13,7 @@ use std::rc::Rc;
 
 use mlua::prelude::*;
 
+use crate::engine::config::ModulesConfig;
 pub use crate::engine::{ErrorInfo, FullscreenType, SharedState, WindowState};
 
 /// Registers the `luna.ai.*` game AI toolkit API.
@@ -110,79 +111,215 @@ pub mod lua_types;
 // quest_api removed — quest system is now library/quest/init.lua
 // stats_api removed — stats system is now library/stats/init.lua
 /// Registers the `luna.tilemap.*` tile map, tileset, autotile, and procedural generation API.
+pub mod animation_api;
+pub mod camera_api;
+pub mod network_api;
+pub mod procgen_api;
+pub mod raycaster_api;
+pub mod spine_api;
 pub mod tilemap_api;
 /// Registers the `luna.timer.*` frame-timing API.
 pub mod timer_api;
 /// Registers the `luna.window.*` window management API.
 pub mod window_api;
 
-/// Creates and configures the Lua VM, registers all `luna.*` sub-APIs, and returns the ready `Lua` instance.
+/// Creates and configures the Lua VM, registers `luna.*` sub-APIs according to the
+/// provided module flags, and returns the ready `Lua` instance.
 ///
 /// # Parameters
 /// - `state` — Shared engine state passed (via `Rc<RefCell>` clone) to every Lua closure.
+/// - `modules` — Module enable/disable flags read from `conf.lua`. Mandatory APIs
+///   (`math`, `log`, `event`) are always registered regardless of flags.
 ///
 /// # Returns
-/// `LuaResult<Lua>` — A configured Lua VM with `luna.*` as a global, or a Lua error if any sub-API fails to register.
-pub fn create_lua_vm(state: Rc<RefCell<SharedState>>) -> LuaResult<Lua> {
+/// `LuaResult<Lua>` — A configured Lua VM with `luna.*` as a global, or a Lua error if
+/// any sub-API fails to register.
+pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
     let lua = Lua::new();
 
     // Create the luna namespace table
     let luna = lua.create_table()?;
 
-    // Register all sub-APIs
-    ai_api::register(&lua, &luna)?;
-    steering_api::register(&lua, &luna)?;
-    graphics_api::register(&lua, &luna, state.clone())?;
-    font_api::register(&lua, &luna, state.clone())?;
-    sprite_api::register(&lua, &luna)?;
-    input_api::register(&lua, &luna, state.clone())?;
-    audio_api::register(&lua, &luna, state.clone())?;
-    timer_api::register(&lua, &luna, state.clone())?;
+    // Mandatory — always registered
     math_api::register(&lua, &luna)?;
-    filesystem_api::register(&lua, &luna, state.clone())?;
-    window_api::register(&lua, &luna, state.clone())?;
-    physics_api::register(&lua, &luna)?;
-    particle_api::register(&lua, &luna, state.clone())?;
-    event_api::register(&lua, &luna, state.clone())?;
-    system_api::register(&lua, &luna, state.clone())?;
-    data_api::register(&lua, &luna)?;
-    serial_api::register(&lua, &luna)?;
-    automation_api::register(&lua, &luna, state.clone())?;
     log_api::register(&lua, &luna)?;
-    localization_api::register(&lua, &luna)?;
-    image_api::register(&lua, &luna, state.clone())?;
-    gui_api::register(&lua, &luna)?;
-    compute_api::register(&lua, &luna)?;
-    dataframe_api::register(&lua, &luna)?;
-    debugbridge_api::register(&lua, &luna)?;
-    debug_api::register(&lua, &luna)?;
-    docs_api::register(&lua, &luna)?;
-    graph_api::register(&lua, &luna)?;
-    thread_api::register(&lua, &luna)?;
-    tilemap_api::register(&lua, &luna)?;
-    scene_api::register(&lua, &luna)?;
-    pathfinding_api::register(&lua, &luna)?;
-    pipeline_api::register(&lua, &luna)?;
-    patterns_api::register(&lua, &luna)?;
-    minimap_api::register(&lua, &luna)?;
-    // dialog_api moved to library/dialog/init.lua
-    postfx_api::register(&lua, &luna)?;
-    overlay_api::register(&lua, &luna)?;
-    entity_api::register(&lua, &luna)?;
-    modding_api::register(&lua, &luna, state.clone())?;
-    savegame_api::register(&lua, &luna, state.clone())?;
-    // cardgame_api moved to library/cardgame/init.lua
-    // battle_api moved to library/battle/init.lua
-    // combat_api moved to library/combat/init.lua
-    // economy_api moved to library/economy/init.lua
-    // stats_api moved to library/stats/init.lua
-    // inventory_api moved to library/inventory/init.lua
-    // quest_api moved to library/quest/init.lua
-    // crafting_api moved to library/crafting/init.lua
+    event_api::register(&lua, &luna, state.clone())?;
 
-    /// Luna on this Object.
-    /// # Returns
-    /// The result.
+    // graphics: luna.graphics, luna.font, luna.sprite
+    if modules.graphics {
+        graphics_api::register(&lua, &luna, state.clone())?;
+        font_api::register(&lua, &luna, state.clone())?;
+        sprite_api::register(&lua, &luna)?;
+    }
+
+    // audio: luna.audio
+    if modules.audio {
+        audio_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // input: luna.input (keyboard/mouse/gamepad)
+    if modules.input {
+        input_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // timer: luna.timer
+    if modules.timer {
+        timer_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // filesystem: luna.filesystem
+    if modules.filesystem {
+        filesystem_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // window: luna.window
+    if modules.window {
+        window_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // physics: luna.physics
+    if modules.physics {
+        physics_api::register(&lua, &luna)?;
+    }
+
+    // particle: luna.particle
+    if modules.particle {
+        particle_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // system: luna.system
+    if modules.system {
+        system_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // data: luna.data, luna.serial
+    if modules.data {
+        data_api::register(&lua, &luna)?;
+        serial_api::register(&lua, &luna)?;
+    }
+
+    // localization: luna.localization
+    if modules.localization {
+        localization_api::register(&lua, &luna)?;
+    }
+
+    // image: luna.image
+    if modules.image {
+        image_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // gui: luna.gui
+    if modules.gui {
+        gui_api::register(&lua, &luna)?;
+    }
+
+    // compute: luna.compute, luna.dataframe
+    if modules.compute {
+        compute_api::register(&lua, &luna)?;
+        dataframe_api::register(&lua, &luna)?;
+    }
+
+    // ai: luna.ai, luna.steering
+    if modules.ai {
+        ai_api::register(&lua, &luna)?;
+        steering_api::register(&lua, &luna)?;
+    }
+
+    // pathfinding: luna.pathfinding
+    if modules.pathfinding {
+        pathfinding_api::register(&lua, &luna)?;
+    }
+
+    // graph: luna.graph
+    if modules.graph {
+        graph_api::register(&lua, &luna)?;
+    }
+
+    // thread: luna.thread
+    if modules.thread {
+        thread_api::register(&lua, &luna)?;
+    }
+
+    // tilemap: luna.tilemap
+    if modules.tilemap {
+        tilemap_api::register(&lua, &luna)?;
+    }
+
+    // scene: luna.scene
+    if modules.scene {
+        scene_api::register(&lua, &luna)?;
+    }
+
+    // overlay: luna.overlay, luna.postfx
+    if modules.overlay {
+        overlay_api::register(&lua, &luna)?;
+        postfx_api::register(&lua, &luna)?;
+    }
+
+    // entity: luna.entity
+    if modules.entity {
+        entity_api::register(&lua, &luna)?;
+    }
+
+    // minimap: luna.minimap
+    if modules.minimap {
+        minimap_api::register(&lua, &luna)?;
+    }
+
+    // modding: luna.modding
+    if modules.modding {
+        modding_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // savegame: luna.savegame
+    if modules.savegame {
+        savegame_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // pipeline: luna.pipeline, luna.patterns
+    if modules.pipeline {
+        pipeline_api::register(&lua, &luna)?;
+        patterns_api::register(&lua, &luna)?;
+    }
+
+    // animation: luna.animation
+    if modules.animation {
+        animation_api::register(&lua, &luna)?;
+    }
+
+    // camera: luna.camera
+    if modules.camera {
+        camera_api::register(&lua, &luna)?;
+    }
+
+    // network: luna.network
+    if modules.network {
+        network_api::register(&lua, &luna)?;
+    }
+
+    // procgen: luna.procgen
+    if modules.procgen {
+        procgen_api::register(&lua, &luna)?;
+    }
+
+    // raycaster: luna.raycaster
+    if modules.raycaster {
+        raycaster_api::register(&lua, &luna)?;
+    }
+
+    // spine: luna.spine
+    if modules.spine {
+        spine_api::register(&lua, &luna)?;
+    }
+
+    // debug: luna.debug, luna.debugbridge, luna.docs, luna.simulator
+    if modules.debug {
+        debug_api::register(&lua, &luna)?;
+        debugbridge_api::register(&lua, &luna)?;
+        docs_api::register(&lua, &luna)?;
+        automation_api::register(&lua, &luna, state.clone())?;
+    }
+
     lua.globals().set("luna", luna)?;
 
     // Add `library/` to the Lua package path so games can use

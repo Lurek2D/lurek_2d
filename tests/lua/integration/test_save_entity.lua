@@ -41,7 +41,7 @@ describe("integration: save entity world state", function()
         local mgr = luna.savegame.newSaveManager()
         local universe = luna.entity.newUniverse()
 
-        mgr:register("entities")
+        mgr:register("entities", function() return {} end, function(_data) end)
         expect_false(mgr:isDirty(), "initially clean")
 
         -- Modify entities

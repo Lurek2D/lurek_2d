@@ -3,12 +3,13 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
+use luna2d::engine::config::Config;
 
 fn make_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(
         luna2d::lua_api::SharedState::new(800, 600, "Test", PathBuf::from(".")),
     ));
-    luna2d::lua_api::create_lua_vm(state).expect("VM creation failed")
+    luna2d::lua_api::create_lua_vm(state, &Config::default().modules).expect("VM creation failed")
 }
 
 // ── Factory and type ──

@@ -22,8 +22,8 @@ use crate::engine::error_screen::ErrorScreen;
 use crate::engine::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, SpriteBatchKey, TextureKey,
 };
-use crate::engine::{FullscreenType, SharedState};
 use crate::engine::shared_state::WindowState;
+use crate::engine::{FullscreenType, SharedState};
 use crate::graphics::renderer::{DrawCommand, DrawMode, TextureData};
 use crate::graphics::GpuRenderer;
 use crate::input::keyboard::{winit_key_to_string, winit_scancode_to_string};
@@ -434,7 +434,7 @@ impl LunaApp {
 
         let state = Rc::new(RefCell::new(shared_state));
 
-        let lua = match create_lua_vm(state.clone()) {
+        let lua = match create_lua_vm(state.clone(), &self.config.modules) {
             Ok(l) => l,
             Err(e) => {
                 log::error!("Failed to initialise Lua VM: {}", e);
@@ -672,7 +672,10 @@ impl LunaApp {
 
         // Apply pending scale mode
         if let Some(new_mode) = pending_scale_mode {
-            if matches!(new_mode.as_str(), "none" | "letterbox" | "stretch" | "pixel") {
+            if matches!(
+                new_mode.as_str(),
+                "none" | "letterbox" | "stretch" | "pixel"
+            ) {
                 if let Some(state) = &self.state {
                     let mut st = state.borrow_mut();
                     st.window_state.scale_mode_str = new_mode;
@@ -717,8 +720,22 @@ impl LunaApp {
             return;
         };
 
-        let (commands, textures, shaders, default_filter, bg, cam_matrix, frame_time,
-             vp_scale_x, vp_scale_y, vp_offset_x, vp_offset_y, vp_mode, game_w, game_h) = {
+        let (
+            commands,
+            textures,
+            shaders,
+            default_filter,
+            bg,
+            cam_matrix,
+            frame_time,
+            vp_scale_x,
+            vp_scale_y,
+            vp_offset_x,
+            vp_offset_y,
+            vp_mode,
+            game_w,
+            game_h,
+        ) = {
             let st = state.borrow();
             (
                 st.draw_commands.clone(),
@@ -741,10 +758,7 @@ impl LunaApp {
         // Wrap draw commands with viewport transform when scale mode is active.
         // Uses the reusable render_cmd_buf to avoid a per-frame heap allocation.
         let use_viewport = vp_mode != "none"
-            && (vp_scale_x != 1.0
-                || vp_scale_y != 1.0
-                || vp_offset_x != 0.0
-                || vp_offset_y != 0.0);
+            && (vp_scale_x != 1.0 || vp_scale_y != 1.0 || vp_offset_x != 0.0 || vp_offset_y != 0.0);
         if use_viewport {
             self.render_cmd_buf.clear();
             if vp_mode == "letterbox" || vp_mode == "pixel" {
@@ -2249,14 +2263,8 @@ mod tests {
             "scale_y should be 2.0, got {}",
             ws.viewport_scale_y
         );
-        assert!(
-            ws.viewport_offset_x.abs() < 1e-4,
-            "offset_x should be 0.0"
-        );
-        assert!(
-            ws.viewport_offset_y.abs() < 1e-4,
-            "offset_y should be 0.0"
-        );
+        assert!(ws.viewport_offset_x.abs() < 1e-4, "offset_x should be 0.0");
+        assert!(ws.viewport_offset_y.abs() < 1e-4, "offset_y should be 0.0");
     }
 
     #[test]

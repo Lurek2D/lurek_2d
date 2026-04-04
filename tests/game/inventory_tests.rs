@@ -1,6 +1,7 @@
 //! Integration tests for `luna.inventory.*` Lua API.
 
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -12,7 +13,7 @@ fn make_vm() -> mlua::Lua {
         "Test",
         PathBuf::from("."),
     )));
-    create_lua_vm(state).unwrap()
+    create_lua_vm(state, &Config::default().modules).unwrap()
 }
 
 // ── Item ─────────────────────────────────────────────────────────────────────

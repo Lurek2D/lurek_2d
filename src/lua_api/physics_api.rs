@@ -601,6 +601,50 @@ impl LuaUserData for LuaBody {
                 Ok(())
             },
         );
+
+        /// Transforms a body-local point to world coordinates.
+        ///
+        /// # Parameters
+        /// - `local_x` — `number`: X in body-local space.
+        /// - `local_y` — `number`: Y in body-local space.
+        ///
+        /// # Returns
+        /// Two numbers `x, y` in world space.
+        methods.add_method(
+            "getWorldPoint",
+            |_, this, (local_x, local_y): (f32, f32)| {
+                let ws = this.worlds.borrow();
+                if let Some(world) = ws.get(this.world_index) {
+                    if let Some(body) = world.get_body(this.body_index) {
+                        let (wx, wy) = body.get_world_point(local_x, local_y);
+                        return Ok((wx, wy));
+                    }
+                }
+                Ok((0.0f32, 0.0f32))
+            },
+        );
+
+        /// Transforms a world-space point to body-local coordinates.
+        ///
+        /// # Parameters
+        /// - `world_x` — `number`: X in world space.
+        /// - `world_y` — `number`: Y in world space.
+        ///
+        /// # Returns
+        /// Two numbers `x, y` in body-local space.
+        methods.add_method(
+            "getLocalPoint",
+            |_, this, (world_x, world_y): (f32, f32)| {
+                let ws = this.worlds.borrow();
+                if let Some(world) = ws.get(this.world_index) {
+                    if let Some(body) = world.get_body(this.body_index) {
+                        let (lx, ly) = body.get_local_point(world_x, world_y);
+                        return Ok((lx, ly));
+                    }
+                }
+                Ok((0.0f32, 0.0f32))
+            },
+        );
     }
 }
 
@@ -2452,6 +2496,37 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
                     return Ok(table);
                 }
                 lua.create_table()
+            },
+        )?,
+    )?;
+
+    // luna.physics.getBodyAtPoint(world_id, x, y) -> Body or nil
+    /// Returns the first body whose collider contains the given world-space point.
+    ///
+    /// # Parameters
+    /// - `world` — World ID or World userdata.
+    /// - `x` — World-space X coordinate.
+    /// - `y` — World-space Y coordinate.
+    ///
+    /// # Returns
+    /// `Body` userdata, or `nil` if no body at that point.
+    let w = worlds.clone();
+    physics.set(
+        "getBodyAtPoint",
+        lua.create_function(
+            move |_, (world_id_val, x, y): (LuaValue, f32, f32)| {
+                let world_id = world_index_from_value(&world_id_val)?;
+                let ws = w.borrow();
+                if let Some(world) = ws.get(world_id) {
+                    if let Some(body_id) = world.get_body_at_point(x, y) {
+                        return Ok(Some(LuaBody {
+                            worlds: w.clone(),
+                            world_index: world_id,
+                            body_index: body_id,
+                        }));
+                    }
+                }
+                Ok(None)
             },
         )?,
     )?;

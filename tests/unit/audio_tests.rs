@@ -10,6 +10,7 @@ use luna2d::audio::Mixer;
 use luna2d::audio::PlayState;
 use luna2d::audio::SourceType;
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 
 fn make_audio_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -18,7 +19,7 @@ fn make_audio_vm() -> mlua::Lua {
         "Test",
         PathBuf::from("."),
     )));
-    create_lua_vm(state).expect("Failed to create Lua VM")
+    create_lua_vm(state, &Config::default().modules).expect("Failed to create Lua VM")
 }
 
 fn assert_lua_error_contains(result: mlua::Result<()>, expected: &str) {
@@ -613,6 +614,7 @@ fn mixer_tell_after_stop_is_zero() {
 fn audio_seek_invalid_id_is_noop_via_lua() {
     // seek on a non-existent source should return a runtime error, not panic.
     use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
     use std::cell::RefCell;
     use std::path::PathBuf;
     use std::rc::Rc;
@@ -623,7 +625,7 @@ fn audio_seek_invalid_id_is_noop_via_lua() {
         "Test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state).expect("Lua VM");
+    let lua = create_lua_vm(state, &Config::default().modules).expect("Lua VM");
 
     // seek on handle 0 (invalid) should produce a runtime error, not a panic.
     let _ = lua.load(r#"luna.audio.seek(0, 0.0)"#).exec();

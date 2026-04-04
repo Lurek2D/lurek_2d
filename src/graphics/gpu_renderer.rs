@@ -1357,7 +1357,7 @@ impl GpuRenderer {
                     );
                 }
 
-                DrawCommand::DrawImage { texture_key, x, y } => {
+                DrawCommand::DrawImage { texture_key, x, y, effect: _ } => {
                     if let Some(gt) = self.gpu_textures.get(*texture_key) {
                         let w = gt.width as f32;
                         let h = gt.height as f32;
@@ -1411,6 +1411,7 @@ impl GpuRenderer {
                     sy,
                     ox,
                     oy,
+                    effect: _,
                 } => {
                     if let Some(gt) = self.gpu_textures.get(*texture_key) {
                         let w = gt.width as f32;
@@ -1471,6 +1472,7 @@ impl GpuRenderer {
                     sy,
                     ox,
                     oy,
+                    effect: _,
                 } => {
                     if let Some(_gt) = self.gpu_textures.get(*texture_key) {
                         let t = transform_stack.last().unwrap();
@@ -2048,6 +2050,10 @@ impl GpuRenderer {
                 DrawCommand::SetShader(shader) => {
                     active_shader = shader.filter(|key| shaders.contains_key(*key));
                 }
+                // DrawShape and DrawParticleSystem are not yet GPU-implemented;
+                // silence non-exhaustive-pattern error until renderer support is added.
+                DrawCommand::DrawShape { .. } => {}
+                DrawCommand::DrawParticleSystem { .. } => {}
             }
         }
 
@@ -3517,6 +3523,9 @@ fn stencil_operation(action: crate::graphics::renderer::StencilAction) -> wgpu::
         crate::graphics::renderer::StencilAction::DecrementWrap => {
             wgpu::StencilOperation::DecrementWrap
         }
+        crate::graphics::renderer::StencilAction::Keep => wgpu::StencilOperation::Keep,
+        crate::graphics::renderer::StencilAction::Zero => wgpu::StencilOperation::Zero,
+        crate::graphics::renderer::StencilAction::Invert => wgpu::StencilOperation::Invert,
     }
 }
 

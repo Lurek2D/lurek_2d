@@ -151,7 +151,7 @@ impl LunaApp {
             self.game_dir.clone(),
         )));
 
-        let lua = match create_lua_vm(state.clone()) {
+        let lua = match create_lua_vm(state.clone(), &self.config.modules) {
             Ok(l) => l,
             Err(e) => {
                 log::error!("Failed to initialise Lua VM: {}", e);

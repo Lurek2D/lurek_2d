@@ -1413,19 +1413,27 @@ impl LuaUserData for LuaRaycaster2D {
             "extractMinimap",
             |lua,
              this,
-             (px, py, pa, view_radius, cell_size, wr, wg, wb, wa, fr, fg, fb, fa, pr, pg, pb, pa2): (
+             (px, py, pa, view_radius, cell_size, wall_color, floor_color, player_color): (
                 f32, f32, f32, u32, u32,
-                u8, u8, u8, u8,
-                u8, u8, u8, u8,
-                u8, u8, u8, u8,
+                LuaTable, LuaTable, LuaTable,
             )| {
                 let rc = this.inner.borrow();
+                let wc: [u8; 4] = [
+                    wall_color.get(1)?, wall_color.get(2)?,
+                    wall_color.get(3)?, wall_color.get(4)?,
+                ];
+                let fc: [u8; 4] = [
+                    floor_color.get(1)?, floor_color.get(2)?,
+                    floor_color.get(3)?, floor_color.get(4)?,
+                ];
+                let pc: [u8; 4] = [
+                    player_color.get(1)?, player_color.get(2)?,
+                    player_color.get(3)?, player_color.get(4)?,
+                ];
                 let (pixels, w, h) = extract_minimap(
                     &rc, px, py, pa,
                     view_radius, cell_size,
-                    [wr, wg, wb, wa],
-                    [fr, fg, fb, fa],
-                    [pr, pg, pb, pa2],
+                    wc, fc, pc,
                 );
                 let tbl = lua.create_table_with_capacity(pixels.len(), 0)?;
                 for (i, byte) in pixels.into_iter().enumerate() {
@@ -1555,17 +1563,6 @@ impl LuaUserData for LuaTileWalker {
         /// - `rc_ud` — `userdata`.
         methods.add_method("turnAround", |_, this, ()| {
             this.inner.borrow_mut().turn_around();
-            Ok(())
-        });
-        /// Sets the raycaster.
-        ///
-        /// # Parameters
-        /// - `rc_ud` — `userdata`.
-        methods.add_method("setRaycaster", |_, this, rc_ud: LuaAnyUserData| {
-            let lua_rc = rc_ud.borrow::<LuaRaycaster2D>()?;
-            this.inner
-                .borrow_mut()
-                .set_raycaster(Rc::clone(&lua_rc.inner));
             Ok(())
         });
         /// Returns `true` if move forward.

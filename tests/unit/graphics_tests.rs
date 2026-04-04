@@ -17,6 +17,7 @@ use luna2d::graphics::SpriteBatch;
 use luna2d::graphics::BlendMode;
 use luna2d::math::Color;
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 use slotmap::{Key, SlotMap};
 
 #[test]
@@ -57,7 +58,7 @@ fn make_graphics_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
         "Test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state.clone()).expect("Failed to create Lua VM");
+    let lua = create_lua_vm(state.clone(), &Config::default().modules).expect("Failed to create Lua VM");
     (state, lua)
 }
 

@@ -209,7 +209,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
                     .zip(distances2.iter())
                     .enumerate()
                 {
-                    r_tbl.set(i + 1, *r)?;
+                    r_tbl.set(i + 1, *r + 1)?;
                     d_tbl.set(i + 1, *d)?;
                     d2_tbl.set(i + 1, *d2)?;
                 }

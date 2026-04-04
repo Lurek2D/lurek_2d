@@ -86,6 +86,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 
 fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -94,7 +95,7 @@ fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
         "test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state.clone()).unwrap();
+    let lua = create_lua_vm(state.clone(), &Config::default().modules).unwrap();
     (state, lua)
 }
 

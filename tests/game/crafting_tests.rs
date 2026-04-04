@@ -2,6 +2,7 @@
 
 use luna2d::crafting::{CraftSkill, ModifierPool, Quality, Recipe};
 use luna2d::lua_api::{create_lua_vm, SharedState};
+use luna2d::engine::config::Config;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -14,7 +15,7 @@ fn make_vm() -> mlua::Lua {
         "Test",
         PathBuf::from("."),
     )));
-    create_lua_vm(state).unwrap()
+    create_lua_vm(state, &Config::default().modules).unwrap()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

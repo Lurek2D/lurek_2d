@@ -270,6 +270,15 @@ name = "network_tests"
 path = "tests/unit/network_tests.rs"
 
 [[test]]
+name = "procgen_tests"
+path = "tests/unit/procgen_tests.rs"
+
+[[test]]
+name = "raycaster_tests"
+path = "tests/unit/raycaster_tests.rs"
+
+
+[[test]]
 name = "particle_tests"
 path = "tests/unit/particle_tests.rs"
 
@@ -300,6 +309,10 @@ path = "tests/unit/savegame_tests.rs"
 [[test]]
 name = "scene_tests"
 path = "tests/unit/scene_tests.rs"
+
+[[test]]
+name = "spine_tests"
+path = "tests/unit/spine_tests.rs"
 
 [[test]]
 name = "sound_tests"

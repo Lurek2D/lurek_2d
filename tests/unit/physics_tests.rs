@@ -1662,3 +1662,61 @@ fn physics_non_circle_get_radius_returns_none() {
     });
     assert!(s.get_radius().is_none());
 }
+
+// ── get_world_point / get_local_point ─────────────────────────────────────
+
+#[test]
+fn body_get_world_point_no_rotation() {
+    let body = Body::new(100.0, 200.0, BodyType::Dynamic);
+    let (wx, wy) = body.get_world_point(10.0, 20.0);
+    assert!((wx - 110.0).abs() < 1e-5);
+    assert!((wy - 220.0).abs() < 1e-5);
+}
+
+#[test]
+fn body_get_world_point_rotated_90() {
+    let mut body = Body::new(0.0, 0.0, BodyType::Dynamic);
+    body.angle = std::f32::consts::FRAC_PI_2; // 90 degrees
+    let (wx, wy) = body.get_world_point(10.0, 0.0);
+    assert!((wx - 0.0).abs() < 1e-4, "wx={wx}");
+    assert!((wy - 10.0).abs() < 1e-4, "wy={wy}");
+}
+
+#[test]
+fn body_get_local_point_no_rotation() {
+    let body = Body::new(100.0, 200.0, BodyType::Dynamic);
+    let (lx, ly) = body.get_local_point(110.0, 220.0);
+    assert!((lx - 10.0).abs() < 1e-5);
+    assert!((ly - 20.0).abs() < 1e-5);
+}
+
+#[test]
+fn body_get_world_local_roundtrip() {
+    let mut body = Body::new(50.0, 75.0, BodyType::Dynamic);
+    body.angle = 1.2;
+    let local = (7.0f32, -3.0f32);
+    let (wx, wy) = body.get_world_point(local.0, local.1);
+    let (lx, ly) = body.get_local_point(wx, wy);
+    assert!((lx - local.0).abs() < 1e-4, "lx={lx}");
+    assert!((ly - local.1).abs() < 1e-4, "ly={ly}");
+}
+
+// ── get_body_at_point ─────────────────────────────────────────────────────
+
+#[test]
+fn world_get_body_at_point_hit() {
+    let mut world = World::new(0.0, 0.0);
+    let id = world.add_body(Body::new(0.0, 0.0, BodyType::Static));
+    world.step(0.0); // sync colliders
+    let result = world.get_body_at_point(0.0, 0.0);
+    assert_eq!(result, Some(id));
+}
+
+#[test]
+fn world_get_body_at_point_miss() {
+    let mut world = World::new(0.0, 0.0);
+    world.add_body(Body::new(0.0, 0.0, BodyType::Static));
+    world.step(0.0);
+    let result = world.get_body_at_point(9999.0, 9999.0);
+    assert!(result.is_none());
+}
