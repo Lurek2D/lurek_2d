@@ -208,6 +208,16 @@ pub struct ErrorInfo {
     pub hint: Option<String>,
 }
 
+/// Pending request to save the next rendered screen frame as a PNG.
+///
+/// # Fields
+/// - `path` — `String`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ScreenshotRequest {
+    /// Relative destination path inside the game's `save/` directory.
+    pub path: String,
+}
+
 /// Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.
 ///
 /// # Fields
@@ -328,10 +338,10 @@ pub struct SharedState {
     pub fs: GameFS,
     /// MIDI SoundFont state for MIDI instrument rendering.
     pub midi_state: MidiState,
-    /// Whether a screenshot capture was requested this frame.
+    /// Pending save request for the next fully rendered screen frame.
     ///
-    /// Set to `true` by `luna.graphics.captureScreenshot`. Cleared after the callback fires.
-    pub pending_screenshot: bool,
+    /// Set by `luna.graphics.saveScreenshot` and consumed after a successful render.
+    pub pending_screenshot: Option<ScreenshotRequest>,
     /// Active stencil mode — written by `luna.graphics.setStencilMode`, read at render time.
     pub stencil_mode: StencilMode,
     /// Active depth test mode and write-enable flag — written by `luna.graphics.setDepthMode`.
@@ -412,7 +422,7 @@ impl SharedState {
             async_loader: None,
             fs,
             midi_state: MidiState::new(),
-            pending_screenshot: false,
+            pending_screenshot: None,
             stencil_mode: StencilMode::default(),
             depth_mode: (DepthMode::Always, false),
             light_world: LightWorld::new(),

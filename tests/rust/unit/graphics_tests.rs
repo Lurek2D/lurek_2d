@@ -4,20 +4,19 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
+use luna2d::animation::Animation;
+use luna2d::engine::config::Config;
 use luna2d::engine::resource_keys::TextureKey;
 use luna2d::graphics::renderer::{
-    CompareMode, DepthMode, DrawCommand, DrawMode, StencilAction, TextAlign,
-    TextureData,
+    CompareMode, DepthMode, DrawCommand, DrawMode, StencilAction, TextAlign, TextureData,
 };
 use luna2d::graphics::sprite_batch::BatchEntry;
-use luna2d::animation::Animation;
+use luna2d::graphics::BlendMode;
 use luna2d::graphics::Font;
 use luna2d::graphics::NineSlice;
 use luna2d::graphics::SpriteBatch;
-use luna2d::graphics::BlendMode;
-use luna2d::math::Color;
 use luna2d::lua_api::{create_lua_vm, SharedState};
-use luna2d::engine::config::Config;
+use luna2d::math::Color;
 use slotmap::{Key, SlotMap};
 
 #[test]
@@ -58,7 +57,8 @@ fn make_graphics_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
         "Test",
         PathBuf::from("."),
     )));
-    let lua = create_lua_vm(state.clone(), &Config::default().modules).expect("Failed to create Lua VM");
+    let lua =
+        create_lua_vm(state.clone(), &Config::default().modules).expect("Failed to create Lua VM");
     (state, lua)
 }
 
@@ -1771,7 +1771,10 @@ fn nine_slice_lua_api_creates_and_draws() {
             && (*h - 200.0).abs() < 1e-5
         )
     });
-    assert!(found, "Expected DrawCommand::DrawNineSlice in draw commands");
+    assert!(
+        found,
+        "Expected DrawCommand::DrawNineSlice in draw commands"
+    );
 }
 
 #[test]
@@ -1797,7 +1800,10 @@ fn nine_slice_lua_method_draw() {
             && (*h - 300.0).abs() < 1e-5
         )
     });
-    assert!(found, "Expected DrawCommand::DrawNineSlice from method call");
+    assert!(
+        found,
+        "Expected DrawCommand::DrawNineSlice from method call"
+    );
 }
 
 #[test]
@@ -1996,7 +2002,10 @@ fn graphics_draw_dispatch_image_userdata_pushes_draw_image() {
         .draw_commands
         .iter()
         .any(|cmd| matches!(cmd, DrawCommand::DrawImage { x, y, .. } if (*x - 10.0).abs() < 1e-5 && (*y - 20.0).abs() < 1e-5));
-    assert!(found, "Expected DrawCommand::DrawImage after draw(img, 10, 20)");
+    assert!(
+        found,
+        "Expected DrawCommand::DrawImage after draw(img, 10, 20)"
+    );
 }
 
 #[test]
@@ -2136,10 +2145,7 @@ fn graphics_draw_ex_sy_defaults_to_sx() {
         matches!(cmd, DrawCommand::DrawImageEx { sx, sy, .. }
             if (*sx - 3.0).abs() < 1e-5 && (*sy - 3.0).abs() < 1e-5)
     });
-    assert!(
-        found,
-        "drawEx sy should default to sx when omitted"
-    );
+    assert!(found, "drawEx sy should default to sx when omitted");
 }
 
 // ===========================================================================
@@ -2170,7 +2176,6 @@ fn graphics_capture_screenshot_stores_callback() {
     );
 }
 
-
 // ===========================================================================
 // Phase 3: DrawCommand image and canvas variants
 // ===========================================================================
@@ -2179,10 +2184,13 @@ fn graphics_capture_screenshot_stores_callback() {
 fn graphics_draw_command_image_variant() {
     // Verify DrawCommand::DrawImage is pushed when drawing an Image at default transform.
     let (state, lua) = make_graphics_vm();
-    run_draw(&lua, r#"
+    run_draw(
+        &lua,
+        r#"
         local img = luna.graphics.newImage("assets/icon.png")
         luna.graphics.draw(img, 10, 20)
-    "#);
+    "#,
+    );
     let st = state.borrow();
     let found = st.draw_commands.iter().any(|cmd| {
         matches!(cmd, DrawCommand::DrawImage { x, y, .. } if (*x - 10.0).abs() < 1e-4 && (*y - 20.0).abs() < 1e-4)
@@ -2194,10 +2202,13 @@ fn graphics_draw_command_image_variant() {
 fn graphics_draw_command_canvas_variant() {
     // Verify DrawCommand::DrawCanvas is pushed when drawing a Canvas.
     let (state, lua) = make_graphics_vm();
-    run_draw(&lua, r#"
+    run_draw(
+        &lua,
+        r#"
         local c = luna.graphics.newCanvas(64, 64)
         luna.graphics.draw(c, 5, 15)
-    "#);
+    "#,
+    );
     let st = state.borrow();
     let found = st.draw_commands.iter().any(|cmd| {
         matches!(cmd, DrawCommand::DrawCanvas { x, y, .. } if (*x - 5.0).abs() < 1e-4 && (*y - 15.0).abs() < 1e-4)
@@ -2214,17 +2225,45 @@ fn graphics_screenshot_request_queued_without_panic() {
     // Headless stub: captureScreenshot must not panic and must call the callback.
     let (_state, lua) = make_graphics_vm();
     let result = lua
-        .load(r#"
+        .load(
+            r#"
         local fired = false
         luna.graphics.captureScreenshot(function(img)
             fired = true
         end)
         assert(fired, "captureScreenshot callback must be invoked")
-        "#)
+        "#,
+        )
         .exec();
     assert!(
         result.is_ok(),
         "graphics_screenshot_request_queued_without_panic failed: {:?}",
+        result
+    );
+}
+
+#[test]
+fn graphics_save_screenshot_queues_save_path() {
+    let (state, lua) = make_graphics_vm();
+    lua.load(r#"luna.graphics.saveScreenshot('save/test_frame.png')"#)
+        .exec()
+        .expect("saveScreenshot should queue a request");
+
+    let st = state.borrow();
+    let request = st
+        .pending_screenshot
+        .as_ref()
+        .expect("saveScreenshot should store a pending request");
+    assert_eq!(request.path, "save/test_frame.png");
+}
+
+#[test]
+fn graphics_save_screenshot_rejects_non_save_path() {
+    let (_state, lua) = make_graphics_vm();
+    let result = lua.load(r#"luna.graphics.saveScreenshot('frame.png')"#).exec();
+    assert!(
+        result.is_err(),
+        "saveScreenshot should reject paths outside save/: {:?}",
         result
     );
 }
@@ -2263,11 +2302,9 @@ fn graphics_depth_default_is_always() {
 #[test]
 fn graphics_stencil_mode_round_trip() {
     let (state, lua) = make_graphics_vm();
-    lua.load(
-        r#"luna.graphics.setStencilMode("replace", "always", 1)"#,
-    )
-    .exec()
-    .expect("setStencilMode failed");
+    lua.load(r#"luna.graphics.setStencilMode("replace", "always", 1)"#)
+        .exec()
+        .expect("setStencilMode failed");
     let st = state.borrow();
     assert_eq!(st.stencil_mode.action, StencilAction::Replace);
     assert_eq!(st.stencil_mode.compare, CompareMode::Always);
@@ -2336,8 +2373,6 @@ fn graphics_stencil_mode_unknown_action_errors() {
 #[test]
 fn graphics_depth_mode_unknown_mode_errors() {
     let (_state, lua) = make_graphics_vm();
-    let result = lua
-        .load(r#"luna.graphics.setDepthMode("turbo")"#)
-        .exec();
+    let result = lua.load(r#"luna.graphics.setDepthMode("turbo")"#).exec();
     assert!(result.is_err(), "expected error for unknown depth mode");
 }

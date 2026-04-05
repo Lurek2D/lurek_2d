@@ -38,6 +38,7 @@ This directory contains **permanent** CLI scripts for the Luna2D engine pipeline
 | `test_coverage.py` | Cross-reference API functions vs test files | stdout + `docs/API/test_coverage.json` |
 | `integration_coverage.py` | Integration test coverage check | stdout |
 | `module_audit.py` | Module structure and coverage audit | stdout |
+| `audit_module.py` | End-to-end module quality audit (PASS/WARN/ERROR) | stdout / JSON |
 | `quality_report.py` | Quality metrics report | stdout |
 
 ### Code Helpers

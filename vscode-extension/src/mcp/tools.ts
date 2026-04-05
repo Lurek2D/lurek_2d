@@ -185,6 +185,7 @@ export function handleGetApiDoc(
     const apiDocPath = path.join(
       workspaceRoot,
       "docs",
+      "API",
       "lua_api_reference_generated.md"
     );
 

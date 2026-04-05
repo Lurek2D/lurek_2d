@@ -211,7 +211,7 @@
         },
         {
             "label": "Docs: Coverage Report",
-            "detail": "📊 Run tools/doc_coverage.py to show docstring coverage for all Rust public items and Lua API bindings. Writes docs/doc_coverage.json.",
+            "detail": "📊 Run tools/doc_coverage.py to show docstring coverage for all Rust public items and Lua API bindings. Writes docs/logs/doc_coverage.json.",
             "type": "shell",
             "command": "python tools/doc_coverage.py",
             "problemMatcher": []
@@ -225,14 +225,14 @@
         },
         {
             "label": "Docs: Generate Test Docs",
-            "detail": "🧪 Run tools/gen_test_docs.py to generate docs/test_docs.md — a human-readable description of all tests and coverage gaps. Requires docs/test_coverage.json (run 'Docs: Test Coverage' first).",
+            "detail": "🧪 Run tools/gen_test_docs.py to generate docs/test_docs.md — a human-readable description of all tests and coverage gaps. Requires docs/logs/test_coverage.json (run 'Docs: Test Coverage' first).",
             "type": "shell",
             "command": "python tools/gen_test_docs.py",
             "problemMatcher": []
         },
         {
             "label": "Docs: Test Coverage",
-            "detail": "📊 Run tools/test_coverage.py to analyse Rust and Lua API test coverage. Writes docs/test_coverage.json.",
+            "detail": "📊 Run tools/test_coverage.py to analyse Rust and Lua API test coverage. Writes docs/logs/test_coverage.json.",
             "type": "shell",
             "command": "python tools/test_coverage.py",
             "problemMatcher": []
@@ -298,16 +298,16 @@
         },
         {
             "label": "Run Debug: Splash (drag-drop ready)",
-            "detail": "⚡ Launch the debug binary splash screen WITHOUT rebuilding — fast startup for drag-drop folder loading. Build once first with 'Build: Debug'.",
+            "detail": "⚡ Launch the debug binary from build/debug WITHOUT rebuilding — fast startup for drag-drop folder loading. Build once first with 'Build: Debug'.",
             "type": "shell",
-            "command": "${workspaceFolder}/target/debug/luna2d",
+            "command": "${workspaceFolder}/build/debug/luna2d",
             "problemMatcher": []
         },
         {
             "label": "Run Release: Splash (drag-drop ready)",
-            "detail": "⚡ Launch the release binary splash screen WITHOUT rebuilding — fastest startup for drag-drop testing. Build once first with 'Build: Release'.",
+            "detail": "⚡ Launch the release binary from build/release WITHOUT rebuilding — fastest startup for drag-drop testing. Build once first with 'Build: Release'.",
             "type": "shell",
-            "command": "${workspaceFolder}/target/release/luna2d",
+            "command": "${workspaceFolder}/build/release/luna2d",
             "problemMatcher": []
         },
         {

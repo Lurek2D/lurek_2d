@@ -114,13 +114,19 @@ pub use crate::thread::worker as thread_worker;
 pub mod lua_types;
 // quest_api removed — quest system is now library/quest/init.lua
 // stats_api removed — stats system is now library/stats/init.lua
-/// Registers the `luna.tilemap.*` tile map, tileset, autotile, and procedural generation API.
+/// Registers the `luna.animation.*` sprite animation API.
 pub mod animation_api;
+/// Registers the `luna.camera.*` camera transform and viewport API.
 pub mod camera_api;
+/// Registers the `luna.network.*` ENet peer-to-peer networking API.
 pub mod network_api;
+/// Registers the `luna.procgen.*` procedural content generation API.
 pub mod procgen_api;
+/// Registers the `luna.raycaster.*` 2.5-D raycasting renderer API.
 pub mod raycaster_api;
+/// Registers the `luna.spine.*` skeletal animation (Spine runtime) API.
 pub mod spine_api;
+/// Registers the `luna.tilemap.*` tile map, tileset, autotile, and procedural generation API.
 pub mod tilemap_api;
 /// Registers the `luna.timer.*` frame-timing API.
 pub mod timer_api;

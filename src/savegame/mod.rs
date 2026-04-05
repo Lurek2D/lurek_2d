@@ -7,6 +7,12 @@ use crate::engine::log_messages::{SV01, SV02, SV03, SV04};
 use crate::log_msg;
 
 /// Metadata extracted from a save slot.
+///
+/// # Fields
+/// - `slot` — `String`. Slot name.
+/// - `timestamp` — `f64`. Unix epoch timestamp.
+/// - `version` — `i32`. Schema version.
+/// - `summary` — `String`. Optional summary string.
 #[derive(Debug, Clone, Default)]
 pub struct SlotMeta {
     /// Slot name.
@@ -42,12 +48,18 @@ pub struct SaveManager {
 
 impl SaveManager {
     /// Create a new empty SaveManager.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new() -> Self {
         log_msg!(debug, SV01);
         Self::default()
     }
 
     /// Register a named collector module.
+    ///
+    /// # Parameters
+    /// - `name` — `impl Into<String>`. The collector module name to register.
     pub fn register(&mut self, name: impl Into<String>) {
         let name = name.into();
         if !self.registered.contains(&name) {
@@ -57,27 +69,42 @@ impl SaveManager {
     }
 
     /// Unregister a collector by name.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. The collector name to unregister.
     pub fn unregister(&mut self, name: &str) {
         log_msg!(debug, SV03, "{}", name);
         self.registered.retain(|n| n != name);
     }
 
     /// Get registered module names.
+    ///
+    /// # Returns
+    /// `&[String]`.
     pub fn registered_names(&self) -> &[String] {
         &self.registered
     }
 
     /// Set the current schema version.
+    ///
+    /// # Parameters
+    /// - `version` — `i32`. New schema version number.
     pub fn set_schema_version(&mut self, version: i32) {
         self.schema_version = version;
     }
 
     /// Get the current schema version.
+    ///
+    /// # Returns
+    /// `i32`.
     pub fn schema_version(&self) -> i32 {
         self.schema_version
     }
 
     /// Record a migration version key.
+    ///
+    /// # Parameters
+    /// - `from_version` — `i32`. The schema version this migration upgrades from.
     pub fn add_migration(&mut self, from_version: i32) {
         if !self.migration_versions.contains(&from_version) {
             self.migration_versions.push(from_version);
@@ -86,6 +113,12 @@ impl SaveManager {
     }
 
     /// Get migration versions >=`from` and < current, in ascending order.
+    ///
+    /// # Parameters
+    /// - `from` — `i32`. The schema version of the save being loaded.
+    ///
+    /// # Returns
+    /// `Vec<i32>`.
     pub fn applicable_migrations(&self, from: i32) -> Vec<i32> {
         self.migration_versions
             .iter()
@@ -100,6 +133,9 @@ impl SaveManager {
     }
 
     /// Whether data is dirty.
+    ///
+    /// # Returns
+    /// `bool`.
     pub fn is_dirty(&self) -> bool {
         self.dirty
     }
@@ -110,6 +146,10 @@ impl SaveManager {
     }
 
     /// Enable auto-save with interval and target slot.
+    ///
+    /// # Parameters
+    /// - `interval` — `f64`. Auto-save interval in seconds.
+    /// - `slot` — `impl Into<String>`. Target save slot name.
     pub fn enable_auto_save(&mut self, interval: f64, slot: impl Into<String>) {
         let slot = slot.into();
         log_msg!(debug, SV04, "{} @ {:.3}s", slot, interval);
@@ -124,6 +164,12 @@ impl SaveManager {
     }
 
     /// Advance the auto-save timer. Returns `Some(slot)` if a save should trigger.
+    ///
+    /// # Parameters
+    /// - `dt` — `f64`. Delta time in seconds.
+    ///
+    /// # Returns
+    /// `Option<String>`.
     pub fn update(&mut self, dt: f64) -> Option<String> {
         if let Some((interval, ref slot)) = self.auto_save {
             self.auto_save_elapsed += dt;
@@ -145,6 +191,13 @@ impl SaveManager {
 ///
 /// Supports nil, bool, number (f64), string, and nested tables (HashMap).
 /// Does not handle userdata, functions, or circular references.
+///
+/// # Parameters
+/// - `data` — `&HashMap<String, SaveValue>`. The table data to serialize.
+/// - `depth` — `u32`. Current nesting depth (internal; call with `0`).
+///
+/// # Returns
+/// `Result<String, String>`.
 pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<String, String> {
     if depth > 32 {
         return Err("serialization depth limit exceeded (>32)".to_string());
@@ -170,6 +223,13 @@ pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<
 }
 
 /// Serialize a single value.
+///
+/// # Parameters
+/// - `value` — `&SaveValue`. The value to serialize.
+/// - `depth` — `u32`. Current nesting depth.
+///
+/// # Returns
+/// `Result<String, String>`.
 pub fn serialize_value(value: &SaveValue, depth: u32) -> Result<String, String> {
     match value {
         SaveValue::Nil => Ok("nil".to_string()),
@@ -181,6 +241,13 @@ pub fn serialize_value(value: &SaveValue, depth: u32) -> Result<String, String> 
 }
 
 /// A simple value type matching the Lua subset we can serialize.
+///
+/// # Variants
+/// - `Nil` — Lua nil.
+/// - `Bool` — Lua boolean.
+/// - `Number` — Lua number.
+/// - `Str` — Lua string.
+/// - `Table` — Lua table (string keys only for save data).
 #[derive(Debug, Clone)]
 pub enum SaveValue {
     /// Lua nil.

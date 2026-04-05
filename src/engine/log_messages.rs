@@ -224,7 +224,6 @@ macro_rules! log_msg {
     };
 }
 
-
 // ---------------------------------------------------------------------------
 // Audio module IDs (Tier 1)
 // ---------------------------------------------------------------------------
@@ -296,9 +295,6 @@ pub const LA08_PATHFINDING_THREAD_UNIMPL: &str = "LA08";
 
 /// Log message: error in a Lua callback function.
 pub const L060_LUA_CALLBACK_ERROR: &str = "L060";
-
-
-
 
 // ---------------------------------------------------------------------------
 // App module IDs — surface, cursor, screenshot, drag-drop (baseline.app)
@@ -527,192 +523,301 @@ pub const IM01_IMAGE_LOADED: &str = "IM01";
 pub const IM02_IMAGE_MISMATCH: &str = "IM02";
 
 // ── audio_source ──────────────────────────────────────────────────────────
+/// Stable ID for "audio source created with file path".
 pub const AS01: &str = "AS01";
 
 // ── audio_bus ─────────────────────────────────────────────────────────────
+/// Stable ID for "audio bus created with name".
 pub const BU01: &str = "BU01";
+/// Stable ID for "audio bus paused".
 pub const BU02: &str = "BU02";
+/// Stable ID for "audio bus resumed".
 pub const BU03: &str = "BU03";
 
 // ── particle_emitter ──────────────────────────────────────────────────────
+/// Stable ID for "particle system created".
 pub const PE01: &str = "PE01";
+/// Stable ID for "particle emitter activated".
 pub const PE02: &str = "PE02";
+/// Stable ID for "particle emitter stopped".
 pub const PE03: &str = "PE03";
+/// Stable ID for "particle system reset, all active particles cleared".
 pub const PE04: &str = "PE04";
 
 // ── physics_body ──────────────────────────────────────────────────────────
+/// Stable ID for "rectangular physics body created at position".
 pub const BD01: &str = "BD01";
+/// Stable ID for "circular physics body created at position with radius".
 pub const BD02: &str = "BD02";
+/// Stable ID for "polygon physics body created at position".
 pub const BD03: &str = "BD03";
 
 // ── scheduler ─────────────────────────────────────────────────────────────
+/// Stable ID for "scheduler instance created".
 pub const TI01: &str = "TI01";
+/// Stable ID for "one-shot callback scheduled with delay".
 pub const TI02: &str = "TI02";
+/// Stable ID for "repeating callback scheduled with interval".
 pub const TI03: &str = "TI03";
+/// Stable ID for "all scheduled callbacks cancelled".
 pub const TI04: &str = "TI04";
 
 // ── fsm ───────────────────────────────────────────────────────────────────
+/// Stable ID for "FSM state transition initiated".
 pub const FN01: &str = "FN01";
+/// Stable ID for "FSM state transition completed or error condition triggered".
 pub const FN02: &str = "FN02";
 
 // ── goap ──────────────────────────────────────────────────────────────────
+/// Stable ID for "GOAP plan computation started with action set".
 pub const GP01: &str = "GP01";
+/// Stable ID for "GOAP plan action execution step".
 pub const GP02: &str = "GP02";
+/// Stable ID for "GOAP planning failed — no valid plan found for goal".
 pub const GP03: &str = "GP03";
 
 // ── flow_field ────────────────────────────────────────────────────────────
+/// Stable ID for "flow field created at grid dimensions".
 pub const FF01: &str = "FF01";
+/// Stable ID for "flow field computed for goal cell".
 pub const FF02: &str = "FF02";
+/// Stable ID for "flow field cleared".
 pub const FF03: &str = "FF03";
 
 // ── hpa ───────────────────────────────────────────────────────────────────
+/// Stable ID for "HPA* abstract graph built from NavGrid".
 pub const HP01: &str = "HP01";
+/// Stable ID for "HPA* path not found between start and goal".
 pub const HP02: &str = "HP02";
+/// Stable ID for "HPA* path found between start and goal".
 pub const HP03: &str = "HP03";
 
 // ── transition ────────────────────────────────────────────────────────────
+/// Stable ID for "scene transition started".
 pub const TR01: &str = "TR01";
+/// Stable ID for "scene transition completed".
 pub const TR02: &str = "TR02";
 
 // ── graph_simulation ──────────────────────────────────────────────────────
+/// Stable ID for "graph simulation step executed".
 pub const GR01: &str = "GR01";
+/// Stable ID for "graph simulation events processed this step".
 pub const GR02: &str = "GR02";
 
 // ── canvas_gfx ────────────────────────────────────────────────────────────
+/// Stable ID for "canvas render target created at pixel dimensions".
 pub const CV01: &str = "CV01";
 
 // ── mesh_gfx ──────────────────────────────────────────────────────────────
+/// Stable ID for "GPU mesh created with vertex and index buffers".
 pub const MS01: &str = "MS01";
+/// Stable ID for "GPU mesh geometry updated with new vertex data".
 pub const MS02: &str = "MS02";
 
 // ── raycaster ─────────────────────────────────────────────────────────────
+/// Stable ID for "raycaster world initialized at grid dimensions".
 pub const RC01: &str = "RC01";
 
 // ── fx_stack ──────────────────────────────────────────────────────────────
+/// Stable ID for "post-processing effect added to FX stack".
 pub const FX01: &str = "FX01";
+/// Stable ID for "post-processing FX stack rendered to output target".
 pub const FX02: &str = "FX02";
 
 // ── dataframe ─────────────────────────────────────────────────────────────
+/// Stable ID for "DataFrame operation logged (mutation, creation, or query)".
 pub const DF01: &str = "DF01";
 
 // ── signal ────────────────────────────────────────────────────────────────
+/// Stable ID for "signal emitted to registered handlers".
 pub const SG01: &str = "SG01";
+/// Stable ID for "signal handler registered for event".
 pub const SG02: &str = "SG02";
 
 // ── mapgen ────────────────────────────────────────────────────────────────
+/// Stable ID for "procedural map generation started at grid dimensions".
 pub const MG01: &str = "MG01";
+/// Stable ID for "map generation layer added to output".
 pub const MG02: &str = "MG02";
+/// Stable ID for "procedural map generation completed".
 pub const MG03: &str = "MG03";
 
 // ── astar ─────────────────────────────────────────────────────────────────
+/// Stable ID for "A* pathfinding search started".
 pub const AT01: &str = "AT01";
+/// Stable ID for "A* path found between start and goal".
 pub const AT02: &str = "AT02";
+/// Stable ID for "A* search exhausted — no path found between start and goal".
 pub const AT03: &str = "AT03";
 
 // ── tmx ───────────────────────────────────────────────────────────────────
+/// Stable ID for "TMX tilemap file parse started".
 pub const TL01: &str = "TL01";
+/// Stable ID for "TMX tilemap file parsed successfully at tile dimensions".
 pub const TL02: &str = "TL02";
 
 // ── voronoi ───────────────────────────────────────────────────────────────
+/// Stable ID for "Voronoi diagram computed from seed points".
 pub const VR01: &str = "VR01";
+/// Stable ID for "Voronoi region processing step completed".
 pub const VR02: &str = "VR02";
 
 // ── savegame ──────────────────────────────────────────────────────────────
+/// Stable ID for "save slot initialized for write".
 pub const SV01: &str = "SV01";
+/// Stable ID for "save data written to slot".
 pub const SV02: &str = "SV02";
+/// Stable ID for "save data loaded from slot".
 pub const SV03: &str = "SV03";
+/// Stable ID for "save operation failed with error".
 pub const SV04: &str = "SV04";
 
 // ── channel_thread ────────────────────────────────────────────────────────
+/// Stable ID for "anonymous thread channel created".
 pub const CH01: &str = "CH01";
+/// Stable ID for "named thread channel created".
 pub const CH02: &str = "CH02";
+/// Stable ID for "value pushed onto channel queue".
 pub const CH03: &str = "CH03";
+/// Stable ID for "channel queue drained and cleared".
 pub const CH04: &str = "CH04";
 
 // ── light_source ──────────────────────────────────────────────────────────
+/// Stable ID for "point light source added at position with radius".
 pub const LT01: &str = "LT01";
+/// Stable ID for "light source position updated".
 pub const LT02: &str = "LT02";
+/// Stable ID for "light source radius changed".
 pub const LT03: &str = "LT03";
 
 // ── relationships ─────────────────────────────────────────────────────────
+/// Stable ID for "relationship type registered with hierarchy depth".
 pub const RL01: &str = "RL01";
+/// Stable ID for "relationship created between two entities".
 pub const RL02: &str = "RL02";
+/// Stable ID for "relationship lookup executed for entity pair".
 pub const RL03: &str = "RL03";
 
 // ── graph_core ────────────────────────────────────────────────────────────
+/// Stable ID for "graph node added with type identifier".
 pub const GC01: &str = "GC01";
+/// Stable ID for "graph node removed by ID".
 pub const GC02: &str = "GC02";
+/// Stable ID for "directed edge added between graph nodes".
 pub const GC03: &str = "GC03";
+/// Stable ID for "edge removed from graph by ID".
 pub const GC04: &str = "GC04";
 
 // ── command_queue ─────────────────────────────────────────────────────────
+/// Stable ID for "command queue created".
 pub const CQ01: &str = "CQ01";
+/// Stable ID for "command queue flushed".
 pub const CQ02: &str = "CQ02";
+/// Stable ID for "commands dispatched from queue".
 pub const CQ03: &str = "CQ03";
 
 // ── unit_pathfinder ───────────────────────────────────────────────────────
+/// Stable ID for "unit pathfinder initialized".
 pub const UP01: &str = "UP01";
+/// Stable ID for "path found for unit between grid positions".
 pub const UP02: &str = "UP02";
+/// Stable ID for "unit pathfinding failed between grid positions".
 pub const UP03: &str = "UP03";
 
 // ── screen_overlay ────────────────────────────────────────────────────────
+/// Stable ID for "screen overlay created at pixel dimensions".
 pub const OV01: &str = "OV01";
+/// Stable ID for "overlay color fade animation started".
 pub const OV02: &str = "OV02";
+/// Stable ID for "overlay flash effect started with intensity and duration".
 pub const OV03: &str = "OV03";
 
 // ── post_effect ───────────────────────────────────────────────────────────
+/// Stable ID for "post-FX effect pass created".
 pub const FE01: &str = "FE01";
+/// Stable ID for "post-FX effect linked to shader".
 pub const FE02: &str = "FE02";
+/// Stable ID for "post-FX effect uniform parameter set".
 pub const FE03: &str = "FE03";
 
 // ── column_batch ──────────────────────────────────────────────────────────
+/// Stable ID for "raycaster column batch created with column count".
 pub const CB01: &str = "CB01";
+/// Stable ID for "raycaster column cell value computed".
 pub const CB02: &str = "CB02";
 
 // ── tileset_ext ───────────────────────────────────────────────────────────
+/// Stable ID for "tileset loaded with first GID and tile count".
 pub const TS01: &str = "TS01";
+/// Stable ID for "animated tile registered with frame count".
 pub const TS02: &str = "TS02";
+/// Stable ID for "tile collision flag assigned".
 pub const TS03: &str = "TS03";
 
 // ── gamepad_state ─────────────────────────────────────────────────────────
+/// Stable ID for "gamepad device connected with ID".
 pub const GD01: &str = "GD01";
+/// Stable ID for "gamepad button state changed".
 pub const GD02: &str = "GD02";
+/// Stable ID for "gamepad axis value updated".
 pub const GD03: &str = "GD03";
 
 // ── dsp_effect ────────────────────────────────────────────────────────────
+/// Stable ID for "DSP effect added to audio graph with ID".
 pub const DP01: &str = "DP01";
+/// Stable ID for "DSP audio source initialized with sample rate and channels".
 pub const DP02: &str = "DP02";
+/// Stable ID for "DSP effect graph processed one audio frame".
 pub const DP03: &str = "DP03";
 
 // ── blackboard ────────────────────────────────────────────────────────────
+/// Stable ID for "AI blackboard created".
 pub const BB01: &str = "BB01";
+/// Stable ID for "blackboard value read by key".
 pub const BB02: &str = "BB02";
+/// Stable ID for "blackboard entries cleared".
 pub const BB03: &str = "BB03";
 
 // ── chunk_map ─────────────────────────────────────────────────────────────
+/// Stable ID for "chunk map initialized with chunk side length".
 pub const CK01: &str = "CK01";
+/// Stable ID for "tile chunk loaded at chunk coordinates".
 pub const CK02: &str = "CK02";
+/// Stable ID for "tile chunk unloaded at chunk coordinates".
 pub const CK03: &str = "CK03";
 
 // ── image_effect ──────────────────────────────────────────────────────────
+/// Stable ID for "image effect shader registered by name".
 pub const IE01: &str = "IE01";
+/// Stable ID for "image effect applied to pixel buffer".
 pub const IE02: &str = "IE02";
+/// Stable ID for "image effect removed by name".
 pub const IE03: &str = "IE03";
 
 // ── nav_grid ──────────────────────────────────────────────────────────────
+/// Stable ID for "navigation grid created at tile dimensions".
 pub const NG01: &str = "NG01";
+/// Stable ID for "navigation grid cost map reloaded".
 pub const NG02: &str = "NG02";
+/// Stable ID for "navigation cell cost value updated".
 pub const NG03: &str = "NG03";
 
 // ── sprite_sheet ──────────────────────────────────────────────────────────
+/// Stable ID for "sprite sheet parsed with total frame count".
 pub const SS01: &str = "SS01";
+/// Stable ID for "sprite animation clip registered with frame range".
 pub const SS02: &str = "SS02";
 
 // ── influence_map ─────────────────────────────────────────────────────────
+/// Stable ID for "influence map created at grid dimensions with cell size".
 pub const IF01: &str = "IF01";
+/// Stable ID for "influence layer added by name".
 pub const IF02: &str = "IF02";
+/// Stable ID for "influence map layer values propagated".
 pub const IF03: &str = "IF03";
 
 // ── spatial_hash ──────────────────────────────────────────────────────────
+/// Stable ID for "spatial hash grid created with cell size".
 pub const HX01: &str = "HX01";
+/// Stable ID for "spatial hash rebuilt with entity count".
 pub const HX02: &str = "HX02";

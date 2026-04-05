@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python3
 """
-gen_docs_lua.py -- Generate Lua API reference from docs/API/api_data.json.
+gen_docs_lua.py -- Generate Lua API reference from docs/API/lua_api_data.json.
 
 Each function/method is rendered in a Lua code block:
     name( param : type, optional : type? ) -> ReturnType  -- description
@@ -14,7 +14,7 @@ import argparse, json, re, sys
 from pathlib import Path
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-INPUT_FILE  = WORKSPACE_ROOT / "docs" / "API" / "api_data.json"
+INPUT_FILE  = WORKSPACE_ROOT / "docs" / "API" / "lua_api_data.json"
 OUTPUT_FILE = WORKSPACE_ROOT / "docs" / "API" / "lua-api.md"
 
 _MODULE_ORDER = [
@@ -102,6 +102,15 @@ def _build_call(fn, prefix):
     # Return type: prefer inferred_return, fall back to returns_doc
     ret = fn.get("inferred_return") or _parse_return_type(fn.get("returns_doc", ""))
 
+    # Suppress uninformative "any" — try to infer from function name or omit entirely
+    if ret == "any":
+        fn_name = fn.get("name", "")
+        if fn_name.startswith("new") and len(fn_name) > 3 and fn_name[3].isupper():
+            # e.g. newImage -> Image, newBody -> Body, newWorld -> World
+            ret = fn_name[3:]
+        else:
+            ret = ""
+
     call = f"{prefix}{args}"
     if ret:
         call += f" -> {ret}"
@@ -167,6 +176,17 @@ def _render_module(mod_name, mod_data):
 
     fns = mod_data.get("functions",[])
     cls = mod_data.get("classes",{})
+
+    # Per-module coverage stat
+    all_items = list(fns)
+    for cls_data in cls.values():
+        all_items += cls_data.get("methods", [])
+    n_total = len(all_items)
+    n_documented = sum(1 for it in all_items if (it.get("description","") or "").strip())
+    if n_total:
+        mod_pct = round(n_documented / n_total * 100)
+        out.append(f"*Coverage: {n_documented}/{n_total} items documented ({mod_pct}%)*")
+        out.append("")
 
     if fns:
         entries = [_build_call(fn, f"luna.{mod_name}.{fn['name']}") for fn in sorted(fns, key=lambda f:f["name"])]

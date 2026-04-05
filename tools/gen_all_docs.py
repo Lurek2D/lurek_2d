@@ -2,19 +2,20 @@
 """Convenience runner: regenerate the full Luna2D documentation pipeline in one command.
 
 Steps:
-    1. gen_api_data.py          -> docs/API/api_data.json         (master machine-readable JSON)
-    2. gen_docs_lua.py          -> docs/API/lua-api.md            (compact Lua API reference)
-    3. gen_docs_rust.py         -> docs/API/rust-api.md           (compact Rust API reference)
-    4. gen_docs_tests.py        -> docs/API/test-docs.md          (test catalog)
-    5. gen_wiki_api.py          -> wiki/API-Reference.md      (game-developer cheatsheet)
-    6. doc_coverage.py          -> docs/API/doc_coverage.json     (docstring coverage analytics)
-    7. test_coverage.py         -> docs/API/test_coverage.json    (test coverage analytics)
-    8. gen_test_docs.py         -> docs/API/test_docs.md          (human-readable test docs)
-    9. gen_lua_api.py           -> docs/API/lua_api_reference_generated.md  (legacy — kept for VS Code ext)
+    1. gen_rust_api_data.py     -> docs/API/rust_api_data.json    (Rust master JSON)
+    2. gen_lua_api_data.py      -> docs/API/lua_api_data.json     (Lua master JSON)
+    3. gen_luadoc.py            -> docs/API/luna.lua              (LuaCATS stubs)
+    4. gen_docs_lua.py          -> docs/API/lua-api.md            (compact Lua API reference)
+    5. gen_docs_rust.py         -> docs/API/rust-api.md           (compact Rust API reference)
+    6. gen_wiki_api.py          -> wiki/API-Reference.md          (game-developer cheatsheet)
+    7. doc_coverage.py          -> docs/logs/doc_coverage.json    (docstring coverage analytics)
+    8. test_coverage.py         -> docs/logs/test_coverage.json   (test coverage analytics)
+    9. gen_test_docs.py --mode rust  -> docs/API/test_docs_rust.md
+   10. gen_test_docs.py --mode lua   -> docs/API/test_docs_lua.md
+   11. gen_coverage_gaps.py     -> docs/API/coverage_gaps.md      (API gap report)
 
 Usage:
     python tools/gen_all_docs.py          # run all steps
-    python tools/gen_all_docs.py --skip-legacy   # skip step 9
 """
 
 import subprocess
@@ -23,27 +24,36 @@ import time
 from pathlib import Path
 
 SCRIPTS = [
-    ("gen_api_data.py",    "Master JSON (docs/API/api_data.json)"),
-    ("gen_docs_lua.py",    "Lua API reference (docs/API/lua-api.md)"),
-    ("gen_docs_rust.py",   "Rust API reference (docs/API/rust-api.md)"),
-    ("gen_docs_tests.py",  "Test catalog (docs/API/test-docs.md)"),
-    ("gen_wiki_api.py",    "Wiki cheatsheet (wiki/API-Reference.md)"),
-    ("doc_coverage.py",    "Doc coverage analytics (docs/API/doc_coverage.json)"),
-    ("test_coverage.py",   "Test coverage analytics (docs/API/test_coverage.json)"),
-    ("gen_test_docs.py",   "Test documentation (docs/API/test_docs.md)"),
+    ("gen_rust_api_data.py", "Rust JSON (docs/API/rust_api_data.json)"),
+    ("gen_lua_api_data.py",  "Lua JSON (docs/API/lua_api_data.json)"),
+    ("gen_luadoc.py",        "LuaCATS Stubs (docs/API/luna.lua)"),
+    ("gen_docs_lua.py",      "Lua API reference (docs/API/lua-api.md)"),
+    ("gen_docs_rust.py",     "Rust API reference (docs/API/rust-api.md)"),
+    ("gen_wiki_api.py",      "Wiki cheatsheet (wiki/API-Reference.md)"),
+    ("doc_coverage.py",      "Doc coverage analytics (docs/logs/doc_coverage.json)"),
+    ("test_coverage.py",     "Test coverage analytics (docs/logs/test_coverage.json)"),
 ]
 
-LEGACY_SCRIPT = ("gen_lua_api.py", "Legacy Lua ref (docs/API/lua_api_reference_generated.md)")
+# Scripts that need extra arguments (script_name, args_list, label)
+SCRIPTS_WITH_ARGS = [
+    ("gen_test_docs.py", ["--mode", "rust", "--output", "docs/API/test_docs_rust.md"],
+     "Rust test docs (docs/API/test_docs_rust.md)"),
+    ("gen_test_docs.py", ["--mode", "lua",  "--output", "docs/API/test_docs_lua.md"],
+     "Lua test docs (docs/API/test_docs_lua.md)"),
+    ("gen_coverage_gaps.py", [],
+     "Coverage gaps (docs/API/coverage_gaps.md)"),
+]
+
 
 TOOLS_DIR = Path(__file__).parent
 
 
-def run_script(script_name: str, label: str) -> bool:
+def run_script(script_name: str, extra_args: list, label: str) -> bool:
     script = TOOLS_DIR / script_name
     print(f"  [{label}]")
     t0 = time.monotonic()
     result = subprocess.run(
-        [sys.executable, str(script)],
+        [sys.executable, str(script)] + extra_args,
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -64,17 +74,20 @@ def run_script(script_name: str, label: str) -> bool:
 
 
 def main() -> None:
-    skip_legacy = "--skip-legacy" in sys.argv
     print("Luna2D doc pipeline")
     print("=" * 60)
 
     failed = []
-    scripts = SCRIPTS + ([] if skip_legacy else [LEGACY_SCRIPT])
 
-    for script_name, label in scripts:
-        ok = run_script(script_name, label)
+    for script_name, label in SCRIPTS:
+        ok = run_script(script_name, [], label)
         if not ok:
             failed.append(script_name)
+
+    for script_name, extra_args, label in SCRIPTS_WITH_ARGS:
+        ok = run_script(script_name, extra_args, label)
+        if not ok:
+            failed.append(f"{script_name} {' '.join(extra_args)}")
 
     print("=" * 60)
     if failed:

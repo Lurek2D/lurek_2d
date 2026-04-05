@@ -333,13 +333,27 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
     rel_path = str(api_file.relative_to(WORKSPACE_ROOT)).replace("\\", "/")
     functions: List[LuaFunction] = []
     current_impl_type: Optional[str] = None
+    current_widget_type: Optional[str] = None
     brace_depth = 0
+
+    type_names = {}
+    c_struct = None
+    for l in lines:
+        if "impl" in l and "LunaType for" in l:
+            m = re.search(r'impl(?:<[^>]*>)?\s+(?:LunaType\s+for\s+)?(\w+)', l)
+            if m: c_struct = m.group(1)
+        if c_struct and 'const TYPE_NAME' in l:
+            m2 = re.search(r'const\s+TYPE_NAME.*?=\s*"([^"]+)"', l)
+            if m2:
+                type_names[c_struct] = m2.group(1)
+                c_struct = None
 
     set_multiline_re = re.compile(r'(\w+)\.set\(\s*$')
     set_inline_re = re.compile(r'(\w+)\.set\(\s*"(\w+)"\s*,\s*lua\.create_function')
     name_next_re = re.compile(r'^\s*"(\w+)"\s*,')
     method_re = re.compile(r'methods\.add_method(?:_mut)?\(\s*"(\w+)"')
     impl_re = re.compile(r'^\s*impl(?:<[^>]*>)?\s+(?:LuaUserData\s+for\s+)?(\w+)')
+    add_method_re = re.compile(r'fn\s+add_(\w+)_methods\(')
 
     i = 0
     while i < len(lines):
@@ -351,6 +365,16 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
         impl_m = impl_re.match(stripped)
         if impl_m:
             current_impl_type = impl_m.group(1)
+
+        add_m = add_method_re.search(stripped)
+        if add_m:
+            w_type = add_m.group(1).title()     # e.g. "button" -> "Button"
+            current_widget_type = w_type
+
+        add_m = add_method_re.search(stripped)
+        if add_m:
+            w_type = add_m.group(1).title()     # e.g. "button" -> "Button"
+            current_widget_type = w_type
 
         if brace_depth <= 0:
             current_impl_type = None
@@ -366,16 +390,24 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
                 is_func = any("create_function" in lines[k] for k in range(i + 1, min(i + 5, len(lines))))
                 if is_func:
                     docstring = _collect_docstring_above(lines, i)
+                    owner = current_widget_type if current_widget_type else ""
+                    kind = "method" if owner else "function"
+                    lua_name = f"{owner}:{func_name}" if owner else f"luna.{module}.{func_name}"
+                    
+                    if not docstring and owner:
+                        docstring = f"/// Returns a value for {func_name} (auto-generated)."
+                        
                     desc = docstring.split("\n")[0] if docstring else ""
                     params, returns = _extract_params_returns(docstring)
                     inferred = _infer_signature(lines, i)
+                    
                     functions.append(LuaFunction(
                         module=module, name=func_name,
-                        lua_name=f"luna.{module}.{func_name}",
-                        owner_type="", description=desc,
+                        lua_name=lua_name,
+                        owner_type=owner, description=desc,
                         full_doc=docstring, params=params,
                         returns=returns, line=i + 1,
-                        file=rel_path, kind="function",
+                        file=rel_path, kind=kind,
                         inferred_sig=inferred,
                         typed_params=_parse_tagged_params(docstring),
                         inferred_return=_parse_tagged_return(docstring),
@@ -386,16 +418,24 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
         if set_inline_m:
             func_name = set_inline_m.group(2)
             docstring = _collect_docstring_above(lines, i)
+            owner = current_widget_type if current_widget_type else ""
+            kind = "method" if owner else "function"
+            lua_name = f"{owner}:{func_name}" if owner else f"luna.{module}.{func_name}"
+            
+            if not docstring and owner:
+                docstring = f"/// Returns a value for {func_name} (auto-generated)."
+
             desc = docstring.split("\n")[0] if docstring else ""
             params, returns = _extract_params_returns(docstring)
             inferred = _infer_signature(lines, i)
+            
             functions.append(LuaFunction(
                 module=module, name=func_name,
-                lua_name=f"luna.{module}.{func_name}",
-                owner_type="", description=desc,
+                lua_name=lua_name,
+                owner_type=owner, description=desc,
                 full_doc=docstring, params=params,
                 returns=returns, line=i + 1,
-                file=rel_path, kind="function",
+                file=rel_path, kind=kind,
                 inferred_sig=inferred,
                 typed_params=_parse_tagged_params(docstring),
                 inferred_return=_parse_tagged_return(docstring),
@@ -406,7 +446,7 @@ def extract_lua_functions(api_file: Path) -> List[LuaFunction]:
         if method_m:
             func_name = method_m.group(1)
             owner = current_impl_type or "Unknown"
-            display_owner = owner.replace("Lua", "") if owner.startswith("Lua") else owner
+            display_owner = type_names.get(owner, owner.replace("Lua", "") if owner.startswith("Lua") else owner)
             docstring = _collect_docstring_above(lines, i)
             desc = docstring.split("\n")[0] if docstring else ""
             params, returns = _extract_params_returns(docstring)

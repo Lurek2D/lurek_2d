@@ -5,7 +5,7 @@ This file is the always-on backbone for AI-assisted development in the Luna2D re
 
 - **CAG load order**: System Prompt → Instructions (auto-load by file glob) → Skills (load on-demand) → Prompts → Agents
 - **Tech baseline**: Rust stable ≥1.78 | LuaJIT vendored via mlua 0.9 (Lua 5.4 `lua54` feature = non-shipping fallback) | wgpu 22 | winit 0.30 | rapier2d 0.32 | rodio 0.17 | fontdue 0.9
-- **Source of truth**: [`docs/zen-of-luna.md`](../docs/zen-of-luna.md) (first principles) · [`docs/design-assumptions.md`](../docs/design-assumptions.md) (binding constraints) · [`docs/architecture.md`](../docs/architecture.md) (module structure, tier system, dependency graph). Consult all three before implementing any feature or making an architectural decision.
+- **Source of truth**: [`docs/architecture/philosophy.md`](../docs/architecture/philosophy.md) (first principles + binding constraints) · [`docs/architecture/engine-architecture.md`](../docs/architecture/engine-architecture.md) (module structure, tier system, dependency graph) · [`docs/architecture/test-framework.md`](../docs/architecture/test-framework.md) (test suite structure). Consult all three before implementing any feature or making an architectural decision.
 - **API namespace**: All Lua bindings live under `luna.*` — never external engine prefixes, never bare globals
 - **Design inspiration**: Similar Lua-based 2D game engines — single exe, loads `main.lua`, callback model (`luna.load/update/draw`). User writes Lua; engine owns GPU, threading, and batching.
 - **IDE**: VS Code first-party extension — MCP server, CAG docs, IntelliSense, webview panels, AI-first workflow
@@ -21,7 +21,7 @@ This file is the always-on backbone for AI-assisted development in the Luna2D re
 
 ## Design Constraints
 
-The following are **active, binding decisions** from `docs/design-assumptions.md`. Do not propose changes to these without a design-assumption update.
+The following are **active, binding decisions** from `docs/architecture/philosophy.md`. Do not propose changes to these without a design-assumption update.
 
 | ID | Constraint |
 |---|---|
@@ -143,7 +143,7 @@ python tools/cag_validate.py --file .github/agents/developer.agent.md  # Single 
 - **GPU rendering**: wgpu → `wgpu::Surface` → `GpuRenderer::render_frame()` → swapchain present. No CPU pixel buffer. `renderer.rs` contains shared draw types (`DrawCommand`, `BlendMode`, etc.).
 - **Draw command queue**: Lua calls push `DrawCommand` variants during `luna.draw()`. Engine processes them after the callback returns. Never render inside a Lua closure.
 - **SharedState**: `Rc<RefCell<SharedState>>` shared between Lua closures and the engine loop. Never use raw pointers or `unsafe` for state sharing. Resource pools use `SlotMap` with typed keys.
-- **Module direction and tier system**: All source modules belong to one of four tiers plus two foundation layers. See the full tier table in [`docs/architecture.md`](../docs/architecture.md). Short form:
+- **Module direction and tier system**: All source modules belong to one of four tiers plus two foundation layers. See the full tier table in [`docs/architecture/engine-architecture.md`](../docs/architecture/engine-architecture.md). Short form:
   - **Foundation**: `math` (leaf, no deps), `engine` (may import all)
   - **Tier 1 Basic Core**: `graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread` — may only import `math` + `engine`; no Tier 1 ↔ Tier 1 cross-imports
   - **Tier 2 Engine Extensions**: `particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource` — may import math, engine, and Tier 1; no Tier 2 ↔ Tier 2 cross-imports
@@ -288,9 +288,9 @@ Luna2D has a **two-layer test system** — Rust integration tests and Lua BDD te
 
 ```
 src/          — Rust source code (28 modules)
-examples/     — Lua game examples (13 demos)
+examples/     — Lua game examples (27 demos)
 tests/        — Integration tests (28 test files + stress/ + lua/ + golden/)
-docs/         — Architecture, zen, design-assumptions, generated API refs
+docs/         — Architecture (engine-architecture, test-framework, philosophy), generated API refs
 tools/        — CLI scripts (CAG validation, doc generation, packaging, install)
 .github/      — CAG layer (agents, skills, prompts, instructions)
 vscode-extension/ — First-party VS Code extension (MCP server, IntelliSense)
@@ -362,9 +362,9 @@ work/{session}/
 | `python tools/collect_docs.py` | Generate `docs/API/api_generated.md` from `///` comments |
 | `python tools/collect_docs.py --report-missing` | List public items missing `///` docs (exit 1 if any) |
 | `python tools/collect_docs.py --suggest` | Print starter `///` lines for undocumented items |
-| `python tools/doc_coverage.py` | Docstring coverage analytics → `docs/API/doc_coverage.json` |
+| `python tools/doc_coverage.py` | Docstring coverage analytics → `docs/logs/doc_coverage.json` |
 | `python tools/doc_coverage.py --report-missing` | List all Rust + Lua API items missing doc comments |
-| `python tools/test_coverage.py` | Test coverage analytics → `docs/API/test_coverage.json` |
+| `python tools/test_coverage.py` | Test coverage analytics → `docs/logs/test_coverage.json` |
 | `python tools/test_coverage.py --suggest` | Print test stubs for uncovered items |
 | `python tools/gen_test_docs.py` | Generate `docs/API/test_docs.md` from coverage metadata |
 | `python tools/gen_lua_api.py` | Generate `docs/API/lua_api_reference_generated.md` |
@@ -376,6 +376,7 @@ work/{session}/
 | `powershell tools/install.ps1` | Install luna.exe locally (Windows) |
 | `bash tools/install.sh` | Install luna2d locally (Linux/macOS) |
 | `python tools/module_audit.py` | Audit module structure and coverage |
+| `python tools/audit_module.py <name>` | End-to-end module quality audit (PASS/WARN/ERROR) |
 | `python tools/quality_report.py` | Generate quality report |
 | `python tools/integration_coverage.py` | Check integration test coverage |
 

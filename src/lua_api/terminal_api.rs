@@ -117,9 +117,7 @@ enum CallbackKind {
     Select,
 }
 
-fn attached_location(
-    binding: &Rc<RefCell<WidgetBinding>>,
-) -> Option<(Rc<TerminalBinding>, usize)> {
+fn attached_location(binding: &Rc<RefCell<WidgetBinding>>) -> Option<(Rc<TerminalBinding>, usize)> {
     let binding_ref = binding.borrow();
     match &binding_ref.attachment {
         WidgetAttachment::Attached { terminal, index } => Some((terminal.clone(), *index)),
@@ -179,7 +177,9 @@ fn store_callback(
     slot: &mut Option<LuaRegistryKey>,
     callback: Option<LuaFunction>,
 ) -> LuaResult<()> {
-    *slot = callback.map(|func| lua.create_registry_value(func)).transpose()?;
+    *slot = callback
+        .map(|func| lua.create_registry_value(func))
+        .transpose()?;
     Ok(())
 }
 
@@ -275,7 +275,10 @@ fn sync_binding_snapshot(
 fn reindex_widget_handles(terminal: &Rc<TerminalBinding>, removed_index: usize) {
     let entries: Vec<(usize, Weak<RefCell<WidgetBinding>>)> = {
         let handles = terminal.widget_handles.borrow();
-        handles.iter().map(|(index, handle)| (*index, handle.clone())).collect()
+        handles
+            .iter()
+            .map(|(index, handle)| (*index, handle.clone()))
+            .collect()
     };
 
     let mut reindexed = HashMap::new();
@@ -298,7 +301,11 @@ fn reindex_widget_handles(terminal: &Rc<TerminalBinding>, removed_index: usize) 
                 }
             }
 
-            let new_index = if index > removed_index { index - 1 } else { index };
+            let new_index = if index > removed_index {
+                index - 1
+            } else {
+                index
+            };
             reindexed.insert(new_index, Rc::downgrade(&handle));
         }
     }
@@ -421,7 +428,13 @@ fn dispatch_terminal_events(
     Ok(())
 }
 
-fn build_draw_commands(cells: &[TCell], cols: usize, rows: usize, ox: f32, oy: f32) -> Vec<DrawCommand> {
+fn build_draw_commands(
+    cells: &[TCell],
+    cols: usize,
+    rows: usize,
+    ox: f32,
+    oy: f32,
+) -> Vec<DrawCommand> {
     let mut commands = Vec::new();
 
     for row in 0..rows {
@@ -482,11 +495,9 @@ impl LuaUserData for LuaTerminal {
             let col = usize_from_value(values.next());
             let row = usize_from_value(values.next());
             let ch = match values.next() {
-                Some(LuaValue::String(value)) => value
-                    .to_str()?
-                    .chars()
-                    .next()
-                    .unwrap_or(' ') as u32,
+                Some(LuaValue::String(value)) => {
+                    value.to_str()?.chars().next().unwrap_or(' ') as u32
+                }
                 Some(LuaValue::Integer(value)) => value as u32,
                 Some(LuaValue::Number(value)) => value as u32,
                 _ => b' ' as u32,
@@ -512,15 +523,8 @@ impl LuaUserData for LuaTerminal {
         methods.add_method("get", |_, this, (col, row): (usize, usize)| {
             let cell = this.binding.terminal.borrow().get(col, row);
             Ok((
-                cell.ch,
-                cell.fg[0],
-                cell.fg[1],
-                cell.fg[2],
-                cell.fg[3],
-                cell.bg[0],
-                cell.bg[1],
-                cell.bg[2],
-                cell.bg[3],
+                cell.ch, cell.fg[0], cell.fg[1], cell.fg[2], cell.fg[3], cell.bg[0], cell.bg[1],
+                cell.bg[2], cell.bg[3],
             ))
         });
 
@@ -558,39 +562,47 @@ impl LuaUserData for LuaTerminal {
             Ok(this.binding.terminal.borrow().get_widget_count())
         });
 
-        methods.add_method("setFocus", |_, this, value: LuaValue| {
-            match value {
-                LuaValue::Nil => {
-                    this.binding.terminal.borrow_mut().set_focus(None);
-                    Ok(())
-                }
-                LuaValue::UserData(userdata) => {
-                    let widget = widget_handle_from_userdata(&userdata)?;
-                    let index = attached_index_for_terminal(&widget, &this.binding)
-                        .ok_or_else(|| wrong_terminal("Terminal:setFocus"))?;
-                    this.binding.terminal.borrow_mut().set_focus(Some(index));
-                    Ok(())
-                }
-                _ => Err(runtime_error("Terminal:setFocus", "expected widget or nil")),
+        methods.add_method("setFocus", |_, this, value: LuaValue| match value {
+            LuaValue::Nil => {
+                this.binding.terminal.borrow_mut().set_focus(None);
+                Ok(())
             }
+            LuaValue::UserData(userdata) => {
+                let widget = widget_handle_from_userdata(&userdata)?;
+                let index = attached_index_for_terminal(&widget, &this.binding)
+                    .ok_or_else(|| wrong_terminal("Terminal:setFocus"))?;
+                this.binding.terminal.borrow_mut().set_focus(Some(index));
+                Ok(())
+            }
+            _ => Err(runtime_error("Terminal:setFocus", "expected widget or nil")),
         });
 
         methods.add_method("getFocused", |lua: &Lua, this, ()| {
             let focused = this.binding.terminal.borrow().get_focused();
             match focused.and_then(|index| widget_handle_for_index(&this.binding, index)) {
-                Some(binding) => Ok(LuaValue::UserData(lua.create_userdata(LuaWidget { binding })?)),
+                Some(binding) => Ok(LuaValue::UserData(
+                    lua.create_userdata(LuaWidget { binding })?,
+                )),
                 None => Ok(LuaValue::Nil),
             }
         });
 
         methods.add_method("keypressed", |lua, this, key: String| {
-            let (consumed, events) = this.binding.terminal.borrow_mut().keypressed_with_events(&key);
+            let (consumed, events) = this
+                .binding
+                .terminal
+                .borrow_mut()
+                .keypressed_with_events(&key);
             dispatch_terminal_events(lua, &this.binding, &events)?;
             Ok(consumed)
         });
 
         methods.add_method("textinput", |lua, this, text: String| {
-            let (consumed, events) = this.binding.terminal.borrow_mut().textinput_with_events(&text);
+            let (consumed, events) = this
+                .binding
+                .terminal
+                .borrow_mut()
+                .textinput_with_events(&text);
             dispatch_terminal_events(lua, &this.binding, &events)?;
             Ok(consumed)
         });
@@ -600,11 +612,11 @@ impl LuaUserData for LuaTerminal {
             |lua, this, (px, py, button): (f32, f32, Option<usize>)| {
                 let col = (px / CELL_W).floor() as usize + 1;
                 let row = (py / CELL_H).floor() as usize + 1;
-                let (_, events) = this
-                    .binding
-                    .terminal
-                    .borrow_mut()
-                    .mousepressed_with_events(col, row, button.unwrap_or(1));
+                let (_, events) = this.binding.terminal.borrow_mut().mousepressed_with_events(
+                    col,
+                    row,
+                    button.unwrap_or(1),
+                );
                 dispatch_terminal_events(lua, &this.binding, &events)?;
                 Ok(())
             },
@@ -666,7 +678,9 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("isVisible", |_, this, ()| {
-            with_widget(&this.binding, "Widget:isVisible", |widget| Ok(widget.base.visible))
+            with_widget(&this.binding, "Widget:isVisible", |widget| {
+                Ok(widget.base.visible)
+            })
         });
 
         methods.add_method("setEnabled", |_, this, enabled: bool| {
@@ -677,7 +691,9 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("isEnabled", |_, this, ()| {
-            with_widget(&this.binding, "Widget:isEnabled", |widget| Ok(widget.base.enabled))
+            with_widget(&this.binding, "Widget:isEnabled", |widget| {
+                Ok(widget.base.enabled)
+            })
         });
 
         methods.add_method("setTag", |_, this, tag: String| {
@@ -695,38 +711,42 @@ impl LuaUserData for LuaWidget {
 
         methods.add_method("setText", |lua, this, text: String| {
             let mut trigger_change = false;
-            with_widget_mut(&this.binding, "Widget:setText", |widget| match &mut widget.kind {
-                WidgetKind::Label {
-                    text: label_text, ..
-                } => {
-                    *label_text = text.clone();
-                    widget.base.width = char_count(label_text).max(1);
-                    Ok(())
-                }
-                WidgetKind::Button { text: button_text } => {
-                    *button_text = text.clone();
-                    Ok(())
-                }
-                WidgetKind::TextBox {
-                    text: text_box_text,
-                    max_length,
-                    cursor_pos,
-                } => {
-                    let new_text = if *max_length > 0 {
-                        truncate_chars(&text, *max_length)
-                    } else {
-                        text.clone()
-                    };
-                    trigger_change = *text_box_text != new_text;
-                    *text_box_text = new_text;
-                    *cursor_pos = char_count(text_box_text);
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind(
-                    "Widget:setText",
-                    "label, button, or text box",
-                )),
-            })?;
+            with_widget_mut(
+                &this.binding,
+                "Widget:setText",
+                |widget| match &mut widget.kind {
+                    WidgetKind::Label {
+                        text: label_text, ..
+                    } => {
+                        *label_text = text.clone();
+                        widget.base.width = char_count(label_text).max(1);
+                        Ok(())
+                    }
+                    WidgetKind::Button { text: button_text } => {
+                        *button_text = text.clone();
+                        Ok(())
+                    }
+                    WidgetKind::TextBox {
+                        text: text_box_text,
+                        max_length,
+                        cursor_pos,
+                    } => {
+                        let new_text = if *max_length > 0 {
+                            truncate_chars(&text, *max_length)
+                        } else {
+                            text.clone()
+                        };
+                        trigger_change = *text_box_text != new_text;
+                        *text_box_text = new_text;
+                        *cursor_pos = char_count(text_box_text);
+                        Ok(())
+                    }
+                    _ => Err(wrong_widget_kind(
+                        "Widget:setText",
+                        "label, button, or text box",
+                    )),
+                },
+            )?;
 
             if trigger_change {
                 dispatch_callback(lua, &this.binding, CallbackKind::Change)?;
@@ -735,14 +755,16 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("getText", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getText", |widget| match &widget.kind {
-                WidgetKind::Label { text, .. } => Ok(text.clone()),
-                WidgetKind::Button { text } => Ok(text.clone()),
-                WidgetKind::TextBox { text, .. } => Ok(text.clone()),
-                _ => Err(wrong_widget_kind(
-                    "Widget:getText",
-                    "label, button, or text box",
-                )),
+            with_widget(&this.binding, "Widget:getText", |widget| {
+                match &widget.kind {
+                    WidgetKind::Label { text, .. } => Ok(text.clone()),
+                    WidgetKind::Button { text } => Ok(text.clone()),
+                    WidgetKind::TextBox { text, .. } => Ok(text.clone()),
+                    _ => Err(wrong_widget_kind(
+                        "Widget:getText",
+                        "label, button, or text box",
+                    )),
+                }
             })
         });
 
@@ -750,172 +772,215 @@ impl LuaUserData for LuaWidget {
             "setColor",
             |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
                 let color = [r, g, b, a.unwrap_or(1.0)];
-                with_widget_mut(&this.binding, "Widget:setColor", |widget| match &mut widget.kind {
-                    WidgetKind::Label {
-                        color: label_color, ..
-                    } => {
-                        *label_color = color;
-                        Ok(())
-                    }
-                    WidgetKind::Border {
-                        color: border_color, ..
-                    } => {
-                        *border_color = color;
-                        Ok(())
-                    }
-                    _ => Err(wrong_widget_kind("Widget:setColor", "label or border")),
-                })
+                with_widget_mut(
+                    &this.binding,
+                    "Widget:setColor",
+                    |widget| match &mut widget.kind {
+                        WidgetKind::Label {
+                            color: label_color, ..
+                        } => {
+                            *label_color = color;
+                            Ok(())
+                        }
+                        WidgetKind::Border {
+                            color: border_color,
+                            ..
+                        } => {
+                            *border_color = color;
+                            Ok(())
+                        }
+                        _ => Err(wrong_widget_kind("Widget:setColor", "label or border")),
+                    },
+                )
             },
         );
 
         methods.add_method("getColor", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getColor", |widget| match &widget.kind {
-                WidgetKind::Label { color, .. } | WidgetKind::Border { color, .. } => {
-                    Ok((color[0], color[1], color[2], color[3]))
+            with_widget(&this.binding, "Widget:getColor", |widget| {
+                match &widget.kind {
+                    WidgetKind::Label { color, .. } | WidgetKind::Border { color, .. } => {
+                        Ok((color[0], color[1], color[2], color[3]))
+                    }
+                    _ => Err(wrong_widget_kind("Widget:getColor", "label or border")),
                 }
-                _ => Err(wrong_widget_kind("Widget:getColor", "label or border")),
             })
         });
 
         methods.add_method("setOnClick", |lua, this, callback: Option<LuaFunction>| {
-            with_widget(&this.binding, "Widget:setOnClick", |widget| match &widget.kind {
-                WidgetKind::Button { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:setOnClick", "button")),
+            with_widget(&this.binding, "Widget:setOnClick", |widget| {
+                match &widget.kind {
+                    WidgetKind::Button { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:setOnClick", "button")),
+                }
             })?;
             let mut binding_ref = this.binding.borrow_mut();
             store_callback(lua, &mut binding_ref.callbacks.on_click, callback)
         });
 
         methods.add_method("setMaxLength", |_, this, max_length: usize| {
-            with_widget_mut(&this.binding, "Widget:setMaxLength", |widget| match &mut widget.kind {
-                WidgetKind::TextBox {
-                    text,
-                    max_length: current_max,
-                    cursor_pos,
-                } => {
-                    *current_max = max_length;
-                    if *current_max > 0 && char_count(text) > *current_max {
-                        *text = truncate_chars(text, *current_max);
+            with_widget_mut(
+                &this.binding,
+                "Widget:setMaxLength",
+                |widget| match &mut widget.kind {
+                    WidgetKind::TextBox {
+                        text,
+                        max_length: current_max,
+                        cursor_pos,
+                    } => {
+                        *current_max = max_length;
+                        if *current_max > 0 && char_count(text) > *current_max {
+                            *text = truncate_chars(text, *current_max);
+                        }
+                        *cursor_pos = (*cursor_pos).min(char_count(text));
+                        Ok(())
                     }
-                    *cursor_pos = (*cursor_pos).min(char_count(text));
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:setMaxLength", "text box")),
-            })
+                    _ => Err(wrong_widget_kind("Widget:setMaxLength", "text box")),
+                },
+            )
         });
 
         methods.add_method("getMaxLength", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getMaxLength", |widget| match &widget.kind {
-                WidgetKind::TextBox { max_length, .. } => Ok(*max_length),
-                _ => Err(wrong_widget_kind("Widget:getMaxLength", "text box")),
-            })
+            with_widget(
+                &this.binding,
+                "Widget:getMaxLength",
+                |widget| match &widget.kind {
+                    WidgetKind::TextBox { max_length, .. } => Ok(*max_length),
+                    _ => Err(wrong_widget_kind("Widget:getMaxLength", "text box")),
+                },
+            )
         });
 
         methods.add_method("setOnChange", |lua, this, callback: Option<LuaFunction>| {
-            with_widget(&this.binding, "Widget:setOnChange", |widget| match &widget.kind {
-                WidgetKind::TextBox { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:setOnChange", "text box")),
-            })?;
+            with_widget(
+                &this.binding,
+                "Widget:setOnChange",
+                |widget| match &widget.kind {
+                    WidgetKind::TextBox { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:setOnChange", "text box")),
+                },
+            )?;
             let mut binding_ref = this.binding.borrow_mut();
             store_callback(lua, &mut binding_ref.callbacks.on_change, callback)
         });
 
         methods.add_method("addItem", |_, this, item: String| {
-            with_widget_mut(&this.binding, "Widget:addItem", |widget| match &mut widget.kind {
-                WidgetKind::List { items, .. } => {
-                    items.push(item);
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:addItem", "list")),
-            })
+            with_widget_mut(
+                &this.binding,
+                "Widget:addItem",
+                |widget| match &mut widget.kind {
+                    WidgetKind::List { items, .. } => {
+                        items.push(item);
+                        Ok(())
+                    }
+                    _ => Err(wrong_widget_kind("Widget:addItem", "list")),
+                },
+            )
         });
 
         methods.add_method("removeItem", |_, this, index: usize| {
-            with_widget_mut(&this.binding, "Widget:removeItem", |widget| match &mut widget.kind {
-                WidgetKind::List {
-                    items,
-                    selected,
-                    scroll_offset,
-                } => {
-                    if index >= 1 && index <= items.len() {
-                        items.remove(index - 1);
-                        if let Some(current) = *selected {
-                            if current == index - 1 {
-                                *selected = None;
-                            } else if current > index - 1 {
-                                *selected = Some(current - 1);
+            with_widget_mut(
+                &this.binding,
+                "Widget:removeItem",
+                |widget| match &mut widget.kind {
+                    WidgetKind::List {
+                        items,
+                        selected,
+                        scroll_offset,
+                    } => {
+                        if index >= 1 && index <= items.len() {
+                            items.remove(index - 1);
+                            if let Some(current) = *selected {
+                                if current == index - 1 {
+                                    *selected = None;
+                                } else if current > index - 1 {
+                                    *selected = Some(current - 1);
+                                }
+                            }
+                            if *scroll_offset > items.len().saturating_sub(1) {
+                                *scroll_offset = items.len().saturating_sub(1);
                             }
                         }
-                        if *scroll_offset > items.len().saturating_sub(1) {
-                            *scroll_offset = items.len().saturating_sub(1);
-                        }
+                        Ok(())
                     }
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:removeItem", "list")),
-            })
+                    _ => Err(wrong_widget_kind("Widget:removeItem", "list")),
+                },
+            )
         });
 
         methods.add_method("clearItems", |_, this, ()| {
-            with_widget_mut(&this.binding, "Widget:clearItems", |widget| match &mut widget.kind {
-                WidgetKind::List {
-                    items,
-                    selected,
-                    scroll_offset,
-                } => {
-                    items.clear();
-                    *selected = None;
-                    *scroll_offset = 0;
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:clearItems", "list")),
-            })
+            with_widget_mut(
+                &this.binding,
+                "Widget:clearItems",
+                |widget| match &mut widget.kind {
+                    WidgetKind::List {
+                        items,
+                        selected,
+                        scroll_offset,
+                    } => {
+                        items.clear();
+                        *selected = None;
+                        *scroll_offset = 0;
+                        Ok(())
+                    }
+                    _ => Err(wrong_widget_kind("Widget:clearItems", "list")),
+                },
+            )
         });
 
         methods.add_method("getItemCount", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getItemCount", |widget| match &widget.kind {
-                WidgetKind::List { items, .. } => Ok(items.len()),
-                _ => Err(wrong_widget_kind("Widget:getItemCount", "list")),
-            })
+            with_widget(
+                &this.binding,
+                "Widget:getItemCount",
+                |widget| match &widget.kind {
+                    WidgetKind::List { items, .. } => Ok(items.len()),
+                    _ => Err(wrong_widget_kind("Widget:getItemCount", "list")),
+                },
+            )
         });
 
         methods.add_method("getItem", |_, this, index: usize| {
-            with_widget(&this.binding, "Widget:getItem", |widget| match &widget.kind {
-                WidgetKind::List { items, .. } => Ok(if index >= 1 && index <= items.len() {
-                    items[index - 1].clone()
-                } else {
-                    String::new()
-                }),
-                _ => Err(wrong_widget_kind("Widget:getItem", "list")),
+            with_widget(&this.binding, "Widget:getItem", |widget| {
+                match &widget.kind {
+                    WidgetKind::List { items, .. } => Ok(if index >= 1 && index <= items.len() {
+                        items[index - 1].clone()
+                    } else {
+                        String::new()
+                    }),
+                    _ => Err(wrong_widget_kind("Widget:getItem", "list")),
+                }
             })
         });
 
         methods.add_method("setSelected", |lua, this, index: Option<usize>| {
             let mut changed = false;
-            with_widget_mut(&this.binding, "Widget:setSelected", |widget| match &mut widget.kind {
-                WidgetKind::List {
-                    items,
-                    selected,
-                    scroll_offset,
-                } => {
-                    let new_selected = index.and_then(|value| {
-                        if value >= 1 && value <= items.len() {
-                            Some(value - 1)
-                        } else {
-                            None
+            with_widget_mut(
+                &this.binding,
+                "Widget:setSelected",
+                |widget| match &mut widget.kind {
+                    WidgetKind::List {
+                        items,
+                        selected,
+                        scroll_offset,
+                    } => {
+                        let new_selected = index.and_then(|value| {
+                            if value >= 1 && value <= items.len() {
+                                Some(value - 1)
+                            } else {
+                                None
+                            }
+                        });
+                        changed = *selected != new_selected;
+                        *selected = new_selected;
+                        if let Some(current) = *selected {
+                            if current < *scroll_offset {
+                                *scroll_offset = current;
+                            }
                         }
-                    });
-                    changed = *selected != new_selected;
-                    *selected = new_selected;
-                    if let Some(current) = *selected {
-                        if current < *scroll_offset {
-                            *scroll_offset = current;
-                        }
+                        Ok(())
                     }
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:setSelected", "list")),
-            })?;
+                    _ => Err(wrong_widget_kind("Widget:setSelected", "list")),
+                },
+            )?;
 
             if changed {
                 dispatch_callback(lua, &this.binding, CallbackKind::Select)?;
@@ -924,17 +989,25 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("getSelected", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getSelected", |widget| match &widget.kind {
-                WidgetKind::List { selected, .. } => Ok(selected.map(|value| value + 1)),
-                _ => Err(wrong_widget_kind("Widget:getSelected", "list")),
-            })
+            with_widget(
+                &this.binding,
+                "Widget:getSelected",
+                |widget| match &widget.kind {
+                    WidgetKind::List { selected, .. } => Ok(selected.map(|value| value + 1)),
+                    _ => Err(wrong_widget_kind("Widget:getSelected", "list")),
+                },
+            )
         });
 
         methods.add_method("setOnSelect", |lua, this, callback: Option<LuaFunction>| {
-            with_widget(&this.binding, "Widget:setOnSelect", |widget| match &widget.kind {
-                WidgetKind::List { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:setOnSelect", "list")),
-            })?;
+            with_widget(
+                &this.binding,
+                "Widget:setOnSelect",
+                |widget| match &widget.kind {
+                    WidgetKind::List { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:setOnSelect", "list")),
+                },
+            )?;
             let mut binding_ref = this.binding.borrow_mut();
             store_callback(lua, &mut binding_ref.callbacks.on_select, callback)
         });
@@ -942,43 +1015,63 @@ impl LuaUserData for LuaWidget {
         methods.add_method("setStyle", |_, this, style_name: String| {
             let style = BorderStyle::from_str_name(&style_name)
                 .ok_or_else(|| runtime_error("Widget:setStyle", "invalid border style"))?;
-            with_widget_mut(&this.binding, "Widget:setStyle", |widget| match &mut widget.kind {
-                WidgetKind::Border { style: border_style, .. } => {
-                    *border_style = style;
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:setStyle", "border")),
-            })
+            with_widget_mut(
+                &this.binding,
+                "Widget:setStyle",
+                |widget| match &mut widget.kind {
+                    WidgetKind::Border {
+                        style: border_style,
+                        ..
+                    } => {
+                        *border_style = style;
+                        Ok(())
+                    }
+                    _ => Err(wrong_widget_kind("Widget:setStyle", "border")),
+                },
+            )
         });
 
         methods.add_method("getStyle", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getStyle", |widget| match &widget.kind {
-                WidgetKind::Border { style, .. } => Ok(style.as_str().to_string()),
-                _ => Err(wrong_widget_kind("Widget:getStyle", "border")),
+            with_widget(&this.binding, "Widget:getStyle", |widget| {
+                match &widget.kind {
+                    WidgetKind::Border { style, .. } => Ok(style.as_str().to_string()),
+                    _ => Err(wrong_widget_kind("Widget:getStyle", "border")),
+                }
             })
         });
 
         methods.add_method("setTitle", |_, this, title: String| {
-            with_widget_mut(&this.binding, "Widget:setTitle", |widget| match &mut widget.kind {
-                WidgetKind::Border { title: border_title, .. } => {
-                    *border_title = title;
-                    Ok(())
-                }
-                _ => Err(wrong_widget_kind("Widget:setTitle", "border")),
-            })
+            with_widget_mut(
+                &this.binding,
+                "Widget:setTitle",
+                |widget| match &mut widget.kind {
+                    WidgetKind::Border {
+                        title: border_title,
+                        ..
+                    } => {
+                        *border_title = title;
+                        Ok(())
+                    }
+                    _ => Err(wrong_widget_kind("Widget:setTitle", "border")),
+                },
+            )
         });
 
         methods.add_method("getTitle", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getTitle", |widget| match &widget.kind {
-                WidgetKind::Border { title, .. } => Ok(title.clone()),
-                _ => Err(wrong_widget_kind("Widget:getTitle", "border")),
+            with_widget(&this.binding, "Widget:getTitle", |widget| {
+                match &widget.kind {
+                    WidgetKind::Border { title, .. } => Ok(title.clone()),
+                    _ => Err(wrong_widget_kind("Widget:getTitle", "border")),
+                }
             })
         });
 
         methods.add_method("addChild", |_, this, child_ud: LuaAnyUserData| {
-            with_widget(&this.binding, "Widget:addChild", |widget| match &widget.kind {
-                WidgetKind::Panel { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:addChild", "panel")),
+            with_widget(&this.binding, "Widget:addChild", |widget| {
+                match &widget.kind {
+                    WidgetKind::Panel { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:addChild", "panel")),
+                }
             })?;
 
             let child = widget_handle_from_userdata(&child_ud)?;
@@ -1026,10 +1119,14 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("removeChild", |_, this, child_ud: LuaAnyUserData| {
-            with_widget(&this.binding, "Widget:removeChild", |widget| match &widget.kind {
-                WidgetKind::Panel { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:removeChild", "panel")),
-            })?;
+            with_widget(
+                &this.binding,
+                "Widget:removeChild",
+                |widget| match &widget.kind {
+                    WidgetKind::Panel { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:removeChild", "panel")),
+                },
+            )?;
 
             let child = widget_handle_from_userdata(&child_ud)?;
             if let Some((terminal, panel_index)) = attached_location(&this.binding) {
@@ -1050,13 +1147,20 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("clearChildren", |_, this, ()| {
-            with_widget(&this.binding, "Widget:clearChildren", |widget| match &widget.kind {
-                WidgetKind::Panel { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:clearChildren", "panel")),
-            })?;
+            with_widget(
+                &this.binding,
+                "Widget:clearChildren",
+                |widget| match &widget.kind {
+                    WidgetKind::Panel { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:clearChildren", "panel")),
+                },
+            )?;
 
             if let Some((terminal, panel_index)) = attached_location(&this.binding) {
-                let _ = terminal.terminal.borrow_mut().clear_panel_children(panel_index);
+                let _ = terminal
+                    .terminal
+                    .borrow_mut()
+                    .clear_panel_children(panel_index);
             } else {
                 this.binding.borrow_mut().pending_children.clear();
             }
@@ -1064,10 +1168,14 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("getChildCount", |_, this, ()| {
-            with_widget(&this.binding, "Widget:getChildCount", |widget| match &widget.kind {
-                WidgetKind::Panel { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:getChildCount", "panel")),
-            })?;
+            with_widget(
+                &this.binding,
+                "Widget:getChildCount",
+                |widget| match &widget.kind {
+                    WidgetKind::Panel { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:getChildCount", "panel")),
+                },
+            )?;
 
             if let Some((terminal, panel_index)) = attached_location(&this.binding) {
                 with_widget(&this.binding, "Widget:getChildCount", |_| {
@@ -1086,9 +1194,11 @@ impl LuaUserData for LuaWidget {
         });
 
         methods.add_method("getChild", |lua: &Lua, this, index: usize| {
-            with_widget(&this.binding, "Widget:getChild", |widget| match &widget.kind {
-                WidgetKind::Panel { .. } => Ok(()),
-                _ => Err(wrong_widget_kind("Widget:getChild", "panel")),
+            with_widget(&this.binding, "Widget:getChild", |widget| {
+                match &widget.kind {
+                    WidgetKind::Panel { .. } => Ok(()),
+                    _ => Err(wrong_widget_kind("Widget:getChild", "panel")),
+                }
             })?;
 
             if index == 0 {
@@ -1110,13 +1220,22 @@ impl LuaUserData for LuaWidget {
                 };
 
                 match child_handle {
-                    Some(binding) => Ok(LuaValue::UserData(lua.create_userdata(LuaWidget { binding })?)),
+                    Some(binding) => Ok(LuaValue::UserData(
+                        lua.create_userdata(LuaWidget { binding })?,
+                    )),
                     None => Ok(LuaValue::Nil),
                 }
             } else {
-                let child = this.binding.borrow().pending_children.get(index - 1).cloned();
+                let child = this
+                    .binding
+                    .borrow()
+                    .pending_children
+                    .get(index - 1)
+                    .cloned();
                 match child {
-                    Some(binding) => Ok(LuaValue::UserData(lua.create_userdata(LuaWidget { binding })?)),
+                    Some(binding) => Ok(LuaValue::UserData(
+                        lua.create_userdata(LuaWidget { binding })?,
+                    )),
                     None => Ok(LuaValue::Nil),
                 }
             }
@@ -1156,14 +1275,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     terminal_ns.set(
         "newLabel",
-        lua.create_function(move |lua, (col, row, text): (usize, usize, Option<String>)| {
-            let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_label(
-                col,
-                row,
-                text.unwrap_or_default(),
-            ))));
-            lua.create_userdata(LuaWidget { binding })
-        })?,
+        lua.create_function(
+            move |lua, (col, row, text): (usize, usize, Option<String>)| {
+                let binding = Rc::new(RefCell::new(WidgetBinding::new(Widget::new_label(
+                    col,
+                    row,
+                    text.unwrap_or_default(),
+                ))));
+                lua.create_userdata(LuaWidget { binding })
+            },
+        )?,
     )?;
 
     terminal_ns.set(

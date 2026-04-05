@@ -35,6 +35,8 @@ pub mod error;
 pub mod error_screen;
 /// Structured logging with stable message IDs.
 pub mod log_messages;
+/// TOML-backed human-readable message catalog for all engine log messages.
+pub mod messages;
 /// Typed resource keys for generational ID-based resource pools.
 pub mod resource_keys;
 /// Central shared runtime state: SharedState, WindowState, FullscreenType, ErrorInfo.
@@ -45,4 +47,5 @@ pub use config::Config;
 pub use debug_overlay::DebugOverlay;
 pub use error::{EngineError, EngineResult, ErrorCategory};
 pub use error_screen::ErrorScreen;
-pub use shared_state::{ErrorInfo, FullscreenType, SharedState, WindowState};
+pub use messages::MessageCatalog;
+pub use shared_state::{ErrorInfo, FullscreenType, ScreenshotRequest, SharedState, WindowState};

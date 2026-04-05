@@ -4,7 +4,7 @@ gen_icon.py — Generate assets/icon.ico (and .png) for the Luna2D engine.
 
 Usage:
     python tools/gen_icon.py              # writes assets/icon.ico + assets/icon.png
-    python tools/gen_icon.py --out custom.ico
+    python tools/gen_icon.py --ico custom.ico --png custom.png
 
 The .ico file is embedded into luna2d.exe on Windows via build.rs + winresource.
 The .png is a 256×256 high-resolution source kept alongside it.
@@ -35,65 +35,75 @@ def lerp_color(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(4))
 
 
+def build_mark_points(
+    cx: float,
+    cy: float,
+    inner_r: float,
+    outer_r: float,
+    mouth_half: float,
+    num_teeth: int,
+    tooth_width: float = 0.45,
+) -> list[tuple[float, float]]:
+    tooth_period = math.tau / num_teeth
+    steps = num_teeth * 20
+    points = [(cx, cy)]
+
+    for i in range(steps + 1):
+        angle = mouth_half + (math.tau - 2 * mouth_half) * i / steps
+        phase = (angle % tooth_period) / tooth_period
+        radius = outer_r if phase < tooth_width else inner_r
+        points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
+
+    return points
+
+
+def draw_cube(draw: ImageDraw.ImageDraw, cx: float, cy: float, size: float) -> None:
+    draw.polygon(
+        [(cx, cy - size), (cx + size, cy - size * 0.5), (cx, cy), (cx - size, cy - size * 0.5)],
+        fill=(120, 182, 242, 255),
+    )
+    draw.polygon(
+        [(cx - size, cy - size * 0.5), (cx, cy), (cx, cy + size), (cx - size, cy + size * 0.5)],
+        fill=(77, 135, 210, 255),
+    )
+    draw.polygon(
+        [(cx, cy), (cx + size, cy - size * 0.5), (cx + size, cy + size * 0.5), (cx, cy + size)],
+        fill=(44, 93, 168, 255),
+    )
+
+
 def generate_icon_image(size: int) -> Image.Image:
-    """Draw a single icon frame: light blue gear-pacman eating a gray cube."""
+    """Draw a single icon frame: the latest Luna mark eating the incoming cube."""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img, "RGBA")
 
-    s = size
+    s = float(size)
+    px = s * 0.39
+    py = s * 0.50
+    gear_inner = s * 0.30
+    gear_outer = s * 0.38
 
-    # Background circle (rounded square feeling)
-    bg_r = int(s * 0.44)
-    bx, by = s // 2, s // 2
-    d.ellipse([bx - bg_r, by - bg_r, bx + bg_r, by + bg_r],
-              fill=(22, 12, 48, 255))
+    draw_cube(d, px + s * 0.45, py - s * 0.03, s * 0.08)
+    d.polygon(
+        build_mark_points(px, py, gear_inner, gear_outer, math.radians(36), 12),
+        fill=(142, 200, 232, 255),
+    )
 
-    # Center of Pac-Man
-    px, py = int(s * 0.45), int(s * 0.5)
-    r = int(s * 0.3)
+    cutout_x = px + s * 0.11
+    cutout_y = py - s * 0.02
+    cutout_r = s * 0.24
+    d.ellipse(
+        [cutout_x - cutout_r, cutout_y - cutout_r, cutout_x + cutout_r, cutout_y + cutout_r],
+        fill=(30, 10, 64, 255),
+    )
 
-    # Glow light blue
-    for gr in range(r + int(s * 0.12), r - 1, -2):
-        alpha = max(0, int(35 * (1 - (gr - r) / (s * 0.12))))
-        d.ellipse([px - gr, py - gr, px + gr, py + gr], fill=(130, 200, 250, alpha))
-
-    # Draw gear teeth along the outer rim
-    num_teeth = 12
-    tooth_h = int(s * 0.06)
-    tooth_w_angle = math.pi * 2 / (num_teeth * 2)
-
-    start_angle = math.radians(35)
-    end_angle = math.radians(360 - 35)
-
-    pts = [(px, py)]
-    steps = 200
-    for i in range(steps + 1):
-        angle = start_angle + (end_angle - start_angle) * i / steps
-        angle_norm = angle % (math.pi * 2)
-        rem = angle_norm % (math.pi * 2 / num_teeth)
-
-        rad = r
-        if rem > tooth_w_angle * 0.5 and rem < tooth_w_angle * 1.5:
-            rad = r + tooth_h
-
-        x = px + rad * math.cos(angle)
-        y = py + rad * math.sin(angle)
-        pts.append((x, y))
-
-    d.polygon(pts, fill=(130, 200, 250, 255))
-
-    # Eye
-    eye_x, eye_y = px + int(r * 0.1), py - int(r * 0.5)
-    eye_r = int(s * 0.04)
-    d.ellipse([eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r], fill=(22, 12, 48, 255))
-
-    # Draw the gray cube
-    cx, cy = px + int(s * 0.35), py
-    cr = int(s * 0.12)
-
-    d.polygon([(cx, cy - cr), (cx + cr, cy - cr//2), (cx, cy), (cx - cr, cy - cr//2)], fill=(170, 170, 170, 255))
-    d.polygon([(cx - cr, cy - cr//2), (cx, cy), (cx, cy + cr), (cx - cr, cy + cr//2)], fill=(130, 130, 130, 255))
-    d.polygon([(cx, cy), (cx + cr, cy - cr//2), (cx + cr, cy + cr//2), (cx, cy + cr)], fill=(90, 90, 90, 255))
+    eye_x = px - s * 0.06
+    eye_y = py - s * 0.15
+    eye_r = max(1.0, s * 0.04)
+    d.ellipse(
+        [eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r],
+        fill=(22, 12, 48, 255),
+    )
 
     return img
 

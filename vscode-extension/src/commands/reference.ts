@@ -13,7 +13,7 @@ export async function browseApi(): Promise<void> {
     return;
   }
 
-  const apiPath = path.join(root, "docs", "lua_api_reference_generated.md");
+  const apiPath = path.join(root, "docs", "API", "lua_api_reference_generated.md");
   if (!fs.existsSync(apiPath)) {
     vscode.window.showWarningMessage(
       "API reference not found. Run 'python tools/gen_lua_api.py' to generate it."
@@ -62,7 +62,7 @@ export async function openApiDocs(): Promise<void> {
     return;
   }
 
-  const apiPath = path.join(root, "docs", "lua_api_reference_generated.md");
+  const apiPath = path.join(root, "docs", "API", "lua_api_reference_generated.md");
   if (!fs.existsSync(apiPath)) {
     vscode.window.showWarningMessage(
       "API reference not found. Run 'python tools/gen_lua_api.py' first."
@@ -90,7 +90,7 @@ export async function openWiki(): Promise<void> {
   const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (!root) { vscode.window.showErrorMessage("No workspace folder open."); return; }
 
-  const apiPath = path.join(root, "docs", "lua_api_reference_generated.md");
+  const apiPath = path.join(root, "docs", "API", "lua_api_reference_generated.md");
   const altPath = path.join(root, "docs", "lua-api.md");
   const docPath = fs.existsSync(apiPath) ? apiPath : fs.existsSync(altPath) ? altPath : null;
 

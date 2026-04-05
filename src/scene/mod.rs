@@ -4,11 +4,11 @@
 //! `pause`, `resume`, `update`, `draw`), animated transitions (fade, slide), a named
 //! scene registry, inter-scene data passing, and a `DepthSorter` for z-ordered draw batching.
 
-/// depth_sorter.
+/// Z-order depth sorter for draw-call batching; groups scene objects by depth layer before rendering.
 pub mod depth_sorter;
-/// stack.
+/// LIFO scene stack with lifecycle callbacks (`enter`, `leave`, `pause`, `resume`, `update`, `draw`) and a named scene registry.
 pub mod stack;
-/// transition.
+/// Animated scene transitions with configurable types (fade, slide) and easing, plus inter-scene data passing.
 pub mod transition;
 
 pub use depth_sorter::DepthSorter;

@@ -1,4 +1,4 @@
-//! Engine and window configuration loaded from `conf.lua`.
+﻿//! Engine and window configuration loaded from `conf.lua`.
 //!
 //! When the engine starts it looks for a `conf.lua` file in the game directory.
 //! If found, it is executed in a minimal Lua VM and the result is read into a [`Config`]
@@ -34,6 +34,11 @@
 //! end
 //! ```
 
+use crate::engine::log_messages::{
+    L050_MODULE_DEP_DISABLED, L051_CONF_READ_ERR, L052_CONF_PARSE_ERR, L053_CONF_CALLBACK_ERR,
+};
+#[allow(unused_imports)]
+use crate::log_msg;
 use mlua::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -224,23 +229,23 @@ impl ModulesConfig {
     pub fn validate_and_fix(&mut self) {
         if !self.graphics {
             if self.minimap {
-                log::warn!("modules.minimap disabled: requires modules.graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "minimap requires graphics");
                 self.minimap = false;
             }
             if self.particle {
-                log::warn!("modules.particle disabled: requires modules.graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "particle requires graphics");
                 self.particle = false;
             }
             if self.gui {
-                log::warn!("modules.gui disabled: requires modules.graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "gui requires graphics");
                 self.gui = false;
             }
             if self.overlay {
-                log::warn!("modules.overlay disabled: requires modules.graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "overlay requires graphics");
                 self.overlay = false;
             }
             if self.terminal {
-                log::warn!("modules.terminal disabled: requires modules.graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "terminal requires graphics");
                 self.terminal = false;
             }
         }
@@ -370,13 +375,13 @@ impl Config {
         let code = match std::fs::read_to_string(&conf_path) {
             Ok(c) => c,
             Err(e) => {
-                log::warn!("Failed to read conf.lua: {}", e);
+                log_msg!(warn, L051_CONF_READ_ERR, "{}", e);
                 return (config, Some(format!("Failed to read conf.lua: {}", e)));
             }
         };
 
         if let Err(e) = lua.load(&code).set_name("conf.lua").exec() {
-            log::warn!("Error in conf.lua: {}", e);
+            log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
             return (config, Some(format!("Error in conf.lua: {}", e)));
         }
 
@@ -384,7 +389,7 @@ impl Config {
         if let Ok(conf_fn) = luna.get::<_, LuaFunction>("conf") {
             let t = Self::create_config_table(&lua, &config);
             if let Err(e) = conf_fn.call::<_, ()>(t.clone()) {
-                log::warn!("Error calling luna.conf(): {}", e);
+                log_msg!(warn, L053_CONF_CALLBACK_ERR, "{}", e);
                 return (config, Some(format!("Error calling luna.conf(): {}", e)));
             }
             config = Self::read_config_table(&t, config);

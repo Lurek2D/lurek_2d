@@ -1,6 +1,6 @@
 [package]
 name = "luna2d"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 description = "Luna2D — A cross-platform 2D game engine powered by Rust and Lua"
 license = "MIT"
@@ -244,6 +244,9 @@ name = "engine_tests"
 path = "tests/rust/unit/engine_tests.rs"
 
 [[test]]
+name = "messages_tests"
+path = "tests/rust/unit/messages_tests.rs"
+[[test]]
 name = "entity_tests"
 path = "tests/rust/unit/entity_tests.rs"
 
@@ -382,6 +385,14 @@ path = "tests/rust/ext/graphics_ext_tests.rs"
 [[test]]
 name = "math_ext_tests"
 path = "tests/rust/ext/math_ext_tests.rs"
+
+[[test]]
+name = "terminal_demo_smoke_tests"
+path = "tests/rust/ext/terminal_demo_smoke_tests.rs"
+
+[[test]]
+name = "graphics_runtime_smoke_tests"
+path = "tests/rust/ext/graphics_runtime_smoke_tests.rs"
 
 # === Game-system tests ===
 [[test]]

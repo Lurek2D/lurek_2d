@@ -3,6 +3,7 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use crate::engine::ScreenshotRequest;
 use crate::lua_api::SharedState;
 use crate::graphics::renderer::{BlendMode, CompareMode, DepthMode, DrawCommand, DrawMode, StencilAction, StencilMode, TextAlign};
 use crate::graphics::texture::Texture;
@@ -4423,13 +4424,37 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
 
+    // luna.graphics.saveScreenshot(path)
+    /// Queues a PNG export of the actual rendered frame to a file under `save/`.
+    ///
+    /// The path is validated immediately against the sandboxed `GameFS`, then written
+    /// after the current frame finishes rendering through the normal GPU surface path.
+    ///
+    /// # Parameters
+    /// - `path` — `string`. Relative output path inside `save/`, for example `"save/frame.png"`.
+    ///
+    /// # Returns
+    /// Nothing.
+    let s = state.clone();
+    graphics.set(
+        "saveScreenshot",
+        lua.create_function(move |_, path: String| {
+            {
+                let st = s.borrow();
+                st.fs.resolve_save_path(&path).map_err(LuaError::external)?;
+            }
+            s.borrow_mut().pending_screenshot = Some(ScreenshotRequest { path });
+            Ok(())
+        })?,
+    )?;
+
+
     // luna.graphics.captureScreenshot(callback)
     /// Captures the current frame as an `ImageData` and passes it to `callback`.
     ///
     /// In headless or test mode this creates a blank transparent `ImageData` sized to the
-    /// current window dimensions and calls `callback` synchronously (GPU pixel readback is
-    /// deferred to future full-GPU implementation). Setting `pending_screenshot` in
-    /// `SharedState` allows engine-side code to detect that a capture was requested.
+    /// current window dimensions and calls `callback` synchronously. This remains a stub
+    /// path used for headless and test environments.
     ///
     /// # Parameters
     /// - `callback` â€” `function`. Called with one `ImageData` argument.
@@ -4444,12 +4469,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 let st = s.borrow();
                 (st.window_width, st.window_height)
             };
-            s.borrow_mut().pending_screenshot = true;
             let img = crate::image::ImageData::new(w.max(1), h.max(1));
             let img_ud = lua_ctx.create_userdata(img)?;
-            let result = callback.call::<_, ()>(img_ud);
-            s.borrow_mut().pending_screenshot = false;
-            result
+            callback.call::<_, ()>(img_ud)
         })?,
     )?;
 

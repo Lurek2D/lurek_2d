@@ -4,6 +4,7 @@
   "description": "AI-first IDE support for Luna2D game engine",
   "version": "0.1.0",
   "publisher": "luna2d",
+  "icon": "media/luna-logo.png",
   "engines": {
     "vscode": "^1.90.0"
   },

@@ -7,6 +7,18 @@ use super::item::{GraphItem, ItemPosition};
 use super::node::{Node, OverflowPolicy};
 
 /// Statistics snapshot of the graph state.
+///
+/// # Fields
+/// - `nodes` — `usize`. Total number of nodes.
+/// - `edges` — `usize`. Total number of edges.
+/// - `items` — `usize`. Total number of items.
+/// - `active_nodes` — `usize`. Number of active nodes.
+/// - `active_edges` — `usize`. Number of active edges.
+/// - `items_in_transit` — `usize`. Items currently in transit on edges.
+/// - `items_on_nodes` — `usize`. Items currently sitting on nodes.
+/// - `total_demand` — `i32`. Sum of all demand quantities.
+/// - `total_supply` — `i32`. Sum of all supply quantities.
+/// - `queued_items` — `usize`. Total items in all queues.
 #[derive(Debug, Clone)]
 pub struct GraphStats {
     /// Total number of nodes.
@@ -32,6 +44,11 @@ pub struct GraphStats {
 }
 
 /// A directed graph with typed nodes, edges, and flowing items.
+///
+/// # Fields
+/// - `nodes` — `HashMap<u64, Node>`. All nodes keyed by ID.
+/// - `edges` — `HashMap<u64, Edge>`. All edges keyed by ID.
+/// - `items` — `HashMap<u64, GraphItem>`. All items keyed by ID.
 pub struct Graph {
     /// All nodes keyed by ID.
     pub nodes: HashMap<u64, Node>,
@@ -55,6 +72,9 @@ impl Default for Graph {
 
 impl Graph {
     /// Create an empty graph.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new() -> Self {
         Self {
             nodes: HashMap::new(),
@@ -69,6 +89,13 @@ impl Graph {
     // ---- Node management ----
 
     /// Add a node with the given type and capacity. Returns the new node ID.
+    ///
+    /// # Parameters
+    /// - `node_type` — `&str`. Logical type label for the node.
+    /// - `capacity` — `i32`. Maximum number of items the node can hold.
+    ///
+    /// # Returns
+    /// `u64`. The ID of the newly created node.
     pub fn add_node(&mut self, node_type: &str, capacity: i32) -> u64 {
         let id = self.next_node_id;
         self.next_node_id += 1;
@@ -78,6 +105,12 @@ impl Graph {
 
     /// Remove a node and all connected edges. Items at the node become `Unplaced`.
     /// Returns `true` if the node existed.
+    ///
+    /// # Parameters
+    /// - `node_id` — `u64`. ID of the node to remove.
+    ///
+    /// # Returns
+    /// `bool`. `true` if the node existed and was removed.
     pub fn remove_node(&mut self, node_id: u64) -> bool {
         if self.nodes.remove(&node_id).is_none() {
             return false;
@@ -102,16 +135,28 @@ impl Graph {
     }
 
     /// Whether a node with the given ID exists.
+    ///
+    /// # Parameters
+    /// - `node_id` — `u64`. The node ID to check.
+    ///
+    /// # Returns
+    /// `bool`.
     pub fn has_node(&self, node_id: u64) -> bool {
         self.nodes.contains_key(&node_id)
     }
 
     /// Get all node IDs.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_node_ids(&self) -> Vec<u64> {
         self.nodes.keys().copied().collect()
     }
 
     /// Get the number of nodes.
+    ///
+    /// # Returns
+    /// `usize`.
     pub fn get_node_count(&self) -> usize {
         self.nodes.len()
     }
@@ -119,6 +164,14 @@ impl Graph {
     // ---- Edge management ----
 
     /// Add a directed edge between two existing nodes. Returns the edge ID.
+    ///
+    /// # Parameters
+    /// - `from` — `u64`. Source node ID.
+    /// - `to` — `u64`. Destination node ID.
+    /// - `edge_type` — `Option<&str>`. Logical type label; defaults to `"default"`.
+    ///
+    /// # Returns
+    /// `Result<u64, String>`. The new edge ID, or an error if either node does not exist.
     pub fn add_edge(
         &mut self,
         from: u64,
@@ -139,6 +192,12 @@ impl Graph {
     }
 
     /// Remove an edge. Items in transit on it become `Unplaced`. Returns `true` if it existed.
+    ///
+    /// # Parameters
+    /// - `edge_id` — `u64`. ID of the edge to remove.
+    ///
+    /// # Returns
+    /// `bool`. `true` if the edge existed and was removed.
     pub fn remove_edge(&mut self, edge_id: u64) -> bool {
         if let Some(edge) = self.edges.remove(&edge_id) {
             for &iid in &edge.items_in_transit {
@@ -153,21 +212,40 @@ impl Graph {
     }
 
     /// Whether an edge with the given ID exists.
+    ///
+    /// # Parameters
+    /// - `edge_id` — `u64`. The edge ID to check.
+    ///
+    /// # Returns
+    /// `bool`.
     pub fn has_edge(&self, edge_id: u64) -> bool {
         self.edges.contains_key(&edge_id)
     }
 
     /// Get all edge IDs.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_edge_ids(&self) -> Vec<u64> {
         self.edges.keys().copied().collect()
     }
 
     /// Get the number of edges.
+    ///
+    /// # Returns
+    /// `usize`.
     pub fn get_edge_count(&self) -> usize {
         self.edges.len()
     }
 
     /// Find an edge from `from` to `to` (returns the first match).
+    ///
+    /// # Parameters
+    /// - `from` — `u64`. Source node ID.
+    /// - `to` — `u64`. Destination node ID.
+    ///
+    /// # Returns
+    /// `Option<u64>`. The first matching edge ID, or `None`.
     pub fn get_edge_between(&self, from: u64, to: u64) -> Option<u64> {
         self.edges
             .values()
@@ -178,6 +256,13 @@ impl Graph {
     // ---- Item management ----
 
     /// Create a new item (starts `Unplaced`). Returns the item ID.
+    ///
+    /// # Parameters
+    /// - `item_type` — `&str`. Logical type label for the item.
+    /// - `decay_time` — `f64`. Lifetime in seconds before the item auto-expires (`0.0` = no decay).
+    ///
+    /// # Returns
+    /// `u64`. The ID of the newly created item.
     pub fn create_item(&mut self, item_type: &str, decay_time: f64) -> u64 {
         let id = self.next_item_id;
         self.next_item_id += 1;
@@ -187,6 +272,13 @@ impl Graph {
 
     /// Try to add an existing item to a node, respecting capacity and overflow policy.
     /// Returns `Ok(true)` if placed, `Ok(false)` if rejected or destroyed, `Err` on invalid IDs.
+    ///
+    /// # Parameters
+    /// - `item_id` — `u64`. ID of the item to place.
+    /// - `node_id` — `u64`. ID of the target node.
+    ///
+    /// # Returns
+    /// `Result<bool, String>`.
     pub fn add_item_to_node(&mut self, item_id: u64, node_id: u64) -> Result<bool, String> {
         if !self.items.contains_key(&item_id) {
             return Err(format!("item {item_id} does not exist"));
@@ -228,6 +320,12 @@ impl Graph {
     }
 
     /// Remove an item from the graph entirely.
+    ///
+    /// # Parameters
+    /// - `item_id` — `u64`. ID of the item to remove.
+    ///
+    /// # Returns
+    /// `bool`. `true` if the item existed and was removed.
     pub fn remove_item(&mut self, item_id: u64) -> bool {
         if self.items.remove(&item_id).is_none() {
             return false;
@@ -245,21 +343,40 @@ impl Graph {
     }
 
     /// Whether an item with the given ID exists.
+    ///
+    /// # Parameters
+    /// - `item_id` — `u64`. The item ID to check.
+    ///
+    /// # Returns
+    /// `bool`.
     pub fn has_item(&self, item_id: u64) -> bool {
         self.items.contains_key(&item_id)
     }
 
     /// Get all item IDs.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_item_ids(&self) -> Vec<u64> {
         self.items.keys().copied().collect()
     }
 
     /// Get the number of items.
+    ///
+    /// # Returns
+    /// `usize`.
     pub fn get_item_count(&self) -> usize {
         self.items.len()
     }
 
     /// Send an item onto an edge (start transit). Returns `Ok(true)` if sent.
+    ///
+    /// # Parameters
+    /// - `item_id` — `u64`. ID of the item to send.
+    /// - `edge_id` — `u64`. ID of the edge to send it on.
+    ///
+    /// # Returns
+    /// `Result<bool, String>`.
     pub fn send_item(&mut self, item_id: u64, edge_id: u64) -> Result<bool, String> {
         let item = self
             .items
@@ -308,6 +425,9 @@ impl Graph {
     // ---- Stats ----
 
     /// Compute a statistics snapshot.
+    ///
+    /// # Returns
+    /// `GraphStats`.
     pub fn get_stats(&self) -> GraphStats {
         let mut stats = GraphStats {
             nodes: self.nodes.len(),
@@ -346,6 +466,12 @@ impl Graph {
     // ---- Edge queries ----
 
     /// Get IDs of edges leaving a node.
+    ///
+    /// # Parameters
+    /// - `node_id` — `u64`. The source node ID.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_outgoing_edges(&self, node_id: u64) -> Vec<u64> {
         self.edges
             .values()
@@ -355,6 +481,12 @@ impl Graph {
     }
 
     /// Get IDs of edges arriving at a node.
+    ///
+    /// # Parameters
+    /// - `node_id` — `u64`. The destination node ID.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_incoming_edges(&self, node_id: u64) -> Vec<u64> {
         self.edges
             .values()

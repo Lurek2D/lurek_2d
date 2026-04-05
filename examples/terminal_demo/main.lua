@@ -10,8 +10,28 @@ local classLabel, classList
 local createBtn
 local statusLabel
 local selectedClass = nil
+local smokeMode = false
+local smokeScreenshotPath = "save/terminal_demo_smoke.png"
+local smokeRequested = false
+local smokeQuitNextFrame = false
+
+local function initSmokeMode()
+    local args = luna.system.getArgs()
+    local screenshotPrefix = "--smoke-screenshot="
+
+    for i = 1, #args do
+        local arg = args[i]
+        if arg == "--smoke-terminal-demo" then
+            smokeMode = true
+        elseif arg:sub(1, #screenshotPrefix) == screenshotPrefix then
+            smokeMode = true
+            smokeScreenshotPath = arg:sub(#screenshotPrefix + 1)
+        end
+    end
+end
 
 function luna.load()
+    initSmokeMode()
     luna.graphics.setBackgroundColor(0, 0, 0)
 
     -- Create an 80×25 terminal grid
@@ -141,7 +161,9 @@ end
 -- ── Callbacks ────────────────────────────────────────────────────────────
 
 function luna.update(dt)
-    -- No per-frame logic needed for this demo
+    if smokeQuitNextFrame then
+        luna.event.quit()
+    end
 end
 
 function luna.draw()
@@ -150,6 +172,12 @@ function luna.draw()
     -- Draw a small hint below the terminal
     luna.graphics.setColor(0.4, 0.4, 0.4)
     luna.graphics.print("Terminal Demo  |  Tab = cycle focus  |  ESC = quit", 10, 580, 1)
+
+    if smokeMode and not smokeRequested then
+        luna.graphics.saveScreenshot(smokeScreenshotPath)
+        smokeRequested = true
+        smokeQuitNextFrame = true
+    end
 end
 
 function luna.keypressed(key)

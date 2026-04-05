@@ -6,6 +6,14 @@
 use thiserror::Error;
 
 /// Errors produced by the networking subsystem.
+///
+/// # Variants
+/// - `PeerLimitExceeded` — The requested peer count exceeds `MAX_PEERS`.
+/// - `Io` — A socket-level I/O error occurred.
+/// - `Enet` — An ENet-internal error surfaced from `rusty_enet`.
+/// - `HostDestroyed` — The host has already been destroyed; further calls are invalid.
+/// - `InvalidPeer` — The addressed peer index is out of range.
+/// - `InvalidAddress` — Failed to parse a bind address string.
 #[derive(Debug, Error)]
 pub enum NetworkError {
     /// The requested peer count exceeds [`super::constants::MAX_PEERS`].

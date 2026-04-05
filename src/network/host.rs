@@ -29,6 +29,11 @@ pub struct NetworkHost {
 }
 
 /// Result of a single [`NetworkHost::service`] call.
+///
+/// # Variants
+/// - `Connect` — A remote peer completed the connection handshake.
+/// - `Disconnect` — A remote peer disconnected (gracefully or timed out).
+/// - `Receive` — A data packet arrived from a remote peer.
 pub enum NetworkEvent {
     /// A remote peer completed the connection handshake.
     Connect {
@@ -197,6 +202,9 @@ impl NetworkHost {
     /// # Parameters
     /// - `channel_id` — `u8`: channel to broadcast on.
     /// - `packet` — `&Packet`: the packet data.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn broadcast(&mut self, channel_id: u8, packet: &Packet) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.broadcast(channel_id, packet);
@@ -204,6 +212,9 @@ impl NetworkHost {
     }
 
     /// Flush all queued packets without waiting for the next `service()`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn flush(&mut self) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.flush();
@@ -215,6 +226,9 @@ impl NetworkHost {
     /// # Parameters
     /// - `peer_id` — `PeerID`.
     /// - `data` — `u32`: application data sent with the disconnect event.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn disconnect(&mut self, peer_id: PeerID, data: u32) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.peer_mut(peer_id).disconnect(data);
@@ -226,6 +240,9 @@ impl NetworkHost {
     /// # Parameters
     /// - `peer_id` — `PeerID`.
     /// - `data` — `u32`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn disconnect_now(&mut self, peer_id: PeerID, data: u32) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.peer_mut(peer_id).disconnect_now(data);
@@ -237,6 +254,9 @@ impl NetworkHost {
     /// # Parameters
     /// - `peer_id` — `PeerID`.
     /// - `data` — `u32`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn disconnect_later(&mut self, peer_id: PeerID, data: u32) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.peer_mut(peer_id).disconnect_later(data);
@@ -247,6 +267,9 @@ impl NetworkHost {
     ///
     /// # Parameters
     /// - `peer_id` — `PeerID`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn reset_peer(&mut self, peer_id: PeerID) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.peer_mut(peer_id).reset();
@@ -257,6 +280,9 @@ impl NetworkHost {
     ///
     /// # Parameters
     /// - `peer_id` — `PeerID`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn ping(&mut self, peer_id: PeerID) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.peer_mut(peer_id).ping();
@@ -350,6 +376,9 @@ impl NetworkHost {
     ///
     /// # Parameters
     /// - `limit` — `usize`.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn set_channel_limit(&mut self, limit: usize) -> Result<(), NetworkError> {
         let host = self.host_mut()?;
         host.set_channel_limit(limit)
@@ -370,6 +399,9 @@ impl NetworkHost {
     /// # Parameters
     /// - `incoming` — `Option<u32>`: bytes/sec, `None` for unlimited.
     /// - `outgoing` — `Option<u32>`: bytes/sec, `None` for unlimited.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
     pub fn set_bandwidth_limit(
         &mut self,
         incoming: Option<u32>,
@@ -397,6 +429,9 @@ impl NetworkHost {
     }
 
     /// Returns `true` if the host has been destroyed.
+    ///
+    /// # Returns
+    /// `bool`.
     pub fn is_destroyed(&self) -> bool {
         self.inner.is_none()
     }

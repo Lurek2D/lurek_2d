@@ -2172,7 +2172,7 @@ fn try_errorhandler_or_screen(lua: &Lua, err: &mlua::Error) -> ErrorScreen {
 fn make_splash_commands(
     width: u32,
     height: u32,
-    time: f64,
+    _time: f64,
     title_key: FontKey,
     small_key: FontKey,
     fonts: &mut SlotMap<FontKey, crate::graphics::Font>,
@@ -2180,7 +2180,6 @@ fn make_splash_commands(
 ) -> Vec<DrawCommand> {
     let cx = width as f32 / 2.0;
     let cy = height as f32 / 2.0;
-    let t = time as f32;
 
     // ── Text ─────────────────────────────────────────────────────────────────
     let title_text = "LUNA2D";
@@ -2213,144 +2212,142 @@ fn make_splash_commands(
     let logo_x = cx;
     let logo_y = cy - 30.0;
 
-    // ── Gear (rotates slowly, sits at centre of logo group) ──────────────────
-    let gear_r_outer = 52.0f32;
-    let gear_r_inner = 36.0f32;
-    let gear_teeth: usize = 10;
-    let gear_spin = t * 0.35; // ~20 rpm
-    {
-        // pre-build flat vertices for gear polygon: outer (tip) / inner (root), alternating
-    }
-    let gear_vertices: Vec<f32> = {
-        let n = gear_teeth * 2;
-        (0..n)
-            .flat_map(|i| {
-                let angle = gear_spin + (i as f32 / n as f32) * std::f32::consts::TAU;
-                let r = if i % 2 == 0 {
-                    gear_r_outer
-                } else {
-                    gear_r_inner
-                };
-                let (s, c) = angle.sin_cos();
-                [logo_x + c * r, logo_y + s * r]
-            })
-            .collect()
-    };
+    // ── Combined moon + gear + pacman mark ───────────────────────────────────
+    // 9 wide teeth with explicit radial rise/fall walls — cog look, not sun-ray look.
+    let mark_r_outer = 62.0_f32;
+    let mark_r_inner = 44.0_f32;
+    let gear_teeth: usize = 9;
+    let mouth_half = 36.0_f32.to_radians();
+    let tooth_top_frac = 0.50_f32;
+    let gap_frac = 1.0_f32 - tooth_top_frac;
+    let sweep = std::f32::consts::TAU - 2.0 * mouth_half;
+    let per_tooth = sweep / gear_teeth as f32;
+    const GEAR_ARC: usize = 4; // arc subdivision steps per tooth/gap
+    let mark_vertices: Vec<f32> = {
+        let mut pts = Vec::new();
+        pts.push(logo_x);
+        pts.push(logo_y);
 
-    // ── Pacman (pie polygon overlaid on gear hub) ─────────────────────────────
-    let pac_r = 30.0f32;
-    let pac_x = logo_x;
-    let pac_y = logo_y;
-    let mouth_half = (t * 2.8).sin().abs() * 0.4 + 0.08; // 0.08 → 0.48 rad
-    let pac_start = mouth_half;
-    let pac_end = std::f32::consts::TAU - mouth_half;
-    let pac_segs: usize = 40;
-    let pac_vertices: Vec<f32> = {
-        let mut pts = vec![pac_x, pac_y]; // centre of pie
-        (0..=pac_segs).for_each(|i| {
-            let angle = pac_start + (pac_end - pac_start) * (i as f32 / pac_segs as f32);
-            let (s, c) = angle.sin_cos();
-            pts.push(pac_x + c * pac_r);
-            pts.push(pac_y + s * pac_r);
-        });
+        for i in 0..gear_teeth {
+            let a_rise = mouth_half + i as f32 * per_tooth;
+            let a_fall = a_rise + tooth_top_frac * per_tooth;
+            let a_next = a_fall + gap_frac * per_tooth;
+
+            // Radial rise wall: inner → outer (same angle, both radii)
+            let (s, c) = a_rise.sin_cos();
+            pts.push(logo_x + c * mark_r_inner);
+            pts.push(logo_y + s * mark_r_inner);
+            pts.push(logo_x + c * mark_r_outer);
+            pts.push(logo_y + s * mark_r_outer);
+
+            // Tooth top arc at outer radius
+            for j in 1..GEAR_ARC {
+                let a = a_rise + (j as f32 / GEAR_ARC as f32) * (a_fall - a_rise);
+                let (s, c) = a.sin_cos();
+                pts.push(logo_x + c * mark_r_outer);
+                pts.push(logo_y + s * mark_r_outer);
+            }
+
+            // Radial fall wall: outer → inner (same angle, both radii)
+            let (s, c) = a_fall.sin_cos();
+            pts.push(logo_x + c * mark_r_outer);
+            pts.push(logo_y + s * mark_r_outer);
+            pts.push(logo_x + c * mark_r_inner);
+            pts.push(logo_y + s * mark_r_inner);
+
+            // Gap arc at inner radius
+            for j in 1..GEAR_ARC {
+                let a = a_fall + (j as f32 / GEAR_ARC as f32) * (a_next - a_fall);
+                let (s, c) = a.sin_cos();
+                pts.push(logo_x + c * mark_r_inner);
+                pts.push(logo_y + s * mark_r_inner);
+            }
+        }
+
+        // Final: inner radius at end of last gap (TAU - mouth_half)
+        let (s, c) = (std::f32::consts::TAU - mouth_half).sin_cos();
+        pts.push(logo_x + c * mark_r_inner);
+        pts.push(logo_y + s * mark_r_inner);
+
         pts
     };
-
-    // ── 3D box: travels from right toward pacman, fades when fully eaten ──────
-    let cycle = 2.6f32;
-    let ct = (t % cycle) / cycle; // 0.0..1.0 per cycle
-    let box_sx = pac_x + 85.0;
-    let box_ex = pac_x + pac_r - 4.0; // arrives at Pacman mouth
-    let bx = box_sx + (box_ex - box_sx) * ct;
-    let box_alpha = if ct > 0.80 {
-        ((1.0 - ct) / 0.20).max(0.0)
-    } else {
-        1.0
-    };
-    let bs = 18.0f32; // box size
-    let bd = 8.0f32; // iso depth
-    let by = pac_y - bs * 0.5;
-
-    // ── Moon crescent (upper-left of logo group) ──────────────────────────────
-    let moon_pulse = 1.0 + (t * 1.5).sin() * 0.04;
-    let mr = 55.0f32 * moon_pulse;
-    let moon_x = logo_x - 95.0;
-    let moon_y = logo_y - 18.0;
+    let cutout_x = logo_x + 16.0;
+    let cutout_y = logo_y - 2.0;
+    let cutout_r = 35.0_f32;
+    let eye_x = logo_x - 12.0;
+    let eye_y = logo_y - 24.0;
+    let eye_r = 5.0_f32;
+    let cube_size = 12.0_f32;
+    let cube_x = logo_x + mark_r_outer + 16.0; // just outside mouth tip
+    let cube_y = logo_y; // centred on the horizontal mouth axis (was logo_y - 4.0)
 
     let mut cmds: Vec<DrawCommand> = Vec::new();
 
-    // ── Gear: steel gray ─────────────────────────────────────────────────────
-    cmds.push(DrawCommand::SetColor(0.45, 0.50, 0.56, 1.0));
+    // ── Static incoming cube ─────────────────────────────────────────────────
+    cmds.push(DrawCommand::SetColor(0.47, 0.71, 0.95, 1.0));
     cmds.push(DrawCommand::Polygon {
         mode: DrawMode::Fill,
-        vertices: gear_vertices,
+        vertices: vec![
+            cube_x,
+            cube_y - cube_size,
+            cube_x + cube_size,
+            cube_y - cube_size * 0.5,
+            cube_x,
+            cube_y,
+            cube_x - cube_size,
+            cube_y - cube_size * 0.5,
+        ],
     });
-    // Gear hub cutout (darker circle)
-    cmds.push(DrawCommand::SetColor(0.28, 0.32, 0.38, 1.0));
-    cmds.push(DrawCommand::Circle {
-        mode: DrawMode::Fill,
-        x: logo_x,
-        y: logo_y,
-        r: gear_r_inner * 0.55,
-    });
-
-    // ── 3D box: blue cube (three visible faces) ───────────────────────────────
-    if box_alpha > 0.01 {
-        let a = box_alpha;
-        // Top face
-        cmds.push(DrawCommand::SetColor(0.35 * a, 0.55 * a, 0.85 * a, a));
-        cmds.push(DrawCommand::Polygon {
-            mode: DrawMode::Fill,
-            vertices: vec![bx, by, bx + bs, by, bx + bs + bd, by - bd, bx + bd, by - bd],
-        });
-        // Right face
-        cmds.push(DrawCommand::SetColor(0.18 * a, 0.35 * a, 0.70 * a, a));
-        cmds.push(DrawCommand::Polygon {
-            mode: DrawMode::Fill,
-            vertices: vec![
-                bx + bs,
-                by,
-                bx + bs + bd,
-                by - bd,
-                bx + bs + bd,
-                by - bd + bs,
-                bx + bs,
-                by + bs,
-            ],
-        });
-        // Front face
-        cmds.push(DrawCommand::SetColor(0.28 * a, 0.46 * a, 0.80 * a, a));
-        cmds.push(DrawCommand::Rectangle {
-            mode: DrawMode::Fill,
-            x: bx,
-            y: by,
-            w: bs,
-            h: bs,
-        });
-    }
-
-    // ── Pacman: golden yellow ─────────────────────────────────────────────────
-    cmds.push(DrawCommand::SetColor(0.97, 0.87, 0.18, 1.0));
+    cmds.push(DrawCommand::SetColor(0.30, 0.53, 0.82, 1.0));
     cmds.push(DrawCommand::Polygon {
         mode: DrawMode::Fill,
-        vertices: pac_vertices,
+        vertices: vec![
+            cube_x - cube_size,
+            cube_y - cube_size * 0.5,
+            cube_x,
+            cube_y,
+            cube_x,
+            cube_y + cube_size,
+            cube_x - cube_size,
+            cube_y + cube_size * 0.5,
+        ],
+    });
+    cmds.push(DrawCommand::SetColor(0.17, 0.36, 0.66, 1.0));
+    cmds.push(DrawCommand::Polygon {
+        mode: DrawMode::Fill,
+        vertices: vec![
+            cube_x,
+            cube_y,
+            cube_x + cube_size,
+            cube_y - cube_size * 0.5,
+            cube_x + cube_size,
+            cube_y + cube_size * 0.5,
+            cube_x,
+            cube_y + cube_size,
+        ],
     });
 
-    // ── Moon crescent ─────────────────────────────────────────────────────────
-    cmds.push(DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0));
-    cmds.push(DrawCommand::Circle {
+    // ── Single Luna mark: moon + gear + pacman in one static silhouette ──────
+    cmds.push(DrawCommand::SetColor(0.55, 0.82, 0.93, 1.0));
+    cmds.push(DrawCommand::Polygon {
         mode: DrawMode::Fill,
-        x: moon_x,
-        y: moon_y,
-        r: mr,
+        vertices: mark_vertices,
     });
-    // Shadow disc (carved from background colour)
+
     cmds.push(DrawCommand::SetColor(0.12, 0.08, 0.20, 1.0));
     cmds.push(DrawCommand::Circle {
         mode: DrawMode::Fill,
-        x: moon_x + 22.0,
-        y: moon_y - 14.0,
-        r: mr * 0.84,
+        x: cutout_x,
+        y: cutout_y,
+        r: cutout_r,
+    });
+
+    cmds.push(DrawCommand::SetColor(0.07, 0.05, 0.12, 1.0));
+    cmds.push(DrawCommand::Circle {
+        mode: DrawMode::Fill,
+        x: eye_x,
+        y: eye_y,
+        r: eye_r,
     });
 
     // ── Text ──────────────────────────────────────────────────────────────────

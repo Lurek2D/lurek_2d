@@ -6,6 +6,11 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 use super::core::Graph;
 
 /// Result of a successful pathfinding query.
+///
+/// # Fields
+/// - `nodes` — `Vec<u64>`. Ordered sequence of node IDs from source to destination.
+/// - `edges` — `Vec<u64>`. Ordered sequence of edge IDs traversed.
+/// - `cost` — `f64`. Total path cost (sum of edge weights).
 #[derive(Debug, Clone)]
 pub struct PathResult {
     /// Ordered sequence of node IDs from source to destination.
@@ -45,6 +50,13 @@ impl Ord for DijkstraState {
 impl Graph {
     /// Find the shortest path from `from` to `to` using Dijkstra's algorithm.
     /// Uses edge `weight` as cost. Returns `None` if no path exists.
+    ///
+    /// # Parameters
+    /// - `from` — `u64`. Source node ID.
+    /// - `to` — `u64`. Destination node ID.
+    ///
+    /// # Returns
+    /// `Option<PathResult>`.
     pub fn find_path(&self, from: u64, to: u64) -> Option<PathResult> {
         if !self.has_node(from) || !self.has_node(to) {
             return None;
@@ -109,6 +121,14 @@ impl Graph {
 
     /// Find a path that only uses edges the given item can traverse.
     /// Filters by: edge active, item type allowed, not on cooldown.
+    ///
+    /// # Parameters
+    /// - `item_id` — `u64`. ID of the item to route.
+    /// - `from` — `u64`. Source node ID.
+    /// - `to` — `u64`. Destination node ID.
+    ///
+    /// # Returns
+    /// `Option<PathResult>`.
     pub fn find_path_for_item(&self, item_id: u64, from: u64, to: u64) -> Option<PathResult> {
         let item_type = self.items.get(&item_id)?.item_type.clone();
 
@@ -177,11 +197,25 @@ impl Graph {
     }
 
     /// Get the shortest-path distance between two nodes, or `None` if unreachable.
+    ///
+    /// # Parameters
+    /// - `from` — `u64`. Source node ID.
+    /// - `to` — `u64`. Destination node ID.
+    ///
+    /// # Returns
+    /// `Option<f64>`.
     pub fn get_distance(&self, from: u64, to: u64) -> Option<f64> {
         self.find_path(from, to).map(|p| p.cost)
     }
 
     /// Get all nodes reachable from `from`, optionally limited by max distance.
+    ///
+    /// # Parameters
+    /// - `from` — `u64`. Source node ID.
+    /// - `max_dist` — `Option<f64>`. Optional maximum travel cost cutoff.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_reachable(&self, from: u64, max_dist: Option<f64>) -> Vec<u64> {
         if !self.has_node(from) {
             return Vec::new();
@@ -242,6 +276,12 @@ impl Graph {
     }
 
     /// Get direct outgoing neighbors of a node.
+    ///
+    /// # Parameters
+    /// - `node_id` — `u64`. The node to query.
+    ///
+    /// # Returns
+    /// `Vec<u64>`.
     pub fn get_neighbors(&self, node_id: u64) -> Vec<u64> {
         let mut result = HashSet::new();
         for edge in self.edges.values() {

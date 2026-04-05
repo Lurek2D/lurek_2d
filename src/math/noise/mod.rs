@@ -7,7 +7,9 @@
 //! - [`functions`] — standalone `perlin2d`, `simplex2d`, `fbm`, etc.
 //! - [`generator`] — `NoiseGenerator`, `DistType`, `NoiseKind`, `FractalType`, `MapGenOptions`.
 
+/// Standalone noise functions: `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, `simplex_noise_2d`, `simplex_noise_3d`, and fractal Brownian motion (`fbm`).
 pub mod functions;
+/// Configurable noise generator: `NoiseGenerator`, `NoiseKind`, `FractalType`, `DistType`, and `MapGenOptions` for seeded, multi-octave noise maps.
 pub mod generator;
 
 pub use functions::{

@@ -23,7 +23,7 @@ use winit::window::{Window, WindowId};
 use crate::graphics::renderer::{DrawCommand, DrawMode};
 use crate::graphics::GpuRenderer;
 use crate::input::keyboard::winit_key_to_string;
-use crate::lua_api::{SharedState, create_lua_vm};
+use crate::lua_api::{create_lua_vm, SharedState};
 use crate::timer::Clock;
 
 use super::config::Config;
@@ -197,7 +197,9 @@ impl LunaApp {
     }
 
     fn game_update(&mut self) {
-        let (Some(lua), Some(state)) = (&self.lua, &self.state) else { return };
+        let (Some(lua), Some(state)) = (&self.lua, &self.state) else {
+            return;
+        };
         call_lua_callback(lua, "update", self.clock.last_dt() as f64);
 
         state.borrow_mut().draw_commands.clear();
@@ -213,7 +215,11 @@ impl LunaApp {
 
         let (commands, textures, bg) = {
             let st = state.borrow();
-            (st.draw_commands.clone(), st.textures.clone(), st.background_color)
+            (
+                st.draw_commands.clone(),
+                st.textures.clone(),
+                st.background_color,
+            )
         };
 
         if let Err(e) = renderer.render_frame(surface, &commands, &textures, bg) {
@@ -261,7 +267,9 @@ impl LunaApp {
     }
 
     fn handle_resize(&mut self, width: u32, height: u32) {
-        if width == 0 || height == 0 { return; }
+        if width == 0 || height == 0 {
+            return;
+        }
         let (Some(renderer), Some(surface)) = (&mut self.renderer, &self.surface) else {
             return;
         };
@@ -289,7 +297,9 @@ impl LunaApp {
 
 impl ApplicationHandler for LunaApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        if self.window.is_some() { return; } // already initialised
+        if self.window.is_some() {
+            return;
+        } // already initialised
 
         let window_attrs = Window::default_attributes()
             .with_title(&self.config.window.title)
@@ -310,12 +320,7 @@ impl ApplicationHandler for LunaApp {
         self.last_frame = Instant::now();
     }
 
-    fn window_event(
-        &mut self,
-        event_loop: &ActiveEventLoop,
-        _id: WindowId,
-        event: WindowEvent,
-    ) {
+    fn window_event(&mut self, event_loop: &ActiveEventLoop, _id: WindowId, event: WindowEvent) {
         match event {
             WindowEvent::CloseRequested => {
                 log::info!("Window close requested.");
@@ -373,7 +378,11 @@ impl ApplicationHandler for LunaApp {
                 }
             }
 
-            WindowEvent::MouseInput { state: btn_state, button, .. } => {
+            WindowEvent::MouseInput {
+                state: btn_state,
+                button,
+                ..
+            } => {
                 let idx = match button {
                     MouseButton::Left => Some(0),
                     MouseButton::Right => Some(1),
@@ -445,11 +454,20 @@ pub struct App {
 
 impl App {
     /// Creates a new `App` with the given `Config`.
+    ///
+    /// # Parameters
+    /// - `config` — `Config`. Engine configuration loaded from `conf.lua`.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(config: Config) -> Self {
         App { config }
     }
 
     /// Initialises the GPU, window, Lua VM, and runs the event loop until the game exits.
+    ///
+    /// # Parameters
+    /// - `game_dir` — `PathBuf`. Path to the game directory containing `main.lua`.
     pub fn run(self, game_dir: PathBuf) {
         env_logger::init();
         log::info!("Luna2D Engine starting (wgpu GPU backend)…");
@@ -483,23 +501,39 @@ fn make_splash_commands(width: u32, height: u32, time: f64) -> Vec<DrawCommand> 
     let moon_r = 60.0 * pulse;
     vec![
         DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0),
-        DrawCommand::Circle { mode: DrawMode::Fill, x: cx, y: cy - 40.0, r: moon_r },
+        DrawCommand::Circle {
+            mode: DrawMode::Fill,
+            x: cx,
+            y: cy - 40.0,
+            r: moon_r,
+        },
         DrawCommand::SetColor(0.12, 0.08, 0.20, 1.0),
-        DrawCommand::Circle { mode: DrawMode::Fill, x: cx + 25.0, y: cy - 55.0, r: moon_r * 0.85 },
+        DrawCommand::Circle {
+            mode: DrawMode::Fill,
+            x: cx + 25.0,
+            y: cy - 55.0,
+            r: moon_r * 0.85,
+        },
         DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0),
         DrawCommand::Print {
             text: "LUNA2D".to_string(),
-            x: cx - 54.0, y: cy + 50.0, scale: 3.0,
+            x: cx - 54.0,
+            y: cy + 50.0,
+            scale: 3.0,
         },
         DrawCommand::SetColor(0.6, 0.55, 0.7, 1.0),
         DrawCommand::Print {
             text: "2D Game Engine".to_string(),
-            x: cx - 84.0, y: cy + 85.0, scale: 2.0,
+            x: cx - 84.0,
+            y: cy + 85.0,
+            scale: 2.0,
         },
         DrawCommand::SetColor(0.4, 0.35, 0.5, 1.0),
         DrawCommand::Print {
             text: "v0.2.0".to_string(),
-            x: cx - 36.0, y: cy + 115.0, scale: 2.0,
+            x: cx - 36.0,
+            y: cy + 115.0,
+            scale: 2.0,
         },
     ]
 }

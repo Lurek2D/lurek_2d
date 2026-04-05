@@ -5,16 +5,61 @@
 local x, y = 400, 300
 local speed = 200
 local size = 40
-local icon  -- Image handle loaded via newImage
+local icon  -- Image handle created from local ImageData
+local smokeMode = false
+local smokeScreenshotPath = "save/sprites_smoke.png"
+local smokeRequested = false
+local smokeQuitNextFrame = false
+
+local function initSmokeMode()
+    local args = luna.system.getArgs()
+    local screenshotPrefix = "--smoke-screenshot="
+
+    for i = 1, #args do
+        local arg = args[i]
+        if arg == "--smoke-sprites" then
+            smokeMode = true
+        elseif arg:sub(1, #screenshotPrefix) == screenshotPrefix then
+            smokeMode = true
+            smokeScreenshotPath = arg:sub(#screenshotPrefix + 1)
+        end
+    end
+end
+
+local function createIcon()
+    local imageData = luna.image.newImageData(16, 16)
+
+    for py = 0, 15 do
+        for px = 0, 15 do
+            if px == 0 or px == 15 or py == 0 or py == 15 then
+                imageData:setPixel(px, py, 0, 0, 0, 0)
+            elseif px == py or px + py == 15 then
+                imageData:setPixel(px, py, 255, 255, 255, 255)
+            elseif py < 8 then
+                imageData:setPixel(px, py, 64, 160, 255, 255)
+            else
+                imageData:setPixel(px, py, 32, 96, 220, 255)
+            end
+        end
+    end
+
+    return luna.graphics.newImage(imageData)
+end
 
 function luna.load()
+    initSmokeMode()
     luna.window.setTitle("Movement Demo - Luna2D")
     luna.graphics.setBackgroundColor(0.08, 0.08, 0.18)
-    -- Load an Image; luna.graphics.draw() dispatches based on type
-    icon = luna.graphics.newImage("assets/icon.png")
+    -- Create a small sprite image locally; luna.graphics.draw() dispatches based on type
+    icon = createIcon()
 end
 
 function luna.update(dt)
+    if smokeQuitNextFrame then
+        luna.event.quit()
+        return
+    end
+
     if luna.keyboard.isDown("up") or luna.keyboard.isDown("w") then
         y = y - speed * dt
     end
@@ -62,4 +107,10 @@ function luna.draw()
 
     -- Position info
     luna.graphics.print("X:" .. tostring(luna.math.floor(x)) .. " Y:" .. tostring(luna.math.floor(y)), 10, 570, 2)
+
+    if smokeMode and not smokeRequested then
+        luna.graphics.saveScreenshot(smokeScreenshotPath)
+        smokeRequested = true
+        smokeQuitNextFrame = true
+    end
 end

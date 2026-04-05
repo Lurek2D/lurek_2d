@@ -35,11 +35,15 @@ try:
 except ImportError:
     HAVE_PILLOW = False
 
-HAVE_CAIROSVG = False
+try:
+    import cairosvg
+    HAVE_CAIROSVG = True
+except (ImportError, OSError):
+    HAVE_CAIROSVG = False
 
 # ── Paths ───────────────────────────────────────────────────────────────
 WORKSPACE = Path(__file__).resolve().parent.parent
-SVG_SOURCE = WORKSPACE / "assets" / "splash.svg"
+SVG_SOURCE = WORKSPACE / "assets" / "svg" / "splash.svg"
 OUTPUT_DEFAULT = WORKSPACE / "assets" / "splash.png"
 ICON_OUTPUT_DEFAULT = WORKSPACE / "assets" / "icon.png"
 
@@ -86,60 +90,88 @@ def draw_stars(draw: ImageDraw.ImageDraw) -> None:
         draw.ellipse([x - r, y - r, x + r, y + r], fill=col)
 
 
-# ── Moon ───────────────────────────────────────────────────────────────────────
+# ── Luna mark ─────────────────────────────────────────────────────────────────
 
-def draw_moon(img: Image.Image) -> None:
-    """Draw a light blue gear-pacman eating a gray cube in the upper-right region."""
-    moon_layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-    d = ImageDraw.Draw(moon_layer)
+def draw_logo(img: Image.Image) -> None:
+    """Draw the single combined moon + gear + pacman mark plus the incoming cube."""
+    logo_layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+    d = ImageDraw.Draw(logo_layer)
 
     px, py = 500, 180
-    r = 100
+    gear_inner = 90
+    gear_outer = 114
+    mouth_half = math.radians(36)
+    n_teeth = 9
+    tooth_frac = 0.50
+    gap_frac = 1.0 - tooth_frac
+    sweep = math.tau - 2 * mouth_half
+    per_tooth = sweep / n_teeth
+    arc_steps = 4
 
-    # Glow light blue
-    for gr in range(r + 40, r - 1, -2):
-        alpha = max(0, int(40 * (1 - (gr - r) / 40)))
-        d.ellipse([px - gr, py - gr, px + gr, py + gr], fill=(130, 200, 250, alpha))
+    # Cube centred on the horizontal mouth axis (cy = py, not py - 8)
+    cx, cy = px + 148, py
+    cr = 22
+    d.polygon(
+        [(cx, cy - cr), (cx + cr, cy - cr // 2), (cx, cy), (cx - cr, cy - cr // 2)],
+        fill=(120, 182, 242, 255),
+    )
+    d.polygon(
+        [(cx - cr, cy - cr // 2), (cx, cy), (cx, cy + cr), (cx - cr, cy + cr // 2)],
+        fill=(77, 135, 210, 255),
+    )
+    d.polygon(
+        [(cx, cy), (cx + cr, cy - cr // 2), (cx + cr, cy + cr // 2), (cx, cy + cr)],
+        fill=(44, 93, 168, 255),
+    )
 
-    # Draw gear teeth along the outer rim
-    num_teeth = 12
-    tooth_h = 20
-    tooth_w_angle = math.pi * 2 / (num_teeth * 2)
-
-    start_angle = math.radians(35)
-    end_angle = math.radians(360 - 35)
-
+    # Build gear polygon: 9 teeth with explicit radial rise/fall walls  (cog, not sun)
     pts = [(px, py)]
-    steps = 200
-    for i in range(steps + 1):
-        angle = start_angle + (end_angle - start_angle) * i / steps
-        angle_norm = angle % (math.pi * 2)
-        rem = angle_norm % (math.pi * 2 / num_teeth)
+    for i in range(n_teeth):
+        a_rise = mouth_half + i * per_tooth
+        a_fall = a_rise + tooth_frac * per_tooth
+        a_next = a_fall + gap_frac * per_tooth
 
-        rad = r
-        if rem > tooth_w_angle * 0.5 and rem < tooth_w_angle * 1.5:
-            rad = r + tooth_h
+        # Radial rise wall: inner -> outer at same angle
+        pts.append((px + gear_inner * math.cos(a_rise), py + gear_inner * math.sin(a_rise)))
+        pts.append((px + gear_outer * math.cos(a_rise), py + gear_outer * math.sin(a_rise)))
 
-        x = px + rad * math.cos(angle)
-        y = py + rad * math.sin(angle)
-        pts.append((x, y))
+        # Tooth top arc at outer radius
+        for j in range(1, arc_steps):
+            a = a_rise + j / arc_steps * (a_fall - a_rise)
+            pts.append((px + gear_outer * math.cos(a), py + gear_outer * math.sin(a)))
 
-    d.polygon(pts, fill=(130, 200, 250, 255))
+        # Radial fall wall: outer -> inner at same angle
+        pts.append((px + gear_outer * math.cos(a_fall), py + gear_outer * math.sin(a_fall)))
+        pts.append((px + gear_inner * math.cos(a_fall), py + gear_inner * math.sin(a_fall)))
 
-    # Eye
-    eye_x, eye_y = px + int(r * 0.1), py - int(r * 0.5)
-    eye_r = 15
-    d.ellipse([eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r], fill=(22, 12, 48, 255))
+        # Gap arc at inner radius
+        for j in range(1, arc_steps):
+            a = a_fall + j / arc_steps * (a_next - a_fall)
+            pts.append((px + gear_inner * math.cos(a), py + gear_inner * math.sin(a)))
 
-    # Draw the gray cube
-    cx, cy = px + 120, py
-    cr = 40
+    # Close at end of last gap
+    a_end = math.tau - mouth_half
+    pts.append((px + gear_inner * math.cos(a_end), py + gear_inner * math.sin(a_end)))
 
-    d.polygon([(cx, cy - cr), (cx + cr, cy - cr//2), (cx, cy), (cx - cr, cy - cr//2)], fill=(170, 170, 170, 255))
-    d.polygon([(cx - cr, cy - cr//2), (cx, cy), (cx, cy + cr), (cx - cr, cy + cr//2)], fill=(130, 130, 130, 255))
-    d.polygon([(cx, cy), (cx + cr, cy - cr//2), (cx + cr, cy + cr//2), (cx, cy + cr)], fill=(90, 90, 90, 255))
+    d.polygon(pts, fill=(142, 200, 232, 255))
 
-    img.alpha_composite(moon_layer)
+    cutout_x = px + 26
+    cutout_y = py - 6
+    cutout_r = 66
+    d.ellipse(
+        [cutout_x - cutout_r, cutout_y - cutout_r, cutout_x + cutout_r, cutout_y + cutout_r],
+        fill=(30, 10, 64, 255),
+    )
+
+    # Position eye in the visible crescent area (outside the dark cutout)
+    eye_x, eye_y = px - 38, py - 45
+    eye_r = 12
+    d.ellipse(
+        [eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r],
+        fill=(22, 12, 48, 255),
+    )
+
+    img.alpha_composite(logo_layer)
 
 
 # ── Orbit arc ─────────────────────────────────────────────────────────────────
@@ -220,7 +252,7 @@ def draw_title(img: Image.Image) -> None:
 
     title = "LUNA2D"
     subtitle = "2D GAME ENGINE"
-    powered = "Powered by Rust  ·  Lua 5.4  ·  tiny-skia"
+    powered = "Powered by Rust  ·  LuaJIT  ·  wgpu"
 
     # ── Glow effect: draw title blurred in a separate layer ──────────────
     glow_layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
@@ -303,9 +335,8 @@ def generate_splash(output: Path, *, prefer_svg: bool = True) -> None:
 
     draw_layer = ImageDraw.Draw(img, "RGBA")
     draw_stars(draw_layer)
-    draw_orbit(draw_layer)
 
-    draw_moon(img)
+    draw_logo(img)
 
     draw_layer = ImageDraw.Draw(img, "RGBA")
     draw_star4(draw_layer, 260, 270, 12, (200, 160, 30, 180))

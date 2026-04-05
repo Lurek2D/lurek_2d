@@ -6,9 +6,13 @@
 //! Architecture: Tier 2. Depends only on `crate::math` and `crate::engine`.
 //! Does not import `mlua` or any other Tier-2 crate module.
 
+/// DAG node and edge types; the `Pipeline` container and its `run` / `run_async` entry points.
 pub mod dag;
+/// `PipelineResult` and `PipelineStatus` returned after pipeline execution.
 pub mod result;
+/// `PipelineScheduler` — time-based dispatch that triggers pipelines on tick or interval.
 pub mod scheduler;
+/// `PipelineStep` definition, `StepStatus`, and `ErrorPolicy` for individual pipeline nodes.
 pub mod step;
 
 pub use dag::{ErrorMode, Pipeline};

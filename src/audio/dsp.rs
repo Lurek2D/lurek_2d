@@ -5,66 +5,57 @@ use std::sync::{Arc, RwLock};
 use crate::engine::log_messages::{DP01, DP02, DP03};
 use crate::log_msg;
 
+/// Thread-safe atomic `f32` parameter backed by an `AtomicU32` bit-cast.
+///
+/// Allows lock-free reads and writes across the audio thread and the main
+/// engine thread without requiring a `Mutex`.
+///
+/// # Fields
+/// - `val` — `AtomicU32` storing the bit pattern of the `f32` value.
 #[derive(Debug)]
-
-/// Thread-safe atomic parameter.
-///
-/// # Fields
-/// - al — AtomicU32.
-/// Thread-safe atomic parameter.
-///
-/// # Fields
-/// - al — AtomicU32.
 pub struct AtomicParam {
     val: AtomicU32,
 }
 
 impl AtomicParam {
-    /// Creates a new param.
+    /// Creates a new `AtomicParam` initialised to `val`.
     ///
     /// # Parameters
-    /// - al — 32.
+    /// - `val` — `f32`. Initial parameter value.
     ///
     /// # Returns
-    /// Self.
-    /// Creates a new param.
-    ///
-    /// # Parameters
-    /// - al — 32.
-    ///
-    /// # Returns
-    /// Self.
+    /// `Self`.
     pub fn new(val: f32) -> Self {
         Self {
             val: AtomicU32::new(val.to_bits()),
         }
     }
 
-    /// Gets the value.
+    /// Returns the current value, loaded with `Relaxed` ordering.
     ///
     /// # Returns
-    /// 32.
-    /// Gets the value.
-    ///
-    /// # Returns
-    /// 32.
+    /// `f32`.
     pub fn get(&self) -> f32 {
         f32::from_bits(self.val.load(Ordering::Relaxed))
     }
 
-    /// Sets the value.
+    /// Stores a new value with `Relaxed` ordering.
     ///
     /// # Parameters
-    /// - al — 32.
-    /// Sets the value.
-    ///
-    /// # Parameters
-    /// - al — 32.
+    /// - `val` — `f32`. New parameter value.
     pub fn set(&self, val: f32) {
         self.val.store(val.to_bits(), Ordering::Relaxed);
     }
 }
 
+/// Category of DSP audio effect applied to a sound source.
+///
+/// # Variants
+/// - `Lowpass` — Low-pass biquad filter; attenuates high frequencies above the cutoff.
+/// - `Highpass` — High-pass biquad filter; attenuates low frequencies below the cutoff.
+/// - `Bandpass` — Band-pass biquad filter; passes only a band of frequencies around the center.
+/// - `Reverb` — Comb-filter reverb effect with room-size and mix controls.
+/// - `Chorus` — Short-delay chorus/flanger with decay and mix controls.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EffectType {
     Lowpass,
@@ -74,6 +65,18 @@ pub enum EffectType {
     Chorus,
 }
 
+/// Shared configuration for a single DSP effect slot.
+///
+/// `EffectParams` is shared between the main thread (which sets parameters)
+/// and the audio thread (which reads them) via `Arc<EffectParams>`.
+/// All parameter mutations go through `AtomicParam` to avoid locking.
+///
+/// # Fields
+/// - `id` — `u32`. Unique monotonic slot identifier.
+/// - `typ` — `EffectType`. The category of DSP effect.
+/// - `p1` — `AtomicParam`. Primary parameter: cutoff frequency (filter) or room-size (reverb/chorus).
+/// - `p2` — `AtomicParam`. Secondary parameter: center frequency (bandpass) or wet/dry mix.
+/// - `p3` — `AtomicParam`. Reserved for future effect parameters.
 #[derive(Debug)]
 pub struct EffectParams {
     pub id: u32,
@@ -84,6 +87,14 @@ pub struct EffectParams {
 }
 
 impl EffectParams {
+    /// Creates a new `EffectParams` with the given slot ID and effect type.
+    ///
+    /// # Parameters
+    /// - `id` — `u32`. Unique monotonic slot identifier.
+    /// - `typ` — `EffectType`. The category of DSP effect.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(id: u32, typ: EffectType) -> Self {
         log_msg!(debug, DP01, "id={}", id);
         Self {
@@ -96,6 +107,18 @@ impl EffectParams {
     }
 }
 
+/// Per-stream instantiation of an `EffectParams` slot, holding the filter state for a single audio stream.
+///
+/// One `ActiveEffect` is created per `EffectParams` inside each `DynamicEffectSource`.
+/// It owns the biquad filter history (`bq_x1`/`bq_x2`/`bq_y1`/`bq_y2`) for two channels
+/// and the comb-filter delay buffer used by the reverb and chorus effects.
+///
+/// # Fields
+/// - `params` — `Arc<EffectParams>`. Shared reference to the effect configuration.
+/// - `bq_x1`/`bq_x2` — `[f32; 2]`. Biquad input history for left and right channels.
+/// - `bq_y1`/`bq_y2` — `[f32; 2]`. Biquad output history for left and right channels.
+/// - `comb_buf` — `Vec<f32>`. Delay-line ring buffer for reverb/chorus effects.
+/// - `comb_pos` — `usize`. Current write head position in `comb_buf`.
 #[derive(Clone)]
 pub struct ActiveEffect {
     pub params: Arc<EffectParams>,
@@ -110,6 +133,17 @@ pub struct ActiveEffect {
 }
 
 impl ActiveEffect {
+    /// Creates a new `ActiveEffect` for the given effect configuration.
+    ///
+    /// Allocates the comb-filter delay buffer sized to `sample_rate` and `channels`.
+    ///
+    /// # Parameters
+    /// - `params` — `Arc<EffectParams>`. Shared effect slot configuration.
+    /// - `sample_rate` — `u32`. Sample rate of the audio stream.
+    /// - `channels` — `u16`. Channel count of the audio stream.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(params: Arc<EffectParams>, sample_rate: u32, channels: u16) -> Self {
         let comb_len = match params.typ {
             EffectType::Reverb | EffectType::Chorus => {
@@ -136,24 +170,15 @@ impl ActiveEffect {
         }
     }
 
-    /// Process sample.
+    /// Applies this effect's DSP algorithm to a single PCM sample.
     ///
     /// # Parameters
-    /// - sample — 32.
-    /// - channel — u16.
-    /// - sample_rate — u32.
+    /// - `sample` — `f32`. The input PCM sample.
+    /// - `channel` — `u16`. The interleaved channel index (0 = left, 1 = right).
+    /// - `sample_rate` — `u32`. Sample rate of the audio stream.
     ///
     /// # Returns
-    /// 32.
-    /// Process sample.
-    ///
-    /// # Parameters
-    /// - sample — 32.
-    /// - channel — u16.
-    /// - sample_rate — u32.
-    ///
-    /// # Returns
-    /// 32.
+    /// `f32`. The processed output sample.
     pub fn process(&mut self, sample: f32, channel: u16, sample_rate: u32) -> f32 {
         let c = (channel as usize) % 2;
         let typ = self.params.typ;
@@ -220,11 +245,23 @@ impl ActiveEffect {
     }
 }
 
+/// Shared, thread-safe graph of active DSP effects owned by a sound source.
+///
+/// The main thread pushes `Arc<EffectParams>` entries into the graph; the audio
+/// thread observes them via a non-blocking `try_read` lock on every sample batch
+/// and synchronises its `active_effects` list accordingly.
+///
+/// # Fields
+/// - `effects` — `Arc<RwLock<Vec<Arc<EffectParams>>>>`. The list of effects to apply in order.
 pub struct SharedEffectGraph {
     pub effects: Arc<RwLock<Vec<Arc<EffectParams>>>>,
 }
 
 impl SharedEffectGraph {
+    /// Creates an empty `SharedEffectGraph` with no effects in the chain.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new() -> Self {
         log_msg!(debug, DP03);
         Self {
@@ -241,6 +278,22 @@ impl Default for SharedEffectGraph {
 
 impl SharedEffectGraph {}
 
+/// A rodio `Source` wrapper that applies a dynamic chain of DSP effects to an inner audio source.
+///
+/// On every audio-thread call to `Iterator::next`, `DynamicEffectSource` checks whether the
+/// shared effect list has changed (`sync_effects`) and processes the sample through each
+/// `ActiveEffect` in sequence before returning it to the mixer.
+///
+/// # Type Parameters
+/// - `I` — The inner [`rodio::Source`] that produces `f32` samples.
+///
+/// # Fields
+/// - `input` — `I`. The wrapped inner audio source.
+/// - `shared_graph` — `Arc<RwLock<Vec<Arc<EffectParams>>>>`. Lock-shared effect configuration.
+/// - `active_effects` — `Vec<ActiveEffect>`. Per-stream effect state, synchronised from `shared_graph`.
+/// - `current_channel` — `u16`. Interleaved channel index used to route samples to the correct filter lane.
+/// - `sample_rate` — `u32`. Sample rate of the inner source, cached for filter coefficient computation.
+/// - `channels` — `u16`. Channel count of the inner source.
 pub struct DynamicEffectSource<I: Source<Item = f32>> {
     input: I,
     shared_graph: Arc<RwLock<Vec<Arc<EffectParams>>>>,
@@ -251,6 +304,14 @@ pub struct DynamicEffectSource<I: Source<Item = f32>> {
 }
 
 impl<I: Source<Item = f32>> DynamicEffectSource<I> {
+    /// Wraps an inner audio source with a dynamic DSP effect chain.
+    ///
+    /// # Parameters
+    /// - `input` — `I`. The inner rodio source that produces `f32` samples.
+    /// - `shared_graph` — `Arc<RwLock<Vec<Arc<EffectParams>>>>`. The shared effect list.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(input: I, shared_graph: Arc<RwLock<Vec<Arc<EffectParams>>>>) -> Self {
         let sample_rate = input.sample_rate();
         let channels = input.channels();

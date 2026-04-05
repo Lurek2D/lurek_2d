@@ -183,7 +183,11 @@ impl ErrorScreen {
             ERROR_TEXT_COLOR[2],
             ERROR_TEXT_COLOR[3],
         ));
-        let body_line_h = if body_font.is_some() { 22.0 } else { LINE_H * 2.0 };
+        let body_line_h = if body_font.is_some() {
+            22.0
+        } else {
+            LINE_H * 2.0
+        };
         self.push_text(&mut cmds, &self.title, margin_x, y, body_font);
         y += body_line_h + 4.0;
 
@@ -201,7 +205,11 @@ impl ErrorScreen {
             cmds.push(DrawCommand::SetColor(0.8, 0.8, 0.9, 1.0));
             self.push_text(&mut cmds, "Traceback:", margin_x, y, body_font);
             y += body_line_h;
-            let indent = if body_font.is_some() { 24.0 } else { GLYPH_W * 2.0 * 2.0 };
+            let indent = if body_font.is_some() {
+                24.0
+            } else {
+                GLYPH_W * 2.0 * 2.0
+            };
             for line in &self.traceback_lines {
                 self.push_text(&mut cmds, line, margin_x + indent, y, body_font);
                 y += body_line_h;
@@ -209,7 +217,7 @@ impl ErrorScreen {
         }
 
         // Footer instructions
-        let footer = "Press Escape to quit  |  Press R to restart";
+        let footer = "Press Escape to quit  |  R to restart  |  Ctrl+C to copy error";
         let footer_y = screen_h as f32 - 50.0;
         cmds.push(DrawCommand::SetColor(
             ERROR_FOOTER_COLOR[0],
@@ -220,6 +228,23 @@ impl ErrorScreen {
         self.push_text(&mut cmds, footer, margin_x, footer_y, body_font);
 
         cmds
+    }
+
+    /// Returns the full error text as a plain string suitable for clipboard copy.
+    ///
+    /// # Returns
+    /// `String` containing the title, message, and traceback joined with newlines.
+    pub fn as_text(&self) -> String {
+        let mut parts = vec![self.title.clone()];
+        parts.extend(self.message_lines.iter().cloned());
+        if !self.traceback_lines.is_empty() {
+            parts.push(String::new());
+            parts.push("Traceback:".to_string());
+            for line in &self.traceback_lines {
+                parts.push(format!("  {}", line));
+            }
+        }
+        parts.join("\n")
     }
 
     /// Pushes a text draw command, choosing `PrintFont` (TTF) or `Print` (bitmap).

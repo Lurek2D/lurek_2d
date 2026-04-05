@@ -402,6 +402,14 @@ impl mlua::UserData for LuaSaveManager {
 ///
 /// Provides a slot-based save/load system with collectors, schema versioning,
 /// dirty tracking, and auto-save.
+///
+/// # Parameters
+/// - `lua` — `&Lua`. The active Lua VM.
+/// - `luna` — `&LuaTable`. The top-level `luna` table.
+/// - `state` — `Rc<RefCell<SharedState>>`. Shared engine state.
+///
+/// # Returns
+/// `LuaResult<()>`.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let savegame = lua.create_table()?;
 

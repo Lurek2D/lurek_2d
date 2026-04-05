@@ -302,10 +302,10 @@ export class ApiDataService {
   async load(extensionPath: string): Promise<void> {
     if (this.loaded) return;
 
-    // Priority 1: docs/api_data.json (precompiled)
+    // Priority 1: docs/API/api_data.json (precompiled)
     const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (wsRoot) {
-      const jsonPath = path.join(wsRoot, "docs", "api_data.json");
+      const jsonPath = path.join(wsRoot, "docs", "API", "api_data.json");
       if (fs.existsSync(jsonPath)) {
         try {
           const raw = fs.readFileSync(jsonPath, "utf-8");
@@ -337,7 +337,7 @@ export class ApiDataService {
 
     // Priority 3: generated markdown in workspace
     if (wsRoot) {
-      const mdPath = path.join(wsRoot, "docs", "lua_api_reference_generated.md");
+      const mdPath = path.join(wsRoot, "docs", "API", "lua_api_reference_generated.md");
       if (fs.existsSync(mdPath)) {
         try {
           const md = fs.readFileSync(mdPath, "utf-8");

@@ -17,7 +17,7 @@ export class ApiReferenceEditor extends WebviewEditor {
       const workspaceFolders = vscode.workspace.workspaceFolders;
       if (!workspaceFolders) { return; }
       const root = workspaceFolders[0].uri;
-      const apiPath = vscode.Uri.joinPath(root, "docs", "lua_api_reference_generated.md");
+      const apiPath = vscode.Uri.joinPath(root, "docs", "API", "lua_api_reference_generated.md");
       const data = await vscode.workspace.fs.readFile(apiPath);
       const text = new (globalThis as any).TextDecoder().decode(data) as string;
       this.panel.webview.postMessage({ type: "apiData", content: text });

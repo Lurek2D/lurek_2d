@@ -1,0 +1,5265 @@
+{
+  "generated_at": "2026-04-05T20:22:03.636335+00:00",
+  "summary": {
+    "rust": {
+      "total": 0,
+      "covered": 0,
+      "missing": 0,
+      "pct": 0.0
+    },
+    "lua_api": {
+      "total": 452,
+      "covered": 322,
+      "missing": 130,
+      "pct": 71.2
+    },
+    "total": {
+      "total": 452,
+      "covered": 322,
+      "missing": 130,
+      "pct": 71.2
+    }
+  },
+  "missing": [
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 148,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 150,
+      "kind": "fn",
+      "name": "w",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 151,
+      "kind": "fn",
+      "name": "h",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 169,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 170,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 172,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 173,
+      "kind": "fn",
+      "name": "frame",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 244,
+      "kind": "fn",
+      "name": "animation",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "audio_api",
+      "file": "src/lua_api/audio_api.rs",
+      "line": 2433,
+      "kind": "fn",
+      "name": "audio",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "automation_api",
+      "file": "src/lua_api/automation_api.rs",
+      "line": 323,
+      "kind": "fn",
+      "name": "simulator",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "camera_api",
+      "file": "src/lua_api/camera_api.rs",
+      "line": 250,
+      "kind": "fn",
+      "name": "camera",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "data_api",
+      "file": "src/lua_api/data_api.rs",
+      "line": 287,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 183,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 214,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "font_api",
+      "file": "src/lua_api/font_api.rs",
+      "line": 254,
+      "kind": "fn",
+      "name": "font",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 4531,
+      "kind": "fn",
+      "name": "graphics",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 89,
+      "kind": "fn",
+      "name": "_idx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 318,
+      "kind": "fn",
+      "name": "_idx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 331,
+      "kind": "fn",
+      "name": "setOnChange",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 332,
+      "kind": "fn",
+      "name": "setOnDraw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1771,
+      "kind": "fn",
+      "name": "sx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1772,
+      "kind": "fn",
+      "name": "sy",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1773,
+      "kind": "fn",
+      "name": "sw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1774,
+      "kind": "fn",
+      "name": "sh",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1775,
+      "kind": "fn",
+      "name": "dx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1776,
+      "kind": "fn",
+      "name": "dy",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1777,
+      "kind": "fn",
+      "name": "dw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1778,
+      "kind": "fn",
+      "name": "dh",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2929,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2930,
+      "kind": "fn",
+      "name": "tooltip",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2931,
+      "kind": "fn",
+      "name": "enabled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2932,
+      "kind": "fn",
+      "name": "toggled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 4804,
+      "kind": "fn",
+      "name": "gui",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "light_api",
+      "file": "src/lua_api/light_api.rs",
+      "line": 1130,
+      "kind": "fn",
+      "name": "light",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "mod",
+      "file": "src/lua_api/mod.rs",
+      "line": 349,
+      "kind": "fn",
+      "name": "luna",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "mod",
+      "file": "src/lua_api/mod.rs",
+      "line": 367,
+      "kind": "fn",
+      "name": "path",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 42,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 43,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 44,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 47,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 48,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 49,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 56,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 57,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 58,
+      "kind": "fn",
+      "name": "channel_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 234,
+      "kind": "fn",
+      "name": "network",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "overlay_api",
+      "file": "src/lua_api/overlay_api.rs",
+      "line": 743,
+      "kind": "fn",
+      "name": "overlay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 466,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 666,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 669,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 682,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 698,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 711,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 728,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 750,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 771,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 2595,
+      "kind": "fn",
+      "name": "particle",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 702,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 703,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 724,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 725,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 959,
+      "kind": "fn",
+      "name": "pathfinding",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2921,
+      "kind": "fn",
+      "name": "physics",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 464,
+      "kind": "fn",
+      "name": "success",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 465,
+      "kind": "fn",
+      "name": "completed",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 466,
+      "kind": "fn",
+      "name": "failed",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 467,
+      "kind": "fn",
+      "name": "skipped",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 468,
+      "kind": "fn",
+      "name": "cancelled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 469,
+      "kind": "fn",
+      "name": "totalDuration",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 470,
+      "kind": "fn",
+      "name": "errors",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 526,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 756,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 880,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1231,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1236,
+      "kind": "fn",
+      "name": "errorMode",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1244,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1249,
+      "kind": "fn",
+      "name": "deps",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1250,
+      "kind": "fn",
+      "name": "delay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1251,
+      "kind": "fn",
+      "name": "optional",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1252,
+      "kind": "fn",
+      "name": "retryCount",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1253,
+      "kind": "fn",
+      "name": "retryDelay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1255,
+      "kind": "fn",
+      "name": "tag",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1260,
+      "kind": "fn",
+      "name": "steps",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1398,
+      "kind": "fn",
+      "name": "pipeline",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 153,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 154,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 221,
+      "kind": "fn",
+      "name": "procgen",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 23,
+      "kind": "fn",
+      "name": "distance",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 24,
+      "kind": "fn",
+      "name": "raw_distance",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 25,
+      "kind": "fn",
+      "name": "cell_value",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 26,
+      "kind": "fn",
+      "name": "side",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 27,
+      "kind": "fn",
+      "name": "tex_u",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 28,
+      "kind": "fn",
+      "name": "hit_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 29,
+      "kind": "fn",
+      "name": "hit_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 30,
+      "kind": "fn",
+      "name": "hit",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 194,
+      "kind": "fn",
+      "name": "raycaster",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 105,
+      "kind": "fn",
+      "name": "__schema_version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 113,
+      "kind": "fn",
+      "name": "__summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 207,
+      "kind": "fn",
+      "name": "__schema_version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 212,
+      "kind": "fn",
+      "name": "__timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 213,
+      "kind": "fn",
+      "name": "__summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 340,
+      "kind": "fn",
+      "name": "slot",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 352,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 353,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 354,
+      "kind": "fn",
+      "name": "summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 386,
+      "kind": "fn",
+      "name": "slot",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 390,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 391,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 392,
+      "kind": "fn",
+      "name": "summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 421,
+      "kind": "fn",
+      "name": "savegame",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 145,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 146,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 147,
+      "kind": "fn",
+      "name": "rotation",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 148,
+      "kind": "fn",
+      "name": "scale_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "scale_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 209,
+      "kind": "fn",
+      "name": "spine",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 2696,
+      "kind": "fn",
+      "name": "sprite",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "terminal_api",
+      "file": "src/lua_api/terminal_api.rs",
+      "line": 1362,
+      "kind": "fn",
+      "name": "terminal",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1349,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2568,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2615,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2816,
+      "kind": "fn",
+      "name": "tilemap",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 607,
+      "kind": "fn",
+      "name": "scale_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 608,
+      "kind": "fn",
+      "name": "scale_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 609,
+      "kind": "fn",
+      "name": "offset_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 610,
+      "kind": "fn",
+      "name": "offset_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 611,
+      "kind": "fn",
+      "name": "game_width",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 612,
+      "kind": "fn",
+      "name": "game_height",
+      "has_doc": false
+    }
+  ],
+  "items": [
+    {
+      "source": "lua_api",
+      "module": "ai_api",
+      "file": "src/lua_api/ai_api.rs",
+      "line": 2312,
+      "kind": "fn",
+      "name": "ai",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 148,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 150,
+      "kind": "fn",
+      "name": "w",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 151,
+      "kind": "fn",
+      "name": "h",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 169,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 170,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 172,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 173,
+      "kind": "fn",
+      "name": "frame",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "animation_api",
+      "file": "src/lua_api/animation_api.rs",
+      "line": 244,
+      "kind": "fn",
+      "name": "animation",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "audio_api",
+      "file": "src/lua_api/audio_api.rs",
+      "line": 1545,
+      "kind": "fn",
+      "name": "getMaxSources",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "audio_api",
+      "file": "src/lua_api/audio_api.rs",
+      "line": 2433,
+      "kind": "fn",
+      "name": "audio",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "automation_api",
+      "file": "src/lua_api/automation_api.rs",
+      "line": 323,
+      "kind": "fn",
+      "name": "simulator",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "camera_api",
+      "file": "src/lua_api/camera_api.rs",
+      "line": 250,
+      "kind": "fn",
+      "name": "camera",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "compute_api",
+      "file": "src/lua_api/compute_api.rs",
+      "line": 696,
+      "kind": "fn",
+      "name": "compute",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "data_api",
+      "file": "src/lua_api/data_api.rs",
+      "line": 287,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "dataframe_api",
+      "file": "src/lua_api/dataframe_api.rs",
+      "line": 999,
+      "kind": "fn",
+      "name": "dataframe",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 161,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 166,
+      "kind": "fn",
+      "name": "time",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 171,
+      "kind": "fn",
+      "name": "selfTime",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 176,
+      "kind": "fn",
+      "name": "startTime",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 185,
+      "kind": "fn",
+      "name": "children",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 309,
+      "kind": "fn",
+      "name": "level",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 314,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 319,
+      "kind": "fn",
+      "name": "message",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 324,
+      "kind": "fn",
+      "name": "source",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 329,
+      "kind": "fn",
+      "name": "line",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 525,
+      "kind": "fn",
+      "name": "fps",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 530,
+      "kind": "fn",
+      "name": "dt",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 535,
+      "kind": "fn",
+      "name": "avg",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 540,
+      "kind": "fn",
+      "name": "min",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 545,
+      "kind": "fn",
+      "name": "max",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 550,
+      "kind": "fn",
+      "name": "p50",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 555,
+      "kind": "fn",
+      "name": "p95",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 560,
+      "kind": "fn",
+      "name": "p99",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 576,
+      "kind": "fn",
+      "name": "fps",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 581,
+      "kind": "fn",
+      "name": "dt",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 586,
+      "kind": "fn",
+      "name": "avg",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 591,
+      "kind": "fn",
+      "name": "min",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 596,
+      "kind": "fn",
+      "name": "max",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 601,
+      "kind": "fn",
+      "name": "p50",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 606,
+      "kind": "fn",
+      "name": "p95",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 611,
+      "kind": "fn",
+      "name": "p99",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debug_api",
+      "file": "src/lua_api/debug_api.rs",
+      "line": 834,
+      "kind": "fn",
+      "name": "devtools",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debugbridge_api",
+      "file": "src/lua_api/debugbridge_api.rs",
+      "line": 665,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debugbridge_api",
+      "file": "src/lua_api/debugbridge_api.rs",
+      "line": 670,
+      "kind": "fn",
+      "name": "message",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debugbridge_api",
+      "file": "src/lua_api/debugbridge_api.rs",
+      "line": 675,
+      "kind": "fn",
+      "name": "source",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debugbridge_api",
+      "file": "src/lua_api/debugbridge_api.rs",
+      "line": 680,
+      "kind": "fn",
+      "name": "line",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "debugbridge_api",
+      "file": "src/lua_api/debugbridge_api.rs",
+      "line": 810,
+      "kind": "fn",
+      "name": "debugbridge",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 182,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 183,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 188,
+      "kind": "fn",
+      "name": "description",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 193,
+      "kind": "fn",
+      "name": "optional",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 199,
+      "kind": "fn",
+      "name": "default",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 214,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 219,
+      "kind": "fn",
+      "name": "description",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 472,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 477,
+      "kind": "fn",
+      "name": "qualifiedName",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 482,
+      "kind": "fn",
+      "name": "module",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 487,
+      "kind": "fn",
+      "name": "kind",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 492,
+      "kind": "fn",
+      "name": "description",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 497,
+      "kind": "fn",
+      "name": "score",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 651,
+      "kind": "fn",
+      "name": "missing",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 660,
+      "kind": "fn",
+      "name": "phantom",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 669,
+      "kind": "fn",
+      "name": "incomplete",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 819,
+      "kind": "fn",
+      "name": "overallScore",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 824,
+      "kind": "fn",
+      "name": "grade",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 833,
+      "kind": "fn",
+      "name": "moduleScores",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 1330,
+      "kind": "fn",
+      "name": "stale",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 1335,
+      "kind": "fn",
+      "name": "current",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 1340,
+      "kind": "fn",
+      "name": "missing",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "docs_api",
+      "file": "src/lua_api/docs_api.rs",
+      "line": 1691,
+      "kind": "fn",
+      "name": "docs",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "entity_api",
+      "file": "src/lua_api/entity_api.rs",
+      "line": 661,
+      "kind": "fn",
+      "name": "entity",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "event_api",
+      "file": "src/lua_api/event_api.rs",
+      "line": 342,
+      "kind": "fn",
+      "name": "event",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "filesystem_api",
+      "file": "src/lua_api/filesystem_api.rs",
+      "line": 385,
+      "kind": "fn",
+      "name": "size",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "filesystem_api",
+      "file": "src/lua_api/filesystem_api.rs",
+      "line": 387,
+      "kind": "fn",
+      "name": "modtime",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "filesystem_api",
+      "file": "src/lua_api/filesystem_api.rs",
+      "line": 389,
+      "kind": "fn",
+      "name": "readonly",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "filesystem_api",
+      "file": "src/lua_api/filesystem_api.rs",
+      "line": 612,
+      "kind": "fn",
+      "name": "filesystem",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "font_api",
+      "file": "src/lua_api/font_api.rs",
+      "line": 254,
+      "kind": "fn",
+      "name": "font",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 626,
+      "kind": "fn",
+      "name": "nodes",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 641,
+      "kind": "fn",
+      "name": "edges",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 646,
+      "kind": "fn",
+      "name": "cost",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 681,
+      "kind": "fn",
+      "name": "nodes",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 690,
+      "kind": "fn",
+      "name": "edges",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 695,
+      "kind": "fn",
+      "name": "cost",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 853,
+      "kind": "fn",
+      "name": "nodes",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 858,
+      "kind": "fn",
+      "name": "edges",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 863,
+      "kind": "fn",
+      "name": "items",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 868,
+      "kind": "fn",
+      "name": "activeNodes",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 873,
+      "kind": "fn",
+      "name": "activeEdges",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 878,
+      "kind": "fn",
+      "name": "itemsInTransit",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 883,
+      "kind": "fn",
+      "name": "itemsOnNodes",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 888,
+      "kind": "fn",
+      "name": "totalDemand",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 893,
+      "kind": "fn",
+      "name": "totalSupply",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 898,
+      "kind": "fn",
+      "name": "queuedItems",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graph_api",
+      "file": "src/lua_api/graph_api.rs",
+      "line": 2098,
+      "kind": "fn",
+      "name": "graph",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1908,
+      "kind": "fn",
+      "name": "drawcalls",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1910,
+      "kind": "fn",
+      "name": "canvasswitches",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1912,
+      "kind": "fn",
+      "name": "batcheddraws",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1914,
+      "kind": "fn",
+      "name": "texturememory",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1916,
+      "kind": "fn",
+      "name": "images",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1918,
+      "kind": "fn",
+      "name": "canvases",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 1920,
+      "kind": "fn",
+      "name": "fonts",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3900,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3902,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3904,
+      "kind": "fn",
+      "name": "w",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3906,
+      "kind": "fn",
+      "name": "h",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3908,
+      "kind": "fn",
+      "name": "sw",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 3910,
+      "kind": "fn",
+      "name": "sh",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "graphics_api",
+      "file": "src/lua_api/graphics_api.rs",
+      "line": 4531,
+      "kind": "fn",
+      "name": "graphics",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 89,
+      "kind": "fn",
+      "name": "_idx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 318,
+      "kind": "fn",
+      "name": "_idx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 330,
+      "kind": "fn",
+      "name": "setOnClick",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 331,
+      "kind": "fn",
+      "name": "setOnChange",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 332,
+      "kind": "fn",
+      "name": "setOnDraw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1771,
+      "kind": "fn",
+      "name": "sx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1772,
+      "kind": "fn",
+      "name": "sy",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1773,
+      "kind": "fn",
+      "name": "sw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1774,
+      "kind": "fn",
+      "name": "sh",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1775,
+      "kind": "fn",
+      "name": "dx",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1776,
+      "kind": "fn",
+      "name": "dy",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1777,
+      "kind": "fn",
+      "name": "dw",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 1778,
+      "kind": "fn",
+      "name": "dh",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2929,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2930,
+      "kind": "fn",
+      "name": "tooltip",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2931,
+      "kind": "fn",
+      "name": "enabled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 2932,
+      "kind": "fn",
+      "name": "toggled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 4573,
+      "kind": "fn",
+      "name": "_theme",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "gui_api",
+      "file": "src/lua_api/gui_api.rs",
+      "line": 4804,
+      "kind": "fn",
+      "name": "gui",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "image_api",
+      "file": "src/lua_api/image_api.rs",
+      "line": 171,
+      "kind": "fn",
+      "name": "image",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 142,
+      "kind": "fn",
+      "name": "keyboard",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 343,
+      "kind": "fn",
+      "name": "mouse",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 602,
+      "kind": "fn",
+      "name": "gamepad",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 619,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 621,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 623,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 625,
+      "kind": "fn",
+      "name": "pressure",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "input_api",
+      "file": "src/lua_api/input_api.rs",
+      "line": 668,
+      "kind": "fn",
+      "name": "touch",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "light_api",
+      "file": "src/lua_api/light_api.rs",
+      "line": 1130,
+      "kind": "fn",
+      "name": "light",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "localization_api",
+      "file": "src/lua_api/localization_api.rs",
+      "line": 352,
+      "kind": "fn",
+      "name": "localization",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "log_api",
+      "file": "src/lua_api/log_api.rs",
+      "line": 136,
+      "kind": "fn",
+      "name": "log",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1035,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1040,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1068,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1073,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1078,
+      "kind": "fn",
+      "name": "dx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1083,
+      "kind": "fn",
+      "name": "dy",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1345,
+      "kind": "fn",
+      "name": "distance",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1350,
+      "kind": "fn",
+      "name": "cellValue",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1355,
+      "kind": "fn",
+      "name": "side",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1360,
+      "kind": "fn",
+      "name": "texU",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1365,
+      "kind": "fn",
+      "name": "hitX",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1370,
+      "kind": "fn",
+      "name": "hitY",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1375,
+      "kind": "fn",
+      "name": "hit",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1837,
+      "kind": "fn",
+      "name": "pi",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2213,
+      "kind": "fn",
+      "name": "sin",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2221,
+      "kind": "fn",
+      "name": "cos",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2229,
+      "kind": "fn",
+      "name": "tan",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2249,
+      "kind": "fn",
+      "name": "sqrt",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2257,
+      "kind": "fn",
+      "name": "abs",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2265,
+      "kind": "fn",
+      "name": "floor",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2273,
+      "kind": "fn",
+      "name": "ceil",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2842,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2847,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "math_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 2865,
+      "kind": "fn",
+      "name": "math",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "minimap_api",
+      "file": "src/lua_api/minimap_api.rs",
+      "line": 511,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "minimap_api",
+      "file": "src/lua_api/minimap_api.rs",
+      "line": 516,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "minimap_api",
+      "file": "src/lua_api/minimap_api.rs",
+      "line": 521,
+      "kind": "fn",
+      "name": "w",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "minimap_api",
+      "file": "src/lua_api/minimap_api.rs",
+      "line": 526,
+      "kind": "fn",
+      "name": "h",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "minimap_api",
+      "file": "src/lua_api/minimap_api.rs",
+      "line": 911,
+      "kind": "fn",
+      "name": "minimap",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "mod",
+      "file": "src/lua_api/mod.rs",
+      "line": 347,
+      "kind": "fn",
+      "name": "conf",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "mod",
+      "file": "src/lua_api/mod.rs",
+      "line": 349,
+      "kind": "fn",
+      "name": "luna",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "mod",
+      "file": "src/lua_api/mod.rs",
+      "line": 367,
+      "kind": "fn",
+      "name": "path",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 299,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 304,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 309,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 314,
+      "kind": "fn",
+      "name": "author",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 319,
+      "kind": "fn",
+      "name": "priority",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 324,
+      "kind": "fn",
+      "name": "enabled",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 329,
+      "kind": "fn",
+      "name": "loaded",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 335,
+      "kind": "fn",
+      "name": "path",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 355,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 360,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 365,
+      "kind": "fn",
+      "name": "priority",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 370,
+      "kind": "fn",
+      "name": "enabled",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 447,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 452,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 457,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 462,
+      "kind": "fn",
+      "name": "author",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 467,
+      "kind": "fn",
+      "name": "priority",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 472,
+      "kind": "fn",
+      "name": "enabled",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 478,
+      "kind": "fn",
+      "name": "path",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 488,
+      "kind": "fn",
+      "name": "dependencies",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "modding_api",
+      "file": "src/lua_api/modding_api.rs",
+      "line": 615,
+      "kind": "fn",
+      "name": "modding",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 42,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 43,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 44,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 47,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 48,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 49,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 56,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 57,
+      "kind": "fn",
+      "name": "peer_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 58,
+      "kind": "fn",
+      "name": "channel_id",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 61,
+      "kind": "fn",
+      "name": "data",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "network_api",
+      "file": "src/lua_api/network_api.rs",
+      "line": 234,
+      "kind": "fn",
+      "name": "network",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "overlay_api",
+      "file": "src/lua_api/overlay_api.rs",
+      "line": 743,
+      "kind": "fn",
+      "name": "overlay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 466,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 666,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 669,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 674,
+      "kind": "fn",
+      "name": "radius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 679,
+      "kind": "fn",
+      "name": "fill",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 682,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 687,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 692,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 698,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 703,
+      "kind": "fn",
+      "name": "innerRadius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 708,
+      "kind": "fn",
+      "name": "outerRadius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 711,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 716,
+      "kind": "fn",
+      "name": "length",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 721,
+      "kind": "fn",
+      "name": "angle",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 728,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 733,
+      "kind": "fn",
+      "name": "radius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 738,
+      "kind": "fn",
+      "name": "angle",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 743,
+      "kind": "fn",
+      "name": "spread",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 750,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 755,
+      "kind": "fn",
+      "name": "points",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 760,
+      "kind": "fn",
+      "name": "outerRadius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 765,
+      "kind": "fn",
+      "name": "innerRadius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 771,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 776,
+      "kind": "fn",
+      "name": "revolutions",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 781,
+      "kind": "fn",
+      "name": "radius",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "particle_api",
+      "file": "src/lua_api/particle_api.rs",
+      "line": 2595,
+      "kind": "fn",
+      "name": "particle",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 297,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 302,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 625,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 630,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 702,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 703,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 724,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 725,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pathfinding_api",
+      "file": "src/lua_api/pathfinding_api.rs",
+      "line": 959,
+      "kind": "fn",
+      "name": "pathfinding",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "patterns_api",
+      "file": "src/lua_api/patterns_api.rs",
+      "line": 1100,
+      "kind": "fn",
+      "name": "patterns",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1270,
+      "kind": "fn",
+      "name": "nx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1272,
+      "kind": "fn",
+      "name": "ny",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1274,
+      "kind": "fn",
+      "name": "touching",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1324,
+      "kind": "fn",
+      "name": "nx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1326,
+      "kind": "fn",
+      "name": "ny",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 1328,
+      "kind": "fn",
+      "name": "touching",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2390,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2392,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2394,
+      "kind": "fn",
+      "name": "nx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2396,
+      "kind": "fn",
+      "name": "ny",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2398,
+      "kind": "fn",
+      "name": "toi",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2444,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2446,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2448,
+      "kind": "fn",
+      "name": "nx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2450,
+      "kind": "fn",
+      "name": "ny",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2452,
+      "kind": "fn",
+      "name": "toi",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "physics_api",
+      "file": "src/lua_api/physics_api.rs",
+      "line": 2921,
+      "kind": "fn",
+      "name": "physics",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 464,
+      "kind": "fn",
+      "name": "success",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 465,
+      "kind": "fn",
+      "name": "completed",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 466,
+      "kind": "fn",
+      "name": "failed",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 467,
+      "kind": "fn",
+      "name": "skipped",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 468,
+      "kind": "fn",
+      "name": "cancelled",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 469,
+      "kind": "fn",
+      "name": "totalDuration",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 470,
+      "kind": "fn",
+      "name": "errors",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 526,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 756,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 880,
+      "kind": "fn",
+      "name": "results",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1231,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1236,
+      "kind": "fn",
+      "name": "errorMode",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1244,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1249,
+      "kind": "fn",
+      "name": "deps",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1250,
+      "kind": "fn",
+      "name": "delay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1251,
+      "kind": "fn",
+      "name": "optional",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1252,
+      "kind": "fn",
+      "name": "retryCount",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1253,
+      "kind": "fn",
+      "name": "retryDelay",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1255,
+      "kind": "fn",
+      "name": "tag",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1260,
+      "kind": "fn",
+      "name": "steps",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "pipeline_api",
+      "file": "src/lua_api/pipeline_api.rs",
+      "line": 1398,
+      "kind": "fn",
+      "name": "pipeline",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "postfx_api",
+      "file": "src/lua_api/postfx_api.rs",
+      "line": 1160,
+      "kind": "fn",
+      "name": "postfx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 153,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 154,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "procgen_api",
+      "file": "src/lua_api/procgen_api.rs",
+      "line": 221,
+      "kind": "fn",
+      "name": "procgen",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 23,
+      "kind": "fn",
+      "name": "distance",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 24,
+      "kind": "fn",
+      "name": "raw_distance",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 25,
+      "kind": "fn",
+      "name": "cell_value",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 26,
+      "kind": "fn",
+      "name": "side",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 27,
+      "kind": "fn",
+      "name": "tex_u",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 28,
+      "kind": "fn",
+      "name": "hit_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 29,
+      "kind": "fn",
+      "name": "hit_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 30,
+      "kind": "fn",
+      "name": "hit",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "raycaster_api",
+      "file": "src/lua_api/raycaster_api.rs",
+      "line": 194,
+      "kind": "fn",
+      "name": "raycaster",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 105,
+      "kind": "fn",
+      "name": "__schema_version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 113,
+      "kind": "fn",
+      "name": "__summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 207,
+      "kind": "fn",
+      "name": "__schema_version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 212,
+      "kind": "fn",
+      "name": "__timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 213,
+      "kind": "fn",
+      "name": "__summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 340,
+      "kind": "fn",
+      "name": "slot",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 352,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 353,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 354,
+      "kind": "fn",
+      "name": "summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 386,
+      "kind": "fn",
+      "name": "slot",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 390,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 391,
+      "kind": "fn",
+      "name": "timestamp",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 392,
+      "kind": "fn",
+      "name": "summary",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "savegame_api",
+      "file": "src/lua_api/savegame_api.rs",
+      "line": 421,
+      "kind": "fn",
+      "name": "savegame",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "scene_api",
+      "file": "src/lua_api/scene_api.rs",
+      "line": 705,
+      "kind": "fn",
+      "name": "scene",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "serial_api",
+      "file": "src/lua_api/serial_api.rs",
+      "line": 117,
+      "kind": "fn",
+      "name": "serial",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 145,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 146,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 147,
+      "kind": "fn",
+      "name": "rotation",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 148,
+      "kind": "fn",
+      "name": "scale_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 149,
+      "kind": "fn",
+      "name": "scale_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "spine_api",
+      "file": "src/lua_api/spine_api.rs",
+      "line": 209,
+      "kind": "fn",
+      "name": "spine",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 50,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 55,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 60,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 65,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 280,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 285,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 290,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 295,
+      "kind": "fn",
+      "name": "w",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 300,
+      "kind": "fn",
+      "name": "h",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "sprite_api",
+      "file": "src/lua_api/sprite_api.rs",
+      "line": 2696,
+      "kind": "fn",
+      "name": "sprite",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "steering_api",
+      "file": "src/lua_api/steering_api.rs",
+      "line": 77,
+      "kind": "fn",
+      "name": "steering",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 257,
+      "kind": "fn",
+      "name": "engine",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 259,
+      "kind": "fn",
+      "name": "version",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 261,
+      "kind": "fn",
+      "name": "lua_version",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 263,
+      "kind": "fn",
+      "name": "renderer",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 278,
+      "kind": "fn",
+      "name": "processors",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 280,
+      "kind": "fn",
+      "name": "memory",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 412,
+      "kind": "fn",
+      "name": "message",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 414,
+      "kind": "fn",
+      "name": "code",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 416,
+      "kind": "fn",
+      "name": "category",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 419,
+      "kind": "fn",
+      "name": "hint",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 536,
+      "kind": "fn",
+      "name": "flags",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 538,
+      "kind": "fn",
+      "name": "options",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 540,
+      "kind": "fn",
+      "name": "positional",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 572,
+      "kind": "fn",
+      "name": "status",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 574,
+      "kind": "fn",
+      "name": "time",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 584,
+      "kind": "fn",
+      "name": "status",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 588,
+      "kind": "fn",
+      "name": "status",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 590,
+      "kind": "fn",
+      "name": "error",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 595,
+      "kind": "fn",
+      "name": "time",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "system_api",
+      "file": "src/lua_api/system_api.rs",
+      "line": 635,
+      "kind": "fn",
+      "name": "system",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "terminal_api",
+      "file": "src/lua_api/terminal_api.rs",
+      "line": 1362,
+      "kind": "fn",
+      "name": "terminal",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "thread_api",
+      "file": "src/lua_api/thread_api.rs",
+      "line": 155,
+      "kind": "fn",
+      "name": "thread",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 173,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 178,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 183,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 188,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 330,
+      "kind": "fn",
+      "name": "tileid",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 335,
+      "kind": "fn",
+      "name": "duration",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1349,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1354,
+      "kind": "fn",
+      "name": "groupIndex",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1359,
+      "kind": "fn",
+      "name": "blockIndex",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1364,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1369,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1374,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1379,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1384,
+      "kind": "fn",
+      "name": "count",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1389,
+      "kind": "fn",
+      "name": "rotation",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1394,
+      "kind": "fn",
+      "name": "mirror",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1399,
+      "kind": "fn",
+      "name": "randomRotation",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1404,
+      "kind": "fn",
+      "name": "randomMirror",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1409,
+      "kind": "fn",
+      "name": "direction",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1414,
+      "kind": "fn",
+      "name": "matchSides",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1427,
+      "kind": "fn",
+      "name": "conditionSuccess",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1432,
+      "kind": "fn",
+      "name": "chance",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1437,
+      "kind": "fn",
+      "name": "repeatCount",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1442,
+      "kind": "fn",
+      "name": "minCount",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1447,
+      "kind": "fn",
+      "name": "maxCount",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1452,
+      "kind": "fn",
+      "name": "sizeFilterW",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1457,
+      "kind": "fn",
+      "name": "sizeFilterH",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1462,
+      "kind": "fn",
+      "name": "tileId",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1467,
+      "kind": "fn",
+      "name": "pathWidth",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1472,
+      "kind": "fn",
+      "name": "tileLayer",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1719,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1724,
+      "kind": "fn",
+      "name": "startRow",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 1729,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2027,
+      "kind": "fn",
+      "name": "cx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2032,
+      "kind": "fn",
+      "name": "cy",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2053,
+      "kind": "fn",
+      "name": "cx",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2058,
+      "kind": "fn",
+      "name": "cy",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2154,
+      "kind": "fn",
+      "name": "q",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2159,
+      "kind": "fn",
+      "name": "r",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2202,
+      "kind": "fn",
+      "name": "q",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2207,
+      "kind": "fn",
+      "name": "r",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2234,
+      "kind": "fn",
+      "name": "q",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2239,
+      "kind": "fn",
+      "name": "r",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2258,
+      "kind": "fn",
+      "name": "q",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2263,
+      "kind": "fn",
+      "name": "r",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2290,
+      "kind": "fn",
+      "name": "q",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2295,
+      "kind": "fn",
+      "name": "r",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2347,
+      "kind": "fn",
+      "name": "FLOOR",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2352,
+      "kind": "fn",
+      "name": "NORTH_WALL",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2357,
+      "kind": "fn",
+      "name": "WEST_WALL",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2362,
+      "kind": "fn",
+      "name": "OBJECT",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2472,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2477,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2482,
+      "kind": "fn",
+      "name": "tileWidth",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2487,
+      "kind": "fn",
+      "name": "tileHeight",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2506,
+      "kind": "fn",
+      "name": "firstGid",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2511,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2516,
+      "kind": "fn",
+      "name": "tileWidth",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2521,
+      "kind": "fn",
+      "name": "tileHeight",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2526,
+      "kind": "fn",
+      "name": "spacing",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2531,
+      "kind": "fn",
+      "name": "margin",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2536,
+      "kind": "fn",
+      "name": "tileCount",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2541,
+      "kind": "fn",
+      "name": "columns",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2546,
+      "kind": "fn",
+      "name": "imageSource",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2552,
+      "kind": "fn",
+      "name": "source",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2560,
+      "kind": "fn",
+      "name": "tilesets",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2568,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2573,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2578,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2583,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2588,
+      "kind": "fn",
+      "name": "visible",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2593,
+      "kind": "fn",
+      "name": "opacity",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2598,
+      "kind": "fn",
+      "name": "offsetX",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2603,
+      "kind": "fn",
+      "name": "offsetY",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2612,
+      "kind": "fn",
+      "name": "tiles",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2615,
+      "kind": "fn",
+      "name": "type",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2620,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2625,
+      "kind": "fn",
+      "name": "visible",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2633,
+      "kind": "fn",
+      "name": "id",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2638,
+      "kind": "fn",
+      "name": "name",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2643,
+      "kind": "fn",
+      "name": "obj_type",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2648,
+      "kind": "fn",
+      "name": "x",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2653,
+      "kind": "fn",
+      "name": "y",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2658,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2663,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2668,
+      "kind": "fn",
+      "name": "gid",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2675,
+      "kind": "fn",
+      "name": "objects",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2684,
+      "kind": "fn",
+      "name": "layers",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "tilemap_api",
+      "file": "src/lua_api/tilemap_api.rs",
+      "line": 2816,
+      "kind": "fn",
+      "name": "tilemap",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "timer_api",
+      "file": "src/lua_api/timer_api.rs",
+      "line": 424,
+      "kind": "fn",
+      "name": "timer",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 128,
+      "kind": "fn",
+      "name": "isOpen",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 370,
+      "kind": "fn",
+      "name": "fullscreen",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 380,
+      "kind": "fn",
+      "name": "vsync",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 426,
+      "kind": "fn",
+      "name": "width",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 428,
+      "kind": "fn",
+      "name": "height",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 430,
+      "kind": "fn",
+      "name": "refreshRate",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 526,
+      "kind": "fn",
+      "name": "focus",
+      "has_doc": true
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 607,
+      "kind": "fn",
+      "name": "scale_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 608,
+      "kind": "fn",
+      "name": "scale_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 609,
+      "kind": "fn",
+      "name": "offset_x",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 610,
+      "kind": "fn",
+      "name": "offset_y",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 611,
+      "kind": "fn",
+      "name": "game_width",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 612,
+      "kind": "fn",
+      "name": "game_height",
+      "has_doc": false
+    },
+    {
+      "source": "lua_api",
+      "module": "window_api",
+      "file": "src/lua_api/window_api.rs",
+      "line": 705,
+      "kind": "fn",
+      "name": "window",
+      "has_doc": true
+    }
+  ]
+}
