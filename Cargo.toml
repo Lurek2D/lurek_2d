@@ -121,8 +121,13 @@ arboard = "3"
 # Cross-platform native file/message dialogs
 rfd = "0.14"
 
-[dev-dependencies]
+# Zip archive reading for .lunar game packages
+zip = { version = "2", default-features = false, features = ["deflate"] }
+
+# Temporary directory management (used for .lunar extraction at runtime)
 tempfile = "3"
+
+[dev-dependencies]
 
 [target.'cfg(windows)'.dependencies]
 # Windows message box for panic handler
@@ -287,8 +292,8 @@ name = "particle_tests"
 path = "tests/rust/unit/particle_tests.rs"
 
 [[test]]
-name = "overlay_tests"
-path = "tests/rust/unit/overlay_tests.rs"
+name = "fx_screen_tests"
+path = "tests/rust/unit/fx_screen_tests.rs"
 
 [[test]]
 name = "pathfinding_tests"
@@ -327,8 +332,8 @@ name = "spine_tests"
 path = "tests/rust/unit/spine_tests.rs"
 
 [[test]]
-name = "sound_tests"
-path = "tests/rust/unit/sound_tests.rs"
+name = "audio_sound_tests"
+path = "tests/rust/unit/audio_sound_tests.rs"
 
 [[test]]
 name = "thread_tests"
@@ -418,6 +423,21 @@ path = "tests/rust/game/minimap_tests.rs"
 # [[test]]
 # name = "stats_tests"
 # path = "tests/rust/game/stats_tests.rs"
+
+# unregistered - audit before activating; tests luna.item + luna.inventory integration
+# [[test]]
+# name = "inventory_item_tests"
+# path = "tests/rust/game/inventory_item_tests.rs"
+
+# unregistered - audit before activating; tests luna.item.* API
+# [[test]]
+# name = "item_tests"
+# path = "tests/rust/game/item_tests.rs"
+
+# unregistered - audit before activating; imports deleted luna2d::province module (migration-state)
+# [[test]]
+# name = "province_tests"
+# path = "tests/rust/game/province_tests.rs"
 
 # === Harnesses ===
 [[test]]

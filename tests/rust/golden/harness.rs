@@ -1,7 +1,7 @@
 //! Golden file tests — verify deterministic binary output.
 //!
 //! Creates known inputs, generates outputs, and compares against stored baselines
-//! in `tests/golden/expected/`. On first run, baselines are generated automatically.
+//! in `tests/rust/golden/expected/`. On first run, baselines are generated automatically.
 //! Subsequent runs verify the output matches byte-for-byte.
 
 use luna2d::data::compress::{compress, decompress, CompressFormat};
@@ -15,8 +15,8 @@ use std::path::Path;
 /// Helper: compare actual bytes to a golden file. If the golden file doesn't exist,
 /// create it (first run). If it does exist, assert byte-for-byte equality.
 fn assert_golden(name: &str, actual: &[u8]) {
-    let expected_path = format!("tests/golden/expected/{}", name);
-    let actual_path = format!("tests/golden/actual/{}", name);
+    let expected_path = format!("tests/rust/golden/expected/{}", name);
+    let actual_path = format!("tests/rust/golden/actual/{}", name);
 
     // Always write the actual output for inspection
     fs::create_dir_all(Path::new(&actual_path).parent().unwrap()).unwrap();
