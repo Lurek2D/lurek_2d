@@ -13,6 +13,8 @@ use crate::engine::resource_keys::TextureKey;
 use crate::graphics::renderer::TextureData;
 use slotmap::SlotMap;
 use std::path::Path;
+use crate::engine::log_messages::{TX01_TEX_DECODED};
+use crate::log_msg;
 
 /// A loaded image asset referenced by its index into the renderer's texture list.
 ///
@@ -73,6 +75,7 @@ impl Texture {
             height,
         });
 
+        log_msg!(debug, TX01_TEX_DECODED, "{}x{}", width, height);
         Ok(Texture { key, width, height })
     }
 

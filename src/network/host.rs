@@ -13,6 +13,8 @@ use rusty_enet::{self as enet, Host, HostSettings, Packet, PeerID};
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;
+use crate::engine::log_messages::{NW01_HOST_BIND, NW04_NET_ERROR};
+use crate::log_msg;
 
 /// Wraps a `rusty_enet::Host<UdpSocket>` with Luna2D-specific defaults and
 /// limit enforcement.
@@ -74,6 +76,7 @@ impl NetworkHost {
     ) -> Result<Self, NetworkError> {
         let peers = peer_count.unwrap_or(DEFAULT_PEERS);
         if peers > MAX_PEERS {
+            log_msg!(error, NW04_NET_ERROR, "peer limit: {} > {}", peers, MAX_PEERS);
             return Err(NetworkError::PeerLimitExceeded {
                 requested: peers,
                 max: MAX_PEERS,
@@ -95,6 +98,7 @@ impl NetworkHost {
 
         let host = Host::new(socket, settings).map_err(|e| NetworkError::Enet(format!("{e}")))?;
 
+        log_msg!(info, NW01_HOST_BIND, "{}", local_addr);
         Ok(Self {
             inner: Some(host),
             local_addr,

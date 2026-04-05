@@ -23,6 +23,8 @@ use std::collections::HashMap;
 use crate::event::{Event, EventArg, EventQueue};
 
 use super::{Action, Script, Step};
+use crate::engine::log_messages::{AT01_SIM_INIT, AT02_SCRIPT_LOAD};
+use crate::log_msg;
 
 /// Current playback state of the [`Simulator`].
 ///
@@ -123,6 +125,7 @@ impl Simulator {
     /// # Returns
     /// `Simulator`.
     pub fn new() -> Self {
+        log_msg!(debug, AT01_SIM_INIT);
         Self {
             scripts: HashMap::new(),
             active_script: None,
@@ -142,6 +145,7 @@ impl Simulator {
     /// # Parameters
     /// - `script` — `Script`.
     pub fn load(&mut self, script: Script) {
+        log_msg!(debug, AT02_SCRIPT_LOAD, "{}", script.name);
         self.scripts.insert(script.name.clone(), script);
     }
 

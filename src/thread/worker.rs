@@ -9,6 +9,8 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 
 use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaChannel};
+use crate::engine::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};
+use crate::log_msg;
 
 /// Execution state of a background Lua thread.
 ///
@@ -64,6 +66,7 @@ impl LuaThread {
     /// The thread is created in `Pending` state and does not start until
     /// `start()` is called.
     pub fn new(code: String, channels: Arc<Mutex<HashMap<String, Arc<Channel>>>>) -> Self {
+        log_msg!(debug, TH01_WORKER_INIT);
         Self {
             code,
             state: Arc::new(Mutex::new(ThreadState::Pending)),
@@ -86,6 +89,7 @@ impl LuaThread {
     /// Returns an error if the thread is already running.
     pub fn start(&mut self, args: Vec<ChannelValue>) -> Result<(), String> {
         if *self.state.lock().unwrap() == ThreadState::Running {
+            log_msg!(error, TH04_WORKER_ERROR, "already running");
             return Err("Thread is already running".into());
         }
 
@@ -94,6 +98,7 @@ impl LuaThread {
         let channels = self.channels.clone();
 
         *state.lock().unwrap() = ThreadState::Running;
+        log_msg!(info, TH02_WORKER_START);
 
         let handle = thread::spawn(move || {
             let lua = mlua::Lua::new();

@@ -6,6 +6,8 @@ use crate::engine::resource_keys::{LightKey, OccluderKey};
 use crate::light::light2d::Light2D;
 use crate::light::occluder::Occluder;
 use crate::math::Color;
+use crate::engine::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
+use crate::log_msg;
 
 /// Resource pool and state for the 2D lighting system.
 ///
@@ -40,6 +42,7 @@ impl LightWorld {
     ///
     /// Defaults: ambient = (0.1, 0.1, 0.1, 1.0), enabled = false, max_lights = 64.
     pub fn new() -> Self {
+        log_msg!(debug, LW01_LIGHT_WORLD_INIT);
         Self {
             lights: SlotMap::with_key(),
             occluders: SlotMap::with_key(),
@@ -57,6 +60,7 @@ impl LightWorld {
     /// # Returns
     /// `LightKey`.
     pub fn add_light(&mut self, light: Light2D) -> LightKey {
+        log_msg!(debug, LW02_LIGHT_ADD);
         if !self.enabled {
             self.enabled = true;
         }

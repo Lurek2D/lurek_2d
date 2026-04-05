@@ -174,3 +174,114 @@ L079 = "Drag-drop ignored: game already running"
 L080 = "Game directory"
 L081 = "Log file"
 L082 = "Could not create log file; logging to stderr only"
+
+[tier1.filesystem]
+FS01 = "GameFS initialised"
+FS02 = "file read"
+FS03 = "file write"
+FS04 = "path traversal rejected"
+FS05 = "VirtualFS path mounted"
+
+[tier2.animation]
+AN01 = "AnimationController created"
+AN02 = "animation clip added"
+AN03 = "animation clip not found"
+
+[tier1.entity]
+EN01 = "Universe created"
+EN02 = "entity spawned"
+EN03 = "entity pool running low"
+
+[tier2.tilemap]
+TM01 = "TileMap created"
+TM02 = "tileset added to map"
+TM03 = "tile layer added"
+TM04 = "TMX parse failed"
+
+[tier2.savegame]
+SV01 = "SaveManager created"
+SV02 = "save write started"
+SV03 = "save load started"
+SV04 = "save write error"
+
+[tier1.thread]
+TH01 = "Worker created"
+TH02 = "worker thread started"
+TH03 = "worker thread finished"
+TH04 = "worker thread error"
+
+[tier2.pathfinding]
+PF01 = "pathfinding Grid created"
+PF02 = "path found"
+PF03 = "no path to target"
+
+[tier2.modding]
+MD01 = "ModManager created"
+MD02 = "mod entry registered"
+MD03 = "mod load failed"
+MD04 = "load order resolved"
+
+[tier2.network]
+NW01 = "network host bound"
+NW02 = "peer connected"
+NW03 = "peer disconnected"
+NW04 = "network error"
+
+[tier2.pipeline]
+PL01 = "Pipeline created"
+PL02 = "pipeline step added"
+PL03 = "pipeline executed"
+PL04 = "pipeline cycle detected"
+
+[tier2.automation]
+AT01 = "Simulator created"
+AT02 = "automation script loaded"
+AT03 = "simulation step warn"
+
+[tier1.audio_dec]
+AD01 = "audio file decoded"
+AD02 = "audio decode error"
+
+[tier1.compute]
+CP01 = "NdArray allocated"
+CP02 = "NdArray exceeds recommended size"
+
+[tier2.minimap]
+MM01 = "Minimap created"
+MM02 = "minimap terrain rebuilt"
+
+[tier2.procgen]
+PG01 = "cellular automata started"
+PG02 = "cellular automata done"
+
+[tier2.serial]
+SR01 = "JSON parsed"
+SR02 = "JSON parse error"
+SR03 = "JSON encoded"
+
+[tier2.gui]
+GU01 = "GuiContext created"
+GU02 = "widget added to context"
+GU03 = "GuiContext reset"
+
+[tier1.texture]
+TX01 = "texture decoded"
+TX02 = "large texture warning"
+TX03 = "texture decode error"
+
+[tier1.shader_mgr]
+SH01 = "shader created"
+SH02 = "shader compile error"
+
+[tier1.light]
+LW01 = "LightWorld created"
+LW02 = "light source added"
+LW03 = "max lights reached"
+
+[tier2.spine]
+SP01 = "Skeleton loaded"
+SP02 = "skeleton animation not found"
+
+[tier1.image_data]
+IM01 = "ImageData loaded"
+IM02 = "ImageData byte size mismatch"

@@ -13,6 +13,8 @@
 
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, VecDeque};
+use crate::engine::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
+use crate::log_msg;
 
 /// A node in the A*/Dijkstra priority queue.
 #[derive(Debug, Clone)]
@@ -75,6 +77,7 @@ impl Grid {
     /// - `default_cost` — Initial movement cost for every cell.
     pub fn new(width: u32, height: u32, default_cost: f32) -> Self {
         let len = (width as usize) * (height as usize);
+        log_msg!(debug, PF01_GRID_INIT, "{}x{}", width, height);
         Self {
             width,
             height,
@@ -226,6 +229,7 @@ impl Grid {
         let start = self.idx(sx, sy)?;
         let goal = self.idx(gx, gy)?;
         if !self.walkable[start] || !self.walkable[goal] {
+            log_msg!(warn, PF03_NO_PATH, "start or goal not walkable");
             return None;
         }
 

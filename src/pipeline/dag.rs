@@ -7,6 +7,8 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::pipeline::step::PipelineStep;
+use crate::engine::log_messages::{PL01_PIPELINE_INIT, PL02_STEP_ADD};
+use crate::log_msg;
 
 /// Determines how the pipeline responds when a step fails.
 ///
@@ -46,6 +48,7 @@ impl Pipeline {
     /// # Returns
     /// `Pipeline`.
     pub fn new(name: impl Into<String>) -> Self {
+        log_msg!(debug, PL01_PIPELINE_INIT);
         Self {
             name: name.into(),
             steps: HashMap::new(),
@@ -70,6 +73,7 @@ impl Pipeline {
             ));
         }
         self.steps.insert(step.name.clone(), step);
+        log_msg!(debug, PL02_STEP_ADD);
         Ok(())
     }
 

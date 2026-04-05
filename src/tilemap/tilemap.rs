@@ -14,6 +14,8 @@ use crate::math::{Rect, Vec2};
 
 use super::mapgen::MapOrientation;
 use super::tileset::TileSet;
+use crate::engine::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
+use crate::log_msg;
 
 /// A single layer of tiles in a [`TileMap`].
 ///
@@ -138,6 +140,7 @@ impl TileMap {
     /// # Returns
     /// `Self`.
     pub fn new(tile_width: u32, tile_height: u32, chunk_size: u32) -> Self {
+        log_msg!(debug, TM01_TILEMAP_INIT, "{}x{} tiles, chunk={}", tile_width, tile_height, chunk_size);
         Self {
             tile_width,
             tile_height,
@@ -159,6 +162,7 @@ impl TileMap {
     /// # Parameters
     /// - `ts` — `TileSet`.
     pub fn add_tileset(&mut self, ts: TileSet) {
+        log_msg!(debug, TM02_TILESET_ADD);
         self.tilesets.push(ts);
     }
 
@@ -195,6 +199,7 @@ impl TileMap {
     /// # Returns
     /// `usize`.
     pub fn add_layer(&mut self, name: &str, width: u32, height: u32) -> usize {
+        log_msg!(debug, TM03_LAYER_ADD, "{}", name);
         self.layers.push(TileLayer::new(name, width, height));
         self.layers.len() - 1
     }

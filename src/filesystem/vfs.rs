@@ -9,6 +9,8 @@
 //! and the `luna.*` Lua API for the scripting interface.
 //!
 use crate::engine::error::{EngineError, EngineResult};
+use crate::engine::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
+use crate::log_msg;
 use std::path::{Path, PathBuf};
 
 /// File metadata returned by `get_info()`. Consult the module-level documentation for the broader usage context and preconditions.
@@ -83,6 +85,7 @@ impl GameFS {
     /// # Returns
     /// A new `GameFS` instance ready for sandboxed I/O.
     pub fn new(base_dir: impl Into<PathBuf>) -> Self {
+        log_msg!(debug, FS01_GAMEFS_INIT);
         GameFS {
             base_dir: base_dir.into(),
             identity: String::new(),
@@ -188,6 +191,28 @@ impl GameFS {
             })?;
         }
         std::fs::write(&full, content)
+            .map_err(|e| EngineError::FileSystemError(format!("Failed to write '{}': {}", path, e)))
+    }
+
+    /// Writes raw bytes to `path`, which must stay inside the `save/` subdirectory.
+    ///
+    /// Creates parent directories automatically. Rejects any path outside `save/`
+    /// to prevent scripts from writing arbitrary files to the host filesystem.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path under `save/`, e.g. `"save/frame.png"`.
+    /// - `bytes` — Raw bytes to write.
+    ///
+    /// # Returns
+    /// `Ok(())` on success. `Err(EngineError)` if the path is outside `save/` or an I/O error occurs.
+    pub fn write_bytes(&self, path: &str, bytes: &[u8]) -> EngineResult<()> {
+        let resolved = self.resolve_save_path(path)?;
+        if let Some(parent) = resolved.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to create directories: {}", e))
+            })?;
+        }
+        std::fs::write(&resolved, bytes)
             .map_err(|e| EngineError::FileSystemError(format!("Failed to write '{}': {}", path, e)))
     }
 
@@ -470,6 +495,7 @@ impl GameFS {
         // Security: reject path traversal in source
         for component in std::path::Path::new(source_path).components() {
             if let std::path::Component::ParentDir = component {
+                log_msg!(warn, FS04_PATH_TRAVERSAL, "{}", source_path);
                 return Err(EngineError::FileSystemError(
                     "Access denied: path traversal in mount source".into(),
                 ));
@@ -488,14 +514,16 @@ impl GameFS {
                 source_path, e
             ))
         })?;
-        let base_canonical = self.base_dir.canonicalize().map_err(|e| {
-            EngineError::FileSystemError(format!("Cannot resolve base dir: {}", e))
-        })?;
+        let base_canonical = self
+            .base_dir
+            .canonicalize()
+            .map_err(|e| EngineError::FileSystemError(format!("Cannot resolve base dir: {}", e)))?;
         if !canonical.starts_with(&base_canonical) {
             return Err(EngineError::FileSystemError(
                 "Access denied: mount source must be inside the game directory".into(),
             ));
         }
+        log_msg!(info, FS05_VFS_MOUNT, "{} -> {}", source_path, mountpoint);
         self.mounts.push(MountLayer {
             source: canonical,
             mountpoint: mountpoint.to_string(),
@@ -562,10 +590,7 @@ impl GameFS {
                 let candidate = layer.source.join(rel.trim_start_matches('/'));
                 if candidate.is_file() {
                     return std::fs::read(&candidate).map_err(|e| {
-                        EngineError::FileSystemError(format!(
-                            "Failed to read '{}': {}",
-                            path, e
-                        ))
+                        EngineError::FileSystemError(format!("Failed to read '{}': {}", path, e))
                     });
                 }
             }
@@ -588,9 +613,7 @@ impl GameFS {
         }
         for layer in &self.mounts {
             if path.starts_with(&layer.mountpoint) || layer.mountpoint == path {
-                let rel = path
-                    .strip_prefix(&layer.mountpoint)
-                    .unwrap_or(path);
+                let rel = path.strip_prefix(&layer.mountpoint).unwrap_or(path);
                 let dir = layer.source.join(rel.trim_start_matches('/'));
                 if dir.is_dir() {
                     if let Ok(rd) = std::fs::read_dir(&dir) {

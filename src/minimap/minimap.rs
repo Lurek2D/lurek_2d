@@ -1,6 +1,8 @@
 //! Core `Minimap` data model: terrain grid, fog of war, objects, pings, markers, and navigation.
 
 use std::collections::HashMap;
+use crate::engine::log_messages::{MM01_MINIMAP_INIT};
+use crate::log_msg;
 
 use super::types::{
     ColorMode, FogLevel, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing,
@@ -92,6 +94,7 @@ impl Minimap {
     /// # Returns
     /// `Self`.
     pub fn new(grid_width: u32, grid_height: u32, display_width: u32, display_height: u32) -> Self {
+        log_msg!(debug, MM01_MINIMAP_INIT, "{}x{} grid", grid_width, grid_height);
         let cell_count = (grid_width * grid_height) as usize;
         Self {
             grid_width,

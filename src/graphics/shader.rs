@@ -12,6 +12,8 @@
 //! and the `luna.*` Lua API for the scripting interface.
 
 use std::collections::HashMap;
+use crate::engine::log_messages::{SH01_SHADER_OK};
+use crate::log_msg;
 
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 
@@ -97,6 +99,7 @@ impl Shader {
     pub fn new(source: String) -> Result<Self, String> {
         validate_wgsl(&source)?;
         let prepared = prepare_fragment_source_for_wrapper(&source)?;
+        log_msg!(info, SH01_SHADER_OK);
         Ok(Self {
             source,
             wrapper_source: prepared.source,

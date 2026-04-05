@@ -7,6 +7,8 @@ use crate::math::Rect;
 use super::clip::AnimClip;
 use super::event::AnimEvent;
 use super::frame::AnimFrame;
+use crate::engine::log_messages::{AN01_ANIM_CTRL_INIT, AN02_CLIP_ADDED, AN03_CLIP_NOT_FOUND};
+use crate::log_msg;
 
 /// Sprite animation with named clips, speed control, and playback events.
 ///
@@ -53,6 +55,7 @@ impl Animation {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, AN01_ANIM_CTRL_INIT);
         Self {
             frames: Vec::new(),
             clips: HashMap::new(),
@@ -145,6 +148,7 @@ impl Animation {
     /// - `fps` — Playback speed in frames per second.
     /// - `looping` — Whether the clip loops.
     pub fn add_clip(&mut self, name: &str, frame_indices: Vec<usize>, fps: f32, looping: bool) {
+        log_msg!(debug, AN02_CLIP_ADDED, "{}", name);
         self.clips.insert(
             name.to_string(),
             AnimClip {
@@ -201,6 +205,7 @@ impl Animation {
     /// Returns `false` if the clip does not exist.
     pub fn play(&mut self, name: &str) -> bool {
         if !self.clips.contains_key(name) {
+            log_msg!(warn, AN03_CLIP_NOT_FOUND, "{}", name);
             return false;
         }
         self.current_clip = Some(name.to_string());

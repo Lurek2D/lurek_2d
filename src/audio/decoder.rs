@@ -5,6 +5,8 @@
 //! memory.
 
 use crate::engine::EngineError;
+use crate::engine::log_messages::{AD01_AUDIO_DECODED};
+use crate::log_msg;
 
 /// Streaming audio decoder that reads PCM in fixed-size chunks.
 ///
@@ -56,6 +58,7 @@ impl Decoder {
         let channels = decoder.channels();
         let pcm: Vec<i16> = decoder.collect();
 
+        log_msg!(debug, AD01_AUDIO_DECODED, "{}", path);
         Ok(Self {
             path: path.to_string(),
             sample_rate,

@@ -337,3 +337,191 @@ pub const L082_LOG_FILE_FAIL: &str = "L082";
 
 /// Log message: font atlas has reached the maximum size and cannot grow.
 pub const G006_ATLAS_MAX_SIZE: &str = "G006";
+
+// ── Filesystem ──────────────────────────────────────────────────────────────
+/// Stable ID for "GameFS initialised".
+pub const FS01_GAMEFS_INIT: &str = "FS01";
+/// Stable ID for "file read".
+pub const FS02_FILE_READ: &str = "FS02";
+/// Stable ID for "file write".
+pub const FS03_FILE_WRITE: &str = "FS03";
+/// Stable ID for "path traversal rejected".
+pub const FS04_PATH_TRAVERSAL: &str = "FS04";
+/// Stable ID for "VirtualFS path mounted".
+pub const FS05_VFS_MOUNT: &str = "FS05";
+
+// ── Animation ────────────────────────────────────────────────────────────────
+/// Stable ID for "AnimationController created".
+pub const AN01_ANIM_CTRL_INIT: &str = "AN01";
+/// Stable ID for "animation clip added".
+pub const AN02_CLIP_ADDED: &str = "AN02";
+/// Stable ID for "animation clip not found".
+pub const AN03_CLIP_NOT_FOUND: &str = "AN03";
+
+// ── Entity ───────────────────────────────────────────────────────────────────
+/// Stable ID for "Universe created".
+pub const EN01_UNIVERSE_INIT: &str = "EN01";
+/// Stable ID for "entity spawned".
+pub const EN02_ENTITY_SPAWN: &str = "EN02";
+/// Stable ID for "entity pool running low".
+pub const EN03_ENTITY_LOW: &str = "EN03";
+
+// ── Tilemap ──────────────────────────────────────────────────────────────────
+/// Stable ID for "TileMap created".
+pub const TM01_TILEMAP_INIT: &str = "TM01";
+/// Stable ID for "tileset added to map".
+pub const TM02_TILESET_ADD: &str = "TM02";
+/// Stable ID for "tile layer added".
+pub const TM03_LAYER_ADD: &str = "TM03";
+/// Stable ID for "TMX parse failed".
+pub const TM04_TMX_FAIL: &str = "TM04";
+
+// ── SaveGame ─────────────────────────────────────────────────────────────────
+/// Stable ID for "SaveManager created".
+pub const SV01_SAVE_INIT: &str = "SV01";
+/// Stable ID for "save write started".
+pub const SV02_SAVE_WRITE: &str = "SV02";
+/// Stable ID for "save load started".
+pub const SV03_SAVE_LOAD: &str = "SV03";
+/// Stable ID for "save write error".
+pub const SV04_SAVE_ERROR: &str = "SV04";
+
+// ── Scene ────────────────────────────────────────────────────────────────────
+/// Stable ID for "SceneStack created".
+pub const SC01_STACK_INIT: &str = "SC01";
+/// Stable ID for "scene pushed".
+pub const SC02_SCENE_PUSH: &str = "SC02";
+/// Stable ID for "scene popped".
+pub const SC03_SCENE_POP: &str = "SC03";
+/// Stable ID for "scene stack cleared".
+pub const SC04_STACK_CLEAR: &str = "SC04";
+
+// ── Thread ───────────────────────────────────────────────────────────────────
+/// Stable ID for "Worker created".
+pub const TH01_WORKER_INIT: &str = "TH01";
+/// Stable ID for "worker thread started".
+pub const TH02_WORKER_START: &str = "TH02";
+/// Stable ID for "worker thread finished".
+pub const TH03_WORKER_DONE: &str = "TH03";
+/// Stable ID for "worker thread error".
+pub const TH04_WORKER_ERROR: &str = "TH04";
+
+// ── Pathfinding ──────────────────────────────────────────────────────────────
+/// Stable ID for "pathfinding Grid created".
+pub const PF01_GRID_INIT: &str = "PF01";
+/// Stable ID for "path found".
+pub const PF02_PATH_FOUND: &str = "PF02";
+/// Stable ID for "no path to target".
+pub const PF03_NO_PATH: &str = "PF03";
+
+// ── Modding ──────────────────────────────────────────────────────────────────
+/// Stable ID for "ModManager created".
+pub const MD01_MGR_INIT: &str = "MD01";
+/// Stable ID for "mod entry registered".
+pub const MD02_MOD_REG: &str = "MD02";
+/// Stable ID for "mod load failed".
+pub const MD03_MOD_FAIL: &str = "MD03";
+/// Stable ID for "load order resolved".
+pub const MD04_ORDER_OK: &str = "MD04";
+
+// ── Network ──────────────────────────────────────────────────────────────────
+/// Stable ID for "network host bound".
+pub const NW01_HOST_BIND: &str = "NW01";
+/// Stable ID for "peer connected".
+pub const NW02_PEER_CONN: &str = "NW02";
+/// Stable ID for "peer disconnected".
+pub const NW03_PEER_DISC: &str = "NW03";
+/// Stable ID for "network error".
+pub const NW04_NET_ERROR: &str = "NW04";
+
+// ── Pipeline ─────────────────────────────────────────────────────────────────
+/// Stable ID for "Pipeline created".
+pub const PL01_PIPELINE_INIT: &str = "PL01";
+/// Stable ID for "pipeline step added".
+pub const PL02_STEP_ADD: &str = "PL02";
+/// Stable ID for "pipeline executed".
+pub const PL03_EXEC: &str = "PL03";
+/// Stable ID for "pipeline cycle detected".
+pub const PL04_CYCLE: &str = "PL04";
+
+// ── Automation ───────────────────────────────────────────────────────────────
+/// Stable ID for "Simulator created".
+pub const AT01_SIM_INIT: &str = "AT01";
+/// Stable ID for "automation script loaded".
+pub const AT02_SCRIPT_LOAD: &str = "AT02";
+/// Stable ID for "simulation step warn".
+pub const AT03_STEP_WARN: &str = "AT03";
+
+// ── Audio Decoder ────────────────────────────────────────────────────────────
+/// Stable ID for "audio file decoded".
+pub const AD01_AUDIO_DECODED: &str = "AD01";
+/// Stable ID for "audio decode error".
+pub const AD02_AUDIO_ERROR: &str = "AD02";
+
+// ── Compute ──────────────────────────────────────────────────────────────────
+/// Stable ID for "NdArray allocated".
+pub const CP01_NDARRAY_ALLOC: &str = "CP01";
+/// Stable ID for "NdArray exceeds recommended size".
+pub const CP02_NDARRAY_LARGE: &str = "CP02";
+
+// ── Minimap ──────────────────────────────────────────────────────────────────
+/// Stable ID for "Minimap created".
+pub const MM01_MINIMAP_INIT: &str = "MM01";
+/// Stable ID for "minimap terrain rebuilt".
+pub const MM02_TERRAIN_REBUILD: &str = "MM02";
+
+// ── Procgen ──────────────────────────────────────────────────────────────────
+/// Stable ID for "cellular automata started".
+pub const PG01_CELLULAR_START: &str = "PG01";
+/// Stable ID for "cellular automata done".
+pub const PG02_CELLULAR_DONE: &str = "PG02";
+
+// ── Serial ───────────────────────────────────────────────────────────────────
+/// Stable ID for "JSON parsed".
+pub const SR01_JSON_OK: &str = "SR01";
+/// Stable ID for "JSON parse error".
+pub const SR02_JSON_ERR: &str = "SR02";
+/// Stable ID for "JSON encoded".
+pub const SR03_JSON_ENC: &str = "SR03";
+
+// ── GUI ──────────────────────────────────────────────────────────────────────
+/// Stable ID for "GuiContext created".
+pub const GU01_CTX_INIT: &str = "GU01";
+/// Stable ID for "widget added to context".
+pub const GU02_WIDGET_ADD: &str = "GU02";
+/// Stable ID for "GuiContext reset".
+pub const GU03_CTX_RESET: &str = "GU03";
+
+// ── Texture ──────────────────────────────────────────────────────────────────
+/// Stable ID for "texture decoded".
+pub const TX01_TEX_DECODED: &str = "TX01";
+/// Stable ID for "large texture warning".
+pub const TX02_TEX_LARGE: &str = "TX02";
+/// Stable ID for "texture decode error".
+pub const TX03_TEX_ERROR: &str = "TX03";
+
+// ── Shader ───────────────────────────────────────────────────────────────────
+/// Stable ID for "shader created".
+pub const SH01_SHADER_OK: &str = "SH01";
+/// Stable ID for "shader compile error".
+pub const SH02_SHADER_ERR: &str = "SH02";
+
+// ── LightWorld ───────────────────────────────────────────────────────────────
+/// Stable ID for "LightWorld created".
+pub const LW01_LIGHT_WORLD_INIT: &str = "LW01";
+/// Stable ID for "light source added".
+pub const LW02_LIGHT_ADD: &str = "LW02";
+/// Stable ID for "max lights reached".
+pub const LW03_LIGHT_MAX: &str = "LW03";
+
+// ── Spine ────────────────────────────────────────────────────────────────────
+/// Stable ID for "Skeleton loaded".
+pub const SP01_SKEL_LOADED: &str = "SP01";
+/// Stable ID for "skeleton animation not found".
+pub const SP02_SKEL_ANIM_MISS: &str = "SP02";
+
+// ── ImageData ────────────────────────────────────────────────────────────────
+/// Stable ID for "ImageData loaded".
+pub const IM01_IMAGE_LOADED: &str = "IM01";
+/// Stable ID for "ImageData byte size mismatch".
+pub const IM02_IMAGE_MISMATCH: &str = "IM02";

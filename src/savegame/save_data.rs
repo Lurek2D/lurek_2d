@@ -10,6 +10,8 @@
 //! and the `luna.*` Lua API for the scripting interface.
 
 use std::collections::HashMap;
+use crate::engine::log_messages::{SV01_SAVE_INIT};
+use crate::log_msg;
 
 /// Metadata extracted from a save slot. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -65,6 +67,7 @@ impl SaveManager {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, SV01_SAVE_INIT);
         Self::default()
     }
 

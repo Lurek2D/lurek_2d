@@ -14,6 +14,8 @@
 //! tree by hit-testing against widget bounds.
 
 use crate::gui::containers::{DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel};
+use crate::engine::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
+use crate::log_msg;
 use crate::gui::controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider, TabBar, TextInput,
 };
@@ -276,6 +278,7 @@ impl GuiContext {
     /// # Returns
     /// `GuiContext`.
     pub fn new() -> Self {
+        log_msg!(debug, GU01_CTX_INIT);
         let root = Panel::new();
         Self {
             widgets: vec![WidgetKind::Panel(root)],
@@ -675,6 +678,7 @@ impl GuiContext {
     /// # Returns
     /// `bool`.
     pub fn add_child(&mut self, parent_idx: usize, child_idx: usize) -> bool {
+        log_msg!(debug, GU02_WIDGET_ADD);
         if parent_idx >= self.widgets.len() || child_idx >= self.widgets.len() {
             return false;
         }

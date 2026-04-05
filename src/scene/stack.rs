@@ -11,6 +11,8 @@
 use std::collections::HashMap;
 
 use crate::scene::transition::{ActiveTransition, TransitionType};
+use crate::engine::log_messages::{SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR};
+use crate::log_msg;
 
 /// Unique identifier for a scene in the stack.
 pub type SceneId = u64;
@@ -45,6 +47,7 @@ impl SceneStack {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, SC01_STACK_INIT);
         Self {
             stack: Vec::new(),
             registry: HashMap::new(),
@@ -81,6 +84,7 @@ impl SceneStack {
         transition_type: TransitionType,
         duration: f32,
     ) -> Option<SceneId> {
+        log_msg!(info, SC02_SCENE_PUSH);
         let prev = self.stack.last().copied();
         if transition_type != TransitionType::None && duration > 0.0 {
             self.transition = Some(ActiveTransition::new(transition_type, duration));
@@ -108,6 +112,7 @@ impl SceneStack {
         if self.stack.is_empty() {
             return Err("Cannot pop from an empty scene stack".to_string());
         }
+        log_msg!(info, SC03_SCENE_POP);
         let popped = self.stack.pop().unwrap();
         let revealed = self.stack.last().copied();
         if transition_type != TransitionType::None && duration > 0.0 {
@@ -151,6 +156,7 @@ impl SceneStack {
     /// # Returns
     /// `Vec<SceneId>`.
     pub fn clear(&mut self) -> Vec<SceneId> {
+        log_msg!(info, SC04_STACK_CLEAR);
         self.transition = None;
         std::mem::take(&mut self.stack)
     }

@@ -12,6 +12,8 @@
 //! and the `luna.*` Lua API for the scripting interface.
 
 use std::collections::{HashMap, HashSet};
+use crate::engine::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
+use crate::log_msg;
 
 /// Metadata describing a mod. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -60,6 +62,7 @@ impl ModInfo {
     /// `Self`.
     pub fn new(id: impl Into<String>) -> Self {
         let id = id.into();
+        log_msg!(debug, MD02_MOD_REG, "{}", id);
         Self {
             name: id.clone(),
             id,
@@ -99,6 +102,7 @@ impl ModManager {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, MD01_MGR_INIT);
         Self {
             mods: Vec::new(),
             custom_load_order: None,
@@ -202,6 +206,7 @@ impl ModManager {
     /// mods listed there appear first (in that order), followed by any remaining
     /// mods sorted by priority. Mods not registered are silently skipped.
     pub fn load_order(&self) -> Vec<&ModInfo> {
+        log_msg!(debug, MD04_ORDER_OK);
         if let Some(order) = &self.custom_load_order {
             let mut result: Vec<&ModInfo> = Vec::new();
             let mut seen: HashSet<&str> = HashSet::new();

@@ -1,5 +1,7 @@
 use super::bone::Bone;
 use super::slot::Slot;
+use crate::engine::log_messages::{SP01_SKEL_LOADED};
+use crate::log_msg;
 
 /// A skeletal animation rig composed of a bone hierarchy and render slots.
 ///
@@ -36,6 +38,7 @@ impl Skeleton {
     /// # Returns
     /// `Skeleton` at the origin with unit scale and no bones or slots.
     pub fn new(name: impl Into<String>) -> Self {
+        log_msg!(info, SP01_SKEL_LOADED);
         Self {
             name: name.into(),
             bones: Vec::new(),

@@ -10,6 +10,8 @@
 
 use mlua::{Function, Lua, RegistryKey, Result as LuaResult, Table, Value as LuaValue};
 use std::collections::{HashMap, HashSet};
+use crate::engine::log_messages::{EN01_UNIVERSE_INIT, EN02_ENTITY_SPAWN};
+use crate::log_msg;
 
 /// Maximum number of bitmap tag definitions per Universe.
 const MAX_BITMAP_TAGS: usize = 63;
@@ -60,6 +62,7 @@ impl Universe {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, EN01_UNIVERSE_INIT);
         Self {
             next_id: 1,
             free_list: Vec::new(),
@@ -182,6 +185,7 @@ impl Universe {
     /// # Returns
     /// `u32`.
     pub fn spawn(&mut self) -> u32 {
+        log_msg!(debug, EN02_ENTITY_SPAWN);
         let slot = if let Some(recycled) = self.free_list.pop() {
             recycled
         } else {

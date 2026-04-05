@@ -4,6 +4,8 @@
 //! iterative neighbor-count smoothing.
 
 use super::lcg::Lcg;
+use crate::engine::log_messages::{PG01_CELLULAR_START, PG02_CELLULAR_DONE};
+use crate::log_msg;
 
 /// Options for cellular automata generation.
 ///
@@ -51,6 +53,7 @@ impl Default for CellularOpts {
 ///
 /// Returns a flat `Vec<u8>` of size `width * height` where 1 = wall, 0 = open.
 pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8> {
+    log_msg!(debug, PG01_CELLULAR_START, "{}x{}", width, height);
     let size = (width * height) as usize;
     let mut grid = vec![0u8; size];
     let mut rng = Lcg::new(opts.seed);
@@ -99,6 +102,7 @@ pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8
         std::mem::swap(&mut grid, &mut next);
     }
 
+    log_msg!(debug, PG02_CELLULAR_DONE, "{}x{}", width, height);
     grid
 }
 
