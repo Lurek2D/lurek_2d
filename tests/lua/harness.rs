@@ -267,6 +267,26 @@ fn lua_test_gui() {
     run_lua_test("unit/test_gui.lua");
 }
 
+#[test]
+fn lua_test_serial() {
+    run_lua_test("unit/test_serial.lua");
+}
+
+#[test]
+fn lua_test_thread() {
+    run_lua_test("unit/test_thread.lua");
+}
+
+#[test]
+fn lua_test_savegame() {
+    run_lua_test("unit/test_savegame.lua");
+}
+
+#[test]
+fn lua_test_modding() {
+    run_lua_test("unit/test_modding.lua");
+}
+
 // === Validation Tests ===
 
 #[test]
