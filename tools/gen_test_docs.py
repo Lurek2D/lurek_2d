@@ -31,7 +31,7 @@ from pathlib import Path
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = WORKSPACE_ROOT / "docs" / "API" / "test_coverage.json"
 DEFAULT_OUTPUT = WORKSPACE_ROOT / "docs" / "API" / "test_docs.md"
-TESTS_DIR = WORKSPACE_ROOT / "tests"
+TESTS_DIR = WORKSPACE_ROOT / "tests" / "rust"
 
 # Matches a Rust test function
 _TEST_FN_RE = re.compile(r"^(?:pub\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(")
@@ -45,7 +45,7 @@ def _collect_test_function_docs(tests_dir: Path) -> dict[str, dict[str, str]]:
     """
     result: dict[str, dict[str, str]] = {}
 
-    for rs_file in sorted(tests_dir.glob("*.rs")):
+    for rs_file in sorted(tests_dir.rglob("*.rs")):
         mod_name = rs_file.stem  # e.g. "physics_tests"
         docs: dict[str, str] = {}
 

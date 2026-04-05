@@ -1,4 +1,4 @@
-//! Test harness that discovers and runs all Lua integration test scripts.
+﻿//! Test harness that discovers and runs all Lua integration test scripts.
 
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -170,6 +170,11 @@ fn lua_test_patterns() {
 }
 
 #[test]
+fn lua_test_light() {
+    run_lua_test("unit/test_light.lua");
+}
+
+#[test]
 fn lua_test_localization() {
     run_lua_test("unit/test_localization.lua");
 }
@@ -266,22 +271,22 @@ fn lua_test_gui() {
 
 #[test]
 fn lua_validation_toml() {
-    run_lua_test("validation/test_toml_validation.lua");
+    run_lua_test("security/test_toml_validation.lua");
 }
 
 #[test]
 fn lua_validation_invalid_args() {
-    run_lua_test("validation/test_invalid_args.lua");
+    run_lua_test("security/test_invalid_args.lua");
 }
 
 #[test]
 fn lua_validation_savegame() {
-    run_lua_test("validation/test_savegame_validation.lua");
+    run_lua_test("security/test_savegame_validation.lua");
 }
 
 #[test]
 fn lua_validation_filesystem_security() {
-    run_lua_test("validation/test_mount_traversal.lua");
+    run_lua_test("security/test_mount_traversal.lua");
 }
 
 // === Cross-Module Integration Tests ===
@@ -513,4 +518,96 @@ fn lua_integration_physics_timer() {
 #[test]
 fn lua_integration_timer_math() {
     run_lua_test("integration/test_timer_math.lua");
+}
+
+#[test]
+fn lua_integration_ai_physics2() {
+    run_lua_test("integration/test_ai_physics2.lua");
+}
+
+#[test]
+fn lua_integration_compute_dataframe2() {
+    run_lua_test("integration/test_compute_dataframe2.lua");
+}
+
+#[test]
+fn lua_integration_data_system2() {
+    run_lua_test("integration/test_data_system2.lua");
+}
+
+#[test]
+fn lua_integration_debugbridge() {
+    run_lua_test("integration/test_debugbridge.lua");
+}
+
+#[test]
+fn lua_integration_devtools() {
+    run_lua_test("integration/test_devtools.lua");
+}
+
+#[test]
+fn lua_integration_docs() {
+    run_lua_test("integration/test_docs.lua");
+}
+
+#[test]
+fn lua_integration_drawlayer() {
+    run_lua_test("integration/test_drawlayer.lua");
+}
+
+#[test]
+fn lua_integration_entity_ai2() {
+    run_lua_test("integration/test_entity_ai2.lua");
+}
+
+#[test]
+fn lua_integration_math_graphics2() {
+    run_lua_test("integration/test_math_graphics2.lua");
+}
+
+#[test]
+fn lua_integration_math_physics2() {
+    run_lua_test("integration/test_math_physics2.lua");
+}
+
+#[test]
+fn lua_integration_physics_timer2() {
+    run_lua_test("integration/test_physics_timer2.lua");
+}
+
+#[test]
+fn lua_integration_save_entity2() {
+    run_lua_test("integration/test_save_entity2.lua");
+}
+
+#[test]
+fn lua_integration_system() {
+    run_lua_test("integration/test_system.lua");
+}
+
+#[test]
+fn lua_integration_tilemap_physics2() {
+    run_lua_test("integration/test_tilemap_physics2.lua");
+}
+
+#[test]
+fn lua_integration_timer_math2() {
+    run_lua_test("integration/test_timer_math2.lua");
+}
+
+// ─── New: unit, config, examples ─────────────────────────────────────────
+
+#[test]
+fn lua_test_terminal() {
+    run_lua_test("unit/test_terminal.lua");
+}
+
+#[test]
+fn lua_test_config() {
+    run_lua_test("config/test_config.lua");
+}
+
+#[test]
+fn lua_test_examples() {
+    run_lua_test("examples/test_examples.lua");
 }

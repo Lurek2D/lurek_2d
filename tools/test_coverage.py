@@ -27,8 +27,8 @@ from typing import Dict, List, Set, Tuple
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = WORKSPACE_ROOT / "src"
-TESTS_DIR = WORKSPACE_ROOT / "tests"
-LUA_TESTS_DIR = TESTS_DIR / "lua"
+TESTS_DIR = WORKSPACE_ROOT / "tests" / "rust"
+LUA_TESTS_DIR = WORKSPACE_ROOT / "tests" / "lua"
 DEFAULT_JSON_OUTPUT = WORKSPACE_ROOT / "docs" / "API" / "test_coverage.json"
 
 
@@ -140,7 +140,7 @@ def analyze_rust_coverage(
     """Determine which public Rust functions appear in test files."""
     # Load all test files
     test_contents: Dict[str, str] = {}
-    for tf in sorted(tests_dir.glob("*.rs")):
+    for tf in sorted(tests_dir.rglob("*.rs")):
         test_contents[tf.stem] = _load_test_content(tf)
 
     covered = []
@@ -178,7 +178,7 @@ def analyze_lua_coverage(
 ) -> Tuple[List[dict], List[dict]]:
     """Determine which Lua API functions appear in Lua test files."""
     test_contents: Dict[str, str] = {}
-    for tf in sorted(lua_tests_dir.glob("*.lua")):
+    for tf in sorted(lua_tests_dir.rglob("*.lua")):
         test_contents[tf.stem] = _load_test_content(tf)
 
     covered = []

@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Dict, List
 
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
-GOLDEN_DIR = WORKSPACE_ROOT / "tests" / "golden"
+GOLDEN_DIR = WORKSPACE_ROOT / "tests" / "rust" / "golden"
 GOLDEN_ACTUAL_DIR = GOLDEN_DIR / "actual"
 GOLDEN_EXPECTED_DIR = GOLDEN_DIR / "expected"
 

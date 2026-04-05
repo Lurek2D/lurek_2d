@@ -1,36 +1,76 @@
+-- Dialog API integration tests
+local total, passed, failed = 0, 0, 0
+
+local function describe(name, fn)
+    print("  " .. name)
+    fn()
+end
+
+local function it(name, fn)
+    total = total + 1
+    local ok, err = pcall(fn)
+    if ok then
+        passed = passed + 1
+        print("    ✓ " .. name)
+    else
+        failed = failed + 1
+        print("    ✗ " .. name .. ": " .. tostring(err))
+    end
+end
+
+local function expect_eq(a, b, msg)
+    if a ~= b then
+        error((msg or "") .. " expected " .. tostring(b) .. " got " .. tostring(a), 2)
+    end
+end
+
+local function expect_type(val, t, msg)
+    if type(val) ~= t then
+        error((msg or "") .. " expected type " .. t .. " got " .. type(val), 2)
+    end
+end
+
+local function expect_no_error(fn, msg)
+    local ok, err = pcall(fn)
+    if not ok then error((msg or "unexpected error") .. ": " .. tostring(err), 2) end
+end
+
+print("Dialog API Tests")
+print("================")
+
 describe("newSequencer", function()
     it("creates a sequencer", function()
         local seq = luna.dialog.newSequencer()
-        expect_type("userdata", seq)
+        expect_type(seq, "userdata", "sequencer")
     end)
 
     it("has type Sequencer", function()
         local seq = luna.dialog.newSequencer()
-        expect_equal("Sequencer", seq:type())
+        expect_eq(seq:type(), "Sequencer")
     end)
 
     it("typeOf Object", function()
         local seq = luna.dialog.newSequencer()
-        expect_equal(true, seq:typeOf("Object"))
-        expect_equal(true, seq:typeOf("Sequencer"))
-        expect_equal(false, seq:typeOf("Image"))
+        expect_eq(seq:typeOf("Object"), true)
+        expect_eq(seq:typeOf("Sequencer"), true)
+        expect_eq(seq:typeOf("Image"), false)
     end)
 end)
 
 describe("initial state", function()
     it("starts idle", function()
         local seq = luna.dialog.newSequencer()
-        expect_equal("idle", seq:getState())
+        expect_eq(seq:getState(), "idle")
     end)
 
     it("is not active", function()
         local seq = luna.dialog.newSequencer()
-        expect_equal(false, seq:isActive())
+        expect_eq(seq:isActive(), false)
     end)
 
     it("default speed is 30", function()
         local seq = luna.dialog.newSequencer()
-        expect_equal(30, seq:getSpeed())
+        expect_eq(seq:getSpeed(), 30)
     end)
 end)
 
@@ -41,18 +81,18 @@ describe("load and start", function()
             { type = "say", speaker = "Alice", text = "Hello world" },
         })
         seq:start()
-        expect_equal("typing", seq:getState())
-        expect_equal("Alice", seq:currentSpeaker())
-        expect_equal("Hello world", seq:currentText())
-        expect_equal(true, seq:isActive())
+        expect_eq(seq:getState(), "typing")
+        expect_eq(seq:currentSpeaker(), "Alice")
+        expect_eq(seq:currentText(), "Hello world")
+        expect_eq(seq:isActive(), true)
     end)
 
     it("handles empty script gracefully", function()
         local seq = luna.dialog.newSequencer()
         seq:load({})
         seq:start()
-        expect_equal("done", seq:getState())
-        expect_equal(false, seq:isActive())
+        expect_eq(seq:getState(), "done")
+        expect_eq(seq:isActive(), false)
     end)
 end)
 
@@ -60,7 +100,7 @@ describe("setSpeed / getSpeed", function()
     it("changes typing speed", function()
         local seq = luna.dialog.newSequencer()
         seq:setSpeed(60)
-        expect_equal(60, seq:getSpeed())
+        expect_eq(seq:getSpeed(), 60)
     end)
 
     it("speed 0 means instant reveal", function()
@@ -70,8 +110,8 @@ describe("setSpeed / getSpeed", function()
             { type = "say", speaker = "X", text = "Instant" },
         })
         seq:start()
-        expect_equal("waiting", seq:getState())
-        expect_equal("Instant", seq:revealedText())
+        expect_eq(seq:getState(), "waiting")
+        expect_eq(seq:revealedText(), "Instant")
     end)
 end)
 
@@ -82,10 +122,10 @@ describe("advance and skip", function()
             { type = "say", speaker = "A", text = "Hello" },
         })
         seq:start()
-        expect_equal("typing", seq:getState())
+        expect_eq(seq:getState(), "typing")
         seq:skip()
-        expect_equal("waiting", seq:getState())
-        expect_equal("Hello", seq:revealedText())
+        expect_eq(seq:getState(), "waiting")
+        expect_eq(seq:revealedText(), "Hello")
     end)
 
     it("advance from typing skips to waiting", function()
@@ -95,7 +135,7 @@ describe("advance and skip", function()
         })
         seq:start()
         seq:advance()
-        expect_equal("waiting", seq:getState())
+        expect_eq(seq:getState(), "waiting")
     end)
 
     it("advance from waiting goes to next node", function()
@@ -106,10 +146,10 @@ describe("advance and skip", function()
         })
         seq:setSpeed(0)
         seq:start()
-        expect_equal("A", seq:currentSpeaker())
+        expect_eq(seq:currentSpeaker(), "A")
         seq:advance()
-        expect_equal("B", seq:currentSpeaker())
-        expect_equal("waiting", seq:getState())
+        expect_eq(seq:currentSpeaker(), "B")
+        expect_eq(seq:getState(), "waiting")
     end)
 
     it("advance past last node goes to done", function()
@@ -120,8 +160,8 @@ describe("advance and skip", function()
         })
         seq:start()
         seq:advance()
-        expect_equal("done", seq:getState())
-        expect_equal(false, seq:isActive())
+        expect_eq(seq:getState(), "done")
+        expect_eq(seq:isActive(), false)
     end)
 end)
 
@@ -135,9 +175,9 @@ describe("choice nodes", function()
             }},
         })
         seq:start()
-        expect_equal("choice", seq:getState())
-        expect_equal(true, seq:isWaitingForChoice())
-        expect_equal("Pick one", seq:getChoiceText())
+        expect_eq(seq:getState(), "choice")
+        expect_eq(seq:isWaitingForChoice(), true)
+        expect_eq(seq:getChoiceText(), "Pick one")
     end)
 
     it("getChoiceLabels returns labels", function()
@@ -151,10 +191,10 @@ describe("choice nodes", function()
         })
         seq:start()
         local labels = seq:getChoiceLabels()
-        expect_equal(3, #labels)
-        expect_equal("Yes", labels[1])
-        expect_equal("No", labels[2])
-        expect_equal("Maybe", labels[3])
+        expect_eq(#labels, 3)
+        expect_eq(labels[1], "Yes")
+        expect_eq(labels[2], "No")
+        expect_eq(labels[3], "Maybe")
     end)
 
     it("choose selects a branch", function()
@@ -172,7 +212,7 @@ describe("choice nodes", function()
         })
         seq:start()
         seq:choose(2)
-        expect_equal("You chose B", seq:currentText())
+        expect_eq(seq:currentText(), "You chose B")
     end)
 end)
 
@@ -183,7 +223,7 @@ describe("wait nodes", function()
             { type = "wait", time = 2.0 },
         })
         seq:start()
-        expect_equal("paused", seq:getState())
+        expect_eq(seq:getState(), "paused")
     end)
 end)
 
@@ -195,7 +235,7 @@ describe("call nodes", function()
             { type = "call", fn = function() called = true end },
         })
         seq:start()
-        expect_equal(true, called)
+        expect_eq(called, true, "call callback should fire")
     end)
 end)
 
@@ -211,8 +251,8 @@ describe("events", function()
             { type = "say", speaker = "Bob", text = "Hi there" },
         })
         seq:start()
-        expect_equal("Bob", event_speaker)
-        expect_equal("Hi there", event_text)
+        expect_eq(event_speaker, "Bob")
+        expect_eq(event_text, "Hi there")
     end)
 
     it("fires choice event", function()
@@ -225,7 +265,7 @@ describe("events", function()
             }},
         })
         seq:start()
-        expect_equal(true, choice_fired)
+        expect_eq(choice_fired, true)
     end)
 
     it("fires finished event", function()
@@ -238,7 +278,7 @@ describe("events", function()
         })
         seq:start()
         seq:advance()
-        expect_equal(true, finished)
+        expect_eq(finished, true, "finished event should fire")
     end)
 
     it("off removes event handler", function()
@@ -250,12 +290,12 @@ describe("events", function()
             { type = "say", speaker = "B", text = "Two" },
         })
         seq:start()
-        expect_equal(1, count)
+        expect_eq(count, 1)
         seq:off("line")
         seq:setSpeed(0)
         seq:skip()
         seq:advance()
-        expect_equal(1, count)
+        expect_eq(count, 1, "off should prevent further events")
     end)
 end)
 
@@ -267,13 +307,13 @@ describe("update with dt", function()
             { type = "say", speaker = "A", text = "Hello" },
         })
         seq:start()
-        expect_equal("typing", seq:getState())
+        expect_eq(seq:getState(), "typing")
         -- After 0.3s at 10 cps = 3 chars revealed
         seq:update(0.3)
         local revealed = seq:revealedText()
         -- Should have revealed some chars but not all
-        expect_equal(true, #revealed > 0)
-        expect_equal(true, #revealed < 5)
+        expect_eq(#revealed > 0, true, "should reveal some chars")
+        expect_eq(#revealed < 5, true, "should not reveal all chars yet")
     end)
 
     it("transitions to waiting when fully revealed", function()
@@ -284,8 +324,8 @@ describe("update with dt", function()
         })
         seq:start()
         seq:update(1.0) -- 10 cps * 1s = 10 chars, but text is only 2 chars
-        expect_equal("waiting", seq:getState())
-        expect_equal("Hi", seq:revealedText())
+        expect_eq(seq:getState(), "waiting")
+        expect_eq(seq:revealedText(), "Hi")
     end)
 end)
 
@@ -316,15 +356,15 @@ describe("full workflow", function()
         })
 
         seq:start()
-        expect_equal("line:NPC", events[1])
+        expect_eq(events[1], "line:NPC")
         seq:advance()
-        expect_equal("choice", events[2])
+        expect_eq(events[2], "choice")
         seq:choose(1) -- pick "Hello"
-        expect_equal("Nice to meet you!", seq:currentText())
+        expect_eq(seq:currentText(), "Nice to meet you!")
         seq:advance()
-        expect_equal("done", seq:getState())
-        expect_equal("finished", events[#events])
+        expect_eq(seq:getState(), "done")
+        expect_eq(events[#events], "finished")
     end)
 end)
 
-test_summary()
+_test_results = { total = total, passed = passed, failed = failed }
