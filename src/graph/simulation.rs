@@ -11,6 +11,8 @@
 use super::core::Graph;
 use super::item::ItemPosition;
 use super::node::FlowMode;
+use crate::engine::log_messages::{GR01, GR02};
+use crate::log_msg;
 
 /// Events generated during simulation for the Lua callback layer to dispatch.
 ///
@@ -120,6 +122,7 @@ impl Graph {
     /// # Returns
     /// `Vec<GraphEvent>`.
     pub fn update(&mut self, dt: f64) -> Vec<GraphEvent> {
+        log_msg!(debug, GR01);
         let mut events = Vec::new();
         self.process_decay(dt, &mut events);
         self.process_transit(dt, &mut events);
@@ -128,6 +131,7 @@ impl Graph {
         self.process_pull_flow(dt, &mut events);
         self.process_conversions(&mut events);
         self.process_queues(dt, &mut events);
+        log_msg!(debug, GR02, "{}", events.len());
         events
     }
 

@@ -10,6 +10,8 @@
 //!
 use crate::math::{Rect, Vec2};
 use crate::physics::shape::Shape;
+use crate::engine::log_messages::{BD01, BD02, BD03};
+use crate::log_msg;
 
 /// Determines whether a physics body is affected by forces and gravity.
 ///
@@ -109,6 +111,7 @@ impl Body {
     /// # Returns
     /// A newly-initialised `Body`.
     pub fn new(x: f32, y: f32, body_type: BodyType) -> Self {
+        log_msg!(debug, BD01, "({},{})", x, y);
         Body {
             position: Vec2::new(x, y),
             velocity: Vec2::ZERO,
@@ -143,6 +146,7 @@ impl Body {
     /// # Returns
     /// A newly-initialised circular `Body`.
     pub fn new_circle(x: f32, y: f32, radius: f32, body_type: BodyType) -> Self {
+        log_msg!(debug, BD02, "({},{}) r={}", x, y, radius);
         Body {
             position: Vec2::new(x, y),
             velocity: Vec2::ZERO,
@@ -185,6 +189,7 @@ impl Body {
         }
         let w = max_x - min_x;
         let h = max_y - min_y;
+        log_msg!(debug, BD03, "({},{})", x, y);
         Body {
             position: Vec2::new(x, y),
             velocity: Vec2::ZERO,

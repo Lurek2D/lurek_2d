@@ -10,6 +10,8 @@
 
 use std::cmp::Ordering;
 use std::collections::HashMap;
+use crate::engine::log_messages::{DF01};
+use crate::log_msg;
 
 /// A single cell value in a DataFrame column.
 ///
@@ -202,6 +204,7 @@ impl DataFrame {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, DF01);
         Self {
             column_names: Vec::new(),
             data: Vec::new(),

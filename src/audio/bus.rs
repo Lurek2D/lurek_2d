@@ -7,6 +7,8 @@
 //!
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
+use crate::engine::log_messages::{BU01, BU02, BU03};
+use crate::log_msg;
 
 /// A named audio bus that applies volume, pitch, and pause overrides to all
 /// sources assigned to it.
@@ -39,8 +41,10 @@ impl Bus {
     /// # Returns
     /// `Self`.
     pub fn new(name: impl Into<String>) -> Self {
+        let name = name.into();
+        log_msg!(debug, BU01, "{}", name);
         Bus {
-            name: name.into(),
+            name,
             volume: 1.0,
             pitch: 1.0,
             paused: false,
@@ -90,11 +94,13 @@ impl Bus {
 
     /// Pauses the bus. All sources assigned to this bus will be suppressed.
     pub fn pause(&mut self) {
+        log_msg!(debug, BU02, "{}", self.name);
         self.paused = true;
     }
 
     /// Resumes the bus. Consult the module-level documentation for the broader usage context and preconditions.
     pub fn resume(&mut self) {
+        log_msg!(debug, BU03, "{}", self.name);
         self.paused = false;
     }
 

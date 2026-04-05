@@ -8,6 +8,8 @@ use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 
 use crate::pathfinding::astar;
 use crate::pathfinding::nav_grid::NavGrid;
+use crate::engine::log_messages::{HP01, HP02, HP03};
+use crate::log_msg;
 
 /// An edge in the abstract graph connecting two entrance nodes.
 ///
@@ -137,6 +139,7 @@ pub fn build_abstract(grid: &NavGrid, chunk_size: u32) -> AbstractGraph {
     let cols = gw.div_ceil(cs);
     let rows = gh.div_ceil(cs);
 
+    log_msg!(debug, HP01, "{}x{}", gw, gh);
     let mut graph = AbstractGraph {
         nodes: Vec::new(),
         edges: Vec::new(),
@@ -218,6 +221,7 @@ pub fn build_abstract(grid: &NavGrid, chunk_size: u32) -> AbstractGraph {
         }
     }
 
+    log_msg!(debug, HP03);
     // Intra-chunk edges: connect all entrances within each chunk via local A★
     let chunk_keys: Vec<(u32, u32)> = graph.chunks.keys().cloned().collect();
     for key in chunk_keys {
@@ -244,6 +248,7 @@ pub fn build_abstract(grid: &NavGrid, chunk_size: u32) -> AbstractGraph {
         }
     }
 
+    log_msg!(debug, HP02);
     graph
 }
 

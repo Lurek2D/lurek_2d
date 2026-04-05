@@ -11,6 +11,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
+use crate::engine::log_messages::AS01;
+use crate::log_msg;
+
 /// 3D spatial audio state for an audio source.
 ///
 /// Used to compute panning relative to the listener position.
@@ -71,6 +74,7 @@ impl AudioSource {
     /// # Returns
     /// `Self`.
     pub fn new(id: usize, file_path: &str) -> Self {
+        log_msg!(debug, AS01, "{}", file_path);
         AudioSource {
             id,
             file_path: file_path.to_string(),

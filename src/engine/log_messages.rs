@@ -525,3 +525,94 @@ pub const SP02_SKEL_ANIM_MISS: &str = "SP02";
 pub const IM01_IMAGE_LOADED: &str = "IM01";
 /// Stable ID for "ImageData byte size mismatch".
 pub const IM02_IMAGE_MISMATCH: &str = "IM02";
+
+// ── audio_source ──────────────────────────────────────────────────────────
+pub const AS01: &str = "AS01";
+
+// ── audio_bus ─────────────────────────────────────────────────────────────
+pub const BU01: &str = "BU01";
+pub const BU02: &str = "BU02";
+pub const BU03: &str = "BU03";
+
+// ── particle_emitter ──────────────────────────────────────────────────────
+pub const PE01: &str = "PE01";
+pub const PE02: &str = "PE02";
+pub const PE03: &str = "PE03";
+pub const PE04: &str = "PE04";
+
+// ── physics_body ──────────────────────────────────────────────────────────
+pub const BD01: &str = "BD01";
+pub const BD02: &str = "BD02";
+pub const BD03: &str = "BD03";
+
+// ── scheduler ─────────────────────────────────────────────────────────────
+pub const TI01: &str = "TI01";
+pub const TI02: &str = "TI02";
+pub const TI03: &str = "TI03";
+pub const TI04: &str = "TI04";
+
+// ── fsm ───────────────────────────────────────────────────────────────────
+pub const FN01: &str = "FN01";
+pub const FN02: &str = "FN02";
+
+// ── goap ──────────────────────────────────────────────────────────────────
+pub const GP01: &str = "GP01";
+pub const GP02: &str = "GP02";
+pub const GP03: &str = "GP03";
+
+// ── flow_field ────────────────────────────────────────────────────────────
+pub const FF01: &str = "FF01";
+pub const FF02: &str = "FF02";
+pub const FF03: &str = "FF03";
+
+// ── hpa ───────────────────────────────────────────────────────────────────
+pub const HP01: &str = "HP01";
+pub const HP02: &str = "HP02";
+pub const HP03: &str = "HP03";
+
+// ── transition ────────────────────────────────────────────────────────────
+pub const TR01: &str = "TR01";
+pub const TR02: &str = "TR02";
+
+// ── graph_simulation ──────────────────────────────────────────────────────
+pub const GR01: &str = "GR01";
+pub const GR02: &str = "GR02";
+
+// ── canvas_gfx ────────────────────────────────────────────────────────────
+pub const CV01: &str = "CV01";
+
+// ── mesh_gfx ──────────────────────────────────────────────────────────────
+pub const MS01: &str = "MS01";
+pub const MS02: &str = "MS02";
+
+// ── raycaster ─────────────────────────────────────────────────────────────
+pub const RC01: &str = "RC01";
+
+// ── fx_stack ──────────────────────────────────────────────────────────────
+pub const FX01: &str = "FX01";
+pub const FX02: &str = "FX02";
+
+// ── dataframe ─────────────────────────────────────────────────────────────
+pub const DF01: &str = "DF01";
+
+// ── signal ────────────────────────────────────────────────────────────────
+pub const SG01: &str = "SG01";
+pub const SG02: &str = "SG02";
+
+// ── mapgen ────────────────────────────────────────────────────────────────
+pub const MG01: &str = "MG01";
+pub const MG02: &str = "MG02";
+pub const MG03: &str = "MG03";
+
+// ── astar ─────────────────────────────────────────────────────────────────
+pub const AT01: &str = "AT01";
+pub const AT02: &str = "AT02";
+pub const AT03: &str = "AT03";
+
+// ── tmx ───────────────────────────────────────────────────────────────────
+pub const TL01: &str = "TL01";
+pub const TL02: &str = "TL02";
+
+// ── voronoi ───────────────────────────────────────────────────────────────
+pub const VR01: &str = "VR01";
+pub const VR02: &str = "VR02";

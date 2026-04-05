@@ -13,6 +13,8 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 
 use crate::pathfinding::nav_grid::NavGrid;
+use crate::engine::log_messages::{FF01, FF02, FF03};
+use crate::log_msg;
 
 /// A pre-computed flow field that stores a direction vector and integrated cost
 /// for every cell, guiding any unit toward one or more target cells.
@@ -58,6 +60,7 @@ impl FlowField {
         let size = (w * h) as usize;
         drop(g);
 
+        log_msg!(debug, FF01);
         Self {
             width: w,
             height: h,
@@ -91,6 +94,7 @@ impl FlowField {
         let size = (w * h) as usize;
         let us = unit_size.max(1);
 
+        log_msg!(debug, FF03);
         // Reset
         self.width = w;
         self.height = h;
@@ -183,6 +187,7 @@ impl FlowField {
             }
         }
 
+        log_msg!(debug, FF02);
         self.calculated = true;
     }
 

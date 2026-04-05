@@ -12,6 +12,8 @@ use std::collections::HashMap;
 
 use super::tilemap::TileMap;
 use super::tileset::TileSet;
+use crate::engine::log_messages::{MG01, MG02, MG03};
+use crate::log_msg;
 
 /// Cardinal edge direction for block-segment connectivity.
 ///
@@ -108,6 +110,7 @@ impl MapBlock {
     pub fn new(width: u32, height: u32, layers: u32, segment_size: u32) -> Self {
         let cap = (width * height) as usize;
         let tile_data = (0..layers).map(|_| vec![0u32; cap]).collect();
+        log_msg!(debug, MG01, "{}x{} {} layers", width, height, layers);
         Self {
             width,
             height,
@@ -304,6 +307,7 @@ impl MapGroup {
     /// # Returns
     /// `Self`.
     pub fn new(name: &str) -> Self {
+        log_msg!(debug, MG02, "{}", name);
         Self {
             name: name.to_string(),
             blocks: Vec::new(),
@@ -316,6 +320,7 @@ impl MapGroup {
     /// # Parameters
     /// - `block` — `MapBlock`.
     pub fn add_block(&mut self, block: MapBlock) {
+        log_msg!(debug, MG03);
         self.blocks.push(block);
     }
 

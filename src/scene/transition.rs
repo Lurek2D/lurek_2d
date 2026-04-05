@@ -7,6 +7,8 @@
 //!
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
+use crate::engine::log_messages::{TR01, TR02};
+use crate::log_msg;
 
 /// Visual transition types between scenes. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -78,6 +80,7 @@ impl ActiveTransition {
     /// # Returns
     /// `Self`.
     pub fn new(transition_type: TransitionType, duration: f32) -> Self {
+        log_msg!(debug, TR01);
         Self {
             transition_type,
             duration,
@@ -102,7 +105,9 @@ impl ActiveTransition {
     /// # Returns
     /// `bool`.
     pub fn is_complete(&self) -> bool {
-        self.elapsed >= self.duration
+        let done = self.elapsed >= self.duration;
+        if done { log_msg!(debug, TR02); }
+        done
     }
 
     /// Advance the transition timer by `dt` seconds.

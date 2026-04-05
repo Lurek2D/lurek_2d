@@ -3,6 +3,8 @@
 //! A `Canvas` stores the logical dimensions of an off-screen texture that the
 //! GPU renderer can draw to.  After rendering, the canvas can be composited to
 //! the screen (or another canvas) as a regular image.
+use crate::engine::log_messages::{CV01};
+use crate::log_msg;
 
 /// An off-screen render target with a fixed pixel resolution.
 ///
@@ -30,6 +32,7 @@ impl Canvas {
     /// # Returns
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
+        log_msg!(debug, CV01, "{}x{}", width, height);
         Self { width, height }
     }
 }

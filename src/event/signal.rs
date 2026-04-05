@@ -5,6 +5,8 @@
 //! Callbacks fire in registration order.
 
 use std::collections::HashMap;
+use crate::engine::log_messages::{SG01, SG02};
+use crate::log_msg;
 
 /// A single subscription entry in a [`Signal`].
 ///
@@ -47,6 +49,7 @@ impl Signal {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, SG01);
         Self {
             next_handle: 1,
             subscriptions: HashMap::new(),
@@ -71,6 +74,7 @@ impl Signal {
             .or_default()
             .push(handle);
         self.handle_to_name.insert(handle, name.to_string());
+        log_msg!(debug, SG02, "{}", name);
         handle
     }
 

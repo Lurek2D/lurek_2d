@@ -285,3 +285,94 @@ SP02 = "skeleton animation not found"
 [tier1.image_data]
 IM01 = "ImageData loaded"
 IM02 = "ImageData byte size mismatch"
+
+[audio_source]
+AS01 = "audio source '{}' created"
+
+[audio_bus]
+BU01 = "audio bus '{}' created"
+BU02 = "audio bus '{}' paused"
+BU03 = "audio bus '{}' resumed"
+
+[particle_emitter]
+PE01 = "particle emitter created (max {} particles)"
+PE02 = "particle emitter started"
+PE03 = "particle emitter stopped"
+PE04 = "particle emitter reset"
+
+[physics_body]
+BD01 = "physics body created at ({}, {})"
+BD02 = "circle body created at ({}, {}) r={}"
+BD03 = "polygon body created at ({}, {})"
+
+[scheduler]
+TI01 = "scheduler initialized"
+TI02 = "timer event scheduled (after): id={}"
+TI03 = "timer event scheduled (every): id={}"
+TI04 = "scheduler cleared {} events"
+
+[fsm]
+FN01 = "state machine created, initial state={}"
+FN02 = "state machine: transition added"
+
+[goap]
+GP01 = "GOAP planner initialized"
+GP02 = "GOAP: no viable plan found"
+GP03 = "GOAP plan found"
+
+[flow_field]
+FF01 = "flow field initialized"
+FF02 = "flow field calculated"
+FF03 = "flow field calculation started"
+
+[hpa]
+HP01 = "HPA build_abstract"
+HP02 = "HPA abstract graph built"
+HP03 = "HPA intra-chunk linking phase"
+
+[transition]
+TR01 = "scene transition created"
+TR02 = "scene transition complete"
+
+[graph_simulation]
+GR01 = "graph simulation step"
+GR02 = "graph simulation step done"
+
+[canvas_gfx]
+CV01 = "canvas created"
+
+[mesh_gfx]
+MS01 = "mesh created"
+MS02 = "mesh created from vertices"
+
+[raycaster]
+RC01 = "RayCastMap created"
+
+[fx_stack]
+FX01 = "post-fx stack initialized"
+FX02 = "post-fx effect added"
+
+[dataframe]
+DF01 = "DataFrame initialized"
+
+[signal]
+SG01 = "Signal bus initialized"
+SG02 = "subscribe to signal"
+
+[mapgen]
+MG01 = "MapBlock created"
+MG02 = "MapGroup created"
+MG03 = "MapGroup: block added"
+
+[astar]
+AT01 = "A* path fail: start/goal not walkable"
+AT02 = "A* trivial path: start==goal"
+AT03 = "A* path found"
+
+[tmx]
+TL01 = "load_tmx: parsing"
+TL02 = "load_tmx: map loaded"
+
+[voronoi]
+VR01 = "voronoi_diagram: started"
+VR02 = "voronoi_diagram: done"

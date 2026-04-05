@@ -33,6 +33,8 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
 use mlua::RegistryKey;
+use crate::engine::log_messages::{GP01, GP02, GP03};
+use crate::log_msg;
 
 /// A single GOAP action with boolean preconditions and effects.
 ///
@@ -150,6 +152,7 @@ impl GOAPPlanner {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, GP01);
         Self {
             actions: Vec::new(),
             goals: Vec::new(),
@@ -242,6 +245,7 @@ impl GOAPPlanner {
                 new_actions.push(i);
 
                 if self.goal_satisfied(goal_state, &new_state) {
+                    log_msg!(debug, GP03);
                     return new_actions
                         .iter()
                         .map(|&idx| self.actions[idx].name.clone())
@@ -257,6 +261,7 @@ impl GOAPPlanner {
             }
         }
 
+        log_msg!(warn, GP02);
         Vec::new() // No plan found
     }
 

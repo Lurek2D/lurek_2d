@@ -19,6 +19,8 @@ use std::io::Read;
 
 use base64::Engine as _;
 use flate2::read::{GzDecoder, ZlibDecoder};
+use crate::engine::log_messages::{TL01, TL02};
+use crate::log_msg;
 
 /// Rendering orientation of the map, as specified in the TMX `orientation` attribute.
 ///
@@ -287,6 +289,7 @@ impl TmxMap {
 /// - **Base64 + gzip**: Gzip-decompressed with `flate2` — supported.
 /// - **Base64 + zstd**: Not supported (returns an error).
 pub fn load_tmx(xml: &str) -> Result<TmxMap, String> {
+    log_msg!(debug, TL01, "{} bytes", xml.len());
     let doc = roxmltree::Document::parse(xml).map_err(|e| format!("TMX XML parse error: {e}"))?;
 
     let map_node = doc
@@ -334,6 +337,7 @@ pub fn load_tmx(xml: &str) -> Result<TmxMap, String> {
         // imagelayer skipped — no TileMap equivalent
     }
 
+    log_msg!(debug, TL02, "{}x{}", width, height);
     Ok(TmxMap {
         width,
         height,

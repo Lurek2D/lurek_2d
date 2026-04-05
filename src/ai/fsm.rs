@@ -27,6 +27,8 @@
 use std::collections::HashMap;
 
 use mlua::RegistryKey;
+use crate::engine::log_messages::{FN01, FN02};
+use crate::log_msg;
 
 /// Lua lifecycle hooks for a single FSM state.
 ///
@@ -122,6 +124,7 @@ impl StateMachine {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, FN01);
         Self {
             states: HashMap::new(),
             transitions: Vec::new(),
@@ -136,6 +139,7 @@ impl StateMachine {
     /// # Parameters
     /// - `transition` — `Transition`.
     pub fn add_transition(&mut self, transition: Transition) {
+        log_msg!(debug, FN02);
         self.transitions.push(transition);
         self.transitions.sort_by(|a, b| b.priority.cmp(&a.priority));
     }

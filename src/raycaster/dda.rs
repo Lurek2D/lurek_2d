@@ -6,6 +6,8 @@
 
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
+use crate::engine::log_messages::{RC01};
+use crate::log_msg;
 
 /// 2D grid-based raycaster using DDA traversal.
 ///
@@ -32,6 +34,7 @@ impl Raycaster2D {
     /// # Returns
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
+        log_msg!(debug, RC01, "{}x{}", width, height);
         Self {
             width,
             height,

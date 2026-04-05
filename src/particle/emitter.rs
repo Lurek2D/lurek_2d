@@ -6,6 +6,8 @@ use super::config::{EmissionShape, EmitterState, InsertMode, ParticleConfig};
 use super::emission::{emission_offset, emission_shape_offset};
 use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range};
 use super::particle::Particle;
+use crate::engine::log_messages::{PE01, PE02, PE03, PE04};
+use crate::log_msg;
 
 /// An emitter-based particle system. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -53,6 +55,7 @@ impl ParticleSystem {
     /// # Returns
     /// `Self`.
     pub fn new(config: ParticleConfig) -> Self {
+        log_msg!(debug, PE01);
         Self {
             particles: Vec::with_capacity(config.max_particles as usize),
             config,
@@ -259,6 +262,7 @@ impl ParticleSystem {
 
     /// Resets the system, killing all particles and zeroing the accumulator and emitter age.
     pub fn reset(&mut self) {
+        log_msg!(debug, PE04);
         self.particles.clear();
         self.emit_accumulator = 0.0;
         self.emitter_age = 0.0;
@@ -266,12 +270,14 @@ impl ParticleSystem {
 
     /// Activates the emitter, beginning particle emission.
     pub fn start(&mut self) {
+        log_msg!(debug, PE02);
         self.state = EmitterState::Active;
         self.emitter_age = 0.0;
     }
 
     /// Stops the emitter. Existing particles continue updating until they die.
     pub fn stop(&mut self) {
+        log_msg!(debug, PE03);
         self.state = EmitterState::Stopped;
     }
 

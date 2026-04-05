@@ -37,7 +37,17 @@ use gilrs::{
 };
 
 use super::config::Config;
-use crate::engine::log_messages::{L003_GAME_LOADED, L006_SPLASH_SCREEN, L007_NO_MAIN_LUA, L010_RENDER_ERROR, L011_LUA_ERROR, L016_LUA_VM_INIT_FAIL, L017_MAIN_LUA_READ_FAIL, L023_GPU_TEX_TOO_SMALL, L024_SURFACE_LOST, L033_GPU_ADAPTER, L034_GPU_TEX_DIM, L035_GPU_INIT, L036_GAMEPAD_CONNECTED, L037_GAMEPAD_DISCONNECTED, L038_GILRS_UNAVAILABLE, L039_WINDOW_CLOSE, L040_ICON_LOAD_FAIL, L041_ICON_CONV_FAIL, L042_DISPLAY_INDEX_UNAVAIL, L043_DROP_FILE, L044_DROP_GAME, L070_SURFACE_NO_READBACK, L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL, L073_CURSOR_POS_FAIL, L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL, L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED, L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL};
+use crate::engine::log_messages::{
+    L003_GAME_LOADED, L006_SPLASH_SCREEN, L007_NO_MAIN_LUA, L010_RENDER_ERROR, L011_LUA_ERROR,
+    L016_LUA_VM_INIT_FAIL, L017_MAIN_LUA_READ_FAIL, L021_CLIPBOARD_FAIL, L023_GPU_TEX_TOO_SMALL,
+    L024_SURFACE_LOST, L033_GPU_ADAPTER, L034_GPU_TEX_DIM, L035_GPU_INIT, L036_GAMEPAD_CONNECTED,
+    L037_GAMEPAD_DISCONNECTED, L038_GILRS_UNAVAILABLE, L039_WINDOW_CLOSE, L040_ICON_LOAD_FAIL,
+    L041_ICON_CONV_FAIL, L042_DISPLAY_INDEX_UNAVAIL, L043_DROP_FILE, L044_DROP_GAME,
+    L070_SURFACE_NO_READBACK, L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL,
+    L073_CURSOR_POS_FAIL, L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL,
+    L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED,
+    L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL,
+};
 #[allow(unused_imports)]
 use crate::log_msg;
 
@@ -146,11 +156,16 @@ struct LunaApp {
     /// Current window VSync mode (1 = Fifo/vsync, 0 = no-vsync, -1 = Mailbox when supported).
     window_vsync_mode: i32,
 
-    /// Lazily-initialised TTF fonts for the splash screen.
-    splash_fonts: Option<(SlotMap<FontKey, crate::graphics::Font>, FontKey, FontKey)>,
+    /// Lazily-initialised TTF fonts shared by both the splash and error screens.
+    ///
+    /// Tuple: (font_store, title_key at 36 pt, body_key at 18 pt).
+    engine_fonts: Option<(SlotMap<FontKey, crate::graphics::Font>, FontKey, FontKey)>,
 
-    /// Lazily-initialised TTF fonts for the error screen.
-    error_fonts: Option<(SlotMap<FontKey, crate::graphics::Font>, FontKey, FontKey)>,
+    /// Tracks whether any Ctrl modifier (left or right) is currently held.
+    ///
+    /// Updated by `ModifiersChanged` events so that the error screen key handler can
+    /// detect Ctrl+C without relying on `SharedState` (which may be `None`).
+    ctrl_held: bool,
 
     /// `false` until the first `RedrawRequested` triggers `init_lua()`, ensuring
     /// the splash frame is visible before the Lua VM blocks the event loop.
@@ -199,8 +214,8 @@ impl LunaApp {
             conf_error,
             explicit_game_dir,
             window_vsync_mode,
-            splash_fonts: None,
-            error_fonts: None,
+            engine_fonts: None,
+            ctrl_held: false,
             lua_initialized: false,
             drag_hover: false,
             max_surface_dim: 4096,
@@ -388,7 +403,11 @@ impl LunaApp {
                 warn,
                 L023_GPU_TEX_TOO_SMALL,
                 "initial window {}x{} exceeds GPU max {}; clamping to {}x{}",
-                width, height, self.max_surface_dim, cw, ch
+                width,
+                height,
+                self.max_surface_dim,
+                cw,
+                ch
             );
         }
         surface.configure(&device, &self.surface_configuration(cw, ch));
@@ -811,9 +830,7 @@ impl LunaApp {
         let sprite_batches = std::mem::take(&mut state.borrow_mut().sprite_batches);
         let canvases = state.borrow().canvases.clone();
         let meshes = state.borrow().meshes.clone();
-        let screenshot_supported = self
-            .surface_usage
-            .contains(wgpu::TextureUsages::COPY_SRC);
+        let screenshot_supported = self.surface_usage.contains(wgpu::TextureUsages::COPY_SRC);
         let capture_screenshot = screenshot_request.is_some() && screenshot_supported;
 
         let screenshot_pixels = match renderer.render_frame(
@@ -862,11 +879,23 @@ impl LunaApp {
                 {
                     Ok(png) => {
                         if let Err(err) = state.borrow().fs.write_bytes(&request.path, &png) {
-                            log_msg!(error, L075_SCREENSHOT_SAVE_FAIL, "path: {}, err: {}", request.path, err);
+                            log_msg!(
+                                error,
+                                L075_SCREENSHOT_SAVE_FAIL,
+                                "path: {}, err: {}",
+                                request.path,
+                                err
+                            );
                         }
                     }
                     Err(err) => {
-                        log_msg!(error, L076_SCREENSHOT_ENCODE_FAIL, "path: {}, err: {}", request.path, err);
+                        log_msg!(
+                            error,
+                            L076_SCREENSHOT_ENCODE_FAIL,
+                            "path: {}, err: {}",
+                            request.path,
+                            err
+                        );
                     }
                 }
             }
@@ -883,8 +912,8 @@ impl LunaApp {
             .as_ref()
             .map_or(0.0, |s| s.borrow().clock.total());
 
-        // Lazily initialise TTF fonts for the splash screen.
-        if self.splash_fonts.is_none() {
+        // Lazily initialise shared TTF engine fonts (used by both splash and error screens).
+        if self.engine_fonts.is_none() {
             static FONT_DATA: &[u8] = include_bytes!("../../assets/fonts/OpenSans.ttf");
             let mut fonts: SlotMap<FontKey, crate::graphics::Font> = SlotMap::with_key();
             let title_font =
@@ -893,9 +922,9 @@ impl LunaApp {
                 crate::graphics::Font::from_bytes(FONT_DATA, 18.0).expect("embedded font");
             let title_key = fonts.insert(title_font);
             let small_key = fonts.insert(small_font);
-            self.splash_fonts = Some((fonts, title_key, small_key));
+            self.engine_fonts = Some((fonts, title_key, small_key));
         }
-        let (splash_fonts, title_key, small_key) = self.splash_fonts.as_mut().unwrap();
+        let (splash_fonts, title_key, small_key) = self.engine_fonts.as_mut().unwrap();
 
         let cmds = make_splash_commands(
             renderer.width,
@@ -939,19 +968,19 @@ impl LunaApp {
             return;
         };
 
-        // Lazily initialise TTF fonts for the error screen (same as splash).
-        if self.error_fonts.is_none() {
+        // Re-use the shared engine fonts (same OpenSans 36/18 pt as the splash screen).
+        if self.engine_fonts.is_none() {
             static FONT_DATA: &[u8] = include_bytes!("../../assets/fonts/OpenSans.ttf");
             let mut fonts: SlotMap<FontKey, crate::graphics::Font> = SlotMap::with_key();
-            let heading_font =
-                crate::graphics::Font::from_bytes(FONT_DATA, 32.0).expect("embedded font");
-            let body_font =
-                crate::graphics::Font::from_bytes(FONT_DATA, 16.0).expect("embedded font");
-            let heading_key = fonts.insert(heading_font);
-            let body_key = fonts.insert(body_font);
-            self.error_fonts = Some((fonts, heading_key, body_key));
+            let title_font =
+                crate::graphics::Font::from_bytes(FONT_DATA, 36.0).expect("embedded font");
+            let small_font =
+                crate::graphics::Font::from_bytes(FONT_DATA, 18.0).expect("embedded font");
+            let title_key = fonts.insert(title_font);
+            let small_key = fonts.insert(small_font);
+            self.engine_fonts = Some((fonts, title_key, small_key));
         }
-        let (error_fonts, heading_key, body_key) = self.error_fonts.as_mut().unwrap();
+        let (error_fonts, heading_key, body_key) = self.engine_fonts.as_mut().unwrap();
 
         let cmds = error_screen.draw_commands(
             renderer.width,
@@ -1212,6 +1241,30 @@ fn system_cursor_to_winit_cursor(cursor: SystemCursor) -> CursorIcon {
     }
 }
 
+/// Loads the embedded engine icon PNG and converts it to a [`winit::window::Icon`].
+///
+/// Used as the default window icon when the game's `conf.lua` does not supply a
+/// custom icon path. Returns `None` if the embedded bytes cannot be decoded.
+fn load_embedded_icon() -> Option<winit::window::Icon> {
+    static ICON_BYTES: &[u8] = include_bytes!("../../assets/icon.png");
+    let image = match ::image::load_from_memory(ICON_BYTES) {
+        Ok(img) => img,
+        Err(e) => {
+            log_msg!(warn, L040_ICON_LOAD_FAIL, "embedded icon: {}", e);
+            return None;
+        }
+    };
+    let rgba = image.to_rgba8();
+    let (w, h) = (rgba.width(), rgba.height());
+    match winit::window::Icon::from_rgba(rgba.into_raw(), w, h) {
+        Ok(icon) => Some(icon),
+        Err(e) => {
+            log_msg!(warn, L041_ICON_CONV_FAIL, "embedded icon: {}", e);
+            None
+        }
+    }
+}
+
 fn load_window_icon(game_dir: &Path, icon_path: &str) -> Option<winit::window::Icon> {
     let resolved_path = {
         let path = Path::new(icon_path);
@@ -1338,6 +1391,11 @@ impl ApplicationHandler for LunaApp {
             if let Some(icon) = load_window_icon(&self.game_dir, icon_path) {
                 window.set_window_icon(Some(icon));
             }
+        } else {
+            // No icon configured — fall back to the embedded engine icon.
+            if let Some(icon) = load_embedded_icon() {
+                window.set_window_icon(Some(icon));
+            }
         }
 
         self.init_gpu(window);
@@ -1414,6 +1472,7 @@ impl ApplicationHandler for LunaApp {
 
             WindowEvent::ModifiersChanged(mods) => {
                 let state_mods = mods.state();
+                self.ctrl_held = state_mods.control_key();
                 if let Some(state) = &self.state {
                     state.borrow_mut().keyboard.set_modifiers(
                         state_mods.shift_key(),
@@ -1466,6 +1525,20 @@ impl ApplicationHandler for LunaApp {
                             }
                             if key_str == "r" {
                                 self.run_state = RunState::Restarting;
+                                return;
+                            }
+                            if self.ctrl_held && key_str == "c" {
+                                if let RunState::Error(ref screen) = self.run_state {
+                                    let text = screen.as_text();
+                                    match arboard::Clipboard::new() {
+                                        Ok(mut cb) => {
+                                            let _ = cb.set_text(text);
+                                        }
+                                        Err(e) => {
+                                            log_msg!(warn, L021_CLIPBOARD_FAIL, "{}", e);
+                                        }
+                                    }
+                                }
                                 return;
                             }
                         }
@@ -2030,7 +2103,13 @@ fn init_logging(
                 .filter_module("naga", wgpu_level)
                 .format_timestamp_millis()
                 .init();
-            log_msg!(warn, L082_LOG_FILE_FAIL, "path: {}, err: {}", log_path.display(), e);
+            log_msg!(
+                warn,
+                L082_LOG_FILE_FAIL,
+                "path: {}, err: {}",
+                log_path.display(),
+                e
+            );
         }
     }
 }
@@ -2089,6 +2168,7 @@ fn try_errorhandler_or_screen(lua: &Lua, err: &mlua::Error) -> ErrorScreen {
     ErrorScreen::from_lua_error(err)
 }
 
+#[allow(clippy::vec_init_then_push)]
 fn make_splash_commands(
     width: u32,
     height: u32,
@@ -2100,9 +2180,9 @@ fn make_splash_commands(
 ) -> Vec<DrawCommand> {
     let cx = width as f32 / 2.0;
     let cy = height as f32 / 2.0;
-    let pulse = 1.0 + (time * 2.0).sin() as f32 * 0.05;
-    let moon_r = 60.0 * pulse;
+    let t = time as f32;
 
+    // ── Text ─────────────────────────────────────────────────────────────────
     let title_text = "LUNA2D";
     let subtitle_text = "2D Game Engine";
     let version_text = format!("v{}", env!("CARGO_PKG_VERSION"));
@@ -2112,7 +2192,6 @@ fn make_splash_commands(
         "Drop a game folder here to load it"
     };
 
-    // Measure text widths for centering.
     let title_w = fonts
         .get_mut(title_key)
         .map(|f| f.text_width(title_text))
@@ -2130,55 +2209,180 @@ fn make_splash_commands(
         .map(|f| f.text_width(hint_text))
         .unwrap_or(0.0);
 
-    let mut cmds = vec![
-        // Moon crescent
-        DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0),
-        DrawCommand::Circle {
-            mode: DrawMode::Fill,
-            x: cx,
-            y: cy - 40.0,
-            r: moon_r,
-        },
-        DrawCommand::SetColor(0.12, 0.08, 0.20, 1.0),
-        DrawCommand::Circle {
-            mode: DrawMode::Fill,
-            x: cx + 25.0,
-            y: cy - 55.0,
-            r: moon_r * 0.85,
-        },
-        // Title
-        DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0),
-        DrawCommand::PrintFont {
-            font_key: title_key,
-            text: title_text.to_string(),
-            x: cx - title_w / 2.0,
-            y: cy + 45.0,
-            scale: 1.0,
-        },
-        // Subtitle
-        DrawCommand::SetColor(0.6, 0.55, 0.7, 1.0),
-        DrawCommand::PrintFont {
-            font_key: small_key,
-            text: subtitle_text.to_string(),
-            x: cx - subtitle_w / 2.0,
-            y: cy + 85.0,
-            scale: 1.0,
-        },
-        // Version
-        DrawCommand::SetColor(0.4, 0.35, 0.5, 1.0),
-        DrawCommand::PrintFont {
-            font_key: small_key,
-            text: version_text,
-            x: cx - version_w / 2.0,
-            y: cy + 110.0,
-            scale: 1.0,
-        },
-    ];
+    // ── Logo group centred at (cx, cy - 30) ──────────────────────────────────
+    let logo_x = cx;
+    let logo_y = cy - 30.0;
 
-    // Drop hint — shown at the bottom of the splash screen.
-    // Brightens when the user is hovering a file over the window.
+    // ── Gear (rotates slowly, sits at centre of logo group) ──────────────────
+    let gear_r_outer = 52.0f32;
+    let gear_r_inner = 36.0f32;
+    let gear_teeth: usize = 10;
+    let gear_spin = t * 0.35; // ~20 rpm
+    {
+        // pre-build flat vertices for gear polygon: outer (tip) / inner (root), alternating
+    }
+    let gear_vertices: Vec<f32> = {
+        let n = gear_teeth * 2;
+        (0..n)
+            .flat_map(|i| {
+                let angle = gear_spin + (i as f32 / n as f32) * std::f32::consts::TAU;
+                let r = if i % 2 == 0 {
+                    gear_r_outer
+                } else {
+                    gear_r_inner
+                };
+                let (s, c) = angle.sin_cos();
+                [logo_x + c * r, logo_y + s * r]
+            })
+            .collect()
+    };
+
+    // ── Pacman (pie polygon overlaid on gear hub) ─────────────────────────────
+    let pac_r = 30.0f32;
+    let pac_x = logo_x;
+    let pac_y = logo_y;
+    let mouth_half = (t * 2.8).sin().abs() * 0.4 + 0.08; // 0.08 → 0.48 rad
+    let pac_start = mouth_half;
+    let pac_end = std::f32::consts::TAU - mouth_half;
+    let pac_segs: usize = 40;
+    let pac_vertices: Vec<f32> = {
+        let mut pts = vec![pac_x, pac_y]; // centre of pie
+        (0..=pac_segs).for_each(|i| {
+            let angle = pac_start + (pac_end - pac_start) * (i as f32 / pac_segs as f32);
+            let (s, c) = angle.sin_cos();
+            pts.push(pac_x + c * pac_r);
+            pts.push(pac_y + s * pac_r);
+        });
+        pts
+    };
+
+    // ── 3D box: travels from right toward pacman, fades when fully eaten ──────
+    let cycle = 2.6f32;
+    let ct = (t % cycle) / cycle; // 0.0..1.0 per cycle
+    let box_sx = pac_x + 85.0;
+    let box_ex = pac_x + pac_r - 4.0; // arrives at Pacman mouth
+    let bx = box_sx + (box_ex - box_sx) * ct;
+    let box_alpha = if ct > 0.80 {
+        ((1.0 - ct) / 0.20).max(0.0)
+    } else {
+        1.0
+    };
+    let bs = 18.0f32; // box size
+    let bd = 8.0f32; // iso depth
+    let by = pac_y - bs * 0.5;
+
+    // ── Moon crescent (upper-left of logo group) ──────────────────────────────
+    let moon_pulse = 1.0 + (t * 1.5).sin() * 0.04;
+    let mr = 55.0f32 * moon_pulse;
+    let moon_x = logo_x - 95.0;
+    let moon_y = logo_y - 18.0;
+
+    let mut cmds: Vec<DrawCommand> = Vec::new();
+
+    // ── Gear: steel gray ─────────────────────────────────────────────────────
+    cmds.push(DrawCommand::SetColor(0.45, 0.50, 0.56, 1.0));
+    cmds.push(DrawCommand::Polygon {
+        mode: DrawMode::Fill,
+        vertices: gear_vertices,
+    });
+    // Gear hub cutout (darker circle)
+    cmds.push(DrawCommand::SetColor(0.28, 0.32, 0.38, 1.0));
+    cmds.push(DrawCommand::Circle {
+        mode: DrawMode::Fill,
+        x: logo_x,
+        y: logo_y,
+        r: gear_r_inner * 0.55,
+    });
+
+    // ── 3D box: blue cube (three visible faces) ───────────────────────────────
+    if box_alpha > 0.01 {
+        let a = box_alpha;
+        // Top face
+        cmds.push(DrawCommand::SetColor(0.35 * a, 0.55 * a, 0.85 * a, a));
+        cmds.push(DrawCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: vec![bx, by, bx + bs, by, bx + bs + bd, by - bd, bx + bd, by - bd],
+        });
+        // Right face
+        cmds.push(DrawCommand::SetColor(0.18 * a, 0.35 * a, 0.70 * a, a));
+        cmds.push(DrawCommand::Polygon {
+            mode: DrawMode::Fill,
+            vertices: vec![
+                bx + bs,
+                by,
+                bx + bs + bd,
+                by - bd,
+                bx + bs + bd,
+                by - bd + bs,
+                bx + bs,
+                by + bs,
+            ],
+        });
+        // Front face
+        cmds.push(DrawCommand::SetColor(0.28 * a, 0.46 * a, 0.80 * a, a));
+        cmds.push(DrawCommand::Rectangle {
+            mode: DrawMode::Fill,
+            x: bx,
+            y: by,
+            w: bs,
+            h: bs,
+        });
+    }
+
+    // ── Pacman: golden yellow ─────────────────────────────────────────────────
+    cmds.push(DrawCommand::SetColor(0.97, 0.87, 0.18, 1.0));
+    cmds.push(DrawCommand::Polygon {
+        mode: DrawMode::Fill,
+        vertices: pac_vertices,
+    });
+
+    // ── Moon crescent ─────────────────────────────────────────────────────────
+    cmds.push(DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0));
+    cmds.push(DrawCommand::Circle {
+        mode: DrawMode::Fill,
+        x: moon_x,
+        y: moon_y,
+        r: mr,
+    });
+    // Shadow disc (carved from background colour)
+    cmds.push(DrawCommand::SetColor(0.12, 0.08, 0.20, 1.0));
+    cmds.push(DrawCommand::Circle {
+        mode: DrawMode::Fill,
+        x: moon_x + 22.0,
+        y: moon_y - 14.0,
+        r: mr * 0.84,
+    });
+
+    // ── Text ──────────────────────────────────────────────────────────────────
+    let text_y = logo_y + 72.0;
+    cmds.push(DrawCommand::SetColor(0.95, 0.90, 0.55, 1.0));
+    cmds.push(DrawCommand::PrintFont {
+        font_key: title_key,
+        text: title_text.to_string(),
+        x: cx - title_w / 2.0,
+        y: text_y,
+        scale: 1.0,
+    });
+    cmds.push(DrawCommand::SetColor(0.60, 0.55, 0.70, 1.0));
+    cmds.push(DrawCommand::PrintFont {
+        font_key: small_key,
+        text: subtitle_text.to_string(),
+        x: cx - subtitle_w / 2.0,
+        y: text_y + 42.0,
+        scale: 1.0,
+    });
+    cmds.push(DrawCommand::SetColor(0.40, 0.35, 0.50, 1.0));
+    cmds.push(DrawCommand::PrintFont {
+        font_key: small_key,
+        text: version_text,
+        x: cx - version_w / 2.0,
+        y: text_y + 66.0,
+        scale: 1.0,
+    });
+
+    // ── Drop hint (bottom of screen) ─────────────────────────────────────────
     if drag_hover {
-        cmds.push(DrawCommand::SetColor(0.4, 0.8, 0.4, 0.15));
+        cmds.push(DrawCommand::SetColor(0.40, 0.80, 0.40, 0.15));
         cmds.push(DrawCommand::Rectangle {
             mode: DrawMode::Fill,
             x: cx - 220.0,
@@ -2186,7 +2390,7 @@ fn make_splash_commands(
             w: 440.0,
             h: 40.0,
         });
-        cmds.push(DrawCommand::SetColor(0.5, 0.9, 0.5, 1.0));
+        cmds.push(DrawCommand::SetColor(0.50, 0.90, 0.50, 1.0));
     } else {
         cmds.push(DrawCommand::SetColor(0.35, 0.30, 0.45, 1.0));
     }

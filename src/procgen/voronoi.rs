@@ -4,6 +4,8 @@
 //! distances, and second-closest distances.
 
 use super::lcg::Lcg;
+use crate::engine::log_messages::{VR01, VR02};
+use crate::log_msg;
 
 /// Options for Voronoi diagram generation. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -52,6 +54,7 @@ pub fn voronoi_diagram(
     points: &[(f32, f32)],
     opts: &VoronoiOpts,
 ) -> (Vec<u32>, Vec<f32>, Vec<f32>) {
+    log_msg!(debug, VR01, "{}x{} {} pts", width, height, points.len());
     let size = (width * height) as usize;
     let mut regions = vec![0u32; size];
     let mut distances = vec![0.0f32; size];
@@ -105,6 +108,7 @@ pub fn voronoi_diagram(
         }
     }
 
+    log_msg!(debug, VR02);
     (regions, distances, second_distances)
 }
 

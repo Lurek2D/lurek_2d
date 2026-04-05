@@ -1,3 +1,5 @@
+use crate::engine::log_messages::{FX01, FX02};
+use crate::log_msg;
 /// An ordered chain of effects that captures and processes the rendered scene.
 ///
 /// The full lifecycle every draw frame is:
@@ -49,6 +51,7 @@ impl PostFxStack {
     /// # Returns
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
+        log_msg!(debug, FX01);
         Self {
             effects: Vec::new(),
             enabled: Vec::new(),
@@ -67,6 +70,7 @@ impl PostFxStack {
     /// # Parameters
     /// - `effect_idx` — `usize` — Index into the caller's effect storage.
     pub fn add(&mut self, effect_idx: usize) {
+        log_msg!(debug, FX02);
         self.effects.push(effect_idx);
         self.enabled.push(true);
     }
