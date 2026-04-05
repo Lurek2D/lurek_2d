@@ -35,11 +35,7 @@ try:
 except ImportError:
     HAVE_PILLOW = False
 
-try:
-    import cairosvg  # type: ignore
-    HAVE_CAIROSVG = True
-except ImportError:
-    HAVE_CAIROSVG = False
+HAVE_CAIROSVG = False
 
 # ── Paths ───────────────────────────────────────────────────────────────
 WORKSPACE = Path(__file__).resolve().parent.parent
@@ -93,38 +89,55 @@ def draw_stars(draw: ImageDraw.ImageDraw) -> None:
 # ── Moon ───────────────────────────────────────────────────────────────────────
 
 def draw_moon(img: Image.Image) -> None:
-    """Draw a golden crescent moon in the upper-right region."""
+    """Draw a light blue gear-pacman eating a gray cube in the upper-right region."""
     moon_layer = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     d = ImageDraw.Draw(moon_layer)
 
-    cx, cy, r = 570, 152, 92
+    px, py = 500, 180
+    r = 100
 
-    # Soft glow behind moon
-    for glow_r in range(r + 60, r - 1, -4):
-        alpha = int(40 * (1 - (glow_r - r) / 60)) if glow_r > r else 40
-        glow_col = (245, 220, 80, max(0, alpha))
-        d.ellipse([cx - glow_r, cy - glow_r, cx + glow_r, cy + glow_r], fill=glow_col)
+    # Glow light blue
+    for gr in range(r + 40, r - 1, -2):
+        alpha = max(0, int(40 * (1 - (gr - r) / 40)))
+        d.ellipse([px - gr, py - gr, px + gr, py + gr], fill=(130, 200, 250, alpha))
+        
+    # Draw gear teeth along the outer rim
+    num_teeth = 12
+    tooth_h = 20
+    tooth_w_angle = math.pi * 2 / (num_teeth * 2)
+    
+    start_angle = math.radians(35)
+    end_angle = math.radians(360 - 35)
+    
+    pts = [(px, py)]
+    steps = 200
+    for i in range(steps + 1):
+        angle = start_angle + (end_angle - start_angle) * i / steps
+        angle_norm = angle % (math.pi * 2)
+        rem = angle_norm % (math.pi * 2 / num_teeth)
+        
+        rad = r
+        if rem > tooth_w_angle * 0.5 and rem < tooth_w_angle * 1.5:
+            rad = r + tooth_h
+            
+        x = px + rad * math.cos(angle)
+        y = py + rad * math.sin(angle)
+        pts.append((x, y))
+        
+    d.polygon(pts, fill=(130, 200, 250, 255))
+    
+    # Eye
+    eye_x, eye_y = px + int(r * 0.1), py - int(r * 0.5)
+    eye_r = 15
+    d.ellipse([eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r], fill=(22, 12, 48, 255))
 
-    # Main moon body — goldish gradient approximation
-    for i, (ring_r, col) in enumerate([
-        (r,     hex_color("#FFFBE8")),
-        (r - 8, hex_color("#F8E86E")),
-        (r - 25, hex_color("#F0D050")),
-        (r - 45, hex_color("#E0B830")),
-    ]):
-        d.ellipse([cx - ring_r, cy - ring_r, cx + ring_r, cy + ring_r], fill=col)
-
-    # Crescent mask — cut out the right portion with background colour
-    mask_cx, mask_cy, mask_r = cx + 58, cy - 28, 85
-    # Use the background colour at that point (approx dark blue-purple)
-    bg_col = (12, 8, 28, 255)
-    d.ellipse([mask_cx - mask_r, mask_cy - mask_r, mask_cx + mask_r, mask_cy + mask_r],
-              fill=bg_col)
-
-    # Subtle surface craters
-    for cr_x, cr_y, cr_r, cr_a in [(535, 132, 11, 30), (512, 165, 7, 25), (555, 108, 5, 20)]:
-        d.ellipse([cr_x - cr_r, cr_y - cr_r, cr_x + cr_r, cr_y + cr_r],
-                  outline=(180, 140, 20, cr_a), width=2)
+    # Draw the gray cube
+    cx, cy = px + 120, py
+    cr = 40
+    
+    d.polygon([(cx, cy - cr), (cx + cr, cy - cr//2), (cx, cy), (cx - cr, cy - cr//2)], fill=(170, 170, 170, 255))
+    d.polygon([(cx - cr, cy - cr//2), (cx, cy), (cx, cy + cr), (cx - cr, cy + cr//2)], fill=(130, 130, 130, 255))
+    d.polygon([(cx, cy), (cx + cr, cy - cr//2), (cx + cr, cy + cr//2), (cx, cy + cr)], fill=(90, 90, 90, 255))
 
     img.alpha_composite(moon_layer)
 

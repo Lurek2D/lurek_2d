@@ -36,7 +36,7 @@ def lerp_color(a, b, t):
 
 
 def generate_icon_image(size: int) -> Image.Image:
-    """Draw a single icon frame: crescent moon on dark purple background."""
+    """Draw a single icon frame: light blue gear-pacman eating a gray cube."""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img, "RGBA")
 
@@ -48,41 +48,52 @@ def generate_icon_image(size: int) -> Image.Image:
     d.ellipse([bx - bg_r, by - bg_r, bx + bg_r, by + bg_r],
               fill=(22, 12, 48, 255))
 
-    # Moon body
-    moon_cx, moon_cy = int(s * 0.52), int(s * 0.46)
-    moon_r = int(s * 0.30)
+    # Center of Pac-Man
+    px, py = int(s * 0.45), int(s * 0.5)
+    r = int(s * 0.3)
+    
+    # Glow light blue
+    for gr in range(r + int(s * 0.12), r - 1, -2):
+        alpha = max(0, int(35 * (1 - (gr - r) / (s * 0.12))))
+        d.ellipse([px - gr, py - gr, px + gr, py + gr], fill=(130, 200, 250, alpha))
+        
+    # Draw gear teeth along the outer rim
+    num_teeth = 12
+    tooth_h = int(s * 0.06)
+    tooth_w_angle = math.pi * 2 / (num_teeth * 2)
+    
+    start_angle = math.radians(35)
+    end_angle = math.radians(360 - 35)
+    
+    pts = [(px, py)]
+    steps = 200
+    for i in range(steps + 1):
+        angle = start_angle + (end_angle - start_angle) * i / steps
+        angle_norm = angle % (math.pi * 2)
+        rem = angle_norm % (math.pi * 2 / num_teeth)
+        
+        rad = r
+        if rem > tooth_w_angle * 0.5 and rem < tooth_w_angle * 1.5:
+            rad = r + tooth_h
+            
+        x = px + rad * math.cos(angle)
+        y = py + rad * math.sin(angle)
+        pts.append((x, y))
+        
+    d.polygon(pts, fill=(130, 200, 250, 255))
+    
+    # Eye
+    eye_x, eye_y = px + int(r * 0.1), py - int(r * 0.5)
+    eye_r = int(s * 0.04)
+    d.ellipse([eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r], fill=(22, 12, 48, 255))
 
-    # Glow
-    for gr in range(moon_r + int(s * 0.12), moon_r - 1, -2):
-        alpha = max(0, int(35 * (1 - (gr - moon_r) / (s * 0.12))))
-        d.ellipse([moon_cx - gr, moon_cy - gr, moon_cx + gr, moon_cy + gr],
-                  fill=(245, 220, 80, alpha))
-
-    # Moon fill
-    d.ellipse([moon_cx - moon_r, moon_cy - moon_r,
-               moon_cx + moon_r, moon_cy + moon_r],
-              fill=(248, 218, 74, 255))
-
-    # Crescent cutout
-    cut_cx = moon_cx + int(moon_r * 0.65)
-    cut_cy = moon_cy - int(moon_r * 0.28)
-    cut_r  = int(moon_r * 0.88)
-    d.ellipse([cut_cx - cut_r, cut_cy - cut_r,
-               cut_cx + cut_r, cut_cy + cut_r],
-              fill=(22, 12, 48, 255))
-
-    # Tiny star (top-left of icon)
-    def star4(cx, cy, r):
-        pts = []
-        for i in range(8):
-            angle = math.pi / 4 * i - math.pi / 4
-            rad = r if i % 2 == 0 else r * 0.4
-            pts.append((cx + rad * math.cos(angle), cy + rad * math.sin(angle)))
-        d.polygon(pts, fill=(245, 220, 80, 200))
-
-    star4(int(s * 0.24), int(s * 0.28), int(s * 0.065))
-    star4(int(s * 0.70), int(s * 0.72), int(s * 0.04))
-    star4(int(s * 0.18), int(s * 0.65), int(s * 0.03))
+    # Draw the gray cube
+    cx, cy = px + int(s * 0.35), py
+    cr = int(s * 0.12)
+    
+    d.polygon([(cx, cy - cr), (cx + cr, cy - cr//2), (cx, cy), (cx - cr, cy - cr//2)], fill=(170, 170, 170, 255))
+    d.polygon([(cx - cr, cy - cr//2), (cx, cy), (cx, cy + cr), (cx - cr, cy + cr//2)], fill=(130, 130, 130, 255))
+    d.polygon([(cx, cy), (cx + cr, cy - cr//2), (cx + cr, cy + cr//2), (cx, cy + cr)], fill=(90, 90, 90, 255))
 
     return img
 
