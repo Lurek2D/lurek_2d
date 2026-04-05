@@ -12,6 +12,8 @@ use std::cell::RefCell;
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 
+use crate::engine::log_messages::{UP01, UP02, UP03};
+use crate::log_msg;
 use crate::pathfinding::astar;
 use crate::pathfinding::nav_grid::NavGrid;
 
@@ -68,6 +70,7 @@ impl UnitPathfinder {
     /// # Returns
     /// `Self`.
     pub fn new(grid: Rc<RefCell<NavGrid>>) -> Self {
+        log_msg!(debug, UP01);
         Self {
             grid,
             cache: HashMap::new(),
@@ -115,6 +118,12 @@ impl UnitPathfinder {
             let (path, _complete) = astar::astar(&grid, (x1, y1), (x2, y2), unit_size, 0);
             path.map(|p| p.into_iter().map(|(x, y)| Waypoint { x, y }).collect())
         };
+
+        if result.is_some() {
+            log_msg!(debug, UP02, "({}, {}) -> ({}, {})", x1, y1, x2, y2);
+        } else {
+            log_msg!(warn, UP03, "({}, {}) -> ({}, {})", x1, y1, x2, y2);
+        }
 
         if self.cache_enabled {
             self.cache_insert(key, result.clone());

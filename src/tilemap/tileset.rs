@@ -10,6 +10,8 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{TS01, TS02, TS03};
+use crate::log_msg;
 use crate::math::Rect;
 
 /// A single frame in a tile animation sequence.
@@ -82,6 +84,7 @@ impl TileSet {
         spacing: u32,
         margin: u32,
     ) -> Self {
+        log_msg!(debug, TS01, "first_gid={} tiles={}", first_gid, tile_count);
         Self {
             first_gid,
             tile_count,
@@ -190,6 +193,7 @@ impl TileSet {
     /// - `local_tile_id` — `u32`.
     /// - `frames` — `Vec<TileAnimFrame>`.
     pub fn set_animation(&mut self, local_tile_id: u32, frames: Vec<TileAnimFrame>) {
+        log_msg!(debug, TS02, "tile={} frames={}", local_tile_id, frames.len());
         self.animations.insert(local_tile_id, frames);
     }
 
@@ -212,6 +216,7 @@ impl TileSet {
     ///
     /// Automatically expands the internal solids vector if needed.
     pub fn set_solid(&mut self, local_tile_id: u32, solid: bool) {
+        log_msg!(trace, TS03, "tile={} solid={}", local_tile_id, solid);
         let idx = local_tile_id as usize;
         if idx >= self.solids.len() {
             self.solids.resize(idx + 1, false);

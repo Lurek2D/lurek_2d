@@ -5,6 +5,8 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{SS01, SS02};
+use crate::log_msg;
 use crate::math::Rect;
 
 /// Named frame group within the sprite sheet.
@@ -115,6 +117,8 @@ impl SpriteSheet {
             });
         }
 
+        log_msg!(debug, SS01, "frames={}", total);
+
         Self {
             frame_width,
             frame_height,
@@ -223,6 +227,7 @@ impl SpriteSheet {
     /// - `count` — `usize`.
     pub fn name_group(&mut self, name: impl Into<String>, start_frame: usize, count: usize) {
         let name = name.into();
+        log_msg!(debug, SS02, "{} [{}..{}]", name, start_frame, count);
         self.groups.insert(
             name.clone(),
             FrameGroup {

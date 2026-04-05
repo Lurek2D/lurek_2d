@@ -3,6 +3,9 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{SV01, SV02, SV03, SV04};
+use crate::log_msg;
+
 /// Metadata extracted from a save slot.
 #[derive(Debug, Clone, Default)]
 pub struct SlotMeta {
@@ -40,6 +43,7 @@ pub struct SaveManager {
 impl SaveManager {
     /// Create a new empty SaveManager.
     pub fn new() -> Self {
+        log_msg!(debug, SV01);
         Self::default()
     }
 
@@ -47,12 +51,14 @@ impl SaveManager {
     pub fn register(&mut self, name: impl Into<String>) {
         let name = name.into();
         if !self.registered.contains(&name) {
+            log_msg!(debug, SV02, "{}", name);
             self.registered.push(name);
         }
     }
 
     /// Unregister a collector by name.
     pub fn unregister(&mut self, name: &str) {
+        log_msg!(debug, SV03, "{}", name);
         self.registered.retain(|n| n != name);
     }
 
@@ -105,7 +111,9 @@ impl SaveManager {
 
     /// Enable auto-save with interval and target slot.
     pub fn enable_auto_save(&mut self, interval: f64, slot: impl Into<String>) {
-        self.auto_save = Some((interval, slot.into()));
+        let slot = slot.into();
+        log_msg!(debug, SV04, "{} @ {:.3}s", slot, interval);
+        self.auto_save = Some((interval, slot));
         self.auto_save_elapsed = 0.0;
     }
 

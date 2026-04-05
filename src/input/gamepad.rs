@@ -8,7 +8,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 //!
+use crate::engine::log_messages::{GD01, GD02, GD03};
 use crate::engine::EngineError;
+use crate::log_msg;
 use std::collections::HashMap;
 use std::io::{BufRead, Write};
 
@@ -41,6 +43,7 @@ impl GamepadState {
     /// # Returns
     /// A new `GamepadState` with no buttons or axes recorded yet.
     pub fn new(id: u32) -> Self {
+        log_msg!(debug, GD01, "id={}", id);
         GamepadState {
             id,
             name: String::from("Unknown Controller"),
@@ -57,6 +60,7 @@ impl GamepadState {
     /// - `button` — Button index.
     /// - `pressed` — `true` if the button is now held down; `false` if released.
     pub fn update_button(&mut self, button: u32, pressed: bool) {
+        log_msg!(trace, GD02, "button={} pressed={}", button, pressed);
         self.buttons.insert(button, pressed);
     }
 
@@ -66,6 +70,7 @@ impl GamepadState {
     /// - `axis` — Axis index.
     /// - `value` — Axis value, typically in `[-1.0, 1.0]`.
     pub fn update_axis(&mut self, axis: u32, value: f32) {
+        log_msg!(trace, GD03, "axis={} value={:.3}", axis, value);
         self.axes.insert(axis, value);
     }
 

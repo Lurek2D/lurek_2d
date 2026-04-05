@@ -2,6 +2,8 @@ use super::atmosphere::{CloudState, FilmGrainState, FogState, HeatHazeState, Lig
 use super::ambient::AmbientState;
 use super::effects::{FadeState, FlashState, ShakeState};
 use super::weather::{WeatherParticle, WeatherState, WeatherType};
+use crate::engine::log_messages::{OV01, OV02, OV03};
+use crate::log_msg;
 
 /// Composable per-frame screen-effect overlay managing multiple visual subsystems.
 ///
@@ -80,6 +82,7 @@ impl Overlay {
     /// # Returns
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
+        log_msg!(debug, OV01, "{}x{}", width, height);
         Self {
             width,
             height,
@@ -255,6 +258,7 @@ impl Overlay {
     /// - `a` — `f32` — Starting alpha (0.0–1.0).
     /// - `duration` — `f32` — Flash duration in seconds.
     pub fn trigger_flash(&mut self, r: f32, g: f32, b: f32, a: f32, duration: f32) {
+        log_msg!(debug, OV02, "rgba=({:.2}, {:.2}, {:.2}, {:.2}) {:.3}s", r, g, b, a, duration);
         self.flash.active = true;
         self.flash.color = [r, g, b, a];
         self.flash.duration = duration;
@@ -274,6 +278,7 @@ impl Overlay {
     /// - `intensity` — `f32` — Peak shake magnitude in pixels.
     /// - `duration` — `f32` — Shake duration in seconds.
     pub fn trigger_shake(&mut self, intensity: f32, duration: f32) {
+        log_msg!(debug, OV03, "intensity={} duration={:.3}s", intensity, duration);
         self.shake.active = true;
         self.shake.intensity = intensity;
         self.shake.duration = duration;

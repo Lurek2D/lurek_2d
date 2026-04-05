@@ -10,6 +10,9 @@ use std::sync::{Arc, Condvar, Mutex};
 
 use mlua::prelude::*;
 
+use crate::engine::log_messages::{CH01, CH02, CH03, CH04};
+use crate::log_msg;
+
 
 /// Serializable values that can be sent between threads.
 ///
@@ -61,6 +64,7 @@ impl Channel {
     /// # Returns
     /// `Arc<Self>`.
     pub fn new() -> Arc<Self> {
+        log_msg!(debug, CH01);
         Arc::new(Self {
             name: None,
             queue: Mutex::new(VecDeque::new()),
@@ -77,6 +81,7 @@ impl Channel {
     /// # Returns
     /// `Arc<Self>`.
     pub fn named(name: String) -> Arc<Self> {
+        log_msg!(debug, CH02, "{}", name);
         Arc::new(Self {
             name: Some(name),
             queue: Mutex::new(VecDeque::new()),
@@ -98,6 +103,7 @@ impl Channel {
         let mut count = self.push_count.lock().unwrap();
         *count += 1;
         let id = *count;
+        log_msg!(trace, CH03, "push_id={}", id);
         self.condvar.notify_one();
         id
     }
@@ -166,7 +172,10 @@ impl Channel {
 
     /// Remove all values from the channel. After this call the container is in the same state as immediately after construction.
     pub fn clear(&self) {
-        self.queue.lock().unwrap().clear();
+        let mut queue = self.queue.lock().unwrap();
+        let count = queue.len();
+        queue.clear();
+        log_msg!(debug, CH04, "{}", count);
     }
 
     /// Push a value only if the channel is currently empty.

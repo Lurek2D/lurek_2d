@@ -8,7 +8,9 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::engine::log_messages::{IE01, IE02, IE03};
 use crate::graphics::ShaderPassDescriptor;
+use crate::log_msg;
 use super::effect::PostFxEffect;
 
 /// An ordered shader-effect chain to apply when drawing a single image.
@@ -41,6 +43,7 @@ impl ImageEffect {
     /// # Returns
     /// `Self`.
     pub fn new(name: &str) -> Self {
+        log_msg!(debug, IE01, "{}", name);
         Self {
             effects: Vec::new(),
             name: name.to_owned(),
@@ -52,6 +55,7 @@ impl ImageEffect {
     /// # Parameters
     /// - `effect` â€” `PostFxEffect` â€” The pass to append.
     pub fn add_effect(&mut self, effect: PostFxEffect) {
+        log_msg!(debug, IE02);
         self.effects.push(Rc::new(RefCell::new(effect)));
     }
 
@@ -121,6 +125,7 @@ impl ImageEffect {
             .position(|e| e.borrow().get_type_name() == name)
         {
             self.effects.remove(pos);
+            log_msg!(debug, IE03, "{}", name);
             true
         } else {
             false

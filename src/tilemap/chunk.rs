@@ -9,6 +9,8 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{CK01, CK02, CK03};
+use crate::log_msg;
 use crate::math::Rect;
 
 /// A chunk-based tilemap that supports large and infinite maps through sparse storage.
@@ -42,6 +44,7 @@ impl ChunkMap {
     /// Typical values are 16, 32, or 64. Must be ≥ 1.
     pub fn new(chunk_size: u32) -> Self {
         assert!(chunk_size >= 1, "chunk_size must be >= 1");
+        log_msg!(debug, CK01, "chunk_size={}", chunk_size);
         Self {
             chunk_size,
             chunks: HashMap::new(),
@@ -133,6 +136,7 @@ impl ChunkMap {
     ///
     /// Does nothing if the chunk is already loaded.
     pub fn load_chunk(&mut self, cx: i32, cy: i32) {
+        log_msg!(debug, CK02, "({}, {})", cx, cy);
         let cs = self.chunk_size;
         self.chunks
             .entry((cx, cy))
@@ -147,6 +151,7 @@ impl ChunkMap {
     ///
     /// Subsequent reads from tiles in this chunk return [`Self::DEFAULT_GID`].
     pub fn unload_chunk(&mut self, cx: i32, cy: i32) {
+        log_msg!(debug, CK03, "({}, {})", cx, cy);
         self.chunks.remove(&(cx, cy));
     }
 

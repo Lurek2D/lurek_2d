@@ -26,6 +26,9 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{IF01, IF02, IF03};
+use crate::log_msg;
+
 /// A multi-layer spatial float grid for influence mapping and strategic reasoning.
 ///
 /// The grid has fixed dimensions (`width × height` cells) with a configurable
@@ -66,6 +69,7 @@ impl InfluenceMap {
     /// # Returns
     /// `Self`.
     pub fn new(width: usize, height: usize, cell_size: f32) -> Self {
+        log_msg!(debug, IF01, "{}x{} cell={}", width, height, cell_size);
         Self {
             width,
             height,
@@ -79,6 +83,7 @@ impl InfluenceMap {
     /// # Parameters
     /// - `name` — `&str`.
     pub fn add_layer(&mut self, name: &str) {
+        log_msg!(debug, IF02, "{}", name);
         self.layers
             .insert(name.to_string(), vec![0.0; self.width * self.height]);
     }
@@ -231,6 +236,7 @@ impl InfluenceMap {
     /// - `layer` — `&str`.
     pub fn clear_layer(&mut self, layer: &str) {
         if let Some(data) = self.layers.get_mut(layer) {
+            log_msg!(debug, IF03, "{}", layer);
             for v in data.iter_mut() {
                 *v = 0.0;
             }

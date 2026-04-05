@@ -10,6 +10,9 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{GC01, GC02, GC03, GC04};
+use crate::log_msg;
+
 use super::edge::Edge;
 use super::item::{GraphItem, ItemPosition};
 use super::node::{Node, OverflowPolicy};
@@ -107,6 +110,7 @@ impl Graph {
     pub fn add_node(&mut self, node_type: &str, capacity: i32) -> u64 {
         let id = self.next_node_id;
         self.next_node_id += 1;
+        log_msg!(debug, GC01, "id={} type={}", id, node_type);
         self.nodes.insert(id, Node::new(id, node_type, capacity));
         id
     }
@@ -139,6 +143,7 @@ impl Graph {
                 item.position = ItemPosition::Unplaced;
             }
         }
+        log_msg!(debug, GC02, "{}", node_id);
         true
     }
 
@@ -191,6 +196,7 @@ impl Graph {
         self.next_edge_id += 1;
         let e = Edge::new(id, from, to, edge_type.unwrap_or("default"));
         self.edges.insert(id, e);
+        log_msg!(debug, GC03, "{} -> {} (id={})", from, to, id);
         Ok(id)
     }
 
@@ -208,6 +214,7 @@ impl Graph {
                     item.position = ItemPosition::Unplaced;
                 }
             }
+            log_msg!(debug, GC04, "{}", edge_id);
             true
         } else {
             false

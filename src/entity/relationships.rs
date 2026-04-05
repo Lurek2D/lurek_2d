@@ -13,6 +13,9 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{RL01, RL02, RL03};
+use crate::log_msg;
+
 /// Definition of a named relation type with a fixed set of valid level strings.
 ///
 /// # Example
@@ -144,6 +147,7 @@ impl RelationshipManager {
     /// - `levels` — `Vec<String>`.
     /// - `default_level` — `&str`.
     pub fn define_type(&mut self, name: &str, levels: Vec<String>, default_level: &str) {
+        log_msg!(debug, RL01, "{} ({} levels)", name, levels.len());
         self.types
             .insert(name.to_string(), RelationType::new(name, levels, default_level));
     }
@@ -163,6 +167,7 @@ impl RelationshipManager {
             for rel in self.relations.values_mut() {
                 rel.type_levels.remove(name);
             }
+            log_msg!(debug, RL02, "{}", name);
             true
         } else {
             false
@@ -195,7 +200,10 @@ impl RelationshipManager {
         let key = ordered(a, b);
         self.relations
             .entry(key)
-            .or_insert_with(|| Relationship::new(a, b))
+            .or_insert_with(|| {
+                log_msg!(trace, RL03, "({}, {})", a, b);
+                Relationship::new(a, b)
+            })
     }
 
     /// Get the numeric relation value between two entities.

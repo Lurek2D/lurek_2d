@@ -2,6 +2,9 @@ use rodio::Source;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, RwLock};
 
+use crate::engine::log_messages::{DP01, DP02, DP03};
+use crate::log_msg;
+
 #[derive(Debug)]
 
 /// Thread-safe atomic parameter.
@@ -82,6 +85,7 @@ pub struct EffectParams {
 
 impl EffectParams {
     pub fn new(id: u32, typ: EffectType) -> Self {
+        log_msg!(debug, DP01, "id={}", id);
         Self {
             id,
             typ,
@@ -118,6 +122,8 @@ impl ActiveEffect {
             }
             _ => 1,
         };
+
+        log_msg!(debug, DP02, "sr={} ch={}", sample_rate, channels);
 
         Self {
             params,
@@ -220,6 +226,7 @@ pub struct SharedEffectGraph {
 
 impl SharedEffectGraph {
     pub fn new() -> Self {
+        log_msg!(debug, DP03);
         Self {
             effects: Arc::new(RwLock::new(Vec::new())),
         }

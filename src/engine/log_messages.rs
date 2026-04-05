@@ -616,3 +616,103 @@ pub const TL02: &str = "TL02";
 // ── voronoi ───────────────────────────────────────────────────────────────
 pub const VR01: &str = "VR01";
 pub const VR02: &str = "VR02";
+
+// ── savegame ──────────────────────────────────────────────────────────────
+pub const SV01: &str = "SV01";
+pub const SV02: &str = "SV02";
+pub const SV03: &str = "SV03";
+pub const SV04: &str = "SV04";
+
+// ── channel_thread ────────────────────────────────────────────────────────
+pub const CH01: &str = "CH01";
+pub const CH02: &str = "CH02";
+pub const CH03: &str = "CH03";
+pub const CH04: &str = "CH04";
+
+// ── light_source ──────────────────────────────────────────────────────────
+pub const LT01: &str = "LT01";
+pub const LT02: &str = "LT02";
+pub const LT03: &str = "LT03";
+
+// ── relationships ─────────────────────────────────────────────────────────
+pub const RL01: &str = "RL01";
+pub const RL02: &str = "RL02";
+pub const RL03: &str = "RL03";
+
+// ── graph_core ────────────────────────────────────────────────────────────
+pub const GC01: &str = "GC01";
+pub const GC02: &str = "GC02";
+pub const GC03: &str = "GC03";
+pub const GC04: &str = "GC04";
+
+// ── command_queue ─────────────────────────────────────────────────────────
+pub const CQ01: &str = "CQ01";
+pub const CQ02: &str = "CQ02";
+pub const CQ03: &str = "CQ03";
+
+// ── unit_pathfinder ───────────────────────────────────────────────────────
+pub const UP01: &str = "UP01";
+pub const UP02: &str = "UP02";
+pub const UP03: &str = "UP03";
+
+// ── screen_overlay ────────────────────────────────────────────────────────
+pub const OV01: &str = "OV01";
+pub const OV02: &str = "OV02";
+pub const OV03: &str = "OV03";
+
+// ── post_effect ───────────────────────────────────────────────────────────
+pub const FE01: &str = "FE01";
+pub const FE02: &str = "FE02";
+pub const FE03: &str = "FE03";
+
+// ── column_batch ──────────────────────────────────────────────────────────
+pub const CB01: &str = "CB01";
+pub const CB02: &str = "CB02";
+
+// ── tileset_ext ───────────────────────────────────────────────────────────
+pub const TS01: &str = "TS01";
+pub const TS02: &str = "TS02";
+pub const TS03: &str = "TS03";
+
+// ── gamepad_state ─────────────────────────────────────────────────────────
+pub const GD01: &str = "GD01";
+pub const GD02: &str = "GD02";
+pub const GD03: &str = "GD03";
+
+// ── dsp_effect ────────────────────────────────────────────────────────────
+pub const DP01: &str = "DP01";
+pub const DP02: &str = "DP02";
+pub const DP03: &str = "DP03";
+
+// ── blackboard ────────────────────────────────────────────────────────────
+pub const BB01: &str = "BB01";
+pub const BB02: &str = "BB02";
+pub const BB03: &str = "BB03";
+
+// ── chunk_map ─────────────────────────────────────────────────────────────
+pub const CK01: &str = "CK01";
+pub const CK02: &str = "CK02";
+pub const CK03: &str = "CK03";
+
+// ── image_effect ──────────────────────────────────────────────────────────
+pub const IE01: &str = "IE01";
+pub const IE02: &str = "IE02";
+pub const IE03: &str = "IE03";
+
+// ── nav_grid ──────────────────────────────────────────────────────────────
+pub const NG01: &str = "NG01";
+pub const NG02: &str = "NG02";
+pub const NG03: &str = "NG03";
+
+// ── sprite_sheet ──────────────────────────────────────────────────────────
+pub const SS01: &str = "SS01";
+pub const SS02: &str = "SS02";
+
+// ── influence_map ─────────────────────────────────────────────────────────
+pub const IF01: &str = "IF01";
+pub const IF02: &str = "IF02";
+pub const IF03: &str = "IF03";
+
+// ── spatial_hash ──────────────────────────────────────────────────────────
+pub const HX01: &str = "HX01";
+pub const HX02: &str = "HX02";

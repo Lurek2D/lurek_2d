@@ -11,6 +11,8 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
+use crate::engine::log_messages::{CB01, CB02};
+use crate::log_msg;
 use crate::math::Color;
 
 /// Per-column rendering state produced by a raycaster.
@@ -87,6 +89,7 @@ impl ColumnBatch {
     /// # Returns
     /// `Self`.
     pub fn new(column_count: usize, screen_width: f32, screen_height: f32) -> Self {
+        log_msg!(debug, CB01, "{}", column_count);
         let mut columns = Vec::with_capacity(column_count);
         columns.resize_with(column_count, ColumnData::default);
         Self {
@@ -116,6 +119,7 @@ impl ColumnBatch {
         shade: f32,
         cell_val: u32,
     ) {
+        log_msg!(trace, CB02, "col={} cell={}", col, cell_val);
         if let Some(c) = self.columns.get_mut(col) {
             c.tex_u = tex_u;
             c.start = start;

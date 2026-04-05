@@ -376,3 +376,103 @@ TL02 = "load_tmx: map loaded"
 [voronoi]
 VR01 = "voronoi_diagram: started"
 VR02 = "voronoi_diagram: done"
+
+[savegame]
+SV01 = "save manager created"
+SV02 = "collector registered"
+SV03 = "collector unregistered"
+SV04 = "auto-save enabled"
+
+[channel_thread]
+CH01 = "channel created"
+CH02 = "named channel created"
+CH03 = "value pushed to channel"
+CH04 = "channel cleared"
+
+[light_source]
+LT01 = "light created"
+LT02 = "light moved"
+LT03 = "light radius changed"
+
+[relationships]
+RL01 = "relationship type defined"
+RL02 = "relationship type removed"
+RL03 = "relationship record created"
+
+[graph_core]
+GC01 = "graph node added"
+GC02 = "graph node removed"
+GC03 = "graph edge added"
+GC04 = "graph edge removed"
+
+[command_queue]
+CQ01 = "command queue created"
+CQ02 = "command enqueued"
+CQ03 = "command queue cleared"
+
+[unit_pathfinder]
+UP01 = "unit pathfinder created"
+UP02 = "unit path found"
+UP03 = "unit path not found"
+
+[screen_overlay]
+OV01 = "screen overlay created"
+OV02 = "screen flash triggered"
+OV03 = "screen shake triggered"
+
+[post_effect]
+FE01 = "post effect created"
+FE02 = "custom post effect created"
+FE03 = "post effect parameter set"
+
+[column_batch]
+CB01 = "column batch created"
+CB02 = "column updated"
+
+[tileset_ext]
+TS01 = "tileset created"
+TS02 = "tileset animation set"
+TS03 = "tileset solid flag set"
+
+[gamepad_state]
+GD01 = "gamepad state created"
+GD02 = "gamepad button updated"
+GD03 = "gamepad axis updated"
+
+[dsp_effect]
+DP01 = "DSP effect parameters created"
+DP02 = "active DSP effect created"
+DP03 = "shared effect graph created"
+
+[blackboard]
+BB01 = "blackboard created"
+BB02 = "blackboard key removed"
+BB03 = "blackboard cleared"
+
+[chunk_map]
+CK01 = "chunk map created"
+CK02 = "chunk loaded"
+CK03 = "chunk unloaded"
+
+[image_effect]
+IE01 = "image effect stack created"
+IE02 = "image effect added"
+IE03 = "image effect removed"
+
+[nav_grid]
+NG01 = "nav grid created"
+NG02 = "nav grid loaded from costs"
+NG03 = "nav grid cost updated"
+
+[sprite_sheet]
+SS01 = "sprite sheet created"
+SS02 = "sprite group named"
+
+[influence_map]
+IF01 = "influence map created"
+IF02 = "influence layer added"
+IF03 = "influence layer cleared"
+
+[spatial_hash]
+HX01 = "spatial hash created"
+HX02 = "spatial hash cleared"

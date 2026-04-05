@@ -8,6 +8,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
+use crate::engine::log_messages::{NG01, NG02, NG03};
+use crate::log_msg;
+
 /// Controls how diagonal movement is handled during pathfinding.
 ///
 /// # Variants
@@ -84,6 +87,7 @@ impl NavGrid {
     /// # Returns
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
+        log_msg!(debug, NG01, "{}x{}", width, height);
         Self {
             width,
             height,
@@ -112,6 +116,7 @@ impl NavGrid {
             (width * height) as usize,
             "costs length must equal width * height"
         );
+        log_msg!(debug, NG02, "{}x{} {} costs", width, height, costs.len());
         Self {
             width,
             height,
@@ -169,6 +174,7 @@ impl NavGrid {
     /// - `cost` — `u8`.
     pub fn set_cost(&mut self, x: u32, y: u32, cost: u8) {
         if x < self.width && y < self.height {
+            log_msg!(trace, NG03, "({}, {})={}", x, y, cost);
             self.costs[(y * self.width + x) as usize] = cost;
         }
     }

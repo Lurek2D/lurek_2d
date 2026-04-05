@@ -24,6 +24,9 @@
 
 use std::collections::VecDeque;
 
+use crate::engine::log_messages::{CQ01, CQ02, CQ03};
+use crate::log_msg;
+
 use mlua::RegistryKey;
 
 /// A single RTS unit command with metadata and a Lua tick callback.
@@ -87,6 +90,7 @@ impl CommandQueue {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, CQ01);
         Self {
             commands: VecDeque::new(),
         }
@@ -97,6 +101,7 @@ impl CommandQueue {
     /// # Parameters
     /// - `cmd` — `Command`.
     pub fn enqueue(&mut self, cmd: Command) {
+        log_msg!(debug, CQ02);
         self.commands.push_back(cmd);
     }
 
@@ -133,7 +138,9 @@ impl CommandQueue {
 
     /// Clears all commands.
     pub fn clear(&mut self) {
+        let count = self.commands.len();
         self.commands.clear();
+        log_msg!(debug, CQ03, "{}", count);
     }
 
     /// Returns the number of queued commands.

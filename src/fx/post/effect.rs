@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{FE01, FE02, FE03};
+use crate::log_msg;
 use super::effect_type::PostFxEffectType;
 
 /// A single post-processing effect with named float parameters.
@@ -43,6 +45,7 @@ impl PostFxEffect {
     /// # Returns
     /// `Self`.
     pub fn new(effect_type: PostFxEffectType) -> Self {
+        log_msg!(debug, FE01);
         Self {
             params: effect_type.default_params(),
             effect_type,
@@ -64,6 +67,7 @@ impl PostFxEffect {
     /// # Returns
     /// `Self`.
     pub fn new_custom(shader_id: usize) -> Self {
+        log_msg!(debug, FE02, "shader={}", shader_id);
         Self {
             effect_type: PostFxEffectType::Custom,
             params: HashMap::new(),
@@ -83,7 +87,9 @@ impl PostFxEffect {
     /// - `name` — `impl Into<String>` — Parameter key (e.g., `"threshold"`).
     /// - `value` — `f32` — New value for the parameter.
     pub fn set_parameter(&mut self, name: impl Into<String>, value: f32) {
-        self.params.insert(name.into(), value);
+        let name = name.into();
+        log_msg!(trace, FE03, "{}={}", name, value);
+        self.params.insert(name, value);
     }
 
     /// Gets a named float parameter, returning `default` if not set.

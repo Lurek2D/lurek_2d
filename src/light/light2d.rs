@@ -10,6 +10,8 @@
 
 use crate::light::attenuation::Attenuation;
 use crate::light::blend_mode::LightBlendMode;
+use crate::engine::log_messages::{LT01, LT02, LT03};
+use crate::log_msg;
 use crate::light::falloff::FalloffMode;
 use crate::light::flicker::FlickerConfig;
 use crate::light::light_type::LightType;
@@ -109,6 +111,7 @@ impl Light2D {
     ///
     /// Defaults: color = white, intensity = 1.0, enabled = true.
     pub fn new(x: f32, y: f32, radius: f32) -> Self {
+        log_msg!(debug, LT01, "({}, {}) r={}", x, y, radius);
         Self {
             x,
             y,
@@ -142,6 +145,7 @@ impl Light2D {
     /// - `x` — `f32`.
     /// - `y` — `f32`.
     pub fn set_position(&mut self, x: f32, y: f32) {
+        log_msg!(trace, LT02, "({}, {})", x, y);
         self.x = x;
         self.y = y;
     }
@@ -159,6 +163,7 @@ impl Light2D {
     /// # Parameters
     /// - `radius` — `f32`.
     pub fn set_radius(&mut self, radius: f32) {
+        log_msg!(trace, LT03, "{}", radius);
         self.radius = radius;
     }
 

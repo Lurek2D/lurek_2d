@@ -24,6 +24,9 @@
 
 use std::collections::HashMap;
 
+use crate::engine::log_messages::{BB01, BB02, BB03};
+use crate::log_msg;
+
 /// A typed value stored in a blackboard slot.
 ///
 /// Three types are supported, matching the primitive types commonly passed
@@ -82,6 +85,7 @@ impl Blackboard {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
+        log_msg!(debug, BB01);
         Self {
             entries: HashMap::new(),
             parent: None,
@@ -194,12 +198,15 @@ impl Blackboard {
     /// # Parameters
     /// - `key` — `&str`.
     pub fn remove(&mut self, key: &str) {
+        log_msg!(trace, BB02, "{}", key);
         self.entries.remove(key);
     }
 
     /// Clears all local entries. Parent is unaffected.
     pub fn clear(&mut self) {
+        let count = self.entries.len();
         self.entries.clear();
+        log_msg!(debug, BB03, "{}", count);
     }
 
     /// Returns all local key names. Consult the module-level documentation for the broader usage context and preconditions.
