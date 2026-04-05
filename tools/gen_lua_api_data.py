@@ -331,6 +331,81 @@ def extract_lua_tests() -> list:
     return lua_tests
 
 
+# ── Docs overlay ───────────────────────────────────────────────────────────────
+
+def _apply_overlay(lua_api: dict, overlay: dict) -> None:
+    """Merge docs_overlay.json descriptions into lua_api in-place.
+
+    Overlay keys:
+      "module.funcName"             → top-level function
+      "module.ClassName.methodName" → class method
+    """
+    def fmt_params(params: list) -> str:
+        if not params:
+            return ""
+        lines = []
+        for p in params:
+            desc = p.get("desc", "")
+            desc_part = f": {desc}" if desc else ""
+            lines.append(f"- `{p['name']}` — `{p.get('type', 'any')}`{desc_part}.")
+        return "# Parameters\n" + "\n".join(lines)
+
+    def fmt_returns(returns) -> str:
+        if not returns:
+            return ""
+        return f"# Returns\n{returns}"
+
+    mods = lua_api.get("modules", {})
+    applied = 0
+
+    for key, doc in overlay.items():
+        if key.startswith("_"):
+            continue  # skip comment keys
+        parts = key.split(".", 2)
+        if len(parts) == 2:
+            mod_name, fn_name = parts
+            for fn in mods.get(mod_name, {}).get("functions", []):
+                raw_name = fn.get("lua_name") or fn.get("name") or ""
+                short_name = raw_name.split(".")[-1].split(":")[-1]
+                if short_name == fn_name and not fn.get("description"):
+                    fn["description"] = doc["description"]
+                    fn["params_doc"] = fmt_params(doc.get("params", []))
+                    fn["returns_doc"] = fmt_returns(doc.get("returns"))
+                    applied += 1
+                    break
+        elif len(parts) == 3:
+            mod_name, cls_name, method_name = parts
+            cls = mods.get(mod_name, {}).get("classes", {}).get(cls_name, {})
+            for m in cls.get("methods", []):
+                raw_name = m.get("lua_name") or m.get("name") or ""
+                short_name = raw_name.split(".")[-1].split(":")[-1]
+                if short_name == method_name and not m.get("description"):
+                    m["description"] = doc["description"]
+                    m["params_doc"] = fmt_params(doc.get("params", []))
+                    m["returns_doc"] = fmt_returns(doc.get("returns"))
+                    applied += 1
+                    break
+
+    if applied:
+        # Recalculate documented count
+        total = 0
+        documented = 0
+        for mod_data in mods.values():
+            for fn in mod_data.get("functions", []):
+                total += 1
+                if fn.get("description"):
+                    documented += 1
+            for cls_data in mod_data.get("classes", {}).values():
+                for m in cls_data.get("methods", []):
+                    total += 1
+                    if m.get("description"):
+                        documented += 1
+        lua_api["summary"]["total_functions"] = total
+        lua_api["summary"]["documented"] = documented
+        lua_api["summary"]["coverage_pct"] = round(documented / total * 100, 1) if total else 0
+        print(f"   Overlay applied: {applied} entries merged.")
+
+
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main() -> int:
@@ -351,13 +426,18 @@ def main() -> int:
     print("--- Scanning Lua API ---")
     gen_lua_api = _load_gen_lua_api()
     lua_api = extract_lua_api(gen_lua_api, verbose=args.verbose)
+
+    # Apply docs overlay (fills descriptions that cannot live in Rust source)
+    overlay_path = WORKSPACE_ROOT / "docs" / "API" / "docs_overlay.json"
+    if overlay_path.exists():
+        overlay = json.loads(overlay_path.read_text(encoding="utf-8"))
+        _apply_overlay(lua_api, overlay)
+
     s = lua_api["summary"]
     print(
         f"   {s['total_functions']} functions | {s['modules']} modules | "
         f"{s['documented']} documented ({s['coverage_pct']}%)"
     )
-
-
 
     # Read version from Cargo.toml
     version = "unknown"

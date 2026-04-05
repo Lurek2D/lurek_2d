@@ -892,6 +892,7 @@ impl GpuRenderer {
         commands: &[DrawCommand],
         textures: &SlotMap<TextureKey, TextureData>,
         fonts: &mut SlotMap<FontKey, crate::graphics::Font>,
+        light_world: &crate::light::light_world::LightWorld,
         sprite_batches: &SlotMap<SpriteBatchKey, crate::graphics::SpriteBatch>,
         canvases: &SlotMap<CanvasKey, crate::graphics::Canvas>,
         meshes: &SlotMap<MeshKey, Mesh>,
@@ -2301,6 +2302,32 @@ impl GpuRenderer {
                 ..Default::default()
             });
         }
+
+
+        // ====== LIGHT RENDERING PASS ======
+        if light_world.enabled {
+            let _pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("light_pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &view,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Load,
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: &self.screen_stencil_target.as_ref().unwrap().view,
+                    depth_ops: None,
+                    stencil_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Load,
+                        store: wgpu::StoreOp::Store,
+                    }),
+                }),
+                ..Default::default()
+            });
+        }
+        // ==================================
 
         let pending_readback = if capture_screenshot {
             self.begin_surface_readback(&mut encoder, &output.texture, self.width, self.height)

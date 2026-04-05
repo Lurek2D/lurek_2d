@@ -833,21 +833,26 @@ impl LunaApp {
         let screenshot_supported = self.surface_usage.contains(wgpu::TextureUsages::COPY_SRC);
         let capture_screenshot = screenshot_request.is_some() && screenshot_supported;
 
-        let screenshot_pixels = match renderer.render_frame(
-            surface,
-            final_commands,
-            &textures,
-            &mut fonts,
-            &sprite_batches,
-            &canvases,
-            &meshes,
-            &shaders,
-            &default_filter,
-            bg,
-            &cam_matrix,
-            frame_time,
-            capture_screenshot,
-        ) {
+        let screenshot_pixels = {
+            let s_ref = state.borrow();
+            renderer.render_frame(
+                surface,
+                final_commands,
+                &textures,
+                &mut fonts,
+                &s_ref.light_world,
+                &sprite_batches,
+                &canvases,
+                &meshes,
+                &shaders,
+                &default_filter,
+                bg,
+                &cam_matrix,
+                frame_time,
+                capture_screenshot,
+            )
+        };
+        let screenshot_pixels = match screenshot_pixels {
             Ok(screenshot) => screenshot,
             Err(e) => {
                 if e == wgpu::SurfaceError::Lost || e == wgpu::SurfaceError::Outdated {
@@ -942,11 +947,13 @@ impl LunaApp {
         let no_meshes: SlotMap<MeshKey, crate::graphics::Mesh> = SlotMap::with_key();
         let no_shaders: SlotMap<ShaderKey, crate::graphics::Shader> = SlotMap::with_key();
         let default_filter = ("linear".to_string(), "linear".to_string(), 1);
+        let no_lights = crate::light::light_world::LightWorld::new();
         if let Err(e) = renderer.render_frame(
             surface,
             &cmds,
             &no_textures,
             splash_fonts,
+            &no_lights,
             &no_batches,
             &no_canvases,
             &no_meshes,
@@ -995,11 +1002,13 @@ impl LunaApp {
         let no_meshes: SlotMap<MeshKey, crate::graphics::Mesh> = SlotMap::with_key();
         let no_shaders: SlotMap<ShaderKey, crate::graphics::Shader> = SlotMap::with_key();
         let default_filter = ("linear".to_string(), "linear".to_string(), 1);
+        let no_lights = crate::light::light_world::LightWorld::new();
         if let Err(e) = renderer.render_frame(
             surface,
             &cmds,
             &no_textures,
             error_fonts,
+            &no_lights,
             &no_batches,
             &no_canvases,
             &no_meshes,

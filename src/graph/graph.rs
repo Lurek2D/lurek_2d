@@ -172,12 +172,7 @@ impl Graph {
     ///
     /// # Returns
     /// `Result<u64, String>`. The new edge ID, or an error if either node does not exist.
-    pub fn add_edge(
-        &mut self,
-        from: u64,
-        to: u64,
-        edge_type: Option<&str>,
-    ) -> Result<u64, String> {
+    pub fn add_edge(&mut self, from: u64, to: u64, edge_type: Option<&str>) -> Result<u64, String> {
         if !self.nodes.contains_key(&from) {
             return Err(format!("source node {from} does not exist"));
         }
@@ -266,7 +261,8 @@ impl Graph {
     pub fn create_item(&mut self, item_type: &str, decay_time: f64) -> u64 {
         let id = self.next_item_id;
         self.next_item_id += 1;
-        self.items.insert(id, GraphItem::new(id, item_type, decay_time));
+        self.items
+            .insert(id, GraphItem::new(id, item_type, decay_time));
         id
     }
 

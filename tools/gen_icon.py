@@ -35,26 +35,43 @@ def lerp_color(a, b, t):
     return tuple(int(a[i] + (b[i] - a[i]) * t) for i in range(4))
 
 
-def build_mark_points(
+def build_gear_points(
     cx: float,
     cy: float,
     inner_r: float,
     outer_r: float,
     mouth_half: float,
-    num_teeth: int,
-    tooth_width: float = 0.45,
+    n_teeth: int,
+    arc_steps: int = 4,
 ) -> list[tuple[float, float]]:
-    tooth_period = math.tau / num_teeth
-    steps = num_teeth * 20
-    points = [(cx, cy)]
-
-    for i in range(steps + 1):
-        angle = mouth_half + (math.tau - 2 * mouth_half) * i / steps
-        phase = (angle % tooth_period) / tooth_period
-        radius = outer_r if phase < tooth_width else inner_r
-        points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
-
-    return points
+    """Pac-Man gear polygon with explicit radial rise/fall walls (cog, not sun)."""
+    sweep = math.tau - 2 * mouth_half
+    per_tooth = sweep / n_teeth
+    tooth_frac = 0.50
+    gap_frac = 1.0 - tooth_frac
+    pts: list[tuple[float, float]] = [(cx, cy)]
+    for i in range(n_teeth):
+        a_rise = mouth_half + i * per_tooth
+        a_fall = a_rise + tooth_frac * per_tooth
+        a_next = a_fall + gap_frac * per_tooth
+        # radial rise wall: inner → outer at same angle
+        pts.append((cx + inner_r * math.cos(a_rise), cy + inner_r * math.sin(a_rise)))
+        pts.append((cx + outer_r * math.cos(a_rise), cy + outer_r * math.sin(a_rise)))
+        # tooth top arc
+        for j in range(1, arc_steps):
+            a = a_rise + j / arc_steps * (a_fall - a_rise)
+            pts.append((cx + outer_r * math.cos(a), cy + outer_r * math.sin(a)))
+        # radial fall wall: outer → inner at same angle
+        pts.append((cx + outer_r * math.cos(a_fall), cy + outer_r * math.sin(a_fall)))
+        pts.append((cx + inner_r * math.cos(a_fall), cy + inner_r * math.sin(a_fall)))
+        # gap arc
+        for j in range(1, arc_steps):
+            a = a_fall + j / arc_steps * (a_next - a_fall)
+            pts.append((cx + inner_r * math.cos(a), cy + inner_r * math.sin(a)))
+    # close at end of last gap
+    a_end = math.tau - mouth_half
+    pts.append((cx + inner_r * math.cos(a_end), cy + inner_r * math.sin(a_end)))
+    return pts
 
 
 def draw_cube(draw: ImageDraw.ImageDraw, cx: float, cy: float, size: float) -> None:
@@ -78,28 +95,49 @@ def generate_icon_image(size: int) -> Image.Image:
     d = ImageDraw.Draw(img, "RGBA")
 
     s = float(size)
-    px = s * 0.39
-    py = s * 0.50
-    gear_inner = s * 0.30
-    gear_outer = s * 0.38
+    cx = s * 0.50
+    cy = s * 0.50
 
-    draw_cube(d, px + s * 0.45, py - s * 0.03, s * 0.08)
+    # Disc sized relative to the GEAR so gear teeth fill the circle properly.
+    # Gear centre shifted left so the open mouth + cube fit inside on the right.
+    px = s * 0.40
+    py = s * 0.50
+    gear_outer = s * 0.31         # teeth reach close to disc edge
+    gear_inner = gear_outer * (44 / 62)
+
+    disc_r = s * 0.44
+    halo_r = disc_r + s * 0.04
+    rim_r  = disc_r + s * 0.015
+
+    # 0. Dark ring background
+    d.ellipse([cx - halo_r, cy - halo_r, cx + halo_r, cy + halo_r], fill=(18, 8, 48, 255))
+    d.ellipse([cx - rim_r,  cy - rim_r,  cx + rim_r,  cy + rim_r],  fill=(28, 16, 68, 255))
+    d.ellipse([cx - disc_r, cy - disc_r, cx + disc_r, cy + disc_r], fill=(12, 6, 32, 255))
+
+    # 1. Gear body — 9-tooth cog, mouth opens right (±36°)
     d.polygon(
-        build_mark_points(px, py, gear_inner, gear_outer, math.radians(36), 12),
+        build_gear_points(px, py, gear_inner, gear_outer, math.radians(36), 9),
         fill=(142, 200, 232, 255),
     )
 
-    cutout_x = px + s * 0.11
-    cutout_y = py - s * 0.02
-    cutout_r = s * 0.24
+    # 2. Dark crescent cutout — same proportions as app.rs (offset right of gear centre)
+    cutout_x = px + gear_outer * (16 / 62)
+    cutout_y = py - gear_outer * (2 / 62)
+    cutout_r = gear_outer * (35 / 62)
     d.ellipse(
         [cutout_x - cutout_r, cutout_y - cutout_r, cutout_x + cutout_r, cutout_y + cutout_r],
-        fill=(30, 10, 64, 255),
+        fill=(12, 6, 32, 255),
     )
 
-    eye_x = px - s * 0.06
-    eye_y = py - s * 0.15
-    eye_r = max(1.0, s * 0.04)
+    # 3. Cube sitting in the open mouth, on the horizontal axis
+    cube_size = gear_outer * (12 / 62)
+    cube_cx   = px + gear_outer * (78 / 62)
+    draw_cube(d, cube_cx, py, cube_size)
+
+    # 4. Eye in the crescent (left-of-cutout blue area)
+    eye_x = px - gear_outer * (15 / 62)
+    eye_y = py - gear_outer * (24 / 62)
+    eye_r = max(1.0, gear_outer * (6 / 62))
     d.ellipse(
         [eye_x - eye_r, eye_y - eye_r, eye_x + eye_r, eye_y + eye_r],
         fill=(22, 12, 48, 255),

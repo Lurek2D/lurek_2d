@@ -55,6 +55,8 @@ def _collect_lua_names(lua_data: dict) -> set[str]:
             if lua_name:
                 names.add(f"{mod_name}.{lua_name}")
         for cls_name, cls_data in mod_data.get("classes", {}).items():
+            if cls_name == "mlua":
+                continue  # skip spurious mlua pseudo-class entries
             names.add(f"{mod_name}.{cls_name}")
             for method in cls_data.get("methods", []):
                 mname = method.get("lua_name") or method.get("name") or ""
@@ -127,6 +129,8 @@ def _lua_undocumented(lua_data: dict) -> list[dict]:
                 })
 
         for cls_name, cls_data in sorted(mod_data.get("classes", {}).items()):
+            if cls_name == "mlua":
+                continue  # skip spurious mlua pseudo-class entries
             cls_desc = (cls_data.get("description", "") or "").strip()
             if len(cls_desc) < _MIN_DESC_LENGTH:
                 results.append({

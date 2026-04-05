@@ -183,23 +183,19 @@ def _parse_tagged_return(docstring: str) -> str:
 
 
 def collect_class_descriptions(api_file: Path) -> Dict[str, str]:
-    """Return {display_class_name: first_doc_line} for all pub struct LuaXxx types.
+    """Return {display_class_name: first_doc_line} for all pub struct LuaXxx and impl LuaUserData for LuaXxx types.
 
     The display name strips the leading ``Lua`` prefix: ``LuaCard`` → ``Card``.
+    Checks ``pub struct LuaXxx`` first; then falls back to ``impl LuaUserData for LuaXxx``
+    so that UserData types defined elsewhere (e.g. src/ai/) get descriptions too.
     """
     try:
         lines = api_file.read_text(encoding="utf-8").splitlines()
     except OSError:
         return {}
 
-    result: Dict[str, str] = {}
-    for i, line in enumerate(lines):
-        m = re.match(r"\s*pub struct (Lua\w+)", line)
-        if not m:
-            continue
-        struct_name = m.group(1)
-        class_name = struct_name[3:] if struct_name.startswith("Lua") else struct_name
-        # Collect /// doc comment lines immediately above (skip #[...] attrs and blank lines)
+    def _collect_doc_above(lines, i):
+        """Collect first /// description line from directly above line i."""
         j = i - 1
         doc_parts: List[str] = []
         while j >= 0:
@@ -212,8 +208,33 @@ def collect_class_descriptions(api_file: Path) -> Dict[str, str]:
             else:
                 break
             j -= 1
-        if doc_parts:
-            result[class_name] = doc_parts[0].strip()
+        return doc_parts[0].strip() if doc_parts else ""
+
+    result: Dict[str, str] = {}
+
+    # Pass 1: pub struct LuaXxx (highest priority — struct-level docs)
+    for i, line in enumerate(lines):
+        m = re.match(r"\s*pub struct (Lua\w+)", line)
+        if not m:
+            continue
+        struct_name = m.group(1)
+        class_name = struct_name[3:] if struct_name.startswith("Lua") else struct_name
+        desc = _collect_doc_above(lines, i)
+        if desc:
+            result[class_name] = desc
+
+    # Pass 2: impl LuaUserData for LuaXxx (fallback for types defined in other src/ files)
+    for i, line in enumerate(lines):
+        m = re.search(r"impl\s+LuaUserData\s+for\s+(Lua\w+)", line)
+        if not m:
+            continue
+        struct_name = m.group(1)
+        class_name = struct_name[3:] if struct_name.startswith("Lua") else struct_name
+        if class_name in result:
+            continue  # already found via pub struct
+        desc = _collect_doc_above(lines, i)
+        if desc:
+            result[class_name] = desc
 
     return result
 
