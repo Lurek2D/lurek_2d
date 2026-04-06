@@ -102,6 +102,10 @@ pub mod thread_api;
 pub mod tilemap_api;
 /// Frame timing and FPS API.
 pub mod timer_api;
+/// Post-processing and screen-effects (fx) API.
+pub mod fx_api;
+/// Window management and viewport API.
+pub mod window_api;
 
 // ── VM factory ───────────────────────────────────────────────────────────────
 
@@ -172,10 +176,14 @@ pub fn create_lua_vm(
         gui_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Overlay / light ───────────────────────────────────────────────────────
+    // ── Window ────────────────────────────────────────────────────────────────
+    window_api::register(&lua, &luna, state.clone())?;
+
+    // ── Overlay / light / fx ─────────────────────────────────────────────────
     if modules.overlay {
         light_api::register(&lua, &luna, state.clone())?;
         pipeline_api::register(&lua, &luna, state.clone())?;
+        fx_api::register(&lua, &luna, state.clone())?;
     }
 
     // ── Tilemap ───────────────────────────────────────────────────────────────

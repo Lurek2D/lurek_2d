@@ -165,6 +165,29 @@ def parse_rustdoc(docstring: str) -> ParsedSection:
             result.raw_returns = m.group(1).strip("`")
             break
 
+    # ALSO accept inline @param / @return tags (single-source-of-truth format)
+    # These appear in source module docs where # Parameters sections aren't used.
+    for line in lines:
+        line = line.strip()
+        # @param name : type  OR  @param name: type
+        m = re.match(r"@param\s+(\w+)\s*:?\s*(\S+)", line)
+        if m and not result.raw_returns:  # only if # Parameters block didn't populate
+            result.raw_params.append((m.group(1), m.group(2)))
+        # @return type
+        m = re.match(r"@return\s+(\S+)", line)
+        if m and not result.raw_returns:
+            result.raw_returns = m.group(1)
+
+    # Deduplicate params added by both paths (# Parameters section overrides @param)
+    # If # Parameters already populated raw_params, clear any @param duplicates.
+    seen: dict = {}
+    deduped = []
+    for name, typ in result.raw_params:
+        if name not in seen:
+            seen[name] = True
+            deduped.append((name, typ))
+    result.raw_params = deduped
+
     return result
 
 
@@ -293,6 +316,10 @@ def generate_fn_block(fn: FoundFn, module_name: str) -> str:
     # Docstring header
     lines.append(f"/// {fn.doc.summary}")
     for extra in fn.doc.extra_lines:
+        # Skip @param / @return lines — they will be re-emitted below to avoid duplicates
+        stripped = extra.strip()
+        if stripped.startswith("@param") or stripped.startswith("@return"):
+            continue
         if extra.strip():
             lines.append(f"/// {extra}")
         else:
@@ -307,15 +334,11 @@ def generate_fn_block(fn: FoundFn, module_name: str) -> str:
         lua_ret = rust_to_lua_type(fn.doc.raw_returns)
         lines.append(_make_tag_return(lua_ret))
 
-    # Function signature
+    # Function signature — use &self receiver (collect_docs.py skips self, closure dispatch used in add_method)
     if fn.is_method:
-        # Method: &self receiver
         if fn.doc.raw_params:
-            param_block = ", ".join(
-                f"{n}: {rust_to_lua_type(t)}" for n, t in fn.doc.raw_params
-            )
             lines.append(
-                f"pub fn {fn.rust_name}(&self, _lua: &Lua, _args: LuaMultiValue) -> LuaResult<()> {{"  
+                f"pub fn {fn.rust_name}(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {{"
             )
         else:
             lines.append(
@@ -325,11 +348,11 @@ def generate_fn_block(fn: FoundFn, module_name: str) -> str:
         # Module function
         if fn.doc.raw_params:
             lines.append(
-                f"pub fn {fn.rust_name}(_lua: &Lua, _args: LuaMultiValue) -> LuaResult<LuaValue> {{"
+                f"pub fn {fn.rust_name}(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {{"
             )
         else:
             lines.append(
-                f"pub fn {fn.rust_name}(_lua: &Lua, _: ()) -> LuaResult<LuaValue> {{"
+                f"pub fn {fn.rust_name}(_lua: &Lua, _: ()) -> LuaResult<()> {{"
             )
     lines.append("    todo!()")
     lines.append("}")
@@ -344,9 +367,14 @@ def generate_userdata_impl(type_name: str, methods: List[FoundFn]) -> str:
     struct_name = f"Lua{type_name}"
 
     lines.append(f"impl UserData for {struct_name} {{")
-    lines.append("    fn add_methods<M: UserDataMethods<Self>>(methods: &mut M) {")
+    lines.append("    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {")
     for m in methods:
-        lines.append(f'        methods.add_method("{m.lua_name}", Self::{m.rust_name});')
+        # Dispatch via closure: mlua add_method expects Fn(&Lua, &Self, A) but struct
+        # method has (&self, &Lua, A), so we use a closure to reorder arguments.
+        if m.doc.raw_params:
+            lines.append(f"        methods.add_method(\"{m.lua_name}\", |lua, this, args: LuaMultiValue<'_>| this.{m.rust_name}(lua, args));")
+        else:
+            lines.append(f'        methods.add_method("{m.lua_name}", |lua, this, _: ()| this.{m.rust_name}(lua, ()));')
     lines.append("    }")
     lines.append("}")
     lines.append("")
@@ -395,6 +423,7 @@ def generate_api_file(module_name: str, fns: List[FoundFn]) -> str:
         "use std::rc::Rc;",
         "",
         "use mlua::prelude::*;",
+        "use mlua::{UserData, UserDataMethods};",
         "",
         "use crate::engine::SharedState;",
         "",
@@ -402,20 +431,30 @@ def generate_api_file(module_name: str, fns: List[FoundFn]) -> str:
 
     sections: List[str] = ["\n".join(header_lines)]
 
-    # Group methods by owner type
+    # Group methods by owner type — deduplicate by rust_name within each group
     methods_by_type: Dict[str, List[FoundFn]] = {}
+    module_fns_seen: set = set()
     module_fns: List[FoundFn] = []
 
     for fn_item in fns:
         if fn_item.is_method and fn_item.owner_type:
-            methods_by_type.setdefault(fn_item.owner_type, []).append(fn_item)
+            methods_by_type.setdefault(fn_item.owner_type, [])
+            # Skip if a method with the same rust_name already added to this type
+            existing = {m.rust_name for m in methods_by_type[fn_item.owner_type]}
+            if fn_item.rust_name not in existing:
+                methods_by_type[fn_item.owner_type].append(fn_item)
         else:
-            module_fns.append(fn_item)
+            if fn_item.rust_name not in module_fns_seen:
+                module_fns_seen.add(fn_item.rust_name)
+                module_fns.append(fn_item)
 
     # Emit UserData structs and their method impls
     for type_name, methods in sorted(methods_by_type.items()):
         struct_name = f"Lua{type_name}"
         sections.append(f"// ── {struct_name} ────────────────────────────────────────────────────────────\n")
+        sections.append(f"/// `{struct_name}` Lua userdata wrapper for `luna.{module_name}.{type_name}`.")
+        sections.append("///")
+        sections.append(f"/// Holds the Rust-side {type_name} state exposed to Lua scripts.")
         sections.append(f"pub struct {struct_name}(/* TODO: add key + state fields */);\n")
         sections.append("")
 

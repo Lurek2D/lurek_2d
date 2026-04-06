@@ -767,6 +767,10 @@ def _has_explicit_params(sig: str) -> bool:
         if re.match(r"^_?\w+\s*:\s*&\s*(mut\s+)?(?:mlua::)?Table\b", p):
             continue
         # Skip shared-state plumbing: _state: Rc<...>, Arc<...>
+        # Skip Lua registration plumbing: luna: &Table/&mlua::Table
+        if re.match(r"^_?\w+\s*:\s*&\s*(mut\s+)?(?:mlua::)?Table\b", p):
+            continue
+        # Skip shared-state plumbing: _state: Rc<...>, Arc<...>
         if re.match(r"^_?\w+\s*:\s*(?:Rc<|Arc<)", p):
             continue
         return True
