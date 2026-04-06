@@ -8,10 +8,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use mlua::{Function, Lua, RegistryKey, Result as LuaResult, Table, Value as LuaValue};
-use std::collections::{HashMap, HashSet};
 use crate::engine::log_messages::{EN01_UNIVERSE_INIT, EN02_ENTITY_SPAWN};
 use crate::log_msg;
+use mlua::{Function, Lua, RegistryKey, Result as LuaResult, Table, Value as LuaValue};
+use std::collections::{HashMap, HashSet};
 
 /// Maximum number of bitmap tag definitions per Universe.
 const MAX_BITMAP_TAGS: usize = 63;
@@ -263,7 +263,10 @@ impl Universe {
         if let Some(new_parent) = parent {
             let parent_slot = Self::unpack_slot(new_parent);
             self.parents.insert(entity_slot, parent_slot);
-            self.children.entry(parent_slot).or_default().push(entity_slot);
+            self.children
+                .entry(parent_slot)
+                .or_default()
+                .push(entity_slot);
         }
     }
 
@@ -276,9 +279,10 @@ impl Universe {
     /// `Option<u32>`.
     pub fn get_parent(&self, entity: u32) -> Option<u32> {
         let entity_slot = Self::unpack_slot(entity);
-        self.parents.get(&entity_slot).copied().map(|parent_slot| {
-            Self::pack_id(parent_slot, self.current_gen(parent_slot))
-        })
+        self.parents
+            .get(&entity_slot)
+            .copied()
+            .map(|parent_slot| Self::pack_id(parent_slot, self.current_gen(parent_slot)))
     }
 
     /// Returns the direct children of `entity`. Returns an empty `Vec` if none.
@@ -550,7 +554,8 @@ impl Universe {
                 if let Ok(entity_table) = store.get::<_, Table>(slot) {
                     let val: LuaValue = entity_table.get(name)?;
                     if !val.is_nil() {
-                        callback.call::<_, ()>((Self::pack_id(slot, self.current_gen(slot)), val))?;
+                        callback
+                            .call::<_, ()>((Self::pack_id(slot, self.current_gen(slot)), val))?;
                     }
                 }
             }
@@ -846,7 +851,10 @@ impl Universe {
     /// # Returns
     /// `i32`.
     pub fn get_layer(&self, id: u32) -> i32 {
-        self.layers.get(&Self::unpack_slot(id)).copied().unwrap_or(0)
+        self.layers
+            .get(&Self::unpack_slot(id))
+            .copied()
+            .unwrap_or(0)
     }
 
     /// Returns all alive entities on a specific layer.
@@ -880,7 +888,8 @@ impl Universe {
         entities.sort_by(|a, b| {
             let la = self.get_layer(*a);
             let lb = self.get_layer(*b);
-            la.cmp(&lb).then(Self::unpack_slot(*a).cmp(&Self::unpack_slot(*b)))
+            la.cmp(&lb)
+                .then(Self::unpack_slot(*a).cmp(&Self::unpack_slot(*b)))
         });
         entities
     }

@@ -450,11 +450,7 @@ impl Simulator {
                 let button = step.button.unwrap_or(1) as f64;
                 event_queue.push(Event {
                     name: "mousereleased".to_string(),
-                    args: vec![
-                        EventArg::Num(x),
-                        EventArg::Num(y),
-                        EventArg::Num(button),
-                    ],
+                    args: vec![EventArg::Num(x), EventArg::Num(y), EventArg::Num(button)],
                 });
             }
             Action::MouseWheel => {

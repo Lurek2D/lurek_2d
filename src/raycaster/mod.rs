@@ -4,10 +4,12 @@
 //! wall column projection, sprite projection, lighting, doors, heightmaps,
 //! depth buffering, and minimap extraction.
 
-/// Column-based depth buffer for sprite occlusion.
-pub mod depth_buffer;
+/// Wolfenstein-style raycasting column batch renderer.
+pub mod column_batch;
 /// Grid-based raycaster using DDA (Digital Differential Analyzer) traversal.
 pub mod dda;
+/// Column-based depth buffer for sprite occlusion.
+pub mod depth_buffer;
 /// Sliding door support for grid-based raycaster levels.
 pub mod doors;
 /// Floor and ceiling height variations for stepped or multi-level environments.
@@ -26,8 +28,6 @@ pub mod segment;
 pub mod sprite_projection;
 /// Visibility polygon via endpoint raycasting.
 pub mod visibility;
-/// Wolfenstein-style raycasting column batch renderer.
-pub mod column_batch;
 
 // Re-exports
 pub use column_batch::{ColumnBatch, ColumnData};

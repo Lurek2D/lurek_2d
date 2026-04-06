@@ -40,6 +40,7 @@ This directory contains **permanent** CLI scripts for the Luna2D engine pipeline
 | `integration_coverage.py` | Integration test coverage check | stdout |
 | `module_audit.py` | Module structure and coverage audit | stdout |
 | `audit_module.py` | End-to-end module quality audit (PASS/WARN/ERROR) | stdout / JSON |
+| `validate_agent_md.py` | Validate `src/<module>/AGENT.md` structure, sync, and content quality (M-01–M-12) | stdout / JSON |
 | `quality_report.py` | Quality metrics report | stdout |
 
 ### Code Helpers

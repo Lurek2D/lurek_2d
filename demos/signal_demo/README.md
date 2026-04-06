@@ -14,7 +14,7 @@ Demonstrates the pub-sub `luna.event.newSignal()` system for decoupled event-dri
 ## How to Run
 
 ```powershell
-cargo run -- examples/signal_demo
+cargo run -- demos/signal_demo
 ```
 
 ## Controls

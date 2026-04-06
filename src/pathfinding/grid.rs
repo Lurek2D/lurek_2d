@@ -11,10 +11,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use std::cmp::Ordering;
-use std::collections::{BinaryHeap, VecDeque};
 use crate::engine::log_messages::{PF01_GRID_INIT, PF03_NO_PATH};
 use crate::log_msg;
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, VecDeque};
 
 /// A node in the A*/Dijkstra priority queue.
 #[derive(Debug, Clone)]

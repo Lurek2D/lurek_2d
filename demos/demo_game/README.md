@@ -15,7 +15,7 @@ A complete mini-game: physics-based shooting gallery where you aim with the mous
 ## How to Run
 
 ```powershell
-cargo run -- examples/demo_game
+cargo run -- demos/demo_game
 ```
 
 ## Controls

@@ -17,10 +17,10 @@
 
 use std::io::Read;
 
-use base64::Engine as _;
-use flate2::read::{GzDecoder, ZlibDecoder};
 use crate::engine::log_messages::{TL01, TL02};
 use crate::log_msg;
+use base64::Engine as _;
+use flate2::read::{GzDecoder, ZlibDecoder};
 
 /// Rendering orientation of the map, as specified in the TMX `orientation` attribute.
 ///

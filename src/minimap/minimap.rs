@@ -1,8 +1,8 @@
 //! Core `Minimap` data model: terrain grid, fog of war, objects, pings, markers, and navigation.
 
-use std::collections::HashMap;
-use crate::engine::log_messages::{MM01_MINIMAP_INIT};
+use crate::engine::log_messages::MM01_MINIMAP_INIT;
 use crate::log_msg;
+use std::collections::HashMap;
 
 use super::types::{
     ColorMode, FogLevel, MinimapMarker, MinimapObject, MinimapObjectType, MinimapPing,
@@ -94,7 +94,13 @@ impl Minimap {
     /// # Returns
     /// `Self`.
     pub fn new(grid_width: u32, grid_height: u32, display_width: u32, display_height: u32) -> Self {
-        log_msg!(debug, MM01_MINIMAP_INIT, "{}x{} grid", grid_width, grid_height);
+        log_msg!(
+            debug,
+            MM01_MINIMAP_INIT,
+            "{}x{} grid",
+            grid_width,
+            grid_height
+        );
         let cell_count = (grid_width * grid_height) as usize;
         Self {
             grid_width,
@@ -778,13 +784,7 @@ impl Minimap {
     ///
     /// # Returns
     /// `Option<&str>`.
-    pub fn get_hover_info(
-        &self,
-        sx: f32,
-        sy: f32,
-        minimap_x: f32,
-        minimap_y: f32,
-    ) -> Option<&str> {
+    pub fn get_hover_info(&self, sx: f32, sy: f32, minimap_x: f32, minimap_y: f32) -> Option<&str> {
         // Bounds check against display rect
         let local_x = sx - minimap_x;
         let local_y = sy - minimap_y;
@@ -799,11 +799,7 @@ impl Minimap {
         let (gx, gy) = self.screen_to_grid(sx, sy, minimap_x, minimap_y);
         let gxi = gx.floor() as i64;
         let gyi = gy.floor() as i64;
-        if gxi < 0
-            || gyi < 0
-            || gxi >= self.grid_width as i64
-            || gyi >= self.grid_height as i64
-        {
+        if gxi < 0 || gyi < 0 || gxi >= self.grid_width as i64 || gyi >= self.grid_height as i64 {
             return None;
         }
 

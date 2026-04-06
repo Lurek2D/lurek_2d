@@ -15,7 +15,7 @@ A side-scrolling platformer with physics-based movement, jump mechanics, platfor
 ## How to Run
 
 ```powershell
-cargo run -- examples/platformer
+cargo run -- demos/platformer
 ```
 
 ## Controls

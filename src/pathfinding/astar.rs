@@ -10,9 +10,9 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-use crate::pathfinding::nav_grid::{DiagonalMode, NavGrid};
 use crate::engine::log_messages::{AT01, AT02, AT03};
 use crate::log_msg;
+use crate::pathfinding::nav_grid::{DiagonalMode, NavGrid};
 
 /// Diagonal movement cost (√2 ≈ 1.414).
 const SQRT2: f32 = std::f32::consts::SQRT_2;
@@ -91,7 +91,15 @@ pub fn astar(
     let us = unit_size.max(1);
 
     if !grid.is_walkable(start.0, start.1, us) || !grid.is_walkable(goal.0, goal.1, us) {
-        log_msg!(warn, AT01, "({},{}) -> ({},{})", start.0, start.1, goal.0, goal.1);
+        log_msg!(
+            warn,
+            AT01,
+            "({},{}) -> ({},{})",
+            start.0,
+            start.1,
+            goal.0,
+            goal.1
+        );
         return (Option::None, false);
     }
 

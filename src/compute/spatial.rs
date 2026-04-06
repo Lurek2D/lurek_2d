@@ -53,9 +53,13 @@ pub fn convolve2d(input: &NdArray, kernel: &NdArray) -> Result<NdArray, String> 
                     let ir = r as isize + kr as isize - kr_half as isize;
                     let ic = c as isize + kc as isize - kc_half as isize;
                     if ir >= 0 && ir < in_rows as isize && ic >= 0 && ic < in_cols as isize {
-                        let in_val =
-                            input.get_f64(input.flat_index(&[ir as usize, ic as usize]).expect("index in bounds"));
-                        let k_val = kernel.get_f64(kernel.flat_index(&[kr, kc]).expect("index in bounds"));
+                        let in_val = input.get_f64(
+                            input
+                                .flat_index(&[ir as usize, ic as usize])
+                                .expect("index in bounds"),
+                        );
+                        let k_val =
+                            kernel.get_f64(kernel.flat_index(&[kr, kc]).expect("index in bounds"));
                         acc += in_val * k_val;
                     }
                 }
@@ -148,7 +152,11 @@ pub fn erode(a: &NdArray, radius: usize) -> Result<NdArray, String> {
                         all_nonzero = false;
                         break 'outer;
                     }
-                    if a.get_f64(a.flat_index(&[nr as usize, nc as usize]).expect("index in bounds")) == 0.0 {
+                    if a.get_f64(
+                        a.flat_index(&[nr as usize, nc as usize])
+                            .expect("index in bounds"),
+                    ) == 0.0
+                    {
                         all_nonzero = false;
                         break 'outer;
                     }
@@ -437,13 +445,25 @@ mod tests {
         );
         let out = dilate(&input, 1).unwrap();
         // Center and 4-neighbors should be 1.0
-        assert!((out.get_f64(out.flat_index(&[2, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5);
-        assert!((out.get_f64(out.flat_index(&[1, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5);
-        assert!((out.get_f64(out.flat_index(&[3, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5);
-        assert!((out.get_f64(out.flat_index(&[2, 1]).expect("index in bounds")) - 1.0).abs() < 1e-5);
-        assert!((out.get_f64(out.flat_index(&[2, 3]).expect("index in bounds")) - 1.0).abs() < 1e-5);
+        assert!(
+            (out.get_f64(out.flat_index(&[2, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
+        assert!(
+            (out.get_f64(out.flat_index(&[1, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
+        assert!(
+            (out.get_f64(out.flat_index(&[3, 2]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
+        assert!(
+            (out.get_f64(out.flat_index(&[2, 1]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
+        assert!(
+            (out.get_f64(out.flat_index(&[2, 3]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
         // Corners should remain 0
-        assert!((out.get_f64(out.flat_index(&[0, 0]).expect("index in bounds")) - 0.0).abs() < 1e-5);
+        assert!(
+            (out.get_f64(out.flat_index(&[0, 0]).expect("index in bounds")) - 0.0).abs() < 1e-5
+        );
     }
 
     #[test]
@@ -451,9 +471,13 @@ mod tests {
         // 3x3 all ones → erode with radius 1 → only center survives
         let input = arr_2d(&[1.0; 9], 3, 3);
         let out = erode(&input, 1).unwrap();
-        assert!((out.get_f64(out.flat_index(&[1, 1]).expect("index in bounds")) - 1.0).abs() < 1e-5);
+        assert!(
+            (out.get_f64(out.flat_index(&[1, 1]).expect("index in bounds")) - 1.0).abs() < 1e-5
+        );
         // Edges should be 0 because the diamond extends beyond the array
-        assert!((out.get_f64(out.flat_index(&[0, 0]).expect("index in bounds")) - 0.0).abs() < 1e-5);
+        assert!(
+            (out.get_f64(out.flat_index(&[0, 0]).expect("index in bounds")) - 0.0).abs() < 1e-5
+        );
     }
 
     #[test]
@@ -487,8 +511,14 @@ mod tests {
         let mut target = NdArray::zeros(&[3, 4], DataType::Float32).unwrap();
         let patch = arr_2d(&[99.0, 88.0, 77.0, 66.0], 2, 2);
         set_region(&mut target, 1, 2, &patch).unwrap();
-        assert!((target.get_f64(target.flat_index(&[1, 2]).expect("index in bounds")) - 99.0).abs() < 1e-5);
-        assert!((target.get_f64(target.flat_index(&[2, 3]).expect("index in bounds")) - 66.0).abs() < 1e-5);
+        assert!(
+            (target.get_f64(target.flat_index(&[1, 2]).expect("index in bounds")) - 99.0).abs()
+                < 1e-5
+        );
+        assert!(
+            (target.get_f64(target.flat_index(&[2, 3]).expect("index in bounds")) - 66.0).abs()
+                < 1e-5
+        );
     }
 
     #[test]

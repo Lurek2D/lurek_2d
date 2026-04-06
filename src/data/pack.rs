@@ -408,7 +408,10 @@ fn get_as_i64(values: &[PackValue], idx: usize, fmt: char) -> Result<i64, String
         Some(PackValue::UInt(n)) => Ok(*n as i64),
         Some(PackValue::Float(f)) => Ok(*f as i64),
         Some(PackValue::Double(d)) => Ok(*d as i64),
-        Some(_) => Err(format!("pack '{}': expected integer at value index {}", fmt, idx)),
+        Some(_) => Err(format!(
+            "pack '{}': expected integer at value index {}",
+            fmt, idx
+        )),
         None => Err(format!(
             "pack '{}': not enough values (expected index {})",
             fmt, idx
@@ -423,7 +426,10 @@ fn get_as_u64(values: &[PackValue], idx: usize, fmt: char) -> Result<u64, String
         Some(PackValue::Int(n)) => Ok(*n as u64),
         Some(PackValue::Float(f)) => Ok(*f as u64),
         Some(PackValue::Double(d)) => Ok(*d as u64),
-        Some(_) => Err(format!("pack '{}': expected unsigned integer at value index {}", fmt, idx)),
+        Some(_) => Err(format!(
+            "pack '{}': expected unsigned integer at value index {}",
+            fmt, idx
+        )),
         None => Err(format!(
             "pack '{}': not enough values (expected index {})",
             fmt, idx
@@ -438,7 +444,10 @@ fn get_as_f64(values: &[PackValue], idx: usize, fmt: char) -> Result<f64, String
         Some(PackValue::Float(f)) => Ok(*f as f64),
         Some(PackValue::Int(n)) => Ok(*n as f64),
         Some(PackValue::UInt(n)) => Ok(*n as f64),
-        Some(_) => Err(format!("pack '{}': expected numeric at value index {}", fmt, idx)),
+        Some(_) => Err(format!(
+            "pack '{}': expected numeric at value index {}",
+            fmt, idx
+        )),
         None => Err(format!(
             "pack '{}': not enough values (expected index {})",
             fmt, idx
@@ -450,12 +459,16 @@ fn get_as_f64(values: &[PackValue], idx: usize, fmt: char) -> Result<f64, String
 fn get_as_string(values: &[PackValue], idx: usize, fmt: char) -> Result<String, String> {
     match values.get(idx) {
         Some(PackValue::Str(s)) => Ok(s.clone()),
-        Some(PackValue::Bytes(b)) => {
-            String::from_utf8(b.clone()).map_err(|e| {
-                format!("pack '{}': bytes at index {} are not valid UTF-8: {}", fmt, idx, e)
-            })
-        }
-        Some(_) => Err(format!("pack '{}': expected string at value index {}", fmt, idx)),
+        Some(PackValue::Bytes(b)) => String::from_utf8(b.clone()).map_err(|e| {
+            format!(
+                "pack '{}': bytes at index {} are not valid UTF-8: {}",
+                fmt, idx, e
+            )
+        }),
+        Some(_) => Err(format!(
+            "pack '{}': expected string at value index {}",
+            fmt, idx
+        )),
         None => Err(format!(
             "pack '{}': not enough values (expected index {})",
             fmt, idx

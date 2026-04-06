@@ -1,921 +1,1402 @@
-//! `luna.physics` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/physics/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.physics` — Rigid-body physics simulation, collision detection, joints, and raycasting.
+
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use super::SharedState;
+use crate::math::Vec2;
+use crate::physics::{Body, BodyType, Shape, World};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Helper: parse BodyType from string
+// -------------------------------------------------------------------------------
 
-// ── LuaBody ────────────────────────────────────────────────────────────
-
-pub struct LuaBody(/* TODO: add key + state fields */);
-
-
-impl LuaBody {
-    /// Returns `true` if this body participates in collision layer filtering with `other`.
-    ///
-    /// Both bodies must accept each other's layer for collision to occur.
-    ///
-    /// @param other : The
-    /// @return true
-    pub fn collides_with_layer(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Transforms a point from body-local coordinates to world coordinates.
-    ///
-    /// Applies the body's rotation and then translates by the body's position.
-    ///
-    ///
-    /// @param local_x : number
-    /// @param local_y : number
-    pub fn get_world_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Transforms a point from world coordinates to body-local coordinates.
-    ///
-    /// Translates relative to the body's position, then applies the inverse rotation.
-    ///
-    ///
-    /// @param world_x : number
-    /// @param world_y : number
-    pub fn get_local_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+fn parse_body_type(s: &str) -> LuaResult<BodyType> {
+    match s {
+        "static" => Ok(BodyType::Static),
+        "dynamic" => Ok(BodyType::Dynamic),
+        "kinematic" => Ok(BodyType::Kinematic),
+        "sensor" => Ok(BodyType::Sensor),
+        _ => Err(LuaError::external(format!(
+            "invalid body type '{}': expected static, dynamic, kinematic, or sensor",
+            s
+        ))),
     }
 }
 
-impl UserData for LuaBody {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("collidesWithLayer", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getWorldPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLocalPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+// -------------------------------------------------------------------------------
+// Helper: parse Shape from string + args
+// -------------------------------------------------------------------------------
+
+fn parse_shape(lua: &Lua, shape_type: &str, args: LuaMultiValue) -> LuaResult<Shape> {
+    match shape_type {
+        "rectangle" => {
+            let mut iter = args.into_iter();
+            let w: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let h: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            Ok(Shape::Rect {
+                width: w,
+                height: h,
+            })
+        }
+        "circle" => {
+            let mut iter = args.into_iter();
+            let r: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            Ok(Shape::Circle { radius: r })
+        }
+        "polygon" => {
+            let mut iter = args.into_iter();
+            let tbl: LuaTable = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let mut verts = Vec::new();
+            let len = tbl.raw_len();
+            let mut i = 1;
+            while i + 1 <= len {
+                let x: f32 = tbl.raw_get(i)?;
+                let y: f32 = tbl.raw_get(i + 1)?;
+                verts.push(Vec2::new(x, y));
+                i += 2;
+            }
+            Ok(Shape::Polygon { vertices: verts })
+        }
+        "edge" => {
+            let mut iter = args.into_iter();
+            let x1: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let y1: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let x2: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let y2: f32 = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            Ok(Shape::Edge {
+                v1: Vec2::new(x1, y1),
+                v2: Vec2::new(x2, y2),
+            })
+        }
+        "chain" => {
+            let mut iter = args.into_iter();
+            let tbl: LuaTable = lua.unpack(iter.next().unwrap_or(LuaValue::Nil))?;
+            let closed: bool = lua
+                .unpack(iter.next().unwrap_or(LuaValue::Boolean(false)))
+                .unwrap_or(false);
+            let mut verts = Vec::new();
+            let len = tbl.raw_len();
+            let mut i = 1;
+            while i + 1 <= len {
+                let x: f32 = tbl.raw_get(i)?;
+                let y: f32 = tbl.raw_get(i + 1)?;
+                verts.push(Vec2::new(x, y));
+                i += 2;
+            }
+            Ok(Shape::Chain {
+                vertices: verts,
+                closed,
+            })
+        }
+        _ => Err(LuaError::external(format!(
+            "invalid shape type '{}': expected rectangle, circle, polygon, edge, or chain",
+            shape_type
+        ))),
     }
 }
 
-// ── LuaStandaloneShape ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// LuaWorld UserData
+// -------------------------------------------------------------------------------
 
-pub struct LuaStandaloneShape(/* TODO: add key + state fields */);
+/// Lua-side handle wrapping a physics World.
+#[derive(Clone)]
+pub struct LuaWorld {
+    world: Rc<RefCell<World>>,
+}
 
+impl LuaUserData for LuaWorld {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- step --
+        /// Advances the physics simulation by dt seconds.
+        /// @param dt : number
+        /// @return nil
+        methods.add_method("step", |_, this, dt: f32| {
+            this.world.borrow_mut().step(dt);
+            Ok(())
+        });
 
-impl LuaStandaloneShape {
-    /// Returns the shape type name.
-    ///
-    ///
-    /// @return One
-    pub fn get_type(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- clear --
+        /// Resets the world, removing all bodies and joints.
+        /// @return nil
+        methods.add_method("clear", |_, this, ()| {
+            this.world.borrow_mut().clear();
+            Ok(())
+        });
+
+        // -- getGravity --
+        /// Returns the gravity vector (gx, gy).
+        /// @return number, number
+        methods.add_method("getGravity", |_, this, ()| {
+            Ok(this.world.borrow().get_gravity())
+        });
+
+        // -- setGravity --
+        /// Sets the gravity vector.
+        /// @param gx : number
+        /// @param gy : number
+        /// @return nil
+        methods.add_method("setGravity", |_, this, (gx, gy): (f32, f32)| {
+            this.world.borrow_mut().set_gravity(gx, gy);
+            Ok(())
+        });
+
+        // -- setMeter --
+        /// Sets the pixels-per-meter scaling factor.
+        /// @param ppm : number
+        /// @return nil
+        methods.add_method("setMeter", |_, this, ppm: f32| {
+            this.world.borrow_mut().set_meter(ppm);
+            Ok(())
+        });
+
+        // -- getMeter --
+        /// Returns the pixels-per-meter scaling factor.
+        /// @return number
+        methods.add_method("getMeter", |_, this, ()| {
+            Ok(this.world.borrow().get_meter())
+        });
+
+        // -- toPhysics --
+        /// Converts a pixel value to physics units.
+        /// @param px : number
+        /// @return number
+        methods.add_method("toPhysics", |_, this, px: f32| {
+            Ok(this.world.borrow().to_physics(px))
+        });
+
+        // -- toPixels --
+        /// Converts a physics-unit value to pixels.
+        /// @param m : number
+        /// @return number
+        methods.add_method("toPixels", |_, this, m: f32| {
+            Ok(this.world.borrow().to_pixels(m))
+        });
+
+        // -- getBodyCount --
+        /// Returns the total number of bodies in the world.
+        /// @return integer
+        methods.add_method("getBodyCount", |_, this, ()| {
+            Ok(this.world.borrow().body_count())
+        });
+
+        // -- getBodyIds --
+        /// Returns all body IDs in the world.
+        /// @return table
+        methods.add_method("getBodyIds", |_, this, ()| {
+            Ok(this.world.borrow().get_body_ids())
+        });
+
+        // -- destroyBody --
+        /// Removes a body from the world.
+        /// @param id : integer
+        /// @return nil
+        methods.add_method("destroyBody", |_, this, id: usize| {
+            this.world.borrow_mut().destroy_body(id);
+            Ok(())
+        });
+
+        // -- newBody --
+        /// Creates a new rectangular body and adds it to the world.
+        /// @param x : number
+        /// @param y : number
+        /// @param bodyType : string
+        /// @return Body
+        methods.add_method(
+            "newBody",
+            |_, this, (x, y, bt): (f32, f32, String)| {
+                let body_type = parse_body_type(&bt)?;
+                let body = Body::new(x, y, body_type);
+                let id = this.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&this.world),
+                    id,
+                })
+            },
+        );
+
+        // -- newCircleBody --
+        /// Creates a new circular body and adds it to the world.
+        /// @param x : number
+        /// @param y : number
+        /// @param radius : number
+        /// @param bodyType : string
+        /// @return Body
+        methods.add_method(
+            "newCircleBody",
+            |_, this, (x, y, radius, bt): (f32, f32, f32, String)| {
+                let body_type = parse_body_type(&bt)?;
+                let body = Body::new_circle(x, y, radius, body_type);
+                let id = this.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&this.world),
+                    id,
+                })
+            },
+        );
+
+        // -- newPolygonBody --
+        /// Creates a new polygon body from a flat vertex table and adds it to the world.
+        /// @param x : number
+        /// @param y : number
+        /// @param vertices : table
+        /// @param bodyType : string
+        /// @return Body
+        methods.add_method(
+            "newPolygonBody",
+            |_, this, (x, y, tbl, bt): (f32, f32, LuaTable, String)| {
+                let body_type = parse_body_type(&bt)?;
+                let mut verts = Vec::new();
+                let len = tbl.raw_len();
+                let mut i = 1;
+                while i + 1 <= len {
+                    let vx: f32 = tbl.raw_get(i)?;
+                    let vy: f32 = tbl.raw_get(i + 1)?;
+                    verts.push(Vec2::new(vx, vy));
+                    i += 2;
+                }
+                let body = Body::new_polygon(x, y, verts, body_type);
+                let id = this.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&this.world),
+                    id,
+                })
+            },
+        );
+
+        // -- newEdgeBody --
+        /// Creates a new edge (line segment) body and adds it to the world.
+        /// @param x : number
+        /// @param y : number
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        /// @param bodyType : string
+        /// @return Body
+        #[allow(clippy::too_many_arguments)]
+        methods.add_method(
+            "newEdgeBody",
+            |_, this, (x, y, x1, y1, x2, y2, bt): (f32, f32, f32, f32, f32, f32, String)| {
+                let body_type = parse_body_type(&bt)?;
+                let body =
+                    Body::new_edge(x, y, Vec2::new(x1, y1), Vec2::new(x2, y2), body_type);
+                let id = this.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&this.world),
+                    id,
+                })
+            },
+        );
+
+        // -- newChainBody --
+        /// Creates a new chain body from a flat vertex table and adds it to the world.
+        /// @param x : number
+        /// @param y : number
+        /// @param vertices : table
+        /// @param closed : boolean
+        /// @param bodyType : string
+        /// @return Body
+        methods.add_method(
+            "newChainBody",
+            |_, this, (x, y, tbl, closed, bt): (f32, f32, LuaTable, bool, String)| {
+                let body_type = parse_body_type(&bt)?;
+                let mut verts = Vec::new();
+                let len = tbl.raw_len();
+                let mut i = 1;
+                while i + 1 <= len {
+                    let vx: f32 = tbl.raw_get(i)?;
+                    let vy: f32 = tbl.raw_get(i + 1)?;
+                    verts.push(Vec2::new(vx, vy));
+                    i += 2;
+                }
+                let body = Body::new_chain(x, y, verts, closed, body_type);
+                let id = this.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&this.world),
+                    id,
+                })
+            },
+        );
+
+        // -- addFixture --
+        /// Adds an extra fixture (collider) to a body.
+        /// @param bodyId : integer
+        /// @param shapeType : string
+        /// @param ... : varies
+        /// @return integer
+        methods.add_method(
+            "addFixture",
+            |lua,
+             this,
+             (body_id, shape_type, density, friction, restitution, sensor, args): (
+                usize,
+                String,
+                f32,
+                f32,
+                f32,
+                bool,
+                LuaMultiValue,
+            )| {
+                let shape = parse_shape(lua, &shape_type, args)?;
+                let idx = this
+                    .world
+                    .borrow_mut()
+                    .add_fixture(body_id, shape, density, friction, restitution, sensor);
+                Ok(idx)
+            },
+        );
+
+        // -- fixtureCount --
+        /// Returns the number of fixtures on a body.
+        /// @param bodyId : integer
+        /// @return integer
+        methods.add_method("fixtureCount", |_, this, body_id: usize| {
+            Ok(this.world.borrow().fixture_count(body_id))
+        });
+
+        // -- setFixtureFriction --
+        /// Sets friction on a fixture by index.
+        /// @param bodyId : integer
+        /// @param fixtureIdx : integer
+        /// @param friction : number
+        methods.add_method(
+            "setFixtureFriction",
+            |_, this, (body_id, fix_idx, friction): (usize, usize, f32)| {
+                this.world
+                    .borrow_mut()
+                    .set_fixture_friction(body_id, fix_idx, friction);
+                Ok(())
+            },
+        );
+
+        // -- setFixtureRestitution --
+        /// Sets restitution on a fixture by index.
+        /// @param bodyId : integer
+        /// @param fixtureIdx : integer
+        /// @param restitution : number
+        methods.add_method(
+            "setFixtureRestitution",
+            |_, this, (body_id, fix_idx, restitution): (usize, usize, f32)| {
+                this.world
+                    .borrow_mut()
+                    .set_fixture_restitution(body_id, fix_idx, restitution);
+                Ok(())
+            },
+        );
+
+        // -- setFixtureSensor --
+        /// Sets whether a fixture is a sensor.
+        /// @param bodyId : integer
+        /// @param fixtureIdx : integer
+        /// @param sensor : boolean
+        methods.add_method(
+            "setFixtureSensor",
+            |_, this, (body_id, fix_idx, sensor): (usize, usize, bool)| {
+                this.world
+                    .borrow_mut()
+                    .set_fixture_sensor(body_id, fix_idx, sensor);
+                Ok(())
+            },
+        );
+
+        // ── Joint creation ────────────────────────────────────────────────
+
+        // -- addRevoluteJoint --
+        /// Creates a revolute (pin) joint between two bodies.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @return integer
+        methods.add_method(
+            "addRevoluteJoint",
+            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+                Ok(this.world.borrow_mut().add_revolute_joint(a, b, ax, ay))
+            },
+        );
+
+        // -- addDistanceJoint --
+        /// Creates a distance joint between two bodies.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param ax1 : number
+        /// @param ay1 : number
+        /// @param ax2 : number
+        /// @param ay2 : number
+        /// @param length : number
+        /// @return integer
+        #[allow(clippy::too_many_arguments)]
+        methods.add_method(
+            "addDistanceJoint",
+            |_, this, (a, b, ax1, ay1, ax2, ay2, len): (usize, usize, f32, f32, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_distance_joint(a, b, ax1, ay1, ax2, ay2, len))
+            },
+        );
+
+        // -- addPrismaticJoint --
+        /// Creates a prismatic (slider) joint between two bodies.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @param axisX : number
+        /// @param axisY : number
+        /// @return integer
+        methods.add_method(
+            "addPrismaticJoint",
+            |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_prismatic_joint(a, b, ax, ay, axis_x, axis_y))
+            },
+        );
+
+        // -- addWeldJoint --
+        /// Creates a weld (rigid) joint between two bodies.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @return integer
+        methods.add_method(
+            "addWeldJoint",
+            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+                Ok(this.world.borrow_mut().add_weld_joint(a, b, ax, ay))
+            },
+        );
+
+        // -- addRopeJoint --
+        /// Creates a rope joint with a maximum distance.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param ax1 : number
+        /// @param ay1 : number
+        /// @param ax2 : number
+        /// @param ay2 : number
+        /// @param maxLength : number
+        /// @return integer
+        #[allow(clippy::too_many_arguments)]
+        methods.add_method(
+            "addRopeJoint",
+            |_, this, (a, b, ax1, ay1, ax2, ay2, max): (usize, usize, f32, f32, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_rope_joint(a, b, ax1, ay1, ax2, ay2, max))
+            },
+        );
+
+        // -- addWheelJoint --
+        /// Creates a wheel joint (prismatic + rotation).
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @param axisX : number
+        /// @param axisY : number
+        /// @return integer
+        methods.add_method(
+            "addWheelJoint",
+            |_, this, (a, b, ax, ay, axis_x, axis_y): (usize, usize, f32, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_wheel_joint(a, b, ax, ay, axis_x, axis_y))
+            },
+        );
+
+        // -- addFrictionJoint --
+        /// Creates a friction joint that resists relative motion.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @param maxForce : number
+        /// @param maxTorque : number
+        /// @return integer
+        methods.add_method(
+            "addFrictionJoint",
+            |_, this, (a, b, ax, ay, max_f, max_t): (usize, usize, f32, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_friction_joint(a, b, ax, ay, max_f, max_t))
+            },
+        );
+
+        // -- addMotorJoint --
+        /// Creates a motor joint that drives body_b toward body_a.
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param correctionFactor : number
+        /// @return integer
+        methods.add_method(
+            "addMotorJoint",
+            |_, this, (a, b, factor): (usize, usize, f32)| {
+                Ok(this.world.borrow_mut().add_motor_joint(a, b, factor))
+            },
+        );
+
+        // -- addMouseJoint --
+        /// Creates a mouse joint connecting a body to a target point.
+        /// @param bodyId : integer
+        /// @param targetX : number
+        /// @param targetY : number
+        /// @param maxForce : number
+        /// @return integer
+        methods.add_method(
+            "addMouseJoint",
+            |_, this, (body_id, tx, ty, max_f): (usize, f32, f32, f32)| {
+                Ok(this
+                    .world
+                    .borrow_mut()
+                    .add_mouse_joint(body_id, tx, ty, max_f))
+            },
+        );
+
+        // -- addPulleyJoint --
+        /// Creates a pulley joint (stub — falls back to weld joint).
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @return integer
+        methods.add_method(
+            "addPulleyJoint",
+            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+                Ok(this.world.borrow_mut().add_pulley_joint(a, b, ax, ay))
+            },
+        );
+
+        // -- addGearJoint --
+        /// Creates a gear joint (stub — falls back to weld joint).
+        /// @param bodyA : integer
+        /// @param bodyB : integer
+        /// @param anchorX : number
+        /// @param anchorY : number
+        /// @return integer
+        methods.add_method(
+            "addGearJoint",
+            |_, this, (a, b, ax, ay): (usize, usize, f32, f32)| {
+                Ok(this.world.borrow_mut().add_gear_joint(a, b, ax, ay))
+            },
+        );
+
+        // ── Joint management ──────────────────────────────────────────────
+
+        // -- jointCount --
+        /// Returns the total number of joints.
+        /// @return integer
+        methods.add_method("jointCount", |_, this, ()| {
+            Ok(this.world.borrow().joint_count())
+        });
+
+        // -- getJointIds --
+        /// Returns all joint IDs.
+        /// @return table
+        methods.add_method("getJointIds", |_, this, ()| {
+            Ok(this.world.borrow().get_joint_ids())
+        });
+
+        // -- getJointBodies --
+        /// Returns the two body IDs connected by a joint.
+        /// @param jointId : integer
+        /// @return integer, integer
+        methods.add_method("getJointBodies", |_, this, jid: usize| {
+            match this.world.borrow().get_joint_bodies(jid) {
+                Some((a, b)) => Ok((a, b)),
+                None => Err(LuaError::external(format!("invalid joint id: {}", jid))),
+            }
+        });
+
+        // -- destroyJoint --
+        /// Removes a joint from the world.
+        /// @param jointId : integer
+        /// @return nil
+        methods.add_method("destroyJoint", |_, this, jid: usize| {
+            this.world.borrow_mut().destroy_joint(jid);
+            Ok(())
+        });
+
+        // -- getJointType --
+        /// Returns the type name of a joint.
+        /// @param jointId : integer
+        /// @return string
+        methods.add_method("getJointType", |_, this, jid: usize| {
+            Ok(this.world.borrow().get_joint_type(jid).to_string())
+        });
+
+        // -- setJointMotorSpeed --
+        /// Sets the motor speed on a joint's angular axis.
+        /// @param jointId : integer
+        /// @param speed : number
+        methods.add_method(
+            "setJointMotorSpeed",
+            |_, this, (jid, speed): (usize, f32)| {
+                this.world.borrow_mut().set_joint_motor_speed(jid, speed);
+                Ok(())
+            },
+        );
+
+        // -- getJointMotorSpeed --
+        /// Returns the motor speed on a joint's angular axis.
+        /// @param jointId : integer
+        /// @return number
+        methods.add_method("getJointMotorSpeed", |_, this, jid: usize| {
+            Ok(this.world.borrow().get_joint_motor_speed(jid))
+        });
+
+        // -- setJointLimitsEnabled --
+        /// Enables or disables angular limits on a joint.
+        /// @param jointId : integer
+        /// @param enabled : boolean
+        methods.add_method(
+            "setJointLimitsEnabled",
+            |_, this, (jid, enabled): (usize, bool)| {
+                this.world
+                    .borrow_mut()
+                    .set_joint_limits_enabled(jid, enabled);
+                Ok(())
+            },
+        );
+
+        // -- setJointLimits --
+        /// Sets the angular limits on a joint.
+        /// @param jointId : integer
+        /// @param lower : number
+        /// @param upper : number
+        methods.add_method(
+            "setJointLimits",
+            |_, this, (jid, lower, upper): (usize, f32, f32)| {
+                this.world.borrow_mut().set_joint_limits(jid, lower, upper);
+                Ok(())
+            },
+        );
+
+        // -- getJointLimits --
+        /// Returns the angular limits on a joint.
+        /// @param jointId : integer
+        /// @return number, number
+        methods.add_method("getJointLimits", |_, this, jid: usize| {
+            Ok(this.world.borrow().get_joint_limits(jid))
+        });
+
+        // -- setMouseJointTarget --
+        /// Updates the target position of a mouse joint.
+        /// @param jointId : integer
+        /// @param x : number
+        /// @param y : number
+        methods.add_method(
+            "setMouseJointTarget",
+            |_, this, (jid, x, y): (usize, f32, f32)| {
+                this.world.borrow_mut().set_mouse_joint_target(jid, x, y);
+                Ok(())
+            },
+        );
+
+        // ── Raycast and spatial queries ───────────────────────────────────
+
+        // -- raycast --
+        /// Casts a ray and returns the nearest hit, or nil.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        /// @return table|nil
+        methods.add_method(
+            "raycast",
+            |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+                match this.world.borrow().raycast(x1, y1, x2, y2) {
+                    Some(hit) => {
+                        let tbl = lua.create_table()?;
+                        tbl.set("bodyId", hit.body_id)?;
+                        tbl.set("x", hit.point.0)?;
+                        tbl.set("y", hit.point.1)?;
+                        tbl.set("normalX", hit.normal.0)?;
+                        tbl.set("normalY", hit.normal.1)?;
+                        tbl.set("toi", hit.toi)?;
+                        Ok(LuaValue::Table(tbl))
+                    }
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        // -- raycastClosest --
+        /// Casts a ray and returns the closest hit using the query pipeline.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param dx : number
+        /// @param dy : number
+        /// @param maxDist : number
+        /// @return table|nil
+        methods.add_method(
+            "raycastClosest",
+            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| {
+                match this
+                    .world
+                    .borrow()
+                    .raycast_closest(x1, y1, dx, dy, max_dist)
+                {
+                    Some(hit) => {
+                        let tbl = lua.create_table()?;
+                        tbl.set("bodyId", hit.body_id)?;
+                        tbl.set("x", hit.point.0)?;
+                        tbl.set("y", hit.point.1)?;
+                        tbl.set("normalX", hit.normal.0)?;
+                        tbl.set("normalY", hit.normal.1)?;
+                        tbl.set("toi", hit.toi)?;
+                        Ok(LuaValue::Table(tbl))
+                    }
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        // -- raycastAll --
+        /// Casts a ray and returns all hits.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param dx : number
+        /// @param dy : number
+        /// @param maxDist : number
+        /// @return table
+        methods.add_method(
+            "raycastAll",
+            |lua, this, (x1, y1, dx, dy, max_dist): (f32, f32, f32, f32, f32)| {
+                let hits = this
+                    .world
+                    .borrow()
+                    .raycast_all(x1, y1, dx, dy, max_dist);
+                let result = lua.create_table()?;
+                for (i, hit) in hits.iter().enumerate() {
+                    let tbl = lua.create_table()?;
+                    tbl.set("bodyId", hit.body_id)?;
+                    tbl.set("x", hit.point.0)?;
+                    tbl.set("y", hit.point.1)?;
+                    tbl.set("normalX", hit.normal.0)?;
+                    tbl.set("normalY", hit.normal.1)?;
+                    tbl.set("toi", hit.toi)?;
+                    result.set(i + 1, tbl)?;
+                }
+                Ok(result)
+            },
+        );
+
+        // -- queryAABB --
+        /// Returns body IDs within an axis-aligned bounding box.
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        /// @return table
+        methods.add_method(
+            "queryAABB",
+            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+                Ok(this.world.borrow().query_aabb(x, y, w, h))
+            },
+        );
+
+        // -- getBodyAtPoint --
+        /// Returns the body ID at a world-space point, or nil.
+        /// @param x : number
+        /// @param y : number
+        /// @return integer|nil
+        methods.add_method("getBodyAtPoint", |_, this, (x, y): (f32, f32)| {
+            Ok(this.world.borrow().get_body_at_point(x, y))
+        });
+
+        // ── Collision events ──────────────────────────────────────────────
+
+        // -- getCollisionEvents --
+        /// Returns collision events from the last step.
+        /// @return table
+        methods.add_method("getCollisionEvents", |lua, this, ()| {
+            let w = this.world.borrow();
+            let events = w.get_collision_events();
+            let result = lua.create_table()?;
+            for (i, evt) in events.iter().enumerate() {
+                let tbl = lua.create_table()?;
+                tbl.set("bodyA", evt.body_a)?;
+                tbl.set("bodyB", evt.body_b)?;
+                result.set(i + 1, tbl)?;
+            }
+            Ok(result)
+        });
+
+        // -- getBeginContactEvents --
+        /// Returns begin-contact events from the last step.
+        /// @return table
+        methods.add_method("getBeginContactEvents", |lua, this, ()| {
+            let w = this.world.borrow();
+            let events = w.get_begin_contact_events();
+            let result = lua.create_table()?;
+            for (i, (a, b)) in events.iter().enumerate() {
+                let tbl = lua.create_table()?;
+                tbl.set("bodyA", *a)?;
+                tbl.set("bodyB", *b)?;
+                result.set(i + 1, tbl)?;
+            }
+            Ok(result)
+        });
+
+        // -- getEndContactEvents --
+        /// Returns end-contact events from the last step.
+        /// @return table
+        methods.add_method("getEndContactEvents", |lua, this, ()| {
+            let w = this.world.borrow();
+            let events = w.get_end_contact_events();
+            let result = lua.create_table()?;
+            for (i, (a, b)) in events.iter().enumerate() {
+                let tbl = lua.create_table()?;
+                tbl.set("bodyA", *a)?;
+                tbl.set("bodyB", *b)?;
+                result.set(i + 1, tbl)?;
+            }
+            Ok(result)
+        });
+
+        // -- getContacts --
+        /// Returns all contact pairs from the narrow phase.
+        /// @return table
+        methods.add_method("getContacts", |lua, this, ()| {
+            let contacts = this.world.borrow().get_contacts();
+            let result = lua.create_table()?;
+            for (i, c) in contacts.iter().enumerate() {
+                let tbl = lua.create_table()?;
+                tbl.set("bodyA", c.body_a)?;
+                tbl.set("bodyB", c.body_b)?;
+                tbl.set("normalX", c.normal_x)?;
+                tbl.set("normalY", c.normal_y)?;
+                tbl.set("isTouching", c.is_touching)?;
+                result.set(i + 1, tbl)?;
+            }
+            Ok(result)
+        });
+
+        // -- getBodyContacts --
+        /// Returns contacts involving a specific body.
+        /// @param bodyId : integer
+        /// @return table
+        methods.add_method("getBodyContacts", |lua, this, body_id: usize| {
+            let contacts = this.world.borrow().get_body_contacts(body_id);
+            let result = lua.create_table()?;
+            for (i, c) in contacts.iter().enumerate() {
+                let tbl = lua.create_table()?;
+                tbl.set("bodyA", c.body_a)?;
+                tbl.set("bodyB", c.body_b)?;
+                tbl.set("normalX", c.normal_x)?;
+                tbl.set("normalY", c.normal_y)?;
+                tbl.set("isTouching", c.is_touching)?;
+                result.set(i + 1, tbl)?;
+            }
+            Ok(result)
+        });
+
+        // -- setBodyType --
+        /// Changes the body type.
+        /// @param bodyId : integer
+        /// @param bodyType : string
+        methods.add_method(
+            "setBodyType",
+            |_, this, (id, bt): (usize, String)| {
+                let body_type = parse_body_type(&bt)?;
+                this.world.borrow_mut().set_body_type(id, body_type);
+                Ok(())
+            },
+        );
+
+        // -- getBodyType --
+        /// Returns the body type as a string.
+        /// @param bodyId : integer
+        /// @return string
+        methods.add_method("getBodyType", |_, this, id: usize| {
+            Ok(this.world.borrow().get_body_type_str(id).to_string())
+        });
     }
-    /// Returns the radius for circle shapes.
-    ///
-    ///
-    /// @return Some(f32)
-    pub fn get_radius(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+}
+
+// -------------------------------------------------------------------------------
+// LuaBody UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side handle to a physics body accessed through its world.
+#[derive(Clone)]
+pub struct LuaBody {
+    world: Rc<RefCell<World>>,
+    id: usize,
+}
+
+impl LuaUserData for LuaBody {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns the body's integer ID.
+        /// @return integer
+        methods.add_method("getId", |_, this, ()| Ok(this.id));
+
+        // -- getPosition --
+        /// Returns the body position (x, y).
+        /// @return number, number
+        methods.add_method("getPosition", |_, this, ()| {
+            let w = this.world.borrow();
+            match w.get_body(this.id) {
+                Some(b) => Ok((b.position.x, b.position.y)),
+                None => Ok((0.0, 0.0)),
+            }
+        });
+
+        // -- setPosition --
+        /// Sets the body position.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            this.world.borrow_mut().set_body_position(this.id, x, y);
+            Ok(())
+        });
+
+        // -- getX --
+        /// Returns the body X position.
+        /// @return number
+        methods.add_method("getX", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.0, |b| b.position.x))
+        });
+
+        // -- getY --
+        /// Returns the body Y position.
+        /// @return number
+        methods.add_method("getY", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.0, |b| b.position.y))
+        });
+
+        // -- getVelocity --
+        /// Returns the body velocity (vx, vy).
+        /// @return number, number
+        methods.add_method("getVelocity", |_, this, ()| {
+            let w = this.world.borrow();
+            match w.get_body(this.id) {
+                Some(b) => Ok((b.velocity.x, b.velocity.y)),
+                None => Ok((0.0, 0.0)),
+            }
+        });
+
+        // -- setVelocity --
+        /// Sets the body velocity.
+        /// @param vx : number
+        /// @param vy : number
+        /// @return nil
+        methods.add_method("setVelocity", |_, this, (vx, vy): (f32, f32)| {
+            let mut w = this.world.borrow_mut();
+            if let Some(b) = w.get_body_mut(this.id) {
+                b.velocity.x = vx;
+                b.velocity.y = vy;
+            }
+            Ok(())
+        });
+
+        // -- getAngle --
+        /// Returns the body angle in radians.
+        /// @return number
+        methods.add_method("getAngle", |_, this, ()| {
+            Ok(this.world.borrow().get_body_angle(this.id))
+        });
+
+        // -- setAngle --
+        /// Sets the body angle in radians.
+        /// @param angle : number
+        /// @return nil
+        methods.add_method("setAngle", |_, this, angle: f32| {
+            this.world.borrow_mut().set_body_angle(this.id, angle);
+            Ok(())
+        });
+
+        // -- getAngularVelocity --
+        /// Returns the angular velocity in radians/s.
+        /// @return number
+        methods.add_method("getAngularVelocity", |_, this, ()| {
+            Ok(this.world.borrow().get_angular_velocity(this.id))
+        });
+
+        // -- setAngularVelocity --
+        /// Sets the angular velocity.
+        /// @param omega : number
+        /// @return nil
+        methods.add_method("setAngularVelocity", |_, this, omega: f32| {
+            this.world
+                .borrow_mut()
+                .set_angular_velocity(this.id, omega);
+            Ok(())
+        });
+
+        // -- getMass --
+        /// Returns the body mass.
+        /// @return number
+        methods.add_method("getMass", |_, this, ()| {
+            Ok(this.world.borrow().get_body_mass(this.id))
+        });
+
+        // -- setMass --
+        /// Sets the body mass.
+        /// @param mass : number
+        /// @return nil
+        methods.add_method("setMass", |_, this, mass: f32| {
+            this.world.borrow_mut().set_body_mass(this.id, mass);
+            Ok(())
+        });
+
+        // -- getType --
+        /// Returns the body type as a string.
+        /// @return string
+        methods.add_method("getType", |_, this, ()| {
+            Ok(this
+                .world
+                .borrow()
+                .get_body_type_str(this.id)
+                .to_string())
+        });
+
+        // -- setType --
+        /// Sets the body type.
+        /// @param bodyType : string
+        /// @return nil
+        methods.add_method("setType", |_, this, bt: String| {
+            let body_type = parse_body_type(&bt)?;
+            this.world.borrow_mut().set_body_type(this.id, body_type);
+            Ok(())
+        });
+
+        // -- getWidth --
+        /// Returns the body width.
+        /// @return number
+        methods.add_method("getWidth", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.0, |b| b.width))
+        });
+
+        // -- getHeight --
+        /// Returns the body height.
+        /// @return number
+        methods.add_method("getHeight", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.0, |b| b.height))
+        });
+
+        // -- getFriction --
+        /// Returns the body friction coefficient.
+        /// @return number
+        methods.add_method("getFriction", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.5, |b| b.friction))
+        });
+
+        // -- setFriction --
+        /// Sets the body friction coefficient.
+        /// @param friction : number
+        /// @return nil
+        methods.add_method("setFriction", |_, this, friction: f32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(b) = w.get_body_mut(this.id) {
+                b.friction = friction;
+            }
+            Ok(())
+        });
+
+        // -- getRestitution --
+        /// Returns the body restitution (bounciness).
+        /// @return number
+        methods.add_method("getRestitution", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(0.3, |b| b.restitution))
+        });
+
+        // -- setRestitution --
+        /// Sets the body restitution (bounciness).
+        /// @param restitution : number
+        /// @return nil
+        methods.add_method("setRestitution", |_, this, restitution: f32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(b) = w.get_body_mut(this.id) {
+                b.restitution = restitution;
+            }
+            Ok(())
+        });
+
+        // -- getLayer --
+        /// Returns the collision layer bitmask.
+        /// @return integer
+        methods.add_method("getLayer", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(1u32, |b| b.layer))
+        });
+
+        // -- setLayer --
+        /// Sets the collision layer bitmask.
+        /// @param layer : integer
+        /// @return nil
+        methods.add_method("setLayer", |_, this, layer: u32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(b) = w.get_body_mut(this.id) {
+                b.layer = layer;
+            }
+            Ok(())
+        });
+
+        // -- getMask --
+        /// Returns the collision mask bitmask.
+        /// @return integer
+        methods.add_method("getMask", |_, this, ()| {
+            let w = this.world.borrow();
+            Ok(w.get_body(this.id).map_or(1u32, |b| b.mask))
+        });
+
+        // -- setMask --
+        /// Sets the collision mask bitmask.
+        /// @param mask : integer
+        /// @return nil
+        methods.add_method("setMask", |_, this, mask: u32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(b) = w.get_body_mut(this.id) {
+                b.mask = mask;
+            }
+            Ok(())
+        });
+
+        // -- applyImpulse --
+        /// Applies a linear impulse to the body.
+        /// @param ix : number
+        /// @param iy : number
+        /// @return nil
+        methods.add_method("applyImpulse", |_, this, (ix, iy): (f32, f32)| {
+            this.world.borrow_mut().apply_impulse(this.id, ix, iy);
+            Ok(())
+        });
+
+        // -- applyForce --
+        /// Applies a continuous force to the body.
+        /// @param fx : number
+        /// @param fy : number
+        /// @return nil
+        methods.add_method("applyForce", |_, this, (fx, fy): (f32, f32)| {
+            this.world.borrow_mut().apply_force(this.id, fx, fy);
+            Ok(())
+        });
+
+        // -- applyTorque --
+        /// Applies a torque (rotational force).
+        /// @param torque : number
+        /// @return nil
+        methods.add_method("applyTorque", |_, this, torque: f32| {
+            this.world.borrow_mut().apply_torque(this.id, torque);
+            Ok(())
+        });
+
+        // -- applyForceAtPoint --
+        /// Applies a force at a specific world-space point.
+        /// @param fx : number
+        /// @param fy : number
+        /// @param px : number
+        /// @param py : number
+        methods.add_method(
+            "applyForceAtPoint",
+            |_, this, (fx, fy, px, py): (f32, f32, f32, f32)| {
+                this.world
+                    .borrow_mut()
+                    .apply_force_at_point(this.id, fx, fy, px, py);
+                Ok(())
+            },
+        );
+
+        // -- applyAngularImpulse --
+        /// Applies an angular impulse.
+        /// @param impulse : number
+        /// @return nil
+        methods.add_method("applyAngularImpulse", |_, this, impulse: f32| {
+            this.world
+                .borrow_mut()
+                .apply_angular_impulse(this.id, impulse);
+            Ok(())
+        });
+
+        // -- getGravityScale --
+        /// Returns the per-body gravity multiplier.
+        /// @return number
+        methods.add_method("getGravityScale", |_, this, ()| {
+            Ok(this.world.borrow().get_gravity_scale(this.id))
+        });
+
+        // -- setGravityScale --
+        /// Sets the per-body gravity multiplier.
+        /// @param scale : number
+        /// @return nil
+        methods.add_method("setGravityScale", |_, this, scale: f32| {
+            this.world
+                .borrow_mut()
+                .set_gravity_scale(this.id, scale);
+            Ok(())
+        });
+
+        // -- isFixedRotation --
+        /// Returns whether rotation is locked.
+        /// @return boolean
+        methods.add_method("isFixedRotation", |_, this, ()| {
+            Ok(this.world.borrow().is_fixed_rotation(this.id))
+        });
+
+        // -- setFixedRotation --
+        /// Locks or unlocks rotation.
+        /// @param fixed : boolean
+        /// @return nil
+        methods.add_method("setFixedRotation", |_, this, fixed: bool| {
+            this.world
+                .borrow_mut()
+                .set_fixed_rotation(this.id, fixed);
+            Ok(())
+        });
+
+        // -- getLinearDamping --
+        /// Returns the linear damping coefficient.
+        /// @return number
+        methods.add_method("getLinearDamping", |_, this, ()| {
+            Ok(this.world.borrow().get_linear_damping(this.id))
+        });
+
+        // -- setLinearDamping --
+        /// Sets the linear damping coefficient.
+        /// @param damping : number
+        /// @return nil
+        methods.add_method("setLinearDamping", |_, this, damping: f32| {
+            this.world
+                .borrow_mut()
+                .set_linear_damping(this.id, damping);
+            Ok(())
+        });
+
+        // -- getAngularDamping --
+        /// Returns the angular damping coefficient.
+        /// @return number
+        methods.add_method("getAngularDamping", |_, this, ()| {
+            Ok(this.world.borrow().get_angular_damping(this.id))
+        });
+
+        // -- setAngularDamping --
+        /// Sets the angular damping coefficient.
+        /// @param damping : number
+        /// @return nil
+        methods.add_method("setAngularDamping", |_, this, damping: f32| {
+            this.world
+                .borrow_mut()
+                .set_angular_damping(this.id, damping);
+            Ok(())
+        });
+
+        // -- isBullet --
+        /// Returns whether CCD is enabled.
+        /// @return boolean
+        methods.add_method("isBullet", |_, this, ()| {
+            Ok(this.world.borrow().is_bullet(this.id))
+        });
+
+        // -- setBullet --
+        /// Enables or disables CCD.
+        /// @param bullet : boolean
+        /// @return nil
+        methods.add_method("setBullet", |_, this, bullet: bool| {
+            this.world.borrow_mut().set_bullet(this.id, bullet);
+            Ok(())
+        });
+
+        // -- isSleepingAllowed --
+        /// Returns whether the body can sleep.
+        /// @return boolean
+        methods.add_method("isSleepingAllowed", |_, this, ()| {
+            Ok(this.world.borrow().is_sleeping_allowed(this.id))
+        });
+
+        // -- setSleepingAllowed --
+        /// Sets whether the body can sleep.
+        /// @param allowed : boolean
+        /// @return nil
+        methods.add_method("setSleepingAllowed", |_, this, allowed: bool| {
+            this.world
+                .borrow_mut()
+                .set_sleeping_allowed(this.id, allowed);
+            Ok(())
+        });
+
+        // -- destroy --
+        /// Removes this body from the world.
+        /// @return nil
+        methods.add_method("destroy", |_, this, ()| {
+            this.world.borrow_mut().destroy_body(this.id);
+            Ok(())
+        });
     }
 }
 
-impl UserData for LuaStandaloneShape {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getType", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRadius", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Registration
+// -------------------------------------------------------------------------------
 
-// ── LuaWorld ────────────────────────────────────────────────────────────
-
-pub struct LuaWorld(/* TODO: add key + state fields */);
-
-
-impl LuaWorld {
-    /// Returns the number of fixtures on a body (1 = primary only).
-    ///
-    /// @param body_id : Index
-    /// @return Fixture
-    pub fn fixture_count(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns an immutable reference to body `id`, or `None` if out of range.
-    ///
-    ///
-    /// @param id : Body
-    pub fn get_body(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the total number of bodies. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return The
-    pub fn body_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Casts a ray from `(x1, y1)` toward `(x2, y2)` and returns the nearest hit.
-    ///
-    /// Uses a brute-force O(n) test against all colliders.
-    ///
-    /// @param x1 : Ray
-    /// @param y1 : Ray
-    /// @param x2 : Ray
-    /// @param y2 : Ray
-    /// @return The
-    pub fn raycast(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the angular velocity of a body. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param id : Body
-    /// @return Angular
-    pub fn get_angular_velocity(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the angle (rotation) of a body in radians.
-    ///
-    /// @param id : Body
-    /// @return The
-    pub fn get_body_angle(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the mass of a body. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param id : Body
-    /// @return The
-    pub fn get_body_mass(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the gravity scale multiplier for a body.
-    ///
-    /// @param id : Body
-    /// @return The
-    pub fn get_gravity_scale(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if the body has rotation locked.
-    ///
-    /// @param id : Body
-    /// @return true
-    pub fn is_fixed_rotation(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the linear damping coefficient for a body.
-    ///
-    /// @param id : Body
-    /// @return The
-    pub fn get_linear_damping(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the angular damping coefficient for a body.
-    ///
-    /// @param id : Body
-    /// @return The
-    pub fn get_angular_damping(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether CCD is enabled for a body.
-    ///
-    /// @param id : Body
-    /// @return true
-    pub fn is_bullet(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the body type as a string. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param id : Body
-    /// @return One
-    pub fn get_body_type_str(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether sleeping is allowed for a body.
-    ///
-    /// @param id : Body
-    /// @return true
-    pub fn is_sleeping_allowed(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the total number of joints. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return The
-    pub fn joint_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the two body IDs connected by a joint.
-    ///
-    ///
-    /// @param joint_id : Joint
-    pub fn get_joint_bodies(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns body IDs with colliders intersecting the given AABB.
-    ///
-    ///
-    /// @param x : AABB
-    /// @param y : AABB
-    /// @param w : AABB
-    /// @param h : AABB
-    pub fn query_aabb(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the first body whose collider contains the given world-space point.
-    ///
-    /// Uses a point-sized AABB query filter.
-    ///
-    /// @param x : World-space
-    /// @param y : World-space
-    /// @return integer?
-    pub fn get_body_at_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the motor target velocity on the angular axis of a joint.
-    ///
-    /// @param joint_id : Joint
-    /// @return The
-    pub fn get_joint_motor_speed(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the angular limits `(lower, upper)` on a joint.
-    ///
-    ///
-    /// @param joint_id : Joint
-    pub fn get_joint_limits(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the type name of a joint. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param joint_id : Joint
-    /// @return One
-    pub fn get_joint_type(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the pixels-per-meter scaling factor.
-    ///
-    ///
-    /// @return The
-    pub fn get_meter(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Converts a pixel value to physics units.
-    ///
-    /// @param px : Pixel
-    /// @return The
-    pub fn to_physics(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Converts a physics-unit value to pixels.
-    ///
-    /// @param m : Physics-unit
-    /// @return The
-    pub fn to_pixels(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns contacts involving a specific body.
-    ///
-    ///
-    /// @param body_id : Body
-    pub fn get_body_contacts(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaWorld {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("fixtureCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBody", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("bodyCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("raycast", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAngularVelocity", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBodyAngle", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBodyMass", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getGravityScale", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isFixedRotation", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLinearDamping", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAngularDamping", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isBullet", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBodyTypeStr", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isSleepingAllowed", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("jointCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getJointBodies", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("queryAabb", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBodyAtPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getJointMotorSpeed", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getJointLimits", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getJointType", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getMeter", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toPhysics", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toPixels", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBodyContacts", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.physics.* functions ──────────────────────────────────────────
-
-/// Creates a new circular `Body` at position `(x, y)` of the given `body_type`.
-///
-/// Defaults: velocity = `Vec2::ZERO`, mass = 1.0, restitution = 0.3, layer/mask = 1.
-///
-///
-/// @param x : X
-/// @param y : Y
-/// @param radius : Circle
-/// @param body_type : Static,
-pub fn new_circle(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a new polygon `Body` at position `(x, y)` with the given vertices.
-///
-/// Vertices define a convex polygon (max 8 vertices). The body's width/height
-/// are computed from the bounding box of the vertices.
-///
-///
-/// @param x : X
-/// @param y : Y
-/// @param vertices : Convex
-/// @param body_type : Static,
-pub fn new_polygon(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a new edge (line segment) `Body` between two local points.
-///
-/// The body position `(x, y)` is the world-space origin of the edge.
-///
-///
-/// @param x : Origin
-/// @param y : Origin
-/// @param v1 : Start
-/// @param v2 : End
-/// @param body_type : Static,
-pub fn new_edge(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a new chain `Body` from a series of connected vertices.
-///
-/// The body position `(x, y)` is the world-space origin of the chain.
-///
-///
-/// @param x : Origin
-/// @param y : Origin
-/// @param vertices : Chain
-/// @param closed : Whether
-/// @param body_type : Static,
-pub fn new_chain(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a regular polygon with the given radius and number of sides.
-///
-/// Vertices are placed on a circle of the given radius, evenly spaced.
-/// Minimum 3 sides, maximum 8 sides (clamped).
-///
-///
-/// @param radius : Circumscribed
-/// @param sides : Number
-pub fn regular_polygon(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a `body` to the world and returns its stable integer id.
-///
-/// @param body : The
-/// @return The
-pub fn add_body(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds an extra fixture (collider) to an existing body.
-///
-/// Returns the fixture index (0 = primary, 1+ = extra fixtures).
-///
-/// @param body_id : Index
-/// @param shape : Collision
-/// @param density : Mass
-/// @param friction : Surface
-/// @param restitution : Bounciness
-/// @param sensor : Whether
-/// @return The
-pub fn add_fixture(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the friction of a fixture by index.
-///
-/// Index 0 = primary fixture, 1+ = extra fixtures.
-///
-///
-/// @param body_id : Index
-/// @param fixture_idx : Fixture
-/// @param friction : New
-pub fn set_fixture_friction(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the restitution of a fixture by index.
-///
-///
-/// @param body_id : Index
-/// @param fixture_idx : Fixture
-/// @param restitution : New
-pub fn set_fixture_restitution(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets whether a fixture is a sensor. Replaces the current fixture sensor value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param body_id : Index
-/// @param fixture_idx : Fixture
-/// @param sensor : Whether
-pub fn set_fixture_sensor(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns a mutable reference to body `id`, or `None` if out of range.
-///
-/// Shape, restitution, layer, mask, velocity, and position mutations are
-/// flushed into the rapier simulation on the next `step()` call.
-///
-///
-/// @param id : Body
-pub fn get_body_mut(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a revolute (pin) joint between two bodies at a local anchor on body_a.
-///
-/// Returns a stable joint id.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @return The
-pub fn add_revolute_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advances the simulation by `dt` seconds.
-///
-/// 1. Rebuild rapier colliders for bodies with changed shape/properties.
-/// 2. Push all body positions/velocities into rapier.
-/// 3. Step the rapier pipeline.
-/// 4. Read back positions/velocities for Dynamic bodies.
-/// 5. Record collision events.
-///
-///
-/// @param dt : Time
-pub fn step(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies a linear impulse directly to a body in the rapier simulation.
-///
-/// Has no effect on static or sensor bodies.
-///
-///
-/// @param id : Body
-/// @param ix : Impulse
-/// @param iy : Impulse
-pub fn apply_impulse(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Teleports a body to a new position. Replaces the current body position value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param id : Body
-/// @param x : New
-/// @param y : New
-pub fn set_body_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies a continuous force to a body (accumulated over the next step).
-///
-///
-/// @param id : Body
-/// @param fx : Force
-/// @param fy : Force
-pub fn apply_force(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies a torque (rotational force) to a body.
-///
-///
-/// @param id : Body
-/// @param torque : Torque
-pub fn apply_torque(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the angular velocity (spin rate) of a body.
-///
-///
-/// @param id : Body
-/// @param omega : Angular
-pub fn set_angular_velocity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the angle (rotation) of a body in radians.
-///
-///
-/// @param id : Body
-/// @param angle : New
-pub fn set_body_angle(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the mass of a body. Replaces the current body mass value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param id : Body
-/// @param mass : New
-pub fn set_body_mass(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the per-body gravity multiplier. Replaces the current gravity scale value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param id : Body
-/// @param scale : Gravity
-pub fn set_gravity_scale(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Locks or unlocks rotation for a body. Replaces the current fixed rotation value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param id : Body
-/// @param fixed : true
-pub fn set_fixed_rotation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets linear damping (air resistance) for a body.
-///
-///
-/// @param id : Body
-/// @param damping : Damping
-pub fn set_linear_damping(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets angular damping (rotational resistance) for a body.
-///
-///
-/// @param id : Body
-/// @param damping : Damping
-pub fn set_angular_damping(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Enables or disables continuous collision detection (CCD) for a body.
-///
-///
-/// @param id : Body
-/// @param bullet : true
-pub fn set_bullet(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies a force at a specific world-space point on a body.
-///
-/// A force applied off-centre generates torque in addition to linear acceleration.
-///
-///
-/// @param id : Body
-/// @param fx : Force
-/// @param fy : Force
-/// @param px : Application
-/// @param py : Application
-pub fn apply_force_at_point(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies an angular (rotational) impulse to a body.
-///
-/// Mirrors the resulting angular velocity into the body cache so that
-/// the next `step()` sync does not discard it.
-///
-///
-/// @param id : Body
-/// @param impulse : Angular
-pub fn apply_angular_impulse(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Changes the body type of an existing body.
-///
-///
-/// @param id : Body
-/// @param bt : New
-pub fn set_body_type(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the gravity vector. Replaces the current gravity value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param gx : Horizontal
-/// @param gy : Vertical
-pub fn set_gravity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets whether sleeping is allowed for a body.
-///
-/// When sleeping is allowed, the physics engine can deactivate stationary
-/// bodies to save CPU. When disabled, the body stays awake indefinitely.
-///
-///
-/// @param id : Body
-/// @param allowed : true
-pub fn set_sleeping_allowed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes a body from the world by disabling it in rapier.
-///
-/// The body slot is kept to preserve stable IDs. The body is set to Static
-/// and its rapier rigid body is disabled.
-///
-///
-/// @param id : Body
-pub fn destroy_body(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a distance joint that tries to maintain a fixed distance between two bodies.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param ax1 : Local
-/// @param ay1 : Local
-/// @param ax2 : Local
-/// @param ay2 : Local
-/// @param length : Rest
-/// @return The
-pub fn add_distance_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a prismatic (slider) joint allowing motion along one axis.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @param axis_x : Slide
-/// @param axis_y : Slide
-/// @return The
-pub fn add_prismatic_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a weld (rigid) joint that locks two bodies together.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @return The
-pub fn add_weld_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a rope joint with a maximum distance constraint.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param ax1 : Local
-/// @param ay1 : Local
-/// @param ax2 : Local
-/// @param ay2 : Local
-/// @param max_length : Maximum
-/// @return The
-pub fn add_rope_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes a joint from the world. After this call the associated key is invalid and must not be reused.
-///
-///
-/// @param joint_id : Joint
-pub fn destroy_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Casts a ray and returns the closest hit using the query pipeline.
-///
-/// @param x1 : Ray
-/// @param y1 : Ray
-/// @param dx : Ray
-/// @param dy : Ray
-/// @param max_dist : Maximum
-/// @return The
-pub fn raycast_closest(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Casts a ray and returns all hits along it.
-///
-///
-/// @param x1 : Ray
-/// @param y1 : Ray
-/// @param dx : Ray
-/// @param dy : Ray
-/// @param max_dist : Maximum
-pub fn raycast_all(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a wheel joint (prismatic + rotation) between two bodies.
-///
-/// Allows translation along the given axis and free rotation.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @param axis_x : Slide
-/// @param axis_y : Slide
-/// @return The
-pub fn add_wheel_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a friction joint that resists relative motion between two bodies.
-///
-/// Uses a fixed joint with velocity motors tuned to the given force/torque limits.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @param max_force : Maximum
-/// @param max_torque : Maximum
-/// @return The
-pub fn add_friction_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a motor joint that drives body_b toward body_a's frame.
-///
-/// The correction factor controls how aggressively the motor corrects position.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param correction_factor : Motor
-/// @return The
-pub fn add_motor_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a mouse joint that connects a body to a target point via a spring.
-///
-/// Internally creates a kinematic anchor body at the target position
-/// and a spring joint between the body and the anchor.
-///
-/// @param body_id : Index
-/// @param target_x : Initial
-/// @param target_y : Initial
-/// @param max_force : Maximum
-/// @return The
-pub fn add_mouse_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Updates the target position of a mouse joint.
-///
-///
-/// @param joint_id : Joint
-/// @param x : New
-/// @param y : New
-pub fn set_mouse_joint_target(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Stub: pulley joint is not supported by rapier2d. Returns a fixed joint fallback.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @return The
-pub fn add_pulley_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Stub: gear joint is not supported by rapier2d. Returns a fixed joint fallback.
-///
-/// @param body_a : Index
-/// @param body_b : Index
-/// @param anchor_x : Local
-/// @param anchor_y : Local
-/// @return The
-pub fn add_gear_joint(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the motor speed on the angular axis of a joint.
-///
-///
-/// @param joint_id : Joint
-/// @param speed : Target
-pub fn set_joint_motor_speed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Enables or disables limits on the angular axis of a joint.
-///
-///
-/// @param joint_id : Joint
-/// @param enabled : true
-pub fn set_joint_limits_enabled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the angular limits (lower, upper) on a joint in radians.
-///
-///
-/// @param joint_id : Joint
-/// @param lower : Lower
-/// @param upper : Upper
-pub fn set_joint_limits(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the pixels-per-meter scaling factor.
-///
-///
-/// @param ppm : Pixels
-pub fn set_meter(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.physics` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.physics` API namespace.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("newCircle", lua.create_function(new_circle)?)?;
-    tbl.set("newPolygon", lua.create_function(new_polygon)?)?;
-    tbl.set("newEdge", lua.create_function(new_edge)?)?;
-    tbl.set("newChain", lua.create_function(new_chain)?)?;
-    tbl.set("regularPolygon", lua.create_function(regular_polygon)?)?;
-    tbl.set("addBody", lua.create_function(add_body)?)?;
-    tbl.set("addFixture", lua.create_function(add_fixture)?)?;
-    tbl.set("setFixtureFriction", lua.create_function(set_fixture_friction)?)?;
-    tbl.set("setFixtureRestitution", lua.create_function(set_fixture_restitution)?)?;
-    tbl.set("setFixtureSensor", lua.create_function(set_fixture_sensor)?)?;
-    tbl.set("getBodyMut", lua.create_function(get_body_mut)?)?;
-    tbl.set("addRevoluteJoint", lua.create_function(add_revolute_joint)?)?;
-    tbl.set("step", lua.create_function(step)?)?;
-    tbl.set("applyImpulse", lua.create_function(apply_impulse)?)?;
-    tbl.set("setBodyPosition", lua.create_function(set_body_position)?)?;
-    tbl.set("applyForce", lua.create_function(apply_force)?)?;
-    tbl.set("applyTorque", lua.create_function(apply_torque)?)?;
-    tbl.set("setAngularVelocity", lua.create_function(set_angular_velocity)?)?;
-    tbl.set("setBodyAngle", lua.create_function(set_body_angle)?)?;
-    tbl.set("setBodyMass", lua.create_function(set_body_mass)?)?;
-    tbl.set("setGravityScale", lua.create_function(set_gravity_scale)?)?;
-    tbl.set("setFixedRotation", lua.create_function(set_fixed_rotation)?)?;
-    tbl.set("setLinearDamping", lua.create_function(set_linear_damping)?)?;
-    tbl.set("setAngularDamping", lua.create_function(set_angular_damping)?)?;
-    tbl.set("setBullet", lua.create_function(set_bullet)?)?;
-    tbl.set("applyForceAtPoint", lua.create_function(apply_force_at_point)?)?;
-    tbl.set("applyAngularImpulse", lua.create_function(apply_angular_impulse)?)?;
-    tbl.set("setBodyType", lua.create_function(set_body_type)?)?;
-    tbl.set("setGravity", lua.create_function(set_gravity)?)?;
-    tbl.set("setSleepingAllowed", lua.create_function(set_sleeping_allowed)?)?;
-    tbl.set("destroyBody", lua.create_function(destroy_body)?)?;
-    tbl.set("addDistanceJoint", lua.create_function(add_distance_joint)?)?;
-    tbl.set("addPrismaticJoint", lua.create_function(add_prismatic_joint)?)?;
-    tbl.set("addWeldJoint", lua.create_function(add_weld_joint)?)?;
-    tbl.set("addRopeJoint", lua.create_function(add_rope_joint)?)?;
-    tbl.set("destroyJoint", lua.create_function(destroy_joint)?)?;
-    tbl.set("raycastClosest", lua.create_function(raycast_closest)?)?;
-    tbl.set("raycastAll", lua.create_function(raycast_all)?)?;
-    tbl.set("addWheelJoint", lua.create_function(add_wheel_joint)?)?;
-    tbl.set("addFrictionJoint", lua.create_function(add_friction_joint)?)?;
-    tbl.set("addMotorJoint", lua.create_function(add_motor_joint)?)?;
-    tbl.set("addMouseJoint", lua.create_function(add_mouse_joint)?)?;
-    tbl.set("setMouseJointTarget", lua.create_function(set_mouse_joint_target)?)?;
-    tbl.set("addPulleyJoint", lua.create_function(add_pulley_joint)?)?;
-    tbl.set("addGearJoint", lua.create_function(add_gear_joint)?)?;
-    tbl.set("setJointMotorSpeed", lua.create_function(set_joint_motor_speed)?)?;
-    tbl.set("setJointLimitsEnabled", lua.create_function(set_joint_limits_enabled)?)?;
-    tbl.set("setJointLimits", lua.create_function(set_joint_limits)?)?;
-    tbl.set("setMeter", lua.create_function(set_meter)?)?;
+
+    // -- newWorld --
+    /// Creates a new physics world with the given gravity vector.
+    /// @param gx : number
+    /// @param gy : number
+    /// @return World
+    tbl.set(
+        "newWorld",
+        lua.create_function(|_, (gx, gy): (f32, f32)| {
+            Ok(LuaWorld {
+                world: Rc::new(RefCell::new(World::new(gx, gy))),
+            })
+        })?,
+    )?;
+
+    // -- newRectangleShape --
+    /// Creates a rectangle shape value.
+    /// @param width : number
+    /// @param height : number
+    /// @return string, number, number
+    tbl.set(
+        "newRectangleShape",
+        lua.create_function(|_, (w, h): (f32, f32)| Ok(("rectangle", w, h)))?,
+    )?;
+
+    // -- newCircleShape --
+    /// Creates a circle shape value.
+    /// @param radius : number
+    /// @return string, number
+    tbl.set(
+        "newCircleShape",
+        lua.create_function(|_, r: f32| Ok(("circle", r)))?,
+    )?;
+
+    // -- newEdgeShape --
+    /// Creates an edge shape value.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @return string, number, number, number, number
+    tbl.set(
+        "newEdgeShape",
+        lua.create_function(|_, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+            Ok(("edge", x1, y1, x2, y2))
+        })?,
+    )?;
+
     luna.set("physics", tbl)?;
     Ok(())
 }

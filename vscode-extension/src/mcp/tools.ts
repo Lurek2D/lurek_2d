@@ -141,7 +141,7 @@ function execCommand(
 /**
  * Creates the handler for `luna2d.runExample`.
  *
- * Builds and runs the specified example via `cargo run -- examples/<name>`.
+ * Builds and runs the specified demo via `cargo run -- demos/<name>`.
  */
 export function handleRunExample(
   workspaceRoot: string
@@ -153,14 +153,14 @@ export function handleRunExample(
     }
 
     // Validate example exists
-    const exampleDir = path.join(workspaceRoot, "examples", name);
+    const exampleDir = path.join(workspaceRoot, "demos", name);
     if (!fs.existsSync(exampleDir)) {
       const available = listExampleDirs(workspaceRoot);
-      return `Example "${name}" not found. Available: ${available.join(", ")}`;
+      return `Demo "${name}" not found. Available: ${available.join(", ")}`;
     }
 
     return execCommand(
-      `cargo run -- examples/${name}`,
+      `cargo run -- demos/${name}`,
       workspaceRoot,
       120_000
     );
@@ -238,7 +238,7 @@ export function handleListExamples(
   return async () => {
     const examples = listExampleDirs(workspaceRoot);
     if (examples.length === 0) {
-      return "No examples found in examples/ directory.";
+      return "No demos found in demos/ directory.";
     }
     return examples.join("\n");
   };
@@ -317,10 +317,10 @@ export function handleGetLogs(
 }
 
 /**
- * Lists example directory names from the workspace examples/ folder.
+ * Lists demo directory names from the workspace demos/ folder.
  */
 function listExampleDirs(workspaceRoot: string): string[] {
-  const examplesDir = path.join(workspaceRoot, "examples");
+  const examplesDir = path.join(workspaceRoot, "demos");
   if (!fs.existsSync(examplesDir)) {
     return [];
   }

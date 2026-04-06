@@ -76,7 +76,11 @@ fn flood_fill_blocked_by_walls() {
     // Cells in rows 3-4 should not be filled (blocked by wall)
     for y in 3..h {
         for x in 0..w {
-            assert_eq!(result[(y * w + x) as usize], 0, "cell ({x},{y}) should remain 0");
+            assert_eq!(
+                result[(y * w + x) as usize],
+                0,
+                "cell ({x},{y}) should remain 0"
+            );
         }
     }
 }
@@ -96,10 +100,7 @@ fn perlin_noise_periodic_wraps_seamlessly() {
     let py = 8.0_f64;
     let v1 = perlin_noise_periodic(0.0, 3.0, px, py);
     let v2 = perlin_noise_periodic(px, 3.0, px, py);
-    assert!(
-        (v1 - v2).abs() < 1e-6,
-        "noise does not wrap: {v1} vs {v2}"
-    );
+    assert!((v1 - v2).abs() < 1e-6, "noise does not wrap: {v1} vs {v2}");
 }
 
 // ── poisson_disk ──────────────────────────────────────────────────────────────

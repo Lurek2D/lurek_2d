@@ -8,9 +8,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use mlua::prelude::*;
 use crate::engine::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
 use crate::log_msg;
+use mlua::prelude::*;
 
 /// CPU-side pixel buffer in RGBA8 format. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -77,7 +77,13 @@ impl ImageData {
     pub fn from_bytes(width: u32, height: u32, bytes: Vec<u8>) -> Result<Self, String> {
         let expected = (width * height * 4) as usize;
         if bytes.len() != expected {
-            log_msg!(error, IM02_IMAGE_MISMATCH, "expected {} got {}", expected, bytes.len());
+            log_msg!(
+                error,
+                IM02_IMAGE_MISMATCH,
+                "expected {} got {}",
+                expected,
+                bytes.len()
+            );
             return Err(format!(
                 "Expected {} bytes for {}x{} RGBA image, got {}",
                 expected,

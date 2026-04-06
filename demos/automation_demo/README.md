@@ -21,5 +21,5 @@ Demonstrates the `luna.simulator` input automation system. The simulator replays
 ## Run
 
 ```sh
-cargo run -- examples/automation_demo
+cargo run -- demos/automation_demo
 ```

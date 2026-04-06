@@ -31,10 +31,18 @@ fn test_spawn_recycled_lifo() {
     u.kill(a, &lua).unwrap();
     // LIFO — same SLOT is recycled, but generation increments so packed IDs differ
     let c = u.spawn();
-    assert_eq!(c & 0x00FF_FFFF, a & 0x00FF_FFFF, "same slot recycled (LIFO)");
+    assert_eq!(
+        c & 0x00FF_FFFF,
+        a & 0x00FF_FFFF,
+        "same slot recycled (LIFO)"
+    );
     assert_ne!(c, a, "packed ID must differ after gen increment");
     let d = u.spawn();
-    assert_eq!(d & 0x00FF_FFFF, b & 0x00FF_FFFF, "same slot recycled (LIFO)");
+    assert_eq!(
+        d & 0x00FF_FFFF,
+        b & 0x00FF_FFFF,
+        "same slot recycled (LIFO)"
+    );
     assert_ne!(d, b, "packed ID must differ after gen increment");
 }
 
@@ -463,7 +471,11 @@ fn test_kill_removes_components() {
     u.kill(id, &lua).unwrap();
     // Respawn reuses the same slot but with incremented generation
     let id2 = u.spawn();
-    assert_eq!(id2 & 0x00FF_FFFF, id & 0x00FF_FFFF, "same slot should be recycled");
+    assert_eq!(
+        id2 & 0x00FF_FFFF,
+        id & 0x00FF_FFFF,
+        "same slot should be recycled"
+    );
     assert_ne!(id2, id, "generation must differ for recycled slot");
     // Components should not carry over to the new entity at the same slot
     let val = u.get_component(&lua, id2, "hp").unwrap();
@@ -485,7 +497,11 @@ fn test_kill_clears_tags_and_layers() {
     assert!(!u.has_bitmap_tag(id, "fast"));
     // After respawn, same slot is reused (different gen), layer defaults to 0
     let id2 = u.spawn();
-    assert_eq!(id2 & 0x00FF_FFFF, id & 0x00FF_FFFF, "same slot should be recycled");
+    assert_eq!(
+        id2 & 0x00FF_FFFF,
+        id & 0x00FF_FFFF,
+        "same slot should be recycled"
+    );
     assert_ne!(id2, id, "generation must differ for recycled slot");
     assert_eq!(u.get_layer(id2), 0);
 }
@@ -750,12 +766,15 @@ fn test_stale_id_after_recycle_detects_as_dead() {
     let old_id = u.spawn();
     u.kill(old_id, &lua).unwrap();
     let new_id = u.spawn(); // recycles same slot with incremented generation
-    // The OLD id (stale generation) must not be alive.
-    // This test PASSES only when generational IDs are implemented.
+                            // The OLD id (stale generation) must not be alive.
+                            // This test PASSES only when generational IDs are implemented.
     assert!(!u.is_alive(old_id), "old ID must be dead after recycle");
     assert!(u.is_alive(new_id), "new ID must be alive");
     // The two IDs must be different once generations are tracked.
-    assert_ne!(old_id, new_id, "recycled slot must produce different packed ID");
+    assert_ne!(
+        old_id, new_id,
+        "recycled slot must produce different packed ID"
+    );
 }
 
 #[test]
@@ -767,13 +786,16 @@ fn test_stale_id_component_access_errors() {
     let old_id = u.spawn();
     u.kill(old_id, &lua).unwrap();
     let _new_id = u.spawn(); // recycles slot
-    // Getting a component on the stale ID should not return data from the new entity.
-    // (returns nil is acceptable — must not return new entity's data)
+                             // Getting a component on the stale ID should not return data from the new entity.
+                             // (returns nil is acceptable — must not return new entity's data)
     let result = u.get_component(&lua, old_id, "health");
     // Should be Ok(Nil) or Err — must not panic.
     assert!(result.is_ok() || result.is_err(), "should not panic");
     if let Ok(val) = result {
-        assert!(val.is_nil(), "stale ID must not see new entity's components");
+        assert!(
+            val.is_nil(),
+            "stale ID must not see new entity's components"
+        );
     }
 }
 
@@ -795,7 +817,10 @@ fn test_inverted_tag_index_remove_on_kill() {
     u.kill(a, &lua).unwrap();
     // After kill, a must NOT appear in tag results.
     let enemies = u.get_entities_by_tag("enemy");
-    assert!(!enemies.contains(&a), "dead entity must not appear in tag query");
+    assert!(
+        !enemies.contains(&a),
+        "dead entity must not appear in tag query"
+    );
     assert!(enemies.contains(&b), "alive entity must still appear");
 }
 
@@ -874,6 +899,13 @@ fn test_kill_parent_detaches_children() {
     // Regular kill (not recursive) should detach child but not kill it.
     u.kill(parent, &lua).unwrap();
     assert!(!u.is_alive(parent));
-    assert!(u.is_alive(child), "child must survive non-recursive kill of parent");
-    assert_eq!(u.get_parent(child), None, "child must be detached after parent dies");
+    assert!(
+        u.is_alive(child),
+        "child must survive non-recursive kill of parent"
+    );
+    assert_eq!(
+        u.get_parent(child),
+        None,
+        "child must be detached after parent dies"
+    );
 }

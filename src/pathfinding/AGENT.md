@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.pathfinding` |
 | **Source** | `src/pathfinding/` |
+| **Rust Tests** | `tests/unit/pathfinding_tests.rs`                    |
 | **Tests** | `tests/pathfinding_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_pathfinding.lua` |
 
@@ -81,6 +83,7 @@ NavGrid / PathGrid (base cost grid)
 | `graph_path.rs` | Adjacency-graph pathfinding (A★ and Dijkstra) for province maps and sparse neighbor topologies |
 | `influence_map.rs` | Multi-layer spatial float grid for strategic area analysis and influence mapping (moved from `src/ai/`) |
 | `unit_pathfinder.rs` | Unit-aware pathfinder with result caching and convenience methods |
+| `grid.rs` | TODO: describe purpose of grid.rs |
 
 ## Submodules
 
@@ -263,3 +266,38 @@ Exposed under `luna.pathfinding.*` by `src/lua_api/pathfinding_api/`.
 | `type` | 1 |
 | **Total** | **36** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    grid = luna.pathfinding.newGrid(40, 30, 32)
+    -- Mark obstacles
+    for x = 5, 10 do
+        grid:setWalkable(x, 7, false)
+    end
+
+    -- Find path
+    path = grid:findPath(1, 1, 38, 28)
+    if path then
+        print("Path found with", #path, "nodes")
+    end
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`                                 |
+| `math`    | Imports from  | `Vec2`, `Rect` for grid coordinates                |
+| `ai`      | Related       | `ai` uses `pathfinding` for movement; they have separate responsibilities |
+| `tilemap` | Related       | Tilemaps commonly provide the walkability grid     |
+| `lua_api` | Imported by   | `src/lua_api/pathfinding_api.rs` registers `luna.pathfinding.*` |
+
+## Notes
+
+- Grid cells default to walkable at construction; set obstacles with `grid:setWalkable(x, y, false)`.
+- A* search is synchronous and blocking; for large maps (>200×200), offload to a `thread` worker.
+- `grid.rs` handles coordinate transformation between tile-space and world-space.
+- HPA* is the hierarchical variant for very large maps; it pre-builds a cluster abstraction layer.
+- Flow fields pre-compute cost gradients toward a target — efficient for many agents sharing one goal.

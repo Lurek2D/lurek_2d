@@ -133,6 +133,18 @@ impl Clock {
         self.frame_count
     }
 
+    /// Returns a live high-resolution elapsed time since the clock was created, in seconds.
+    ///
+    /// Unlike [`Clock::total`], which caches its value on each [`Clock::tick`] call,
+    /// this method queries the system clock directly, giving sub-microsecond precision
+    /// at the moment of the call.
+    ///
+    /// # Returns
+    /// `f64` — Elapsed time since clock creation in seconds.
+    pub fn elapsed(&self) -> f64 {
+        self.start_time.elapsed().as_secs_f64()
+    }
+
     /// Returns the average delta time over the last N frames (up to 60).
     ///
     /// Returns `0.0` if no frames have been ticked yet. Once the buffer is full,

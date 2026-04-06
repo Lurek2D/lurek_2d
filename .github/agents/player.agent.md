@@ -11,7 +11,7 @@ name: Player
 ## SCOPE
 
 **Owns**:
-- Subjective experience review of `examples/` game scripts
+- Subjective experience review of `demos/` game scripts
 - API ergonomics feedback from a game author's perspective
 - Engagement and fun evaluation of demo games
 - Documentation approachability: does a beginner feel welcome?
@@ -85,7 +85,7 @@ Every Player output includes:
 
 ## EXAMPLE REVIEWS
 
-**Jamie on `examples/hello_world/main.lua`:**
+**Jamie on `demos/hello_world/main.lua`:**
 > "Getting text on screen was five lines — honestly great. But I wanted to change the background colour and had no idea where. I searched 'background' in the examples folder for 10 minutes. Turns out it's `luna.graphics.setBackgroundColor()` in `luna.load()`. I would have guessed `setBackground`. 🟡 Workable."
 
 **Alex on `luna.physics.newWorld()` parameters:**

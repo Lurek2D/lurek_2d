@@ -1,31 +1,67 @@
 //! Composable visual effects layer — Tier 2 Engine Extension.
 //!
-//! The `fx` module consolidates two families of screen and image effects:
+//! The `fx` module provides two families of visual effects as pure CPU data models.
+//! GPU application is handled in `lua_api`. All files are flat in this folder.
 //!
-//! ## Sub-namespaces
+//! ## Post-processing effects (image-space pipeline)
 //!
-//! | Sub-module | Replaces | Responsibility |
-//! |---|---|---|
-//! | `post` | `postfx` | Image-space post-processing pipeline: bloom, blur, CRT, vignette, chromatic aberration, color grading, godrays, pixelate, sepia, grayscale, invert, scanlines, edge-detect, hue-shift, noise |
-//! | `screen` | `overlay` | World-simulation screen overlays: weather, ambient lighting, flash, shake, fade, fog, heat haze, vignette, film grain, lightning |
+//! | File | Types |
+//! |---|---|
+//! | `effect_type` | `PostFxEffectType` — enum of all built-in effect kinds |
+//! | `effect` | `PostFxEffect` — per-effect parameter bag |
+//! | `stack` | `PostFxStack` — ordered pipeline of post-processing passes |
+//! | `image_effect` | `ImageEffect` — lightweight per-image effect chain |
 //!
-//! Both sub-namespaces are **pure CPU data models** — no GPU dependencies.
-//! GPU application of each effect family is handled in `lua_api`.
+//! ## Screen overlays (world-simulation effects)
+//!
+//! | File | Types |
+//! |---|---|
+//! | `ambient` | `AmbientState` — time-of-day colour cycling |
+//! | `atmosphere` | `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, `LightningState` |
+//! | `screen_effects` | `FlashState`, `ShakeState`, `FadeState` — one-shot screen effects |
+//! | `overlay` | `Overlay` — main struct combining all screen subsystems |
+//! | `weather` | `WeatherState`, `WeatherParticle`, `WeatherType` — weather simulation |
 //!
 //! ## Tier
 //!
 //! `fx` is a **Tier 2 — Engine Extension** module. It may import `math`,
 //! `engine`, and any Tier 1 module. It must not import other Tier 2 modules.
 
-/// Image-space post-processing pipeline (bloom, blur, CRT, color grading, …).
-pub mod post;
-/// World-simulation screen overlays (weather, ambient, shake, fog, lightning, …).
-pub mod screen;
+// ── Post-processing effects ──────────────────────────────────────────────────
 
-/// Re-exports from `post` for convenient top-level access.
-pub use post::{ImageEffect, PostFxEffect, PostFxEffectType, PostFxStack};
-/// Re-exports from `screen` for convenient top-level access.
-pub use screen::{
-    AmbientState, CloudState, FadeState, FilmGrainState, FlashState, FogState, HeatHazeState,
-    LightningState, Overlay, ShakeState, VignetteState, WeatherParticle, WeatherState, WeatherType,
+/// Per-effect parameter bag with builder helpers.
+pub mod effect;
+/// Enum of all built-in post-processing effect kinds (bloom, blur, CRT, colour grading, …).
+pub mod effect_type;
+/// Lightweight per-image effect chain (subset of the full pipeline).
+pub mod image_effect;
+/// Ordered pipeline of post-processing passes applied to the rendered scene.
+pub mod stack;
+
+// ── Screen overlays ──────────────────────────────────────────────────────────
+
+/// Ambient lighting state with time-of-day colour cycling (night → dawn → day → dusk).
+pub mod ambient;
+/// Atmospheric effects: clouds, fog, heat haze, vignette, film grain, lightning.
+pub mod atmosphere;
+/// Main `Overlay` struct combining all screen-effect subsystems into one per-frame controller.
+pub mod overlay;
+/// One-shot screen effects: flash (colour burst), shake (jitter), fade (alpha transition).
+pub mod screen_effects;
+/// Weather simulation: rain, snow, hail, dust, leaves, ash, pollen particles.
+pub mod weather;
+
+// ── Re-exports ───────────────────────────────────────────────────────────────
+
+pub use effect::PostFxEffect;
+pub use effect_type::PostFxEffectType;
+pub use image_effect::ImageEffect;
+pub use stack::PostFxStack;
+
+pub use ambient::AmbientState;
+pub use atmosphere::{
+    CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
+pub use overlay::Overlay;
+pub use screen_effects::{FadeState, FlashState, ShakeState};
+pub use weather::{WeatherParticle, WeatherState, WeatherType};

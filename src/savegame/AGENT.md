@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.savegame` |
 | **Source** | `src/savegame/` |
+| **Rust Tests** | `tests/unit/savegame_tests.rs`                    |
 | **Tests** | `tests/savegame_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_savegame.lua` |
 
@@ -111,3 +113,40 @@ Exposed under `luna.savegame.*` by `src/lua_api/savegame_api/`.
 | `struct` | 2 |
 | **Total** | **6** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    save = luna.savegame.load("slot1")
+    if save then
+        player_score = save.score
+        player_level = save.level
+    else
+        player_score = 0
+        player_level = 1
+    end
+end
+
+function save_game()
+    luna.savegame.save("slot1", {
+        score = player_score,
+        level = player_level
+    })
+end
+```
+
+## References
+
+| Module       | Relationship  | Notes                                              |
+|--------------|---------------|----------------------------------------------------|
+| `engine`     | Imports from  | Uses `SharedState`                                 |
+| `filesystem` | Imports from  | All save/load operations go through `filesystem` sandbox |
+| `data`       | Related       | `data` handles binary serialisation; `savegame` provides schema-versioned JSON saves |
+| `lua_api`    | Imported by   | `src/lua_api/savegame_api.rs` registers `luna.savegame.*` |
+
+## Notes
+
+- Save data is serialised to JSON (human-readable) via `serde_json`; schema version is embedded.
+- `savegame:migrate()` applies registered migration functions when loading an older save schema.
+- Save files are stored in `luna.filesystem.getSaveDirectory()` — always sandbox-safe.
+- Do not save resource keys (TextureKey, etc.) — they are runtime-only; save logical IDs instead.

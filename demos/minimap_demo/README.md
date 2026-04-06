@@ -16,7 +16,7 @@ A scrollable terrain minimap with fog of war, object markers, pings, and a dragg
 ## How to Run
 
 ```powershell
-cargo run -- examples/minimap_demo
+cargo run -- demos/minimap_demo
 ```
 
 ## Controls

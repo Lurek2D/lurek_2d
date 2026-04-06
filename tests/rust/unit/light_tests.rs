@@ -195,9 +195,7 @@ fn occluder_new_too_few_panics() {
 #[test]
 #[should_panic(expected = "Occluder vertex count must be 3..=256")]
 fn occluder_new_too_many_panics() {
-    let verts: Vec<Vec2> = (0..257)
-        .map(|i| Vec2::new(i as f32, 0.0))
-        .collect();
+    let verts: Vec<Vec2> = (0..257).map(|i| Vec2::new(i as f32, 0.0)).collect();
     let _ = Occluder::new(verts);
 }
 

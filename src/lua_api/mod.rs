@@ -1,22 +1,12 @@
-//! Luna2D Lua API registration layer.
+//! Lua API binding bridge for the Luna2D engine.
 //!
-//! This module is the bridge between the Rust engine modules and the LuaJIT VM.
-//! [`create_lua_vm`] creates a sandboxed VM and registers all enabled `luna.*`
-//! API sub-modules based on the active [`ModulesConfig`].
+//! This is the integration layer that registers all `luna.*` API sub-modules
+//! on top of the types defined in `engine`. `SharedState`, `WindowState`,
+//! `FullscreenType`, and `ErrorInfo` are defined in `engine::shared_state`
+//! and re-exported here for sub-module convenience.
 //!
-//! # Module layout
-//!
-//! Each sub-module exposes exactly one function:
-//! ```text
-//! pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>
-//! ```
-//! That function populates the `luna.<name>` table in the Lua global namespace.
-//!
-//! # Conditional registration
-//!
-//! Modules gated on a [`ModulesConfig`] flag are only registered when the flag is
-//! `true`.  Always-on modules (math, event, dataframe, serial, light) are registered
-//! unconditionally.
+//! The primary entry point is `create_lua_vm()` which constructs a configured
+//! LuaJIT VM with every `luna.*` namespace bound.
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -24,270 +14,345 @@ use std::rc::Rc;
 use mlua::prelude::*;
 
 use crate::engine::config::ModulesConfig;
+pub use crate::engine::{ErrorInfo, FullscreenType, SharedState, WindowState};
 
-// Re-export SharedState so engine callers (app_winit.rs) can import it from lua_api.
-pub use crate::engine::SharedState;
-
-// ── API sub-modules ──────────────────────────────────────────────────────────
-
-/// AI FSM, behaviour tree, and steering API.
-pub mod ai_api;
-/// Sprite animation and frame-clip API.
-pub mod animation_api;
-/// Audio playback and mixer API.
-pub mod audio_api;
-/// Automated input and replay API.
-pub mod automation_api;
-/// Camera and viewport API.
-pub mod camera_api;
-/// Numerical array and CPU compute API.
-pub mod compute_api;
-/// Binary data, compression, hashing, and encoding API.
-pub mod data_api;
-/// Column-major tabular DataFrame API.
-pub mod dataframe_api;
-/// Lightweight ECS entity API.
-pub mod entity_api;
-/// Event queue API.
+/// Registers the `luna.event.*` event queue and signal API.
 pub mod event_api;
-/// Sandboxed game filesystem API.
-pub mod filesystem_api;
-/// Directed graph and flow simulation API.
-pub mod graph_api;
-/// GPU rendering pipeline API.
-pub mod graphics_api;
-/// Retained-mode GUI widgets API.
-pub mod gui_api;
-/// CPU-side image pixel manipulation API.
-pub mod image_api;
-/// Keyboard, mouse, gamepad, and touch input API.
-pub mod input_api;
-/// Lighting and shadow API.
-pub mod light_api;
-/// Math utilities, noise, easing, random, and transform API.
-pub mod math_api;
-/// Minimap extraction and FOV masking API.
-pub mod minimap_api;
-/// Mod discovery and load-ordering API.
-pub mod modding_api;
-/// UDP networking API.
-pub mod network_api;
-/// 2D particle emitter API.
-pub mod particle_api;
-/// A-star and flow-field navigation API.
-pub mod pathfinding_api;
-/// Rigid-body physics API.
-pub mod physics_api;
-/// Data pipeline and pattern helpers API.
-pub mod pipeline_api;
-/// Procedural generation API.
-pub mod procgen_api;
-/// DDA raycaster API.
-pub mod raycaster_api;
-/// Save/load orchestration API.
-pub mod savegame_api;
-/// Scene stack and transition API.
-pub mod scene_api;
-/// Binary serialisation API.
-pub mod serial_api;
-/// Decoded PCM audio sample API.
-pub mod sound_api;
-/// Skeletal animation (Spine) API.
-pub mod spine_api;
-/// Text-mode terminal emulator API.
-pub mod terminal_api;
-/// Background thread and Channel API.
-pub mod thread_api;
-/// Tilemap and tileset API.
-pub mod tilemap_api;
-/// Frame timing and FPS API.
+
+/// Registers the `luna.timer.*` frame-timing API.
 pub mod timer_api;
-/// Post-processing and screen-effects (fx) API.
-pub mod fx_api;
-/// Window management and viewport API.
+
+/// Registers the `luna.image.*` pixel-level image manipulation API.
+pub mod image_api;
+
+/// Registers the `luna.camera.*` Camera2D API.
+pub mod camera_api;
+
+/// Registers the `luna.animation.*` API.
+pub mod animation_api;
+
+/// Registers the `luna.thread.*` background threading API.
+pub mod thread_api;
+
+/// Registers the `luna.simulator.*` automated input simulation API.
+pub mod automation_api;
+
+/// Registers the `luna.keyboard` / `luna.mouse` / `luna.gamepad` / `luna.touch` input API.
+pub mod input_api;
+
+/// Registers the `luna.savegame.*` slot-based save/load API.
+pub mod savegame_api;
+
+/// Registers the `luna.data.*` binary data, compression, hashing, and encoding API.
+pub mod data_api;
+
+/// Registers the `luna.entity.*` lightweight ECS API.
+pub mod entity_api;
+
+/// Registers the `luna.scene.*` scene stack and depth-sorter API.
+pub mod scene_api;
+
+/// Registers the `luna.compute.*` array computation API.
+pub mod compute_api;
+
+/// Registers the `luna.window.*` window management API.
 pub mod window_api;
 
-// ── VM factory ───────────────────────────────────────────────────────────────
+/// Registers the `luna.modding.*` mod management API.
+pub mod modding_api;
 
-/// Creates a sandboxed LuaJIT VM and registers all enabled `luna.*` API modules.
-///
-/// The `luna` global table is populated with every sub-API whose corresponding
-/// [`ModulesConfig`] flag is `true`.  A small set of always-on modules (math,
-/// event, dataframe, serial, light) are registered unconditionally.
+/// Registers the `luna.filesystem.*` sandboxed file I/O API.
+pub mod filesystem_api;
+
+/// Registers the `luna.serial.*` format serialization API.
+pub mod serial_api;
+
+/// Registers the `luna.raycaster.*` DDA grid raycasting API.
+pub mod raycaster_api;
+
+/// Registers the `luna.spine.*` skeletal animation API.
+pub mod spine_api;
+
+/// Registers the `luna.procgen.*` procedural generation API.
+pub mod procgen_api;
+
+/// Registers the `luna.network.*` UDP networking API.
+pub mod network_api;
+
+/// Registers the `luna.minimap.*` grid-based minimap API.
+pub mod minimap_api;
+
+/// Registers the `luna.pathfinding.*` grid-based pathfinding API.
+pub mod pathfinding_api;
+
+/// Registers the `luna.dataframe.*` tabular data API.
+pub mod dataframe_api;
+
+/// Registers the `luna.light.*` 2D lighting API.
+pub mod light_api;
+
+/// Registers the `luna.terminal.*` text-mode terminal emulator API.
+pub mod terminal_api;
+
+/// Registers the `luna.pipeline.*` DAG pipeline orchestrator API.
+pub mod pipeline_api;
+
+/// Registers the `luna.graph.*` directed-graph and item-flow simulation API.
+pub mod graph_api;
+
+/// Registers the `luna.ai.*` game AI toolkit API.
+pub mod ai_api;
+
+/// Registers the `luna.audio.*` audio playback, mixing, and MIDI API.
+pub mod audio_api;
+
+/// Registers the `luna.fx.*` post-processing and screen overlay API.
+pub mod fx_api;
+
+/// Registers the `luna.particle.*` particle system and trail API.
+pub mod particle_api;
+
+/// Registers the `luna.gui.*` retained-mode widget UI API.
+pub mod gui_api;
+
+/// Registers the `luna.tilemap.*` tile-based map authoring and coordinate helpers API.
+pub mod tilemap_api;
+
+/// Registers the `luna.math.*` math utilities API.
+pub mod math_api;
+
+/// Registers the `luna.physics.*` rigid-body physics API.
+pub mod physics_api;
+
+/// Registers the `luna.graphics.*` rendering and drawing API.
+pub mod graphics_api;
+
+/// Creates and configures the Lua VM, registers `luna.*` sub-APIs according to the
+/// provided module flags, and returns the ready `Lua` instance.
 ///
 /// # Parameters
-/// - `state` — `Rc<RefCell<SharedState>>`.
-/// - `modules` — `&ModulesConfig`.
+/// - `state` — Shared engine state passed (via `Rc<RefCell>` clone) to every Lua closure.
+/// - `modules` — Module enable/disable flags read from `conf.lua`. Mandatory APIs
+///   (`math`, `log`, `event`) are always registered regardless of flags.
 ///
 /// # Returns
-/// `LuaResult<Lua>`.
-pub fn create_lua_vm(
-    state: Rc<RefCell<SharedState>>,
-    modules: &ModulesConfig,
-) -> LuaResult<Lua> {
+/// `LuaResult<Lua>` — A configured Lua VM with `luna.*` as a global, or a Lua error if
+/// any sub-API fails to register.
+pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
     let lua = Lua::new();
+
+    // Create the luna namespace table
     let luna = lua.create_table()?;
 
-    // ── Always-on ────────────────────────────────────────────────────────────
-    math_api::register(&lua, &luna, state.clone())?;
+    // event: luna.event (always registered — mandatory API)
     event_api::register(&lua, &luna, state.clone())?;
 
-    // ── Graphics ─────────────────────────────────────────────────────────────
-    if modules.graphics {
-        graphics_api::register(&lua, &luna, state.clone())?;
-    }
-    if modules.image {
-        image_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Audio ─────────────────────────────────────────────────────────────────
-    if modules.audio {
-        audio_api::register(&lua, &luna, state.clone())?;
-        sound_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Physics ───────────────────────────────────────────────────────────────
-    if modules.physics {
-        physics_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Input ─────────────────────────────────────────────────────────────────
-    if modules.input {
-        input_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Timer ─────────────────────────────────────────────────────────────────
+    // timer: luna.timer
     if modules.timer {
         timer_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Filesystem ────────────────────────────────────────────────────────────
-    if modules.filesystem {
-        filesystem_api::register(&lua, &luna, state.clone())?;
+    // image: luna.image
+    if modules.image {
+        image_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Particle ─────────────────────────────────────────────────────────────
-    if modules.particle {
-        particle_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── GUI ───────────────────────────────────────────────────────────────────
-    if modules.gui {
-        gui_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Window ────────────────────────────────────────────────────────────────
-    window_api::register(&lua, &luna, state.clone())?;
-
-    // ── Overlay / light / fx ─────────────────────────────────────────────────
-    if modules.overlay {
-        light_api::register(&lua, &luna, state.clone())?;
-        pipeline_api::register(&lua, &luna, state.clone())?;
-        fx_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Tilemap ───────────────────────────────────────────────────────────────
-    if modules.tilemap {
-        tilemap_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Scene ─────────────────────────────────────────────────────────────────
-    if modules.scene {
-        scene_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Savegame ──────────────────────────────────────────────────────────────
-    if modules.savegame {
-        savegame_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Entity ────────────────────────────────────────────────────────────────
-    if modules.entity {
-        entity_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── AI ────────────────────────────────────────────────────────────────────
-    if modules.ai {
-        ai_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Pathfinding ───────────────────────────────────────────────────────────
-    if modules.pathfinding {
-        pathfinding_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Thread ────────────────────────────────────────────────────────────────
-    if modules.thread {
-        thread_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Graph ─────────────────────────────────────────────────────────────────
-    if modules.graph {
-        graph_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Data / serial / compute / dataframe ───────────────────────────────────
-    if modules.data {
-        data_api::register(&lua, &luna, state.clone())?;
-        serial_api::register(&lua, &luna, state.clone())?;
-    }
-    if modules.compute {
-        compute_api::register(&lua, &luna, state.clone())?;
-        dataframe_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Minimap ───────────────────────────────────────────────────────────────
-    if modules.minimap {
-        minimap_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Modding ───────────────────────────────────────────────────────────────
-    if modules.modding {
-        modding_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Camera ────────────────────────────────────────────────────────────────
+    // camera: luna.camera
     if modules.camera {
         camera_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Animation ─────────────────────────────────────────────────────────────
+    // animation: luna.animation
     if modules.animation {
         animation_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Network ───────────────────────────────────────────────────────────────
-    if modules.network {
-        network_api::register(&lua, &luna, state.clone())?;
+    // thread: luna.thread
+    if modules.thread {
+        thread_api::register(&lua, &luna, state.clone())?;
     }
 
-    // ── Procgen ───────────────────────────────────────────────────────────────
-    if modules.procgen {
-        procgen_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Raycaster ─────────────────────────────────────────────────────────────
-    if modules.raycaster {
-        raycaster_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Spine ─────────────────────────────────────────────────────────────────
-    if modules.spine {
-        spine_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Terminal ──────────────────────────────────────────────────────────────
-    if modules.terminal {
-        terminal_api::register(&lua, &luna, state.clone())?;
-    }
-
-    // ── Debug / automation ────────────────────────────────────────────────────
+    // automation: luna.simulator
     if modules.debug {
         automation_api::register(&lua, &luna, state.clone())?;
     }
 
-    luna.set("_ENGINE_VERSION", env!("CARGO_PKG_VERSION"))?;
+    // input: luna.keyboard / luna.mouse / luna.gamepad / luna.touch
+    if modules.input {
+        input_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // savegame: luna.savegame (always registered — no config flag)
+    savegame_api::register(&lua, &luna, state.clone())?;
+
+    // data: luna.data (always registered — no config flag)
+    data_api::register(&lua, &luna, state.clone())?;
+
+    // modding: luna.modding (always registered — no config flag)
+    modding_api::register(&lua, &luna, state.clone())?;
+
+    // serial: luna.serial (always registered — no config flag)
+    serial_api::register(&lua, &luna, state.clone())?;
+
+    // dataframe: luna.dataframe (always registered — no config flag)
+    dataframe_api::register(&lua, &luna, state.clone())?;
+
+    // light: luna.light (always registered — no config flag)
+    light_api::register(&lua, &luna, state.clone())?;
+
+    // filesystem: luna.filesystem
+    if modules.filesystem {
+        filesystem_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // entity: luna.entity
+    if modules.entity {
+        entity_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // window: luna.window
+    if modules.window {
+        window_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // scene: luna.scene
+    if modules.scene {
+        scene_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // compute: luna.compute
+    if modules.compute {
+        compute_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // raycaster: luna.raycaster
+    if modules.raycaster {
+        raycaster_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // spine: luna.spine
+    if modules.spine {
+        spine_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // procgen: luna.procgen
+    if modules.procgen {
+        procgen_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // network: luna.network
+    if modules.network {
+        network_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // minimap: luna.minimap
+    if modules.minimap {
+        minimap_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // pathfinding: luna.pathfinding
+    if modules.pathfinding {
+        pathfinding_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // terminal: luna.terminal
+    if modules.terminal {
+        terminal_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // pipeline: luna.pipeline
+    if modules.pipeline {
+        pipeline_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // graph: luna.graph
+    if modules.graph {
+        graph_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // ai: luna.ai
+    if modules.ai {
+        ai_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // audio: luna.audio
+    if modules.audio {
+        audio_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // fx: luna.fx
+    if modules.overlay {
+        fx_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // particle: luna.particle
+    if modules.particle {
+        particle_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // gui: luna.gui
+    if modules.gui {
+        gui_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // tilemap: luna.tilemap
+    if modules.tilemap {
+        tilemap_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // math: luna.math (always registered — mandatory)
+    math_api::register(&lua, &luna, state.clone())?;
+
+    // physics: luna.physics
+    if modules.physics {
+        physics_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // graphics: luna.graphics
+    if modules.graphics {
+        graphics_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // Register luna.conf as a no-op runtime callback.
+    // During engine boot the real conf.lua is executed in a temporary Lua VM
+    // before this VM is created. At runtime, luna.conf() is a safe no-op so
+    // that test scripts and any post-boot calls don't error.
+    luna.set("conf", lua.create_function(|_, _: mlua::Value| Ok(()))?)?;
+
     lua.globals().set("luna", luna)?;
 
+    // Add `library/` to the Lua package path so games can use
+    // `require("library.dialog")`, `require("library.item")`, etc.
+    {
+        let package: LuaTable = lua.globals().get("package")?;
+        let old_path: String = package.get("path")?;
+        let mut new_path = old_path;
+        new_path.push_str(";./?/init.lua;./?.lua");
+        if let Ok(exe) = std::env::current_exe() {
+            if let Some(dir) = exe.parent() {
+                let d = dir.to_string_lossy().replace('\\', "/");
+                new_path.push_str(&format!(";{}/?/init.lua;{}/?.lua", d, d));
+            }
+        }
+        package.set("path", new_path)?;
+    }
+
     Ok(lua)
+}
+
+/// Creates a test Lua VM with the BDD test framework loaded and all available API modules registered.
+///
+/// # Returns
+/// `LuaResult<Lua>`.
+pub fn create_test_vm() -> LuaResult<Lua> {
+    use crate::engine::config::Config;
+    use std::path::PathBuf;
+    let state = Rc::new(RefCell::new(SharedState::new(
+        800,
+        600,
+        "Test",
+        PathBuf::from("."),
+    )));
+    let modules = Config::default().modules;
+    create_lua_vm(state, &modules)
 }

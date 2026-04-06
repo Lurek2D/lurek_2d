@@ -8,7 +8,7 @@ common mistakes.
 
 Usage:
     python tools/validate_game.py path/to/game/          # validate a game folder
-    python tools/validate_game.py examples/hello_world/   # validate an example
+    python tools/validate_game.py demos/hello_world/   # validate an example
     python tools/validate_game.py --all-examples          # validate all examples
     python tools/validate_game.py --json                  # JSON output
     python tools/validate_game.py --help
@@ -218,7 +218,7 @@ def main() -> int:
     parser.add_argument("game_dir", nargs="?",
                         help="Path to game folder to validate")
     parser.add_argument("--all-examples", action="store_true",
-                        help="Validate all examples/ games")
+                        help="Validate all demos/ games")
     parser.add_argument("--json", action="store_true",
                         help="Output structured JSON")
     parser.add_argument("--output", metavar="FILE",

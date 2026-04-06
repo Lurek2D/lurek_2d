@@ -1,4 +1,4 @@
-﻿//! Luna2D Binary Pack Format — format-string based binary serialization.
+//! Luna2D Binary Pack Format — format-string based binary serialization.
 //!
 //! Provides `write`, `read`, and `measure_size` for the `luna.data` module.
 //! Format strings use space-separated named type tokens.
@@ -156,19 +156,31 @@ pub fn write(format: &str, values: &[BinValue]) -> Result<ByteData, String> {
             Token::U16 => {
                 let v = coerce_u64(values, val_idx, "u16")? as u16;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::U32 => {
                 let v = coerce_u64(values, val_idx, "u32")? as u32;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::U64 => {
                 let v = coerce_u64(values, val_idx, "u64")?;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::I8 => {
@@ -179,31 +191,51 @@ pub fn write(format: &str, values: &[BinValue]) -> Result<ByteData, String> {
             Token::I16 => {
                 let v = coerce_i64(values, val_idx, "i16")? as i16;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::I32 => {
                 let v = coerce_i64(values, val_idx, "i32")? as i32;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::I64 => {
                 let v = coerce_i64(values, val_idx, "i64")?;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::F32 => {
                 let v = coerce_f64(values, val_idx, "f32")? as f32;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::F64 => {
                 let v = coerce_f64(values, val_idx, "f64")?;
                 val_idx += 1;
-                let b = if endian == Endian::Little { v.to_le_bytes() } else { v.to_be_bytes() };
+                let b = if endian == Endian::Little {
+                    v.to_le_bytes()
+                } else {
+                    v.to_be_bytes()
+                };
                 buf.extend_from_slice(&b);
             }
             Token::Bool => {
@@ -215,7 +247,11 @@ pub fn write(format: &str, values: &[BinValue]) -> Result<ByteData, String> {
                 let s = coerce_str(values, val_idx, "str")?;
                 val_idx += 1;
                 let len = s.len() as u32;
-                let lb = if endian == Endian::Little { len.to_le_bytes() } else { len.to_be_bytes() };
+                let lb = if endian == Endian::Little {
+                    len.to_le_bytes()
+                } else {
+                    len.to_be_bytes()
+                };
                 buf.extend_from_slice(&lb);
                 buf.extend_from_slice(s.as_bytes());
             }
@@ -259,21 +295,33 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
             Token::U16 => {
                 check_bounds(data, pos, 2, "u16")?;
                 let arr = [data[pos], data[pos + 1]];
-                let v = if endian == Endian::Little { u16::from_le_bytes(arr) } else { u16::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    u16::from_le_bytes(arr)
+                } else {
+                    u16::from_be_bytes(arr)
+                };
                 values.push(BinValue::U16(v));
                 pos += 2;
             }
             Token::U32 => {
                 check_bounds(data, pos, 4, "u32")?;
                 let arr = [data[pos], data[pos + 1], data[pos + 2], data[pos + 3]];
-                let v = if endian == Endian::Little { u32::from_le_bytes(arr) } else { u32::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    u32::from_le_bytes(arr)
+                } else {
+                    u32::from_be_bytes(arr)
+                };
                 values.push(BinValue::U32(v));
                 pos += 4;
             }
             Token::U64 => {
                 check_bounds(data, pos, 8, "u64")?;
                 let arr = read8(data, pos);
-                let v = if endian == Endian::Little { u64::from_le_bytes(arr) } else { u64::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    u64::from_le_bytes(arr)
+                } else {
+                    u64::from_be_bytes(arr)
+                };
                 values.push(BinValue::U64(v));
                 pos += 8;
             }
@@ -285,35 +333,55 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
             Token::I16 => {
                 check_bounds(data, pos, 2, "i16")?;
                 let arr = [data[pos], data[pos + 1]];
-                let v = if endian == Endian::Little { i16::from_le_bytes(arr) } else { i16::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    i16::from_le_bytes(arr)
+                } else {
+                    i16::from_be_bytes(arr)
+                };
                 values.push(BinValue::I16(v));
                 pos += 2;
             }
             Token::I32 => {
                 check_bounds(data, pos, 4, "i32")?;
                 let arr = [data[pos], data[pos + 1], data[pos + 2], data[pos + 3]];
-                let v = if endian == Endian::Little { i32::from_le_bytes(arr) } else { i32::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    i32::from_le_bytes(arr)
+                } else {
+                    i32::from_be_bytes(arr)
+                };
                 values.push(BinValue::I32(v));
                 pos += 4;
             }
             Token::I64 => {
                 check_bounds(data, pos, 8, "i64")?;
                 let arr = read8(data, pos);
-                let v = if endian == Endian::Little { i64::from_le_bytes(arr) } else { i64::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    i64::from_le_bytes(arr)
+                } else {
+                    i64::from_be_bytes(arr)
+                };
                 values.push(BinValue::I64(v));
                 pos += 8;
             }
             Token::F32 => {
                 check_bounds(data, pos, 4, "f32")?;
                 let arr = [data[pos], data[pos + 1], data[pos + 2], data[pos + 3]];
-                let v = if endian == Endian::Little { f32::from_le_bytes(arr) } else { f32::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    f32::from_le_bytes(arr)
+                } else {
+                    f32::from_be_bytes(arr)
+                };
                 values.push(BinValue::F32(v));
                 pos += 4;
             }
             Token::F64 => {
                 check_bounds(data, pos, 8, "f64")?;
                 let arr = read8(data, pos);
-                let v = if endian == Endian::Little { f64::from_le_bytes(arr) } else { f64::from_be_bytes(arr) };
+                let v = if endian == Endian::Little {
+                    f64::from_le_bytes(arr)
+                } else {
+                    f64::from_be_bytes(arr)
+                };
                 values.push(BinValue::F64(v));
                 pos += 8;
             }
@@ -325,7 +393,11 @@ pub fn read(format: &str, data: &[u8], offset: usize) -> Result<(Vec<BinValue>, 
             Token::Str => {
                 check_bounds(data, pos, 4, "str")?;
                 let arr = [data[pos], data[pos + 1], data[pos + 2], data[pos + 3]];
-                let len = if endian == Endian::Little { u32::from_le_bytes(arr) } else { u32::from_be_bytes(arr) } as usize;
+                let len = if endian == Endian::Little {
+                    u32::from_le_bytes(arr)
+                } else {
+                    u32::from_be_bytes(arr)
+                } as usize;
                 pos += 4;
                 check_bounds(data, pos, len, "str")?;
                 let s = String::from_utf8_lossy(&data[pos..pos + len]).into_owned();
@@ -374,12 +446,14 @@ pub fn measure_size(format: &str) -> Result<usize, String> {
             Token::U64 | Token::I64 | Token::F64 => size += 8,
             Token::Str => {
                 return Err(
-                    "luna.data size: 'str' token has variable length; cannot compute static size".to_string(),
+                    "luna.data size: 'str' token has variable length; cannot compute static size"
+                        .to_string(),
                 )
             }
             Token::CStr => {
                 return Err(
-                    "luna.data size: 'cstr' token has variable length; cannot compute static size".to_string(),
+                    "luna.data size: 'cstr' token has variable length; cannot compute static size"
+                        .to_string(),
                 )
             }
         }
@@ -419,57 +493,69 @@ fn read8(data: &[u8], pos: usize) -> [u8; 8] {
 /// Coerce a `BinValue` to `u64`, accepting any numeric variant.
 fn coerce_u64(values: &[BinValue], idx: usize, token: &str) -> Result<u64, String> {
     match values.get(idx) {
-        Some(BinValue::U8(v))  => Ok(*v as u64),
+        Some(BinValue::U8(v)) => Ok(*v as u64),
         Some(BinValue::U16(v)) => Ok(*v as u64),
         Some(BinValue::U32(v)) => Ok(*v as u64),
         Some(BinValue::U64(v)) => Ok(*v),
-        Some(BinValue::I8(v))  => Ok(*v as u64),
+        Some(BinValue::I8(v)) => Ok(*v as u64),
         Some(BinValue::I16(v)) => Ok(*v as u64),
         Some(BinValue::I32(v)) => Ok(*v as u64),
         Some(BinValue::I64(v)) => Ok(*v as u64),
         Some(BinValue::F32(v)) => Ok(*v as u64),
         Some(BinValue::F64(v)) => Ok(*v as u64),
         Some(BinValue::Bool(b)) => Ok(if *b { 1 } else { 0 }),
-        Some(_) => Err(format!("luna.data write '{token}': expected integer at value index {idx}")),
-        None    => Err(format!("luna.data write '{token}': not enough values (expected index {idx})")),
+        Some(_) => Err(format!(
+            "luna.data write '{token}': expected integer at value index {idx}"
+        )),
+        None => Err(format!(
+            "luna.data write '{token}': not enough values (expected index {idx})"
+        )),
     }
 }
 
 /// Coerce a `BinValue` to `i64`, accepting any numeric variant.
 fn coerce_i64(values: &[BinValue], idx: usize, token: &str) -> Result<i64, String> {
     match values.get(idx) {
-        Some(BinValue::U8(v))  => Ok(*v as i64),
+        Some(BinValue::U8(v)) => Ok(*v as i64),
         Some(BinValue::U16(v)) => Ok(*v as i64),
         Some(BinValue::U32(v)) => Ok(*v as i64),
         Some(BinValue::U64(v)) => Ok(*v as i64),
-        Some(BinValue::I8(v))  => Ok(*v as i64),
+        Some(BinValue::I8(v)) => Ok(*v as i64),
         Some(BinValue::I16(v)) => Ok(*v as i64),
         Some(BinValue::I32(v)) => Ok(*v as i64),
         Some(BinValue::I64(v)) => Ok(*v),
         Some(BinValue::F32(v)) => Ok(*v as i64),
         Some(BinValue::F64(v)) => Ok(*v as i64),
         Some(BinValue::Bool(b)) => Ok(if *b { 1 } else { 0 }),
-        Some(_) => Err(format!("luna.data write '{token}': expected integer at value index {idx}")),
-        None    => Err(format!("luna.data write '{token}': not enough values (expected index {idx})")),
+        Some(_) => Err(format!(
+            "luna.data write '{token}': expected integer at value index {idx}"
+        )),
+        None => Err(format!(
+            "luna.data write '{token}': not enough values (expected index {idx})"
+        )),
     }
 }
 
 /// Coerce a `BinValue` to `f64`, accepting any numeric variant.
 fn coerce_f64(values: &[BinValue], idx: usize, token: &str) -> Result<f64, String> {
     match values.get(idx) {
-        Some(BinValue::U8(v))  => Ok(*v as f64),
+        Some(BinValue::U8(v)) => Ok(*v as f64),
         Some(BinValue::U16(v)) => Ok(*v as f64),
         Some(BinValue::U32(v)) => Ok(*v as f64),
         Some(BinValue::U64(v)) => Ok(*v as f64),
-        Some(BinValue::I8(v))  => Ok(*v as f64),
+        Some(BinValue::I8(v)) => Ok(*v as f64),
         Some(BinValue::I16(v)) => Ok(*v as f64),
         Some(BinValue::I32(v)) => Ok(*v as f64),
         Some(BinValue::I64(v)) => Ok(*v as f64),
         Some(BinValue::F32(v)) => Ok(*v as f64),
         Some(BinValue::F64(v)) => Ok(*v),
         Some(BinValue::Bool(b)) => Ok(if *b { 1.0 } else { 0.0 }),
-        Some(_) => Err(format!("luna.data write '{token}': expected numeric at value index {idx}")),
-        None    => Err(format!("luna.data write '{token}': not enough values (expected index {idx})")),
+        Some(_) => Err(format!(
+            "luna.data write '{token}': expected numeric at value index {idx}"
+        )),
+        None => Err(format!(
+            "luna.data write '{token}': not enough values (expected index {idx})"
+        )),
     }
 }
 
@@ -477,10 +563,14 @@ fn coerce_f64(values: &[BinValue], idx: usize, token: &str) -> Result<f64, Strin
 fn coerce_bool(values: &[BinValue], idx: usize, token: &str) -> Result<bool, String> {
     match values.get(idx) {
         Some(BinValue::Bool(b)) => Ok(*b),
-        Some(BinValue::U8(v))  => Ok(*v != 0),
+        Some(BinValue::U8(v)) => Ok(*v != 0),
         Some(BinValue::I64(v)) => Ok(*v != 0),
-        Some(_) => Err(format!("luna.data write '{token}': expected bool at value index {idx}")),
-        None    => Err(format!("luna.data write '{token}': not enough values (expected index {idx})")),
+        Some(_) => Err(format!(
+            "luna.data write '{token}': expected bool at value index {idx}"
+        )),
+        None => Err(format!(
+            "luna.data write '{token}': not enough values (expected index {idx})"
+        )),
     }
 }
 
@@ -491,7 +581,11 @@ fn coerce_str(values: &[BinValue], idx: usize, token: &str) -> Result<String, St
         Some(BinValue::Bytes(b)) => String::from_utf8(b.clone()).map_err(|e| {
             format!("luna.data write '{token}': bytes at index {idx} are not valid UTF-8: {e}")
         }),
-        Some(_) => Err(format!("luna.data write '{token}': expected string at value index {idx}")),
-        None    => Err(format!("luna.data write '{token}': not enough values (expected index {idx})")),
+        Some(_) => Err(format!(
+            "luna.data write '{token}': expected string at value index {idx}"
+        )),
+        None => Err(format!(
+            "luna.data write '{token}': not enough values (expected index {idx})"
+        )),
     }
 }

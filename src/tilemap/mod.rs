@@ -37,10 +37,10 @@ pub use tileset::{TileAnimFrame, TileSet};
 pub use tmx::{
     load_tmx, TmxLayer, TmxMap, TmxObject, TmxObjectLayer, TmxOrientation, TmxTileLayer, TmxTileset,
 };
-/// Grid-direction walker for tile stepping.
-pub mod tile_walker;
 /// Optimized renderer data model for large tile-based maps with chunking and LOD.
 pub mod large_map_renderer;
+/// Grid-direction walker for tile stepping.
+pub mod tile_walker;
 pub use large_map_renderer::{LargeMapRenderer, MapChunk};
 /// Polygon map with named regions, hit detection, and labeling.
 pub mod polygon_map;

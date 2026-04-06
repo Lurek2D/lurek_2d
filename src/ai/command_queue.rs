@@ -182,6 +182,69 @@ impl CommandQueue {
     pub fn advance(&mut self) {
         self.commands.pop_front();
     }
+
+    /// Appends a new command built from raw parameters. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `kind` — `String`.
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `priority` — `i32`.
+    /// - `interruptible` — `bool`.
+    /// - `callback` — `RegistryKey`.
+    pub fn enqueue_raw(
+        &mut self,
+        kind: String,
+        tx: f32,
+        ty: f32,
+        priority: i32,
+        interruptible: bool,
+        callback: RegistryKey,
+    ) {
+        self.enqueue(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+    }
+
+    /// Inserts at the front from raw parameters. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `kind` — `String`.
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `priority` — `i32`.
+    /// - `interruptible` — `bool`.
+    /// - `callback` — `RegistryKey`.
+    pub fn push_front_raw(
+        &mut self,
+        kind: String,
+        tx: f32,
+        ty: f32,
+        priority: i32,
+        interruptible: bool,
+        callback: RegistryKey,
+    ) {
+        self.push_front(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+    }
+
+    /// Clears the queue and replaces with a single command from raw parameters. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `kind` — `String`.
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `priority` — `i32`.
+    /// - `interruptible` — `bool`.
+    /// - `callback` — `RegistryKey`.
+    pub fn replace_raw(
+        &mut self,
+        kind: String,
+        tx: f32,
+        ty: f32,
+        priority: i32,
+        interruptible: bool,
+        callback: RegistryKey,
+    ) {
+        self.replace(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+    }
 }
 
 impl Default for CommandQueue {

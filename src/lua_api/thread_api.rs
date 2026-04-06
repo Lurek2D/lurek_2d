@@ -1,161 +1,131 @@
-//! `luna.thread` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/thread/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
-use std::cell::RefCell;
-use std::rc::Rc;
+//! `luna.thread` — Background threads and inter-thread channel communication.
 
+use super::SharedState;
 use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
-use crate::engine::SharedState;
+use crate::thread::channel::{lua_to_channel_value, Channel, LuaChannel};
+use crate::thread::worker::LuaThread;
 
-// ── LuaChannel ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// LuaThreadHandle UserData
+// -------------------------------------------------------------------------------
 
-pub struct LuaChannel(/* TODO: add key + state fields */);
+/// Lua-side wrapper around a background [`LuaThread`].
+#[derive(Clone)]
+pub struct LuaThreadHandle {
+    inner: Arc<Mutex<LuaThread>>,
+}
 
+impl LuaUserData for LuaThreadHandle {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
-impl LuaChannel {
-    /// Push a value to the back of the channel. Returns the push ID.
-    ///
-    /// @param value : ChannelValue
-    /// @return integer
-    pub fn push(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Pop a value from the front of the channel (non-blocking).
-    ///
-    ///
-    /// @return ChannelValue?
-    pub fn pop(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Peek at the front value without removing it.
-    ///
-    ///
-    /// @return ChannelValue?
-    pub fn peek(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Wait for a value, blocking the calling thread.
-    ///
-    /// @param timeout : number?
-    /// @return ChannelValue?
-    pub fn demand(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the number of values currently in the channel.
-    ///
-    ///
-    /// @return integer
-    pub fn get_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Push a value only if the channel is currently empty.
-    ///
-    /// @param value : ChannelValue
-    /// @return boolean
-    pub fn supply(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the channel name, if it is a named channel.
-    ///
-    ///
-    /// @return Option<
-    pub fn name(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return string
+        methods.add_method("type", |_, _, ()| Ok("Thread".to_string()));
+
+        // -- typeOf --
+        /// Returns whether this object is of the given type.
+        /// @param name : string
+        /// @return boolean
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Thread" || name == "Object")
+        });
+
+        // -- start --
+        /// Launches the background thread, passing optional arguments via varargs.
+        /// @return nil
+        methods.add_method("start", |_, this, args: LuaMultiValue| {
+            let channel_args: Vec<_> = args
+                .into_iter()
+                .map(lua_to_channel_value)
+                .collect::<LuaResult<Vec<_>>>()?;
+            this.inner
+                .lock()
+                .unwrap()
+                .start(channel_args)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(())
+        });
+
+        // -- wait --
+        /// Blocks the calling thread until the background thread finishes.
+        /// @return nil
+        methods.add_method("wait", |_, this, ()| {
+            this.inner.lock().unwrap().wait();
+            Ok(())
+        });
+
+        // -- isRunning --
+        /// Returns whether the thread is currently executing.
+        /// @return boolean
+        methods.add_method("isRunning", |_, this, ()| {
+            Ok(this.inner.lock().unwrap().is_running())
+        });
+
+        // -- getError --
+        /// Returns the error message if the thread failed, or nil.
+        /// @return string?
+        methods.add_method("getError", |_, this, ()| {
+            Ok(this.inner.lock().unwrap().get_error())
+        });
+
     }
 }
 
-impl UserData for LuaChannel {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("push", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("pop", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("peek", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("demand", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("supply", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("name", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── LuaLuaThread ────────────────────────────────────────────────────────────
-
-pub struct LuaLuaThread(/* TODO: add key + state fields */);
-
-
-impl LuaLuaThread {
-    /// Check whether the thread is currently running.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_running(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the error message if the thread terminated with an error.
-    ///
-    ///
-    /// @return string?
-    pub fn get_error(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaLuaThread {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isRunning", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getError", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.thread.* functions ──────────────────────────────────────────
-
-/// Create a named channel. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param name : string
-/// @return Arc<Self>
-pub fn named(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Convert a Lua value into a `ChannelValue` for cross-thread transfer.
-///
-/// @param value : any
-/// @return LuaResult<ChannelValue>
-pub fn lua_to_channel_value(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Convert a `ChannelValue` back into a Lua value.
-///
-/// @param lua : Lua
-/// @param value : ChannelValue
-/// @return LuaResult<LuaValue<
-pub fn channel_value_to_lua(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Start the thread, spawning a new OS thread with its own Lua VM.
-///
-/// @param args : table
-/// @return Result<()
-pub fn start(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.thread` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.thread` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("named", lua.create_function(named)?)?;
-    tbl.set("luaToChannelValue", lua.create_function(lua_to_channel_value)?)?;
-    tbl.set("channelValueToLua", lua.create_function(channel_value_to_lua)?)?;
-    tbl.set("start", lua.create_function(start)?)?;
+    let named_channels: Arc<Mutex<HashMap<String, Arc<Channel>>>> =
+        Arc::new(Mutex::new(HashMap::new()));
+
+    // -- newThread --
+    /// Creates a new background thread from a Lua code string.
+    /// @param code : string
+    /// @return Thread
+    let ch = named_channels.clone();
+    tbl.set(
+        "newThread",
+        lua.create_function(move |_, code: String| {
+            Ok(LuaThreadHandle {
+                inner: Arc::new(Mutex::new(LuaThread::new(code, ch.clone()))),
+            })
+        })?,
+    )?;
+
+    // -- newChannel --
+    /// Creates an unnamed thread-safe channel for inter-thread communication.
+    /// @return Channel
+    tbl.set(
+        "newChannel",
+        lua.create_function(|_, ()| Ok(LuaChannel { inner: Channel::new() }))?,
+    )?;
+
+    // -- getChannel --
+    /// Gets or creates a named global channel shared across threads.
+    /// @param name : string
+    /// @return Channel
+    let ch = named_channels.clone();
+    tbl.set(
+        "getChannel",
+        lua.create_function(move |_, name: String| {
+            let mut channels = ch.lock().unwrap();
+            let channel = channels
+                .entry(name.clone())
+                .or_insert_with(|| Channel::named(name))
+                .clone();
+            Ok(LuaChannel { inner: channel })
+        })?,
+    )?;
+
     luna.set("thread", tbl)?;
     Ok(())
 }

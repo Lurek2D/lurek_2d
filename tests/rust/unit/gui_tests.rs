@@ -2,12 +2,11 @@
 //! controls, containers, extras, theme, and context.
 
 use luna2d::gui::{
-    Accordion, AccordionSection, Button, CheckBox, ColorPicker, ComboBox, DockPanel, Dialog,
-    GUITable, GUIWindow, GuiContext, ImageWidget, Label, Layout, LayoutDirection, ListBox,
-    MenuBar, MenuItem, NinePatch, Panel, ProgressBar, RadioButton, ScrollBar, ScrollPanel,
-    Separator, Slider, Spacer, SplitPanel, StatusBar, TabBar, TableColumn, TextInput, Theme,
-    Toast, Toolbar, ToolbarButton, TooltipPanel, TreeView, WidgetBase, WidgetState,
-    WidgetStyle, WidgetType,
+    Accordion, AccordionSection, Button, CheckBox, ColorPicker, ComboBox, Dialog, DockPanel,
+    GUITable, GUIWindow, GuiContext, ImageWidget, Label, Layout, LayoutDirection, ListBox, MenuBar,
+    MenuItem, NinePatch, Panel, ProgressBar, RadioButton, ScrollBar, ScrollPanel, Separator,
+    Slider, Spacer, SplitPanel, StatusBar, TabBar, TableColumn, TextInput, Theme, Toast, Toolbar,
+    ToolbarButton, TooltipPanel, TreeView, WidgetBase, WidgetState, WidgetStyle, WidgetType,
 };
 
 // ============================================================
@@ -354,8 +353,18 @@ fn layout_perform_vertical() {
     ly.children.push(0);
     ly.children.push(1);
     let mut bases = vec![
-        { let mut b = WidgetBase::new(WidgetType::Button); b.width = 100.0; b.height = 30.0; b },
-        { let mut b = WidgetBase::new(WidgetType::Button); b.width = 100.0; b.height = 40.0; b },
+        {
+            let mut b = WidgetBase::new(WidgetType::Button);
+            b.width = 100.0;
+            b.height = 30.0;
+            b
+        },
+        {
+            let mut b = WidgetBase::new(WidgetType::Button);
+            b.width = 100.0;
+            b.height = 40.0;
+            b
+        },
     ];
     ly.perform_layout(&mut bases);
     assert!((bases[0].x - 10.0).abs() < 1e-5);
@@ -373,8 +382,18 @@ fn layout_perform_horizontal() {
     ly.children.push(0);
     ly.children.push(1);
     let mut bases = vec![
-        { let mut b = WidgetBase::new(WidgetType::Button); b.width = 50.0; b.height = 30.0; b },
-        { let mut b = WidgetBase::new(WidgetType::Button); b.width = 60.0; b.height = 30.0; b },
+        {
+            let mut b = WidgetBase::new(WidgetType::Button);
+            b.width = 50.0;
+            b.height = 30.0;
+            b
+        },
+        {
+            let mut b = WidgetBase::new(WidgetType::Button);
+            b.width = 60.0;
+            b.height = 30.0;
+            b
+        },
     ];
     ly.perform_layout(&mut bases);
     assert!((bases[0].x - 0.0).abs() < 1e-5);
@@ -645,7 +664,9 @@ fn theme_set_get_style() {
         font_size: 16.0,
     };
     theme.set_style(WidgetType::Button, WidgetState::Normal, style.clone());
-    let retrieved = theme.get_style(WidgetType::Button, WidgetState::Normal).unwrap();
+    let retrieved = theme
+        .get_style(WidgetType::Button, WidgetState::Normal)
+        .unwrap();
     assert!((retrieved.bg_color[0] - 1.0).abs() < 1e-5);
     assert!((retrieved.border_width - 2.0).abs() < 1e-5);
 }
@@ -663,7 +684,9 @@ fn theme_fallback_to_normal() {
     };
     theme.set_style(WidgetType::Label, WidgetState::Normal, style);
     // Querying Hovered should fall back to Normal
-    let retrieved = theme.get_style(WidgetType::Label, WidgetState::Hovered).unwrap();
+    let retrieved = theme
+        .get_style(WidgetType::Label, WidgetState::Hovered)
+        .unwrap();
     assert!((retrieved.bg_color[0] - 0.5).abs() < 1e-5);
 }
 
@@ -755,7 +778,6 @@ fn gui_context_all_widget_constructors() {
     ctx.add_tree_view();
     assert_eq!(ctx.widgets.len(), 17); // root panel + 16 added
 }
-
 
 // ============================================================
 // RadioButton

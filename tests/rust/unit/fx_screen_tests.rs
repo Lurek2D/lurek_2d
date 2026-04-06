@@ -8,8 +8,8 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -894,7 +894,6 @@ fn lua_overlay_fade_defaults() {
     .exec()
     .expect("Fade default duration should be 1.0s");
 }
-
 
 // ── Merged from overlay_tests2.rs ─────────────────────────────────────────
 

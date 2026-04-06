@@ -15,7 +15,7 @@ Demonstrates six classic software design patterns implemented in Lua using Luna2
 ## How to Run
 
 ```powershell
-cargo run -- examples/patterns_demo
+cargo run -- demos/patterns_demo
 ```
 
 ## Controls

@@ -53,8 +53,8 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
     let state = Rc::new(RefCell::new(SharedState::new(

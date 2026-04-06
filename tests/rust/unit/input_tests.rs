@@ -60,8 +60,8 @@ fn gamepad_axis_value() {
 
 // ── Gamepad Lua API tests ──────────────────────────────────────────
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;

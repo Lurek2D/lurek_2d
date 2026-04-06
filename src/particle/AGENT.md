@@ -6,7 +6,7 @@
 | **Tier** | Tier 2 — Reusable Engine Extensions |
 | **Lua API** | `luna.particle` |
 | **Source** | `src/particle/` |
-| **Tests** | `tests/particle_tests.rs` |
+| **Rust Tests** | `tests/unit/particle_tests.rs`                    |
 | **Lua Tests** | `tests/lua/unit/test_particle.lua` |
 
 ## Summary
@@ -71,6 +71,25 @@ ParticleSystem (main container)
 | `src/particle/emitter.rs`  | `ParticleSystem` simulation + `draw_commands()` |
 | `src/particle/math.rs`     | Math helpers (`lerp`, `interpolate_*`, `rand_*`) |
 | `src/particle/emission.rs` | Emission offset helpers for area distribution and shapes |
+| `config.rs` | TODO: describe purpose of config.rs |
+| `emission.rs` | TODO: describe purpose of emission.rs |
+| `emitter.rs` | TODO: describe purpose of emitter.rs |
+| `math.rs` | TODO: describe purpose of math.rs |
+| `particle.rs` | TODO: describe purpose of particle.rs |
+| `shapes.rs` | `ParticleShape` geometric primitive enum (Square/Circle/Triangle/Spark/Diamond) |
+| `trail.rs` | `TrailConfig` and per-particle `TrailState` for motion-trail rendering |
+
+## Submodules
+
+| Name | Purpose |
+|------|---------|
+| `config` | ~50-field `ParticleConfig` struct, `EmissionShape` enum, and gradient/curve types |
+| `emission` | Per-emission-shape spawn-offset helpers for area distribution |
+| `emitter` | `ParticleSystem` simulation loop and `draw_commands()` builder |
+| `math` | Internal numeric helpers: `lerp`, curve interpolation, `rand_range_f32` |
+| `particle` | Per-particle `Particle` live-state struct and spawn initialisation |
+| `shapes` | `ParticleShape` display primitive enum mirrored on the GPU as `ParticleRenderShape` |
+| `trail` | `TrailConfig` parameters and per-particle `TrailState` (position history buffer) |
 
 ## Key Types
 
@@ -163,7 +182,7 @@ Gravity is set via config fields `gravity_x` / `gravity_y` in `luna.particle.new
 
 | Example | Description |
 |---------|-------------|
-| `examples/particles_demo/main.lua` | Full showcase: fire, explosion, smoke, sparks, magic, and snow emitters |
+| `demos/particles_demo/main.lua` | Full showcase: fire, explosion, smoke, sparks, magic, and snow emitters |
 
 ## Item Summary
 
@@ -174,3 +193,43 @@ Gravity is set via config fields `gravity_x` / `gravity_y` in `luna.particle.new
 | `mod` | 6 (`config`, `emission`, `emitter`, `math`, `particle`, `shapes`) |
 | `struct` | 3 (`ParticleConfig`, `Particle`, `ParticleSystem`) |
 | **Total** | **19** |
+
+## Lua Examples
+
+```lua
+function luna.load()
+    emitter = luna.particle.newSystem(1000)
+    emitter:setTexture(luna.graphics.newImage("spark.png"))
+    emitter:setEmissionRate(100)
+    emitter:setLifetime(1.0, 2.0)
+    emitter:setSpeed(50, 150)
+    emitter:setSpread(math.pi * 2)
+    emitter:setColors({1,0.5,0,1}, {1,0,0,0})
+    emitter:start()
+end
+
+function luna.update(dt)
+    emitter:update(dt)
+end
+
+function luna.draw()
+    luna.graphics.draw(emitter, 400, 300)
+end
+```
+
+## References
+
+| Module     | Relationship  | Notes                                              |
+|------------|---------------|----------------------------------------------------|
+| `engine`   | Imports from  | Uses `SharedState`, `TextureKey`, `ParticleKey`    |
+| `math`     | Imports from  | `Vec2`, `Color`, `Rect`, noise functions           |
+| `graphics` | Related       | `particle` pushes `DrawParticleSystem` into the draw command queue |
+| `lua_api`  | Imported by   | `src/lua_api/particle_api.rs` registers `luna.particle.*` |
+
+## Notes
+
+- `ParticleSystem` is a CPU-side simulation; all positions are updated in Rust each frame.
+- Particle count limit is fixed at creation (`newSystem(max_particles)`) — allocates once, never reallocates.
+- Texture assignment is optional; untextured particles render as coloured quads.
+- Frame-rate independence: always pass `dt` to `emitter:update(dt)`; never assume fixed 60fps.
+- Trail support adds additional vertices per particle; keep trail length short on integrated GPUs.

@@ -13,7 +13,7 @@ A Lua-side scene state machine: Title Screen → Gameplay → Game Over. Shows h
 ## How to Run
 
 ```powershell
-cargo run -- examples/scene_demo
+cargo run -- demos/scene_demo
 ```
 
 ## Controls

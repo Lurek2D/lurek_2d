@@ -2,110 +2,140 @@
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 1 — Core Engine Subsystems |
+| **Tier** | Unassigned |
+| **Status** | Implemented — Full |
 | **Lua API** | `luna.serial` |
 | **Source** | `src/serial/` |
-| **Tests** | `tests/unit/serial_tests.rs` |
+| **Rust Tests** | `tests/unit/serial_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_serial.lua` |
+| **Architecture** | — |
 
 ## Summary
 
-The serial module provides format-agnostic serialization and deserialization
-for the Luna2D engine. It supports JSON, TOML, CSV, and YAML formats through a
-shared `SerialValue` intermediate type that maps cleanly to Lua tables.
+The `serial` module provides format-agnostic serialisation and deserialisation for JSON,
+TOML, CSV, and Lua table literals. It is a Tier 1 Engine Subsystem.
 
-All parsers return a `SerialValue` tree and all encoders accept one. The Lua
-API (`luna.serial.*`) converts between `SerialValue` and Lua tables
-automatically. Map keys are always strings; sequences use consecutive integer
-indices when returned to Lua.
+`SerialValue` is a common intermediate representation (Null, Bool, Int, Float, String,
+Array, Map) that all format drivers produce and consume. This means a Lua script can
+load a JSON file, mutate it as a `SerialValue` tree, and save it as TOML without any
+format-specific knowledge.
 
-Binary data persistence belongs in `src/binary/` (`luna.binary.*`) or
-`src/data/` (`luna.data.*` for LÖVE2D-compat).
-Full save-game orchestration belongs in `src/savegame/` (`luna.savegame.*`).
+Supported formats: JSON (via `serde_json`), TOML (via `toml`), CSV (rows-of-strings),
+and Lua table literals (hand-rolled parser for simple config files). YAML is explicitly
+not supported — design assumption B-05 prohibits YAML anywhere in the project.
 
+The module contains no file I/O: callers supply strings and receive strings back.
+Filesystem operations are handled by `luna.filesystem` or `luna.data`.
+
+**Scope boundary**: `serial` is a pure string-in / string-out transformation module.
+It has no GPU, audio, or physics dependencies.
 ## Architecture
 
 ```
-serial/
-  │
-  ├── SerialValue ── shared intermediate type (Null/Bool/Int/Float/Str/Seq/Map)
-  │                  Map uses IndexMap<String, SerialValue> for insertion order
-  │
-  ├── json ── from_json / to_json via serde_json
-  │
-  ├── toml ── from_toml / to_toml via toml = "0.8"
-  │
-  ├── csv ── from_csv / to_csv via csv = "1" with CsvOptions
-  │
-  └── yaml ── from_yaml / to_yaml via serde_yml = "0.9"
+serial (module root)
+  ├── csv.rs — CSV parsing and serialization for Luna2D. Converts between CSV strings and `SerialValue` using the `csv` crate. Parses CSV rows into ordered maps keyed by header columns.
+  ├── json.rs — JSON parsing and serialization for Luna2D. Converts between JSON strings and `SerialValue` using `serde_json`.
+  ├── lua_table.rs — `SerialValue`: shared intermediate representation for all serial format modules. All format modules (json, toml, csv, yaml) convert to/from `SerialValue`. `Lua-table` is the canonical name because the primary use case is bridging between Lua tables and text serialization formats.
+  ├── toml.rs — TOML parsing and serialization for Luna2D. Converts between TOML strings and `SerialValue` using the `toml` crate. Provides the functionality previously in `data::toml_convert`.
+  ├── yaml.rs — YAML parsing and serialization for Luna2D. Converts between YAML strings and `SerialValue` using `serde_yml`.
 ```
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
-| `mod.rs` | Module root; re-exports SerialValue, SerialError, and all format submodules |
-| `lua_table.rs` | `SerialValue` intermediate enum and `SerialError` type |
-| `json.rs` | JSON parsing and encoding |
-| `toml.rs` | TOML parsing and encoding (migrated from `data::toml_convert`) |
-| `csv.rs` | CSV parsing and encoding with configurable delimiter and header options |
-| `yaml.rs` | YAML parsing and encoding |
+| `csv.rs` | CSV parsing and serialization for Luna2D. Converts between CSV strings and `SerialValue` using the `csv` crate. Parses CSV rows into ordered maps keyed by header columns. |
+| `json.rs` | JSON parsing and serialization for Luna2D. Converts between JSON strings and `SerialValue` using `serde_json`. |
+| `lua_table.rs` | `SerialValue`: shared intermediate representation for all serial format modules. All format modules (json, toml, csv, yaml) convert to/from `SerialValue`. `Lua-table` is the canonical name because the primary use case is bridging between Lua tables and text serialization formats. |
+| `toml.rs` | TOML parsing and serialization for Luna2D. Converts between TOML strings and `SerialValue` using the `toml` crate. Provides the functionality previously in `data::toml_convert`. |
+| `yaml.rs` | YAML parsing and serialization for Luna2D. Converts between YAML strings and `SerialValue` using `serde_yml`. |
 
 ## Submodules
 
-### `serial::lua_table`
+### `serial::csv`
 
-Shared intermediate type.
+CSV parsing and serialization for Luna2D. Converts between CSV strings and `SerialValue` using the `csv` crate. Parses CSV rows into ordered maps keyed by header columns.
 
-- **`SerialValue`** (enum): `Null`, `Bool(bool)`, `Int(i64)`, `Float(f64)`, `Str(String)`, `Seq(Vec<SerialValue>)`, `Map(IndexMap<String, SerialValue>)`.
+- **`CsvOptions`** (struct): TODO: one-line description.
 
 ### `serial::json`
 
-JSON serialization using `serde_json`.
+JSON parsing and serialization for Luna2D. Converts between JSON strings and `SerialValue` using `serde_json`.
 
-- **`from_json`** (fn): Parse a JSON string into `SerialValue`. Errors prefixed with `"JSON parse error: "`.
-- **`to_json`** (fn): Encode `SerialValue` to JSON string. Pass `pretty = true` for indented output.
+### `serial::lua_table`
+
+`SerialValue`: shared intermediate representation for all serial format modules. All format modules (json, toml, csv, yaml) convert to/from `SerialValue`. `Lua-table` is the canonical name because the primary use case is bridging between Lua tables and text serialization formats.
+
+- **`SerialValue`** (enum): TODO: one-line description.
 
 ### `serial::toml`
 
-TOML serialization using the `toml` crate.
-
-- **`from_toml`** (fn): Parse a TOML string into `SerialValue`. Errors prefixed with `"TOML parse error: "`.
-- **`to_toml`** (fn): Encode `SerialValue` to TOML string. Errors prefixed with `"TOML encode error: "`.
-
-### `serial::csv`
-
-CSV serialization using the `csv` crate.
-
-- **`CsvOptions`** (struct): `delimiter: u8` (default `b','`), `has_headers: bool` (default `true`). Implements `Default`.
-- **`from_csv`** (fn): Parse CSV into `SerialValue::Seq` of `SerialValue::Map` rows. Header row becomes map keys when `has_headers = true`.
-- **`to_csv`** (fn): Encode `SerialValue` (Seq of Maps or Seq of Seqs) to CSV string.
+TOML parsing and serialization for Luna2D. Converts between TOML strings and `SerialValue` using the `toml` crate. Provides the functionality previously in `data::toml_convert`.
 
 ### `serial::yaml`
 
-YAML serialization using `serde_yml`.
+YAML parsing and serialization for Luna2D. Converts between YAML strings and `SerialValue` using `serde_yml`.
 
-- **`from_yaml`** (fn): Parse a YAML string into `SerialValue`. Errors prefixed with `"YAML parse error: "`.
-- **`to_yaml`** (fn): Encode `SerialValue` to YAML string. Errors prefixed with `"YAML encode error: "`.
+## Key Types
+
+### Structs
+
+#### `serial::csv::CsvOptions`
+
+TODO: description from `///` doc comment.
+
+### Enums
+
+#### `serial::lua_table::SerialValue`
+
+TODO: description from `///` doc comment.
 
 ## Lua API
 
-Exposed under `luna.serial.*` by `src/lua_api/serial_api.rs`.
+Exposed under `luna.serial.*` by `src\lua_api\serial_api.rs`.
 
-| Lua Function | Description |
-|---|---|
-| `luna.serial.fromJson(str)` | Parse JSON string → Lua table |
-| `luna.serial.toJson(table, pretty?)` | Encode Lua table → JSON string |
-| `luna.serial.fromToml(str)` | Parse TOML string → Lua table |
-| `luna.serial.toToml(table)` | Encode Lua table → TOML string |
-| `luna.serial.fromCsv(str, delimiter?, hasHeaders?)` | Parse CSV → Lua table (seq of maps) |
-| `luna.serial.toCsv(table, delimiter?, hasHeaders?)` | Encode Lua table → CSV string |
-| `luna.serial.fromYaml(str)` | Parse YAML string → Lua table |
-| `luna.serial.toYaml(table)` | Encode Lua table → YAML string |
+TODO: Describe the overall API surface. List the major categories of functions.
 
-## Conventions
+Exposed functions include: `serial`.
 
-- All `from_*` functions propagate errors to Lua as descriptive `LuaError` messages
-- `to_*` functions accept any Lua table; sequences are detected by consecutive integer keys from 1
-- `nil` values in Lua tables map to `SerialValue::Null` and are preserved through round-trips (YAML and JSON only; TOML does not support null)
-- Floats that are whole numbers (e.g. `42.0`) are coerced to `Int` when converting from Lua to `SerialValue`
+## Lua Examples
+
+```lua
+-- Example: Basic serial usage
+function luna.load()
+    -- TODO: replace with real serial setup
+    local obj = luna.serial.serial()
+end
+
+function luna.update(dt)
+    -- TODO: update logic
+end
+```
+
+## Item Summary
+
+| Kind | Count |
+|------|-------|
+| `struct` | 1 |
+| `enum`   | 1 |
+| `fn`     | 8 |
+| **Total** | **10** |
+
+## References
+
+| Module | Relationship | Notes |
+|--------|--------------|-------|
+| `engine` | Imports from | Uses SharedState, EngineError |
+| `math` | Imports from | Vec2, Color, Rect |
+| `lua_api` | Imported by | Binds public API to Lua |
+
+TODO: Add entries for similar modules and explain the separation of duties.
+
+## Notes
+
+TODO: Document unique facts an agent must know before editing this module:
+- External crate constraints (version, thread-safety, API limitations)
+- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
+- Known limitations or intentional omissions
+- Best practices and anti-patterns for this module
+- What Lua scripts will break if the API changes

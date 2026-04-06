@@ -1,672 +1,1237 @@
-//! `luna.light` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/light/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.light` — 2D lighting, shadow occluders, and ambient control.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::engine::resource_keys::{LightKey, OccluderKey};
+use crate::light::{
+    Attenuation, FalloffMode, FlickerConfig, Light2D, LightBlendMode, LightType, Occluder,
+    ShadowFilter,
+};
+use crate::math::{Color, Vec2};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// String ↔ Enum helpers
+// -------------------------------------------------------------------------------
 
-// ── LuaAttenuation ────────────────────────────────────────────────────────────
-
-pub struct LuaAttenuation(/* TODO: add key + state fields */);
-
-
-impl LuaAttenuation {
-    /// Computes the attenuation factor at a given distance.
-    ///
-    /// @param distance : number
-    /// @return number
-    pub fn factor(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+/// Parses a blend mode string into `LightBlendMode`.
+fn parse_blend_mode(s: &str) -> LuaResult<LightBlendMode> {
+    match s {
+        "add" => Ok(LightBlendMode::Add),
+        "sub" => Ok(LightBlendMode::Sub),
+        "mix" => Ok(LightBlendMode::Mix),
+        _ => Err(LuaError::RuntimeError(format!(
+            "invalid blend mode '{}', expected 'add', 'sub', or 'mix'",
+            s
+        ))),
     }
 }
 
-impl UserData for LuaAttenuation {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("factor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Converts a `LightBlendMode` to its string representation.
+fn blend_mode_to_str(mode: LightBlendMode) -> &'static str {
+    match mode {
+        LightBlendMode::Add => "add",
+        LightBlendMode::Sub => "sub",
+        LightBlendMode::Mix => "mix",
     }
 }
 
-// ── LuaFlickerConfig ────────────────────────────────────────────────────────────
-
-pub struct LuaFlickerConfig(/* TODO: add key + state fields */);
-
-
-impl LuaFlickerConfig {
-    /// Computes the intensity multiplier for the current phase.
-    ///
-    ///
-    /// @return number
-    pub fn multiplier(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+/// Parses a falloff mode string into `FalloffMode`.
+fn parse_falloff(s: &str) -> LuaResult<FalloffMode> {
+    match s {
+        "linear" => Ok(FalloffMode::Linear),
+        "smooth" => Ok(FalloffMode::Smooth),
+        "constant" => Ok(FalloffMode::Constant),
+        _ => Err(LuaError::RuntimeError(format!(
+            "invalid falloff '{}', expected 'linear', 'smooth', or 'constant'",
+            s
+        ))),
     }
 }
 
-impl UserData for LuaFlickerConfig {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("multiplier", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Converts a `FalloffMode` to its string representation.
+fn falloff_to_str(mode: FalloffMode) -> &'static str {
+    match mode {
+        FalloffMode::Linear => "linear",
+        FalloffMode::Smooth => "smooth",
+        FalloffMode::Constant => "constant",
     }
 }
 
-// ── LuaLight2D ────────────────────────────────────────────────────────────
-
-pub struct LuaLight2D(/* TODO: add key + state fields */);
-
-
-impl LuaLight2D {
-    /// Returns the light's influence radius. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_radius(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the light's tint color. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return Color
-    pub fn get_color(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the light's brightness multiplier.
-    ///
-    ///
-    /// @return number
-    pub fn get_intensity(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether the light is active. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_enabled(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the energy scaling factor.
-    ///
-    ///
-    /// @return number
-    pub fn get_energy(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the light blend mode.
-    ///
-    ///
-    /// @return LightBlendMode
-    pub fn get_blend_mode(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the falloff mode.
-    ///
-    ///
-    /// @return FalloffMode
-    pub fn get_falloff(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether this light casts shadows.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_shadow_enabled(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the shadow region color.
-    ///
-    ///
-    /// @return Color
-    pub fn get_shadow_color(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the shadow edge filter quality.
-    ///
-    ///
-    /// @return ShadowFilter
-    pub fn get_shadow_filter(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the shadow edge smoothing factor.
-    ///
-    ///
-    /// @return number
-    pub fn get_shadow_smooth(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the light interaction bitmask.
-    ///
-    ///
-    /// @return u16
-    pub fn get_light_mask(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the shadow casting bitmask.
-    ///
-    ///
-    /// @return u16
-    pub fn get_shadow_mask(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the geometric light type.
-    ///
-    ///
-    /// @return LightType
-    pub fn get_light_type(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the direction angle in radians.
-    ///
-    ///
-    /// @return number
-    pub fn get_direction(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the inner cone angle in radians.
-    ///
-    ///
-    /// @return number
-    pub fn get_inner_angle(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the outer cone angle in radians.
-    ///
-    ///
-    /// @return number
-    pub fn get_outer_angle(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the custom attenuation coefficients.
-    ///
-    ///
-    /// @return Attenuation
-    pub fn get_attenuation(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the group identifier.
-    ///
-    ///
-    /// @return u16
-    pub fn get_group_id(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether this light hints at volumetric scattering.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_volumetric(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+/// Parses a shadow filter string into `ShadowFilter`.
+fn parse_shadow_filter(s: &str) -> LuaResult<ShadowFilter> {
+    match s {
+        "none" => Ok(ShadowFilter::None),
+        "pcf5" => Ok(ShadowFilter::Pcf5),
+        "pcf13" => Ok(ShadowFilter::Pcf13),
+        _ => Err(LuaError::RuntimeError(format!(
+            "invalid shadow filter '{}', expected 'none', 'pcf5', or 'pcf13'",
+            s
+        ))),
     }
 }
 
-impl UserData for LuaLight2D {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getRadius", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getColor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getIntensity", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isEnabled", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getEnergy", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBlendMode", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getFalloff", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isShadowEnabled", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getShadowColor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getShadowFilter", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getShadowSmooth", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLightMask", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getShadowMask", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLightType", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDirection", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getInnerAngle", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getOuterAngle", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAttenuation", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getGroupId", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isVolumetric", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Converts a `ShadowFilter` to its string representation.
+fn shadow_filter_to_str(filter: ShadowFilter) -> &'static str {
+    match filter {
+        ShadowFilter::None => "none",
+        ShadowFilter::Pcf5 => "pcf5",
+        ShadowFilter::Pcf13 => "pcf13",
     }
 }
 
-// ── LuaLightWorld ────────────────────────────────────────────────────────────
-
-pub struct LuaLightWorld(/* TODO: add key + state fields */);
-
-
-impl LuaLightWorld {
-    /// Returns a shared reference to a light by key.
-    ///
-    /// @param key : LightKey
-    /// @return Option<
-    pub fn get_light(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns a shared reference to an occluder by key.
-    ///
-    /// @param key : OccluderKey
-    /// @return Option<
-    pub fn get_occluder(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of lights in the world.
-    ///
-    ///
-    /// @return integer
-    pub fn light_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of occluders in the world.
-    ///
-    ///
-    /// @return integer
-    pub fn occluder_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if any light in the world is enabled.
-    ///
-    ///
-    /// @return boolean
-    pub fn has_active_lights(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of lights in the given group.
-    ///
-    /// @param group_id : u16
-    /// @return integer
-    pub fn group_count(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+/// Parses a light type string into `LightType`.
+fn parse_light_type(s: &str) -> LuaResult<LightType> {
+    match s {
+        "point" => Ok(LightType::Point),
+        "directional" => Ok(LightType::Directional),
+        "spot" => Ok(LightType::Spot),
+        _ => Err(LuaError::RuntimeError(format!(
+            "invalid light type '{}', expected 'point', 'directional', or 'spot'",
+            s
+        ))),
     }
 }
 
-impl UserData for LuaLightWorld {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getLight", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getOccluder", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("lightCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("occluderCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasActiveLights", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("groupCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Converts a `LightType` to its string representation.
+fn light_type_to_str(lt: LightType) -> &'static str {
+    match lt {
+        LightType::Point => "point",
+        LightType::Directional => "directional",
+        LightType::Spot => "spot",
     }
 }
 
-// ── LuaOccluder ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// Boundary parsing helpers
+// -------------------------------------------------------------------------------
 
-pub struct LuaOccluder(/* TODO: add key + state fields */);
+/// Returns a `LuaError` for an invalid or removed light handle.
+fn invalid_light(method: &str) -> LuaError {
+    LuaError::RuntimeError(format!("{}: invalid or already-removed light handle", method))
+}
 
+/// Returns a `LuaError` for an invalid or removed occluder handle.
+fn invalid_occluder(method: &str) -> LuaError {
+    LuaError::RuntimeError(format!(
+        "{}: invalid or already-removed occluder handle",
+        method
+    ))
+}
 
-impl LuaOccluder {
-    /// Returns the translation offset.
-    ///
-    ///
-    /// @return Vec2
-    pub fn get_position(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+/// Parses a flat Lua table `{x1,y1,x2,y2,...}` into `Vec<Vec2>`.
+fn parse_vertex_table(tbl: &LuaTable) -> LuaResult<Vec<Vec2>> {
+    let len = tbl.len()? as usize;
+    if len < 6 || len > 512 || len % 2 != 0 {
+        return Err(LuaError::RuntimeError(format!(
+            "vertex table must have an even number of elements (6..=512), got {}",
+            len
+        )));
     }
-    /// Returns the shadow opacity.
-    ///
-    ///
-    /// @return number
-    pub fn get_opacity(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+    let count = len / 2;
+    let mut verts = Vec::with_capacity(count);
+    for i in 0..count {
+        let x: f32 = tbl.get((i * 2 + 1) as i64)?;
+        let y: f32 = tbl.get((i * 2 + 2) as i64)?;
+        verts.push(Vec2::new(x, y));
     }
-    /// Returns the light interaction bitmask.
-    ///
-    ///
-    /// @return u16
-    pub fn get_light_mask(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether this occluder is active.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_enabled(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
+    Ok(verts)
 }
 
-impl UserData for LuaOccluder {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getPosition", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getOpacity", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLightMask", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isEnabled", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Parses an optional color table `{r, g, b [, a]}` from an opts table field.
+fn parse_opt_color(opts: &LuaTable, field: &str) -> LuaResult<Option<Color>> {
+    let val: LuaValue = opts.get(field)?;
+    match val {
+        LuaValue::Table(tbl) => {
+            let r: f32 = tbl.get(1i32).unwrap_or(1.0);
+            let g: f32 = tbl.get(2i32).unwrap_or(1.0);
+            let b: f32 = tbl.get(3i32).unwrap_or(1.0);
+            let a: f32 = tbl.get(4i32).unwrap_or(1.0);
+            Ok(Some(Color::new(r, g, b, a)))
+        }
+        LuaValue::Nil => Ok(None),
+        _ => Err(LuaError::RuntimeError(format!(
+            "expected color table for '{}', got {}",
+            field,
+            val.type_name()
+        ))),
     }
 }
 
-// ── luna.light.* functions ──────────────────────────────────────────
-
-/// Advances the phase by `dt` seconds.
-///
-///
-/// @param dt : number
-pub fn advance(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+/// Applies optional settings from a Lua opts table to a `Light2D`.
+fn apply_light_opts(light: &mut Light2D, opts: &LuaTable) -> LuaResult<()> {
+    if let Ok(Some(c)) = parse_opt_color(opts, "color") {
+        light.set_color(c);
+    }
+    if let Ok(v) = opts.get::<_, f32>("intensity") {
+        light.set_intensity(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("energy") {
+        light.set_energy(v);
+    }
+    if let Ok(s) = opts.get::<_, String>("blend") {
+        light.set_blend_mode(parse_blend_mode(&s)?);
+    }
+    if let Ok(s) = opts.get::<_, String>("falloff") {
+        light.set_falloff(parse_falloff(&s)?);
+    }
+    if let Ok(v) = opts.get::<_, bool>("shadowEnabled") {
+        light.set_shadow_enabled(v);
+    }
+    if let Ok(Some(c)) = parse_opt_color(opts, "shadowColor") {
+        light.set_shadow_color(c);
+    }
+    if let Ok(s) = opts.get::<_, String>("shadowFilter") {
+        light.set_shadow_filter(parse_shadow_filter(&s)?);
+    }
+    if let Ok(v) = opts.get::<_, f32>("shadowSmooth") {
+        light.set_shadow_smooth(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("lightMask") {
+        light.set_light_mask(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("shadowMask") {
+        light.set_shadow_mask(v);
+    }
+    if let Ok(v) = opts.get::<_, bool>("enabled") {
+        light.set_enabled(v);
+    }
+    if let Ok(s) = opts.get::<_, String>("type") {
+        light.set_light_type(parse_light_type(&s)?);
+    }
+    if let Ok(v) = opts.get::<_, f32>("direction") {
+        light.set_direction(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("innerAngle") {
+        light.set_inner_angle(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("outerAngle") {
+        light.set_outer_angle(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("groupId") {
+        light.set_group_id(v);
+    }
+    if let Ok(v) = opts.get::<_, bool>("volumetric") {
+        light.set_volumetric(v);
+    }
+    if let Ok(v) = opts.get::<_, f32>("flickerSpeed") {
+        light.flicker_mut().speed = v;
+        light.flicker_mut().enabled = true;
+    }
+    if let Ok(v) = opts.get::<_, f32>("flickerStrength") {
+        light.flicker_mut().strength = v;
+        light.flicker_mut().enabled = true;
+    }
+    if let Ok(v) = opts.get::<_, f32>("attConstant") {
+        light.set_attenuation(Attenuation::new(
+            v,
+            light.get_attenuation().linear,
+            light.get_attenuation().quadratic,
+        ));
+    }
+    if let Ok(v) = opts.get::<_, f32>("attLinear") {
+        light.set_attenuation(Attenuation::new(
+            light.get_attenuation().constant,
+            v,
+            light.get_attenuation().quadratic,
+        ));
+    }
+    if let Ok(v) = opts.get::<_, f32>("attQuadratic") {
+        light.set_attenuation(Attenuation::new(
+            light.get_attenuation().constant,
+            light.get_attenuation().linear,
+            v,
+        ));
+    }
+    Ok(())
 }
 
-/// Sets the light's world-space position. Replaces the current position value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn set_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+/// Applies optional settings from a Lua opts table to an `Occluder`.
+fn apply_occluder_opts(occ: &mut Occluder, opts: &LuaTable) -> LuaResult<()> {
+    if let Ok(v) = opts.get::<_, f32>("opacity") {
+        occ.set_opacity(v);
+    }
+    if let Ok(v) = opts.get::<_, u16>("lightMask") {
+        occ.set_light_mask(v);
+    }
+    if let Ok(v) = opts.get::<_, bool>("enabled") {
+        occ.set_enabled(v);
+    }
+    Ok(())
 }
 
-/// Sets the light's influence radius. Replaces the current radius value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param radius : number
-pub fn set_radius(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+// -------------------------------------------------------------------------------
+// LuaLight UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side handle to a light resource stored in [`LightWorld`].
+#[derive(Clone)]
+pub struct LuaLight {
+    state: Rc<RefCell<SharedState>>,
+    key: LightKey,
 }
 
-/// Sets the light's tint color. Replaces the current color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param color : Color
-pub fn set_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+impl LuaUserData for LuaLight {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- setPosition --
+        /// Sets the light's world-space position.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setPosition"))?;
+            light.set_position(x, y);
+            Ok(())
+        });
+
+        // -- getPosition --
+        /// Returns the light's world-space position.
+        /// @return number, number
+        methods.add_method("getPosition", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getPosition"))?;
+            Ok(light.get_position())
+        });
+
+        // -- setRadius --
+        /// Sets the light's influence radius.
+        /// @param r : number
+        /// @return nil
+        methods.add_method("setRadius", |_, this, r: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setRadius"))?;
+            light.set_radius(r);
+            Ok(())
+        });
+
+        // -- getRadius --
+        /// Returns the light's influence radius.
+        /// @return number
+        methods.add_method("getRadius", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getRadius"))?;
+            Ok(light.get_radius())
+        });
+
+        // -- setColor --
+        /// Sets the light's tint color.
+        /// @param r : number
+        /// @param g : number
+        /// @param b : number
+        /// @param a : number?
+        /// @return nil
+        methods.add_method("setColor", |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setColor"))?;
+            light.set_color(Color::new(r, g, b, a.unwrap_or(1.0)));
+            Ok(())
+        });
+
+        // -- getColor --
+        /// Returns the light's tint color as (r, g, b, a).
+        /// @return number, number, number, number
+        methods.add_method("getColor", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getColor"))?;
+            let c = light.get_color();
+            Ok((c.r, c.g, c.b, c.a))
+        });
+
+        // -- setIntensity --
+        /// Sets the brightness multiplier.
+        /// @param i : number
+        /// @return nil
+        methods.add_method("setIntensity", |_, this, i: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setIntensity"))?;
+            light.set_intensity(i);
+            Ok(())
+        });
+
+        // -- getIntensity --
+        /// Returns the brightness multiplier.
+        /// @return number
+        methods.add_method("getIntensity", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getIntensity"))?;
+            Ok(light.get_intensity())
+        });
+
+        // -- setEnergy --
+        /// Sets the energy scaling factor.
+        /// @param e : number
+        /// @return nil
+        methods.add_method("setEnergy", |_, this, e: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setEnergy"))?;
+            light.set_energy(e);
+            Ok(())
+        });
+
+        // -- getEnergy --
+        /// Returns the energy scaling factor.
+        /// @return number
+        methods.add_method("getEnergy", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getEnergy"))?;
+            Ok(light.get_energy())
+        });
+
+        // -- setBlendMode --
+        /// Sets the blend mode ('add', 'sub', or 'mix').
+        /// @param mode : string
+        /// @return nil
+        methods.add_method("setBlendMode", |_, this, mode: String| {
+            let bm = parse_blend_mode(&mode)?;
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setBlendMode"))?;
+            light.set_blend_mode(bm);
+            Ok(())
+        });
+
+        // -- getBlendMode --
+        /// Returns the blend mode as a string.
+        /// @return string
+        methods.add_method("getBlendMode", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getBlendMode"))?;
+            Ok(blend_mode_to_str(light.get_blend_mode()).to_string())
+        });
+
+        // -- setFalloff --
+        /// Sets the falloff mode ('linear', 'smooth', or 'constant').
+        /// @param mode : string
+        /// @return nil
+        methods.add_method("setFalloff", |_, this, mode: String| {
+            let fm = parse_falloff(&mode)?;
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setFalloff"))?;
+            light.set_falloff(fm);
+            Ok(())
+        });
+
+        // -- getFalloff --
+        /// Returns the falloff mode as a string.
+        /// @return string
+        methods.add_method("getFalloff", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getFalloff"))?;
+            Ok(falloff_to_str(light.get_falloff()).to_string())
+        });
+
+        // -- setShadowEnabled --
+        /// Sets whether this light casts shadows.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setShadowEnabled", |_, this, b: bool| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setShadowEnabled"))?;
+            light.set_shadow_enabled(b);
+            Ok(())
+        });
+
+        // -- isShadowEnabled --
+        /// Returns whether this light casts shadows.
+        /// @return boolean
+        methods.add_method("isShadowEnabled", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:isShadowEnabled"))?;
+            Ok(light.is_shadow_enabled())
+        });
+
+        // -- setShadowColor --
+        /// Sets the shadow region color.
+        /// @param r : number
+        /// @param g : number
+        /// @param b : number
+        /// @param a : number?
+        /// @return nil
+        methods.add_method(
+            "setShadowColor",
+            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+                let mut st = this.state.borrow_mut();
+                let light = st.light_world.get_light_mut(this.key)
+                    .ok_or_else(|| invalid_light("Light:setShadowColor"))?;
+                light.set_shadow_color(Color::new(r, g, b, a.unwrap_or(1.0)));
+                Ok(())
+            },
+        );
+
+        // -- getShadowColor --
+        /// Returns the shadow region color as (r, g, b, a).
+        /// @return number, number, number, number
+        methods.add_method("getShadowColor", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getShadowColor"))?;
+            let c = light.get_shadow_color();
+            Ok((c.r, c.g, c.b, c.a))
+        });
+
+        // -- setShadowFilter --
+        /// Sets the shadow edge filter ('none', 'pcf5', or 'pcf13').
+        /// @param filter : string
+        /// @return nil
+        methods.add_method("setShadowFilter", |_, this, filter: String| {
+            let sf = parse_shadow_filter(&filter)?;
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setShadowFilter"))?;
+            light.set_shadow_filter(sf);
+            Ok(())
+        });
+
+        // -- getShadowFilter --
+        /// Returns the shadow edge filter as a string.
+        /// @return string
+        methods.add_method("getShadowFilter", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getShadowFilter"))?;
+            Ok(shadow_filter_to_str(light.get_shadow_filter()).to_string())
+        });
+
+        // -- setShadowSmooth --
+        /// Sets the shadow edge smoothing factor.
+        /// @param smooth : number
+        /// @return nil
+        methods.add_method("setShadowSmooth", |_, this, s: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setShadowSmooth"))?;
+            light.set_shadow_smooth(s);
+            Ok(())
+        });
+
+        // -- getShadowSmooth --
+        /// Returns the shadow edge smoothing factor.
+        /// @return number
+        methods.add_method("getShadowSmooth", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getShadowSmooth"))?;
+            Ok(light.get_shadow_smooth())
+        });
+
+        // -- setLightMask --
+        /// Sets the light interaction bitmask.
+        /// @param mask : integer
+        /// @return nil
+        methods.add_method("setLightMask", |_, this, mask: u16| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setLightMask"))?;
+            light.set_light_mask(mask);
+            Ok(())
+        });
+
+        // -- getLightMask --
+        /// Returns the light interaction bitmask.
+        /// @return integer
+        methods.add_method("getLightMask", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getLightMask"))?;
+            Ok(light.get_light_mask())
+        });
+
+        // -- setShadowMask --
+        /// Sets the shadow casting bitmask.
+        /// @param mask : integer
+        /// @return nil
+        methods.add_method("setShadowMask", |_, this, mask: u16| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setShadowMask"))?;
+            light.set_shadow_mask(mask);
+            Ok(())
+        });
+
+        // -- getShadowMask --
+        /// Returns the shadow casting bitmask.
+        /// @return integer
+        methods.add_method("getShadowMask", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getShadowMask"))?;
+            Ok(light.get_shadow_mask())
+        });
+
+        // -- setEnabled --
+        /// Sets whether this light is active.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setEnabled", |_, this, b: bool| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setEnabled"))?;
+            light.set_enabled(b);
+            Ok(())
+        });
+
+        // -- isEnabled --
+        /// Returns whether this light is active.
+        /// @return boolean
+        methods.add_method("isEnabled", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:isEnabled"))?;
+            Ok(light.is_enabled())
+        });
+
+        // -- setLightType --
+        /// Sets the geometric light type ('point', 'directional', or 'spot').
+        /// @param t : string
+        /// @return nil
+        methods.add_method("setLightType", |_, this, t: String| {
+            let lt = parse_light_type(&t)?;
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setLightType"))?;
+            light.set_light_type(lt);
+            Ok(())
+        });
+
+        // -- getLightType --
+        /// Returns the geometric light type as a string.
+        /// @return string
+        methods.add_method("getLightType", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getLightType"))?;
+            Ok(light_type_to_str(light.get_light_type()).to_string())
+        });
+
+        // -- setDirection --
+        /// Sets the direction angle in radians.
+        /// @param dir : number
+        /// @return nil
+        methods.add_method("setDirection", |_, this, dir: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setDirection"))?;
+            light.set_direction(dir);
+            Ok(())
+        });
+
+        // -- getDirection --
+        /// Returns the direction angle in radians.
+        /// @return number
+        methods.add_method("getDirection", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getDirection"))?;
+            Ok(light.get_direction())
+        });
+
+        // -- setInnerAngle --
+        /// Sets the inner cone angle in radians for spot lights.
+        /// @param angle : number
+        /// @return nil
+        methods.add_method("setInnerAngle", |_, this, a: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setInnerAngle"))?;
+            light.set_inner_angle(a);
+            Ok(())
+        });
+
+        // -- getInnerAngle --
+        /// Returns the inner cone angle in radians.
+        /// @return number
+        methods.add_method("getInnerAngle", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getInnerAngle"))?;
+            Ok(light.get_inner_angle())
+        });
+
+        // -- setOuterAngle --
+        /// Sets the outer cone angle in radians for spot lights.
+        /// @param angle : number
+        /// @return nil
+        methods.add_method("setOuterAngle", |_, this, a: f32| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setOuterAngle"))?;
+            light.set_outer_angle(a);
+            Ok(())
+        });
+
+        // -- getOuterAngle --
+        /// Returns the outer cone angle in radians.
+        /// @return number
+        methods.add_method("getOuterAngle", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getOuterAngle"))?;
+            Ok(light.get_outer_angle())
+        });
+
+        // -- setAttenuation --
+        /// Sets the custom attenuation coefficients (constant, linear, quadratic).
+        /// @param c : number
+        /// @param l : number
+        /// @param q : number
+        /// @return nil
+        methods.add_method("setAttenuation", |_, this, (c, l, q): (f32, f32, f32)| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setAttenuation"))?;
+            light.set_attenuation(Attenuation::new(c, l, q));
+            Ok(())
+        });
+
+        // -- getAttenuation --
+        /// Returns the custom attenuation coefficients as (constant, linear, quadratic).
+        /// @return number, number, number
+        methods.add_method("getAttenuation", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getAttenuation"))?;
+            let a = light.get_attenuation();
+            Ok((a.constant, a.linear, a.quadratic))
+        });
+
+        // -- setFlicker --
+        /// Sets the flicker effect speed and strength (enables flicker).
+        /// @param speed : number
+        /// @param strength : number
+        /// @return nil
+        methods.add_method("setFlicker", |_, this, (speed, strength): (f32, f32)| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setFlicker"))?;
+            *light.flicker_mut() = FlickerConfig::new(speed, strength);
+            Ok(())
+        });
+
+        // -- getFlicker --
+        /// Returns the flicker effect speed and strength.
+        /// @return number, number
+        methods.add_method("getFlicker", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getFlicker"))?;
+            let f = light.flicker();
+            Ok((f.speed, f.strength))
+        });
+
+        // -- setFlickerEnabled --
+        /// Sets whether the flicker effect is active.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setFlickerEnabled", |_, this, b: bool| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setFlickerEnabled"))?;
+            light.flicker_mut().enabled = b;
+            Ok(())
+        });
+
+        // -- isFlickerEnabled --
+        /// Returns whether the flicker effect is active.
+        /// @return boolean
+        methods.add_method("isFlickerEnabled", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:isFlickerEnabled"))?;
+            Ok(light.flicker().enabled)
+        });
+
+        // -- setGroupId --
+        /// Sets the group identifier for batch operations.
+        /// @param id : integer
+        /// @return nil
+        methods.add_method("setGroupId", |_, this, id: u16| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setGroupId"))?;
+            light.set_group_id(id);
+            Ok(())
+        });
+
+        // -- getGroupId --
+        /// Returns the group identifier.
+        /// @return integer
+        methods.add_method("getGroupId", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:getGroupId"))?;
+            Ok(light.get_group_id())
+        });
+
+        // -- setVolumetric --
+        /// Sets whether this light hints at volumetric scattering.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setVolumetric", |_, this, b: bool| {
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:setVolumetric"))?;
+            light.set_volumetric(b);
+            Ok(())
+        });
+
+        // -- isVolumetric --
+        /// Returns whether this light hints at volumetric scattering.
+        /// @return boolean
+        methods.add_method("isVolumetric", |_, this, ()| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:isVolumetric"))?;
+            Ok(light.is_volumetric())
+        });
+
+        // -- remove --
+        /// Removes this light from the world.
+        /// @return nil
+        methods.add_method("remove", |_, this, ()| {
+            this.state.borrow_mut().light_world.remove_light(this.key);
+            Ok(())
+        });
+
+        // -- isValid --
+        /// Returns whether this light handle is still valid.
+        /// @return boolean
+        methods.add_method("isValid", |_, this, ()| {
+            Ok(this.state.borrow().light_world.lights.contains_key(this.key))
+        });
+
+        // -- __tostring --
+        /// Returns a human-readable string for debugging.
+        /// @return string
+        methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
+            let st = this.state.borrow();
+            match st.light_world.get_light(this.key) {
+                Some(l) => Ok(format!("Light({}, {}, r={})", l.x, l.y, l.radius)),
+                None => Ok("Light(invalid)".to_string()),
+            }
+        });
+
+    }
 }
 
-/// Sets the light's brightness multiplier. Replaces the current intensity value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param intensity : number
-pub fn set_intensity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+// -------------------------------------------------------------------------------
+// LuaOccluder UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side handle to an occluder resource stored in [`LightWorld`].
+#[derive(Clone)]
+pub struct LuaOccluder {
+    state: Rc<RefCell<SharedState>>,
+    key: OccluderKey,
 }
 
-/// Sets whether the light is active. Replaces the current enabled value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param enabled : boolean
-pub fn set_enabled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
+impl LuaUserData for LuaOccluder {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- setVertices --
+        /// Replaces the polygon vertices from a flat table {x1,y1,x2,y2,...}.
+        /// @param vertices : table
+        /// @return nil
+        methods.add_method("setVertices", |_, this, tbl: LuaTable| {
+            let verts = parse_vertex_table(&tbl)?;
+            let mut st = this.state.borrow_mut();
+            let occ = st.light_world.get_occluder_mut(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:setVertices"))?;
+            occ.set_vertices(verts);
+            Ok(())
+        });
+
+        // -- getVertices --
+        /// Returns the polygon vertices as a flat table {x1,y1,x2,y2,...}.
+        /// @return table
+        methods.add_method("getVertices", |lua, this, ()| {
+            let st = this.state.borrow();
+            let occ = st.light_world.get_occluder(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:getVertices"))?;
+            let tbl = lua.create_table()?;
+            for (i, v) in occ.get_vertices().iter().enumerate() {
+                tbl.set(i * 2 + 1, v.x)?;
+                tbl.set(i * 2 + 2, v.y)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- setPosition --
+        /// Sets the translation offset applied to all vertices.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            let mut st = this.state.borrow_mut();
+            let occ = st.light_world.get_occluder_mut(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:setPosition"))?;
+            occ.set_position(Vec2::new(x, y));
+            Ok(())
+        });
+
+        // -- getPosition --
+        /// Returns the translation offset as (x, y).
+        /// @return number, number
+        methods.add_method("getPosition", |_, this, ()| {
+            let st = this.state.borrow();
+            let occ = st.light_world.get_occluder(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:getPosition"))?;
+            let pos = occ.get_position();
+            Ok((pos.x, pos.y))
+        });
+
+        // -- setOpacity --
+        /// Sets the shadow opacity (0.0–1.0).
+        /// @param opacity : number
+        /// @return nil
+        methods.add_method("setOpacity", |_, this, o: f32| {
+            let mut st = this.state.borrow_mut();
+            let occ = st.light_world.get_occluder_mut(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:setOpacity"))?;
+            occ.set_opacity(o);
+            Ok(())
+        });
+
+        // -- getOpacity --
+        /// Returns the shadow opacity.
+        /// @return number
+        methods.add_method("getOpacity", |_, this, ()| {
+            let st = this.state.borrow();
+            let occ = st.light_world.get_occluder(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:getOpacity"))?;
+            Ok(occ.get_opacity())
+        });
+
+        // -- setLightMask --
+        /// Sets the light interaction bitmask.
+        /// @param mask : integer
+        /// @return nil
+        methods.add_method("setLightMask", |_, this, mask: u16| {
+            let mut st = this.state.borrow_mut();
+            let occ = st.light_world.get_occluder_mut(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:setLightMask"))?;
+            occ.set_light_mask(mask);
+            Ok(())
+        });
+
+        // -- getLightMask --
+        /// Returns the light interaction bitmask.
+        /// @return integer
+        methods.add_method("getLightMask", |_, this, ()| {
+            let st = this.state.borrow();
+            let occ = st.light_world.get_occluder(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:getLightMask"))?;
+            Ok(occ.get_light_mask())
+        });
+
+        // -- setEnabled --
+        /// Sets whether this occluder is active.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setEnabled", |_, this, b: bool| {
+            let mut st = this.state.borrow_mut();
+            let occ = st.light_world.get_occluder_mut(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:setEnabled"))?;
+            occ.set_enabled(b);
+            Ok(())
+        });
+
+        // -- isEnabled --
+        /// Returns whether this occluder is active.
+        /// @return boolean
+        methods.add_method("isEnabled", |_, this, ()| {
+            let st = this.state.borrow();
+            let occ = st.light_world.get_occluder(this.key)
+                .ok_or_else(|| invalid_occluder("Occluder:isEnabled"))?;
+            Ok(occ.is_enabled())
+        });
+
+        // -- remove --
+        /// Removes this occluder from the world.
+        /// @return nil
+        methods.add_method("remove", |_, this, ()| {
+            this.state.borrow_mut().light_world.remove_occluder(this.key);
+            Ok(())
+        });
+
+        // -- isValid --
+        /// Returns whether this occluder handle is still valid.
+        /// @return boolean
+        methods.add_method("isValid", |_, this, ()| {
+            Ok(this.state.borrow().light_world.occluders.contains_key(this.key))
+        });
+
+        // -- __tostring --
+        /// Returns a human-readable string for debugging.
+        /// @return string
+        methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
+            let st = this.state.borrow();
+            match st.light_world.get_occluder(this.key) {
+                Some(o) => Ok(format!("Occluder({} verts)", o.get_vertices().len())),
+                None => Ok("Occluder(invalid)".to_string()),
+            }
+        });
+
+    }
 }
 
-/// Sets the energy scaling factor (scales radius and intensity together).
-///
-///
-/// @param energy : number
-pub fn set_energy(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-/// Sets the light blend mode.
-///
-///
-/// @param mode : LightBlendMode
-pub fn set_blend_mode(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the falloff mode controlling intensity decay.
-///
-///
-/// @param mode : FalloffMode
-pub fn set_falloff(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets whether this light casts shadows.
-///
-///
-/// @param enabled : boolean
-pub fn set_shadow_enabled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the shadow region color.
-///
-///
-/// @param color : Color
-pub fn set_shadow_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the shadow edge filter quality.
-///
-///
-/// @param filter : ShadowFilter
-pub fn set_shadow_filter(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the shadow edge smoothing factor.
-///
-///
-/// @param smooth : number
-pub fn set_shadow_smooth(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the light interaction bitmask.
-///
-///
-/// @param mask : u16
-pub fn set_light_mask(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the shadow casting bitmask.
-///
-///
-/// @param mask : u16
-pub fn set_shadow_mask(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the geometric light type.
-///
-///
-/// @param light_type : LightType
-pub fn set_light_type(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the direction angle in radians (for Directional and Spot lights).
-///
-///
-/// @param direction : number
-pub fn set_direction(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the inner cone angle in radians for Spot lights.
-///
-///
-/// @param angle : number
-pub fn set_inner_angle(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the outer cone angle in radians for Spot lights.
-///
-///
-/// @param angle : number
-pub fn set_outer_angle(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the custom attenuation coefficients.
-///
-///
-/// @param attenuation : Attenuation
-pub fn set_attenuation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the group identifier for batch operations.
-///
-///
-/// @param group_id : u16
-pub fn set_group_id(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets whether this light hints at volumetric scattering.
-///
-///
-/// @param volumetric : boolean
-pub fn set_volumetric(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Inserts a light and returns its key. Auto-enables the system on first light.
-///
-/// @param light : Light2D
-/// @return LightKey
-pub fn add_light(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Inserts an occluder and returns its key.
-///
-/// @param occluder : Occluder
-/// @return OccluderKey
-pub fn add_occluder(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes a light by key, returning it if found.
-///
-/// @param key : LightKey
-/// @return Light2D?
-pub fn remove_light(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes an occluder by key, returning it if found.
-///
-/// @param key : OccluderKey
-/// @return Occluder?
-pub fn remove_occluder(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns a mutable reference to a light by key.
-///
-/// @param key : LightKey
-/// @return Option<
-pub fn get_light_mut(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns a mutable reference to an occluder by key.
-///
-/// @param key : OccluderKey
-/// @return Option<
-pub fn get_occluder_mut(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the enabled state for all lights in the given group.
-///
-///
-/// @param group_id : u16
-/// @param enabled : boolean
-pub fn set_group_enabled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the intensity for all lights in the given group.
-///
-///
-/// @param group_id : u16
-/// @param intensity : number
-pub fn set_group_intensity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the color for all lights in the given group.
-///
-///
-/// @param group_id : u16
-/// @param color : Color
-pub fn set_group_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advances flicker phase for all lights with flicker enabled.
-///
-///
-/// @param dt : number
-pub fn advance_flickers(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the polygon vertices.
-///
-///
-/// @param vertices : table
-pub fn set_vertices(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the translation offset.
-///
-///
-/// @param position : Vec2
-/// Sets the shadow opacity (0.0–1.0).
-///
-///
-/// @param opacity : number
-pub fn set_opacity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the light interaction bitmask.
-///
-///
-/// @param mask : u16
-/// Sets whether this occluder is active.
-///
-///
-/// @param enabled : boolean
-/// Registers the `luna.light` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.light` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("advance", lua.create_function(advance)?)?;
-    tbl.set("setPosition", lua.create_function(set_position)?)?;
-    tbl.set("setRadius", lua.create_function(set_radius)?)?;
-    tbl.set("setColor", lua.create_function(set_color)?)?;
-    tbl.set("setIntensity", lua.create_function(set_intensity)?)?;
-    tbl.set("setEnabled", lua.create_function(set_enabled)?)?;
-    tbl.set("setEnergy", lua.create_function(set_energy)?)?;
-    tbl.set("setBlendMode", lua.create_function(set_blend_mode)?)?;
-    tbl.set("setFalloff", lua.create_function(set_falloff)?)?;
-    tbl.set("setShadowEnabled", lua.create_function(set_shadow_enabled)?)?;
-    tbl.set("setShadowColor", lua.create_function(set_shadow_color)?)?;
-    tbl.set("setShadowFilter", lua.create_function(set_shadow_filter)?)?;
-    tbl.set("setShadowSmooth", lua.create_function(set_shadow_smooth)?)?;
-    tbl.set("setLightMask", lua.create_function(set_light_mask)?)?;
-    tbl.set("setShadowMask", lua.create_function(set_shadow_mask)?)?;
-    tbl.set("setLightType", lua.create_function(set_light_type)?)?;
-    tbl.set("setDirection", lua.create_function(set_direction)?)?;
-    tbl.set("setInnerAngle", lua.create_function(set_inner_angle)?)?;
-    tbl.set("setOuterAngle", lua.create_function(set_outer_angle)?)?;
-    tbl.set("setAttenuation", lua.create_function(set_attenuation)?)?;
-    tbl.set("setGroupId", lua.create_function(set_group_id)?)?;
-    tbl.set("setVolumetric", lua.create_function(set_volumetric)?)?;
-    tbl.set("addLight", lua.create_function(add_light)?)?;
-    tbl.set("addOccluder", lua.create_function(add_occluder)?)?;
-    tbl.set("removeLight", lua.create_function(remove_light)?)?;
-    tbl.set("removeOccluder", lua.create_function(remove_occluder)?)?;
-    tbl.set("getLightMut", lua.create_function(get_light_mut)?)?;
-    tbl.set("getOccluderMut", lua.create_function(get_occluder_mut)?)?;
-    tbl.set("setGroupEnabled", lua.create_function(set_group_enabled)?)?;
-    tbl.set("setGroupIntensity", lua.create_function(set_group_intensity)?)?;
-    tbl.set("setGroupColor", lua.create_function(set_group_color)?)?;
-    tbl.set("advanceFlickers", lua.create_function(advance_flickers)?)?;
-    tbl.set("setVertices", lua.create_function(set_vertices)?)?;
-    tbl.set("setPosition", lua.create_function(set_position)?)?;
-    tbl.set("setOpacity", lua.create_function(set_opacity)?)?;
-    tbl.set("setLightMask", lua.create_function(set_light_mask)?)?;
-    tbl.set("setEnabled", lua.create_function(set_enabled)?)?;
+
+    // -- newLight --
+    /// Creates a new light at (x, y) with the given radius and optional settings.
+    /// @param x : number
+    /// @param y : number
+    /// @param radius : number
+    /// @param opts : table?
+    /// @return Light
+    let s = state.clone();
+    tbl.set(
+        "newLight",
+        lua.create_function(
+            move |_, (x, y, radius, opts): (f32, f32, f32, Option<LuaTable>)| {
+                let mut light = Light2D::new(x, y, radius);
+                if let Some(ref opts) = opts {
+                    apply_light_opts(&mut light, opts)?;
+                }
+                let key = s.borrow_mut().light_world.add_light(light);
+                Ok(LuaLight {
+                    state: s.clone(),
+                    key,
+                })
+            },
+        )?,
+    )?;
+
+    // -- newOccluder --
+    /// Creates a new shadow occluder from a vertex table and optional settings.
+    /// @param vertices : table
+    /// @param opts : table?
+    /// @return Occluder
+    let s = state.clone();
+    tbl.set(
+        "newOccluder",
+        lua.create_function(move |_, (vtbl, opts): (LuaTable, Option<LuaTable>)| {
+            let verts = parse_vertex_table(&vtbl)?;
+            let mut occ = Occluder::new(verts);
+            if let Some(ref opts) = opts {
+                apply_occluder_opts(&mut occ, opts)?;
+            }
+            let key = s.borrow_mut().light_world.add_occluder(occ);
+            Ok(LuaOccluder {
+                state: s.clone(),
+                key,
+            })
+        })?,
+    )?;
+
+    // -- setAmbient --
+    /// Sets the global ambient light color.
+    /// @param r : number
+    /// @param g : number
+    /// @param b : number
+    /// @param a : number?
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setAmbient",
+        lua.create_function(move |_, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+            s.borrow_mut().light_world.ambient = Color::new(r, g, b, a.unwrap_or(1.0));
+            Ok(())
+        })?,
+    )?;
+
+    // -- getAmbient --
+    /// Returns the global ambient light color as (r, g, b, a).
+    /// @return number, number, number, number
+    let s = state.clone();
+    tbl.set(
+        "getAmbient",
+        lua.create_function(move |_, ()| {
+            let c = s.borrow().light_world.ambient;
+            Ok((c.r, c.g, c.b, c.a))
+        })?,
+    )?;
+
+    // -- setEnabled --
+    /// Sets whether the lighting system is active.
+    /// @param enabled : boolean
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setEnabled",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().light_world.enabled = enabled;
+            Ok(())
+        })?,
+    )?;
+
+    // -- isEnabled --
+    /// Returns whether the lighting system is active.
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "isEnabled",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().light_world.enabled)
+        })?,
+    )?;
+
+    // -- getLightCount --
+    /// Returns the number of lights in the world.
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "getLightCount",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().light_world.light_count())
+        })?,
+    )?;
+
+    // -- getOccluderCount --
+    /// Returns the number of occluders in the world.
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "getOccluderCount",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().light_world.occluder_count())
+        })?,
+    )?;
+
+    // -- getMaxLights --
+    /// Returns the maximum number of lights processed per frame.
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "getMaxLights",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().light_world.max_lights)
+        })?,
+    )?;
+
+    // -- setMaxLights --
+    /// Sets the maximum number of lights processed per frame (clamped 1–256).
+    /// @param n : integer
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setMaxLights",
+        lua.create_function(move |_, n: u16| {
+            s.borrow_mut().light_world.max_lights = n.clamp(1, 256);
+            Ok(())
+        })?,
+    )?;
+
+    // -- clear --
+    /// Removes all lights and occluders, resets ambient to default.
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "clear",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().light_world.clear();
+            Ok(())
+        })?,
+    )?;
+
+    // -- setGroupEnabled --
+    /// Sets the enabled state for all lights in the given group.
+    /// @param groupId : integer
+    /// @param enabled : boolean
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setGroupEnabled",
+        lua.create_function(move |_, (group_id, enabled): (u16, bool)| {
+            s.borrow_mut().light_world.set_group_enabled(group_id, enabled);
+            Ok(())
+        })?,
+    )?;
+
+    // -- setGroupIntensity --
+    /// Sets the intensity for all lights in the given group.
+    /// @param groupId : integer
+    /// @param intensity : number
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setGroupIntensity",
+        lua.create_function(move |_, (group_id, intensity): (u16, f32)| {
+            s.borrow_mut().light_world.set_group_intensity(group_id, intensity);
+            Ok(())
+        })?,
+    )?;
+
+    // -- setGroupColor --
+    /// Sets the color for all lights in the given group.
+    /// @param groupId : integer
+    /// @param r : number
+    /// @param g : number
+    /// @param b : number
+    /// @param a : number?
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setGroupColor",
+        lua.create_function(
+            move |_, (group_id, r, g, b, a): (u16, f32, f32, f32, Option<f32>)| {
+                s.borrow_mut()
+                    .light_world
+                    .set_group_color(group_id, Color::new(r, g, b, a.unwrap_or(1.0)));
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- getGroupCount --
+    /// Returns the number of lights in the given group.
+    /// @param groupId : integer
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "getGroupCount",
+        lua.create_function(move |_, group_id: u16| {
+            Ok(s.borrow().light_world.group_count(group_id))
+        })?,
+    )?;
+
+    // -- advanceFlickers --
+    /// Advances flicker phase for all lights with flicker enabled.
+    /// @param dt : number
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "advanceFlickers",
+        lua.create_function(move |_, dt: f32| {
+            s.borrow_mut().light_world.advance_flickers(dt);
+            Ok(())
+        })?,
+    )?;
+
     luna.set("light", tbl)?;
     Ok(())
 }

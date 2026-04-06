@@ -1,0 +1,123 @@
+-- examples/image.lua
+-- luna.image — CPU-side pixel buffer manipulation (ImageData and CompressedImageData).
+-- All luna.image API methods demonstrated with code and comments.
+
+-- ── ImageData ────────────────────────────────────────────────────────────────
+
+-- newImageData(width, height) → ImageData
+-- Creates a new RGBA8 pixel buffer filled with transparent black.
+local img_data = luna.image.newImageData(64, 64)
+
+-- newImageData(path) → ImageData
+-- Loads an image file from the game filesystem into a CPU pixel buffer.
+local loaded = luna.image.newImageData("textures/player.png")
+
+-- newImageData(width, height, bytes) → ImageData
+-- Creates an ImageData from raw bytes (must be width*height*4 bytes, RGBA8 order).
+local raw_bytes = string.rep("\xFF\x00\x00\xFF", 4 * 4)  -- 4x4 solid red
+local from_bytes = luna.image.newImageData(4, 4, raw_bytes)
+
+-- ── ImageData : dimensions ────────────────────────────────────────────────────
+
+local w = img_data:getWidth()         -- 64
+local h = img_data:getHeight()        -- 64
+local iw, ih = img_data:getDimensions()  -- 64, 64
+
+-- ── ImageData : pixel access ─────────────────────────────────────────────────
+-- All pixel coordinates are 0-based (top-left is 0,0).
+-- Channel values are integers 0–255.
+
+-- getPixel(x, y) → r, g, b, a
+local r, g, b, a = img_data:getPixel(0, 0)  -- 0, 0, 0, 0  (transparent black)
+
+-- setPixel(x, y, r, g, b, a)
+img_data:setPixel(10, 10, 255, 128, 0, 255)   -- solid orange at (10,10)
+img_data:setPixel(20, 20, 0, 200, 255, 180)   -- translucent cyan at (20,20)
+
+-- ── ImageData : batch operations ─────────────────────────────────────────────
+
+-- mapPixel(fn) — apply fn(x, y, r, g, b, a) → r, g, b, a to every pixel
+-- Useful for image effects and procedural generation.
+img_data:mapPixel(function(x, y, r, g, b, a)
+    -- Checkerboard pattern
+    if (x + y) % 2 == 0 then
+        return 255, 255, 255, 255  -- white
+    else
+        return 0, 0, 0, 255        -- black
+    end
+end)
+
+-- paste(source_img_data, dest_x, dest_y)
+-- Copies all pixels from source into this buffer at (dest_x, dest_y).
+local stamp = luna.image.newImageData(8, 8)
+stamp:mapPixel(function(_, _, _, _, _, _)
+    return 255, 0, 0, 255  -- fill with red
+end)
+
+img_data:paste(stamp, 5, 5)  -- paste red 8x8 square at (5,5) in img_data
+
+-- ── ImageData : export ────────────────────────────────────────────────────────
+
+-- getString() → string
+-- Returns the raw RGBA8 pixel bytes as a Lua string (width * height * 4 bytes).
+local raw = img_data:getString()
+local byte_count = #raw  -- 64 * 64 * 4 = 16384
+
+-- encode("png") → string  — PNG-compressed bytes, ready to write to a file.
+local png_bytes = img_data:encode("png")
+luna.filesystem.write("output.png", png_bytes)
+
+-- ── Using ImageData to modify a GPU texture ───────────────────────────────────
+
+-- Luna2D allows uploading an ImageData as a GPU texture:
+--   local tex = luna.graphics.newImage(img_data)
+--   luna.graphics.draw(tex, x, y)
+
+-- ── CompressedImageData ───────────────────────────────────────────────────────
+
+-- newCompressedData(path) → CompressedImageData
+-- Loads a DXT/BCn compressed texture from disk (e.g. a .dds file).
+-- The data stays GPU-compressed in CPU memory for fast upload.
+-- local cdata = luna.image.newCompressedData("textures/rock_bc3.dds")
+
+-- isCompressed(imagedata_value) → boolean
+-- Returns true if the value is a CompressedImageData (not a standard ImageData).
+-- local is_compressed = luna.image.isCompressed(cdata)  -- true
+-- local is_standard   = luna.image.isCompressed(img_data)  -- false
+
+-- CompressedImageData : dimensions
+-- cdata:getWidth()   → integer
+-- cdata:getHeight()  → integer
+-- cdata:getDimensions() → w, h
+
+-- CompressedImageData : format
+-- cdata:getFormat() → string  e.g. "DXT1", "DXT5", "BC7"
+
+-- CompressedImageData : mip levels
+-- cdata:getMipmapCount() → integer  (1 = no mipmaps)
+-- cdata:getString(mip_level?) → raw bytes for a specific mip level (0-based)
+-- cdata:getSize(mip_level?) → integer  byte count for that mip level
+
+-- ── Typical use — procedural texture ─────────────────────────────────────────
+
+--[[
+function luna.load()
+    local pixels = luna.image.newImageData(256, 256)
+    pixels:mapPixel(function(x, y)
+        -- Simple noise-based terrain colour
+        local n = luna.math.noise(x / 50, y / 50)
+        if n > 0.3 then
+            return 80, 140, 40, 255    -- grass
+        elseif n > 0 then
+            return 200, 170, 100, 255  -- sand
+        else
+            return 20, 80, 200, 255    -- water
+        end
+    end)
+    terrain_tex = luna.graphics.newImage(pixels)
+end
+
+function luna.draw()
+    luna.graphics.draw(terrain_tex, 0, 0)
+end
+]]

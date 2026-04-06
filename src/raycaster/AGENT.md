@@ -3,8 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.math` (base types) · `luna.raycaster` (extensions) |
 | **Source** | `src/raycaster/` |
+| **Rust Tests** | `tests/unit/raycaster_tests.rs`                    |
+| **Lua Tests**  | `tests/lua/unit/test_raycaster.lua`                     |
 | **Tests** | `tests/lua/unit/test_math.lua` |
 
 ## Summary
@@ -68,6 +71,7 @@ Raycaster2D (DDA grid)
 | `depth_buffer.rs` | `DepthBuffer` — 1D per-column depth tracker for sprite occlusion |
 | `lighting.rs` | `PointLight`, `compute_lighting`, `apply_lit_shade` |
 | `minimap_overlay.rs` | `extract_minimap` (RGBA crop), `draw_player_arrow` |
+| `column_batch.rs` | TODO: describe purpose of column_batch.rs |
 
 ## Submodules
 
@@ -323,3 +327,42 @@ A world-space point light.
 | Lua bindings (luna.math) | 3 + 14 methods |
 | Lua bindings (luna.raycaster) | 8 + 27 methods |
 | Source files | 12 |
+
+## Lua Examples
+
+```lua
+function luna.load()
+    map = luna.raycaster.newMap(24, 24)
+    map:loadFromString([[
+        111111111111
+        100000000001
+        100000000001
+        111111111111
+    ]])
+
+    caster = luna.raycaster.newRenderer(map, 800, 600)
+    caster:setFOV(math.pi / 3)
+end
+
+function luna.draw()
+    caster:render(player_x, player_y, player_angle)
+end
+```
+
+## References
+
+| Module     | Relationship  | Notes                                              |
+|------------|---------------|----------------------------------------------------|
+| `engine`   | Imports from  | Uses `SharedState`, canvas resources               |
+| `math`     | Imports from  | `Vec2` for ray directions and intersection math    |
+| `graphics` | Related       | Raycasted columns are drawn as textured quads via draw commands |
+| `tilemap`  | Related       | Raycaster commonly reads wall data from a tilemap  |
+| `lua_api`  | Imported by   | `src/lua_api/raycaster_api.rs` registers `luna.raycaster.*` |
+
+## Notes
+
+- Classic DDA raycasting algorithm (Wolf3D-style); produces a 2.5D visual, not true 3D.
+- Column batching (`column_batch.rs`) groups adjacent same-texture columns into single draw calls.
+- Floor and ceiling rendering is NOT included in the base implementation (performance tradeoff).
+- Wall textures must be power-of-two for correct DDA column height mapping.
+- Performance target: 800×600 at 60fps on integrated GPU with a 24×24 map.

@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.event` |
 | **Source** | `src/event/` |
+| **Rust Tests** | `tests/unit/event_tests.rs`                    |
 | **Tests** | `tests/event_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_event.lua` |
 
@@ -102,3 +104,35 @@ Exposed under `luna.event.*` by `src/lua_api/event_api/`.
 | `struct` | 4 |
 | **Total** | **5** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    luna.event.push("game_started", {level = 1})
+end
+
+function luna.update(dt)
+    local evt = luna.event.poll()
+    while evt do
+        if evt.type == "game_started" then
+            print("Level:", evt.data.level)
+        end
+        evt = luna.event.poll()
+    end
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState` for the event queue             |
+| `input`   | Related       | `input` fires engine-level input events; `event` provides a user-programmable queue |
+| `lua_api` | Imported by   | `src/lua_api/event_api.rs` registers `luna.event.*` |
+
+## Notes
+
+- The event queue is a FIFO buffer; events are consumed by `luna.event.poll()` one at a time.
+- `luna.event.push()` is the only thread-safe path for background threads to communicate with the game loop.
+- Event data is a Lua table; only primitive types (string, number, boolean) are safe to pass across thread boundaries.
+- Do not push events from inside `luna.draw()` — draw should be side-effect free.

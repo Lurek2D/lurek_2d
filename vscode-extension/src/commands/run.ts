@@ -84,9 +84,9 @@ export async function runExample(
     return;
   }
 
-  const examplesDir = path.join(root, "examples");
+  const examplesDir = path.join(root, "demos");
   if (!fs.existsSync(examplesDir)) {
-    vscode.window.showWarningMessage("No examples/ directory found.");
+    vscode.window.showWarningMessage("No demos/ directory found.");
     return;
   }
 
@@ -101,7 +101,7 @@ export async function runExample(
   }
 
   const selected = await vscode.window.showQuickPick(examples, {
-    placeHolder: "Select an example to run",
+    placeHolder: "Select a demo to run",
   });
   if (!selected) {
     return;

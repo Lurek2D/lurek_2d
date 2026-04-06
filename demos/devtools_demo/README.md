@@ -14,7 +14,7 @@ Demonstrates `luna.devtools`: runtime diagnostics including a performance profil
 ## How to Run
 
 ```powershell
-cargo run -- examples/devtools_demo
+cargo run -- demos/devtools_demo
 ```
 
 ## Controls

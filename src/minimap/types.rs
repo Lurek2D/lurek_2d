@@ -13,6 +13,34 @@ pub enum ColorMode {
     Political,
 }
 
+impl ColorMode {
+    /// Parse a color mode from its string name.
+    ///
+    /// # Parameters
+    /// - `s` — `&str`.
+    ///
+    /// # Returns
+    /// `Option<Self>`.
+    pub fn parse_mode(s: &str) -> Option<Self> {
+        match s {
+            "terrain" => Some(ColorMode::Terrain),
+            "political" => Some(ColorMode::Political),
+            _ => None,
+        }
+    }
+
+    /// Return the string name of this color mode.
+    ///
+    /// # Returns
+    /// `&'static str`.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            ColorMode::Terrain => "terrain",
+            ColorMode::Political => "political",
+        }
+    }
+}
+
 /// Fog-of-war visibility level for a cell.
 ///
 /// # Variants

@@ -133,7 +133,7 @@ Breaking version bumps that require code changes. Each is a dedicated migration 
 5. Test `UserData` registration patterns — mlua 0.10+ changed `UserData` method registration.
 6. Test all Lua callbacks (`luna.load`, `luna.update`, `luna.draw`, etc.).
 7. Run full test suite: `cargo test`.
-8. Run all examples: `cargo run -- examples/hello_world`, etc.
+8. Run all examples: `cargo run -- demos/hello_world`, etc.
 
 **Acceptance gate**: All 18,161+ SLoC of Lua API code compiles and all tests pass. All examples run without errors.
 
@@ -280,7 +280,7 @@ Breaking version bumps that require code changes. Each is a dedicated migration 
 1. Update `winit` version to `"0.31"`.
 2. Fix any breaking API changes in window creation or event loop.
 3. Test on Windows. Verify gamepad, keyboard, mouse, touch still work.
-4. Run `cargo test && cargo run -- examples/hello_world`.
+4. Run `cargo test && cargo run -- demos/hello_world`.
 
 **Acceptance gate**: Window creates, input works, examples run. Tests pass.
 

@@ -6,9 +6,9 @@
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::pipeline::step::PipelineStep;
 use crate::engine::log_messages::{PL01_PIPELINE_INIT, PL02_STEP_ADD};
 use crate::log_msg;
+use crate::pipeline::step::PipelineStep;
 
 /// Determines how the pipeline responds when a step fails.
 ///
@@ -21,6 +21,37 @@ pub enum ErrorMode {
     Abort,
     /// Skip the failed step and continue executing the remaining steps.
     Continue,
+}
+
+impl ErrorMode {
+    /// Returns the mode as a lowercase string suitable for Lua.
+    ///
+    /// # Returns
+    /// `&'static str`.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Abort => "abort",
+            Self::Continue => "continue",
+        }
+    }
+
+    /// Parses a mode string. Returns `Err` with a descriptive message on unknown input.
+    ///
+    /// # Parameters
+    /// - `s` — `&str`.
+    ///
+    /// # Returns
+    /// `Result<ErrorMode, String>`.
+    pub fn from_str_lua(s: &str) -> Result<Self, String> {
+        match s {
+            "abort" => Ok(Self::Abort),
+            "continue" => Ok(Self::Continue),
+            _ => Err(format!(
+                "setErrorMode: unknown mode '{}', expected 'abort' or 'continue'",
+                s
+            )),
+        }
+    }
 }
 
 /// A directed acyclic graph (DAG) container that holds pipeline steps and their dependencies.

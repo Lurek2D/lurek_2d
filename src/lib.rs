@@ -146,6 +146,8 @@ pub mod scene;
 /// Skeletal animation: bone hierarchies, slots, and world-transform propagation.
 pub mod spine;
 // migration-state: pub mod stats; — now library/stats/init.lua
+/// Lua API registration layer: LuaJIT VM creation and `luna.*` module binding.
+pub mod lua_api;
 /// Grid-based character-cell terminal emulator and widget toolkit.
 pub mod terminal;
 /// Background Rust worker threads and `Channel` inter-thread communication.
@@ -156,8 +158,6 @@ pub mod tilemap;
 pub mod timer;
 /// Window event loop placeholder.
 pub mod window;
-/// Lua API registration layer: LuaJIT VM creation and `luna.*` module binding.
-pub mod lua_api;
 
 /// Entry-point shared by both `luna` (console) and `lunec` (no-console) binaries.
 ///
@@ -186,7 +186,12 @@ pub fn luna_run() {
             .unwrap_or_default();
 
         let msg = format!("Luna2D panicked: {}{}", payload, location);
-        log_msg!(error, crate::engine::log_messages::L060_LUA_CALLBACK_ERROR, "{}", msg);
+        log_msg!(
+            error,
+            crate::engine::log_messages::L060_LUA_CALLBACK_ERROR,
+            "{}",
+            msg
+        );
 
         #[cfg(target_os = "windows")]
         {
@@ -218,7 +223,12 @@ pub fn luna_run() {
                 }
                 Err(e) => {
                     let msg = format!("Failed to open .lunar archive '{}': {}", path.display(), e);
-                    log_msg!(error, crate::engine::log_messages::L060_LUA_CALLBACK_ERROR, "{}", msg);
+                    log_msg!(
+                        error,
+                        crate::engine::log_messages::L060_LUA_CALLBACK_ERROR,
+                        "{}",
+                        msg
+                    );
                     #[cfg(target_os = "windows")]
                     show_windows_error_box(&msg);
                     eprintln!("{}", msg);

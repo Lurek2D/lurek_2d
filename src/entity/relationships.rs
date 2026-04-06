@@ -148,8 +148,10 @@ impl RelationshipManager {
     /// - `default_level` — `&str`.
     pub fn define_type(&mut self, name: &str, levels: Vec<String>, default_level: &str) {
         log_msg!(debug, RL01, "{} ({} levels)", name, levels.len());
-        self.types
-            .insert(name.to_string(), RelationType::new(name, levels, default_level));
+        self.types.insert(
+            name.to_string(),
+            RelationType::new(name, levels, default_level),
+        );
     }
 
     /// Remove a relation type. Returns `true` if it existed.
@@ -198,12 +200,10 @@ impl RelationshipManager {
     /// Get the relationship record for a pair (creating it at zero if absent).
     fn ensure(&mut self, a: u32, b: u32) -> &mut Relationship {
         let key = ordered(a, b);
-        self.relations
-            .entry(key)
-            .or_insert_with(|| {
-                log_msg!(trace, RL03, "({}, {})", a, b);
-                Relationship::new(a, b)
-            })
+        self.relations.entry(key).or_insert_with(|| {
+            log_msg!(trace, RL03, "({}, {})", a, b);
+            Relationship::new(a, b)
+        })
     }
 
     /// Get the numeric relation value between two entities.

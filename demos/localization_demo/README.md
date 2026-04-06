@@ -14,7 +14,7 @@ Demonstrates `luna.localization`: multi-language strings, interpolation, plurali
 ## How to Run
 
 ```powershell
-cargo run -- examples/localization_demo
+cargo run -- demos/localization_demo
 ```
 
 ## Controls

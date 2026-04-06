@@ -14,7 +14,7 @@ Demonstrates `luna.math.newTween()` with multiple easing curves. Rectangles anim
 ## How to Run
 
 ```powershell
-cargo run -- examples/tween_demo
+cargo run -- demos/tween_demo
 ```
 
 ## Controls

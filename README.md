@@ -25,8 +25,8 @@ This is David vs. Goliath: a 20 MB engine that, powered by AI, delivers features
 # Build and run
 cargo build                           # Debug build
 cargo run                             # Splash screen (no game)
-cargo run -- examples/hello_world     # Run an example
-cargo run -- examples/physics_demo    # Physics demo
+cargo run -- demos/hello_world     # Run an example
+cargo run -- demos/physics_demo    # Physics demo
 cargo build --release                 # Release build (~20 MB)
 ```
 
@@ -155,7 +155,7 @@ Baseline: math (leaf) + engine (lifecycle, SharedState)
 
 ## Examples
 
-27 example games and demos ship in `examples/`:
+27 example games and demos ship in `demos/`:
 
 | Example | Demonstrates |
 |---|---|
@@ -171,12 +171,12 @@ Baseline: math (leaf) + engine (lifecycle, SharedState)
 | `tween_demo` | Easing and animation |
 | `light_demo` | Dynamic lighting effects |
 | `postfx_demo` | Post-processing effects |
-| ... | See `examples/` for all demos |
+| ... | See `demos/` for all demos |
 
 Run any example:
 
 ```bash
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
 
 ---

@@ -4,9 +4,9 @@
 //! name and receive a monotonically increasing handle ID for later removal.
 //! Callbacks fire in registration order.
 
-use std::collections::HashMap;
 use crate::engine::log_messages::{SG01, SG02};
 use crate::log_msg;
+use std::collections::HashMap;
 
 /// A single subscription entry in a [`Signal`].
 ///

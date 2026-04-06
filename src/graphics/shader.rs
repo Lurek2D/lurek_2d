@@ -11,9 +11,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use std::collections::HashMap;
-use crate::engine::log_messages::{SH01_SHADER_OK};
+use crate::engine::log_messages::SH01_SHADER_OK;
 use crate::log_msg;
+use std::collections::HashMap;
 
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 

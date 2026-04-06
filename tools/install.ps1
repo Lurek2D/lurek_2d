@@ -6,7 +6,7 @@
 .DESCRIPTION
     Builds the Luna2D engine in release mode, copies the binary to
     %USERPROFILE%\bin (or a custom destination via -Destination), and
-    copies the examples/ folder so you can run games from any terminal.
+    copies the demos/ folder so you can run games from any terminal.
 
     Run with --uninstall / -Uninstall to remove a previous installation.
 
@@ -116,7 +116,7 @@ if (Test-Path $ExamplesSource) {
     Copy-Item $ExamplesSource -Destination $ExamplesDest -Recurse -Force
     Write-OK "Examples copied."
 } else {
-    Write-Host "[  --  ] examples/ folder not found — skipping."
+    Write-Host "[  --  ] demos/ folder not found — skipping."
 }
 
 # 7. PATH advisory

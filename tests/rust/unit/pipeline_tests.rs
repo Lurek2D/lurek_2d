@@ -34,7 +34,10 @@ fn toposort_respects_dependency_order() {
     let order = p.get_execution_order().unwrap();
     let pos_a = order.iter().position(|s| s == "step_a").unwrap();
     let pos_b = order.iter().position(|s| s == "step_b").unwrap();
-    assert!(pos_a < pos_b, "step_a must appear before step_b in execution order");
+    assert!(
+        pos_a < pos_b,
+        "step_a must appear before step_b in execution order"
+    );
 }
 
 #[test]
@@ -134,10 +137,20 @@ fn parallel_groups_independent_steps_at_level_zero() {
     p.add_step(PipelineStep::new("b")).unwrap();
 
     let groups = p.get_parallel_groups().unwrap();
-    assert_eq!(groups.len(), 1, "both independent steps should be in a single level-0 group");
+    assert_eq!(
+        groups.len(),
+        1,
+        "both independent steps should be in a single level-0 group"
+    );
     let group0 = &groups[0];
-    assert!(group0.contains(&"a".to_string()), "group[0] must contain 'a'");
-    assert!(group0.contains(&"b".to_string()), "group[0] must contain 'b'");
+    assert!(
+        group0.contains(&"a".to_string()),
+        "group[0] must contain 'a'"
+    );
+    assert!(
+        group0.contains(&"b".to_string()),
+        "group[0] must contain 'b'"
+    );
     assert_eq!(group0.len(), 2);
 }
 
@@ -158,15 +171,25 @@ fn parallel_groups_diamond_shape() {
     p.add_step(d).unwrap();
 
     let groups = p.get_parallel_groups().unwrap();
-    assert_eq!(groups.len(), 3, "diamond should yield 3 levels: [A], [B,C], [D]");
+    assert_eq!(
+        groups.len(),
+        3,
+        "diamond should yield 3 levels: [A], [B,C], [D]"
+    );
 
     // Level 0: only A
     assert_eq!(groups[0], vec!["A".to_string()], "level 0 must be [A]");
 
     // Level 1: B and C (order within the group is by topo position, which is non-deterministic
     //          from the HashMap, so check membership only)
-    assert!(groups[1].contains(&"B".to_string()), "level 1 must contain B");
-    assert!(groups[1].contains(&"C".to_string()), "level 1 must contain C");
+    assert!(
+        groups[1].contains(&"B".to_string()),
+        "level 1 must contain B"
+    );
+    assert!(
+        groups[1].contains(&"C".to_string()),
+        "level 1 must contain C"
+    );
     assert_eq!(groups[1].len(), 2, "level 1 must have exactly 2 steps");
 
     // Level 2: only D
@@ -184,10 +207,16 @@ fn remove_step_cleans_dep_references() {
     p.add_step(b).unwrap();
 
     let removed = p.remove_step("a");
-    assert!(removed, "remove_step should return true for an existing step");
+    assert!(
+        removed,
+        "remove_step should return true for an existing step"
+    );
 
     let b_step = p.get_step("b").unwrap();
-    assert!(b_step.deps.is_empty(), "dep reference to 'a' should be cleaned from 'b'");
+    assert!(
+        b_step.deps.is_empty(),
+        "dep reference to 'a' should be cleaned from 'b'"
+    );
 }
 
 #[test]
@@ -269,12 +298,18 @@ fn scheduler_step_fires_after_delay_elapses() {
 fn pipeline_result_is_success_when_no_failures() {
     let mut result = PipelineResult::new();
     result.completed.push("step_a".to_string());
-    assert!(result.is_success(), "result with no failures should be a success");
+    assert!(
+        result.is_success(),
+        "result with no failures should be a success"
+    );
 }
 
 #[test]
 fn pipeline_result_not_success_when_failed() {
     let mut result = PipelineResult::new();
     result.failed.push("step_a".to_string());
-    assert!(!result.is_success(), "result with a failed step should not be a success");
+    assert!(
+        !result.is_success(),
+        "result with a failed step should not be a success"
+    );
 }

@@ -15,7 +15,8 @@ name: Lua-Designer
 - Function signatures: parameter names, types, order
 - Callback conventions: `luna.load()`, `luna.update(dt)`, `luna.draw()`, etc.
 - API naming patterns (e.g., `luna.graphics.draw()`, `luna.audio.play()`)
-- Lua example code in `examples/`
+- Lua demo games in `demos/`
+- API reference examples in `examples/`
 - `docs/lua_api_reference.md` API surface documentation
 
 **Must not become**:

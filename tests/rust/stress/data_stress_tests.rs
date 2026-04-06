@@ -42,7 +42,11 @@ fn stress_hash_large_data() {
     ];
     for algo in &algos {
         let digest = hash(*algo, &data);
-        assert!(!digest.is_empty(), "{:?} should produce non-empty digest", algo);
+        assert!(
+            !digest.is_empty(),
+            "{:?} should produce non-empty digest",
+            algo
+        );
     }
 }
 
@@ -77,7 +81,10 @@ fn stress_hex_large() {
 fn stress_toml_parse_valid() {
     let mut toml_str = String::new();
     for i in 0..500 {
-        toml_str.push_str(&format!("[section_{}]\nkey = {}\nname = \"value_{}\"\n\n", i, i, i));
+        toml_str.push_str(&format!(
+            "[section_{}]\nkey = {}\nname = \"value_{}\"\n\n",
+            i, i, i
+        ));
     }
     let parsed = parse_toml(&toml_str).unwrap();
     let encoded = encode_toml(&parsed).unwrap();

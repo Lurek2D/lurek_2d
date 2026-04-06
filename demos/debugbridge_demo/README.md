@@ -14,7 +14,7 @@ Demonstrates `luna.debugbridge`: a TCP-based debug server that allows external t
 ## How to Run
 
 ```powershell
-cargo run -- examples/debugbridge_demo
+cargo run -- demos/debugbridge_demo
 # Connect from another terminal:
 # telnet 127.0.0.1 19740
 # or: nc 127.0.0.1 19740

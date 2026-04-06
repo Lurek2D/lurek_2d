@@ -11,8 +11,8 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use crate::engine::resource_keys::TextureKey;
 use crate::engine::log_messages::{MS01, MS02};
+use crate::engine::resource_keys::TextureKey;
 use crate::log_msg;
 
 /// Drawing mode for mesh geometry. Consult the module-level documentation for the broader usage context and preconditions.

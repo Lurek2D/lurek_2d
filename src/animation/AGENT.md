@@ -3,85 +3,142 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
-| **Lua API** | `luna.graphics.newAnimation()` (via `src/lua_api/sprite_api.rs`) |
-| **Source** | `src/animation/` (split across `frame.rs`, `clip.rs`, `event.rs`, `animation.rs`) |
-| **Rust Tests** | `tests/unit/animation_tests.rs` — 14 tests |
-| **Lua Tests** | None (animation is tested indirectly via `test_graphics.lua`) |
 | **Status** | Implemented — Full |
+| **Lua API** | `luna.animation` |
+| **Source** | `src/animation/` |
+| **Rust Tests** | `tests/unit/animation_tests.rs` |
+| **Lua Tests** | `tests/lua/unit/test_animation.lua` |
+| **Architecture** | — |
 
 ## Summary
 
-The `animation` module provides a sprite animation runtime for Luna2D: named playback
-clips, a shared frame pool, per-frame duration overrides, variable speed, and an event
-queue for script notifications.
+The `animation` module provides frame-based sprite animation for 2D characters and objects.
+It is a Tier 1 Engine Subsystem that depends only on `crate::math` and `crate::engine`.
 
-An [`Animation`] stores a pool of [`AnimFrame`] entries (each holding a source rectangle
-into a sprite-sheet texture and an optional per-frame duration).  Named [`AnimClip`]s
-reference frames by index into the pool and carry FPS and looping settings.  Calling
-[`Animation::play`] selects the active clip; [`Animation::update`] advances the timer
-and pushes [`AnimEvent`] variants onto an internal queue; [`Animation::drain_events`]
-lets the caller react to `Finished`, `FrameChanged`, and `Looped` transitions.
+The module is built around three data types: `AnimClip` names a sequence of frame indices;
+`AnimFrame` records a source rectangle plus an optional per-frame display duration; and
+`Animation` is the live playback controller that advances through clips using delta time,
+fires `AnimEvent` markers at specified frames, and can loop, reverse, or halt on the last frame.
 
+Scripts interact via `luna.animation.*` — creating animations, adding clips, updating each
+frame with `update(dt)`, and querying the current frame rectangle for use in `luna.graphics.draw()`.
+
+**Scope boundary**: This module contains no GPU code. Uploading textures and issuing draw calls
+is handled by `luna_api::graphics_api`. Physics or sound triggered by animation events must
+be wired by user scripts, not by the animation module itself.
 ## Architecture
 
 ```
-animation/
-  │
-  └── Animation ── main controller
-        │
-        ├── frames: Vec<AnimFrame>   ── source quads + optional duration
-        ├── clips:  HashMap<String, AnimClip>  ── named playback definitions
-        └── Playback state
-              ├── current_clip, current_frame_pos, timer
-              ├── playing, speed
-              └── drain_events() → Vec<AnimEvent>
+animation (module root)
+  ├── clip.rs — [`AnimClip`] — a named animation clip referencing frames by index.
+  ├── controller.rs — [`Animation`] — main controller for sprite animation playback.
+  ├── event.rs — [`AnimEvent`] — events emitted during animation playback.
+  ├── frame.rs — [`AnimFrame`] — a single animation frame with a source rectangle and optional duration.
 ```
-
-## Architecture Note
-
-`animation` was extracted from `src/graphics/animation.rs` during the graphics-module-split
-session.  It is a Tier 1 module that imports only from `crate::math` (specifically `Rect`).
-
-The backward-compatibility alias `AnimationFrame = AnimFrame` is preserved so that callers
-that previously imported `AnimationFrame` from `crate::graphics` continue to compile.
-
-The Lua binding in `src/lua_api/sprite_api.rs` wraps `Animation` in a `LuaAnimation`
-userdata and registers it on the `luna.graphics` table (e.g. `luna.graphics.newAnimation()`).
-There is no separate `luna.animation` module — all animation functions are accessed through
-`luna.graphics` or through an animation object returned by `newAnimation()`.
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
-| `mod.rs` | Sub-module declarations and `pub use` re-exports only |
-| `frame.rs` | `AnimFrame` struct and `AnimationFrame` backward-compat alias |
-| `clip.rs` | `AnimClip` struct |
-| `event.rs` | `AnimEvent` enum |
-| `animation.rs` | `Animation` controller: frame pool, clip management, update logic, unit tests |
+| `clip.rs` | [`AnimClip`] — a named animation clip referencing frames by index. |
+| `controller.rs` | [`Animation`] — main controller for sprite animation playback. |
+| `event.rs` | [`AnimEvent`] — events emitted during animation playback. |
+| `frame.rs` | [`AnimFrame`] — a single animation frame with a source rectangle and optional duration. |
+
+## Submodules
+
+### `animation::clip`
+
+[`AnimClip`] — a named animation clip referencing frames by index.
+
+- **`AnimClip`** (struct): TODO: one-line description.
+
+### `animation::controller`
+
+[`Animation`] — main controller for sprite animation playback.
+
+- **`Animation`** (struct): TODO: one-line description.
+
+### `animation::event`
+
+[`AnimEvent`] — events emitted during animation playback.
+
+- **`AnimEvent`** (enum): TODO: one-line description.
+
+### `animation::frame`
+
+[`AnimFrame`] — a single animation frame with a source rectangle and optional duration.
+
+- **`AnimFrame`** (struct): TODO: one-line description.
 
 ## Key Types
 
-| Type | Kind | Description |
-|------|------|-------------|
-| `Animation` | struct | Sprite animation controller with named clips, speed, and event queue |
-| `AnimFrame` | struct | Single frame: source `Rect` quad and optional duration override |
-| `AnimClip` | struct | Named clip: frame index list, FPS, and looping flag |
-| `AnimEvent` | enum | Playback notification: `Finished`, `FrameChanged { frame_index }`, `Looped` |
-| `AnimationFrame` | type alias | Backward-compatible alias for `AnimFrame` |
+### Structs
 
-## Lua API Summary
+#### `animation::clip::AnimClip`
 
-Animation is exposed as an object returned by `luna.graphics.newAnimation()`.
+TODO: description from `///` doc comment.
 
-| Function | Description |
-|----------|-------------|
-| `luna.graphics.newAnimation()` | Creates a new empty `Animation` object |
-| `anim:addFrame(quad, duration?)` | Adds a frame (source rect) to the frame pool |
-| `anim:addClip(name, frames, fps, loop)` | Registers a named clip |
-| `anim:play(name)` | Starts playback of a named clip |
-| `anim:stop()` | Stops playback |
-| `anim:update(dt)` | Advances the animation timer |
-| `anim:getQuad()` | Returns the current source quad (Rect) |
-| `anim:setSpeed(factor)` | Scales playback speed |
-| `anim:getEvents()` | Returns and clears pending events |
+#### `animation::controller::Animation`
+
+TODO: description from `///` doc comment.
+
+#### `animation::frame::AnimFrame`
+
+TODO: description from `///` doc comment.
+
+### Enums
+
+#### `animation::event::AnimEvent`
+
+TODO: description from `///` doc comment.
+
+## Lua API
+
+Exposed under `luna.animation.*` by `src\lua_api\animation_api.rs`.
+
+TODO: Describe the overall API surface. List the major categories of functions.
+
+Exposed functions include: `animation`, `frame`, `type`.
+
+## Lua Examples
+
+```lua
+-- Example: Basic animation usage
+function luna.load()
+    -- TODO: replace with real animation setup
+    local obj = luna.animation.animation()
+end
+
+function luna.update(dt)
+    -- TODO: update logic
+end
+```
+
+## Item Summary
+
+| Kind | Count |
+|------|-------|
+| `struct` | 3 |
+| `enum`   | 1 |
+| `fn`     | 0 |
+| **Total** | **4** |
+
+## References
+
+| Module | Relationship | Notes |
+|--------|--------------|-------|
+| `engine` | Imports from | Uses SharedState, EngineError |
+| `math` | Imports from | Vec2, Color, Rect |
+| `lua_api` | Imported by | Binds public API to Lua |
+
+TODO: Add entries for similar modules and explain the separation of duties.
+
+## Notes
+
+TODO: Document unique facts an agent must know before editing this module:
+- External crate constraints (version, thread-safety, API limitations)
+- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
+- Known limitations or intentional omissions
+- Best practices and anti-patterns for this module
+- What Lua scripts will break if the API changes

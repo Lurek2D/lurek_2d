@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.input` |
 | **Source** | `src/input/` |
+| **Rust Tests** | `tests/unit/input_tests.rs`                    |
 | **Tests** | `tests/input_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_input.lua` |
 
@@ -152,3 +154,43 @@ Exposed under `luna.input.*` by `src/lua_api/input_api/`.
 | `struct` | 5 |
 | **Total** | **16** |
 
+## Lua Examples
+
+```lua
+function luna.update(dt)
+    -- Keyboard
+    if luna.keyboard.isDown("left") then
+        player_x = player_x - 200 * dt
+    end
+    if luna.keyboard.isDown("right") then
+        player_x = player_x + 200 * dt
+    end
+
+    -- Mouse
+    local mx, my = luna.mouse.getPosition()
+    local pressed = luna.mouse.isDown(1)
+end
+
+function luna.keypressed(key)
+    if key == "escape" then
+        luna.event.push("quit")
+    end
+end
+```
+
+## References
+
+| Module      | Relationship  | Notes                                              |
+|-------------|---------------|----------------------------------------------------|
+| `engine`    | Imports from  | Uses `SharedState` for keyboard/mouse/gamepad state |
+| `event`     | Related       | `input` delivers hardware events; `event` is a user-level queue |
+| `automation`| Related       | `automation` records/replays the events delivered by `input` |
+| `lua_api`   | Imported by   | `src/lua_api/input_api.rs` registers `luna.keyboard.*` / `luna.mouse.*` etc. |
+
+## Notes
+
+- Key names follow lowercase ASCII: `"space"`, `"escape"`, `"a"`, `"left"`, `"f1"`.
+- `isDown` is true for the entire duration a key is held; `wasPressed`/`wasReleased` are true for one frame only.
+- Mouse position is in logical pixels (DPI-unscaled); multiply by `luna.window.getDPIScale()` for physical pixels.
+- Gamepad IDs start from 0 and may be sparse if controllers are disconnected mid-session.
+- `luna.touch.*` events mirror mouse events for single-touch scenarios for cross-platform compatibility.

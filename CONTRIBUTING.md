@@ -6,7 +6,7 @@ Luna2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. K
 
 ```bash
 cargo build
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
 
 If your work touches the official editor tooling, also review [vscode-extension/README.md](vscode-extension/README.md).

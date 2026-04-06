@@ -106,7 +106,9 @@ impl ActiveTransition {
     /// `bool`.
     pub fn is_complete(&self) -> bool {
         let done = self.elapsed >= self.duration;
-        if done { log_msg!(debug, TR02); }
+        if done {
+            log_msg!(debug, TR02);
+        }
         done
     }
 

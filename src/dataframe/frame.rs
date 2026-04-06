@@ -8,10 +8,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
+use crate::engine::log_messages::DF01;
+use crate::log_msg;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::engine::log_messages::{DF01};
-use crate::log_msg;
 
 /// A single cell value in a DataFrame column.
 ///
@@ -447,6 +447,18 @@ impl DataFrame {
         }
     }
 
+    /// Return a mutable reference to a column's cell data, resolved by `ColRef`.
+    ///
+    /// # Parameters
+    /// - `col` — `ColRef`.
+    ///
+    /// # Returns
+    /// `Result<&mut Vec<CellValue>, String>`.
+    pub fn column_data_mut(&mut self, col: ColRef) -> Result<&mut Vec<CellValue>, String> {
+        let ci = self.resolve_col(col)?;
+        Ok(&mut self.data[ci])
+    }
+
     /// Create a DataFrame from raw column names and column-major data.
     ///
     /// # Parameters
@@ -687,6 +699,18 @@ impl Database {
         for (name, df) in other.tables {
             self.tables.insert(name, df);
         }
+    }
+
+    /// Deep-clone this Database and all contained DataFrames.
+    ///
+    /// # Returns
+    /// `Database`.
+    pub fn clone_db(&self) -> Database {
+        let mut db = Database::new();
+        for (name, df) in &self.tables {
+            db.add_table(name, df.clone_df());
+        }
+        db
     }
 }
 

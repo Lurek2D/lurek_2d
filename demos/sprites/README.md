@@ -14,7 +14,7 @@ Moves a coloured rectangle around the screen with keyboard input. Demonstrates r
 ## How to Run
 
 ```powershell
-cargo run -- examples/sprites
+cargo run -- demos/sprites
 ```
 
 ## Controls

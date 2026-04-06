@@ -5,8 +5,8 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -24,13 +24,34 @@ fn make_vm() -> mlua::Lua {
 
 #[test]
 fn test_effect_type_from_name_valid() {
-    assert_eq!(PostFxEffectType::from_name("bloom"), Some(PostFxEffectType::Bloom));
-    assert_eq!(PostFxEffectType::from_name("blur"), Some(PostFxEffectType::Blur));
-    assert_eq!(PostFxEffectType::from_name("crt"), Some(PostFxEffectType::Crt));
-    assert_eq!(PostFxEffectType::from_name("godrays"), Some(PostFxEffectType::Godrays));
-    assert_eq!(PostFxEffectType::from_name("vignette"), Some(PostFxEffectType::Vignette));
-    assert_eq!(PostFxEffectType::from_name("colourgrade"), Some(PostFxEffectType::ColourGrade));
-    assert_eq!(PostFxEffectType::from_name("chromatic"), Some(PostFxEffectType::Chromatic));
+    assert_eq!(
+        PostFxEffectType::from_name("bloom"),
+        Some(PostFxEffectType::Bloom)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("blur"),
+        Some(PostFxEffectType::Blur)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("crt"),
+        Some(PostFxEffectType::Crt)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("godrays"),
+        Some(PostFxEffectType::Godrays)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("vignette"),
+        Some(PostFxEffectType::Vignette)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("colourgrade"),
+        Some(PostFxEffectType::ColourGrade)
+    );
+    assert_eq!(
+        PostFxEffectType::from_name("chromatic"),
+        Some(PostFxEffectType::Chromatic)
+    );
 }
 
 #[test]
@@ -261,10 +282,12 @@ fn test_stack_is_enabled_nonexistent() {
 fn test_lua_postfx_new_effect() {
     let lua = make_vm();
     let result: String = lua
-        .load(r#"
+        .load(
+            r#"
             local bloom = luna.postfx.newEffect("bloom")
             return bloom:getEffectType()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(result, "bloom");
@@ -273,9 +296,8 @@ fn test_lua_postfx_new_effect() {
 #[test]
 fn test_lua_postfx_invalid_effect_type() {
     let lua = make_vm();
-    let result: Result<mlua::Value, _> = lua
-        .load(r#"luna.postfx.newEffect("invalid_type")"#)
-        .eval();
+    let result: Result<mlua::Value, _> =
+        lua.load(r#"luna.postfx.newEffect("invalid_type")"#).eval();
     assert!(result.is_err());
 }
 
@@ -283,14 +305,16 @@ fn test_lua_postfx_invalid_effect_type() {
 fn test_lua_postfx_effect_parameters() {
     let lua = make_vm();
     let result: (f32, f32, bool) = lua
-        .load(r#"
+        .load(
+            r#"
             local bloom = luna.postfx.newEffect("bloom")
             bloom:setThreshold(0.5)
             local t = bloom:getParameter("threshold")
             local i = bloom:getParameter("intensity")
             local h = bloom:hasParameter("threshold")
             return t, i, h
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert!((result.0 - 0.5).abs() < 1e-5);
@@ -302,7 +326,8 @@ fn test_lua_postfx_effect_parameters() {
 fn test_lua_postfx_stack_add_remove() {
     let lua = make_vm();
     let count: i32 = lua
-        .load(r#"
+        .load(
+            r#"
             local stack = luna.postfx.newStack(800, 600)
             local bloom = luna.postfx.newEffect("bloom")
             local blur = luna.postfx.newEffect("blur")
@@ -312,7 +337,8 @@ fn test_lua_postfx_stack_add_remove() {
             stack:remove(bloom)
             local c2 = stack:getEffectCount()
             return c1 * 10 + c2
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(count, 21); // c1=2, c2=1 -> 21
@@ -322,10 +348,12 @@ fn test_lua_postfx_stack_add_remove() {
 fn test_lua_postfx_stack_dimensions() {
     let lua = make_vm();
     let (w, h): (u32, u32) = lua
-        .load(r#"
+        .load(
+            r#"
             local stack = luna.postfx.newStack(1920, 1080)
             return stack:getWidth(), stack:getHeight()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(w, 1920);
@@ -336,10 +364,12 @@ fn test_lua_postfx_stack_dimensions() {
 fn test_lua_postfx_get_effect_types() {
     let lua = make_vm();
     let count: i32 = lua
-        .load(r#"
+        .load(
+            r#"
             local types = luna.postfx.getEffectTypes()
             return #types
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(count, 15); // 7 original + 8 new: pixelate,sepia,grayscale,invert,scanlines,edgedetect,hueshift,noise
@@ -349,10 +379,12 @@ fn test_lua_postfx_get_effect_types() {
 fn test_lua_postfx_new_pass() {
     let lua = make_vm();
     let (t, built_in): (String, bool) = lua
-        .load(r#"
+        .load(
+            r#"
             local pass = luna.postfx.newPass(1)
             return pass:getEffectType(), pass:isBuiltIn()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(t, "custom");
@@ -363,10 +395,12 @@ fn test_lua_postfx_new_pass() {
 fn test_lua_postfx_effect_type_method() {
     let lua = make_vm();
     let t: String = lua
-        .load(r#"
+        .load(
+            r#"
             local bloom = luna.postfx.newEffect("bloom")
             return bloom:type()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(t, "PostFxEffect");
@@ -436,19 +470,35 @@ fn all_new_effect_types_are_built_in() {
         PostFxEffectType::Noise,
     ];
     for t in &new_types {
-        assert!(PostFxEffect::new(t.clone()).is_built_in(), "{:?} should be built-in", t);
+        assert!(
+            PostFxEffect::new(t.clone()).is_built_in(),
+            "{:?} should be built-in",
+            t
+        );
     }
 }
 
 #[test]
 fn all_new_effect_types_round_trip_name() {
     let new_names = [
-        "pixelate", "sepia", "grayscale", "invert", "scanlines", "edgedetect", "hueshift", "noise",
+        "pixelate",
+        "sepia",
+        "grayscale",
+        "invert",
+        "scanlines",
+        "edgedetect",
+        "hueshift",
+        "noise",
     ];
     for name in &new_names {
         let t = PostFxEffectType::from_name(name);
         assert!(t.is_some(), "from_name({}) returned None", name);
-        assert_eq!(t.unwrap().name(), *name, "name() round-trip failed for {}", name);
+        assert_eq!(
+            t.unwrap().name(),
+            *name,
+            "name() round-trip failed for {}",
+            name
+        );
     }
 }
 
@@ -458,10 +508,12 @@ fn all_new_effect_types_round_trip_name() {
 fn lua_pixelate_effect_has_block_size_param() {
     let lua = make_vm();
     let v: f32 = lua
-        .load(r#"
+        .load(
+            r#"
             local e = luna.postfx.newEffect("pixelate")
             return e:getParameter("block_size")
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert!((v - 4.0).abs() < 1e-5);
@@ -471,10 +523,12 @@ fn lua_pixelate_effect_has_block_size_param() {
 fn lua_sepia_effect_built_in() {
     let lua = make_vm();
     let ok: bool = lua
-        .load(r#"
+        .load(
+            r#"
             local e = luna.postfx.newEffect("sepia")
             return e:isBuiltIn()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert!(ok);
@@ -484,10 +538,12 @@ fn lua_sepia_effect_built_in() {
 fn lua_scanlines_effect_has_spacing_param() {
     let lua = make_vm();
     let v: f32 = lua
-        .load(r#"
+        .load(
+            r#"
             local e = luna.postfx.newEffect("scanlines")
             return e:getParameter("spacing")
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert!((v - 4.0).abs() < 1e-5);
@@ -497,7 +553,8 @@ fn lua_scanlines_effect_has_spacing_param() {
 fn lua_new_effects_stack_add_remove() {
     let lua = make_vm();
     let count: i32 = lua
-        .load(r#"
+        .load(
+            r#"
             local stack = luna.postfx.newStack(800, 600)
             local pixelate = luna.postfx.newEffect("pixelate")
             local sepia     = luna.postfx.newEffect("sepia")
@@ -506,7 +563,8 @@ fn lua_new_effects_stack_add_remove() {
             stack:add(sepia)
             stack:add(grayscale)
             return stack:getEffectCount()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(count, 3);
@@ -516,10 +574,12 @@ fn lua_new_effects_stack_add_remove() {
 fn lua_hueshift_effect_name_roundtrip() {
     let lua = make_vm();
     let name: String = lua
-        .load(r#"
+        .load(
+            r#"
             local e = luna.postfx.newEffect("hueshift")
             return e:getEffectType()
-        "#)
+        "#,
+        )
         .eval()
         .expect("Lua eval failed");
     assert_eq!(name, "hueshift");

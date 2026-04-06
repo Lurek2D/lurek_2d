@@ -585,7 +585,7 @@ def check_example_exists(module: str) -> Check:
     """W-03: Example game or test game demonstrates the module."""
     examples_dir = WORKSPACE / "examples"
     if not examples_dir.is_dir():
-        return Check("W-03", "Example game", WARN, "examples/ directory not found")
+        return Check("W-03", "Example game", WARN, "demos/ directory not found")
 
     # Check for module-named example or demo
     candidates = [

@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.scene` |
 | **Source** | `src/scene/` |
+| **Rust Tests** | `tests/unit/scene_tests.rs`                    |
 | **Tests** | `tests/scene_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_scene.lua` |
 
@@ -391,3 +393,18 @@ Runs a series of steps (tweens, delays, callbacks) one after another in order.
 | `type` | 1 |
 | **Total** | **9** |
 
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`                                 |
+| `event`   | Related       | Scene transitions may be triggered by event queue entries |
+| `renderer`| Related       | Each scene contains its own draw commands           |
+| `lua_api` | Imported by   | `src/lua_api/scene_api.rs` registers `luna.scene.*` |
+
+## Notes
+
+- The scene stack is a `Vec<Box<dyn Scene>>`; `push` adds to stack, `pop` removes top, `switch` clears and replaces.
+- `enter(data)` and `exit()` are optional lifecycle callbacks; `update(dt)` and `draw()` are always called on the top scene.
+- Scene `data` passed through push/switch must be a serialisable Lua table (no userdata).
+- Rendering peeks through the stack: transparent scenes can opt into `drawBelow()` to composite.

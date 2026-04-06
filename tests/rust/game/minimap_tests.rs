@@ -1,14 +1,17 @@
 //! Integration tests for the `luna.minimap.*` Lua API.
 
+use luna2d::engine::config::Config;
 use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
-use luna2d::engine::config::Config;
 
 fn make_vm() -> mlua::Lua {
-    let state = Rc::new(RefCell::new(
-        luna2d::lua_api::SharedState::new(800, 600, "Test", PathBuf::from(".")),
-    ));
+    let state = Rc::new(RefCell::new(luna2d::lua_api::SharedState::new(
+        800,
+        600,
+        "Test",
+        PathBuf::from("."),
+    )));
     luna2d::lua_api::create_lua_vm(state, &Config::default().modules).expect("VM creation failed")
 }
 
@@ -315,13 +318,14 @@ fn minimap_color_mode() {
 #[test]
 fn minimap_color_mode_invalid() {
     let lua = make_vm();
-    let result = lua.load(
-        r#"
+    let result = lua
+        .load(
+            r#"
         local m = luna.minimap.newMinimap(10, 10)
         m:setColorMode("invalid")
     "#,
-    )
-    .exec();
+        )
+        .exec();
     assert!(result.is_err(), "invalid color mode should error");
 }
 

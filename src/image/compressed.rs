@@ -138,6 +138,50 @@ impl CompressedImageData {
     pub fn get_format(&self) -> &str {
         self.format.as_str()
     }
+
+    /// Check whether the given bytes start with the DDS magic number (`0x44 0x44 0x53 0x20`).
+    ///
+    /// Returns `false` if the slice is shorter than 4 bytes or does not match.
+    ///
+    /// # Parameters
+    /// - `bytes` — `&[u8]`.
+    ///
+    /// # Returns
+    /// `bool`.
+    pub fn is_dds_magic(bytes: &[u8]) -> bool {
+        bytes.len() >= 4 && bytes[..4] == [0x44, 0x44, 0x53, 0x20]
+    }
+
+    /// Load compressed texture data from a DDS file on disk.
+    ///
+    /// # Parameters
+    /// - `path` — `&str`.
+    ///
+    /// # Returns
+    /// `Result<Self, EngineError>`.
+    pub fn from_file(path: &str) -> Result<Self, EngineError> {
+        let bytes = std::fs::read(path)
+            .map_err(|e| EngineError::FileSystemError(format!("Cannot read '{}': {}", path, e)))?;
+        Self::from_dds(&bytes)
+    }
+
+    /// Check whether the file at `path` starts with the DDS magic number.
+    ///
+    /// Returns `false` if the file cannot be read or is shorter than 4 bytes.
+    ///
+    /// # Parameters
+    /// - `path` — `&str`.
+    ///
+    /// # Returns
+    /// `bool`.
+    pub fn is_dds_file(path: &str) -> bool {
+        let Ok(mut f) = std::fs::File::open(path) else {
+            return false;
+        };
+        let mut magic = [0u8; 4];
+        use std::io::Read;
+        f.read_exact(&mut magic).is_ok() && Self::is_dds_magic(&magic)
+    }
 }
 
 /// Detect the compressed format from a parsed DDS file.

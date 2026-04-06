@@ -1,5 +1,7 @@
 //! Terminal grid state and input handling.
 
+use crate::graphics::renderer::DrawCommand;
+
 use super::cell::{TCell, DEFAULT_FG};
 use super::widget::{BorderStyle, Widget, WidgetKind};
 
@@ -1045,6 +1047,78 @@ impl Terminal {
     /// `Option<&Widget>`.
     pub fn find_by_tag(&self, tag: &str) -> Option<&Widget> {
         self.widgets.iter().find(|widget| widget.base.tag == tag)
+    }
+
+    /// Render the terminal grid (with widget overlays) into a list of
+    /// [`DrawCommand`] values suitable for pushing to `SharedState`.
+    ///
+    /// # Parameters
+    /// - `ox` — `f32`. X pixel offset.
+    /// - `oy` — `f32`. Y pixel offset.
+    /// - `cell_w` — `f32`. Pixel width of one cell.
+    /// - `cell_h` — `f32`. Pixel height of one cell.
+    ///
+    /// # Returns
+    /// `Vec<DrawCommand>`.
+    pub fn build_draw_commands(
+        &self,
+        ox: f32,
+        oy: f32,
+        cell_w: f32,
+        cell_h: f32,
+    ) -> Vec<DrawCommand> {
+        let cells = self.render_cells();
+        let mut commands = Vec::new();
+
+        for row in 0..self.rows {
+            let row_cells = &cells[row * self.cols..(row + 1) * self.cols];
+            if row_cells.is_empty() {
+                continue;
+            }
+
+            let mut run_start = 0usize;
+            let mut run_color = row_cells[0].fg;
+            let mut run_text = String::new();
+
+            let flush_run = |commands: &mut Vec<DrawCommand>,
+                             run_start: usize,
+                             run_color: [f32; 4],
+                             run_text: &mut String| {
+                if !run_text.trim().is_empty() {
+                    commands.push(DrawCommand::SetColor(
+                        run_color[0],
+                        run_color[1],
+                        run_color[2],
+                        run_color[3],
+                    ));
+                    commands.push(DrawCommand::Print {
+                        text: run_text.clone(),
+                        x: ox + run_start as f32 * cell_w,
+                        y: oy + row as f32 * cell_h,
+                        scale: 1.0,
+                    });
+                }
+                run_text.clear();
+            };
+
+            for (col, cell) in row_cells.iter().enumerate() {
+                if col > 0 && cell.fg != run_color {
+                    flush_run(&mut commands, run_start, run_color, &mut run_text);
+                    run_start = col;
+                    run_color = cell.fg;
+                }
+
+                run_text.push(char::from_u32(cell.ch).unwrap_or(' '));
+            }
+
+            flush_run(&mut commands, run_start, run_color, &mut run_text);
+        }
+
+        if !commands.is_empty() {
+            commands.push(DrawCommand::SetColor(1.0, 1.0, 1.0, 1.0));
+        }
+
+        commands
     }
 }
 

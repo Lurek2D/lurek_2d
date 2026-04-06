@@ -4,9 +4,9 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
+use luna2d::engine::config::Config;
 use luna2d::graphics::renderer::{DrawCommand, ParticleRenderShape};
 use luna2d::lua_api::{create_lua_vm, SharedState};
-use luna2d::engine::config::Config;
 use luna2d::particle::{
     interpolate_colors, interpolate_sizes, AreaDistribution, EmissionShape, InsertMode,
     ParticleConfig, ParticleShape, ParticleSystem, RelativeMode,
@@ -303,7 +303,11 @@ fn test_particle_draw_generates_commands() {
     .unwrap();
     let st = state.borrow();
     // draw_commands batches all particles into a single DrawParticleSystem command
-    assert_eq!(st.draw_commands.len(), 1, "expected one DrawParticleSystem command");
+    assert_eq!(
+        st.draw_commands.len(),
+        1,
+        "expected one DrawParticleSystem command"
+    );
     match &st.draw_commands[0] {
         DrawCommand::DrawParticleSystem { particles } => {
             assert!(!particles.is_empty(), "particles list should be non-empty");
@@ -1323,7 +1327,11 @@ fn particle_system_draw_commands_returns_one_entry() {
     assert_eq!(sys.count(), 10);
 
     let cmds = sys.draw_commands(0.0, 0.0);
-    assert_eq!(cmds.len(), 1, "draw_commands should return exactly one DrawParticleSystem");
+    assert_eq!(
+        cmds.len(),
+        1,
+        "draw_commands should return exactly one DrawParticleSystem"
+    );
     match &cmds[0] {
         DrawCommand::DrawParticleSystem { particles } => {
             assert_eq!(particles.len(), 10, "should have 10 particle instances");
@@ -1337,7 +1345,10 @@ fn particle_system_draw_commands_empty_when_no_particles() {
     let sys = ParticleSystem::new(ParticleConfig::default());
     assert_eq!(sys.count(), 0);
     let cmds = sys.draw_commands(0.0, 0.0);
-    assert!(cmds.is_empty(), "fresh system with no particles should return empty draw list");
+    assert!(
+        cmds.is_empty(),
+        "fresh system with no particles should return empty draw list"
+    );
 }
 
 #[test]
@@ -1357,9 +1368,21 @@ fn particle_instance_color_matches_config() {
         other => panic!("expected DrawParticleSystem, got {:?}", other),
     };
     let inst = &particles[0];
-    assert!((inst.r - 1.0).abs() < 1e-4, "r should be 1.0, got {}", inst.r);
-    assert!((inst.g - 0.0).abs() < 1e-4, "g should be 0.0, got {}", inst.g);
-    assert!((inst.b - 0.0).abs() < 1e-4, "b should be 0.0, got {}", inst.b);
+    assert!(
+        (inst.r - 1.0).abs() < 1e-4,
+        "r should be 1.0, got {}",
+        inst.r
+    );
+    assert!(
+        (inst.g - 0.0).abs() < 1e-4,
+        "g should be 0.0, got {}",
+        inst.g
+    );
+    assert!(
+        (inst.b - 0.0).abs() < 1e-4,
+        "b should be 0.0, got {}",
+        inst.b
+    );
 }
 
 #[test]
@@ -1441,13 +1464,21 @@ fn particle_system_emit_respects_max() {
     let mut sys = ParticleSystem::new(cfg);
     sys.stop();
     sys.emit(100);
-    assert_eq!(sys.count(), 5, "emit(100) should be capped at max_particles=5");
+    assert_eq!(
+        sys.count(),
+        5,
+        "emit(100) should be capped at max_particles=5"
+    );
 }
 
 #[test]
 fn interpolate_sizes_empty_returns_one() {
     let result = interpolate_sizes(&[], 0.5, 0.0);
-    assert!((result - 1.0).abs() < 1e-4, "empty sizes should return 1.0, got {}", result);
+    assert!(
+        (result - 1.0).abs() < 1e-4,
+        "empty sizes should return 1.0, got {}",
+        result
+    );
 }
 
 #[test]
@@ -1492,14 +1523,18 @@ fn particle_lua_setshape_getshape_round_trip() {
 #[test]
 fn particle_lua_setshape_invalid_raises_error() {
     let (_state, lua) = make_vm();
-    let result = lua.load(
-        r#"
+    let result = lua
+        .load(
+            r#"
         local ps = luna.particle.newSystem({ maxParticles = 10 })
         ps:setShape("hexagon")
         "#,
-    )
-    .exec();
-    assert!(result.is_err(), "invalid shape name should raise a Lua error");
+        )
+        .exec();
+    assert!(
+        result.is_err(),
+        "invalid shape name should raise a Lua error"
+    );
     let err = result.unwrap_err().to_string();
     assert!(
         err.contains("hexagon"),
@@ -1523,8 +1558,8 @@ fn particle_lua_default_shape_is_square() {
 
 // ── Trail ──────────────────────────────────────────────────────────────────
 
-use luna2d::particle::Trail;
 use luna2d::math::Color;
+use luna2d::particle::Trail;
 
 #[test]
 fn trail_new_starts_empty() {
@@ -1578,8 +1613,8 @@ fn trail_set_width_updates_both_ends() {
 #[test]
 fn trail_set_width_none_preserves_end_width() {
     let mut trail = Trail::new(2.0, 6.0);
-    trail.set_width(6.0, Some(2.0));  // set end_width to 2.0
-    trail.set_width(10.0, None);       // None should leave end_width at 2.0
+    trail.set_width(6.0, Some(2.0)); // set end_width to 2.0
+    trail.set_width(10.0, None); // None should leave end_width at 2.0
     let (sw, ew) = trail.get_width();
     assert!((sw - 10.0).abs() < 1e-5);
     assert!((ew - 2.0).abs() < 1e-5);

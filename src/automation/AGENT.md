@@ -1,245 +1,139 @@
-﻿# `automation` — Agent Reference
+# `automation` — Agent Reference
 
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
-| **Lua namespace** | `luna.simulator` |
+| **Status** | Implemented — Full |
+| **Lua API** | `luna.automation` |
 | **Source** | `src/automation/` |
-| **Lua API** | `src/lua_api/automation_api.rs` |
-| **Rust tests** | `tests/unit/automation_tests.rs` (49 tests) |
-| **Lua BDD tests** | `tests/lua/unit/test_automation.lua` (62 tests) |
-| **Example** | `examples/automation_demo/` |
+| **Rust Tests** | `tests/unit/automation_tests.rs` |
+| **Lua Tests** | `tests/lua/unit/test_automation.lua` |
+| **Architecture** | — |
 
 ## Summary
 
-Automated input simulation via timed step scripts. The `Simulator` loads
-named `Script` objects — each containing an ordered list of `Step` records —
-and plays them back by injecting synthetic input events into the Luna2D event
-queue on each `update(dt)` call.
+The `automation` module provides automated input simulation through timed step scripts.
+It is a Tier 1 Engine Subsystem that depends only on `crate::math`, `crate::engine`, and
+`crate::event`.
 
-A `Step` records a wall-clock offset in seconds from script start, an
-`Action` variant (keypress, keyrelease, mousemove, mousepress, mouserelease,
-mousewheel, textinput, or wait), and action-specific optional fields
-(key, scancode, x, y, dx, dy, button, text, isRepeat, clicks).
+A `Script` contains an ordered list of `Step` records, each with a timestamp and an `Action`
+variant — one of eight kinds: `KeyPress`, `KeyRelease`, `TextInput`, `MouseMove`, `MousePress`,
+`MouseRelease`, `WheelMove`, and `Wait`. The `Simulator` plays back a loaded script by comparing
+the elapsed game time against each step's timestamp and injecting the corresponding synthetic
+event into the engine's `EventQueue`.
 
-Scripts are loaded as Lua tables or from TOML files via the `loadFile`/
-`loadFromToml` helpers. Multiple scripts can be registered simultaneously;
-`start(name)` selects which one plays. Step count is capped at 100,000 per
-script (CSF-010 unbounded allocation guard).
+Primary use-cases are headless integration tests, QA regression replay, speedrun verification,
+and recorded developer input sessions. Scripts can be serialised to/from Lua tables for storage.
 
-Primary use-cases: headless integration tests, QA regression replay,
-speedrun verification, and recorded developer input sessions.
-
+**Scope boundary**: The `automation` module only injects events into the queue; it does not
+consume them. Actual input handling remains in `src/input/`. Steps beyond `MAX_STEPS` are
+silently dropped to cap memory footprint.
 ## Architecture
 
 ```
-Simulator (script playback engine)
-  │
-  ├── scripts: HashMap<name, Script>
-  │     └── Script
-  │           ├── description: Option<String>
-  │           └── steps: Vec<Step>  (sorted by time, capped at 100k)
-  │                 └── Step { time, action, key/x/y/button/text/... }
-  │
-  ├── active_script: Option<String>
-  ├── elapsed: f32
-  ├── next_step_idx: usize
-  ├── state: PlaybackState (Idle / Running / Paused / Complete)
-  │
-  └── update(dt) [runs only in Running state]
-        ├── elapsed += dt
-        ├── while steps[next_step_idx].time <= elapsed → dispatch
-        └── dispatch → push synthetic Event into EventQueue
-              (event names: keypressed / keyreleased / mousemoved /
-               mousepressed / mousereleased / wheelmoved / textinput)
-
-Runtime dependencies:
-  - crate::event::EventQueue  (step dispatch target)
-  - luna.data.parseToml       (TOML parsing in Lua helpers)
-  - luna.filesystem.read      (file reading in loadFile helper)
+automation (module root)
+  ├── script.rs — Script container for the automation simulation module. This module provides the [`Script`] struct — a named, time-sorted, capacity-capped collection of [`Step`] objects. Scripts are stored in the [`Simulator`](super::Simulator) by name and selected for playback via [`Simulator::start`](super::Simulator::start). The step cap of [`MAX_STEPS`] guards against unbounded memory allocation from large or adversarially constructed input scripts (CSF-010 allocation guard).
+  ├── simulator.rs — Playback engine for the automation simulation module. This module provides the [`Simulator`] struct and the private [`PlaybackState`] enum that drives it. The [`Simulator`] holds a named collection of [`Script`] objects and plays back the active script by injecting synthetic input events into the engine's [`EventQueue`] on each [`Simulator::update`] call. ## Playback lifecycle 1. Load one or more scripts with [`Simulator::load`]. 2. Call [`Simulator::start`] to select a script and begin playback. 3. Call [`Simulator::update`] once per frame, passing the delta time. 4. The simulator advances its internal elapsed counter and dispatches all steps whose `time <= elapsed`. Each step fires at most once. 5. When all steps are dispatched the state transitions to `Complete`. Playback can be paused and resumed at any point. Stopping resets the elapsed counter and step index back to zero.
+  ├── step.rs — Step definitions for the automation simulation module. This module provides the [`Action`] enum and [`Step`] struct that form the building blocks of a simulation script. A `Step` pairs a wall-clock offset (seconds from script start) with an action type and optional action-specific parameters such as key name, mouse coordinates, button index, and text. Steps are created programmatically and collected into a [`Script`](super::Script) to be played back by the [`Simulator`](super::Simulator).
 ```
 
-## Module Structure
+## Source Files
 
-| File | Type | Role |
-|---|---|---|
-| `mod.rs` | Rust module root | Re-exports `Action`, `Step`, `Script`, `Simulator` |
-| `step.rs` | `Action` enum + `Step` struct | 8 action variants; 12-field step record |
-| `script.rs` | `Script` struct | Named, sorted, capacity-capped step container |
-| `simulator.rs` | `Simulator` struct | Playback engine with `PlaybackState` state machine |
+| File | Purpose |
+|------|---------|
+| `script.rs` | Script container for the automation simulation module. This module provides the [`Script`] struct — a named, time-sorted, capacity-capped collection of [`Step`] objects. Scripts are stored in the [`Simulator`](super::Simulator) by name and selected for playback via [`Simulator::start`](super::Simulator::start). The step cap of [`MAX_STEPS`] guards against unbounded memory allocation from large or adversarially constructed input scripts (CSF-010 allocation guard). |
+| `simulator.rs` | Playback engine for the automation simulation module. This module provides the [`Simulator`] struct and the private [`PlaybackState`] enum that drives it. The [`Simulator`] holds a named collection of [`Script`] objects and plays back the active script by injecting synthetic input events into the engine's [`EventQueue`] on each [`Simulator::update`] call. ## Playback lifecycle 1. Load one or more scripts with [`Simulator::load`]. 2. Call [`Simulator::start`] to select a script and begin playback. 3. Call [`Simulator::update`] once per frame, passing the delta time. 4. The simulator advances its internal elapsed counter and dispatches all steps whose `time <= elapsed`. Each step fires at most once. 5. When all steps are dispatched the state transitions to `Complete`. Playback can be paused and resumed at any point. Stopping resets the elapsed counter and step index back to zero. |
+| `step.rs` | Step definitions for the automation simulation module. This module provides the [`Action`] enum and [`Step`] struct that form the building blocks of a simulation script. A `Step` pairs a wall-clock offset (seconds from script start) with an action type and optional action-specific parameters such as key name, mouse coordinates, button index, and text. Steps are created programmatically and collected into a [`Script`](super::Script) to be played back by the [`Simulator`](super::Simulator). |
 
-## PlaybackState Transitions
+## Submodules
 
-| From | To | Trigger |
-|---|---|---|
-| `Idle` | `Running` | `start(name)` with a loaded script |
-| `Running` | `Paused` | `pause()` |
-| `Paused` | `Running` | `resume()` |
-| `Running` | `Complete` | last step dispatched during `update(dt)` |
-| Any | `Idle` | `stop()`, or active script unloaded |
+### `automation::script`
 
-## Lua API — `luna.simulator`
+Script container for the automation simulation module. This module provides the [`Script`] struct — a named, time-sorted, capacity-capped collection of [`Step`] objects. Scripts are stored in the [`Simulator`](super::Simulator) by name and selected for playback via [`Simulator::start`](super::Simulator::start). The step cap of [`MAX_STEPS`] guards against unbounded memory allocation from large or adversarially constructed input scripts (CSF-010 allocation guard).
 
-### Script Management
+- **`Script`** (struct): TODO: one-line description.
 
-| Function | Parameters | Returns | Description |
-|---|---|---|---|
-| `load` | `name: string, data: table` | `nil` | Load a script from a Lua step table. Table must have a `steps` array |
-| `unload` | `name: string` | `boolean` | Remove a loaded script. Returns `true` if it existed |
-| `hasScript` | `name: string` | `boolean` | Return `true` if a script is registered |
-| `getScripts` | — | `table<string>` | Return an array of all registered script names |
-| `loadFromToml` | `name: string, toml: string` | `nil` | Parse a TOML string and load as a script |
-| `loadFile` | `path: string [, name: string]` | `nil` | Read a TOML file and load as a script. Name defaults to `meta.name` or path |
+### `automation::simulator`
 
-### Playback Control
+Playback engine for the automation simulation module. This module provides the [`Simulator`] struct and the private [`PlaybackState`] enum that drives it. The [`Simulator`] holds a named collection of [`Script`] objects and plays back the active script by injecting synthetic input events into the engine's [`EventQueue`] on each [`Simulator::update`] call. ## Playback lifecycle 1. Load one or more scripts with [`Simulator::load`]. 2. Call [`Simulator::start`] to select a script and begin playback. 3. Call [`Simulator::update`] once per frame, passing the delta time. 4. The simulator advances its internal elapsed counter and dispatches all steps whose `time <= elapsed`. Each step fires at most once. 5. When all steps are dispatched the state transitions to `Complete`. Playback can be paused and resumed at any point. Stopping resets the elapsed counter and step index back to zero.
 
-| Function | Parameters | Returns | Description |
-|---|---|---|---|
-| `start` | `name: string` | `nil` | Start playback from step zero. Errors if script not loaded |
-| `stop` | — | `nil` | Stop playback and reset to Idle |
-| `pause` | — | `nil` | Pause at the current elapsed position |
-| `resume` | — | `nil` | Resume from a paused position |
-| `update` | `dt: number` | `nil` | Advance clock by `dt`. Dispatches all steps with `time <= elapsed` |
+- **`Simulator`** (struct): TODO: one-line description.
 
-### Playback State
+### `automation::step`
 
-| Function | Parameters | Returns | Description |
-|---|---|---|---|
-| `isRunning` | — | `boolean` | `true` when in Running state |
-| `isPaused` | — | `boolean` | `true` when in Paused state |
-| `isComplete` | — | `boolean` | `true` when all steps have been dispatched |
-| `getCurrentStep` | — | `number` | Index of the next step to fire (0-based) |
-| `getStepCount` | — | `number` | Total steps in the active script |
-| `getCurrentScript` | — | `string \| nil` | Name of the active script, or `nil` |
-| `getElapsedTime` | — | `number` | Seconds elapsed since the most recent `start()` call |
+Step definitions for the automation simulation module. This module provides the [`Action`] enum and [`Step`] struct that form the building blocks of a simulation script. A `Step` pairs a wall-clock offset (seconds from script start) with an action type and optional action-specific parameters such as key name, mouse coordinates, button index, and text. Steps are created programmatically and collected into a [`Script`](super::Script) to be played back by the [`Simulator`](super::Simulator).
 
-## Action Variants
+- **`Step`** (struct): TODO: one-line description.
+- **`Action`** (enum): TODO: one-line description.
 
-| String | Description | Required fields | Optional fields |
-|---|---|---|---|
-| `"keypress"` | Simulate `keypressed` event | — | `key`, `scancode`, `isRepeat` |
-| `"keyrelease"` | Simulate `keyreleased` event | — | `key`, `scancode` |
-| `"mousemove"` | Simulate `mousemoved` event | — | `x`, `y`, `dx`, `dy` |
-| `"mousepress"` | Simulate `mousepressed` event | — | `x`, `y`, `button`, `clicks` |
-| `"mouserelease"` | Simulate `mousereleased` event | — | `x`, `y`, `button` |
-| `"mousewheel"` | Simulate `wheelmoved` event | — | `dx`, `dy` |
-| `"textinput"` | Simulate `textinput` event | — | `text` |
-| `"wait"` | No-op timed delay | — | — |
+## Key Types
 
-**Note:** `Action::parse_action()` is case-sensitive. All action strings must be lowercase.
+### Structs
 
-## Step Table Format
+#### `automation::script::Script`
+
+TODO: description from `///` doc comment.
+
+#### `automation::simulator::Simulator`
+
+TODO: description from `///` doc comment.
+
+#### `automation::step::Step`
+
+TODO: description from `///` doc comment.
+
+### Enums
+
+#### `automation::step::Action`
+
+TODO: description from `///` doc comment.
+
+## Lua API
+
+Exposed under `luna.automation.*` by `src\lua_api\automation_api.rs`.
+
+TODO: Describe the overall API surface. List the major categories of functions.
+
+Exposed functions include: `simulator`.
+
+## Lua Examples
 
 ```lua
--- All fields except `action` are optional and default as noted
-{
-    time     = 1.5,        -- seconds from script start (default 0.0)
-    action   = "keypress", -- required: one of the 8 action strings above
-    key      = "space",    -- key name (keypress/keyrelease; used as scancode fallback)
-    scancode = "space",    -- scancode override (keypress/keyrelease)
-    x        = 400,        -- mouse X position (mousemove/mousepress/mouserelease)
-    y        = 300,        -- mouse Y position
-    dx       = 10,         -- X delta (mousemove/mousewheel)
-    dy       = -5,         -- Y delta (mousemove/mousewheel)
-    button   = 1,          -- mouse button index 1=left, 2=right, 3=middle (default 1)
-    text     = "hello",    -- text string (textinput)
-    isRepeat = false,       -- key-repeat flag (keypress, default false)
-    clicks   = 1            -- consecutive click count (mousepress, default 1)
-}
-```
-
-## Script Table Format
-
-```lua
-{
-    meta  = { description = "optional human-readable script description" },
-    steps = {
-        { time = 0.0, action = "keypress",    key = "space" },
-        { time = 0.5, action = "mousemove",   x = 200, y = 150 },
-        { time = 1.0, action = "mousepress",  x = 200, y = 150, button = 1 },
-        { time = 1.1, action = "mouserelease",x = 200, y = 150, button = 1 },
-        { time = 2.0, action = "wait" },
-    }
-}
-```
-
-## TOML Script Format
-
-```toml
-[meta]
-description = "Navigate to play button and click"
-
-[[steps]]
-time   = 0.5
-action = "mousemove"
-x      = 200
-y      = 150
-
-[[steps]]
-time   = 1.0
-action = "mousepress"
-x      = 200
-y      = 150
-button = 1
-```
-
-**Note:** Use level-1 long-string delimiters `[=[ ]=]` in Lua when embedding TOML that contains `[[steps]]` — the double-bracket would otherwise end the Lua long string.
-
-## Usage Example
-
-```lua
--- Load and start a script
-luna.simulator.load("test_menu", {
-    meta  = { description = "Click the play button" },
-    steps = {
-        { time = 0.1, action = "mousemove",   x = 400, y = 300 },
-        { time = 0.5, action = "mousepress",  x = 400, y = 300, button = 1 },
-        { time = 0.6, action = "mouserelease",x = 400, y = 300, button = 1 },
-        { time = 1.0, action = "keypress",    key = "escape" },
-    }
-})
-luna.simulator.start("test_menu")
+-- Example: Basic automation usage
+function luna.load()
+    -- TODO: replace with real automation setup
+    local obj = luna.automation.simulator()
+end
 
 function luna.update(dt)
-    luna.simulator.update(dt)
-    if luna.simulator.isComplete() then
-        luna.simulator.stop()
-        print("Simulation complete after", luna.simulator.getElapsedTime(), "s")
-    end
+    -- TODO: update logic
 end
 ```
 
-### Loading from a TOML file
+## Item Summary
 
-```lua
--- Uses luna.data.parseToml and luna.filesystem.read internally
-luna.simulator.loadFile("scripts/intro.toml")
--- or with an explicit name override:
-luna.simulator.loadFile("scripts/intro.toml", "intro_v2")
-```
+| Kind | Count |
+|------|-------|
+| `struct` | 3 |
+| `enum`   | 1 |
+| `fn`     | 0 |
+| **Total** | **4** |
 
-## Implementation Notes
+## References
 
-- **`Rc<RefCell<Simulator>>`**: A single `Simulator` instance is created at `register()` time and shared across all 15 Rust closures via `Rc` clone. Borrow the `RefCell` only for the duration of each operation.
-- **mlua 0.9 generics**: All `table.get` calls require both type parameters: `table.get::<_, T>("key")`.
-- **Lua helpers**: `loadFromToml` and `loadFile` are implemented as Lua closures (not Rust functions) injected via `lua.load(chunk).eval::<LuaFunction>()` so they can call other `luna.*` API functions.
-- **TOML parsing**: Uses `luna.data.parseToml` (NOT `decodeToml`). The actual call sequence inside `loadFromToml` is `luna.data.parseToml(toml_string)`.
-- **Registration order**: `automation_api::register()` MUST appear after `data_api::register()` and `filesystem_api::register()` in `src/lua_api/mod.rs` because the Lua helpers call those APIs.
-- **Event dispatch names**: "keypressed", "keyreleased", "mousemoved", "mousepressed", "mousereleased", "wheelmoved", "textinput".
-- **MAX_STEPS = 100_000**: Defined in `src/automation/script.rs`. Enforced at `Script::new()` time (truncate after sort).
+| Module | Relationship | Notes |
+|--------|--------------|-------|
+| `engine` | Imports from | Uses SharedState, EngineError |
+| `math` | Imports from | Vec2, Color, Rect |
+| `lua_api` | Imported by | Binds public API to Lua |
 
-## Module Boundaries
+TODO: Add entries for similar modules and explain the separation of duties.
 
-**vs `luna.keyboard` / `luna.mouse`**: Those modules read real hardware input. `luna.simulator` injects synthetic events into the same `EventQueue`. Injected events are indistinguishable from real input to the game script.
+## Notes
 
-**vs `luna.event`**: `luna.event` is the raw event queue. `luna.simulator.update()` pushes events *into* the queue — it does not replace or intercept real events.
-
-**vs `luna.thread`**: Scripts run synchronously on the Lua thread. For long-running replays that should not block the game loop, wrap the simulator in a `luna.thread` worker (advanced usage).
-
-## Quality Gates
-
-Before merge:
-1. `cargo test --test automation_tests` — all 49 Rust tests pass
-2. `cargo test lua_test_automation` — all 62 Lua BDD tests pass
-3. `cargo clippy -- -D warnings` — 0 warnings
-4. `python tools/collect_docs.py --report-missing` — 0 undocumented public items
+TODO: Document unique facts an agent must know before editing this module:
+- External crate constraints (version, thread-safety, API limitations)
+- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
+- Known limitations or intentional omissions
+- Best practices and anti-patterns for this module
+- What Lua scripts will break if the API changes

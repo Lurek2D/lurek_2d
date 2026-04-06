@@ -12,9 +12,9 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use crate::pathfinding::nav_grid::NavGrid;
 use crate::engine::log_messages::{FF01, FF02, FF03};
 use crate::log_msg;
+use crate::pathfinding::nav_grid::NavGrid;
 
 /// A pre-computed flow field that stores a direction vector and integrated cost
 /// for every cell, guiding any unit toward one or more target cells.

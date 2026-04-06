@@ -3,8 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.math` (sub-functions) |
 | **Source** | `src/procgen/` |
+| **Rust Tests** | `tests/unit/procgen_tests.rs`                    |
+| **Lua Tests**  | `tests/lua/unit/test_procgen.lua`                     |
 | **Tests** | `tests/lua/unit/test_math.lua` |
 
 ## Summary
@@ -147,3 +150,37 @@ All functions are registered under `luna.math.*` by `src/lua_api/math_api.rs`.
 | Free functions | 5 |
 | Lua bindings | 5 |
 | Source files | 7 |
+
+## Lua Examples
+
+```lua
+function luna.load()
+    gen = luna.procgen.new(12345)  -- seed
+
+    -- Generate dungeon
+    dungeon = gen:dungeon({
+        width = 80, height = 50,
+        rooms = 12, min_room = 4, max_room = 10
+    })
+
+    -- Generate terrain noise map
+    terrain = gen:noiseMap(200, 100, {scale=0.05, octaves=4})
+end
+```
+
+## References
+
+| Module      | Relationship  | Notes                                              |
+|-------------|---------------|----------------------------------------------------|
+| `engine`    | Imports from  | Uses `SharedState`                                 |
+| `math`      | Imports from  | Noise functions, `RandomGenerator`, `Vec2`         |
+| `tilemap`   | Related       | Procedurally generated maps are often stored in `tilemap` structures |
+| `pathfinding`| Related      | Generated dungeons feed into `pathfinding` grids   |
+| `lua_api`   | Imported by   | `src/lua_api/procgen_api.rs` registers `luna.procgen.*` |
+
+## Notes
+
+- All generation functions are deterministic for a given seed — same seed produces same output.
+- Dungeon generation places rooms, then connects them with corridors using MST + random extra connections.
+- Noise map generation uses `math::noise_generator` under the hood; the `procgen` API just wraps it with domain defaults.
+- Cave generation uses cellular automata (born/survive rules are configurable).

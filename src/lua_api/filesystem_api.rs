@@ -1,488 +1,452 @@
-//! `luna.filesystem` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/filesystem/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.filesystem` — Sandboxed file I/O, directory queries, and async asset loading.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::filesystem::{FileData, FileHandle, GameFS};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// LuaFileData UserData
+// -------------------------------------------------------------------------------
 
-// ── LuaAsyncLoader ────────────────────────────────────────────────────────────
+/// Lua-side wrapper around a [`FileData`] buffer.
+pub struct LuaFileData {
+    inner: FileData,
+}
 
-pub struct LuaAsyncLoader(/* TODO: add key + state fields */);
+impl LuaUserData for LuaFileData {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
+        // -- getSize --
+        /// Returns the file size in bytes.
+        /// @return integer
+        methods.add_method("getSize", |_, this, ()| Ok(this.inner.len() as i64));
 
-impl LuaAsyncLoader {
-    /// Submit a file-read request. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    /// @param resolved_path : PathBuf
-    /// @return LoadHandle
-    pub fn request_load(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check the status of a previously-requested load.
-    ///
-    /// @param handle : LoadHandle
-    /// @return LoadStatus
-    pub fn poll(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of completed but un-polled results.
-    ///
-    ///
-    /// @return integer
-    pub fn pending_results(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- getString --
+        /// Returns the file content as a Lua string.
+        /// @return string
+        methods.add_method("getString", |lua, this, ()| {
+            lua.create_string(&this.inner.bytes)
+        });
+
+        // -- getFilename --
+        /// Returns the virtual path this data was loaded from.
+        /// @return string
+        methods.add_method("getFilename", |_, this, ()| Ok(this.inner.path.clone()));
+
     }
 }
 
-impl UserData for LuaAsyncLoader {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("requestLoad", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("poll", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("pendingResults", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+// -------------------------------------------------------------------------------
+// LuaFileHandle UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`FileHandle`] with interior mutability.
+pub struct LuaFileHandle {
+    inner: RefCell<FileHandle>,
+}
+
+impl LuaUserData for LuaFileHandle {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- read --
+        /// Reads bytes from the file, returning them as a string.
+        /// @param count : integer?
+        /// @return string
+        methods.add_method("read", |_, this, count: Option<usize>| {
+            let bytes = this.inner.borrow_mut().read(count).map_err(LuaError::external)?;
+            Ok(String::from_utf8_lossy(&bytes).to_string())
+        });
+
+        // -- readLine --
+        /// Reads the next line from the file without the trailing newline.
+        /// @return string?
+        methods.add_method("readLine", |_, this, ()| {
+            this.inner.borrow_mut().read_line().map_err(LuaError::external)
+        });
+
+        // -- write --
+        /// Writes a string to the file and returns the number of bytes written.
+        /// @param data : string
+        /// @return integer
+        methods.add_method("write", |_, this, data: String| {
+            this.inner
+                .borrow_mut()
+                .write(data.as_bytes())
+                .map_err(LuaError::external)
+        });
+
+        // -- seek --
+        /// Seeks the file position to the given byte offset from the start.
+        /// @param pos : integer
+        /// @return integer
+        methods.add_method("seek", |_, this, pos: u64| {
+            this.inner.borrow_mut().seek(pos).map_err(LuaError::external)
+        });
+
+        // -- tell --
+        /// Returns the current read/write byte offset from the start of the file.
+        /// @return integer
+        methods.add_method("tell", |_, this, ()| {
+            this.inner.borrow_mut().tell().map_err(LuaError::external)
+        });
+
+        // -- getSize --
+        /// Returns the size of the open file in bytes.
+        /// @return integer
+        methods.add_method("getSize", |_, this, ()| {
+            Ok(this.inner.borrow().get_size())
+        });
+
+        // -- getMode --
+        /// Returns the access mode the file was opened with.
+        /// @return string
+        methods.add_method("getMode", |_, this, ()| {
+            Ok(this.inner.borrow().get_mode().as_str().to_string())
+        });
+
+        // -- flush --
+        /// Flushes all buffered writes to disk without closing the handle.
+        /// @return nil
+        methods.add_method("flush", |_, this, ()| {
+            this.inner.borrow_mut().flush().map_err(LuaError::external)
+        });
+
+        // -- close --
+        /// Flushes any pending writes and closes the file handle.
+        /// @return nil
+        methods.add_method("close", |_, this, ()| {
+            this.inner.borrow_mut().close().map_err(LuaError::external)
+        });
+
+        // -- isEOF --
+        /// Returns whether the read cursor has reached the end of the file.
+        /// @return boolean
+        methods.add_method("isEOF", |_, this, ()| {
+            this.inner.borrow_mut().is_eof().map_err(LuaError::external)
+        });
+
     }
 }
 
-// ── LuaFileData ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-pub struct LuaFileData(/* TODO: add key + state fields */);
-
-
-impl LuaFileData {
-    /// Returns the number of bytes in this buffer.
-    ///
-    ///
-    /// @return integer
-    pub fn len(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if the buffer is empty.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_empty(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the bytes as a UTF-8 string slice, or an error if invalid.
-    ///
-    ///
-    /// @return Result<
-    pub fn as_str(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaFileData {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("len", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isEmpty", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("asStr", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaFileHandle ────────────────────────────────────────────────────────────
-
-pub struct LuaFileHandle(/* TODO: add key + state fields */);
-
-
-impl LuaFileHandle {
-    /// Get the file size in bytes (cached at open time).
-    ///
-    ///
-    /// @return File
-    pub fn get_size(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the current file access mode. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return The
-    pub fn get_mode(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the logical (game-relative) path of this file.
-    ///
-    ///
-    /// @return The
-    pub fn get_path(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaFileHandle {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getSize", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getMode", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getPath", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaGameFS ────────────────────────────────────────────────────────────
-
-pub struct LuaGameFS(/* TODO: add key + state fields */);
-
-
-impl LuaGameFS {
-    /// Reads the file at `path` (relative to base dir) and returns its contents as a `String`.
-    ///
-    /// Canonicalises the path and rejects any path that escapes the base directory,
-    /// preventing path-traversal attacks.
-    ///
-    /// @param path : Relative
-    /// @return Ok(String)
-    pub fn read_string(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Reads the file at `path` as raw bytes.
-    ///
-    /// Applies the same path-traversal check as `read_string`.
-    ///
-    /// @param path : Relative
-    /// @return Ok(Vec<u8>)
-    pub fn read_bytes(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Writes `content` to `path`, which must be inside the `save/` subdirectory.
-    ///
-    /// Creates parent directories automatically. Rejects any path outside `save/`
-    /// to prevent scripts from writing arbitrary files to the system.
-    ///
-    /// @param path : Relative
-    /// @param content : string
-    /// @return Ok(())
-    pub fn write_string(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Writes raw bytes to `path`, which must stay inside the `save/` subdirectory.
-    ///
-    /// Creates parent directories automatically. Rejects any path outside `save/`
-    /// to prevent scripts from writing arbitrary files to the host filesystem.
-    ///
-    /// @param path : Relative
-    /// @param bytes : Raw
-    /// @return Ok(())
-    pub fn write_bytes(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if the file or directory at `path` exists within the game directory.
-    ///
-    /// @param path : Relative
-    /// @return boolean
-    pub fn exists(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Lists all entries in the directory at `path` relative to the game directory.
-    ///
-    /// @param path : Relative
-    /// @return Ok(Vec<String>)
-    pub fn list(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get sorted directory items relative to `base_dir`.
-    ///
-    /// @param path : directory
-    /// @return Sorted
-    pub fn get_directory_items(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check if the given path refers to a regular file.
-    ///
-    /// @param path : path
-    /// @return true
-    pub fn is_file(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check if the given path refers to a directory.
-    ///
-    /// @param path : path
-    /// @return true
-    pub fn is_directory(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Create a directory (and all parent directories) inside the save area.
-    ///
-    /// @param path : target
-    /// @return Ok(())
-    pub fn create_directory(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Remove a file or empty directory from the save area.
-    ///
-    /// @param path : path
-    /// @return Ok(())
-    pub fn remove(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get file or directory metadata. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param path : path
-    /// @return returns
-    pub fn get_info(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Append UTF-8 string content to a file in the save area.
-    ///
-    /// Creates the file and any parent directories if they do not exist.
-    ///
-    /// @param path : target
-    /// @param content : string
-    /// @return Ok(())
-    pub fn append_string(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the game source directory (where `main.lua` lives).
-    ///
-    ///
-    /// @return Absolute
-    pub fn get_source(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the save directory path. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return Path
-    pub fn get_save_directory(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the game identity string used for save directory naming.
-    ///
-    ///
-    /// @return The
-    pub fn get_identity(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Reads file bytes from the VFS, searching mount layers newest-first before
-    /// falling back to the base game directory.
-    ///
-    /// Useful for `luna.filesystem.load()` — returns raw bytes for Lua compilation.
-    ///
-    /// @param path : str
-    /// @return Result<Vec<u8>
-    pub fn load_chunk(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Lists entries visible under a virtual path, merging all mount layers.
-    ///
-    /// @param path : str
-    /// @return Result<Vec<String>
-    pub fn get_directory_items_merged(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Resolve a logical path to an absolute path for reading.
-    ///
-    /// Rejects path-traversal sequences (`..`) via `canonicalize()`.
-    ///
-    /// @param path : logical
-    /// @return Canonical
-    pub fn resolve_read_path(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Resolve a logical path to an absolute path for writing.
-    ///
-    /// Enforces that the target is inside the `save/` subdirectory.
-    ///
-    /// @param path : logical
-    /// @return Absolute
-    pub fn resolve_save_path(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaGameFS {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("readString", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("readBytes", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("writeString", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("writeBytes", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("exists", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("list", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDirectoryItems", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isFile", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isDirectory", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("createDirectory", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("remove", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getInfo", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("appendString", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getSource", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getSaveDirectory", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getIdentity", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("loadChunk", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDirectoryItemsMerged", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("resolveReadPath", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("resolveSavePath", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.filesystem.* functions ──────────────────────────────────────────
-
-/// Convert a mode string ("r", "w", "a") to a `FileMode`.
-///
-/// @param s : mode
-/// @return The
-pub fn parse_mode(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Open a file within the sandbox. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// Read mode is allowed from `base_dir`; Write and Append are restricted to `save/`.
-///
-/// @param vfs : the
-/// @param path : logical
-/// @param mode : Read
-/// @return An
-pub fn open(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Read up to `count` bytes, or all remaining bytes when `count` is `None`.
-///
-/// @param count : maximum
-/// @return The
-pub fn read(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Read a single line without the trailing newline character.
-///
-///
-/// @return Some(line)
-pub fn read_line(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Write raw bytes to the file. Returns an error if the underlying I/O operation fails.
-///
-/// @param data : byte
-/// @return The
-pub fn write(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Seek to an absolute byte position in the file.
-///
-/// @param pos : byte
-/// @return The
-pub fn seek(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Get the current byte position within the file.
-///
-///
-/// @return The
-pub fn tell(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Flush buffered writes to disk. Returns an error if the underlying I/O operation fails.
-///
-///
-/// @return Ok(())
-pub fn flush(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Close the file handle, flushing any pending writes first.
-///
-///
-/// @return Ok(())
-pub fn close(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Check whether the end of file has been reached (Read mode only).
-///
-///
-/// @return true
-pub fn is_eof(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Get the current working directory of the process.
-///
-///
-/// @return The
-pub fn get_working_directory(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Get the current user's home directory. This accessor incurs no allocation; call it freely in hot paths.
-///
-///
-/// @return Home
-pub fn get_user_directory(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the game identity string. Replaces the current identity value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param identity : short
-pub fn set_identity(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Mounts a host directory (relative to the game dir) at a virtual mountpoint.
-///
-/// The source path must not contain `..` components and must resolve to a
-/// directory inside the game directory, preventing arbitrary filesystem access.
-///
-/// @param source_path : str
-/// @param mountpoint : str
-/// @return Result<()
-pub fn mount(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Mounts an absolute host-OS path at a virtual mountpoint.
-///
-/// The caller is responsible for ensuring the path is safe to expose.
-///
-/// @param source_path : Path
-/// @param mountpoint : str
-/// @return Result<()
-pub fn mount_full(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes the first mount layer matching `mountpoint`.
-///
-/// @param mountpoint : str
-/// @return boolean
-pub fn unmount(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.filesystem` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.filesystem` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("parseMode", lua.create_function(parse_mode)?)?;
-    tbl.set("open", lua.create_function(open)?)?;
-    tbl.set("read", lua.create_function(read)?)?;
-    tbl.set("readLine", lua.create_function(read_line)?)?;
-    tbl.set("write", lua.create_function(write)?)?;
-    tbl.set("seek", lua.create_function(seek)?)?;
-    tbl.set("tell", lua.create_function(tell)?)?;
-    tbl.set("flush", lua.create_function(flush)?)?;
-    tbl.set("close", lua.create_function(close)?)?;
-    tbl.set("isEof", lua.create_function(is_eof)?)?;
-    tbl.set("getWorkingDirectory", lua.create_function(get_working_directory)?)?;
-    tbl.set("getUserDirectory", lua.create_function(get_user_directory)?)?;
-    tbl.set("setIdentity", lua.create_function(set_identity)?)?;
-    tbl.set("mount", lua.create_function(mount)?)?;
-    tbl.set("mountFull", lua.create_function(mount_full)?)?;
-    tbl.set("unmount", lua.create_function(unmount)?)?;
+
+    // -- read --
+    /// Reads a text file and returns its contents as a string.
+    /// @param path : string
+    /// @return string
+    let s = state.clone();
+    tbl.set(
+        "read",
+        lua.create_function(move |_, path: String| {
+            s.borrow().fs.read_string(&path).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- write --
+    /// Writes a string to a file in the save directory.
+    /// @param path : string
+    /// @param data : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "write",
+        lua.create_function(move |_, (path, data): (String, String)| {
+            s.borrow()
+                .fs
+                .write_string(&path, &data)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- exists --
+    /// Returns whether the given file or directory exists.
+    /// @param path : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "exists",
+        lua.create_function(move |_, path: String| Ok(s.borrow().fs.exists(&path)))?,
+    )?;
+
+    // -- append --
+    /// Opens the file in append mode and writes the given string at the end.
+    /// @param path : string
+    /// @param data : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "append",
+        lua.create_function(move |_, (path, data): (String, String)| {
+            s.borrow()
+                .fs
+                .append_string(&path, &data)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- openFile --
+    /// Opens a file and returns a readable/writable file handle.
+    /// @param path : string
+    /// @param mode : string
+    /// @return FileHandle
+    let s = state.clone();
+    tbl.set(
+        "openFile",
+        lua.create_function(move |_, (path, mode): (String, String)| {
+            let handle = s.borrow().fs.open_file(&path, &mode).map_err(LuaError::external)?;
+            Ok(LuaFileHandle {
+                inner: RefCell::new(handle),
+            })
+        })?,
+    )?;
+
+    // -- getDirectoryItems --
+    /// Returns a table containing the names of every file and subdirectory in the given path.
+    /// @param path : string
+    /// @return table
+    let s = state.clone();
+    tbl.set(
+        "getDirectoryItems",
+        lua.create_function(move |_, path: String| {
+            s.borrow()
+                .fs
+                .get_directory_items(&path)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- isFile --
+    /// Returns whether the given path is a regular file.
+    /// @param path : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "isFile",
+        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_file(&path)))?,
+    )?;
+
+    // -- isDirectory --
+    /// Returns whether the given path is a directory.
+    /// @param path : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "isDirectory",
+        lua.create_function(move |_, path: String| Ok(s.borrow().fs.is_directory(&path)))?,
+    )?;
+
+    // -- createDirectory --
+    /// Creates a directory and any missing parent directories in the save area.
+    /// @param path : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "createDirectory",
+        lua.create_function(move |_, path: String| {
+            s.borrow()
+                .fs
+                .create_directory(&path)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- remove --
+    /// Permanently deletes a file or empty directory from the save directory.
+    /// @param path : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "remove",
+        lua.create_function(move |_, path: String| {
+            s.borrow().fs.remove(&path).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- getInfo --
+    /// Returns a table of metadata for a path, or nil if the path does not exist.
+    /// @param path : string
+    /// @return table?
+    let s = state.clone();
+    tbl.set(
+        "getInfo",
+        lua.create_function(move |lua, path: String| {
+            match s.borrow().fs.get_info(&path) {
+                Ok(info) => {
+                    let t = lua.create_table()?;
+                    t.set("type", info.file_type.as_str())?;
+                    t.set("size", info.size)?;
+                    t.set("modtime", info.modified_time)?;
+                    t.set("readonly", info.readonly)?;
+                    Ok(Some(t))
+                }
+                Err(_) => Ok(None),
+            }
+        })?,
+    )?;
+
+    // -- getSource --
+    /// Returns the absolute path of the directory the game was loaded from.
+    /// @return string
+    let s = state.clone();
+    tbl.set(
+        "getSource",
+        lua.create_function(move |_, ()| Ok(s.borrow().fs.get_source()))?,
+    )?;
+
+    // -- getSaveDirectory --
+    /// Returns the sandboxed save data directory path.
+    /// @return string
+    let s = state.clone();
+    tbl.set(
+        "getSaveDirectory",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().fs.get_save_directory().to_string_lossy().to_string())
+        })?,
+    )?;
+
+    // -- getWorkingDirectory --
+    /// Returns the current working directory path.
+    /// @return string
+    tbl.set(
+        "getWorkingDirectory",
+        lua.create_function(move |_, ()| GameFS::get_working_directory().map_err(LuaError::external))?,
+    )?;
+
+    // -- getUserDirectory --
+    /// Returns the current user's home directory path.
+    /// @return string
+    tbl.set(
+        "getUserDirectory",
+        lua.create_function(move |_, ()| Ok(GameFS::get_user_directory()))?,
+    )?;
+
+    // -- getIdentity --
+    /// Returns the identity string used to locate the game's save directory.
+    /// @return string
+    let s = state.clone();
+    tbl.set(
+        "getIdentity",
+        lua.create_function(move |_, ()| Ok(s.borrow().filesystem_identity.clone()))?,
+    )?;
+
+    // -- setIdentity --
+    /// Sets the identity string that names the game's sandboxed save-data directory.
+    /// @param name : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setIdentity",
+        lua.create_function(move |_, name: String| {
+            s.borrow_mut().filesystem_identity = name;
+            Ok(())
+        })?,
+    )?;
+
+    // -- lines --
+    /// Returns an iterator function over the lines of a text file.
+    /// @param path : string
+    /// @return function
+    let s = state.clone();
+    tbl.set(
+        "lines",
+        lua.create_function(move |lua, path: String| {
+            let lines = s.borrow().fs.read_lines(&path).map_err(LuaError::external)?;
+            let iter = Rc::new(RefCell::new(lines.into_iter()));
+            let iter_fn = lua.create_function(move |_, ()| Ok(iter.borrow_mut().next()))?;
+            Ok(iter_fn)
+        })?,
+    )?;
+
+    // -- readAsync --
+    /// Starts loading a file in the background and returns an opaque handle.
+    /// @param path : string
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "readAsync",
+        lua.create_function(move |_, path: String| {
+            s.borrow_mut()
+                .request_async_load(&path)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- pollAsync --
+    /// Polls an async load handle, returning status and optional data.
+    /// @param handle : integer
+    /// @return string, string?
+    let s = state.clone();
+    tbl.set(
+        "pollAsync",
+        lua.create_function(move |_, handle_id: u64| {
+            Ok(s.borrow().poll_async_load(handle_id))
+        })?,
+    )?;
+
+    // -- mount --
+    /// Mounts a directory at a virtual path inside the game filesystem.
+    /// @param source : string
+    /// @param mountpoint : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "mount",
+        lua.create_function(move |_, (src, mp): (String, String)| {
+            s.borrow_mut()
+                .fs
+                .mount(&src, &mp)
+                .map(|_| true)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- unmount --
+    /// Removes a virtual mount layer by mountpoint.
+    /// @param mountpoint : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "unmount",
+        lua.create_function(move |_, mp: String| Ok(s.borrow_mut().fs.unmount(&mp)))?,
+    )?;
+
+    // -- load --
+    /// Loads and compiles a Lua file from the VFS, returning it as a callable function.
+    /// @param path : string
+    /// @return function
+    let s = state.clone();
+    tbl.set(
+        "load",
+        lua.create_function(move |ctx, path: String| {
+            let bytes = s.borrow().fs.load_chunk(&path).map_err(LuaError::external)?;
+            ctx.load(&bytes[..]).into_function()
+        })?,
+    )?;
+
+    // -- newFileData --
+    /// Loads a file from the VFS into a FileData buffer.
+    /// @param path : string
+    /// @return FileData
+    let s = state.clone();
+    tbl.set(
+        "newFileData",
+        lua.create_function(move |_, path: String| {
+            let bytes = s.borrow().fs.load_chunk(&path).map_err(LuaError::external)?;
+            Ok(LuaFileData {
+                inner: FileData::new(path, bytes),
+            })
+        })?,
+    )?;
+
     luna.set("filesystem", tbl)?;
     Ok(())
 }

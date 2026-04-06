@@ -233,6 +233,58 @@ impl BezierCurve {
             p.y = oy + (p.y - oy) * s;
         }
     }
+
+    /// Approximate the total arc length of the curve.
+    ///
+    /// Samples the curve at `100` equidistant parameter values and sums segment lengths.
+    /// Accuracy improves with more control points that are closer together.
+    ///
+    /// # Returns
+    /// Approximate arc length in the same units as the control points.
+    pub fn length(&self) -> f32 {
+        const SAMPLES: usize = 100;
+        let mut total = 0.0f32;
+        let mut prev = self.evaluate(0.0);
+        for i in 1..=SAMPLES {
+            let t = i as f32 / SAMPLES as f32;
+            let curr = self.evaluate(t);
+            let dx = curr.x - prev.x;
+            let dy = curr.y - prev.y;
+            total += (dx * dx + dy * dy).sqrt();
+            prev = curr;
+        }
+        total
+    }
+
+    /// Evaluate the curve position at parameter `t` and return it as an `(x, y)` tuple.
+    ///
+    /// Equivalent to `evaluate(t)` but returns a plain tuple for ergonomic Lua binding.
+    ///
+    /// # Parameters
+    /// - `t` — curve parameter in `[0.0, 1.0]`
+    ///
+    /// # Returns
+    /// `(x, y)` position on the curve.
+    pub fn get_interpolated_position(&self, t: f32) -> (f32, f32) {
+        let p = self.evaluate(t);
+        (p.x, p.y)
+    }
+
+    /// Return the angle of the curve tangent at parameter `t` in radians.
+    ///
+    /// Uses the first derivative curve to compute the tangent direction.
+    /// Returns `0.0` when the tangent length is zero (degenerate curve section).
+    ///
+    /// # Parameters
+    /// - `t` — curve parameter in `[0.0, 1.0]`
+    ///
+    /// # Returns
+    /// Tangent angle in radians (`atan2(dy, dx)`).
+    pub fn get_interpolated_angle(&self, t: f32) -> f32 {
+        let deriv = self.get_derivative();
+        let tangent = deriv.evaluate(t);
+        tangent.y.atan2(tangent.x)
+    }
 }
 
 impl Clone for BezierCurve {

@@ -2,118 +2,105 @@
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 1 — Basic Core |
+| **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status** | Implemented — Full |
 | **Lua API** | `luna.data` |
 | **Source** | `src/data/` |
-| **Tests** | `tests/data_tests.rs` |
+| **Rust Tests** | `tests/unit/data_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_data.lua` |
+| **Architecture** | — |
 
 ## Summary
 
-The `data` module is the LÖVE2D-compatible binary data layer for Luna2D.  It
-mirrors the `love.data.*` API surface so that games ported from LÖVE2D compile
-without modification and new games can use familiar idioms.
+The `data` module provides binary data manipulation, compression, hashing, encoding, and
+structured pack/unpack for Lua scripts. It is a Tier 1 Engine Subsystem.
 
-The distinguishing feature is **`luna.data.pack` / `luna.data.unpack`**: a
-format-string binary serializer that uses LÖVE2D's single-character type codes
-(`b`, `B`, `h`, `H`, `i`, `I`, `l`, `L`, `f`, `d`, `z`, `s`, `x`) with `<` /
-`>` byte-order prefixes, producing byte-for-byte identical output to LÖVE2D for
-the same inputs.  This is deliberately different from `luna.binary.write` /
-`luna.binary.read`, which use Luna2D's own space-separated token format
-(`"le u32 f32 str"`).
+`ByteData` wraps `Vec<u8>` and exposes byte-level read/write via the `luna.data` Lua API.
+The `compress` sub-module supports deflate, gzip, lz4, and zlib via flate2 and lz4_flex.
+The `hash` sub-module computes MD5, SHA-1, SHA-256, and SHA-512 digests. The `encode`
+sub-module converts binary buffers to/from Base64 and hex strings. The `bin_pack` sub-module
+provides C-style `pack`/`unpack` with format strings compatible with Python's `struct` module,
+enabling binary protocol work. `DataView` gives a windowed read-only cursor into a byte slice.
 
-Along with the pack API the module provides the same primitives as `luna.binary`
-(ByteData, compress, decompress, encode, decode, hash) using identical
-implementations, and adds low-level TOML parsing/encoding helpers
-(`parseToml` / `encodeToml`) that work directly at the `toml::Value` level.
+Scripts use `luna.data.newByteData(size)`, `luna.data.compress(fmt, bytes)`,
+`luna.data.hash(algo, data)`, `luna.data.encode(fmt, data)`, and `luna.data.pack(fmt, ...)`.
 
-**Separation boundary** — use `luna.data` when:
-- Porting a LÖVE2D game or using LÖVE2D binary data files
-- Needing the `<bHif>` format-string pack convention
-
-Use `luna.binary` when:
-- Writing new Luna2D-native binary files with the space-token format
-- Using `luna.binary.size` for fixed-layout struct arithmetic
-
-Use `luna.serial` for text-format serialization (JSON / TOML / CSV / YAML).
-Use `luna.filesystem` for file I/O.
+**Scope boundary**: This module is a pure CPU data-processing layer with no GPU, audio,
+or filesystem dependencies.
+## Architecture
 
 ```
-data/
-  │
-  ├── ByteData ── Vec<u8> wrapper with Lua UserData interface
-  │
-  ├── compress ── deflate / gzip / lz4 / zlib (level 0-9)
-  │
-  ├── encode ── base64 / hex encoding and decoding
-  │
-  ├── hash ── md5 / sha1 / sha256 / sha512 → hex string
-  │
-  └── toml_convert ── parse_toml / encode_toml for TOML ↔ Lua table
+data (module root)
+  ├── bin_pack.rs — Luna2D Binary Pack Format — format-string based binary serialization. Provides `write`, `read`, and `measure_size` for the `luna.data` module. Format strings use space-separated named type tokens. # Format string tokens | Token  | Type                       | Byte size  | |--------|----------------------------|------------| | `le`   | switch to little-endian    | (modifier) | | `be`   | switch to big-endian       | (modifier) | | `u8`   | unsigned 8-bit integer     | 1          | | `u16`  | unsigned 16-bit integer    | 2          | | `u32`  | unsigned 32-bit integer    | 4          | | `u64`  | unsigned 64-bit integer    | 8          | | `i8`   | signed 8-bit integer       | 1          | | `i16`  | signed 16-bit integer      | 2          | | `i32`  | signed 32-bit integer      | 4          | | `i64`  | signed 64-bit integer      | 8          | | `f32`  | 32-bit float               | 4          | | `f64`  | 64-bit float               | 8          | | `bool` | boolean (u8: 0=false)      | 1          | | `str`  | u32-length-prefixed UTF-8  | 4 + len    | | `cstr` | null-terminated UTF-8      | len + 1    | | `pad`  | zero padding byte          | 1          |
+  ├── byte_data.rs — Contiguous byte buffer accessible from Lua. This module is part of Luna2D's `data` subsystem and provides the implementation details for byte data-related operations and data management. Key types exported from this module: `ByteData`. Primary functions: `new()`, `from_bytes()`, `from_string()`, `len()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+  ├── compress.rs — Data compression and decompression using deflate, gzip, zlib, and LZ4. This module is part of Luna2D's `data` subsystem and provides the implementation details for compress-related operations and data management. Key types exported from this module: `CompressFormat`. Primary functions: `parse_str()`, `compress()`, `decompress()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+  ├── dataview.rs — Read-only windowed view into a shared byte buffer. `DataView` provides typed accessor methods over a slice of a `Vec<u8>` without copying the underlying data. All reads are little-endian. Bounds are checked on every access; out-of-range indices return an error.
+  ├── encode.rs — Base64 and hex encoding/decoding for data serialization. This module is part of Luna2D's `data` subsystem and provides the implementation details for encode-related operations and data management. Key types exported from this module: `EncodeFormat`. Primary functions: `parse_str()`, `encode()`, `decode()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+  ├── hash.rs — Cryptographic hash functions for data integrity verification. This module is part of Luna2D's `data` subsystem and provides the implementation details for hash-related operations and data management. Key types exported from this module: `HashAlgorithm`. Primary functions: `parse_str()`, `hash()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+  ├── pack.rs — Binary pack/unpack utilities compatible with LÖVE2D's `data.pack` API. Provides format-string based binary serialization for the `luna.data` module. Supports little-endian and big-endian byte order via `<` and `>` prefixes.
+  ├── toml_convert.rs — TOML parsing and encoding for Luna2D. Converts between TOML strings and Lua tables. Supports the full TOML spec via the `toml` crate, mapping types to their Lua equivalents. This module is part of Luna2D's `data` subsystem and provides the implementation details for toml convert-related operations and data management. Primary functions: `parse_toml()`, `encode_toml()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
 ```
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
-| `mod.rs` | Module root; re-exports all public API items |
-| `byte_data.rs` | Contiguous byte buffer accessible from Lua |
-| `compress.rs` | Data compression and decompression using deflate, gzip, zlib, and LZ4 |
-| `dataview.rs` | Read-only windowed view into a shared byte buffer |
-| `encode.rs` | Base64 and hex encoding/decoding for data serialization |
-| `hash.rs` | Cryptographic hash functions for data integrity verification |
-| `pack.rs` | Binary pack/unpack utilities compatible with LÖVE2D `data.pack` API |
-| `toml_convert.rs` | TOML parsing and encoding for Luna2D |
+| `bin_pack.rs` | Luna2D Binary Pack Format — format-string based binary serialization. Provides `write`, `read`, and `measure_size` for the `luna.data` module. Format strings use space-separated named type tokens. # Format string tokens | Token  | Type                       | Byte size  | |--------|----------------------------|------------| | `le`   | switch to little-endian    | (modifier) | | `be`   | switch to big-endian       | (modifier) | | `u8`   | unsigned 8-bit integer     | 1          | | `u16`  | unsigned 16-bit integer    | 2          | | `u32`  | unsigned 32-bit integer    | 4          | | `u64`  | unsigned 64-bit integer    | 8          | | `i8`   | signed 8-bit integer       | 1          | | `i16`  | signed 16-bit integer      | 2          | | `i32`  | signed 32-bit integer      | 4          | | `i64`  | signed 64-bit integer      | 8          | | `f32`  | 32-bit float               | 4          | | `f64`  | 64-bit float               | 8          | | `bool` | boolean (u8: 0=false)      | 1          | | `str`  | u32-length-prefixed UTF-8  | 4 + len    | | `cstr` | null-terminated UTF-8      | len + 1    | | `pad`  | zero padding byte          | 1          | |
+| `byte_data.rs` | Contiguous byte buffer accessible from Lua. This module is part of Luna2D's `data` subsystem and provides the implementation details for byte data-related operations and data management. Key types exported from this module: `ByteData`. Primary functions: `new()`, `from_bytes()`, `from_string()`, `len()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
+| `compress.rs` | Data compression and decompression using deflate, gzip, zlib, and LZ4. This module is part of Luna2D's `data` subsystem and provides the implementation details for compress-related operations and data management. Key types exported from this module: `CompressFormat`. Primary functions: `parse_str()`, `compress()`, `decompress()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
+| `dataview.rs` | Read-only windowed view into a shared byte buffer. `DataView` provides typed accessor methods over a slice of a `Vec<u8>` without copying the underlying data. All reads are little-endian. Bounds are checked on every access; out-of-range indices return an error. |
+| `encode.rs` | Base64 and hex encoding/decoding for data serialization. This module is part of Luna2D's `data` subsystem and provides the implementation details for encode-related operations and data management. Key types exported from this module: `EncodeFormat`. Primary functions: `parse_str()`, `encode()`, `decode()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
+| `hash.rs` | Cryptographic hash functions for data integrity verification. This module is part of Luna2D's `data` subsystem and provides the implementation details for hash-related operations and data management. Key types exported from this module: `HashAlgorithm`. Primary functions: `parse_str()`, `hash()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
+| `pack.rs` | Binary pack/unpack utilities compatible with LÖVE2D's `data.pack` API. Provides format-string based binary serialization for the `luna.data` module. Supports little-endian and big-endian byte order via `<` and `>` prefixes. |
+| `toml_convert.rs` | TOML parsing and encoding for Luna2D. Converts between TOML strings and Lua tables. Supports the full TOML spec via the `toml` crate, mapping types to their Lua equivalents. This module is part of Luna2D's `data` subsystem and provides the implementation details for toml convert-related operations and data management. Primary functions: `parse_toml()`, `encode_toml()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
+
+## Submodules
+
+### `data::bin_pack`
+
+Luna2D Binary Pack Format — format-string based binary serialization. Provides `write`, `read`, and `measure_size` for the `luna.data` module. Format strings use space-separated named type tokens. # Format string tokens | Token  | Type                       | Byte size  | |--------|----------------------------|------------| | `le`   | switch to little-endian    | (modifier) | | `be`   | switch to big-endian       | (modifier) | | `u8`   | unsigned 8-bit integer     | 1          | | `u16`  | unsigned 16-bit integer    | 2          | | `u32`  | unsigned 32-bit integer    | 4          | | `u64`  | unsigned 64-bit integer    | 8          | | `i8`   | signed 8-bit integer       | 1          | | `i16`  | signed 16-bit integer      | 2          | | `i32`  | signed 32-bit integer      | 4          | | `i64`  | signed 64-bit integer      | 8          | | `f32`  | 32-bit float               | 4          | | `f64`  | 64-bit float               | 8          | | `bool` | boolean (u8: 0=false)      | 1          | | `str`  | u32-length-prefixed UTF-8  | 4 + len    | | `cstr` | null-terminated UTF-8      | len + 1    | | `pad`  | zero padding byte          | 1          |
+
+- **`BinValue`** (enum): TODO: one-line description.
+
 ### `data::byte_data`
 
-Contiguous byte buffer accessible from Lua.
+Contiguous byte buffer accessible from Lua. This module is part of Luna2D's `data` subsystem and provides the implementation details for byte data-related operations and data management. Key types exported from this module: `ByteData`. Primary functions: `new()`, `from_bytes()`, `from_string()`, `len()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
 
-- **`ByteData`** (struct): Contiguous byte buffer for binary data manipulation.  Wraps a `Vec<u8>` with indexed get/set operations and string...
+- **`ByteData`** (struct): TODO: one-line description.
 
 ### `data::compress`
 
-Data compression and decompression using deflate, gzip, zlib, and LZ4.
+Data compression and decompression using deflate, gzip, zlib, and LZ4. This module is part of Luna2D's `data` subsystem and provides the implementation details for compress-related operations and data management. Key types exported from this module: `CompressFormat`. Primary functions: `parse_str()`, `compress()`, `decompress()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
 
-- **`CompressFormat`** (enum): Supported compression formats. Consult the module-level documentation for the broader usage context and preconditions.
-- **`compress`** (fn): Compress data using the specified format and compression level (0-9).
-- **`decompress`** (fn): Decompress data using the specified format.
-
-### `data::encode`
-
-Base64 and hex encoding/decoding for data serialization.
-
-- **`EncodeFormat`** (enum): Supported encoding formats. Consult the module-level documentation for the broader usage context and preconditions.
-- **`encode`** (fn): Encode bytes into a string using the specified format.
-- **`decode`** (fn): Decode a string back into bytes using the specified format.
-
-### `data::hash`
-
-Cryptographic hash functions for data integrity verification.
-
-- **`HashAlgorithm`** (enum): Supported hash algorithms. Consult the module-level documentation for the broader usage context and preconditions.
-- **`hash`** (fn): Compute the hash of data using the specified algorithm, returned as a hex string.
+- **`CompressFormat`** (enum): TODO: one-line description.
 
 ### `data::dataview`
 
-Read-only windowed view into a shared byte buffer.
+Read-only windowed view into a shared byte buffer. `DataView` provides typed accessor methods over a slice of a `Vec<u8>` without copying the underlying data. All reads are little-endian. Bounds are checked on every access; out-of-range indices return an error.
 
-- **`DataView`** (struct): Typed accessor over a byte slice; supports `get_u8`, `get_u16`, `get_u32`, `get_i8`, `get_i16`, `get_i32`, `get_f32`, `get_f64`, and `get_bytes`.
+- **`DataView`** (struct): TODO: one-line description.
+
+### `data::encode`
+
+Base64 and hex encoding/decoding for data serialization. This module is part of Luna2D's `data` subsystem and provides the implementation details for encode-related operations and data management. Key types exported from this module: `EncodeFormat`. Primary functions: `parse_str()`, `encode()`, `decode()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+
+- **`EncodeFormat`** (enum): TODO: one-line description.
+
+### `data::hash`
+
+Cryptographic hash functions for data integrity verification. This module is part of Luna2D's `data` subsystem and provides the implementation details for hash-related operations and data management. Key types exported from this module: `HashAlgorithm`. Primary functions: `parse_str()`, `hash()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+
+- **`HashAlgorithm`** (enum): TODO: one-line description.
 
 ### `data::pack`
 
-Binary pack/unpack utilities compatible with LÖVE2D `data.pack` API.
+Binary pack/unpack utilities compatible with LÖVE2D's `data.pack` API. Provides format-string based binary serialization for the `luna.data` module. Supports little-endian and big-endian byte order via `<` and `>` prefixes.
 
-- **`PackValue`** (enum): Typed value that can be packed or unpacked: Bool, Int, Float, String, Bytes.
-- **`pack`** (fn): Serialize a slice of `PackValue` to `ByteData` using a format string.
-- **`unpack`** (fn): Deserialize bytes at `offset` into a `Vec<PackValue>` using a format string.
-- **`get_packed_size`** (fn): Return the byte size a set of values would occupy without allocating.
+- **`PackValue`** (enum): TODO: one-line description.
 
 ### `data::toml_convert`
 
-TOML parsing and encoding for Luna2D.
-
-- **`parse_toml`** (fn): Parse a TOML string into a `toml::Value`.
-- **`encode_toml`** (fn): Encode a `toml::Value` into a TOML string.
+TOML parsing and encoding for Luna2D. Converts between TOML strings and Lua tables. Supports the full TOML spec via the `toml` crate, mapping types to their Lua equivalents. This module is part of Luna2D's `data` subsystem and provides the implementation details for toml convert-related operations and data management. Primary functions: `parse_toml()`, `encode_toml()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
 
 ## Key Types
 
@@ -121,54 +108,80 @@ TOML parsing and encoding for Luna2D.
 
 #### `data::byte_data::ByteData`
 
-Contiguous byte buffer for binary data manipulation. Wraps a `Vec<u8>` with indexed get/set operations and string conversion.
+TODO: description from `///` doc comment.
 
 #### `data::dataview::DataView`
 
-Read-only windowed view into a shared byte buffer. Typed accessors (`get_u8`, `get_u16`, `get_f32`, etc.) operate on a sub-slice at a given offset.
+TODO: description from `///` doc comment.
 
 ### Enums
 
+#### `data::bin_pack::BinValue`
+
+TODO: description from `///` doc comment.
+
 #### `data::compress::CompressFormat`
 
-Supported compression formats.
+TODO: description from `///` doc comment.
 
 #### `data::encode::EncodeFormat`
 
-Supported encoding formats.
+TODO: description from `///` doc comment.
 
 #### `data::hash::HashAlgorithm`
 
-Supported hash algorithms.
+TODO: description from `///` doc comment.
 
 #### `data::pack::PackValue`
 
-Typed value that can be packed or unpacked: Bool, Int, Float, String, Bytes.
-
-## Public Functions
-
-- **`compress()`** `compress::` — Compress data using the specified format and compression level (0-9).
-- **`decode()`** `encode::` — Decode a string back into bytes using the specified format.
-- **`decompress()`** `compress::` — Decompress data using the specified format.
-- **`encode()`** `encode::` — Encode bytes into a string using the specified format.
-- **`encode_toml()`** `toml_convert::` — Encode a `toml::Value` into a TOML string.
-- **`get_packed_size()`** `pack::` — Return the byte size a set of values would occupy without allocating.
-- **`hash()`** `hash::` — Compute the hash of data using the specified algorithm, returned as a hex string.
-- **`pack()`** `pack::` — Serialize a slice of `PackValue` to `ByteData` using a format string.
-- **`parse_toml()`** `toml_convert::` — Parse a TOML string into a `toml::Value`.
-- **`unpack()`** `pack::` — Deserialize bytes at `offset` into a `Vec<PackValue>` using a format string.
+TODO: description from `///` doc comment.
 
 ## Lua API
 
-Exposed under `luna.data.*` by `src/lua_api/data_api.rs`.
+Exposed under `luna.data.*` by `src\lua_api\data_api.rs`.
+
+TODO: Describe the overall API surface. List the major categories of functions.
+
+Exposed functions include: `data`.
+
+## Lua Examples
+
+```lua
+-- Example: Basic data usage
+function luna.load()
+    -- TODO: replace with real data setup
+    local obj = luna.data.data()
+end
+
+function luna.update(dt)
+    -- TODO: update logic
+end
+```
 
 ## Item Summary
 
 | Kind | Count |
 |------|-------|
-| `enum` | 4 |
-| `fn` | 10 |
-| `mod` | 7 |
 | `struct` | 2 |
-| **Total** | **23** |
+| `enum`   | 5 |
+| `fn`     | 13 |
+| **Total** | **20** |
 
+## References
+
+| Module | Relationship | Notes |
+|--------|--------------|-------|
+| `engine` | Imports from | Uses SharedState, EngineError |
+| `math` | Imports from | Vec2, Color, Rect |
+| `lua_api` | Imported by | Binds public API to Lua |
+
+TODO: Add entries for similar modules and explain the separation of duties.
+
+## Notes
+
+TODO: Document unique facts an agent must know before editing this module:
+- External crate constraints (version, thread-safety, API limitations)
+- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
+- Known limitations or intentional omissions
+- Best practices and anti-patterns for this module
+- What Lua scripts will break if the API changes

@@ -1,751 +1,704 @@
-//! `luna.compute` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/compute/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.compute` — Dense N-dimensional numerical arrays with NumPy-style operations.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::compute::array::{DataType, NdArray};
+use crate::compute::ops;
+use crate::compute::spatial;
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------------------------
 
-// ── LuaNdArray ────────────────────────────────────────────────────────────
-
-pub struct LuaNdArray(/* TODO: add key + state fields */);
-
-
-impl LuaNdArray {
-    /// Read element at flat index as f64 (works for any dtype).
-    ///
-    /// @param flat : integer
-    /// @return number
-    pub fn get_f64(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+/// Parse a Lua table of positive integers into a shape vector.
+fn parse_shape(value: LuaValue) -> LuaResult<Vec<usize>> {
+    let table = value
+        .as_table()
+        .ok_or_else(|| LuaError::RuntimeError("shape must be a table".into()))?;
+    let mut shape = Vec::new();
+    for i in 1..=table.len()? {
+        let dim: i64 = table.get(i)?;
+        if dim <= 0 {
+            return Err(LuaError::RuntimeError(
+                "shape dimensions must be positive".into(),
+            ));
+        }
+        shape.push(dim as usize);
     }
-    /// Read element at flat index as i32. Only meaningful for Int32 arrays.
-    ///
-    /// @param flat : integer
-    /// @return integer
-    pub fn get_i32(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+    if shape.is_empty() {
+        return Err(LuaError::RuntimeError("shape must not be empty".into()));
     }
-    /// Convert a multi-dimensional index to a flat element offset.
-    ///
-    /// @param indices : [usize]
-    /// @return Result<usize
-    pub fn flat_index(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+    Ok(shape)
+}
+
+/// Parse an optional dtype string, defaulting to `"float32"`.
+fn parse_dtype(s: Option<String>) -> LuaResult<DataType> {
+    let name = s.as_deref().unwrap_or("float32");
+    DataType::parse(name).map_err(LuaError::RuntimeError)
+}
+
+/// Parse Lua multi-value arguments into 0-based indices.
+fn parse_lua_indices(args: &[LuaValue]) -> LuaResult<Vec<usize>> {
+    args.iter()
+        .map(|v| match v {
+            LuaValue::Integer(n) => {
+                if *n < 1 {
+                    Err(LuaError::RuntimeError("index must be >= 1".into()))
+                } else {
+                    Ok((*n - 1) as usize)
+                }
+            }
+            LuaValue::Number(n) => {
+                let i = *n as i64;
+                if i < 1 {
+                    Err(LuaError::RuntimeError("index must be >= 1".into()))
+                } else {
+                    Ok((i - 1) as usize)
+                }
+            }
+            _ => Err(LuaError::RuntimeError("indices must be integers".into())),
+        })
+        .collect()
+}
+
+/// Dispatch pattern for arithmetic/comparison ops that accept Array or number.
+macro_rules! dispatch_arith {
+    ($methods:ident, $name:expr, $doc:expr, $arr_fn:path, $scalar_fn:path) => {
+        $methods.add_method($name, |lua, this, value: LuaValue| {
+            let result = match value {
+                LuaValue::Number(n) => {
+                    $scalar_fn(&this.inner, n).map_err(LuaError::RuntimeError)?
+                }
+                LuaValue::Integer(n) => {
+                    $scalar_fn(&this.inner, n as f64).map_err(LuaError::RuntimeError)?
+                }
+                LuaValue::UserData(ud) => {
+                    let other = ud.borrow::<LuaArray>()?;
+                    $arr_fn(&this.inner, &other.inner).map_err(LuaError::RuntimeError)?
+                }
+                _ => return Err(LuaError::RuntimeError("expected Array or number".into())),
+            };
+            lua.create_userdata(LuaArray { inner: result })
+        });
+    };
+}
+
+// -------------------------------------------------------------------------------
+// LuaArray UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around [`NdArray`].
+pub struct LuaArray {
+    inner: NdArray,
+}
+
+impl LuaUserData for LuaArray {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- getShape --
+        /// Returns the shape as a table of dimension sizes.
+        /// @return table
+        methods.add_method("getShape", |lua, this, ()| {
+            let table = lua.create_table()?;
+            for (i, &dim) in this.inner.shape().iter().enumerate() {
+                table.set(i + 1, dim)?;
+            }
+            Ok(table)
+        });
+
+        // -- getDimensions --
+        /// Returns the number of dimensions.
+        /// @return integer
+        methods.add_method("getDimensions", |_, this, ()| {
+            Ok(this.inner.ndim())
+        });
+
+        // -- getSize --
+        /// Returns the total number of elements.
+        /// @return integer
+        methods.add_method("getSize", |_, this, ()| {
+            Ok(this.inner.size())
+        });
+
+        // -- getDataType --
+        /// Returns the element data type name.
+        /// @return string
+        methods.add_method("getDataType", |_, this, ()| {
+            Ok(this.inner.dtype().name().to_string())
+        });
+
+        // -- isOnGPU --
+        /// Returns false (CPU arrays only).
+        /// @return boolean
+        methods.add_method("isOnGPU", |_, _this, ()| {
+            Ok(false)
+        });
+
+        // -- get --
+        /// Returns the element at the given 1-based indices.
+        /// @param indices : integer...
+        /// @return number
+        methods.add_method("get", |_, this, args: LuaMultiValue| {
+            let indices = parse_lua_indices(&args.into_vec())?;
+            this.inner.get_by_indices(&indices).map_err(LuaError::RuntimeError)
+        });
+
+        // -- set --
+        /// Sets the element at the given 1-based indices to a value.
+        /// @param indices_and_value : integer..., number
+        /// @return nil
+        methods.add_method_mut("set", |_, this, args: LuaMultiValue| {
+            let args_vec = args.into_vec();
+            if args_vec.len() < 2 {
+                return Err(LuaError::RuntimeError(
+                    "set requires at least one index and a value".into(),
+                ));
+            }
+            let val = match &args_vec[args_vec.len() - 1] {
+                LuaValue::Number(n) => *n,
+                LuaValue::Integer(n) => *n as f64,
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "last argument to set must be a number".into(),
+                    ))
+                }
+            };
+            let indices = parse_lua_indices(&args_vec[..args_vec.len() - 1])?;
+            this.inner
+                .set_by_indices(&indices, val)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- toTable --
+        /// Returns all elements as a flat table of numbers.
+        /// @return table
+        methods.add_method("toTable", |lua, this, ()| {
+            let values = this.inner.to_f64_vec();
+            let table = lua.create_table()?;
+            for (i, &v) in values.iter().enumerate() {
+                table.set(i + 1, v)?;
+            }
+            Ok(table)
+        });
+
+        // -- reshape --
+        /// Returns a new array with the given shape and the same data.
+        /// @param shape : table
+        /// @return Array
+        methods.add_method("reshape", |lua, this, shape: LuaValue| {
+            let s = parse_shape(shape)?;
+            let result = ops::reshape(&this.inner, &s).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- clone --
+        /// Returns a deep copy of this array.
+        /// @return Array
+        methods.add_method("clone", |lua, this, ()| {
+            lua.create_userdata(LuaArray { inner: this.inner.clone() })
+        });
+
+        // -- transpose --
+        /// Returns the transposed 2D array.
+        /// @return Array
+        methods.add_method("transpose", |lua, this, ()| {
+            let result = ops::transpose_2d(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- fill --
+        /// Fills all elements with the given value in-place.
+        /// @param val : number
+        /// @return nil
+        methods.add_method_mut("fill", |_, this, val: f64| {
+            ops::fill(&mut this.inner, val);
+            Ok(())
+        });
+
+        // -- add --
+        /// Element-wise addition with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "add", "Element-wise add.", ops::add, ops::add_scalar);
+
+        // -- sub --
+        /// Element-wise subtraction with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "sub", "Element-wise sub.", ops::sub, ops::sub_scalar);
+
+        // -- mul --
+        /// Element-wise multiplication with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "mul", "Element-wise mul.", ops::mul, ops::mul_scalar);
+
+        // -- div --
+        /// Element-wise division with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "div", "Element-wise div.", ops::div, ops::div_scalar);
+
+        // -- pow --
+        /// Raises each element to a scalar exponent.
+        /// @param exp : number
+        /// @return Array
+        methods.add_method("pow", |lua, this, exp: f64| {
+            let result = ops::pow_scalar(&this.inner, exp).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- sqrt --
+        /// Element-wise square root.
+        /// @return Array
+        methods.add_method("sqrt", |lua, this, ()| {
+            let result = ops::sqrt(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- abs --
+        /// Element-wise absolute value.
+        /// @return Array
+        methods.add_method("abs", |lua, this, ()| {
+            let result = ops::abs(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- neg --
+        /// Element-wise negation.
+        /// @return Array
+        methods.add_method("neg", |lua, this, ()| {
+            let result = ops::neg(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- clamp --
+        /// Clamps each element to the given range.
+        /// @param min : number
+        /// @param max : number
+        /// @return Array
+        methods.add_method("clamp", |lua, this, (min, max): (f64, f64)| {
+            let result = ops::clamp(&this.inner, min, max).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- eq --
+        /// Element-wise equality with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "eq", "Element-wise eq.", ops::eq, ops::eq_scalar);
+
+        // -- neq --
+        /// Element-wise not-equal with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "neq", "Element-wise neq.", ops::neq, ops::neq_scalar);
+
+        // -- gt --
+        /// Element-wise greater-than with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "gt", "Element-wise gt.", ops::gt, ops::gt_scalar);
+
+        // -- lt --
+        /// Element-wise less-than with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "lt", "Element-wise lt.", ops::lt, ops::lt_scalar);
+
+        // -- gte --
+        /// Element-wise greater-or-equal with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "gte", "Element-wise gte.", ops::gte, ops::gte_scalar);
+
+        // -- lte --
+        /// Element-wise less-or-equal with an Array or scalar.
+        /// @param other : Array|number
+        /// @return Array
+        dispatch_arith!(methods, "lte", "Element-wise lte.", ops::lte, ops::lte_scalar);
+
+        // -- threshold --
+        /// Returns a mask array with 1.0 where elements >= val, else 0.0.
+        /// @param val : number
+        /// @return Array
+        methods.add_method("threshold", |lua, this, val: f64| {
+            let result = ops::threshold(&this.inner, val).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- where --
+        /// Selects elements from this where mask is nonzero, else from other.
+        /// @param mask : Array
+        /// @param other : Array
+        /// @return Array
+        methods.add_method(
+            "where",
+            |lua, this, (mask, other): (LuaAnyUserData, LuaAnyUserData)| {
+                let mask_arr = mask.borrow::<LuaArray>()?;
+                let other_arr = other.borrow::<LuaArray>()?;
+                let result = ops::where_mask(&mask_arr.inner, &this.inner, &other_arr.inner)
+                    .map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: result })
+            },
+        );
+
+        // -- countNonZero --
+        /// Returns the count of nonzero elements.
+        /// @return integer
+        methods.add_method("countNonZero", |_, this, ()| {
+            Ok(ops::count_nonzero(&this.inner))
+        });
+
+        // -- argmin --
+        /// Returns the 1-based flat index of the minimum element.
+        /// @return integer
+        methods.add_method("argmin", |_, this, ()| {
+            Ok(ops::argmin(&this.inner) + 1)
+        });
+
+        // -- argmax --
+        /// Returns the 1-based flat index of the maximum element.
+        /// @return integer
+        methods.add_method("argmax", |_, this, ()| {
+            Ok(ops::argmax(&this.inner) + 1)
+        });
+
+        // -- any --
+        /// Returns true if any element is nonzero.
+        /// @return boolean
+        methods.add_method("any", |_, this, ()| {
+            Ok(ops::any(&this.inner))
+        });
+
+        // -- all --
+        /// Returns true if all elements are nonzero.
+        /// @return boolean
+        methods.add_method("all", |_, this, ()| {
+            Ok(ops::all(&this.inner))
+        });
+
+        // -- sum --
+        /// Sum of all elements, or along an axis (1-based).
+        /// @param axis : integer?
+        /// @return number|Array
+        methods.add_method("sum", |lua, this, axis: Option<i64>| match axis {
+            None => Ok(LuaValue::Number(ops::sum(&this.inner))),
+            Some(a) => {
+                let arr = ops::sum_axis(&this.inner, (a - 1) as usize)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaValue::UserData(lua.create_userdata(LuaArray { inner: arr })?))
+            }
+        });
+
+        // -- mean --
+        /// Mean of all elements, or along an axis (1-based).
+        /// @param axis : integer?
+        /// @return number|Array
+        methods.add_method("mean", |lua, this, axis: Option<i64>| match axis {
+            None => Ok(LuaValue::Number(ops::mean(&this.inner))),
+            Some(a) => {
+                let arr = ops::mean_axis(&this.inner, (a - 1) as usize)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaValue::UserData(lua.create_userdata(LuaArray { inner: arr })?))
+            }
+        });
+
+        // -- min --
+        /// Minimum of all elements, or along an axis (1-based).
+        /// @param axis : integer?
+        /// @return number|Array
+        methods.add_method("min", |lua, this, axis: Option<i64>| match axis {
+            None => Ok(LuaValue::Number(ops::min_val(&this.inner))),
+            Some(a) => {
+                let arr = ops::min_axis(&this.inner, (a - 1) as usize)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaValue::UserData(lua.create_userdata(LuaArray { inner: arr })?))
+            }
+        });
+
+        // -- max --
+        /// Maximum of all elements, or along an axis (1-based).
+        /// @param axis : integer?
+        /// @return number|Array
+        methods.add_method("max", |lua, this, axis: Option<i64>| match axis {
+            None => Ok(LuaValue::Number(ops::max_val(&this.inner))),
+            Some(a) => {
+                let arr = ops::max_axis(&this.inner, (a - 1) as usize)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaValue::UserData(lua.create_userdata(LuaArray { inner: arr })?))
+            }
+        });
+
+        // -- matmul --
+        /// Matrix multiplication of two 2D arrays.
+        /// @param other : Array
+        /// @return Array
+        methods.add_method("matmul", |lua, this, other: LuaAnyUserData| {
+            let other_arr = other.borrow::<LuaArray>()?;
+            let result = spatial::matmul(&this.inner, &other_arr.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- dot --
+        /// Dot product of two 1D arrays.
+        /// @param other : Array
+        /// @return number
+        methods.add_method("dot", |_, this, other: LuaAnyUserData| {
+            let other_arr = other.borrow::<LuaArray>()?;
+            spatial::dot(&this.inner, &other_arr.inner).map_err(LuaError::RuntimeError)
+        });
+
+        // -- bitwiseAnd --
+        /// Bitwise AND of two Int32 arrays.
+        /// @param other : Array
+        /// @return Array
+        methods.add_method("bitwiseAnd", |lua, this, other: LuaAnyUserData| {
+            let other_arr = other.borrow::<LuaArray>()?;
+            let result = ops::bitwise_and(&this.inner, &other_arr.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- bitwiseOr --
+        /// Bitwise OR of two Int32 arrays.
+        /// @param other : Array
+        /// @return Array
+        methods.add_method("bitwiseOr", |lua, this, other: LuaAnyUserData| {
+            let other_arr = other.borrow::<LuaArray>()?;
+            let result = ops::bitwise_or(&this.inner, &other_arr.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- bitwiseXor --
+        /// Bitwise XOR of two Int32 arrays.
+        /// @param other : Array
+        /// @return Array
+        methods.add_method("bitwiseXor", |lua, this, other: LuaAnyUserData| {
+            let other_arr = other.borrow::<LuaArray>()?;
+            let result = ops::bitwise_xor(&this.inner, &other_arr.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- bitwiseNot --
+        /// Bitwise NOT of an Int32 array.
+        /// @return Array
+        methods.add_method("bitwiseNot", |lua, this, ()| {
+            let result = ops::bitwise_not(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- bitwiseLShift --
+        /// Bitwise left shift of an Int32 array.
+        /// @param amount : integer
+        /// @return Array
+        methods.add_method("bitwiseLShift", |lua, this, amount: u32| {
+            let result =
+                ops::bitwise_lshift(&this.inner, amount).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- bitwiseRShift --
+        /// Bitwise right shift of an Int32 array.
+        /// @param amount : integer
+        /// @return Array
+        methods.add_method("bitwiseRShift", |lua, this, amount: u32| {
+            let result =
+                ops::bitwise_rshift(&this.inner, amount).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- convolve2D --
+        /// 2D convolution with zero-padding.
+        /// @param kernel : Array
+        /// @return Array
+        methods.add_method("convolve2D", |lua, this, kernel: LuaAnyUserData| {
+            let kernel_arr = kernel.borrow::<LuaArray>()?;
+            let result = spatial::convolve2d(&this.inner, &kernel_arr.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- dilate --
+        /// Morphological dilation with a diamond structuring element.
+        /// @param radius : integer
+        /// @return Array
+        methods.add_method("dilate", |lua, this, radius: usize| {
+            let result = spatial::dilate(&this.inner, radius).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- erode --
+        /// Morphological erosion with a diamond structuring element.
+        /// @param radius : integer
+        /// @return Array
+        methods.add_method("erode", |lua, this, radius: usize| {
+            let result = spatial::erode(&this.inner, radius).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: result })
+        });
+
+        // -- floodFill --
+        /// Flood fill from a 1-based (row, col) with a new value.
+        /// @param row : integer
+        /// @param col : integer
+        /// @param val : number
+        /// @return Array
+        methods.add_method(
+            "floodFill",
+            |lua, this, (row, col, val): (usize, usize, f64)| {
+                let result = spatial::flood_fill(&this.inner, row - 1, col - 1, val)
+                    .map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: result })
+            },
+        );
+
+        // -- getRegion --
+        /// Extracts a rectangular sub-region (1-based row, col).
+        /// @param row : integer
+        /// @param col : integer
+        /// @param rows : integer
+        /// @param cols : integer
+        /// @return Array
+        methods.add_method(
+            "getRegion",
+            |lua, this, (row, col, rows, cols): (usize, usize, usize, usize)| {
+                let result = spatial::get_region(&this.inner, row - 1, col - 1, rows, cols)
+                    .map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: result })
+            },
+        );
+
+        // -- setRegion --
+        /// Copies a source array into this array at the given 1-based position.
+        /// @param row : integer
+        /// @param col : integer
+        /// @param source : Array
+        /// @return nil
+        methods.add_method_mut(
+            "setRegion",
+            |_, this, (row, col, source): (usize, usize, LuaAnyUserData)| {
+                let src = source.borrow::<LuaArray>()?;
+                spatial::set_region(&mut this.inner, row - 1, col - 1, &src.inner)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(())
+            },
+        );
+
+        // -- __tostring --
+        /// Returns a human-readable summary string.
+        /// @return string
+        methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
+            Ok(this.inner.display_string())
+        });
+
     }
-    /// Returns the element data type of this array.
-    ///
-    ///
-    /// @return DataType
-    pub fn dtype(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the total number of elements in this array.
-    ///
-    ///
-    /// @return integer
-    pub fn size(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of dimensions (1, 2, or 3).
-    ///
-    ///
-    /// @return integer
-    pub fn ndim(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
 }
 
-impl UserData for LuaNdArray {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getF64", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getI32", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("flatIndex", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("dtype", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("size", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("ndim", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.compute.* functions ──────────────────────────────────────────
-
-/// Parse a dtype from a string name (`"float32"`, `"float64"`, `"int32"`).
-///
-/// @param s : str
-/// @return Result<Self
-pub fn parse(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Number of bytes per element for this dtype.
-///
-///
-/// @return integer
-pub fn byte_size(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create a zero-initialized NdArray. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param shape : [usize]
-/// @param dtype : DataType
-/// @return Result<Self
-pub fn zeros(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create an NdArray filled with ones (1.0 for floats, 1 for int32).
-///
-/// @param shape : [usize]
-/// @param dtype : DataType
-/// @return Result<Self
-pub fn ones(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create a 1D NdArray with values from `start` to `stop` (exclusive) with given step.
-///
-/// @param start : number
-/// @param stop : number
-/// @param step : number
-/// @param dtype : DataType
-/// @return Result<Self
-pub fn range(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create an NdArray from a slice of f64 values, converting to the target dtype.
-///
-/// @param values : [f64]
-/// @param shape : [usize]
-/// @param dtype : DataType
-/// @return Result<Self
-pub fn from_slice(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Write a value (as f64) to the flat index, converting to the array's dtype.
-///
-///
-/// @param flat : integer
-/// @param val : number
-pub fn set_f64(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Write an i32 value at the flat index. Only meaningful for Int32 arrays.
-///
-///
-/// @param flat : integer
-/// @param val : integer
-pub fn set_i32(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Compute row-major strides for a given shape.
-///
-/// @param shape : [usize]
-/// @return table
-pub fn compute_strides(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise addition of two arrays (same shape and dtype).
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn add(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a scalar to every element. The insertion is O(1) amortised unless a resize is triggered.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn add_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise subtraction of two arrays (same shape and dtype).
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn sub(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Subtract a scalar from every element. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn sub_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise multiplication of two arrays (same shape and dtype).
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn mul(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Multiply every element by a scalar. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn mul_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise division of two arrays (same shape and dtype).
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn div(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Divide every element by a scalar. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn div_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Raise every element to a scalar exponent.
-///
-/// @param a : NdArray
-/// @param exp : number
-/// @return Result<NdArray
-pub fn pow_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise square root. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return Result<NdArray
-pub fn sqrt(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise absolute value. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return Result<NdArray
-pub fn abs(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise negation. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return Result<NdArray
-pub fn neg(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Clamp every element to `[min_val, max_val]`.
-///
-/// @param a : NdArray
-/// @param min_val : number
-/// @param max_val : number
-/// @return Result<NdArray
-pub fn clamp(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise equality comparison of two arrays. Returns Float32 with 0/1.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn eq(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise equality comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn eq_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise not-equal comparison of two arrays. Returns Float32.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn neq(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise not-equal comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn neq_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise greater-than comparison of two arrays. Returns Float32.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn gt(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise greater-than comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn gt_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise less-than comparison of two arrays. Returns Float32.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn lt(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise less-than comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn lt_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise greater-than-or-equal comparison of two arrays. Returns Float32.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn gte(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise greater-than-or-equal comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn gte_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise less-than-or-equal comparison of two arrays. Returns Float32.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn lte(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Element-wise less-than-or-equal comparison against a scalar. Returns Float32.
-///
-/// @param a : NdArray
-/// @param s : number
-/// @return Result<NdArray
-pub fn lte_scalar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Threshold mask: returns Float32 array with 1.0 where `a >= val`, 0.0 otherwise.
-///
-/// @param a : NdArray
-/// @param val : number
-/// @return Result<NdArray
-pub fn threshold(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Conditional selection: where `cond != 0`, choose from `a`; otherwise from `b`.
-///
-/// @param cond : NdArray
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn where_mask(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Count the number of non-zero elements. Runs in O(1) time.
-///
-/// @param a : NdArray
-/// @return integer
-pub fn count_nonzero(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Return the flat index of the minimum element (0-based).
-///
-/// @param a : NdArray
-/// @return integer
-pub fn argmin(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Return the flat index of the maximum element (0-based).
-///
-/// @param a : NdArray
-/// @return integer
-pub fn argmax(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns `true` if any element is non-zero.
-///
-/// @param a : NdArray
-/// @return boolean
-pub fn any(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns `true` if all elements are non-zero.
-///
-/// @param a : NdArray
-/// @return boolean
-pub fn all(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sum of all elements. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return number
-pub fn sum(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Mean of all elements. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return number
-pub fn mean(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Minimum value across all elements. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return number
-pub fn min_val(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Maximum value across all elements. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return number
-pub fn max_val(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sum along a given axis, producing an array with that axis removed.
-///
-/// @param a : NdArray
-/// @param axis : integer
-/// @return Result<NdArray
-pub fn sum_axis(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Mean along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param axis : integer
-/// @return Result<NdArray
-pub fn mean_axis(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Minimum along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param axis : integer
-/// @return Result<NdArray
-pub fn min_axis(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Maximum along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param axis : integer
-/// @return Result<NdArray
-pub fn max_axis(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Reshape an array to a new shape with the same total element count.
-///
-/// @param a : NdArray
-/// @param new_shape : [usize]
-/// @return Result<NdArray
-pub fn reshape(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Transpose a 2D array (swap rows and columns).
-///
-/// @param a : NdArray
-/// @return Result<NdArray
-pub fn transpose_2d(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Fill all elements of an array with a value (in-place).
-///
-///
-/// @param a : mut NdArray
-/// @param val : number
-pub fn fill(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Clone an array (convenience wrapper). Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return NdArray
-pub fn clone_array(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise AND of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn bitwise_and(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise OR of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn bitwise_or(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise XOR of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn bitwise_xor(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise NOT of an Int32 array. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param a : NdArray
-/// @return Result<NdArray
-pub fn bitwise_not(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise left shift of an Int32 array by `amount` bits.
-///
-/// @param a : NdArray
-/// @param amount : integer
-/// @return Result<NdArray
-pub fn bitwise_lshift(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bitwise right shift (arithmetic) of an Int32 array by `amount` bits.
-///
-/// @param a : NdArray
-/// @param amount : integer
-/// @return Result<NdArray
-pub fn bitwise_rshift(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// 2D convolution with zero-padding (same-size output).
-///
-/// @param input : NdArray
-/// @param kernel : NdArray
-/// @return Result<NdArray
-pub fn convolve2d(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Morphological dilation with a Manhattan-diamond structuring element.
-///
-/// @param a : NdArray
-/// @param radius : integer
-/// @return Result<NdArray
-pub fn dilate(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Morphological erosion with a Manhattan-diamond structuring element.
-///
-/// @param a : NdArray
-/// @param radius : integer
-/// @return Result<NdArray
-pub fn erode(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Flood fill using BFS with 4-connectivity.
-///
-/// @param a : NdArray
-/// @param row : integer
-/// @param col : integer
-/// @param val : number
-/// @return Result<NdArray
-pub fn flood_fill(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Extract a rectangular sub-region from a 2D array.
-///
-/// @param a : NdArray
-/// @param row : integer
-/// @param col : integer
-/// @param sub_rows : integer
-/// @param sub_cols : integer
-/// @return Result<NdArray
-pub fn get_region(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Copy a source 2D array into a target 2D array at position `(row, col)`.
-///
-/// @param a : mut NdArray
-/// @param row : integer
-/// @param col : integer
-/// @param src : NdArray
-/// @return Result<()
-pub fn set_region(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Matrix multiplication of two 2D arrays: (m,k) × (k,n) → (m,n).
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<NdArray
-pub fn matmul(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Dot product of two 1D arrays (same length). Returns a scalar.
-///
-/// @param a : NdArray
-/// @param b : NdArray
-/// @return Result<f64
-pub fn dot(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-/// Registers the `luna.compute` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.compute` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("parse", lua.create_function(parse)?)?;
-    tbl.set("byteSize", lua.create_function(byte_size)?)?;
-    tbl.set("zeros", lua.create_function(zeros)?)?;
-    tbl.set("ones", lua.create_function(ones)?)?;
-    tbl.set("range", lua.create_function(range)?)?;
-    tbl.set("fromSlice", lua.create_function(from_slice)?)?;
-    tbl.set("setF64", lua.create_function(set_f64)?)?;
-    tbl.set("setI32", lua.create_function(set_i32)?)?;
-    tbl.set("computeStrides", lua.create_function(compute_strides)?)?;
-    tbl.set("add", lua.create_function(add)?)?;
-    tbl.set("addScalar", lua.create_function(add_scalar)?)?;
-    tbl.set("sub", lua.create_function(sub)?)?;
-    tbl.set("subScalar", lua.create_function(sub_scalar)?)?;
-    tbl.set("mul", lua.create_function(mul)?)?;
-    tbl.set("mulScalar", lua.create_function(mul_scalar)?)?;
-    tbl.set("div", lua.create_function(div)?)?;
-    tbl.set("divScalar", lua.create_function(div_scalar)?)?;
-    tbl.set("powScalar", lua.create_function(pow_scalar)?)?;
-    tbl.set("sqrt", lua.create_function(sqrt)?)?;
-    tbl.set("abs", lua.create_function(abs)?)?;
-    tbl.set("neg", lua.create_function(neg)?)?;
-    tbl.set("clamp", lua.create_function(clamp)?)?;
-    tbl.set("eq", lua.create_function(eq)?)?;
-    tbl.set("eqScalar", lua.create_function(eq_scalar)?)?;
-    tbl.set("neq", lua.create_function(neq)?)?;
-    tbl.set("neqScalar", lua.create_function(neq_scalar)?)?;
-    tbl.set("gt", lua.create_function(gt)?)?;
-    tbl.set("gtScalar", lua.create_function(gt_scalar)?)?;
-    tbl.set("lt", lua.create_function(lt)?)?;
-    tbl.set("ltScalar", lua.create_function(lt_scalar)?)?;
-    tbl.set("gte", lua.create_function(gte)?)?;
-    tbl.set("gteScalar", lua.create_function(gte_scalar)?)?;
-    tbl.set("lte", lua.create_function(lte)?)?;
-    tbl.set("lteScalar", lua.create_function(lte_scalar)?)?;
-    tbl.set("threshold", lua.create_function(threshold)?)?;
-    tbl.set("whereMask", lua.create_function(where_mask)?)?;
-    tbl.set("countNonzero", lua.create_function(count_nonzero)?)?;
-    tbl.set("argmin", lua.create_function(argmin)?)?;
-    tbl.set("argmax", lua.create_function(argmax)?)?;
-    tbl.set("any", lua.create_function(any)?)?;
-    tbl.set("all", lua.create_function(all)?)?;
-    tbl.set("sum", lua.create_function(sum)?)?;
-    tbl.set("mean", lua.create_function(mean)?)?;
-    tbl.set("minVal", lua.create_function(min_val)?)?;
-    tbl.set("maxVal", lua.create_function(max_val)?)?;
-    tbl.set("sumAxis", lua.create_function(sum_axis)?)?;
-    tbl.set("meanAxis", lua.create_function(mean_axis)?)?;
-    tbl.set("minAxis", lua.create_function(min_axis)?)?;
-    tbl.set("maxAxis", lua.create_function(max_axis)?)?;
-    tbl.set("reshape", lua.create_function(reshape)?)?;
-    tbl.set("transpose2d", lua.create_function(transpose_2d)?)?;
-    tbl.set("fill", lua.create_function(fill)?)?;
-    tbl.set("cloneArray", lua.create_function(clone_array)?)?;
-    tbl.set("bitwiseAnd", lua.create_function(bitwise_and)?)?;
-    tbl.set("bitwiseOr", lua.create_function(bitwise_or)?)?;
-    tbl.set("bitwiseXor", lua.create_function(bitwise_xor)?)?;
-    tbl.set("bitwiseNot", lua.create_function(bitwise_not)?)?;
-    tbl.set("bitwiseLshift", lua.create_function(bitwise_lshift)?)?;
-    tbl.set("bitwiseRshift", lua.create_function(bitwise_rshift)?)?;
-    tbl.set("convolve2d", lua.create_function(convolve2d)?)?;
-    tbl.set("dilate", lua.create_function(dilate)?)?;
-    tbl.set("erode", lua.create_function(erode)?)?;
-    tbl.set("floodFill", lua.create_function(flood_fill)?)?;
-    tbl.set("getRegion", lua.create_function(get_region)?)?;
-    tbl.set("setRegion", lua.create_function(set_region)?)?;
-    tbl.set("matmul", lua.create_function(matmul)?)?;
-    tbl.set("dot", lua.create_function(dot)?)?;
+
+    // -- newArray --
+    /// Creates a zero-initialized array with the given shape and optional dtype.
+    /// @param shape : table
+    /// @param dtype : string?
+    /// @return Array
+    tbl.set(
+        "newArray",
+        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+            let s = parse_shape(shape)?;
+            let dt = parse_dtype(dtype)?;
+            let arr = NdArray::zeros(&s, dt).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: arr })
+        })?,
+    )?;
+
+    // -- zeros --
+    /// Creates a zero-filled array with the given shape and optional dtype.
+    /// @param shape : table
+    /// @param dtype : string?
+    /// @return Array
+    tbl.set(
+        "zeros",
+        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+            let s = parse_shape(shape)?;
+            let dt = parse_dtype(dtype)?;
+            let arr = NdArray::zeros(&s, dt).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: arr })
+        })?,
+    )?;
+
+    // -- ones --
+    /// Creates a one-filled array with the given shape and optional dtype.
+    /// @param shape : table
+    /// @param dtype : string?
+    /// @return Array
+    tbl.set(
+        "ones",
+        lua.create_function(|lua, (shape, dtype): (LuaValue, Option<String>)| {
+            let s = parse_shape(shape)?;
+            let dt = parse_dtype(dtype)?;
+            let arr = NdArray::ones(&s, dt).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: arr })
+        })?,
+    )?;
+
+    // -- range --
+    /// Creates a 1D array from start to stop with optional step and dtype.
+    /// @param start : number
+    /// @param stop : number
+    /// @param step : number?
+    /// @param dtype : string?
+    /// @return Array
+    tbl.set(
+        "range",
+        lua.create_function(
+            |lua, (start, stop, step, dtype): (f64, f64, Option<f64>, Option<String>)| {
+                let st = step.unwrap_or(1.0);
+                let dt = parse_dtype(dtype)?;
+                let arr = NdArray::range(start, stop, st, dt).map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: arr })
+            },
+        )?,
+    )?;
+
+    // -- fromTable --
+    /// Creates an array from a Lua table of numbers with optional shape and dtype.
+    /// @param data : table
+    /// @param shape : table?
+    /// @param dtype : string?
+    /// @return Array
+    tbl.set(
+        "fromTable",
+        lua.create_function(
+            |lua, (data, shape, dtype): (LuaTable, Option<LuaValue>, Option<String>)| {
+                let mut values = Vec::new();
+                for i in 1..=data.len()? {
+                    let v: f64 = data.get(i)?;
+                    values.push(v);
+                }
+                let dt = parse_dtype(dtype)?;
+                let s = match shape {
+                    Some(sv) => parse_shape(sv)?,
+                    None => vec![values.len()],
+                };
+                let arr =
+                    NdArray::from_slice(&values, &s, dt).map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: arr })
+            },
+        )?,
+    )?;
+
     luna.set("compute", tbl)?;
     Ok(())
 }

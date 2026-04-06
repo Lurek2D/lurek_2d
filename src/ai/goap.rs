@@ -32,9 +32,9 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
-use mlua::RegistryKey;
 use crate::engine::log_messages::{GP01, GP02, GP03};
 use crate::log_msg;
+use mlua::RegistryKey;
 
 /// A single GOAP action with boolean preconditions and effects.
 ///
@@ -281,6 +281,71 @@ impl GOAPPlanner {
         goal.iter()
             .filter(|(k, v)| state.get(*k) != Some(*v))
             .count() as f64
+    }
+
+    /// Adds an action with the given cost and optional Lua callback. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `name` — `String`.
+    /// - `cost` — `f64`.
+    /// - `callback` — `Option<RegistryKey>`.
+    pub fn add_action(&mut self, name: String, cost: f64, callback: Option<RegistryKey>) {
+        self.actions.push(GOAPAction {
+            name,
+            cost,
+            callback,
+            preconditions: HashMap::new(),
+            effects: HashMap::new(),
+        });
+    }
+
+    /// Adds a boolean precondition to the named action. No-op if action not found.
+    ///
+    /// # Parameters
+    /// - `action_name` — `&str`.
+    /// - `key` — `String`.
+    /// - `value` — `bool`.
+    pub fn add_precondition(&mut self, action_name: &str, key: String, value: bool) {
+        if let Some(a) = self.actions.iter_mut().find(|a| a.name == action_name) {
+            a.preconditions.insert(key, value);
+        }
+    }
+
+    /// Adds a boolean effect to the named action. No-op if action not found.
+    ///
+    /// # Parameters
+    /// - `action_name` — `&str`.
+    /// - `key` — `String`.
+    /// - `value` — `bool`.
+    pub fn add_effect(&mut self, action_name: &str, key: String, value: bool) {
+        if let Some(a) = self.actions.iter_mut().find(|a| a.name == action_name) {
+            a.effects.insert(key, value);
+        }
+    }
+
+    /// Adds a goal with the given name and priority. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `name` — `String`.
+    /// - `priority` — `f64`.
+    pub fn add_goal(&mut self, name: String, priority: f64) {
+        self.goals.push(GOAPGoal {
+            name,
+            priority,
+            state: HashMap::new(),
+        });
+    }
+
+    /// Sets a boolean condition on the named goal. No-op if goal not found.
+    ///
+    /// # Parameters
+    /// - `goal_name` — `&str`.
+    /// - `key` — `String`.
+    /// - `value` — `bool`.
+    pub fn set_goal_state(&mut self, goal_name: &str, key: String, value: bool) {
+        if let Some(g) = self.goals.iter_mut().find(|g| g.name == goal_name) {
+            g.state.insert(key, value);
+        }
     }
 }
 

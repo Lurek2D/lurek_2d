@@ -2260,7 +2260,9 @@ fn graphics_save_screenshot_queues_save_path() {
 #[test]
 fn graphics_save_screenshot_rejects_non_save_path() {
     let (_state, lua) = make_graphics_vm();
-    let result = lua.load(r#"luna.graphics.saveScreenshot('frame.png')"#).exec();
+    let result = lua
+        .load(r#"luna.graphics.saveScreenshot('frame.png')"#)
+        .exec();
     assert!(
         result.is_err(),
         "saveScreenshot should reject paths outside save/: {:?}",

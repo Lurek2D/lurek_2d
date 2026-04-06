@@ -2,12 +2,12 @@
 
 use slotmap::SlotMap;
 
+use crate::engine::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::engine::resource_keys::{LightKey, OccluderKey};
 use crate::light::light2d::Light2D;
 use crate::light::occluder::Occluder;
-use crate::math::Color;
-use crate::engine::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::log_msg;
+use crate::math::Color;
 
 /// Resource pool and state for the 2D lighting system.
 ///

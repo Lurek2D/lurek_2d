@@ -822,3 +822,31 @@ impl DataFrame {
         out
     }
 }
+
+use crate::dataframe::frame::Database;
+
+impl Database {
+    /// Serialize all tables to a JSON object string.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn to_json(&self) -> String {
+        let names = self.list_tables();
+        let mut out = String::from("{");
+        for (i, name) in names.iter().enumerate() {
+            if i > 0 {
+                out.push(',');
+            }
+            out.push('"');
+            json_escape_string(&mut out, name);
+            out.push_str("\":");
+            if let Some(df) = self.get_table(name) {
+                out.push_str(&df.to_json());
+            } else {
+                out.push_str("[]");
+            }
+        }
+        out.push('}');
+        out
+    }
+}

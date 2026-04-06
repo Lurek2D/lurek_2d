@@ -24,5 +24,5 @@ A shop / trading simulation showing how `luna.item` and `luna.inventory` combine
 ## Run
 
 ```sh
-cargo run -- examples/merchant_demo
+cargo run -- demos/merchant_demo
 ```

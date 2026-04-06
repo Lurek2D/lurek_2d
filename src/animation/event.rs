@@ -21,3 +21,28 @@ pub enum AnimEvent {
     /// A looping clip wrapped back to its first frame.
     Looped,
 }
+
+impl AnimEvent {
+    /// Returns the event type as a Lua-friendly string.
+    ///
+    /// # Returns
+    /// `&'static str`.
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            Self::Finished => "finished",
+            Self::FrameChanged { .. } => "frameChanged",
+            Self::Looped => "looped",
+        }
+    }
+
+    /// Returns the frame index for `FrameChanged` events, or `None`.
+    ///
+    /// # Returns
+    /// `Option<usize>`.
+    pub fn frame_index(&self) -> Option<usize> {
+        match self {
+            Self::FrameChanged { frame_index } => Some(*frame_index),
+            _ => None,
+        }
+    }
+}

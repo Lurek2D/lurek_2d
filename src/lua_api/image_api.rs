@@ -1,214 +1,148 @@
-//! `luna.image` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/image/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.image` — CPU-side pixel-level image manipulation.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::image::{CompressedImageData, ImageData};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// LuaCompressedImageData UserData
+// -------------------------------------------------------------------------------
 
-// ── LuaCompressedImageData ────────────────────────────────────────────────────────────
+/// Lua-side wrapper around [`CompressedImageData`].
+pub struct LuaCompressedImageData {
+    inner: CompressedImageData,
+}
 
-pub struct LuaCompressedImageData(/* TODO: add key + state fields */);
+impl LuaUserData for LuaCompressedImageData {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
+        // -- getWidth --
+        /// Returns the width of the base mip level in pixels.
+        /// @return integer
+        methods.add_method("getWidth", |_, this, ()| {
+            Ok(this.inner.width)
+        });
 
-impl LuaCompressedImageData {
-    /// Return the number of mipmap levels stored.
-    ///
-    ///
-    /// @return integer
-    pub fn get_mipmap_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- getHeight --
+        /// Returns the height of the base mip level in pixels.
+        /// @return integer
+        methods.add_method("getHeight", |_, this, ()| {
+            Ok(this.inner.height)
+        });
+
+        // -- getDimensions --
+        /// Returns the width and height of the base mip level.
+        /// @return integer, integer
+        methods.add_method("getDimensions", |_, this, ()| {
+            Ok(this.inner.get_dimensions())
+        });
+
+        // -- getMipmapCount --
+        /// Returns the number of mipmap levels stored.
+        /// @return integer
+        methods.add_method("getMipmapCount", |_, this, ()| {
+            Ok(this.inner.get_mipmap_count())
+        });
+
+        // -- getFormat --
+        /// Returns the compressed format name string.
+        /// @return string
+        methods.add_method("getFormat", |_, this, ()| {
+            Ok(this.inner.get_format().to_string())
+        });
+
     }
 }
 
-impl UserData for LuaCompressedImageData {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getMipmapCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── LuaImageData ────────────────────────────────────────────────────────────
-
-pub struct LuaImageData(/* TODO: add key + state fields */);
-
-
-impl LuaImageData {
-    /// Get the width of the image. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return integer
-    pub fn width(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the height of the image. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return integer
-    pub fn height(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the RGBA values of a pixel at (x, y). Values are 0-255.
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return Option<(u8
-    pub fn get_pixel(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Encode the image as PNG bytes. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return Result<Vec<u8>
-    pub fn encode_png(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the raw pixel bytes as a vector (for Lua getString() compatibility).
-    ///
-    ///
-    /// @return table
-    pub fn get_string(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaImageData {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("width", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("height", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getPixel", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("encodePng", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getString", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaPaletteLUT ────────────────────────────────────────────────────────────
-
-pub struct LuaPaletteLUT(/* TODO: add key + state fields */);
-
-
-impl LuaPaletteLUT {
-    /// Returns the number of color mappings. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return integer
-    pub fn get_color_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the source color at the given 0-based index, if it exists.
-    ///
-    /// @param index : integer
-    /// @return Color?
-    pub fn get_from_color(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the target color at the given 0-based index, if it exists.
-    ///
-    /// @param index : integer
-    /// @return Color?
-    pub fn get_to_color(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaPaletteLUT {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getColorCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getFromColor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getToColor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.image.* functions ──────────────────────────────────────────
-
-/// Load compressed texture data from DDS file bytes.
-///
-/// Returns `Unknown` format rather than failing when the format is unrecognised.
-///
-/// @param bytes : [u8]
-/// @return Result<Self
-pub fn from_dds(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Load an image from a file path. Returns a fully initialised instance with all fields set to their initial values.
-///
-/// @param path : str
-/// @return Result<Self
-pub fn from_file(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create from raw RGBA bytes. Returns a fully initialised instance with all fields set to their initial values.
-///
-/// @param width : integer
-/// @param height : integer
-/// @param bytes : table
-/// @return Result<Self
-pub fn from_bytes(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the RGBA values of a pixel at (x, y). Values are 0-255.
-///
-/// @param x : integer
-/// @param y : integer
-/// @param r : u8
-/// @param g : u8
-/// @param b : u8
-/// @param a : u8
-/// @return boolean
-pub fn set_pixel(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Paste source image onto self at position (dx, dy).
-///
-///
-/// @param source : ImageData
-/// @param dx : integer
-/// @param dy : integer
-pub fn paste(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Apply a function to every pixel, replacing each (r,g,b,a) with the return value.
-///
-/// @param f : F
-/// @return The
-pub fn map_pixel(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the color mapping at the given 0-based index.
-///
-///
-/// @param index : integer
-/// @param from : Color
-/// @param to : Color
-pub fn set_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.image` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.image` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("fromDds", lua.create_function(from_dds)?)?;
-    tbl.set("fromFile", lua.create_function(from_file)?)?;
-    tbl.set("fromBytes", lua.create_function(from_bytes)?)?;
-    tbl.set("setPixel", lua.create_function(set_pixel)?)?;
-    tbl.set("paste", lua.create_function(paste)?)?;
-    tbl.set("mapPixel", lua.create_function(map_pixel)?)?;
-    tbl.set("setColor", lua.create_function(set_color)?)?;
+
+    // -- newImageData --
+    /// Creates a new blank ImageData or loads one from a file.
+    /// @param width_or_filename : integer|string
+    /// @param height : integer?
+    /// @return ImageData
+    let s = state.clone();
+    tbl.set(
+        "newImageData",
+        lua.create_function(move |lua, args: LuaMultiValue| {
+            let mut iter = args.into_iter();
+            let first = iter.next().ok_or_else(|| {
+                LuaError::RuntimeError(
+                    "newImageData expects (width, height) or (filename)".into(),
+                )
+            })?;
+            let img = if let LuaValue::String(ref filename) = first {
+                let name = filename
+                    .to_str()
+                    .map_err(|e| LuaError::RuntimeError(e.to_string()))?;
+                let path = s.borrow().game_dir.join(name);
+                ImageData::from_file(
+                    path.to_str()
+                        .ok_or_else(|| LuaError::RuntimeError("Invalid path".into()))?,
+                )
+                .map_err(LuaError::RuntimeError)?
+            } else {
+                let width = match first {
+                    LuaValue::Integer(n) => n as u32,
+                    LuaValue::Number(n) => n as u32,
+                    _ => {
+                        return Err(LuaError::RuntimeError("width must be a number".into()));
+                    }
+                };
+                let height = match iter.next() {
+                    Some(LuaValue::Integer(n)) => n as u32,
+                    Some(LuaValue::Number(n)) => n as u32,
+                    _ => {
+                        return Err(LuaError::RuntimeError("height must be a number".into()));
+                    }
+                };
+                ImageData::new(width, height)
+            };
+            lua.create_userdata(img)
+        })?,
+    )?;
+
+    // -- newCompressedData --
+    /// Loads compressed texture data from a DDS file.
+    /// @param filename : string
+    /// @return CompressedImageData
+    let s = state.clone();
+    tbl.set(
+        "newCompressedData",
+        lua.create_function(move |lua, filename: String| {
+            let path = s.borrow().game_dir.join(&filename);
+            let path_str = path
+                .to_str()
+                .ok_or_else(|| LuaError::RuntimeError("Invalid path".into()))?;
+            let cid = CompressedImageData::from_file(path_str).map_err(LuaError::external)?;
+            lua.create_userdata(LuaCompressedImageData { inner: cid })
+        })?,
+    )?;
+
+    // -- isCompressed --
+    /// Returns true if the file at the given path is a DDS file.
+    /// @param filename : string
+    /// @return boolean
+    let s = state.clone();
+    tbl.set(
+        "isCompressed",
+        lua.create_function(move |_, filename: String| {
+            let path = s.borrow().game_dir.join(&filename);
+            Ok(CompressedImageData::is_dds_file(
+                path.to_str().unwrap_or(""),
+            ))
+        })?,
+    )?;
+
     luna.set("image", tbl)?;
     Ok(())
 }

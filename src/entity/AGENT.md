@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.entity` |
 | **Source** | `src/entity/` |
+| **Rust Tests** | `tests/unit/entity_tests.rs`                    |
 | **Tests** | `tests/entity_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_entity.lua` |
 
@@ -118,3 +120,36 @@ Exposed under `luna.entity.*` by `src/lua_api/entity_api/`.
 | `struct` | 4 |
 | **Total** | **7** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    world = luna.entity.newWorld()
+    player = world:newEntity()
+    player:set("position", {x=100, y=200})
+    player:set("velocity", {x=0, y=0})
+    player:set("health", 100)
+end
+
+function luna.update(dt)
+    local pos = player:get("position")
+    pos.x = pos.x + player:get("velocity").x * dt
+    player:set("position", pos)
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`                                 |
+| `math`    | Imports from  | `Vec2` for position components                     |
+| `ai`      | Related       | AI behaviours often drive entity state changes     |
+| `lua_api` | Imported by   | `src/lua_api/entity_api.rs` registers `luna.entity.*` |
+
+## Notes
+
+- The entity system is a lightweight property bag, not a full archetype ECS — do not expect cache-friendly batch-iteration.
+- Entities are identified by `EntityId` (SlotMap key); stale IDs return `None` from all lookups.
+- Component values are stored as `LuaValue` — arbitrary Lua tables, numbers, or strings.
+- For performance-critical game loops, prefer native Lua tables over the entity API for tight inner loops.

@@ -1,4 +1,4 @@
-﻿//! Mod implementation for the `graphics` subsystem.
+//! Mod implementation for the `graphics` subsystem.
 //!
 //! This module is part of Luna2D's `graphics` subsystem and provides the implementation
 //! details for mod-related operations and data management.
@@ -57,4 +57,3 @@ pub use sprite_batch::SpriteBatch;
 pub use sprite_sheet::SpriteSheet;
 pub use texture::Texture;
 pub use texture_atlas::TextureAtlas;
-

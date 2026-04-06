@@ -15,9 +15,9 @@ use crate::engine::resource_keys::BusKey;
 // To re-enable: restore midly = "0.5" in Cargo.toml and uncomment imports + restore fn bodies from git
 use rodio::Source;
 // use std::collections::HashSet; // only needed for MIDI load_data (disabled)
-use std::path::Path;
 use crate::engine::log_messages::{A001_MIDI_READ_FAIL, A002_MIDI_DISABLED};
 use crate::log_msg;
+use std::path::Path;
 
 /// Pre-parsed MIDI metadata extracted during `load()`.
 ///

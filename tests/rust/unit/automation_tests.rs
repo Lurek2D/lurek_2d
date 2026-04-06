@@ -27,7 +27,10 @@ fn action_from_str_mousepress() {
 
 #[test]
 fn action_from_str_mouserelease() {
-    assert_eq!(Action::parse_action("mouserelease"), Some(Action::MouseRelease));
+    assert_eq!(
+        Action::parse_action("mouserelease"),
+        Some(Action::MouseRelease)
+    );
 }
 
 #[test]
@@ -128,10 +131,7 @@ fn script_new_sorts_by_time() {
 
 #[test]
 fn script_step_count() {
-    let steps = vec![
-        Step::new(0.0, Action::Wait),
-        Step::new(1.0, Action::Wait),
-    ];
+    let steps = vec![Step::new(0.0, Action::Wait), Step::new(1.0, Action::Wait)];
     let script = Script::new("test", steps);
     assert_eq!(script.step_count(), 2);
 }
@@ -186,10 +186,7 @@ fn simulator_load_replaces_existing() {
     let script1 = Script::new("test", vec![Step::new(0.0, Action::Wait)]);
     let script2 = Script::new(
         "test",
-        vec![
-            Step::new(0.0, Action::Wait),
-            Step::new(1.0, Action::Wait),
-        ],
+        vec![Step::new(0.0, Action::Wait), Step::new(1.0, Action::Wait)],
     );
     sim.load(script1);
     sim.load(script2);

@@ -8,14 +8,14 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
+use crate::engine::log_messages::{LT01, LT02, LT03};
 use crate::light::attenuation::Attenuation;
 use crate::light::blend_mode::LightBlendMode;
-use crate::engine::log_messages::{LT01, LT02, LT03};
-use crate::log_msg;
 use crate::light::falloff::FalloffMode;
 use crate::light::flicker::FlickerConfig;
 use crate::light::light_type::LightType;
 use crate::light::shadow::ShadowFilter;
+use crate::log_msg;
 use crate::math::Color;
 
 /// 2D point light with position, radius, color, intensity, and shadow settings.

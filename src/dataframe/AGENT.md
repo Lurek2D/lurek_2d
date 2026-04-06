@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.dataframe` |
 | **Source** | `src/dataframe/` |
+| **Rust Tests** | `tests/unit/dataframe_tests.rs`                    |
 | **Tests** | `tests/dataframe_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_dataframe.lua` |
 
@@ -144,3 +146,35 @@ Exposed under `luna.dataframe.*` by `src/lua_api/dataframe_api/`.
 | `struct` | 2 |
 | **Total** | **13** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    df = luna.dataframe.new()
+    df:addColumn("x", "f32")
+    df:addColumn("y", "f32")
+    df:addColumn("name", "string")
+
+    df:addRow({x=1.0, y=2.0, name="Alice"})
+    df:addRow({x=3.0, y=4.0, name="Bob"})
+
+    local count = df:rowCount()
+    local col = df:getColumn("x")
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`                                 |
+| `math`    | Imports from  | Numeric types for column data                      |
+| `compute` | Related       | `compute` stores flat numeric arrays; `dataframe` stores named column tables |
+| `lua_api` | Imported by   | `src/lua_api/dataframe_api.rs` registers `luna.dataframe.*` |
+
+## Notes
+
+- Columns are strongly typed on the Rust side; mixing types causes a `LuaError`.
+- Row insertion is O(1) amortised; column addition to an existing frame requires re-allocation.
+- No SQL-style query language; use Lua iteration for complex filtering.
+- Intended for tabular game data (loot tables, stat sheets), not real-time simulation arrays — use `compute` for that.

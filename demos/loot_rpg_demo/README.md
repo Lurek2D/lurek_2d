@@ -24,5 +24,5 @@ A dungeon-crawler-style item and inventory example that shows how `luna.item` an
 ## Run
 
 ```sh
-cargo run -- examples/loot_rpg_demo
+cargo run -- demos/loot_rpg_demo
 ```

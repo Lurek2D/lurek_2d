@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.compute` |
 | **Source** | `src/compute/` |
+| **Rust Tests** | `tests/unit/compute_tests.rs`                    |
 | **Tests** | `tests/compute_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_compute.lua` |
 
@@ -233,3 +235,34 @@ Exposed under `luna.compute.*` by `src/lua_api/compute_api/`.
 | `struct` | 1 |
 | **Total** | **63** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    arr = luna.compute.newArray(1000, "f32")
+    for i = 1, 1000 do
+        arr:set(i, i * 0.1)
+    end
+end
+
+function luna.update(dt)
+    local sum = arr:reduce("sum")
+    local mean = arr:mean()
+end
+```
+
+## References
+
+| Module      | Relationship  | Notes                                              |
+|-------------|---------------|----------------------------------------------------|
+| `engine`    | Imports from  | Uses `SharedState`                                 |
+| `math`      | Imports from  | Numeric types, `Vec2`                              |
+| `dataframe` | Related       | `dataframe` stores named column tables; `compute` stores raw numeric arrays |
+| `lua_api`   | Imported by   | `src/lua_api/compute_api.rs` registers `luna.compute.*` |
+
+## Notes
+
+- `NdArray` stores data in row-major column-major layout; be consistent when iterating in Lua vs Rust.
+- All arithmetic operations are CPU-side; there is no GPU compute shader path.
+- Large arrays (>10M elements) may cause GC pressure in Lua due to boxing; use Rust-side batch operations where possible.
+- Intended for numerical simulations, signal processing, and data analysis — not real-time per-frame game logic.

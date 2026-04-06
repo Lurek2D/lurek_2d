@@ -26,5 +26,5 @@ Demonstrates the Luna2D 2D lighting system.
 ## Run
 
 ```powershell
-cargo run -- examples/light_demo
+cargo run -- demos/light_demo
 ```

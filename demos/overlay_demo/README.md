@@ -14,7 +14,7 @@ Demonstrates `luna.graphics.newDrawLayer()` for z-ordered rendering. Layers can 
 ## How to Run
 
 ```powershell
-cargo run -- examples/overlay_demo
+cargo run -- demos/overlay_demo
 ```
 
 ## Controls

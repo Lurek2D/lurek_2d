@@ -1,1172 +1,1337 @@
-//! `luna.math` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/math/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.math` — Math utilities: random generators, transforms, Bezier curves, tweening,
+//! spatial hashing, noise, easing, polygon triangulation, and color-space conversion.
+
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use super::SharedState;
+use crate::math::color::{gamma_to_linear, linear_to_gamma};
+use crate::math::easing;
+use crate::math::noise_functions;
+use crate::math::polygon;
+use crate::math::BezierCurve;
+use crate::math::NoiseGenerator;
+use crate::math::RandomGenerator;
+use crate::math::SpatialHash;
+use crate::math::Transform;
+use crate::math::Tween;
+use crate::math::Vec2;
+use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// LuaRandomGenerator UserData
+// -------------------------------------------------------------------------------
 
-// ── LuaBezierCurve ────────────────────────────────────────────────────────────
+/// Lua-side wrapper around a [`RandomGenerator`].
+pub struct LuaRandomGenerator {
+    inner: RandomGenerator,
+}
 
-pub struct LuaBezierCurve(/* TODO: add key + state fields */);
+impl LuaUserData for LuaRandomGenerator {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- random --
+        /// Returns a uniform random number in [0, 1).
+        /// @return number
+        methods.add_method_mut("random", |_, this, ()| Ok(this.inner.random()));
 
+        // -- randomFloat --
+        /// Returns a uniform random float in [min, max).
+        /// @param min : number
+        /// @param max : number
+        /// @return number
+        methods.add_method_mut("randomFloat", |_, this, (min, max): (f64, f64)| {
+            Ok(this.inner.random_float(min, max))
+        });
 
-impl LuaBezierCurve {
-    /// Evaluate the curve at parameter `t` using De Casteljau's algorithm.
-    ///
-    /// @param t : curve
-    /// @return The
-    pub fn evaluate(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Render the curve as a polyline with the given number of segments.
-    ///
-    /// @param segments : number
-    /// @return segments
-    pub fn render(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Render a portion of the curve between `t_start` and `t_end`.
-    ///
-    /// @param t_start : start
-    /// @param t_end : end
-    /// @param segments : number
-    /// @return segments
-    pub fn render_segment(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get a control point by 0-based index. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param index : 0-based
-    /// @return Some(Vec2)
-    pub fn get_control_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the number of control points. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return Number
-    pub fn get_control_point_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- randomInt --
+        /// Returns a uniform random integer in [min, max].
+        /// @param min : integer
+        /// @param max : integer
+        /// @return integer
+        methods.add_method_mut("randomInt", |_, this, (min, max): (i64, i64)| {
+            Ok(this.inner.random_int(min, max))
+        });
+
+        // -- randomNormal --
+        /// Returns a random number from a normal (Gaussian) distribution.
+        /// @param stddev : number?
+        /// @param mean : number?
+        /// @return number
+        methods.add_method_mut(
+            "randomNormal",
+            |_, this, (stddev, mean): (Option<f64>, Option<f64>)| {
+                Ok(this.inner.random_normal(stddev.unwrap_or(1.0), mean.unwrap_or(0.0)))
+            },
+        );
+
+        // -- getSeed --
+        /// Returns the seed used to initialise this generator.
+        /// @return integer
+        methods.add_method("getSeed", |_, this, ()| Ok(this.inner.get_seed()));
+
+        // -- setSeed --
+        /// Sets the seed, fully resetting the generator state.
+        /// @param seed : integer
+        /// @return nil
+        methods.add_method_mut("setSeed", |_, this, seed: u64| {
+            this.inner.set_seed(seed);
+            Ok(())
+        });
+
+        // -- getState --
+        /// Serialises the generator state as a string for later restoration.
+        /// @return string
+        methods.add_method("getState", |_, this, ()| Ok(this.inner.get_state()));
+
+        // -- setState --
+        /// Restores the generator state from a previously serialised string.
+        /// @param state : string
+        /// @return nil
+        methods.add_method_mut("setState", |_, this, state: String| {
+            this.inner
+                .set_state(&state)
+                .map_err(LuaError::external)?;
+            Ok(())
+        });
     }
 }
 
-impl UserData for LuaBezierCurve {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("evaluate", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("render", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("renderSegment", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getControlPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getControlPointCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+// -------------------------------------------------------------------------------
+// LuaTransform UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Transform`].
+pub struct LuaTransform {
+    inner: Transform,
+}
+
+impl LuaUserData for LuaTransform {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- translate --
+        /// Applies translation to the transform.
+        /// @param dx : number
+        /// @param dy : number
+        /// @return nil
+        methods.add_method_mut("translate", |_, this, (dx, dy): (f32, f32)| {
+            this.inner.translate(dx, dy);
+            Ok(())
+        });
+
+        // -- rotate --
+        /// Applies a rotation in radians.
+        /// @param angle : number
+        /// @return nil
+        methods.add_method_mut("rotate", |_, this, angle: f32| {
+            this.inner.rotate(angle);
+            Ok(())
+        });
+
+        // -- scale --
+        /// Applies non-uniform scaling.
+        /// @param sx : number
+        /// @param sy : number?
+        /// @return nil
+        methods.add_method_mut("scale", |_, this, (sx, sy): (f32, Option<f32>)| {
+            this.inner.scale(sx, sy.unwrap_or(sx));
+            Ok(())
+        });
+
+        // -- shear --
+        /// Applies shear factors.
+        /// @param kx : number
+        /// @param ky : number
+        /// @return nil
+        methods.add_method_mut("shear", |_, this, (kx, ky): (f32, f32)| {
+            this.inner.shear(kx, ky);
+            Ok(())
+        });
+
+        // -- reset --
+        /// Resets the transform to identity.
+        /// @return nil
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.reset();
+            Ok(())
+        });
+
+        // -- setTransformation --
+        /// Replaces the transform with full transformation parameters.
+        /// @param x : number
+        /// @param y : number
+        /// @param angle : number?
+        /// @param sx : number?
+        /// @param sy : number?
+        /// @param ox : number?
+        /// @param oy : number?
+        /// @param kx : number?
+        /// @param ky : number?
+        #[allow(clippy::too_many_arguments)]
+        methods.add_method_mut(
+            "setTransformation",
+            |_,
+             this,
+             (x, y, angle, sx, sy, ox, oy, kx, ky): (
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                this.inner.set_transformation(
+                    x,
+                    y,
+                    angle.unwrap_or(0.0),
+                    sx.unwrap_or(1.0),
+                    sy.unwrap_or(sx.unwrap_or(1.0)),
+                    ox.unwrap_or(0.0),
+                    oy.unwrap_or(0.0),
+                    kx.unwrap_or(0.0),
+                    ky.unwrap_or(0.0),
+                );
+                Ok(())
+            },
+        );
+
+        // -- transformPoint --
+        /// Transforms a point from local space to world space.
+        /// @param x : number
+        /// @param y : number
+        /// @return number, number
+        methods.add_method("transformPoint", |_, this, (x, y): (f32, f32)| {
+            Ok(this.inner.transform_point(x, y))
+        });
+
+        // -- inverseTransformPoint --
+        /// Transforms a point from world space back to local space.
+        /// @param x : number
+        /// @param y : number
+        /// @return number, number
+        methods.add_method("inverseTransformPoint", |_, this, (x, y): (f32, f32)| {
+            Ok(this.inner.inverse_transform_point(x, y))
+        });
+
+        // -- inverse --
+        /// Returns a new Transform that undoes this transform.
+        /// @return Transform
+        methods.add_method("inverse", |lua, this, ()| {
+            lua.create_userdata(LuaTransform {
+                inner: this.inner.inverse(),
+            })
+        });
+
+        // -- clone --
+        /// Returns a copy of this transform.
+        /// @return Transform
+        methods.add_method("clone", |lua, this, ()| {
+            lua.create_userdata(LuaTransform {
+                inner: this.inner,
+            })
+        });
+
+        // -- getMatrix --
+        /// Returns the 3x3 matrix as a flat table of 9 numbers (row-major).
+        /// @return table
+        methods.add_method("getMatrix", |lua, this, ()| {
+            let m = this.inner.matrix();
+            let t = lua.create_table()?;
+            let mut idx = 1;
+            for row in &m.m {
+                for &val in row {
+                    t.set(idx, val)?;
+                    idx += 1;
+                }
+            }
+            Ok(t)
+        });
     }
 }
 
-// ── LuaColor ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// LuaBezierCurve UserData
+// -------------------------------------------------------------------------------
 
-pub struct LuaColor(/* TODO: add key + state fields */);
+/// Lua-side wrapper around a [`BezierCurve`].
+pub struct LuaBezierCurve {
+    inner: BezierCurve,
+}
 
+impl LuaUserData for LuaBezierCurve {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- evaluate --
+        /// Evaluates the curve at parameter t, returning (x, y).
+        /// @param t : number
+        /// @return number, number
+        methods.add_method("evaluate", |_, this, t: f32| {
+            let p = this.inner.evaluate(t);
+            Ok((p.x, p.y))
+        });
 
-impl LuaColor {
-    /// Converts the color to a packed `u32` RGB value suitable for packed pixel buffers.
-    ///
-    /// Alpha is discarded. Bit layout: `0x00RRGGBB`.
-    ///
-    ///
-    /// @return integer
-    pub fn to_rgb_u32(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- render --
+        /// Renders the curve as a polyline with the given number of segments.
+        /// @param segments : integer
+        /// @return table
+        methods.add_method("render", |lua, this, segments: usize| {
+            let points = this.inner.render(segments);
+            let t = lua.create_table()?;
+            for (i, p) in points.iter().enumerate() {
+                t.set(i + 1, vec![p.x, p.y])?;
+            }
+            Ok(t)
+        });
+
+        // -- getDerivative --
+        /// Returns a new BezierCurve representing the first derivative.
+        /// @return BezierCurve
+        methods.add_method("getDerivative", |lua, this, ()| {
+            lua.create_userdata(LuaBezierCurve {
+                inner: this.inner.get_derivative(),
+            })
+        });
+
+        // -- getControlPoint --
+        /// Returns the control point at 1-based index as (x, y), or nil.
+        /// @param index : integer
+        /// @return number?, number?
+        methods.add_method("getControlPoint", |_, this, index: usize| {
+            if index == 0 {
+                return Ok((None, None));
+            }
+            match this.inner.get_control_point(index - 1) {
+                Some(p) => Ok((Some(p.x), Some(p.y))),
+                None => Ok((None, None)),
+            }
+        });
+
+        // -- setControlPoint --
+        /// Sets the control point at 1-based index.
+        /// @param index : integer
+        /// @param x : number
+        /// @param y : number
+        /// @return boolean
+        methods.add_method_mut(
+            "setControlPoint",
+            |_, this, (index, x, y): (usize, f32, f32)| {
+                if index == 0 {
+                    return Ok(false);
+                }
+                Ok(this.inner.set_control_point(index - 1, Vec2::new(x, y)))
+            },
+        );
+
+        // -- insertControlPoint --
+        /// Inserts a control point. If index is given (1-based), inserts at that position.
+        /// @param x : number
+        /// @param y : number
+        /// @param index : integer?
+        methods.add_method_mut(
+            "insertControlPoint",
+            |_, this, (x, y, index): (f32, f32, Option<usize>)| {
+                this.inner
+                    .insert_control_point(Vec2::new(x, y), index.map(|i| i.saturating_sub(1)));
+                Ok(())
+            },
+        );
+
+        // -- removeControlPoint --
+        /// Removes a control point at 1-based index.
+        /// @param index : integer
+        /// @return boolean
+        methods.add_method_mut("removeControlPoint", |_, this, index: usize| {
+            if index == 0 {
+                return Ok(false);
+            }
+            Ok(this.inner.remove_control_point(index - 1))
+        });
+
+        // -- getControlPointCount --
+        /// Returns the number of control points.
+        /// @return integer
+        methods.add_method("getControlPointCount", |_, this, ()| {
+            Ok(this.inner.get_control_point_count())
+        });
+
+        // -- length --
+        /// Returns the approximate arc length of the curve.
+        /// @return number
+        methods.add_method("length", |_, this, ()| Ok(this.inner.length()));
+
+        // -- translate --
+        /// Translates all control points by (dx, dy).
+        /// @param dx : number
+        /// @param dy : number
+        /// @return nil
+        methods.add_method_mut("translate", |_, this, (dx, dy): (f32, f32)| {
+            this.inner.translate(dx, dy);
+            Ok(())
+        });
+
+        // -- rotate --
+        /// Rotates all control points around a pivot by angle radians.
+        /// @param angle : number
+        /// @param ox : number
+        /// @param oy : number
+        /// @return nil
+        methods.add_method_mut("rotate", |_, this, (angle, ox, oy): (f32, f32, f32)| {
+            this.inner.rotate(angle, ox, oy);
+            Ok(())
+        });
+
+        // -- scale --
+        /// Scales all control points around a pivot by factor s.
+        /// @param s : number
+        /// @param ox : number
+        /// @param oy : number
+        /// @return nil
+        methods.add_method_mut("scale", |_, this, (s, ox, oy): (f32, f32, f32)| {
+            this.inner.scale(s, ox, oy);
+            Ok(())
+        });
     }
 }
 
-impl UserData for LuaColor {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("toRgbU32", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+// -------------------------------------------------------------------------------
+// LuaTween UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Tween`].
+pub struct LuaTween {
+    inner: Tween,
+}
+
+impl LuaUserData for LuaTween {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- update --
+        /// Advances the clock by dt seconds. Returns true when complete.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method_mut("update", |_, this, dt: f64| Ok(this.inner.update(dt)));
+
+        // -- reset --
+        /// Resets the clock to 0.
+        /// @return nil
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.reset();
+            Ok(())
+        });
+
+        // -- getValue --
+        /// Returns the interpolated value at 1-based index.
+        /// @param index : integer
+        /// @return number
+        methods.add_method("getValue", |_, this, index: usize| {
+            if index == 0 {
+                return Ok(0.0);
+            }
+            Ok(this.inner.get_value(index - 1))
+        });
+
+        // -- getAllValues --
+        /// Returns all interpolated values as a table.
+        /// @return table
+        methods.add_method("getAllValues", |lua, this, ()| {
+            let vals = this.inner.get_all_values();
+            let t = lua.create_table()?;
+            for (i, v) in vals.iter().enumerate() {
+                t.set(i + 1, *v)?;
+            }
+            Ok(t)
+        });
+
+        // -- isComplete --
+        /// Returns true if the tween has finished.
+        /// @return boolean
+        methods.add_method("isComplete", |_, this, ()| Ok(this.inner.is_complete()));
+
+        // -- getValueCount --
+        /// Returns the number of values in this tween.
+        /// @return integer
+        methods.add_method("getValueCount", |_, this, ()| {
+            Ok(this.inner.value_count())
+        });
+
+        // -- getEasingName --
+        /// Returns the easing function name.
+        /// @return string
+        methods.add_method("getEasingName", |_, this, ()| {
+            Ok(this.inner.easing_name().to_string())
+        });
+
+        // -- getDuration --
+        /// Returns the tween duration in seconds.
+        /// @return number
+        methods.add_method("getDuration", |_, this, ()| Ok(this.inner.duration()));
+
+        // -- getTime --
+        /// Returns the current clock time.
+        /// @return number
+        methods.add_method("getTime", |_, this, ()| Ok(this.inner.clock()));
+
+        // -- setTime --
+        /// Sets the clock to a specific time, clamped to [0, duration].
+        /// @param t : number
+        /// @return nil
+        methods.add_method_mut("setTime", |_, this, t: f64| {
+            this.inner.set_time(t);
+            Ok(())
+        });
+
+        // -- addValue --
+        /// Adds a start/target value pair. Returns the 1-based index.
+        /// @param start : number
+        /// @param target : number
+        /// @return integer
+        methods.add_method_mut("addValue", |_, this, (start, target): (f64, f64)| {
+            Ok(this.inner.add_value(start, target) + 1)
+        });
     }
 }
 
-// ── LuaMat3 ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// LuaSpatialHash UserData
+// -------------------------------------------------------------------------------
 
-pub struct LuaMat3(/* TODO: add key + state fields */);
+/// Lua-side wrapper around a [`SpatialHash`].
+pub struct LuaSpatialHash {
+    inner: SpatialHash,
+}
 
+impl LuaUserData for LuaSpatialHash {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- insert --
+        /// Inserts an item with the given AABB.
+        /// @param id : string
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        methods.add_method_mut(
+            "insert",
+            |_, this, (id, x, y, w, h): (String, f32, f32, f32, f32)| {
+                this.inner.insert(id, x, y, w, h);
+                Ok(())
+            },
+        );
 
-impl LuaMat3 {
-    /// Compute the inverse of this 3×3 matrix. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return The
-    pub fn inverse(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Applies the matrix transform to a 2D point using homogeneous coordinates.
-    ///
-    /// @param p : Input
-    /// @return Vec2
-    pub fn transform_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+        // -- update --
+        /// Updates an existing item's AABB.
+        /// @param id : string
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        methods.add_method_mut(
+            "update",
+            |_, this, (id, x, y, w, h): (String, f32, f32, f32, f32)| {
+                this.inner.update(id, x, y, w, h);
+                Ok(())
+            },
+        );
+
+        // -- remove --
+        /// Removes an item by its ID.
+        /// @param id : string
+        /// @return nil
+        methods.add_method_mut("remove", |_, this, id: String| {
+            this.inner.remove(&id);
+            Ok(())
+        });
+
+        // -- clear --
+        /// Removes all items.
+        /// @return nil
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.clear();
+            Ok(())
+        });
+
+        // -- queryRect --
+        /// Returns IDs of items overlapping the query rectangle.
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        /// @return table
+        methods.add_method("queryRect", |lua, this, (x, y, w, h): (f32, f32, f32, f32)| {
+            let ids = this.inner.query_rect(x, y, w, h);
+            let t = lua.create_table()?;
+            for (i, id) in ids.iter().enumerate() {
+                t.set(i + 1, id.as_str())?;
+            }
+            Ok(t)
+        });
+
+        // -- queryCircle --
+        /// Returns IDs of items overlapping the query circle.
+        /// @param cx : number
+        /// @param cy : number
+        /// @param radius : number
+        /// @return table
+        methods.add_method(
+            "queryCircle",
+            |lua, this, (cx, cy, radius): (f32, f32, f32)| {
+                let ids = this.inner.query_circle(cx, cy, radius);
+                let t = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    t.set(i + 1, id.as_str())?;
+                }
+                Ok(t)
+            },
+        );
+
+        // -- getCellSize --
+        /// Returns the cell size.
+        /// @return number
+        methods.add_method("getCellSize", |_, this, ()| Ok(this.inner.cell_size()));
+
+        // -- getItemCount --
+        /// Returns the number of items in the hash.
+        /// @return integer
+        methods.add_method("getItemCount", |_, this, ()| {
+            Ok(this.inner.item_count())
+        });
     }
 }
 
-impl UserData for LuaMat3 {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("inverse", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("transformPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+// -------------------------------------------------------------------------------
+// LuaNoiseGenerator UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`NoiseGenerator`].
+pub struct LuaNoiseGenerator {
+    inner: NoiseGenerator,
+}
+
+/// Resolves a noise kind string name to a [`NoiseKind`] enum.
+fn resolve_noise_kind(name: &str) -> NoiseKind {
+    match name.to_lowercase().as_str() {
+        "simplex" => NoiseKind::Simplex,
+        _ => NoiseKind::Perlin,
     }
 }
 
-// ── LuaRandomGenerator ────────────────────────────────────────────────────────────
-
-pub struct LuaRandomGenerator(/* TODO: add key + state fields */);
-
-
-impl LuaRandomGenerator {
-    /// Get the seed that was used to initialise (or last reset) this generator.
-    ///
-    ///
-    /// @return The
-    pub fn get_seed(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Serialise the generator state as a string for later restoration.
-    ///
-    ///
-    /// @return An
-    pub fn get_state(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+/// Resolves a distance type string name to a [`DistType`] enum.
+fn resolve_dist_type(name: &str) -> DistType {
+    match name.to_lowercase().as_str() {
+        "manhattan" => DistType::Manhattan,
+        "chebyshev" => DistType::Chebyshev,
+        _ => DistType::Euclidean,
     }
 }
 
-impl UserData for LuaRandomGenerator {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getSeed", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getState", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Resolves a fractal type string name to a [`FractalType`] enum.
+fn resolve_fractal_type(name: &str) -> FractalType {
+    match name.to_lowercase().as_str() {
+        "ridged" => FractalType::Ridged,
+        "turbulence" => FractalType::Turbulence,
+        _ => FractalType::Fbm,
     }
 }
 
-// ── LuaRect ────────────────────────────────────────────────────────────
+impl LuaUserData for LuaNoiseGenerator {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- perlin1d --
+        /// Returns 1D Perlin noise at x.
+        /// @param x : number
+        /// @return number
+        methods.add_method("perlin1d", |_, this, x: f64| {
+            Ok(this.inner.perlin_1d(x))
+        });
 
-pub struct LuaRect(/* TODO: add key + state fields */);
+        // -- perlin2d --
+        /// Returns 2D Perlin noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @return number
+        methods.add_method("perlin2d", |_, this, (x, y): (f64, f64)| {
+            Ok(this.inner.perlin_2d(x, y))
+        });
 
+        // -- perlin3d --
+        /// Returns 3D Perlin noise at (x, y, z).
+        /// @param x : number
+        /// @param y : number
+        /// @param z : number
+        /// @return number
+        methods.add_method("perlin3d", |_, this, (x, y, z): (f64, f64, f64)| {
+            Ok(this.inner.perlin_3d(x, y, z))
+        });
 
-impl LuaRect {
-    /// Returns the center point of the rectangle.
-    ///
-    ///
-    /// @return Vec2
-    pub fn center(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the area of the rectangle. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return number
-    pub fn area(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if the given point lies within or on the boundary of the rectangle.
-    ///
-    /// @param point_x : X
-    /// @param point_y : Y
-    /// @return boolean
-    pub fn contains(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if this rectangle overlaps with `other`.
-    ///
-    /// Touch (shared edge) is not considered an intersection; the overlap must be positive.
-    ///
-    /// @param other : The
-    /// @return boolean
-    pub fn intersects(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+        // -- perlin4d --
+        /// Returns 4D Perlin noise at (x, y, z, w).
+        /// @param x : number
+        /// @param y : number
+        /// @param z : number
+        /// @param w : number
+        /// @return number
+        methods.add_method("perlin4d", |_, this, (x, y, z, w): (f64, f64, f64, f64)| {
+            Ok(this.inner.perlin_4d(x, y, z, w))
+        });
+
+        // -- simplex1d --
+        /// Returns 1D Simplex noise at x.
+        /// @param x : number
+        /// @return number
+        methods.add_method("simplex1d", |_, this, x: f64| {
+            Ok(this.inner.simplex_1d(x))
+        });
+
+        // -- simplex2d --
+        /// Returns 2D Simplex noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @return number
+        methods.add_method("simplex2d", |_, this, (x, y): (f64, f64)| {
+            Ok(this.inner.simplex_2d(x, y))
+        });
+
+        // -- simplex3d --
+        /// Returns 3D Simplex noise at (x, y, z).
+        /// @param x : number
+        /// @param y : number
+        /// @param z : number
+        /// @return number
+        methods.add_method("simplex3d", |_, this, (x, y, z): (f64, f64, f64)| {
+            Ok(this.inner.simplex_3d(x, y, z))
+        });
+
+        // -- worley2d --
+        /// Returns 2D Worley (cellular) noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @param distType : string?
+        /// @param f2 : boolean?
+        /// @return number
+        methods.add_method(
+            "worley2d",
+            |_, this, (x, y, dist_name, f2): (f64, f64, Option<String>, Option<bool>)| {
+                let dist = dist_name
+                    .as_deref()
+                    .map(resolve_dist_type)
+                    .unwrap_or(DistType::Euclidean);
+                Ok(this.inner.worley_2d(x, y, dist, f2.unwrap_or(false)))
+            },
+        );
+
+        // -- worley3d --
+        /// Returns 3D Worley (cellular) noise at (x, y, z).
+        /// @param x : number
+        /// @param y : number
+        /// @param z : number
+        /// @param distType : string?
+        /// @param f2 : boolean?
+        /// @return number
+        methods.add_method(
+            "worley3d",
+            |_, this, (x, y, z, dist_name, f2): (f64, f64, f64, Option<String>, Option<bool>)| {
+                let dist = dist_name
+                    .as_deref()
+                    .map(resolve_dist_type)
+                    .unwrap_or(DistType::Euclidean);
+                Ok(this.inner.worley_3d(x, y, z, dist, f2.unwrap_or(false)))
+            },
+        );
+
+        // -- fbm --
+        /// Returns fractal Brownian motion noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @param octaves : integer?
+        /// @param lacunarity : number?
+        /// @param persistence : number?
+        /// @param kind : string?
+        /// @return number
+        methods.add_method(
+            "fbm",
+            |_,
+             this,
+             (x, y, octaves, lac, pers, kind): (
+                f64,
+                f64,
+                Option<u32>,
+                Option<f64>,
+                Option<f64>,
+                Option<String>,
+            )| {
+                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                Ok(this.inner.fbm(
+                    x,
+                    y,
+                    octaves.unwrap_or(4),
+                    lac.unwrap_or(2.0),
+                    pers.unwrap_or(0.5),
+                    nk,
+                ))
+            },
+        );
+
+        // -- ridged --
+        /// Returns ridged multi-fractal noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @param octaves : integer?
+        /// @param lacunarity : number?
+        /// @param persistence : number?
+        /// @param kind : string?
+        /// @return number
+        methods.add_method(
+            "ridged",
+            |_,
+             this,
+             (x, y, octaves, lac, pers, kind): (
+                f64,
+                f64,
+                Option<u32>,
+                Option<f64>,
+                Option<f64>,
+                Option<String>,
+            )| {
+                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                Ok(this.inner.ridged(
+                    x,
+                    y,
+                    octaves.unwrap_or(4),
+                    lac.unwrap_or(2.0),
+                    pers.unwrap_or(0.5),
+                    nk,
+                ))
+            },
+        );
+
+        // -- turbulence --
+        /// Returns turbulence noise at (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @param octaves : integer?
+        /// @param lacunarity : number?
+        /// @param persistence : number?
+        /// @param kind : string?
+        /// @return number
+        methods.add_method(
+            "turbulence",
+            |_,
+             this,
+             (x, y, octaves, lac, pers, kind): (
+                f64,
+                f64,
+                Option<u32>,
+                Option<f64>,
+                Option<f64>,
+                Option<String>,
+            )| {
+                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                Ok(this.inner.turbulence(
+                    x,
+                    y,
+                    octaves.unwrap_or(4),
+                    lac.unwrap_or(2.0),
+                    pers.unwrap_or(0.5),
+                    nk,
+                ))
+            },
+        );
+
+        // -- warpDomain --
+        /// Applies domain warping, returning offset (x, y).
+        /// @param x : number
+        /// @param y : number
+        /// @param strength : number
+        /// @return number, number
+        methods.add_method("warpDomain", |_, this, (x, y, strength): (f64, f64, f64)| {
+            Ok(this.inner.warp_domain(x, y, strength))
+        });
+
+        // -- generateMap --
+        /// Generates a 2D noise map as a flat table (row-major).
+        /// @param width : integer
+        /// @param height : integer
+        /// @param opts : table?
+        /// @return table
+        methods.add_method("generateMap", |lua, this, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+            let map_opts = if let Some(t) = opts {
+                MapGenOptions {
+                    scale_x: t.get::<_, Option<f64>>("scaleX")?.unwrap_or(1.0),
+                    scale_y: t.get::<_, Option<f64>>("scaleY")?.unwrap_or(1.0),
+                    octaves: t.get::<_, Option<u32>>("octaves")?.unwrap_or(4),
+                    lacunarity: t.get::<_, Option<f64>>("lacunarity")?.unwrap_or(2.0),
+                    persistence: t.get::<_, Option<f64>>("persistence")?.unwrap_or(0.5),
+                    kind: t
+                        .get::<_, Option<String>>("kind")?
+                        .as_deref()
+                        .map(resolve_noise_kind)
+                        .unwrap_or(NoiseKind::Perlin),
+                    fractal: t
+                        .get::<_, Option<String>>("fractal")?
+                        .as_deref()
+                        .map(resolve_fractal_type)
+                        .unwrap_or(FractalType::Fbm),
+                    offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
+                    offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                }
+            } else {
+                MapGenOptions::default()
+            };
+            let data = this.inner.generate_map(w, h, &map_opts);
+            let result = lua.create_table()?;
+            for (i, v) in data.iter().enumerate() {
+                result.set(i + 1, *v)?;
+            }
+            Ok(result)
+        });
+
+        // -- getSeed --
+        /// Returns the current seed.
+        /// @return integer
+        methods.add_method("getSeed", |_, this, ()| Ok(this.inner.seed()));
+
+        // -- setSeed --
+        /// Sets the seed and rebuilds the permutation table.
+        /// @param seed : integer
+        /// @return nil
+        methods.add_method_mut("setSeed", |_, this, seed: u64| {
+            this.inner.set_seed(seed);
+            Ok(())
+        });
     }
 }
 
-impl UserData for LuaRect {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("center", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("area", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("contains", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("intersects", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── LuaSpatialHash ────────────────────────────────────────────────────────────
+/// Registers the `luna.math` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    let tbl = lua.create_table()?;
 
-pub struct LuaSpatialHash(/* TODO: add key + state fields */);
+    // ── Factory functions ────────────────────────────────────────────
 
+    // -- newRandomGenerator --
+    /// Creates a new random number generator with an optional seed.
+    /// @param seed : integer?
+    /// @return RandomGenerator
+    tbl.set(
+        "newRandomGenerator",
+        lua.create_function(|lua, seed: Option<u64>| {
+            let rng = match seed {
+                Some(s) => RandomGenerator::with_seed(s),
+                None => RandomGenerator::new(),
+            };
+            lua.create_userdata(LuaRandomGenerator { inner: rng })
+        })?,
+    )?;
 
-impl LuaSpatialHash {
-    /// Returns the cell size. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return number
-    pub fn cell_size(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of items in the hash.
-    ///
-    ///
-    /// @return integer
-    pub fn item_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the IDs of all items whose AABBs overlap the query rectangle.
-    ///
+    // -- newTransform --
+    /// Creates a new Transform, optionally initialised from full parameters.
+    /// @param x : number?
+    /// @param y : number?
+    /// @param angle : number?
+    /// @param sx : number?
+    /// @param sy : number?
+    /// @param ox : number?
+    /// @param oy : number?
+    /// @param kx : number?
+    /// @param ky : number?
+    /// @return Transform
+    tbl.set(
+        "newTransform",
+        lua.create_function(
+            |lua,
+             (x, y, angle, sx, sy, ox, oy, kx, ky): (
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                let t = if x.is_some() || y.is_some() {
+                    let sx_val = sx.unwrap_or(1.0);
+                    Transform::from_components(
+                        x.unwrap_or(0.0),
+                        y.unwrap_or(0.0),
+                        angle.unwrap_or(0.0),
+                        sx_val,
+                        sy.unwrap_or(sx_val),
+                        ox.unwrap_or(0.0),
+                        oy.unwrap_or(0.0),
+                        kx.unwrap_or(0.0),
+                        ky.unwrap_or(0.0),
+                    )
+                } else {
+                    Transform::new()
+                };
+                lua.create_userdata(LuaTransform { inner: t })
+            },
+        )?,
+    )?;
+
+    // -- newBezierCurve --
+    /// Creates a new BezierCurve from a flat table of coordinates {x1,y1, x2,y2, ...}.
+    /// @param points : table
+    /// @return BezierCurve
+    tbl.set(
+        "newBezierCurve",
+        lua.create_function(|lua, points: LuaTable| {
+            let len = points.len()? as usize;
+            if len < 4 || len % 2 != 0 {
+                return Err(LuaError::external(
+                    "newBezierCurve requires a flat table of at least 4 numbers (2 points): {x1,y1, x2,y2, ...}",
+                ));
+            }
+            let mut pts = Vec::with_capacity(len / 2);
+            for i in (1..=len).step_by(2) {
+                let x: f32 = points.get(i)?;
+                let y: f32 = points.get(i + 1)?;
+                pts.push(Vec2::new(x, y));
+            }
+            lua.create_userdata(LuaBezierCurve {
+                inner: BezierCurve::new(pts),
+            })
+        })?,
+    )?;
+
+    // -- newTween --
+    /// Creates a new Tween with the given duration and easing name.
+    /// @param duration : number
+    /// @param easingName : string?
+    /// @return Tween
+    tbl.set(
+        "newTween",
+        lua.create_function(|lua, (duration, easing_name): (f64, Option<String>)| {
+            let name = easing_name.as_deref().unwrap_or("linear");
+            lua.create_userdata(LuaTween {
+                inner: Tween::new(duration, name),
+            })
+        })?,
+    )?;
+
+    // -- newSpatialHash --
+    /// Creates a new SpatialHash with the given cell size.
+    /// @param cellSize : number
+    /// @return SpatialHash
+    tbl.set(
+        "newSpatialHash",
+        lua.create_function(|lua, cell_size: f32| {
+            lua.create_userdata(LuaSpatialHash {
+                inner: SpatialHash::new(cell_size),
+            })
+        })?,
+    )?;
+
+    // -- newNoiseGenerator --
+    /// Creates a new seeded noise generator.
+    /// @param seed : integer?
+    /// @return NoiseGenerator
+    tbl.set(
+        "newNoiseGenerator",
+        lua.create_function(|lua, seed: Option<u64>| {
+            lua.create_userdata(LuaNoiseGenerator {
+                inner: NoiseGenerator::new(seed.unwrap_or(0)),
+            })
+        })?,
+    )?;
+
+    // ── Free noise functions ─────────────────────────────────────────
+
+    // -- perlin2d --
+    /// Returns 2D Perlin noise at (x, y) with the given seed.
     /// @param x : number
     /// @param y : number
-    /// @param w : number
-    /// @param h : number
-    /// @return table
-    pub fn query_rect(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the IDs of all items whose AABBs overlap the query circle.
-    ///
-    /// @param cx : number
-    /// @param cy : number
-    /// @param radius : number
-    /// @return table
-    pub fn query_circle(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the IDs of all items whose AABBs are intersected by a line
-    ///
-    /// @param x1 : number
-    /// @param y1 : number
-    /// @param x2 : number
-    /// @param y2 : number
-    /// @return table
-    pub fn query_segment(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaSpatialHash {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("cellSize", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("itemCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("queryRect", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("queryCircle", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("querySegment", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaTransform ────────────────────────────────────────────────────────────
-
-pub struct LuaTransform(/* TODO: add key + state fields */);
-
-
-impl LuaTransform {
-    /// Transform a point from local space to world space.
-    ///
-    ///
-    /// @param x : local
-    /// @param y : local
-    pub fn transform_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Transform a point from world space back to local space.
-    ///
-    ///
-    /// @param x : world
-    /// @param y : world
-    pub fn inverse_transform_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaTransform {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("transformPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("inverseTransformPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaTween ────────────────────────────────────────────────────────────
-
-pub struct LuaTween(/* TODO: add key + state fields */);
-
-
-impl LuaTween {
-    /// Returns the interpolated value at the given index.
-    ///
-    /// @param index : integer
+    /// @param seed : integer?
     /// @return number
-    pub fn get_value(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns all interpolated values. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
+    tbl.set(
+        "perlin2d",
+        lua.create_function(|_, (x, y, seed): (f32, f32, Option<u32>)| {
+            Ok(noise_functions::perlin2d(x, y, seed.unwrap_or(0)))
+        })?,
+    )?;
+
+    // -- perlin3d --
+    /// Returns 3D Perlin noise at (x, y, z) with the given seed.
+    /// @param x : number
+    /// @param y : number
+    /// @param z : number
+    /// @param seed : integer?
+    /// @return number
+    tbl.set(
+        "perlin3d",
+        lua.create_function(|_, (x, y, z, seed): (f32, f32, f32, Option<u32>)| {
+            Ok(noise_functions::perlin3d(x, y, z, seed.unwrap_or(0)))
+        })?,
+    )?;
+
+    // -- simplex2d --
+    /// Returns 2D Simplex noise at (x, y) with the given seed.
+    /// @param x : number
+    /// @param y : number
+    /// @param seed : integer?
+    /// @return number
+    tbl.set(
+        "simplex2d",
+        lua.create_function(|_, (x, y, seed): (f32, f32, Option<u32>)| {
+            Ok(noise_functions::simplex2d(x, y, seed.unwrap_or(0)))
+        })?,
+    )?;
+
+    // -- fbm --
+    /// Returns fractal Brownian motion noise at (x, y).
+    /// @param x : number
+    /// @param y : number
+    /// @param seed : integer?
+    /// @param octaves : integer?
+    /// @param lacunarity : number?
+    /// @param gain : number?
+    /// @return number
+    tbl.set(
+        "fbm",
+        lua.create_function(
+            |_, (x, y, seed, octaves, lac, gain): (f32, f32, Option<u32>, Option<u32>, Option<f32>, Option<f32>)| {
+                Ok(noise_functions::fbm(
+                    x,
+                    y,
+                    seed.unwrap_or(0),
+                    octaves.unwrap_or(4),
+                    lac.unwrap_or(2.0),
+                    gain.unwrap_or(0.5),
+                ))
+            },
+        )?,
+    )?;
+
+    // ── Easing functions ─────────────────────────────────────────────
+
+    // -- applyEasing --
+    /// Applies a named easing function to progress value t.
+    /// @param name : string
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "applyEasing",
+        lua.create_function(|_, (name, t): (String, f32)| {
+            easing::apply(&name, t).ok_or_else(|| {
+                LuaError::external(format!("Unknown easing function: {}", name))
+            })
+        })?,
+    )?;
+
+    // -- linear --
+    /// Linear easing (identity).
+    /// @param t : number
+    /// @return number
+    tbl.set("linear", lua.create_function(|_, t: f32| Ok(easing::linear(t)))?)?;
+
+    // -- inQuad --
+    /// Quadratic ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inQuad", lua.create_function(|_, t: f32| Ok(easing::ease_in_quad(t)))?)?;
+
+    // -- outQuad --
+    /// Quadratic ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outQuad", lua.create_function(|_, t: f32| Ok(easing::ease_out_quad(t)))?)?;
+
+    // -- inOutQuad --
+    /// Quadratic ease-in-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("inOutQuad", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quad(t)))?)?;
+
+    // -- inCubic --
+    /// Cubic ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inCubic", lua.create_function(|_, t: f32| Ok(easing::ease_in_cubic(t)))?)?;
+
+    // -- outCubic --
+    /// Cubic ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outCubic", lua.create_function(|_, t: f32| Ok(easing::ease_out_cubic(t)))?)?;
+
+    // -- inOutCubic --
+    /// Cubic ease-in-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("inOutCubic", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_cubic(t)))?)?;
+
+    // -- inQuart --
+    /// Quartic ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inQuart", lua.create_function(|_, t: f32| Ok(easing::ease_in_quart(t)))?)?;
+
+    // -- outQuart --
+    /// Quartic ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outQuart", lua.create_function(|_, t: f32| Ok(easing::ease_out_quart(t)))?)?;
+
+    // -- inOutQuart --
+    /// Quartic ease-in-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("inOutQuart", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quart(t)))?)?;
+
+    // -- inSine --
+    /// Sinusoidal ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inSine", lua.create_function(|_, t: f32| Ok(easing::ease_in_sine(t)))?)?;
+
+    // -- outSine --
+    /// Sinusoidal ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outSine", lua.create_function(|_, t: f32| Ok(easing::ease_out_sine(t)))?)?;
+
+    // -- inOutSine --
+    /// Sinusoidal ease-in-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("inOutSine", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_sine(t)))?)?;
+
+    // -- inExpo --
+    /// Exponential ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inExpo", lua.create_function(|_, t: f32| Ok(easing::ease_in_expo(t)))?)?;
+
+    // -- outExpo --
+    /// Exponential ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outExpo", lua.create_function(|_, t: f32| Ok(easing::ease_out_expo(t)))?)?;
+
+    // -- inOutExpo --
+    /// Exponential ease-in-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("inOutExpo", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_expo(t)))?)?;
+
+    // -- inElastic --
+    /// Elastic ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inElastic", lua.create_function(|_, t: f32| Ok(easing::ease_in_elastic(t)))?)?;
+
+    // -- outElastic --
+    /// Elastic ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outElastic", lua.create_function(|_, t: f32| Ok(easing::ease_out_elastic(t)))?)?;
+
+    // -- outBounce --
+    /// Bounce ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outBounce", lua.create_function(|_, t: f32| Ok(easing::ease_out_bounce(t)))?)?;
+
+    // -- inBounce --
+    /// Bounce ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inBounce", lua.create_function(|_, t: f32| Ok(easing::ease_in_bounce(t)))?)?;
+
+    // -- inBack --
+    /// Back ease-in.
+    /// @param t : number
+    /// @return number
+    tbl.set("inBack", lua.create_function(|_, t: f32| Ok(easing::ease_in_back(t)))?)?;
+
+    // -- outBack --
+    /// Back ease-out.
+    /// @param t : number
+    /// @return number
+    tbl.set("outBack", lua.create_function(|_, t: f32| Ok(easing::ease_out_back(t)))?)?;
+
+    // ── Geometry ─────────────────────────────────────────────────────
+
+    // -- triangulate --
+    /// Triangulates a simple polygon given as a flat table {x1,y1, x2,y2, ...}.
+    /// Returns a table of triangle tables, each with 6 numbers.
+    /// @param polygon : table
     /// @return table
-    pub fn get_all_values(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns true if the tween has completed.
-    ///
-    ///
+    tbl.set(
+        "triangulate",
+        lua.create_function(|lua, pts: LuaTable| {
+            let len = pts.len()? as usize;
+            if len < 6 || len % 2 != 0 {
+                return Err(LuaError::external(
+                    "triangulate requires a flat table of at least 6 numbers (3 points)",
+                ));
+            }
+            let mut verts = Vec::with_capacity(len / 2);
+            for i in (1..=len).step_by(2) {
+                let x: f32 = pts.get(i)?;
+                let y: f32 = pts.get(i + 1)?;
+                verts.push(Vec2::new(x, y));
+            }
+            let triangles = polygon::triangulate(&verts).map_err(LuaError::external)?;
+            let result = lua.create_table()?;
+            for (i, tri) in triangles.iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set(1, tri[0].x)?;
+                t.set(2, tri[0].y)?;
+                t.set(3, tri[1].x)?;
+                t.set(4, tri[1].y)?;
+                t.set(5, tri[2].x)?;
+                t.set(6, tri[2].y)?;
+                result.set(i + 1, t)?;
+            }
+            Ok(result)
+        })?,
+    )?;
+
+    // -- isConvex --
+    /// Returns true if the polygon (flat table {x1,y1,...}) is convex.
+    /// @param polygon : table
     /// @return boolean
-    pub fn is_complete(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of values in this tween.
-    ///
-    ///
-    /// @return integer
-    pub fn value_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the duration. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
+    tbl.set(
+        "isConvex",
+        lua.create_function(|_, pts: LuaTable| {
+            let len = pts.len()? as usize;
+            if len < 6 || len % 2 != 0 {
+                return Ok(false);
+            }
+            let mut verts = Vec::with_capacity(len / 2);
+            for i in (1..=len).step_by(2) {
+                let x: f32 = pts.get(i)?;
+                let y: f32 = pts.get(i + 1)?;
+                verts.push(Vec2::new(x, y));
+            }
+            Ok(polygon::is_convex(&verts))
+        })?,
+    )?;
+
+    // ── Color space ──────────────────────────────────────────────────
+
+    // -- gammaToLinear --
+    /// Converts a gamma-encoded sRGB value to linear space.
+    /// @param c : number
     /// @return number
-    pub fn duration(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current clock time. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
+    tbl.set(
+        "gammaToLinear",
+        lua.create_function(|_, c: f32| Ok(gamma_to_linear(c)))?,
+    )?;
+
+    // -- linearToGamma --
+    /// Converts a linear-space value to gamma-encoded sRGB.
+    /// @param c : number
     /// @return number
-    pub fn clock(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+    tbl.set(
+        "linearToGamma",
+        lua.create_function(|_, c: f32| Ok(linear_to_gamma(c)))?,
+    )?;
 
-impl UserData for LuaTween {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getValue", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAllValues", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isComplete", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("valueCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("duration", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("clock", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.math.* functions ──────────────────────────────────────────
-
-/// Set a control point by 0-based index. Replaces the current control point value; callers hold responsibility for maintaining consistency with related fields.
-///
-/// @param index : 0-based
-/// @param point : new
-/// @return true
-pub fn set_control_point(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Insert a control point at a given index, or append if `index` is `None`.
-///
-///
-/// @param point : position
-/// @param index : 0-based
-pub fn insert_control_point(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a control point by 0-based index.
-///
-/// @param index : 0-based
-/// @return false
-pub fn remove_control_point(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Translate all control points by `(dx, dy)`.
-///
-///
-/// @param dx : horizontal
-/// @param dy : vertical
-pub fn translate(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Rotate all control points around a pivot `(ox, oy)` by `angle` radians.
-///
-///
-/// @param angle : rotation
-/// @param ox : pivot
-/// @param oy : pivot
-pub fn rotate(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Scale all control points around a pivot `(ox, oy)` by factor `s`.
-///
-///
-/// @param s : uniform
-/// @param ox : pivot
-/// @param oy : pivot
-pub fn scale(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a color from `u8` RGBA components in `[0, 255]`, normalizing to `[0.0, 1.0]`.
-///
-///
-/// @param r : Red
-/// @param g : Green
-/// @param b : Blue
-/// @param a : Alpha
-pub fn from_u8(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Convert a single sRGB gamma-space color component to linear space.
-///
-/// Input and output in `[0.0, 1.0]`. Uses the standard IEC 61966-2-1 sRGB transfer function.
-///
-/// @param c : gamma-encoded
-/// @return Linear
-pub fn gamma_to_linear(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Convert a single linear-space color component to sRGB gamma space.
-///
-/// Input and output in `[0.0, 1.0]`. Uses the standard IEC 61966-2-1 sRGB inverse transfer function.
-///
-/// @param c : linear-light
-/// @return Gamma
-pub fn linear_to_gamma(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Linear interpolation — no easing. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn linear(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quadratic ease-in — starts slow, accelerates.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_quad(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quadratic ease-out — starts fast, decelerates.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_quad(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quadratic ease-in-out — slow start and end, fast middle.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_out_quad(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Cubic ease-in — starts slow, accelerates sharply.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_cubic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Cubic ease-out — starts fast, decelerates sharply.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_cubic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Cubic ease-in-out — smooth S-curve. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_out_cubic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quartic ease-in — very slow start. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_quart(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quartic ease-out — very slow end. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_quart(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Quartic ease-in-out — pronounced S-curve.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_out_quart(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sinusoidal ease-in — gentle sine-based acceleration.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_sine(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sinusoidal ease-out — gentle sine-based deceleration.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_sine(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sinusoidal ease-in-out — gentle S-curve.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_out_sine(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Exponential ease-in — very slow start, rapid acceleration.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_expo(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Exponential ease-out — rapid start, very slow end.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_expo(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Exponential ease-in-out — sharp S-curve with exponential tails.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_out_expo(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Elastic ease-in — spring-like overshoot at the start.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_elastic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Elastic ease-out — spring-like overshoot at the end.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_elastic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bounce ease-out — simulates a bouncing ball landing.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_bounce(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bounce ease-in — simulates a bouncing ball launching.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_bounce(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Back ease-in — pulls back before accelerating past the start.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_in_back(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Back ease-out — overshoots the target then settles back.
-///
-/// @param t : normalised
-/// @return Eased
-pub fn ease_out_back(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Looks up an easing function by name and applies it to progress value `t`.
-///
-/// Supported names (case-insensitive): `"linear"`, `"inQuad"`, `"outQuad"`,
-/// `"inOutQuad"`, `"inCubic"`, `"outCubic"`, `"inOutCubic"`, `"inQuart"`,
-/// `"outQuart"`, `"inOutQuart"`, `"inSine"`, `"outSine"`, `"inOutSine"`,
-/// `"inExpo"`, `"outExpo"`, `"inOutExpo"`, `"inElastic"`, `"outElastic"`,
-/// `"outBounce"`, `"inBounce"`, `"inBack"`, `"outBack"`.
-///
-/// @param name : easing
-/// @param t : normalised
-/// @return Some(f32)
-pub fn apply(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the angle in radians from (x1, y1) to (x2, y2).
-///
-/// @param x1 : number
-/// @param y1 : number
-/// @param x2 : number
-/// @param y2 : number
-/// @return number
-pub fn angle_between(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns true if the point (px, py) is inside the circle centered at (cx, cy) with radius r.
-///
-/// @param cx : number
-/// @param cy : number
-/// @param r : number
-/// @param px : number
-/// @param py : number
-/// @return boolean
-pub fn circle_contains_point(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns true if two circles overlap. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param x1 : number
-/// @param y1 : number
-/// @param r1 : number
-/// @param x2 : number
-/// @param y2 : number
-/// @param r2 : number
-/// @return boolean
-pub fn circle_intersects_circle(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Line-circle intersection. Returns (intersects, hit1, hit2).
-///
-/// @param cx : number
-/// @param cy : number
-/// @param r : number
-/// @param lx1 : number
-/// @param ly1 : number
-/// @param lx2 : number
-/// @param ly2 : number
-/// @return Points
-pub fn circle_intersects_line(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Segment-circle intersection. Same as line-circle but clamped to the segment.
-///
-///
-/// @param cx : number
-/// @param cy : number
-/// @param r : number
-/// @param sx1 : number
-/// @param sy1 : number
-/// @param sx2 : number
-/// @param sy2 : number
-pub fn circle_intersects_segment(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Computes the signed area of a polygon using the Shoelace formula.
-///
-/// @param vertices : [f32]
-/// @return number
-pub fn polygon_area(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Computes the centroid of a polygon. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param vertices : [f32]
-/// @return vertices
-pub fn polygon_centroid(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Tests if two line segments intersect. Returns (intersects, intersection_point).
-///
-///
-/// @param x1 : number
-/// @param y1 : number
-/// @param x2 : number
-/// @param y2 : number
-/// @param x3 : number
-/// @param y3 : number
-/// @param x4 : number
-/// @param y4 : number
-pub fn segment_intersects_segment(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the closest point on a line segment to a given point.
-///
-///
-/// @param px : number
-/// @param py : number
-/// @param x1 : number
-/// @param y1 : number
-/// @param x2 : number
-/// @param y2 : number
-pub fn closest_point_on_segment(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Tests if a point is inside a polygon using the ray casting algorithm.
-///
-/// @param vertices : [f32]
-/// @param px : number
-/// @param py : number
-/// @return boolean
-pub fn point_in_polygon(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Infinite line intersection. Returns the intersection point if lines are not parallel.
-///
-/// @param x1 : number
-/// @param y1 : number
-/// @param x2 : number
-/// @param y2 : number
-/// @param x3 : number
-/// @param y3 : number
-/// @param x4 : number
-/// @param y4 : number
-/// @return Option<(f32
-pub fn line_intersect(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bresenham line rasterization from (x1, y1) to (x2, y2).
-///
-/// @param x1 : integer
-/// @param y1 : integer
-/// @param x2 : integer
-/// @param y2 : integer
-/// @return Vec<(i32
-pub fn bresenham(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Computes the convex hull of a set of 2D points using Andrew's monotone chain algorithm.
-///
-/// @param points : [f32]
-/// @return table
-pub fn convex_hull(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Delaunay triangulation using the Bowyer-Watson algorithm.
-///
-/// @param points : [(f64, f64)]
-/// @return Vec<
-pub fn delaunay_triangulate(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the 3×3 identity matrix. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @return Mat3
-pub fn identity(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a `Mat3` from a flat 9-element array in row-major order.
-///
-/// @param data : [f32; 9]
-/// @return Self
-pub fn from_row_major(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a translation matrix that moves points by `(t.x, t.y)`.
-///
-/// @param t : Translation
-/// @return Mat3
-pub fn from_translation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a rotation matrix for a counter-clockwise rotation of `angle` radians.
-///
-/// @param angle : Rotation
-/// @return Mat3
-pub fn from_rotation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a shear (skew) matrix. Returns a fully initialised instance with all fields set to their initial values.
-///
-/// @param kx : Shear
-/// @param ky : Shear
-/// @return Mat3
-pub fn from_shear(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a non-uniform scale matrix with the given per-axis factors.
-///
-/// @param scale : Vec2
-/// @return Mat3
-pub fn from_scale(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Triangulate a simple polygon using the ear-clipping algorithm.
-///
-/// @param polygon : slice
-/// @return Ok(triangles)
-pub fn triangulate(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Check if a polygon is convex. This accessor incurs no allocation; call it freely in hot paths.
-///
-/// Uses cross-product sign consistency at each vertex to determine convexity.
-///
-/// @param polygon : slice
-/// @return true
-pub fn is_convex(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create with a specific seed for deterministic sequences.
-///
-///
-/// @param seed : 64-bit
-pub fn with_seed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sample a uniform random integer in `[min, max]` (inclusive).
-///
-///
-/// @param min : lower
-/// @param max : upper
-pub fn random_int(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sample a uniform random float in `[min, max)`.
-///
-///
-/// @param min : lower
-/// @param max : upper
-pub fn random_float(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Random number from normal (Gaussian) distribution using Box-Muller transform.
-///
-///
-/// @param stddev : standard
-/// @param mean : mean
-pub fn random_normal(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the seed, fully resetting the generator state.
-///
-///
-/// @param seed : new
-pub fn set_seed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Restore the generator state from a previously serialised string.
-///
-/// @param state : string
-/// @return Ok(())
-pub fn set_state(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Inserts an item with the given AABB. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param id : string
-/// @param x : number
-/// @param y : number
-/// @param w : number
-/// @param h : number
-pub fn insert(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes an item by its ID. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param id : str
-pub fn remove(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Updates an existing item's AABB. Equivalent to remove + insert.
-///
-///
-/// @param id : string
-/// @param x : number
-/// @param y : number
-/// @param w : number
-/// @param h : number
-pub fn update(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create from full transformation parameters (standard parameter order).
-///
-/// Equivalent to: `translate(x, y) → rotate(angle) → scale(sx, sy) → shear(kx, ky) → translate(-ox, -oy)`
-///
-///
-/// @param angle : rotation
-pub fn from_components(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Apply translation to the transform. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param dx : horizontal
-/// @param dy : vertical
-/// Apply a rotation to the transform. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param angle : rotation
-/// Apply non-uniform scaling to the transform.
-///
-///
-/// @param sx : horizontal
-/// @param sy : vertical
-/// Apply shear to the transform (standard convention).
-///
-///
-/// @param kx : horizontal
-/// @param ky : vertical
-pub fn shear(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Replace the current state with full transformation parameters.
-///
-///
-/// @param angle : rotation
-pub fn set_transformation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a value to interpolate. Returns the 0-based index.
-///
-/// @param start : number
-/// @param target : number
-/// @return integer
-pub fn add_value(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advances the clock by `dt` seconds. Returns `true` when the tween is complete.
-///
-/// @param dt : number
-/// @return boolean
-/// Sets the clock to a specific time, clamped to [0, duration].
-///
-///
-/// @param t : number
-pub fn set_time(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the zero vector `(0.0, 0.0)`. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// Equivalent to `Vec2::ZERO`; provided for ergonomics.
-///
-///
-/// @return Vec2
-pub fn zero(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Creates a vector with both components set to `v`.
-///
-/// @param v : Value
-/// @return Vec2
-pub fn splat(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the dot product of this vector and `other`.
-///
-/// @param other : The
-/// @return number
-pub fn dot(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the Euclidean length (magnitude) of the vector.
-///
-///
-/// @return number
-pub fn length(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the squared Euclidean length of the vector.
-///
-/// Cheaper than `length` when only comparing magnitudes.
-///
-///
-/// @return number
-pub fn length_squared(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns a unit vector in the same direction, or the original vector if its length is zero.
-///
-///
-/// @return Vec2
-pub fn normalize(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the Euclidean distance between this point and `other`.
-///
-/// @param other : The
-/// @return number
-pub fn distance(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Linearly interpolates between `self` and `other` by factor `t`.
-///
-/// `t = 0.0` returns `self`; `t = 1.0` returns `other`; values outside `[0, 1]` extrapolate.
-///
-/// @param other : Target
-/// @param t : Interpolation
-/// @return Vec2
-pub fn lerp(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Returns the angle of the vector in radians, measured from the positive X axis.
-///
-///
-/// @return number
-pub fn angle(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.math` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
-    let tbl = lua.create_table()?;
-    tbl.set("setControlPoint", lua.create_function(set_control_point)?)?;
-    tbl.set("insertControlPoint", lua.create_function(insert_control_point)?)?;
-    tbl.set("removeControlPoint", lua.create_function(remove_control_point)?)?;
-    tbl.set("translate", lua.create_function(translate)?)?;
-    tbl.set("rotate", lua.create_function(rotate)?)?;
-    tbl.set("scale", lua.create_function(scale)?)?;
-    tbl.set("fromU8", lua.create_function(from_u8)?)?;
-    tbl.set("gammaToLinear", lua.create_function(gamma_to_linear)?)?;
-    tbl.set("linearToGamma", lua.create_function(linear_to_gamma)?)?;
-    tbl.set("linear", lua.create_function(linear)?)?;
-    tbl.set("easeInQuad", lua.create_function(ease_in_quad)?)?;
-    tbl.set("easeOutQuad", lua.create_function(ease_out_quad)?)?;
-    tbl.set("easeInOutQuad", lua.create_function(ease_in_out_quad)?)?;
-    tbl.set("easeInCubic", lua.create_function(ease_in_cubic)?)?;
-    tbl.set("easeOutCubic", lua.create_function(ease_out_cubic)?)?;
-    tbl.set("easeInOutCubic", lua.create_function(ease_in_out_cubic)?)?;
-    tbl.set("easeInQuart", lua.create_function(ease_in_quart)?)?;
-    tbl.set("easeOutQuart", lua.create_function(ease_out_quart)?)?;
-    tbl.set("easeInOutQuart", lua.create_function(ease_in_out_quart)?)?;
-    tbl.set("easeInSine", lua.create_function(ease_in_sine)?)?;
-    tbl.set("easeOutSine", lua.create_function(ease_out_sine)?)?;
-    tbl.set("easeInOutSine", lua.create_function(ease_in_out_sine)?)?;
-    tbl.set("easeInExpo", lua.create_function(ease_in_expo)?)?;
-    tbl.set("easeOutExpo", lua.create_function(ease_out_expo)?)?;
-    tbl.set("easeInOutExpo", lua.create_function(ease_in_out_expo)?)?;
-    tbl.set("easeInElastic", lua.create_function(ease_in_elastic)?)?;
-    tbl.set("easeOutElastic", lua.create_function(ease_out_elastic)?)?;
-    tbl.set("easeOutBounce", lua.create_function(ease_out_bounce)?)?;
-    tbl.set("easeInBounce", lua.create_function(ease_in_bounce)?)?;
-    tbl.set("easeInBack", lua.create_function(ease_in_back)?)?;
-    tbl.set("easeOutBack", lua.create_function(ease_out_back)?)?;
-    tbl.set("apply", lua.create_function(apply)?)?;
-    tbl.set("angleBetween", lua.create_function(angle_between)?)?;
-    tbl.set("circleContainsPoint", lua.create_function(circle_contains_point)?)?;
-    tbl.set("circleIntersectsCircle", lua.create_function(circle_intersects_circle)?)?;
-    tbl.set("circleIntersectsLine", lua.create_function(circle_intersects_line)?)?;
-    tbl.set("circleIntersectsSegment", lua.create_function(circle_intersects_segment)?)?;
-    tbl.set("polygonArea", lua.create_function(polygon_area)?)?;
-    tbl.set("polygonCentroid", lua.create_function(polygon_centroid)?)?;
-    tbl.set("segmentIntersectsSegment", lua.create_function(segment_intersects_segment)?)?;
-    tbl.set("closestPointOnSegment", lua.create_function(closest_point_on_segment)?)?;
-    tbl.set("pointInPolygon", lua.create_function(point_in_polygon)?)?;
-    tbl.set("lineIntersect", lua.create_function(line_intersect)?)?;
-    tbl.set("bresenham", lua.create_function(bresenham)?)?;
-    tbl.set("convexHull", lua.create_function(convex_hull)?)?;
-    tbl.set("delaunayTriangulate", lua.create_function(delaunay_triangulate)?)?;
-    tbl.set("identity", lua.create_function(identity)?)?;
-    tbl.set("fromRowMajor", lua.create_function(from_row_major)?)?;
-    tbl.set("fromTranslation", lua.create_function(from_translation)?)?;
-    tbl.set("fromRotation", lua.create_function(from_rotation)?)?;
-    tbl.set("fromShear", lua.create_function(from_shear)?)?;
-    tbl.set("fromScale", lua.create_function(from_scale)?)?;
-    tbl.set("triangulate", lua.create_function(triangulate)?)?;
-    tbl.set("isConvex", lua.create_function(is_convex)?)?;
-    tbl.set("withSeed", lua.create_function(with_seed)?)?;
-    tbl.set("randomInt", lua.create_function(random_int)?)?;
-    tbl.set("randomFloat", lua.create_function(random_float)?)?;
-    tbl.set("randomNormal", lua.create_function(random_normal)?)?;
-    tbl.set("setSeed", lua.create_function(set_seed)?)?;
-    tbl.set("setState", lua.create_function(set_state)?)?;
-    tbl.set("insert", lua.create_function(insert)?)?;
-    tbl.set("remove", lua.create_function(remove)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("fromComponents", lua.create_function(from_components)?)?;
-    tbl.set("translate", lua.create_function(translate)?)?;
-    tbl.set("rotate", lua.create_function(rotate)?)?;
-    tbl.set("scale", lua.create_function(scale)?)?;
-    tbl.set("shear", lua.create_function(shear)?)?;
-    tbl.set("setTransformation", lua.create_function(set_transformation)?)?;
-    tbl.set("addValue", lua.create_function(add_value)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("setTime", lua.create_function(set_time)?)?;
-    tbl.set("zero", lua.create_function(zero)?)?;
-    tbl.set("splat", lua.create_function(splat)?)?;
-    tbl.set("dot", lua.create_function(dot)?)?;
-    tbl.set("length", lua.create_function(length)?)?;
-    tbl.set("lengthSquared", lua.create_function(length_squared)?)?;
-    tbl.set("normalize", lua.create_function(normalize)?)?;
-    tbl.set("distance", lua.create_function(distance)?)?;
-    tbl.set("lerp", lua.create_function(lerp)?)?;
-    tbl.set("angle", lua.create_function(angle)?)?;
     luna.set("math", tbl)?;
     Ok(())
 }

@@ -6,10 +6,10 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 
-use crate::pathfinding::astar;
-use crate::pathfinding::nav_grid::NavGrid;
 use crate::engine::log_messages::{HP01, HP02, HP03};
 use crate::log_msg;
+use crate::pathfinding::astar;
+use crate::pathfinding::nav_grid::NavGrid;
 
 /// An edge in the abstract graph connecting two entrance nodes.
 ///

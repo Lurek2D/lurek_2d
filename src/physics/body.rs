@@ -8,10 +8,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 //!
-use crate::math::{Rect, Vec2};
-use crate::physics::shape::Shape;
 use crate::engine::log_messages::{BD01, BD02, BD03};
 use crate::log_msg;
+use crate::math::{Rect, Vec2};
+use crate::physics::shape::Shape;
 
 /// Determines whether a physics body is affected by forces and gravity.
 ///
@@ -333,6 +333,32 @@ impl Body {
     /// `true` if both bodies accept each other's layer.
     pub fn collides_with_layer(&self, other: &Body) -> bool {
         (self.layer & other.mask) != 0 && (other.layer & self.mask) != 0
+    }
+
+    /// Returns the AABB of this body as a flat `(x, y, width, height)` tuple.
+    ///
+    /// Convenience wrapper around `bounding_box()` for ergonomic Lua binding return values.
+    ///
+    /// # Returns
+    /// `(x, y, width, height)` — position and size of the bounding box.
+    pub fn get_bounding_box(&self) -> (f32, f32, f32, f32) {
+        let r = self.bounding_box();
+        (r.x, r.y, r.width, r.height)
+    }
+
+    /// Returns the body type as a static string slice.
+    ///
+    /// Used for Lua binding where the type name must be a plain string.
+    ///
+    /// # Returns
+    /// One of `"static"`, `"dynamic"`, `"kinematic"`, or `"sensor"`.
+    pub fn get_type(&self) -> &'static str {
+        match self.body_type {
+            BodyType::Static => "static",
+            BodyType::Dynamic => "dynamic",
+            BodyType::Kinematic => "kinematic",
+            BodyType::Sensor => "sensor",
+        }
     }
 
     /// Transforms a point from body-local coordinates to world coordinates.

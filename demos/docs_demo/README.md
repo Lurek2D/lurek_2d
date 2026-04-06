@@ -14,7 +14,7 @@ Demonstrates `luna.docs`: the self-documenting API introspection module. Scan th
 ## How to Run
 
 ```powershell
-cargo run -- examples/docs_demo
+cargo run -- demos/docs_demo
 ```
 
 ## Controls

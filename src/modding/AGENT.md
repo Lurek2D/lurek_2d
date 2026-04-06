@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.modding` |
 | **Source** | `src/modding/` |
+| **Rust Tests** | `tests/unit/modding_tests.rs`                    |
 | **Tests** | `tests/modding_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_modding.lua` |
 
@@ -95,3 +97,32 @@ Exposed under `luna.modding.*` by `src/lua_api/modding_api/`.
 | `struct` | 2 |
 | **Total** | **3** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    -- Discover and load mods from "mods/" directory
+    local mods = luna.modding.discover("mods/")
+    for _, mod in ipairs(mods) do
+        print("Found mod:", mod.name, "v"..mod.version)
+        if luna.modding.isCompatible(mod) then
+            luna.modding.load(mod)
+        end
+    end
+end
+```
+
+## References
+
+| Module       | Relationship  | Notes                                              |
+|--------------|---------------|----------------------------------------------------|
+| `engine`     | Imports from  | Uses `SharedState`                                 |
+| `filesystem` | Imports from  | `modding` discovers mods through the filesystem layer |
+| `lua_api`    | Imported by   | `src/lua_api/modding_api.rs` registers `luna.modding.*` |
+
+## Notes
+
+- Mod discovery searches only inside the configured mods directory — never the game source tree.
+- Dependency resolution is topological sort; circular mod dependencies are detected and rejected.
+- Load order is deterministic: alphabetical within priority tier, dependencies always before dependents.
+- Mods are Lua scripts loaded in a sandboxed VM that inherits the game's `luna.*` API surface.

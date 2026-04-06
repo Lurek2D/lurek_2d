@@ -139,8 +139,7 @@ impl EventQueue {
         }
         // Timed path: spin-wait with 1 ms granularity.
         if let Some(ms) = timeout_ms {
-            let deadline =
-                std::time::Instant::now() + std::time::Duration::from_millis(ms);
+            let deadline = std::time::Instant::now() + std::time::Duration::from_millis(ms);
             while std::time::Instant::now() < deadline {
                 std::thread::sleep(std::time::Duration::from_millis(1));
                 if let Some(evt) = self.poll() {

@@ -3,7 +3,8 @@
 Luna2D is a 2D game engine written in Rust that loads and executes Lua game scripts.
 This file is the always-on backbone for AI-assisted development in the Luna2D repository.
 
-- **CAG load order**: System Prompt → Instructions (auto-load by file glob) → Skills (load on-demand) → Prompts → Agents
+- **CAG load order**: System Prompt → `src/<module>/AGENT.md` (module knowledge) → Instructions (glob) → Skills (on-demand) → Prompts → Agents
+- **Module knowledge**: Every `src/<module>/AGENT.md` is the canonical domain reference for that module. Read it before implementing module-specific features. Skills cover only cross-cutting domains.
 - **Tech baseline**: Rust stable ≥1.78 | LuaJIT vendored via mlua 0.9 (Lua 5.4 `lua54` feature = non-shipping fallback) | wgpu 22 | winit 0.30 | rapier2d 0.32 | rodio 0.17 | fontdue 0.9
 - **Source of truth**: [`docs/architecture/philosophy.md`](../docs/architecture/philosophy.md) (first principles + binding constraints) · [`docs/architecture/engine-architecture.md`](../docs/architecture/engine-architecture.md) (module structure, tier system, dependency graph) · [`docs/architecture/test-framework.md`](../docs/architecture/test-framework.md) (test suite structure). Consult all three before implementing any feature or making an architectural decision.
 - **API namespace**: All Lua bindings live under `luna.*` — never external engine prefixes, never bare globals
@@ -43,7 +44,7 @@ The following are **active, binding decisions** from `docs/architecture/philosop
 cargo build                           # Debug build (only needed to ship or run the binary)
 cargo build --release                 # Release build
 cargo run                             # Splash screen (no game)
-cargo run -- examples/hello_world     # Run example
+cargo run -- demos/hello_world     # Run example
 cargo run -- path/to/my_game          # Run custom game
 ```
 
@@ -109,10 +110,11 @@ python tools/cag_validate.py --file .github/agents/developer.agent.md  # Single 
 
 ### Load Order
 
-1. **Instructions** — auto-load by `applyTo` glob when matching files are in context
-2. **Skills** — load on-demand when the task matches the domain
-3. **Prompts** — task-driven playbooks, operator selects
-4. **Agents** — specialist roles, routed by task type
+1. **`src/<module>/AGENT.md`** — read when working inside a specific source module. Contains types, patterns, and invariants for that module. This is the primary source of module-domain knowledge.
+2. **Instructions** — auto-load by `applyTo` glob for cross-cutting concerns: Rust code (`rust.instructions.md`), tests, Lua API, Lua examples, docs, tools, CAG files, dependencies.
+3. **Skills** — load on-demand for cross-cutting domains: testing, performance, Lua API design, sandbox, game loop, font rendering, error handling, documentation, CI/CD, asset pipeline, software rendering, threading, module architecture/audit, debugging, cross-platform, roadmap.
+4. **Prompts** — task-driven playbooks, operator selects
+5. **Agents** — specialist roles, routed by task type
 
 ### Agent Intent Summary
 
@@ -288,7 +290,7 @@ Luna2D has a **two-layer test system** — Rust integration tests and Lua BDD te
 
 ```
 src/          — Rust source code (28 modules)
-examples/     — Lua game examples (27 demos)
+demos/     — Lua game examples (27 demos)
 tests/        — Integration tests (28 test files + stress/ + lua/ + golden/)
 docs/         — Architecture (engine-architecture, test-framework, philosophy), generated API refs
 tools/        — CLI scripts (CAG validation, doc generation, packaging, install)
@@ -323,7 +325,7 @@ work/{session}/
 ├── handovers/     ← agent-to-agent Markdown handover docs
 ├── reports/       ← findings, summaries, run results
 ├── data/          ← data files produced during analysis
-├── examples/      ← example artifacts or reference outputs
+├── demos/      ← example artifacts or reference outputs
 ├── other/         ← miscellaneous
 ├── temp/          ← strictly temporary; cleaned per session
 └── logs/
@@ -397,7 +399,7 @@ Luna2D uses the `log` crate facade (`log::info!`, `log::warn!`, `log::error!`, `
 | `info!` | Lifecycle events: startup, shutdown, script load |
 | `debug!` | Per-frame or per-call detail — disabled in release builds |
 
-**Control at runtime**: `RUST_LOG=luna2d=debug cargo run -- examples/hello_world`
+**Control at runtime**: `RUST_LOG=luna2d=debug cargo run -- demos/hello_world`
 **Test output**: captured by `cargo test -- --nocapture` or `RUST_LOG=debug cargo test`
 **Never** use `println!` in engine code — always `log::*`.
 
@@ -443,7 +445,7 @@ pub fn step(&mut self, dt: f32) { … }
 
 **Lua (describe → script → `cargo run`)**:
 1. Write a `main.lua` that exercises the API call you intend to add
-2. Run `cargo run -- examples/<name>` — confirm the error message
+2. Run `cargo run -- demos/<name>` — confirm the error message
 3. Implement the Lua binding; re-run to confirm the script works
 
 **Rules**:

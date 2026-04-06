@@ -101,6 +101,8 @@ tilemap/
 | `tilemap.rs` | Main tile map container with layers, tiles, viewport, collision, and autotile... |
 | `tileset.rs` | Tile set backed by a texture atlas with animation, solid flags, and autotile... |
 | `tmx.rs` | Tiled TMX map format loader |
+| `large_map_renderer.rs` | TODO: describe purpose of large_map_renderer.rs |
+| `polygon_map.rs` | TODO: describe purpose of polygon_map.rs |
 
 ## Submodules
 
@@ -1155,3 +1157,21 @@ Defines tiles from a texture atlas with animation and collision data.
 | `struct` | 23 |
 | **Total** | **60** |
 
+## References
+
+| Module        | Relationship  | Notes                                              |
+|---------------|---------------|----------------------------------------------------|
+| `engine`      | Imports from  | Uses `SharedState`, `TextureKey`                   |
+| `math`        | Imports from  | `Vec2`, `Rect`, `Color` for tile coordinates       |
+| `graphics`    | Related       | Tilemap rendering emits `DrawImage` commands per tile batch |
+| `pathfinding` | Related       | Pathfinding grids often use tilemap walkability data |
+| `minimap`     | Related       | Minimap reads from tilemap to generate overview    |
+| `lua_api`     | Imported by   | `src/lua_api/tilemap_api.rs` registers `luna.tilemap.*` |
+
+## Notes
+
+- TMX (Tiled) and CSV map formats are supported; JSON Tiled format requires a conversion step.
+- `large_map_renderer.rs` handles streaming/chunked rendering for maps larger than screen × 4.
+- `polygon_map.rs` supports non-rectangular (polygon) tile shapes for isometric/hexagonal maps.
+- Tile GIDs are 1-based (Tiled convention); layer rendering order matches the layer stack in the TMX file.
+- Auto-tiles and Wang tile autotiling are NOT supported; implement in Lua on top of raw tile access.

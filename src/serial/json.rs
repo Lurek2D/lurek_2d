@@ -3,10 +3,10 @@
 //! Converts between JSON strings and `SerialValue` using `serde_json`.
 
 use super::lua_table::SerialValue;
-use indexmap::IndexMap;
-use serde_json::Value as JsonValue;
 use crate::engine::log_messages::{SR01_JSON_OK, SR03_JSON_ENC};
 use crate::log_msg;
+use indexmap::IndexMap;
+use serde_json::Value as JsonValue;
 
 /// Parse a JSON string into a `SerialValue`.
 ///
@@ -36,7 +36,9 @@ pub fn to_json(val: &SerialValue, pretty: bool) -> Result<String, String> {
     } else {
         serde_json::to_string(&jv).map_err(|e| format!("JSON encode error: {e}"))
     };
-    if result.is_ok() { log_msg!(debug, SR03_JSON_ENC); }
+    if result.is_ok() {
+        log_msg!(debug, SR03_JSON_ENC);
+    }
     result
 }
 
@@ -70,11 +72,9 @@ fn serial_to_json(val: &SerialValue) -> JsonValue {
         SerialValue::Null => JsonValue::Null,
         SerialValue::Bool(b) => JsonValue::Bool(*b),
         SerialValue::Int(n) => JsonValue::Number((*n).into()),
-        SerialValue::Float(f) => {
-            serde_json::Number::from_f64(*f)
-                .map(JsonValue::Number)
-                .unwrap_or(JsonValue::Null)
-        }
+        SerialValue::Float(f) => serde_json::Number::from_f64(*f)
+            .map(JsonValue::Number)
+            .unwrap_or(JsonValue::Null),
         SerialValue::Str(s) => JsonValue::String(s.clone()),
         SerialValue::Seq(arr) => JsonValue::Array(arr.iter().map(serial_to_json).collect()),
         SerialValue::Map(map) => {

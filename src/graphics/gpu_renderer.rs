@@ -15,16 +15,19 @@ use std::sync::mpsc;
 
 use bytemuck::{Pod, Zeroable};
 
+use crate::engine::log_messages::{
+    G002_SCREENSHOT_ZERO_SIZE, G003_SCREENSHOT_MAP_FAIL, G004_SCREENSHOT_RECV_FAIL,
+    G005_SCREENSHOT_DATA_FAIL,
+};
 use crate::engine::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, SpriteBatchKey, TextureKey,
 };
 use crate::graphics::mesh::Mesh;
 use crate::graphics::renderer::{BlendMode, DrawCommand, DrawMode, TextAlign, TextureData};
 use crate::graphics::shader::{Shader, ShaderFragmentInput, UniformValue};
+use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use slotmap::{SlotMap, SparseSecondaryMap};
-use crate::engine::log_messages::{G002_SCREENSHOT_ZERO_SIZE, G003_SCREENSHOT_MAP_FAIL, G004_SCREENSHOT_RECV_FAIL, G005_SCREENSHOT_DATA_FAIL};
-use crate::log_msg;
 
 // ─── Vertex types ────────────────────────────────────────────────────────────
 
@@ -2302,7 +2305,6 @@ impl GpuRenderer {
                 ..Default::default()
             });
         }
-
 
         // ====== LIGHT RENDERING PASS ======
         if light_world.enabled {

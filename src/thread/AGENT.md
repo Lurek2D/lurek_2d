@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.thread` |
 | **Source** | `src/thread/` |
+| **Rust Tests** | `tests/unit/thread_tests.rs`                    |
 | **Tests** | `tests/thread_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_thread.lua` |
 
@@ -104,3 +106,44 @@ Exposed under `luna.thread.*` by `src/lua_api/thread_api/`.
 | `struct` | 3 |
 | **Total** | **9** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    -- Create inter-thread channel
+    ch = luna.thread.newChannel()
+
+    -- Start background worker
+    worker = luna.thread.newThread([[
+        local ch = ...
+        for i = 1, 100 do
+            ch:push(i * i)
+        end
+        ch:push("done")
+    ]], ch)
+    worker:start()
+end
+
+function luna.update(dt)
+    local val = ch:pop()
+    if val == "done" then
+        print("Worker finished")
+    end
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`, but only for creating Channel objects |
+| `math`    | Related       | Workers may import `math` (it's safe to use across threads) |
+| `lua_api` | Imported by   | `src/lua_api/thread_api.rs` registers `luna.thread.*` |
+
+## Notes
+
+- Each worker thread creates its own isolated Lua VM — they do NOT share `SharedState`.
+- Only these modules are safe to use inside worker Lua VMs: `luna.math`, `luna.data`, `luna.thread` (channel only), `luna.filesystem` (read-only).
+- `Channel` is MPMC (multi-producer multi-consumer) and thread-safe.
+- `channel:demand()` blocks the calling thread until a value arrives — use carefully to avoid deadlocks.
+- Do NOT call `luna.graphics.*` or `luna.audio.*` from worker threads.

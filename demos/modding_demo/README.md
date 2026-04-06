@@ -12,11 +12,11 @@ Demonstrates the Luna2D virtual filesystem mod-loading workflow: mounting an ext
 
 ## Setup
 
-The demo reads from `examples/mods/hello_mod/`. Create that folder with:
+The demo reads from `demos/mods/hello_mod/`. Create that folder with:
 
 ```
-examples/mods/hello_mod/greeting.txt  — any greeting text
-examples/mods/hello_mod/init.lua      — optional Lua code to run
+demos/mods/hello_mod/greeting.txt  — any greeting text
+demos/mods/hello_mod/init.lua      — optional Lua code to run
 ```
 
 If the folder is absent the demo reports a friendly fallback message on-screen.
@@ -28,5 +28,5 @@ No interactive controls — the mod loads and unmounts during `luna.load()`.
 ## Run
 
 ```sh
-cargo run -- examples/modding_demo
+cargo run -- demos/modding_demo
 ```

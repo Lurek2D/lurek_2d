@@ -64,8 +64,16 @@ fn sprites_smoke_mode_writes_non_blank_800x600_png() {
 
     let image = decode_png(&screenshot_path).unwrap_or_else(|error| panic!("{error}"));
 
-    assert_eq!(image.width(), 800, "sprites smoke screenshot width mismatch");
-    assert_eq!(image.height(), 600, "sprites smoke screenshot height mismatch");
+    assert_eq!(
+        image.width(),
+        800,
+        "sprites smoke screenshot width mismatch"
+    );
+    assert_eq!(
+        image.height(),
+        600,
+        "sprites smoke screenshot height mismatch"
+    );
 
     let summary = summarize_image_content(&image);
     let _ = summary.non_black_pixels;

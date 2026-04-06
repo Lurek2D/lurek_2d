@@ -193,7 +193,13 @@ impl TileSet {
     /// - `local_tile_id` — `u32`.
     /// - `frames` — `Vec<TileAnimFrame>`.
     pub fn set_animation(&mut self, local_tile_id: u32, frames: Vec<TileAnimFrame>) {
-        log_msg!(debug, TS02, "tile={} frames={}", local_tile_id, frames.len());
+        log_msg!(
+            debug,
+            TS02,
+            "tile={} frames={}",
+            local_tile_id,
+            frames.len()
+        );
         self.animations.insert(local_tile_id, frames);
     }
 

@@ -15,7 +15,7 @@ The minimum viable Luna2D game. Draws coloured shapes and text, shows FPS, and d
 ## How to Run
 
 ```powershell
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
 
 ## Controls

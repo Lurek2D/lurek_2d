@@ -1,321 +1,593 @@
-//! `luna.scene` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/scene/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.scene` — Scene stack management, transitions, registry, and depth-sorted rendering.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::scene::depth_sorter::DepthSorter;
+use crate::scene::stack::{SceneId, SceneStack};
+use crate::scene::transition::TransitionType;
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// SceneState
+// -------------------------------------------------------------------------------
 
-// ── LuaActiveTransition ────────────────────────────────────────────────────────────
-
-pub struct LuaActiveTransition(/* TODO: add key + state fields */);
-
-
-impl LuaActiveTransition {
-    /// Normalized progress of the transition, clamped to [0, 1].
-    ///
-    ///
-    /// @return number
-    pub fn progress(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Whether the transition has completed. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_complete(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
+/// Internal state managed by the scene API layer.
+struct SceneState {
+    /// The LIFO scene stack with registry and transition support.
+    stack: SceneStack,
+    /// Maps each SceneId to its Lua table stored in the registry.
+    scene_refs: HashMap<SceneId, LuaRegistryKey>,
+    /// Maps string keys to Lua values stored in the registry.
+    data_refs: HashMap<String, LuaRegistryKey>,
 }
 
-impl UserData for LuaActiveTransition {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("progress", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isComplete", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Helper
+// -------------------------------------------------------------------------------
 
-// ── LuaDepthSorter ────────────────────────────────────────────────────────────
-
-pub struct LuaDepthSorter(/* TODO: add key + state fields */);
-
-
-impl LuaDepthSorter {
-    /// Number of queued entries. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return integer
-    pub fn get_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaDepthSorter {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaSceneStack ────────────────────────────────────────────────────────────
-
-pub struct LuaSceneStack(/* TODO: add key + state fields */);
-
-
-impl LuaSceneStack {
-    /// Look up a registered scene ID by name.
-    ///
-    /// @param name : str
-    /// @return SceneId?
-    pub fn pop_to(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Number of scenes on the stack. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return integer
-    pub fn get_stack_size(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Whether the stack is empty. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_empty(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the top scene ID, or `None` if empty.
-    ///
-    ///
-    /// @return SceneId?
-    pub fn get_current(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Whether a transition is currently active.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_transitioning(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get transition progress [0, 1], or 0 if no transition.
-    ///
-    ///
-    /// @return number
-    pub fn get_transition_progress(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get a registered scene ID by name. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param name : str
-    /// @return SceneId?
-    pub fn get_registered(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check if a name is registered. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param name : str
-    /// @return boolean
-    pub fn has_registered(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get all registered scene names. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return table
-    pub fn get_registered_names(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get a stored data value reference by key.
-    ///
-    /// @param key : str
-    /// @return SceneId?
-    pub fn get_data(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check if a data key exists. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param key : str
-    /// @return boolean
-    pub fn has_data(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaSceneStack {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("popTo", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getStackSize", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isEmpty", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getCurrent", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isTransitioning", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getTransitionProgress", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRegistered", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasRegistered", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRegisteredNames", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getData", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasData", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.scene.* functions ──────────────────────────────────────────
-
-/// Add a callback at the given depth. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param callback_index : integer
-/// @param depth : number
-pub fn add(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add an object with a `:drawSorted()` method at the given depth.
-///
-///
-/// @param callback_index : integer
-/// @param depth : number
-pub fn add_object(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Allocate a new unique scene ID. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @return SceneId
-pub fn next_scene_id(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Push a scene ID onto the stack and start a transition.
-///
-/// @param scene_id : SceneId
-/// @param transition_type : TransitionType
-/// @param duration : number
-/// @return SceneId?
-pub fn push(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Pop the top scene from the stack. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param transition_type : TransitionType
-/// @param duration : number
-/// @return Result<(SceneId
-pub fn pop(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Replace the top scene with a new one.
-///
-/// @param scene_id : SceneId
-/// @param transition_type : TransitionType
-/// @param duration : number
-/// @return SceneId?
-pub fn switch_to(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove all scenes from the stack. Returns all removed scene IDs.
-///
-///
-/// @return table
-pub fn clear(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Pop scenes until `target_id` is on top of the stack.
-///
-/// @param target_id : SceneId
-/// @return table
-pub fn pop_until(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Update the active transition timer. Returns true if the transition just completed.
-///
-/// @param dt : number
-/// @return boolean
-pub fn update_transition(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Register a scene by name. Panics in debug mode if the same entity is registered twice.
-///
-///
-/// @param name : string
-/// @param scene_id : SceneId
-pub fn register_scene(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Unregister a scene by name. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param name : str
-pub fn unregister_scene(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Store a data value reference by key. Replaces the current data value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param key : string
-/// @param value_id : SceneId
-pub fn set_data(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a data value by key. Returns the removed value if present, or `None` when the key did not exist.
-///
-///
-/// @param key : str
-pub fn remove_data(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Parse a transition type from a Lua string.
-///
-/// @param s : str
-/// @return Self
-pub fn from_lua_str(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advance the transition timer by `dt` seconds.
-///
-///
-/// @param dt : number
-pub fn update(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.scene` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
+/// Calls an optional method on a scene table stored in the Lua registry.
+fn call_scene_method<'a>(
+    lua: &'a Lua,
+    scene_key: &LuaRegistryKey,
+    method: &str,
+    args: impl IntoLuaMulti<'a>,
 ) -> LuaResult<()> {
+    let table: LuaTable = lua.registry_value(scene_key)?;
+    if let Ok(func) = table.get::<_, LuaFunction>(method) {
+        func.call::<_, ()>((table.clone(), args))?;
+    }
+    Ok(())
+}
+
+// -------------------------------------------------------------------------------
+// LuaDepthSorter UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`DepthSorter`] with registry-stored callbacks.
+pub struct LuaDepthSorter {
+    inner: Rc<RefCell<DepthSorter>>,
+    callbacks: Rc<RefCell<Vec<LuaRegistryKey>>>,
+}
+
+impl LuaUserData for LuaDepthSorter {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- add --
+        /// Registers a draw callback at the given depth layer.
+        /// @param callback : function
+        /// @param depth : number
+        /// @return nil
+        methods.add_method("add", |lua, this, (callback, depth): (LuaFunction, f32)| {
+            let key = lua.create_registry_value(callback)?;
+            let mut cbs = this.callbacks.borrow_mut();
+            let index = cbs.len();
+            cbs.push(key);
+            this.inner.borrow_mut().add(index, depth);
+            Ok(())
+        });
+
+        // -- addObject --
+        /// Registers a table object with a draw method at the given depth.
+        /// @param obj : table
+        /// @return nil
+        methods.add_method("addObject", |lua, this, obj: LuaTable| {
+            let depth: f32 = obj.get::<_, f32>("depth").unwrap_or(0.0);
+            let key = lua.create_registry_value(obj)?;
+            let mut cbs = this.callbacks.borrow_mut();
+            let index = cbs.len();
+            cbs.push(key);
+            this.inner.borrow_mut().add_object(index, depth);
+            Ok(())
+        });
+
+        // -- sort --
+        /// Sorts all registered callbacks by depth ascending.
+        /// @return nil
+        methods.add_method("sort", |_, this, ()| {
+            this.inner.borrow_mut().sort();
+            Ok(())
+        });
+
+        // -- flush --
+        /// Calls all draw callbacks in sorted depth order, then clears.
+        /// @return nil
+        methods.add_method("flush", |lua, this, ()| {
+            let entries: Vec<(usize, bool)> = {
+                let mut sorter = this.inner.borrow_mut();
+                sorter
+                    .sorted_entries()
+                    .iter()
+                    .map(|e| (e.callback_index, e.is_object))
+                    .collect()
+            };
+
+            let cbs = this.callbacks.borrow();
+            for (idx, is_object) in &entries {
+                if let Some(key) = cbs.get(*idx) {
+                    if *is_object {
+                        if let Ok(obj) = lua.registry_value::<LuaTable>(key) {
+                            if let Ok(func) = obj.get::<_, LuaFunction>("drawSorted") {
+                                let _ = func.call::<_, ()>(obj.clone());
+                            }
+                        }
+                    } else if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
+                        let _ = func.call::<_, ()>(());
+                    }
+                }
+            }
+
+            this.inner.borrow_mut().clear();
+            drop(cbs);
+            this.callbacks.borrow_mut().clear();
+            Ok(())
+        });
+
+        // -- clear --
+        /// Removes all registered callbacks without calling them.
+        /// @return nil
+        methods.add_method("clear", |_, this, ()| {
+            this.inner.borrow_mut().clear();
+            this.callbacks.borrow_mut().clear();
+            Ok(())
+        });
+
+        // -- getCount --
+        /// Returns the number of registered draw entries.
+        /// @return integer
+        methods.add_method("getCount", |_, this, ()| {
+            Ok(this.inner.borrow().get_count())
+        });
+
+    }
+}
+
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
+
+/// Registers the `luna.scene` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("add", lua.create_function(add)?)?;
-    tbl.set("addObject", lua.create_function(add_object)?)?;
-    tbl.set("nextSceneId", lua.create_function(next_scene_id)?)?;
-    tbl.set("push", lua.create_function(push)?)?;
-    tbl.set("pop", lua.create_function(pop)?)?;
-    tbl.set("switchTo", lua.create_function(switch_to)?)?;
-    tbl.set("clear", lua.create_function(clear)?)?;
-    tbl.set("popUntil", lua.create_function(pop_until)?)?;
-    tbl.set("updateTransition", lua.create_function(update_transition)?)?;
-    tbl.set("registerScene", lua.create_function(register_scene)?)?;
-    tbl.set("unregisterScene", lua.create_function(unregister_scene)?)?;
-    tbl.set("setData", lua.create_function(set_data)?)?;
-    tbl.set("removeData", lua.create_function(remove_data)?)?;
-    tbl.set("fromLuaStr", lua.create_function(from_lua_str)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
+
+    let state = Rc::new(RefCell::new(SceneState {
+        stack: SceneStack::new(),
+        scene_refs: HashMap::new(),
+        data_refs: HashMap::new(),
+    }));
+
+    // ── Stack operations ─────────────────────────────────────────────────
+
+    // -- push --
+    /// Pushes a scene table onto the stack with an optional transition.
+    /// @param scene : table
+    /// @param transition : string?
+    /// @param duration : number?
+    /// @param params : table?
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "push",
+        lua.create_function(
+            move |lua,
+                  (scene, transition, duration, params): (
+                LuaTable,
+                Option<String>,
+                Option<f32>,
+                Option<LuaValue>,
+            )| {
+                let trans = transition
+                    .as_deref()
+                    .map(TransitionType::from_lua_str)
+                    .unwrap_or(TransitionType::None);
+                let dur = duration.unwrap_or(0.0);
+
+                let mut s = st.borrow_mut();
+                let scene_id = s.stack.next_scene_id();
+                let key = lua.create_registry_value(scene)?;
+
+                let prev_id = s.stack.push(scene_id, trans, dur);
+                if let Some(pid) = prev_id {
+                    if let Some(prev_key) = s.scene_refs.get(&pid) {
+                        let _ = call_scene_method(lua, prev_key, "pause", ());
+                    }
+                }
+
+                s.scene_refs.insert(scene_id, key);
+
+                let params_arg = params.unwrap_or(LuaValue::Nil);
+                if let Some(new_key) = s.scene_refs.get(&scene_id) {
+                    let _ = call_scene_method(lua, new_key, "enter", params_arg);
+                }
+
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- pop --
+    /// Pops the top scene from the stack with an optional transition.
+    /// @param transition : string?
+    /// @param duration : number?
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "pop",
+        lua.create_function(
+            move |lua, (transition, duration): (Option<String>, Option<f32>)| {
+                let trans = transition
+                    .as_deref()
+                    .map(TransitionType::from_lua_str)
+                    .unwrap_or(TransitionType::None);
+                let dur = duration.unwrap_or(0.0);
+
+                let mut s = st.borrow_mut();
+                let (popped_id, revealed_id) =
+                    s.stack.pop(trans, dur).map_err(LuaError::RuntimeError)?;
+
+                if let Some(popped_key) = s.scene_refs.remove(&popped_id) {
+                    let _ = call_scene_method(lua, &popped_key, "leave", ());
+                }
+
+                if let Some(rid) = revealed_id {
+                    if let Some(revealed_key) = s.scene_refs.get(&rid) {
+                        let _ = call_scene_method(lua, revealed_key, "resume", ());
+                    }
+                }
+
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- switchTo --
+    /// Replaces the top scene with a new one, calling leave and enter callbacks.
+    /// @param scene : table
+    /// @param transition : string?
+    /// @param duration : number?
+    /// @param params : table?
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "switchTo",
+        lua.create_function(
+            move |lua,
+                  (scene, transition, duration, params): (
+                LuaTable,
+                Option<String>,
+                Option<f32>,
+                Option<LuaValue>,
+            )| {
+                let trans = transition
+                    .as_deref()
+                    .map(TransitionType::from_lua_str)
+                    .unwrap_or(TransitionType::None);
+                let dur = duration.unwrap_or(0.0);
+
+                let mut s = st.borrow_mut();
+                let scene_id = s.stack.next_scene_id();
+                let key = lua.create_registry_value(scene)?;
+
+                let old_id = s.stack.switch_to(scene_id, trans, dur);
+                if let Some(oid) = old_id {
+                    if let Some(old_key) = s.scene_refs.remove(&oid) {
+                        let _ = call_scene_method(lua, &old_key, "leave", ());
+                    }
+                }
+
+                s.scene_refs.insert(scene_id, key);
+
+                let params_arg = params.unwrap_or(LuaValue::Nil);
+                if let Some(new_key) = s.scene_refs.get(&scene_id) {
+                    let _ = call_scene_method(lua, new_key, "enter", params_arg);
+                }
+
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- clear --
+    /// Clears all scenes from the stack, calling leave on each.
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "clear",
+        lua.create_function(move |lua, ()| {
+            let mut s = st.borrow_mut();
+            let removed = s.stack.clear();
+
+            for id in &removed {
+                if let Some(scene_key) = s.scene_refs.remove(id) {
+                    let _ = call_scene_method(lua, &scene_key, "leave", ());
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
+
+    // -- popTo --
+    /// Pops scenes until the named scene is on top, calling leave on each removed.
+    /// @param name : string
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "popTo",
+        lua.create_function(move |lua, name: String| {
+            let mut s = st.borrow_mut();
+            let target_id = match s.stack.pop_to(&name) {
+                Some(id) => id,
+                None => return Ok(false),
+            };
+
+            let popped_ids = s.stack.pop_until(target_id);
+
+            for id in &popped_ids {
+                if let Some(scene_key) = s.scene_refs.remove(id) {
+                    let _ = call_scene_method(lua, &scene_key, "leave", ());
+                }
+            }
+
+            if let Some(top_key) = s.stack.get_current().and_then(|id| s.scene_refs.get(&id)) {
+                let _ = call_scene_method(lua, top_key, "resume", ());
+            }
+
+            Ok(true)
+        })?,
+    )?;
+
+    // -- update --
+    /// Updates the top scene and any active transition.
+    /// @param dt : number
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "update",
+        lua.create_function(move |lua, dt: f32| {
+            let mut s = st.borrow_mut();
+            s.stack.update_transition(dt);
+
+            if let Some(top_id) = s.stack.get_current() {
+                if let Some(top_key) = s.scene_refs.get(&top_id) {
+                    let _ = call_scene_method(lua, top_key, "update", dt);
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
+
+    // -- draw --
+    /// Draws all scenes in the stack from bottom to top.
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "draw",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let all_ids: Vec<SceneId> = s.stack.get_all().to_vec();
+
+            for id in &all_ids {
+                if let Some(scene_key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, scene_key, "draw", ());
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
+
+    // ── Stack query ──────────────────────────────────────────────────────
+
+    // -- getStackSize --
+    /// Returns the number of scenes on the stack.
+    /// @return integer
+    let st = state.clone();
+    tbl.set(
+        "getStackSize",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.get_stack_size()))?,
+    )?;
+
+    // -- isEmpty --
+    /// Returns true if the scene stack is empty.
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "isEmpty",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.is_empty()))?,
+    )?;
+
+    // -- getCurrent --
+    /// Returns the current top scene table, or nil if the stack is empty.
+    /// @return table?
+    let st = state.clone();
+    tbl.set(
+        "getCurrent",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            if let Some(top_id) = s.stack.get_current() {
+                if let Some(key) = s.scene_refs.get(&top_id) {
+                    let table: LuaTable = lua.registry_value(key)?;
+                    return Ok(LuaValue::Table(table));
+                }
+            }
+            Ok(LuaValue::Nil)
+        })?,
+    )?;
+
+    // ── Transitions ──────────────────────────────────────────────────────
+
+    // -- isTransitioning --
+    /// Returns true if a scene transition is currently active.
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "isTransitioning",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.is_transitioning()))?,
+    )?;
+
+    // -- getTransitionProgress --
+    /// Returns the transition progress from 0.0 to 1.0.
+    /// @return number
+    let st = state.clone();
+    tbl.set(
+        "getTransitionProgress",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress()))?,
+    )?;
+
+    // ── Registry ─────────────────────────────────────────────────────────
+
+    // -- registerScene --
+    /// Registers a scene table by name for later retrieval.
+    /// @param name : string
+    /// @param scene : table
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "registerScene",
+        lua.create_function(move |lua, (name, scene): (String, LuaTable)| {
+            let mut s = st.borrow_mut();
+            let scene_id = s.stack.next_scene_id();
+            let key = lua.create_registry_value(scene)?;
+            s.stack.register_scene(name, scene_id);
+            s.scene_refs.insert(scene_id, key);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getRegistered --
+    /// Returns a registered scene table by name, or nil if not found.
+    /// @param name : string
+    /// @return table?
+    let st = state.clone();
+    tbl.set(
+        "getRegistered",
+        lua.create_function(move |lua, name: String| {
+            let s = st.borrow();
+            if let Some(scene_id) = s.stack.get_registered(&name) {
+                if let Some(key) = s.scene_refs.get(&scene_id) {
+                    let table: LuaTable = lua.registry_value(key)?;
+                    return Ok(LuaValue::Table(table));
+                }
+            }
+            Ok(LuaValue::Nil)
+        })?,
+    )?;
+
+    // -- hasRegistered --
+    /// Returns true if a scene is registered under the given name.
+    /// @param name : string
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "hasRegistered",
+        lua.create_function(move |_, name: String| {
+            Ok(st.borrow().stack.has_registered(&name))
+        })?,
+    )?;
+
+    // -- unregisterScene --
+    /// Removes a scene from the registry by name.
+    /// @param name : string
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "unregisterScene",
+        lua.create_function(move |_, name: String| {
+            st.borrow_mut().stack.unregister_scene(&name);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getRegisteredNames --
+    /// Returns a list of all registered scene names.
+    /// @return table
+    let st = state.clone();
+    tbl.set(
+        "getRegisteredNames",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.get_registered_names()))?,
+    )?;
+
+    // ── Data store ───────────────────────────────────────────────────────
+
+    // -- setData --
+    /// Stores a value in the inter-scene data store under the given key.
+    /// @param key : string
+    /// @param value : table
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "setData",
+        lua.create_function(move |lua, (key, value): (String, LuaValue)| {
+            let mut s = st.borrow_mut();
+            let value_id = s.stack.next_scene_id();
+            let reg_key = lua.create_registry_value(value)?;
+            s.stack.set_data(key.clone(), value_id);
+            s.data_refs.insert(key, reg_key);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getData --
+    /// Returns a value from the inter-scene data store, or nil if not found.
+    /// @param key : string
+    /// @return table?
+    let st = state.clone();
+    tbl.set(
+        "getData",
+        lua.create_function(move |lua, key: String| {
+            let s = st.borrow();
+            if let Some(reg_key) = s.data_refs.get(&key) {
+                let value: LuaValue = lua.registry_value(reg_key)?;
+                return Ok(value);
+            }
+            Ok(LuaValue::Nil)
+        })?,
+    )?;
+
+    // -- hasData --
+    /// Returns true if the given key exists in the data store.
+    /// @param key : string
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "hasData",
+        lua.create_function(move |_, key: String| Ok(st.borrow().stack.has_data(&key)))?,
+    )?;
+
+    // -- removeData --
+    /// Removes a value from the inter-scene data store by key.
+    /// @param key : string
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "removeData",
+        lua.create_function(move |_, key: String| {
+            let mut s = st.borrow_mut();
+            s.stack.remove_data(&key);
+            s.data_refs.remove(&key);
+            Ok(())
+        })?,
+    )?;
+
+    // ── Factory ──────────────────────────────────────────────────────────
+
+    // -- newDepthSorter --
+    /// Creates a new DepthSorter for z-ordered draw batching.
+    /// @return DepthSorter
+    tbl.set(
+        "newDepthSorter",
+        lua.create_function(|_, ()| {
+            Ok(LuaDepthSorter {
+                inner: Rc::new(RefCell::new(DepthSorter::new())),
+                callbacks: Rc::new(RefCell::new(Vec::new())),
+            })
+        })?,
+    )?;
+
     luna.set("scene", tbl)?;
     Ok(())
 }

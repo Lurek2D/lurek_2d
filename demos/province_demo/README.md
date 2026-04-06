@@ -22,5 +22,5 @@ Demonstrates the Luna2D province map system, inspired by Europa Universalis-styl
 ## Run
 
 ```sh
-cargo run -- examples/province_demo
+cargo run -- demos/province_demo
 ```

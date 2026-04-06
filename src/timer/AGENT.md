@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.timer` |
 | **Source** | `src/timer/` |
+| **Rust Tests** | `tests/unit/timer_tests.rs`                    |
 | **Tests** | `tests/timer_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_timer.lua` |
 
@@ -99,3 +101,36 @@ Exposed under `luna.timer.*` by `src/lua_api/timer_api/`.
 | `struct` | 3 |
 | **Total** | **5** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    score = 0
+    -- Repeating timer
+    luna.timer.every(5.0, function()
+        score = score + 10
+    end)
+    -- One-shot timer
+    luna.timer.after(3.0, function()
+        print("3 seconds elapsed!")
+    end)
+end
+
+function luna.update(dt)
+    luna.timer.update(dt)
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState` for the `Clock`                 |
+| `lua_api` | Imported by   | `src/lua_api/timer_api.rs` registers `luna.timer.*` |
+
+## Notes
+
+- `luna.timer.getDelta()` returns the frame delta time in seconds; always use this, not wall-clock time.
+- `luna.timer.every(dt, fn)` and `luna.timer.after(dt, fn)` return handles that can be cancelled with `:cancel()`.
+- Timer callbacks fire during `luna.timer.update(dt)` — call this once per frame in `luna.update`.
+- Sleep (`luna.timer.sleep(seconds)`) blocks the entire main thread; only use in startup or loading screens.

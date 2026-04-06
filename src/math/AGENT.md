@@ -1,11 +1,13 @@
-# `math` — Agent Reference
+﻿# `math` — Agent Reference
 
 | Property | Value |
 |----------|-------|
 | **Tier** | Baseline |
-| **Lua API** | `None` |
+| **Status**     | Implemented — Full                                   |
+| **Lua API** | `luna.math` |
 | **Source** | `src/math/` |
-| **Tests** | `tests/math_tests.rs` |
+| **Rust Tests** | `tests/unit/math_tests.rs`                    |
+| **Lua Tests**  | `tests/lua/unit/test_math.lua`                     |
 
 ## Summary
 
@@ -82,7 +84,8 @@ math/
 | `easing.rs` | Standard easing functions for smooth animation and interpolation |
 | `geometry.rs` | 2D geometry utility functions |
 | `mat3.rs` | Mat3 3×3 matrix for affine transforms |
-| `noise.rs` | 2D Perlin and Simplex noise generators for procedural content |
+| `noise_functions.rs` | Perlin 2D/3D/4D, Simplex 2D, fbm, ridged, turbulence, Worley noise functions (formerly `noise/functions.rs`) |
+| `noise_generator.rs` | `NoiseGenerator` struct; `NoiseKind`, `FractalType`, `DistType`, `MapGenOptions` (formerly `noise/generator.rs`) |
 | `polygon.rs` | Polygon utilities: ear-clipping triangulation and convexity testing |
 | `random.rs` | Seedable random number generator for reproducible sequences |
 | `rect.rs` | Axis-aligned rectangle type |
@@ -363,3 +366,59 @@ Noise algorithm kind used by fractal combinators.
 | `struct` | 12 |
 | **Total** | **71** |
 
+## Lua API
+
+**Namespace**: `luna.math`
+**Wrapper**: `src/lua_api/math_api.rs`
+
+The `math` module exposes its full public API under `luna.math.*`. Key groups:
+
+| Group | Representative functions |
+|-------|--------------------------|
+| Trig / arithmetic | `luna.math.sin`, `cos`, `tan`, `atan2`, `floor`, `ceil`, `abs`, `clamp`, `lerp` |
+| Random | `luna.math.random()`, `luna.math.randomSeed(n)`, `luna.math.newRandomGenerator(seed)` |
+| Vectors | `luna.math.newVec2(x, y)`, arithmetic operators via metatable |
+| Transforms | `luna.math.newTransform()`, `:translate()`, `:rotate()`, `:scale()` |
+| Bezier | `luna.math.newBezierCurve({pts})`, `:evaluate(t)`, `:getLength()` |
+| Noise | `luna.math.noise(x)`, `luna.math.noise(x,y)`, `luna.math.noise(x,y,z)` (Perlin) |
+| Easing | `luna.math.linear(t)`, `luna.math.inQuad(t)`, … (22 easing functions) |
+| Geometry | `luna.math.triangulate(polygon)`, `luna.math.pointInPolygon(pt, poly)` |
+
+## Lua Examples
+
+```lua
+function luna.load()
+    -- Random number generator
+    rng = luna.math.newRandomGenerator(42)
+    print(rng:random())          -- 0..1
+    print(rng:randomInt(1, 6))   -- dice roll
+
+    -- Noise
+    for i = 0, 100 do
+        local v = luna.math.noise(i * 0.1)
+    end
+
+    -- Easing
+    local t = luna.math.ease("outCubic", 0.5)
+
+    -- Transform
+    local tr = luna.math.newTransform()
+    tr:translate(100, 200):rotate(math.pi / 4):scale(2, 2)
+end
+```
+
+## References
+
+| Module   | Relationship | Notes                                              |
+|----------|------------- |----------------------------------------------------|
+| (none)   | —            | `math` is the leaf; it imports nothing from Luna2D |
+| All tiers| Imported by  | Every engine module may freely import `math`       |
+| `lua_api`| Imported by  | `src/lua_api/math_api.rs` registers `luna.math.*` |
+
+## Notes
+
+- `math` is the leaf of the dependency graph — it imports nothing from Luna2D. All other modules may freely import it.
+- Floating-point comparison: use `(a - b).abs() < 1e-5` in tests — never `==` on `f32` values.
+- `RandomGenerator` wraps `fastrand::Rng` — it is NOT cryptographically secure.
+- `NoiseGenerator` seeds are deterministic: same seed + same calls = same output, across platforms.
+- `BezierCurve` uses De Casteljau for arbitrary degree; performance degrades for degree > 6.

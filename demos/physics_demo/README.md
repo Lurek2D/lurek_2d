@@ -16,7 +16,7 @@ Demonstrates Luna2D's rapier2d-backed physics world: dynamic rigid bodies, a sta
 ## How to Run
 
 ```powershell
-cargo run -- examples/physics_demo
+cargo run -- demos/physics_demo
 ```
 
 ## Controls

@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.graphics` |
 | **Source** | `src/graphics/` |
+| **Rust Tests** | `tests/unit/graphics_tests.rs`                    |
 | **Tests** | `tests/graphics_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_graphics.lua` |
 | **Extracted modules** | `animation` → `src/animation/`, `camera` → `src/camera/`, `Color` → `src/math/color.rs` |
@@ -116,6 +118,9 @@ GpuRenderer (wgpu rendering backend)
 | `trail.rs` | Trail renderer for fading ribbon effects |
 | `viewport.rs` | **Extracted** — see `src/camera/AGENT.md` |
 | `viewport_scale.rs` | **Extracted** — see `src/camera/AGENT.md` |
+| `color.rs` | TODO: describe purpose of color.rs |
+| `gpu_renderer.rs` | TODO: describe purpose of gpu_renderer.rs |
+| `image_effect.rs` | TODO: describe purpose of image_effect.rs |
 
 ## Submodules
 
@@ -578,3 +583,45 @@ Exposed under `luna.graphics.*` by `src/lua_api/graphics_api/`.
 | `type` | 2 |
 | **Total** | **96** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    img = luna.graphics.newImage("player.png")
+    font = luna.graphics.newFont("font.ttf", 18)
+    canvas = luna.graphics.newCanvas(800, 600)
+end
+
+function luna.draw()
+    -- Draw to canvas
+    luna.graphics.setCanvas(canvas)
+    luna.graphics.clear()
+    luna.graphics.draw(img, 100, 200)
+    luna.graphics.setCanvas()
+
+    -- Draw canvas to screen
+    luna.graphics.draw(canvas, 0, 0)
+    luna.graphics.setColor(1, 1, 1)
+    luna.graphics.setFont(font)
+    luna.graphics.print("Score: 0", 10, 10)
+end
+```
+
+## References
+
+| Module     | Relationship  | Notes                                              |
+|------------|---------------|----------------------------------------------------|
+| `engine`   | Imports from  | `SharedState`, `TextureKey`, `FontKey`, all resource keys |
+| `math`     | Imports from  | `Vec2`, `Mat3`, `Rect`, `Color` for rendering math |
+| `image`    | Related       | `image` provides CPU pixel buffers; `graphics` uploads them to GPU |
+| `camera`   | Related       | `camera` sets the view transform consumed by the renderer |
+| `particle` | Related       | `particle` pushes `DrawParticleSystem` commands into the queue |
+| `lua_api`  | Imported by   | `src/lua_api/graphics_api.rs` registers `luna.graphics.*` |
+
+## Notes
+
+- Draw commands are queued during `luna.draw()` and processed in order by `GpuRenderer::render_frame()`. Never allocate GPU resources inside `luna.draw()`.
+- The GPU render path is wgpu 22 (Vulkan/DX12/Metal). No raw OpenGL, no software fallback.
+- Canvas ping-pong: `setCanvas(canvas)` begins a new render pass; `setCanvas()` (no args) returns to screen.
+- Blend modes are pre-baked pipelines (5 modes × 2 wireframe states). Custom blend modes require a Shader.
+- Per-frame heap allocations in the draw command queue must be avoided — grow buffers at startup.

@@ -201,6 +201,17 @@ impl KeyboardState {
         self.keys_down.contains(key)
     }
 
+    /// Returns `true` if any of the given keys is currently held down.
+    ///
+    /// # Parameters
+    /// - `keys` — Slice of key name strings to check.
+    ///
+    /// # Returns
+    /// `bool` — `true` if at least one key in `keys` is held.
+    pub fn is_any_down(&self, keys: &[String]) -> bool {
+        keys.iter().any(|k| self.keys_down.contains(k.as_str()))
+    }
+
     /// Returns the list of keys that became pressed this frame.
     ///
     /// # Returns

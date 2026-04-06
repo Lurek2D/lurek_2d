@@ -9,8 +9,8 @@ use luna2d::audio::MidiPlayer;
 use luna2d::audio::Mixer;
 use luna2d::audio::PlayState;
 use luna2d::audio::SourceType;
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_audio_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -613,8 +613,8 @@ fn mixer_tell_after_stop_is_zero() {
 #[test]
 fn audio_seek_invalid_id_is_noop_via_lua() {
     // seek on a non-existent source should return a runtime error, not panic.
+    use luna2d::engine::config::Config;
     use luna2d::lua_api::{create_lua_vm, SharedState};
-use luna2d::engine::config::Config;
     use std::cell::RefCell;
     use std::path::PathBuf;
     use std::rc::Rc;
@@ -923,22 +923,15 @@ fn audio_set_source_orientation_round_trips() {
 
 #[test]
 fn decoder_loads_wav_fixture() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert_eq!(d.sample_rate, 44100);
     assert_eq!(d.channels, 1);
 }
 
 #[test]
 fn decoder_decode_returns_chunk() {
-    let mut d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        512,
-    )
-    .unwrap();
+    let mut d =
+        luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 512).unwrap();
     let chunk = d.decode();
     assert!(chunk.is_some());
     let c = chunk.unwrap();
@@ -947,11 +940,8 @@ fn decoder_decode_returns_chunk() {
 
 #[test]
 fn decoder_decode_returns_none_at_eof() {
-    let mut d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        100_000,
-    )
-    .unwrap();
+    let mut d =
+        luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 100_000).unwrap();
     let _ = d.decode(); // consume all
     let eof = d.decode();
     assert!(eof.is_none());
@@ -959,11 +949,8 @@ fn decoder_decode_returns_none_at_eof() {
 
 #[test]
 fn decoder_rewind_resets_position() {
-    let mut d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        100_000,
-    )
-    .unwrap();
+    let mut d =
+        luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 100_000).unwrap();
     let _ = d.decode();
     d.rewind();
     let after_rewind = d.decode();
@@ -972,82 +959,52 @@ fn decoder_rewind_resets_position() {
 
 #[test]
 fn decoder_get_duration_positive() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert!(d.get_duration() > 0.0);
 }
 
 #[test]
 fn decoder_channel_count_mono_is_1() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert_eq!(d.channels, 1);
 }
 
 #[test]
 fn decoder_sample_rate_returns_positive() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert!(d.sample_rate > 0);
 }
 
 #[test]
 fn decoder_bit_depth_returns_positive() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert!(d.bit_depth > 0);
 }
 
 #[test]
 fn decoder_tell_starts_at_zero() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert!((d.tell() - 0.0).abs() < 1e-6);
 }
 
 #[test]
 fn decoder_tell_advances_after_decode() {
-    let mut d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let mut d =
+        luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     let _ = d.decode();
     assert!(d.tell() > 0.0);
 }
 
 #[test]
 fn decoder_is_seekable_always_true() {
-    let d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let d = luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     assert!(d.is_seekable());
 }
 
 #[test]
 fn decoder_seek_then_tell_round_trips() {
-    let mut d = luna2d::audio::Decoder::from_file(
-        "tests/fixtures/sine_mono_44100.wav",
-        1024,
-    )
-    .unwrap();
+    let mut d =
+        luna2d::audio::Decoder::from_file("tests/fixtures/sine_mono_44100.wav", 1024).unwrap();
     let target = 0.01;
     d.seek(target);
     assert!((d.tell() - target).abs() < 0.001);
@@ -1067,7 +1024,9 @@ fn queueable_source_queue_reduces_free_count() {
     let mut mixer = Mixer::new();
     let key = mixer.new_queueable(44100, 16, 1, 4);
     let pcm = vec![0.0f32; 128];
-    mixer.queue_buffer(key, &pcm).expect("queue_buffer should succeed");
+    mixer
+        .queue_buffer(key, &pcm)
+        .expect("queue_buffer should succeed");
     assert_eq!(mixer.queueable_free_buffer_count(key), 3);
 }
 
@@ -1083,10 +1042,17 @@ fn queueable_source_queue_full_returns_error() {
     let mut mixer = Mixer::new();
     let key = mixer.new_queueable(44100, 16, 1, 2);
     let pcm = vec![0.0f32; 64];
-    mixer.queue_buffer(key, &pcm).expect("first queue should succeed");
-    mixer.queue_buffer(key, &pcm).expect("second queue should succeed");
+    mixer
+        .queue_buffer(key, &pcm)
+        .expect("first queue should succeed");
+    mixer
+        .queue_buffer(key, &pcm)
+        .expect("second queue should succeed");
     let err = mixer.queue_buffer(key, &pcm);
-    assert!(err.is_err(), "queueing beyond capacity must return an error");
+    assert!(
+        err.is_err(),
+        "queueing beyond capacity must return an error"
+    );
 }
 
 #[test]
@@ -1122,5 +1088,8 @@ fn audio_set_playback_device_default_ok() {
 #[test]
 fn audio_set_playback_device_unknown_errors() {
     let result = luna2d::audio::set_playback_device("NonExistentDevice___XYZ");
-    assert!(result.is_err(), "unknown device name should return an error");
+    assert!(
+        result.is_err(),
+        "unknown device name should return an error"
+    );
 }

@@ -47,6 +47,18 @@ impl DiagonalMode {
             _ => Option::None,
         }
     }
+
+    /// Convert to the canonical Lua string representation.
+    ///
+    /// # Returns
+    /// `&'static str`.
+    pub fn to_lua_str(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Always => "always",
+            Self::NoCornerCut => "nocornercut",
+        }
+    }
 }
 
 /// A 2D grid of traversal costs used by pathfinding algorithms.

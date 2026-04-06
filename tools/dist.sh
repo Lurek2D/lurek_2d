@@ -12,7 +12,7 @@
 #     luna2d-linux-x86_64/            (or macos-aarch64 etc.)
 #       luna2d                        ← engine binary
 #       assets/                       ← engine assets
-#       examples/                     ← bundled example games
+#       demos/                     ← bundled example games
 #       LICENSE  README.md  HOW-TO-RUN.txt
 #     luna2d-linux-x86_64.tar.gz      ← distributable archive
 
@@ -88,7 +88,7 @@ chmod +x "$PACKAGE_DIR/luna"
 ok "Copied luna binary."
 
 [[ -d "$WORKSPACE/assets"   ]] && cp -r "$WORKSPACE/assets"   "$PACKAGE_DIR/assets"   && ok "Copied assets/"
-[[ -d "$WORKSPACE/examples" ]] && cp -r "$WORKSPACE/examples" "$PACKAGE_DIR/examples" && ok "Copied examples/"
+[[ -d "$WORKSPACE/examples" ]] && cp -r "$WORKSPACE/examples" "$PACKAGE_DIR/examples" && ok "Copied demos/"
 [[ -f "$WORKSPACE/README.md" ]] && cp "$WORKSPACE/README.md" "$PACKAGE_DIR/"
 [[ -f "$WORKSPACE/LICENSE"  ]]  && cp "$WORKSPACE/LICENSE"  "$PACKAGE_DIR/"
 
@@ -98,7 +98,7 @@ LUNA2D $VERSION — ${TARGET_TRIPLE} Distribution
 
 How to run a game
 -----------------
-  ./luna  examples/hello_world
+  ./luna  demos/hello_world
   ./luna  path/to/your_game
 
 How to show the splash screen (no game)
@@ -107,9 +107,9 @@ How to show the splash screen (no game)
 
 Bundled examples
 ----------------
-  examples/hello_world   — shapes, text, FPS counter
-  examples/physics_demo  — falling ball with AABB physics
-  examples/sprites       — keyboard-controlled sprite
+  demos/hello_world   — shapes, text, FPS counter
+  demos/physics_demo  — falling ball with AABB physics
+  demos/sprites       — keyboard-controlled sprite
 
 Writing your own game
 ---------------------

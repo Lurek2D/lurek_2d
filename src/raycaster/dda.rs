@@ -6,7 +6,7 @@
 
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
-use crate::engine::log_messages::{RC01};
+use crate::engine::log_messages::RC01;
 use crate::log_msg;
 
 /// 2D grid-based raycaster using DDA traversal.
@@ -186,11 +186,7 @@ impl Raycaster2D {
             }
 
             // Check bounds
-            if map_x < 0
-                || map_y < 0
-                || map_x >= self.width as i32
-                || map_y >= self.height as i32
-            {
+            if map_x < 0 || map_y < 0 || map_x >= self.width as i32 || map_y >= self.height as i32 {
                 return None;
             }
 
@@ -379,11 +375,7 @@ impl Raycaster2D {
                 map_y += step_y;
             }
 
-            if map_x < 0
-                || map_y < 0
-                || map_x >= self.width as i32
-                || map_y >= self.height as i32
-            {
+            if map_x < 0 || map_y < 0 || map_x >= self.width as i32 || map_y >= self.height as i32 {
                 return true; // left grid = no wall hit
             }
 
@@ -490,7 +482,7 @@ mod tests {
     fn test_cast_ray_hits_wall() {
         let mut rc = Raycaster2D::new(8, 8);
         rc.set_cell(4, 2, 1); // wall at (4,2)
-                               // Cast from (2.5, 2.5) to the right (angle=0)
+                              // Cast from (2.5, 2.5) to the right (angle=0)
         let hit = rc.cast_ray(2.5, 2.5, 0.0, 20.0);
         assert!(hit.is_some());
         let h = hit.unwrap();

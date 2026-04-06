@@ -1,15 +1,15 @@
 ---
-applyTo: "examples/**/*.lua"
+applyTo: "demos/**/*.lua"
 ---
 
-# Lua Examples Instructions
+# Demo Game Instructions
 
-All files in `examples/` are self-contained Lua game demos that demonstrate the `luna.*` API. They must run with `cargo run -- examples/<name>` and serve as both documentation and acceptance tests for the API.
+All files in `demos/` are self-contained Lua game demos that demonstrate the `luna.*` API. They must run with `cargo run -- demos/<name>` and serve as both documentation and acceptance tests for the API.
 
 ## Core Rules
 
 - **`luna.*` namespace only** — never external engine prefixes, `lg.*`, or any other prefix; this is Luna2D, with its own `luna.*` namespace
-- **Must be runnable**: every example must work with `cargo run -- examples/<name>` immediately after checkout
+- **Must be runnable**: every demo must work with `cargo run -- demos/<name>` immediately after checkout
 - **All callbacks optional but conventional**: define `luna.load()`, `luna.update(dt)`, `luna.draw()` as the primary structure
 - **No external assets unless committed**: if an example loads an image or audio file, it must be in the same example directory
 - **Demonstrate one concept clearly**: `hello_world` → basic shapes + text; `physics_demo` → physics world; `sprites` → movement/input

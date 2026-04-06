@@ -10,6 +10,7 @@
 //!
 use crate::engine::error::{EngineError, EngineResult};
 use crate::engine::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
+use crate::filesystem::file_handle::{FileHandle, FileMode};
 use crate::log_msg;
 use std::path::{Path, PathBuf};
 
@@ -49,6 +50,21 @@ pub enum FileType {
     Symlink,
     /// Unknown or special entry.
     Other,
+}
+
+impl FileType {
+    /// Returns the string name of this file type.
+    ///
+    /// # Returns
+    /// `&'static str` — one of `"file"`, `"directory"`, `"symlink"`, or `"other"`.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            FileType::File => "file",
+            FileType::Directory => "directory",
+            FileType::Symlink => "symlink",
+            FileType::Other => "other",
+        }
+    }
 }
 
 /// A virtual filesystem mount layer overlaid on top of the game directory.
@@ -686,5 +702,30 @@ impl GameFS {
             }
         }
         Ok(full)
+    }
+
+    /// Reads a text file and returns its contents split into lines.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path to the file within the game directory.
+    ///
+    /// # Returns
+    /// `Ok(Vec<String>)` — The lines of the file. `Err(EngineError)` on I/O failure.
+    pub fn read_lines(&self, path: &str) -> EngineResult<Vec<String>> {
+        let content = self.read_string(path)?;
+        Ok(content.lines().map(|l| l.to_string()).collect())
+    }
+
+    /// Opens a file handle by parsing the mode string and delegating to `FileHandle::open`.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path to the file.
+    /// - `mode_str` — Mode string: `"r"` for read, `"w"` for write, `"a"` for append.
+    ///
+    /// # Returns
+    /// An open `FileHandle`, or an `EngineError` on failure.
+    pub fn open_file(&self, path: &str, mode_str: &str) -> EngineResult<FileHandle> {
+        let mode = FileMode::parse_mode(mode_str)?;
+        FileHandle::open(self, path, mode)
     }
 }

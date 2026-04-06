@@ -428,4 +428,55 @@ impl SharedState {
             light_world: LightWorld::new(),
         }
     }
+
+    /// Advances the clock by one tick and syncs `delta_time`, `total_time`, and `fps`.
+    ///
+    /// # Returns
+    /// `f64` — Frame delta time in seconds.
+    pub fn step_timer(&mut self) -> f64 {
+        let dt = self.clock.tick();
+        self.delta_time = dt;
+        self.total_time = self.clock.total();
+        self.fps = self.clock.fps();
+        dt
+    }
+
+    /// Submits a background file-read request, lazily creating the async loader.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path to the file within the game directory.
+    ///
+    /// # Returns
+    /// `u64` — An opaque handle ID used to poll the load result.
+    pub fn request_async_load(&mut self, path: &str) -> crate::engine::error::EngineResult<u64> {
+        let resolved = self.fs.resolve_read_path(path)?;
+        if self.async_loader.is_none() {
+            self.async_loader = Some(crate::filesystem::AsyncLoader::new());
+        }
+        let handle = self.async_loader.as_ref().unwrap().request_load(resolved);
+        Ok(handle.0)
+    }
+
+    /// Polls a pending async load and returns the status and optional data.
+    ///
+    /// # Parameters
+    /// - `handle_id` — The opaque handle returned by `request_async_load`.
+    ///
+    /// # Returns
+    /// `(String, Option<String>)` — Status (`"pending"`, `"done"`, or `"error"`) and data.
+    pub fn poll_async_load(&self, handle_id: u64) -> (String, Option<String>) {
+        use crate::filesystem::{LoadHandle, LoadResult, LoadStatus};
+        if let Some(ref loader) = self.async_loader {
+            match loader.poll(LoadHandle(handle_id)) {
+                LoadStatus::Pending => ("pending".to_string(), None),
+                LoadStatus::Done(LoadResult::Ready(bytes)) => (
+                    "done".to_string(),
+                    Some(String::from_utf8_lossy(&bytes).to_string()),
+                ),
+                LoadStatus::Done(LoadResult::Error(msg)) => ("error".to_string(), Some(msg)),
+            }
+        } else {
+            ("error".to_string(), None)
+        }
+    }
 }

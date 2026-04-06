@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.ai` |
 | **Source** | `src/ai/` |
+| **Rust Tests** | `tests/unit/ai_tests.rs`                    |
 | **Tests** | `tests/ai_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_ai.lua` |
 
@@ -325,3 +327,35 @@ Exposed under `luna.ai.*` by `src/lua_api/ai_api/`.
 | `type` | 1 |
 | **Total** | **44** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    -- create a finite-state machine
+    fsm = luna.ai.newFSM("idle")
+    fsm:addTransition("idle", "patrol", function() return target_visible end)
+    fsm:addTransition("patrol", "chase", function() return player_close end)
+end
+
+function luna.update(dt)
+    fsm:update(dt)
+    local state = fsm:getState()
+end
+```
+
+## References
+
+| Module        | Relationship  | Notes                                             |
+|---------------|---------------|---------------------------------------------------|
+| `engine`      | Imports from  | Uses `SharedState` for registering Lua bindings   |
+| `math`        | Imports from  | `Vec2` for positions and steering behaviours      |
+| `pathfinding` | Related       | Pathfinding provides grid navigation; `ai` owns FSMs and behaviour trees |
+| `entity`      | Related       | Common to use `ai` states to drive `entity` components |
+| `lua_api`     | Imported by   | `src/lua_api/ai_api.rs` registers `luna.ai.*`    |
+
+## Notes
+
+- The `ai` module provides FSM, behaviour tree, GOAP, and steering — do not re-implement these patterns elsewhere.
+- FSM states run on the main Lua thread; background AI computation should use `luna.thread` workers.
+- Steering behaviours return force vectors; apply them via physics `body:applyForce()` or manual position integration.
+- No dependency on `rapier2d` is allowed: AI must remain Tier 2 and decoupled from physics.

@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.graph` |
 | **Source** | `src/graph/` |
+| **Rust Tests** | `tests/unit/graph_tests.rs`                    |
 | **Tests** | `tests/graph_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_graph.lua` |
 
@@ -83,6 +85,8 @@ Graph (HashMap-based directed graph)
 | `simulation.rs` | Simulation engine — update(dt) and step() for item flow, decay, transit, and... |
 | `supply_demand.rs` | Supply/demand processing — match demands to supplies and route items |
 | `traversal.rs` | Dijkstra pathfinding and reachability queries on the graph |
+| `graph.rs` | TODO: describe purpose of graph.rs |
+| `pathfinding.rs` | TODO: describe purpose of pathfinding.rs |
 
 ## Submodules
 
@@ -208,3 +212,39 @@ Exposed under `luna.graph.*` by `src/lua_api/graph_api/`.
 | `struct` | 9 |
 | **Total** | **21** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    g = luna.graph.new()
+    -- Add nodes
+    local a = g:addNode("A", {value=1})
+    local b = g:addNode("B", {value=2})
+    local c = g:addNode("C", {value=3})
+
+    -- Add directed edges with weights
+    g:addEdge(a, b, 1.5)
+    g:addEdge(b, c, 2.0)
+    g:addEdge(a, c, 5.0)
+
+    -- Shortest path
+    local path = g:shortestPath(a, c)
+    print("Path length:", path.cost)
+end
+```
+
+## References
+
+| Module        | Relationship  | Notes                                              |
+|---------------|---------------|----------------------------------------------------|
+| `engine`      | Imports from  | Uses `SharedState`                                 |
+| `math`        | Imports from  | `Vec2` for optional spatial positions on nodes     |
+| `pathfinding` | Related       | `pathfinding` uses grid-based A*; `graph` is general graph algorithms |
+| `lua_api`     | Imported by   | `src/lua_api/graph_api.rs` registers `luna.graph.*` |
+
+## Notes
+
+- Directed graphs with optional edge weights. Undirected graphs can be simulated by adding reciprocal edges.
+- Node and edge payloads are arbitrary Lua tables stored as `LuaValue`.
+- Shortest-path uses Dijkstra; for A* (heuristic-guided) use the `pathfinding` module's grid instead.
+- No cycle detection guard on construction — callers must ensure DAGs where algorithms require them.

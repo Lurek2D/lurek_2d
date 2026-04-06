@@ -1,499 +1,726 @@
-//! `luna.input` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/input/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.keyboard` / `luna.mouse` / `luna.gamepad` / `luna.touch` — Input state queries and cursor management.
+
+use super::SharedState;
+use mlua::prelude::*;
+use mlua::Variadic;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::input::keyboard::{get_key_from_scancode, get_scancode_from_key};
+use crate::input::mouse::{is_cursor_supported, CursorKind, SystemCursor};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// LuaCursor UserData
+// -------------------------------------------------------------------------------
 
-// ── LuaGamepadMappings ────────────────────────────────────────────────────────────
+/// Lua-side wrapper around a mouse cursor handle.
+pub struct LuaCursor {
+    kind: CursorKind,
+}
 
-pub struct LuaGamepadMappings(/* TODO: add key + state fields */);
+impl LuaUserData for LuaCursor {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
+        // -- release --
+        /// Releases the cursor resource (no-op on desktop).
+        /// @return nil
+        methods.add_method("release", |_, _this, ()| Ok(()));
 
-impl LuaGamepadMappings {
-    /// Returns the mapping string for `guid`, or `None` if unknown.
-    ///
-    /// @param guid : SDL-format
-    /// @return Option<
-    pub fn get_mapping_string(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Writes all stored mappings to a plain-text file, one per line.
-    ///
-    /// @param path : Destination
-    /// @return Result<()
-    pub fn save_to_file(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+        // -- getType --
+        /// Returns the cursor type as "system" or "custom".
+        /// @return string
+        methods.add_method("getType", |_, this, ()| {
+            Ok(match &this.kind {
+                CursorKind::System(_) => "system",
+                CursorKind::Custom { .. } => "custom",
+            })
+        });
+
     }
 }
 
-impl UserData for LuaGamepadMappings {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getMappingString", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("saveToFile", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── LuaGamepadState ────────────────────────────────────────────────────────────
+/// Registers the `luna.keyboard`, `luna.mouse`, `luna.gamepad`, and `luna.touch` API tables.
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
 
-pub struct LuaGamepadState(/* TODO: add key + state fields */);
+    // ── luna.keyboard ─────────────────────────────────────────────────────────
 
+    let keyboard = lua.create_table()?;
 
-impl LuaGamepadState {
-    /// Returns `true` if the button at `button` index is currently pressed.
-    ///
-    /// @param button : Button
+    // -- isDown --
+    /// Returns true if any of the given keys is currently held down.
+    /// @param keys : string...
     /// @return boolean
-    pub fn is_button_pressed(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current value of the analog axis at `axis` index.
-    ///
-    /// @param axis : Axis
+    let s = state.clone();
+    keyboard.set(
+        "isDown",
+        lua.create_function(move |_, args: Variadic<String>| {
+            Ok(s.borrow().keyboard.is_any_down(&args))
+        })?,
+    )?;
+
+    // -- isScancodeDown --
+    /// Returns whether the key with the given scancode is held.
+    /// @param scancode : string
+    /// @return boolean
+    let s = state.clone();
+    keyboard.set(
+        "isScancodeDown",
+        lua.create_function(move |_, scancode: String| {
+            Ok(s.borrow().keyboard.is_scancode_down(&scancode))
+        })?,
+    )?;
+
+    // -- setKeyRepeat --
+    /// Enables or disables key-repeat events.
+    /// @param enabled : boolean
+    /// @return nil
+    let s = state.clone();
+    keyboard.set(
+        "setKeyRepeat",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().keyboard.set_key_repeat(enabled);
+            Ok(())
+        })?,
+    )?;
+
+    // -- hasKeyRepeat --
+    /// Returns whether key-repeat is currently enabled.
+    /// @return boolean
+    let s = state.clone();
+    keyboard.set(
+        "hasKeyRepeat",
+        lua.create_function(move |_, ()| Ok(s.borrow().keyboard.has_key_repeat()))?,
+    )?;
+
+    // -- setTextInput --
+    /// Enables or disables Unicode text input mode.
+    /// @param enabled : boolean
+    /// @return nil
+    let s = state.clone();
+    keyboard.set(
+        "setTextInput",
+        lua.create_function(move |_, enabled: bool| {
+            s.borrow_mut().keyboard.set_text_input(enabled);
+            Ok(())
+        })?,
+    )?;
+
+    // -- hasTextInput --
+    /// Returns whether text input mode is currently active.
+    /// @return boolean
+    let s = state.clone();
+    keyboard.set(
+        "hasTextInput",
+        lua.create_function(move |_, ()| Ok(s.borrow().keyboard.has_text_input()))?,
+    )?;
+
+    // -- getScancodeFromKey --
+    /// Returns the hardware scancode for the given key name.
+    /// @param key : string
+    /// @return string?
+    keyboard.set(
+        "getScancodeFromKey",
+        lua.create_function(move |_, key: String| Ok(get_scancode_from_key(&key)))?,
+    )?;
+
+    // -- getKeyFromScancode --
+    /// Returns the key name for the given hardware scancode.
+    /// @param scancode : string
+    /// @return string?
+    keyboard.set(
+        "getKeyFromScancode",
+        lua.create_function(move |_, scancode: String| Ok(get_key_from_scancode(&scancode)))?,
+    )?;
+
+    // -- isModifierActive --
+    /// Returns whether the named modifier key is currently held.
+    /// @param modifier : string
+    /// @return boolean
+    let s = state.clone();
+    keyboard.set(
+        "isModifierActive",
+        lua.create_function(move |_, modifier: String| {
+            Ok(s.borrow().keyboard.is_modifier_active(&modifier))
+        })?,
+    )?;
+
+    luna.set("keyboard", keyboard)?;
+
+    // ── luna.mouse ────────────────────────────────────────────────────────────
+
+    let mouse = lua.create_table()?;
+
+    // -- getPosition --
+    /// Returns the current cursor position as (x, y).
+    /// @return number, number
+    let s = state.clone();
+    mouse.set(
+        "getPosition",
+        lua.create_function(move |_, ()| {
+            let st = s.borrow();
+            Ok((st.mouse.x, st.mouse.y))
+        })?,
+    )?;
+
+    // -- getX --
+    /// Returns the current mouse X position in window coordinates.
     /// @return number
-    pub fn get_axis_value(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether this gamepad is currently connected.
-    ///
-    ///
+    let s = state.clone();
+    mouse.set(
+        "getX",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.x))?,
+    )?;
+
+    // -- getY --
+    /// Returns the current mouse Y position in window coordinates.
+    /// @return number
+    let s = state.clone();
+    mouse.set(
+        "getY",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.y))?,
+    )?;
+
+    // -- isDown --
+    /// Returns whether the given mouse button is currently held down.
+    /// @param button : integer
     /// @return boolean
-    pub fn is_connected(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of distinct buttons that have been reported.
-    ///
-    ///
-    /// @return integer
-    pub fn get_button_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of distinct axes that have been reported.
-    ///
-    ///
-    /// @return integer
-    pub fn get_axis_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the d-pad hat direction string for the requested hat index.
-    ///
-    ///
-    /// @param hat : integer
-    pub fn get_hat(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
+    let s = state.clone();
+    mouse.set(
+        "isDown",
+        lua.create_function(move |_, button: usize| {
+            Ok(s.borrow().mouse.is_down(button.saturating_sub(1)))
+        })?,
+    )?;
 
-impl UserData for LuaGamepadState {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isButtonPressed", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAxisValue", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isConnected", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getButtonCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getAxisCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getHat", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- setVisible --
+    /// Shows or hides the operating-system mouse cursor.
+    /// @param visible : boolean
+    /// @return nil
+    let s = state.clone();
+    mouse.set(
+        "setVisible",
+        lua.create_function(move |_, visible: bool| {
+            s.borrow_mut().mouse.set_visible(visible);
+            Ok(())
+        })?,
+    )?;
 
-// ── LuaKeyboardState ────────────────────────────────────────────────────────────
-
-pub struct LuaKeyboardState(/* TODO: add key + state fields */);
-
-
-impl LuaKeyboardState {
-    /// Returns `true` if the given physical scancode is currently held down.
-    ///
-    /// @param scancode : str
+    // -- isVisible --
+    /// Returns whether the mouse cursor is currently visible.
     /// @return boolean
-    pub fn is_scancode_down(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if key repeat event delivery is enabled.
-    ///
-    ///
-    /// @return boolean
-    pub fn has_key_repeat(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if text input (IME) event delivery is enabled.
-    ///
-    ///
-    /// @return boolean
-    pub fn has_text_input(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if `key` is currently held down.
-    ///
-    /// @param key : Lowercase
-    /// @return boolean
-    pub fn is_down(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if the named modifier key is currently held.
-    ///
-    /// @param modifier : str
-    /// @return boolean
-    pub fn is_modifier_active(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
+    let s = state.clone();
+    mouse.set(
+        "isVisible",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.is_visible()))?,
+    )?;
 
-impl UserData for LuaKeyboardState {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isScancodeDown", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasKeyRepeat", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasTextInput", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isDown", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isModifierActive", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- setGrabbed --
+    /// Locks or unlocks the mouse cursor to the window.
+    /// @param grabbed : boolean
+    /// @return nil
+    let s = state.clone();
+    mouse.set(
+        "setGrabbed",
+        lua.create_function(move |_, grabbed: bool| {
+            s.borrow_mut().mouse.set_grabbed(grabbed);
+            Ok(())
+        })?,
+    )?;
 
-// ── LuaMouseState ────────────────────────────────────────────────────────────
-
-pub struct LuaMouseState(/* TODO: add key + state fields */);
-
-
-impl LuaMouseState {
-    /// Returns `true` if the button at `button` index is currently held down.
-    ///
-    /// @param button : Button
+    // -- isGrabbed --
+    /// Returns whether the mouse cursor is locked to the window.
     /// @return boolean
-    pub fn is_down(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether the cursor is visible. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_visible(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns whether the cursor is confined to the window.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_grabbed(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
+    let s = state.clone();
+    mouse.set(
+        "isGrabbed",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.is_grabbed()))?,
+    )?;
+
+    // -- setRelativeMode --
+    /// Enables or disables raw relative mouse motion mode.
+    /// @param relative : boolean
+    /// @return nil
+    let s = state.clone();
+    mouse.set(
+        "setRelativeMode",
+        lua.create_function(move |_, relative: bool| {
+            s.borrow_mut().mouse.set_relative_mode(relative);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getRelativeMode --
     /// Returns whether relative mouse mode is active.
-    ///
-    ///
     /// @return boolean
-    pub fn get_relative_mode(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current system cursor shape.
-    ///
-    ///
-    /// @return SystemCursor
-    pub fn get_cursor(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+    let s = state.clone();
+    mouse.set(
+        "getRelativeMode",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.get_relative_mode()))?,
+    )?;
 
-impl UserData for LuaMouseState {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isDown", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isVisible", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isGrabbed", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRelativeMode", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getCursor", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- setPosition --
+    /// Moves the mouse cursor to the given window-space position.
+    /// @param x : number
+    /// @param y : number
+    /// @return nil
+    let s = state.clone();
+    mouse.set(
+        "setPosition",
+        lua.create_function(move |_, (x, y): (f32, f32)| {
+            s.borrow_mut().mouse.request_position(x, y);
+            Ok(())
+        })?,
+    )?;
 
-// ── LuaTouchState ────────────────────────────────────────────────────────────
+    // -- setCursor --
+    /// Sets the active mouse cursor from a Cursor handle, name string, or nil to reset.
+    /// @param cursor : Cursor?
+    /// @return nil
+    let s = state.clone();
+    mouse.set(
+        "setCursor",
+        lua.create_function(move |_, cursor_val: LuaValue| {
+            let mut st = s.borrow_mut();
+            match cursor_val {
+                LuaValue::UserData(ud) => {
+                    if let Ok(cursor) = ud.borrow::<LuaCursor>() {
+                        match &cursor.kind {
+                            CursorKind::System(sc) => st.mouse.set_cursor(*sc),
+                            CursorKind::Custom { .. } => {
+                                st.mouse.set_cursor(SystemCursor::Arrow);
+                            }
+                        }
+                    }
+                }
+                LuaValue::String(name_str) => {
+                    st.mouse.set_cursor(SystemCursor::from_name(
+                        name_str.to_str().unwrap_or("arrow"),
+                    ));
+                }
+                LuaValue::Nil => {
+                    st.mouse.set_cursor(SystemCursor::Arrow);
+                }
+                _ => {}
+            }
+            Ok(())
+        })?,
+    )?;
 
-pub struct LuaTouchState(/* TODO: add key + state fields */);
+    // -- newCursor --
+    /// Creates a custom mouse cursor from RGBA pixel data.
+    /// @param pixels : table
+    /// @param width : integer
+    /// @param height : integer
+    /// @param hotx : integer?
+    /// @param hoty : integer?
+    /// @return Cursor
+    mouse.set(
+        "newCursor",
+        lua.create_function(
+            move |_,
+                  (pixels, width, height, hotx, hoty): (
+                Vec<u8>,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                Ok(LuaCursor {
+                    kind: CursorKind::Custom {
+                        pixels,
+                        width,
+                        height,
+                        hotx: hotx.unwrap_or(0),
+                        hoty: hoty.unwrap_or(0),
+                    },
+                })
+            },
+        )?,
+    )?;
 
+    // -- getSystemCursor --
+    /// Returns a system cursor object for the named cursor shape.
+    /// @param name : string
+    /// @return Cursor
+    mouse.set(
+        "getSystemCursor",
+        lua.create_function(move |_, name: String| {
+            Ok(LuaCursor {
+                kind: CursorKind::System(SystemCursor::from_name(&name)),
+            })
+        })?,
+    )?;
 
-impl LuaTouchState {
-    /// Returns all active touch points. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return table
-    pub fn get_touches(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns a specific touch point by ID. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param id : integer
-    /// @return TouchPoint?
-    pub fn get_touch(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of active touches. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
+    // -- isCursorSupported --
+    /// Returns whether cursor customisation is supported on this platform.
+    /// @return boolean
+    mouse.set(
+        "isCursorSupported",
+        lua.create_function(move |_, ()| Ok(is_cursor_supported()))?,
+    )?;
+
+    // -- getCursor --
+    /// Returns the name of the currently active system cursor.
+    /// @return string
+    let s = state.clone();
+    mouse.set(
+        "getCursor",
+        lua.create_function(move |_, ()| {
+            Ok(s.borrow().mouse.get_cursor().as_str().to_string())
+        })?,
+    )?;
+
+    // -- getWheelDelta --
+    /// Returns the mouse scroll wheel delta (dx, dy) since last frame.
+    /// @return number, number
+    let s = state.clone();
+    mouse.set(
+        "getWheelDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.get_scroll()))?,
+    )?;
+
+    luna.set("mouse", mouse)?;
+
+    // ── luna.gamepad ──────────────────────────────────────────────────────────
+
+    let gamepad = lua.create_table()?;
+
+    // -- getCount --
+    /// Returns the number of connected gamepads.
     /// @return integer
-    pub fn get_touch_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+    let s = state.clone();
+    gamepad.set(
+        "getCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().gamepads.len()))?,
+    )?;
 
-impl UserData for LuaTouchState {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getTouches", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getTouch", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getTouchCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- getJoystickCount --
+    /// Returns the number of tracked gamepad slots.
+    /// @return integer
+    let s = state.clone();
+    gamepad.set(
+        "getJoystickCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().gamepads.len()))?,
+    )?;
 
-// ── luna.input.* functions ──────────────────────────────────────────
+    // -- getJoysticks --
+    /// Returns a list of connected gamepad IDs.
+    /// @return table
+    let s = state.clone();
+    gamepad.set(
+        "getJoysticks",
+        lua.create_function(move |lua, ()| {
+            let st = s.borrow();
+            let tbl = lua.create_table()?;
+            for gp in &st.gamepads {
+                if gp.connected {
+                    tbl.push(gp.id as i64)?;
+                }
+            }
+            Ok(tbl)
+        })?,
+    )?;
 
-/// Updates the pressed state for a specific button.
-///
-///
-/// @param button : Button
-/// @param pressed : true
-pub fn update_button(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- isConnected --
+    /// Returns whether the gamepad with the given ID is connected.
+    /// @param id : integer
+    /// @return boolean
+    let s = state.clone();
+    gamepad.set(
+        "isConnected",
+        lua.create_function(move |_, id: usize| {
+            Ok(s.borrow().gamepads.get(id).is_some_and(|gp| gp.connected))
+        })?,
+    )?;
 
-/// Updates the value for a specific analog axis.
-///
-///
-/// @param axis : Axis
-/// @param value : Axis
-pub fn update_axis(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getName --
+    /// Returns the human-readable name of a gamepad.
+    /// @param id : integer
+    /// @return string
+    let s = state.clone();
+    gamepad.set(
+        "getName",
+        lua.create_function(move |_, id: usize| {
+            let st = s.borrow();
+            Ok(st
+                .gamepads
+                .get(id)
+                .map_or_else(|| "Unknown".to_string(), |gp| gp.name.clone()))
+        })?,
+    )?;
 
-/// Converts a `gilrs::Button` to a engine-compatible string name.
-///
-///
-/// @param button : gilrs::Button
-pub fn gilrs_button_to_string(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- isGamepad --
+    /// Returns whether the joystick at the given slot is a recognized gamepad.
+    /// @param id : integer
+    /// @return boolean
+    let s = state.clone();
+    gamepad.set(
+        "isGamepad",
+        lua.create_function(move |_, id: usize| {
+            Ok(s.borrow().gamepads.get(id).is_some_and(|gp| gp.connected))
+        })?,
+    )?;
 
-/// Converts a `gilrs::Axis` to a engine-compatible string name.
-///
-///
-/// @param axis : gilrs::Axis
-pub fn gilrs_axis_to_string(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getButtonCount --
+    /// Returns the total number of buttons on the gamepad.
+    /// @param id : integer
+    /// @return integer
+    let s = state.clone();
+    gamepad.set(
+        "getButtonCount",
+        lua.create_function(move |_, id: usize| {
+            Ok(s.borrow().gamepads.get(id).map_or(0, |gp| gp.get_button_count()))
+        })?,
+    )?;
 
-/// Inserts or replaces the mapping string for the given GUID.
-///
-///
-/// @param guid : SDL-format
-/// @param mapping : Full
-pub fn set_mapping(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getAxisCount --
+    /// Returns the total number of analog axes on the gamepad.
+    /// @param id : integer
+    /// @return integer
+    let s = state.clone();
+    gamepad.set(
+        "getAxisCount",
+        lua.create_function(move |_, id: usize| {
+            Ok(s.borrow().gamepads.get(id).map_or(0, |gp| gp.get_axis_count()))
+        })?,
+    )?;
 
-/// Parses a plain-text GameControllerDB file and merges entries into this store.
-///
-/// Lines that start with `#` are treated as comments and skipped.
-/// Empty lines are also skipped.  Returns the number of mappings loaded.
-///
-/// @param path : File
-/// @return Result<usize
-pub fn load_from_file(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- isDown --
+    /// Returns whether the given button on the gamepad is currently held.
+    /// @param id : integer
+    /// @param button : integer
+    /// @return boolean
+    let s = state.clone();
+    gamepad.set(
+        "isDown",
+        lua.create_function(move |_, (id, button): (usize, u32)| {
+            Ok(s.borrow()
+                .gamepads
+                .get(id)
+                .is_some_and(|gp| gp.is_button_pressed(button)))
+        })?,
+    )?;
 
-/// Records that `key` is now held down, adding it to the pressed list if newly down.
-///
-///
-/// @param key : Lowercase
-pub fn set_key_down(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getAxis --
+    /// Returns the current value (-1 to 1) of a gamepad analog axis.
+    /// @param id : integer
+    /// @param axis : integer
+    /// @return number
+    let s = state.clone();
+    gamepad.set(
+        "getAxis",
+        lua.create_function(move |_, (id, axis): (usize, u32)| {
+            Ok(s.borrow()
+                .gamepads
+                .get(id)
+                .map_or(0.0, |gp| gp.get_axis_value(axis)))
+        })?,
+    )?;
 
-/// Records that `key` was released, adding it to the released list if it was down.
-///
-///
-/// @param key : Lowercase
-pub fn set_key_up(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- isVibrationSupported --
+    /// Returns whether the gamepad supports haptic vibration.
+    /// @param id : integer
+    /// @return boolean
+    gamepad.set(
+        "isVibrationSupported",
+        lua.create_function(move |_, _id: usize| Ok(false))?,
+    )?;
 
-/// Sets the modifier bitmask when modifiers change.
-///
-///
-/// @param shift : boolean
-/// @param ctrl : boolean
-/// @param alt : boolean
-/// @param meta : boolean
-pub fn set_modifiers(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getGUID --
+    /// Returns the hardware GUID string of the gamepad.
+    /// @param id : integer
+    /// @return string
+    let s = state.clone();
+    gamepad.set(
+        "getGUID",
+        lua.create_function(move |_, id: usize| {
+            let st = s.borrow();
+            Ok(st
+                .gamepads
+                .get(id)
+                .map_or_else(String::new, |gp| gp.get_guid().to_string()))
+        })?,
+    )?;
 
-/// Converts a `winit 0.30` logical `Key` to the lowercase string name used by the `luna.*` API.
-///
-/// Returns `Some(name)` for recognised keys, `None` for keys without a mapping
-/// (which the engine skips silently).
-///
-/// @param key : A
-/// @return string?
-pub fn winit_key_to_string(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getHat --
+    /// Returns the direction string of a hat switch on the gamepad.
+    /// @param id : integer
+    /// @param hat : integer
+    /// @return string
+    let s = state.clone();
+    gamepad.set(
+        "getHat",
+        lua.create_function(move |_, (id, hat): (usize, u32)| {
+            let st = s.borrow();
+            Ok(st
+                .gamepads
+                .get(id)
+                .map_or_else(|| "c".to_string(), |gp| gp.get_hat(hat).to_string()))
+        })?,
+    )?;
 
-/// Converts a `winit 0.30` physical `KeyCode` to a engine-compatible scancode string.
-///
-/// Scancodes represent physical key positions and are layout-independent.
-///
-/// @param code : A
-/// @return Option<
-pub fn winit_scancode_to_string(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- setVibration --
+    /// Triggers haptic rumble (currently a no-op stub).
+    /// @param args : any...
+    /// @return boolean
+    gamepad.set(
+        "setVibration",
+        lua.create_function(move |_, _args: LuaMultiValue| Ok(false))?,
+    )?;
 
-/// Parses a cursor name string into a `SystemCursor` variant.
-///
-/// @param name : str
-/// @return Self
-pub fn from_name(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- setBackgroundEvents --
+    /// Enable or disable receiving gamepad events when the window is not focused.
+    /// @param enable : boolean
+    /// @return nil
+    let s = state.clone();
+    gamepad.set(
+        "setBackgroundEvents",
+        lua.create_function(move |_, enable: bool| {
+            s.borrow_mut().gamepad_background_events = enable;
+            Ok(())
+        })?,
+    )?;
 
-/// Updates the cursor position. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn update_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getBackgroundEvents --
+    /// Returns whether background gamepad events are enabled.
+    /// @return boolean
+    let s = state.clone();
+    gamepad.set(
+        "getBackgroundEvents",
+        lua.create_function(move |_, ()| Ok(s.borrow().gamepad_background_events))?,
+    )?;
 
-/// Requests that the backend cursor move to a new position.
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn request_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- setGamepadMapping --
+    /// Stores or replaces the SDL2 GameControllerDB mapping string for the given GUID.
+    /// @param guid : string
+    /// @param mapping : string
+    /// @return nil
+    let s = state.clone();
+    gamepad.set(
+        "setGamepadMapping",
+        lua.create_function(move |_, (guid, mapping): (String, String)| {
+            s.borrow_mut().gamepad_mappings.set_mapping(&guid, &mapping);
+            Ok(())
+        })?,
+    )?;
 
-/// Records a button press or release event, updating the transient pressed/released flags.
-///
-///
-/// @param button : Button
-/// @param pressed : true
-pub fn set_button(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getGamepadMappingString --
+    /// Returns the stored mapping string for the given GUID, or nil.
+    /// @param guid : string
+    /// @return string?
+    let s = state.clone();
+    gamepad.set(
+        "getGamepadMappingString",
+        lua.create_function(move |_, guid: String| {
+            Ok(s.borrow()
+                .gamepad_mappings
+                .get_mapping_string(&guid)
+                .map(|m| m.to_string()))
+        })?,
+    )?;
 
-/// Sets cursor visibility. Replaces the current visible value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param visible : boolean
-pub fn set_visible(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- loadGamepadMappings --
+    /// Loads SDL2 GameControllerDB-format mappings from a file.
+    /// @param path : string
+    /// @return integer
+    let s = state.clone();
+    gamepad.set(
+        "loadGamepadMappings",
+        lua.create_function(move |_, path: String| {
+            s.borrow_mut()
+                .gamepad_mappings
+                .load_from_file(&path)
+                .map_err(LuaError::external)
+        })?,
+    )?;
 
-/// Sets whether the cursor is confined to the window.
-///
-///
-/// @param grabbed : boolean
-pub fn set_grabbed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- saveGamepadMappings --
+    /// Saves all stored gamepad mappings to a plain-text file.
+    /// @param path : string
+    /// @return nil
+    let s = state.clone();
+    gamepad.set(
+        "saveGamepadMappings",
+        lua.create_function(move |_, path: String| {
+            s.borrow()
+                .gamepad_mappings
+                .save_to_file(&path)
+                .map_err(LuaError::external)?;
+            Ok(())
+        })?,
+    )?;
 
-/// Sets relative (FPS) mouse mode. Replaces the current relative mode value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param relative : boolean
-pub fn set_relative_mode(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    luna.set("gamepad", gamepad)?;
 
-/// Accumulates scroll delta for the current frame.
-///
-///
-/// @param dx : number
-/// @param dy : number
-pub fn accumulate_scroll(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // ── luna.touch ────────────────────────────────────────────────────────────
 
-/// Sets the system cursor shape. Replaces the current cursor value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param cursor : SystemCursor
-pub fn set_cursor(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    let touch = lua.create_table()?;
 
-/// Returns whether cursor customisation is supported on this platform.
-///
-///
-/// @return boolean
-pub fn is_cursor_supported(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
+    // -- getTouches --
+    /// Returns a table of active touch points with id, x, y, and pressure fields.
+    /// @return table
+    let s = state.clone();
+    touch.set(
+        "getTouches",
+        lua.create_function(move |lua, ()| {
+            let st = s.borrow();
+            let touches = st.touch.get_touches();
+            let tbl = lua.create_table()?;
+            for (i, tp) in touches.iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("id", tp.id)?;
+                entry.set("x", tp.x)?;
+                entry.set("y", tp.y)?;
+                entry.set("pressure", tp.pressure)?;
+                tbl.set(i + 1, entry)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
 
-/// Registers or updates a touch point. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param id : integer
-/// @param x : number
-/// @param y : number
-/// @param pressure : number
-pub fn touch_start(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getPosition --
+    /// Returns the position (x, y) of the touch with the given ID.
+    /// @param id : integer
+    /// @return number, number
+    let s = state.clone();
+    touch.set(
+        "getPosition",
+        lua.create_function(move |_, id: u64| {
+            let st = s.borrow();
+            let (x, y) = st
+                .touch
+                .get_touch(id)
+                .map_or((0.0, 0.0), |tp| (tp.x, tp.y));
+            Ok((x, y))
+        })?,
+    )?;
 
-/// Updates the position of an existing touch point.
-///
-///
-/// @param id : integer
-/// @param x : number
-/// @param y : number
-/// @param pressure : number
-pub fn touch_move(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getPressure --
+    /// Returns the pressure (0-1) of the touch with the given ID.
+    /// @param id : integer
+    /// @return number
+    let s = state.clone();
+    touch.set(
+        "getPressure",
+        lua.create_function(move |_, id: u64| {
+            Ok(s.borrow().touch.get_touch(id).map_or(0.0, |tp| tp.pressure))
+        })?,
+    )?;
 
-/// Removes a touch point. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param id : integer
-pub fn touch_end(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
+    // -- getTouchCount --
+    /// Returns the number of currently active touch points.
+    /// @return integer
+    let s = state.clone();
+    touch.set(
+        "getTouchCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().touch.get_touch_count()))?,
+    )?;
 
-/// Registers the `luna.input` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
-    let tbl = lua.create_table()?;
-    tbl.set("updateButton", lua.create_function(update_button)?)?;
-    tbl.set("updateAxis", lua.create_function(update_axis)?)?;
-    tbl.set("gilrsButtonToString", lua.create_function(gilrs_button_to_string)?)?;
-    tbl.set("gilrsAxisToString", lua.create_function(gilrs_axis_to_string)?)?;
-    tbl.set("setMapping", lua.create_function(set_mapping)?)?;
-    tbl.set("loadFromFile", lua.create_function(load_from_file)?)?;
-    tbl.set("setKeyDown", lua.create_function(set_key_down)?)?;
-    tbl.set("setKeyUp", lua.create_function(set_key_up)?)?;
-    tbl.set("setModifiers", lua.create_function(set_modifiers)?)?;
-    tbl.set("winitKeyToString", lua.create_function(winit_key_to_string)?)?;
-    tbl.set("winitScancodeToString", lua.create_function(winit_scancode_to_string)?)?;
-    tbl.set("fromName", lua.create_function(from_name)?)?;
-    tbl.set("updatePosition", lua.create_function(update_position)?)?;
-    tbl.set("requestPosition", lua.create_function(request_position)?)?;
-    tbl.set("setButton", lua.create_function(set_button)?)?;
-    tbl.set("setVisible", lua.create_function(set_visible)?)?;
-    tbl.set("setGrabbed", lua.create_function(set_grabbed)?)?;
-    tbl.set("setRelativeMode", lua.create_function(set_relative_mode)?)?;
-    tbl.set("accumulateScroll", lua.create_function(accumulate_scroll)?)?;
-    tbl.set("setCursor", lua.create_function(set_cursor)?)?;
-    tbl.set("isCursorSupported", lua.create_function(is_cursor_supported)?)?;
-    tbl.set("touchStart", lua.create_function(touch_start)?)?;
-    tbl.set("touchMove", lua.create_function(touch_move)?)?;
-    tbl.set("touchEnd", lua.create_function(touch_end)?)?;
-    luna.set("input", tbl)?;
+    luna.set("touch", touch)?;
+
     Ok(())
 }

@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Core Engine Subsystems |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.physics` |
 | **Source** | `src/physics/` |
+| **Rust Tests** | `tests/unit/physics_tests.rs`                    |
 | **Tests** | `tests/physics_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_physics.lua` |
 
@@ -183,3 +185,42 @@ Exposed under `luna.physics.*` by `src/lua_api/physics_api/`.
 | `struct` | 6 |
 | **Total** | **13** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    world = luna.physics.newWorld(0, 9.8)
+
+    -- Ground platform
+    ground = world:newBody(400, 580, "static")
+    ground:setShape("rectangle", 800, 20)
+
+    -- Dynamic box
+    box = world:newBody(400, 100, "dynamic")
+    box:setShape("rectangle", 40, 40)
+    box:setLinearDamping(0.1)
+end
+
+function luna.update(dt)
+    world:step(dt)
+    local x, y = box:getPosition()
+    local vx, vy = box:getLinearVelocity()
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                               |
+|-----------|-----------    |-----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`, `PhysicsWorldKey`, `PhysicsBodyKey` |
+| `math`    | Imports from  | `Vec2`, `Rect` for body positions and shape data   |
+| `graphics`| Related       | Physics debug rendering draws body outlines via draw commands |
+| `lua_api` | Imported by   | `src/lua_api/physics_api.rs` registers `luna.physics.*` |
+
+## Notes
+
+- rapier2d 0.32 is the underlying engine; do not call rapier types directly from Lua-facing code.
+- The body sync-buffer pattern: Lua sets properties on `Body` → synced to rapier at `world:step()` → results read back.
+- `World::step(dt)` should be called once per frame with the real delta time (not fixed).
+- Sensor bodies generate contact events but exert no forces.
+- The physics world cannot be shared across threads; create separate worlds per thread if needed.

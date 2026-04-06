@@ -70,7 +70,7 @@ sudo pacman -S libxkbcommon wayland alsa-lib
 ```bash
 cargo build                            # Debug build
 cargo build --release                  # Release build
-cargo run -- examples/hello_world      # Run with example
+cargo run -- demos/hello_world      # Run with example
 ```
 
 ### Cross-Compilation to Linux ARM64 from Windows
@@ -123,7 +123,7 @@ xcode-select --install
 
 # Then just:
 cargo build
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
 
 Xcode Command Line Tools provide the linker (`ld`), CoreAudio SDK headers, and the Cocoa/AppKit frameworks that minifb links against.

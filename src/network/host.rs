@@ -9,7 +9,7 @@
 use std::net::{SocketAddr, UdpSocket};
 use std::time::Duration;
 
-use rusty_enet::{self as enet, Host, HostSettings, Packet, PeerID};
+use rusty_enet::{self as enet, Host, HostSettings, Packet, PacketKind, PeerID};
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;
@@ -81,7 +81,13 @@ impl NetworkHost {
     ) -> Result<Self, NetworkError> {
         let peers = peer_count.unwrap_or(DEFAULT_PEERS);
         if peers > MAX_PEERS {
-            log_msg!(error, NW04_NET_ERROR, "peer limit: {} > {}", peers, MAX_PEERS);
+            log_msg!(
+                error,
+                NW04_NET_ERROR,
+                "peer limit: {} > {}",
+                peers,
+                MAX_PEERS
+            );
             return Err(NetworkError::PeerLimitExceeded {
                 requested: peers,
                 max: MAX_PEERS,
@@ -197,6 +203,34 @@ impl NetworkHost {
         Ok(())
     }
 
+    /// Send raw bytes to a specific peer with a reliability flag.
+    ///
+    /// Convenience wrapper around [`send`](Self::send) that constructs the
+    /// [`Packet`] internally so callers don't need `rusty_enet` types.
+    ///
+    /// # Parameters
+    /// - `peer_id` — `PeerID`: target peer.
+    /// - `channel_id` — `u8`: channel to send on.
+    /// - `data` — `&[u8]`: payload bytes.
+    /// - `reliable` — `bool`: `true` for reliable, `false` for unreliable sequenced.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
+    pub fn send_bytes(
+        &mut self,
+        peer_id: PeerID,
+        channel_id: u8,
+        data: &[u8],
+        reliable: bool,
+    ) -> Result<(), NetworkError> {
+        let kind = if reliable {
+            PacketKind::Reliable
+        } else {
+            PacketKind::Unreliable { sequenced: true }
+        };
+        self.send(peer_id, channel_id, Packet::new(data, kind))
+    }
+
     /// Broadcast a packet to all connected peers.
     ///
     /// # Parameters
@@ -209,6 +243,33 @@ impl NetworkHost {
         let host = self.host_mut()?;
         host.broadcast(channel_id, packet);
         Ok(())
+    }
+
+    /// Broadcast raw bytes to all connected peers with a reliability flag.
+    ///
+    /// Convenience wrapper around [`broadcast`](Self::broadcast) that constructs
+    /// the [`Packet`] internally.
+    ///
+    /// # Parameters
+    /// - `channel_id` — `u8`: channel to broadcast on.
+    /// - `data` — `&[u8]`: payload bytes.
+    /// - `reliable` — `bool`: `true` for reliable, `false` for unreliable sequenced.
+    ///
+    /// # Returns
+    /// `Result<(), NetworkError>`.
+    pub fn broadcast_bytes(
+        &mut self,
+        channel_id: u8,
+        data: &[u8],
+        reliable: bool,
+    ) -> Result<(), NetworkError> {
+        let kind = if reliable {
+            PacketKind::Reliable
+        } else {
+            PacketKind::Unreliable { sequenced: true }
+        };
+        let packet = Packet::new(data, kind);
+        self.broadcast(channel_id, &packet)
     }
 
     /// Flush all queued packets without waiting for the next `service()`.

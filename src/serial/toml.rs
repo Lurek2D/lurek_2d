@@ -30,9 +30,7 @@ pub fn from_toml(s: &str) -> Result<SerialValue, String> {
 pub fn to_toml(val: &SerialValue) -> Result<String, String> {
     let tv = serial_to_toml(val)?;
     match &tv {
-        toml::Value::Table(t) => {
-            toml::to_string(t).map_err(|e| format!("TOML encode error: {e}"))
-        }
+        toml::Value::Table(t) => toml::to_string(t).map_err(|e| format!("TOML encode error: {e}")),
         _ => Err("to_toml: root value must be a map".to_string()),
     }
 }
@@ -45,9 +43,7 @@ fn toml_to_serial(v: toml::Value) -> SerialValue {
         toml::Value::Float(f) => SerialValue::Float(f),
         toml::Value::Boolean(b) => SerialValue::Bool(b),
         toml::Value::Datetime(dt) => SerialValue::Str(dt.to_string()),
-        toml::Value::Array(arr) => {
-            SerialValue::Seq(arr.into_iter().map(toml_to_serial).collect())
-        }
+        toml::Value::Array(arr) => SerialValue::Seq(arr.into_iter().map(toml_to_serial).collect()),
         toml::Value::Table(map) => {
             let mut ordered = IndexMap::new();
             for (k, v) in map {

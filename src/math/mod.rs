@@ -21,8 +21,10 @@ pub mod geometry;
 
 /// 3x3 column-major matrix for 2D transforms (translate, rotate, scale).
 pub mod mat3;
-/// 2D Perlin and Simplex noise generators for procedural content.
-pub mod noise;
+/// Standalone noise functions: `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, `simplex_noise_2d`, `simplex_noise_3d`, `fbm`.
+pub mod noise_functions;
+/// Configurable noise generator: `NoiseGenerator`, `NoiseKind`, `FractalType`, `DistType`, `MapGenOptions`.
+pub mod noise_generator;
 /// Polygon utilities: ear-clipping triangulation and convexity testing.
 pub mod polygon;
 
@@ -43,7 +45,10 @@ pub use bezier::BezierCurve;
 pub use color::{gamma_to_linear, linear_to_gamma, Color};
 pub use geometry::*;
 pub use mat3::Mat3;
-pub use noise::NoiseGenerator;
+pub use noise_functions::{
+    fbm, perlin2d, perlin3d, perlin4d, simplex2d, simplex_noise_2d, simplex_noise_3d,
+};
+pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 pub use random::RandomGenerator;
 pub use rect::Rect;
 pub use spatial_hash::SpatialHash;

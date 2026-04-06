@@ -8,9 +8,9 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::thread;
 
-use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaChannel};
 use crate::engine::log_messages::{TH01_WORKER_INIT, TH02_WORKER_START, TH04_WORKER_ERROR};
 use crate::log_msg;
+use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaChannel};
 
 /// Execution state of a background Lua thread.
 ///

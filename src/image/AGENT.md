@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.image` |
 | **Source** | `src/image/` |
+| **Rust Tests** | `tests/unit/image_tests.rs`                    |
 | **Tests** | `tests/image_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_image.lua` |
 
@@ -54,6 +56,8 @@ ImageData (CPU pixel buffer)
 | File | Purpose |
 |------|---------|
 | `image_data.rs` | CPU-side RGBA8 pixel buffer for image manipulation |
+| `compressed.rs` | TODO: describe purpose of compressed.rs |
+| `palette_lut.rs` | TODO: describe purpose of palette_lut.rs |
 
 ## Submodules
 
@@ -91,3 +95,43 @@ Exposed under `luna.image.*` by `src/lua_api/image_api/`.
 | `struct` | 1 |
 | **Total** | **2** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    -- Create CPU-side pixel buffer
+    imgdata = luna.image.newImageData(64, 64)
+
+    -- Fill with gradient
+    for y = 0, 63 do
+        for x = 0, 63 do
+            imgdata:setPixel(x, y, x/63, y/63, 0, 1)
+        end
+    end
+
+    -- Upload to GPU for rendering
+    tex = luna.graphics.newImage(imgdata)
+end
+
+function luna.draw()
+    luna.graphics.draw(tex, 100, 100)
+end
+```
+
+## References
+
+| Module     | Relationship  | Notes                                              |
+|------------|---------------|----------------------------------------------------|
+| `engine`   | Imports from  | Uses `SharedState`                                 |
+| `math`     | Imports from  | `Color`, `Rect` for pixel operations               |
+| `graphics` | Related       | `image` is CPU-side; `graphics` uploads `ImageData` to GPU via `newImage(imgdata)` |
+| `data`     | Related       | `data` holds raw bytes; `image` decodes them into RGBA pixel buffers |
+| `lua_api`  | Imported by   | `src/lua_api/image_api.rs` registers `luna.image.*` |
+
+## Notes
+
+- `ImageData` is a CPU-side RGBA8 buffer; it has no GPU resources until `luna.graphics.newImage(imgdata)` is called.
+- `mapPixel(fn)` calls the Lua function for every pixel — avoid for large images (slow Lua→Rust boundary overhead).
+- PNG encoding via `encode("png")` is blocking; offload to a thread worker for non-blocking export.
+- `palette_lut` provides LUT-based colour palette swapping (e.g., team colour recolouring).
+- `compressed` provides hardware-compressed texture formats (BC7, ETC2) via the `image` crate's DXT encoder.

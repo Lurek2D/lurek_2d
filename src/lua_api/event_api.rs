@@ -1,178 +1,300 @@
-//! `luna.event` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/event/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.event` — Event queue polling and pub-sub signal dispatching.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::event::{Event, EventArg, Signal};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------------------------
 
-// ── LuaEventQueue ────────────────────────────────────────────────────────────
-
-pub struct LuaEventQueue(/* TODO: add key + state fields */);
-
-
-impl LuaEventQueue {
-    /// Check if the queue is empty. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_empty(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get the number of events in the queue.
-    ///
-    ///
-    /// @return integer
-    pub fn len(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+/// Converts a [`LuaValue`] to an [`EventArg`] for queue storage.
+fn lua_value_to_event_arg(val: &LuaValue) -> LuaResult<EventArg> {
+    match val {
+        LuaValue::String(s) => Ok(EventArg::Str(
+            s.to_str()
+                .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                .to_string(),
+        )),
+        LuaValue::Integer(n) => Ok(EventArg::Num(*n as f64)),
+        LuaValue::Number(n) => Ok(EventArg::Num(*n)),
+        LuaValue::Boolean(b) => Ok(EventArg::Bool(*b)),
+        _ => Ok(EventArg::Nil),
     }
 }
 
-impl UserData for LuaEventQueue {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isEmpty", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("len", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Converts an [`Event`] into a Lua multi-value (name followed by args).
+fn event_to_lua_multi<'lua>(lua: &'lua Lua, event: &Event) -> LuaResult<LuaMultiValue<'lua>> {
+    let mut values = Vec::with_capacity(1 + event.args.len());
+    values.push(LuaValue::String(lua.create_string(&event.name)?));
+    for arg in &event.args {
+        let val = match arg {
+            EventArg::Str(s) => LuaValue::String(lua.create_string(s)?),
+            EventArg::Num(n) => LuaValue::Number(*n),
+            EventArg::Bool(b) => LuaValue::Boolean(*b),
+            EventArg::Nil => LuaValue::Nil,
+        };
+        values.push(val);
+    }
+    Ok(LuaMultiValue::from_vec(values))
+}
+
+// -------------------------------------------------------------------------------
+// LuaSignal UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Signal`] with registry-stored callbacks.
+#[derive(Clone)]
+pub struct LuaSignal {
+    inner: Rc<RefCell<Signal>>,
+    callbacks: Rc<RefCell<HashMap<u64, LuaRegistryKey>>>,
+}
+
+impl LuaUserData for LuaSignal {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- register --
+        /// Registers a callback for the named event and returns its handle ID.
+        /// @param name : string
+        /// @param callback : function
+        /// @return integer
+        methods.add_method(
+            "register",
+            |lua, this, (name, callback): (String, LuaFunction)| {
+                let key = lua.create_registry_value(callback)?;
+                let handle = this.inner.borrow_mut().subscribe(&name);
+                this.callbacks.borrow_mut().insert(handle, key);
+                Ok(handle)
+            },
+        );
+
+        // -- emit --
+        /// Emits the named event, calling all registered callbacks with extra arguments.
+        /// @param name : string
+        /// @return nil
+        methods.add_method("emit", |lua, this, args: LuaMultiValue| {
+            let mut iter = args.into_iter();
+            let name: String = match iter.next() {
+                Some(LuaValue::String(s)) => s
+                    .to_str()
+                    .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                    .to_string(),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "Signal:emit() requires a string event name as first argument".into(),
+                    ))
+                }
+            };
+            let extra_args: Vec<LuaValue> = iter.collect();
+            let handles = this.inner.borrow().get_handles(&name);
+            let callbacks = this.callbacks.borrow();
+            for handle in handles {
+                if let Some(key) = callbacks.get(&handle) {
+                    let func: LuaFunction = lua.registry_value(key)?;
+                    func.call::<_, ()>(LuaMultiValue::from_vec(extra_args.clone()))?;
+                }
+            }
+            Ok(())
+        });
+
+        // -- remove --
+        /// Removes a subscription by handle ID.
+        /// @param handle : integer
+        /// @return boolean
+        methods.add_method("remove", |lua, this, handle: u64| {
+            let removed = this.inner.borrow_mut().remove(handle);
+            if removed {
+                if let Some(key) = this.callbacks.borrow_mut().remove(&handle) {
+                    lua.remove_registry_value(key)?;
+                }
+            }
+            Ok(removed)
+        });
+
+        // -- clear --
+        /// Removes all callbacks for the named event.
+        /// @param name : string
+        /// @return integer
+        methods.add_method("clear", |lua, this, name: String| {
+            let handles = this.inner.borrow().get_handles(&name);
+            let count = this.inner.borrow_mut().clear(&name);
+            let mut cbs = this.callbacks.borrow_mut();
+            for handle in handles {
+                if let Some(key) = cbs.remove(&handle) {
+                    lua.remove_registry_value(key)?;
+                }
+            }
+            Ok(count)
+        });
+
+        // -- clearAll --
+        /// Removes all callbacks across all events.
+        /// @return integer
+        methods.add_method("clearAll", |lua, this, ()| {
+            let count = this.inner.borrow_mut().clear_all();
+            let mut cbs = this.callbacks.borrow_mut();
+            for (_, key) in cbs.drain() {
+                lua.remove_registry_value(key)?;
+            }
+            Ok(count)
+        });
+
+        // -- getCount --
+        /// Returns the callback count for the named event.
+        /// @param name : string
+        /// @return integer
+        methods.add_method("getCount", |_, this, name: String| {
+            Ok(this.inner.borrow().get_count(&name))
+        });
+
+        // -- getTotalCount --
+        /// Returns the total callback count across all events.
+        /// @return integer
+        methods.add_method("getTotalCount", |_, this, ()| {
+            Ok(this.inner.borrow().get_total_count())
+        });
+
     }
 }
 
-// ── LuaSignal ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-pub struct LuaSignal(/* TODO: add key + state fields */);
-
-
-impl LuaSignal {
-    /// Returns the handles registered for the given event name (in registration order).
-    ///
-    /// Returns an empty slice if no subscriptions exist for the name.
-    ///
-    /// @param name : str
-    /// @return table
-    pub fn get_handles(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the number of subscriptions for the given event name.
-    ///
-    /// @param name : str
-    /// @return integer
-    pub fn get_count(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the total number of subscriptions across all event names.
-    ///
-    ///
-    /// @return integer
-    pub fn get_total_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaSignal {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getHandles", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getTotalCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.event.* functions ──────────────────────────────────────────
-
-/// Push an event onto the queue. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param event : Event
-pub fn push(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Push an event by name and arguments. The insertion is O(1) amortised unless a resize is triggered.
-///
-///
-/// @param name : str
-/// @param args : table
-pub fn push_event(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Poll the next event from the queue. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @return Event?
-pub fn poll(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Blocks until an event is available or `timeout_ms` milliseconds elapse.
-///
-/// If the queue already contains an event it is returned immediately without sleeping.
-/// With a `Some(0)` timeout the queue is polled once and the function returns.
-///
-/// @param timeout_ms : integer?
-/// @return Event?
-pub fn wait(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers a subscription for the given event name.
-///
-/// Returns a unique handle ID that can be used with [`remove`](Self::remove).
-///
-/// @param name : str
-/// @return integer
-pub fn subscribe(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes a subscription by its handle ID.
-///
-/// Returns `true` if the handle existed and was removed.
-///
-/// @param handle : integer
-/// @return boolean
-pub fn remove(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes all subscriptions for the given event name.
-///
-/// Returns the number of subscriptions removed.
-///
-/// @param name : str
-/// @return integer
-pub fn clear(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes all subscriptions across all event names.
-///
-/// Returns the total number of subscriptions removed.
-///
-///
-/// @return integer
-pub fn clear_all(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.event` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.event` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("push", lua.create_function(push)?)?;
-    tbl.set("pushEvent", lua.create_function(push_event)?)?;
-    tbl.set("poll", lua.create_function(poll)?)?;
-    tbl.set("wait", lua.create_function(wait)?)?;
-    tbl.set("subscribe", lua.create_function(subscribe)?)?;
-    tbl.set("remove", lua.create_function(remove)?)?;
-    tbl.set("clear", lua.create_function(clear)?)?;
-    tbl.set("clearAll", lua.create_function(clear_all)?)?;
+
+    // -- quit --
+    /// Pushes a quit event, requesting the engine to stop.
+    /// @param code : integer?
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "quit",
+        lua.create_function(move |_, code: Option<i32>| {
+            let mut st = s.borrow_mut();
+            st.quit_requested = true;
+            st.exit_code = code.unwrap_or(0);
+            Ok(())
+        })?,
+    )?;
+
+    // -- push --
+    /// Pushes a custom event onto the event queue.
+    /// @param name : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "push",
+        lua.create_function(move |_, args: LuaMultiValue| {
+            let mut iter = args.into_iter();
+            let name: String = match iter.next() {
+                Some(LuaValue::String(s)) => s
+                    .to_str()
+                    .map_err(|e| LuaError::RuntimeError(e.to_string()))?
+                    .to_string(),
+                _ => {
+                    return Err(LuaError::RuntimeError(
+                        "event.push requires a string event name as first argument".into(),
+                    ))
+                }
+            };
+            let mut event_args = Vec::new();
+            for val in iter {
+                event_args.push(lua_value_to_event_arg(&val)?);
+            }
+            s.borrow_mut().event_queue.push_event(&name, event_args);
+            Ok(())
+        })?,
+    )?;
+
+    // -- poll --
+    /// Returns an iterator function that pops events from the queue.
+    /// @return function
+    let s = state.clone();
+    tbl.set(
+        "poll",
+        lua.create_function(move |lua, ()| {
+            let state_ref = s.clone();
+            lua.create_function(move |lua, ()| {
+                match state_ref.borrow_mut().event_queue.poll() {
+                    Some(event) => event_to_lua_multi(lua, &event),
+                    None => Ok(LuaMultiValue::new()),
+                }
+            })
+        })?,
+    )?;
+
+    // -- clear --
+    /// Discards all pending events in the queue.
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "clear",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().event_queue.clear();
+            Ok(())
+        })?,
+    )?;
+
+    // -- newSignal --
+    /// Creates a new pub-sub Signal dispatcher.
+    /// @return Signal
+    tbl.set(
+        "newSignal",
+        lua.create_function(|_, ()| {
+            Ok(LuaSignal {
+                inner: Rc::new(RefCell::new(Signal::new())),
+                callbacks: Rc::new(RefCell::new(HashMap::new())),
+            })
+        })?,
+    )?;
+
+    // -- pump --
+    /// Syncs OS-level events into the queue (no-op in Luna2D push model).
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "pump",
+        lua.create_function(move |_, ()| {
+            s.borrow().event_queue.pump();
+            Ok(())
+        })?,
+    )?;
+
+    // -- wait --
+    /// Blocks until the next event arrives or the optional timeout elapses.
+    /// @param timeout : number?
+    /// @return string?
+    let s = state.clone();
+    tbl.set(
+        "wait",
+        lua.create_function(move |lua, timeout: Option<f64>| {
+            let timeout_ms = timeout.map(|t| (t * 1000.0) as u64);
+            match s.borrow_mut().event_queue.wait(timeout_ms) {
+                Some(event) => event_to_lua_multi(lua, &event),
+                None => Ok(LuaMultiValue::new()),
+            }
+        })?,
+    )?;
+
+    // -- restart --
+    /// Requests that the engine restart at the beginning of the next frame.
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "restart",
+        lua.create_function(move |_, ()| {
+            s.borrow_mut().restart_requested = true;
+            Ok(())
+        })?,
+    )?;
+
     luna.set("event", tbl)?;
     Ok(())
 }

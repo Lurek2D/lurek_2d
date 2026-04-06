@@ -14,10 +14,10 @@ Usage:
                 Defaults to <game_dir_name>.lunar in the current directory.
 
 Examples:
-    python tools/pack.py examples/hello_world
+    python tools/pack.py demos/hello_world
       → hello_world.lunar
 
-    python tools/pack.py examples/physics_demo dist/physics_demo.lunar
+    python tools/pack.py demos/physics_demo dist/physics_demo.lunar
       → dist/physics_demo.lunar
 """
 

@@ -3,8 +3,11 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Baseline |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `None` |
 | **Source** | `src/engine/` |
+| **Rust Tests** | `—`                    |
+| **Lua Tests**  | `—`                     |
 | **Tests** | `tests/engine_tests.rs` |
 
 ## Summary
@@ -81,6 +84,9 @@ App (entry point)
 | `log_messages.rs` | Structured logging with stable message IDs for the Luna2D engine |
 | `resource_keys.rs` | Typed resource keys for generational ID-based resource pools |
 | `shared_state.rs` | Shared engine state hub: SharedState, WindowState, FullscreenType, and ErrorInfo |
+| `app_winit.rs` | TODO: describe purpose of app_winit.rs |
+| `messages.rs` | TODO: describe purpose of messages.rs |
+| `temp_test.rs` | TODO: describe purpose of temp_test.rs |
 
 ## Submodules
 
@@ -190,6 +196,60 @@ Frame rate cap and other performance tuning options.
 
 Window dimensions, title, vsync, fullscreen, and resize settings.
 
+## Module Toggle System
+
+`Config::modules` holds one bool per optional subsystem parsed from `conf.lua` (`t.modules.*`).
+
+### Dependency constraints (enforce in `ModulesConfig::validate_and_fix()`)
+
+| If flag is true | Then this flag must also be true |
+|---|---|
+| `graphics` | `window` |
+| `particle` | `graphics` (+ `window`) |
+| `gui` | `graphics` (+ `window`) |
+| `overlay` | `graphics` (+ `window`) |
+| `savegame` | `filesystem` |
+| `modding` | `filesystem` |
+
+### Mandatory modules (always registered, no flag)
+
+`math_api`, `log_api`, `event_api` — register unconditionally regardless of `ModulesConfig`.
+
+### Full conf.lua module flag reference (27 flags)
+
+| conf.lua key | Covers lua_api files | Lua namespaces |
+|---|---|---|
+| `t.modules.window` | window_api | `luna.window.*` |
+| `t.modules.graphics` | graphics_api, font_api, sprite_api | `luna.graphics.*, luna.font.*, luna.sprite.*` |
+| `t.modules.audio` | audio_api | `luna.audio.*` |
+| `t.modules.input` | input_api | `luna.input.*` |
+| `t.modules.physics` | physics_api | `luna.physics.*` |
+| `t.modules.filesystem` | filesystem_api | `luna.filesystem.*` |
+| `t.modules.timer` | timer_api | `luna.timer.*` |
+| `t.modules.particle` | particle_api | `luna.particle.*` |
+| `t.modules.image` | image_api | `luna.image.*` |
+| `t.modules.gui` | gui_api | `luna.gui.*` |
+| `t.modules.overlay` | overlay_api, postfx_api | `luna.overlay.*, luna.postfx.*` |
+| `t.modules.tilemap` | tilemap_api | `luna.tilemap.*` |
+| `t.modules.scene` | scene_api | `luna.scene.*` |
+| `t.modules.savegame` | savegame_api | `luna.savegame.*` |
+| `t.modules.entity` | entity_api | `luna.entity.*` |
+| `t.modules.ai` | ai_api, steering_api | `luna.ai.*, luna.steering.*` |
+| `t.modules.pathfinding` | pathfinding_api | `luna.pathfinding.*` |
+| `t.modules.thread` | thread_api | `luna.thread.*` |
+| `t.modules.graph` | graph_api | `luna.graph.*` |
+| `t.modules.data` | data_api, serial_api | `luna.data.*, luna.serial.*` |
+| `t.modules.compute` | compute_api, dataframe_api | `luna.compute.*, luna.dataframe.*` |
+| `t.modules.minimap` | minimap_api | `luna.minimap.*` |
+| `t.modules.modding` | modding_api | `luna.modding.*` |
+| `t.modules.pipeline` | pipeline_api, patterns_api | `luna.pipeline.*, luna.patterns.*` |
+| `t.modules.system` | system_api | `luna.system.*` |
+| `t.modules.localization` | localization_api | `luna.localization.*` |
+| `t.modules.debug` | debug_api, debugbridge_api, docs_api, automation_api | `luna.debug.*, luna.debugbridge.*, luna.docs.*, luna.automation.*` |
+
+`debug` defaults to `cfg!(debug_assertions)` — true in dev builds, false in release.
+A disabled module means its `luna.*` table is **absent** (nil) — not a stub.
+
 #### `engine::shared_state::ErrorInfo`
 
 Captured Lua or engine error and traceback for the error screen display.
@@ -261,3 +321,35 @@ Convenience alias for `Result<T, EngineError>` used throughout the engine.
 | `type` | 1 |
 | **Total** | **38** |
 
+## Lua Examples
+
+-- No direct Lua API. Engine is the runtime substrate.
+-- Configured via conf.lua:
+```lua
+function luna.conf(t)
+    t.window.title = "My Game"
+    t.window.width = 1280
+    t.window.height = 720
+    t.modules.physics = true
+end
+
+function luna.load()
+    -- Engine is running at this point
+end
+```
+
+## References
+
+| Module     | Relationship  | Notes                                              |
+|------------|---------------|----------------------------------------------------|
+| `math`     | Imports from  | Foundational types (`Vec2`, `Color`, `Rect`)       |
+| Tier 1+    | Imported by   | Every module that stores state in `SharedState`    |
+| `lua_api`  | Imported by   | Bridge layer that registers all `luna.*` API tables |
+
+## Notes
+
+- `SharedState` is the single-mutable-reference pattern for all Lua closures — never bypass it with raw pointers.
+- `Rc<RefCell<SharedState>>` is intentional: the game loop is single-threaded; `Arc<Mutex<>>` adds unnecessary overhead.
+- `RunState::Error` renders a blue screen with the Lua error message; press `R` to restart, `Escape` to quit.
+- `Config` is finalised at startup from `conf.lua`; it cannot be mutated at runtime.
+- `ResourceKeys` (SlotMap key types) are defined here because all modules share them via `SharedState`.

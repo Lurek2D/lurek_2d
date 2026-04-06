@@ -140,7 +140,14 @@ impl TileMap {
     /// # Returns
     /// `Self`.
     pub fn new(tile_width: u32, tile_height: u32, chunk_size: u32) -> Self {
-        log_msg!(debug, TM01_TILEMAP_INIT, "{}x{} tiles, chunk={}", tile_width, tile_height, chunk_size);
+        log_msg!(
+            debug,
+            TM01_TILEMAP_INIT,
+            "{}x{} tiles, chunk={}",
+            tile_width,
+            tile_height,
+            chunk_size
+        );
         Self {
             tile_width,
             tile_height,

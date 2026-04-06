@@ -247,21 +247,21 @@
         // ─── 📦 INSTALL ───────────────────────────────────────────────────────
         {
             "label": "Install: Local (Windows)",
-            "detail": "📦 Build release binary and install luna.exe to %USERPROFILE%\\bin. Copies examples/ too. Run once — then use 'Run (Installed):' tasks.",
+            "detail": "📦 Build release binary and install luna.exe to %USERPROFILE%\\bin. Copies demos/ too. Run once — then use 'Run (Installed):' tasks.",
             "type": "shell",
             "command": "powershell -ExecutionPolicy Bypass -File tools/install.ps1",
             "problemMatcher": []
         },
         {
             "label": "Install: Local (Linux / macOS)",
-            "detail": "📦 Build release binary and install luna2d to /usr/local/bin. Copies examples/ folder. May require sudo.",
+            "detail": "📦 Build release binary and install luna2d to /usr/local/bin. Copies demos/ folder. May require sudo.",
             "type": "shell",
             "command": "bash tools/install.sh",
             "problemMatcher": []
         },
         {
             "label": "Uninstall: Local (Windows)",
-            "detail": "🗑️  Remove luna.exe from %USERPROFILE%\\bin and the installed examples/ folder.",
+            "detail": "🗑️  Remove luna.exe from %USERPROFILE%\\bin and the installed demos/ folder.",
             "type": "shell",
             "command": "powershell -ExecutionPolicy Bypass -File tools/install.ps1 --uninstall",
             "problemMatcher": []
@@ -270,23 +270,23 @@
         // Requires 'Install: Local (Windows)' to have been run at least once.
         {
             "label": "Run (Installed): Hello World",
-            "detail": "🌙 Run examples/hello_world with the installed luna2d binary (no recompile). Run 'Install: Local (Windows)' first.",
+            "detail": "🌙 Run demos/hello_world with the installed luna2d binary (no recompile). Run 'Install: Local (Windows)' first.",
             "type": "shell",
-            "command": "luna examples/hello_world",
+            "command": "luna demos/hello_world",
             "problemMatcher": []
         },
         {
             "label": "Run (Installed): Physics Demo",
-            "detail": "🌙 Run examples/physics_demo with the installed luna2d binary (no recompile).",
+            "detail": "🌙 Run demos/physics_demo with the installed luna2d binary (no recompile).",
             "type": "shell",
-            "command": "luna examples/physics_demo",
+            "command": "luna demos/physics_demo",
             "problemMatcher": []
         },
         {
             "label": "Run (Installed): Sprites",
-            "detail": "🌙 Run examples/sprites with the installed luna2d binary (no recompile).",
+            "detail": "🌙 Run demos/sprites with the installed luna2d binary (no recompile).",
             "type": "shell",
-            "command": "luna examples/sprites",
+            "command": "luna demos/sprites",
             "problemMatcher": []
         },
         {
@@ -390,16 +390,16 @@
         {
             "id": "exampleGame",
             "type": "pickString",
-            "description": "Choose an example game to run",
+            "description": "Choose a demo to run",
             "options": [
-                { "label": "Hello World",   "value": "examples/hello_world"  },
-                { "label": "Physics Demo",  "value": "examples/physics_demo" },
-                { "label": "Sprites",       "value": "examples/sprites"      },
-                { "label": "Platformer",    "value": "examples/platformer"   },
-                { "label": "Scene Demo",    "value": "examples/scene_demo"   },
-                { "label": "Demo Game",     "value": "examples/demo_game"    }
+                { "label": "Hello World",   "value": "demos/hello_world"  },
+                { "label": "Physics Demo",  "value": "demos/physics_demo" },
+                { "label": "Sprites",       "value": "demos/sprites"      },
+                { "label": "Platformer",    "value": "demos/platformer"   },
+                { "label": "Scene Demo",    "value": "demos/scene_demo"   },
+                { "label": "Demo Game",     "value": "demos/demo_game"    }
             ],
-            "default": "examples/hello_world"
+            "default": "demos/hello_world"
         }
     ]
 }

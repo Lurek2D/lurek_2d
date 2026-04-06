@@ -402,6 +402,52 @@ impl NdArray {
         Ok(())
     }
 
+    /// Read element by multi-dimensional indices (0-based), combining flat_index + get_f64.
+    ///
+    /// # Parameters
+    /// - `indices` — `&[usize]`.
+    ///
+    /// # Returns
+    /// `Result<f64, String>`.
+    pub fn get_by_indices(&self, indices: &[usize]) -> Result<f64, String> {
+        let flat = self.flat_index(indices)?;
+        Ok(self.get_f64(flat))
+    }
+
+    /// Write a value by multi-dimensional indices (0-based), combining flat_index + set_f64.
+    ///
+    /// # Parameters
+    /// - `indices` — `&[usize]`.
+    /// - `val` — `f64`.
+    ///
+    /// # Returns
+    /// `Result<(), String>`.
+    pub fn set_by_indices(&mut self, indices: &[usize], val: f64) -> Result<(), String> {
+        let flat = self.flat_index(indices)?;
+        self.set_f64(flat, val);
+        Ok(())
+    }
+
+    /// Return all elements as a `Vec<f64>`.
+    ///
+    /// # Returns
+    /// `Vec<f64>`.
+    pub fn to_f64_vec(&self) -> Vec<f64> {
+        (0..self.size()).map(|i| self.get_f64(i)).collect()
+    }
+
+    /// Return a human-readable summary string for debugging.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn display_string(&self) -> String {
+        format!(
+            "Array({:?}, dtype={})",
+            self.shape,
+            self.dtype.name()
+        )
+    }
+
     /// Total number of elements for a given shape.
     fn element_count(shape: &[usize]) -> usize {
         shape.iter().product()

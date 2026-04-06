@@ -148,6 +148,46 @@ impl Vec2 {
     pub fn angle(self) -> f32 {
         self.y.atan2(self.x)
     }
+
+    /// Returns a copy of this vector rotated by `angle` radians around the origin.
+    ///
+    /// # Parameters
+    /// - `angle` — Rotation angle in radians.
+    ///
+    /// # Returns
+    /// `Vec2` — The rotated vector.
+    pub fn rotate(self, angle: f32) -> Vec2 {
+        let (sin, cos) = angle.sin_cos();
+        Vec2 {
+            x: self.x * cos - self.y * sin,
+            y: self.x * sin + self.y * cos,
+        }
+    }
+
+    /// Returns the perpendicular (normal) vector, rotated 90° counter-clockwise.
+    ///
+    /// # Returns
+    /// `Vec2` — `(-y, x)`.
+    pub fn perpendicular(self) -> Vec2 {
+        Vec2 {
+            x: -self.y,
+            y: self.x,
+        }
+    }
+
+    /// Returns the 2D cross product (perpendicular dot product) with `other`.
+    ///
+    /// This is the z-component of the 3D cross product when z=0.
+    /// Positive if `other` is counter-clockwise from `self`, negative if clockwise.
+    ///
+    /// # Parameters
+    /// - `other` — The second vector.
+    ///
+    /// # Returns
+    /// `f32` — `self.x * other.y - self.y * other.x`.
+    pub fn cross(self, other: Vec2) -> f32 {
+        self.x * other.y - self.y * other.x
+    }
 }
 
 impl Add for Vec2 {

@@ -4,13 +4,13 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
-use luna2d::engine::config::Config;
 use luna2d::data::byte_data::ByteData;
 use luna2d::data::compress::{compress, decompress, CompressFormat};
 use luna2d::data::encode::{decode, encode, EncodeFormat};
 use luna2d::data::hash::{hash, HashAlgorithm};
 use luna2d::data::toml_convert;
+use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -181,22 +181,34 @@ fn data_dataview_out_of_bounds_error() {
 
 // ── Luna2D Binary Pack Format tests ──────────────────────────────────────────
 
-use luna2d::data::bin_pack::{write, read, measure_size, BinValue};
+use luna2d::data::bin_pack::{measure_size, read, write, BinValue};
 
 #[test]
 fn binary_write_read_u32_f32_roundtrip() {
     let bd = write("u32 f32", &[BinValue::U32(42), BinValue::F32(3.14)]).unwrap();
     let (vals, pos) = read("u32 f32", bd.as_bytes(), 0).unwrap();
     assert_eq!(pos, 8);
-    if let BinValue::U32(n) = vals[0] { assert_eq!(n, 42); } else { panic!("expected U32"); }
-    if let BinValue::F32(f) = vals[1] { assert!((f - 3.14f32).abs() < 1e-4); } else { panic!("expected F32"); }
+    if let BinValue::U32(n) = vals[0] {
+        assert_eq!(n, 42);
+    } else {
+        panic!("expected U32");
+    }
+    if let BinValue::F32(f) = vals[1] {
+        assert!((f - 3.14f32).abs() < 1e-4);
+    } else {
+        panic!("expected F32");
+    }
 }
 
 #[test]
 fn binary_write_read_str_roundtrip() {
     let bd = write("str", &[BinValue::Str("hello".to_string())]).unwrap();
     let (vals, _) = read("str", bd.as_bytes(), 0).unwrap();
-    if let BinValue::Str(s) = &vals[0] { assert_eq!(s, "hello"); } else { panic!("expected Str"); }
+    if let BinValue::Str(s) = &vals[0] {
+        assert_eq!(s, "hello");
+    } else {
+        panic!("expected Str");
+    }
 }
 
 #[test]
@@ -204,7 +216,11 @@ fn binary_write_read_cstr_roundtrip() {
     let bd = write("cstr", &[BinValue::Str("world".to_string())]).unwrap();
     assert_eq!(bd.as_bytes().len(), 6);
     let (vals, _) = read("cstr", bd.as_bytes(), 0).unwrap();
-    if let BinValue::Str(s) = &vals[0] { assert_eq!(s, "world"); } else { panic!("expected Str"); }
+    if let BinValue::Str(s) = &vals[0] {
+        assert_eq!(s, "world");
+    } else {
+        panic!("expected Str");
+    }
 }
 
 #[test]
@@ -236,8 +252,16 @@ fn binary_bool_roundtrip() {
     let bd = write("bool bool", &[BinValue::Bool(true), BinValue::Bool(false)]).unwrap();
     assert_eq!(bd.as_bytes(), &[1u8, 0u8]);
     let (vals, _) = read("bool bool", bd.as_bytes(), 0).unwrap();
-    if let BinValue::Bool(b) = vals[0] { assert!(b); } else { panic!("expected Bool"); }
-    if let BinValue::Bool(b) = vals[1] { assert!(!b); } else { panic!("expected Bool"); }
+    if let BinValue::Bool(b) = vals[0] {
+        assert!(b);
+    } else {
+        panic!("expected Bool");
+    }
+    if let BinValue::Bool(b) = vals[1] {
+        assert!(!b);
+    } else {
+        panic!("expected Bool");
+    }
 }
 
 #[test]
@@ -267,26 +291,46 @@ fn binary_unknown_token_error() {
 
 #[test]
 fn binary_multi_type_roundtrip() {
-    let vals = &[
-        BinValue::I8(-1),
-        BinValue::U8(255),
-        BinValue::F64(1.5),
-    ];
+    let vals = &[BinValue::I8(-1), BinValue::U8(255), BinValue::F64(1.5)];
     let bd = write("le i8 u8 f64", vals).unwrap();
     let (out, pos) = read("le i8 u8 f64", bd.as_bytes(), 0).unwrap();
     assert_eq!(pos, bd.as_bytes().len());
-    if let BinValue::I8(v) = out[0] { assert_eq!(v, -1); } else { panic!("expected I8"); }
-    if let BinValue::U8(v) = out[1] { assert_eq!(v, 255); } else { panic!("expected U8"); }
-    if let BinValue::F64(v) = out[2] { assert!((v - 1.5).abs() < 1e-10); } else { panic!("expected F64"); }
+    if let BinValue::I8(v) = out[0] {
+        assert_eq!(v, -1);
+    } else {
+        panic!("expected I8");
+    }
+    if let BinValue::U8(v) = out[1] {
+        assert_eq!(v, 255);
+    } else {
+        panic!("expected U8");
+    }
+    if let BinValue::F64(v) = out[2] {
+        assert!((v - 1.5).abs() < 1e-10);
+    } else {
+        panic!("expected F64");
+    }
 }
 
 #[test]
 fn binary_offset_read() {
-    let bd = write("u8 u8 u8", &[BinValue::U8(10), BinValue::U8(20), BinValue::U8(30)]).unwrap();
+    let bd = write(
+        "u8 u8 u8",
+        &[BinValue::U8(10), BinValue::U8(20), BinValue::U8(30)],
+    )
+    .unwrap();
     let (vals, pos) = read("u8 u8", bd.as_bytes(), 1).unwrap();
     assert_eq!(pos, 3);
-    if let BinValue::U8(v) = vals[0] { assert_eq!(v, 20); } else { panic!(); }
-    if let BinValue::U8(v) = vals[1] { assert_eq!(v, 30); } else { panic!(); }
+    if let BinValue::U8(v) = vals[0] {
+        assert_eq!(v, 20);
+    } else {
+        panic!();
+    }
+    if let BinValue::U8(v) = vals[1] {
+        assert_eq!(v, 30);
+    } else {
+        panic!();
+    }
 }
 
 #[test]
@@ -298,7 +342,6 @@ fn binary_dataview_from_write() {
     let v = dv.get_f32(0).unwrap();
     assert!((v - 2.5f32).abs() < 1e-6);
 }
-
 
 // ── Merged from data_tests2.rs ────────────────────────────────────────────
 

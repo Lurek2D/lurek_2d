@@ -13,18 +13,21 @@
 //! Input events are forwarded from Lua callbacks and dispatched to the widget
 //! tree by hit-testing against widget bounds.
 
-use crate::gui::containers::{DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel};
 use crate::engine::log_messages::{GU01_CTX_INIT, GU02_WIDGET_ADD};
-use crate::log_msg;
+use crate::gui::containers::{
+    DockPanel, GUIWindow, Layout, NinePatch, Panel, ScrollPanel, SplitPanel,
+};
 use crate::gui::controls::{
-    Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider, TabBar, TextInput,
+    Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
+    TabBar, TextInput,
 };
 use crate::gui::extras::{
-    Accordion, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator,
-    Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeView,
+    Accordion, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator, Spacer,
+    StatusBar, Toast, Toolbar, TooltipPanel, TreeView,
 };
 use crate::gui::theme::Theme;
 use crate::gui::widget::{WidgetBase, WidgetState};
+use crate::log_msg;
 
 /// Type-erased widget storage.
 ///
@@ -415,7 +418,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_layout(&mut self, direction: super::LayoutDirection) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Layout(Layout::new(direction)));
+        self.widgets
+            .push(WidgetKind::Layout(Layout::new(direction)));
         idx
     }
 
@@ -489,7 +493,6 @@ impl GuiContext {
         idx
     }
 
-
     /// Add a radio button and return its pool index.
     ///
     /// # Parameters
@@ -500,7 +503,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_radio_button(&mut self, text: impl Into<String>, group: impl Into<String>) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::RadioButton(RadioButton::new(text, group)));
+        self.widgets
+            .push(WidgetKind::RadioButton(RadioButton::new(text, group)));
         idx
     }
 
@@ -513,7 +517,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_scroll_bar(&mut self, vertical: bool) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::ScrollBar(ScrollBar::new(vertical)));
+        self.widgets
+            .push(WidgetKind::ScrollBar(ScrollBar::new(vertical)));
         idx
     }
 
@@ -526,7 +531,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_gui_window(&mut self, title: impl Into<String>) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::GUIWindow(GUIWindow::new(title)));
+        self.widgets
+            .push(WidgetKind::GUIWindow(GUIWindow::new(title)));
         idx
     }
 
@@ -539,7 +545,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_split_panel(&mut self, orientation: impl Into<String>) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::SplitPanel(SplitPanel::new(orientation)));
+        self.widgets
+            .push(WidgetKind::SplitPanel(SplitPanel::new(orientation)));
         idx
     }
 
@@ -562,7 +569,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_toolbar(&mut self, orientation: impl Into<String>) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::Toolbar(Toolbar::new(orientation)));
+        self.widgets
+            .push(WidgetKind::Toolbar(Toolbar::new(orientation)));
         idx
     }
 
@@ -631,7 +639,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_tooltip_panel(&mut self, text: impl Into<String>) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::TooltipPanel(TooltipPanel::new(text)));
+        self.widgets
+            .push(WidgetKind::TooltipPanel(TooltipPanel::new(text)));
         idx
     }
 
@@ -641,7 +650,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_color_picker(&mut self) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::ColorPicker(ColorPicker::new()));
+        self.widgets
+            .push(WidgetKind::ColorPicker(ColorPicker::new()));
         idx
     }
 
@@ -661,7 +671,8 @@ impl GuiContext {
     /// `usize`.
     pub fn add_image_widget(&mut self) -> usize {
         let idx = self.widgets.len();
-        self.widgets.push(WidgetKind::ImageWidget(ImageWidget::new()));
+        self.widgets
+            .push(WidgetKind::ImageWidget(ImageWidget::new()));
         idx
     }
 

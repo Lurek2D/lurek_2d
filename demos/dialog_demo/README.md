@@ -14,7 +14,7 @@ A dialog sequencer: typewriter text rendering, branching choices, and scripted e
 ## How to Run
 
 ```powershell
-cargo run -- examples/dialog_demo
+cargo run -- demos/dialog_demo
 ```
 
 ## Controls

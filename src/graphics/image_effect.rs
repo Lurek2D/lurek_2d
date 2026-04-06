@@ -1,4 +1,4 @@
-﻿//! Lightweight per-image shader-effect pass data â€” Tier 1 graphics layer.
+//! Lightweight per-image shader-effect pass data â€” Tier 1 graphics layer.
 //!
 //! [`ShaderPassDescriptor`] describes one shader pass in a per-image effect chain.
 //! This type lives in Tier 1 and has **no imports from `src/postfx/`**.
@@ -46,4 +46,3 @@ impl ShaderPassDescriptor {
         }
     }
 }
-

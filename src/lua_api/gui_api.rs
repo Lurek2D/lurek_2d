@@ -1,1221 +1,2938 @@
-//! `luna.gui` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/gui/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.gui` — Retained-mode widget UI system.
+
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use super::SharedState;
+use crate::gui::context::{GuiContext, WidgetKind};
+use crate::gui::containers::LayoutDirection;
+use crate::gui::extras::{AccordionSection, TableColumn, Toast};
+use crate::gui::theme::{Theme, WidgetStyle};
+use crate::gui::widget::{WidgetState, WidgetType};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// create_widget_table — shared base methods for every widget
+// -------------------------------------------------------------------------------
 
-// ── LuaComboBox ────────────────────────────────────────────────────────────
+/// Builds a Lua table with common base-widget methods bound to `idx`.
+fn create_widget_table<'a>(
+    lua: &'a Lua,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<LuaTable<'a>> {
+    let t = lua.create_table()?;
+    /// @return nil
+    t.set("_idx", idx)?;
 
-pub struct LuaComboBox(/* TODO: add key + state fields */);
+    // -- setPosition --
+    /// Sets the widget position.
+    /// @param x : number
+    /// @param y : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setPosition", lua.create_function(move |_, (x, y): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            let b = w.base_mut();
+            b.x = x;
+            b.y = y;
+        }
+        Ok(())
+    })?)?;
 
+    // -- getPosition --
+    /// Returns the widget position.
+    /// @return number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getPosition", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            let b = w.base();
+            Ok((b.x, b.y))
+        } else {
+            Ok((0.0, 0.0))
+        }
+    })?)?;
 
-impl LuaComboBox {
-    /// Get the currently selected item text, if any.
-    ///
-    ///
-    /// @return Option<
-    pub fn selected_item(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+    // -- setSize --
+    /// Sets the widget size.
+    /// @param w : number
+    /// @param h : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSize", lua.create_function(move |_, (w, h): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(wgt) = g.widgets.get_mut(idx) {
+            let b = wgt.base_mut();
+            b.width = w;
+            b.height = h;
+        }
+        Ok(())
+    })?)?;
 
-impl UserData for LuaComboBox {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("selectedItem", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- getSize --
+    /// Returns the widget size.
+    /// @return number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            let b = w.base();
+            Ok((b.width, b.height))
+        } else {
+            Ok((0.0, 0.0))
+        }
+    })?)?;
 
-// ── LuaGraphRenderer ────────────────────────────────────────────────────────────
+    // -- setVisible --
+    /// Sets widget visibility.
+    /// @param visible : boolean
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setVisible", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().visible = v;
+        }
+        Ok(())
+    })?)?;
 
-pub struct LuaGraphRenderer(/* TODO: add key + state fields */);
+    // -- isVisible --
+    /// Returns whether the widget is visible.
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isVisible", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).is_some_and(|w| w.base().visible))
+    })?)?;
 
+    // -- setEnabled --
+    /// Sets whether the widget is enabled.
+    /// @param enabled : boolean
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setEnabled", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            let b = w.base_mut();
+            b.enabled = v;
+            if !v {
+                b.state = WidgetState::Disabled;
+            } else if b.state == WidgetState::Disabled {
+                b.state = WidgetState::Normal;
+            }
+        }
+        Ok(())
+    })?)?;
 
-impl LuaGraphRenderer {
-    /// Returns the names of all registered series.
-    ///
-    ///
+    // -- isEnabled --
+    /// Returns whether the widget is enabled.
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isEnabled", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).is_some_and(|w| w.base().enabled))
+    })?)?;
+
+    // -- setId --
+    /// Sets the widget string identifier.
+    /// @param id : string
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setId", lua.create_function(move |_, id: String| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().id = id;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getId --
+    /// Returns the widget string identifier.
+    /// @return string
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getId", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or(String::new(), |w| w.base().id.clone()))
+    })?)?;
+
+    // -- setTooltip --
+    /// Sets the widget tooltip text.
+    /// @param text : string
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTooltip", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().tooltip = text;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getTooltip --
+    /// Returns the widget tooltip text.
+    /// @return string
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTooltip", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or(String::new(), |w| w.base().tooltip.clone()))
+    })?)?;
+
+    // -- getState --
+    /// Returns the widget interaction state name.
+    /// @return string
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getState", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or("normal", |w| w.base().state.as_str()).to_string())
+    })?)?;
+
+    // -- addChild --
+    /// Adds a child widget to this container.
+    /// @param child : table
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addChild", lua.create_function(move |_, child: LuaTable| {
+        let child_idx: usize = child.get("_idx")?;
+        let mut g = c.borrow_mut();
+        g.add_child(idx, child_idx);
+        Ok(())
+    })?)?;
+
+    // -- removeChild --
+    /// Removes a child widget from this container.
+    /// @param child : table
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeChild", lua.create_function(move |_, child: LuaTable| {
+        let child_idx: usize = child.get("_idx")?;
+        let mut g = c.borrow_mut();
+        g.remove_child(idx, child_idx);
+        Ok(())
+    })?)?;
+
+    // -- getChildCount --
+    /// Returns the number of children in this container.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getChildCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.child_count(idx))
+    })?)?;
+
+    // -- findById --
+    /// Recursively searches for a widget by id starting from this widget.
+    /// @param id : string
     /// @return table
-    pub fn get_series_names(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current cursor position in data coordinates.
-    ///
-    ///
-    /// @return Option<(f64
-    pub fn get_cursor_value(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Maps world (data) coordinates to viewport screen-pixel coordinates.
-    ///
-    ///
-    /// @param wx : number
-    /// @param wy : number
-    pub fn world_to_screen(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Maps viewport screen-pixel coordinates back to world (data) coordinates.
-    ///
-    ///
-    /// @param sx : number
-    /// @param sy : number
-    pub fn screen_to_world(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
+    let c = ctx.clone();
+    /// @return nil
+    t.set("findById", lua.create_function(move |lua, id: String| {
+        let g = c.borrow();
+        match g.find_by_id(idx, &id) {
+            Some(found_idx) => {
+                let ft = lua.create_table()?;
+                ft.set("_idx", found_idx)?;
+                Ok(LuaValue::Table(ft))
+            }
+            None => Ok(LuaValue::Nil),
+        }
+    })?)?;
 
-impl UserData for LuaGraphRenderer {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getSeriesNames", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getCursorValue", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("worldToScreen", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("screenToWorld", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+    // -- setOnClick --
+    /// Stores a click callback (future invocation).
+    /// @param fn : function
+    /// @return nil
+    t.set("setOnClick", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
 
-// ── LuaGuiContext ────────────────────────────────────────────────────────────
+    // -- setOnChange --
+    /// Stores a change callback (future invocation).
+    /// @param fn : function
+    /// @return nil
+    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
 
-pub struct LuaGuiContext(/* TODO: add key + state fields */);
+    // -- setOnDraw --
+    /// Stores a custom draw callback (future invocation).
+    /// @param fn : function
+    /// @return nil
+    t.set("setOnDraw", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
 
-
-impl LuaGuiContext {
-    /// Return the number of widgets in the pool (including the root).
-    ///
-    ///
-    /// @return integer
-    pub fn widget_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Count the children of a container widget.
-    ///
-    /// @param widget_idx : integer
-    /// @return integer
-    pub fn child_count(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the number of active (non-expired) toast notifications.
-    ///
-    ///
-    /// @return integer
-    pub fn toast_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Recursively search for a widget by its `id` string, starting from
-    /// `start_idx`.
-    ///
-    /// @param start_idx : integer
-    /// @param id : str
-    /// @return integer?
-    pub fn find_by_id(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaGuiContext {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("widgetCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("childCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toastCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("findById", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaLayout ────────────────────────────────────────────────────────────
-
-pub struct LuaLayout(/* TODO: add key + state fields */);
-
-
-impl LuaLayout {
-    /// Recalculate child positions based on direction, spacing, alignment,
-    /// and justification.
-    ///
-    /// This method updates the `x` / `y` fields of each child's `WidgetBase`
-    /// in the provided mutable slice.  Children are referenced by index in
-    /// `self.children`.
-    ///
-    ///
-    /// @param bases : mut [WidgetBase]
-    pub fn perform_layout(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaLayout {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("performLayout", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaListBox ────────────────────────────────────────────────────────────
-
-pub struct LuaListBox(/* TODO: add key + state fields */);
-
-
-impl LuaListBox {
-    /// Get the currently selected item text, if any.
-    ///
-    ///
-    /// @return Option<
-    pub fn selected_item(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaListBox {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("selectedItem", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaNinePatch ────────────────────────────────────────────────────────────
-
-pub struct LuaNinePatch(/* TODO: add key + state fields */);
-
-
-impl LuaNinePatch {
-    /// Compute the nine slice rectangles.
-    ///
-    /// Each returned element is `(sx, sy, sw, sh, dx, dy, dw, dh)` where
-    /// `s*` are source coordinates and `d*` are destination coordinates on
-    /// the widget.
-    ///
-    ///
-    /// @return Vec<(f32
-    pub fn get_slices(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaNinePatch {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getSlices", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaProgressBar ────────────────────────────────────────────────────────────
-
-pub struct LuaProgressBar(/* TODO: add key + state fields */);
-
-
-impl LuaProgressBar {
-    /// Return the normalized progress in `[0.0, 1.0]`.
-    ///
-    ///
-    /// @return number
-    pub fn progress(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaProgressBar {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("progress", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaTheme ────────────────────────────────────────────────────────────
-
-pub struct LuaTheme(/* TODO: add key + state fields */);
-
-
-impl LuaTheme {
-    /// Look up the style for a widget type and state.
-    ///
-    /// Falls back to the `Normal` state entry if no state-specific entry
-    /// exists.  Returns `None` only if the type has no theme entries at all.
-    ///
-    /// @param widget_type : WidgetType
-    /// @param state : WidgetState
-    /// @return Option<
-    pub fn get_style(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaTheme {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getStyle", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaToast ────────────────────────────────────────────────────────────
-
-pub struct LuaToast(/* TODO: add key + state fields */);
-
-
-impl LuaToast {
-    /// Return the progress through the toast's lifetime as `[0.0, 1.0]`.
-    ///
-    ///
-    /// @return number
-    pub fn progress(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return `true` if the toast has exceeded its display duration.
-    ///
-    ///
+    // -- containsPoint --
+    /// Returns whether (x, y) is inside this widget.
+    /// @param x : number
+    /// @param y : number
     /// @return boolean
-    pub fn is_expired(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+    let c = ctx.clone();
+    /// @return nil
+    t.set("containsPoint", lua.create_function(move |_, (x, y): (f32, f32)| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).is_some_and(|w| w.base().contains_point(x, y)))
+    })?)?;
+
+    // -- setPadding --
+    /// Sets widget padding (CSS-like: top, right?, bottom?, left?).
+    /// @param top : number
+    /// @param right : number
+    /// @param bottom : number
+    /// @param left : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setPadding", lua.create_function(
+        move |_, (top, right, bottom, left): (f32, Option<f32>, Option<f32>, Option<f32>)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                let r = right.unwrap_or(top);
+                let bo = bottom.unwrap_or(top);
+                let l = left.unwrap_or(r);
+                w.base_mut().padding = [top, r, bo, l];
+            }
+            Ok(())
+        },
+    )?)?;
+
+    // -- getPadding --
+    /// Returns the widget padding (top, right, bottom, left).
+    /// @return number, number, number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getPadding", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            let p = w.base().padding;
+            Ok((p[0], p[1], p[2], p[3]))
+        } else {
+            Ok((0.0, 0.0, 0.0, 0.0))
+        }
+    })?)?;
+
+    // -- setMargin --
+    /// Sets widget margin (CSS-like: top, right?, bottom?, left?).
+    /// @param top : number
+    /// @param right : number
+    /// @param bottom : number
+    /// @param left : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMargin", lua.create_function(
+        move |_, (top, right, bottom, left): (f32, Option<f32>, Option<f32>, Option<f32>)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                let r = right.unwrap_or(top);
+                let bo = bottom.unwrap_or(top);
+                let l = left.unwrap_or(r);
+                w.base_mut().margin = [top, r, bo, l];
+            }
+            Ok(())
+        },
+    )?)?;
+
+    // -- getMargin --
+    /// Returns the widget margin (top, right, bottom, left).
+    /// @return number, number, number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMargin", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            let m = w.base().margin;
+            Ok((m[0], m[1], m[2], m[3]))
+        } else {
+            Ok((0.0, 0.0, 0.0, 0.0))
+        }
+    })?)?;
+
+    // -- setZOrder --
+    /// Sets the widget z-order for draw sorting.
+    /// @param z : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setZOrder", lua.create_function(move |_, z: i32| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().z_order = z;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getZOrder --
+    /// Returns the widget z-order.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getZOrder", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or(0, |w| w.base().z_order))
+    })?)?;
+
+    // -- setMinSize --
+    /// Sets the minimum widget size.
+    /// @param w : number
+    /// @param h : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMinSize", lua.create_function(move |_, (w, h): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(wgt) = g.widgets.get_mut(idx) {
+            let b = wgt.base_mut();
+            b.min_width = w;
+            b.min_height = h;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getMinSize --
+    /// Returns the minimum widget size.
+    /// @return number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMinSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            Ok((w.base().min_width, w.base().min_height))
+        } else {
+            Ok((0.0, 0.0))
+        }
+    })?)?;
+
+    // -- setMaxSize --
+    /// Sets the maximum widget size.
+    /// @param w : number
+    /// @param h : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMaxSize", lua.create_function(move |_, (w, h): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(wgt) = g.widgets.get_mut(idx) {
+            let b = wgt.base_mut();
+            b.max_width = w;
+            b.max_height = h;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getMaxSize --
+    /// Returns the maximum widget size.
+    /// @return number, number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMaxSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(w) = g.widgets.get(idx) {
+            Ok((w.base().max_width, w.base().max_height))
+        } else {
+            Ok((f32::INFINITY, f32::INFINITY))
+        }
+    })?)?;
+
+    // -- setAnchor --
+    /// Sets anchor edges (left, top, right, bottom).
+    /// @param left : number
+    /// @param top : number
+    /// @param right : number
+    /// @param bottom : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setAnchor", lua.create_function(
+        move |_, (left, top, right, bottom): (Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
+            let mut g = c.borrow_mut();
+            if let Some(w) = g.widgets.get_mut(idx) {
+                let b = w.base_mut();
+                b.anchor_left = left;
+                b.anchor_top = top;
+                b.anchor_right = right;
+                b.anchor_bottom = bottom;
+            }
+            Ok(())
+        },
+    )?)?;
+
+    // -- setAnchorCenter --
+    /// Sets center anchor offsets.
+    /// @param cx : number
+    /// @param cy : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setAnchorCenter", lua.create_function(move |_, (cx, cy): (Option<f32>, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            let b = w.base_mut();
+            b.anchor_center_x = cx;
+            b.anchor_center_y = cy;
+        }
+        Ok(())
+    })?)?;
+
+    // -- clearAnchor --
+    /// Removes all anchor constraints.
+    let c = ctx.clone();
+    /// @return nil
+    t.set("clearAnchor", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().clear_anchors();
+        }
+        Ok(())
+    })?)?;
+
+    // -- setFlexGrow --
+    /// Sets the flex-grow factor.
+    /// @param grow : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setFlexGrow", lua.create_function(move |_, grow: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().flex_grow = grow;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getFlexGrow --
+    /// Returns the flex-grow factor.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getFlexGrow", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or(0.0, |w| w.base().flex_grow))
+    })?)?;
+
+    // -- setFlexShrink --
+    /// Sets the flex-shrink factor.
+    /// @param shrink : number
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setFlexShrink", lua.create_function(move |_, shrink: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(w) = g.widgets.get_mut(idx) {
+            w.base_mut().flex_shrink = shrink;
+        }
+        Ok(())
+    })?)?;
+
+    // -- getFlexShrink --
+    /// Returns the flex-shrink factor.
+    /// @return number
+    let c = ctx.clone();
+    /// @return table
+    t.set("getFlexShrink", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(g.widgets.get(idx).map_or(0.0, |w| w.base().flex_shrink))
+    })?)?;
+
+    Ok(t)
+}
+
+// -------------------------------------------------------------------------------
+// Per-widget-type method helpers
+// -------------------------------------------------------------------------------
+
+/// Adds Button-specific methods to a widget table.
+fn add_button_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    // -- setText --
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Button(btn)) = g.widgets.get_mut(idx) { btn.text = text; }
+        Ok(())
+    })?)?;
+    // -- getText --
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Button(btn)) => btn.text.clone(), _ => String::new() })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Label-specific methods to a widget table.
+fn add_label_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Label(lbl)) = g.widgets.get_mut(idx) { lbl.text = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Label(lbl)) => lbl.text.clone(), _ => String::new() })
+    })?)?;
+    Ok(())
+}
+
+/// Adds TextInput-specific methods to a widget table.
+fn add_text_input_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) {
+            ti.cursor_pos = text.len();
+            ti.text = text;
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TextInput(ti)) => ti.text.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setPlaceholder", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) { ti.placeholder = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getPlaceholder", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TextInput(ti)) => ti.placeholder.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMaxLength", lua.create_function(move |_, n: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TextInput(ti)) = g.widgets.get_mut(idx) { ti.max_length = n; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isFocused", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TextInput(ti)) => ti.focused, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getCursorPosition", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TextInput(ti)) => ti.cursor_pos, _ => 0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds CheckBox-specific methods to a widget table.
+fn add_checkbox_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setChecked", lua.create_function(move |_, checked: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::CheckBox(cb)) = g.widgets.get_mut(idx) { cb.checked = checked; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isChecked", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::CheckBox(cb)) => cb.checked, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::CheckBox(cb)) = g.widgets.get_mut(idx) { cb.text = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::CheckBox(cb)) => cb.text.clone(), _ => String::new() })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Slider-specific methods to a widget table.
+fn add_slider_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setValue", lua.create_function(move |_, v: f64| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Slider(sl)) = g.widgets.get_mut(idx) { sl.set_value(v); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getValue", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Slider(sl)) => sl.value, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setRange", lua.create_function(move |_, (min, max): (f64, f64)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Slider(sl)) = g.widgets.get_mut(idx) {
+            sl.min = min;
+            sl.max = max;
+            sl.set_value(sl.value);
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setStep", lua.create_function(move |_, step: f64| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Slider(sl)) = g.widgets.get_mut(idx) { sl.step = step; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMin", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Slider(sl)) => sl.min, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMax", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Slider(sl)) => sl.max, _ => 1.0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds ProgressBar-specific methods to a widget table.
+fn add_progress_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setValue", lua.create_function(move |_, v: f64| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(idx) { pb.value = v.clamp(pb.min, pb.max); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getValue", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ProgressBar(pb)) => pb.value, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getProgress", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ProgressBar(pb)) => pb.progress(), _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setRange", lua.create_function(move |_, (min, max): (f64, f64)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ProgressBar(pb)) = g.widgets.get_mut(idx) {
+            pb.min = min;
+            pb.max = max;
+            pb.value = pb.value.clamp(min, max);
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMin", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ProgressBar(pb)) => pb.min, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMax", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ProgressBar(pb)) => pb.max, _ => 1.0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds ComboBox-specific methods (1-based indices in Lua).
+fn add_combo_box_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addItem", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ComboBox(cb)) = g.widgets.get_mut(idx) { cb.add_item(text); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeItem", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ComboBox(cb)) = g.widgets.get_mut(idx) {
+            if index >= 1 && index <= cb.items.len() { cb.remove_item(index - 1); return Ok(true); }
+        }
+        Ok(false)
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("clearItems", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ComboBox(cb)) = g.widgets.get_mut(idx) { cb.clear(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getItemCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ComboBox(cb)) => cb.items.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getItem", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::ComboBox(cb)) => if index >= 1 { cb.items.get(index - 1).cloned() } else { None },
+            _ => None,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSelectedIndex", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ComboBox(cb)) = g.widgets.get_mut(idx) {
+            if index >= 1 && index <= cb.items.len() { cb.selected_index = Some(index - 1); }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSelectedIndex", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ComboBox(cb)) => cb.selected_index.map_or(0, |i| i + 1), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSelectedItem", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ComboBox(cb)) => cb.selected_item().map(|s| s.to_string()), _ => None })
+    })?)?;
+    Ok(())
+}
+
+/// Adds ListBox-specific methods (1-based indices in Lua).
+fn add_list_box_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addItem", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ListBox(lb)) = g.widgets.get_mut(idx) { lb.add_item(text); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeItem", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ListBox(lb)) = g.widgets.get_mut(idx) { if index >= 1 { lb.remove_item(index - 1); } }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("clearItems", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ListBox(lb)) = g.widgets.get_mut(idx) { lb.clear(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getItemCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ListBox(lb)) => lb.items.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getItem", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::ListBox(lb)) => if index >= 1 { lb.items.get(index - 1).cloned().unwrap_or_default() } else { String::new() },
+            _ => String::new(),
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSelectedIndex", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ListBox(lb)) = g.widgets.get_mut(idx) {
+            if index >= 1 && index <= lb.items.len() { lb.selected_index = Some(index - 1); }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSelectedIndex", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ListBox(lb)) => lb.selected_index.map_or(0, |i| i + 1), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setItemHeight", lua.create_function(move |_, h: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ListBox(lb)) = g.widgets.get_mut(idx) { lb.item_height = h; }
+        Ok(())
+    })?)?;
+    Ok(())
+}
+
+/// Adds TabBar-specific methods (1-based indices in Lua).
+fn add_tab_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addTab", lua.create_function(move |_, label: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TabBar(tb)) = g.widgets.get_mut(idx) { tb.add_tab(label); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeTab", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TabBar(tb)) = g.widgets.get_mut(idx) {
+            if index >= 1 && index <= tb.tabs.len() { tb.remove_tab(index - 1); return Ok(true); }
+        }
+        Ok(false)
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTab", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::TabBar(tb)) => if index >= 1 { tb.tabs.get(index - 1).cloned() } else { None },
+            _ => None,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTabCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TabBar(tb)) => tb.tabs.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setActiveTab", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TabBar(tb)) = g.widgets.get_mut(idx) {
+            if index >= 1 && index <= tb.tabs.len() { tb.active_tab = index - 1; }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getActiveTab", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TabBar(tb)) => tb.active_tab + 1, _ => 0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Panel-specific methods.
+fn add_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTitle", lua.create_function(move |_, title: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Panel(p)) = g.widgets.get_mut(idx) { p.title = title; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTitle", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Panel(p)) => p.title.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setScrollable", lua.create_function(move |_, scrollable: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Panel(p)) = g.widgets.get_mut(idx) { p.scrollable = scrollable; }
+        Ok(())
+    })?)?;
+    Ok(())
+}
+
+/// Adds Layout-specific methods.
+fn add_layout_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setDirection", lua.create_function(move |_, dir: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(layout)) = g.widgets.get_mut(idx) {
+            if let Some(d) = LayoutDirection::parse_str(&dir) { layout.direction = d; }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getDirection", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Layout(l)) => l.direction.as_str().to_string(), _ => "vertical".to_string() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSpacing", lua.create_function(move |_, spacing: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) { l.spacing = spacing; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSpacing", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Layout(l)) => l.spacing, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setColumns", lua.create_function(move |_, n: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) { l.columns = n.max(1); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setWrap", lua.create_function(move |_, wrap: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) { l.wrap = wrap; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getWrap", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Layout(l)) => l.wrap, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setAlign", lua.create_function(move |_, align: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) { l.align = align; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getAlign", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Layout(l)) => l.align.clone(), _ => "start".to_string() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setJustify", lua.create_function(move |_, justify: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Layout(l)) = g.widgets.get_mut(idx) { l.justify = justify; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getJustify", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Layout(l)) => l.justify.clone(), _ => "start".to_string() })
+    })?)?;
+    Ok(())
+}
+
+/// Adds ScrollPanel-specific methods.
+fn add_scroll_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setContentSize", lua.create_function(move |_, (w, h): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollPanel(sp)) = g.widgets.get_mut(idx) { sp.content_width = w; sp.content_height = h; sp.clamp_scroll(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getContentSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollPanel(sp)) => (sp.content_width, sp.content_height), _ => (0.0, 0.0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setScrollPosition", lua.create_function(move |_, (x, y): (f32, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollPanel(sp)) = g.widgets.get_mut(idx) { sp.scroll_x = x; sp.scroll_y = y; sp.clamp_scroll(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getScrollPosition", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollPanel(sp)) => (sp.scroll_x, sp.scroll_y), _ => (0.0, 0.0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMaxScroll", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollPanel(sp)) => sp.max_scroll(), _ => (0.0, 0.0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setScrollSpeed", lua.create_function(move |_, speed: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollPanel(sp)) = g.widgets.get_mut(idx) { sp.scroll_speed = speed; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getScrollSpeed", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollPanel(sp)) => sp.scroll_speed, _ => 20.0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds NinePatch-specific methods.
+fn add_nine_patch_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setInsets", lua.create_function(move |_, (left, top, right, bottom): (u32, u32, u32, u32)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::NinePatch(np)) = g.widgets.get_mut(idx) {
+            np.inset_left = left; np.inset_top = top; np.inset_right = right; np.inset_bottom = bottom;
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getInsets", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::NinePatch(np)) => (np.inset_left, np.inset_top, np.inset_right, np.inset_bottom),
+            _ => (0, 0, 0, 0),
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setImageDimensions", lua.create_function(move |_, (w, h): (u32, u32)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::NinePatch(np)) = g.widgets.get_mut(idx) { np.image_width = w; np.image_height = h; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getImageDimensions", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::NinePatch(np)) => (np.image_width, np.image_height), _ => (0, 0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSlices", lua.create_function(move |lua, ()| {
+        let g = c.borrow();
+        match g.widgets.get(idx) {
+            Some(WidgetKind::NinePatch(np)) => {
+                let slices = np.get_slices();
+                let result = lua.create_table()?;
+                for (i, s) in slices.iter().enumerate() {
+                    let st = lua.create_table()?;
+                    st.set("sx", s.0)?; st.set("sy", s.1)?; st.set("sw", s.2)?; st.set("sh", s.3)?;
+                    st.set("dx", s.4)?; st.set("dy", s.5)?; st.set("dw", s.6)?; st.set("dh", s.7)?;
+                    result.set(i + 1, st)?;
+                }
+                Ok(LuaValue::Table(result))
+            }
+            _ => Ok(LuaValue::Nil),
+        }
+    })?)?;
+    Ok(())
+}
+
+/// Adds Toast-specific methods.
+fn add_toast_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMessage", lua.create_function(move |_, msg: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Toast(toast)) = g.widgets.get_mut(idx) { toast.message = msg; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMessage", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toast(toast)) => toast.message.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setDuration", lua.create_function(move |_, d: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Toast(toast)) = g.widgets.get_mut(idx) { toast.duration = d; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getDuration", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toast(toast)) => toast.duration, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getProgress", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toast(toast)) => toast.progress(), _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isExpired", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toast(toast)) => toast.is_expired(), _ => true })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Separator-specific methods.
+fn add_separator_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setVertical", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Separator(sep)) = g.widgets.get_mut(idx) { sep.vertical = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isVertical", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Separator(sep)) => sep.vertical, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setThickness", lua.create_function(move |_, thickness: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Separator(sep)) = g.widgets.get_mut(idx) { sep.thickness = thickness; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getThickness", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Separator(sep)) => sep.thickness, _ => 1.0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds TreeView-specific methods (1-based indices in Lua).
+fn add_tree_view_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addNode", lua.create_function(move |_, (text, parent_index): (String, Option<usize>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            let pi = parent_index.map(|i| i.saturating_sub(1));
+            Ok(tv.add_node(text, pi) + 1)
+        } else { Ok(0) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("toggleNode", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            if index >= 1 { tv.toggle_node(index - 1); return Ok(tv.nodes.get(index - 1).is_some_and(|n| n.expanded)); }
+        }
+        Ok(false)
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isExpanded", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::TreeView(tv)) => index >= 1 && tv.nodes.get(index - 1).is_some_and(|n| n.expanded),
+            _ => false,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getNodeCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TreeView(tv)) => tv.node_count(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeNode", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.remove_node(i)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("clearNodes", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) { tv.clear_nodes(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getNodeText", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) {
+            Ok(index.checked_sub(1).and_then(|i| tv.get_node_text(i)).map(str::to_string))
+        } else { Ok(None) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setNodeText", lua.create_function(move |_, (index, text): (usize, String)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.set_node_text(i, text)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setNodeIcon", lua.create_function(move |_, (index, icon): (usize, String)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.set_node_icon(i, icon)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("expandNode", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.expand_node(i)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("collapseNode", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.collapse_node(i)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isNodeExpanded", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) {
+            Ok(index.checked_sub(1).and_then(|i| tv.is_node_expanded(i)))
+        } else { Ok(None) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("expandAll", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) { tv.expand_all(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("collapseAll", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) { tv.collapse_all(); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSelectedNode", lua.create_function(move |_, index: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get_mut(idx) {
+            Ok(index.checked_sub(1).is_some_and(|i| tv.set_selected_node(i)))
+        } else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSelectedNode", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) { Ok(tv.get_selected_node().map(|i| i + 1)) } else { Ok(None) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getChildNodes", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) {
+            Ok(index.checked_sub(1).and_then(|i| tv.get_child_nodes(i)).map(|v| v.iter().map(|&ci| ci + 1).collect::<Vec<_>>()).unwrap_or_default())
+        } else { Ok(Vec::new()) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getParentNode", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) {
+            Ok(index.checked_sub(1).and_then(|i| tv.get_parent_node(i)).flatten().map(|p| p + 1))
+        } else { Ok(None) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getNodeDepth", lua.create_function(move |_, index: usize| {
+        let g = c.borrow();
+        if let Some(WidgetKind::TreeView(tv)) = g.widgets.get(idx) {
+            Ok(index.checked_sub(1).and_then(|i| tv.get_node_depth(i)))
+        } else { Ok(None) }
+    })?)?;
+    Ok(())
+}
+
+/// Adds RadioButton-specific methods.
+fn add_radio_button_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::RadioButton(rb)) => rb.text.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::RadioButton(rb)) = g.widgets.get_mut(idx) { rb.text = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isSelected", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::RadioButton(rb)) => rb.selected, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSelected", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::RadioButton(rb)) = g.widgets.get_mut(idx) { rb.selected = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getGroup", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::RadioButton(rb)) => rb.group.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setGroup", lua.create_function(move |_, group: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::RadioButton(rb)) = g.widgets.get_mut(idx) { rb.group = group; }
+        Ok(())
+    })?)?;
+    /// @return nil
+    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds ScrollBar-specific methods.
+fn add_scroll_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getScrollPosition", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollBar(sb)) => sb.position, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setScrollPosition", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollBar(sb)) = g.widgets.get_mut(idx) { sb.position = v.clamp(0.0, (sb.content_size - sb.view_size).max(0.0)); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getContentSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollBar(sb)) => sb.content_size, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setContentSize", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollBar(sb)) = g.widgets.get_mut(idx) { sb.content_size = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getViewSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollBar(sb)) => sb.view_size, _ => 0.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setViewSize", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ScrollBar(sb)) = g.widgets.get_mut(idx) { sb.view_size = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isVertical", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollBar(sb)) => sb.vertical, _ => true })
+    })?)?;
+    /// @return nil
+    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds GUIWindow-specific methods.
+fn add_gui_window_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTitle", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUIWindow(w)) => w.title.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTitle", lua.create_function(move |_, title: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUIWindow(w)) = g.widgets.get_mut(idx) { w.title = title; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isCloseable", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUIWindow(w)) => w.closeable, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setCloseable", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUIWindow(w)) = g.widgets.get_mut(idx) { w.closeable = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isDraggable", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUIWindow(w)) => w.draggable, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setDraggable", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUIWindow(w)) = g.widgets.get_mut(idx) { w.draggable = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isResizable", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUIWindow(w)) => w.resizable, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setResizable", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUIWindow(w)) = g.widgets.get_mut(idx) { w.resizable = v; }
+        Ok(())
+    })?)?;
+    /// @return nil
+    t.set("setOnClose", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds SplitPanel-specific methods.
+fn add_split_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getOrientation", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::SplitPanel(sp)) => sp.orientation.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setOrientation", lua.create_function(move |_, v: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) { sp.orientation = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSplitPosition", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::SplitPanel(sp)) => sp.split_position, _ => 0.5 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSplitPosition", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) { sp.split_position = v.clamp(0.0, 1.0); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMinPanelSize", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::SplitPanel(sp)) => sp.min_panel_size, _ => 50.0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setMinPanelSize", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) { sp.min_panel_size = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setFirstChild", lua.create_function(move |_, child_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) { sp.first_child = Some(child_idx); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSecondChild", lua.create_function(move |_, child_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::SplitPanel(sp)) = g.widgets.get_mut(idx) { sp.second_child = Some(child_idx); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getFirstChild", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::SplitPanel(sp)) => sp.first_child, _ => None })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSecondChild", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::SplitPanel(sp)) => sp.second_child, _ => None })
+    })?)?;
+    Ok(())
+}
+
+/// Adds DockPanel-specific methods.
+fn add_dock_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("dock", lua.create_function(move |_, (child_idx, side): (usize, String)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) { dp.docked.push((child_idx, side)); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("undock", lua.create_function(move |_, child_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) { dp.docked.retain(|(ci, _)| *ci != child_idx); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getDockedCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::DockPanel(dp)) => dp.docked.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSplitSize", lua.create_function(move |_, (side, size): (String, f32)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::DockPanel(dp)) = g.widgets.get_mut(idx) {
+            if let Some(entry) = dp.split_sizes.iter_mut().find(|(s, _)| *s == side) { entry.1 = size; }
+            else { dp.split_sizes.push((side, size)); }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSplitSize", lua.create_function(move |_, side: String| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::DockPanel(dp)) => dp.split_sizes.iter().find(|(s, _)| *s == side).map(|(_, v)| *v),
+            _ => None,
+        })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Toolbar-specific methods.
+fn add_toolbar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getOrientation", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toolbar(tb)) => tb.orientation.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setOrientation", lua.create_function(move |_, v: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) { tb.orientation = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addButton", lua.create_function(move |_, (id, tooltip): (String, Option<String>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get_mut(idx) { Ok(tb.add_button(id, tooltip.unwrap_or_default()) + 1) }
+        else { Ok(0) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getButton", lua.create_function(move |lua, id: String| {
+        let g = c.borrow();
+        if let Some(WidgetKind::Toolbar(tb)) = g.widgets.get(idx) {
+            if let Some(btn) = tb.buttons.iter().find(|b| b.id == id) {
+                let bt = lua.create_table()?;
+                bt.set("id", btn.id.clone())?; bt.set("tooltip", btn.tooltip.clone())?;
+                bt.set("enabled", btn.enabled)?; bt.set("toggled", btn.toggled)?;
+                return Ok(Some(bt));
+            }
+        }
+        Ok(None)
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setButtonEnabled", lua.create_function(move |_, (id, enabled): (String, bool)| {
+        let mut g = c.borrow_mut();
+        Ok(match g.widgets.get_mut(idx) { Some(WidgetKind::Toolbar(tb)) => tb.set_button_enabled(&id, enabled), _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setButtonToggled", lua.create_function(move |_, (id, toggled): (String, bool)| {
+        let mut g = c.borrow_mut();
+        Ok(match g.widgets.get_mut(idx) { Some(WidgetKind::Toolbar(tb)) => tb.set_button_toggled(&id, toggled), _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isButtonToggled", lua.create_function(move |_, id: String| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Toolbar(tb)) => tb.is_button_toggled(&id), _ => None })
+    })?)?;
+    Ok(())
+}
+
+/// Adds MenuBar-specific methods.
+fn add_menu_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addMenu", lua.create_function(move |_, menu_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuBar(mb)) = g.widgets.get_mut(idx) { if !mb.menus.contains(&menu_idx) { mb.menus.push(menu_idx); } }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("removeMenu", lua.create_function(move |_, menu_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuBar(mb)) = g.widgets.get_mut(idx) { mb.menus.retain(|m| *m != menu_idx); Ok(true) }
+        else { Ok(false) }
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMenus", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuBar(mb)) => mb.menus.clone(), _ => Vec::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getMenuCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuBar(mb)) => mb.menus.len(), _ => 0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds MenuItem-specific methods.
+fn add_menu_item_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuItem(mi)) => mi.text.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuItem(mi)) = g.widgets.get_mut(idx) { mi.text = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getShortcut", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuItem(mi)) => mi.shortcut.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setShortcut", lua.create_function(move |_, shortcut: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuItem(mi)) = g.widgets.get_mut(idx) { mi.shortcut = shortcut; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isChecked", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuItem(mi)) => mi.checked, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setChecked", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuItem(mi)) = g.widgets.get_mut(idx) { mi.checked = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addSubItem", lua.create_function(move |_, child_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::MenuItem(mi)) = g.widgets.get_mut(idx) { if !mi.items.contains(&child_idx) { mi.items.push(child_idx); } }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSubItems", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuItem(mi)) => mi.items.clone(), _ => Vec::new() })
+    })?)?;
+    /// @return nil
+    t.set("setOnClick", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds Dialog-specific methods.
+fn add_dialog_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTitle", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Dialog(d)) => d.title.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTitle", lua.create_function(move |_, title: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.title = title; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isModal", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Dialog(d)) => d.modal, _ => true })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setModal", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.modal = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isOpen", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Dialog(d)) => d.open, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("open", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.open = true; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("close", lua.create_function(move |_, ()| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.open = false; }
+        Ok(())
+    })?)?;
+    /// @return nil
+    t.set("setOnClose", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setContent", lua.create_function(move |_, content_idx: Option<usize>| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.content_idx = content_idx; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getContent", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Dialog(d)) => d.content_idx, _ => None })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addButton", lua.create_function(move |_, (text, _cb): (String, Option<LuaFunction>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.footer_buttons.push(text); Ok(d.footer_buttons.len()) }
+        else { Ok(0) }
+    })?)?;
+    Ok(())
+}
+
+/// Adds StatusBar-specific methods.
+fn add_status_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addSection", lua.create_function(move |_, (text, width): (String, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) { sb.sections.push((text, width.unwrap_or(100.0))); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSectionText", lua.create_function(move |_, (section_idx, text): (usize, String)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::StatusBar(sb)) = g.widgets.get_mut(idx) {
+            if section_idx >= 1 && section_idx <= sb.sections.len() { sb.sections[section_idx - 1].0 = text; }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSectionText", lua.create_function(move |_, section_idx: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::StatusBar(sb)) => if section_idx >= 1 && section_idx <= sb.sections.len() { Some(sb.sections[section_idx - 1].0.clone()) } else { None },
+            _ => None,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSectionCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::StatusBar(sb)) => sb.sections.len(), _ => 0 })
+    })?)?;
+    Ok(())
+}
+
+/// Adds Accordion-specific methods (1-based sections in Lua).
+fn add_accordion_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addSection", lua.create_function(move |_, (title, content_idx): (String, Option<usize>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) {
+            acc.sections.push(AccordionSection { title, content_idx, expanded: false });
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSectionCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Accordion(acc)) => acc.sections.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("toggleSection", lua.create_function(move |_, section_idx: usize| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) {
+            if section_idx >= 1 && section_idx <= acc.sections.len() {
+                let new_state = !acc.sections[section_idx - 1].expanded;
+                if acc.exclusive && new_state { for s in acc.sections.iter_mut() { s.expanded = false; } }
+                acc.sections[section_idx - 1].expanded = new_state;
+                return Ok(new_state);
+            }
+        }
+        Ok(false)
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isSectionExpanded", lua.create_function(move |_, section_idx: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::Accordion(acc)) => section_idx >= 1 && section_idx <= acc.sections.len() && acc.sections[section_idx - 1].expanded,
+            _ => false,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isExclusive", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::Accordion(acc)) => acc.exclusive, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setExclusive", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::Accordion(acc)) = g.widgets.get_mut(idx) { acc.exclusive = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSectionTitle", lua.create_function(move |_, section_idx: usize| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::Accordion(acc)) => if section_idx >= 1 && section_idx <= acc.sections.len() { Some(acc.sections[section_idx - 1].title.clone()) } else { None },
+            _ => None,
+        })
+    })?)?;
+    Ok(())
+}
+
+/// Adds TooltipPanel-specific methods.
+fn add_tooltip_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getText", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TooltipPanel(tp)) => tp.text.clone(), _ => String::new() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setText", lua.create_function(move |_, text: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TooltipPanel(tp)) = g.widgets.get_mut(idx) { tp.text = text; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getDelay", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TooltipPanel(tp)) => tp.delay, _ => 0.5 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setDelay", lua.create_function(move |_, v: f32| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TooltipPanel(tp)) = g.widgets.get_mut(idx) { tp.delay = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTarget", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::TooltipPanel(tp)) => tp.target_idx, _ => None })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTarget", lua.create_function(move |_, target: Option<usize>| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::TooltipPanel(tp)) = g.widgets.get_mut(idx) { tp.target_idx = target; }
+        Ok(())
+    })?)?;
+    Ok(())
+}
+
+/// Adds ColorPicker-specific methods.
+fn add_color_picker_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getColor", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ColorPicker(cp)) => (cp.r, cp.g, cp.b, cp.a), _ => (1.0, 1.0, 1.0, 1.0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setColor", lua.create_function(move |_, (r, green, b, a): (f32, f32, f32, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ColorPicker(cp)) = g.widgets.get_mut(idx) { cp.r = r; cp.g = green; cp.b = b; cp.a = a.unwrap_or(cp.a); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getShowAlpha", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ColorPicker(cp)) => cp.show_alpha, _ => true })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setShowAlpha", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ColorPicker(cp)) = g.widgets.get_mut(idx) { cp.show_alpha = v; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getColorMode", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ColorPicker(cp)) => cp.color_mode.clone(), _ => "rgb".to_string() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setColorMode", lua.create_function(move |_, mode: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ColorPicker(cp)) = g.widgets.get_mut(idx) { cp.color_mode = mode; }
+        Ok(())
+    })?)?;
+    /// @return nil
+    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds GUITable-specific methods (1-based rows/cols in Lua).
+fn add_gui_table_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addColumn", lua.create_function(move |_, (header, width): (String, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) { tbl.columns.push(TableColumn { header, width: width.unwrap_or(100.0) }); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getColumnCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUITable(tbl)) => tbl.columns.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("addRow", lua.create_function(move |_, cells: Vec<String>| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) { tbl.rows.push(cells); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getRowCount", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUITable(tbl)) => tbl.rows.len(), _ => 0 })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getCell", lua.create_function(move |_, (row, col): (usize, usize)| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) {
+            Some(WidgetKind::GUITable(tbl)) => {
+                if row >= 1 && row <= tbl.rows.len() && col >= 1 && col <= tbl.rows[row - 1].len() { Some(tbl.rows[row - 1][col - 1].clone()) } else { None }
+            }
+            _ => None,
+        })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setCell", lua.create_function(move |_, (row, col, text): (usize, usize, String)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) {
+            if row >= 1 && row <= tbl.rows.len() && col >= 1 && col <= tbl.rows[row - 1].len() { tbl.rows[row - 1][col - 1] = text; }
+        }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getSelectedRow", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUITable(tbl)) => tbl.selected_row.map(|r| r + 1), _ => None })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSelectedRow", lua.create_function(move |_, row: Option<usize>| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) { tbl.selected_row = row.map(|r| r.saturating_sub(1)); }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("isSortable", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::GUITable(tbl)) => tbl.sortable, _ => false })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setSortable", lua.create_function(move |_, v: bool| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::GUITable(tbl)) = g.widgets.get_mut(idx) { tbl.sortable = v; }
+        Ok(())
+    })?)?;
+    /// @return nil
+    t.set("setOnSelect", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    Ok(())
+}
+
+/// Adds ImageWidget-specific methods.
+fn add_image_widget_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getScaleMode", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ImageWidget(iw)) => iw.scale_mode.clone(), _ => "fit".to_string() })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setScaleMode", lua.create_function(move |_, mode: String| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ImageWidget(iw)) = g.widgets.get_mut(idx) { iw.scale_mode = mode; }
+        Ok(())
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("getTint", lua.create_function(move |_, ()| {
+        let g = c.borrow();
+        Ok(match g.widgets.get(idx) { Some(WidgetKind::ImageWidget(iw)) => (iw.tint.0, iw.tint.1, iw.tint.2, iw.tint.3), _ => (1.0, 1.0, 1.0, 1.0) })
+    })?)?;
+    let c = ctx.clone();
+    /// @return nil
+    t.set("setTint", lua.create_function(move |_, (r, green, b, a): (f32, f32, f32, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        if let Some(WidgetKind::ImageWidget(iw)) = g.widgets.get_mut(idx) { iw.tint = (r, green, b, a.unwrap_or(1.0)); }
+        Ok(())
+    })?)?;
+    Ok(())
+}
+
+// -------------------------------------------------------------------------------
+// LuaTheme UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a GUI [`Theme`].
+struct LuaTheme {
+    inner: Rc<RefCell<Theme>>,
+}
+
+impl LuaUserData for LuaTheme {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setStyle --
+        /// Sets a style for a (widget_type, state) pair.
+        /// @param widgetType : string
+        /// @param state : string
+        /// @param style : table
+        /// @return nil
+        methods.add_method("setStyle", |_, this, (widget_type, state, style_table): (String, String, LuaTable)| {
+            let wt = parse_widget_type(&widget_type).ok_or_else(|| {
+                LuaError::external(format!("gui.newTheme:setStyle: unknown widget type '{widget_type}'"))
+            })?;
+            let ws = WidgetState::parse_str(&state).ok_or_else(|| {
+                LuaError::external(format!("gui.newTheme:setStyle: unknown state '{state}'"))
+            })?;
+            let style = parse_widget_style(&style_table)?;
+            this.inner.borrow_mut().set_style(wt, ws, style);
+            Ok(())
+        });
     }
 }
 
-impl UserData for LuaToast {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("progress", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isExpired", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Parses a widget type string into a [`WidgetType`].
+fn parse_widget_type(s: &str) -> Option<WidgetType> {
+    match s {
+        "button" => Some(WidgetType::Button),
+        "label" => Some(WidgetType::Label),
+        "textinput" => Some(WidgetType::TextInput),
+        "checkbox" => Some(WidgetType::CheckBox),
+        "slider" => Some(WidgetType::Slider),
+        "progressbar" => Some(WidgetType::ProgressBar),
+        "combobox" => Some(WidgetType::ComboBox),
+        "listbox" => Some(WidgetType::ListBox),
+        "panel" => Some(WidgetType::Panel),
+        "layout" => Some(WidgetType::Layout),
+        "scrollpanel" => Some(WidgetType::ScrollPanel),
+        "ninepatch" => Some(WidgetType::NinePatch),
+        "tabbar" => Some(WidgetType::TabBar),
+        "toast" => Some(WidgetType::Toast),
+        "separator" => Some(WidgetType::Separator),
+        "spacer" => Some(WidgetType::Spacer),
+        "treeview" => Some(WidgetType::TreeView),
+        "radiobutton" => Some(WidgetType::RadioButton),
+        "scrollbar" => Some(WidgetType::ScrollBar),
+        "guiwindow" => Some(WidgetType::GUIWindow),
+        "splitpanel" => Some(WidgetType::SplitPanel),
+        "dockpanel" => Some(WidgetType::DockPanel),
+        "toolbar" => Some(WidgetType::Toolbar),
+        "menubar" => Some(WidgetType::MenuBar),
+        "menuitem" => Some(WidgetType::MenuItem),
+        "dialog" => Some(WidgetType::Dialog),
+        "statusbar" => Some(WidgetType::StatusBar),
+        "accordion" => Some(WidgetType::Accordion),
+        "tooltippanel" => Some(WidgetType::TooltipPanel),
+        "colorpicker" => Some(WidgetType::ColorPicker),
+        "guitable" => Some(WidgetType::GUITable),
+        "imagewidget" => Some(WidgetType::ImageWidget),
+        _ => None,
     }
 }
 
-// ── LuaToolbar ────────────────────────────────────────────────────────────
-
-pub struct LuaToolbar(/* TODO: add key + state fields */);
-
-
-impl LuaToolbar {
-    /// Return the 0-based index of the button with the given `id`, or `None`.
-    ///
-    /// @param id : str
-    /// @return integer?
-    pub fn get_button_index(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+/// Parses a Lua style table into a [`WidgetStyle`].
+fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
+    let mut style = WidgetStyle::default();
+    if let Ok(bg) = t.get::<_, LuaTable>("bg") {
+        style.bg_color = [
+            bg.get::<_, f32>(1).unwrap_or(0.2), bg.get::<_, f32>(2).unwrap_or(0.2),
+            bg.get::<_, f32>(3).unwrap_or(0.2), bg.get::<_, f32>(4).unwrap_or(1.0),
+        ];
     }
-    /// Return whether the button identified by `id` is in the toggled state.
-    ///
-    /// @param id : str
-    /// @return boolean?
-    pub fn is_button_toggled(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+    if let Ok(fg) = t.get::<_, LuaTable>("fg") {
+        style.fg_color = [
+            fg.get::<_, f32>(1).unwrap_or(1.0), fg.get::<_, f32>(2).unwrap_or(1.0),
+            fg.get::<_, f32>(3).unwrap_or(1.0), fg.get::<_, f32>(4).unwrap_or(1.0),
+        ];
     }
-}
-
-impl UserData for LuaToolbar {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getButtonIndex", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isButtonToggled", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+    if let Ok(bc) = t.get::<_, LuaTable>("border") {
+        style.border_color = [
+            bc.get::<_, f32>(1).unwrap_or(0.4), bc.get::<_, f32>(2).unwrap_or(0.4),
+            bc.get::<_, f32>(3).unwrap_or(0.4), bc.get::<_, f32>(4).unwrap_or(1.0),
+        ];
     }
+    if let Ok(bw) = t.get::<_, f32>("borderWidth") { style.border_width = bw; }
+    if let Ok(cr) = t.get::<_, f32>("cornerRadius") { style.corner_radius = cr; }
+    if let Ok(fs) = t.get::<_, f32>("fontSize") { style.font_size = fs; }
+    Ok(style)
 }
 
-// ── LuaTreeView ────────────────────────────────────────────────────────────
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-pub struct LuaTreeView(/* TODO: add key + state fields */);
-
-
-impl LuaTreeView {
-    /// Return the total number of nodes.
-    ///
-    ///
-    /// @return integer
-    pub fn node_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the display text of the node at `index`, or `None` if out of range.
-    ///
-    /// @param index : integer
-    /// @return Option<
-    pub fn get_node_text(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return whether the node at `index` is expanded.
-    ///
-    /// @param index : integer
-    /// @return boolean?
-    pub fn is_node_expanded(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the selected node index, or `None` if nothing is selected.
-    ///
-    ///
-    /// @return integer?
-    pub fn get_selected_node(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return a slice of child indices for the node at `index`.
-    ///
-    /// @param index : integer
-    /// @return Option<
-    pub fn get_child_nodes(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the parent index of the node at `index`.
-    ///
-    /// Returns `Some(None)` for root-level nodes and `None` if the index is
-    /// out of range.
-    ///
-    /// @param index : integer
-    /// @return integer??
-    pub fn get_parent_node(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the depth of the node at `index` (0 for root-level nodes).
-    ///
-    /// Traverses the parent chain; returns `None` if the index is out of range.
-    ///
-    /// @param index : integer
-    /// @return integer?
-    pub fn get_node_depth(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaTreeView {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("nodeCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getNodeText", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isNodeExpanded", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getSelectedNode", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getChildNodes", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getParentNode", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getNodeDepth", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaWidgetBase ────────────────────────────────────────────────────────────
-
-pub struct LuaWidgetBase(/* TODO: add key + state fields */);
-
-
-impl LuaWidgetBase {
-    /// Test whether a point `(px, py)` lies within this widget's bounding
-    /// rectangle.
-    ///
-    /// @param px : number
-    /// @param py : number
-    /// @return boolean
-    pub fn contains_point(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaWidgetBase {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("containsPoint", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaWidgetKind ────────────────────────────────────────────────────────────
-
-pub struct LuaWidgetKind(/* TODO: add key + state fields */);
-
-
-impl LuaWidgetKind {
-    /// Return the child indices if this widget is a container type.
-    ///
-    ///
-    /// @return Option<
-    pub fn children(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaWidgetKind {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("children", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.gui.* functions ──────────────────────────────────────────
-
-/// Parse a direction string.  Accepted: `"vertical"`, `"horizontal"`, `"grid"`.
-///
-/// @param s : str
-/// @return LayoutDirection?
-pub fn parse_str(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Return mutable child indices if this widget is a container type.
-///
-///
-/// @return Option<
-pub fn children_mut(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a button and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @return integer
-pub fn add_button(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a label and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @return integer
-pub fn add_label(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a text input and return its pool index.
-///
-///
-/// @return integer
-pub fn add_text_input(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a check box and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @return integer
-pub fn add_checkbox(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a slider and return its pool index.
-///
-/// @param min : number
-/// @param max : number
-/// @return integer
-pub fn add_slider(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a progress bar and return its pool index.
-///
-/// @param min : number
-/// @param max : number
-/// @return integer
-pub fn add_progress_bar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a combo box and return its pool index.
-///
-///
-/// @return integer
-pub fn add_combo_box(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a list box and return its pool index.
-///
-///
-/// @return integer
-pub fn add_list_box(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a panel and return its pool index.
-///
-///
-/// @return integer
-pub fn add_panel(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a layout and return its pool index.
-///
-/// @param direction : LayoutDirection
-/// @return integer
-pub fn add_layout(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a scroll panel and return its pool index.
-///
-///
-/// @return integer
-pub fn add_scroll_panel(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a nine-patch and return its pool index.
-///
-///
-/// @return integer
-pub fn add_nine_patch(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a tab bar and return its pool index.
-///
-///
-/// @return integer
-pub fn add_tab_bar(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a separator and return its pool index.
-///
-/// @param vertical : boolean
-/// @return integer
-pub fn add_separator(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a spacer and return its pool index.
-///
-/// @param width : number
-/// @param height : number
-/// @return integer
-pub fn add_spacer(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a tree view and return its pool index.
-///
-///
-/// @return integer
-pub fn add_tree_view(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a radio button and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @param group : impl Into<String>
-/// @return integer
-pub fn add_radio_button(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a scroll bar and return its pool index.
-///
-/// @param vertical : boolean
-/// @return integer
-pub fn add_scroll_bar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a GUI window and return its pool index.
-///
-/// @param title : impl Into<String>
-/// @return integer
-pub fn add_gui_window(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a split panel and return its pool index.
-///
-/// @param orientation : impl Into<String>
-/// @return integer
-pub fn add_split_panel(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a dock panel and return its pool index.
-///
-///
-/// @return integer
-pub fn add_dock_panel(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a toolbar and return its pool index.
-///
-/// @param orientation : impl Into<String>
-/// @return integer
-pub fn add_toolbar(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a menu bar and return its pool index.
-///
-///
-/// @return integer
-pub fn add_menu_bar(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a menu item and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @return integer
-pub fn add_menu_item(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a dialog and return its pool index.
-///
-/// @param title : impl Into<String>
-/// @return integer
-pub fn add_dialog(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a status bar and return its pool index.
-///
-///
-/// @return integer
-pub fn add_status_bar(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add an accordion and return its pool index.
-///
-///
-/// @return integer
-pub fn add_accordion(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a tooltip panel and return its pool index.
-///
-/// @param text : impl Into<String>
-/// @return integer
-pub fn add_tooltip_panel(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a color picker and return its pool index.
-///
-///
-/// @return integer
-pub fn add_color_picker(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a GUI table and return its pool index.
-///
-///
-/// @return integer
-pub fn add_gui_table(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add an image widget and return its pool index.
-///
-///
-/// @return integer
-pub fn add_image_widget(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add `child_idx` as a child of the container at `parent_idx`.
-///
-/// Returns `false` if the parent is not a container or indices are invalid.
-///
-/// @param parent_idx : integer
-/// @param child_idx : integer
-/// @return boolean
-pub fn add_child(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove `child_idx` from the container at `parent_idx`.
-///
-/// @param parent_idx : integer
-/// @param child_idx : integer
-/// @return boolean
-pub fn remove_child(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set keyboard focus to the given widget, clearing focus from the
-/// previous widget.
-///
-///
-/// @param widget_idx : integer?
-pub fn set_focus(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Queue a toast notification for display.
-///
-///
-/// @param toast : Toast
-pub fn add_toast(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advance toast timers and remove expired toasts.
-///
-///
-/// @param dt : number
-pub fn update(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a mouse press event to the widget tree.
-///
-/// Hit-tests all visible, enabled widgets and sets focus + state
-/// accordingly.
-///
-/// @param x : number
-/// @param y : number
-/// @param _button : integer
-/// @return boolean
-pub fn mouse_pressed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a mouse release event to the widget tree.
-///
-/// @param x : number
-/// @param y : number
-/// @param _button : integer
-/// @return boolean
-pub fn mouse_released(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a mouse move event to update hover states.
-///
-/// @param x : number
-/// @param y : number
-/// @return boolean
-pub fn mouse_moved(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a key press event.  Handles tab focus navigation and
-/// delegates to focused text inputs.
-///
-/// @param key : str
-/// @return boolean
-pub fn key_pressed(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a text input event to the focused text input widget.
-///
-/// @param text : str
-/// @return boolean
-pub fn text_input(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Forward a mouse wheel event.
-///
-/// @param _x : number
-/// @param y : number
-/// @return boolean
-pub fn wheel_moved(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Insert text at the cursor position, respecting `max_length`.
-///
-/// @param input : str
-/// @return boolean
-pub fn insert_text(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Delete the character before the cursor (backspace).
-///
-///
-/// @return boolean
-pub fn backspace(_lua: &Lua, _: ()) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the current value, clamping to the `[min, max]` range and
-/// snapping to `step` if non-zero.
-///
-///
-/// @param v : number
-pub fn set_value(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add an item to the end of the list.
-///
-///
-/// @param text : impl Into<String>
-pub fn add_item(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove an item at the given 0-based index.
-///
-/// Returns `false` if the index is out of bounds.
-///
-/// @param index : integer
-/// @return boolean
-pub fn remove_item(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add an item to the end of the list.
-///
-///
-/// @param text : impl Into<String>
-/// Remove an item at the given 0-based index.
-///
-/// @param index : integer
-/// @return boolean
-/// Add a tab with the given label.
-///
-///
-/// @param label : impl Into<String>
-pub fn add_tab(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a tab at the given 0-based index.
-///
-/// @param index : integer
-/// @return boolean
-pub fn remove_tab(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the screen-pixel viewport for chart rendering.
-///
-///
-/// @param x : number
-/// @param y : number
-/// @param w : number
-/// @param h : number
-pub fn set_viewport(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the world (data) coordinate range. Replaces the current range value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param x_min : number
-/// @param x_max : number
-/// @param y_min : number
-/// @param y_max : number
-pub fn set_range(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a line series with the given name, data points, and color.
-///
-///
-/// @param name : str
-/// @param points : table
-/// @param color : Color
-pub fn add_line_series(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a scatter series. The insertion is O(1) amortised unless a resize is triggered.
-///
-///
-/// @param name : str
-/// @param points : table
-/// @param color : Color
-/// @param size : number
-pub fn add_scatter_series(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a bar series. Each value maps to category index 0, 1, 2, ….
-///
-///
-/// @param name : str
-/// @param values : table
-/// @param color : Color
-pub fn add_bar_series(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Removes a series by name. Returns `true` if it existed.
-///
-/// @param name : str
-/// @return boolean
-pub fn remove_series(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Enables or disables the background grid.
-///
-///
-/// @param b : boolean
-pub fn set_show_grid(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Enables or disables the x/y axes. Replaces the current show axes value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param b : boolean
-pub fn set_show_axes(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Enables or disables axis labels and chart title.
-///
-///
-/// @param b : boolean
-pub fn set_show_labels(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the grid line color. Replaces the current grid color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param c : Color
-pub fn set_grid_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the axis line color. Replaces the current axis color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param c : Color
-pub fn set_axis_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the chart background color. Replaces the current bg color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param c : Color
-pub fn set_bg_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the chart title. Replaces the current title value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param text : str
-pub fn set_title(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the x-axis and y-axis labels. Replaces the current axis labels value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param x_label : str
-/// @param y_label : str
-pub fn set_axis_labels(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the cursor position in data (world) coordinates.
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn set_cursor_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advance the elapsed timer by `dt` seconds.
-///
-///
-/// @param dt : number
-/// Add a node to the tree.
-///
-/// If `parent_index` is `None`, the node is a root-level entry.
-/// If `parent_index` is `Some(idx)`, the node is added as a child of node
-/// at index `idx`.
-///
-/// @param text : impl Into<String>
-/// @param parent_index : integer?
-/// @return integer
-pub fn add_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Toggle the expanded state of a node.
-///
-/// @param index : integer
-/// @return boolean
-pub fn toggle_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove the node at `index`, detaching it from its parent and remapping
-/// all stored indices that follow.  Children of the removed node are
-/// orphaned (their `parent` becomes `None`).
-///
-/// @param index : integer
-/// @return boolean
-pub fn remove_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the display text of the node at `index`.
-///
-/// @param index : integer
-/// @param text : impl Into<String>
-/// @return boolean
-pub fn set_node_text(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the icon name placeholder for the node at `index`.
-///
-/// Passing an empty string clears the icon.
-///
-/// @param index : integer
-/// @param icon : impl Into<String>
-/// @return boolean
-pub fn set_node_icon(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Expand the node at `index` (make its children visible).
-///
-/// @param index : integer
-/// @return boolean
-pub fn expand_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Collapse the node at `index` (hide its children).
-///
-/// @param index : integer
-/// @return boolean
-pub fn collapse_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the selected node.
-///
-/// Passing an out-of-range index clears the selection and returns `false`.
-///
-/// @param index : integer
-/// @return boolean
-pub fn set_selected_node(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a named button to the toolbar.
-///
-/// If a button with the same `id` already exists, its existing index is
-/// returned without creating a duplicate.
-///
-/// @param id : impl Into<String>
-/// @param tooltip : impl Into<String>
-/// @return integer
-/// Add a flexible spacer to the toolbar.
-///
-/// This is a placeholder; layout and rendering are handled externally.
-///
-///
-/// @param _width : number
-/// Enable or disable the button identified by `id`.
-///
-/// @param id : str
-/// @param enabled : boolean
-/// @return boolean
-pub fn set_button_enabled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the toggled (latched pressed) state of the button identified by `id`.
-///
-/// @param id : str
-/// @param toggled : boolean
-/// @return boolean
-pub fn set_button_toggled(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Insert or replace a style entry for the given widget type and state.
-///
-///
-/// @param widget_type : WidgetType
-/// @param state : WidgetState
-/// @param style : WidgetStyle
-pub fn set_style(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Parse a state name string into a [`WidgetState`].
-///
-/// Accepted values (case-sensitive): `"normal"`, `"hovered"`, `"pressed"`,
-/// `"focused"`, `"disabled"`.
-///
-/// @param s : str
-/// @return WidgetState?
 /// Registers the `luna.gui` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("parseStr", lua.create_function(parse_str)?)?;
-    tbl.set("childrenMut", lua.create_function(children_mut)?)?;
-    tbl.set("addButton", lua.create_function(add_button)?)?;
-    tbl.set("addLabel", lua.create_function(add_label)?)?;
-    tbl.set("addTextInput", lua.create_function(add_text_input)?)?;
-    tbl.set("addCheckbox", lua.create_function(add_checkbox)?)?;
-    tbl.set("addSlider", lua.create_function(add_slider)?)?;
-    tbl.set("addProgressBar", lua.create_function(add_progress_bar)?)?;
-    tbl.set("addComboBox", lua.create_function(add_combo_box)?)?;
-    tbl.set("addListBox", lua.create_function(add_list_box)?)?;
-    tbl.set("addPanel", lua.create_function(add_panel)?)?;
-    tbl.set("addLayout", lua.create_function(add_layout)?)?;
-    tbl.set("addScrollPanel", lua.create_function(add_scroll_panel)?)?;
-    tbl.set("addNinePatch", lua.create_function(add_nine_patch)?)?;
-    tbl.set("addTabBar", lua.create_function(add_tab_bar)?)?;
-    tbl.set("addSeparator", lua.create_function(add_separator)?)?;
-    tbl.set("addSpacer", lua.create_function(add_spacer)?)?;
-    tbl.set("addTreeView", lua.create_function(add_tree_view)?)?;
-    tbl.set("addRadioButton", lua.create_function(add_radio_button)?)?;
-    tbl.set("addScrollBar", lua.create_function(add_scroll_bar)?)?;
-    tbl.set("addGuiWindow", lua.create_function(add_gui_window)?)?;
-    tbl.set("addSplitPanel", lua.create_function(add_split_panel)?)?;
-    tbl.set("addDockPanel", lua.create_function(add_dock_panel)?)?;
-    tbl.set("addToolbar", lua.create_function(add_toolbar)?)?;
-    tbl.set("addMenuBar", lua.create_function(add_menu_bar)?)?;
-    tbl.set("addMenuItem", lua.create_function(add_menu_item)?)?;
-    tbl.set("addDialog", lua.create_function(add_dialog)?)?;
-    tbl.set("addStatusBar", lua.create_function(add_status_bar)?)?;
-    tbl.set("addAccordion", lua.create_function(add_accordion)?)?;
-    tbl.set("addTooltipPanel", lua.create_function(add_tooltip_panel)?)?;
-    tbl.set("addColorPicker", lua.create_function(add_color_picker)?)?;
-    tbl.set("addGuiTable", lua.create_function(add_gui_table)?)?;
-    tbl.set("addImageWidget", lua.create_function(add_image_widget)?)?;
-    tbl.set("addChild", lua.create_function(add_child)?)?;
-    tbl.set("removeChild", lua.create_function(remove_child)?)?;
-    tbl.set("setFocus", lua.create_function(set_focus)?)?;
-    tbl.set("addToast", lua.create_function(add_toast)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("mousePressed", lua.create_function(mouse_pressed)?)?;
-    tbl.set("mouseReleased", lua.create_function(mouse_released)?)?;
-    tbl.set("mouseMoved", lua.create_function(mouse_moved)?)?;
-    tbl.set("keyPressed", lua.create_function(key_pressed)?)?;
-    tbl.set("textInput", lua.create_function(text_input)?)?;
-    tbl.set("wheelMoved", lua.create_function(wheel_moved)?)?;
-    tbl.set("insertText", lua.create_function(insert_text)?)?;
-    tbl.set("backspace", lua.create_function(backspace)?)?;
-    tbl.set("setValue", lua.create_function(set_value)?)?;
-    tbl.set("addItem", lua.create_function(add_item)?)?;
-    tbl.set("removeItem", lua.create_function(remove_item)?)?;
-    tbl.set("addItem", lua.create_function(add_item)?)?;
-    tbl.set("removeItem", lua.create_function(remove_item)?)?;
-    tbl.set("addTab", lua.create_function(add_tab)?)?;
-    tbl.set("removeTab", lua.create_function(remove_tab)?)?;
-    tbl.set("setViewport", lua.create_function(set_viewport)?)?;
-    tbl.set("setRange", lua.create_function(set_range)?)?;
-    tbl.set("addLineSeries", lua.create_function(add_line_series)?)?;
-    tbl.set("addScatterSeries", lua.create_function(add_scatter_series)?)?;
-    tbl.set("addBarSeries", lua.create_function(add_bar_series)?)?;
-    tbl.set("removeSeries", lua.create_function(remove_series)?)?;
-    tbl.set("setShowGrid", lua.create_function(set_show_grid)?)?;
-    tbl.set("setShowAxes", lua.create_function(set_show_axes)?)?;
-    tbl.set("setShowLabels", lua.create_function(set_show_labels)?)?;
-    tbl.set("setGridColor", lua.create_function(set_grid_color)?)?;
-    tbl.set("setAxisColor", lua.create_function(set_axis_color)?)?;
-    tbl.set("setBgColor", lua.create_function(set_bg_color)?)?;
-    tbl.set("setTitle", lua.create_function(set_title)?)?;
-    tbl.set("setAxisLabels", lua.create_function(set_axis_labels)?)?;
-    tbl.set("setCursorPosition", lua.create_function(set_cursor_position)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("addNode", lua.create_function(add_node)?)?;
-    tbl.set("toggleNode", lua.create_function(toggle_node)?)?;
-    tbl.set("removeNode", lua.create_function(remove_node)?)?;
-    tbl.set("setNodeText", lua.create_function(set_node_text)?)?;
-    tbl.set("setNodeIcon", lua.create_function(set_node_icon)?)?;
-    tbl.set("expandNode", lua.create_function(expand_node)?)?;
-    tbl.set("collapseNode", lua.create_function(collapse_node)?)?;
-    tbl.set("setSelectedNode", lua.create_function(set_selected_node)?)?;
-    tbl.set("addButton", lua.create_function(add_button)?)?;
-    tbl.set("addSpacer", lua.create_function(add_spacer)?)?;
-    tbl.set("setButtonEnabled", lua.create_function(set_button_enabled)?)?;
-    tbl.set("setButtonToggled", lua.create_function(set_button_toggled)?)?;
-    tbl.set("setStyle", lua.create_function(set_style)?)?;
-    tbl.set("parseStr", lua.create_function(parse_str)?)?;
+    let ctx = Rc::new(RefCell::new(GuiContext::new()));
+
+    // -- newButton --
+    /// Creates a button widget.
+    /// @param text : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newButton", lua.create_function(move |lua, text: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_button(text.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_button_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newLabel --
+    /// Creates a text label widget.
+    /// @param text : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newLabel", lua.create_function(move |lua, text: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_label(text.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_label_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTextInput --
+    /// Creates a text input widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newTextInput", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_text_input();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_text_input_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newCheckbox --
+    /// Creates a checkbox widget.
+    /// @param text : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newCheckbox", lua.create_function(move |lua, text: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_checkbox(text.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_checkbox_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newSlider --
+    /// Creates a value slider widget.
+    /// @param min : number
+    /// @param max : number
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newSlider", lua.create_function(move |lua, (min, max): (Option<f64>, Option<f64>)| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_slider(min.unwrap_or(0.0), max.unwrap_or(100.0));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_slider_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newProgressBar --
+    /// Creates a progress bar widget.
+    /// @param min : number
+    /// @param max : number
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newProgressBar", lua.create_function(move |lua, (min, max): (Option<f64>, Option<f64>)| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_progress_bar(min.unwrap_or(0.0), max.unwrap_or(100.0));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_progress_bar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newComboBox --
+    /// Creates a dropdown combo box widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newComboBox", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_combo_box();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_combo_box_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newList --
+    /// Creates a selectable list widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newList", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_list_box();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_list_box_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newPanel --
+    /// Creates a container panel widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newPanel", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_panel();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_panel_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newLayout --
+    /// Creates a flexbox layout container.
+    /// @param direction : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newLayout", lua.create_function(move |lua, direction: Option<String>| {
+        let dir = direction.as_deref().and_then(LayoutDirection::parse_str).unwrap_or(LayoutDirection::Vertical);
+        let mut g = c.borrow_mut();
+        let idx = g.add_layout(dir);
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_layout_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newScrollPanel --
+    /// Creates a scrollable panel widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newScrollPanel", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_scroll_panel();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_scroll_panel_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newNinePatch --
+    /// Creates a 9-patch slicer widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newNinePatch", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_nine_patch();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_nine_patch_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTabBar --
+    /// Creates a tab bar widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newTabBar", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_tab_bar();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_tab_bar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newSeparator --
+    /// Creates a separator line.
+    /// @param vertical : boolean
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newSeparator", lua.create_function(move |lua, vertical: Option<bool>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_separator(vertical.unwrap_or(false));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_separator_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newSpacer --
+    /// Creates a spacing filler widget.
+    /// @param w : number
+    /// @param h : number
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newSpacer", lua.create_function(move |lua, (w, h): (Option<f32>, Option<f32>)| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_spacer(w.unwrap_or(0.0), h.unwrap_or(0.0));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newToast --
+    /// Creates a toast notification widget.
+    /// @param message : string
+    /// @param duration : number
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newToast", lua.create_function(move |lua, (message, duration): (Option<String>, Option<f32>)| {
+        let toast = Toast::new(message.unwrap_or_default(), duration.unwrap_or(3.0));
+        let mut g = c.borrow_mut();
+        let idx = g.widgets.len();
+        g.widgets.push(WidgetKind::Toast(toast));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_toast_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTreeView --
+    /// Creates a collapsible tree view widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newTreeView", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_tree_view();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_tree_view_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newRadioButton --
+    /// Creates a grouped radio button widget.
+    /// @param text : string
+    /// @param group : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newRadioButton", lua.create_function(move |lua, (text, group): (Option<String>, Option<String>)| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_radio_button(text.unwrap_or_default(), group.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_radio_button_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newScrollBar --
+    /// Creates a scroll bar widget.
+    /// @param vertical : boolean
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newScrollBar", lua.create_function(move |lua, vertical: Option<bool>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_scroll_bar(vertical.unwrap_or(true));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_scroll_bar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newWindow --
+    /// Creates a draggable window widget.
+    /// @param title : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newWindow", lua.create_function(move |lua, title: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_gui_window(title.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_gui_window_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newSplitPanel --
+    /// Creates a resizable split panel.
+    /// @param orientation : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newSplitPanel", lua.create_function(move |lua, orientation: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_split_panel(orientation.unwrap_or_else(|| "horizontal".to_string()));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_split_panel_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newDockPanel --
+    /// Creates a dock panel.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newDockPanel", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_dock_panel();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_dock_panel_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newToolbar --
+    /// Creates a toolbar widget.
+    /// @param orientation : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newToolbar", lua.create_function(move |lua, orientation: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_toolbar(orientation.unwrap_or_else(|| "horizontal".to_string()));
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_toolbar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newMenuBar --
+    /// Creates a menu bar widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newMenuBar", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_menu_bar();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_menu_bar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newMenuItem --
+    /// Creates a menu item widget.
+    /// @param text : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newMenuItem", lua.create_function(move |lua, text: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_menu_item(text.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_menu_item_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newDialog --
+    /// Creates a modal dialog widget.
+    /// @param title : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newDialog", lua.create_function(move |lua, title: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_dialog(title.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_dialog_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newStatusBar --
+    /// Creates a status bar widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newStatusBar", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_status_bar();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_status_bar_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newAccordion --
+    /// Creates a collapsible accordion widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newAccordion", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_accordion();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_accordion_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTooltipPanel --
+    /// Creates a tooltip panel widget.
+    /// @param text : string
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newTooltipPanel", lua.create_function(move |lua, text: Option<String>| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_tooltip_panel(text.unwrap_or_default());
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_tooltip_panel_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newColorPicker --
+    /// Creates a color picker widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newColorPicker", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_color_picker();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_color_picker_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTable --
+    /// Creates a data table widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newTable", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_gui_table();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_gui_table_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newImageWidget --
+    /// Creates an image display widget.
+    /// @return table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("newImageWidget", lua.create_function(move |lua, ()| {
+        let mut g = c.borrow_mut();
+        let idx = g.add_image_widget();
+        drop(g);
+        let t = create_widget_table(lua, &c, idx)?;
+        add_image_widget_methods(lua, &t, &c, idx)?;
+        Ok(t)
+    })?)?;
+
+    // -- newTheme --
+    /// Creates a new theme instance.
+    /// @return Theme
+    tbl.set("newTheme", lua.create_function(|lua, ()| {
+        lua.create_userdata(LuaTheme { inner: Rc::new(RefCell::new(Theme::new())) })
+    })?)?;
+
+    // -- setTheme --
+    /// Sets the active GUI theme.
+    /// @param theme : Theme
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("setTheme", lua.create_function(move |_, theme_ud: LuaAnyUserData| {
+        let lua_theme = theme_ud.borrow::<LuaTheme>()?;
+        let theme = lua_theme.inner.borrow().clone();
+        c.borrow_mut().theme = Some(theme);
+        Ok(())
+    })?)?;
+
+    // -- getTheme --
+    /// Returns whether a theme is set.
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("getTheme", lua.create_function(move |_, ()| {
+        Ok(c.borrow().theme.is_some())
+    })?)?;
+
+    // -- getRoot --
+    /// Returns the root panel widget table.
+    /// @return table
+    let c = ctx.clone();
+    /// @return table
+    tbl.set("getRoot", lua.create_function(move |lua, ()| {
+        let t = create_widget_table(lua, &c, 0)?;
+        add_panel_methods(lua, &t, &c, 0)?;
+        Ok(t)
+    })?)?;
+
+    // -- setFocus --
+    /// Sets keyboard focus to a widget or clears it.
+    /// @param widget : table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("setFocus", lua.create_function(move |_, widget: Option<LuaTable>| {
+        let idx = match widget {
+            Some(t) => Some(t.get::<_, usize>("_idx")?),
+            None => None,
+        };
+        c.borrow_mut().set_focus(idx);
+        Ok(())
+    })?)?;
+
+    // -- getFocus --
+    /// Returns the focused widget index or nil.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("getFocus", lua.create_function(move |_, ()| {
+        Ok(c.borrow().focused_widget)
+    })?)?;
+
+    // -- focusNext --
+    /// Moves focus to the next focusable widget.
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("focusNext", lua.create_function(move |_, ()| {
+        c.borrow_mut().focus_next();
+        Ok(())
+    })?)?;
+
+    // -- focusPrev --
+    /// Moves focus to the previous focusable widget.
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("focusPrev", lua.create_function(move |_, ()| {
+        c.borrow_mut().focus_prev();
+        Ok(())
+    })?)?;
+
+    // -- clearFocus --
+    /// Clears keyboard focus.
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("clearFocus", lua.create_function(move |_, ()| {
+        c.borrow_mut().set_focus(None);
+        Ok(())
+    })?)?;
+
+    // -- addToast --
+    /// Queues a toast notification from a table.
+    /// @param toast : table
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("addToast", lua.create_function(move |_, toast_table: LuaTable| {
+        let msg: String = toast_table.get::<_, Option<String>>("message")?
+            .or_else(|| toast_table.get::<_, Option<String>>(1).ok().flatten())
+            .unwrap_or_default();
+        let dur: f32 = toast_table.get::<_, Option<f32>>("duration")?.unwrap_or(3.0);
+        c.borrow_mut().add_toast(Toast::new(msg, dur));
+        Ok(())
+    })?)?;
+
+    // -- getToastCount --
+    /// Returns the number of active toasts.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("getToastCount", lua.create_function(move |_, ()| {
+        Ok(c.borrow().toast_count())
+    })?)?;
+
+    // -- mousepressed --
+    /// Forwards a mouse press event to the GUI.
+    /// @param x : number
+    /// @param y : number
+    /// @param button : number
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("mousepressed", lua.create_function(move |_, (x, y, btn): (f32, f32, Option<u32>)| {
+        Ok(c.borrow_mut().mouse_pressed(x, y, btn.unwrap_or(1)))
+    })?)?;
+
+    // -- mousereleased --
+    /// Forwards a mouse release event to the GUI.
+    /// @param x : number
+    /// @param y : number
+    /// @param button : number
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("mousereleased", lua.create_function(move |_, (x, y, btn): (f32, f32, Option<u32>)| {
+        Ok(c.borrow_mut().mouse_released(x, y, btn.unwrap_or(1)))
+    })?)?;
+
+    // -- mousemoved --
+    /// Forwards a mouse move event to the GUI.
+    /// @param x : number
+    /// @param y : number
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("mousemoved", lua.create_function(move |_, (x, y): (f32, f32)| {
+        Ok(c.borrow_mut().mouse_moved(x, y))
+    })?)?;
+
+    // -- keypressed --
+    /// Forwards a key press event to the GUI.
+    /// @param key : string
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("keypressed", lua.create_function(move |_, key: String| {
+        Ok(c.borrow_mut().key_pressed(&key))
+    })?)?;
+
+    // -- textinput --
+    /// Forwards text input to the focused text input widget.
+    /// @param text : string
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("textinput", lua.create_function(move |_, text: String| {
+        Ok(c.borrow_mut().text_input(&text))
+    })?)?;
+
+    // -- wheelmoved --
+    /// Forwards a mouse wheel event to the GUI.
+    /// @param x : number
+    /// @param y : number
+    /// @return boolean
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("wheelmoved", lua.create_function(move |_, (x, y): (f32, f32)| {
+        Ok(c.borrow_mut().wheel_moved(x, y))
+    })?)?;
+
+    // -- update --
+    /// Advances toast timers and removes expired toasts.
+    /// @param dt : number
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("update", lua.create_function(move |_, dt: f32| {
+        c.borrow_mut().update(dt);
+        Ok(())
+    })?)?;
+
+    // -- getWidgetCount --
+    /// Returns the total widget count in the context.
+    /// @return number
+    let c = ctx.clone();
+    /// @return nil
+    tbl.set("getWidgetCount", lua.create_function(move |_, ()| {
+        Ok(c.borrow().widget_count())
+    })?)?;
+
     luna.set("gui", tbl)?;
     Ok(())
 }

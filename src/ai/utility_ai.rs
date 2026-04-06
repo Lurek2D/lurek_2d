@@ -200,6 +200,66 @@ impl UtilityAI {
             last_scores: Vec::new(),
         }
     }
+
+    /// Adds an action with the given scorer callback and momentum bonus. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `name` — `String`.
+    /// - `scorer` — `RegistryKey`.
+    /// - `momentum_bonus` — `f64`.
+    pub fn add_action(&mut self, name: String, scorer: RegistryKey, momentum_bonus: f64) {
+        self.actions.push(UAAction {
+            name,
+            scorer,
+            considerations: Vec::new(),
+            momentum_bonus,
+        });
+    }
+
+    /// Adds a consideration to the named action. No-op if action not found. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `action_name` — `&str`.
+    /// - `name` — `String`.
+    /// - `callback` — `RegistryKey`.
+    /// - `curve` — `&str`.
+    /// - `p1` — `f64`.
+    /// - `p2` — `f64`.
+    /// - `p3` — `f64`.
+    /// - `weight` — `f64`.
+    pub fn add_consideration(
+        &mut self,
+        action_name: &str,
+        name: String,
+        callback: RegistryKey,
+        curve: &str,
+        p1: f64,
+        p2: f64,
+        p3: f64,
+        weight: f64,
+    ) {
+        if let Some(a) = self.actions.iter_mut().find(|a| a.name == action_name) {
+            a.considerations.push(Consideration {
+                name,
+                callback,
+                curve: ResponseCurve::parse_str(curve),
+                p1,
+                p2,
+                p3,
+                weight,
+            });
+        }
+    }
+
+    /// Returns the name of the last chosen action, or `None` if no evaluation has occurred.
+    ///
+    /// # Returns
+    /// `Option<&str>`.
+    pub fn last_action_name(&self) -> Option<&str> {
+        self.last_action
+            .and_then(|i| self.actions.get(i))
+            .map(|a| a.name.as_str())
+    }
 }
 
 impl Default for UtilityAI {

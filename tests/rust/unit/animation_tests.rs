@@ -110,7 +110,11 @@ fn set_speed_negative_value_clamps_to_zero() {
     assert!((anim.get_speed()).abs() < 1e-5);
     let before = anim.current_frame();
     anim.update(0.5);
-    assert_eq!(anim.current_frame(), before, "frozen animation should not advance");
+    assert_eq!(
+        anim.current_frame(),
+        before,
+        "frozen animation should not advance"
+    );
 }
 
 // ── Looping vs non-looping ────────────────────────────────────────────────────
@@ -150,7 +154,10 @@ fn drain_events_clears_pending_events() {
     let first = anim.drain_events();
     assert!(!first.is_empty(), "should have produced events");
     let second = anim.drain_events();
-    assert!(second.is_empty(), "pending events should be cleared after first drain");
+    assert!(
+        second.is_empty(),
+        "pending events should be cleared after first drain"
+    );
 }
 
 // ── Edge case: non-existent clip ──────────────────────────────────────────────
@@ -179,5 +186,9 @@ fn switching_clips_resets_frame_position() {
 
     anim.play("run"); // switch clip
     assert_eq!(anim.get_current_clip(), Some("run"));
-    assert_eq!(anim.current_frame(), 0, "switching clips should reset to frame 0");
+    assert_eq!(
+        anim.current_frame(),
+        0,
+        "switching clips should reset to frame 0"
+    );
 }

@@ -14,7 +14,7 @@ Demonstrates `luna.graphics.newNineSlice()` for building scalable UI panels and 
 ## How to Run
 
 ```powershell
-cargo run -- examples/nine_slice_demo
+cargo run -- demos/nine_slice_demo
 ```
 
 ## Controls

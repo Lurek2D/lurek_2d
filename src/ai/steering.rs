@@ -437,6 +437,146 @@ impl SteeringManager {
         self.last_force = combined;
         combined
     }
+
+    /// Adds a Seek behavior targeting `(tx, ty)` with the given weight.
+    ///
+    /// # Parameters
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `weight` — `f32`.
+    pub fn add_seek(&mut self, tx: f32, ty: f32, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Seek {
+            target: (tx, ty),
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds a Flee behavior away from `(tx, ty)` within `panic_dist`.
+    ///
+    /// # Parameters
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `panic_dist` — `f32`.
+    /// - `weight` — `f32`.
+    pub fn add_flee(&mut self, tx: f32, ty: f32, panic_dist: f32, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Flee {
+            target: (tx, ty),
+            panic_dist,
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds an Arrive behavior targeting `(tx, ty)` with deceleration inside `slowing_radius`.
+    ///
+    /// # Parameters
+    /// - `tx` — `f32`.
+    /// - `ty` — `f32`.
+    /// - `slowing_radius` — `f32`.
+    /// - `weight` — `f32`.
+    pub fn add_arrive(&mut self, tx: f32, ty: f32, slowing_radius: f32, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Arrive {
+            target: (tx, ty),
+            slowing_radius,
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds a Wander behavior with the given circle parameters.
+    ///
+    /// # Parameters
+    /// - `radius` — `f32`.
+    /// - `distance` — `f32`.
+    /// - `jitter` — `f32`.
+    /// - `weight` — `f32`.
+    pub fn add_wander(&mut self, radius: f32, distance: f32, jitter: f32, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Wander {
+            wander_radius: radius,
+            wander_distance: distance,
+            wander_jitter: jitter,
+            wander_angle: 0.0,
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds a Pursue behavior targeting a named agent.
+    ///
+    /// # Parameters
+    /// - `target_name` — `Option<String>`.
+    /// - `weight` — `f32`.
+    pub fn add_pursue(&mut self, target_name: Option<String>, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Pursue {
+            target_name,
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds an Evade behavior fleeing from a named threat agent.
+    ///
+    /// # Parameters
+    /// - `threat_name` — `Option<String>`.
+    /// - `weight` — `f32`.
+    pub fn add_evade(&mut self, threat_name: Option<String>, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Evade {
+            threat_name,
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Adds a Flock behavior for group movement among named neighbors.
+    ///
+    /// # Parameters
+    /// - `neighbor_radius` — `f32`.
+    /// - `sep` — `f32`.
+    /// - `align` — `f32`.
+    /// - `coh` — `f32`.
+    /// - `weight` — `f32`.
+    pub fn add_flock(&mut self, neighbor_radius: f32, sep: f32, align: f32, coh: f32, weight: f32) {
+        self.behaviors.push(SteeringBehaviorType::Flock {
+            neighbor_radius,
+            sep_weight: sep,
+            align_weight: align,
+            coh_weight: coh,
+            neighbor_names: Vec::new(),
+            base: SteeringBase {
+                weight,
+                enabled: true,
+            },
+        });
+    }
+
+    /// Sets the combination mode from a Lua string (`"weighted"` or `"priority"`).
+    ///
+    /// # Parameters
+    /// - `mode` — `&str`.
+    pub fn set_combine_mode_str(&mut self, mode: &str) {
+        self.combine_mode = CombineMode::parse_str(mode);
+    }
+
+    /// Returns the force vector computed during the last `calculate()` call.
+    ///
+    /// # Returns
+    /// `Force`.
+    pub fn last_force(&self) -> Force {
+        self.last_force
+    }
 }
 
 impl Default for SteeringManager {

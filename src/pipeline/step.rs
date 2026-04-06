@@ -36,6 +36,24 @@ pub enum StepStatus {
     Cancelled,
 }
 
+impl StepStatus {
+    /// Returns the status as a lowercase string suitable for Lua.
+    ///
+    /// # Returns
+    /// `&'static str`.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Pending => "pending",
+            Self::Waiting => "waiting",
+            Self::Running => "running",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Skipped => "skipped",
+            Self::Cancelled => "cancelled",
+        }
+    }
+}
+
 /// Determines how the pipeline reacts when this step fails.
 ///
 /// # Variants

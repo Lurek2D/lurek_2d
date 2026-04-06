@@ -136,6 +136,19 @@ impl AIWorld {
     pub fn global_blackboard_mut(&mut self) -> &mut Blackboard {
         &mut self.global_blackboard
     }
+
+    /// Advances all agents by `dt` seconds, integrating velocity into position.
+    ///
+    /// Ticks every agent in the world in descending priority order.
+    ///
+    /// # Parameters
+    /// - `dt` — `f32`.
+    pub fn update(&mut self, dt: f32) {
+        for agent in &mut self.agents {
+            agent.position.0 += agent.velocity.0 * dt;
+            agent.position.1 += agent.velocity.1 * dt;
+        }
+    }
 }
 
 impl Default for AIWorld {

@@ -8,7 +8,7 @@ The `library/` folder is Tier 3 in Luna2D's active layer model. It contains pure
 - `src/lua_api/` is the bridge that exposes the public `luna.*` surface.
 - Tier 3 lives here in `library/`.
 - Lunasome modules consume public `luna.*` APIs and other Lua modules; the Rust engine does not depend on `library/`.
-- `examples/` is a consumer of the public Lua surface, not part of the numbered layer model.
+- `demos/` is a consumer of the public Lua surface, not part of the numbered layer model.
 
 ## Deliverables
 
@@ -16,7 +16,7 @@ The `library/` folder is Tier 3 in Luna2D's active layer model. It contains pure
 |---|---|
 | `luna2d[.exe]` | Engine runtime binary ÔÇö windowing, GPU, physics, audio, input, filesystem |
 | `library/` | Lunasome standard library ÔÇö pure-Lua gameplay systems |
-| `examples/` | Reference games and verification targets built on the public Lua surface |
+| `demos/` | Reference games and verification targets built on the public Lua surface |
 
 ## Usage
 
@@ -47,7 +47,7 @@ The engine automatically adds the correct search paths so `require("library.*")`
 
 ## Validation
 
-There is no separate `library/tests/` tree today. Library behavior is currently verified through the Lua harness in `tests/lua/unit/`, including `test_library_dialog.lua` and `test_library_quest.lua`. When you add or change a library module, add or update coverage there and, when relevant, verify a representative example under `examples/`.
+There is no separate `library/tests/` tree today. Library behavior is currently verified through the Lua harness in `tests/lua/unit/`, including `test_library_dialog.lua` and `test_library_quest.lua`. When you add or change a library module, add or update coverage there and, when relevant, verify a representative example under `demos/`.
 
 ## LDoc Conventions
 

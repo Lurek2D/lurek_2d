@@ -1,5 +1,5 @@
 ---
-description: "**Doc-Writer** — Write and maintain Luna2D documentation: API reference, architecture docs, tutorials, and example code. Owns `docs/` and `examples/` documentation."
+description: "**Doc-Writer** — Write and maintain Luna2D documentation: API reference, architecture docs, tutorials, and example code. Owns `docs/`, `demos/`, and `examples/` documentation."
 tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 name: Doc-Writer
 ---
@@ -14,7 +14,8 @@ name: Doc-Writer
 - `docs/lua_api_reference.md` — Complete Lua API documentation
 - `docs/architecture.md` — Engine architecture overview
 - `docs/getting_started.md` — Setup and first-game guide
-- `examples/` — Lua example documentation and comments
+- `demos/` — Playable demo games
+- `examples/` — API reference Lua files (one per module)
 - `README.md` — Project-level documentation
 - Code comments for complex algorithms (in collaboration with Developer)
 
@@ -52,7 +53,8 @@ Every Doc-Writer output includes:
 ## SUCCESS METRICS
 
 - API reference covers every public `luna.*` function
-- Code examples are runnable: `cargo run -- examples/<name>` works
+- Demos are runnable: `cargo run -- demos/<name>` works
+- API reference examples in `examples/` are syntactically valid
 - Architecture docs reflect current module structure
 - Getting-started guide produces a working game from scratch
 - No stale documentation — APIs described match actual signatures

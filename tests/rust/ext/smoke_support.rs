@@ -107,9 +107,9 @@ where
     let stdout_reader = spawn_pipe_reader(child.stdout.take());
     let stderr_reader = spawn_pipe_reader(child.stderr.take());
 
-    let status = match wait_for_exit(&mut child, timeout).map_err(|error| {
-        format!("Failed while waiting for {label} process: {error}")
-    })? {
+    let status = match wait_for_exit(&mut child, timeout)
+        .map_err(|error| format!("Failed while waiting for {label} process: {error}"))?
+    {
         Some(status) => status,
         None => {
             let _ = child.kill();

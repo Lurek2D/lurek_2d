@@ -194,7 +194,11 @@ impl Layout {
                 }
                 LayoutDirection::Grid => {
                     // Simple grid: advance columns, then wrap
-                    let col = self.children.iter().position(|&i| i == child_idx).unwrap_or(0);
+                    let col = self
+                        .children
+                        .iter()
+                        .position(|&i| i == child_idx)
+                        .unwrap_or(0);
                     let col_in_row = col % self.columns;
                     if col_in_row == self.columns - 1 {
                         cx = self.base.x + pad[3];
@@ -397,7 +401,6 @@ impl Default for NinePatch {
         Self::new()
     }
 }
-
 
 // ── GUIWindow ─────────────────────────────────────────────────────────
 

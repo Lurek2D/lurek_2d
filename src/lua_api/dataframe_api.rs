@@ -1,581 +1,860 @@
-//! `luna.dataframe` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/dataframe/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.dataframe` — Column-major tabular data with query, analytics, and SQL.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::dataframe::frame::{CellValue, ColRef, DataFrame, Database};
+use crate::dataframe::serial;
+use crate::dataframe::sql;
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------------------------
 
-// ── LuaCellValue ────────────────────────────────────────────────────────────
-
-pub struct LuaCellValue(/* TODO: add key + state fields */);
-
-
-impl LuaCellValue {
-    /// Returns `true` if this cell is `Nil`. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return boolean
-    pub fn is_nil(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the contained number, or `None`.
-    ///
-    ///
-    /// @return number?
-    pub fn as_number(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the contained text as a string slice, or `None`.
-    ///
-    ///
-    /// @return Option<
-    pub fn as_text(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the contained boolean, or `None`.
-    ///
-    ///
-    /// @return boolean?
-    pub fn as_bool(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Comparison for sorting. Nil sorts to end; among non-nil values
-    ///
-    /// @param other : CellValue
-    /// @return Ordering
-    pub fn cmp_for_sort(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+/// Convert a Lua value to a [`ColRef`] (column name or 1-based index).
+fn lua_to_col_ref(v: LuaValue) -> LuaResult<ColRef> {
+    match v {
+        LuaValue::String(s) => Ok(ColRef::Name(s.to_str()?.to_string())),
+        LuaValue::Integer(i) if i >= 1 => Ok(ColRef::Index(i as usize)),
+        LuaValue::Number(n) if n >= 1.0 => Ok(ColRef::Index(n as usize)),
+        _ => Err(LuaError::RuntimeError(
+            "column must be a string name or 1-based integer".into(),
+        )),
     }
 }
 
-impl UserData for LuaCellValue {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("isNil", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("asNumber", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("asText", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("asBool", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("cmpForSort", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
+/// Convert a Lua value to a [`CellValue`].
+fn lua_to_cell(v: LuaValue) -> CellValue {
+    match v {
+        LuaValue::Nil => CellValue::Nil,
+        LuaValue::Boolean(b) => CellValue::Bool(b),
+        LuaValue::Integer(i) => CellValue::Number(i as f64),
+        LuaValue::Number(n) => CellValue::Number(n),
+        LuaValue::String(s) => CellValue::Text(s.to_str().unwrap_or("").to_string()),
+        _ => CellValue::Nil,
     }
 }
 
-// ── LuaDataFrame ────────────────────────────────────────────────────────────
+/// Convert a [`CellValue`] to a Lua value.
+fn cell_to_lua<'lua>(lua: &'lua Lua, cell: &CellValue) -> LuaResult<LuaValue<'lua>> {
+    match cell {
+        CellValue::Nil => Ok(LuaValue::Nil),
+        CellValue::Number(n) => Ok(LuaValue::Number(*n)),
+        CellValue::Text(s) => Ok(LuaValue::String(lua.create_string(s)?)),
+        CellValue::Bool(b) => Ok(LuaValue::Boolean(*b)),
+    }
+}
 
-pub struct LuaDataFrame(/* TODO: add key + state fields */);
+/// Validate a 1-based Lua row index.
+fn validate_row(row: usize) -> LuaResult<usize> {
+    if row == 0 {
+        return Err(LuaError::RuntimeError("row index must be >= 1".into()));
+    }
+    Ok(row - 1)
+}
 
+// -------------------------------------------------------------------------------
+// LuaDataFrame UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a shared [`DataFrame`].
+pub struct LuaDataFrame {
+    inner: Rc<RefCell<DataFrame>>,
+}
 
 impl LuaDataFrame {
-    /// Return the number of rows. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return integer
-    pub fn nrows(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+    /// Create a new wrapper from an owned [`DataFrame`].
+    fn new(df: DataFrame) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(df)),
+        }
     }
-    /// Return the number of columns. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return integer
-    pub fn ncols(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+}
+
+impl LuaUserData for LuaDataFrame {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- nrows --
+        /// Returns the number of rows.
+        /// @return integer
+        methods.add_method("nrows", |_, this, ()| {
+            Ok(this.inner.borrow().nrows())
+        });
+
+        // -- ncols --
+        /// Returns the number of columns.
+        /// @return integer
+        methods.add_method("ncols", |_, this, ()| {
+            Ok(this.inner.borrow().ncols())
+        });
+
+        // -- columns --
+        /// Returns a table of column names.
+        /// @return table
+        methods.add_method("columns", |lua, this, ()| {
+            let df = this.inner.borrow();
+            let tbl = lua.create_table()?;
+            for (i, name) in df.columns().iter().enumerate() {
+                tbl.set(i + 1, name.as_str())?;
+            }
+            Ok(tbl)
+        });
+
+        // -- count --
+        /// Returns the row count (alias for nrows).
+        /// @return integer
+        methods.add_method("count", |_, this, ()| {
+            Ok(this.inner.borrow().count())
+        });
+
+        // -- addColumn --
+        /// Adds a new column with an optional default value.
+        /// @param name : string
+        /// @param default : LuaValue?
+        /// @return nil
+        methods.add_method(
+            "addColumn",
+            |_, this, (name, default): (String, Option<LuaValue>)| {
+                let def = default.map(lua_to_cell).unwrap_or(CellValue::Nil);
+                this.inner
+                    .borrow_mut()
+                    .add_column(&name, def)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- removeColumn --
+        /// Removes a column by name or index.
+        /// @param col : string|integer
+        /// @return nil
+        methods.add_method("removeColumn", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow_mut()
+                .remove_column(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- rename --
+        /// Renames a column.
+        /// @param col : string|integer
+        /// @param new_name : string
+        /// @return nil
+        methods.add_method("rename", |_, this, (col, new_name): (LuaValue, String)| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow_mut()
+                .rename_column(cr, &new_name)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- getColumn --
+        /// Returns all values in a column as a table.
+        /// @param col : string|integer
+        /// @return table
+        methods.add_method("getColumn", |lua, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let cells = df.get_column(cr).map_err(LuaError::RuntimeError)?;
+            let tbl = lua.create_table()?;
+            for (i, cell) in cells.iter().enumerate() {
+                tbl.set(i + 1, cell_to_lua(lua, cell)?)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- addRow --
+        /// Adds a row from an optional table of name-value pairs, returns 1-based index.
+        /// @param row_tbl : table?
+        /// @return integer
+        methods.add_method("addRow", |_, this, row_tbl: Option<LuaTable>| {
+            let values: Vec<(String, CellValue)> = if let Some(tbl) = row_tbl {
+                let mut v = Vec::new();
+                for pair in tbl.pairs::<String, LuaValue>() {
+                    let (key, val) = pair?;
+                    v.push((key, lua_to_cell(val)));
+                }
+                v
+            } else {
+                Vec::new()
+            };
+            let row_0 = this.inner.borrow_mut().add_row(&values);
+            Ok(row_0 + 1)
+        });
+
+        // -- removeRow --
+        /// Removes a row by 1-based index.
+        /// @param row : integer
+        /// @return nil
+        methods.add_method("removeRow", |_, this, row: usize| {
+            let r = validate_row(row)?;
+            this.inner
+                .borrow_mut()
+                .remove_row(r)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- getRow --
+        /// Returns a row as a table of name-value pairs.
+        /// @param row : integer
+        /// @return table
+        methods.add_method("getRow", |lua, this, row: usize| {
+            let r = validate_row(row)?;
+            let df = this.inner.borrow();
+            let pairs = df.get_row(r).map_err(LuaError::RuntimeError)?;
+            let tbl = lua.create_table()?;
+            for (name, cell) in &pairs {
+                tbl.set(name.as_str(), cell_to_lua(lua, cell)?)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- getValue --
+        /// Returns a single cell value.
+        /// @param row : integer
+        /// @param col : string|integer
+        /// @return LuaValue
+        methods.add_method("getValue", |lua, this, (row, col): (usize, LuaValue)| {
+            let r = validate_row(row)?;
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let cell = df.get_value(r, cr).map_err(LuaError::RuntimeError)?;
+            cell_to_lua(lua, &cell)
+        });
+
+        // -- setValue --
+        /// Sets a single cell value.
+        /// @param row : integer
+        /// @param col : string|integer
+        /// @param val : LuaValue
+        /// @return nil
+        methods.add_method(
+            "setValue",
+            |_, this, (row, col, val): (usize, LuaValue, LuaValue)| {
+                let r = validate_row(row)?;
+                let cr = lua_to_col_ref(col)?;
+                let cv = lua_to_cell(val);
+                this.inner
+                    .borrow_mut()
+                    .set_value(r, cr, cv)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- filter --
+        /// Filters rows where column matches a condition, returns a new DataFrame.
+        /// @param col : string|integer
+        /// @param op : string
+        /// @param val : LuaValue
+        /// @return DataFrame
+        methods.add_method(
+            "filter",
+            |_, this, (col, op, val): (LuaValue, String, LuaValue)| {
+                let cr = lua_to_col_ref(col)?;
+                let cv = lua_to_cell(val);
+                let df = this.inner.borrow();
+                let result = df.filter(cr, &op, &cv).map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- sort --
+        /// Sorts by column, returns a new DataFrame.
+        /// @param col : string|integer
+        /// @param ascending : boolean?
+        /// @return DataFrame
+        methods.add_method(
+            "sort",
+            |_, this, (col, ascending): (LuaValue, Option<bool>)| {
+                let cr = lua_to_col_ref(col)?;
+                let df = this.inner.borrow();
+                let result = df
+                    .sort(cr, ascending.unwrap_or(true))
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- head --
+        /// Returns the first n rows (default 5).
+        /// @param n : integer?
+        /// @return DataFrame
+        methods.add_method("head", |_, this, n: Option<usize>| {
+            let df = this.inner.borrow();
+            Ok(LuaDataFrame::new(df.head(n.unwrap_or(5))))
+        });
+
+        // -- tail --
+        /// Returns the last n rows (default 5).
+        /// @param n : integer?
+        /// @return DataFrame
+        methods.add_method("tail", |_, this, n: Option<usize>| {
+            let df = this.inner.borrow();
+            Ok(LuaDataFrame::new(df.tail(n.unwrap_or(5))))
+        });
+
+        // -- slice --
+        /// Returns rows from start to end (1-based, inclusive).
+        /// @param start : integer
+        /// @param end_idx : integer
+        /// @return DataFrame
+        methods.add_method("slice", |_, this, (start, end): (usize, usize)| {
+            if start == 0 || end == 0 {
+                return Err(LuaError::RuntimeError("slice indices must be >= 1".into()));
+            }
+            let df = this.inner.borrow();
+            let result = df
+                .slice(start - 1, end - 1)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- select --
+        /// Selects a subset of columns, returns a new DataFrame.
+        /// @param cols : string|integer...
+        /// @return DataFrame
+        methods.add_method("select", |_, this, cols: LuaMultiValue| {
+            let col_refs: Vec<ColRef> = cols
+                .into_iter()
+                .map(lua_to_col_ref)
+                .collect::<LuaResult<Vec<_>>>()?;
+            let df = this.inner.borrow();
+            let result = df
+                .select_columns(&col_refs)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- unique --
+        /// Returns unique values in a column as a table.
+        /// @param col : string|integer
+        /// @return table
+        methods.add_method("unique", |lua, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let vals = df.unique(cr).map_err(LuaError::RuntimeError)?;
+            let tbl = lua.create_table()?;
+            for (i, v) in vals.iter().enumerate() {
+                tbl.set(i + 1, cell_to_lua(lua, v)?)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- groupBy --
+        /// Groups rows by column value, returns a table of DataFrames keyed by value.
+        /// @param col : string|integer
+        /// @return table
+        methods.add_method("groupBy", |lua, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let groups = df.group_by(cr).map_err(LuaError::RuntimeError)?;
+            let tbl = lua.create_table()?;
+            for (key, sub_df) in groups {
+                let lua_key = cell_to_lua(lua, &key)?;
+                tbl.set(lua_key, LuaDataFrame::new(sub_df))?;
+            }
+            Ok(tbl)
+        });
+
+        // -- join --
+        /// Joins with another DataFrame on matching columns.
+        /// @param other : DataFrame
+        /// @param this_col : string|integer
+        /// @param other_col : string|integer
+        /// @param join_type : string?
+        /// @return DataFrame
+        methods.add_method(
+            "join",
+            |_,
+             this,
+             (other, this_col, other_col, jtype): (
+                LuaAnyUserData,
+                LuaValue,
+                LuaValue,
+                Option<String>,
+            )| {
+                let other_df = other.borrow::<LuaDataFrame>()?;
+                let tc = lua_to_col_ref(this_col)?;
+                let oc = lua_to_col_ref(other_col)?;
+                let df = this.inner.borrow();
+                let other_borrow = other_df.inner.borrow();
+                let result = df
+                    .join(
+                        &other_borrow,
+                        tc,
+                        oc,
+                        jtype.as_deref().unwrap_or("inner"),
+                    )
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- merge --
+        /// Appends rows from another DataFrame in-place.
+        /// @param other : DataFrame
+        /// @return nil
+        methods.add_method("merge", |_, this, other: LuaAnyUserData| {
+            let other_df = other.borrow::<LuaDataFrame>()?;
+            let other_borrow = other_df.inner.borrow();
+            this.inner.borrow_mut().merge(&other_borrow);
+            Ok(())
+        });
+
+        // -- countBy --
+        /// Counts distinct values in a column, returns a DataFrame with value and count columns.
+        /// @param col : string|integer
+        /// @return DataFrame
+        methods.add_method("countBy", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let result = df.count_by(cr).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- dropNil --
+        /// Removes rows where the given column is nil, returns a new DataFrame.
+        /// @param col : string|integer
+        /// @return DataFrame
+        methods.add_method("dropNil", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            let df = this.inner.borrow();
+            let result = df.drop_nil(cr).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- sample --
+        /// Returns a random sample of n rows.
+        /// @param n : integer
+        /// @param seed : integer?
+        /// @return DataFrame
+        methods.add_method("sample", |_, this, (n, seed): (usize, Option<u64>)| {
+            let df = this.inner.borrow();
+            Ok(LuaDataFrame::new(df.sample(n, seed)))
+        });
+
+        // -- describe --
+        /// Returns descriptive statistics for all numeric columns.
+        /// @return DataFrame
+        methods.add_method("describe", |_, this, ()| {
+            let df = this.inner.borrow();
+            Ok(LuaDataFrame::new(df.describe()))
+        });
+
+        // -- sum --
+        /// Returns the sum of numeric values in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("sum", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner.borrow().sum(cr).map_err(LuaError::RuntimeError)
+        });
+
+        // -- mean --
+        /// Returns the mean of numeric values in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("mean", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner.borrow().mean(cr).map_err(LuaError::RuntimeError)
+        });
+
+        // -- min --
+        /// Returns the minimum numeric value in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("min", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .min_val(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- max --
+        /// Returns the maximum numeric value in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("max", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .max_val(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- median --
+        /// Returns the median of numeric values in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("median", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .median(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- stddev --
+        /// Returns the population standard deviation of numeric values in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("stddev", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .stddev(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- variance --
+        /// Returns the population variance of numeric values in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("variance", |_, this, col: LuaValue| {
+            let cr = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .variance(cr)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- fillNil --
+        /// Replaces nil values in a column with the given value.
+        /// @param col : string|integer
+        /// @param val : LuaValue
+        /// @return nil
+        methods.add_method("fillNil", |_, this, (col, val): (LuaValue, LuaValue)| {
+            let cr = lua_to_col_ref(col)?;
+            let cv = lua_to_cell(val);
+            this.inner
+                .borrow_mut()
+                .fill_nil(cr, cv)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- apply --
+        /// Applies a function to each value in a column, replacing cells with results.
+        /// @param col : string|integer
+        /// @param func : function
+        /// @return nil
+        methods.add_method(
+            "apply",
+            |lua, this, (col_val, func): (LuaValue, LuaFunction)| {
+                let col = lua_to_col_ref(col_val)?;
+                let mut df = this.inner.borrow_mut();
+                let cells = df.column_data_mut(col).map_err(LuaError::RuntimeError)?;
+                for cell in cells.iter_mut() {
+                    let lua_val = cell_to_lua(lua, cell)?;
+                    let result: LuaValue = func.call(lua_val)?;
+                    *cell = lua_to_cell(result);
+                }
+                Ok(())
+            },
+        );
+
+        // -- toCSV --
+        /// Serializes this DataFrame to a CSV string.
+        /// @return string
+        methods.add_method("toCSV", |_, this, ()| {
+            Ok(this.inner.borrow().to_csv())
+        });
+
+        // -- toJSON --
+        /// Serializes this DataFrame to a JSON string.
+        /// @return string
+        methods.add_method("toJSON", |_, this, ()| {
+            Ok(this.inner.borrow().to_json())
+        });
+
+        // -- toBinary --
+        /// Serializes this DataFrame to a binary LVDF string.
+        /// @param lua : Lua
+        /// @return string
+        methods.add_method("toBinary", |lua, this, ()| {
+            let bytes = this.inner.borrow().to_binary();
+            lua.create_string(&bytes)
+        });
+
+        // -- toTable --
+        /// Converts this DataFrame to a Lua table of row tables.
+        /// @return table
+        methods.add_method("toTable", |lua, this, ()| {
+            let df = this.inner.borrow();
+            let tbl = lua.create_table()?;
+            let cols = df.columns();
+            let data = df.raw_data();
+            #[allow(clippy::needless_range_loop)]
+            for row in 0..df.nrows() {
+                let row_tbl = lua.create_table()?;
+                for (ci, name) in cols.iter().enumerate() {
+                    row_tbl.set(name.as_str(), cell_to_lua(lua, &data[ci][row])?)?;
+                }
+                tbl.set(row + 1, row_tbl)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- toString --
+        /// Returns a formatted string table representation.
+        /// @return string
+        methods.add_method("toString", |_, this, ()| {
+            Ok(this.inner.borrow().to_string_table())
+        });
+
+        // -- query --
+        /// Executes a SQL query against this DataFrame.
+        /// @param sql_str : string
+        /// @return DataFrame
+        methods.add_method("query", |_, this, sql_str: String| {
+            let df = this.inner.borrow();
+            let result = sql::query_sql(&df, &sql_str).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- clone --
+        /// Returns a deep copy of this DataFrame.
+        /// @return DataFrame
+        methods.add_method("clone", |_, this, ()| {
+            Ok(LuaDataFrame::new(this.inner.borrow().clone_df()))
+        });
+
     }
-    /// Alias for `nrows()`; returns the row count in O(1) time.
-    ///
-    ///
-    /// @return integer
-    pub fn count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+}
+
+// -------------------------------------------------------------------------------
+// LuaDatabase UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a shared [`Database`].
+pub struct LuaDatabase {
+    inner: Rc<RefCell<Database>>,
+}
+
+impl LuaUserData for LuaDatabase {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+
+        // -- addTable --
+        /// Adds or replaces a table by cloning the given DataFrame.
+        /// @param name : string
+        /// @param df : DataFrame
+        /// @return nil
+        methods.add_method(
+            "addTable",
+            |_, this, (name, df_ud): (String, LuaAnyUserData)| {
+                let lua_df = df_ud.borrow::<LuaDataFrame>()?;
+                let cloned = lua_df.inner.borrow().clone_df();
+                this.inner.borrow_mut().add_table(&name, cloned);
+                Ok(())
+            },
+        );
+
+        // -- getTable --
+        /// Returns a copy of a table by name, or nil if not found.
+        /// @param name : string
+        /// @return DataFrame?
+        methods.add_method("getTable", |_, this, name: String| {
+            let db = this.inner.borrow();
+            match db.get_table(&name) {
+                Some(df) => Ok(Some(LuaDataFrame::new(df.clone_df()))),
+                None => Ok(None),
+            }
+        });
+
+        // -- removeTable --
+        /// Removes a table by name.
+        /// @param name : string
+        /// @return nil
+        methods.add_method("removeTable", |_, this, name: String| {
+            this.inner
+                .borrow_mut()
+                .remove_table(&name)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- hasTable --
+        /// Returns true if a table with the given name exists.
+        /// @param name : string
+        /// @return boolean
+        methods.add_method("hasTable", |_, this, name: String| {
+            Ok(this.inner.borrow().has_table(&name))
+        });
+
+        // -- listTables --
+        /// Returns a table of all table names.
+        /// @return table
+        methods.add_method("listTables", |lua, this, ()| {
+            let db = this.inner.borrow();
+            let names = db.list_tables();
+            let tbl = lua.create_table()?;
+            for (i, name) in names.iter().enumerate() {
+                tbl.set(i + 1, name.as_str())?;
+            }
+            Ok(tbl)
+        });
+
+        // -- tableCount --
+        /// Returns the number of tables.
+        /// @return integer
+        methods.add_method("tableCount", |_, this, ()| {
+            Ok(this.inner.borrow().table_count())
+        });
+
+        // -- clear --
+        /// Removes all tables.
+        /// @return nil
+        methods.add_method("clear", |_, this, ()| {
+            this.inner.borrow_mut().clear();
+            Ok(())
+        });
+
+        // -- merge --
+        /// Merges all tables from another Database into this one.
+        /// @param other : Database
+        /// @return nil
+        methods.add_method("merge", |_, this, other: LuaAnyUserData| {
+            let other_db = other.borrow::<LuaDatabase>()?;
+            let cloned = other_db.inner.borrow().clone_db();
+            this.inner.borrow_mut().merge(cloned);
+            Ok(())
+        });
+
+        // -- toJSON --
+        /// Serializes all tables to a JSON object string.
+        /// @return string
+        methods.add_method("toJSON", |_, this, ()| {
+            Ok(this.inner.borrow().to_json())
+        });
+
+        // -- query --
+        /// Executes a SQL query against the database tables.
+        /// @param sql_str : string
+        /// @return DataFrame
+        methods.add_method("query", |_, this, sql_str: String| {
+            let db = this.inner.borrow();
+            let result =
+                sql::query_sql_database(&db, &sql_str).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(result))
+        });
+
     }
-    /// Resolve a `ColRef` to a 0-based column index.
-    ///
-    /// @param col : ColRef
-    /// @return Result<usize
-    pub fn resolve_col(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return a reference to the column data. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param col : ColRef
-    /// @return Result<
-    pub fn get_column(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get a full row as name-value pairs (0-based index).
-    ///
-    /// @param row : integer
-    /// @return Result<Vec<(String
-    pub fn get_row(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Get a single cell value (0-based row, ColRef for column).
-    ///
-    /// @param row : integer
-    /// @param col : ColRef
-    /// @return Result<CellValue
-    pub fn get_value(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Deep-clone this DataFrame. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
+}
+
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
+
+/// Registers the `luna.dataframe` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    let tbl = lua.create_table()?;
+
+    // -- newDataFrame --
+    /// Creates a new empty DataFrame.
     /// @return DataFrame
-    pub fn clone_df(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Filter rows where `col op val` is true.
-    ///
-    /// @param col : ColRef
-    /// @param op : str
-    /// @param val : CellValue
-    /// @return Result<DataFrame
-    pub fn filter(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Sort by column, stable sort. Nils sort to end.
-    ///
-    /// @param col : ColRef
-    /// @param ascending : boolean
-    /// @return Result<DataFrame
-    pub fn sort(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the first `n` rows. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    /// @param n : integer
+    tbl.set(
+        "newDataFrame",
+        lua.create_function(|_, ()| Ok(LuaDataFrame::new(DataFrame::new())))?,
+    )?;
+
+    // -- newDatabase --
+    /// Creates a new empty Database.
+    /// @return Database
+    tbl.set(
+        "newDatabase",
+        lua.create_function(|_, ()| {
+            Ok(LuaDatabase {
+                inner: Rc::new(RefCell::new(Database::new())),
+            })
+        })?,
+    )?;
+
+    // -- fromTable --
+    /// Creates a DataFrame from an array of row tables.
+    /// @param rows : table
     /// @return DataFrame
-    pub fn head(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the last `n` rows. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    /// @param n : integer
+    tbl.set(
+        "fromTable",
+        lua.create_function(|_, rows: LuaTable| {
+            let mut df = DataFrame::new();
+            let len = rows.len()?;
+            for i in 1..=len {
+                let row: LuaTable = rows.get(i)?;
+                if i == 1 {
+                    for pair in row.clone().pairs::<String, LuaValue>() {
+                        let (key, _) = pair?;
+                        df.add_column(&key, CellValue::Nil)
+                            .map_err(LuaError::RuntimeError)?;
+                    }
+                }
+                let mut values = Vec::new();
+                for pair in row.pairs::<String, LuaValue>() {
+                    let (key, val) = pair?;
+                    values.push((key, lua_to_cell(val)));
+                }
+                df.add_row(&values);
+            }
+            Ok(LuaDataFrame::new(df))
+        })?,
+    )?;
+
+    // -- fromCSV --
+    /// Parses a CSV string into a DataFrame.
+    /// @param s : string
     /// @return DataFrame
-    pub fn tail(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return a slice of rows from `start` to `end` (0-based, inclusive on both ends).
-    ///
-    /// @param start : integer
-    /// @param end : integer
-    /// @return Result<DataFrame
-    pub fn slice(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Column projection: select a subset of columns.
-    ///
-    /// @param cols : [ColRef]
-    /// @return Result<DataFrame
-    pub fn select_columns(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return unique values in a column (O(n^2) dedup).
-    ///
-    /// @param col : ColRef
-    /// @return Result<Vec<CellValue>
-    pub fn unique(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Group rows by the value in a column. Returns (group_key, sub-DataFrame) pairs.
-    ///
-    /// @param col : ColRef
-    /// @return Result<Vec<(CellValue
-    pub fn group_by(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Count distinct values in a column, returning a DataFrame with "value" and "count" columns.
-    ///
-    /// @param col : ColRef
-    /// @return Result<DataFrame
-    pub fn count_by(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Remove rows where the given column is Nil.
-    ///
-    /// @param col : ColRef
-    /// @return Result<DataFrame
-    pub fn drop_nil(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Random sample of `n` rows using Fisher-Yates shuffle.
-    ///
+    tbl.set(
+        "fromCSV",
+        lua.create_function(|_, s: String| {
+            let df = serial::from_csv(&s).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(df))
+        })?,
+    )?;
+
+    // -- fromJSON --
+    /// Parses a JSON string into a DataFrame.
+    /// @param s : string
+    /// @return DataFrame
+    tbl.set(
+        "fromJSON",
+        lua.create_function(|_, s: String| {
+            let df = serial::from_json(&s).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(df))
+        })?,
+    )?;
+
+    // -- fromBinary --
+    /// Deserializes a binary LVDF string into a DataFrame.
+    /// @param s : string
+    /// @return DataFrame
+    tbl.set(
+        "fromBinary",
+        lua.create_function(|_, s: LuaString| {
+            let df = serial::from_binary(s.as_bytes()).map_err(LuaError::RuntimeError)?;
+            Ok(LuaDataFrame::new(df))
+        })?,
+    )?;
+
+    // -- random --
+    /// Generates a DataFrame with random data from column definitions.
+    /// @param defs : table
     /// @param n : integer
     /// @param seed : integer?
     /// @return DataFrame
-    pub fn sample(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Sum of numeric values in a column (skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn sum(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Mean of numeric values in a column (skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn mean(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Minimum numeric value in a column (skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn min_val(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Maximum numeric value in a column (skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn max_val(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Median of numeric values in a column (skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn median(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Standard deviation of numeric values in a column (population stddev, skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn stddev(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Variance of numeric values in a column (population variance, skipping nils).
-    ///
-    /// @param col : ColRef
-    /// @return Result<f64
-    pub fn variance(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Descriptive statistics for all numeric columns.
-    ///
-    ///
-    /// @return DataFrame
-    pub fn describe(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Serialize to CSV string (RFC 4180). Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return string
-    pub fn to_csv(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Serialize to JSON string (array-of-objects format).
-    ///
-    ///
-    /// @return string
-    pub fn to_json(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Serialize to LVDF binary format. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return table
-    pub fn to_binary(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Format the DataFrame as an ASCII table for debug display.
-    ///
-    ///
-    /// @return string
-    pub fn to_string_table(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+    tbl.set(
+        "random",
+        lua.create_function(|_, (defs_tbl, n, seed): (LuaTable, usize, Option<u64>)| {
+            let mut defs = Vec::new();
+            for i in 1..=defs_tbl.len()? {
+                let pair: LuaTable = defs_tbl.get(i)?;
+                let name: String = pair.get(1)?;
+                let hint: String = pair.get(2)?;
+                defs.push((name, hint));
+            }
+            Ok(LuaDataFrame::new(DataFrame::random(&defs, n, seed)))
+        })?,
+    )?;
 
-impl UserData for LuaDataFrame {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("nrows", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("ncols", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("count", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("resolveCol", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getColumn", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRow", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getValue", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("cloneDf", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("filter", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("sort", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("head", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("tail", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("slice", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("selectColumns", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("unique", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("groupBy", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("countBy", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("dropNil", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("sample", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("sum", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("mean", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("minVal", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("maxVal", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("median", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("stddev", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("variance", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("describe", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toCsv", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toJson", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toBinary", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toStringTable", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaDatabase ────────────────────────────────────────────────────────────
-
-pub struct LuaDatabase(/* TODO: add key + state fields */);
-
-
-impl LuaDatabase {
-    /// Get a shared reference to a table by name.
-    ///
-    /// @param name : str
-    /// @return Option<
-    pub fn get_table(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Check whether a table with the given name exists.
-    ///
-    /// @param name : str
-    /// @return boolean
-    pub fn has_table(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the names of all tables, sorted alphabetically.
-    ///
-    ///
-    /// @return table
-    pub fn list_tables(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Return the number of tables. Consult the module-level documentation for the broader usage context and preconditions.
-    ///
-    ///
-    /// @return integer
-    pub fn table_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaDatabase {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getTable", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasTable", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("listTables", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("tableCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.dataframe.* functions ──────────────────────────────────────────
-
-/// Add a new column, filling existing rows with `default`.
-///
-/// @param name : str
-/// @param default : CellValue
-/// @return Result<()
-pub fn add_column(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a column by reference. Returns the removed value if present, or `None` when the key did not exist.
-///
-/// @param col : ColRef
-/// @return Result<()
-pub fn remove_column(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Rename a column. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param col : ColRef
-/// @param new_name : str
-/// @return Result<()
-pub fn rename_column(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add a row from name-value pairs. Missing columns receive `Nil`.
-///
-/// @param values : [(String, CellValue)]
-/// @return integer
-pub fn add_row(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a row by 0-based index. Returns the removed value if present, or `None` when the key did not exist.
-///
-/// @param row : integer
-/// @return Result<()
-pub fn remove_row(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set a single cell value (0-based row, ColRef for column).
-///
-/// @param row : integer
-/// @param col : ColRef
-/// @param val : CellValue
-/// @return Result<()
-pub fn set_value(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Create a DataFrame from raw column names and column-major data.
-///
-/// @param column_names : table
-/// @param data : table
-/// @return Self
-pub fn from_raw(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Generate a DataFrame with random data. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param defs : [(String, String)]
-/// @param n_rows : integer
-/// @param seed : integer?
-/// @return DataFrame
-pub fn random(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Add or replace a table. The insertion is O(1) amortised unless a resize is triggered.
-///
-///
-/// @param name : str
-/// @param df : DataFrame
-pub fn add_table(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Get a mutable reference to a table by name.
-///
-/// @param name : str
-/// @return Option<
-pub fn get_table_mut(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Remove a table by name. Returns error if not found.
-///
-/// @param name : str
-/// @return Result<()
-pub fn remove_table(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Merge all tables from `other` into this database.
-///
-///
-/// @param other : Database
-pub fn merge(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Join with another DataFrame on matching columns.
-///
-/// @param other : DataFrame
-/// @param this_col : ColRef
-/// @param other_col : ColRef
-/// @param join_type : str
-/// @return Result<DataFrame
-pub fn join(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Append rows from another DataFrame in-place. Adds missing columns as Nil.
-///
-///
-/// @param other : DataFrame
-/// Replace Nil values in a column with the given value (in-place).
-///
-/// @param col : ColRef
-/// @param val : CellValue
-/// @return Result<()
-pub fn fill_nil(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Parse a CSV string into a DataFrame. Returns a fully initialised instance with all fields set to their initial values.
-///
-/// @param s : str
-/// @return Result<DataFrame
-pub fn from_csv(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Parse JSON (array-of-objects) into a DataFrame.
-///
-/// @param s : str
-/// @return Result<DataFrame
-pub fn from_json(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Deserialize a DataFrame from LVDF binary format.
-///
-/// @param data : [u8]
-/// @return Result<DataFrame
-pub fn from_binary(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Execute a SQL query on a single DataFrame.
-///
-/// @param df : DataFrame
-/// @param sql : str
-/// @return Result<DataFrame
-pub fn query_sql(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Execute a SQL query on a Database (supports FROM and JOIN).
-///
-/// @param db : Database
-/// @param sql : str
-/// @return Result<DataFrame
-pub fn query_sql_database(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.dataframe` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
-    let tbl = lua.create_table()?;
-    tbl.set("addColumn", lua.create_function(add_column)?)?;
-    tbl.set("removeColumn", lua.create_function(remove_column)?)?;
-    tbl.set("renameColumn", lua.create_function(rename_column)?)?;
-    tbl.set("addRow", lua.create_function(add_row)?)?;
-    tbl.set("removeRow", lua.create_function(remove_row)?)?;
-    tbl.set("setValue", lua.create_function(set_value)?)?;
-    tbl.set("fromRaw", lua.create_function(from_raw)?)?;
-    tbl.set("random", lua.create_function(random)?)?;
-    tbl.set("addTable", lua.create_function(add_table)?)?;
-    tbl.set("getTableMut", lua.create_function(get_table_mut)?)?;
-    tbl.set("removeTable", lua.create_function(remove_table)?)?;
-    tbl.set("merge", lua.create_function(merge)?)?;
-    tbl.set("join", lua.create_function(join)?)?;
-    tbl.set("merge", lua.create_function(merge)?)?;
-    tbl.set("fillNil", lua.create_function(fill_nil)?)?;
-    tbl.set("fromCsv", lua.create_function(from_csv)?)?;
-    tbl.set("fromJson", lua.create_function(from_json)?)?;
-    tbl.set("fromBinary", lua.create_function(from_binary)?)?;
-    tbl.set("querySql", lua.create_function(query_sql)?)?;
-    tbl.set("querySqlDatabase", lua.create_function(query_sql_database)?)?;
     luna.set("dataframe", tbl)?;
     Ok(())
 }

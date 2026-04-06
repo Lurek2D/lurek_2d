@@ -9,12 +9,12 @@
 //! and the `luna.*` Lua API for the scripting interface.
 //!
 use crate::engine::error::{EngineError, EngineResult};
+use crate::engine::log_messages::TX01_TEX_DECODED;
 use crate::engine::resource_keys::TextureKey;
 use crate::graphics::renderer::TextureData;
+use crate::log_msg;
 use slotmap::SlotMap;
 use std::path::Path;
-use crate::engine::log_messages::{TX01_TEX_DECODED};
-use crate::log_msg;
 
 /// A loaded image asset referenced by its index into the renderer's texture list.
 ///

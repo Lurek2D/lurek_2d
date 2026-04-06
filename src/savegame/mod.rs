@@ -44,6 +44,8 @@ pub struct SaveManager {
     auto_save_elapsed: f64,
     /// Migration version keys (sorted ascending on use).
     migration_versions: Vec<i32>,
+    /// User-provided summary string for save metadata.
+    summary: String,
 }
 
 impl SaveManager {
@@ -181,9 +183,40 @@ impl SaveManager {
         None
     }
 
-    /// Reset all state.
+    /// Reset all state. After this call the container is in the same state as
+    /// immediately after construction.
     pub fn reset(&mut self) {
         *self = Self::default();
+    }
+
+    /// Build the save file path for a given slot name.
+    ///
+    /// Slot files are stored in the `save/` directory with a `slot_` prefix
+    /// and `.sav` extension.
+    ///
+    /// # Parameters
+    /// - `slot` — `&str`. The slot name.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn slot_path(slot: &str) -> String {
+        format!("save/slot_{}.sav", slot)
+    }
+
+    /// Set the summary string for save metadata.
+    ///
+    /// # Parameters
+    /// - `summary` — `String`. The summary text.
+    pub fn set_summary(&mut self, summary: String) {
+        self.summary = summary;
+    }
+
+    /// Get the summary string.
+    ///
+    /// # Returns
+    /// `&str`.
+    pub fn summary(&self) -> &str {
+        &self.summary
     }
 }
 

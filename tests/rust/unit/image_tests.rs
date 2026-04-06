@@ -125,7 +125,11 @@ fn palette_lut_new_is_empty() {
 #[test]
 fn palette_lut_set_color_increments_count() {
     let mut lut = PaletteLUT::new();
-    lut.set_color(0, Color::new(1.0, 0.0, 0.0, 1.0), Color::new(0.0, 1.0, 0.0, 1.0));
+    lut.set_color(
+        0,
+        Color::new(1.0, 0.0, 0.0, 1.0),
+        Color::new(0.0, 1.0, 0.0, 1.0),
+    );
     assert_eq!(lut.get_color_count(), 1);
 }
 
@@ -135,7 +139,9 @@ fn palette_lut_get_from_and_to_color() {
     let from = Color::new(1.0, 0.0, 0.0, 1.0);
     let to = Color::new(0.0, 0.0, 1.0, 1.0);
     lut.set_color(0, from, to);
-    let got_from = lut.get_from_color(0).expect("expected a from color at index 0");
+    let got_from = lut
+        .get_from_color(0)
+        .expect("expected a from color at index 0");
     let got_to = lut.get_to_color(0).expect("expected a to color at index 0");
     assert!((got_from.r - 1.0).abs() < 1e-5);
     assert!((got_to.b - 1.0).abs() < 1e-5);
@@ -152,7 +158,11 @@ fn palette_lut_get_out_of_bounds_returns_none() {
 fn palette_lut_set_color_extends_to_index() {
     let mut lut = PaletteLUT::new();
     // Setting index 2 should extend both vectors to length 3
-    lut.set_color(2, Color::new(0.5, 0.5, 0.5, 1.0), Color::new(0.0, 0.0, 0.0, 1.0));
+    lut.set_color(
+        2,
+        Color::new(0.5, 0.5, 0.5, 1.0),
+        Color::new(0.0, 0.0, 0.0, 1.0),
+    );
     assert_eq!(lut.get_color_count(), 3);
     // Entries at 0 and 1 are filled with WHITE defaults
     let c0 = lut.get_from_color(0).unwrap();

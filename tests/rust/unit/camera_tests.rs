@@ -71,7 +71,10 @@ fn camera2d_smooth_follow_advances_toward_target() {
     cam.update(0.1); // t = (5.0 * 0.1).min(1.0) = 0.5 → moves to 100
     let (px, _) = cam.get_position();
     assert!(px > 0.0, "camera should have moved toward target");
-    assert!(px < 200.0, "camera should not have fully arrived in one step");
+    assert!(
+        px < 200.0,
+        "camera should not have fully arrived in one step"
+    );
 }
 
 #[test]
@@ -107,7 +110,10 @@ fn camera2d_dead_zone_allows_movement_outside_threshold() {
     cam.set_target(200.0, 0.0); // far outside dead zone
     cam.update(0.016);
     let (px, _) = cam.get_position();
-    assert!((px - 200.0).abs() < 1e-3, "camera should snap to target outside dead zone");
+    assert!(
+        (px - 200.0).abs() < 1e-3,
+        "camera should snap to target outside dead zone"
+    );
 }
 
 // ── Camera2D screen shake ─────────────────────────────────────────────────────
@@ -122,8 +128,14 @@ fn camera2d_shake_expires_after_duration_and_coords_return_to_baseline() {
     let fresh = Camera2D::new(800.0, 600.0);
     let (sx1, sy1) = cam.to_screen_coords(100.0, 100.0);
     let (sx2, sy2) = fresh.to_screen_coords(100.0, 100.0);
-    assert!((sx1 - sx2).abs() < 1e-5, "shake should not affect coords after expiry");
-    assert!((sy1 - sy2).abs() < 1e-5, "shake should not affect coords after expiry");
+    assert!(
+        (sx1 - sx2).abs() < 1e-5,
+        "shake should not affect coords after expiry"
+    );
+    assert!(
+        (sy1 - sy2).abs() < 1e-5,
+        "shake should not affect coords after expiry"
+    );
 }
 
 // ── Viewport coordinate round-trip ────────────────────────────────────────────

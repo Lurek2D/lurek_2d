@@ -3,8 +3,10 @@
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 1 — Basic Core |
+| **Status**     | Implemented — Full                                   |
 | **Lua API** | `luna.filesystem` |
 | **Source** | `src/filesystem/` |
+| **Rust Tests** | `tests/unit/filesystem_tests.rs`                    |
 | **Tests** | `tests/filesystem_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_filesystem.lua` |
 
@@ -146,3 +148,40 @@ Exposed under `luna.filesystem.*` by `src/lua_api/filesystem_api/`.
 | `struct` | 5 |
 | **Total** | **12** |
 
+## Lua Examples
+
+```lua
+function luna.load()
+    -- Write save data
+    luna.filesystem.write("save.json", '{"score": 100}')
+
+    -- Read it back
+    if luna.filesystem.exists("save.json") then
+        local data = luna.filesystem.read("save.json")
+        print(data)
+    end
+
+    -- List files
+    local files = luna.filesystem.getDirectoryItems("saves/")
+    for _, f in ipairs(files) do
+        print(f)
+    end
+end
+```
+
+## References
+
+| Module    | Relationship  | Notes                                              |
+|-----------|-----------    |----------------------------------------------------|
+| `engine`  | Imports from  | Uses `SharedState`, provides sandbox root path     |
+| `data`    | Related       | `data` manipulates bytes in memory; `filesystem` provides sandboxed I/O |
+| `savegame`| Related       | `savegame` calls `filesystem` to persist serial data |
+| `lua_api` | Imported by   | `src/lua_api/filesystem_api.rs` registers `luna.filesystem.*` |
+
+## Notes
+
+- All paths are sandboxed — relative to the game directory or user save directory. `..` traversal is blocked.
+- `luna.filesystem.getSaveDirectory()` returns the OS-appropriate user data path (e.g., `%APPDATA%/game_identity`).
+- VirtualFS supports archive (ZIP) mounting via `luna.filesystem.mount()` for mod/DLC support.
+- File I/O is synchronous and blocking; for large asset streaming, use a `thread` worker.
+- Never expose engine `src/` paths to Lua — the filesystem sandbox is the security boundary.

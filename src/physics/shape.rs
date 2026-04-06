@@ -111,7 +111,6 @@ impl Shape {
     /// # Returns
     /// A `Shape::Polygon` with the computed vertices.
     pub fn regular_polygon(radius: f32, sides: u32) -> Self {
-
         let sides = sides.clamp(3, 8);
         let mut vertices = Vec::with_capacity(sides as usize);
         for i in 0..sides {

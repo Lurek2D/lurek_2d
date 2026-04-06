@@ -117,17 +117,13 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
     for row in rows {
         match row {
             SerialValue::Map(map) => {
-                let values: Vec<String> = map
-                    .values()
-                    .map(serial_value_to_csv_field)
-                    .collect();
+                let values: Vec<String> = map.values().map(serial_value_to_csv_field).collect();
                 writer
                     .write_record(&values)
                     .map_err(|e| format!("CSV encode error: {e}"))?;
             }
             SerialValue::Seq(fields) => {
-                let values: Vec<String> =
-                    fields.iter().map(serial_value_to_csv_field).collect();
+                let values: Vec<String> = fields.iter().map(serial_value_to_csv_field).collect();
                 writer
                     .write_record(&values)
                     .map_err(|e| format!("CSV encode error: {e}"))?;
@@ -136,7 +132,9 @@ pub fn to_csv(val: &SerialValue, opts: CsvOptions) -> Result<String, String> {
         }
     }
 
-    writer.flush().map_err(|e| format!("CSV encode error: {e}"))?;
+    writer
+        .flush()
+        .map_err(|e| format!("CSV encode error: {e}"))?;
     drop(writer);
     String::from_utf8(out).map_err(|e| format!("CSV encode error: {e}"))
 }

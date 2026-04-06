@@ -75,7 +75,7 @@ function getExamplesDir(): string | undefined {
   if (!root) {
     return undefined;
   }
-  const examplesDir = path.join(root, "examples");
+  const examplesDir = path.join(root, "demos");
   if (fs.existsSync(examplesDir)) {
     return examplesDir;
   }
@@ -83,7 +83,7 @@ function getExamplesDir(): string | undefined {
 }
 
 /**
- * Lists example directory names from the workspace examples/ folder.
+ * Lists demo directory names from the workspace demos/ folder.
  */
 function listExampleNames(): string[] {
   const examplesDir = getExamplesDir();
@@ -104,7 +104,7 @@ function listExampleNames(): string[] {
  * Command: Luna2D: Run Example
  *
  * Shows a quick-pick list of available examples and runs the selected one
- * in an integrated terminal via `cargo run -- examples/<name>`.
+ * in an integrated terminal via `cargo run -- demos/<name>`.
  */
 async function runExampleCommand(): Promise<void> {
   const examples = listExampleNames();
@@ -123,7 +123,7 @@ async function runExampleCommand(): Promise<void> {
 
   const terminal = vscode.window.createTerminal("Luna2D Example");
   terminal.show();
-  terminal.sendText(`cargo run -- examples/${selected}`);
+  terminal.sendText(`cargo run -- demos/${selected}`);
 }
 
 /**

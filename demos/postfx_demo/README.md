@@ -15,7 +15,7 @@ Demonstrates Luna2D's post-processing effects stack. Effects are toggled, reorde
 ## How to Run
 
 ```powershell
-cargo run -- examples/postfx_demo
+cargo run -- demos/postfx_demo
 ```
 
 ## Controls

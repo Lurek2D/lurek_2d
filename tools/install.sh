@@ -8,7 +8,7 @@
 #   bash tools/install.sh --prefix ~/.local --uninstall
 #
 # The script builds the release binary, copies it to <prefix>/bin/luna2d, and
-# copies the examples/ folder to <prefix>/share/luna2d/examples.
+# copies the demos/ folder to <prefix>/share/luna2d/examples.
 # Requires: cargo, bash >= 4
 
 set -euo pipefail
@@ -101,7 +101,7 @@ if [[ -d "$EXAMPLES_SOURCE" ]]; then
     cp -r "$EXAMPLES_SOURCE/." "$EXAMPLES_DEST/"
     ok "Examples copied."
 else
-    warn "examples/ folder not found — skipping."
+    warn "demos/ folder not found — skipping."
 fi
 
 # ── PATH advisory ─────────────────────────────────────────────────────────────
@@ -113,5 +113,5 @@ if ! command -v luna &>/dev/null; then
     echo ""
 fi
 
-ok "Luna2D installed. Run:  luna examples/hello_world"
+ok "Luna2D installed. Run:  luna demos/hello_world"
 ok "Or use examples from:   $EXAMPLES_DEST"

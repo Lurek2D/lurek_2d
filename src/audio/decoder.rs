@@ -4,8 +4,8 @@
 //! chunks, enabling streaming playback without loading the entire file into
 //! memory.
 
+use crate::engine::log_messages::AD01_AUDIO_DECODED;
 use crate::engine::EngineError;
-use crate::engine::log_messages::{AD01_AUDIO_DECODED};
 use crate::log_msg;
 
 /// Streaming audio decoder that reads PCM in fixed-size chunks.
@@ -100,8 +100,7 @@ impl Decoder {
     /// # Parameters
     /// - `offset` — `f64`.
     pub fn seek(&mut self, offset: f64) {
-        let sample_pos =
-            (offset * self.sample_rate as f64 * self.channels as f64) as usize;
+        let sample_pos = (offset * self.sample_rate as f64 * self.channels as f64) as usize;
         self.cursor = sample_pos.min(self.pcm.len());
     }
 

@@ -12,7 +12,7 @@
           luna2d-windows-x86_64/
             luna2d.exe           ← engine binary
             assets/              ← engine assets (splash, icon)
-            examples/            ← bundled example games
+            demos/            ← bundled example games
             LICENSE
             README.md
             HOW-TO-RUN.txt
@@ -142,7 +142,7 @@ if (Test-Path $ExamplesSource) {
     $ExamplesDest = Join-Path $PackageDir 'examples'
     if (Test-Path $ExamplesDest) { Remove-Item $ExamplesDest -Recurse -Force }
     Copy-Item $ExamplesSource -Destination $ExamplesDest -Recurse -Force
-    Write-OK "Copied examples/"
+    Write-OK "Copied demos/"
 }
 
 # Copy docs

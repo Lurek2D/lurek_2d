@@ -411,6 +411,11 @@ impl Camera2D {
         self.target.map(|t| (t.x, t.y))
     }
 
+    /// Clears the follow target so the camera stops tracking.
+    pub fn clear_target(&mut self) {
+        self.target = None;
+    }
+
     /// Sets the smooth follow interpolation speed.
     ///
     /// # Parameters

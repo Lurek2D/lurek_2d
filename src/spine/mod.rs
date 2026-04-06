@@ -13,5 +13,5 @@ pub mod skeleton;
 pub mod slot;
 
 pub use bone::Bone;
-pub use skeleton::Skeleton;
+pub use skeleton::{BoneParams, Skeleton};
 pub use slot::Slot;

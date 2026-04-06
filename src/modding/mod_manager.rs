@@ -11,9 +11,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-use std::collections::{HashMap, HashSet};
 use crate::engine::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
 use crate::log_msg;
+use std::collections::{HashMap, HashSet};
 
 /// Metadata describing a mod. Consult the module-level documentation for the broader usage context and preconditions.
 ///

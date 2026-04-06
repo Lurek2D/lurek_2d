@@ -1,7 +1,27 @@
 use super::bone::Bone;
 use super::slot::Slot;
-use crate::engine::log_messages::{SP01_SKEL_LOADED};
+use crate::engine::log_messages::SP01_SKEL_LOADED;
 use crate::log_msg;
+
+/// Parameters for creating and adding a bone in one call.
+///
+/// # Fields
+/// - `name` — `String`. Bone name.
+/// - `parent_index` — `Option<usize>`. Parent bone index, or `None` for root.
+/// - `x` — `f32`. Local X offset.
+/// - `y` — `f32`. Local Y offset.
+/// - `rotation` — `f32`. Local rotation in radians.
+/// - `scale_x` — `f32`. Local X scale.
+/// - `scale_y` — `f32`. Local Y scale.
+pub struct BoneParams {
+    pub name: String,
+    pub parent_index: Option<usize>,
+    pub x: f32,
+    pub y: f32,
+    pub rotation: f32,
+    pub scale_x: f32,
+    pub scale_y: f32,
+}
 
 /// A skeletal animation rig composed of a bone hierarchy and render slots.
 ///
@@ -98,6 +118,82 @@ impl Skeleton {
     /// `Option<usize>` — slot index, or `None` if not found.
     pub fn find_slot(&self, name: &str) -> Option<usize> {
         self.slots.iter().position(|s| s.name == name)
+    }
+
+    /// Creates and adds a bone with the given local transform in one call.
+    ///
+    /// # Parameters
+    /// - `params` — `BoneParams`. Bone creation parameters.
+    ///
+    /// # Returns
+    /// `usize` — index of the newly added bone.
+    pub fn add_bone_full(&mut self, params: BoneParams) -> usize {
+        let mut bone = match params.parent_index {
+            None => Bone::new(&params.name),
+            Some(pi) => Bone::with_parent(&params.name, pi, params.x, params.y),
+        };
+        bone.local_x = params.x;
+        bone.local_y = params.y;
+        bone.local_rotation = params.rotation;
+        bone.local_scale_x = params.scale_x;
+        bone.local_scale_y = params.scale_y;
+        self.add_bone(bone)
+    }
+
+    /// Creates and adds a slot with an optional attachment name in one call.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. Slot name.
+    /// - `bone_index` — `usize`. Index of the bone this slot is bound to.
+    /// - `attachment` — `Option<String>`. Initial attachment name.
+    ///
+    /// # Returns
+    /// `usize` — index of the newly added slot.
+    pub fn add_slot_full(
+        &mut self,
+        name: &str,
+        bone_index: usize,
+        attachment: Option<String>,
+    ) -> usize {
+        let mut slot = Slot::new(name, bone_index);
+        slot.attachment_name = attachment;
+        self.add_slot(slot)
+    }
+
+    /// Returns the world-space transform of the bone at the given index.
+    ///
+    /// # Parameters
+    /// - `idx` — `usize`. Bone index.
+    ///
+    /// # Returns
+    /// `Option<(f32, f32, f32, f32, f32)>` — `(x, y, rotation, scale_x, scale_y)` or `None`.
+    pub fn bone_world_transform(&self, idx: usize) -> Option<(f32, f32, f32, f32, f32)> {
+        self.bones.get(idx).map(|b| {
+            (b.world_x, b.world_y, b.world_rotation, b.world_scale_x, b.world_scale_y)
+        })
+    }
+
+    /// Sets the root bone's local position and propagates world transforms.
+    ///
+    /// # Parameters
+    /// - `x` — `f32`. New local X.
+    /// - `y` — `f32`. New local Y.
+    pub fn set_root_position(&mut self, x: f32, y: f32) {
+        if let Some(root) = self.bones.first_mut() {
+            root.local_x = x;
+            root.local_y = y;
+        }
+        self.update_world_transforms();
+    }
+
+    /// Returns the number of bones in this skeleton.
+    pub fn bone_count(&self) -> usize {
+        self.bones.len()
+    }
+
+    /// Returns the number of slots in this skeleton.
+    pub fn slot_count(&self) -> usize {
+        self.slots.len()
     }
 
     /// Propagates local transforms down the bone hierarchy to compute world transforms.

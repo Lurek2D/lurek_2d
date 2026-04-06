@@ -405,7 +405,8 @@ impl ComboBox {
     /// # Returns
     /// `Option<&str>`.
     pub fn selected_item(&self) -> Option<&str> {
-        self.selected_index.and_then(|i| self.items.get(i).map(|s| s.as_str()))
+        self.selected_index
+            .and_then(|i| self.items.get(i).map(|s| s.as_str()))
     }
 }
 
@@ -497,7 +498,8 @@ impl ListBox {
     /// # Returns
     /// `Option<&str>`.
     pub fn selected_item(&self) -> Option<&str> {
-        self.selected_index.and_then(|i| self.items.get(i).map(|s| s.as_str()))
+        self.selected_index
+            .and_then(|i| self.items.get(i).map(|s| s.as_str()))
     }
 }
 
@@ -574,7 +576,6 @@ impl Default for TabBar {
         Self::new()
     }
 }
-
 
 // ── RadioButton ───────────────────────────────────────────────────────
 

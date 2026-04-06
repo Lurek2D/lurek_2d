@@ -1,568 +1,250 @@
-//! `luna.raycaster` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/raycaster/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.raycaster` - DDA grid raycasting for retro FPS and dungeon-crawler games.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::raycaster::{distance_shade, project_column, RayHit, Raycaster2D};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Helpers
+// -------------------------------------------------------------------------------
 
-// ── LuaColumnBatch ────────────────────────────────────────────────────────────
-
-pub struct LuaColumnBatch(/* TODO: add key + state fields */);
-
-
-impl LuaColumnBatch {
-    /// Reference to a single column by 0-based index.
-    ///
-    /// @param col : integer
-    /// @return Option<
-    pub fn get_column(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Depth value at a 0-based column index. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    /// @param col : integer
-    /// @return number?
-    pub fn get_depth_at(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Depth buffer as a flat vector (one entry per column).
-    ///
-    ///
-    /// @return table
-    pub fn get_depth_buffer(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Number of columns. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return integer
-    pub fn get_column_count(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Screen width in pixels. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_screen_width(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Screen height in pixels. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_screen_height(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
+/// Converts a [`RayHit`] to a Lua table with distance, cell, side, and hit fields.
+fn ray_hit_to_table<'lua>(lua: &'lua Lua, hit: &RayHit) -> LuaResult<LuaTable<'lua>> {
+    let t = lua.create_table()?;
+    t.set("distance", hit.distance)?;
+    t.set("raw_distance", hit.raw_distance)?;
+    t.set("cell_value", hit.cell_value)?;
+    t.set("side", hit.side)?;
+    t.set("tex_u", hit.tex_u)?;
+    t.set("hit_x", hit.hit_x)?;
+    t.set("hit_y", hit.hit_y)?;
+    t.set("hit", hit.hit)?;
+    Ok(t)
 }
 
-impl UserData for LuaColumnBatch {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getColumn", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDepthAt", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDepthBuffer", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getColumnCount", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getScreenWidth", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getScreenHeight", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
+// -------------------------------------------------------------------------------
+// LuaRaycaster UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Raycaster2D`] grid.
+pub struct LuaRaycaster {
+    inner: Raycaster2D,
 }
 
-// ── LuaDepthBuffer ────────────────────────────────────────────────────────────
+impl LuaUserData for LuaRaycaster {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
-pub struct LuaDepthBuffer(/* TODO: add key + state fields */);
+        // -- setCell --
+        /// Sets the cell value at grid position (x, y).
+        /// @param x : integer
+        /// @param y : integer
+        /// @param val : integer
+        /// @return nil
+        methods.add_method_mut("setCell", |_, this, (x, y, val): (u32, u32, u32)| {
+            this.inner.set_cell(x, y, val);
+            Ok(())
+        });
 
+        // -- getCell --
+        /// Returns the cell value at (x, y).
+        /// @param x : integer
+        /// @param y : integer
+        /// @return integer
+        methods.add_method("getCell", |_, this, (x, y): (u32, u32)| {
+            Ok(this.inner.get_cell(x, y))
+        });
 
-impl LuaDepthBuffer {
-    /// Gets the depth for a specific column. Returns `f32::MAX` for out-of-bounds.
-    ///
-    /// @param column : integer
-    /// @return number
-    pub fn get(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns true if the given depth is closer than the stored depth at this column.
-    ///
-    /// @param column : integer
-    /// @param depth : number
-    /// @return boolean
-    pub fn is_visible(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the buffer width.
-    ///
-    ///
-    /// @return integer
-    pub fn width(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
+        // -- setCells --
+        /// Replaces all grid cells from a flat array of values in row-major order.
+        /// @param cells : table
+        /// @return nil
+        methods.add_method_mut("setCells", |_, this, cells_tbl: LuaTable| {
+            let cells: Vec<u32> = cells_tbl
+                .sequence_values::<u32>()
+                .collect::<LuaResult<_>>()?;
+            this.inner.set_cells(cells);
+            Ok(())
+        });
 
-impl UserData for LuaDepthBuffer {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("get", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isVisible", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("width", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+        // -- isBlocked --
+        /// Returns true when the cell at (x, y) is a wall (value > 0).
+        /// @param x : integer
+        /// @param y : integer
+        /// @return boolean
+        methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
+            Ok(this.inner.is_blocked(x, y))
+        });
 
-// ── LuaDoorManager ────────────────────────────────────────────────────────────
+        // -- width --
+        /// Returns the grid width in cells.
+        /// @return integer
+        methods.add_method("width", |_, this, ()| {
+            Ok(this.inner.width())
+        });
 
-pub struct LuaDoorManager(/* TODO: add key + state fields */);
+        // -- height --
+        /// Returns the grid height in cells.
+        /// @return integer
+        methods.add_method("height", |_, this, ()| {
+            Ok(this.inner.height())
+        });
 
+        // -- castRay --
+        /// Casts a single ray and returns a hit table, or nil if nothing was hit.
+        /// @param ox : number
+        /// @param oy : number
+        /// @param angle : number
+        /// @param max_dist : number
+        /// @return table|nil
+        methods.add_method(
+            "castRay",
+            |lua, this, (ox, oy, angle, max_dist): (f32, f32, f32, f32)| {
+                match this.inner.cast_ray(ox, oy, angle, max_dist) {
+                    Some(hit) => Ok(LuaValue::Table(ray_hit_to_table(lua, &hit)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
 
-impl LuaDoorManager {
-    /// Finds a door at grid position (x, y), if any.
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return Option<
-    pub fn get_door_at(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
+        // -- castRays --
+        /// Casts multiple rays across a field of view, returns an array of hit tables.
+        /// @param ox : number
+        /// @param oy : number
+        /// @param angle : number
+        /// @param fov : number
+        /// @param count : integer
+        /// @param max_dist : number
+        /// @return table
+        methods.add_method(
+            "castRays",
+            |lua,
+             this,
+             (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
+                let hits = this
+                    .inner
+                    .cast_rays(ox, oy, angle, fov, count, max_dist);
+                let tbl = lua.create_table()?;
+                for (i, hit) in hits.iter().enumerate() {
+                    tbl.set(i + 1, ray_hit_to_table(lua, hit)?)?;
+                }
+                Ok(tbl)
+            },
+        );
 
-impl UserData for LuaDoorManager {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getDoorAt", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+        // -- castRaysFlat --
+        /// Casts multiple rays and returns a flat array of 5 floats per ray.
+        /// @param ox : number
+        /// @param oy : number
+        /// @param angle : number
+        /// @param fov : number
+        /// @param count : integer
+        /// @param max_dist : number
+        /// @return table
+        methods.add_method(
+            "castRaysFlat",
+            |lua,
+             this,
+             (ox, oy, angle, fov, count, max_dist): (f32, f32, f32, f32, u32, f32)| {
+                let flat = this
+                    .inner
+                    .cast_rays_flat(ox, oy, angle, fov, count, max_dist);
+                lua.create_sequence_from(flat)
+            },
+        );
 
-// ── LuaHeightMap ────────────────────────────────────────────────────────────
+        // -- lineOfSight --
+        /// Checks line of sight between two points using DDA traversal.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        /// @return boolean
+        methods.add_method(
+            "lineOfSight",
+            |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+                Ok(this.inner.line_of_sight(x1, y1, x2, y2))
+            },
+        );
 
-pub struct LuaHeightMap(/* TODO: add key + state fields */);
-
-
-impl LuaHeightMap {
-    /// Returns the floor height at (x, y). Returns 0.0 for out-of-bounds.
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return number
-    pub fn floor_at(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the ceiling height at (x, y). Returns 1.0 for out-of-bounds.
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return number
-    pub fn ceiling_at(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaHeightMap {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("floorAt", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("ceilingAt", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaRaycaster2D ────────────────────────────────────────────────────────────
-
-pub struct LuaRaycaster2D(/* TODO: add key + state fields */);
-
-
-impl LuaRaycaster2D {
-    /// Gets the value of a cell at (x, y). Returns 0 for out-of-bounds.
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return integer
-    pub fn get_cell(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns true if the cell at (x, y) is blocked (value > 0).
-    ///
-    /// @param x : integer
-    /// @param y : integer
-    /// @return boolean
-    pub fn is_blocked(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the grid width.
-    ///
-    ///
-    /// @return integer
-    pub fn width(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the grid height.
-    ///
-    ///
-    /// @return integer
-    pub fn height(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Casts a single ray from (ox, oy) at the given angle using the DDA algorithm.
-    ///
-    /// @param ox : number
-    /// @param oy : number
-    /// @param angle : number
-    /// @param max_dist : number
-    /// @return RayHit?
-    pub fn cast_ray(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Checks line of sight between two points using DDA traversal.
-    ///
-    /// @param x1 : number
-    /// @param y1 : number
-    /// @param x2 : number
-    /// @param y2 : number
-    /// @return boolean
-    pub fn line_of_sight(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
+        // -- projectSprite --
+        /// Projects a world-space sprite onto screen space.
+        /// @param sx : number
+        /// @param sy : number
+        /// @param px : number
+        /// @param py : number
+        /// @param pa : number
+        /// @param fov : number
+        /// @param screen_w : number
+        /// @return table
+        methods.add_method(
+            "projectSprite",
+            |lua,
+             this,
+             (sx, sy, px, py, pa, fov, screen_w): (f32, f32, f32, f32, f32, f32, f32)| {
+                let sp = this
+                    .inner
+                    .project_sprite(sx, sy, px, py, pa, fov, screen_w);
+                let t = lua.create_table()?;
+                t.set("screen_x", sp.screen_x)?;
+                t.set("scale", sp.scale)?;
+                t.set("distance", sp.distance)?;
+                t.set("visible", sp.visible)?;
+                Ok(t)
+            },
+        );
     }
 }
 
-impl UserData for LuaRaycaster2D {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getCell", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("isBlocked", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("width", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("height", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("castRay", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("lineOfSight", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── luna.raycaster.* functions ──────────────────────────────────────────
-
-/// Set the data for a single 0-based column index.
-///
-///
-/// @param col : integer
-/// @param tex_u : number
-/// @param start : number
-/// @param end : number
-/// @param shade : number
-/// @param cell_val : integer
-pub fn set_column(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bulk-update columns from raw ray data. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param rays : [f32]
-/// @param _fov : number
-/// @param max_shade_dist : number?
-pub fn update_from_ray_data(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the floor color. Replaces the current floor color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param color : Color
-pub fn set_floor_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the ceiling color. Replaces the current ceiling color value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param color : Color
-pub fn set_ceiling_color(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the value of a cell at (x, y). 0-based coordinates.
-///
-///
-/// @param x : integer
-/// @param y : integer
-/// @param value : integer
-pub fn set_cell(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Bulk-sets all cells from a flat vector. Length must match width*height.
-///
-///
-/// @param data : table
-pub fn set_cells(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Casts multiple rays spread across a field of view.
-///
-/// @param ox : number
-/// @param oy : number
-/// @param angle : number
-/// @param fov : number
-/// @param count : integer
-/// @param max_dist : number
-/// @return table
-pub fn cast_rays(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Casts multiple rays and returns a flat `Vec<f32>` with 5 values per ray.
-///
-/// @param ox : number
-/// @param oy : number
-/// @param angle : number
-/// @param fov : number
-/// @param count : integer
-/// @param max_dist : number
-/// @return table
-pub fn cast_rays_flat(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Projects a world-space sprite onto screen space.
-///
-/// @param sx : number
-/// @param sy : number
-/// @param px : number
-/// @param py : number
-/// @param pa : number
-/// @param fov : number
-/// @param screen_w : number
-/// @return SpriteProjection
-pub fn project_sprite(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the depth for a specific column.
-///
-///
-/// @param column : integer
-/// @param depth : number
-pub fn set(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Adds a door at (x, y) with the given direction and speed.
-///
-/// @param x : integer
-/// @param y : integer
-/// @param direction : DoorDirection
-/// @param speed : number
-/// @return integer
-pub fn add_door(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Begins opening a door by index.
-///
-///
-/// @param index : integer
-pub fn open_door(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Begins closing a door by index.
-///
-///
-/// @param index : integer
-pub fn close_door(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Advances all door animations by `dt` seconds.
-///
-/// Doors in the `Opening` state increase `open_amount` and transition to
-/// `Open` when fully open. Doors in the `Closing` state decrease
-/// `open_amount` and transition to `Closed` when fully closed.
-///
-///
-/// @param dt : number
-pub fn update(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the floor height at (x, y).
-///
-///
-/// @param x : integer
-/// @param y : integer
-/// @param h : number
-pub fn set_floor(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the ceiling height at (x, y).
-///
-///
-/// @param x : integer
-/// @param y : integer
-/// @param h : number
-pub fn set_ceiling(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the floor height for a rectangular region.
-///
-///
-/// @param x : integer
-/// @param y : integer
-/// @param w : integer
-/// @param h : integer
-/// @param height : number
-pub fn set_floor_rect(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the ceiling height for a rectangular region.
-///
-///
-/// @param x : integer
-/// @param y : integer
-/// @param w : integer
-/// @param h : integer
-/// @param height : number
-pub fn set_ceiling_rect(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Computes ambient + point-light illumination at a world position.
-///
-/// Each light contributes based on inverse-distance falloff within its radius.
-/// The result is the sum of ambient light and all point-light contributions,
-/// clamped per-channel to [0, 1].
-///
-///
-/// @param x : number
-/// @param y : number
-/// @param ambient : number
-/// @param lights : [PointLight]
-pub fn compute_lighting(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Applies lighting to a distance-shaded base brightness.
-///
-/// Multiplies the base shade value by each channel of the light color,
-/// producing a final lit RGB value.
-///
-///
-/// @param base_shade : number
-/// @param light_color : [f32; 3]
-pub fn apply_lit_shade(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Extracts a top-down minimap from a Raycaster2D grid.
-///
-/// Returns flat RGBA pixel data (4 bytes per pixel, row-major) centered on
-/// the player position, with a configurable view radius and cell size.
-///
-/// @param raycaster : Raycaster2D
-/// @param player_x : number
-/// @param player_y : number
-/// @param player_angle : number
-/// @param view_radius : integer
-/// @param cell_size : integer
-/// @param wall_color : [u8; 4]
-/// @param floor_color : [u8; 4]
-/// @param player_color : [u8; 4]
-/// @return Returns
-pub fn extract_minimap(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Renders a simple directional arrow for the player on the minimap.
-///
-/// Draws a small triangle pointing in the player's facing direction,
-/// centered at `(center_x, center_y)` in the pixel buffer.
-///
-///
-/// @param pixels : mut [u8]
-/// @param img_width : integer
-/// @param center_x : integer
-/// @param center_y : integer
-/// @param angle : number
-/// @param size : integer
-/// @param color : [u8; 4]
-pub fn draw_player_arrow(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Projects a wall column distance to screen-space drawing parameters.
-///
-/// @param distance : number
-/// @param fov : number
-/// @param screen_height : number
-/// @return Returns
-pub fn project_column(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Distance-based shading. Returns brightness in [0, 1].
-///
-/// @param distance : number
-/// @param max_distance : number
-/// @return number
-pub fn distance_shade(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Casts a ray from (ox, oy) in direction (dx, dy) against a list of segments.
-///
-/// @param ox : number
-/// @param oy : number
-/// @param dx : number
-/// @param dy : number
-/// @param max_dist : number
-/// @param segments : [Segment]
-/// @return Option<(f32
-pub fn cast_ray_2d(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Computes a visibility polygon by casting rays at segment endpoints.
-///
-/// @param ox : number
-/// @param oy : number
-/// @param segments : [Segment]
-/// @param radius : number
-/// @return table
-pub fn field_of_view(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.raycaster` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.raycaster` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("setColumn", lua.create_function(set_column)?)?;
-    tbl.set("updateFromRayData", lua.create_function(update_from_ray_data)?)?;
-    tbl.set("setFloorColor", lua.create_function(set_floor_color)?)?;
-    tbl.set("setCeilingColor", lua.create_function(set_ceiling_color)?)?;
-    tbl.set("setCell", lua.create_function(set_cell)?)?;
-    tbl.set("setCells", lua.create_function(set_cells)?)?;
-    tbl.set("castRays", lua.create_function(cast_rays)?)?;
-    tbl.set("castRaysFlat", lua.create_function(cast_rays_flat)?)?;
-    tbl.set("projectSprite", lua.create_function(project_sprite)?)?;
-    tbl.set("set", lua.create_function(set)?)?;
-    tbl.set("addDoor", lua.create_function(add_door)?)?;
-    tbl.set("openDoor", lua.create_function(open_door)?)?;
-    tbl.set("closeDoor", lua.create_function(close_door)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("setFloor", lua.create_function(set_floor)?)?;
-    tbl.set("setCeiling", lua.create_function(set_ceiling)?)?;
-    tbl.set("setFloorRect", lua.create_function(set_floor_rect)?)?;
-    tbl.set("setCeilingRect", lua.create_function(set_ceiling_rect)?)?;
-    tbl.set("computeLighting", lua.create_function(compute_lighting)?)?;
-    tbl.set("applyLitShade", lua.create_function(apply_lit_shade)?)?;
-    tbl.set("extractMinimap", lua.create_function(extract_minimap)?)?;
-    tbl.set("drawPlayerArrow", lua.create_function(draw_player_arrow)?)?;
-    tbl.set("projectColumn", lua.create_function(project_column)?)?;
-    tbl.set("distanceShade", lua.create_function(distance_shade)?)?;
-    tbl.set("castRay2d", lua.create_function(cast_ray_2d)?)?;
-    tbl.set("fieldOfView", lua.create_function(field_of_view)?)?;
+
+    // -- new --
+    /// Creates a new raycaster grid of the given dimensions.
+    /// @param width : integer
+    /// @param height : integer
+    /// @return Raycaster
+    tbl.set(
+        "new",
+        lua.create_function(|_, (w, h): (u32, u32)| {
+            Ok(LuaRaycaster {
+                inner: Raycaster2D::new(w, h),
+            })
+        })?,
+    )?;
+
+    // -- projectColumn --
+    /// Projects a wall distance to screen-space drawing parameters.
+    /// @param distance : number
+    /// @param fov : number
+    /// @param screen_height : number
+    /// @return number, number, number
+    tbl.set(
+        "projectColumn",
+        lua.create_function(|_, (distance, fov, screen_height): (f32, f32, f32)| {
+            Ok(project_column(distance, fov, screen_height))
+        })?,
+    )?;
+
+    // -- distanceShade --
+    /// Returns distance-based brightness in [0, 1].
+    /// @param distance : number
+    /// @param max_distance : number
+    /// @return number
+    tbl.set(
+        "distanceShade",
+        lua.create_function(|_, (distance, max_distance): (f32, f32)| {
+            Ok(distance_shade(distance, max_distance))
+        })?,
+    )?;
+
     luna.set("raycaster", tbl)?;
     Ok(())
 }

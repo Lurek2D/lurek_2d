@@ -10,9 +10,11 @@
 
 use std::collections::HashMap;
 
-use crate::scene::transition::{ActiveTransition, TransitionType};
-use crate::engine::log_messages::{SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR};
+use crate::engine::log_messages::{
+    SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR,
+};
 use crate::log_msg;
+use crate::scene::transition::{ActiveTransition, TransitionType};
 
 /// Unique identifier for a scene in the stack.
 pub type SceneId = u64;

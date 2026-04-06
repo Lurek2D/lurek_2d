@@ -26,9 +26,9 @@
 
 use std::collections::HashMap;
 
-use mlua::RegistryKey;
 use crate::engine::log_messages::{FN01, FN02};
 use crate::log_msg;
+use mlua::RegistryKey;
 
 /// Lua lifecycle hooks for a single FSM state.
 ///
@@ -158,6 +158,60 @@ impl StateMachine {
     /// `f32`.
     pub fn time_in_state(&self) -> f32 {
         self.time_in_state
+    }
+
+    /// Adds a named state with optional lifecycle callbacks. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `name` — `String`.
+    /// - `on_enter` — `Option<RegistryKey>`.
+    /// - `on_update` — `Option<RegistryKey>`.
+    /// - `on_exit` — `Option<RegistryKey>`.
+    pub fn add_state_raw(
+        &mut self,
+        name: String,
+        on_enter: Option<RegistryKey>,
+        on_update: Option<RegistryKey>,
+        on_exit: Option<RegistryKey>,
+    ) {
+        self.states.insert(
+            name,
+            StateCallbacks {
+                on_enter,
+                on_update,
+                on_exit,
+            },
+        );
+    }
+
+    /// Adds a transition with optional guard callback. Used by the Lua API.
+    ///
+    /// # Parameters
+    /// - `from` — `String`.
+    /// - `to` — `String`.
+    /// - `priority` — `i32`.
+    /// - `guard` — `Option<RegistryKey>`.
+    pub fn add_transition_raw(
+        &mut self,
+        from: String,
+        to: String,
+        priority: i32,
+        guard: Option<RegistryKey>,
+    ) {
+        self.add_transition(Transition {
+            from,
+            to,
+            guard,
+            priority,
+        });
+    }
+
+    /// Sets the initial state name. The machine transitions here on its first update.
+    ///
+    /// # Parameters
+    /// - `name` — `String`.
+    pub fn set_initial_state(&mut self, name: String) {
+        self.initial_state = Some(name);
     }
 }
 

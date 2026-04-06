@@ -1,6 +1,6 @@
 //! Integration tests for the serial module.
 
-use luna2d::serial::{from_json, to_json, from_toml, to_toml, from_csv, to_csv};
+use luna2d::serial::{from_csv, from_json, from_toml, to_csv, to_json, to_toml};
 use luna2d::serial::{CsvOptions, SerialValue};
 
 // ── JSON ─────────────────────────────────────────────────────────────────────
@@ -12,8 +12,12 @@ fn serial_json_roundtrip_basic_types() {
     let out = to_json(&val, false).unwrap();
     let val2 = from_json(&out).unwrap();
     if let SerialValue::Map(map) = &val2 {
-        if let Some(SerialValue::Str(s)) = map.get("name") { assert_eq!(s, "Luna2D"); }
-        if let Some(SerialValue::Int(n)) = map.get("version") { assert_eq!(*n, 4); }
+        if let Some(SerialValue::Str(s)) = map.get("name") {
+            assert_eq!(s, "Luna2D");
+        }
+        if let Some(SerialValue::Int(n)) = map.get("version") {
+            assert_eq!(*n, 4);
+        }
     } else {
         panic!("expected Map");
     }
@@ -64,9 +68,15 @@ enabled = true
 "#;
     let val = from_toml(input).unwrap();
     if let SerialValue::Map(map) = &val {
-        if let Some(SerialValue::Str(s)) = map.get("name") { assert_eq!(s, "Luna2D"); }
-        if let Some(SerialValue::Int(n)) = map.get("version") { assert_eq!(*n, 4); }
-        if let Some(SerialValue::Bool(b)) = map.get("enabled") { assert!(*b); }
+        if let Some(SerialValue::Str(s)) = map.get("name") {
+            assert_eq!(s, "Luna2D");
+        }
+        if let Some(SerialValue::Int(n)) = map.get("version") {
+            assert_eq!(*n, 4);
+        }
+        if let Some(SerialValue::Bool(b)) = map.get("enabled") {
+            assert!(*b);
+        }
     } else {
         panic!("expected Map");
     }
@@ -83,7 +93,9 @@ title = "test"
     let val = from_toml(input).unwrap();
     if let SerialValue::Map(map) = &val {
         if let Some(SerialValue::Map(win)) = map.get("window") {
-            if let Some(SerialValue::Int(w)) = win.get("width") { assert_eq!(*w, 800); }
+            if let Some(SerialValue::Int(w)) = win.get("width") {
+                assert_eq!(*w, 800);
+            }
         }
     }
 }
@@ -111,12 +123,23 @@ fn serial_toml_parse_error() {
 #[test]
 fn serial_csv_parse_with_headers() {
     let input = "name,age\nAlice,30\nBob,25";
-    let val = from_csv(input, CsvOptions { delimiter: b',', has_headers: true }).unwrap();
+    let val = from_csv(
+        input,
+        CsvOptions {
+            delimiter: b',',
+            has_headers: true,
+        },
+    )
+    .unwrap();
     if let SerialValue::Seq(rows) = &val {
         assert_eq!(rows.len(), 2);
         if let SerialValue::Map(row) = &rows[0] {
-            if let Some(SerialValue::Str(name)) = row.get("name") { assert_eq!(name, "Alice"); }
-            if let Some(SerialValue::Str(age)) = row.get("age") { assert_eq!(age, "30"); }
+            if let Some(SerialValue::Str(name)) = row.get("name") {
+                assert_eq!(name, "Alice");
+            }
+            if let Some(SerialValue::Str(age)) = row.get("age") {
+                assert_eq!(age, "30");
+            }
         }
     } else {
         panic!("expected Seq");
@@ -141,8 +164,8 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use luna2d::lua_api::{create_lua_vm, SharedState};
 use luna2d::engine::config::Config;
+use luna2d::lua_api::{create_lua_vm, SharedState};
 
 fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -216,8 +239,6 @@ fn test_lua_serial_totoml_basic() {
 #[test]
 fn test_lua_serial_fromjson_error() {
     let (_state, lua) = make_vm();
-    let result = lua
-        .load(r#"luna.serial.fromJson("{bad json}")"#)
-        .exec();
+    let result = lua.load(r#"luna.serial.fromJson("{bad json}")"#).exec();
     assert!(result.is_err());
 }

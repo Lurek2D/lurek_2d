@@ -7,10 +7,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `luna.*` Lua API for the scripting interface.
 
-/// Universe — entity management with ID recycling, components, tags, and systems.
-pub mod universe;
 /// Generic relationship system for entity pairs.
 pub mod relationships;
+/// Universe — entity management with ID recycling, components, tags, and systems.
+pub mod universe;
 
-pub use relationships::{Relationship, RelationshipManager, RelationType};
+pub use relationships::{RelationType, Relationship, RelationshipManager};
 pub use universe::{deep_copy_table, Universe};

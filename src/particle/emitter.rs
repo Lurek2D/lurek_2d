@@ -1,13 +1,15 @@
 //! Particle emitter struct and update/draw logic.
 
-use crate::graphics::renderer::{DrawCommand, ParticleInstance, ParticleRenderShape};
-use crate::particle::shapes::ParticleShape;
 use super::config::{EmissionShape, EmitterState, InsertMode, ParticleConfig};
 use super::emission::{emission_offset, emission_shape_offset};
-use super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range};
+use super::math::{
+    interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range,
+};
 use super::particle::Particle;
 use crate::engine::log_messages::{PE01, PE02, PE03, PE04};
+use crate::graphics::renderer::{DrawCommand, ParticleInstance, ParticleRenderShape};
 use crate::log_msg;
+use crate::particle::shapes::ParticleShape;
 
 /// An emitter-based particle system. Consult the module-level documentation for the broader usage context and preconditions.
 ///
@@ -439,16 +441,18 @@ impl ParticleSystem {
             });
         }
 
-        vec![DrawCommand::DrawParticleSystem { particles: instances }]
+        vec![DrawCommand::DrawParticleSystem {
+            particles: instances,
+        }]
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::config::{EmissionShape, ParticleConfig, RelativeMode};
     use super::super::emission::emission_shape_offset;
     use super::super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp};
+    use super::*;
 
     #[test]
     fn test_default_config() {

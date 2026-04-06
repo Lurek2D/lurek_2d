@@ -25,7 +25,8 @@ use crate::log_msg;
 /// - `paused` — `bool`.
 #[derive(Debug, Clone)]
 pub struct Bus {
-    pub effects: std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<crate::audio::dsp::EffectParams>>>>,
+    pub effects:
+        std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<crate::audio::dsp::EffectParams>>>>,
     name: String,
     volume: f32,
     pitch: f32,

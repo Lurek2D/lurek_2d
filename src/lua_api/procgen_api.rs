@@ -1,88 +1,163 @@
-//! `luna.procgen` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/procgen/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.procgen` — Stateless procedural generation utilities.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
+use crate::procgen::{
+    cellular_automata, flood_fill, perlin_noise_periodic, poisson_disk, voronoi_diagram,
+    CellularOpts, VoronoiOpts,
+};
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── luna.procgen.* functions ──────────────────────────────────────────
-
-/// Generates a cave/dungeon map using cellular automata.
-///
-/// @param width : integer
-/// @param height : integer
-/// @param opts : CellularOpts
-/// @return table
-pub fn cellular_automata(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// BFS flood fill on a grid. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param data : [u8]
-/// @param width : integer
-/// @param height : integer
-/// @param sx : integer
-/// @param sy : integer
-/// @param threshold : u8
-/// @param above : boolean
-/// @return table
-pub fn flood_fill(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Periodic Perlin noise that tiles over period (px, py).
-///
-/// @param x : number
-/// @param y : number
-/// @param px : number
-/// @param py : number
-/// @return number
-pub fn perlin_noise_periodic(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Generates Poisson disk sample points using Bridson's algorithm.
-///
-/// @param width : number
-/// @param height : number
-/// @param min_dist : number
-/// @param max_attempts : integer
-/// @param seed : integer
-/// @return Vec<(f32
-pub fn poisson_disk(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Generates a Voronoi diagram. Consult the module-level documentation for the broader usage context and preconditions.
-///
-/// @param width : integer
-/// @param height : integer
-/// @param points : [(f32, f32)]
-/// @param opts : VoronoiOpts
-/// @return Returns
-pub fn voronoi_diagram(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Registers the `luna.procgen` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.procgen` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("cellularAutomata", lua.create_function(cellular_automata)?)?;
-    tbl.set("floodFill", lua.create_function(flood_fill)?)?;
-    tbl.set("perlinNoisePeriodic", lua.create_function(perlin_noise_periodic)?)?;
-    tbl.set("poissonDisk", lua.create_function(poisson_disk)?)?;
-    tbl.set("voronoiDiagram", lua.create_function(voronoi_diagram)?)?;
+
+    // -- cellularAutomata --
+    /// Generates a cave-like map using cellular automata.
+    /// @param w : integer
+    /// @param h : integer
+    /// @param opts : table?
+    /// @return table
+    tbl.set(
+        "cellularAutomata",
+        lua.create_function(|lua, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+            let mut cfg = CellularOpts::default();
+            if let Some(t) = opts {
+                if let Ok(v) = t.get::<_, f32>("fill") { cfg.fill = v; }
+                if let Ok(v) = t.get::<_, u32>("iterations") { cfg.iterations = v; }
+                if let Ok(v) = t.get::<_, u32>("birth") { cfg.birth = v; }
+                if let Ok(v) = t.get::<_, u32>("survive") { cfg.survive = v; }
+                if let Ok(v) = t.get::<_, u64>("seed") { cfg.seed = v; }
+            }
+            let data = cellular_automata(w, h, &cfg);
+            let out = lua.create_table()?;
+            for (i, v) in data.iter().enumerate() {
+                out.set(i + 1, *v)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+
+    // -- floodFill --
+    /// BFS flood fill on a flat grid of bytes.
+    /// @param data : table
+    /// @param w : integer
+    /// @param h : integer
+    /// @param sx : integer
+    /// @param sy : integer
+    /// @param threshold : integer?
+    /// @param above : boolean?
+    /// @return table
+    tbl.set(
+        "floodFill",
+        lua.create_function(
+            |lua,
+             (data_tbl, w, h, sx, sy, threshold, above): (
+                LuaTable,
+                u32,
+                u32,
+                u32,
+                u32,
+                Option<u8>,
+                Option<bool>,
+            )| {
+                let mut data: Vec<u8> = Vec::with_capacity((w * h) as usize);
+                for v in data_tbl.sequence_values::<u8>() {
+                    data.push(v?);
+                }
+                let result = flood_fill(&data, w, h, sx, sy, threshold.unwrap_or(128), above.unwrap_or(false));
+                let out = lua.create_table()?;
+                for (i, v) in result.iter().enumerate() {
+                    out.set(i + 1, *v)?;
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+
+    // -- perlinNoise --
+    /// Evaluates periodic Perlin noise at a point.
+    /// @param x : number
+    /// @param y : number
+    /// @param px : number
+    /// @param py : number
+    /// @return number
+    tbl.set(
+        "perlinNoise",
+        lua.create_function(|_, (x, y, px, py): (f64, f64, f64, f64)| {
+            Ok(perlin_noise_periodic(x, y, px, py))
+        })?,
+    )?;
+
+    // -- poissonDisk --
+    /// Generates Poisson disk sample points using Bridson's algorithm.
+    /// @param w : number
+    /// @param h : number
+    /// @param min_dist : number
+    /// @param max_attempts : integer?
+    /// @param seed : integer?
+    /// @return table
+    tbl.set(
+        "poissonDisk",
+        lua.create_function(
+            |lua, (w, h, min_dist, max_attempts, seed): (f32, f32, f32, Option<u32>, Option<u64>)| {
+                let points = poisson_disk(w, h, min_dist, max_attempts.unwrap_or(30), seed.unwrap_or(0));
+                let out = lua.create_table()?;
+                for (i, (px, py)) in points.iter().enumerate() {
+                    let pt = lua.create_table()?;
+                    pt.set("x", *px)?;
+                    pt.set("y", *py)?;
+                    out.set(i + 1, pt)?;
+                }
+                Ok(out)
+            },
+        )?,
+    )?;
+
+    // -- voronoi --
+    /// Generates a Voronoi diagram for a set of seed points.
+    /// @param w : integer
+    /// @param h : integer
+    /// @param pts : table
+    /// @param opts : table?
+    /// @return table, table, table
+    tbl.set(
+        "voronoi",
+        lua.create_function(
+            |lua, (w, h, pts_tbl, opts_tbl): (u32, u32, LuaTable, Option<LuaTable>)| {
+                let mut points: Vec<(f32, f32)> = Vec::new();
+                for v in pts_tbl.sequence_values::<LuaTable>() {
+                    let pt = v?;
+                    let x: f32 = pt.get("x")?;
+                    let y: f32 = pt.get("y")?;
+                    points.push((x, y));
+                }
+                let mut vopts = VoronoiOpts::default();
+                if let Some(ot) = opts_tbl {
+                    if let Ok(v) = ot.get::<_, f32>("warp_scale") { vopts.warp_scale = v; }
+                    if let Ok(v) = ot.get::<_, f32>("warp_strength") { vopts.warp_strength = v; }
+                    if let Ok(v) = ot.get::<_, u64>("seed") { vopts.seed = v; }
+                }
+                let (regions, distances, distances2) = voronoi_diagram(w, h, &points, &vopts);
+                let r_tbl = lua.create_table()?;
+                let d_tbl = lua.create_table()?;
+                let d2_tbl = lua.create_table()?;
+                for (i, ((r, d), d2)) in regions.iter().zip(distances.iter()).zip(distances2.iter()).enumerate() {
+                    r_tbl.set(i + 1, *r + 1)?;
+                    d_tbl.set(i + 1, *d)?;
+                    d2_tbl.set(i + 1, *d2)?;
+                }
+                Ok((r_tbl, d_tbl, d2_tbl))
+            },
+        )?,
+    )?;
+
     luna.set("procgen", tbl)?;
     Ok(())
 }

@@ -1,389 +1,247 @@
-//! `luna.camera` Lua API bindings.
-//!
-//! Auto-generated skeleton from `src/camera/` Rust docstrings.
-//! Fill in the `todo!()` bodies with actual implementation.
-//! Every `pub fn` has `@param`/`@return` tags for `gen_lua_api.py`.
-//!
+//! `luna.camera` — Camera2D creation and manipulation for 2D viewport control.
+
+use super::SharedState;
+use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use mlua::prelude::*;
-use mlua::{UserData, UserDataMethods};
+use crate::camera::Camera2D;
 
-use crate::engine::SharedState;
+// -------------------------------------------------------------------------------
+// LuaCamera2D UserData
+// -------------------------------------------------------------------------------
 
-// ── LuaCamera ────────────────────────────────────────────────────────────
+/// Lua-side wrapper around a [`Camera2D`] instance.
+pub struct LuaCamera2D {
+    inner: Rc<RefCell<Camera2D>>,
+}
 
-pub struct LuaCamera(/* TODO: add key + state fields */);
+impl LuaUserData for LuaCamera2D {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
 
+        // -- setPosition --
+        /// Sets the camera's world-space position.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("setPosition", |_, this, (x, y): (f32, f32)| {
+            this.inner.borrow_mut().set_position(x, y);
+            Ok(())
+        });
 
-impl LuaCamera {
-    /// Computes the view transformation matrix for this camera.
-    ///
-    ///
-    /// @return Mat3
-    pub fn view_matrix(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
+        // -- getPosition --
+        /// Returns the camera's world-space position as x, y.
+        /// @return number, number
+        methods.add_method("getPosition", |_, this, ()| {
+            Ok(this.inner.borrow().get_position())
+        });
+
+        // -- setZoom --
+        /// Sets the uniform zoom factor (1.0 = natural size).
+        /// @param zoom : number
+        /// @return nil
+        methods.add_method("setZoom", |_, this, zoom: f32| {
+            this.inner.borrow_mut().set_zoom(zoom);
+            Ok(())
+        });
+
+        // -- getZoom --
+        /// Returns the current zoom factor.
+        /// @return number
+        methods.add_method("getZoom", |_, this, ()| {
+            Ok(this.inner.borrow().get_zoom())
+        });
+
+        // -- setRotation --
+        /// Sets the rotation in radians.
+        /// @param r : number
+        /// @return nil
+        methods.add_method("setRotation", |_, this, r: f32| {
+            this.inner.borrow_mut().set_rotation(r);
+            Ok(())
+        });
+
+        // -- getRotation --
+        /// Returns the rotation in radians.
+        /// @return number
+        methods.add_method("getRotation", |_, this, ()| {
+            Ok(this.inner.borrow().get_rotation())
+        });
+
+        // -- setViewport --
+        /// Sets the viewport rectangle in screen pixels.
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        /// @return nil
+        methods.add_method("setViewport", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+            this.inner.borrow_mut().set_viewport(x, y, w, h);
+            Ok(())
+        });
+
+        // -- getViewport --
+        /// Returns the current viewport as x, y, w, h.
+        /// @return number, number, number, number
+        methods.add_method("getViewport", |_, this, ()| {
+            Ok(this.inner.borrow().get_viewport())
+        });
+
+        // -- setBounds --
+        /// Sets world-space bounds for camera clamping.
+        /// @param x : number
+        /// @param y : number
+        /// @param w : number
+        /// @param h : number
+        /// @return nil
+        methods.add_method("setBounds", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+            this.inner.borrow_mut().set_bounds(x, y, w, h);
+            Ok(())
+        });
+
+        // -- removeBounds --
+        /// Removes previously set world-space bounds.
+        /// @return nil
+        methods.add_method("removeBounds", |_, this, ()| {
+            this.inner.borrow_mut().remove_bounds();
+            Ok(())
+        });
+
+        // -- setTarget --
+        /// Sets the follow target position.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("setTarget", |_, this, (x, y): (f32, f32)| {
+            this.inner.borrow_mut().set_target(x, y);
+            Ok(())
+        });
+
+        // -- clearTarget --
+        /// Clears the follow target so the camera stops tracking.
+        /// @return nil
+        methods.add_method("clearTarget", |_, this, ()| {
+            this.inner.borrow_mut().clear_target();
+            Ok(())
+        });
+
+        // -- setFollowSmooth --
+        /// Sets the follow smooth interpolation speed (0.0 = instant snap).
+        /// @param speed : number
+        /// @return nil
+        methods.add_method("setFollowSmooth", |_, this, speed: f32| {
+            this.inner.borrow_mut().set_follow_smooth(speed);
+            Ok(())
+        });
+
+        // -- setDeadZone --
+        /// Sets the dead zone half-extents for camera follow.
+        /// @param w : number
+        /// @param h : number
+        /// @return nil
+        methods.add_method("setDeadZone", |_, this, (w, h): (f32, f32)| {
+            this.inner.borrow_mut().set_dead_zone(w, h);
+            Ok(())
+        });
+
+        // -- setLookAhead --
+        /// Sets the look-ahead multiplier for follow prediction.
+        /// @param mul : number
+        /// @return nil
+        methods.add_method("setLookAhead", |_, this, mul: f32| {
+            this.inner.borrow_mut().set_look_ahead(mul);
+            Ok(())
+        });
+
+        // -- shake --
+        /// Starts a screen-shake effect.
+        /// @param intensity : number
+        /// @param duration : number
+        /// @return nil
+        methods.add_method("shake", |_, this, (intensity, duration): (f32, f32)| {
+            this.inner.borrow_mut().shake(intensity, duration);
+            Ok(())
+        });
+
+        // -- update --
+        /// Advances the camera simulation by dt seconds.
+        /// @param dt : number
+        /// @return nil
+        methods.add_method("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        // -- toWorld --
+        /// Converts screen coordinates to world coordinates.
+        /// @param sx : number
+        /// @param sy : number
+        /// @return number, number
+        methods.add_method("toWorld", |_, this, (sx, sy): (f32, f32)| {
+            Ok(this.inner.borrow().to_world_coords(sx, sy))
+        });
+
+        // -- toScreen --
+        /// Converts world coordinates to screen coordinates.
+        /// @param wx : number
+        /// @param wy : number
+        /// @return number, number
+        methods.add_method("toScreen", |_, this, (wx, wy): (f32, f32)| {
+            Ok(this.inner.borrow().to_screen_coords(wx, wy))
+        });
+
+        // -- getVisibleArea --
+        /// Returns the visible world area as x, y, w, h.
+        /// @return number, number, number, number
+        methods.add_method("getVisibleArea", |_, this, ()| {
+            Ok(this.inner.borrow().get_visible_area())
+        });
+
+        // -- lookAt --
+        /// Instantly moves the camera to look at the given position.
+        /// @param x : number
+        /// @param y : number
+        /// @return nil
+        methods.add_method("lookAt", |_, this, (x, y): (f32, f32)| {
+            this.inner.borrow_mut().look_at(x, y);
+            Ok(())
+        });
+
+        // -- move --
+        /// Translates the camera by dx, dy in world space.
+        /// @param dx : number
+        /// @param dy : number
+        /// @return nil
+        methods.add_method("move", |_, this, (dx, dy): (f32, f32)| {
+            this.inner.borrow_mut().move_by(dx, dy);
+            Ok(())
+        });
+
     }
 }
 
-impl UserData for LuaCamera {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("viewMatrix", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
+// -------------------------------------------------------------------------------
+// Register
+// -------------------------------------------------------------------------------
 
-// ── LuaCamera2D ────────────────────────────────────────────────────────────
-
-pub struct LuaCamera2D(/* TODO: add key + state fields */);
-
-
-impl LuaCamera2D {
-    /// Returns the current zoom factor. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_zoom(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current rotation in radians.
-    ///
-    ///
-    /// @return number
-    pub fn get_rotation(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the world-space bounds, if set. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return Option<(f32
-    pub fn get_bounds(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns `true` if world-space bounds are set.
-    ///
-    ///
-    /// @return boolean
-    pub fn has_bounds(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Converts screen coordinates to world coordinates.
-    ///
-    /// @param screen_x : number
-    /// @param screen_y : number
-    /// @return This
-    pub fn to_world_coords(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Converts world coordinates to screen coordinates.
-    ///
-    ///
-    /// @param world_x : number
-    /// @param world_y : number
-    pub fn to_screen_coords(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the world-space axis-aligned bounding box of the visible area
-    ///
-    ///
-    /// @return as
-    pub fn get_visible_area(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the dead zone as `(width, height)` (full extents), if set.
-    ///
-    ///
-    /// @return Option<(f32
-    pub fn get_dead_zone(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the current follow target, if any.
-    ///
-    ///
-    /// @return Option<(f32
-    pub fn get_target(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the smooth follow speed. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_follow_smooth(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Returns the look-ahead multiplier. This accessor incurs no allocation; call it freely in hot paths.
-    ///
-    ///
-    /// @return number
-    pub fn get_look_ahead(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-    /// Computes the view matrix including the shake offset.
-    ///
-    ///
-    /// @return Mat3
-    pub fn view_matrix(&self, _lua: &Lua, _: ()) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaCamera2D {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getZoom", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getRotation", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getBounds", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("hasBounds", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toWorldCoords", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toScreenCoords", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getVisibleArea", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getDeadZone", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getTarget", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getFollowSmooth", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("getLookAhead", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("viewMatrix", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaViewport ────────────────────────────────────────────────────────────
-
-pub struct LuaViewport(/* TODO: add key + state fields */);
-
-
-impl LuaViewport {
-    /// Convert screen coordinates to game coordinates.
-    ///
-    ///
-    /// @param screen_x : number
-    /// @param screen_y : number
-    pub fn to_game(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Convert game coordinates to screen coordinates.
-    ///
-    ///
-    /// @param game_x : number
-    /// @param game_y : number
-    pub fn to_screen(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaViewport {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("toGame", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toScreen", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── LuaViewportScale ────────────────────────────────────────────────────────────
-
-pub struct LuaViewportScale(/* TODO: add key + state fields */);
-
-
-impl LuaViewportScale {
-    /// Convert screen coordinates to game coordinates.
-    ///
-    ///
-    /// @param screen_x : number
-    /// @param screen_y : number
-    pub fn to_game_coords(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-    /// Convert game coordinates to screen coordinates.
-    ///
-    ///
-    /// @param game_x : number
-    /// @param game_y : number
-    pub fn to_screen_coords(&self, _lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-        todo!()
-    }
-}
-
-impl UserData for LuaViewportScale {
-    fn add_methods<'lua, M: UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("toGameCoords", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-        methods.add_method("toScreenCoords", |_lua, _this, _: ()| -> LuaResult<()> { todo!() });
-    }
-}
-
-// ── luna.camera.* functions ──────────────────────────────────────────
-
-/// Moves the camera to `position` in world space.
-///
-///
-/// @param position : Vec2
-pub fn set_position(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the camera's zoom level. Replaces the current zoom value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param zoom : number
-pub fn set_zoom(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the camera's rotation in radians. Replaces the current rotation value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param rotation : number
-pub fn set_rotation(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the camera position in world space.
-///
-///
-/// @param x : number
-/// @param y : number
-/// Sets the uniform zoom factor. Replaces the current zoom value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param z : number
-/// Sets the rotation in radians. Replaces the current rotation value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param r : number
-/// Sets the viewport rectangle in screen pixels.
-///
-///
-/// @param x : number
-/// @param y : number
-/// @param w : number
-/// @param h : number
-pub fn set_viewport(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets world-space bounds for camera clamping.
-///
-///
-/// @param x : number
-/// @param y : number
-/// @param w : number
-/// @param h : number
-pub fn set_bounds(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Translates the camera by `(dx, dy)` in world space.
-///
-///
-/// @param dx : number
-/// @param dy : number
-pub fn move_by(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the camera position directly (shorthand for [`set_position`](Self::set_position)).
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn look_at(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the dead zone half-extents. Pass `(0, 0)` for no dead zone.
-///
-///
-/// @param w : number
-/// @param h : number
-pub fn set_dead_zone(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the follow target position. Replaces the current target value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param x : number
-/// @param y : number
-pub fn set_target(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the smooth follow interpolation speed.
-///
-///
-/// @param speed : number
-pub fn set_follow_smooth(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Sets the look-ahead multiplier. Replaces the current look ahead value; callers hold responsibility for maintaining consistency with related fields.
-///
-///
-/// @param mul : number
-pub fn set_look_ahead(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Starts a camera shake effect. Consult the module-level documentation for the broader usage context and preconditions.
-///
-///
-/// @param intensity : Maximum
-/// @param duration : How
-pub fn shake(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Processes smooth follow, camera shake, and bounds clamping.
-///
-///
-/// @param dt : number
-pub fn update(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Recompute scale and offset based on the current window size.
-///
-///
-/// @param window_width : number
-/// @param window_height : number
-pub fn resize(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Set the scale mode. Call `resize()` afterwards to recompute.
-///
-///
-/// @param mode : ScaleMode
-pub fn set_scale_mode(_lua: &Lua, _args: LuaMultiValue<'_>) -> LuaResult<()> {
-    todo!()
-}
-
-/// Recompute all derived values from the current window size.
-///
-///
-/// @param window_width : number
-/// @param window_height : number
-/// Registers the `luna.camera` API table.
-pub fn register(
-    lua: &Lua,
-    luna: &mlua::Table,
-    _state: Rc<RefCell<SharedState>>,
-) -> LuaResult<()> {
+/// Registers the `luna.camera` API table with the Lua VM.
+pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
-    tbl.set("setPosition", lua.create_function(set_position)?)?;
-    tbl.set("setZoom", lua.create_function(set_zoom)?)?;
-    tbl.set("setRotation", lua.create_function(set_rotation)?)?;
-    tbl.set("setPosition", lua.create_function(set_position)?)?;
-    tbl.set("setZoom", lua.create_function(set_zoom)?)?;
-    tbl.set("setRotation", lua.create_function(set_rotation)?)?;
-    tbl.set("setViewport", lua.create_function(set_viewport)?)?;
-    tbl.set("setBounds", lua.create_function(set_bounds)?)?;
-    tbl.set("moveBy", lua.create_function(move_by)?)?;
-    tbl.set("lookAt", lua.create_function(look_at)?)?;
-    tbl.set("setDeadZone", lua.create_function(set_dead_zone)?)?;
-    tbl.set("setTarget", lua.create_function(set_target)?)?;
-    tbl.set("setFollowSmooth", lua.create_function(set_follow_smooth)?)?;
-    tbl.set("setLookAhead", lua.create_function(set_look_ahead)?)?;
-    tbl.set("shake", lua.create_function(shake)?)?;
-    tbl.set("update", lua.create_function(update)?)?;
-    tbl.set("resize", lua.create_function(resize)?)?;
-    tbl.set("setScaleMode", lua.create_function(set_scale_mode)?)?;
-    tbl.set("resize", lua.create_function(resize)?)?;
+
+    // -- new --
+    /// Creates a new Camera2D with the given viewport dimensions.
+    /// @param viewport_w : number
+    /// @param viewport_h : number
+    /// @return Camera2D
+    tbl.set(
+        "new",
+        lua.create_function(|lua, (vw, vh): (f32, f32)| {
+            lua.create_userdata(LuaCamera2D {
+                inner: Rc::new(RefCell::new(Camera2D::new(vw, vh))),
+            })
+        })?,
+    )?;
+
     luna.set("camera", tbl)?;
     Ok(())
 }
