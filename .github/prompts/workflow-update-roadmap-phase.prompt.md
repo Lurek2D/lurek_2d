@@ -1,12 +1,12 @@
 ---
-description: "Update an existing phase in docs/roadmap/: add status tracking, mark completed tasks, revise scope, fix dependencies, or add retrospective notes."
+name: workflow-update-roadmap-phase
+description: Update the status, tasks, or acceptance gates of an existing Luna2D roadmap phase file.
 ---
 
 # Update Roadmap Phase
 
 ## Purpose
 
-Bring an existing `docs/roadmap/phase-NN-*.md` file up to date after implementation work, scope changes, or new dependency discoveries.
 
 ## Load Skill First
 
@@ -26,7 +26,6 @@ Load `.github/skills/roadmap-planning/SKILL.md` before proceeding.
 
 ## Inputs
 
-- `PHASE_FILE` — path, e.g., `docs/roadmap/phase-07-physics-deep-parity.md`
 - `STATUS_UPDATE` — per-task status: which tasks are done, in-progress, or blocked
 - `SCOPE_CHANGE` — new files added / removed from task list (if any)
 - `NEW_DEPS` — any new `Depends On` or `Blocks` that emerged

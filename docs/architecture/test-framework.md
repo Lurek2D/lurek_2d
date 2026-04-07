@@ -31,10 +31,20 @@
 
 Luna2D uses a **two-layer test system** executed entirely through `cargo test`:
 
-1. **Rust integration tests** — compiled Rust test binaries that exercise engine modules directly via crate imports.
-2. **Lua BDD tests** — `.lua` scripts using a custom `describe`/`it`/`expect_*` framework, dispatched by a Rust harness.
+1. **Rust tests** — compiled Rust test binaries that exercise engine modules directly via crate imports (unit, stress, golden, config, security, ext).
+2. **Lua BDD tests** — `.lua` scripts using a custom `describe`/`it`/`expect_*` framework, dispatched by a Rust harness (unit, library, integration, stress, security, golden, config, demos).
 
 Both layers run headless — no window, no GPU, no audio device required. This enables CI/CD and parallel execution without display servers.
+
+### Examples vs Demos
+
+| | `examples/` | `demos/` |
+|---|---|---|
+| Purpose | Documentation — shows one `luna.*` API in isolation | Fully functional game showcases |
+| Testable? | **No** — these are read-only reference scripts | **Yes** — every demo must have a test |
+| Format | Single-file, heavily commented | Folder with `main.lua` and optional `conf.lua` |
+
+Examples are not tested. They exist to document API usage and are not expected to execute in a test harness. **Demos must all pass CI** — each demo has exactly one test file in `tests/lua/demos/`.
 
 ---
 
@@ -43,32 +53,35 @@ Both layers run headless — no window, no GPU, no audio device required. This e
 ```
 cargo test
   │
-  ├── Rust Test Binaries ──────────────────────────────────────────┐
-  │   ├── tests/unit/math_tests.rs          (27+ unit test files)  │
-  │   ├── tests/unit/graphics_tests.rs                             │
-  │   ├── tests/unit/physics_tests.rs                              │
-  │   ├── tests/ext/graphics_ext_tests.rs   (extension tests)      │
-  │   ├── tests/game/cardgame_tests.rs      (gameplay system tests)│
-  │   ├── tests/stress/physics_stress.rs    (stress tests)         │
-  │   └── ...                                                      │
+  ├── Rust Test Binaries ─────────────────────────────────────────┐
+  │   ├── tests/rust/unit/          Engine module Rust contracts   │
+  │   ├── tests/rust/stress/        Throughput + allocation tests  │
+  │   ├── tests/rust/golden/        Snapshot: graphics/audio/text  │
+  │   ├── tests/rust/config/        Config loading + validation    │
+  │   ├── tests/rust/security/      Sandbox audit, path traversal  │
+  │   └── tests/rust/ext/           Cross-module Rust smoke tests  │
   │                                                                │
-  ├── Golden Test Harness ─────────────────────────────────────────┤
-  │   └── tests/golden/harness.rs           (16 golden tests)      │
-  │       └── compares actual output against tests/golden/expected/ │
+  ├── Golden Harness ──────────────────────────────────────────────┤
+  │   └── tests/rust/golden/harness.rs                             │
+  │       └── compares actual output against golden/expected/      │
   │                                                                │
-  └── Lua BDD Harness ────────────────────────────────────────────┘
+  └── Lua BDD Harness ─────────────────────────────────────────────┘
       └── tests/lua/harness.rs
-          ├── tests/lua/unit/test_math.lua        (30+ unit files)
-          ├── tests/lua/integration/test_cross.lua (10+ files)
-          ├── tests/lua/stress/test_perf.lua       (12+ files)
-          ├── tests/lua/validation/test_edge.lua   (3+ files)
-          └── tests/lua/golden/test_golden.lua     (1+ files)
+          ├── unit/           One file per engine module (API surface)
+          ├── library/        One file per Lunasome library
+          ├── integration/    Tests BETWEEN two or more modules
+          ├── stress/         Throughput + allocation Lua tests
+          ├── security/       Lua sandboxing + input validation
+          ├── golden/         Deterministic output comparison
+          ├── config/         Configuration loading tests
+          └── demos/          One file per demo in demos/
 ```
 
 ### Why Two Layers?
 
-- **Rust tests** verify internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness. They have direct access to Rust types and can test private-via-crate internals.
-- **Lua tests** verify the public `luna.*` API surface: function signatures, return types, error messages, and end-to-end workflows. They run in the same VM that game scripts use, catching API regressions from the user's perspective.
+- **Rust tests** cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness. Direct crate access allows testing private-via-crate internals.
+- **Lua tests** cover the public `luna.*` API surface: function signatures, return types, error messages, and end-to-end workflows. They run in the same VM game scripts use, catching API regressions from the user's perspective.
+- **Library tests** (`tests/lua/library/`) exclusively test Tier 3 Lunasome pure-Lua libraries. These were formerly tested via `tests/rust/game/` which is now retired — game systems (battle, cardgame, combat, crafting, inventory, quest, stats) live in `library/` not in the engine.
 
 ---
 
@@ -76,71 +89,72 @@ cargo test
 
 ```
 tests/
-├── unit/                            Rust unit tests (1 file per module)
-│   ├── math_tests.rs
-│   ├── graphics_tests.rs
-│   ├── audio_tests.rs
-│   ├── physics_tests.rs
-│   ├── input_tests.rs
-│   ├── timer_tests.rs
-│   ├── filesystem_tests.rs
-│   ├── compute_tests.rs
-│   ├── data_tests.rs
-│   ├── image_tests.rs
-│   ├── sound_tests.rs
-│   ├── event_tests.rs
-│   ├── entity_tests.rs
-│   ├── window_tests.rs
-│   ├── thread_tests.rs
-│   ├── animation_tests.rs
-│   ├── camera_tests.rs
-│   ├── particle_tests.rs
-│   ├── tilemap_tests.rs
-│   ├── scene_tests.rs
-│   ├── savegame_tests.rs
-│   ├── modding_tests.rs
-│   ├── graph_tests.rs
-│   ├── pathfinding_tests.rs
-│   ├── ai_tests.rs
-│   ├── terminal_tests.rs
-│   └── ...
+├── fixtures/                        Shared test assets (images, audio, data files)
 │
-├── ext/                             Extension / cross-module Rust tests
-│   ├── graphics_ext_tests.rs
-│   └── math_ext_tests.rs
-│
-├── game/                            Gameplay system Rust tests
-│   ├── cardgame_tests.rs
-│   ├── combat_tests.rs
-│   ├── crafting_tests.rs
-│   ├── inventory_tests.rs
-│   ├── minimap_tests.rs
-│   ├── province_tests.rs
-│   ├── quest_tests.rs
-│   ├── resource_tests.rs
-│   └── stats_tests.rs
-│
-├── stress/                          Rust stress and performance tests
-│   ├── compute_stress.rs
-│   ├── data_stress.rs
-│   ├── image_stress.rs
-│   └── physics_stress.rs
-│
-├── golden/                          Golden (snapshot) tests
-│   ├── harness.rs                   Rust harness dispatching golden tests
-│   ├── expected/                    Expected output files (committed to git)
-│   │   ├── image/
-│   │   ├── hash/
-│   │   ├── encode/
-│   │   ├── compress/
-│   │   └── data/
-│   └── actual/                      Actual output files (git-ignored)
+├── rust/                            Rust test binaries (all registered in Cargo.toml)
+│   ├── unit/                        One file per engine module — Rust struct invariants
+│   │   ├── math_tests.rs
+│   │   ├── graphics_tests.rs
+│   │   ├── audio_tests.rs
+│   │   ├── physics_tests.rs
+│   │   ├── input_tests.rs
+│   │   ├── timer_tests.rs
+│   │   ├── filesystem_tests.rs
+│   │   ├── compute_tests.rs
+│   │   ├── data_tests.rs
+│   │   ├── image_tests.rs
+│   │   ├── sound_tests.rs
+│   │   ├── event_tests.rs
+│   │   ├── entity_tests.rs
+│   │   ├── window_tests.rs
+│   │   ├── thread_tests.rs
+│   │   ├── animation_tests.rs
+│   │   ├── camera_tests.rs
+│   │   ├── particle_tests.rs
+│   │   ├── tilemap_tests.rs
+│   │   ├── scene_tests.rs
+│   │   ├── savegame_tests.rs
+│   │   ├── modding_tests.rs
+│   │   ├── graph_tests.rs
+│   │   ├── pathfinding_tests.rs
+│   │   ├── ai_tests.rs
+│   │   ├── terminal_tests.rs
+│   │   └── ...
+│   │
+│   ├── stress/                      Throughput + allocation pressure — Rust level
+│   │   ├── compute_stress_tests.rs  e.g. 10K parallel tasks
+│   │   ├── data_stress_tests.rs     e.g. 1M JSON parse cycles
+│   │   ├── image_stress_tests.rs    e.g. batch decode + encode
+│   │   └── physics_stress_tests.rs  e.g. 10K rigid body world
+│   │
+│   ├── golden/                      Snapshot tests — committed expected files
+│   │   ├── harness.rs               Rust harness dispatching golden tests
+│   │   ├── expected/                Expected output files (committed to git)
+│   │   │   ├── image/               Expected PNG snapshots (graphics golden)
+│   │   │   ├── audio/               Expected waveform data (audio golden)
+│   │   │   ├── text/                Expected rendered text (text processing golden)
+│   │   │   ├── hash/                Expected hash digests
+│   │   │   ├── encode/              Expected encoded strings
+│   │   │   ├── compress/            Expected compressed bytes
+│   │   │   └── data/                Expected binary data
+│   │   └── actual/                  Generated during test run (git-ignored)
+│   │
+│   ├── config/                      Config loading + validation tests
+│   │   └── config_tests.rs
+│   │
+│   ├── security/                    Sandbox + path-traversal audits
+│   │   └── security_tests.rs
+│   │
+│   └── ext/                         Cross-module Rust smoke tests
+│       ├── graphics_ext_tests.rs
+│       ├── math_ext_tests.rs
+│       └── graphics_runtime_smoke_tests.rs
 │
 └── lua/                             Lua BDD tests
-    ├── harness.rs                   Rust harness dispatching Lua tests
+    ├── harness.rs                   Rust harness — one #[test] per .lua file
     ├── init.lua                     BDD framework (describe/it/expect_*)
     │
-    ├── unit/                        One-module Lua tests
+    ├── unit/                        One file per engine module (luna.* API surface)
     │   ├── test_math.lua
     │   ├── test_graphics.lua
     │   ├── test_audio.lua
@@ -160,42 +174,81 @@ tests/
     │   ├── test_terminal.lua
     │   └── ...
     │
-    ├── integration/                 Cross-module Lua tests
-    │   ├── test_graphics_integration.lua
-    │   ├── test_data_roundtrip.lua
+    ├── library/                     One file per Lunasome library in library/
+    │   ├── test_library_battle.lua
+    │   ├── test_library_cardgame.lua
+    │   ├── test_library_combat.lua
+    │   ├── test_library_crafting.lua
+    │   ├── test_library_dialog.lua
+    │   ├── test_library_doll.lua
+    │   ├── test_library_economy.lua
+    │   ├── test_library_inventory.lua
+    │   ├── test_library_item.lua
+    │   ├── test_library_province_map.lua
+    │   ├── test_library_quest.lua
+    │   └── test_library_stats.lua
+    │
+    ├── integration/                 Tests BETWEEN modules A + B (or A + B + C)
+    │   │   Rule: every test here must exercise ≥2 distinct luna.* namespaces.
+    │   │   Name format: test_<moduleA>_<moduleB>.lua
+    │   ├── test_ai_physics.lua
+    │   ├── test_entity_ai.lua
+    │   ├── test_math_graphics.lua
+    │   ├── test_math_physics.lua
+    │   ├── test_physics_timer.lua
+    │   ├── test_save_entity.lua
+    │   ├── test_tilemap_physics.lua
     │   └── ...
     │
-    ├── stress/                      Performance Lua tests
-    │   ├── test_math_perf.lua
-    │   ├── test_data_perf.lua
+    ├── stress/                      Throughput + security from Lua perspective
+    │   ├── test_physics_stress.lua
+    │   ├── test_math_stress.lua
+    │   ├── test_entity_stress.lua
+    │   ├── test_particle_stress.lua
     │   └── ...
     │
-    ├── validation/                  Negative-path / edge case Lua tests
-    │   ├── test_error_handling.lua
-    │   └── ...
+    ├── security/                    Lua sandbox + input validation tests
+    │   ├── test_invalid_args.lua    nil spam, wrong types at API boundary
+    │   ├── test_mount_traversal.lua path-traversal attempts via GameFS
+    │   ├── test_savegame_validation.lua
+    │   └── test_toml_validation.lua
     │
-    └── golden/                      Deterministic output Lua tests
-        └── test_math_golden.lua
+    ├── golden/                      Deterministic output Lua tests
+    │   └── test_math_golden.lua
+    │
+    ├── config/                      Configuration loading tests
+    │   └── test_config.lua
+    │
+    └── demos/                       One test file per demo in demos/
+        │   Rule: every demo in demos/ must have a corresponding file here.
+        │   Name format: test_demo_<name>.lua
+        ├── test_demo_hello_world.lua
+        ├── test_demo_physics_demo.lua
+        ├── test_demo_sprites.lua
+        └── ...
 ```
 
 ### Cargo.toml Registration
 
-All test binaries are **explicitly registered** in `Cargo.toml` under `[[test]]` sections. An unregistered `.rs` file in `tests/` will not be discovered by `cargo test`.
+All Rust test binaries are **explicitly registered** in `Cargo.toml` under `[[test]]` sections. An unregistered `.rs` file in `tests/` will not be discovered by `cargo test`.
 
 ```toml
-# Example entries
 [[test]]
 name = "math_tests"
-path = "tests/unit/math_tests.rs"
+path = "tests/rust/unit/math_tests.rs"
 
 [[test]]
 name = "golden_tests"
-path = "tests/golden/harness.rs"
+path = "tests/rust/golden/harness.rs"
 
 [[test]]
 name = "lua_tests"
 path = "tests/lua/harness.rs"
 ```
+
+### tests/rust/game/ — Retired
+
+`tests/rust/game/` previously held Rust tests for game systems (battle, cardgame, combat, crafting, inventory, quest, stats). Those systems are now **pure-Lua libraries** in `library/`. Their tests live in `tests/lua/library/`. Do not add new files to `tests/rust/game/`.
 
 ---
 
@@ -205,10 +258,14 @@ path = "tests/lua/harness.rs"
 
 | Category | Path | Scope | Example |
 |---|---|---|---|
-| **Unit** | `tests/unit/` | One module, Rust-side invariants | `math_tests.rs`: Vec2 arithmetic |
-| **Extension** | `tests/ext/` | Cross-module integration, Rust | `graphics_ext_tests.rs`: mesh + texture |
-| **Game** | `tests/game/` | Gameplay system correctness | `crafting_tests.rs`: recipe resolution |
-| **Stress** | `tests/stress/` | Throughput and allocation pressure | `physics_stress.rs`: 10K body world |
+| **Unit** | `tests/rust/unit/` | One engine module, Rust-side invariants | `math_tests.rs`: Vec2 arithmetic |
+| **Stress** | `tests/rust/stress/` | Throughput and allocation pressure | `physics_stress_tests.rs`: 10K body world |
+| **Golden** | `tests/rust/golden/` | Snapshot comparison: graphics, audio, text | Compare PNG byte-for-byte |
+| **Config** | `tests/rust/config/` | Config loading + validation | `config_tests.rs`: TOML parsing |
+| **Security** | `tests/rust/security/` | Sandbox audit, path-traversal guards | `security_tests.rs`: GameFS escapes |
+| **Ext** | `tests/rust/ext/` | Cross-module Rust smoke tests | `graphics_ext_tests.rs`: mesh + texture |
+
+> **Note**: `tests/rust/game/` is retired. Game systems (battle, cardgame, combat, crafting, inventory, quest, stats) are now pure-Lua libraries tested in `tests/lua/library/`.
 
 ### Test Structure Pattern
 
@@ -255,6 +312,19 @@ fn color_new_clamps_to_0_1() {
 ## Lua BDD Test Framework
 
 All Lua tests use a custom BDD framework defined in `tests/lua/init.lua`. This framework is loaded automatically by `create_test_vm()`.
+
+### Lua Test Categories
+
+| Category | Path | Scope | Rule |
+|---|---|---|---|
+| **Unit** | `tests/lua/unit/` | One engine module per file (API surface) | One `.lua` per `luna.*` namespace |
+| **Library** | `tests/lua/library/` | One Lunasome library per file | One `.lua` per `library/<name>` |
+| **Integration** | `tests/lua/integration/` | Tests between ≥2 modules | Name: `test_<moduleA>_<moduleB>.lua` |
+| **Stress** | `tests/lua/stress/` | Throughput + allocation from Lua | High iteration counts, timing checks |
+| **Security** | `tests/lua/security/` | Sandboxing + input validation | Nil spam, path traversal, bad types |
+| **Golden** | `tests/lua/golden/` | Deterministic output comparison | Compare against saved reference data |
+| **Config** | `tests/lua/config/` | Configuration loading | TOML keys, defaults, missing fields |
+| **Demos** | `tests/lua/demos/` | One file per demo in `demos/` | Name: `test_demo_<name>.lua` |
 
 ### Framework API
 
@@ -309,6 +379,69 @@ end)
 test_summary()
 ```
 
+### Library Test Template
+
+Library tests live in `tests/lua/library/` and use `require()` to load from `library/`.
+
+```lua
+-- tests/lua/library/test_library_combat.lua
+-- Tests for the Lunasome combat library
+
+local combat = require("library/combat")
+
+describe("combat library", function()
+    describe("resolve_attack", function()
+        it("should deal damage within expected range", function()
+            local result = combat.resolve_attack({ damage = 10 }, { defense = 2 })
+            expect_gt(result.damage_dealt, 0)
+            expect_lte(result.damage_dealt, 10)
+        end)
+    end)
+end)
+
+test_summary()
+```
+
+### Integration Test Rule
+
+An integration test **must** exercise at least two distinct `luna.*` module namespaces (or one engine module + one library). Testing a single module with complex data does **not** qualify as integration.
+
+```lua
+-- tests/lua/integration/test_physics_timer.lua
+-- Integration: luna.physics + luna.timer (two distinct namespaces)
+
+describe("physics + timer integration", function()
+    it("should simulate body movement over elapsed time", function()
+        -- uses luna.physics AND luna.timer
+    end)
+end)
+
+test_summary()
+```
+
+### Demo Test Rule
+
+Every folder in `demos/` must have exactly one corresponding `test_demo_<name>.lua` in `tests/lua/demos/`. The demo test:
+- Loads the demo's `main.lua` via `dofile` or `require`
+- Verifies that the demo initialises without error
+- Runs at least one frame cycle (load + update step)
+- Does NOT require GPU, audio, or window
+
+```lua
+-- tests/lua/demos/test_demo_hello_world.lua
+-- Smoke test for demos/hello_world
+
+describe("hello_world demo", function()
+    it("should load without error", function()
+        expect_not_nil(luna)
+        -- load callback runs cleanly
+        dofile("demos/hello_world/main.lua")
+    end)
+end)
+
+test_summary()
+```
+
 ### Harness Dispatch
 
 The Lua harness (`tests/lua/harness.rs`) maps each `#[test]` function to a `.lua` file:
@@ -329,10 +462,13 @@ fn run_lua_test(path: &str) {
 fn lua_test_math() { run_lua_test("unit/test_math.lua"); }
 
 #[test]
-fn lua_test_graphics() { run_lua_test("unit/test_graphics.lua"); }
+fn lua_test_library_combat() { run_lua_test("library/test_library_combat.lua"); }
 
 #[test]
-fn lua_test_physics() { run_lua_test("unit/test_physics.lua"); }
+fn lua_test_integration_physics_timer() { run_lua_test("integration/test_physics_timer.lua"); }
+
+#[test]
+fn lua_test_demo_hello_world() { run_lua_test("demos/test_demo_hello_world.lua"); }
 
 // ... one entry per Lua test file
 ```
@@ -341,15 +477,17 @@ fn lua_test_physics() { run_lua_test("unit/test_physics.lua"); }
 
 ## Golden Tests
 
-Golden tests verify deterministic output by comparing actual results against committed expected files.
+Golden tests verify deterministic output by comparing actual results against committed expected files. The Rust golden harness covers graphics, audio, and text processing at the byte level.
 
 ### Structure
 
 ```
-tests/golden/
+tests/rust/golden/
 ├── harness.rs                 Rust harness
 ├── expected/                  Committed reference files
-│   ├── image/                 Expected PNG snapshots
+│   ├── image/                 Expected PNG snapshots (graphics golden)
+│   ├── audio/                 Expected waveform data (audio golden)
+│   ├── text/                  Expected rendered text bitmaps (text processing)
 │   ├── hash/                  Expected hash digests
 │   ├── encode/                Expected encoded strings
 │   ├── compress/              Expected compressed bytes
@@ -359,14 +497,22 @@ tests/golden/
 
 ### Flow
 
-1. Test generates output (hash, image, encoded data)
-2. Output saved to `tests/golden/actual/`
-3. Compared byte-for-byte against `tests/golden/expected/`
+1. Test generates output (PNG, waveform bytes, rendered text, hash)
+2. Output saved to `tests/rust/golden/actual/`
+3. Compared byte-for-byte against `tests/rust/golden/expected/`
 4. Pass if identical; fail with diff report if different
 
 ### Updating Golden Files
 
-When output intentionally changes (e.g., algorithm improvement), manually copy `actual/` to `expected/` and commit. Always review diffs before committing updated golden files.
+When output intentionally changes (e.g., algorithm improvement or font update), manually copy `actual/` to `expected/` and commit. Always review diffs before committing updated golden files — a silent diff here means a rendering regression was silently accepted.
+
+### Priority Domains for Golden Coverage
+
+| Domain | What to snapshot |
+|---|---|
+| Graphics | Rasterised shapes, sprite compositing, draw-layer ordering |
+| Audio | Rendered waveform bytes from rodio mixer |
+| Text | Fontdue glyph rasterisation, layout bounding boxes |
 
 ---
 
@@ -476,16 +622,16 @@ These constraints are **mandatory** and enforced by CI:
 
 ### For an existing module
 
-Add `#[test]` functions to the existing `tests/unit/<module>_tests.rs` file.
+Add `#[test]` functions to the existing `tests/rust/unit/<module>_tests.rs` file.
 
 ### For a new module
 
-1. Create `tests/unit/<module>_tests.rs`
+1. Create `tests/rust/unit/<module>_tests.rs`
 2. Register it in `Cargo.toml`:
    ```toml
    [[test]]
    name = "<module>_tests"
-   path = "tests/unit/<module>_tests.rs"
+   path = "tests/rust/unit/<module>_tests.rs"
    ```
 3. Add imports: `use luna2d::<module>::TypeName;`
 4. Write tests following the naming convention
@@ -495,14 +641,27 @@ Add `#[test]` functions to the existing `tests/unit/<module>_tests.rs` file.
 
 ## Adding a New Lua Test
 
-1. Create `tests/lua/unit/test_<module>.lua` using the template above
+Choose the correct category:
+
+| You are testing... | Category | Path |
+|---|---|---|
+| A `luna.*` engine API function | **unit** | `tests/lua/unit/test_<module>.lua` |
+| A Lunasome library in `library/` | **library** | `tests/lua/library/test_library_<name>.lua` |
+| Interaction between ≥2 modules | **integration** | `tests/lua/integration/test_<a>_<b>.lua` |
+| High-load / many iterations | **stress** | `tests/lua/stress/test_<topic>_stress.lua` |
+| Nil spam / bad inputs / sandbox | **security** | `tests/lua/security/test_<topic>.lua` |
+| Config file loading | **config** | `tests/lua/config/test_config.lua` |
+| A demo in `demos/` | **demos** | `tests/lua/demos/test_demo_<name>.lua` |
+
+Steps for all categories:
+1. Create the `.lua` file in the correct subdirectory using the template
 2. End the file with `test_summary()`
 3. Add a dispatch entry in `tests/lua/harness.rs`:
    ```rust
    #[test]
-   fn lua_test_<module>() { run_lua_test("unit/test_<module>.lua"); }
+   fn lua_test_<category>_<name>() { run_lua_test("<category>/test_<name>.lua"); }
    ```
-4. Run: `cargo test lua_test_<module>`
+4. Run: `cargo test lua_test_<category>_<name>`
 
 ---
 
@@ -575,7 +734,7 @@ Every commit must pass all of these:
 
 ### Rust (Red → Green → Refactor)
 
-1. **Red**: Write a failing test in `tests/unit/<module>_tests.rs` that names the expected behaviour
+1. **Red**: Write a failing test in `tests/rust/unit/<module>_tests.rs` that names the expected behaviour
 2. **Run**: `cargo test --test <module>_tests` — confirm it fails with the expected error
 3. **Green**: Implement the minimum code in `src/<module>/` to make it pass
 4. **Refactor**: Clean up, keeping tests green
@@ -605,8 +764,11 @@ These are documented issues in the test suite that should be addressed over time
 
 | Issue | Description | Impact |
 |---|---|---|
-| Legacy flat test files | Some old `tests/*.rs` files may exist from before the `unit/ext/game/stress` restructuring | Low — they compile but may be stale |
+| `tests/rust/game/` retirement | Files remain but the category is retired — game systems are now Lua libraries | Medium — stale tests may give false confidence |
+| Missing demo tests | Not every demo in `demos/` has a corresponding file in `tests/lua/demos/` | High — demos are supposed to be fully tested |
+| `tests/lua/examples/` stale | `tests/lua/examples/` should be removed — examples are documentation and not testable | Low — confusing category, misleads contributors |
 | Framework consistency | A few Lua test files define local helpers instead of using global `init.lua` | Low — tests pass, but framework is duplicated |
 | Missing `test_summary()` | Some older Lua test files may lack the mandatory `test_summary()` call | Medium — framework can't report totals |
-| Unregistered test files | `.rs` files in `tests/` not listed in `Cargo.toml` are silently ignored | Medium — tests exist but never run |
-| Coverage gaps | Some `luna.*` API functions have Rust tests but no Lua tests | Medium — API surface not fully verified from user perspective |
+| Unregistered test files | `.rs` files in `tests/rust/` not listed in `Cargo.toml` are silently ignored | Medium — tests exist but never run |
+| Golden coverage gaps | Graphics, audio, and text processing need golden snapshots in `tests/rust/golden/expected/image/`, `/audio/`, `/text/` | High — no byte-level regression detection for renderer output |
+| Lua stress has no perf assertions | Most Lua stress tests measure iteration count but not wall time | Low — tests pass even on degraded hardware |

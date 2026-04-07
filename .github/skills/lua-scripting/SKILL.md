@@ -27,10 +27,10 @@ description: "Load this skill when writing or reviewing Lua game scripts for Lun
 
 ## Live Repository Contracts
 
-- `examples/hello_world/main.lua` — minimal game example
-- `examples/physics_demo/main.lua` — physics usage example
-- `examples/sprites/main.lua` — sprite and texture example
-- `docs/lua_api_reference.md` — API reference for script authors
+- `demos/hello_world/main.lua` — minimal game example
+- `demos/physics_demo/main.lua` — physics usage example
+- `demos/sprites/main.lua` — sprite and texture example
+- `docs/API/lua_api_reference_generated.md` — API reference for script authors
 
 ## Decision Rules
 
@@ -40,6 +40,6 @@ description: "Load this skill when writing or reviewing Lua game scripts for Lun
 - **Local variables**: Use `local` for all variables — avoid globals except luna callbacks
 - **Table patterns**: Use tables for game objects: `local player = {x = 100, y = 200, speed = 150}`
 - **Delta time**: Always multiply movement by `dt` for frame-rate independence
-- **Directory layout**: Each game in its own directory: `examples/my_game/main.lua`
+- **Directory layout**: Each game in its own directory: `demos/hello_world/main.lua`
 - **No require()**: Luna2D doesn't support module loading yet — single-file scripts
 - **Comments**: Use `--` for single-line comments, document non-obvious game logic

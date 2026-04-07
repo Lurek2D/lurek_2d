@@ -1,62 +1,77 @@
 # `light` — Agent Reference
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Unassigned |
-| **Status** | Implemented — Full |
-| **Lua API** | `luna.light` |
-| **Source** | `src/light/` |
-| **Rust Tests** | `tests/unit/light_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_light.lua` |
-| **Architecture** | — |
+| Property       | Value                                                |
+|----------------|------------------------------------------------------|
+| **Tier**       | Tier 2 — Engine Extension                            |
+| **Status**     | Implemented — Full                                   |
+| **Lua API**    | `luna.light`                                         |
+| **Source**      | `src/light/`                                         |
+| **Rust Tests** | `tests/rust/unit/light_tests.rs`                     |
+| **Lua Tests**  | `tests/lua/unit/test_light.lua`                      |
+| **Architecture** | —                                                  |
 
 ## Summary
 
-The `light` module implements a 2D dynamic lighting system with per-light attenuation,
-multiple falloff curves, flicker effects, and optional shadow casting. It is a Tier 1
-Engine Subsystem.
+The `light` module provides a CPU-side 2D dynamic lighting data model for Luna2D. It stores all state needed to describe point, directional, and spot light sources in 2D space — position, radius, colour, intensity, falloff curves, shadow settings, flicker effects, attenuation coefficients, bitmask-based filtering, and group management. It also provides `Occluder` polygons that define shadow-casting geometry and `LightWorld`, a SlotMap-based resource pool that aggregates all lights and occluders for a scene.
 
-`Light2D` is the primary type representing a point or directional light with colour, radius,
-intensity, and a `LightType` variant. `LightWorld` aggregates all active lights and occluders
-for a scene. `Occluder` defines a shadow-casting polygon in world space. `Attenuation` controls
-how light intensity falls off with distance, using curves specified by `FalloffMode`
-(Linear, Quadratic, InverseSquare, Custom). `FlickerConfig` drives pseudo-random intensity
-variation using a seed, amplitude, and frequency. `LightBlendMode` selects how light
-contributions are composited into the scene.
+The module is purely a data container layer. It holds no GPU resources, performs no rendering, and issues no draw commands. The renderer reads `LightWorld` state each frame and produces the actual lighting pass via `DrawCommand` variants in the graphics pipeline. This separation means the light module can be tested headlessly without a GPU context.
 
-Scripts create lights via `luna.light.*`, update positions each frame, and call
-`luna.light.render(world)` to produce the final lit scene through `lua_api`.
+Key design decisions: (1) `Light2D` is a flat struct with 23 public fields covering all light parameters — no inheritance or trait hierarchy. (2) `LightWorld` uses `SlotMap<LightKey, Light2D>` and `SlotMap<OccluderKey, Occluder>` for O(1) insert/remove/lookup with generational key safety. (3) The system auto-enables when the first light is added. (4) Bitmask fields (`light_mask`, `shadow_mask`) control per-light/per-occluder interaction filtering. (5) `FlickerConfig` provides built-in sinusoidal intensity modulation driven by `advance_flickers(dt)` on the world. (6) Group operations (`set_group_enabled`, `set_group_intensity`, `set_group_color`) allow batch control of lights sharing a `group_id`.
 
-**Scope boundary**: Ray-march or shadow-map GPU passes live in `lua_api` or `graphics`.
-This module holds only CPU-side light state and spatial data.
+Scope boundary: GPU shadow mapping, ray-marching, and rendering live in `graphics` and `lua_api`. The `light` module does not import `graphics` — it only imports `math` (for `Vec2`, `Color`) and `engine` (for `SlotMap` keys and log messages). Volumetric scattering is flagged via `Light2D::volumetric` but not implemented at the data level — the renderer decides how to use the hint.
+
 ## Architecture
 
 ```
-light (module root)
-  ├── attenuation.rs — Custom attenuation coefficients for light falloff curves.
-  ├── blend_mode.rs — Light blend mode enum for controlling how light color mixes with the scene.
-  ├── falloff.rs — Falloff mode enum for controlling how light intensity decays over distance.
-  ├── flicker.rs — Built-in flicker effect configuration for lights.
-  ├── light2d.rs — 2D point light data container for lighting systems. This module is part of Luna2D's `graphics` subsystem and provides the implementation details for light2d-related operations and data management. Key types exported from this module: `Light2D`. Primary functions: `new()`, `set_position()`, `get_position()`, `set_radius()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
-  ├── light_type.rs — Light type enum for point, directional, and spot lights.
-  ├── light_world.rs — Resource pool and state for the 2D lighting system.
-  ├── occluder.rs — Polygon shadow caster for the 2D lighting system.
-  ├── shadow.rs — Shadow filter enum for controlling edge quality of shadow boundaries.
+LightWorld (resource pool)
+├── lights: SlotMap<LightKey, Light2D>
+│   └── Light2D
+│       ├── position (x, y)
+│       ├── radius, color, intensity, enabled, energy
+│       ├── blend_mode  → LightBlendMode (Add | Sub | Mix)
+│       ├── falloff     → FalloffMode (Linear | Smooth | Constant)
+│       ├── light_type  → LightType (Point | Directional | Spot)
+│       │   ├── direction (radians)
+│       │   └── inner_angle, outer_angle (for Spot)
+│       ├── attenuation → Attenuation (constant, linear, quadratic)
+│       ├── flicker     → FlickerConfig (speed, strength, phase)
+│       ├── shadow_enabled, shadow_color, shadow_filter, shadow_smooth
+│       ├── light_mask, shadow_mask (u16 bitmasks)
+│       └── group_id, volumetric
+│
+├── occluders: SlotMap<OccluderKey, Occluder>
+│   └── Occluder
+│       ├── vertices: Vec<Vec2> (3..=256)
+│       ├── position: Vec2
+│       ├── opacity: f32
+│       ├── light_mask: u16
+│       └── enabled: bool
+│
+├── ambient: Color
+├── enabled: bool
+└── max_lights: u16
+
+Data flow:
+  Lua scripts → luna.light.* (light_api.rs)
+    → mutates LightWorld in SharedState
+      → renderer reads LightWorld during render_frame()
+        → produces lighting pass via DrawCommand queue
 ```
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
-| `attenuation.rs` | Custom attenuation coefficients for light falloff curves. |
-| `blend_mode.rs` | Light blend mode enum for controlling how light color mixes with the scene. |
-| `falloff.rs` | Falloff mode enum for controlling how light intensity decays over distance. |
-| `flicker.rs` | Built-in flicker effect configuration for lights. |
-| `light2d.rs` | 2D point light data container for lighting systems. This module is part of Luna2D's `graphics` subsystem and provides the implementation details for light2d-related operations and data management. Key types exported from this module: `Light2D`. Primary functions: `new()`, `set_position()`, `get_position()`, `set_radius()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface. |
-| `light_type.rs` | Light type enum for point, directional, and spot lights. |
-| `light_world.rs` | Resource pool and state for the 2D lighting system. |
-| `occluder.rs` | Polygon shadow caster for the 2D lighting system. |
-| `shadow.rs` | Shadow filter enum for controlling edge quality of shadow boundaries. |
+| File              | Purpose                                                        |
+|-------------------|----------------------------------------------------------------|
+| `mod.rs`          | Module root — re-exports all public types, declares submodules |
+| `attenuation.rs`  | `Attenuation` struct — custom distance falloff coefficients    |
+| `blend_mode.rs`   | `LightBlendMode` enum — additive / subtractive / mix blending  |
+| `falloff.rs`      | `FalloffMode` enum — linear / smooth / constant intensity decay|
+| `flicker.rs`      | `FlickerConfig` struct — sinusoidal intensity modulation       |
+| `light2d.rs`      | `Light2D` struct — primary light data container (23 fields)    |
+| `light_type.rs`   | `LightType` enum — point / directional / spot geometry         |
+| `light_world.rs`  | `LightWorld` struct — SlotMap pool for lights and occluders    |
+| `occluder.rs`     | `Occluder` struct — polygon shadow caster definition           |
+| `shadow.rs`       | `ShadowFilter` enum — shadow edge quality (none / PCF5 / PCF13)|
 
 ## Submodules
 
@@ -64,55 +79,55 @@ light (module root)
 
 Custom attenuation coefficients for light falloff curves.
 
-- **`Attenuation`** (struct): TODO: one-line description.
+- **`Attenuation`** (struct): Three-coefficient (constant, linear, quadratic) model controlling how light intensity decays with distance. Computes `1 / (c + l*d + q*d²)`.
 
 ### `light::blend_mode`
 
 Light blend mode enum for controlling how light color mixes with the scene.
 
-- **`LightBlendMode`** (enum): TODO: one-line description.
+- **`LightBlendMode`** (enum): Selects compositing strategy — `Add` (brightens), `Sub` (darkens), or `Mix` (lerp by intensity). Default: `Add`.
 
 ### `light::falloff`
 
 Falloff mode enum for controlling how light intensity decays over distance.
 
-- **`FalloffMode`** (enum): TODO: one-line description.
+- **`FalloffMode`** (enum): Selects radial decay shape — `Linear` (ramp to zero), `Smooth` (quadratic ease-out), or `Constant` (full intensity with hard cutoff). Default: `Linear`.
 
 ### `light::flicker`
 
 Built-in flicker effect configuration for lights.
 
-- **`FlickerConfig`** (struct): TODO: one-line description.
+- **`FlickerConfig`** (struct): Drives sinusoidal intensity modulation via `speed` (rad/s), `strength` (amplitude fraction), and an auto-advancing `phase`. Computes multiplier as `1 + strength * sin(phase)`.
 
 ### `light::light2d`
 
-2D point light data container for lighting systems. This module is part of Luna2D's `graphics` subsystem and provides the implementation details for light2d-related operations and data management. Key types exported from this module: `Light2D`. Primary functions: `new()`, `set_position()`, `get_position()`, `set_radius()`. All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.
+2D point light data container — the primary type in this module.
 
-- **`Light2D`** (struct): TODO: one-line description.
+- **`Light2D`** (struct): Flat data container with 23 public fields describing a 2D light source: position, radius, color, intensity, enabled, energy, blend mode, falloff, shadow settings, masks, light type, direction, cone angles, attenuation, flicker, group ID, and volumetric flag.
 
 ### `light::light_type`
 
-Light type enum for point, directional, and spot lights.
+Geometric light type variants.
 
-- **`LightType`** (enum): TODO: one-line description.
+- **`LightType`** (enum): `Point` (omnidirectional), `Directional` (parallel rays, no positional falloff), or `Spot` (cone defined by inner/outer angles). Default: `Point`.
 
 ### `light::light_world`
 
 Resource pool and state for the 2D lighting system.
 
-- **`LightWorld`** (struct): TODO: one-line description.
+- **`LightWorld`** (struct): Owns `SlotMap<LightKey, Light2D>` and `SlotMap<OccluderKey, Occluder>` pools, plus global ambient color, enabled flag, and max_lights cap. Provides add/remove/get/clear operations, group batch operations, and `advance_flickers(dt)`.
 
 ### `light::occluder`
 
 Polygon shadow caster for the 2D lighting system.
 
-- **`Occluder`** (struct): TODO: one-line description.
+- **`Occluder`** (struct): Convex or concave polygon (3–256 vertices) in local space with a translation offset, opacity (0–1), light interaction bitmask, and enabled flag. Panics if vertex count is outside 3..=256.
 
 ### `light::shadow`
 
 Shadow filter enum for controlling edge quality of shadow boundaries.
 
-- **`ShadowFilter`** (enum): TODO: one-line description.
+- **`ShadowFilter`** (enum): `None` (hard edges), `Pcf5` (5-tap percentage-closer filtering), or `Pcf13` (13-tap PCF for smoother edges). Default: `None`.
 
 ## Key Types
 
@@ -120,88 +135,168 @@ Shadow filter enum for controlling edge quality of shadow boundaries.
 
 #### `light::attenuation::Attenuation`
 
-TODO: description from `///` doc comment.
+Custom attenuation coefficients controlling light intensity decay. Three fields: `constant` (f32, default 1.0), `linear` (f32, default 0.0), `quadratic` (f32, default 0.0). The effective intensity at distance `d` is `intensity / (constant + linear * d + quadratic * d²)`. Provides `new(c, l, q)` constructor and `factor(distance) -> f32` for computing the attenuation multiplier. Implements `Default` (no custom attenuation).
 
 #### `light::flicker::FlickerConfig`
 
-TODO: description from `///` doc comment.
+Built-in flicker effect that modulates light intensity over time. Fields: `enabled` (bool), `speed` (f32, default 8.0 rad/s), `strength` (f32, default 0.15), `phase` (f32, auto-advances). Provides `new(speed, strength)` (creates enabled config), `multiplier() -> f32` (returns current intensity scale), and `advance(dt)` (advances phase, wraps at 2π). Implements `Default` (disabled).
 
 #### `light::light2d::Light2D`
 
-TODO: description from `///` doc comment.
+2D point light with position, radius, color, intensity, and shadow settings. Contains 23 public fields covering all light parameters. Constructor `new(x, y, radius)` creates a white, enabled, point light at the given position. Provides getter/setter pairs for every field: position, radius, color, intensity, enabled, energy, blend_mode, falloff, shadow_enabled, shadow_color, shadow_filter, shadow_smooth, light_mask, shadow_mask, light_type, direction, inner_angle, outer_angle, attenuation, group_id, volumetric. Also provides `flicker()` and `flicker_mut()` for direct flicker config access.
 
 #### `light::light_world::LightWorld`
 
-TODO: description from `///` doc comment.
+Resource pool and state for the 2D lighting system. Owns `SlotMap<LightKey, Light2D>` and `SlotMap<OccluderKey, Occluder>` plus `ambient` color, `enabled` flag, and `max_lights` cap (default 64). Auto-enables when the first light is added. Provides: `add_light`, `add_occluder`, `remove_light`, `remove_occluder`, `get_light`, `get_light_mut`, `get_occluder`, `get_occluder_mut`, `light_count`, `occluder_count`, `clear`, `has_active_lights`, `set_group_enabled`, `set_group_intensity`, `set_group_color`, `group_count`, `advance_flickers`. Implements `Default`.
 
 #### `light::occluder::Occluder`
 
-TODO: description from `///` doc comment.
+Polygon shadow caster that blocks light. Fields: `vertices` (Vec\<Vec2\>, 3–256 verts), `position` (Vec2), `opacity` (f32, 0–1), `light_mask` (u16), `enabled` (bool). Constructor `new(vertices)` panics if vertex count is outside 3..=256. Provides getter/setter pairs for vertices, position, opacity, light_mask, and enabled.
 
 ### Enums
 
 #### `light::blend_mode::LightBlendMode`
 
-TODO: description from `///` doc comment.
+How light color mixes with the scene. Variants: `Add` (additive, default — brightens), `Sub` (subtractive — darkens), `Mix` (lerp by intensity). Implements `Default` (Add).
 
 #### `light::falloff::FalloffMode`
 
-TODO: description from `///` doc comment.
+How light intensity decays from center to edge. Variants: `Linear` (default — ramp to zero), `Smooth` (quadratic ease-out for soft falloff), `Constant` (full intensity with hard cutoff at edge). Implements `Default` (Linear).
 
 #### `light::light_type::LightType`
 
-TODO: description from `///` doc comment.
+The geometric shape of a light source. Variants: `Point` (default — omnidirectional), `Directional` (parallel rays, no positional falloff), `Spot` (cone defined by direction + inner/outer angles). Implements `Default` (Point).
 
 #### `light::shadow::ShadowFilter`
 
-TODO: description from `///` doc comment.
+Edge quality for shadow boundaries. Variants: `None` (default — hard edges), `Pcf5` (5-tap percentage-closer filtering for soft edges), `Pcf13` (13-tap PCF for smoother edges). Implements `Default` (None).
 
 ## Lua API
 
-Exposed under `luna.light.*` by `src\lua_api\light_api.rs`.
+Exposed under `luna.light.*` by `src/lua_api/light_api.rs`. The API provides two UserData types (`Light` and `Occluder`) and module-level functions for world management.
 
-TODO: Describe the overall API surface. List the major categories of functions.
+### Module-level functions
 
-Exposed functions include: `light`.
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.light.newLight` | `(x, y, radius [, opts])` → Light | Creates a point light; opts table overrides defaults |
+| `luna.light.newOccluder` | `(vertices [, opts])` → Occluder | Creates a shadow polygon from flat `{x1,y1,...}` table |
+| `luna.light.setAmbient` | `(r, g, b [, a])` | Sets global ambient light color |
+| `luna.light.getAmbient` | `()` → r, g, b, a | Returns global ambient color |
+| `luna.light.setEnabled` | `(enabled)` | Enables/disables the lighting system |
+| `luna.light.isEnabled` | `()` → bool | Returns lighting system state |
+| `luna.light.getLightCount` | `()` → int | Number of lights in the world |
+| `luna.light.getOccluderCount` | `()` → int | Number of occluders in the world |
+| `luna.light.getMaxLights` | `()` → int | Max lights processed per frame |
+| `luna.light.setMaxLights` | `(n)` | Sets max lights (clamped 1–256) |
+| `luna.light.clear` | `()` | Removes all lights and occluders |
+| `luna.light.setGroupEnabled` | `(groupId, enabled)` | Enables/disables all lights in a group |
+| `luna.light.setGroupIntensity` | `(groupId, intensity)` | Sets intensity for a group |
+| `luna.light.setGroupColor` | `(groupId, r, g, b [, a])` | Sets color for a group |
+| `luna.light.getGroupCount` | `(groupId)` → int | Number of lights in a group |
+| `luna.light.advanceFlickers` | `(dt)` | Advances flicker phase for all lights |
+
+### Light UserData methods
+
+`setPosition(x, y)`, `getPosition()`, `setRadius(r)`, `getRadius()`, `setColor(r, g, b [, a])`, `getColor()`, `setIntensity(i)`, `getIntensity()`, `setEnergy(e)`, `getEnergy()`, `setBlendMode(mode)`, `getBlendMode()`, `setFalloff(mode)`, `getFalloff()`, `setShadowEnabled(b)`, `isShadowEnabled()`, `setShadowColor(r, g, b [, a])`, `getShadowColor()`, `setShadowFilter(filter)`, `getShadowFilter()`, `setShadowSmooth(s)`, `getShadowSmooth()`, `setLightMask(mask)`, `getLightMask()`, `setShadowMask(mask)`, `getShadowMask()`, `setEnabled(b)`, `isEnabled()`, `setLightType(t)`, `getLightType()`, `setDirection(dir)`, `getDirection()`, `setInnerAngle(a)`, `getInnerAngle()`, `setOuterAngle(a)`, `getOuterAngle()`, `setAttenuation(c, l, q)`, `getAttenuation()`, `setFlicker(speed, strength)`, `getFlicker()`, `setFlickerEnabled(b)`, `isFlickerEnabled()`, `setGroupId(id)`, `getGroupId()`, `setVolumetric(b)`, `isVolumetric()`, `remove()`, `isValid()`
+
+### Occluder UserData methods
+
+`setVertices(tbl)`, `getVertices()`, `setPosition(x, y)`, `getPosition()`, `setOpacity(o)`, `getOpacity()`, `setLightMask(mask)`, `getLightMask()`, `setEnabled(b)`, `isEnabled()`, `remove()`, `isValid()`
+
+### `newLight` opts table keys
+
+`color` (table `{r,g,b[,a]}`), `intensity`, `energy`, `blend` (`"add"`/`"sub"`/`"mix"`), `falloff` (`"linear"`/`"smooth"`/`"constant"`), `shadowEnabled`, `shadowColor`, `shadowFilter` (`"none"`/`"pcf5"`/`"pcf13"`), `shadowSmooth`, `lightMask`, `shadowMask`, `enabled`, `type` (`"point"`/`"directional"`/`"spot"`), `direction`, `innerAngle`, `outerAngle`, `groupId`, `volumetric`, `flickerSpeed`, `flickerStrength`, `attConstant`, `attLinear`, `attQuadratic`
 
 ## Lua Examples
 
 ```lua
--- Example: Basic light usage
+-- Basic point light with flicker and an occluder casting shadows
+local torch, wall
+
 function luna.load()
-    -- TODO: replace with real light setup
-    local obj = luna.light.light()
+    -- Create a warm torch light with flicker
+    torch = luna.light.newLight(400, 300, 200, {
+        color = {1.0, 0.8, 0.4},
+        intensity = 1.2,
+        falloff = "smooth",
+        shadowEnabled = true,
+        flickerSpeed = 10,
+        flickerStrength = 0.2,
+    })
+
+    -- Create a rectangular occluder (wall)
+    wall = luna.light.newOccluder({
+        100, 200,   -- top-left
+        200, 200,   -- top-right
+        200, 400,   -- bottom-right
+        100, 400,   -- bottom-left
+    })
+
+    -- Set dim ambient so unlit areas are not pitch black
+    luna.light.setAmbient(0.05, 0.05, 0.1)
 end
 
 function luna.update(dt)
-    -- TODO: update logic
+    -- Move the torch to follow the mouse
+    local mx, my = luna.mouse.getPosition()
+    torch:setPosition(mx, my)
+
+    -- Advance all flicker effects
+    luna.light.advanceFlickers(dt)
+end
+
+function luna.draw()
+    -- Draw your scene; the lighting system composites automatically
+    luna.graphics.print("Move the mouse to move the torch", 10, 10)
+end
+```
+
+```lua
+-- Spot light with group management
+function luna.load()
+    -- Create three spot lights in group 1
+    for i = 1, 3 do
+        luna.light.newLight(200 * i, 300, 150, {
+            type = "spot",
+            direction = math.pi / 2,
+            innerAngle = math.pi / 8,
+            outerAngle = math.pi / 4,
+            groupId = 1,
+        })
+    end
+
+    -- Dim the entire group at once
+    luna.light.setGroupIntensity(1, 0.5)
 end
 ```
 
 ## Item Summary
 
-| Kind | Count |
-|------|-------|
-| `struct` | 5 |
-| `enum`   | 4 |
-| `fn`     | 0 |
-| **Total** | **9** |
+| Kind       | Count |
+|------------|-------|
+| `struct`   | 5     |
+| `enum`     | 4     |
+| `fn`       | 78    |
+| **Total**  | **87**|
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `engine` | Imports from | Uses SharedState, EngineError |
-| `math` | Imports from | Vec2, Color, Rect |
-| `lua_api` | Imported by | Binds public API to Lua |
-
-TODO: Add entries for similar modules and explain the separation of duties.
+| Module      | Relationship | Notes                                                    |
+|-------------|--------------|----------------------------------------------------------|
+| `math`      | Imports from | Uses `Vec2` (occluder vertices/position) and `Color` (light tint, ambient, shadow color) |
+| `engine`    | Imports from | Uses `LightKey`, `OccluderKey` (SlotMap keys from `resource_keys.rs`), log message constants |
+| `lua_api`   | Imported by  | `light_api.rs` exposes `luna.light.*` — provides `LuaLight` and `LuaOccluder` UserData types |
+| `graphics`  | Related      | Renderer reads `LightWorld` from `SharedState` to produce the lighting pass; light module does not import graphics |
+| `particle`  | Similar      | Both are Tier 2 modules with SlotMap resource pools; particle owns visual emission, light owns illumination data |
 
 ## Notes
 
-TODO: Document unique facts an agent must know before editing this module:
-- External crate constraints (version, thread-safety, API limitations)
-- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
-- Known limitations or intentional omissions
-- Best practices and anti-patterns for this module
-- What Lua scripts will break if the API changes
+- **CPU-only data model**: The `light` module holds zero GPU resources. All rendering is performed by the graphics pipeline reading `LightWorld` from `SharedState`. This makes the module fully testable without a GPU context.
+- **Auto-enable behaviour**: `LightWorld::add_light()` sets `enabled = true` automatically when the first light is inserted. Scripts do not need to call `luna.light.setEnabled(true)` explicitly.
+- **Occluder vertex limits**: `Occluder::new()` panics (Rust-side assert) if the vertex count is outside 3..=256. The Lua API (`parse_vertex_table`) validates 6..=512 flat elements (i.e., 3..=256 vertices) before reaching the Rust constructor.
+- **Bitmask filtering**: `light_mask` and `shadow_mask` on both `Light2D` and `Occluder` default to `0xFFFF` (all bits set), meaning all lights interact with all occluders by default. Custom masks allow selective light-occluder filtering without removing objects.
+- **Flicker phase wrapping**: `FlickerConfig::advance()` wraps `phase` at `2π` to prevent float overflow during long-running sessions.
+- **Max lights cap**: `LightWorld::max_lights` defaults to 64 and is clamped to 1–256 by the Lua API. The renderer uses this to limit per-frame processing.
+- **No `Default` on `Light2D`**: `Light2D` does not implement `Default` — use `Light2D::new(x, y, radius)` which provides sensible defaults for all other fields (white, intensity 1.0, enabled, point type, no shadows, no flicker).
+- **Module tier**: Although `mod.rs` states "Tier 1", the module is classified as **Tier 2 — Engine Extension** in the architecture docs because it builds on top of Baseline functionality to provide a reusable lighting abstraction.

@@ -29,6 +29,28 @@ use crate::gui::theme::Theme;
 use crate::gui::widget::{WidgetBase, WidgetState};
 use crate::log_msg;
 
+/// A single interaction event emitted by the GUI widget tree.
+///
+/// Accumulated by [`GuiContext`] in `pending_events` and drained by the Lua
+/// bridge each frame to dispatch registered Lua callbacks.
+///
+/// # Variants
+/// - `Click(usize)` — A button-family widget at the given index was activated.
+/// - `Change(usize)` — A value-bearing widget changed its value.
+/// - `Close(usize)` — A dismissible widget was closed.
+/// - `Select(usize, usize)` — An item in a list/tab widget was selected; (widget_idx, item_idx).
+#[derive(Debug, Clone)]
+pub enum GuiEvent {
+    /// A button or clickable widget at the given index was activated.
+    Click(usize),
+    /// A value-bearing widget at the given index changed its value.
+    Change(usize),
+    /// A dismissible widget at the given index was closed.
+    Close(usize),
+    /// An item in a list/tab widget was selected; (widget_idx, item_idx).
+    Select(usize, usize),
+}
+
 /// Type-erased widget storage.
 ///
 /// Each variant wraps a concrete widget type so that the [`GuiContext`] can
@@ -263,6 +285,7 @@ impl WidgetKind {
 /// - `focused_widget` — `Option<usize>`. Index of the focused widget.
 /// - `toasts` — `Vec<Toast>`. Active toast notifications.
 /// - `theme` — `Option<Theme>`. Active theme.
+/// - `pending_events` — `Vec<GuiEvent>`. Interaction events queued since the last drain.
 #[derive(Debug, Clone)]
 pub struct GuiContext {
     /// Flat pool of all widgets.
@@ -273,6 +296,8 @@ pub struct GuiContext {
     pub toasts: Vec<Toast>,
     /// Active theme.
     pub theme: Option<Theme>,
+    /// Interaction events queued since the last drain.
+    pub pending_events: Vec<GuiEvent>,
 }
 
 impl GuiContext {
@@ -288,6 +313,7 @@ impl GuiContext {
             focused_widget: None,
             toasts: Vec::new(),
             theme: None,
+            pending_events: Vec::new(),
         }
     }
 
@@ -297,6 +323,16 @@ impl GuiContext {
     /// `usize`.
     pub fn widget_count(&self) -> usize {
         self.widgets.len()
+    }
+
+    /// Drain and return all pending interaction events accumulated since the last call.
+    ///
+    /// Called by the Lua bridge each frame to dispatch registered callbacks.
+    ///
+    /// # Returns
+    /// `Vec<GuiEvent>`.
+    pub fn drain_events(&mut self) -> Vec<GuiEvent> {
+        self.pending_events.drain(..).collect()
     }
 
     // ── Widget constructors ───────────────────────────────────────────
@@ -893,9 +929,10 @@ impl GuiContext {
             self.set_focus(Some(idx));
             self.widgets[idx].base_mut().state = WidgetState::Pressed;
 
-            // Toggle checkbox
+            // Toggle checkbox and emit Change event
             if let WidgetKind::CheckBox(cb) = &mut self.widgets[idx] {
                 cb.checked = !cb.checked;
+                self.pending_events.push(GuiEvent::Change(idx));
             }
 
             true
@@ -920,6 +957,16 @@ impl GuiContext {
             let base = self.widgets[i].base();
             if base.state == WidgetState::Pressed {
                 let inside = base.contains_point(x, y);
+                if inside {
+                    // Emit Click for activatable widget types
+                    let is_clickable = matches!(
+                        self.widgets[i],
+                        WidgetKind::Button(_) | WidgetKind::RadioButton(_) | WidgetKind::MenuItem(_)
+                    );
+                    if is_clickable {
+                        self.pending_events.push(GuiEvent::Click(i));
+                    }
+                }
                 let new_state = if inside {
                     WidgetState::Hovered
                 } else {

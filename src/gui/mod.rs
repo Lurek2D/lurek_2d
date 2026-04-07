@@ -46,7 +46,7 @@ pub use containers::{
     DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel,
     SplitPanel,
 };
-pub use context::GuiContext;
+pub use context::{GuiContext, GuiEvent};
 pub use controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
     TabBar, TextInput,

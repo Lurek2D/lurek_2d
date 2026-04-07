@@ -631,3 +631,116 @@ fn lua_test_config() {
 fn lua_test_examples() {
     run_lua_test("examples/test_examples.lua");
 }
+
+// ─── Golden ──────────────────────────────────────────────────────────────────
+
+#[test]
+fn lua_golden_math() {
+    run_lua_test("golden/test_math_golden.lua");
+}
+
+#[test]
+fn lua_golden_math2() {
+    run_lua_test("golden/test_math_golden2.lua");
+}
+
+// ─── Security *2 variants ─────────────────────────────────────────────────────
+
+#[test]
+fn lua_security_invalid_args2() {
+    run_lua_test("security/test_invalid_args2.lua");
+}
+
+#[test]
+fn lua_security_mount_traversal2() {
+    run_lua_test("security/test_mount_traversal2.lua");
+}
+
+#[test]
+fn lua_security_savegame_validation2() {
+    run_lua_test("security/test_savegame_validation2.lua");
+}
+
+#[test]
+fn lua_security_toml_validation2() {
+    run_lua_test("security/test_toml_validation2.lua");
+}
+
+// ─── Stress *2 variants ───────────────────────────────────────────────────────
+
+#[test]
+fn lua_stress_compute2() {
+    run_lua_test("stress/test_compute_stress2.lua");
+}
+
+#[test]
+fn lua_stress_data_compression2() {
+    run_lua_test("stress/test_data_compression_stress2.lua");
+}
+
+#[test]
+fn lua_stress_data2() {
+    run_lua_test("stress/test_data_stress2.lua");
+}
+
+#[test]
+fn lua_stress_dataframe2() {
+    run_lua_test("stress/test_dataframe_stress2.lua");
+}
+
+#[test]
+fn lua_stress_entity2() {
+    run_lua_test("stress/test_entity_stress2.lua");
+}
+
+#[test]
+fn lua_stress_graph2() {
+    run_lua_test("stress/test_graph_stress2.lua");
+}
+
+#[test]
+fn lua_stress_math2() {
+    run_lua_test("stress/test_math_stress2.lua");
+}
+
+#[test]
+fn lua_stress_particle2() {
+    run_lua_test("stress/test_particle_stress2.lua");
+}
+
+#[test]
+fn lua_stress_pathfinding2() {
+    run_lua_test("stress/test_pathfinding_stress2.lua");
+}
+
+#[test]
+fn lua_stress_physics_collision2() {
+    run_lua_test("stress/test_physics_collision_stress2.lua");
+}
+
+#[test]
+fn lua_stress_physics2() {
+    run_lua_test("stress/test_physics_stress2.lua");
+}
+
+#[test]
+fn lua_stress_tilemap2() {
+    run_lua_test("stress/test_tilemap_stress2.lua");
+}
+
+// ─── Unit library tests (battle / crafting / dialog) ─────────────────────────
+
+#[test]
+fn lua_unit_battle() {
+    run_lua_test("unit/test_battle.lua");
+}
+
+#[test]
+fn lua_unit_crafting() {
+    run_lua_test("unit/test_crafting.lua");
+}
+
+#[test]
+fn lua_unit_dialog() {
+    run_lua_test("unit/test_dialog.lua");
+}

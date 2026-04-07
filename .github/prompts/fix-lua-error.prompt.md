@@ -41,7 +41,7 @@ description: "Debug and fix Lua script errors in Luna2D. Use when a Lua game scr
 ## Acceptance
 
 - [ ] The specific error no longer occurs
-- [ ] Fix does not break other examples (`cargo run -- examples/hello_world`)
+- [ ] Fix does not break other examples (`cargo run -- demos/hello_world`)
 - [ ] If binding was incorrect, a regression test is added
 
 ## References
@@ -52,6 +52,6 @@ description: "Debug and fix Lua script errors in Luna2D. Use when a Lua game scr
 **Commands**:
 ```powershell
 cargo run -- <SCRIPT_PATH>
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
-**Docs**: `docs/lua_api_reference.md`, `src/lua_api/mod.rs`
+**Docs**: `docs/API/lua_api_reference_generated.md`, `src/lua_api/mod.rs`

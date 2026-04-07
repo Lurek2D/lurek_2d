@@ -44,7 +44,7 @@ description: "Analyze and reduce memory usage in the Luna2D engine. Use when fra
 
 ## References
 
-**Required Skills**: `performance-profiling`, `software-rendering`, `game-loop`
+**Required Skills**: `performance-profiling`, `gpu-programming`
 **Suggested Agents**: `Optimizer`, `Renderer`
 **Related Prompts**: `analyze-render-performance.prompt.md`
 **Commands**:

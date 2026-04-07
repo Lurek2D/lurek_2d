@@ -97,8 +97,8 @@ description: "Full feature development workflow from design to merged code. Use 
 
 - Working Rust implementation in `src/`
 - Integration tests in `tests/`
-- Updated `docs/lua_api_reference.md`
-- Updated `docs/architecture.md` if modules changed
+- Updated `docs/API/lua_api_reference_generated.md`
+- Updated `docs/architecture/engine-architecture.md` if modules changed
 - Expanded docstrings on all new public items (full description + structured sections)
 - Design doc at `docs/API/<module>-design.md`
 - Accurate `src/<module>/AGENT.md`
@@ -109,7 +109,7 @@ description: "Full feature development workflow from design to merged code. Use 
 - [ ] `cargo check` — 0 errors during development; `cargo test && cargo clippy -- -D warnings` at final gate
 - [ ] `cargo test --test <module>_tests` — module tests pass during development
 - [ ] New public API has at least one integration test
-- [ ] `docs/lua_api_reference.md` updated
+- [ ] `docs/API/lua_api_reference_generated.md` updated
 - [ ] Reviewer signoff
 - [ ] All public items have expanded docstrings (`# Parameters`, `# Fields`, `# Returns` present)
 - [ ] `python tools/collect_docs.py --report-missing` exits 0

@@ -6,7 +6,9 @@ name: Research
 
 # RESEARCH — INFORMATION RETRIEVAL
 
-**Mission**: Find accurate, cited information from external sources (web, docs, GitHub) and internal sources (codebase, `docs/`). Produce a research report that other agents can act on without re-verifying claims themselves.
+## MISSION
+
+Find accurate, cited information from external sources (web, docs, GitHub) and internal sources (codebase, `docs/`). Produce a research report that other agents can act on without re-verifying claims themselves.
 
 ## SCOPE
 

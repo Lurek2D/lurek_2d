@@ -37,7 +37,7 @@ description: "Build a release binary for Luna2D for a target platform. Use when 
    - Cross: `target/<TARGET_TRIPLE>/release/luna2d[.exe]`
 5. Smoke test the binary:
    ```powershell
-   ./target/release/luna2d examples/hello_world
+   ./target/release/luna2d demos/hello_world
    ```
 6. Check binary size:
    ```powershell
@@ -57,7 +57,7 @@ description: "Build a release binary for Luna2D for a target platform. Use when 
 - [ ] `cargo build --release` completes with 0 errors
 - [ ] `cargo clippy -- -D warnings` clean before build
 - [ ] `cargo test` passes before build
-- [ ] Release binary runs `examples/hello_world` without panic
+- [ ] Release binary runs `demos/hello_world` without panic
 - [ ] Binary size is reasonable (< 50 MB)
 
 ## References
@@ -69,5 +69,5 @@ description: "Build a release binary for Luna2D for a target platform. Use when 
 ```powershell
 cargo build --release
 cargo test
-./target/release/luna2d examples/hello_world
+./target/release/luna2d demos/hello_world
 ```

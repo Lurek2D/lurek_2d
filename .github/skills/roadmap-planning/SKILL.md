@@ -1,13 +1,12 @@
 ---
 name: roadmap-planning
-description: "Load this skill when creating new roadmap phase files, updating existing phases, or auditing the docs/roadmap/ directory. It owns phase file format, dependency graph rules, acceptance gate authoring, and roadmap consistency. Skip it for code implementation or API design."
+description: Load this skill when creating or maintaining roadmap phase documentation, updating phase files, or auditing roadmap consistency. Owns phase file format, dependency graph rules, acceptance gate authoring, and roadmap consistency. Skip it for code implementation or API design.
 ---
 
 # Roadmap Planning — Luna2D Engine
 
 ## Load When
 
-- Creating a new `docs/roadmap/phase-NN-*.md` file
 - Updating an existing phase (status, scope, tasks, acceptance gates)
 - Adding a phase dependency (`Depends On` / `Blocks`)
 - Auditing roadmap for completeness, gaps, or stale phases
@@ -15,7 +14,6 @@ description: "Load this skill when creating new roadmap phase files, updating ex
 
 ## Owns
 
-- `docs/roadmap/` files — all phase documents
 - Phase numbering convention and dependency graph
 - Acceptance gate format and measurability standard
 - Phase frontmatter metadata (Priority, Scope, Depends On, Blocks)
@@ -30,20 +28,18 @@ description: "Load this skill when creating new roadmap phase files, updating ex
 
 ## Live Repository Contracts
 
-- `docs/roadmap/phase-01-core-engine-hardening.md` through `phase-18-mobile-web.md` — 18 active phases
-- `docs/architecture.md` — source of truth for module names, dependency direction, and platform targets
+- `docs/architecture/engine-architecture.md` — source of truth for module names, dependency direction, and platform targets
 - `.github/copilot-instructions.md` — defines tech baseline; roadmap phases must not contradict it
 - `Cargo.toml` — dependency versions referenced in phases must match actual Cargo entries
 
 ## Phase File Format
 
-Every phase file at `docs/roadmap/phase-NN-{slug}.md` follows this exact structure:
 
-> See [example_1.md](example_1.md) for the phase file format code example.
+> See example_1.md for the phase file format code example.
 
 ## File Naming
 
-> See [example_2.txt](example_2.txt) for the file naming code example.
+> See example_2.txt for the file naming code example.
 
 - `NN` is zero-padded to two digits: `01`–`09`, then `10`, `11`, …
 - `slug` is lowercase-hyphenated, max 4 words, describes the feature not the status
@@ -86,7 +82,7 @@ Every phase file at `docs/roadmap/phase-NN-{slug}.md` follows this exact structu
 When updating a phase that has been partially or fully implemented:
 
 1. Add a `## Status` section immediately after the frontmatter block (before `## Goal`):
-   > See [example_3.md](example_3.md) for the updating existing phases code example.
+   > See example_3.md for the updating existing phases code example.
 2. Do NOT delete original task descriptions — they are the design record
 3. Update `Depends On` / `Blocks` if new dependencies emerge
 4. Add retrospective notes to `## Current State Analysis` as "**As-Built**:" callouts

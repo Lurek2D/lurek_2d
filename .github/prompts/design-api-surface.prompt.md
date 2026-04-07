@@ -30,21 +30,21 @@ description: "Design a new luna.* Lua API surface. Use when adding a new functio
 5. Write a Lua usage example showing the intended developer experience
 6. Identify the Rust `DrawCommand` variant or `SharedState` field this will need
 7. Document any side effects or ordering constraints (e.g., "must be called inside `luna.draw()`")
-8. Record the finalized spec in `docs/lua_api_reference.md`
+8. Record the finalized spec in `docs/API/lua_api_reference_generated.md`
 
 ## Outputs
 
 - Finalized function signature with parameter types and defaults
 - Lua usage example (3–10 lines)
 - Description of required Rust changes (what `DrawCommand` variant or state field)
-- Updated `docs/lua_api_reference.md` entry
+- Updated `docs/API/lua_api_reference_generated.md` entry
 
 ## Acceptance
 
 - [ ] Function signature follows `luna.*` namespace conventions (lowercase, no external-engine-prefixed names)
 - [ ] Lua usage example is self-contained and readable
 - [ ] No parameter naming conflicts with existing functions in the same namespace
-- [ ] `docs/lua_api_reference.md` updated with new entry
+- [ ] `docs/API/lua_api_reference_generated.md` updated with new entry
 - [ ] Rust implementation requirements described (not implemented yet — that is `Developer`'s job)
 
 ## References
@@ -52,4 +52,4 @@ description: "Design a new luna.* Lua API surface. Use when adding a new functio
 **Required Skills**: `lua-api-design`
 **Suggested Agents**: `Lua-Designer`
 **Related Prompts**: `create-api-function.prompt.md`, `fix-api-function.prompt.md`
-**Docs**: `docs/lua_api_reference.md`
+**Docs**: `docs/API/lua_api_reference_generated.md`

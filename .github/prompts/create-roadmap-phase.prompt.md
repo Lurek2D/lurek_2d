@@ -1,12 +1,12 @@
 ---
-description: "Create a new phase file in docs/roadmap/ that is correctly formatted, dependency-connected, and has binary acceptance gates."
+name: create-roadmap-phase
+description: Create a new Luna2D roadmap phase file with all required metadata, tasks, and acceptance gates.
 ---
 
 # Create Roadmap Phase
 
 ## Purpose
 
-Add a new phase document to `docs/roadmap/` following the established format. Produces a file that is ready for implementation handoff.
 
 ## Load Skill First
 
@@ -35,11 +35,9 @@ Load `.github/skills/roadmap-planning/SKILL.md` before proceeding.
 
 ### Step 1: Determine Phase Number
 
-1. List `docs/roadmap/` to find the highest current phase number
 2. Assign the next sequential number (e.g., current max is 18 → new phase is 19)
 3. Choose a slug: lowercase hyphenated, ≤4 words, describes the feature
 
-**Output**: `docs/roadmap/phase-{NN}-{slug}.md`
 
 ### Step 2: Check Dependency Graph
 
@@ -98,7 +96,7 @@ Description.
 1. `cargo build` succeeds
 2. `cargo test` passes
 3. Named Lua example runs end-to-end
-4. `docs/architecture.md` or relevant doc file updated
+4. `docs/architecture/engine-architecture.md` or relevant doc file updated
 5. `cargo clippy -- -D warnings` passes
 ```
 
@@ -116,7 +114,6 @@ CAG validation does not check roadmap files, but confirms no CAG breakage from t
 
 ## Outputs
 
-- `docs/roadmap/phase-{NN}-{slug}.md` — new phase file
 - Updated `Blocks:` lines in dependency phases (if any)
 
 ## Acceptance

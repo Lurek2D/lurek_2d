@@ -4,10 +4,10 @@ description: "Add a new audio feature to the Luna2D engine. Use when implementin
 
 # Create Audio Feature
 
-**Purpose**: Implement new audio functionality across `src/audio/`, `src/lua_api/audio_api.rs`, and `docs/lua_api_reference.md`.
+**Purpose**: Implement new audio functionality across `src/audio/`, `src/lua_api/audio_api.rs`, and `docs/API/lua_api_reference_generated.md`.
 **Use When**: A new audio capability is needed (looping, volume fades, format support, etc.).
 **Do Not Use When**: The change is a bug fix to existing audio — use `fix-engine-bug.prompt.md` instead.
-**Scope**: `src/audio/`, `src/lua_api/audio_api.rs`, `docs/lua_api_reference.md`.
+**Scope**: `src/audio/`, `src/lua_api/audio_api.rs`, `docs/API/lua_api_reference_generated.md`.
 
 ## Inputs
 
@@ -28,24 +28,24 @@ description: "Add a new audio feature to the Luna2D engine. Use when implementin
 5. Register the binding in `src/lua_api/audio_api.rs`:
    - Follow the `state.clone()` → `move` closure pattern
    - Return `LuaResult<()>` or appropriate type
-6. Write integration test in `tests/audio_tests.rs`
-7. Update `docs/lua_api_reference.md` under `## luna.audio`
+6. Write integration test in `tests/rust/unit/audio_tests.rs`
+7. Update `docs/API/lua_api_reference_generated.md` under `## luna.audio`
 8. Run `cargo build`, `cargo clippy`, `cargo test`
 
 ## Outputs
 
 - Updated `src/audio/mixer.rs` with new method
 - Updated `src/lua_api/audio_api.rs` with new Lua binding
-- New test in `tests/audio_tests.rs`
-- Updated `docs/lua_api_reference.md`
+- New test in `tests/rust/unit/audio_tests.rs`
+- Updated `docs/API/lua_api_reference_generated.md`
 - Verified: `cargo build` clean, `cargo test` passes
 
 ## Acceptance
 
 - [ ] `luna.audio.<function>` callable from Lua without panic
 - [ ] Graceful no-op when audio hardware is unavailable
-- [ ] Test in `tests/audio_tests.rs` covers the new function
-- [ ] `docs/lua_api_reference.md` updated
+- [ ] Test in `tests/rust/unit/audio_tests.rs` covers the new function
+- [ ] `docs/API/lua_api_reference_generated.md` updated
 - [ ] `cargo clippy` zero warnings
 
 ## References
@@ -57,4 +57,4 @@ description: "Add a new audio feature to the Luna2D engine. Use when implementin
 ```powershell
 cargo build; cargo clippy; cargo test
 ```
-**Docs**: `docs/lua_api_reference.md`
+**Docs**: `docs/API/lua_api_reference_generated.md`

@@ -1,424 +1,418 @@
-﻿# `math` — Agent Reference
+# math — Foundational Algorithms
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Baseline |
-| **Status**     | Implemented — Full                                   |
-| **Lua API** | `luna.math` |
-| **Source** | `src/math/` |
-| **Rust Tests** | `tests/unit/math_tests.rs`                    |
-| **Lua Tests**  | `tests/lua/unit/test_math.lua`                     |
+| Property           | Value |
+|--------------------|-------|
+| **Tier**           | Baseline (leaf) |
+| **Architecture**   | 15 submodule files, flat layout under `src/math/` |
+| **Path**           | `src/math/` |
+| **Depends on**     | `fastrand` (external); `crate::engine::log_messages` (log constants in `spatial_hash.rs` only) |
+| **Depended on by** | Every other Luna2D module |
+| **Lua API**        | `luna.math` via `src/lua_api/math_api.rs` |
+| **Tests — Rust**   | `tests/unit/math_tests.rs` (~60 tests, 857 lines) |
+| **Tests — Lua**    | `tests/lua/unit/test_math.lua` (~20 tests, 128 lines) |
+| **Inline tests**   | `easing.rs`, `tween.rs`, `spatial_hash.rs`, `geometry.rs`, `noise_generator.rs` |
 
 ## Summary
 
-The math module is the foundational layer that every other Luna2D module is
-permitted to depend on.  At its core are four types used universally across the
-engine: `Vec2` (2D vector with full operator overloading for positions, velocities,
-and directions), `Mat3` (3×3 homogeneous transformation matrix for 2D affine
-transforms), `Rect` (axis-aligned bounding box with intersection and containment
-tests), and `Transform` (a chainable wrapper that composes translate, rotate, and
-scale operations into a matrix).
+`math` is the **leaf of the dependency graph** — it has zero Tier-1+ internal Luna2D dependencies. Every other module may freely import it. It provides the core mathematical primitives, procedural generation utilities, and interpolation tools used throughout the engine.
 
-Beyond the core types the module is a comprehensive mathematical toolkit
-covering: 24 easing functions (quadratic, cubic, quartic, quintic, sine,
-exponential, circular, elastic, bounce, back) for smooth animation; multiple
-noise generators (Perlin 2D/3D/4D, Simplex 2D, fractal Brownian motion, ridged,
-turbulence, and Worley cellular noise) for procedural generation; a seeded
-`RandomGenerator` with uniform and Gaussian distributions; complex numbers;
-polynomial evaluation; Catmull-Rom and B-Spline curve interpolation; geometry
-algorithms (convex hull, Delaunay triangulation, Bresenham line); and a spatial
-hash table for broad-phase overlap queries.
+The module is organised as 15 flat source files, each owning one cohesive domain. All primary types (`Vec2`, `Mat3`, `Rect`, `Color`) are `Copy`, designed for zero-overhead use in per-frame game loops. Higher-level types (`BezierCurve`, `RandomGenerator`, `NoiseGenerator`, `Tween`, `SpatialHash`, `Transform`) are `Clone` and carry heap-allocated state.
 
-The math module is the sole exception to the no-cross-module-dependency rule
-and is explicitly permitted as a direct import by all other domain modules.
-The pathfinding subsystem (A*, HPA*, flow fields) previously lived here; it has
-been moved to `src/pathfinding/`.
+**Domains covered:**
 
-## Architecture
+- **Vectors & matrices** — `Vec2` (2D vector, arithmetic overloads, directional constants), `Mat3` (3×3 row-major affine matrix with inverse)
+- **Geometry** — `Rect` (AABB), circle/segment/polygon intersection tests, `polygon_area`, `polygon_centroid`, `point_in_polygon`, `convex_hull` (Andrew's monotone chain), `delaunay_triangulate` (Bowyer-Watson), `bresenham` line rasterization, `line_intersect`
+- **Color** — `Color` (sRGB `[f32; 4]`, clamped), `gamma_to_linear` / `linear_to_gamma` (IEC 61966-2-1)
+- **Noise** — standalone functions (`perlin2d`/`3d`/`4d`, `simplex2d`, `fbm`); `NoiseGenerator` with Perlin (1D–4D), Simplex (1D–3D), Worley/cellular (2D–3D, three distance metrics), fractal combinators (fBm, ridged, turbulence), domain warping, and 2D map generation
+- **Easing** — 22 named easing functions + case-insensitive `apply(name, t)` lookup
+- **Random** — `RandomGenerator` (fastrand wrapper, Box-Muller normal distribution, state serialization)
+- **Transform** — `Transform` (`Mat3` wrapper with fluent translate/rotate/scale/shear API)
+- **Bézier** — `BezierCurve` (arbitrary-order De Casteljau evaluation, rendering, derivatives, arc length)
+- **Triangulation** — Ear-clipping `triangulate`, `is_convex` predicate
+- **Spatial indexing** — `SpatialHash` (grid-based broad-phase with rect/circle/segment queries)
+- **Tweening** — `Tween` + `TweenValue` (multi-value interpolation with 22+ named easing functions and alias resolution)
 
-```
-math/
-  │
-  ├── Core types
-  │     ├── Vec2 ── 2D vector (x, y: f32)
-  │     ├── Mat3 ── 3×3 matrix (affine transforms)
-  │     ├── Rect ── axis-aligned rectangle
-  │     └── Transform ── chainable 2D transform wrapper
-  │
-  ├── Curves and animation
-  │     ├── BezierCurve ── arbitrary-order Bézier curves
-  │     ├── Tween ── easing-based value interpolation
-  │     └── Easing ── 24 easing functions (quad, cubic, elastic, bounce, ...)
-  │
-  ├── Noise and procedural generation
-  │     ├── perlin2d/3d/4d, simplex2d
-  │     ├── fbm, fractal, ridged, turbulence, worley
-  │     ├── NoiseGenerator ── configurable multi-octave noise
-  │     └── ProcGen ── cellular automata, voronoi, poisson disk
-  │
-  ├── Geometry
-  │     ├── geometry.rs ── intersection, convex hull, Delaunay, Bresenham
-  │     ├── polygon.rs ── ear-clipping triangulation, convexity test
-  │     └── color.rs ── gamma/linear conversion
-  │
-  ├── Spatial
-  │     └── SpatialHash ── spatial partitioning for broad-phase
-  │         (Grid → src/pathfinding/; Raycaster2D → src/raycaster/)
-  │
-  ├── Tile navigation
-  │     └── TileWalker ── grid-based first-person movement (Facing enum)
-  │
-  ├── Random
-  │     └── RandomGenerator ── seeded PRNG with normal distribution
-  │
-  └── (Raycaster2D/Segment/RayHit → src/raycaster/; procgen → src/procgen/; Grid → src/pathfinding/; TileWalker → src/tilemap/)
-```
+**Note on leaf status:** `SpatialHash` imports `crate::engine::log_messages` for log-message constants (no logic dependency). This is the only internal coupling; all other files are fully standalone.
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Module root; re-exports all public API items |
-| `bezier.rs` | Bezier curve evaluation using De Casteljau's algorithm |
-| `color.rs` | sRGB gamma ↔ linear color space conversion; Color type |
-| `easing.rs` | Standard easing functions for smooth animation and interpolation |
-| `geometry.rs` | 2D geometry utility functions |
-| `mat3.rs` | Mat3 3×3 matrix for affine transforms |
-| `noise_functions.rs` | Perlin 2D/3D/4D, Simplex 2D, fbm, ridged, turbulence, Worley noise functions (formerly `noise/functions.rs`) |
-| `noise_generator.rs` | `NoiseGenerator` struct; `NoiseKind`, `FractalType`, `DistType`, `MapGenOptions` (formerly `noise/generator.rs`) |
-| `polygon.rs` | Polygon utilities: ear-clipping triangulation and convexity testing |
-| `random.rs` | Seedable random number generator for reproducible sequences |
-| `rect.rs` | Axis-aligned rectangle type |
-| `spatial_hash.rs` | Spatial hash for efficient broad-phase AABB collision queries |
-| `srgb.rs` | sRGB ↔ linear color space utilities |
-| `transform.rs` | 2D affine transform wrapping Mat3 with chainable methods |
-| `tween.rs` | Value interpolator with easing curves |
-| `vec2.rs` | 2D vector type (x, y: f32) |
-
-## Submodules
-
-### `math::bezier`
-
-Bezier curve evaluation using De Casteljau's algorithm.
-
-- **`BezierCurve`** (struct): A Bezier curve defined by control points.  Uses De Casteljau's algorithm for evaluation. Minimum 2 control points...
-
-### `math::easing`
-
-Standard easing functions for smooth animation and interpolation.
-
-- **`linear`** (fn): Linear interpolation — no easing. Consult the module-level documentation for the broader usage context and...
-- **`ease_in_quad`** (fn): Quadratic ease-in — starts slow, accelerates.
-- **`ease_out_quad`** (fn): Quadratic ease-out — starts fast, decelerates.
-- **`ease_in_out_quad`** (fn): Quadratic ease-in-out — slow start and end, fast middle.
-- **`ease_in_cubic`** (fn): Cubic ease-in — starts slow, accelerates sharply.
-- **`ease_out_cubic`** (fn): Cubic ease-out — starts fast, decelerates sharply.
-- **`ease_in_out_cubic`** (fn): Cubic ease-in-out — smooth S-curve. Consult the module-level documentation for the broader usage context and...
-- **`ease_in_quart`** (fn): Quartic ease-in — very slow start. Consult the module-level documentation for the broader usage context and...
-- **`ease_out_quart`** (fn): Quartic ease-out — very slow end. Consult the module-level documentation for the broader usage context and...
-- **`ease_in_out_quart`** (fn): Quartic ease-in-out — pronounced S-curve.
-- **`ease_in_sine`** (fn): Sinusoidal ease-in — gentle sine-based acceleration.
-- **`ease_out_sine`** (fn): Sinusoidal ease-out — gentle sine-based deceleration.
-- **`ease_in_out_sine`** (fn): Sinusoidal ease-in-out — gentle S-curve.
-- **`ease_in_expo`** (fn): Exponential ease-in — very slow start, rapid acceleration.
-- **`ease_out_expo`** (fn): Exponential ease-out — rapid start, very slow end.
-- **`ease_in_out_expo`** (fn): Exponential ease-in-out — sharp S-curve with exponential tails.
-- **`ease_in_elastic`** (fn): Elastic ease-in — spring-like overshoot at the start.
-- **`ease_out_elastic`** (fn): Elastic ease-out — spring-like overshoot at the end.
-- **`ease_out_bounce`** (fn): Bounce ease-out — simulates a bouncing ball landing.
-- **`ease_in_bounce`** (fn): Bounce ease-in — simulates a bouncing ball launching.
-- **`ease_in_back`** (fn): Back ease-in — pulls back before accelerating past the start.
-- **`ease_out_back`** (fn): Back ease-out — overshoots the target then settles back.
-- **`apply`** (fn): Looks up an easing function by name and applies it to progress value `t`.  Supported names (case-insensitive):...
-
-### `math::geometry`
-
-2D geometry utility functions.
-
-- **`angle_between`** (fn): Returns the angle in radians from (x1, y1) to (x2, y2).
-- **`circle_contains_point`** (fn): Returns true if the point (px, py) is inside the circle centered at (cx, cy) with radius r.
-- **`circle_intersects_circle`** (fn): Returns true if two circles overlap. Consult the module-level documentation for the broader usage context and...
-- **`circle_intersects_line`** (fn): Line-circle intersection. Returns (intersects, hit1, hit2).
-- **`circle_intersects_segment`** (fn): Segment-circle intersection. Same as line-circle but clamped to the segment.
-- **`polygon_area`** (fn): Computes the signed area of a polygon using the Shoelace formula.
-- **`polygon_centroid`** (fn): Computes the centroid of a polygon. Consult the module-level documentation for the broader usage context and...
-- **`segment_intersects_segment`** (fn): Tests if two line segments intersect. Returns (intersects, intersection_point).
-- **`closest_point_on_segment`** (fn): Returns the closest point on a line segment to a given point.
-- **`point_in_polygon`** (fn): Tests if a point is inside a polygon using the ray casting algorithm.
-- **`line_intersect`** (fn): Infinite line intersection. Returns the intersection point if lines are not parallel.
-- **`bresenham`** (fn): Bresenham line rasterization from (x1, y1) to (x2, y2).
-- **`convex_hull`** (fn): Computes the convex hull of a set of 2D points using Andrew's monotone chain algorithm.
-- **`delaunay_triangulate`** (fn): Delaunay triangulation using the Bowyer-Watson algorithm.
-
-### `math::grid`
-
-2D pathfinding grid with A*, Dijkstra, BFS, and flow field generation.
-
-- **`Grid`** (struct): 2D pathfinding grid with per-cell walkability and movement costs.  Supports A*, Dijkstra, and BFS pathfinding as well...
-
-### `math::mat3`
-
-Mat3 implementation for the `math` subsystem.
-
-- **`Mat3`** (struct): A 3×3 column-major matrix used for 2D affine transforms (translation, rotation, scale).  Used by `Camera::view_matrix`...
-
-### `math::noise`
-
-2D Perlin and Simplex noise generators for procedural content.
-
-- **`perlin2d`** (fn): Generates 2D Perlin noise at the given coordinates.
-- **`simplex2d`** (fn): Generates 2D Simplex noise at the given coordinates.
-- **`fbm`** (fn): Generates fractal Brownian motion noise by layering multiple octaves of Perlin noise.
-- **`perlin3d`** (fn): Generates 3D Perlin noise at the given coordinates.
-- **`perlin4d`** (fn): Generates 4D Perlin noise at the given coordinates.
-- **`DistType`** (enum): Distance metric for Worley noise. Consult the module-level documentation for the broader usage context and...
-- **`NoiseKind`** (enum): Noise algorithm kind used by fractal combinators.
-- **`FractalType`** (enum): Fractal type for multi-octave noise. Consult the module-level documentation for the broader usage context and...
-- **`MapGenOptions`** (struct): Options for 2D noise map generation. Consult the module-level documentation for the broader usage context and...
-- **`NoiseGenerator`** (struct): Seeded procedural noise generator. Consult the module-level documentation for the broader usage context and...
-
-### `math::polygon`
-
-Polygon utilities: ear-clipping triangulation and convexity testing.
-
-- **`triangulate`** (fn): Triangulate a simple polygon using the ear-clipping algorithm.
-- **`is_convex`** (fn): Check if a polygon is convex. This accessor incurs no allocation; call it freely in hot paths.  Uses cross-product sign...
-
-### `math::procgen`
-
-Procedural generation utility functions.
-
-- **`CellularOpts`** (struct): Options for cellular automata generation.
-- **`VoronoiOpts`** (struct): Options for Voronoi diagram generation. Consult the module-level documentation for the broader usage context and...
-- **`cellular_automata`** (fn): Generates a cave/dungeon map using cellular automata.
-- **`voronoi_diagram`** (fn): Generates a Voronoi diagram. Consult the module-level documentation for the broader usage context and preconditions.
-- **`flood_fill`** (fn): BFS flood fill on a grid. Consult the module-level documentation for the broader usage context and preconditions.
-- **`poisson_disk`** (fn): Generates Poisson disk sample points using Bridson's algorithm.
-- **`perlin_noise_periodic`** (fn): Periodic Perlin noise that tiles over period (px, py).
-
-### `math::random`
-
-Seedable random number generator for reproducible sequences.
-
-- **`RandomGenerator`** (struct): Seedable random number generator exposed as a Lua object.  Wraps `fastrand::Rng` with engine-compatible API for...
-
-### `math::rect`
-
-Rect implementation for the `math` subsystem.
-
-- **`Rect`** (struct): An axis-aligned rectangle defined by its top-left corner and dimensions.  Used for AABB collision detection, UI layout,...
-
-### `math::spatial_hash`
-
-Spatial hash for efficient broad-phase AABB collision queries.
-
-- **`SpatialItem`** (struct): Entry in the spatial hash. Consult the module-level documentation for the broader usage context and preconditions.
-- **`SpatialHash`** (struct): Spatial hash for AABB queries. Consult the module-level documentation for the broader usage context and preconditions. ...
-
-### `math::srgb`
-
-sRGB gamma ↔ linear color space conversion.
-
-- **`gamma_to_linear`** (fn): Convert a single sRGB gamma-space color component to linear space.  Input and output in `[0.0, 1.0]`. Uses the standard...
-- **`linear_to_gamma`** (fn): Convert a single linear-space color component to sRGB gamma space.  Input and output in `[0.0, 1.0]`. Uses the standard...
-
-### `math::transform`
-
-2D affine transform wrapping Mat3 with chainable methods.
-
-- **`Transform`** (struct): 2D affine transform exposed as a Lua object.  Wraps `Mat3` with chainable transformation methods matching the standard...
-
-### `math::tween`
-
-Value interpolator with easing curves.
-
-- **`TweenValue`** (struct): A start-to-target value pair for interpolation.
-- **`Tween`** (struct): Value interpolator using easing functions.  Animates one or more values from start to target over a given duration,...
-
-### `math::vec2`
-
-Vec2 implementation for the `math` subsystem.
-
-- **`Vec2`** (struct): A 2D floating-point vector used throughout the engine for positions, velocities, and directions.  Implements standard...
+| File | Contents |
+|------|----------|
+| `mod.rs` | Module root — re-exports all public items from submodules |
+| `vec2.rs` | `Vec2` struct — arithmetic ops, normalization, dot product, lerp, rotation, directional constants |
+| `mat3.rs` | `Mat3` 3×3 matrix — identity, translation, rotation, scale, shear, inverse, multiply |
+| `rect.rs` | `Rect` AABB — center, area, contains, intersects |
+| `color.rs` | `Color` sRGB — constructors, `from_u8`/`to_u8`/`to_rgb_u32`, named constants, `gamma_to_linear`/`linear_to_gamma` |
+| `bezier.rs` | `BezierCurve` — De Casteljau evaluation, render, derivative, arc length, control-point CRUD |
+| `easing.rs` | 22 easing functions + `apply(name, t)` case-insensitive lookup with alias support |
+| `geometry.rs` | Free geometry functions — angle, circle tests, polygon area/centroid, segment intersection, Bresenham, convex hull, Delaunay, point-in-polygon, line intersect |
+| `noise_functions.rs` | Standalone noise — `perlin2d`/`3d`/`4d`, `simplex2d`, `simplex_noise_2d`/`3d`, `fbm` |
+| `noise_generator.rs` | `NoiseGenerator` — seeded permutation-table noise with Perlin/Simplex/Worley, fractal combinators, domain warping, 2D map generation; `NoiseKind`, `DistType`, `FractalType`, `MapGenOptions` |
+| `polygon.rs` | `triangulate` (ear-clipping, CCW enforcement), `is_convex` |
+| `random.rs` | `RandomGenerator` — fastrand wrapper, normal distribution, state serialization |
+| `spatial_hash.rs` | `SpatialHash`, `SpatialItem` — grid-based broad-phase with rect/circle/segment queries |
+| `transform.rs` | `Transform` — `Mat3` wrapper with fluent translate/rotate/scale/shear/reset API |
+| `tween.rs` | `Tween`, `TweenValue` — multi-value interpolation with named easing resolution |
 
 ## Key Types
 
-### Structs
+### Vec2
 
-#### `math::bezier::BezierCurve`
-
-A Bezier curve defined by control points.  Uses De Casteljau's algorithm for evaluation. Minimum 2 control points...
-
-#### `math::noise::MapGenOptions`
-
-Options for 2D noise map generation. Consult the module-level documentation for the broader usage context and...
-
-#### `math::mat3::Mat3`
-
-A 3×3 column-major matrix used for 2D affine transforms (translation, rotation, scale).  Used by `Camera::view_matrix`...
-
-#### `math::noise::NoiseGenerator`
-
-Seeded procedural noise generator. Consult the module-level documentation for the broader usage context and...
-
-#### `math::random::RandomGenerator`
-
-Seedable random number generator exposed as a Lua object.  Wraps `fastrand::Rng` with engine-compatible API for...
-
-#### `math::rect::Rect`
-
-An axis-aligned rectangle defined by its top-left corner and dimensions.  Used for AABB collision detection, UI layout,...
-
-#### `math::spatial_hash::SpatialHash`
-
-Spatial hash for AABB queries. Consult the module-level documentation for the broader usage context and preconditions. ...
-
-#### `math::spatial_hash::SpatialItem`
-
-Entry in the spatial hash. Consult the module-level documentation for the broader usage context and preconditions.
-
-#### `math::transform::Transform`
-
-2D affine transform exposed as a Lua object.  Wraps `Mat3` with chainable transformation methods matching the standard...
-
-#### `math::tween::Tween`
-
-Value interpolator using easing functions.  Animates one or more values from start to target over a given duration,...
-
-#### `math::tween::TweenValue`
-
-A start-to-target value pair for interpolation.
-
-#### `math::vec2::Vec2`
-
-A 2D floating-point vector used throughout the engine for positions, velocities, and directions.  Implements standard...
-
-### Enums
-
-#### `math::noise::DistType`
-
-Distance metric for Worley noise. Consult the module-level documentation for the broader usage context and...
-
-#### `math::noise::FractalType`
-
-Fractal type for multi-octave noise. Consult the module-level documentation for the broader usage context and...
-
-#### `math::noise::NoiseKind`
-
-Noise algorithm kind used by fractal combinators.
-
-## Public Functions
-
-- **`angle_between()`** `geometry::` — Returns the angle in radians from (x1, y1) to (x2, y2).
-- **`apply()`** `easing::` — Looks up an easing function by name and applies it to progress value `t`.  Supported names (case-insensitive):...
-- **`bresenham()`** `geometry::` — Bresenham line rasterization from (x1, y1) to (x2, y2).
-- **`circle_contains_point()`** `geometry::` — Returns true if the point (px, py) is inside the circle centered at (cx, cy) with radius r.
-- **`circle_intersects_circle()`** `geometry::` — Returns true if two circles overlap. Consult the module-level documentation for the broader usage context and...
-- **`circle_intersects_line()`** `geometry::` — Line-circle intersection. Returns (intersects, hit1, hit2).
-- **`circle_intersects_segment()`** `geometry::` — Segment-circle intersection. Same as line-circle but clamped to the segment.
-- **`closest_point_on_segment()`** `geometry::` — Returns the closest point on a line segment to a given point.
-- **`convex_hull()`** `geometry::` — Computes the convex hull of a set of 2D points using Andrew's monotone chain algorithm.
-- **`delaunay_triangulate()`** `geometry::` — Delaunay triangulation using the Bowyer-Watson algorithm.
-- **`ease_in_back()`** `easing::` — Back ease-in — pulls back before accelerating past the start.
-- **`ease_in_bounce()`** `easing::` — Bounce ease-in — simulates a bouncing ball launching.
-- **`ease_in_cubic()`** `easing::` — Cubic ease-in — starts slow, accelerates sharply.
-- **`ease_in_elastic()`** `easing::` — Elastic ease-in — spring-like overshoot at the start.
-- **`ease_in_expo()`** `easing::` — Exponential ease-in — very slow start, rapid acceleration.
-- **`ease_in_out_cubic()`** `easing::` — Cubic ease-in-out — smooth S-curve. Consult the module-level documentation for the broader usage context and...
-- **`ease_in_out_expo()`** `easing::` — Exponential ease-in-out — sharp S-curve with exponential tails.
-- **`ease_in_out_quad()`** `easing::` — Quadratic ease-in-out — slow start and end, fast middle.
-- **`ease_in_out_quart()`** `easing::` — Quartic ease-in-out — pronounced S-curve.
-- **`ease_in_out_sine()`** `easing::` — Sinusoidal ease-in-out — gentle S-curve.
-- **`ease_in_quad()`** `easing::` — Quadratic ease-in — starts slow, accelerates.
-- **`ease_in_quart()`** `easing::` — Quartic ease-in — very slow start. Consult the module-level documentation for the broader usage context and...
-- **`ease_in_sine()`** `easing::` — Sinusoidal ease-in — gentle sine-based acceleration.
-- **`ease_out_back()`** `easing::` — Back ease-out — overshoots the target then settles back.
-- **`ease_out_bounce()`** `easing::` — Bounce ease-out — simulates a bouncing ball landing.
-- **`ease_out_cubic()`** `easing::` — Cubic ease-out — starts fast, decelerates sharply.
-- **`ease_out_elastic()`** `easing::` — Elastic ease-out — spring-like overshoot at the end.
-- **`ease_out_expo()`** `easing::` — Exponential ease-out — rapid start, very slow end.
-- **`ease_out_quad()`** `easing::` — Quadratic ease-out — starts fast, decelerates.
-- **`ease_out_quart()`** `easing::` — Quartic ease-out — very slow end. Consult the module-level documentation for the broader usage context and...
-- **`ease_out_sine()`** `easing::` — Sinusoidal ease-out — gentle sine-based deceleration.
-- **`fbm()`** `noise::` — Generates fractal Brownian motion noise by layering multiple octaves of Perlin noise.
-- **`gamma_to_linear()`** `srgb::` — Convert a single sRGB gamma-space color component to linear space.  Input and output in `[0.0, 1.0]`. Uses the standard...
-- **`is_convex()`** `polygon::` — Check if a polygon is convex. This accessor incurs no allocation; call it freely in hot paths.  Uses cross-product sign...
-- **`line_intersect()`** `geometry::` — Infinite line intersection. Returns the intersection point if lines are not parallel.
-- **`linear()`** `easing::` — Linear interpolation — no easing. Consult the module-level documentation for the broader usage context and...
-- **`linear_to_gamma()`** `srgb::` — Convert a single linear-space color component to sRGB gamma space.  Input and output in `[0.0, 1.0]`. Uses the standard...
-- **`perlin2d()`** `noise::` — Generates 2D Perlin noise at the given coordinates.
-- **`perlin3d()`** `noise::` — Generates 3D Perlin noise at the given coordinates.
-- **`perlin4d()`** `noise::` — Generates 4D Perlin noise at the given coordinates.
-- **`point_in_polygon()`** `geometry::` — Tests if a point is inside a polygon using the ray casting algorithm.
-- **`polygon_area()`** `geometry::` — Computes the signed area of a polygon using the Shoelace formula.
-- **`polygon_centroid()`** `geometry::` — Computes the centroid of a polygon. Consult the module-level documentation for the broader usage context and...
-- **`segment_intersects_segment()`** `geometry::` — Tests if two line segments intersect. Returns (intersects, intersection_point).
-- **`simplex2d()`** `noise::` — Generates 2D Simplex noise at the given coordinates.
-- **`triangulate()`** `polygon::` — Triangulate a simple polygon using the ear-clipping algorithm.
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `enum` | 3 |
-| `fn` | 46 |
-| `mod` | 10 |
-| `struct` | 12 |
-| **Total** | **71** |
-
-## Lua API
-
-**Namespace**: `luna.math`
-**Wrapper**: `src/lua_api/math_api.rs`
-
-The `math` module exposes its full public API under `luna.math.*`. Key groups:
-
-| Group | Representative functions |
-|-------|--------------------------|
-| Trig / arithmetic | `luna.math.sin`, `cos`, `tan`, `atan2`, `floor`, `ceil`, `abs`, `clamp`, `lerp` |
-| Random | `luna.math.random()`, `luna.math.randomSeed(n)`, `luna.math.newRandomGenerator(seed)` |
-| Vectors | `luna.math.newVec2(x, y)`, arithmetic operators via metatable |
-| Transforms | `luna.math.newTransform()`, `:translate()`, `:rotate()`, `:scale()` |
-| Bezier | `luna.math.newBezierCurve({pts})`, `:evaluate(t)`, `:getLength()` |
-| Noise | `luna.math.noise(x)`, `luna.math.noise(x,y)`, `luna.math.noise(x,y,z)` (Perlin) |
-| Easing | `luna.math.linear(t)`, `luna.math.inQuad(t)`, … (22 easing functions) |
-| Geometry | `luna.math.triangulate(polygon)`, `luna.math.pointInPolygon(pt, poly)` |
-
-## Lua Examples
-
-```lua
-function luna.load()
-    -- Random number generator
-    rng = luna.math.newRandomGenerator(42)
-    print(rng:random())          -- 0..1
-    print(rng:randomInt(1, 6))   -- dice roll
-
-    -- Noise
-    for i = 0, 100 do
-        local v = luna.math.noise(i * 0.1)
-    end
-
-    -- Easing
-    local t = luna.math.ease("outCubic", 0.5)
-
-    -- Transform
-    local tr = luna.math.newTransform()
-    tr:translate(100, 200):rotate(math.pi / 4):scale(2, 2)
-end
+```rust
+pub struct Vec2 { pub x: f32, pub y: f32 }
 ```
 
-## References
+Copy type with arithmetic operator overloads (`Add`, `Sub`, `Mul`, `Div`, `Neg`, `AddAssign`, `SubAssign`, `MulAssign`). Directional constants: `ZERO`, `ONE`, `UP` (0,−1), `DOWN` (0,1), `LEFT` (−1,0), `RIGHT` (1,0).
 
-| Module   | Relationship | Notes                                              |
-|----------|------------- |----------------------------------------------------|
-| (none)   | —            | `math` is the leaf; it imports nothing from Luna2D |
-| All tiers| Imported by  | Every engine module may freely import `math`       |
-| `lua_api`| Imported by  | `src/lua_api/math_api.rs` registers `luna.math.*` |
+Methods: `new`, `zero`, `splat`, `dot`, `length`, `length_squared`, `normalize`, `distance`, `lerp`, `angle`, `rotate`, `perpendicular`, `cross`.
 
-## Notes
+### Mat3
 
-- `math` is the leaf of the dependency graph — it imports nothing from Luna2D. All other modules may freely import it.
-- Floating-point comparison: use `(a - b).abs() < 1e-5` in tests — never `==` on `f32` values.
-- `RandomGenerator` wraps `fastrand::Rng` — it is NOT cryptographically secure.
-- `NoiseGenerator` seeds are deterministic: same seed + same calls = same output, across platforms.
-- `BezierCurve` uses De Casteljau for arbitrary degree; performance degrades for degree > 6.
+```rust
+pub struct Mat3 { pub m: [[f32; 3]; 3] }
+```
+
+Row-major 3×3 affine matrix (`m[row][col]`). Factory methods: `identity`, `from_row_major`, `from_translation`, `from_rotation`, `from_scale`, `from_shear`. Operations: `inverse` (returns identity for zero determinant), `transform_point`, `Mul<Mat3>`.
+
+### Rect
+
+```rust
+pub struct Rect { pub x: f32, pub y: f32, pub width: f32, pub height: f32 }
+```
+
+Axis-aligned bounding box. Methods: `new`, `center` → `Vec2`, `area`, `contains(x, y)`, `intersects(&Rect)`.
+
+### Color
+
+```rust
+pub struct Color { pub r: f32, pub g: f32, pub b: f32, pub a: f32 }
+```
+
+sRGB color clamped to `[0.0, 1.0]`. Constants: `WHITE`, `BLACK`, `RED`, `GREEN`, `BLUE`, `LUNA_BG` (dark purple), `LUNA_ACCENT` (warm gold). Methods: `new` (const, clamping), `from_u8`, `to_u8`, `to_rgb_u32`. Free functions: `gamma_to_linear(f32) -> f32`, `linear_to_gamma(f32) -> f32`.
+
+### BezierCurve
+
+```rust
+pub struct BezierCurve { control_points: Vec<Vec2> }  // private field
+```
+
+Arbitrary-order Bézier curve using De Casteljau's algorithm. Methods: `new` (panics if <2 points), `evaluate(t)`, `render(segments)`, `render_segment(t0, t1, steps)`, `get_derivative()`, `get_control_point(i)`, `set_control_point(i, p)`, `insert_control_point(p, index?)`, `remove_control_point(i)`, `get_control_point_count()`, `translate(dx, dy)`, `rotate(angle, ox, oy)`, `scale(s, ox, oy)`, `length()`, `get_interpolated_position`, `get_interpolated_angle`. Implements `Clone`.
+
+### NoiseGenerator
+
+```rust
+pub struct NoiseGenerator { seed: u64, perm: [u8; 512] }
+```
+
+Seeded generator with a 512-entry permutation table. Methods:
+
+- **Perlin**: `perlin_1d(x)`, `perlin_2d(x, y)`, `perlin_3d(x, y, z)`, `perlin_4d(x, y, z, w)`
+- **Simplex**: `simplex_1d(x)`, `simplex_2d(x, y)`, `simplex_3d(x, y, z)`
+- **Worley**: `worley_2d(x, y, dist, f2)`, `worley_3d(x, y, z, dist, f2)` — `DistType::Euclidean|Manhattan|Chebyshev`, `f2` selects F2−F1 mode
+- **Fractal**: `fbm(x, y, octaves, lac, pers, kind)`, `ridged(...)`, `turbulence(...)`
+- **Advanced**: `warp_domain(x, y, strength)`, `generate_map(width, height, opts)`
+- **Seed**: `new(seed)`, `set_seed(seed)`, `seed()`
+
+Supporting enums: `NoiseKind` (`Perlin`, `Simplex`), `FractalType` (`Fbm`, `Ridged`, `Turbulence`), `DistType` (`Euclidean`, `Manhattan`, `Chebyshev`).
+
+Config struct: `MapGenOptions` — `scale_x`, `scale_y`, `octaves`, `lacunarity`, `persistence`, `kind`, `fractal`, `offset_x`, `offset_y`.
+
+### RandomGenerator
+
+```rust
+pub struct RandomGenerator { rng: Rng, seed: u64 }  // fastrand::Rng
+```
+
+Methods: `new` (OS entropy), `with_seed`, `random` (f64 [0,1)), `random_int` (inclusive), `random_float`, `random_normal` (Box-Muller), `set_seed`, `get_seed`, `get_state`/`set_state` (string serialization). Implements `Clone` (clone from same seed, not state copy) and `Default`.
+
+### Transform
+
+```rust
+pub struct Transform { matrix: Mat3 }  // private field
+```
+
+`Mat3` wrapper with a fluent mutation API. Methods: `new` (identity), `from_components(x, y, angle, sx, sy, ox, oy, kx, ky)`, `translate`, `rotate`, `scale`, `shear`, `reset`, `set_transformation`, `transform_point`, `inverse_transform_point`, `inverse`, `matrix()`. All mutation methods return `&mut Self` for chaining. Implements `Copy`, `Clone`.
+
+### Tween / TweenValue
+
+```rust
+pub struct TweenValue { start: f64, target: f64 }
+pub struct Tween { duration: f64, easing_fn: fn(f32)->f32, easing_name: String, clock: f64, values: Vec<TweenValue> }
+```
+
+Multi-value interpolation driver. `Tween::new(duration, easing_name)` resolves easing case-insensitively with alias support (e.g. `"inquad"`, `"easeinquad"`, `"inQuad"` all resolve to `ease_in_quad`). Unknown names fall back to `linear`. Methods: `add_value(start, target)` → index, `update(dt)` → bool (complete?), `get_value(i)`, `get_all_values()`, `reset`, `set_time`, `is_complete`, `value_count`, `easing_name`, `duration`, `clock`.
+
+### SpatialHash / SpatialItem
+
+```rust
+pub struct SpatialItem { pub id: String, pub x: f32, pub y: f32, pub w: f32, pub h: f32 }
+pub struct SpatialHash { cell_size: f32, items: HashMap<String, SpatialItem>, buckets: HashMap<(i32,i32), HashSet<String>> }
+```
+
+Grid-based broad-phase spatial indexing. Methods: `new(cell_size)`, `insert(id, x, y, w, h)`, `remove(id)`, `update(id, x, y, w, h)`, `clear()`, `query_rect(x, y, w, h)`, `query_circle(cx, cy, radius)`, `query_segment(x1, y1, x2, y2)`, `cell_size()`, `item_count()`. Query methods return deduplicated ID lists.
+
+### Geometry Functions (geometry.rs)
+
+Free functions taking raw `f32` coordinates:
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `angle_between` | `(x1, y1, x2, y2) -> f32` | Angle in radians from point 1 to point 2 |
+| `circle_contains_point` | `(cx, cy, r, px, py) -> bool` | Point inside circle test |
+| `circle_intersects_circle` | `(cx1, cy1, r1, cx2, cy2, r2) -> bool` | Circle-circle overlap |
+| `circle_intersects_line` | `(cx, cy, r, x1, y1, x2, y2) -> bool` | Circle-infinite-line overlap |
+| `circle_intersects_segment` | `(cx, cy, r, x1, y1, x2, y2) -> bool` | Circle-segment overlap |
+| `polygon_area` | `(vertices: &[(f32,f32)]) -> f32` | Signed area (Shoelace formula) |
+| `polygon_centroid` | `(vertices: &[(f32,f32)]) -> (f32,f32)` | Centroid via integration |
+| `segment_intersects_segment` | `(...) -> (bool, Option<(f32,f32)>)` | Segment intersection with point |
+| `closest_point_on_segment` | `(px,py, x1,y1, x2,y2) -> (f32,f32)` | Nearest point on segment |
+| `point_in_polygon` | `(x, y, vertices) -> bool` | Ray-casting point-in-polygon |
+| `line_intersect` | `(x1,y1, x2,y2, x3,y3, x4,y4) -> Option<(f32,f32)>` | Infinite line intersection |
+| `bresenham` | `(x1, y1, x2, y2) -> Vec<(i32,i32)>` | Bresenham line rasterization |
+| `convex_hull` | `(points: &[f32]) -> Vec<f32>` | Andrew's monotone chain (flat coords) |
+| `delaunay_triangulate` | `(points: &[(f64,f64)]) -> Vec<[f64;6]>` | Bowyer-Watson triangulation |
+
+### Polygon Functions (polygon.rs)
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `triangulate` | `(polygon: &[Vec2]) -> Result<Vec<[Vec2;3]>, String>` | Ear-clipping, auto-CCW |
+| `is_convex` | `(polygon: &[Vec2]) -> bool` | Cross-product sign consistency |
+
+## Architecture Diagram
+
+```
+                          ┌───────────┐
+                          │  mod.rs   │  re-exports all public items
+                          └─────┬─────┘
+    ┌───┬───┬───┬───┬───┬───┬──┴──┬───┬───┬───┬───┬───┬───┬───┐
+    ▼   ▼   ▼   ▼   ▼   ▼   ▼     ▼   ▼   ▼   ▼   ▼   ▼   ▼   ▼
+  vec2 mat3 rect color bezier easing geom noise noise poly rand spat xform tween
+                                          _fn   _gen            _hash
+
+Internal file dependencies:
+  vec2       → (none)
+  mat3       → vec2
+  rect       → vec2
+  color      → (none)
+  bezier     → vec2
+  easing     → (none)
+  geometry   → (none — raw f32 coordinates)
+  noise_fn   → (none)
+  noise_gen  → (none)
+  polygon    → vec2
+  random     → fastrand (external)
+  spatial_hash → std HashMap/HashSet, crate::engine::log_messages
+  transform  → mat3
+  tween      → easing (resolve_easing)
+```
+
+## Lua API Surface
+
+Registered via `src/lua_api/math_api.rs` as `luna.math`.
+
+### Factory Functions
+
+| Lua Function | Returns | Description |
+|---|---|---|
+| `luna.math.newRandomGenerator(seed?)` | `RandomGenerator` | New RNG, optionally seeded |
+| `luna.math.newTransform(x?,y?,angle?,sx?,sy?,ox?,oy?,kx?,ky?)` | `Transform` | Affine transform (identity if no args) |
+| `luna.math.newBezierCurve(points)` | `BezierCurve` | From flat `{x1,y1, x2,y2, ...}` table (≥ 4 numbers) |
+| `luna.math.newTween(duration, easingName?)` | `Tween` | Multi-value interpolation driver |
+| `luna.math.newSpatialHash(cellSize)` | `SpatialHash` | Grid-based spatial query structure |
+| `luna.math.newNoiseGenerator(seed?)` | `NoiseGenerator` | Seeded procedural noise generator |
+
+### Free Noise Functions
+
+| Lua Function | Description |
+|---|---|
+| `luna.math.perlin2d(x, y, seed?)` | 2D Perlin noise |
+| `luna.math.perlin3d(x, y, z, seed?)` | 3D Perlin noise |
+| `luna.math.simplex2d(x, y, seed?)` | 2D Simplex noise |
+| `luna.math.fbm(x, y, seed?, octaves?, lac?, gain?)` | Fractal Brownian motion |
+
+### Easing Functions
+
+`luna.math.applyEasing(name, t)` — case-insensitive lookup across all 22 easing names.
+
+22 individual functions: `linear`, `inQuad`, `outQuad`, `inOutQuad`, `inCubic`, `outCubic`, `inOutCubic`, `inQuart`, `outQuart`, `inOutQuart`, `inSine`, `outSine`, `inOutSine`, `inExpo`, `outExpo`, `inOutExpo`, `inElastic`, `outElastic`, `outBounce`, `inBounce`, `inBack`, `outBack`.
+
+### Geometry / Color Functions
+
+| Lua Function | Returns | Description |
+|---|---|---|
+| `luna.math.triangulate(polygon)` | table of triangle tables | Ear-clipping triangulation (flat `{x1,y1,...}` input) |
+| `luna.math.isConvex(polygon)` | boolean | Convexity test (flat input) |
+| `luna.math.gammaToLinear(c)` | number | sRGB → linear color space |
+| `luna.math.linearToGamma(c)` | number | Linear → sRGB color space |
+
+### UserData Methods — RandomGenerator
+
+| Method | Returns | Description |
+|---|---|---|
+| `random()` | number | Uniform [0, 1) |
+| `randomFloat(min, max)` | number | Uniform [min, max) |
+| `randomInt(min, max)` | integer | Uniform [min, max] inclusive |
+| `randomNormal(stddev?, mean?)` | number | Gaussian (defaults: σ=1, μ=0) |
+| `getSeed()` | integer | Current seed |
+| `setSeed(seed)` | nil | Reset to new seed |
+| `getState()` | string | Serialise full state |
+| `setState(state)` | nil | Restore serialised state |
+
+### UserData Methods — Transform
+
+| Method | Returns | Description |
+|---|---|---|
+| `translate(dx, dy)` | nil | Apply translation |
+| `rotate(angle)` | nil | Apply rotation (radians) |
+| `scale(sx, sy?)` | nil | Apply scale (uniform if sy omitted) |
+| `shear(kx, ky)` | nil | Apply shear |
+| `reset()` | nil | Reset to identity |
+| `setTransformation(x, y, angle?, sx?, sy?, ox?, oy?, kx?, ky?)` | nil | Full replacement |
+| `transformPoint(x, y)` | number, number | Local → world |
+| `inverseTransformPoint(x, y)` | number, number | World → local |
+| `inverse()` | Transform | New inverse transform |
+| `clone()` | Transform | Deep copy |
+| `getMatrix()` | table | Flat 9-element row-major table |
+
+### UserData Methods — BezierCurve
+
+| Method | Returns | Description |
+|---|---|---|
+| `evaluate(t)` | number, number | Point at parameter t |
+| `render(segments)` | table | Polyline as `{{x,y}, ...}` |
+| `getDerivative()` | BezierCurve | First derivative curve |
+| `getControlPoint(index)` | number?, number? | 1-based; nil if out of range |
+| `setControlPoint(index, x, y)` | boolean | Success flag |
+| `insertControlPoint(x, y, index?)` | nil | Insert at position |
+| `removeControlPoint(index)` | boolean | False if would go below 2 |
+| `getControlPointCount()` | integer | Number of control points |
+| `length()` | number | Approximate arc length |
+| `translate(dx, dy)` | nil | Translate all points |
+| `rotate(angle, ox, oy)` | nil | Rotate around pivot |
+| `scale(s, ox, oy)` | nil | Scale around pivot |
+
+### UserData Methods — Tween
+
+| Method | Returns | Description |
+|---|---|---|
+| `update(dt)` | boolean | Advance clock; true when complete |
+| `reset()` | nil | Reset clock to 0 |
+| `getValue(index)` | number | Interpolated value (1-based) |
+| `getAllValues()` | table | All interpolated values |
+| `isComplete()` | boolean | Whether tween finished |
+| `getValueCount()` | integer | Number of value pairs |
+| `getEasingName()` | string | Resolved easing name |
+| `getDuration()` | number | Total duration in seconds |
+| `getTime()` | number | Current clock time |
+| `setTime(t)` | nil | Jump to time (clamped) |
+| `addValue(start, target)` | integer | Add pair, returns 1-based index |
+
+### UserData Methods — SpatialHash
+
+| Method | Returns | Description |
+|---|---|---|
+| `insert(id, x, y, w, h)` | nil | Insert an AABB item |
+| `update(id, x, y, w, h)` | nil | Update existing item's AABB |
+| `remove(id)` | nil | Remove by ID |
+| `clear()` | nil | Remove all items |
+| `queryRect(x, y, w, h)` | table | IDs overlapping query rect |
+| `queryCircle(cx, cy, radius)` | table | IDs overlapping query circle |
+| `getCellSize()` | number | Grid cell size |
+| `getItemCount()` | integer | Total item count |
+
+### UserData Methods — NoiseGenerator
+
+| Method | Returns | Description |
+|---|---|---|
+| `perlin1d(x)` | number | 1D Perlin noise |
+| `perlin2d(x, y)` | number | 2D Perlin noise |
+| `perlin3d(x, y, z)` | number | 3D Perlin noise |
+| `perlin4d(x, y, z, w)` | number | 4D Perlin noise |
+| `simplex1d(x)` | number | 1D Simplex noise |
+| `simplex2d(x, y)` | number | 2D Simplex noise |
+| `simplex3d(x, y, z)` | number | 3D Simplex noise |
+| `worley2d(x, y, distType?, f2?)` | number | 2D Worley/cellular noise |
+| `worley3d(x, y, z, distType?, f2?)` | number | 3D Worley/cellular noise |
+| `fbm(x, y, octaves?, lac?, pers?, kind?)` | number | Fractal Brownian motion |
+| `ridged(x, y, octaves?, lac?, pers?, kind?)` | number | Ridged multi-fractal |
+| `turbulence(x, y, octaves?, lac?, pers?, kind?)` | number | Turbulence noise |
+| `warpDomain(x, y, strength)` | number, number | Domain-warped coordinates |
+| `generateMap(w, h, opts?)` | table | Flat row-major noise map |
+| `getSeed()` | integer | Current seed |
+| `setSeed(seed)` | nil | Set seed, rebuild permutation |
+
+## Invariants
+
+1. `Vec2`, `Mat3`, `Rect`, `Color`, `Transform` are all `Copy` — no heap allocation, safe to pass by value in per-frame code.
+2. `Color::new` is `const` and clamps all components to `[0.0, 1.0]` at construction.
+3. `Vec2::normalize` returns a zero vector when length is zero — never produces `NaN`.
+4. `Mat3::inverse` returns the identity matrix when the determinant is zero (degenerate input).
+5. `BezierCurve::new` panics if constructed with fewer than 2 control points. All indices in the Lua API are 1-based.
+6. `RandomGenerator::clone()` produces a fresh generator from the same seed, not a copy of the current internal state.
+7. `Tween::new` resolves easing names case-insensitively with alias support; unknown names fall back to `linear` silently.
+8. `SpatialHash::query_*` returns deduplicated ID lists — an item spanning multiple grid cells appears exactly once.
+9. `NoiseGenerator` is fully deterministic for the same seed — output is reproducible across runs and platforms.
+10. `triangulate` ensures CCW winding order; CW input is automatically reversed before ear-clipping.
+11. `gamma_to_linear` / `linear_to_gamma` implement the IEC 61966-2-1 sRGB transfer function with the linear segment below the 0.04045 threshold.
+
+## Dependencies
+
+- **External crate**: `fastrand` — used by `RandomGenerator` for fast PRNG.
+- **Internal**: `crate::engine::log_messages` — used by `SpatialHash` for log-message constants (`HX01`, `HX02`) only. No logic dependency on the engine module.
+- **Downstream**: every Luna2D module may import `crate::math::*`.
+
+## Testing
+
+### Rust Integration Tests
+
+**File**: `tests/unit/math_tests.rs` — 857 lines, ~60+ `#[test]` functions.
+
+| Domain | Tests |
+|--------|-------|
+| Vec2 | addition, subtraction, scalar mul, length, normalize, dot, distance, lerp |
+| Mat3 | identity, translation, rotation, shear, inverse (identity, translation, rotation, composite roundtrips), `from_row_major` |
+| Rect | construction, contains |
+| Color | `gamma_to_linear`↔`linear_to_gamma` roundtrip, known values, boundary (0.0, 1.0) |
+| Easing | all-start-at-zero, most-end-at-one, unknown returns None, individual midpoints (quad, cubic, quart, sine, expo, elastic, bounce) |
+| Noise | Perlin deterministic, Simplex deterministic, varies with position, fbm single-octave matches perlin, 3D/4D deterministic + range, remapped [0,1] |
+| Random | same seed same sequence, different seeds differ, int/float range, normal distribution mean, seed reset, state save/restore, clone independence |
+| Transform | identity, translate, rotate 90°, scale, chaining, inverse roundtrip, reset, from_components, clone independence |
+| BezierCurve | endpoint evaluation, midpoint quadratic, render segment count, render_segment range, derivative reduction, control-point CRUD, translate, scale |
+| Polygon | triangulate triangle/square/concave-L-shape, too-few-vertices error, is_convex triangle/square/concave |
+
+### Lua BDD Tests
+
+**File**: `tests/lua/unit/test_math.lua` — 128 lines, ~20 `it` blocks.
+
+Covers: constants (`pi`), trigonometry (`sin`, `cos`, `tan`, `atan2`), basic functions (`sqrt`, `abs`, `floor`, `ceil`), `min`/`max`/`clamp`, `distance`, `random`.
+
+### Inline Tests (`#[cfg(test)]`)
+
+| File | Scope |
+|------|-------|
+| `easing.rs` | Boundary and midpoint verification for all 22 functions |
+| `tween.rs` | Linear tween, complete flag, reset, quad easing curve, multiple values, unknown easing fallback |
+| `spatial_hash.rs` | Insert+query, miss, remove, circle filter, multiple items same cell |
+| `geometry.rs` | `angle_between`, `circle_contains_point`, `circle_intersects_circle`, `segment_intersects_segment` |
+| `noise_generator.rs` | Deterministic same-seed, different-seeds-differ |
+
+## Sync Contracts
+
+| This File | Must Stay in Sync With | What to Check |
+|-----------|----------------------|---------------|
+| `mod.rs` re-exports | All submodule `pub` items | Every new public type/function must be re-exported |
+| `easing.rs` function list | `math_api.rs` easing bindings | New easing → add Lua binding |
+| Source types | `math_api.rs` UserData impls | New Rust method → add Lua method |
+| `noise_generator.rs` methods | `math_api.rs` LuaNoiseGenerator | New noise method → add Lua binding |
+| `spatial_hash.rs` methods | `math_api.rs` LuaSpatialHash | New query method → add Lua binding |
+| `tween.rs` methods | `math_api.rs` LuaTween | New tween method → add Lua binding |
+| All public API | `tests/unit/math_tests.rs` | New public item → at least one test |
+| All `luna.math.*` functions | `tests/lua/unit/test_math.lua` | New Lua function → at least one Lua test |
+
+## Extension Points
+
+- **New easing function**: add the function to `easing.rs`, add a match arm in `apply()`, expose as `tbl.set("name", ...)` in `math_api.rs`.
+- **New noise type**: add a method to `NoiseGenerator`, expose in `LuaNoiseGenerator` UserData methods in `math_api.rs`.
+- **New geometry function**: add to `geometry.rs`, expose via a `tbl.set(...)` in the register function of `math_api.rs`.
+- **New UserData type**: create a `Lua*` wrapper struct implementing `LuaUserData`, add a `new*` factory function in the register function. Follow the pattern of `LuaTween` or `LuaSpatialHash`.

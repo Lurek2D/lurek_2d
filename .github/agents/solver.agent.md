@@ -6,7 +6,9 @@ name: Solver
 
 # SOLVER — COMPLEX SOLUTION FINDING
 
-**Mission**: Break through engineering problems that have no obvious solution. Accept a problem statement, analyse root causes, evaluate design alternatives, and produce a decision-ready recommendation with rationale. The solution report is the deliverable — implementation belongs to specialist agents.
+## MISSION
+
+Break through engineering problems that have no obvious solution. Accept a problem statement, analyse root causes, evaluate design alternatives, and produce a decision-ready recommendation with rationale. The solution report is the deliverable — implementation belongs to specialist agents.
 
 ## SCOPE
 
@@ -24,7 +26,7 @@ name: Solver
 ## CORE SKILLS
 
 **Primary**: `rust-coding` `module-architecture` `error-handling`
-**Secondary**: `performance-profiling` `physics-engine` `software-rendering`
+**Secondary**: `performance-profiling` `lua-scripting` `gpu-programming`
 
 ## INPUT CONTRACT
 

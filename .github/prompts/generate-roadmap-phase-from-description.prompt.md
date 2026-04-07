@@ -1,11 +1,10 @@
 ---
-description: "Turn any free-text feature description into a complete, production-ready docs/roadmap/phase-NN-*.md file. Multi-step analysis: parse intent → explore codebase → compare actual state → write full phase document."
-name: "Generate Roadmap Phase from Description"
+name: generate-roadmap-phase-from-description
+description: Generate a complete Luna2D roadmap phase file from a natural language description of scope and goals.
 ---
 
 # Generate Roadmap Phase from Description
 
-You will turn the user-provided feature description into a single, fully detailed `docs/roadmap/phase-NN-*.md` file that exactly matches the Luna2D roadmap format.
 
 **Load skill first**: read `.github/skills/roadmap-planning/SKILL.md` before writing anything.
 
@@ -67,7 +66,6 @@ For each relevant source file found, read its public API surface (structs, pub f
 
 Also check:
 - `docs/API/lua_api_reference_generated.md` — what the current generated reference says
-- Any related roadmap phase already in `docs/roadmap/` that touches the same domain
 
 Build two lists:
 
@@ -85,7 +83,6 @@ Build two lists:
 
 ### Stage 3 — Phase Numbering and Metadata
 
-1. Run `list_dir docs/roadmap/` to find the current highest phase number.
 2. Assign the next number (zero-padded, e.g. `19`, `20`).
 3. Choose a slug: lowercase-hyphenated, max 4 words, describes the feature not the status.
 4. Determine dependencies:
@@ -114,7 +111,7 @@ For each sub-task:
   - `Developer` — general Rust/engine work
   - `Renderer` — all `src/graphics/` code
   - `Physicist` — all `src/physics/` code
-  - `Audio-Eng` — all `src/audio/` or `src/sound/` code
+  - `Audio-Eng` — all `src/audio/` or `src/audio/` code
   - `Tester` — test files only
   - `Doc-Writer` — documentation only
 
@@ -138,13 +135,11 @@ Required gates (adapt to phase specifics):
 
 ## Output
 
-Write the complete phase file to `docs/roadmap/phase-{NN}-{slug}.md`.
 
 Follow the format from `.github/skills/roadmap-planning/SKILL.md` exactly. Every section is mandatory unless explicitly marked optional in the skill. Reproduce the exact heading hierarchy (`## Goal`, `## Current State Analysis`, `## Implementation Tasks`, `## Acceptance Gates`).
 
 The file must be self-contained: a developer with no prior context who reads only the phase file must be able to understand what to build, what already exists, which files to touch, and how to verify completion.
 
-**Quality bar**: The file should match the detail level of `docs/roadmap/phase-01-core-engine-hardening.md` and `docs/roadmap/phase-14-thread-module.md` — both include Rust struct snippets, Lua API tables, gap analysis tables, and numbered acceptance gates.
 
 ---
 

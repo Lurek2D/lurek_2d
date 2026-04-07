@@ -1,410 +1,366 @@
 # `scene` — Agent Reference
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Tier 2 — Reusable Engine Extensions |
+| Property       | Value                                                |
+|----------------|------------------------------------------------------|
+| **Tier**       | Tier 2 — Reusable Engine Extensions                  |
 | **Status**     | Implemented — Full                                   |
-| **Lua API** | `luna.scene` |
-| **Source** | `src/scene/` |
-| **Rust Tests** | `tests/unit/scene_tests.rs`                    |
-| **Tests** | `tests/scene_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_scene.lua` |
+| **Lua API**    | `luna.scene`                                         |
+| **Source**      | `src/scene/`                                         |
+| **Rust Tests** | `tests/rust/unit/scene_tests.rs`                     |
+| **Lua Tests**  | `tests/lua/unit/test_scene.lua`                      |
 
 ## Summary
 
-The scene module implements a push-down automaton for game state management —
-the industry-standard pattern for navigating between a game's distinct modes
-(title screen, main gameplay, pause menu, inventory screen, game-over).  Scenes
-are pushed onto a stack; the top scene is active; popping a scene returns to
-the one below it unchanged.  Animated transitions (fade-to-black, slide left,
-slide right, slide up, slide down) bridge between states so state changes look
-intentional rather than abrupt.
+The scene module implements a push-down automaton for game state management — the
+industry-standard pattern for navigating between a game's distinct modes (title
+screen, main gameplay, pause menu, inventory screen, game-over). Scenes are
+pushed onto a LIFO stack; the top scene receives `update(dt)` calls each frame;
+`draw()` dispatches to every scene bottom-to-top so that overlay scenes (pause
+menus, HUDs) render on top of their parent. Popping a scene returns control to
+the one below it, with its full state intact.
 
-The push-down semantics make sub-states trivial: pushing a pause menu keeps
-gameplay alive and paused underneath it; popping the pause menu resumes
-exactly where the player was with all entity positions, timers, and scripted
-state intact.  Per-scene data storage lets each scene maintain its own private
-namespace of Lua values without polluting global variables — score, camera
-offset, and wave counter are keyed by `SceneId` and accessible only while
-that scene is on the stack.  Named scene templates (registered at startup)
-allow scenes to be pushed by name rather than by pre-constructed table.
+Six lifecycle callbacks are supported per scene table: `enter`, `leave`, `pause`,
+`resume`, `update`, and `draw`. The stack automatically calls `pause` on the
+outgoing top scene when a new scene is pushed, and `resume` when it is revealed
+again by a pop. `enter` and `leave` bookend the entire lifetime of a scene on the
+stack. Both `push` and `switchTo` accept an optional `params` argument that is
+forwarded to the incoming scene's `enter(self, params)` callback, enabling
+data flow between scenes without globals.
+
+Animated visual transitions (fade, slide-left, slide-right, slide-up, slide-down)
+bridge between states so scene changes feel intentional. Transition progress is
+exposed via `getTransitionProgress()` for custom rendering effects.
+
+A named registry allows scenes to be registered at startup and later pushed by
+name via `popTo`, supporting reusable scene definitions. An inter-scene key-value
+data store (`setData`/`getData`/`hasData`/`removeData`) lets scenes share
+arbitrary Lua values without polluting globals.
+
+The `DepthSorter` is a standalone per-frame draw batcher that collects draw
+callbacks with numeric depth values, stable-sorts them ascending, and flushes
+them in order. It supports both plain function callbacks and object tables with a
+`:drawSorted()` method, enabling z-ordered rendering within a single scene's draw
+pass without manual sort logic.
+
+The module intentionally does NOT own rendering, input handling, or physics — it
+is purely a lifecycle and ordering coordinator. Scenes are Lua tables with
+optional method keys; the module imposes no base class or inheritance hierarchy.
 
 ## Architecture
 
 ```
-SceneStack (scene management)
+luna.scene (Lua API — scene_api.rs)
   │
-  ├── Stack operations
-  │     ├── push(scene, transition, duration)
-  │     ├── pop(transition, duration)
-  │     └── switch_to(scene, transition, duration)
+  ├── SceneState (API-layer internal state)
+  │     ├── stack: SceneStack          ← Rust-side LIFO stack
+  │     ├── scene_refs: HashMap<SceneId, RegistryKey>
+  │     │     └── maps Rust IDs → Lua tables stored in registry
+  │     └── data_refs: HashMap<String, RegistryKey>
+  │           └── maps data keys → Lua values in registry
   │
-  ├── Registry ── named scene templates
-  │     ├── register_scene(name, callbacks)
-  │     └── get_registered(name)
+  ├── SceneStack (src/scene/stack.rs)
+  │     ├── stack: Vec<SceneId>        ← ordered bottom-to-top
+  │     ├── registry: HashMap<String, SceneId>
+  │     ├── data_keys: HashMap<String, SceneId>
+  │     ├── transition: Option<ActiveTransition>
+  │     └── next_id: u64               ← monotonic ID generator
   │
-  ├── Transitions
-  │     ├── TransitionType: None, Fade, SlideLeft/Right/Up/Down
-  │     └── ActiveTransition: progress tracking + completion
+  ├── ActiveTransition (src/scene/transition.rs)
+  │     ├── transition_type: TransitionType
+  │     ├── duration: f32
+  │     └── elapsed: f32
   │
-  ├── Per-scene data storage
-  │     └── set/get/has/remove_data(scene_id, key, value)
+  ├── TransitionType (src/scene/transition.rs)
+  │     └── None | Fade | SlideLeft | SlideRight | SlideUp | SlideDown
   │
-  └── DepthSorter ── z-ordering for draw calls
-        ├── add(depth, callback_index)
-        ├── sort() → stable z-order
-        └── flush() → drain in order
+  └── DepthSorter (src/scene/depth_sorter.rs)
+        ├── entries: Vec<DepthEntry>
+        └── DepthEntry { depth, callback_index, is_object }
+```
+
+### Lifecycle Call Flow
+
+```
+push(scene_b)           pop()                   switchTo(scene_c)
+  │                       │                       │
+  ├─ prev.pause()         ├─ top.leave()          ├─ top.leave()
+  ├─ stack.push(b)        ├─ stack.pop()          ├─ stack.pop() + push(c)
+  └─ b.enter(params)      └─ revealed.resume()    └─ c.enter(params)
 ```
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
-| `depth_sorter.rs` | Per-frame depth-sorted draw batcher |
-| `stack.rs` | LIFO scene stack with registry and inter-scene data store |
-| `transition.rs` | Visual transition types and active transition state for scene changes |
+| File              | Purpose                                                        |
+|-------------------|----------------------------------------------------------------|
+| `mod.rs`          | Module declaration, re-exports `SceneStack`, `ActiveTransition`, `TransitionType`, `DepthSorter` |
+| `stack.rs`        | LIFO scene stack with named registry, inter-scene data store, and transition integration |
+| `transition.rs`   | `TransitionType` enum with Lua string parsing, `ActiveTransition` timer with progress tracking |
+| `depth_sorter.rs` | Per-frame depth-sorted draw batcher with function and object callback support |
 
 ## Submodules
-
-### `scene::depth_sorter`
-
-Per-frame depth-sorted draw batcher.
-
-- **`DepthEntry`** (struct): Entry in the depth-sorted draw queue. Consult the module-level documentation for the broader usage context and...
-- **`DepthSorter`** (struct): Per-frame depth-sorted draw batcher. Consult the module-level documentation for the broader usage context and...
 
 ### `scene::stack`
 
 LIFO scene stack with registry and inter-scene data store.
 
-- **`SceneId`** (type): Unique identifier for a scene in the stack.
-- **`SceneStack`** (struct): The scene stack manages a LIFO stack of scene references.  Scenes are identified by `SceneId` values. The Lua API layer...
+- **`SceneId`** (type alias): `u64` — unique identifier for a scene in the stack, allocated monotonically by `next_scene_id()`.
+- **`SceneStack`** (struct): The core push-down automaton. Manages a `Vec<SceneId>` stack, a `HashMap<String, SceneId>` named registry, a `HashMap<String, SceneId>` data store, and an `Option<ActiveTransition>` for visual transitions. Provides `push`, `pop`, `switch_to`, `clear`, `pop_to`, `pop_until`, registry CRUD, data CRUD, and transition query/update methods.
 
 ### `scene::transition`
 
 Visual transition types and active transition state for scene changes.
 
-- **`TransitionType`** (enum): Visual transition types between scenes. Consult the module-level documentation for the broader usage context and...
-- **`ActiveTransition`** (struct): Active transition state tracking progress between two scenes.
+- **`TransitionType`** (enum): Six variants controlling how scenes visually transition — `None` (instant), `Fade` (crossfade), `SlideLeft`, `SlideRight`, `SlideUp`, `SlideDown`. Parsed from Lua strings via `from_lua_str`.
+- **`ActiveTransition`** (struct): Tracks an in-progress transition with `transition_type`, `duration`, and `elapsed` fields. Provides `progress()` (normalized 0–1, clamped), `is_complete()`, and `update(dt)`.
+
+### `scene::depth_sorter`
+
+Per-frame depth-sorted draw batcher.
+
+- **`DepthEntry`** (struct): A single entry with `depth: f32`, `callback_index: usize`, and `is_object: bool`. Lower depth values draw first.
+- **`DepthSorter`** (struct): Collects `DepthEntry` items, stable-sorts by ascending depth, and provides `sorted_entries()` for external processing. Supports both plain callbacks (`add`) and object tables with `:drawSorted()` methods (`add_object`).
 
 ## Key Types
 
 ### Structs
 
+#### `scene::stack::SceneStack`
+
+The core scene management structure. Maintains a LIFO stack of `SceneId` values,
+a named registry mapping string names to scene IDs, an inter-scene data store,
+and an optional active transition. The Lua API layer maps each `SceneId` to a Lua
+table stored in the mlua registry. All stack operations return the affected scene
+IDs so the API layer can invoke the correct lifecycle callbacks.
+
+**Key methods**: `new()`, `next_scene_id()`, `push()`, `pop()`, `switch_to()`,
+`clear()`, `pop_to()`, `pop_until()`, `get_stack_size()`, `is_empty()`,
+`get_current()`, `get_all()`, `is_transitioning()`, `get_transition_progress()`,
+`update_transition()`, `register_scene()`, `get_registered()`, `has_registered()`,
+`unregister_scene()`, `get_registered_names()`, `set_data()`, `get_data()`,
+`has_data()`, `remove_data()`.
+
 #### `scene::transition::ActiveTransition`
 
-Active transition state tracking progress between two scenes.
+Tracks a visual transition in progress. Stores the transition type, total
+duration, and elapsed time. `progress()` returns a normalized value clamped
+to [0, 1]. `is_complete()` returns true once elapsed >= duration. `update(dt)`
+advances the timer by delta seconds.
 
 #### `scene::depth_sorter::DepthEntry`
 
-Entry in the depth-sorted draw queue. Consult the module-level documentation for the broader usage context and...
+A single draw entry in the depth queue. Fields: `depth` (sort key, lower = first),
+`callback_index` (index into an external callback storage managed by the Lua API
+layer), `is_object` (if true, the callback is a table with a `:drawSorted()` method
+rather than a plain function).
 
 #### `scene::depth_sorter::DepthSorter`
 
-Per-frame depth-sorted draw batcher. Consult the module-level documentation for the broader usage context and...
-
-#### `scene::stack::SceneStack`
-
-The scene stack manages a LIFO stack of scene references.  Scenes are identified by `SceneId` values. The Lua API layer...
+Per-frame draw batcher. Collects entries via `add()` and `add_object()`,
+stable-sorts them by ascending depth via `sort()` or `sorted_entries()`,
+and exposes the sorted slice for the Lua API layer to invoke callbacks.
+`clear()` resets for the next frame. Implements `Default`.
 
 ### Enums
 
 #### `scene::transition::TransitionType`
 
-Visual transition types between scenes. Consult the module-level documentation for the broader usage context and...
+Visual transition types between scenes. Derives `Debug`, `Clone`, `Copy`, `PartialEq`.
 
-### Type Aliases
+| Variant      | Description                             |
+|--------------|-----------------------------------------|
+| `None`       | Instant switch, no animation            |
+| `Fade`       | Crossfade between outgoing and incoming |
+| `SlideLeft`  | New scene slides in from the right      |
+| `SlideRight` | New scene slides in from the left       |
+| `SlideUp`    | New scene slides in from the bottom     |
+| `SlideDown`  | New scene slides in from the top        |
 
-#### `scene::stack::SceneId`
-
-Unique identifier for a scene in the stack.
+Parsed from Lua strings via `from_lua_str()`: `"fade"`, `"slideleft"`, `"slideright"`, `"slideup"`, `"slidedown"`. Unknown strings map to `None`.
 
 ## Lua API
 
-Exposed under `luna.scene.*` by `src/lua_api/scene_api/`.
+Registered in `src/lua_api/scene_api.rs`. The module creates a private `SceneState`
+(not part of `SharedState`) containing a `SceneStack`, a `scene_refs` map of
+`SceneId → LuaRegistryKey` (Lua scene tables), and a `data_refs` map of
+`String → LuaRegistryKey` (inter-scene data values). The `LuaDepthSorter` UserData
+wraps a `DepthSorter` plus a `Vec<LuaRegistryKey>` for callback storage.
 
-## tween — Animation Tweening System
+### Stack Operations
 
-> **Lua namespace:** `luna.tween`
-> **C++ module:** `src/modules/tween/`
-> **Purpose:** Provides a complete tweening (interpolation) system for animating numeric properties on Lua tables, with support for easing functions, sequences, parallel groups, repeat/yoyo, and lifecycle callbacks.
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.push` | `(scene, transition?, duration?, params?)` | Push a scene table; calls `prev:pause()` then `scene:enter(params)` |
+| `luna.scene.pop` | `(transition?, duration?)` | Pop top scene; calls `top:leave()` then `revealed:resume()` |
+| `luna.scene.switchTo` | `(scene, transition?, duration?, params?)` | Replace top scene; calls `old:leave()` then `scene:enter(params)` |
+| `luna.scene.clear` | `()` | Remove all scenes, calling `leave()` on each |
+| `luna.scene.popTo` | `(name) → boolean` | Pop until named registered scene is on top; returns false if not found |
+| `luna.scene.update` | `(dt)` | Update transition timer and call `top:update(dt)` |
+| `luna.scene.draw` | `()` | Call `draw()` on every scene bottom-to-top |
 
-## Reimplementation Notes
+### Stack Query
 
-- The tween system operates on **Lua tables** — you pass a target table and a fields table `{fieldName = endValue, ...}`. The tweener reads start values from the target table on first update, then writes interpolated values each frame.
-- All active tweens are tracked globally by the `TweenModule`. `luna.tween.update(dt)` advances all registered tweens. Individual tweens auto-register on creation.
-- Each Tween, TweenSequence, and TweenParallel stores Lua registry references (`luaL_ref`) for targets, callbacks, and custom easing functions. These are properly unref'd on destruction.
-- Start values are captured lazily — on first `update()` call, not at creation time. This allows the target table to be modified between tween creation and first frame.
-- Custom easings are registered globally via `registerEasing(name, fn)`. The easing function receives `(t)` where `t` is 0..1 and must return 0..1.
-- 24 built-in easings: `linear`, `quadIn`, `quadOut`, `quadInOut`, `cubicIn`, `cubicOut`, `cubicInOut`, `quartIn`, `quartOut`, `sineIn`, `sineOut`, `sineInOut`, `expoIn`, `expoOut`, `expoInOut`, `circIn`, `circOut`, `elasticIn`, `elasticOut`, `backIn`, `backOut`, `bounceOut`, `bounceIn`.
-- `TweenSequence` runs steps in order — each step can be a tween, a delay, or a callback. Steps run one at a time.
-- `TweenParallel` runs multiple tweens simultaneously; completes when all finish.
-- All `onComplete`, `onUpdate`, `onCancel` methods return `self` for chaining.
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.getStackSize` | `() → integer` | Number of scenes on the stack |
+| `luna.scene.isEmpty` | `() → boolean` | Whether the stack has no scenes |
+| `luna.scene.getCurrent` | `() → table?` | Top scene table, or nil if empty |
 
-## Dependencies
+### Transitions
 
-- None (standalone module, operates on Lua tables via registry refs)
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.isTransitioning` | `() → boolean` | Whether a transition is active |
+| `luna.scene.getTransitionProgress` | `() → number` | Progress from 0.0 to 1.0 |
 
-## Module Functions
+### Registry
 
-| Function | Signature | Returns | Description |
-|----------|-----------|---------|-------------|
-| `update` | `update(dt)` | — | Advance all active tweens by `dt` seconds. Call once per frame. |
-| `tween` | `tween(duration, target, fields [, easing])` | `Tween` | Create and register a tween. `target` is a Lua table, `fields` is `{name=endValue, ...}`, `easing` defaults to `"linear"`. |
-| `sequence` | `sequence()` | `TweenSequence` | Create an empty tween sequence for chaining steps. |
-| `parallel` | `parallel()` | `TweenParallel` | Create an empty parallel group for running tweens simultaneously. |
-| `delay` | `delay(seconds [, callback])` | `Tween` | Create a no-op tween that waits `seconds`, then optionally calls `callback`. |
-| `cancelAll` | `cancelAll()` | — | Cancel all active tweens, sequences, and parallel groups. |
-| `registerEasing` | `registerEasing(name, fn)` | — | Register a custom easing function. `fn(t)` receives 0..1, returns 0..1. |
-| `getEasingNames` | `getEasingNames()` | `table` | Get a list of all available easing names (built-in + custom). |
-| `getActiveCount` | `getActiveCount()` | `int` | Get the number of currently active tweens. |
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.registerScene` | `(name, scene)` | Register a scene table by name |
+| `luna.scene.getRegistered` | `(name) → table?` | Get a registered scene by name |
+| `luna.scene.hasRegistered` | `(name) → boolean` | Check if a name is registered |
+| `luna.scene.unregisterScene` | `(name)` | Remove a scene from the registry |
+| `luna.scene.getRegisteredNames` | `() → table` | List all registered scene names |
 
-## Type: Tween
+### Data Store
 
-Represents a single property interpolation over time.
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.setData` | `(key, value)` | Store a value by string key |
+| `luna.scene.getData` | `(key) → any?` | Retrieve a value by key, or nil |
+| `luna.scene.hasData` | `(key) → boolean` | Check if a key exists |
+| `luna.scene.removeData` | `(key)` | Delete a key-value pair |
 
-| Method | Signature | Returns | Description |
-|--------|-----------|---------|-------------|
-| `cancel` | `cancel()` | — | Cancel this tween immediately. Fires `onCancel` callback if set. |
-| `pause` | `pause()` | — | Pause this tween. It stops advancing but is not cancelled. |
-| `resume` | `resume()` | — | Resume a paused tween. |
-| `isActive` | `isActive()` | `boolean` | Returns true if the tween is still running (not completed/cancelled). |
-| `getProgress` | `getProgress()` | `number` | Returns current progress as 0..1 (based on elapsed/duration). |
-| `setRepeat` | `setRepeat(n)` | — | Set the number of times to repeat the tween after the first play. |
-| `setYoyo` | `setYoyo(enabled)` | — | If true, the tween reverses direction on each repeat (ping-pong). |
-| `onComplete` | `onComplete(fn)` | `Tween` | Set callback called when the tween finishes. Returns self for chaining. |
-| `onUpdate` | `onUpdate(fn)` | `Tween` | Set callback called on each update tick. Returns self for chaining. |
-| `onCancel` | `onCancel(fn)` | `Tween` | Set callback called when the tween is cancelled. Returns self for chaining. |
+### Factory
 
-## Type: TweenSequence
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.newDepthSorter` | `() → DepthSorter` | Create a new depth-sorted draw batcher |
 
-Runs a series of steps (tweens, delays, callbacks) one after another in order.
+### DepthSorter Methods (UserData)
 
-| Method | Signature | Returns | Description |
-|--------|-----------|---------|-------------|
-| `tween` | `tween(duration, target, fields [, easing])` | `TweenSequence` | Append a tween step. Same params as `luna.tween.tween()`. Returns self. |
-| `delay` | `delay(seconds)` | `TweenSequence` | Append a delay step. Returns self. |
-| `callback` | `callback(fn)` | `TweenSequence` | Append a callback step (called when reached). Returns self. |
-| `start` | `start()` | — | Begin executing the sequence from the first step. |
-| `cancel` | `cancel()` | — | Cancel the entire sequence. |
-| `isActive` | `isActive()` | `boolean` | Returns true if the sequence is still running. |
-| `onComplete` | `onComplete(fn)` | `TweenSequence` | Set callback for when all steps complete. Returns self. |
+| Method | Signature | Description |
+|--------|-----------|-------------|
+| `sorter:add` | `(callback, depth)` | Register a draw callback at a depth layer |
+| `sorter:addObject` | `(obj)` | Register a table with `:drawSorted()` at `obj.depth` |
+| `sorter:sort` | `()` | Sort all entries by ascending depth |
+| `sorter:flush` | `()` | Sort, invoke all callbacks in order, then clear |
+| `sorter:clear` | `()` | Remove all entries without invoking them |
+| `sorter:getCount` | `() → integer` | Number of queued entries |
 
-## Type: TweenParallel
+## Lua Examples
 
-Runs multiple tweens simultaneously. Completes when all child tweens finish.
-
-| Method | Signature | Returns | Description |
-|--------|-----------|---------|-------------|
-| `add` | `add(tween)` | — | Add a Tween to the parallel group. |
-| `start` | `start()` | — | Begin executing all child tweens simultaneously. |
-| `cancel` | `cancel()` | — | Cancel all child tweens. |
-| `isActive` | `isActive()` | `boolean` | Returns true if any child tween is still running. |
-| `onComplete` | `onComplete(fn)` | `TweenParallel` | Set callback for when all children complete. Returns self. |
-
-## Built-in Easing Functions
-
-| Category | In | Out | InOut |
-|----------|----|-----|-------|
-| Linear | `linear` | — | — |
-| Quad | `quadIn` | `quadOut` | `quadInOut` |
-| Cubic | `cubicIn` | `cubicOut` | `cubicInOut` |
-| Quart | `quartIn` | `quartOut` | — |
-| Sine | `sineIn` | `sineOut` | `sineInOut` |
-| Expo | `expoIn` | `expoOut` | `expoInOut` |
-| Circ | `circIn` | `circOut` | — |
-| Elastic | `elasticIn` | `elasticOut` | — |
-| Back | `backIn` | `backOut` | — |
-| Bounce | `bounceIn` | `bounceOut` | — |
-
-## Usage Examples
-
-### Basic Tween
+### Basic scene stack with lifecycle callbacks
 
 ```lua
-local obj = { x = 0, y = 0, alpha = 1 }
+local menu = {
+    enter  = function(self, params)
+        print("Menu entered")
+    end,
+    leave  = function(self) print("Menu left") end,
+    update = function(self, dt) end,
+    draw   = function(self)
+        luna.graphics.print("Main Menu - Press Enter", 100, 100)
+    end,
+}
 
--- Move obj.x to 100 and obj.y to 200 over 2 seconds with ease-out
-local t = luna.tween.tween(2.0, obj, { x = 100, y = 200 }, "cubicOut")
-t:onComplete(function() print("done!") end)
+local game = {
+    enter  = function(self, params)
+        self.level = params and params.level or 1
+    end,
+    pause  = function(self) print("Game paused") end,
+    resume = function(self) print("Game resumed") end,
+    leave  = function(self) print("Game over") end,
+    update = function(self, dt) end,
+    draw   = function(self)
+        luna.graphics.print("Level " .. self.level, 100, 100)
+    end,
+}
+
+function luna.load()
+    luna.scene.push(menu)
+end
 
 function luna.update(dt)
-    luna.tween.update(dt)
-    -- obj.x and obj.y are updated automatically
+    luna.scene.update(dt)
+end
+
+function luna.draw()
+    luna.scene.draw()
+end
+
+function luna.keypressed(key)
+    if key == "return" then
+        luna.scene.switchTo(game, "fade", 0.5, { level = 1 })
+    elseif key == "escape" then
+        luna.scene.pop("slideleft", 0.3)
+    end
 end
 ```
 
-### Sequence (Chained Animations)
+### Depth-sorted rendering
 
 ```lua
-local player = { x = 0, y = 0 }
+local sorter = luna.scene.newDepthSorter()
 
-luna.tween.sequence()
-    :tween(1.0, player, { x = 100 }, "quadOut")
-    :delay(0.5)
-    :callback(function() print("halfway!") end)
-    :tween(1.0, player, { y = 200 }, "bounceOut")
-    :onComplete(function() print("full sequence done") end)
-    :start()
+function luna.draw()
+    -- Add draw calls at different depths (lower = drawn first)
+    sorter:add(function() luna.graphics.print("Background", 0, 0) end, 0)
+    sorter:add(function() luna.graphics.print("Player", 100, 100) end, 50)
+    sorter:add(function() luna.graphics.print("UI", 200, 10) end, 100)
+
+    -- Flush invokes them in depth order: 0, 50, 100
+    sorter:flush()
+end
 ```
 
-### Parallel (Simultaneous Animations)
+### Named registry and inter-scene data
 
 ```lua
-local t1 = luna.tween.tween(1.0, sprite, { x = 100 })
-local t2 = luna.tween.tween(1.5, sprite, { alpha = 0 }, "expoOut")
+function luna.load()
+    luna.scene.registerScene("menu", {
+        enter = function(self) end,
+        draw  = function(self)
+            luna.graphics.print("Menu", 10, 10)
+        end,
+    })
 
-local par = luna.tween.parallel()
-par:add(t1)
-par:add(t2)
-par:onComplete(function() print("both done") end)
-par:start()
+    -- Share data between scenes
+    luna.scene.setData("highscore", 0)
+
+    -- Push by reference (popTo uses registry names)
+    luna.scene.push(luna.scene.getRegistered("menu"))
+end
 ```
-
-### Repeat and Yoyo
-
-```lua
-local pulse = luna.tween.tween(0.5, light, { intensity = 2.0 }, "sineInOut")
-pulse:setRepeat(5)   -- play 6 times total
-pulse:setYoyo(true)  -- alternate direction each repeat
-```
-
-### Custom Easing
-
-```lua
-luna.tween.registerEasing("bounceCustom", function(t)
-    return 1 - math.abs(math.sin(t * math.pi * 3)) * (1 - t)
-end)
-
-luna.tween.tween(2.0, obj, { scale = 2.0 }, "bounceCustom")
-```
-
----
-
-## Game Design Role
-
-- **UI animation**: Slide menus in/out, fade buttons, pulse selection highlights.
-- **Camera movement**: Smooth pan to targets, shake effects via yoyo tweens, zoom transitions.
-- **Cutscenes**: Sequence character movements, object transforms, and timed callbacks without coroutine spaghetti.
-- **Juiciness**: Add bounce, elastic, and overshoot easing to make interactions feel alive.
-- **World objects**: Animate doors opening, platforms moving, lights flickering with repeat/yoyo.
-- **Screen transitions**: Fade-to-black, wipe effects, and iris transitions between scenes.
-
----
-
-## Module Boundaries
-
-**vs luna.timer** — Timer provides raw `getDelta()` and `sleep()`. Tween uses `dt` from the game loop to advance interpolation. Timer measures time; Tween uses time to animate values.
-
-**vs luna.graphics** — Graphics renders visuals. Tween modifies numeric fields (x, y, alpha, scale) on data tables; Graphics draws whatever those values say each frame.
-
-**vs luna.ai (StateMachine)** — StateMachine handles discrete state transitions (idle → walk → attack). Tween handles *continuous* value interpolation within a state (smoothly moving x from 0 to 100).
-
-**vs luna.gui** — GUI widget animations (slide-in, fade, highlight pulse) are driven by tweens. Create a tween targeting the widget's properties table.
-
----
-
-## Edge Cases & Pitfalls
-
-- **Non-numeric fields silently skipped**: If a target table has a field of type string or boolean, the tweener skips it without error. Only `number` values are interpolated. Verify field types before tweening.
-- **Cancelled tweens keep last value**: Calling `cancel()` does NOT reset the target fields to their start values. The target retains whatever interpolated value it had at cancellation time. To "undo" a tween, create a reverse tween.
-- **Overlapping tweens on same field**: If two tweens target the same field on the same table, the last one updated "wins" each frame — they overwrite each other. Cancel the first tween before starting the second, or use a sequence.
-- **Zero-duration tween**: A tween with `duration = 0` completes instantly on the next `update()` call, jumping directly to the end values. The `onComplete` callback still fires.
-- **Sequence completion**: A TweenSequence fires `onComplete` after the last step finishes. If a callback step in the middle errors, subsequent steps are skipped and `onComplete` does not fire.
-
----
-
-## Planned / To Implement
-
-- **Path tween**: Interpolate along a BezierCurve or polyline path instead of single start→end values.
-- **Spring tween**: Physics-based spring interpolation with configurable stiffness and damping.
-- **Easing preview**: Dev tool that renders all easing curves as interactive graphs for tuning.
-- **Timeline JSON export**: Export a TweenSequence definition as JSON for external animation editors.
-- **Pause / resume groups**: Pause and resume all tweens in a named group (e.g. pause UI tweens during gameplay, keep gameplay tweens running).
-
-## Reimplementation Notes
-
-- The tween system operates on **Lua tables** — you pass a target table and a fields table `{fieldName = endValue, ...}`. The tweener reads start values from the target table on first update, then writes interpolated values each frame.
-- All active tweens are tracked globally by the `TweenModule`. `luna.tween.update(dt)` advances all registered tweens. Individual tweens auto-register on creation.
-- Each Tween, TweenSequence, and TweenParallel stores Lua registry references (`luaL_ref`) for targets, callbacks, and custom easing functions. These are properly unref'd on destruction.
-- Start values are captured lazily — on first `update()` call, not at creation time. This allows the target table to be modified between tween creation and first frame.
-- Custom easings are registered globally via `registerEasing(name, fn)`. The easing function receives `(t)` where `t` is 0..1 and must return 0..1.
-- 24 built-in easings: `linear`, `quadIn`, `quadOut`, `quadInOut`, `cubicIn`, `cubicOut`, `cubicInOut`, `quartIn`, `quartOut`, `sineIn`, `sineOut`, `sineInOut`, `expoIn`, `expoOut`, `expoInOut`, `circIn`, `circOut`, `elasticIn`, `elasticOut`, `backIn`, `backOut`, `bounceOut`, `bounceIn`.
-- `TweenSequence` runs steps in order — each step can be a tween, a delay, or a callback. Steps run one at a time.
-- `TweenParallel` runs multiple tweens simultaneously; completes when all finish.
-- All `onComplete`, `onUpdate`, `onCancel` methods return `self` for chaining.
-
-## Dependencies
-
-- None (standalone module, operates on Lua tables via registry refs)
-
-## Module Functions
-
-| Function | Signature | Returns | Description |
-|----------|-----------|---------|-------------|
-| `update` | `update(dt)` | — | Advance all active tweens by `dt` seconds. Call once per frame. |
-| `tween` | `tween(duration, target, fields [, easing])` | `Tween` | Create and register a tween. `target` is a Lua table, `fields` is `{name=endValue, ...}`, `easing` defaults to `"linear"`. |
-| `sequence` | `sequence()` | `TweenSequence` | Create an empty tween sequence for chaining steps. |
-| `parallel` | `parallel()` | `TweenParallel` | Create an empty parallel group for running tweens simultaneously. |
-| `delay` | `delay(seconds [, callback])` | `Tween` | Create a no-op tween that waits `seconds`, then optionally calls `callback`. |
-| `cancelAll` | `cancelAll()` | — | Cancel all active tweens, sequences, and parallel groups. |
-| `registerEasing` | `registerEasing(name, fn)` | — | Register a custom easing function. `fn(t)` receives 0..1, returns 0..1. |
-| `getEasingNames` | `getEasingNames()` | `table` | Get a list of all available easing names (built-in + custom). |
-| `getActiveCount` | `getActiveCount()` | `int` | Get the number of currently active tweens. |
-
-## Type: Tween
-
-Represents a single property interpolation over time.
-
-| Method | Signature | Returns | Description |
-|--------|-----------|---------|-------------|
-| `cancel` | `cancel()` | — | Cancel this tween immediately. Fires `onCancel` callback if set. |
-| `pause` | `pause()` | — | Pause this tween. It stops advancing but is not cancelled. |
-| `resume` | `resume()` | — | Resume a paused tween. |
-| `isActive` | `isActive()` | `boolean` | Returns true if the tween is still running (not completed/cancelled). |
-| `getProgress` | `getProgress()` | `number` | Returns current progress as 0..1 (based on elapsed/duration). |
-| `setRepeat` | `setRepeat(n)` | — | Set the number of times to repeat the tween after the first play. |
-| `setYoyo` | `setYoyo(enabled)` | — | If true, the tween reverses direction on each repeat (ping-pong). |
-| `onComplete` | `onComplete(fn)` | `Tween` | Set callback called when the tween finishes. Returns self for chaining. |
-| `onUpdate` | `onUpdate(fn)` | `Tween` | Set callback called on each update tick. Returns self for chaining. |
-| `onCancel` | `onCancel(fn)` | `Tween` | Set callback called when the tween is cancelled. Returns self for chaining. |
-
-## Type: TweenSequence
-
-Runs a series of steps (tweens, delays, callbacks) one after another in order.
-
-| Method | Signature | Returns | Description |
-|--------|-----------|---------|-------------|
-| `tween` | `tween(duration, target, fields [, easing])` | `TweenSequence` | Append a tween step. Same params as `luna.tween.tween()`. Returns self. |
-| `delay` | `delay(seconds)` | `TweenSequence` | Append a delay step. Returns self. |
-| `callback` | `callback(fn)` | `TweenSequence` | Append a callback step (called when reached). Returns self. |
-| `start` | `start()` | — | Begin executing the sequence from the first step. |
-| `cancel` | `cancel()` | — | Cancel the entire sequence. |
-| `isActive` | `isActive()` | `boolean` | Returns true if the sequence is still running. |
-| `onComplete` | `onComplete(fn)` | `TweenSequence` | Set callback for when all steps complete. Returns self. |
 
 ## Item Summary
 
-| Kind | Count |
-|------|-------|
-| `enum` | 1 |
-| `mod` | 3 |
-| `struct` | 4 |
-| `type` | 1 |
-| **Total** | **9** |
+| Kind       | Count |
+|------------|-------|
+| `type`     | 1     |
+| `struct`   | 4     |
+| `enum`     | 1     |
+| `fn`       | 36    |
+| **Total**  | **42**|
 
 ## References
 
-| Module    | Relationship  | Notes                                              |
-|-----------|-----------    |----------------------------------------------------|
-| `engine`  | Imports from  | Uses `SharedState`                                 |
-| `event`   | Related       | Scene transitions may be triggered by event queue entries |
-| `renderer`| Related       | Each scene contains its own draw commands           |
-| `lua_api` | Imported by   | `src/lua_api/scene_api.rs` registers `luna.scene.*` |
+| Module       | Relationship | Notes                                                    |
+|--------------|--------------|----------------------------------------------------------|
+| `engine`     | Imports from | Uses `log_messages` constants for structured logging     |
+| `lua_api`    | Imported by  | `scene_api.rs` binds `SceneStack`, `DepthSorter`, `TransitionType` to Lua |
+| `math`       | None         | No direct dependency — scene module is logic-only        |
+| `graphics`   | None         | Scenes call draw functions via Lua callbacks, not Rust imports |
+| `particle`   | Similar      | Both are Tier 2; particle owns visual effects, scene owns state lifecycle |
+| `tilemap`    | Similar      | Both are Tier 2; tilemap owns map data, scene owns navigation between game states |
 
 ## Notes
 
-- The scene stack is a `Vec<Box<dyn Scene>>`; `push` adds to stack, `pop` removes top, `switch` clears and replaces.
-- `enter(data)` and `exit()` are optional lifecycle callbacks; `update(dt)` and `draw()` are always called on the top scene.
-- Scene `data` passed through push/switch must be a serialisable Lua table (no userdata).
-- Rendering peeks through the stack: transparent scenes can opt into `drawBelow()` to composite.
+- **No SharedState dependency**: Unlike most modules, the scene API maintains its own private `SceneState` via `Rc<RefCell<SceneState>>` rather than using `SharedState`. This is because scene data (Lua table registry keys) is tightly coupled to the Lua VM lifetime and would add unnecessary complexity to `SharedState`.
+- **Scene tables are Lua-owned**: The Rust `SceneStack` only stores `SceneId` integers. Actual Lua scene tables are held in the mlua registry via `LuaRegistryKey`. This means scene state survives garbage collection as long as the scene is on the stack or in the registry.
+- **Lifecycle callback invocation order**: `push` calls `prev:pause()` before `new:enter(params)`. `pop` calls `top:leave()` before `revealed:resume()`. `switchTo` calls `old:leave()` before `new:enter(params)`. `clear` calls `leave()` on every scene. All callbacks are optional — missing methods are silently skipped.
+- **Transition types are string-matched**: `from_lua_str` is case-sensitive and maps unknown strings to `TransitionType::None`. Valid strings: `"fade"`, `"slideleft"`, `"slideright"`, `"slideup"`, `"slidedown"`.
+- **DepthSorter is per-frame**: The sorter is designed to be populated during `draw()`, flushed once, and cleared. Callbacks are stored as `LuaRegistryKey` values and released after flush. Do not carry entries across frames.
+- **draw() dispatches to all scenes**: Unlike `update()` which only calls the top scene, `draw()` iterates every scene in the stack bottom-to-top. This enables overlay patterns (e.g., a pause menu drawn over gameplay).
+- **Data store values are Lua-typed**: `setData`/`getData` accept any Lua value (number, string, table, boolean, nil). The Rust side stores only `SceneId` references; actual values live in the mlua registry.
+- **Transition rendering is the caller's responsibility**: The module tracks transition progress but does not render transition effects itself. Games should read `getTransitionProgress()` and apply their own visual effects (alpha fade, position offset, etc.).

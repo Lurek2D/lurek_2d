@@ -1,49 +1,87 @@
 # `bin` — Agent Reference
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Unassigned |
-| **Status** | Implemented — Full |
-| **Lua API** | `—` |
-| **Source** | `src/bin/` |
-| **Rust Tests** | `tests/unit/bin_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_bin.lua` |
-| **Architecture** | — |
+| Property       | Value                                            |
+|----------------|--------------------------------------------------|
+| **Tier**       | Special — CLI entry point (not a numbered tier)  |
+| **Status**     | Implemented — Full                               |
+| **Lua API**    | —                                                |
+| **Source**      | `src/bin/`                                       |
+| **Rust Tests** | —                                                |
+| **Lua Tests**  | —                                                |
+| **Architecture** | —                                              |
 
 ## Summary
 
-The `bin` module contains the `lunec` compiler binary entry point — a minimal CLI wrapper that
-accepts a game directory path, runs the Luna2D engine in headless mode to syntax-check the
-game's Lua scripts, and reports any parse or runtime errors to stderr with an exit code.
+The `bin` module contains the `lunec` binary entry point — a console-less launcher for
+Luna2D on Windows. Setting `#![cfg_attr(windows, windows_subsystem = "windows")]` suppresses
+the black terminal window that would otherwise appear alongside the game window, providing a
+polished experience for distributed games. On Linux and macOS the attribute is ignored and
+`lunec` behaves identically to the standard `luna2d` binary.
 
-`lunec` is distinct from the main `luna2d` binary: it performs a dry-run validation pass
-(no window, no GPU, no audio) and exits after the `luna.load()` callback returns, making it
-suitable for use in CI pipelines and editor extensions.
+The `lunec` binary is auto-discovered by Cargo from `src/bin/lunec.rs`. It contains a single
+`main()` function that delegates immediately to `luna2d::luna_run()` — the shared entry point
+defined in `src/lib.rs`. All CLI argument parsing, config loading, `.lunar` archive extraction,
+panic hook installation, and engine loop execution happen inside `luna_run()`, not in this file.
 
-The source file is `src/bin/lunec.rs`. It is not a library module; it exposes no public Rust
-API and has no Lua bindings. Configuration uses the same `conf.lua` → `Config` path as the
-main runtime.
+The companion binary `luna2d` lives at `src/main.rs` and is the console-attached development
+binary. Both binaries call the same `luna_run()` function; the only difference is the
+`windows_subsystem` attribute on `lunec`.
 
-**Scope boundary**: `lunec` delegates all engine logic to the `luna2d` library crate. Its
-sole responsibility is argument parsing, headless execution, and exit-code propagation.
+A batch-file wrapper `lunec.bat` exists at the repository root for scenarios where a separately
+compiled `lunec.exe` is unavailable — it launches `luna2d.exe` via `start /B` to detach the
+console window.
+
+**Scope boundary**: `lunec.rs` contains zero engine logic. It is a three-line file whose sole
+purpose is the Windows subsystem attribute plus a call to the library crate. Any changes to
+boot sequence, CLI parsing, or config loading belong in `src/lib.rs` (`luna_run`) or
+`src/engine/app.rs` (`App::new` / `App::run`), never here.
+
 ## Architecture
 
 ```
-bin (module root)
-  ├── lunec.rs — # lunec — Console-less Luna2D Launcher This is an alternative binary entry point for Luna2D that suppresses the console window on Windows by setting the `windows_subsystem = "windows"` attribute. Behavior is otherwise identical to the main `luna2d` binary. ## Purpose When distributing a game to end users on Windows, running via `lunec.exe` prevents the black terminal window from appearing alongside the game window. This provides a polished, professional feel for released games. ## Usage ```sh lunec path/to/my_game     # Launch game without console window lunec                     # Splash screen, no console ``` ## Platform Notes - **Windows**: `windows_subsystem = "windows"` hides the console. - **Linux/macOS**: No behavioral difference from the standard binary; the attribute is ignored on non-Windows platforms.
+                     +---------------+      +---------------+
+                     |  luna2d.exe   |      |  lunec.exe    |
+                     |  src/main.rs  |      | src/bin/lunec |
+                     |  (console)    |      |  (no console) |
+                     +-------+-------+      +-------+-------+
+                             |                      |
+                             +----------+-----------+
+                                        |
+                                        v
+                            +-----------------------+
+                            |  luna2d::luna_run()   |
+                            |     src/lib.rs        |
+                            +-----------+-----------+
+                                        |
+              +-------------------------+-------------------------+
+              v                         v                         v
+    Install panic hook         Parse CLI args            Extract .lunar
+    (Windows msgbox)           (game dir or cwd)         archive if needed
+              |                         |                         |
+              +-------------------------+-------------------------+
+                                        |
+                                        v
+                            +-----------------------+
+                            | Config::load_from_    |
+                            |   conf_lua(&game_dir) |
+                            +-----------+-----------+
+                                        |
+                                        v
+                            +-----------------------+
+                            |  App::new(config)     |
+                            |  app.run(game_dir)    |
+                            +-----------------------+
 ```
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
-| `lunec.rs` | # lunec — Console-less Luna2D Launcher This is an alternative binary entry point for Luna2D that suppresses the console window on Windows by setting the `windows_subsystem = "windows"` attribute. Behavior is otherwise identical to the main `luna2d` binary. ## Purpose When distributing a game to end users on Windows, running via `lunec.exe` prevents the black terminal window from appearing alongside the game window. This provides a polished, professional feel for released games. ## Usage ```sh lunec path/to/my_game     # Launch game without console window lunec                     # Splash screen, no console ``` ## Platform Notes - **Windows**: `windows_subsystem = "windows"` hides the console. - **Linux/macOS**: No behavioral difference from the standard binary; the attribute is ignored on non-Windows platforms. |
+| File       | Purpose                                                                              |
+|------------|--------------------------------------------------------------------------------------|
+| `lunec.rs` | Console-less binary entry point; sets `windows_subsystem = "windows"` and calls `luna_run()` |
 
 ## Submodules
 
-### `bin::lunec`
-
-# lunec — Console-less Luna2D Launcher This is an alternative binary entry point for Luna2D that suppresses the console window on Windows by setting the `windows_subsystem = "windows"` attribute. Behavior is otherwise identical to the main `luna2d` binary. ## Purpose When distributing a game to end users on Windows, running via `lunec.exe` prevents the black terminal window from appearing alongside the game window. This provides a polished, professional feel for released games. ## Usage ```sh lunec path/to/my_game     # Launch game without console window lunec                     # Splash screen, no console ``` ## Platform Notes - **Windows**: `windows_subsystem = "windows"` hides the console. - **Linux/macOS**: No behavioral difference from the standard binary; the attribute is ignored on non-Windows platforms.
+None. The `bin` directory contains a single standalone binary source file with no submodules.
 
 ## Key Types
 
@@ -57,38 +95,64 @@ No public enums.
 
 ## Lua API
 
-No Lua API — internal Rust module only.
+No Lua API — CLI binary entry point only.
 
 ## Lua Examples
 
-```lua
--- TODO: Add usage example
+`lunec` is not invoked from Lua. Usage is from the command line:
+
+```sh
+# Launch a game without a console window (Windows release distribution)
+lunec path/to/my_game
+
+# Show the Luna2D splash screen without a console window
+lunec
+
+# Launch a .lunar archive (zip-packaged game)
+lunec my_game.lunar
+```
+
+Equivalent development commands using the console-attached binary:
+
+```sh
+# Development — console stays open for log output
+luna2d path/to/my_game
+cargo run -- path/to/my_game
 ```
 
 ## Item Summary
 
-| Kind | Count |
-|------|-------|
-| `struct` | 0 |
-| `enum`   | 0 |
-| `fn`     | 0 |
-| **Total** | **0** |
+| Kind      | Count |
+|-----------|-------|
+| `struct`  | 0     |
+| `enum`    | 0     |
+| `fn`      | 1     |
+| **Total** | **1** |
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `engine` | Imports from | Uses SharedState, EngineError |
-| `math` | Imports from | Vec2, Color, Rect |
-| `lua_api` | Imported by | Binds public API to Lua |
+| Module   | Relationship | Notes                                                             |
+|----------|--------------|-------------------------------------------------------------------|
+| `lib.rs` | Calls into   | `lunec.rs` calls `luna2d::luna_run()` — the shared boot function  |
+| `engine` | Indirect     | `luna_run()` creates `Config` and `App`; `lunec` never touches them directly |
 
-TODO: Add entries for similar modules and explain the separation of duties.
+The companion binary `src/main.rs` (`luna2d`) is the console-attached counterpart. Both share
+identical behaviour via `luna_run()`; the only difference is the Windows subsystem attribute.
 
 ## Notes
 
-TODO: Document unique facts an agent must know before editing this module:
-- External crate constraints (version, thread-safety, API limitations)
-- Hardware or OS-specific behaviour (e.g., headless fallback on CI)
-- Known limitations or intentional omissions
-- Best practices and anti-patterns for this module
-- What Lua scripts will break if the API changes
+- **Three-line file**: `lunec.rs` is intentionally minimal. If you need to change boot
+  behaviour, edit `luna_run()` in `src/lib.rs` or `App::new()` / `App::run()` in
+  `src/engine/app.rs`. Never add logic to `lunec.rs` itself.
+- **Cargo auto-discovery**: `src/bin/lunec.rs` is automatically discovered as the `lunec`
+  binary by Cargo. There is no explicit `[[bin]]` entry for it in `Cargo.toml` — only the
+  main `luna2d` binary at `src/main.rs` has one.
+- **Windows-only effect**: The `#![cfg_attr(windows, windows_subsystem = "windows")]`
+  attribute only affects Windows builds. On Linux and macOS `lunec` is functionally identical
+  to `luna2d`.
+- **Batch-file fallback**: `lunec.bat` at the repo root provides console-less launching
+  without a separate binary by using `start "" /B luna2d.exe %*`. This is used in
+  distribution scenarios where only one `.exe` is shipped.
+- **No tests**: `lunec.rs` has no dedicated tests because it contains no logic — it is a
+  pass-through to `luna_run()`. Testing the boot sequence is covered by integration tests
+  that exercise `luna_run()` or `App::run()` directly.

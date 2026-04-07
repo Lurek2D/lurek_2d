@@ -2,14 +2,39 @@
 
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use super::SharedState;
-use crate::gui::context::{GuiContext, WidgetKind};
+use crate::gui::context::{GuiContext, GuiEvent, WidgetKind};
 use crate::gui::containers::LayoutDirection;
 use crate::gui::extras::{AccordionSection, TableColumn, Toast};
 use crate::gui::theme::{Theme, WidgetStyle};
 use crate::gui::widget::{WidgetState, WidgetType};
+
+
+// -------------------------------------------------------------------------------
+// GuiCallbacks — per-widget Lua callback registry
+// -------------------------------------------------------------------------------
+
+/// Stores registered Lua callbacks keyed by widget index.
+///
+/// # Fields
+/// - `on_click` — `HashMap<usize, RegistryKey>`. Per-widget click callbacks.
+/// - `on_change` — `HashMap<usize, RegistryKey>`. Per-widget change callbacks.
+/// - `on_close` — `HashMap<usize, RegistryKey>`. Per-widget close callbacks.
+/// - `on_select` — `HashMap<usize, RegistryKey>`. Per-widget select callbacks.
+#[derive(Default)]
+struct GuiCallbacks {
+    /// Per-widget click callbacks (Button, RadioButton, MenuItem).
+    on_click:  HashMap<usize, LuaRegistryKey>,
+    /// Per-widget change callbacks (Slider, TextInput, CheckBox, ColorPicker, etc.).
+    on_change: HashMap<usize, LuaRegistryKey>,
+    /// Per-widget close callbacks (Dialog, GUIWindow).
+    on_close:  HashMap<usize, LuaRegistryKey>,
+    /// Per-widget select callbacks (GUITable row selection).
+    on_select: HashMap<usize, LuaRegistryKey>,
+}
 
 // -------------------------------------------------------------------------------
 // create_widget_table — shared base methods for every widget
@@ -20,6 +45,7 @@ fn create_widget_table<'a>(
     lua: &'a Lua,
     ctx: &Rc<RefCell<GuiContext>>,
     idx: usize,
+    cbs: &Rc<RefCell<GuiCallbacks>>,
 ) -> LuaResult<LuaTable<'a>> {
     let t = lua.create_table()?;
     /// @return nil
@@ -248,16 +274,26 @@ fn create_widget_table<'a>(
     })?)?;
 
     // -- setOnClick --
-    /// Stores a click callback (future invocation).
+    /// Registers a callback invoked when this widget is clicked.
     /// @param fn : function
     /// @return nil
-    t.set("setOnClick", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnClick", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_click.insert(idx, key);
+        Ok(())
+    })?)?;
 
     // -- setOnChange --
-    /// Stores a change callback (future invocation).
+    /// Registers a callback invoked when this widget's value changes.
     /// @param fn : function
     /// @return nil
-    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnChange", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_change.insert(idx, key);
+        Ok(())
+    })?)?;
 
     // -- setOnDraw --
     /// Stores a custom draw callback (future invocation).
@@ -1367,7 +1403,7 @@ fn add_tree_view_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>,
 }
 
 /// Adds RadioButton-specific methods.
-fn add_radio_button_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_radio_button_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getText", lua.create_function(move |_, ()| {
@@ -1408,12 +1444,17 @@ fn add_radio_button_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext
         Ok(())
     })?)?;
     /// @return nil
-    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnChange", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_change.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
 /// Adds ScrollBar-specific methods.
-fn add_scroll_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_scroll_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getScrollPosition", lua.create_function(move |_, ()| {
@@ -1460,12 +1501,17 @@ fn add_scroll_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>
         Ok(match g.widgets.get(idx) { Some(WidgetKind::ScrollBar(sb)) => sb.vertical, _ => true })
     })?)?;
     /// @return nil
-    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnChange", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_change.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
 /// Adds GUIWindow-specific methods.
-fn add_gui_window_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_gui_window_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getTitle", lua.create_function(move |_, ()| {
@@ -1519,7 +1565,12 @@ fn add_gui_window_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>
         Ok(())
     })?)?;
     /// @return nil
-    t.set("setOnClose", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnClose", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_close.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
@@ -1726,7 +1777,7 @@ fn add_menu_bar_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, 
 }
 
 /// Adds MenuItem-specific methods.
-fn add_menu_item_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_menu_item_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getText", lua.create_function(move |_, ()| {
@@ -1780,12 +1831,17 @@ fn add_menu_item_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>,
         Ok(match g.widgets.get(idx) { Some(WidgetKind::MenuItem(mi)) => mi.items.clone(), _ => Vec::new() })
     })?)?;
     /// @return nil
-    t.set("setOnClick", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnClick", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_click.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
 /// Adds Dialog-specific methods.
-fn add_dialog_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_dialog_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getTitle", lua.create_function(move |_, ()| {
@@ -1825,15 +1881,22 @@ fn add_dialog_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, id
         if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.open = true; }
         Ok(())
     })?)?;
-    let c = ctx.clone();
     /// @return nil
+    let c2 = ctx.clone();
     t.set("close", lua.create_function(move |_, ()| {
-        let mut g = c.borrow_mut();
+        let mut g = c2.borrow_mut();
+        let was_open = matches!(g.widgets.get(idx), Some(WidgetKind::Dialog(d)) if d.open);
         if let Some(WidgetKind::Dialog(d)) = g.widgets.get_mut(idx) { d.open = false; }
+        if was_open { g.pending_events.push(GuiEvent::Close(idx)); }
         Ok(())
     })?)?;
     /// @return nil
-    t.set("setOnClose", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnClose", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_close.insert(idx, key);
+        Ok(())
+    })?)?;
     let c = ctx.clone();
     /// @return nil
     t.set("setContent", lua.create_function(move |_, content_idx: Option<usize>| {
@@ -2003,7 +2066,7 @@ fn add_tooltip_panel_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContex
 }
 
 /// Adds ColorPicker-specific methods.
-fn add_color_picker_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_color_picker_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("getColor", lua.create_function(move |_, ()| {
@@ -2044,12 +2107,17 @@ fn add_color_picker_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext
         Ok(())
     })?)?;
     /// @return nil
-    t.set("setOnChange", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnChange", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_change.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
 /// Adds GUITable-specific methods (1-based rows/cols in Lua).
-fn add_gui_table_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize) -> LuaResult<()> {
+fn add_gui_table_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>, idx: usize, cbs: &Rc<RefCell<GuiCallbacks>>) -> LuaResult<()> {
     let c = ctx.clone();
     /// @return nil
     t.set("addColumn", lua.create_function(move |_, (header, width): (String, Option<f32>)| {
@@ -2123,7 +2191,12 @@ fn add_gui_table_methods(lua: &Lua, t: &LuaTable, ctx: &Rc<RefCell<GuiContext>>,
         Ok(())
     })?)?;
     /// @return nil
-    t.set("setOnSelect", lua.create_function(|_, _f: LuaFunction| Ok(()))?)?;
+    let cbs2 = cbs.clone();
+    t.set("setOnSelect", lua.create_function(move |lua, f: LuaFunction| {
+        let key = lua.create_registry_value(f)?;
+        cbs2.borrow_mut().on_select.insert(idx, key);
+        Ok(())
+    })?)?;
     Ok(())
 }
 
@@ -2263,18 +2336,20 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let ctx = Rc::new(RefCell::new(GuiContext::new()));
+    let callbacks = Rc::new(RefCell::new(GuiCallbacks::default()));
 
     // -- newButton --
     /// Creates a button widget.
     /// @param text : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newButton", lua.create_function(move |lua, text: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_button(text.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_button_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2284,12 +2359,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param text : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newLabel", lua.create_function(move |lua, text: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_label(text.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_label_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2298,12 +2374,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a text input widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newTextInput", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_text_input();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_text_input_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2313,12 +2390,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param text : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newCheckbox", lua.create_function(move |lua, text: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_checkbox(text.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_checkbox_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2329,12 +2407,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param max : number
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newSlider", lua.create_function(move |lua, (min, max): (Option<f64>, Option<f64>)| {
         let mut g = c.borrow_mut();
         let idx = g.add_slider(min.unwrap_or(0.0), max.unwrap_or(100.0));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_slider_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2345,12 +2424,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param max : number
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newProgressBar", lua.create_function(move |lua, (min, max): (Option<f64>, Option<f64>)| {
         let mut g = c.borrow_mut();
         let idx = g.add_progress_bar(min.unwrap_or(0.0), max.unwrap_or(100.0));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_progress_bar_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2359,12 +2439,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a dropdown combo box widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newComboBox", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_combo_box();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_combo_box_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2373,12 +2454,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a selectable list widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newList", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_list_box();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_list_box_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2387,12 +2469,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a container panel widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newPanel", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_panel();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_panel_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2402,13 +2485,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param direction : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newLayout", lua.create_function(move |lua, direction: Option<String>| {
         let dir = direction.as_deref().and_then(LayoutDirection::parse_str).unwrap_or(LayoutDirection::Vertical);
         let mut g = c.borrow_mut();
         let idx = g.add_layout(dir);
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_layout_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2417,12 +2501,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a scrollable panel widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newScrollPanel", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_scroll_panel();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_scroll_panel_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2431,12 +2516,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a 9-patch slicer widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newNinePatch", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_nine_patch();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_nine_patch_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2445,12 +2531,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a tab bar widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newTabBar", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_tab_bar();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_tab_bar_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2460,12 +2547,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param vertical : boolean
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newSeparator", lua.create_function(move |lua, vertical: Option<bool>| {
         let mut g = c.borrow_mut();
         let idx = g.add_separator(vertical.unwrap_or(false));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_separator_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2476,12 +2564,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param h : number
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newSpacer", lua.create_function(move |lua, (w, h): (Option<f32>, Option<f32>)| {
         let mut g = c.borrow_mut();
         let idx = g.add_spacer(w.unwrap_or(0.0), h.unwrap_or(0.0));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2491,6 +2580,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param duration : number
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newToast", lua.create_function(move |lua, (message, duration): (Option<String>, Option<f32>)| {
         let toast = Toast::new(message.unwrap_or_default(), duration.unwrap_or(3.0));
@@ -2498,7 +2588,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         let idx = g.widgets.len();
         g.widgets.push(WidgetKind::Toast(toast));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_toast_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2507,12 +2597,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a collapsible tree view widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newTreeView", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_tree_view();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_tree_view_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2523,13 +2614,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param group : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newRadioButton", lua.create_function(move |lua, (text, group): (Option<String>, Option<String>)| {
         let mut g = c.borrow_mut();
         let idx = g.add_radio_button(text.unwrap_or_default(), group.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_radio_button_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_radio_button_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2538,13 +2630,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param vertical : boolean
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newScrollBar", lua.create_function(move |lua, vertical: Option<bool>| {
         let mut g = c.borrow_mut();
         let idx = g.add_scroll_bar(vertical.unwrap_or(true));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_scroll_bar_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_scroll_bar_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2553,13 +2646,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param title : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newWindow", lua.create_function(move |lua, title: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_gui_window(title.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_gui_window_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_gui_window_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2568,12 +2662,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param orientation : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newSplitPanel", lua.create_function(move |lua, orientation: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_split_panel(orientation.unwrap_or_else(|| "horizontal".to_string()));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_split_panel_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2582,12 +2677,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a dock panel.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newDockPanel", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_dock_panel();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_dock_panel_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2597,12 +2693,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param orientation : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newToolbar", lua.create_function(move |lua, orientation: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_toolbar(orientation.unwrap_or_else(|| "horizontal".to_string()));
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_toolbar_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2611,12 +2708,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a menu bar widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newMenuBar", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_menu_bar();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_menu_bar_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2626,13 +2724,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param text : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newMenuItem", lua.create_function(move |lua, text: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_menu_item(text.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_menu_item_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_menu_item_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2641,13 +2740,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param title : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newDialog", lua.create_function(move |lua, title: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_dialog(title.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_dialog_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_dialog_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2655,12 +2755,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a status bar widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newStatusBar", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_status_bar();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_status_bar_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2669,12 +2770,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a collapsible accordion widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newAccordion", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_accordion();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_accordion_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2684,12 +2786,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param text : string
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newTooltipPanel", lua.create_function(move |lua, text: Option<String>| {
         let mut g = c.borrow_mut();
         let idx = g.add_tooltip_panel(text.unwrap_or_default());
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_tooltip_panel_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2698,13 +2801,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a color picker widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newColorPicker", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_color_picker();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_color_picker_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_color_picker_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2712,13 +2816,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a data table widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newTable", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_gui_table();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
-        add_gui_table_methods(lua, &t, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
+        add_gui_table_methods(lua, &t, &c, idx, &cbs)?;
         Ok(t)
     })?)?;
 
@@ -2726,12 +2831,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates an image display widget.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return nil
     tbl.set("newImageWidget", lua.create_function(move |lua, ()| {
         let mut g = c.borrow_mut();
         let idx = g.add_image_widget();
         drop(g);
-        let t = create_widget_table(lua, &c, idx)?;
+        let t = create_widget_table(lua, &c, idx, &cbs)?;
         add_image_widget_methods(lua, &t, &c, idx)?;
         Ok(t)
     })?)?;
@@ -2747,6 +2853,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Sets the active GUI theme.
     /// @param theme : Theme
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("setTheme", lua.create_function(move |_, theme_ud: LuaAnyUserData| {
         let lua_theme = theme_ud.borrow::<LuaTheme>()?;
@@ -2759,6 +2866,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns whether a theme is set.
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("getTheme", lua.create_function(move |_, ()| {
         Ok(c.borrow().theme.is_some())
@@ -2768,9 +2876,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns the root panel widget table.
     /// @return table
     let c = ctx.clone();
+    let cbs = callbacks.clone();
     /// @return table
     tbl.set("getRoot", lua.create_function(move |lua, ()| {
-        let t = create_widget_table(lua, &c, 0)?;
+        let t = create_widget_table(lua, &c, 0, &cbs)?;
         add_panel_methods(lua, &t, &c, 0)?;
         Ok(t)
     })?)?;
@@ -2779,6 +2888,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Sets keyboard focus to a widget or clears it.
     /// @param widget : table
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("setFocus", lua.create_function(move |_, widget: Option<LuaTable>| {
         let idx = match widget {
@@ -2793,6 +2903,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns the focused widget index or nil.
     /// @return number
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("getFocus", lua.create_function(move |_, ()| {
         Ok(c.borrow().focused_widget)
@@ -2801,6 +2912,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- focusNext --
     /// Moves focus to the next focusable widget.
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("focusNext", lua.create_function(move |_, ()| {
         c.borrow_mut().focus_next();
@@ -2810,6 +2922,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- focusPrev --
     /// Moves focus to the previous focusable widget.
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("focusPrev", lua.create_function(move |_, ()| {
         c.borrow_mut().focus_prev();
@@ -2819,6 +2932,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     // -- clearFocus --
     /// Clears keyboard focus.
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("clearFocus", lua.create_function(move |_, ()| {
         c.borrow_mut().set_focus(None);
@@ -2829,6 +2943,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Queues a toast notification from a table.
     /// @param toast : table
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("addToast", lua.create_function(move |_, toast_table: LuaTable| {
         let msg: String = toast_table.get::<_, Option<String>>("message")?
@@ -2843,6 +2958,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns the number of active toasts.
     /// @return number
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("getToastCount", lua.create_function(move |_, ()| {
         Ok(c.borrow().toast_count())
@@ -2855,6 +2971,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param button : number
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("mousepressed", lua.create_function(move |_, (x, y, btn): (f32, f32, Option<u32>)| {
         Ok(c.borrow_mut().mouse_pressed(x, y, btn.unwrap_or(1)))
@@ -2867,6 +2984,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param button : number
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("mousereleased", lua.create_function(move |_, (x, y, btn): (f32, f32, Option<u32>)| {
         Ok(c.borrow_mut().mouse_released(x, y, btn.unwrap_or(1)))
@@ -2878,6 +2996,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param y : number
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("mousemoved", lua.create_function(move |_, (x, y): (f32, f32)| {
         Ok(c.borrow_mut().mouse_moved(x, y))
@@ -2888,6 +3007,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param key : string
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("keypressed", lua.create_function(move |_, key: String| {
         Ok(c.borrow_mut().key_pressed(&key))
@@ -2898,6 +3018,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param text : string
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("textinput", lua.create_function(move |_, text: String| {
         Ok(c.borrow_mut().text_input(&text))
@@ -2909,18 +3030,49 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @param y : number
     /// @return boolean
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("wheelmoved", lua.create_function(move |_, (x, y): (f32, f32)| {
         Ok(c.borrow_mut().wheel_moved(x, y))
     })?)?;
 
     // -- update --
-    /// Advances toast timers and removes expired toasts.
+    /// Advances toast timers, removes expired toasts, and dispatches pending GUI events.
     /// @param dt : number
     let c = ctx.clone();
+    let cbs_update = callbacks.clone();
     /// @return nil
-    tbl.set("update", lua.create_function(move |_, dt: f32| {
+    tbl.set("update", lua.create_function(move |lua, dt: f32| {
         c.borrow_mut().update(dt);
+        let events = c.borrow_mut().drain_events();
+        for ev in events {
+            match ev {
+                GuiEvent::Click(widget_idx) => {
+                    if let Some(key) = cbs_update.borrow().on_click.get(&widget_idx) {
+                        let f: LuaFunction = lua.registry_value(key)?;
+                        f.call::<_, ()>(widget_idx as u64)?;
+                    }
+                }
+                GuiEvent::Change(widget_idx) => {
+                    if let Some(key) = cbs_update.borrow().on_change.get(&widget_idx) {
+                        let f: LuaFunction = lua.registry_value(key)?;
+                        f.call::<_, ()>(widget_idx as u64)?;
+                    }
+                }
+                GuiEvent::Close(widget_idx) => {
+                    if let Some(key) = cbs_update.borrow().on_close.get(&widget_idx) {
+                        let f: LuaFunction = lua.registry_value(key)?;
+                        f.call::<_, ()>(widget_idx as u64)?;
+                    }
+                }
+                GuiEvent::Select(widget_idx, item_idx) => {
+                    if let Some(key) = cbs_update.borrow().on_select.get(&widget_idx) {
+                        let f: LuaFunction = lua.registry_value(key)?;
+                        f.call::<_, ()>((widget_idx as u64, item_idx as u64))?;
+                    }
+                }
+            }
+        }
         Ok(())
     })?)?;
 
@@ -2928,6 +3080,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns the total widget count in the context.
     /// @return number
     let c = ctx.clone();
+    let _cbs = callbacks.clone();
     /// @return nil
     tbl.set("getWidgetCount", lua.create_function(move |_, ()| {
         Ok(c.borrow().widget_count())

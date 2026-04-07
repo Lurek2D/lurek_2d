@@ -6,7 +6,9 @@ name: Architect
 
 # ARCHITECT — LUNA2D MODULE STRUCTURE AND API DESIGN
 
-**Mission**: Design and maintain the module structure of Luna2D. Own module boundaries, dependency direction, crate organization, and API design principles. Produce design proposals — Developer implements them.
+## MISSION
+
+Design and maintain the module structure of Luna2D. Own module boundaries, dependency direction, crate organization, and API design principles. Produce design proposals — Developer implements them.
 
 ## SCOPE
 
@@ -27,6 +29,15 @@ name: Architect
 **Primary**: `module-architecture`
 **Secondary**: `rust-coding` `error-handling` `lua-api-design`
 
+## INPUT CONTRACT
+
+Architect requires from the caller:
+
+- **Structural concern** — what is broken, ambiguous, or missing in the module graph (cyclic dependency, missing module, unclear boundary)
+- **Affected modules** — which `src/` subdirectories or layers are involved
+- **Constraints** — any performance, binary size, or feature-flag requirements that must inform the design
+- **Handoff intent** — whether the output is a proposal for discussion or a final design for Developer to implement
+
 ## OUTPUT CONTRACT
 
 Every Architect output includes:
@@ -38,46 +49,49 @@ Every Architect output includes:
 ## SUCCESS METRICS
 
 - Module dependency graph is acyclic
-- All modules are assigned to exactly one tier (see `docs/architecture.md`)
-- No same-tier cross-imports at any tier level
-- No upward imports across tiers
-- `engine` may depend on all modules; `lua_api` depends on engine + all domain modules
+- New work is placed in the correct layer: Baseline, Tier 1, Tier 2, bridge, or Tier 3 `library/`
+- No same-tier cross-imports at any engine tier level
+- No upward imports across engine tiers
+- `lua_api` is the bridge layer; lower engine layers do not depend on Tier 3 Lunasome
 - Each module has a clear, single responsibility
 - Public API is minimal — `pub(crate)` when cross-crate visibility isn't needed
 - New modules follow the existing `mod.rs` + subfile pattern
 
-## MODULE TIER SYSTEM
+## MODULE LAYER MODEL
 
-Luna2D uses a four-tier module system. See [`docs/architecture.md`](../../docs/architecture.md) for the full tier tables.
+Luna2D uses an active four-layer runtime model plus a bridge layer. See `docs/architecture.md` for the full tables.
 
-**Foundation layers** (always importable):
-- `math` — leaf, no Luna2D deps; all tiers may freely import
-- `engine` — app lifecycle; may import all modules
+**Baseline**:
+- `math` — leaf, no Luna2D dependencies
+- `engine` — runtime lifecycle and shared state
 
-**Tier 1 — Basic Core** (import: `math` + `engine` only, no cross-Tier-1):
-`graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread`
+**Bridge**:
+- `lua_api` — registers `luna.*`; not a numbered tier
 
-**Tier 2 — Engine Extensions** (import: Tier 1 + math + engine, no cross-Tier-2):
-`particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource`
+**Tier 1 — Core Engine Subsystems** (import: Baseline only, no cross-Tier-1):
+`audio`, `automation`, `compute`, `data`, `entity`, `event`, `filesystem`, `graphics`, `image`, `input`, `physics`, `thread`, `timer`, `window`
 
-**Tier 3 — Gameplay Systems** (import: Tier 1 + Tier 2, no cross-Tier-3):
-`combat`, `crafting`, `dialog`, `inventory`, `item`, `quest`, `stats`, `province_map`
+**Tier 2 — Reusable Engine Extensions** (import: Baseline + Tier 1, no cross-Tier-2):
+`ai`, `dataframe`, `graph`, `gui`, `minimap`, `modding`, `overlay`, `particle`, `pathfinding`, `postfx`, `savegame`, `scene`, `tilemap`
 
-**Tier 4 — Platform Integrations** (future; not imported by lower tiers):
-Reserved for Steam, Epic, and other external platform SDK wrappers.
+**Tier 3 — Lunasome**:
+Pure-Lua gameplay libraries in `library/` that consume public `luna.*` APIs rather than Rust internals.
+
+**Legacy gameplay Rust modules**:
+Gameplay-oriented modules still under `src/` are migration-state code, not the target Tier 3 architecture for new gameplay libraries.
 
 **Rules**:
-- A new module must be assigned a tier before any implementation begins
-- Same-tier cross-imports are forbidden at all tiers
-- Upward imports (Tier N importing Tier N+1) are forbidden
+- A new Rust module must be assigned to Baseline, Tier 1, Tier 2, or explicitly justified as bridge-layer work before implementation begins
+- Same-tier cross-imports are forbidden in engine layers
+- Upward imports across engine layers are forbidden
 - Domain modules must never import `lua_api`
-- `lua_api` is the integration layer; it may import any module
+- New gameplay-domain helpers should prefer `library/` when they do not require Rust-owned resources
 
 **Planned build variants** (future Cargo feature flag work):
-- Light = Foundation + Tier 1
-- Standard = Foundation + Tier 1 + Tier 2
-- Extended = Foundation + Tier 1 + Tier 2 + Tier 3
-- Platform = All tiers + Tier 4
+- Baseline = Baseline + bridge
+- Core = Baseline + Tier 1 + bridge
+- Extended = Baseline + Tier 1 + Tier 2 + bridge
+- Lunasome = Extended + shipped `library/` content
 
 ## WORKFLOW
 
@@ -102,6 +116,17 @@ Reserved for Steam, Epic, and other external platform SDK wrappers.
 | Lua API naming for new module       | `Lua-Designer` |
 | Performance concern with structure  | `Optimizer`    |
 | Documentation update needed         | `Doc-Writer`   |
+
+## BEST PRACTICES
+
+- Assign every proposed module to Baseline, Tier 1, Tier 2, bridge (`lua_api`), or Tier 3 (`library/`) **before** implementation begins — no untiered modules
+- Draw the dependency arrow as a diagram or table before writing prose — visual graphs surface circular imports immediately
+- `pub(crate)` is the default visibility; `pub` must be justified by cross-crate access need
+- New gameplay-domain helpers go to `library/` (pure Lua) unless they require Rust-owned resources that cannot be exposed as `luna.*` values
+- Separate the model (types and algorithms) from the Lua binding layer — domain modules must never import `lua_api`
+- When a module grows beyond about 5 public types, consider splitting responsibility before adding a sixth
+- Proposed structural changes must include a numbered migration path — no design without a transition plan
+- Verify that any new Cargo dependency adds unique capability; prefer the existing stack (wgpu, rodio, rapier2d, mlua) over alternatives
 
 ## ANTI-PATTERNS
 

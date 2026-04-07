@@ -22,7 +22,7 @@ description: "Load this skill when working on Luna2D asset loading: textures, au
 
 ## Does Not Cover
 
-- Rendering loaded textures → use `software-rendering` skill
+- Rendering loaded textures → use `gpu-programming` skill
 - Audio file playback → use `audio-integration` skill
 - Lua script execution → handled by `mlua` integration
 

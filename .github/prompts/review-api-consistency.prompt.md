@@ -15,7 +15,7 @@ Audit the `luna.*` API surface for naming and convention consistency.
 3. Check parameter conventions: `dt`, `x, y`, `key`, `btn`
 4. Check return types: all return `LuaResult<T>`
 5. Check key name conventions: lowercase strings
-6. Compare against `docs/lua_api_reference.md` for accuracy
+6. Compare against `docs/API/lua_api_reference_generated.md` for accuracy
 7. Report inconsistencies
 
 ## Acceptance
@@ -28,4 +28,4 @@ Audit the `luna.*` API surface for naming and convention consistency.
 ## References
 
 - `lua-api-design` skill
-- `docs/lua_api_reference.md`
+- `docs/API/lua_api_reference_generated.md`

@@ -39,8 +39,8 @@ Luna2D has a **two-layer test system** that runs entirely via `cargo test`:
 | Layer | Location | Runner |
 |---|---|---|
 | Rust integration | `tests/<module>_tests.rs` | Cargo auto-discovery |
-| Rust stress | `tests/stress/<name>_tests.rs` | `[[test]]` in `Cargo.toml` |
-| Rust golden | `tests/golden_tests.rs` | Cargo auto-discovery |
+| Rust stress | `tests/rust/stress/<name>_tests.rs` | `[[test]]` in `Cargo.toml` |
+| Rust golden | `tests/rust/golden/harness.rs` | Cargo auto-discovery |
 | Lua BDD (unit) | `tests/lua/unit/test_<module>.lua` | `tests/lua/harness.rs` via `cargo test` |
 | Lua BDD (integration) | `tests/lua/integration/test_<a>_<b>.lua` | `tests/lua/harness.rs` via `cargo test` |
 | Lua BDD (stress) | `tests/lua/stress/test_<name>_stress.lua` | `tests/lua/harness.rs` via `cargo test` |
@@ -331,20 +331,20 @@ python tools/collect_docs.py --suggest         # starter /// lines for undocumen
 
 Golden tests compare deterministic binary/text output against a committed baseline file.
 
-**Baseline files:** `tests/golden/expected/<category>/<name>.<ext>`
-**Runtime output:** `tests/golden/actual/<category>/` (git-ignored)
+**Baseline files:** `tests/rust/golden/expected/<category>/<name>.<ext>`
+**Runtime output:** `tests/rust/golden/actual/<category>/` (git-ignored)
 
 Categories: `encoding/`, `hashes/`, `compression/`, `images/`, `config/`, `sound/`
 
 **To add a new golden test:**
-1. Add expected file to `tests/golden/expected/<category>/`
-2. Add a `#[test]` in `tests/golden_tests.rs` using `assert_golden("category/name.ext", ...)`
+1. Add expected file to `tests/rust/golden/expected/<category>/`
+2. Add a `#[test]` in `tests/rust/golden/harness.rs` using `assert_golden("category/name.ext", ...)`
 3. Run once to confirm match: `cargo test --test golden_tests`
 
 **To update a baseline** (when intentional output change):
 ```powershell
 cargo test --test golden_tests -- --nocapture
-# copy tests/golden/actual/<file> to tests/golden/expected/<file>
+# copy tests/rust/golden/actual/<file> to tests/rust/golden/expected/<file>
 ```
 
 ---
@@ -358,4 +358,9 @@ cargo test --test golden_tests -- --nocapture
 - [ ] `cargo test` exits 0 locally
 - [ ] `cargo clippy -- -D warnings` exits 0 locally
 - [ ] No `#[ignore]` without a comment
-- [ ] No disk I/O outside `tests/golden/actual/` or a temp dir
+- [ ] No disk I/O outside `tests/rust/golden/actual/` or a temp dir
+- [ ] `#[should_panic]` includes `expected = "..."` with the expected panic substring
+- [ ] No `std::thread::sleep` — use deterministic `clock.tick()` with fixed dt instead
+- [ ] No network I/O of any kind
+- [ ] Integration tests do not call private functions — use `pub(crate)` or `#[cfg(test)]` inline modules for test-only access
+- [ ] Test is independently runnable — does not depend on execution order or shared mutable globals

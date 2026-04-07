@@ -51,5 +51,5 @@ Create a new Lua game example that demonstrates specific Luna2D features.
 ## References
 
 - `lua-scripting` skill
-- `docs/lua_api_reference.md`
+- `docs/API/lua_api_reference_generated.md`
 - Existing examples in `examples/`

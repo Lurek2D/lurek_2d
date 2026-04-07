@@ -6,7 +6,6 @@ description: "End-to-end roadmap phase completion: Manager-orchestrated workflow
 
 ## Purpose
 
-Full end-to-end delivery gate for a single `docs/roadmap/phase-NN-*.md`.
 The **Manager** owns this workflow from start to finish.
 It runs audit → findings → fix plan → implementation → tests → documentation → re-audit → review → phase closure.
 Nothing is skipped. Nothing is assumed done.
@@ -24,12 +23,12 @@ Load these **before starting any step**:
 3. `.github/skills/testing-rust/SKILL.md` — test patterns, what counts as coverage
 4. `.github/skills/lua-api-design/SKILL.md` — `luna.*` naming, parameter conventions
 5. **Domain skill** — match to the phase topic:
-   - Graphics / rendering → `software-rendering`
+   - Graphics / rendering → `gpu-programming`
    - Physics → `physics-engine`
    - Audio → `audio-integration`
    - Input / gamepad / touch → `input-handling`
    - Filesystem / assets → `asset-pipeline`
-   - Font / text → `font-rendering`
+   - Font / text → `src/graphics/AGENT.md` (Font Rendering Patterns section)
    - Animation → `animation-system`
    - Timers, math, system, data → `lua-api-design`
    - OO Lua API (Phase 13+) → `lua-api-design`
@@ -37,7 +36,6 @@ Load these **before starting any step**:
 
 ## Inputs
 
-- `PHASE_FILE` — path to the phase document, e.g., `docs/roadmap/phase-04-audio-deep-parity.md`
 - `DRY_RUN` — optional `true` to stop after producing the Gap Report without implementing anything (default: `false`)
 
 ---
@@ -106,7 +104,6 @@ A task describing 5 new Lua functions = 5 MDL rows.
 ### Stage 4 — Dependency Pre-Check
 
 For every phase in `Depends On`:
-1. Find `docs/roadmap/phase-NN-*.md` or `docs/roadmap/done/phase-NN-*.md`
 2. Read its `## Status` section
 3. All tasks ✅ → **SATISFIED**; any ⬜ or 🔄 → **UNMET**
 
@@ -172,7 +169,6 @@ For each gate from Stage 3c:
 | Named Lua test present | Check file exists; no missing `luna.*` calls |
 | API docs updated | `docs/API/lua_api_reference_generated.md` contains each `luna.*` function from MDL |
 | `cargo clippy -- -D warnings` passes | Run and capture result |
-| Phase file location | In `done/` = complete; still in `docs/roadmap/` = not closed |
 
 Verdict per gate: **PASS** (with evidence) / **FAIL** (with reason) / **UNVERIFIED** (note what would confirm it).
 
@@ -203,7 +199,7 @@ Every ❌ and ⚠️ from the matrix becomes one gap row:
 |---|---|---|---|---|---|
 | G-01 | luna.audio.seek() | Missing Lua binding | BLOCKER | src/lua_api/audio_api.rs | Register in register() |
 | G-02 | AudioSource.seek() | Missing docstring | WARNING | src/audio/mixer.rs | Add /// comment |
-| G-03 | test_seek_position | Missing Rust test | WARNING | tests/audio_tests.rs | Add #[test] for seek round-trip |
+| G-03 | test_seek_position | Missing Rust test | WARNING | tests/rust/unit/audio_tests.rs | Add #[test] for seek round-trip |
 ```
 
 Severity:
@@ -240,7 +236,7 @@ Manager decomposes the Gap Report into agent-sized tasks. One task per gap clust
 |---|---|---|---|---|
 | F-01 | G-01 | Developer | src/lua_api/audio_api.rs | luna.audio.seek() callable from Lua; returns correct value |
 | F-02 | G-02 | Developer | src/audio/mixer.rs | /// docstring present on AudioSource::seek |
-| F-03 | G-03 | Tester | tests/audio_tests.rs | test_seek_position passes in cargo test |
+| F-03 | G-03 | Tester | tests/rust/unit/audio_tests.rs | test_seek_position passes in cargo test |
 ```
 
 **Grouping rules**:
@@ -388,10 +384,8 @@ Rules:
 If ALL acceptance gates pass and Reviewer gave sign-off:
 
 ```powershell
-Move-Item docs/roadmap/PHASE_FILE docs/roadmap/done/PHASE_FILE
 ```
 
-If any gate is unverified (live-hardware-only), leave the file in `docs/roadmap/` with Status = 🔄 and document the remaining live-verification items.
 
 ### Stage 13 — Commit
 
@@ -403,7 +397,6 @@ cargo test
 cargo clippy -- -D warnings
 
 # Stage only affected files — NEVER git add .
-git add <all files modified in Phases 4–6> docs/roadmap/<phase-file> docs/API/lua_api_reference_generated.md
 
 git commit -m "feat(<module>): phase NN complete — <one-line summary>"
 ```
@@ -433,7 +426,6 @@ Before calling the workflow complete, confirm every item:
 - [ ] Reviewer sign-off with 0 BLOCKER findings
 - [ ] `cargo build`, `cargo test`, `cargo clippy -- -D warnings`, `cargo fmt --check` all pass
 - [ ] Phase file `## Status` section updated
-- [ ] Phase file moved to `docs/roadmap/done/` (or kept with 🔄 if live-verification pending)
 - [ ] Commit made with correctly staged files
 - [ ] Agent log entry appended
 
@@ -446,5 +438,4 @@ Before calling the workflow complete, confirm every item:
 - Test patterns: `.github/skills/testing-rust/SKILL.md`
 - Lua API registry: `src/lua_api/<module>_api.rs` → `pub fn register()`
 - API reference: `docs/API/lua_api_reference_generated.md`
-- Completed phases: `docs/roadmap/done/`
 - Agents: `Developer` (impl) | `Tester` (tests) | `Doc-Writer` (docs) | `Reviewer` (sign-off) | `Renderer` / `Physicist` / `Audio-Eng` (domain)

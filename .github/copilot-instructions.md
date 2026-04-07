@@ -3,453 +3,222 @@
 Luna2D is a 2D game engine written in Rust that loads and executes Lua game scripts.
 This file is the always-on backbone for AI-assisted development in the Luna2D repository.
 
-- **CAG load order**: System Prompt → `src/<module>/AGENT.md` (module knowledge) → Instructions (glob) → Skills (on-demand) → Prompts → Agents
-- **Module knowledge**: Every `src/<module>/AGENT.md` is the canonical domain reference for that module. Read it before implementing module-specific features. Skills cover only cross-cutting domains.
-- **Tech baseline**: Rust stable ≥1.78 | LuaJIT vendored via mlua 0.9 (Lua 5.4 `lua54` feature = non-shipping fallback) | wgpu 22 | winit 0.30 | rapier2d 0.32 | rodio 0.17 | fontdue 0.9
-- **Source of truth**: [`docs/architecture/philosophy.md`](../docs/architecture/philosophy.md) (first principles + binding constraints) · [`docs/architecture/engine-architecture.md`](../docs/architecture/engine-architecture.md) (module structure, tier system, dependency graph) · [`docs/architecture/test-framework.md`](../docs/architecture/test-framework.md) (test suite structure). Consult all three before implementing any feature or making an architectural decision.
+- **CAG load order**: System Prompt → `src/<module>/AGENT.md` (module knowledge) → Skills (on-demand) → Prompts → Agents
+- **Module knowledge**: Every `src/<module>/AGENT.md` is the canonical domain reference for that module. Read it before implementing module-specific features.
+- **Tech baseline**: Rust stable ≥1.78 | LuaJIT vendored via mlua 0.9 (`lua54` feature = non-shipping fallback) | wgpu 22 | winit 0.30 | rapier2d 0.32 | rodio 0.17 | fontdue 0.9
+- **Sources of truth**: `docs/architecture/philosophy.md` (binding constraints) · `docs/architecture/engine-architecture.md` (module structure, tier system) · `docs/architecture/test-framework.md` (test suite). Consult all three before implementing any feature.
 - **API namespace**: All Lua bindings live under `luna.*` — never external engine prefixes, never bare globals
-- **Design inspiration**: Similar Lua-based 2D game engines — single exe, loads `main.lua`, callback model (`luna.load/update/draw`). User writes Lua; engine owns GPU, threading, and batching.
-- **IDE**: VS Code first-party extension — MCP server, CAG docs, IntelliSense, webview panels, AI-first workflow
-- **License**: MIT — no distribution platform SDKs, no monetisation features
+- **License**: MIT — no platform SDKs, no monetisation features
 
 ## Write Style
 
 - Lead with Luna2D-specific facts, not generic Rust advice
-- Code examples must compile against the actual crate APIs in this repo
-- Prefer brief, actionable guidance — no boilerplate commentary
 - One canonical place for each rule; reference, don't duplicate
 - When designing an API, ask: "could a Copilot agent use this correctly without a clarifying question?" If no, redesign.
 
 ## Design Constraints
 
-The following are **active, binding decisions** from `docs/architecture/philosophy.md`. Do not propose changes to these without a design-assumption update.
+Active binding decisions from `docs/architecture/philosophy.md` — do not propose changes without a design-assumption update:
 
-| ID | Constraint |
-|---|---|
-| A-01 | Luna2D is a **runtime only** — no embedded visual editor or IDE |
-| A-02 | **Desktop only** — Windows/Linux/macOS x86_64 + ARM. Mobile (iOS/Android) and WASM are out of scope |
-| A-03 | **2D graphics only** — no 3D scene graph or perspective pipeline. Raycasting columns and isometric projection are acceptable (they use 2D draw calls) |
-| A-04 | No distribution platform SDK integration (Steam, Epic, itch.io store APIs) in the core engine binary. Platform integrations are Tier 4 — out of scope for Tier 1–3 modules |
-| B-01 | **LuaJIT** is the primary scripting runtime. Lua 5.4 (`lua54` cargo feature) is a non-shipping development fallback |
-| B-02 | **wgpu 22** is the only renderer backend (Vulkan / DX12 / Metal). No raw OpenGL path |
-| B-03 | Games must run acceptably on **integrated GPUs** (Intel UHD, AMD APU) |
-| B-04 | Concurrency lives in **Rust threads**. LuaJIT VMs cannot share state; Lua-to-Lua comms use `Channel` objects |
-| B-05 | **TOML** is the human-authored config format. JSON is only for external interop. YAML is not used |
+- **A-01** Runtime only — no embedded visual editor or IDE
+- **A-02** Desktop only — Windows/Linux/macOS x86_64 + ARM. No mobile, no WASM
+- **A-03** 2D graphics only — no 3D scene graph. Raycasting and isometric rendering use 2D draw calls and are acceptable
+- **A-04** No distribution platform SDKs (Steam, Epic) in the core binary — Tier 4, out of scope
+- **B-01** LuaJIT is the primary runtime; `lua54` Cargo feature is a non-shipping development fallback
+- **B-02** wgpu 22 is the only renderer backend (Vulkan / DX12 / Metal) — no OpenGL path
+- **B-03** Games must run acceptably on integrated GPUs (Intel UHD, AMD APU) — 60 FPS at 1080p target
+- **B-04** Concurrency in Rust threads; LuaJIT VMs cannot share state; use `Channel` for cross-VM comms
+- **B-05** TOML is the human-authored config format. JSON for external interop only. No YAML
 
 ## Quick Start
 
-### Build and Run
+**Tool directory policy**: Permanent CLI scripts go in `tools/`. Session-scoped scripts go in `work/{session}/scripts/` — never in `tools/`. See `tools/README.md` for the full index.
 
+**CAG validation** (run after every `.github/` edit):
 ```powershell
-cargo build                           # Debug build (only needed to ship or run the binary)
-cargo build --release                 # Release build
-cargo run                             # Splash screen (no game)
-cargo run -- demos/hello_world     # Run example
-cargo run -- path/to/my_game          # Run custom game
+python tools/cag_validate.py                              # Full validation
+python tools/cag_validate.py --type agent|skill|prompt    # One family
+python tools/cag_validate.py --file <path>                # Single file
 ```
 
-### Development Loop — Scoped Commands (use during implementation)
-
-**Never run `cargo build` or `cargo test` (full) during development.**
-These rebuild the entire engine (~4 min cold), saturate all CPU cores, and block
-parallel agents or the user working on other modules.
-
-```powershell
-# Type-check only — no compilation, no linking, ~2-5s incremental
-cargo check
-
-# Test only the module you are working on
-cargo test --test <module>_tests -- --nocapture
-cargo test lua_test_<module> -- --nocapture
-
-# Lint only the library (no test binaries compiled)
-cargo clippy --lib
-```
-
-> **Rule**: `cargo check` runs the full borrow-checker and type-checker without producing
-> any binary output. It is the correct tool to validate a change during implementation.
-> `cargo build` is only needed for packaging or running the game binary — never as a
-> pre-test step, because `cargo test` already compiles what it needs automatically.
-
-### Final Gate — before every `git commit`
-
-Run these **once**, only after all implementation work on a task is complete:
-
+**Commit quality gate**:
 ```powershell
 cargo test && cargo clippy -- -D warnings
 ```
 
-### Quality Gates (CI / commit checklist)
+## Architecture
 
-```powershell
-cargo clippy -- -D warnings           # Lint — must pass with 0 warnings
-cargo fmt --check                     # Format check
-cargo test                            # All tests must pass
-```
+Luna2D uses a strictly layered architecture enforced by Rust's module visibility rules and the import direction rules in `docs/architecture/engine-architecture.md`. No lower tier may import a higher tier; all cross-tier flows go upward only.
 
-### Tool Directory Policy
+**Baseline** — `src/math/` (leaf, no internal deps) provides Vec2, Mat3, Rect, Color, noise, easing, random, transform, bezier, and triangulation. `src/engine/` provides `SharedState`, `EngineError`, `Config`, `App`, `RunState`, and all typed `SlotMap` resource keys.
 
-`tools/` contains **permanent** CLI scripts only. Temporary session scripts go in `work/{session}/scripts/`. See `tools/README.md` for the full index.
+**Tier 1** (Core subsystems — Baseline imports only, no Tier 1 ↔ Tier 1 cross-imports):
+`graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread`, `animation`, `camera`, `automation`
 
-- **Permanent** (goes in `tools/`): reusable CLI utilities, doc generators, validators
-- **Temporary** (goes in `work/{session}/scripts/`): one-off migration scripts, session helpers
-- **Never** create `_*.py` or similar temp files in `tools/`
+**Tier 2** (Engine extensions — Baseline + Tier 1, no Tier 2 ↔ Tier 2 cross-imports):
+`particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `gui`, `minimap`, `overlay`, `postfx`, `terminal`
 
-### CAG Validation (tools/)
+**Bridge** — `src/lua_api/` registers the `luna.*` Lua API. It may import all Rust tiers. Domain modules must **never** import `lua_api`.
 
-```powershell
-python tools/cag_validate.py                            # Full CAG validation
-python tools/cag_validate.py --type agent               # Validate agents only
-python tools/cag_validate.py --type skill               # Validate skills only
-python tools/cag_validate.py --type prompt               # Validate prompts only
-python tools/cag_validate.py --type instruction          # Validate instructions only
-python tools/cag_validate.py --file .github/agents/developer.agent.md  # Single file
-```
+**Tier 3 — Lunasome** (`library/`) — Pure-Lua standard libraries that consume only the public `luna.*` API. No Rust engine internals. Includes `battle`, `cardgame`, `combat`, `crafting`, `dialog`, `doll`, `economy`, `inventory`, `item`, `province_map`, `quest`, `stats`.
+
+**Rendering**: `DrawCommand` variants are pushed into a queue during `luna.draw()`. After the callback returns, `GpuRenderer::render_frame()` processes the queue in wgpu render passes. No GPU calls inside Lua closures.
+
+**State**: `Rc<RefCell<SharedState>>` is shared between Lua closures and the engine loop. All resources (textures, fonts, meshes, etc.) live in typed `SlotMap<TypedKey, Resource>` pools — see `src/engine/resource_keys.rs`.
+
+**Boot**: CLI args → `Config::load_from_conf_lua()` (conf.lua via temp Lua VM) → `App::new()` (winit, wgpu, rodio, GameFS) → `create_lua_vm()` (LuaJIT, 35+ API modules) → `main.lua` → `luna.load()` → winit event loop.
 
 ## CAG Routing
 
-### Load Order
+**Load order**: System Prompt → `src/<module>/AGENT.md` → relevant skill files → agent
 
-1. **`src/<module>/AGENT.md`** — read when working inside a specific source module. Contains types, patterns, and invariants for that module. This is the primary source of module-domain knowledge.
-2. **Instructions** — auto-load by `applyTo` glob for cross-cutting concerns: Rust code (`rust.instructions.md`), tests, Lua API, Lua examples, docs, tools, CAG files, dependencies.
-3. **Skills** — load on-demand for cross-cutting domains: testing, performance, Lua API design, sandbox, game loop, font rendering, error handling, documentation, CI/CD, asset pipeline, software rendering, threading, module architecture/audit, debugging, cross-platform, roadmap.
-4. **Prompts** — task-driven playbooks, operator selects
-5. **Agents** — specialist roles, routed by task type
+**Skill catalog** — all skills live in `.github/skills/`. Load the relevant `SKILL.md` before working in that domain.
+`agent-md` · `analytics` · `asset-pipeline` · `build-system` · `cag-workflow` · `ci-cd-pipeline` · `cross-platform` · `dev-debugging` · `documentation` · `error-handling` · `examples-management` · `game-ai` · `github-workflow` · `gpu-programming` · `logging` · `lua-api-design` · `lua-rust-bridge` · `lua-runtime` · `lua-scripting` · `module-architecture` · `module-audit` · `performance-profiling` · `roadmap-planning` · `rust-coding` · `testing-rust` · `threading` · `tools-cag-validation` · `visual-effects` · `vscode-extension`
 
-### Agent Intent Summary
+**Agent roster** — full definitions in `.github/agents/`:
 
 | Agent | Mission |
 |---|---|
-| `Manager` | Route tasks, orchestrate multi-agent workflows, own session start |
-| `Planner` | Decompose complex tasks, build phased plans, define done-when gates |
-| `Research` | Search web/docs/codebase for facts; return cited evidence report |
-| `Solver` | Root-cause analysis, alternative evaluation, decision-ready solution report |
-| `Developer` | Implement Rust features, fix bugs, write code |
-| `Lua-Designer` | Design and evolve the `luna.*` Lua API surface |
-| `Renderer` | Graphics pipeline, wgpu GPU rendering, draw commands |
-| `Physicist` | Physics engine (rapier2d), collision, bodies, world simulation |
-| `Audio-Eng` | Audio system, rodio integration, sound management |
-| `Tester` | Write and run tests, coverage, test strategies |
-| `Reviewer` | Code review, quality gates, compliance checking |
-| `Debugger` | Diagnose runtime issues, trace bugs, profiling |
-| `Optimizer` | Performance analysis, hot-path optimization |
-| `Architect` | Module structure, dependency graph, API design |
-| `Doc-Writer` | Documentation, API reference, tutorials |
-| `Security` | Memory safety, input validation, Lua sandboxing |
-| `CAG-Architect` | Maintain the CAG layer itself |
+| `Manager` | Starts every multi-agent session, creates the work folder, confirms the branch, decomposes requests into agent handoffs with measurable acceptance gates, and tracks overall progress |
+| `Planner` | Accepts complex or multi-file tasks from Manager and produces a phased execution plan with sequencing rules, parallelism analysis, and done-when gates before any implementation begins |
+| `Research` | Finds accurate, cited information from the web, official docs, or the codebase and returns a structured findings report with source citations — never implementation code |
+| `Solver` | Performs structured root-cause analysis when no obvious solution exists, evaluates alternatives against binding constraints, and delivers a decision-ready recommendation with trade-off analysis |
+| `Developer` | Implements Rust engine features, fixes bugs, adds new source modules, and maintains non-specialised Rust subsystem code across all tiers |
+| `Lua-Designer` | Designs and evolves the `luna.*` Lua API surface, enforcing naming conventions, parameter patterns, sensible defaults, and API consistency across all binding modules |
+| `Renderer` | Owns the wgpu GPU pipeline: device and surface setup, `DrawCommand` queue processing, texture management, WGSL shaders, blend modes, and canvas render-to-texture |
+| `Physicist` | Owns the `src/physics/` rapier2d integration: rigid bodies, colliders, shapes, joints, raycasting, collision events, and the `luna.physics.*` Lua API |
+| `Audio-Eng` | Owns the `src/audio/` rodio integration: mixer, audio buses, static and streaming sources, volume/pitch/pan, and the `luna.audio.*` Lua API |
+| `Tester` | Writes and maintains all tests — Rust integration tests in `tests/`, Lua BDD tests in `tests/lua/`, golden snapshot tests, and stress tests |
+| `Reviewer` | Reviews code for compliance with conventions, module boundary rules, tier direction, test coverage, and quality gates — reports findings, must not rewrite code |
+| `Debugger` | Diagnoses runtime bugs, crashes, and unexpected behaviour using RUST_LOG, borrow traces, and engine error paths — delivers root cause, does not implement fixes |
+| `Optimizer` | Profiles frame time, heap allocations, and hot paths; delivers a prioritised optimisation report with measured evidence before Developer implements changes |
+| `Architect` | Makes module boundary decisions, assigns tiers to new modules, designs the dependency graph, and enforces the DAG invariant across the codebase |
+| `Doc-Writer` | Writes and maintains all documentation in `docs/`, ensures `///` coverage on public items, runs the doc pipeline, and keeps `demos/README.md` current |
+| `Security` | Audits the Lua sandbox, GameFS path-traversal guards, Lua input validation, and `unsafe` blocks — reports findings to Developer, never implements fixes directly |
+| `CAG-Architect` | Maintains the `.github/` CAG layer — agents, skills, prompts, and the system prompt — and always runs `tools/cag_validate.py` after every edit |
+| `Configurator` | Authors, validates, and documents `conf.lua` and `conf.toml` templates against the `Config` struct in `src/engine/config.rs` — does not modify engine Rust code |
+| `Hacker` | Performs adversarial probing of the `luna.*` API and sandbox — stale keys, path traversal, double-release, nil spam, resource exhaustion — and feeds findings to Security and Tester |
+| `Player` | Reviews demos and API proposals through named user personas; provides subjective fun ratings and friction reports to Lua-Designer and Doc-Writer — never performs correctness checks |
 
 ## Critical Rules
 
-### Architecture
-
-- **GPU rendering**: wgpu → `wgpu::Surface` → `GpuRenderer::render_frame()` → swapchain present. No CPU pixel buffer. `renderer.rs` contains shared draw types (`DrawCommand`, `BlendMode`, etc.).
-- **Draw command queue**: Lua calls push `DrawCommand` variants during `luna.draw()`. Engine processes them after the callback returns. Never render inside a Lua closure.
-- **SharedState**: `Rc<RefCell<SharedState>>` shared between Lua closures and the engine loop. Never use raw pointers or `unsafe` for state sharing. Resource pools use `SlotMap` with typed keys.
-- **Module direction and tier system**: All source modules belong to one of four tiers plus two foundation layers. See the full tier table in [`docs/architecture/engine-architecture.md`](../docs/architecture/engine-architecture.md). Short form:
-  - **Foundation**: `math` (leaf, no deps), `engine` (may import all)
-  - **Tier 1 Basic Core**: `graphics`, `audio`, `physics`, `input`, `timer`, `filesystem`, `compute`, `data`, `image`, `sound`, `event`, `entity`, `window`, `thread` — may only import `math` + `engine`; no Tier 1 ↔ Tier 1 cross-imports
-  - **Tier 2 Engine Extensions**: `particle`, `tilemap`, `scene`, `savegame`, `modding`, `graph`, `pathfinding`, `ai`, `dataframe`, `resource` — may import math, engine, and Tier 1; no Tier 2 ↔ Tier 2 cross-imports
-  - **Tier 3 Gameplay Systems**: `combat`, `crafting`, `dialog`, `inventory`, `item`, `quest`, `stats`, `province_map` — may import Tier 1 and Tier 2; no Tier 3 ↔ Tier 3 cross-imports
-  - **Tier 4 Platform Integrations** (future): Steam, Epic, etc. — must not be imported by lower tiers
-  - `lua_api` is the bridge layer above all tiers; domain modules never import it
-- **Physics backend**: rapier2d 0.32 provides rigid-body simulation with circles, rectangles, sensors, raycasting, joints, and collision event recording via `src/physics/`.
-
-### Module Dependency Graph
-
-```
-math (leaf — no internal deps)
-  ↑
-engine ← Tier 1 (graphics, audio, physics, input, timer, filesystem,
-  ↑              compute, data, image, sound, event, entity, window, thread)
-  ↑
-  ← Tier 2 (particle, tilemap, scene, savegame, modding, graph,
-  ↑          pathfinding, ai, dataframe, resource)
-  ↑
-  ← Tier 3 (combat, crafting, dialog, inventory, item, quest, stats, province_map)
-  ↑
-  ← Tier 4 (future: Steam, Epic, platform SDKs)
-  ↑
-lua_api (integration layer — imports all tiers)
-```
-
-- `math` is the only module all other modules may freely import
-- Tier 1 modules may only import `math` and `engine` — no Tier 1 ↔ Tier 1 cross-imports
-- Tier 2 modules may import `math`, `engine`, and Tier 1 — no Tier 2 ↔ Tier 2 cross-imports
-- Tier 3 modules may import Tier 1 and Tier 2 — no Tier 3 ↔ Tier 3 cross-imports
-- Tier 4 (future) wraps external platform SDKs — not imported by lower tiers
-- `lua_api` is the integration layer; it may import any module
-- `engine` provides `SharedState`, `EngineError`, `Config`, `App`
-- Domain modules never import `lua_api`
-
-### Boot Sequence
-
-1. Parse CLI args → game directory path
-2. `Config::load_from_conf_lua(game_dir)` — temporary Lua VM executes `conf.lua`
-3. `App::new(config)` — windowing (winit), GPU init (wgpu), audio (rodio), filesystem (GameFS)
-4. `create_lua_vm()` — LuaJIT VM, `luna` global table, 35+ API modules registered
-5. Load and execute `main.lua` → call `luna.load()`
-6. Enter `winit` event loop → `luna.update(dt)` / `luna.draw()` each frame
-
 ### Rust Conventions
 
-- **No `unsafe`** unless absolutely necessary and documented with a `// SAFETY:` comment
-- **Error handling**: `thiserror` derive for `EngineError` enum; `LuaResult<T>` for Lua-callable functions
-- **Visibility**: `pub` for cross-module types; `pub(crate)` when possible
-- **Constructors**: prefer `impl Into<T>` for flexible parameter types
-- **Imports**: absolute paths (`crate::module::Type`), not relative
-- **Formatting**: `cargo fmt` before every commit; `cargo clippy` with 0 warnings
-- **Logging**: use `log::info!` / `log::warn!` / `log::error!` / `log::debug!` — never `println!` in engine code
-- **Allocations**: per-frame code must not allocate on the heap; grow draw-call buffers at startup
-- **SlotMap keys**: resources are stored in `SlotMap<TypedKey, Resource>` — see `TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`, `SpriteBatchKey`, `ParticleKey`
-- **Error propagation**: use `?` throughout internal code; convert to `LuaError` at the Lua API boundary with `.map_err(LuaError::external)`
+Luna2D-specific rules only — common Rust idioms apply without repetition:
+
+- `unsafe` requires a `// SAFETY:` comment explaining the invariant; never use raw pointers for state sharing
+- Per-frame code must not allocate on the heap — grow draw-call buffers at startup, not per frame
+- Engine resources live in `SlotMap<TypedKey, Resource>` — see `src/engine/resource_keys.rs` for all key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`, `SpriteBatchKey`, `ParticleKey`)
+- Use `log::info!` / `log::warn!` / `log::error!` / `log::debug!` — never `println!` in engine code
+- Convert errors to `LuaError` at the Lua API boundary with `.map_err(LuaError::external)`
 
 ### Lua API Conventions
 
-- All bindings under `luna.*` namespace — NEVER external engine prefixes or any other prefix
-- Every API file uses `pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>`
-- Closures capture `Rc<RefCell<SharedState>>` — clone the Rc before moving into closure:
-  ```rust
-  let state = state.clone();
-  luna.set("myFunc", lua.create_function(move |_, args: ()| {
-      let s = state.borrow();
-      // ...
-  })?)?;
-  ```
-- Return `LuaResult<T>` from all Lua-callable functions
-- Key names: lowercase strings (`"space"`, `"escape"`, `"a"`, `"left"`)
-- API functions must have **sensible defaults** — never require parameters a beginner would always pass the same value
-- Every callback (`luna.load`, `luna.update`, `luna.draw`) is optional — an empty `main.lua` is valid
-- Lua API is **synchronous from the script's perspective** — async work happens in Rust threads using `Channel`
-- Use `lua.to_value()` / `lua.from_value()` for Lua↔Rust table conversions; avoid manual field iteration
-- Validate inputs at the Lua boundary — return descriptive `LuaError` messages, never panic
+- All bindings under `luna.*` — never external prefixes or bare globals
+- Every API file signature: `pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>`
+- Clone `Rc` before moving into closures: `let state = state.clone();` then `move |...| { let s = state.borrow(); ... }`
+- Sensible defaults — never require a parameter a beginner would always pass the same value
+- All callbacks (`luna.load`, `luna.update`, `luna.draw`, and all event callbacks) are optional — blank `main.lua` is valid
+- Lua API is synchronous from the script's perspective — async work in Rust threads via `Channel`
+- Validate inputs at the Lua boundary — return descriptive `LuaError`, never panic
+- Full callback reference: `docs/architecture/engine-architecture.md` § Callback Contract
 
-### Callbacks
+### Testing Framework
 
-| Function | When called |
-|---|---|
-| `luna.load()` | Once after script loads |
-| `luna.update(dt)` | Every frame with delta time |
-| `luna.draw()` | Every frame for rendering |
-| `luna.keypressed(key)` | Key press event |
-| `luna.keyreleased(key)` | Key release event |
-| `luna.textinput(text)` | Text input event |
-| `luna.mousepressed(x, y, btn)` | Mouse press event |
-| `luna.mousereleased(x, y, btn)` | Mouse release event |
-| `luna.wheelmoved(x, y)` | Mouse wheel event |
-| `luna.gamepadpressed(id, btn)` | Gamepad button press |
-| `luna.gamepadreleased(id, btn)` | Gamepad button release |
-| `luna.gamepadaxis(id, axis, val)` | Gamepad axis movement |
-| `luna.joystickadded(id)` | Gamepad connected |
-| `luna.joystickremoved(id)` | Gamepad disconnected |
-| `luna.touchpressed(id, x, y, dx, dy, pressure)` | Touch start |
-| `luna.touchmoved(id, x, y, dx, dy, pressure)` | Touch move |
-| `luna.touchreleased(id, x, y, dx, dy, pressure)` | Touch end |
-| `luna.focus(has_focus)` | Window focus change |
-| `luna.visible(is_visible)` | Window visibility change |
-| `luna.resize(w, h)` | Window resize |
+Luna2D has a two-layer test system. Both layers run **headless** — no window, GPU, or audio device required.
 
-### Testing
+**Rust tests** (`tests/rust/unit/`, `tests/rust/stress/`, `tests/rust/golden/`, `tests/rust/config/`, `tests/rust/security/`, `tests/rust/ext/`): naming `<subject>_<scenario>_<expected>`, no `test_` prefix. Float comparisons must use `assert!((val - expected).abs() < 1e-5)`, never `assert_eq!` on floats. All test binaries must be registered in `Cargo.toml`. **`tests/rust/game/` is retired** — game systems are now Lua libraries tested in `tests/lua/library/`.
 
-Luna2D has a **two-layer test system** — Rust integration tests and Lua BDD tests — both executed via `cargo test`.
+**Lua BDD tests** (`tests/lua/`): `tests/lua/harness.rs` dispatches one `#[test]` function per `.lua` file. `tests/lua/init.lua` provides `describe`/`it`/`expect_equal`/`expect_near`/`expect_error` etc. Every Lua test file must end with `test_summary()`. New `.lua` file → add corresponding `#[test] fn lua_test_<category>_<name>()` entry to `tests/lua/harness.rs`.
 
-**Rust integration tests** (`tests/<module>_tests.rs`)
-- Auto-discovered by Cargo; one file per module
-- Import from crate root: `use luna2d::module::Type;`
-- Naming: `<subject>_<scenario>_<expected>` — no `test_` prefix
-- Float: `assert!((val - expected).abs() < 1e-5)` — never `assert_eq!` on floats
+**Lua test categories**: `unit/` (one per engine module), `library/` (one per `library/` Lunasome module), `integration/` (tests between ≥2 modules — both namespaces must appear), `stress/` (throughput/allocation from Lua), `security/` (sandbox, nil spam, path traversal), `golden/` (deterministic output), `config/` (config loading), `demos/` (one per demo in `demos/`).
 
-**Lua BDD tests** (`tests/lua/`)
-- Dispatched by `tests/lua/harness.rs` — every `.lua` file needs one `#[test]` entry there
-- Framework (`tests/lua/init.lua`) provides: `describe` / `it` / `expect_equal` / `expect_near` / `expect_type` / `expect_error` etc.
-- Every Lua test file ends with `test_summary()` — mandatory
-- Layers: `unit/` (one module), `integration/` (cross-module), `stress/` (performance), `validation/` (negative-path), `golden/` (deterministic output)
-- VM is headless: no GPU, no audio, no window — never call `luna.graphics.draw*` in tests
+**Examples vs Demos**: `examples/` are documentation — no tests required. `demos/` are functional showcases — every demo must have a test in `tests/lua/demos/test_demo_<name>.lua`.
 
-**VM helpers (Rust side):**
-- `create_test_vm()` → full Lua VM with BDD framework loaded and `_test_results` global
-- `make_vm()` → `(Rc<RefCell<SharedState>>, Lua)` for stateful Rust-side tests
+**VM helpers**: `create_test_vm()` returns a full Lua VM with BDD framework loaded. `make_vm()` returns `(Rc<RefCell<SharedState>>, Lua)` for stateful Rust-side tests.
 
-**Adding a new Lua test:**
-1. Create `tests/lua/unit/test_<module>.lua` using `describe`/`it`/`expect_*`
-2. Add `#[test] fn lua_test_<module>() { run_lua_test("unit/test_<module>.lua"); }` to `tests/lua/harness.rs`
-3. Run: `cargo test lua_test_<module>`
-
-**Quality gates:**
-- `cargo test` — all suites must exit 0
-- `cargo clippy -- -D warnings` — must exit 0
-- `python tools/test_coverage.py` — coverage analytics
-- `python tools/collect_docs.py --report-missing` — lists undocumented public items (exit 1 if any)
-
-**Constraints:**
-- Lua tests MUST NOT require a window, GPU, or audio device
-- New `luna.*` API functions require at least one Lua test before merge
-- Stress tests live in `tests/stress/` (Rust) and `tests/lua/stress/` (Lua)
-- Golden tests: expected files in `tests/golden/expected/`; actual output in `tests/golden/actual/` (git-ignored)
-
-### File Structure
-
-```
-src/          — Rust source code (28 modules)
-demos/     — Lua game examples (27 demos)
-tests/        — Integration tests (28 test files + stress/ + lua/ + golden/)
-docs/         — Architecture (engine-architecture, test-framework, philosophy), generated API refs
-tools/        — CLI scripts (CAG validation, doc generation, packaging, install)
-.github/      — CAG layer (agents, skills, prompts, instructions)
-vscode-extension/ — First-party VS Code extension (MCP server, IntelliSense)
-work/         — Session work folders (branch.txt, per-session artifact folders)
-assets/       — Engine assets (splash, icon, embedded fonts)
-```
-
-### Work Sessions (Mandatory)
-
-**Every chat session that produces artifacts MUST follow this protocol:**
-
-```powershell
-# 1. Confirm branch
-git rev-parse --abbrev-ref HEAD        # write output to work/branch.txt
-git status                             # review working tree
-
-# 2. Create session folder (human-readable name, no timestamps)
-# e.g., work/renderer-wgpu-port/, work/physics-fix/, work/cag-upgrade/
-
-# 3. Create 8 required subfolders
-# scripts/  handovers/  reports/  data/  examples/  other/  temp/  logs/
-
-# 4. Create logs/agent_log.jsonl (append entries per phase, never overwrite)
-```
-
-**Session folder layout:**
-```
-work/{session}/
-├── scripts/       ← automation scripts from this session
-├── handovers/     ← agent-to-agent Markdown handover docs
-├── reports/       ← findings, summaries, run results
-├── data/          ← data files produced during analysis
-├── demos/      ← example artifacts or reference outputs
-├── other/         ← miscellaneous
-├── temp/          ← strictly temporary; cleaned per session
-└── logs/
-    └── agent_log.jsonl   ← one JSONL entry per completed phase
-```
-
-**Agent log entry format** (append, never overwrite):
-```json
-{"timestamp":"ISO8601","agent":"Name","session":"session-name","phase":"what was done","skills_used":[],"instructions_loaded":[],"tools_used":[],"commands_run":[],"result":"PASS|FAIL|PARTIAL","findings":[],"handover_to":"NextAgent"}
-```
-
-**Rules:**
-- `Manager` always starts the session (creates folder + branch.txt)
-- Complex tasks (3+ agents or 5+ files) → route to `Planner` BEFORE any other work
-- Completed session folders move to `work/archive/` — never delete
-
-### Git Rules
-
-- **Never `git add .`** — stage only files directly changed by the current task
-- **Commit format**: `type(scope): description` — types: `feat` `fix` `refactor` `test` `docs` `chore`
-- **One logical change per commit** — one accepted task phase = one commit
-- **Phase commit sequence**: quality gate → `git add <files>` → `git commit` → log entry → route forward
-- **Before every commit**: `cargo test && cargo clippy -- -D warnings`
-- **Confirm branch** before committing: `git rev-parse --abbrev-ref HEAD`
-
-### CLI Tools (tools/)
-
-> **Tool directory policy**: `tools/` contains **permanent** CLI scripts only. Temporary or session-scoped scripts go in `work/{session}/scripts/` — never in `tools/`. See `tools/README.md` for the full policy and a complete tool index.
-
-| Command | Purpose |
-|---|---|
-| `python tools/gen_all_docs.py` | Run the full documentation pipeline (all formats + coverage) |
-| `python tools/cag_validate.py` | Validate all `.github/` CAG files |
-| `python tools/cag_validate.py --type agent\|skill\|prompt\|instruction` | Validate one family |
-| `python tools/cag_validate.py --file <path>` | Validate a single file |
-| `python tools/collect_docs.py` | Generate `docs/API/api_generated.md` from `///` comments |
-| `python tools/collect_docs.py --report-missing` | List public items missing `///` docs (exit 1 if any) |
-| `python tools/collect_docs.py --suggest` | Print starter `///` lines for undocumented items |
-| `python tools/doc_coverage.py` | Docstring coverage analytics → `docs/logs/doc_coverage.json` |
-| `python tools/doc_coverage.py --report-missing` | List all Rust + Lua API items missing doc comments |
-| `python tools/test_coverage.py` | Test coverage analytics → `docs/logs/test_coverage.json` |
-| `python tools/test_coverage.py --suggest` | Print test stubs for uncovered items |
-| `python tools/gen_test_docs.py` | Generate `docs/API/test_docs.md` from coverage metadata |
-| `python tools/gen_lua_api.py` | Generate `docs/API/lua_api_reference_generated.md` |
-| `python tools/gen_lua_api_skeleton.py` | Generate `src/lua_api/*_api.rs` skeletons from Rust module docstrings |
-| `python tools/gen_lua_api_skeleton.py --list` | List all scannable module names |
-| `python tools/gen_lua_api_skeleton.py --module <name> --dry-run` | Preview skeleton for a single module |
-| `python tools/gen_lua_api_skeleton.py --all` | Generate skeletons for all non-existing modules |
-| `python tools/gen_wiki_api.py` | Regenerate `wiki/API-Reference.md` cheatsheet |
-| `python tools/gen_splash.py` | Regenerate splash screen asset |
-| `python tools/gen_icon.py` | Regenerate window icon asset |
-| `powershell tools/dist.ps1` | Build + package release binary (Windows) |
-| `bash tools/dist.sh` | Build + package release binary (Linux/macOS) |
-| `powershell tools/install.ps1` | Install luna.exe locally (Windows) |
-| `bash tools/install.sh` | Install luna2d locally (Linux/macOS) |
-| `python tools/module_audit.py` | Audit module structure and coverage |
-| `python tools/audit_module.py <name>` | End-to-end module quality audit (PASS/WARN/ERROR) |
-| `python tools/quality_report.py` | Generate quality report |
-| `python tools/integration_coverage.py` | Check integration test coverage |
-
-**Rule**: always use CLI tools instead of ad-hoc grep or manual file walks.
-
-### Logging
-
-Luna2D uses the `log` crate facade (`log::info!`, `log::warn!`, `log::error!`, `log::debug!`) activated via `env_logger`.
-
-| Level | Use for |
-|---|---|
-| `error!` | Unrecoverable — will abort the frame or the session |
-| `warn!` | Recoverable problem — degraded behaviour expected |
-| `info!` | Lifecycle events: startup, shutdown, script load |
-| `debug!` | Per-frame or per-call detail — disabled in release builds |
-
-**Control at runtime**: `RUST_LOG=luna2d=debug cargo run -- demos/hello_world`
-**Test output**: captured by `cargo test -- --nocapture` or `RUST_LOG=debug cargo test`
-**Never** use `println!` in engine code — always `log::*`.
-
-### Test Diagnostics
-
-| What you want | Command |
-|---|---|
-| Type-check only (fastest) | `cargo check` |
-| Run one module's tests | `cargo test --test <module>_tests` |
-| Run one Lua test | `cargo test lua_test_<module>` |
-| See stdout from tests | `cargo test --test <module>_tests -- --nocapture` |
-| Debug log during tests | `$env:RUST_LOG = "debug"; cargo test --test <module>_tests -- --nocapture` |
-| Lint library only | `cargo clippy --lib` |
-| Run all tests (final gate only) | `cargo test` |
-| Format test output | `cargo test -- --format pretty` |
-
-**Key rule**: Use scoped commands (`--test <module>`) during development. Full `cargo test` only at commit time.
-Test output files: none by default. Failures print inline. For structured reports: `cargo test 2>&1 | Tee-Object test_results.txt`.
+**Constraints**: Lua tests must not call GPU, audio, or window APIs. New `luna.*` functions require at least one Lua test before merge. Bug fixes require a regression test first.
 
 ### Docstrings
 
-**Every public item** (`pub struct`, `pub fn`, `pub enum`, `pub trait`, `pub type`, `const`) must have a `///` doc comment.
-**Every module** (`mod.rs`, lib.rs) must have a `//!` module-level doc.
-**Structure**: one-sentence summary, then optional detail paragraph. No `# Examples` unless the example is runnable and tested.
+Every `pub` Rust item needs `///`. Every module (`mod.rs`, `lib.rs`) needs `//!`. Format: one-sentence summary, optional detail paragraph. Verify: `python tools/collect_docs.py --report-missing` (exits 1 if any missing).
 
-Verify coverage: `python tools/collect_docs.py --report-missing` (exit 1 if any missing).
-Auto-generate starters: `python tools/collect_docs.py --suggest`.
+**Lua API files** (`src/lua_api/`) use inline `@param name : type` and `@return type` annotations — **never** `# Parameters` / `# Returns` rustdoc sections. Gold standard: `src/lua_api/timer_api.rs`.
 
-```rust
-/// Applies gravity and resolves AABB collisions for all dynamic bodies.
-///
-/// Call once per frame with the elapsed time in seconds.
-pub fn step(&mut self, dt: f32) { … }
+### Work Sessions (Mandatory)
+
+Every session that produces artifacts must:
+1. Confirm branch: `git rev-parse --abbrev-ref HEAD` → write to `work/branch.txt`
+2. Create `work/{session-name}/` with 8 subfolders: `scripts/` `handovers/` `reports/` `data/` `demos/` `other/` `temp/` `logs/`
+3. Create `logs/agent_log.jsonl` — append one JSONL entry per completed phase, never overwrite
+4. Route to `Planner` before any work if the task spans 3+ agents or 5+ files
+
+Log entry format: `{"timestamp":"ISO8601","agent":"Name","session":"...","phase":"...","skills_used":[],"tools_used":[],"commands_run":[],"result":"PASS|FAIL|PARTIAL","findings":[],"handover_to":"..."}`
+
+Completed session folders move to `work/archive/` — never delete.
+
+### Git Rules
+
+- Never `git add .` — stage only files directly changed by the current task
+- Commit format: `type(scope): description` — types: `feat` `fix` `refactor` `test` `docs` `chore`
+- One logical change per commit — one accepted phase = one commit
+- Confirm branch before committing: `git rev-parse --abbrev-ref HEAD`
+
+### CLI Tools (tools/)
+
+All permanent tools live in `tools/`. See `tools/README.md` for the full index. Key categories:
+
+- **CAG**: `cag_validate.py [--type agent|skill|prompt] [--file <path>]`
+- **Docs**: `gen_all_docs.py` · `collect_docs.py [--report-missing|--suggest]` · `gen_lua_api.py` · `doc_coverage.py`
+- **Tests**: `test_coverage.py [--suggest]` · `integration_coverage.py` · `gen_test_docs.py`
+- **Audit**: `audit_module.py <name>` · `module_audit.py` · `quality_report.py`
+- **Lua API**: `gen_lua_api_skeleton.py [--all|--module <name>|--list]`
+- **Assets**: `gen_splash.py` · `gen_icon.py`
+- **Distribution**: `dist.ps1` / `dist.sh` · `install.ps1` / `install.sh`
+
+### Logging
+
+| Level | Use for |
+|---|---|
+| `error!` | Unrecoverable — aborts the frame or session |
+| `warn!` | Recoverable — degraded behaviour expected |
+| `info!` | Lifecycle events: startup, shutdown, script load |
+| `debug!` | Per-frame detail — disabled in release builds |
+
+Control: `RUST_LOG=luna2d=debug cargo run -- demos/hello_world`. Never use `println!` in engine code.
+
+### Test Diagnostics
+
+| What | Command |
+|---|---|
+| Type-check only | `cargo check` |
+| One Rust test suite | `cargo test --test <module>_tests -- --nocapture` |
+| One Lua test | `cargo test lua_test_<category>_<name> -- --nocapture` |
+| Debug log in tests | `$env:RUST_LOG="debug"; cargo test --test <module>_tests -- --nocapture` |
+| Lint library only | `cargo clippy --lib` |
+| Full quality gate | `cargo test && cargo clippy -- -D warnings` |
+
+Use scoped `--test <module>` during development. Full `cargo test` only at commit time.
+
+### Repository Layout
+
+```
+src/              Rust source — Baseline, Tier 1, Tier 2, and lua_api bridge
+library/          Tier 3 Lunasome — pure-Lua libraries (no Rust engine internals)
+demos/            Playable Lua game demos — each has main.lua and optional conf.lua
+examples/         Single-file Lua API usage scripts — one per luna.* module
+tests/            Rust + Lua test suites (rust/unit/, rust/stress/, rust/golden/, rust/config/, rust/security/, rust/ext/, lua/unit/, lua/library/, lua/integration/, lua/demos/)
+docs/             Architecture docs, generated API refs (docs/API/), performance notes
+tools/            Permanent CLI scripts only
+.github/          CAG layer — agents, skills, prompts, system prompt
+vscode-extension/ First-party VS Code extension (MCP server, IntelliSense, webview panels)
+work/             Session folders — current and work/archive/
+assets/           Engine assets: splash screen, window icon, embedded fonts
 ```
 
-### Test-Driven Development
+### Game Code and Libraries
 
-**Rust (red → green → refactor)**:
-1. Write a failing test in `tests/<module>_tests.rs` that names the expected behaviour
-2. Run `cargo test <module>_tests` — confirm it fails
-3. Implement the minimum code to make it pass
-4. Refactor, keeping tests green
-
-**Lua (describe → script → `cargo run`)**:
-1. Write a `main.lua` that exercises the API call you intend to add
-2. Run `cargo run -- demos/<name>` — confirm the error message
-3. Implement the Lua binding; re-run to confirm the script works
-
-**Rules**:
-- New public Rust API → at least one integration test before merge
-- Bug fix → regression test first, then fix
-- Float comparisons: `assert!((a - b).abs() < 1e-5)` — never `assert_eq!` on `f32`
-- Tests must not create windows, play audio, or write outside `target/`
+- **`demos/`** — Run any demo with `cargo run -- demos/<name>`. Use as reference for complete, idiomatic game structures built on the `luna.*` API.
+- **`examples/`** — Focused single-file API usage scripts (e.g. `physics.lua`, `tilemap.lua`). Use when you need to understand a specific `luna.*` namespace in isolation.
+- **`library/`** — Lunasome Tier 3 pure-Lua libraries. Each has a `README.md`. Load in a game with `require("library/combat")` etc. Never reach into Rust engine internals from library code.
+- **`docs/API/lua_api_reference_generated.md`** — Full `luna.*` API reference generated from `///` inline annotations by `tools/gen_lua_api.py`. Canonical source — do not hand-edit.

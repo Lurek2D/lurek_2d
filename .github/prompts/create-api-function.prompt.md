@@ -32,14 +32,14 @@ Step-by-step workflow for adding a new function to the `luna.*` Lua API.
 2. Verify the function doesn't duplicate existing functionality
 3. Design the signature following Lua API conventions (see `lua-api-design` skill)
 4. Implement the binding in the appropriate `*_api.rs` file using the `register()` pattern
-5. Add the function to `docs/lua_api_reference.md`
+5. Add the function to `docs/API/lua_api_reference_generated.md`
 6. Write at least one test exercising the new function
 7. Run `cargo test` and `cargo clippy`
 
 ## Outputs
 
 - Modified `src/lua_api/<module>_api.rs` with new binding
-- Updated `docs/lua_api_reference.md`
+- Updated `docs/API/lua_api_reference_generated.md`
 - New or updated test in `tests/`
 - Verified: `cargo test` passes, `cargo clippy` clean
 
@@ -57,4 +57,4 @@ Step-by-step workflow for adding a new function to the `luna.*` Lua API.
 
 - `lua-api-design` skill
 - `rust-coding` skill
-- `docs/lua_api_reference.md`
+- `docs/API/lua_api_reference_generated.md`

@@ -8,7 +8,7 @@ description: "Create a new event type or signal pattern for decoupled game commu
 
 - Read `src/event/mod.rs` and `src/event/signal.rs`
 - Read `src/lua_api/event_api.rs` for Lua bindings
-- Read `tests/event_tests.rs` for test patterns
+- Read `tests/rust/unit/event_tests.rs` for test patterns
 - Load the `event-systems` skill
 
 ## Steps
@@ -28,7 +28,7 @@ description: "Create a new event type or signal pattern for decoupled game commu
    - For signals: emit from Lua via `luna.signal.emit(name, ...args)`
 
 4. **Write tests**
-   - Add to `tests/event_tests.rs`
+   - Add to `tests/rust/unit/event_tests.rs`
    - Test FIFO ordering for EventQueue
    - Test subscription handle uniqueness for Signal
    - Test argument type preservation (Str, Num, Bool, Nil round-trip)

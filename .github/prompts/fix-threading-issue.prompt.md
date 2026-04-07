@@ -8,8 +8,8 @@ description: "Diagnose and fix threading issues in Luna2D: Channel deadlocks, Wo
 
 - Read `src/thread/mod.rs` for Channel and Worker types
 - Read `src/lua_api/thread_api.rs` for Lua bindings
-- Read `tests/thread_tests.rs` for test patterns
-- Load the `threading-patterns` skill
+- Read `tests/rust/unit/thread_tests.rs` for test patterns
+- Read `src/thread/AGENT.md` for Channel/Worker patterns
 
 ## Steps
 
@@ -37,7 +37,7 @@ description: "Diagnose and fix threading issues in Luna2D: Channel deadlocks, Wo
    - Appropriate work for workers: pathfinding, AI computation, data processing
 
 5. **Write regression test**
-   - Add test to `tests/thread_tests.rs`
+   - Add test to `tests/rust/unit/thread_tests.rs`
    - Test message round-trip: main → worker → main
    - Test worker completion/termination
    - Test edge cases: empty channels, multiple workers

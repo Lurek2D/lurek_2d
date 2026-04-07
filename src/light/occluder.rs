@@ -37,13 +37,13 @@ impl Occluder {
     /// `Self`.
     ///
     /// # Panics
-    /// Panics if vertex count is less than 3 or greater than 256.
+    /// Panics if vertex count is less than 3 or greater than 512.
     ///
     /// Defaults: position = origin, opacity = 1.0, light_mask = 0xFFFF, enabled = true.
     pub fn new(vertices: Vec<Vec2>) -> Self {
         assert!(
-            vertices.len() >= 3 && vertices.len() <= 256,
-            "Occluder vertex count must be 3..=256, got {}",
+            vertices.len() >= 3 && vertices.len() <= 512,
+            "Occluder vertex count must be 3..=512, got {}",
             vertices.len()
         );
         Self {
@@ -61,11 +61,11 @@ impl Occluder {
     /// - `vertices` — `Vec<Vec2>`.
     ///
     /// # Panics
-    /// Panics if vertex count is less than 3 or greater than 256.
+    /// Panics if vertex count is less than 3 or greater than 512.
     pub fn set_vertices(&mut self, vertices: Vec<Vec2>) {
         assert!(
-            vertices.len() >= 3 && vertices.len() <= 256,
-            "Occluder vertex count must be 3..=256, got {}",
+            vertices.len() >= 3 && vertices.len() <= 512,
+            "Occluder vertex count must be 3..=512, got {}",
             vertices.len()
         );
         self.vertices = vertices;

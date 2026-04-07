@@ -26,4 +26,4 @@ Profile and analyze the rendering pipeline performance.
 ## References
 
 - `performance-profiling` skill
-- `software-rendering` skill
+- `gpu-programming` skill

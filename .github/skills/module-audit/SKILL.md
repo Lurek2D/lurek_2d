@@ -5,6 +5,23 @@ description: "Load this skill when performing end-to-end quality audits on Luna2
 
 # Module Audit Skill
 
+## Owns
+
+- End-to-end module quality audit workflow for all `src/` modules
+- Docstring coverage checks via `python tools/collect_docs.py --report-missing`
+- AGENT.md sync verification against source files and Lua API
+- Test coverage meta-analysis via `python tools/test_coverage.py`
+- Architecture compliance: tier rules, dependency direction, import graph
+- Module audit runner: `python tools/audit_module.py <name>` (PASS/WARN/ERROR verdict)
+- Wiki page completeness for all audited modules
+
+## Load When
+
+- Performing a quality audit on one or more `src/` modules
+- Checking docstring coverage, test coverage, or AGENT.md sync for a module
+- Running `python tools/audit_module.py <name>` and interpreting results
+- Verifying architecture compliance (tier rules, dependency direction) before merging
+
 ## Purpose
 
 Perform a structured, reproducible end-to-end quality audit on one or more Luna2D `src/` modules. Every check produces a discrete PASS / WARNING / ERROR verdict. A module FAILS the audit with **1+ ERROR** or **3+ WARNING**.
@@ -13,8 +30,8 @@ Perform a structured, reproducible end-to-end quality audit on one or more Luna2
 
 Before running any checks, load these reference documents:
 
-1. `docs/architecture/architecture.md` — tier assignments and dependency rules
-2. `docs/design-assumptions.md` — binding constraints
+1. `docs/architecture/engine-architecture.md` — tier assignments and dependency rules
+2. `docs/architecture/philosophy.md` — binding constraints
 3. `src/lib.rs` — module registrations
 4. `src/lua_api/mod.rs` — Lua API registrations
 

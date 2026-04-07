@@ -1,168 +1,258 @@
 # `engine` — Agent Reference
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Baseline |
+| Property       | Value                                                |
+|----------------|------------------------------------------------------|
+| **Tier**       | Baseline — always-on runtime substrate               |
 | **Status**     | Implemented — Full                                   |
-| **Lua API** | `None` |
-| **Source** | `src/engine/` |
-| **Rust Tests** | `—`                    |
-| **Lua Tests**  | `—`                     |
-| **Tests** | `tests/engine_tests.rs` |
+| **Lua API**    | — (foundation module; no dedicated `luna.engine` namespace) |
+| **Source**     | `src/engine/`                                        |
+| **Rust Tests** | `tests/rust/unit/engine_tests.rs`                    |
+| **Lua Tests**  | —                                                    |
+| **Architecture** | `docs/architecture/engine-architecture.md`          |
 
 ## Summary
 
-The engine module is the nervous system of Luna2D — it owns everything that
-must happen in the right order at the right time.  Window creation, GPU
-surface initialisation, Lua VM construction, `SharedState` assembly, the main
-game loop, fixed-timestep physics ticking, input event routing, error handling
-with a full-screen error display, debug overlay, structured log messages, and
-the typed resource keys that identify GPU objects all live here.
+The engine module is the foundational layer of Luna2D — it owns the application
+lifecycle, the main game loop, configuration loading, shared mutable state, error
+handling, structured logging, and the typed resource keys that identify every GPU
+object in the engine.  It sits at the Baseline tier alongside `math`, meaning every
+other module in the system may import from it.  No domain module imports `lua_api`;
+engine is the only upward-facing dependency root.
 
-The winit `ApplicationHandler` pattern structures the loop around OS events
-rather than a manual spin: `resumed()` initialises GPU and Lua, `window_event()`
-routes input events to the input-state structs, and `about_to_wait()` fires
-`tick_frame()` which runs the full update/draw cycle and presents the frame.
-This event-driven architecture is required for correct behaviour on macOS and
-ensures tight integration with the operating system's event queue on all
-desktop platforms.
+`App` drives the winit 0.30 `ApplicationHandler` event loop.  Internally a private
+`LunaApp` struct owns the wgpu surface, GPU renderer, Lua VM, gamepad polling via
+gilrs, and the `RunState` machine (`Running → Error → Restarting`).  `resumed()`
+initialises the GPU adapter/device/surface and fires the first redraw;
+`window_event()` routes OS input events to `KeyboardState`, `MouseState`,
+`GamepadState`, and `TouchState` and fires the corresponding `luna.*` callbacks;
+`about_to_wait()` calls `tick_frame()` which runs the full update/draw cycle and
+presents the rendered frame.  This event-driven architecture is required for correct
+behaviour on macOS and ensures tight integration with the OS event queue on all
+desktop targets (Windows, Linux, macOS).
 
-`SharedState` is the hub that connects every subsystem to every API call.  It
-is deliberately `Rc<RefCell<>>` rather than `Arc<Mutex<>>` because all Lua
-callbacks are strictly single-threaded; removing the need for cross-thread
-safety eliminates an entire class of potential data-race bugs and avoids the
-overhead of lock acquisition on every API call.  Config is loaded from
-`luna.toml` in the game directory before the window is created, so window
-dimensions, title, VSYNC mode, target FPS, and which optional modules
-(physics, audio, gamepad) are enabled are all known at surface initialisation
-time.
+`SharedState` is the central hub connecting every subsystem to every Lua API closure.
+It is `Rc<RefCell<SharedState>>` — not `Arc<Mutex<>>` — because all Lua callbacks
+execute on a single thread; this eliminates data-race bugs and avoids lock overhead.
+`SharedState` holds SlotMap resource pools (textures, fonts, canvases, meshes,
+shaders, particle systems, shapes, sprite batches), subsystem instances (Mixer,
+Clock, GameFS, Camera, EventQueue, KeyboardState, MouseState, TouchState), draw
+state (draw commands, color, blend mode, scissor, stencil, depth mode), and
+per-frame statistics.
+
+`Config` is loaded from `conf.lua` in the game directory at startup using a
+temporary Lua VM.  It captures `WindowConfig` (title, size, vsync, fullscreen,
+scale mode, game resolution), `GraphicsConfig` (backend, power preference),
+`ModulesConfig` (30+ boolean flags for optional subsystems), and
+`PerformanceConfig` (target FPS).  `ModulesConfig::validate_and_fix()` enforces
+dependency constraints (e.g. particle/gui/overlay/terminal require graphics).
+
+Error handling uses `EngineError`, a `thiserror`-derived enum with 12 variants
+carrying stable four-digit codes (E1001–E1012) grouped into five `ErrorCategory`
+values.  `ErrorScreen` renders a blue full-screen error display with word-wrapped
+message, traceback, and recovery instructions (Escape to quit, R to restart,
+Ctrl+C to copy).  The engine never crashes on Lua errors; it transitions to
+`RunState::Error` and displays the error screen.
+
+Structured logging uses stable message IDs (L001–L082, plus subsystem prefixes
+A/G/P/DF/LA) defined as `pub const` values.  The `log_msg!` macro looks up
+human-readable text from a TOML-backed `MessageCatalog` embedded at compile time
+from `src/engine/cfg/messages.toml`.  Resource keys are 14 typed SlotMap newtypes
+providing compile-time safety: a `TextureKey` cannot be passed where a `FontKey` is
+expected.
+
+The engine module intentionally does NOT expose a `luna.engine` Lua namespace.  It
+is a pure foundation layer consumed by all other modules and by `lua_api` for
+lifecycle orchestration.
 
 ## Architecture
 
 ```
-App (entry point)
+App::run(game_dir)
   │
-  ├── RunState ── Running | Error | Restarting
+  ├── EventLoop::run_app(LunaApp)
   │
-  ├── LunaApp (private winit ApplicationHandler)
-  │     ├── init_gpu() ── wgpu adapter/device/surface
-  │     ├── init_lua() ── Lua VM + register all luna.* APIs
-  │     ├── tick_frame() ── input poll → lua update(dt) → lua draw() → present
-  │     └── game_update() ── fixed timestep logic
-  │
-  ├── Config ── loaded from conf.lua
-  │     ├── WindowConfig { title, width, height, vsync, resizable, fullscreen }
-  │     ├── GraphicsConfig { backend, power_preference }
-  │     ├── ModulesConfig { physics, audio, joystick }
-  │     ├── PerformanceConfig { target_fps, fixed_timestep }
-  │     └── load_from_conf_lua(path) → Config
-  │
-  ├── EngineError ── 13 variants (E1001–E1012)
-  │     ├── ErrorCategory (5 enum variants)
-  │     └── error_code() → "E10XX" string
-  │
-  ├── ErrorScreen ── blue background, word wrap, Escape/R controls
-  │
-  ├── DebugOverlay ── FPS + draw calls (F12 toggle)
-  │
-  ├── LogMessages ── L001–L032 constants + log_msg! macro
-  │
-  └── ResourceKeys ── 10 SlotMap key types
-        TextureKey, FontKey, CanvasKey, SoundKey, ParticleKey,
-        SpriteBatchKey, ShaderKey, MeshKey, BusKey, MidiPlayerKey
+  └── LunaApp (private winit ApplicationHandler)
+        │
+        ├── resumed()
+        │     ├── create Window (winit) with Config settings
+        │     ├── init_gpu() → wgpu Instance → Adapter → Device → Surface
+        │     │     └── GpuRenderer::new(device, queue, format, w, h)
+        │     └── first RedrawRequested triggers init_lua()
+        │           ├── create_lua_vm(SharedState, ModulesConfig)
+        │           ├── load and exec main.lua (or show splash)
+        │           └── call luna.load()
+        │
+        ├── window_event()
+        │     ├── KeyEvent → KeyboardState → luna.keypressed / keyreleased
+        │     ├── Ime(Commit) → luna.textinput
+        │     ├── CursorMoved → MouseState → luna.mousemoved
+        │     ├── MouseInput → luna.mousepressed / mousereleased
+        │     ├── MouseWheel → luna.wheelmoved
+        │     ├── Touch → TouchState → luna.touchpressed / moved / released
+        │     ├── Focused → luna.focus
+        │     ├── Occluded → luna.visible
+        │     ├── Resized → reconfigure surface → luna.resize
+        │     ├── DroppedFile → load game folder (drag-and-drop)
+        │     └── CloseRequested → luna.quit() → RunState
+        │
+        ├── about_to_wait() → tick_frame()
+        │     ├── gilrs gamepad polling → luna.gamepadpressed / axis / etc.
+        │     ├── apply pending WindowState operations
+        │     ├── Clock::tick() → dt
+        │     ├── luna.update(dt)
+        │     ├── clear draw_commands
+        │     ├── luna.draw() → game pushes DrawCommands
+        │     ├── DebugOverlay → append overlay DrawCommands
+        │     ├── GpuRenderer::render_frame(commands) → present
+        │     └── reset per-frame state
+        │
+        ├── RunState machine
+        │     Running ──error──▶ Error(ErrorScreen)
+        │       ▲                    │ [Esc] → Quitting
+        │       └── [R] ◀── Restarting ◀─┘
+        │
+        ├── Config (loaded before window creation)
+        │     ├── WindowConfig { title, w, h, vsync, fullscreen, scale_mode, ... }
+        │     ├── GraphicsConfig { backend, power_preference }
+        │     ├── ModulesConfig { 30+ boolean flags }
+        │     └── PerformanceConfig { target_fps }
+        │
+        ├── SharedState (Rc<RefCell<>>)
+        │     ├── SlotMap pools: textures, fonts, canvases, shaders, meshes,
+        │     │     sprite_batches, shapes, particle_systems
+        │     ├── Subsystems: Mixer, Clock, GameFS, Camera, EventQueue,
+        │     │     LightWorld, MidiState
+        │     ├── Input: KeyboardState, MouseState, TouchState, gamepads
+        │     ├── Draw state: draw_commands, color, blend_mode, scissor,
+        │     │     stencil_mode, depth_mode, wireframe, color_mask
+        │     └── Window: WindowState (query + pending operations)
+        │
+        ├── EngineError (12 variants, E1001–E1012)
+        │     ├── ErrorCategory: Init | Runtime | Resource | Script | System
+        │     └── code(), category(), recovery_hint()
+        │
+        ├── ErrorScreen (blue error display)
+        │     ├── from_error(), from_lua_error(), from_engine_error()
+        │     └── draw_commands() → Vec<DrawCommand>
+        │
+        ├── DebugOverlay (F12 toggle, FPS + draw calls)
+        │
+        ├── MessageCatalog (TOML-backed, embedded at compile time)
+        │     └── log_msg! macro → "[L001] Human-readable text"
+        │
+        └── ResourceKeys (14 typed SlotMap key newtypes)
+              TextureKey, FontKey, CanvasKey, SoundKey, ParticleKey,
+              SpriteBatchKey, ShaderKey, MeshKey, ShapeKey, BusKey,
+              MidiPlayerKey, QueueableKey, LightKey, OccluderKey
 ```
 
 ## Source Files
 
 | File | Purpose |
 |------|---------|
-| `app.rs` | Luna2D application lifecycle using winit 0.30 + wgpu GPU rendering |
-| `config.rs` | Engine and window configuration loaded from `conf.lua` |
-| `debug_overlay.rs` | Debug overlay for displaying FPS and draw call statistics |
-| `error.rs` | Structured error types and result alias for the Luna2D engine |
-| `error_screen.rs` | Visual error screen for displaying Lua and engine errors to the user |
-| `log_messages.rs` | Structured logging with stable message IDs for the Luna2D engine |
-| `resource_keys.rs` | Typed resource keys for generational ID-based resource pools |
-| `shared_state.rs` | Shared engine state hub: SharedState, WindowState, FullscreenType, and ErrorInfo |
-| `app_winit.rs` | TODO: describe purpose of app_winit.rs |
-| `messages.rs` | TODO: describe purpose of messages.rs |
-| `temp_test.rs` | TODO: describe purpose of temp_test.rs |
+| `mod.rs` | Module declaration, re-exports of `App`, `Config`, `SharedState`, `EngineError`, etc. |
+| `app.rs` | Application lifecycle: `App`, private `LunaApp` (winit `ApplicationHandler`), `RunState`, game loop, GPU init, Lua VM init, input routing, splash screen, drag-and-drop |
+| `app_winit.rs` | **Dead file** — not declared in `mod.rs`, not compiled. Preserved for historical reference only. |
+| `config.rs` | `Config`, `WindowConfig`, `GraphicsConfig`, `ModulesConfig`, `PerformanceConfig`, `conf.lua` loading |
+| `debug_overlay.rs` | `DebugOverlay` — FPS and draw-call counter rendered in the top-right corner |
+| `error.rs` | `EngineError` (12 variants with stable codes), `ErrorCategory`, `EngineResult<T>` |
+| `error_screen.rs` | `ErrorScreen` — blue error display with word-wrap, traceback, TTF/bitmap text rendering |
+| `log_messages.rs` | Stable message ID constants (`L001`–`L082`, `A001`–`A004`, `G001`–`G005`, `P001`–`P002`, etc.), `set_log_level`/`get_log_level`, `log_msg!` macro |
+| `messages.rs` | `MessageCatalog` — TOML-backed message lookup; `init()`, `get_message()`, `catalog()` functions |
+| `resource_keys.rs` | 14 typed SlotMap key newtypes: `TextureKey`, `FontKey`, `CanvasKey`, `SoundKey`, `ParticleKey`, `SpriteBatchKey`, `ShaderKey`, `MeshKey`, `ShapeKey`, `BusKey`, `MidiPlayerKey`, `QueueableKey`, `LightKey`, `OccluderKey` |
+| `shared_state.rs` | `SharedState`, `WindowState`, `FullscreenType`, `ErrorInfo`, `ScreenshotRequest` |
+| `temp_test.rs` | Placeholder file — contains only the text `testing`, not compiled |
+| `cfg/messages.toml` | TOML catalog of human-readable log message strings, embedded at compile time |
 
 ## Submodules
 
 ### `engine::app`
 
-Luna2D application lifecycle using winit 0.
+Application lifecycle using winit 0.30 + wgpu GPU rendering.
 
-- **`App`** (struct): Entry point for the Luna2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.
+- **`App`** (struct): Public entry point. Holds `Config` and launches the winit event loop via `App::run()`.
+- **`LunaApp`** (struct, private): winit `ApplicationHandler` implementation. Owns the window, wgpu surface, `GpuRenderer`, Lua VM, `SharedState`, gilrs gamepad polling, `RunState`, and `DebugOverlay`.
+- **`RunState`** (enum, private): `Running` | `Error(ErrorScreen)` | `Restarting`.
+- **`recompute_viewport`** (fn, private): Recalculates viewport scale/offset for letterbox, stretch, and pixel scaling modes.
 
 ### `engine::config`
 
-Engine and window configuration loaded from `conf.
+Engine and window configuration loaded from `conf.lua`.
 
-- **`Config`** (struct): Top-level engine configuration. Consult the module-level documentation for the broader usage context and preconditions....
-- **`WindowConfig`** (struct): Window dimensions, title, vsync, fullscreen, and resize settings.
-- **`ModulesConfig`** (struct): Flags to enable or disable optional engine subsystems.
-- **`PerformanceConfig`** (struct): Frame rate cap and other performance tuning options.
+- **`Config`** (struct): Top-level container with `window`, `graphics`, `modules`, `performance`, `identity`, `version`, `log_file`, `log_append`, `log_level` fields. `load_from_conf_lua(game_dir)` creates a temporary Lua VM, executes `conf.lua`, and reads values back.
+- **`WindowConfig`** (struct): Window geometry (width, height), title, vsync, fullscreen, resizable, min size, borderless, icon path, display index, scale mode, game resolution, maximized.
+- **`GraphicsConfig`** (struct): GPU backend selection (`"auto"`, `"dx12"`, `"vulkan"`, `"metal"`) and power preference (`"high"`, `"low"`, `"none"`).
+- **`ModulesConfig`** (struct): 30+ boolean flags toggling optional subsystems (audio, physics, graphics, input, timer, filesystem, window, particle, image, gui, overlay, tilemap, scene, savegame, entity, ai, pathfinding, thread, graph, data, compute, minimap, modding, pipeline, system, localization, debug, animation, camera, network, procgen, raycaster, spine, terminal). `validate_and_fix()` enforces dependency constraints.
+- **`PerformanceConfig`** (struct): Frame rate cap via `target_fps` (default 60).
 
 ### `engine::debug_overlay`
 
 Debug overlay for displaying FPS and draw call statistics.
 
-- **`DebugOverlay`** (struct): Debug overlay showing FPS and render statistics.
+- **`DebugOverlay`** (struct): Toggleable overlay (`enabled` field). `draw_commands()` generates `DrawCommand` sequences (green text on semi-transparent background) for the top-right corner.
 
 ### `engine::error`
 
-Structured error types and result alias for the Luna2D engine.
+Structured error types and result alias.
 
-- **`ErrorCategory`** (enum): Error category for grouping related engine errors.
-- **`EngineError`** (enum): All possible error conditions that can occur in the Luna2D engine.  Each variant carries a stable error code...
-- **`EngineResult`** (type): Convenience alias for `Result<T, EngineError>` used throughout the engine.
+- **`ErrorCategory`** (enum): Five variants — `Init`, `Runtime`, `Resource`, `Script`, `System`. `as_str()` returns the lowercase name.
+- **`EngineError`** (enum): 12 `thiserror`-derived variants — `InitializationError`, `RenderError`, `InputError`, `AudioError`, `PhysicsError`, `FileSystemError`, `LuaError`, `WindowError`, `ConfigError`, `ResourceNotFound`, `ResourceNotLoaded`, `IoError`. Each carries `code()` (E1001–E1012), `category()`, and `recovery_hint()`.
+- **`EngineResult<T>`** (type): Alias for `Result<T, EngineError>`.
 
 ### `engine::error_screen`
 
-Visual error screen for displaying Lua and engine errors to the user.
+Visual error screen for Lua and engine errors.
 
-- **`ErrorScreen`** (struct): Visual error screen that generates `DrawCommand` sequences for the GPU renderer.  Stores a pre-processed error title,...
-- **`wrap_text`** (fn): Wraps a text string at word boundaries to fit within `max_chars` columns.
-- **`format_traceback`** (fn): Cleans up a Lua traceback string for display.
+- **`ErrorScreen`** (struct): Stores pre-processed title, message lines, and traceback. Constructors: `from_error(&str)`, `from_lua_error(&mlua::Error)`, `from_engine_error(&EngineError)`. `draw_commands()` generates a full blue-background error display with TTF or bitmap fallback text. `as_text()` returns the error as plain text for clipboard copy.
+- **`wrap_text`** (fn): Word-boundary text wrapping to a column width.
+- **`format_traceback`** (fn): Cleans and formats Lua traceback strings.
 
 ### `engine::log_messages`
 
-Structured logging with stable message IDs for the Luna2D engine.
+Structured logging with stable message IDs.
 
-- **`set_log_level`** (fn): Sets the global log level at runtime (called from `luna.system.setLogLevel`).
-- **`get_log_level`** (fn): Returns the current log level name. This accessor incurs no allocation; call it freely in hot paths.
-- **`L001_ENGINE_START`** (const): Log message: engine starting. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L002_ENGINE_STOP`** (const): Log message: engine shut down. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L003_GAME_LOADED`** (const): Log message: game loaded from path. Consult the module-level documentation for the broader usage context and...
-- **`L004_GAME_RESTART`** (const): Log message: game restarted. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L005_CONF_LOADED`** (const): Log message: conf.lua loaded. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L010_RENDER_ERROR`** (const): Log message: render error occurred. Consult the module-level documentation for the broader usage context and...
-- **`L011_LUA_ERROR`** (const): Log message: Lua error caught. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L012_AUDIO_ERROR`** (const): Log message: audio error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L013_FS_ERROR`** (const): Log message: filesystem error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L014_PHYSICS_ERROR`** (const): Log message: physics error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L015_RESOURCE_NOT_FOUND`** (const): Log message: resource not found. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L020_NO_AUDIO_DEVICE`** (const): Log message: no audio device available. Consult the module-level documentation for the broader usage context and...
-- **`L021_CLIPBOARD_FAIL`** (const): Log message: clipboard access failed. Consult the module-level documentation for the broader usage context and...
-- **`L022_UNKNOWN_LOG_LEVEL`** (const): Log message: unknown log level requested.
-- **`L030_ASYNC_LOAD_REQUEST`** (const): Log message: async asset load requested.
-- **`L031_ASYNC_LOAD_COMPLETE`** (const): Log message: async asset load completed.
-- **`L032_BATCH_STATS`** (const): Log message: draw batch statistics. Consult the module-level documentation for the broader usage context and...
+- **`set_log_level`** (fn): Sets the global log level at runtime via `log::set_max_level`.
+- **`get_log_level`** (fn): Returns the current log level name as `&'static str`.
+- **`log_msg!`** (macro): Emits structured log messages with stable ID prefix and catalog text lookup. Supports five log levels and optional dynamic arguments.
+- **70+ `pub const`** values: Stable message IDs grouped by subsystem — lifecycle (`L001`–`L007`), GPU (`L033`–`L035`), errors (`L010`–`L017`), warnings (`L020`–`L024`, `L050`–`L053`), subsystems (`L036`–`L044`), debug (`L030`–`L032`), app surface/cursor/screenshot (`L070`–`L082`), callbacks (`L060`), audio (`A001`–`A004`), graphics (`G001`–`G005`), physics (`P001`–`P002`), dataframe (`DF01`), Lua API layer (`LA01`–`LA08`).
+
+### `engine::messages`
+
+TOML-backed human-readable message catalog.
+
+- **`MessageCatalog`** (struct): Immutable map from message ID to text, parsed from the embedded `messages.toml`. Methods: `from_toml()`, `get()`, `len()`, `is_empty()`.
+- **`init`** (fn): Initialises the global `OnceLock<MessageCatalog>` from the embedded TOML. Safe to call multiple times.
+- **`get_message`** (fn): Resolves a stable message ID to its human-readable text; returns the raw ID if the catalog is not initialised.
+- **`catalog`** (fn): Returns `Option<&'static MessageCatalog>`.
 
 ### `engine::resource_keys`
 
 Typed resource keys for generational ID-based resource pools.
 
+- **`TextureKey`** (struct): Key for texture resources.
+- **`FontKey`** (struct): Key for font resources.
+- **`CanvasKey`** (struct): Key for canvas off-screen render targets.
+- **`SoundKey`** (struct): Key for audio source entries in the Mixer.
+- **`ParticleKey`** (struct): Key for particle system instances.
+- **`SpriteBatchKey`** (struct): Key for sprite batch instances.
+- **`ShaderKey`** (struct): Key for custom shader instances.
+- **`MeshKey`** (struct): Key for mesh instances.
+- **`ShapeKey`** (struct): Key for compound shape instances.
+- **`BusKey`** (struct): Key for audio bus instances.
+- **`MidiPlayerKey`** (struct): Key for MIDI player instances.
+- **`QueueableKey`** (struct): Key for queueable audio source instances.
+- **`LightKey`** (struct): Key for light source instances in LightWorld.
+- **`OccluderKey`** (struct): Key for shadow occluder instances in LightWorld.
+
 ### `engine::shared_state`
 
-Shared engine state hub passed to every Lua API closure via `Rc<RefCell<>>`.
+Central shared runtime state.
 
-- **`FullscreenType`** (enum): Fullscreen mode — `Desktop` (borderless) or `Exclusive` (true fullscreen).
-- **`WindowState`** (struct): Current window dimensions, DPI scale factor, and fullscreen mode.
-- **`ErrorInfo`** (struct): Captured Lua or engine error and traceback for the error screen display.
-- **`SharedState`** (struct): Central shared state passed as `Rc<RefCell<SharedState>>` to every Lua API closure. Owns all subsystem state: GPU renderer, audio buses, physics worlds, textures, fonts, canvases, input, camera, particle systems, and draw command queue.
+- **`FullscreenType`** (enum): `Desktop` (borderless) or `Exclusive` (true fullscreen).
+- **`WindowState`** (struct): Window query state (focused, minimized, maximized, visible, DPI scale, position) and pending operations (title, fullscreen, position, size, minimize, maximize, restore, close, attention, icon, vsync, scale mode). Also holds viewport scaling values (game_width, game_height, scale factors, offsets).
+- **`ErrorInfo`** (struct): Captured error info — message, code, category, optional hint.
+- **`ScreenshotRequest`** (struct): Pending PNG save request with destination path.
+- **`SharedState`** (struct): The central hub. Holds all SlotMap resource pools, subsystem instances (Mixer, Clock, GameFS, Camera, EventQueue, LightWorld, MidiState), input state, draw command queue, per-frame statistics, and async loader. `new()` initialises all fields to safe defaults. `step_timer()` advances the clock. `request_async_load()` and `poll_async_load()` manage background file reads.
 
 ## Key Types
 
@@ -170,186 +260,158 @@ Shared engine state hub passed to every Lua API closure via `Rc<RefCell<>>`.
 
 #### `engine::app::App`
 
-Entry point for the Luna2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.
+Public entry point for the Luna2D engine. Accepts a `Config` and an optional conf.lua error message. `App::run(game_dir, explicit_game_dir)` launches the winit event loop and does not return until the window is closed.
 
 #### `engine::config::Config`
 
-Top-level engine configuration. Consult the module-level documentation for the broader usage context and preconditions....
-
-#### `engine::debug_overlay::DebugOverlay`
-
-Debug overlay showing FPS and render statistics.
-
-#### `engine::error_screen::ErrorScreen`
-
-Visual error screen that generates `DrawCommand` sequences for the GPU renderer.  Stores a pre-processed error title,...
-
-#### `engine::config::ModulesConfig`
-
-Flags to enable or disable optional engine subsystems.
-
-#### `engine::config::PerformanceConfig`
-
-Frame rate cap and other performance tuning options.
+Top-level engine configuration container. Loaded from `conf.lua` via `Config::load_from_conf_lua(game_dir)` which returns `(Config, Option<String>)` — the config and an optional warning message. All fields have sensible defaults.
 
 #### `engine::config::WindowConfig`
 
-Window dimensions, title, vsync, fullscreen, and resize settings.
+Window geometry, title, vsync, fullscreen, resizable, min size, borderless, icon path, display index, scale mode (`"none"`, `"letterbox"`, `"stretch"`, `"pixel"`), logical game resolution, and maximized flag.
 
-## Module Toggle System
+#### `engine::config::GraphicsConfig`
 
-`Config::modules` holds one bool per optional subsystem parsed from `conf.lua` (`t.modules.*`).
+GPU backend selection (`"auto"`, `"dx12"`, `"vulkan"`, `"metal"`) and power preference (`"high"`, `"low"`, `"none"`). Read once at startup; changing after GPU init has no effect.
 
-### Dependency constraints (enforce in `ModulesConfig::validate_and_fix()`)
+#### `engine::config::ModulesConfig`
 
-| If flag is true | Then this flag must also be true |
-|---|---|
-| `graphics` | `window` |
-| `particle` | `graphics` (+ `window`) |
-| `gui` | `graphics` (+ `window`) |
-| `overlay` | `graphics` (+ `window`) |
-| `savegame` | `filesystem` |
-| `modding` | `filesystem` |
+30+ boolean flags controlling which optional subsystems are enabled. `validate_and_fix()` disables modules that depend on absent prerequisites (e.g. particle requires graphics).
 
-### Mandatory modules (always registered, no flag)
+#### `engine::config::PerformanceConfig`
 
-`math_api`, `log_api`, `event_api` — register unconditionally regardless of `ModulesConfig`.
+Frame rate cap via `target_fps` (default 60).
 
-### Full conf.lua module flag reference (27 flags)
+#### `engine::debug_overlay::DebugOverlay`
 
-| conf.lua key | Covers lua_api files | Lua namespaces |
-|---|---|---|
-| `t.modules.window` | window_api | `luna.window.*` |
-| `t.modules.graphics` | graphics_api, font_api, sprite_api | `luna.graphics.*, luna.font.*, luna.sprite.*` |
-| `t.modules.audio` | audio_api | `luna.audio.*` |
-| `t.modules.input` | input_api | `luna.input.*` |
-| `t.modules.physics` | physics_api | `luna.physics.*` |
-| `t.modules.filesystem` | filesystem_api | `luna.filesystem.*` |
-| `t.modules.timer` | timer_api | `luna.timer.*` |
-| `t.modules.particle` | particle_api | `luna.particle.*` |
-| `t.modules.image` | image_api | `luna.image.*` |
-| `t.modules.gui` | gui_api | `luna.gui.*` |
-| `t.modules.overlay` | overlay_api, postfx_api | `luna.overlay.*, luna.postfx.*` |
-| `t.modules.tilemap` | tilemap_api | `luna.tilemap.*` |
-| `t.modules.scene` | scene_api | `luna.scene.*` |
-| `t.modules.savegame` | savegame_api | `luna.savegame.*` |
-| `t.modules.entity` | entity_api | `luna.entity.*` |
-| `t.modules.ai` | ai_api, steering_api | `luna.ai.*, luna.steering.*` |
-| `t.modules.pathfinding` | pathfinding_api | `luna.pathfinding.*` |
-| `t.modules.thread` | thread_api | `luna.thread.*` |
-| `t.modules.graph` | graph_api | `luna.graph.*` |
-| `t.modules.data` | data_api, serial_api | `luna.data.*, luna.serial.*` |
-| `t.modules.compute` | compute_api, dataframe_api | `luna.compute.*, luna.dataframe.*` |
-| `t.modules.minimap` | minimap_api | `luna.minimap.*` |
-| `t.modules.modding` | modding_api | `luna.modding.*` |
-| `t.modules.pipeline` | pipeline_api, patterns_api | `luna.pipeline.*, luna.patterns.*` |
-| `t.modules.system` | system_api | `luna.system.*` |
-| `t.modules.localization` | localization_api | `luna.localization.*` |
-| `t.modules.debug` | debug_api, debugbridge_api, docs_api, automation_api | `luna.debug.*, luna.debugbridge.*, luna.docs.*, luna.automation.*` |
+Toggleable FPS and draw-call counter. `draw_commands()` produces a `Vec<DrawCommand>` sequence when `enabled` is true; returns empty when disabled.
 
-`debug` defaults to `cfg!(debug_assertions)` — true in dev builds, false in release.
-A disabled module means its `luna.*` table is **absent** (nil) — not a stub.
+#### `engine::error_screen::ErrorScreen`
 
-#### `engine::shared_state::ErrorInfo`
+Blue error display with word-wrapped message, traceback, and help footer. Supports TTF fonts when available or falls back to built-in bitmap text. `as_text()` returns the error as plain text for clipboard copy.
 
-Captured Lua or engine error and traceback for the error screen display.
+#### `engine::messages::MessageCatalog`
 
-#### `engine::shared_state::SharedState`
-
-Central shared state passed as `Rc<RefCell<SharedState>>` to every Lua API closure.
+Immutable map from stable message ID strings to human-readable text. Parsed from the compile-time-embedded `messages.toml` TOML catalog.
 
 #### `engine::shared_state::WindowState`
 
-Current window dimensions, DPI scale factor, and fullscreen mode.
+Tracks window query state (focused, minimized, maximized, visible, DPI scale, position) and queues pending window operations set by Lua and consumed by the event loop. Also holds viewport scaling state for letterbox/stretch/pixel modes.
+
+#### `engine::shared_state::ErrorInfo`
+
+Captured structured error info: message, stable code, category, optional recovery hint.
+
+#### `engine::shared_state::ScreenshotRequest`
+
+Pending request to save the next rendered frame as a PNG to the given path.
+
+#### `engine::shared_state::SharedState`
+
+Central shared state passed as `Rc<RefCell<SharedState>>` to every Lua API closure and the engine loop. Owns all resource pools (textures, fonts, canvases, meshes, shaders, shapes, sprite batches, particle systems), subsystem instances (Mixer, Clock, GameFS, Camera, EventQueue, LightWorld, MidiState), input state, draw command queue, per-frame statistics, and async loader.
 
 ### Enums
 
-#### `engine::shared_state::FullscreenType`
+#### `engine::error::ErrorCategory`
 
-Fullscreen mode — `Desktop` (borderless) or `Exclusive` (true fullscreen).
+Five error categories: `Init`, `Runtime`, `Resource`, `Script`, `System`. Used by `EngineError::category()` for structured grouping.
 
 #### `engine::error::EngineError`
 
-All possible error conditions that can occur in the Luna2D engine.  Each variant carries a stable error code...
+12 `thiserror`-derived variants with stable four-digit codes (E1001–E1012): `InitializationError`, `RenderError`, `InputError`, `AudioError`, `PhysicsError`, `FileSystemError`, `LuaError`, `WindowError`, `ConfigError`, `ResourceNotFound`, `ResourceNotLoaded`, `IoError`. Methods: `code()`, `category()`, `recovery_hint()`.
 
-#### `engine::error::ErrorCategory`
+#### `engine::shared_state::FullscreenType`
 
-Error category for grouping related engine errors.
+`Desktop` (borderless fullscreen at desktop resolution) or `Exclusive` (true fullscreen that takes over the display).
 
-### Type Aliases
+## Lua API
 
-#### `engine::error::EngineResult`
-
-Convenience alias for `Result<T, EngineError>` used throughout the engine.
-
-## Public Functions
-
-- **`format_traceback()`** `error_screen::` — Cleans up a Lua traceback string for display.
-- **`get_log_level()`** `log_messages::` — Returns the current log level name. This accessor incurs no allocation; call it freely in hot paths.
-- **`set_log_level()`** `log_messages::` — Sets the global log level at runtime (called from `luna.system.setLogLevel`).
-- **`wrap_text()`** `error_screen::` — Wraps a text string at word boundaries to fit within `max_chars` columns.
-
-## Constants
-
-- **`L001_ENGINE_START`** — Log message: engine starting. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L002_ENGINE_STOP`** — Log message: engine shut down. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L003_GAME_LOADED`** — Log message: game loaded from path. Consult the module-level documentation for the broader usage context and...
-- **`L004_GAME_RESTART`** — Log message: game restarted. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L005_CONF_LOADED`** — Log message: conf.lua loaded. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L010_RENDER_ERROR`** — Log message: render error occurred. Consult the module-level documentation for the broader usage context and...
-- **`L011_LUA_ERROR`** — Log message: Lua error caught. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L012_AUDIO_ERROR`** — Log message: audio error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L013_FS_ERROR`** — Log message: filesystem error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L014_PHYSICS_ERROR`** — Log message: physics error. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L015_RESOURCE_NOT_FOUND`** — Log message: resource not found. Consult the module-level documentation for the broader usage context and preconditions.
-- **`L020_NO_AUDIO_DEVICE`** — Log message: no audio device available. Consult the module-level documentation for the broader usage context and...
-- **`L021_CLIPBOARD_FAIL`** — Log message: clipboard access failed. Consult the module-level documentation for the broader usage context and...
-- **`L022_UNKNOWN_LOG_LEVEL`** — Log message: unknown log level requested.
-- **`L030_ASYNC_LOAD_REQUEST`** — Log message: async asset load requested.
-- **`L031_ASYNC_LOAD_COMPLETE`** — Log message: async asset load completed.
-- **`L032_BATCH_STATS`** — Log message: draw batch statistics. Consult the module-level documentation for the broader usage context and...
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `const` | 17 |
-| `enum` | 2 |
-| `fn` | 4 |
-| `mod` | 7 |
-| `struct` | 7 |
-| `type` | 1 |
-| **Total** | **38** |
+No Lua API — foundation module. The engine module does not expose a `luna.engine`
+namespace. It provides the infrastructure consumed by all other modules and by
+`src/lua_api/` for lifecycle orchestration. Lua interacts with engine functionality
+indirectly through `luna.system` (log level, system info), `luna.window` (window
+state), `luna.event` (quit, restart), and `luna.graphics` (draw commands, screenshot).
 
 ## Lua Examples
 
--- No direct Lua API. Engine is the runtime substrate.
--- Configured via conf.lua:
-```lua
-function luna.conf(t)
-    t.window.title = "My Game"
-    t.window.width = 1280
-    t.window.height = 720
-    t.modules.physics = true
-end
+N/A — engine is a foundation module with no dedicated Lua API surface. Game scripts
+interact with engine functionality through higher-level namespaces:
 
-function luna.load()
-    -- Engine is running at this point
+```lua
+-- conf.lua — engine configuration (read by engine::config)
+function luna.conf(t)
+    t.window.title  = "My Game"
+    t.window.width  = 1280
+    t.window.height = 720
+    t.window.vsync  = true
+    t.modules.physics = true
+    t.performance.target_fps = 60
 end
 ```
 
+```lua
+-- main.lua — engine callbacks (dispatched by engine::app)
+function luna.load()
+    -- called once after main.lua executes
+end
+
+function luna.update(dt)
+    -- called every frame with delta time
+end
+
+function luna.draw()
+    -- called every frame; push DrawCommands here
+end
+
+function luna.errorhandler(msg)
+    -- optional: custom error handling before error screen
+    return msg
+end
+```
+
+## Item Summary
+
+| Kind       | Count |
+|------------|-------|
+| `struct`   | 27    |
+| `enum`     | 3     |
+| `type`     | 1     |
+| `fn`       | 30    |
+| `const`    | 73    |
+| `macro`    | 1     |
+| **Total**  | **135** |
+
 ## References
 
-| Module     | Relationship  | Notes                                              |
-|------------|---------------|----------------------------------------------------|
-| `math`     | Imports from  | Foundational types (`Vec2`, `Color`, `Rect`)       |
-| Tier 1+    | Imported by   | Every module that stores state in `SharedState`    |
-| `lua_api`  | Imported by   | Bridge layer that registers all `luna.*` API tables |
+| Module          | Relationship | Notes |
+|-----------------|--------------|-------|
+| `math`          | Imports from | `Vec2`, `Color`, `Rect` (Baseline leaf — no deps) |
+| `graphics`      | Imports from | `GpuRenderer`, `DrawCommand`, `DrawMode`, `TextureData`, `Canvas`, `Mesh`, `Shader`, `Font`, `SpriteBatch`, `CompoundShape`, `BlendMode`, `StencilMode`, `DepthMode`, `RenderStats` |
+| `audio`         | Imports from | `Mixer`, `MidiState` |
+| `input`         | Imports from | `KeyboardState`, `MouseState`, `GamepadState`, `TouchState`, `GamepadMappings`, `SystemCursor`, key/button conversion functions |
+| `timer`         | Imports from | `Clock` |
+| `filesystem`    | Imports from | `GameFS`, `AsyncLoader`, `LoadHandle`, `LoadResult`, `LoadStatus` |
+| `camera`        | Imports from | `Camera` |
+| `event`         | Imports from | `EventQueue`, `EventArg` |
+| `particle`      | Imports from | `ParticleSystem` |
+| `light`         | Imports from | `LightWorld` |
+| `lua_api`       | Imports from | `create_lua_vm` (for Lua VM initialization) |
+| `lua_api`       | Imported by  | All `lua_api/*_api.rs` modules receive `Rc<RefCell<SharedState>>` |
+| All Tier 1/2    | Imported by  | Every module uses `EngineError`, `EngineResult`, resource keys |
+| `main.rs`       | Imported by  | Constructs `App` and calls `App::run()` |
+
+**Similar modules**: `engine` is unique — no other module serves the same role. The closest relationship is with `lua_api`, which is the bridge layer that registers the `luna.*` namespace using types from `engine`.
 
 ## Notes
 
-- `SharedState` is the single-mutable-reference pattern for all Lua closures — never bypass it with raw pointers.
-- `Rc<RefCell<SharedState>>` is intentional: the game loop is single-threaded; `Arc<Mutex<>>` adds unnecessary overhead.
-- `RunState::Error` renders a blue screen with the Lua error message; press `R` to restart, `Escape` to quit.
-- `Config` is finalised at startup from `conf.lua`; it cannot be mutated at runtime.
-- `ResourceKeys` (SlotMap key types) are defined here because all modules share them via `SharedState`.
+- **`app_winit.rs` is dead code**: It is not declared in `mod.rs` and is not compiled. Preserved for historical reference only. Do not modify it.
+- **`temp_test.rs` is a placeholder**: Contains only the text `testing`. Not compiled or tested.
+- **`Rc<RefCell<>>` is intentional**: `SharedState` uses `Rc<RefCell<>>` because all Lua callbacks are single-threaded. Never change this to `Arc<Mutex<>>` — it would add lock overhead with zero benefit since worker threads get separate Lua VMs.
+- **`conf.lua` errors are non-fatal**: `Config::load_from_conf_lua()` returns defaults on error. The error message is passed through to the engine for later display, but the window still opens.
+- **RunState machine is private**: `RunState` and `LunaApp` are not public. External code only interacts with `App::new()` and `App::run()`.
+- **ErrorScreen supports TTF fallback**: When the engine fonts are available, error text renders with `PrintFont` commands. Otherwise, it falls back to the built-in bitmap font at a larger scale.
+- **Resource keys are cross-module**: The 14 key types defined in `resource_keys.rs` are used throughout the entire engine (graphics, audio, particle, light, etc.), not just within the engine module.
+- **`log_msg!` macro requires `MessageCatalog::init()`**: Called automatically by `App::new()`. If used before init, the macro falls back to printing the raw message ID.
+- **Viewport scaling**: `recompute_viewport()` supports four modes (`"none"`, `"letterbox"`, `"stretch"`, `"pixel"`) and is called on every window resize. Coordinates are transformed from game-space to window-space.
+- **Drag-and-drop**: The splash screen supports dropping a game folder onto the window to load it immediately, enabling a zero-CLI workflow.
+- **No `unsafe` in this module** except one `// SAFETY:` documented cast in `get_message()` to extend the lifetime of `OnceLock`-stored strings to `'static`.

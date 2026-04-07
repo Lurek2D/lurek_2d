@@ -49,14 +49,13 @@ python tools/cag_validate.py
 
 ### Gate 6: Example Smoke Test
 ```powershell
-cargo run -- examples/hello_world
+cargo run -- demos/hello_world
 ```
 - Window must open and display without panic
 - Close manually; verify no stderr errors
 
 ### Gate 7: Documentation Check
-- `docs/lua_api_reference.md` — every `luna.*` function in the code has an entry
-- `docs/getting_started.md` — `cargo run -- examples/hello_world` command is accurate
+- `docs/API/lua_api_reference_generated.md` — every `luna.*` function in the code has an entry
 - `README.md` — version badge and feature list current
 
 ### Gate 8: Security Audit

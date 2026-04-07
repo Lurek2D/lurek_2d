@@ -20,7 +20,7 @@ Fix a broken `luna.*` API function.
 2. Read the underlying engine code
 3. Identify the discrepancy
 4. Fix the binding or engine code
-5. Update `docs/lua_api_reference.md` if signature changed
+5. Update `docs/API/lua_api_reference_generated.md` if signature changed
 6. Verify with test
 
 ## Acceptance
@@ -32,4 +32,4 @@ Fix a broken `luna.*` API function.
 ## References
 
 - `lua-api-design` skill
-- `docs/lua_api_reference.md`
+- `docs/API/lua_api_reference_generated.md`

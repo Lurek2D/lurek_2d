@@ -6,7 +6,9 @@ name: Renderer
 
 # RENDERER — LUNA2D GRAPHICS PIPELINE
 
-**Mission**: Implement and maintain the GPU rendering pipeline. Own all `src/graphics/` code: the DrawCommand queue, wgpu render pipeline, texture loading, sprite management, camera transforms, and color handling.
+## MISSION
+
+Implement and maintain the GPU rendering pipeline. Own all `src/graphics/` code: the DrawCommand queue, wgpu render pipeline, texture loading, sprite management, camera transforms, and color handling.
 
 ## SCOPE
 
@@ -39,14 +41,24 @@ name: Renderer
 
 ## CORE SKILLS
 
-**Primary**: `software-rendering` `shader-patterns`
-**Secondary**: `rust-coding` `performance-profiling`
+**Primary**: `gpu-programming` `rust-coding`
+**Secondary**: `performance-profiling` `visual-effects` `lua-rust-bridge`
+
+## INPUT CONTRACT
+
+Renderer requires from the caller:
+
+- **Feature request** — new DrawCommand variant, blend mode, canvas operation, or GPU effect
+- **Lua API surface** — new or changed `luna.graphics.*` function signatures (from Lua-Designer)
+- **Performance constraints** — frame budget context (target: 16.6 ms on integrated GPU at 1080p)
+- **WGSL source** — for custom shader requests, the fragment or vertex shader source to validate
 
 ## OUTPUT CONTRACT
 
 Every Renderer output includes:
 - Changed files in `src/graphics/` or `src/lua_api/graphics_api.rs`
-- Verified: `cargo build` passes, `cargo test` passes
+- Type-check verified: `cargo check` exits 0
+- Graphics tests run: `cargo test --test graphics_tests -- --nocapture`
 - DrawCommand pipeline integrity confirmed (commands queued during `luna.draw()`, processed after)
 - wgpu pipeline integrity maintained — Surface → render pass → present
 

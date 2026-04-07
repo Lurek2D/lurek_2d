@@ -127,6 +127,9 @@ pub mod physics_api;
 /// Registers the `luna.graphics.*` rendering and drawing API.
 pub mod graphics_api;
 
+/// Exposes low-level system queries (processor count, memory size, URL opening, locale, power).
+pub mod system_api;
+
 /// Creates and configures the Lua VM, registers `luna.*` sub-APIs according to the
 /// provided module flags, and returns the ready `Lua` instance.
 ///

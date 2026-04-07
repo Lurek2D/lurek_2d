@@ -25,7 +25,7 @@ description: "Create a new self-contained Lua example game in examples/. Use whe
    - `function luna.update(dt)` — frame logic
    - `function luna.draw()` — rendering only
    - Optionally: `luna.keypressed`, `luna.mousepressed` callbacks
-4. Check all API calls against `docs/lua_api_reference.md`:
+4. Check all API calls against `docs/API/lua_api_reference_generated.md`:
    - Colors: `[0.0, 1.0]` float range
    - Shapes: `("fill"/"line", x, y, ...)`
    - Key names: `"space"`, `"escape"`, `"w"`, `"a"`, `"s"`, `"d"`
@@ -55,4 +55,3 @@ description: "Create a new self-contained Lua example game in examples/. Use whe
 ```powershell
 cargo run -- examples/<EXAMPLE_NAME>
 ```
-**Docs**: `docs/lua_api_reference.md`, `docs/getting_started.md`

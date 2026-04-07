@@ -1,7 +1,6 @@
 ---
 description: "End-to-end quality audit of one or more Luna2D src/ modules. Validates docstrings, AGENT.md, structure, tests, docs, wiki, architecture, performance, and more. Each check produces PASS/WARNING/ERROR."
 argument-hint: "Module name(s): physics, audio, all, tier1, ..."
-agent: "agent"
 ---
 
 # Luna2D Module Audit
@@ -23,7 +22,7 @@ The user will specify one of:
 - **A tier**: `tier1`, `tier2`, `tier3`, `baseline`
 - **All modules**: `all`
 
-Resolve the target list using `src/lib.rs` registrations and `docs/architecture.md` tier assignments.
+Resolve the target list using `src/lib.rs` registrations and `docs/architecture/engine-architecture.md` tier assignments.
 
 ## Audit Checklist
 
@@ -63,7 +62,7 @@ A module **FAILS** the audit if it has:
 | A-03 | **Summary quality** | Summary section is 500–1000 characters and gives an AI agent complete understanding of the module's purpose, scope, and design decisions. Too short (<300 chars) = ERROR. Too long (>1500 chars) = WARNING. |
 | A-04 | **Content sync** | Every `.rs` file in the module folder is listed in the Source Files table. Every public struct/enum is listed in Key Types. Stale or missing entries = ERROR. |
 | A-05 | **Lua examples** | AGENT.md includes a Lua code examples section at the bottom showing how to use the module from game scripts. Missing = WARNING (ERROR if Lua API exists). |
-| A-06 | **Tier label** | The property table includes the correct Tier assignment matching `docs/architecture.md`. Wrong or missing = ERROR. |
+| A-06 | **Tier label** | The property table includes the correct Tier assignment matching `docs/architecture/engine-architecture.md`. Wrong or missing = ERROR. |
 
 ### Phase 3 — Docstrings
 
@@ -79,10 +78,10 @@ A module **FAILS** the audit if it has:
 
 | # | Check | What to verify |
 |---|-------|----------------|
-| R-01 | **Tier placement** | Module is in the correct tier per `docs/architecture.md`. Modules in wrong tier = ERROR. |
+| R-01 | **Tier placement** | Module is in the correct tier per `docs/architecture/engine-architecture.md`. Modules in wrong tier = ERROR. |
 | R-02 | **Dependency direction** | Module imports only from allowed tiers. Tier 1 may only import `math`+`engine`. Tier 2 may import Baseline+Tier 1. No same-tier cross-imports. Violations = ERROR. |
 | R-03 | **No lua_api import** | Domain modules never import `lua_api`. Violations = ERROR. |
-| R-04 | **Design assumptions** | Module does not violate any constraint from `docs/design-assumptions.md` (e.g., no 3D, no mobile, no unsafe without SAFETY comment). Violations = ERROR. |
+| R-04 | **Design assumptions** | Module does not violate any constraint from `docs/architecture/philosophy.md` (e.g., no 3D, no mobile, no unsafe without SAFETY comment). Violations = ERROR. |
 | R-05 | **Module overlap** | Module does not duplicate purpose/scope with another module (e.g., audio vs sound). If overlap exists, flag WARNING with merge/split recommendation. |
 
 ### Phase 5 — Test Coverage
@@ -94,14 +93,13 @@ A module **FAILS** the audit if it has:
 | T-03 | **Test naming** | Tests follow `<subject>_<scenario>_<expected>` convention. No `test_` prefix. Violations = WARNING. |
 | T-04 | **Float comparisons** | No `assert_eq!` on `f32`/`f64` values — must use `abs() < epsilon`. Violations = ERROR. |
 | T-05 | **Test adequacy** | At least one test per public function/method. Significantly undertested modules = WARNING. |
-| T-06 | **Golden tests** | For modules with deterministic visual/audio/text output (graphics, audio, text rendering), golden tests exist in `tests/golden/`. Missing for qualifying modules = WARNING. |
+| T-06 | **Golden tests** | For modules with deterministic visual/audio/text output (graphics, audio, text rendering), golden tests exist in `tests/rust/golden/`. Missing for qualifying modules = WARNING. |
 | T-07 | **Tests pass** | Run `cargo test --test <module>_tests` and (if exists) `cargo test lua_test_<module>`. Any failure = ERROR. |
 
 ### Phase 6 — Documentation & Wiki
 
 | # | Check | What to verify |
 |---|-------|----------------|
-| W-01 | **API docs generated** | Module has generated API docs in `docs/API/` (via `tools/gen_lua_api.py` or `tools/gen_api_data.py`). Missing API coverage = WARNING. |
 | W-02 | **Wiki page** | `wiki/<Module>-API.md` page exists with examples, function reference, and getting-started guidance. Quality should match love2D wiki standard: clear examples, parameter tables, return values. Missing = WARNING; exists but low quality = WARNING. |
 | W-03 | **Example game** | At least one example in `examples/` demonstrates this module's features, OR a test game in `tests/` exercises the module end-to-end. Missing = WARNING. |
 

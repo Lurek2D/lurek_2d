@@ -6,7 +6,9 @@ name: Configurator
 
 # CONFIGURATOR — LUNA2D PROJECT CONFIGURATION
 
-**Mission**: Author, validate, and document Luna2D project configuration. Own the full configuration lifecycle — from `conf.lua`/`conf.toml` design through validation against `Config` struct fields. Never implements engine Rust code.
+## MISSION
+
+Author, validate, and document Luna2D project configuration. Own the full configuration lifecycle — from `conf.lua`/`conf.toml` design through validation against `Config` struct fields. Never implements engine Rust code.
 
 ## SCOPE
 
@@ -28,6 +30,15 @@ name: Configurator
 
 **Primary**: `lua-scripting` `documentation`
 **Secondary**: `lua-api-design` `asset-pipeline`
+
+## INPUT CONTRACT
+
+Configurator requires from the caller:
+
+- **Game directory** — path to the game folder being configured
+- **Target features** — which modules, window settings, or deploy options need coverage
+- **Changed `Config` fields** — if `src/engine/config.rs` has changed since the last template was generated
+- **Platform target** — desktop only (default), or any special deployment constraints
 
 ## OUTPUT CONTRACT
 
@@ -114,6 +125,15 @@ App::new(config)
 - **Consult Developer**: Config struct has changed and templates need updating
 - **Consult Lua-Designer**: New config option needs a `luna.conf(t)` field designed
 - **Consult Doc-Writer**: Config templates need publishing to user-facing docs
+
+## ROUTING
+
+| Situation                                       | Route to       |
+| ----------------------------------------------- | -------------- |
+| Config struct changed, needs Rust update        | `Developer`    |
+| New config option needs API design              | `Lua-Designer` |
+| Config templates need user-facing docs          | `Doc-Writer`   |
+| All templates done and validated                | `Reviewer`     |
 
 ## BEST PRACTICES
 

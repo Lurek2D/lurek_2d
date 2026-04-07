@@ -1,4 +1,4 @@
-﻿---
+---
 name: lua-api-design
 description: "Load this skill when designing or modifying the luna.* Lua API surface. It owns naming conventions, parameter patterns, callback contracts, and API consistency rules. Skip it for Rust internals or pure Lua scripting."
 ---

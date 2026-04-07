@@ -8,7 +8,7 @@ description: "Create a new AI behavior for Luna2D game entities. Use when implem
 
 - Read `src/ai/mod.rs` to understand existing AI types
 - Read `src/lua_api/ai_api.rs` for current Lua bindings
-- Read `tests/ai_tests.rs` for test patterns
+- Read `tests/rust/game/ai_tests.rs` for test patterns
 - Load the `ai-systems` skill
 
 ## Steps
@@ -34,7 +34,7 @@ description: "Create a new AI behavior for Luna2D game entities. Use when implem
    - Register under `luna.ai.*` namespace
 
 4. **Write tests**
-   - Add tests to `tests/ai_tests.rs`
+   - Add tests to `tests/rust/game/ai_tests.rs`
    - Test creation, state transitions, and expected outputs
    - Use `make_lua()` helper for Lua integration tests
    - Float comparisons: `(val - expected).abs() < 1e-5`

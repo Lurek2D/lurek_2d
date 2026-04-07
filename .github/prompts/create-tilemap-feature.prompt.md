@@ -8,7 +8,7 @@ description: "Create a new tilemap feature (layer type, autotile rule, collision
 
 - Read `src/tilemap/mod.rs` for module structure and exports
 - Read `src/lua_api/tilemap_api.rs` for existing Lua bindings
-- Read `tests/tilemap_tests.rs` for test patterns
+- Read `tests/rust/unit/tilemap_tests.rs` for test patterns
 - Load the `tilemap-rendering` skill
 
 ## Steps
@@ -31,7 +31,7 @@ description: "Create a new tilemap feature (layer type, autotile rule, collision
    - Return `LuaResult<T>` from all Lua-callable functions
 
 4. **Write tests**
-   - Add integration tests to `tests/tilemap_tests.rs`
+   - Add integration tests to `tests/rust/unit/tilemap_tests.rs`
    - Test helper: `create_test_vm()` for Lua-level tests
    - Test edge cases: empty maps, single tile, maximum dimensions
    - Float comparisons: `(a - b).abs() < 1e-5`

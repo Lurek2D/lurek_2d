@@ -16,11 +16,10 @@ Load these skills **before** starting any step. Do not proceed without reading t
 2. `.github/skills/lua-api-design/SKILL.md` — `luna.*` naming, parameter conventions, API alignment
 3. `.github/skills/rust-coding/SKILL.md` — Rust conventions, error handling, visibility
 4. `.github/skills/testing-rust/SKILL.md` — test patterns, float comparisons, headless safety
-5. Load domain skill matching the phase: `software-rendering`, `physics-engine`, `audio-integration`, `input-handling`, `asset-pipeline`, or `font-rendering` — whichever applies
+5. Load domain skill matching the phase: `gpu-programming`, `physics-engine`, `audio-integration`, `input-handling`, `asset-pipeline` — whichever applies; for font/text consult `src/graphics/AGENT.md` (Font Rendering Patterns section)
 
 ## Use When
 
-- Delivering a full phase from `docs/roadmap/phase-NN-*.md` start to finish
 - Picking up a phase that is `⬜ Not Started` or `🔄 In Progress`
 - Producing a commit-ready implementation with tests, docs, and a phase status update
 
@@ -32,7 +31,6 @@ Load these skills **before** starting any step. Do not proceed without reading t
 
 ## Inputs
 
-- `PHASE_FILE` — path to the phase document, e.g., `docs/roadmap/phase-02-graphics-deep-parity.md`
 - `SCOPE` — optional: `full` (all tasks in the phase) or a comma-separated list of task IDs to implement, e.g., `2.1, 2.3` (default: `full`)
 - `DRY_RUN` — optional `true` to only produce the plan without writing any code (default: `false`)
 
@@ -90,7 +88,6 @@ Read `docs/API/lua_api_reference_generated.md` (if present) and compare with pha
 
 For every API function the phase intends to add:
 
-1. Open `docs/features/feature_coverage.md`
 2. Find the equivalent reference-engine entry for the target function
 3. Record:
    - The reference function name and signature
@@ -149,7 +146,7 @@ Work through the plan in order. For every task:
 
 ### 5a — Write the Rust Code
 
-Follow the rules from `rust-coding` skill and `rust.instructions.md`:
+Follow the rules from the `rust-coding` skill:
 
 - `pub` for cross-module types, `pub(crate)` for internal
 - No `unsafe` without a `// SAFETY:` comment
@@ -160,7 +157,7 @@ Follow the rules from `rust-coding` skill and `rust.instructions.md`:
 
 ### 5b — Write the Lua Binding
 
-Follow the rules from `lua-api-design` skill and `lua-api.instructions.md`:
+Follow the rules from the `lua-api-design` skill:
 
 Every new Lua-facing function must:
 
@@ -197,7 +194,6 @@ Zero missing docs is required before proceeding to Step 6.
 
 ### 5d — Update `DrawCommand` Queue (graphics phases only)
 
-If the task adds a new visual primitive, add a variant to `DrawCommand` in `src/graphics/draw_command.rs`, handle it in `GpuRenderer::render_frame()`, and document the variant.
 
 Never render inside a Lua closure — push to the queue, process after `luna.draw()` returns.
 
@@ -297,7 +293,7 @@ If any gate fails:
 
 ## Step 8 — Update Architecture Documentation
 
-Open `docs/architecture.md`. If the phase:
+Open `docs/architecture/engine-architecture.md`. If the phase:
 
 - **Added a new module**: add it to the module list with one-sentence description and its dependency direction
 - **Changed SharedState fields**: update the SharedState section
@@ -382,7 +378,7 @@ The phase is not done until every item below is checked:
 - [ ] Every new Rust public function has a corresponding Rust test in `tests/<module>_tests.rs`
 - [ ] API parity check passed: new functions use same parameter order and semantics as a similar game engine equivalents
 - [ ] No external library capability is hand-rolled (the crate audit table from Step 3d is satisfied)
-- [ ] `docs/architecture.md` reflects any structural changes
+- [ ] `docs/architecture/engine-architecture.md` reflects any structural changes
 - [ ] Phase file `## Status` section is up to date with ✅ for all completed tasks
 - [ ] Commit staged with only relevant files
 
@@ -406,8 +402,7 @@ The phase is not done until every item below is checked:
 
 ## References
 
-- `docs/features/feature_coverage.md` — per-function API parity table (ground truth)
-- `docs/architecture.md` — module map, dependency direction, SharedState layout
+- `docs/architecture/engine-architecture.md` — module map, dependency direction, SharedState layout
 - `.github/skills/roadmap-planning/SKILL.md` — phase format and acceptance gate rules
 - `.github/skills/lua-api-design/SKILL.md` — API naming, `luna.*` conventions, API alignment rules
 - `.github/skills/rust-coding/SKILL.md` — Rust code style and safety rules

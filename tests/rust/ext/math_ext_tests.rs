@@ -4,7 +4,7 @@
 //!         Tween, geometry, procgen. Raycasting types live in luna2d::raycaster.
 
 use luna2d::math::geometry;
-use luna2d::math::noise::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
+use luna2d::math::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 use luna2d::math::spatial_hash::SpatialHash;
 use luna2d::math::tween::Tween;
 use luna2d::pathfinding::grid::Grid;

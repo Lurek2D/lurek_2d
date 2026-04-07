@@ -78,7 +78,7 @@ fn lua_sandbox_require_restricted() {
 #[test]
 fn filesystem_reject_dotdot_path() {
     use luna2d::filesystem::GameFS;
-    let fs = GameFS::new(PathBuf::from("tests/rust/fixtures"));
+    let fs = GameFS::new(PathBuf::from("tests/fixtures"));
     // Attempt to escape sandbox via ..
     let result = fs.read_string("../../Cargo.toml");
     assert!(result.is_err(), "Path traversal via ../ must be rejected");
@@ -87,7 +87,7 @@ fn filesystem_reject_dotdot_path() {
 #[test]
 fn filesystem_reject_absolute_path() {
     use luna2d::filesystem::GameFS;
-    let fs = GameFS::new(PathBuf::from("tests/rust/fixtures"));
+    let fs = GameFS::new(PathBuf::from("tests/fixtures"));
     // Try absolute path
     let result = fs.read_string("/etc/passwd");
     assert!(result.is_err(), "Absolute paths must be rejected by GameFS");
@@ -96,7 +96,7 @@ fn filesystem_reject_absolute_path() {
 #[test]
 fn filesystem_reject_null_byte_in_path() {
     use luna2d::filesystem::GameFS;
-    let fs = GameFS::new(PathBuf::from("tests/rust/fixtures"));
+    let fs = GameFS::new(PathBuf::from("tests/fixtures"));
     // Null-byte injection
     let result = fs.read_string("file\x00.lua");
     assert!(result.is_err(), "Null bytes in path must be rejected");

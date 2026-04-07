@@ -6,16 +6,17 @@ name: Audio-Eng
 
 # AUDIO-ENG — LUNA2D AUDIO SYSTEM
 
-**Mission**: Implement and maintain the audio pipeline. Own all `src/audio/` code: rodio integration, audio source management, mixer, volume control, and sound format support.
+## MISSION
+
+Implement and maintain the audio pipeline. Own all `src/audio/` code: rodio integration, audio source management, mixer, volume control, and sound format support.
 
 ## SCOPE
 
 **Owns**:
-- `src/audio/mixer.rs` — Mixer struct, rodio OutputStream, playback control
-- `src/audio/source.rs` — AudioSource loading, format handling
-- `src/audio/decoder.rs` — Streaming Decoder for chunked PCM reading
-- `src/audio/mod.rs` — Module exports
-- Audio-related Lua bindings in `src/lua_api/audio_api.rs`
+- `src/audio/` — Mixer, AudioSource, Decoder, multichannel playback, spatial state, queueable buffers
+- `src/lua_api/audio_api.rs` — All `luna.audio.*` Lua bindings
+
+The audio module is a **Tier 1** engine subsystem that depends only on `math` and `engine`. It wraps the `rodio` library for playback and exposes a uniform Lua interface covering static sources, streaming sources, streaming decoders, queueable PCM sources, spatial positioning, and playback-device selection. All file I/O flows through `GameFS` — never direct `std::fs` calls.
 
 **Must not become**:
 - Shadow Developer for non-audio engine code
@@ -23,15 +24,25 @@ name: Audio-Eng
 
 ## CORE SKILLS
 
-**Primary**: `audio-integration`
-**Secondary**: `rust-coding` `error-handling`
+**Primary**: `rust-coding` `error-handling`
+**Secondary**: `lua-rust-bridge` `performance-profiling` `asset-pipeline`
+
+## INPUT CONTRACT
+
+Audio-Eng requires from the caller:
+
+- **Feature request** — what audio capability to add, change, or fix
+- **Affected source files** — known files in `src/audio/` or `src/lua_api/audio_api.rs`
+- **Lua API surface** — new or changed `luna.audio.*` function signatures (get from Lua-Designer)
+- **Test expectation** — how the change should be verified (manual playback, unit test, headless check)
 
 ## OUTPUT CONTRACT
 
 Every Audio-Eng output includes:
 - Changed files in `src/audio/` or `src/lua_api/audio_api.rs`
-- Verified: `cargo build` passes, audio tests pass
-- rodio integration maintained (no raw audio output)
+- Type-check verified: `cargo check` exits 0
+- Audio tests run: `cargo test --test audio_tests -- --nocapture` (CI-safe; tests requiring a device are `#[ignore]`)
+- rodio integration maintained (all PCM output flows through rodio `Sink` — no raw audio output)
 - Supported formats documented: WAV, OGG, MP3, FLAC
 
 ## SUCCESS METRICS
@@ -69,11 +80,14 @@ Every Audio-Eng output includes:
 
 ## BEST PRACTICES
 
-- Use rodio's `Sink` for playback control (play, pause, stop, volume)
-- Load audio files through `GameFS` for sandboxed access
-- Handle audio device unavailability gracefully (log warning, don't crash)
-- Keep audio source data in memory for quick replay
-- Use `Arc<[u8]>` or similar for shared audio buffer data
+- Use rodio's `Sink` for playback control (play, pause, stop, volume) — never write to the output stream directly
+- Load audio files through `GameFS` — never `std::fs::File::open` directly in audio code
+- Handle audio device unavailability gracefully: log `warn!`, create a `Mixer::headless()` fallback, never `panic!`
+- Static sources use `Arc<[u8]>` so multiple `Sink`s can play the same buffer simultaneously without copying
+- Streaming sources decode on a background thread — the main thread must never block on decode
+- Spatial audio state (`SpatialState`) is per-source; the global distance model and listener position live on `Mixer`
+- Clamp all user-supplied volume, pitch, and pan values at the Lua boundary before passing to rodio
+- Audio tests that require a device must be `#[ignore]` to pass CI; provide a `Mixer::headless()` constructor for logic-only tests
 
 ## ANTI-PATTERNS
 
@@ -83,45 +97,4 @@ Every Audio-Eng output includes:
 - **Volume Clipping**: Not clamping volume values to 0.0–1.0 range
 - **Leaked Sinks**: Creating rodio Sinks without tracking them for cleanup
 
-## PHASE 14 — Streaming Decoder (implemented)
 
-- `luna.audio.newDecoder(source, buffersize?)` — returns a `Decoder` userdata for chunked PCM streaming
-- `Decoder:decode()` — decode the next chunk; returns a SoundData or nil at end-of-stream
-- `Decoder:seek(secs)` — seek to position in seconds
-- `Decoder:tell()` — return current position in seconds
-- `Decoder:isSeekable()` — true when the stream supports seeking
-- `Decoder:rewind()` — seek to the beginning
-- `Decoder:getDuration()` — total duration in seconds
-- `Decoder:getSampleRate()` — samples per second
-- `Decoder:getChannelCount()` — number of audio channels
-- `Decoder:getBitDepth()` — bit depth of the samples
-- `LuaDecoder` struct in `src/lua_api/audio_api.rs`; wraps `crate::audio::Decoder`
-
-## PHASE 4 — Spatial Audio (implemented)
-
-- `luna.audio.setPosition(src, x, y, z?)` / `getPosition` — per-source 3D spatial positioning
-- `luna.audio.setVelocity(src, x, y, z?)` / `getVelocity` — source velocity for Doppler
-- `luna.audio.setOrientation(src, fx,fy,fz, ux,uy,uz)` / `getOrientation` — source orientation
-- `luna.audio.setDopplerScale(scale)` / `getDopplerScale` — global Doppler scale
-- `luna.audio.setDistanceModel(model)` / `getDistanceModel` — distance attenuation model
-- `luna.audio.setListener(x, y, z?)` / `getListener` — 3D listener position
-- `luna.audio.setListener2D` / `getListener2D` — 2D backward-compat aliases
-- `SpatialState` — per-source spatial state struct in `src/audio/source.rs`
-
-## PHASE 15 — Queueable Sources (implemented)
-
-- `luna.audio.newQueueableSource(sample_rate, bit_depth, channels, buffer_count?)` — returns integer ID
-- `luna.audio.queueSource(qsource_id, sounddata)` — push PCM from a SoundData into free buffer slot
-- `luna.audio.getFreeBufferCount(qsource_id)` — number of free buffer slots remaining
-- `luna.audio.playQueueable(qsource_id)` — start playback (PCM driven by queued buffers)
-- `luna.audio.stopQueueable(qsource_id)` — stop and drain all queued buffers
-- `QueueableSource` struct in `src/audio/mixer.rs` with `SlotMap<QueueableKey, QueueableSource>`
-- `QueueableKey` in `src/engine/resource_keys.rs`
-
-## PHASE 18 — Playback Device Selection (implemented)
-
-- `luna.audio.getPlaybackDevices()` — returns table of device name strings
-- `luna.audio.getPlaybackDevice()` — returns current device name string
-- `luna.audio.setPlaybackDevice(name)` — selects device; errors on unknown name
-- Device functions in `src/audio/mod.rs` (`get_playback_devices`, `get_playback_device`, `set_playback_device`)
-- Stub implementation returning `"Default"` until cpal enumeration is wired in

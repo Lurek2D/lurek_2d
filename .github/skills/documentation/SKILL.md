@@ -29,10 +29,39 @@ description: "Load this skill when writing or updating Luna2D documentation: API
 
 ## Live Repository Contracts
 
-- `docs/lua_api_reference.md` — complete Lua API documentation
-- `docs/architecture.md` — engine architecture overview
-- `docs/getting_started.md` — setup and first-game guide
+- `docs/API/lua_api_reference_generated.md` — generated Lua API reference (do not hand-edit)
+- `docs/architecture/engine-architecture.md` — module structure, tier system, rendering pipeline
+- `docs/architecture/philosophy.md` — design assumptions, binding constraints, Zen of Luna
+- `docs/architecture/test-framework.md` — test suite architecture and quality gates
 - `README.md` — project overview and quick start
+
+## Layer Model Terminology
+
+Always use these exact terms when writing architecture or API documentation:
+
+| Term | Meaning |
+|------|---------|
+| **Baseline** | Always-on substrate: `src/math/` (leaf) + `src/engine/` (lifecycle) |
+| **Tier 1** | Core engine subsystems built on Baseline only |
+| **Tier 2** | Reusable engine extensions built on Baseline + Tier 1 |
+| **Tier 3 Lunasome** | Pure-Lua standard libraries under `library/` — NOT Rust source |
+| **bridge layer** | `src/lua_api/` — registers `luna.*`; not a numbered tier |
+
+`lua_api` is the bridge layer, not "Tier 3." Tier 3 Lunasome lives in `library/` and is pure Lua.
+
+Legacy gameplay Rust modules still under `src/` (`battle`, `cardgame`, `combat`, etc.) are **migration-state** — being superseded by `library/` equivalents. Document them as deprecated, not as active Tier 3.
+
+## Testing Docs Conventions
+
+The test suite has three distinct categories — always distinguish them:
+
+| Category | Location | How to run |
+|----------|----------|-----------|
+| Engine integration tests | `tests/unit/`, `tests/rust/ext/`, `tests/rust/game/`, `tests/rust/stress/` | `cargo test --test <name>` |
+| Lua BDD harness | `tests/lua/harness.rs` dispatches `tests/lua/**/*.lua` | `cargo test lua_test_<module>` |
+| Example smoke runs | `demos/<name>/` or `examples/<name>/` directories | `cargo run -- demos/<name>` |
+
+Never conflate these. A failing integration test and a failing cargo run are different problems.
 
 ## Decision Rules
 
@@ -41,6 +70,17 @@ description: "Load this skill when writing or updating Luna2D documentation: API
 - **One source of truth**: Don't duplicate information across doc files — cross-reference
 - **Lua perspective**: API reference written for Lua script authors, not Rust developers
 - **Function format**: `luna.module.function(param1, param2)` — Returns: description
-- **Getting started**: Must produce a working game from zero knowledge
-- **Architecture**: Must reflect current module structure — update when modules change
+- **Layer model terms**: Always use the exact terms from the table above (e.g., "Tier 1", "bridge layer")
+- **require("library.*)**: In code examples, `require("library.combat")` etc. refer to shipped Lua modules under `library/` — never describe `library/` as Rust source
+- **Example paths**: Run commands must use real directory names from `demos/` or `examples/` — not invented paths
+- **Architecture docs**: Must reflect current module structure — update when modules change
 - **Markdown style**: Headers with `##`, code blocks with language tags, tables for reference data
+
+## Avoid
+
+- Linking to other game engines as references or comparisons
+- Documenting files or API functions that do not exist in the codebase
+- Inventing workflows not reflected in the actual engine code
+- Using stale or deprecated function signatures
+- Treating `library/` as Rust source — it is pure Lua
+- Describing planned or future features as if they currently exist
