@@ -1,4 +1,4 @@
-local Player     = require("entities.player")
+﻿local Player     = require("entities.player")
 local BulletPool = require("entities.bullet_pool")
 
 local player, bullets
@@ -15,13 +15,13 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.05, 0.05, 0.1)
+    luna.render.clear(0.05, 0.05, 0.1)
     player:draw()
     bullets:draw()
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("Score: " .. score, 10, 10)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("Score: " .. score, 10, 10)
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
 end

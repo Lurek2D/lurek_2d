@@ -1,4 +1,4 @@
-//! Integration tests for the serial module.
+﻿//! Integration tests for the serial module.
 
 use luna2d::serial::{from_csv, from_json, from_toml, to_csv, to_json, to_toml};
 use luna2d::serial::{CsvOptions, SerialValue};
@@ -183,7 +183,7 @@ fn test_lua_serial_fromjson_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local t = luna.serial.fromJson('{"name":"hello","count":42}')
+        local t = luna.codec.fromJson('{"name":"hello","count":42}')
         assert(t.name == "hello")
         assert(t.count == 42)
         "#,
@@ -197,7 +197,7 @@ fn test_lua_serial_tojson_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local result = luna.serial.toJson({ name = "test", count = 5 })
+        local result = luna.codec.toJson({ name = "test", count = 5 })
         assert(type(result) == "string")
         assert(string.find(result, '"name"') or string.find(result, 'name'))
         "#,
@@ -211,7 +211,7 @@ fn test_lua_serial_fromtoml_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local t = luna.serial.fromToml('name = "hello"\ncount = 42\nactive = true')
+        local t = luna.codec.fromToml('name = "hello"\ncount = 42\nactive = true')
         assert(t.name == "hello")
         assert(t.count == 42)
         assert(t.active == true)
@@ -226,7 +226,7 @@ fn test_lua_serial_totoml_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local result = luna.serial.toToml({ name = "test", count = 5 })
+        local result = luna.codec.toToml({ name = "test", count = 5 })
         assert(type(result) == "string")
         assert(string.find(result, 'name = "test"'))
         assert(string.find(result, "count = 5"))
@@ -239,6 +239,6 @@ fn test_lua_serial_totoml_basic() {
 #[test]
 fn test_lua_serial_fromjson_error() {
     let (_state, lua) = make_vm();
-    let result = lua.load(r#"luna.serial.fromJson("{bad json}")"#).exec();
+    let result = lua.load(r#"luna.codec.fromJson("{bad json}")"#).exec();
     assert!(result.is_err());
 }

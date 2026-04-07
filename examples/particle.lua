@@ -1,13 +1,13 @@
--- examples/particle.lua
--- luna.particle — Emitter-based 2D particle systems and trail ribbons.
--- All luna.particle API methods demonstrated with code and comments.
+﻿-- examples/particle.lua
+-- luna.particles — Emitter-based 2D particle systems and trail ribbons.
+-- All luna.particles API methods demonstrated with code and comments.
 
 -- ── Creating a Particle System ────────────────────────────────────────────────
 
 -- newSystem(config) → ParticleSystem
 -- The config table controls every aspect of particle behaviour.
 -- All fields are optional; unset fields use engine defaults.
-local ps = luna.particle.newSystem({
+local ps = luna.particles.newSystem({
     -- Core emission settings
     maxParticles  = 500,        -- maximum live particles
     emissionRate  = 50,         -- particles per second (continuous)
@@ -146,10 +146,10 @@ local full = ps:isFull()
 -- ── Update / Draw ─────────────────────────────────────────────────────────────
 
 -- update(dt) — call each frame to advance simulation
-ps:update(luna.timer.getDelta())
+ps:update(luna.time.getDelta())
 
--- To draw the particle system, pass it to luna.graphics.draw():
--- luna.graphics.draw(ps, 0, 0)
+-- To draw the particle system, pass it to luna.render.draw():
+-- luna.render.draw(ps, 0, 0)
 
 -- ── Release ───────────────────────────────────────────────────────────────────
 
@@ -160,7 +160,7 @@ ps:release()
 
 -- newTrail() → Trail
 -- Trails produce a smooth ribbon following a moving point.
-local trail = luna.particle.newTrail()
+local trail = luna.particles.newTrail()
 
 -- setWidth(start_w, end_w?) — ribbon width at head and tail
 trail:setWidth(8, 0)  -- tapers to a point
@@ -193,13 +193,13 @@ local pts = trail:getPointCount()
 -- clear() — remove all segments
 trail:clear()
 
--- To draw: luna.graphics.draw(trail, 0, 0)
+-- To draw: luna.render.draw(trail, 0, 0)
 
 -- ── Typical Particle Usage ────────────────────────────────────────────────────
 
 --[[
 function luna.load()
-    fire = luna.particle.newSystem({
+    fire = luna.particles.newSystem({
         maxParticles  = 300,
         emissionRate  = 80,
         lifetimeMin   = 0.4,
@@ -222,6 +222,6 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.draw(fire, 0, 0)
+    luna.render.draw(fire, 0, 0)
 end
 ]]

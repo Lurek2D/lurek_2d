@@ -1,4 +1,4 @@
----
+﻿---
 description: "**Security** — Audit Luna2D for memory safety, Lua sandboxing, input validation, and path traversal. Own security review of all modules. Reports findings — does not implement fixes."
 tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 name: Security
@@ -56,9 +56,9 @@ print(io)           -- nil: io module must be absent
 print(dofile)       -- nil: must be absent (blocks loading arbitrary scripts)
 print(loadfile)     -- nil: must be absent
 print(debug)        -- nil or restricted: debug library must not expose addresses
-luna.filesystem.read("../../../etc/passwd")   -- must fail with sandbox error
-luna.filesystem.read("/etc/passwd")           -- must fail with sandbox error
-luna.filesystem.write("../escape.txt", "x")  -- must fail
+luna.fs.read("../../../etc/passwd")   -- must fail with sandbox error
+luna.fs.read("/etc/passwd")           -- must fail with sandbox error
+luna.fs.write("../escape.txt", "x")  -- must fail
 ```
 
 ## THREAT MODEL
@@ -66,7 +66,7 @@ luna.filesystem.write("../escape.txt", "x")  -- must fail
 | Threat | Attack Surface | Mitigation |
 |---|---|---|
 | Stdlib access | `os`, `io`, `dofile`, `debug` | `mlua::StdLib::NONE` — all removed at VM creation |
-| Path traversal | `luna.filesystem.*` | `GameFS::resolve()` canonicalizes and checks prefix |
+| Path traversal | `luna.fs.*` | `GameFS::resolve()` canonicalizes and checks prefix |
 | Memory corruption | `unsafe` blocks in `src/` | Minimize unsafe; every block needs `// SAFETY:` |
 | Resource exhaustion | Infinite resource allocation | Document limits; SlotMap has no built-in cap |
 | RefCell double-borrow | Nested Lua callbacks during borrow | Scope borrows; never hold across a callback |

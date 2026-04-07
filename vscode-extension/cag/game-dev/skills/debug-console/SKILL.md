@@ -1,4 +1,4 @@
-# Debug Console
+﻿# Debug Console
 
 Toggle overlay with command input, built-in commands, and extensible command registration.
 
@@ -47,7 +47,7 @@ end
 
 ```lua
 register_command("fps", function()
-    console_print("FPS: " .. tostring(luna.timer.getFPS()))
+    console_print("FPS: " .. tostring(luna.time.getFPS()))
 end, "Show current FPS")
 
 register_command("reload", function()
@@ -153,24 +153,24 @@ local function draw_console()
     local ch = 250  -- console height
 
     -- Background
-    luna.graphics.setColor(0, 0, 0, 0.85)
-    luna.graphics.rectangle("fill", 0, 0, sw, ch)
+    luna.render.setColor(0, 0, 0, 0.85)
+    luna.render.rectangle("fill", 0, 0, sw, ch)
 
     -- Log lines
-    luna.graphics.setColor(0.8, 0.8, 0.8, 1)
+    luna.render.setColor(0.8, 0.8, 0.8, 1)
     local start = math.max(1, #console.log - 12)
     for i = start, #console.log do
         local y = (i - start) * 16 + 4
-        luna.graphics.print(console.log[i], 8, y)
+        luna.render.print(console.log[i], 8, y)
     end
 
     -- Input line
-    luna.graphics.setColor(0.2, 0.2, 0.2, 1)
-    luna.graphics.rectangle("fill", 0, ch - 22, sw, 22)
-    luna.graphics.setColor(0, 1, 0, 1)
-    luna.graphics.print("> " .. console.input .. "_", 8, ch - 20)
+    luna.render.setColor(0.2, 0.2, 0.2, 1)
+    luna.render.rectangle("fill", 0, ch - 22, sw, 22)
+    luna.render.setColor(0, 1, 0, 1)
+    luna.render.print("> " .. console.input .. "_", 8, ch - 20)
 
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 ```
 

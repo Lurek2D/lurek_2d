@@ -1,10 +1,10 @@
-# `serial` — Agent Reference
+﻿# `serial` — Agent Reference
 
 | Property         | Value                                                |
 |------------------|------------------------------------------------------|
 | **Tier**         | Tier 2 — Engine Extensions                           |
 | **Status**       | Implemented — Full                                   |
-| **Lua API**      | `luna.serial`                                        |
+| **Lua API**      | `luna.codec`                                        |
 | **Source**        | `src/serial/`                                        |
 | **Rust Tests**   | `tests/rust/unit/serial_tests.rs`                    |
 | **Lua Tests**    | `tests/lua/unit/test_serial.lua`                     |

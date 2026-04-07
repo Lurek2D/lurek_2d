@@ -1,4 +1,4 @@
-# Game-Dev CAG Layer Analysis
+﻿# Game-Dev CAG Layer Analysis
 
 ## Current State
 
@@ -38,10 +38,10 @@ The doc specifies a **game developer-facing CAG layer** (separate from the engin
 
 **Improvement**:
 - Each agent should reference the luna.* APIs relevant to its domain
-- `lua-scripter` should know about luna.event, luna.timer, luna.entity
+- `lua-scripter` should know about luna.signal, luna.time, luna.entity
 - `level-designer` should know about luna.tilemap, luna.scene, luna.physics
 - `audio-designer` should know about luna.audio.* API
-- `visual-artist` should know about luna.graphics, luna.particle, luna.animation
+- `visual-artist` should know about luna.render, luna.particles, luna.tween
 - Include API examples in agent system prompts
 
 ### 2. Template Quality Assessment
@@ -61,7 +61,7 @@ The doc specifies a **game developer-facing CAG layer** (separate from the engin
 | arcade | high score + lives | Should demonstrate luna.data |
 | tower-defense | pathfinding + entities | Should use luna.pathfinding |
 | game-jam | fast scaffold | Should be minimal + timer |
-| demo-scene | graphics showcase | Should use multiple luna.graphics calls |
+| demo-scene | graphics showcase | Should use multiple luna.render calls |
 
 **Action**: Verify each template actually uses the relevant luna.* APIs and library/ modules.
 

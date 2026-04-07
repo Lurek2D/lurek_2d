@@ -1,9 +1,9 @@
--- Luna2D Integration Test: Timer + Math
+﻿-- Luna2D Integration Test: Timer + Math
 -- Tests that timer and math functions work together for game-loop scenarios
 
 describe("timer + math integration", function()
     it("getDelta returns a number", function()
-        local dt = luna.timer.getDelta()
+        local dt = luna.time.getDelta()
         expect_not_nil(dt, "getDelta returns a value")
         expect_true(type(dt) == "number", "dt is a number")
     end)

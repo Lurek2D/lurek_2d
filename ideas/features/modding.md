@@ -1,4 +1,4 @@
-# modding — Feature Analysis
+﻿# modding — Feature Analysis
 
 **Tier**: 2 (Extension)
 **Spec**: `specs/modding.md`
@@ -33,7 +33,7 @@ Modding framework: load, validate, and apply content mods. Mod manifest validati
 ## Structural Issues
 
 - **Correct scope**: Modding is clearly a Tier 2 extension that layers on filesystem and event.
-- **Sandboxing quality**: How robust is the mod sandbox? If mods run in isolated Lua environments, can they access `luna.filesystem` to write arbitrary paths? Security concern.
+- **Sandboxing quality**: How robust is the mod sandbox? If mods run in isolated Lua environments, can they access `luna.fs` to write arbitrary paths? Security concern.
 - **Integration with savegame**: Do save files track which mods were active? Loading a save with missing mods could corrupt state.
 
 ## Suggestions

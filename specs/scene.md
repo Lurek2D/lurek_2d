@@ -1,4 +1,4 @@
-# `scene` — Agent Reference
+﻿# `scene` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -260,7 +260,7 @@ local menu = {
     leave  = function(self) print("Menu left") end,
     update = function(self, dt) end,
     draw   = function(self)
-        luna.graphics.print("Main Menu - Press Enter", 100, 100)
+        luna.render.print("Main Menu - Press Enter", 100, 100)
     end,
 }
 
@@ -273,7 +273,7 @@ local game = {
     leave  = function(self) print("Game over") end,
     update = function(self, dt) end,
     draw   = function(self)
-        luna.graphics.print("Level " .. self.level, 100, 100)
+        luna.render.print("Level " .. self.level, 100, 100)
     end,
 }
 
@@ -305,9 +305,9 @@ local sorter = luna.scene.newDepthSorter()
 
 function luna.draw()
     -- Add draw calls at different depths (lower = drawn first)
-    sorter:add(function() luna.graphics.print("Background", 0, 0) end, 0)
-    sorter:add(function() luna.graphics.print("Player", 100, 100) end, 50)
-    sorter:add(function() luna.graphics.print("UI", 200, 10) end, 100)
+    sorter:add(function() luna.render.print("Background", 0, 0) end, 0)
+    sorter:add(function() luna.render.print("Player", 100, 100) end, 50)
+    sorter:add(function() luna.render.print("UI", 200, 10) end, 100)
 
     -- Flush invokes them in depth order: 0, 50, 100
     sorter:flush()
@@ -321,7 +321,7 @@ function luna.load()
     luna.scene.registerScene("menu", {
         enter = function(self) end,
         draw  = function(self)
-            luna.graphics.print("Menu", 10, 10)
+            luna.render.print("Menu", 10, 10)
         end,
     })
 

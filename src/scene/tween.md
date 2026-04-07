@@ -1,4 +1,4 @@
-# tween — Animation Tweening System
+﻿# tween — Animation Tweening System
 
 > **Lua namespace:** `luna.tween`
 > **C++ module:** `src/modules/tween/`
@@ -169,13 +169,13 @@ luna.tween.tween(2.0, obj, { scale = 2.0 }, "bounceCustom")
 
 ## Module Boundaries
 
-**vs luna.timer** — Timer provides raw `getDelta()` and `sleep()`. Tween uses `dt` from the game loop to advance interpolation. Timer measures time; Tween uses time to animate values.
+**vs luna.time** — Timer provides raw `getDelta()` and `sleep()`. Tween uses `dt` from the game loop to advance interpolation. Timer measures time; Tween uses time to animate values.
 
-**vs luna.graphics** — Graphics renders visuals. Tween modifies numeric fields (x, y, alpha, scale) on data tables; Graphics draws whatever those values say each frame.
+**vs luna.render** — Graphics renders visuals. Tween modifies numeric fields (x, y, alpha, scale) on data tables; Graphics draws whatever those values say each frame.
 
 **vs luna.ai (StateMachine)** — StateMachine handles discrete state transitions (idle → walk → attack). Tween handles *continuous* value interpolation within a state (smoothly moving x from 0 to 100).
 
-**vs luna.gui** — GUI widget animations (slide-in, fade, highlight pulse) are driven by tweens. Create a tween targeting the widget's properties table.
+**vs luna.ui** — GUI widget animations (slide-in, fade, highlight pulse) are driven by tweens. Create a tween targeting the widget's properties table.
 
 ---
 

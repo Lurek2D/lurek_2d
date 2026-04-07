@@ -206,7 +206,7 @@ fn lua_test_log() {
     run_lua_test("unit/test_log.lua");
 }
 
-// === luna.graphics.newShape / CompoundShape tests ===
+// === luna.render.newShape / CompoundShape tests ===
 
 #[test]
 fn lua_test_shape() {
@@ -260,7 +260,7 @@ fn lua_stress_data_compression() {
     run_lua_test("stress/test_data_compression_stress.lua");
 }
 
-// === luna.gui tests ===
+// === luna.ui tests ===
 
 #[test]
 fn lua_test_gui() {

@@ -1,4 +1,4 @@
-//! `luna.fx` — Composable visual effects: post-processing pipeline and screen overlays.
+﻿//! `luna.postfx` — Composable visual effects: post-processing pipeline and screen overlays.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -886,7 +886,7 @@ impl LuaUserData for LuaOverlay {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.fx` API table with the Lua VM.
+/// Registers the `luna.postfx` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`.
@@ -965,7 +965,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("fx", tbl)?;
+    luna.set("postfx", tbl)?;
 
     // Also expose luna.overlay as a dedicated namespace for the Overlay constructor.
     let overlay_tbl = lua.create_table()?;

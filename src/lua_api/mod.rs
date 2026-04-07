@@ -1,4 +1,4 @@
-//! Lua API binding bridge for the Luna2D engine.
+﻿//! Lua API binding bridge for the Luna2D engine.
 //!
 //! This is the integration layer that registers all `luna.*` API sub-modules
 //! on top of the types defined in `engine`. `SharedState`, `WindowState`,
@@ -16,19 +16,19 @@ use mlua::prelude::*;
 use crate::engine::config::ModulesConfig;
 pub use crate::engine::{ErrorInfo, FullscreenType, SharedState, WindowState};
 
-/// Registers the `luna.event.*` event queue and signal API.
+/// Registers the `luna.signal.*` event queue and signal API.
 pub mod event_api;
 
-/// Registers the `luna.timer.*` frame-timing API.
+/// Registers the `luna.time.*` frame-timing API.
 pub mod timer_api;
 
-/// Registers the `luna.image.*` pixel-level image manipulation API.
+/// Registers the `luna.img.*` pixel-level image manipulation API.
 pub mod image_api;
 
 /// Registers the `luna.camera.*` Camera2D API.
 pub mod camera_api;
 
-/// Registers the `luna.animation.*` API.
+/// Registers the `luna.tween.*` API.
 pub mod animation_api;
 
 /// Registers the `luna.thread.*` background threading API.
@@ -52,7 +52,7 @@ pub mod entity_api;
 /// Registers the `luna.scene.*` scene stack and depth-sorter API.
 pub mod scene_api;
 
-/// Registers the `luna.compute.*` array computation API.
+/// Registers the `luna.gpu.*` array computation API.
 pub mod compute_api;
 
 /// Registers the `luna.window.*` window management API.
@@ -61,10 +61,10 @@ pub mod window_api;
 /// Registers the `luna.modding.*` mod management API.
 pub mod modding_api;
 
-/// Registers the `luna.filesystem.*` sandboxed file I/O API.
+/// Registers the `luna.fs.*` sandboxed file I/O API.
 pub mod filesystem_api;
 
-/// Registers the `luna.serial.*` format serialization API.
+/// Registers the `luna.codec.*` format serialization API.
 pub mod serial_api;
 
 /// Registers the `luna.raycaster.*` DDA grid raycasting API.
@@ -106,13 +106,13 @@ pub mod ai_api;
 /// Registers the `luna.audio.*` audio playback, mixing, and MIDI API.
 pub mod audio_api;
 
-/// Registers the `luna.fx.*` post-processing and screen overlay API.
+/// Registers the `luna.postfx.*` post-processing and screen overlay API.
 pub mod fx_api;
 
-/// Registers the `luna.particle.*` particle system and trail API.
+/// Registers the `luna.particles.*` particle system and trail API.
 pub mod particle_api;
 
-/// Registers the `luna.gui.*` retained-mode widget UI API.
+/// Registers the `luna.ui.*` retained-mode widget UI API.
 pub mod gui_api;
 
 /// Registers the `luna.tilemap.*` tile-based map authoring and coordinate helpers API.
@@ -124,7 +124,7 @@ pub mod math_api;
 /// Registers the `luna.physics.*` rigid-body physics API.
 pub mod physics_api;
 
-/// Registers the `luna.graphics.*` rendering and drawing API.
+/// Registers the `luna.render.*` rendering and drawing API.
 pub mod graphics_api;
 
 /// Exposes low-level system queries (processor count, memory size, URL opening, locale, power).
@@ -147,15 +147,15 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     // Create the luna namespace table
     let luna = lua.create_table()?;
 
-    // event: luna.event (always registered — mandatory API)
+    // event: luna.signal (always registered — mandatory API)
     event_api::register(&lua, &luna, state.clone())?;
 
-    // timer: luna.timer
+    // timer: luna.time
     if modules.timer {
         timer_api::register(&lua, &luna, state.clone())?;
     }
 
-    // image: luna.image
+    // image: luna.img
     if modules.image {
         image_api::register(&lua, &luna, state.clone())?;
     }
@@ -165,7 +165,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         camera_api::register(&lua, &luna, state.clone())?;
     }
 
-    // animation: luna.animation
+    // animation: luna.tween
     if modules.animation {
         animation_api::register(&lua, &luna, state.clone())?;
     }
@@ -194,7 +194,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     // modding: luna.modding (always registered — no config flag)
     modding_api::register(&lua, &luna, state.clone())?;
 
-    // serial: luna.serial (always registered — no config flag)
+    // serial: luna.codec (always registered — no config flag)
     serial_api::register(&lua, &luna, state.clone())?;
 
     // dataframe: luna.dataframe (always registered — no config flag)
@@ -203,7 +203,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     // light: luna.light (always registered — no config flag)
     light_api::register(&lua, &luna, state.clone())?;
 
-    // filesystem: luna.filesystem
+    // filesystem: luna.fs
     if modules.filesystem {
         filesystem_api::register(&lua, &luna, state.clone())?;
     }
@@ -223,7 +223,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         scene_api::register(&lua, &luna, state.clone())?;
     }
 
-    // compute: luna.compute
+    // compute: luna.gpu
     if modules.compute {
         compute_api::register(&lua, &luna, state.clone())?;
     }
@@ -283,17 +283,17 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         audio_api::register(&lua, &luna, state.clone())?;
     }
 
-    // fx: luna.fx
+    // fx: luna.postfx
     if modules.overlay {
         fx_api::register(&lua, &luna, state.clone())?;
     }
 
-    // particle: luna.particle
+    // particle: luna.particles
     if modules.particle {
         particle_api::register(&lua, &luna, state.clone())?;
     }
 
-    // gui: luna.gui
+    // gui: luna.ui
     if modules.gui {
         gui_api::register(&lua, &luna, state.clone())?;
     }
@@ -306,7 +306,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     // math: luna.math (always registered — mandatory)
     math_api::register(&lua, &luna, state.clone())?;
 
-    // system: luna.system (always registered — OS info, openURL, locales)
+    // system: luna.platform (always registered — OS info, openURL, locales)
     system_api::register(&lua, &luna, state.clone())?;
 
     // physics: luna.physics
@@ -314,7 +314,7 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         physics_api::register(&lua, &luna, state.clone())?;
     }
 
-    // graphics: luna.graphics
+    // graphics: luna.render
     if modules.graphics {
         graphics_api::register(&lua, &luna, state.clone())?;
     }

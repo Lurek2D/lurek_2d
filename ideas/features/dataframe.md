@@ -1,4 +1,4 @@
-# dataframe — Feature Analysis
+﻿# dataframe — Feature Analysis
 
 **Tier**: 2 (Extension)
 **Spec**: `specs/dataframe.md`
@@ -36,7 +36,7 @@ Column-oriented tabular data structure for game data analysis, scoring tables, s
 
 ## Suggestions
 
-1. **Consider moving to Tier 3 library**: `library/dataframe/` as pure Lua — no Rust overhead. Use `luna.serial` for CSV import and `luna.compute` for numerics.
+1. **Consider moving to Tier 3 library**: `library/dataframe/` as pure Lua — no Rust overhead. Use `luna.codec` for CSV import and `luna.gpu` for numerics.
 2. **Add window functions**: `df:rollingMean("column", windowSize)` — enables time series analysis, rolling averages for game stats.
 3. **Add SQLite import**: `luna.dataframe.fromSQLite(path, query)` — useful for modders and data-driven game design.
 4. **Document use cases**: The module is powerful but users need to understand why they'd use DataFrames in a game. Add examples: leaderboard analysis, balance tuning, event log analysis.

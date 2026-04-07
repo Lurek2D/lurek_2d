@@ -1,4 +1,4 @@
-# Luna Toolkit — Game Developer CAG Layer
+﻿# Luna Toolkit — Game Developer CAG Layer
 
 > A self-contained AI-first workflow layer for **game developers** using Luna2D.
 > This is NOT for engine developers. These agents, skills, prompts, and instructions
@@ -379,7 +379,7 @@ dialog speech bubbles, ammo/resource meters.
 #### `particle-juice`
 **Covers**: On-hit sparks, walk dust, landing impact, death explosion, coin collect,
 healing shimmer, level-up burst, screenshake-synchronized particles. All defined
-as `luna.particle.newSystem()` configurations.
+as `luna.particles.newSystem()` configurations.
 
 ---
 
@@ -690,7 +690,7 @@ applyTo: "**/saves/*.lua"
 - ALWAYS include a `save_version` integer field
 - ALWAYS validate save_version on load, migrate if needed
 - NEVER store raw Lua function references in save data
-- Save paths use luna.filesystem.getSaveDirectory()
+- Save paths use luna.fs.getSaveDirectory()
 - Validate save data before applying (nil-check every expected field)
 ```
 
@@ -1038,8 +1038,8 @@ Language: Lua (LuaJIT target). API: luna.*
 
 ## Luna2D API Quick Reference
 All APIs are under luna.* — never external engine prefixes or third-party runtime prefixes.
-Key modules: luna.graphics, luna.audio, luna.physics, luna.input,
-  luna.math, luna.timer, luna.filesystem, luna.entity, luna.event
+Key modules: luna.render, luna.audio, luna.physics, luna.input,
+  luna.math, luna.time, luna.fs, luna.entity, luna.signal
 
 ## Agent Map
 - game-architect  → system design, architecture decisions

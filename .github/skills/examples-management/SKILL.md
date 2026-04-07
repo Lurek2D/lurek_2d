@@ -1,4 +1,4 @@
----
+﻿---
 name: examples-management
 description: "Load this skill when adding, modifying, or reviewing content in the examples/ or demos/ directories: game example scripts, demo folder structure, conf.lua, or README files. Use for ensuring examples are self-contained, well-commented, and demonstrate one API concept. Skip it for engine Rust code, tests, documentation under docs/, or CAG work."
 ---
@@ -20,7 +20,7 @@ description: "Load this skill when adding, modifying, or reviewing content in th
 - Example file self-contained requirement and comment style
 - Demo folder layout (conf.lua, main.lua, assets, README)
 - Examples ↔ API documentation pipeline integration
-- Smoke test support pattern (`--smoke` flag + `luna.event.quit()`)
+- Smoke test support pattern (`--smoke` flag + `luna.signal.quit()`)
 - `examples/README.md` and `demos/README.md` maintenance
 
 ## Two-Folder Model
@@ -37,8 +37,8 @@ description: "Load this skill when adding, modifying, or reviewing content in th
 ```
 examples/
 ├── physics.lua        — luna.physics.* API example
-├── graphics.lua       — luna.graphics.* example
-├── timer.lua          — luna.timer.* example
+├── graphics.lua       — luna.render.* example
+├── timer.lua          — luna.time.* example
 ├── audio.lua          — luna.audio.* example
 └── ...                — one .lua per API namespace
 ```
@@ -47,13 +47,13 @@ examples/
 
 ```lua
 -- examples/timer.lua
--- Demonstrates luna.timer API: basic delta time, FPS, sleep.
+-- Demonstrates luna.time API: basic delta time, FPS, sleep.
 -- Run with: cargo run -- examples/timer
 
 -- ── load ──────────────────────────────────────────────────────
 function luna.load()
     elapsed = 0
-    font = luna.graphics.getDefaultFont()
+    font = luna.render.getDefaultFont()
 end
 
 -- ── update ────────────────────────────────────────────────────
@@ -63,8 +63,8 @@ end
 
 -- ── draw ──────────────────────────────────────────────────────
 function luna.draw()
-    luna.graphics.print("FPS: " .. luna.timer.getFPS(), 10, 10)
-    luna.graphics.print("Elapsed: " .. string.format("%.2f", elapsed), 10, 30)
+    luna.render.print("FPS: " .. luna.time.getFPS(), 10, 10)
+    luna.render.print("Elapsed: " .. string.format("%.2f", elapsed), 10, 30)
 end
 ```
 
@@ -146,9 +146,9 @@ Add smoke test support to a new example:
 
 ```lua
 function luna.load()
-    local args = luna.system.getArgs()
+    local args = luna.platform.getArgs()
     if args["--smoke"] then
-        luna.event.quit()
+        luna.signal.quit()
     end
 end
 ```
@@ -203,24 +203,24 @@ Color component values must be in `[0.0, 1.0]` range — **never** `[0, 255]`:
 
 ```lua
 -- CORRECT
-luna.graphics.setColor(1.0, 0.0, 0.0, 1.0)    -- red, full opacity
-luna.graphics.setColor(0.5, 0.5, 0.5, 1.0)    -- mid-gray
+luna.render.setColor(1.0, 0.0, 0.0, 1.0)    -- red, full opacity
+luna.render.setColor(0.5, 0.5, 0.5, 1.0)    -- mid-gray
 
 -- WRONG
-luna.graphics.setColor(255, 0, 0, 255)         -- byte range, not float
+luna.render.setColor(255, 0, 0, 255)         -- byte range, not float
 ```
 
 ### Rectangle Draw Mode
 
-`luna.graphics.rectangle()` takes a string mode as its first arg — not a boolean:
+`luna.render.rectangle()` takes a string mode as its first arg — not a boolean:
 
 ```lua
 -- CORRECT
-luna.graphics.rectangle("fill", x, y, w, h)
-luna.graphics.rectangle("line", x, y, w, h)
+luna.render.rectangle("fill", x, y, w, h)
+luna.render.rectangle("line", x, y, w, h)
 
 -- WRONG
-luna.graphics.rectangle(true, x, y, w, h)   -- boolean does not work
+luna.render.rectangle(true, x, y, w, h)   -- boolean does not work
 ```
 
 ### Physics Body Types
@@ -240,5 +240,5 @@ world:newBody(x, y, true)   -- boolean
 | Rule | `demos/` | `examples/` |
 |------|---------|------------|
 | `require()` | ❌ No — must be single-file, self-contained | ✅ May use `require("library.*")` for shipped Lunasome modules |
-| `os.*` / `io.*` system calls | ❌ Never — use `luna.filesystem.*` for file access | ❌ Never |
+| `os.*` / `io.*` system calls | ❌ Never — use `luna.fs.*` for file access | ❌ Never |
 | `conf.lua` | ✅ Required for each demo folder | ❌ Not applicable (single-file) |

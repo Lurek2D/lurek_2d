@@ -1,10 +1,10 @@
-# `gui` — Agent Reference
+﻿# `gui` — Agent Reference
 
 | Property | Value |
 |----------|-------|
 | **Tier** | Tier 2 — Reusable Engine Extensions |
 | **Status** | Implemented — Full |
-| **Lua API** | `luna.gui` |
+| **Lua API** | `luna.ui` |
 | **Source** | `src/gui/` |
 | **Rust Tests** | `tests/rust/unit/gui_tests.rs` |
 | **Lua Tests** | `tests/lua/unit/test_gui.lua` |

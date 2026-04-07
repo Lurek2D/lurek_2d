@@ -1,24 +1,24 @@
--- examples/fx.lua
--- luna.fx — Post-processing effects: stacking, per-image chains, screen overlays.
--- All luna.fx API methods demonstrated with code and comments.
+﻿-- examples/fx.lua
+-- luna.postfx — Post-processing effects: stacking, per-image chains, screen overlays.
+-- All luna.postfx API methods demonstrated with code and comments.
 
 -- ── Effect Types ──────────────────────────────────────────────────────────────
--- Use one of these string names with luna.fx.newEffect(type_name):
+-- Use one of these string names with luna.postfx.newEffect(type_name):
 --   "blur", "bloom", "chromatic_aberration", "color_grading", "crt",
 --   "fisheye", "grain", "scanlines", "sepia", "vignette"
 
 -- ── Creating Effects ──────────────────────────────────────────────────────────
 
 -- newEffect(type_name) → PostFxEffect  — built-in effect by name
-local blur   = luna.fx.newEffect("blur")
-local vign   = luna.fx.newEffect("vignette")
-local grain  = luna.fx.newEffect("grain")
-local sepia  = luna.fx.newEffect("sepia")
+local blur   = luna.postfx.newEffect("blur")
+local vign   = luna.postfx.newEffect("vignette")
+local grain  = luna.postfx.newEffect("grain")
+local sepia  = luna.postfx.newEffect("sepia")
 
 -- newCustomEffect(shader_id) → PostFxEffect  — custom WGSL shader effect
--- shader_id is the id returned by luna.graphics.newShader(...)
--- local my_shader = luna.graphics.newShader(nil, frag_src)
--- local custom_fx = luna.fx.newCustomEffect(my_shader:getId())
+-- shader_id is the id returned by luna.render.newShader(...)
+-- local my_shader = luna.render.newShader(nil, frag_src)
+-- local custom_fx = luna.postfx.newCustomEffect(my_shader:getId())
 
 -- ── Configuring Effects ───────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ local en = blur:isEnabled()
 
 -- newStack(w, h) → PostFxStack  — w/h should match screen or canvas dimensions
 local W, H = 1280, 720
-local fx_stack = luna.fx.newStack(W, H)
+local fx_stack = luna.postfx.newStack(W, H)
 
 -- add(effect_index) — add a slot by integer index (arbitrary allocation)
 -- Internally the stack manages effect positions; use the effect's own add_method index.
@@ -106,7 +106,7 @@ fx_stack:resize(640, 360)
 -- ── ImageEffect (per-image effect chain) ─────────────────────────────────────
 
 -- newImageEffect(name) → ImageEffect  — named per-image chain
-local img_fx = luna.fx.newImageEffect("hero_glow")
+local img_fx = luna.postfx.newImageEffect("hero_glow")
 
 -- addEffect(effect) — append a PostFxEffect to this chain
 img_fx:addEffect(blur)
@@ -127,7 +127,7 @@ img_fx:removeByName("blur")
 -- ── Overlay (screen-wide transient effects) ───────────────────────────────────
 
 -- newOverlay(w, h) → Overlay
-local overlay = luna.fx.newOverlay(W, H)
+local overlay = luna.postfx.newOverlay(W, H)
 
 -- triggerFlash(r, g, b, a, duration)  — brief colour flash (e.g. hit, explosion)
 overlay:triggerFlash(1.0, 0.0, 0.0, 0.8, 0.15)   -- fast red flash
@@ -168,7 +168,7 @@ overlay:resize(1280, 720)
 local fx_overlay, shake_x, shake_y
 
 function luna.load()
-    fx_overlay = luna.fx.newOverlay(luna.window.getWidth(), luna.window.getHeight())
+    fx_overlay = luna.postfx.newOverlay(luna.window.getWidth(), luna.window.getHeight())
 end
 
 function luna.update(dt)
@@ -182,16 +182,16 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.push()
-    luna.graphics.translate(shake_x, shake_y)
+    luna.render.push()
+    luna.render.translate(shake_x, shake_y)
     -- ... draw world ...
-    luna.graphics.pop()
+    luna.render.pop()
 
     -- draw flash overlay on top
     if fx_overlay:getFlashAlpha() > 0 then
-        luna.graphics.setColor(1, 0, 0, fx_overlay:getFlashAlpha())
-        luna.graphics.rectangle("fill", 0, 0, luna.window.getWidth(), luna.window.getHeight())
-        luna.graphics.setColor(1, 1, 1, 1)
+        luna.render.setColor(1, 0, 0, fx_overlay:getFlashAlpha())
+        luna.render.rectangle("fill", 0, 0, luna.window.getWidth(), luna.window.getHeight())
+        luna.render.setColor(1, 1, 1, 1)
     end
 end
 ]]

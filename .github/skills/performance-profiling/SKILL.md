@@ -1,4 +1,4 @@
----
+﻿---
 name: performance-profiling
 description: "Load this skill when analyzing or optimizing Luna2D performance: frame time, allocations, hot paths, rendering throughput, or Lua/Rust boundary overhead. Skip it for correctness bugs or feature implementation."
 ---
@@ -81,9 +81,9 @@ Control visibility with `RUST_LOG=luna2d=debug`.
 ### 2. Lua-side timing
 
 ```lua
-local t = luna.timer.getTime()
+local t = luna.time.getTime()
 doExpensiveThing()
-print(string.format("%.2f ms", (luna.timer.getTime() - t) * 1000))
+print(string.format("%.2f ms", (luna.time.getTime() - t) * 1000))
 ```
 
 ### 3. `cargo flamegraph` (install once)
@@ -144,11 +144,11 @@ Draw call count is the primary render budget variable on integrated GPUs.
 ```lua
 -- BAD: O(N) draw calls — one per sprite
 for _, e in ipairs(entities) do
-    luna.graphics.draw(e.image, e.x, e.y)   -- 1 draw call each
+    luna.render.draw(e.image, e.x, e.y)   -- 1 draw call each
 end
 
 -- GOOD: 1 draw call for all sprites using the same texture
-local batch = luna.graphics.newSpriteBatch(atlas_image, 1000)
+local batch = luna.render.newSpriteBatch(atlas_image, 1000)
 function luna.update(dt)
     batch:clear()
     for _, e in ipairs(entities) do
@@ -156,13 +156,13 @@ function luna.update(dt)
     end
 end
 function luna.draw()
-    luna.graphics.draw(batch, 0, 0)  -- 1 draw call
+    luna.render.draw(batch, 0, 0)  -- 1 draw call
 end
 ```
 
 ### Texture atlas
 
-Pack small sprites into a single large texture. Use `luna.graphics.newQuad()` to define sub-regions. This keeps SpriteBatch at exactly 1 draw call regardless of sprite count.
+Pack small sprites into a single large texture. Use `luna.render.newQuad()` to define sub-regions. This keeps SpriteBatch at exactly 1 draw call regardless of sprite count.
 
 ---
 

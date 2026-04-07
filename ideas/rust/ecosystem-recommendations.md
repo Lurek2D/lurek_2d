@@ -1,4 +1,4 @@
-# Luna2D Ecosystem — Crate Recommendations
+﻿# Luna2D Ecosystem — Crate Recommendations
 
 > **Purpose**: Definitive guide for which Rust crates Luna2D should use, consider, or avoid — per module, per tier.
 > Aligned with the three-tier distribution model: **Luna2D Light**, **Luna2D Standard**, **Luna2D Full**.
@@ -555,7 +555,7 @@ This is purely an encoding library — NOT a hex grid library. Hex grid function
 **PNG-focused expansion** — the user wants full PNG workflow:
 - **Load PNG** — already supported via `image` crate (keep)
 - **Save PNG** — add `ImageData:save(path)` using `image::save_buffer()` with PNG encoder
-- **Screenshot to PNG** — add `luna.graphics.captureScreenshot(path)` that reads the framebuffer and saves to PNG
+- **Screenshot to PNG** — add `luna.render.captureScreenshot(path)` that reads the framebuffer and saves to PNG
 - **Pixel-by-pixel access** — already implemented (`get_pixel`, `set_pixel`), ensure it works for loaded PNGs
 - **Raw byte access** — already implemented (`as_bytes`), document for advanced users
 
@@ -682,7 +682,7 @@ Total expansion: ~350-400 SLoC of additional graph algorithms.
 - **Normalize** to [0, 1] or [-1, 1] range.
 - **Dot product** for 1D arrays.
 
-**GPU compute acceleration**: For large arrays (>100K elements), wgpu compute shaders can parallelize matmul, convolution, and element-wise operations. This uses the existing wgpu dependency — zero additional binary cost. Expose via `luna.compute.gpuMatmul(a, b)`.
+**GPU compute acceleration**: For large arrays (>100K elements), wgpu compute shaders can parallelize matmul, convolution, and element-wise operations. This uses the existing wgpu dependency — zero additional binary cost. Expose via `luna.gpu.gpuMatmul(a, b)`.
 
 ### 21. Noise / Procedural Generation
 
@@ -739,7 +739,7 @@ Total expansion: ~650-850 SLoC of additional noise/procgen algorithms.
 |---|---|---|
 | JSON | serde_json 1 | **KEEP** — read and write JSON files |
 | TOML | — | **ADD `toml` 0.8** — preferred config format (Tier 1) |
-| Lua tables | mlua native | **KEEP** — `luna.filesystem.load()` for Lua data files |
+| Lua tables | mlua native | **KEEP** — `luna.fs.load()` for Lua data files |
 | Binary dump | — | **ADD NATIVE** — simple binary serialization |
 
 **Serialization API surface**:
@@ -749,7 +749,7 @@ Total expansion: ~650-850 SLoC of additional noise/procgen algorithms.
 - `luna.data.parseToml(string) → table` — TOML string to Lua table
 - `luna.data.encodeBinary(table) → ByteData` — simple binary dump (native, ~200 SLoC)
 - `luna.data.decodeBinary(ByteData) → table` — binary load
-- `luna.filesystem.load(path)` — load and execute Lua file, return its result table
+- `luna.fs.load(path)` — load and execute Lua file, return its result table
 
 **Binary dump format** (native implementation):
 A simple tagged binary format for game save data. Type-length-value encoding:
@@ -822,10 +822,10 @@ Simple clipboard (copy/paste text) via `arboard` is enough. No need for advanced
 - Disk I/O read/write bytes per process
 
 **Lua API surface**:
-- `luna.system.getCpuUsage() → number` — overall CPU utilization % (0-100)
-- `luna.system.getMemoryUsage() → number, number` — used MB, total MB
-- `luna.system.getProcessMemory() → number` — engine process memory in MB
-- `luna.system.getFrameTime() → number` — last frame duration in ms (already in timer)
+- `luna.platform.getCpuUsage() → number` — overall CPU utilization % (0-100)
+- `luna.platform.getMemoryUsage() → number, number` — used MB, total MB
+- `luna.platform.getProcessMemory() → number` — engine process memory in MB
+- `luna.platform.getFrameTime() → number` — last frame duration in ms (already in timer)
 
 **Why keep sysinfo**: Despite being ~200-400 KB, it's the only maintained crate for live CPU/memory utilization metrics on all three desktop platforms. The alternatives (`num_cpus`, `std::env`) provide only static info, not utilization.
 

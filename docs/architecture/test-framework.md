@@ -1,4 +1,4 @@
-# Luna2D — Test Framework Architecture
+﻿# Luna2D — Test Framework Architecture
 
 > **Source of truth** for the test suite structure, naming conventions, BDD framework, and CI quality gates.
 > Companion documents: [engine-architecture.md](engine-architecture.md) (runtime module structure) · [philosophy.md](philosophy.md) (principles + design assumptions).
@@ -408,11 +408,11 @@ An integration test **must** exercise at least two distinct `luna.*` module name
 
 ```lua
 -- tests/lua/integration/test_physics_timer.lua
--- Integration: luna.physics + luna.timer (two distinct namespaces)
+-- Integration: luna.physics + luna.time (two distinct namespaces)
 
 describe("physics + timer integration", function()
     it("should simulate body movement over elapsed time", function()
-        -- uses luna.physics AND luna.timer
+        -- uses luna.physics AND luna.time
     end)
 end)
 
@@ -561,7 +561,7 @@ Returns `(Rc<RefCell<SharedState>>, Lua)` — a SharedState + Lua VM pair for st
 ### Lua Tests
 
 - File naming: `test_<module>.lua`
-- `describe()` blocks named after the API namespace: `"luna.math"`, `"luna.graphics"`
+- `describe()` blocks named after the API namespace: `"luna.math"`, `"luna.render"`
 - `it()` blocks use natural language: `"should return zero for empty input"`
 
 ---

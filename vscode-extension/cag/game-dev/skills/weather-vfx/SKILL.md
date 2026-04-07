@@ -1,4 +1,4 @@
-# Weather VFX
+﻿# Weather VFX
 
 Rain particles, snow drift, wind force, lightning flash with thunder SFX, and fog overlay.
 
@@ -53,11 +53,11 @@ local function update_rain(dt, screen_w, screen_h)
 end
 
 local function draw_rain()
-    luna.graphics.setColor(0.6, 0.7, 0.9, 0.5)
+    luna.render.setColor(0.6, 0.7, 0.9, 0.5)
     for _, d in ipairs(rain_drops) do
-        luna.graphics.line(d.x, d.y, d.x + weather.wind_x * 0.02, d.y + RAIN_LENGTH)
+        luna.render.line(d.x, d.y, d.x + weather.wind_x * 0.02, d.y + RAIN_LENGTH)
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 ```
 
@@ -93,11 +93,11 @@ local function update_snow(dt, screen_w, screen_h)
 end
 
 local function draw_snow()
-    luna.graphics.setColor(1, 1, 1, 0.8)
+    luna.render.setColor(1, 1, 1, 0.8)
     for _, s in ipairs(snowflakes) do
-        luna.graphics.circle("fill", s.x, s.y, s.size)
+        luna.render.circle("fill", s.x, s.y, s.size)
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 ```
 
@@ -127,9 +127,9 @@ end
 
 local function draw_lightning(screen_w, screen_h)
     if lightning.flash > 0 then
-        luna.graphics.setColor(1, 1, 1, lightning.flash * 0.7)
-        luna.graphics.rectangle("fill", 0, 0, screen_w, screen_h)
-        luna.graphics.setColor(1, 1, 1, 1)
+        luna.render.setColor(1, 1, 1, lightning.flash * 0.7)
+        luna.render.rectangle("fill", 0, 0, screen_w, screen_h)
+        luna.render.setColor(1, 1, 1, 1)
     end
 end
 ```
@@ -139,9 +139,9 @@ end
 ```lua
 local function draw_fog(screen_w, screen_h, density)
     density = density or 0.3
-    luna.graphics.setColor(0.5, 0.5, 0.6, density)
-    luna.graphics.rectangle("fill", 0, 0, screen_w, screen_h)
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(0.5, 0.5, 0.6, density)
+    luna.render.rectangle("fill", 0, 0, screen_w, screen_h)
+    luna.render.setColor(1, 1, 1, 1)
 end
 ```
 

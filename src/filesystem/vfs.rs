@@ -1,4 +1,4 @@
-//! Vfs implementation for the `filesystem` subsystem.
+﻿//! Vfs implementation for the `filesystem` subsystem.
 //!
 //! This module is part of Luna2D's `filesystem` subsystem and provides the implementation
 //! details for vfs-related operations and data management.
@@ -593,7 +593,7 @@ impl GameFS {
     /// Reads file bytes from the VFS, searching mount layers newest-first before
     /// falling back to the base game directory.
     ///
-    /// Useful for `luna.filesystem.load()` — returns raw bytes for Lua compilation.
+    /// Useful for `luna.fs.load()` — returns raw bytes for Lua compilation.
     ///
     /// # Parameters
     /// - `path` — `&str`. Virtual path to the file.

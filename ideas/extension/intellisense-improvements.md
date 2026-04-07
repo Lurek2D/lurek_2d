@@ -1,4 +1,4 @@
-# IntelliSense Improvements
+﻿# IntelliSense Improvements
 
 ## Current State
 
@@ -65,7 +65,7 @@ This significantly exceeds the 12 providers documented in `02-intellisense-desig
 
 **New diagnostic ideas**:
 - **Missing `luna.load()` callback** — warn if `main.lua` uses luna.* but has no `luna.load` callback
-- **Per-frame allocation warning** — flag `luna.graphics.newImage()` or `luna.audio.newSource()` inside `luna.draw`/`luna.update` callbacks
+- **Per-frame allocation warning** — flag `luna.render.newImage()` or `luna.audio.newSource()` inside `luna.draw`/`luna.update` callbacks
 - **Invalid key name** — flag `luna.keypressed` using key strings not in the valid set
 - **Body type mismatch** — flag methods called on wrong body type (e.g. `setLinearVelocity` on static body)
 - **Missing `test_summary()`** — flag Lua test files that don't end with `test_summary()`
@@ -78,13 +78,13 @@ This significantly exceeds the 12 providers documented in `02-intellisense-desig
 **Current**: Key names are completed when typing inside `luna.keypressed` etc.
 
 **New contextual completions**:
-- **Easing function names** when typing `luna.timer.tween(_, _, _, "` → show all easing names with preview
-- **Blend mode names** when typing `luna.graphics.setBlendMode("` → show modes with visual description
+- **Easing function names** when typing `luna.time.tween(_, _, _, "` → show all easing names with preview
+- **Blend mode names** when typing `luna.render.setBlendMode("` → show modes with visual description
 - **Physics body types** when typing `luna.physics.newBody(_, _, _, "` → "static", "dynamic", "kinematic"
 - **Audio source types** when typing `luna.audio.newSource(_, "` → "static", "stream"
 - **Filter modes** when typing `setFilter("` → "nearest", "linear" with explanation
-- **Draw modes** when typing `luna.graphics.circle("` → "fill", "line" with explanation
-- **Event names** when typing `luna.event.on("` → list all engine event names
+- **Draw modes** when typing `luna.render.circle("` → "fill", "line" with explanation
+- **Event names** when typing `luna.signal.on("` → list all engine event names
 
 ### 5. Easing Curve Visualization
 
@@ -120,7 +120,7 @@ Implementation: Generate a small embedded SVG or canvas in the hover markdown.
 - Workspace-wide `require()` resolution → jump to definition across files
 - Auto-import suggestions: typing a function name from another module → suggest `require()`
 - Show all references across the entire workspace, not just current file
-- Support `luna.filesystem.load()` as a module import path
+- Support `luna.fs.load()` as a module import path
 
 ### 8. Snippet Library Expansion
 
@@ -151,7 +151,7 @@ Implementation: Generate a small embedded SVG or canvas in the hover markdown.
 - Flag string concatenation in loops (suggest `table.concat`)
 - Flag `pairs()`/`ipairs()` on large tables inside `update()`
 - Flag creating closures inside hot loops
-- Flag `luna.graphics.newImage()` called every frame
+- Flag `luna.render.newImage()` called every frame
 - Suggest `local` for frequently accessed globals
 - Flag deep table nesting in tight loops
 

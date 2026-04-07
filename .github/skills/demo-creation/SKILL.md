@@ -1,4 +1,4 @@
----
+﻿---
 name: demo-creation
 description: "Load this skill when creating one or more new demo projects in demos/. Use when: scaffolding a demo from a genre or feature description; generating conf.lua + main.lua + README.md + screen.png; registering a new demo in demos/README.md; using library/ modules alongside luna.* API; creating batches of demos from a list of genres or specific needs. Skip it for examples/ single-file scripts (use examples-management skill), test writing, or engine Rust code."
 argument-hint: "genre, count, features, library modules, resolution, complexity"
@@ -101,7 +101,7 @@ Add module flags only when the demo actually needs them:
 -- ── load ──────────────────────────────────────────────────────
 function luna.load()
     luna.window.setTitle("<Demo Title>")
-    luna.graphics.setBackgroundColor(0.08, 0.08, 0.12)
+    luna.render.setBackgroundColor(0.08, 0.08, 0.12)
     -- resource creation, world setup, initial state
 end
 
@@ -118,7 +118,7 @@ end
 
 -- ── keypressed ────────────────────────────────────────────────
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     -- discrete events: jump, restart, action
 end
 ```
@@ -126,11 +126,11 @@ end
 **Mandatory invariants:**
 - All state in module-level `local` variables — no globals except callbacks
 - `luna.window.setTitle()` called first in `luna.load()`
-- `luna.graphics.setBackgroundColor()` called in `luna.load()`
+- `luna.render.setBackgroundColor()` called in `luna.load()`
 - Movement multiplied by `dt` for frame-rate independence
-- `escape` → `luna.event.quit()` always present in `luna.keypressed`
+- `escape` → `luna.signal.quit()` always present in `luna.keypressed`
 - All 4 callbacks defined, even if `update` is empty
-- No `print()` — use `luna.graphics.print()` for on-screen text, `luna.log.debug()` for diagnostics
+- No `print()` — use `luna.render.print()` for on-screen text, `luna.log.debug()` for diagnostics
 
 **Size guidelines:**
 
@@ -173,7 +173,7 @@ function luna.load()
     inv = inventory.new(20)
     -- then window + graphics setup
     luna.window.setTitle("Loot Demo")
-    luna.graphics.setBackgroundColor(0.05, 0.05, 0.1)
+    luna.render.setBackgroundColor(0.05, 0.05, 0.1)
 end
 ```
 

@@ -1,4 +1,4 @@
-//! `luna.particle` — Emitter-based 2D particle systems and trail ribbons.
+﻿//! `luna.particles` — Emitter-based 2D particle systems and trail ribbons.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -317,7 +317,7 @@ impl LuaUserData for LuaTrail {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.particle` API table with the Lua VM.
+/// Registers the `luna.particles` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`. The Lua VM.
@@ -365,6 +365,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("particle", tbl)?;
+    luna.set("particles", tbl)?;
     Ok(())
 }

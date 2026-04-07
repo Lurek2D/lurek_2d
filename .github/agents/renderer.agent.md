@@ -1,4 +1,4 @@
----
+﻿---
 description: "**Renderer** — Own the Luna2D graphics pipeline: wgpu GPU rendering, DrawCommand queue, textures, sprites, camera, color, and shaders. All `src/graphics/` code."
 tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 name: Renderer
@@ -25,14 +25,14 @@ Implement and maintain the GPU rendering pipeline. Own all `src/graphics/` code:
 - `src/graphics/shader.rs` — Software shader effects
 - `src/graphics/mod.rs` — DrawCommand enum, module exports
 - Graphics-related Lua bindings in `src/lua_api/graphics_api.rs` and `src/lua_api/graphics_ext_api.rs`
-- `luna.graphics.draw` — polymorphic dispatch to Image/Canvas/SpriteBatch/Mesh (Phase 3)
-- `luna.graphics.drawEx` — polymorphic dispatch with full affine transform (Phase 3)
-- `luna.graphics.captureScreenshot` — frame capture with ImageData callback (Phase 5)
-- `luna.image.newCompressedData` — load DDS/DXT compressed textures to Lua userdata (Phase 13)
+- `luna.render.draw` — polymorphic dispatch to Image/Canvas/SpriteBatch/Mesh (Phase 3)
+- `luna.render.drawEx` — polymorphic dispatch with full affine transform (Phase 3)
+- `luna.render.captureScreenshot` — frame capture with ImageData callback (Phase 5)
+- `luna.img.newCompressedData` — load DDS/DXT compressed textures to Lua userdata (Phase 13)
 - `CompressedImageData:getDimensions/getWidth/getHeight/getMipmapCount/getFormat` — compressed texture metadata (Phase 13)
 - `StencilMode` struct and `DepthMode` enum in `src/graphics/renderer.rs` (Phase 6)
 - `SharedState::stencil_mode` and `SharedState::depth_mode` fields (Phase 6)
-- `luna.graphics.setStencilMode`, `getStencilMode`, `clearStencil`, `setDepthMode`, `getDepthMode` (Phase 6)
+- `luna.render.setStencilMode`, `getStencilMode`, `clearStencil`, `setDepthMode`, `getDepthMode` (Phase 6)
 - `src/lua_api/font_api.rs` — `luna.font` module: `newRasterizer`, `newTrueTypeRasterizer`, `newBMFontRasterizer`, `newGlyphData`, `GlyphData` userdata (Phase 16)
 
 **Must not become**:
@@ -49,7 +49,7 @@ Implement and maintain the GPU rendering pipeline. Own all `src/graphics/` code:
 Renderer requires from the caller:
 
 - **Feature request** — new DrawCommand variant, blend mode, canvas operation, or GPU effect
-- **Lua API surface** — new or changed `luna.graphics.*` function signatures (from Lua-Designer)
+- **Lua API surface** — new or changed `luna.render.*` function signatures (from Lua-Designer)
 - **Performance constraints** — frame budget context (target: 16.6 ms on integrated GPU at 1080p)
 - **WGSL source** — for custom shader requests, the fragment or vertex shader source to validate
 
@@ -82,7 +82,7 @@ Every Renderer output includes:
 ## DECISION GATES
 
 - **Self-handle**: New DrawCommand variant, texture format support, camera feature
-- **Consult Lua-Designer**: New `luna.graphics.*` function needed
+- **Consult Lua-Designer**: New `luna.render.*` function needed
 - **Consult Optimizer**: Rendering bottleneck or frame budget concern
 - **Escalate → Manager**: Change affects non-graphics modules
 
@@ -90,7 +90,7 @@ Every Renderer output includes:
 
 | Situation                           | Route to       |
 | ----------------------------------- | -------------- |
-| New luna.graphics.* function design | `Lua-Designer` |
+| New luna.render.* function design | `Lua-Designer` |
 | Non-graphics code change            | `Developer`    |
 | Rendering performance issue         | `Optimizer`    |
 | Graphics test coverage              | `Tester`       |

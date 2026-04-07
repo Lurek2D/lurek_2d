@@ -1,4 +1,4 @@
-# Luna2D — Engine Architecture
+﻿# Luna2D — Engine Architecture
 
 > **Source of truth** for the runtime module structure, rendering pipeline, and internal subsystem design.
 > Companion documents: [philosophy.md](philosophy.md) (principles + design assumptions) · [test-framework.md](test-framework.md) (test architecture).
@@ -183,22 +183,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
 | Namespace | API File | Scope |
 |---|---|---|
-| `luna.graphics` | `graphics_api.rs` | Drawing, images, fonts, canvases, meshes, shaders, sprite batches |
+| `luna.render` | `graphics_api.rs` | Drawing, images, fonts, canvases, meshes, shaders, sprite batches |
 | `luna.audio` | `audio_api.rs` | Sound loading, playback, volume, pitch, panning, buses |
 | `luna.keyboard` | `input_api.rs` | Key state, scancodes, text input |
 | `luna.mouse` | `input_api.rs` | Position, buttons, cursor, scroll, grab |
 | `luna.gamepad` | `input_api.rs` | Joystick state, buttons, axes, vibration |
 | `luna.touch` | `input_api.rs` | Touch points, pressure |
-| `luna.timer` | `timer_api.rs` | Delta time, FPS, sleep |
+| `luna.time` | `timer_api.rs` | Delta time, FPS, sleep |
 | `luna.math` | `math_api.rs` | Trig, random, noise, transforms, Bezier, triangulation |
 | `luna.physics` | `physics_api.rs` | Worlds, bodies, shapes, joints, raycasting |
-| `luna.filesystem` | `filesystem_api.rs` | Sandboxed I/O, directories, archive mounting |
+| `luna.fs` | `filesystem_api.rs` | Sandboxed I/O, directories, archive mounting |
 | `luna.window` | `window_api.rs` | Fullscreen, VSync, display info, DPI, clipboard |
-| `luna.event` | `event_api.rs` | Event queue, quit, push/poll/clear |
-| `luna.system` | `system_api.rs` | OS info, processor count, openURL, locales |
-| `luna.particle` | `particle_api.rs` | Particle emitters, configuration, rendering |
+| `luna.signal` | `event_api.rs` | Event queue, quit, push/poll/clear |
+| `luna.platform` | `system_api.rs` | OS info, processor count, openURL, locales |
+| `luna.particles` | `particle_api.rs` | Particle emitters, configuration, rendering |
 | `luna.data` | `data_api.rs` | Binary data, compression, hashing, encoding |
-| `luna.image` | `image_api.rs` | CPU pixel buffers, pixel manipulation |
+| `luna.img` | `image_api.rs` | CPU pixel buffers, pixel manipulation |
 | `luna.sound` | `sound_api.rs` | Decoded PCM audio samples |
 | `luna.thread` | `thread_api.rs` | Worker threads, channels |
 
@@ -469,14 +469,14 @@ Compile-time type safety: a `TextureKey` cannot be passed where a `FontKey` is e
 ### Resource Lifecycle
 
 ```
-Lua: local img = luna.graphics.newImage("player.png")
+Lua: local img = luna.render.newImage("player.png")
   │
   ▼
 Rust: load pixels → insert into textures SlotMap → upload to GPU
       → return LuaImage(TextureKey) as UserData to Lua
   │
   ▼
-Lua: luna.graphics.draw(img, 100, 200)
+Lua: luna.render.draw(img, 100, 200)
   │
   ▼
 Rust: push DrawImage { texture_key, ... } into draw_commands
@@ -570,7 +570,7 @@ Affine transforms managed via a push/pop stack. Each entry stores translation, r
 All major resource types are exposed to Lua as `mlua::UserData` objects, providing an object-oriented API:
 
 ```lua
-local img = luna.graphics.newImage("player.png")
+local img = luna.render.newImage("player.png")
 img:getWidth()
 img:getHeight()
 img:release()
@@ -619,7 +619,7 @@ This provides `type()`, `typeOf()`, and `__tostring` metamethods automatically.
 
 ### Drawable Protocol
 
-Types that implement the Drawable protocol can be passed to `luna.graphics.draw()`:
+Types that implement the Drawable protocol can be passed to `luna.render.draw()`:
 Image, Canvas, SpriteBatch, Mesh, ParticleSystem.
 
 ---
@@ -722,9 +722,9 @@ pub struct ParticleSystem {
 - **Hashing**: MD5/SHA-1/SHA-256/SHA-512 via sha2 + md-5
 - **Encoding**: Base64/hex encoding and decoding
 
-### luna.image — CPU Pixel Manipulation
+### luna.img — CPU Pixel Manipulation
 
-`ImageData`: RGBA8 pixel buffer with `getPixel`, `setPixel`, `mapPixel`, `paste`, `encode("png")`. Can be uploaded to GPU: `luna.graphics.newImage(imageData)`.
+`ImageData`: RGBA8 pixel buffer with `getPixel`, `setPixel`, `mapPixel`, `paste`, `encode("png")`. Can be uploaded to GPU: `luna.render.newImage(imageData)`.
 
 ### luna.sound — Decoded Audio Samples
 
@@ -751,7 +751,7 @@ File reads search mount points in reverse order (last mounted = highest priority
 
 ### FileHandle
 
-`luna.filesystem.newFile(path, mode)` → FileHandle UserData with `read()`, `write()`, `lines()`, `close()`, `isOpen()`, `getMode()`.
+`luna.fs.newFile(path, mode)` → FileHandle UserData with `read()`, `write()`, `lines()`, `close()`, `isOpen()`, `getMode()`.
 
 ---
 

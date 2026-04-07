@@ -1,4 +1,4 @@
-# fx — Feature Analysis
+﻿# fx — Feature Analysis
 
 **Tier**: 2 (Extension)
 **Spec**: `specs/fx.md`
@@ -39,19 +39,19 @@ Two visual effects families in one module:
 
 ## Structural Issues
 
-- **Two families in one module is OK**: PostFx and Overlays are both "visual effects applied to the rendered frame." Combining them makes sense. But the Lua API naming could be clearer — `luna.fx.postfx.*` vs `luna.fx.overlay.*`.
+- **Two families in one module is OK**: PostFx and Overlays are both "visual effects applied to the rendered frame." Combining them makes sense. But the Lua API naming could be clearer — `luna.postfx.postfx.*` vs `luna.postfx.overlay.*`.
 - **Shake duplication**: `fx` module has screen shake via Overlay. `camera` module also has screen shake. Two independent shake systems is confusing. **Resolve: one canonical shake.**
 - **No separate overlay.md or postfx.md specs**: Both are in `fx.md`. This is correct — they're one module. But the system prompt's tier list mentions "overlay" and "postfx" as separate modules.
 - **CPU-only data**: Overlay subsystems are pure data. Rendering is done elsewhere. This is architecturally correct.
 
 ## Suggestions
 
-1. **Consolidate shake**: Remove camera shake. Keep shake in `fx` module only (or vice versa). One canonical `luna.fx.shake(intensity, duration)`.
-2. **Add effect presets**: `luna.fx.applyPreset("retro")` — pre-configured effect stacks. Reduces boilerplate for common styles.
-3. **Add palette swap**: `luna.fx.postfx.addPaletteSwap(paletteImage)` — common in retro and narrative games (time of day, flashback).
+1. **Consolidate shake**: Remove camera shake. Keep shake in `fx` module only (or vice versa). One canonical `luna.postfx.shake(intensity, duration)`.
+2. **Add effect presets**: `luna.postfx.applyPreset("retro")` — pre-configured effect stacks. Reduces boilerplate for common styles.
+3. **Add palette swap**: `luna.postfx.postfx.addPaletteSwap(paletteImage)` — common in retro and narrative games (time of day, flashback).
 4. **Bridge fx ↔ light**: Connect ambient time-of-day overlay with light module's LightWorld ambient color. Currently independent.
-5. **Add transition effects**: `luna.fx.transition.wipe(duration, angle)`, `luna.fx.transition.iris(x, y, duration)` — PostFx-based scene transitions.
-6. **Add shader error feedback**: `luna.fx.postfx.addCustom(wgsl, onError)` — callback for shader compilation errors.
+5. **Add transition effects**: `luna.postfx.transition.wipe(duration, angle)`, `luna.postfx.transition.iris(x, y, duration)` — PostFx-based scene transitions.
+6. **Add shader error feedback**: `luna.postfx.postfx.addCustom(wgsl, onError)` — callback for shader compilation errors.
 7. **Update tier list**: System prompt should list `fx` not "overlay" and "postfx" as separate modules.
 
 ## Competitor Comparison

@@ -1,4 +1,4 @@
-//! Integration tests for the Luna2D engine core.
+﻿//! Integration tests for the Luna2D engine core.
 
 use luna2d::lua_api::system_api;
 
@@ -160,7 +160,7 @@ fn test_lua_get_arch() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local arch = luna.system.getArch()
+        local arch = luna.platform.getArch()
         assert(type(arch) == "string")
         assert(#arch > 0)
         "#,
@@ -175,7 +175,7 @@ fn test_lua_get_env_existing() {
     lua.load(
         r#"
         -- PATH should exist on all platforms
-        local path = luna.system.getEnv("PATH")
+        local path = luna.platform.getEnv("PATH")
         assert(path ~= nil)
         assert(type(path) == "string")
         "#,
@@ -189,7 +189,7 @@ fn test_lua_get_env_missing() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local val = luna.system.getEnv("LUNA2D_NONEXISTENT_VAR_12345")
+        local val = luna.platform.getEnv("LUNA2D_NONEXISTENT_VAR_12345")
         assert(val == nil)
         "#,
     )
@@ -202,7 +202,7 @@ fn test_lua_get_args() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local args = luna.system.getArgs()
+        local args = luna.platform.getArgs()
         assert(type(args) == "table")
         "#,
     )
@@ -215,7 +215,7 @@ fn test_lua_parse_args_with_table() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local result = luna.system.parseArgs({"--verbose", "--output=report.txt", "-f", "input.lua"})
+        local result = luna.platform.parseArgs({"--verbose", "--output=report.txt", "-f", "input.lua"})
         assert(result.flags.verbose == true)
         assert(result.flags.f == true)
         assert(result.options.output == "report.txt")
@@ -231,7 +231,7 @@ fn test_lua_parse_args_end_of_options() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local result = luna.system.parseArgs({"--debug", "--", "--not-a-flag"})
+        local result = luna.platform.parseArgs({"--debug", "--", "--not-a-flag"})
         assert(result.flags.debug == true)
         assert(result.positional[1] == "--not-a-flag")
         "#,
@@ -245,11 +245,11 @@ fn test_lua_run_batch_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local results = luna.system.runBatch({
+        local results = luna.platform.runBatch({
             add = function() return 1 + 1 end,
             mul = function() return 2 * 3 end,
         })
-        local passed, failed, skipped = luna.system.getBatchResults(results)
+        local passed, failed, skipped = luna.platform.getBatchResults(results)
         assert(passed == 2)
         assert(failed == 0)
         assert(skipped == 0)
@@ -264,11 +264,11 @@ fn test_lua_run_batch_with_error() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
-        local results = luna.system.runBatch({
+        local results = luna.platform.runBatch({
             good = function() return true end,
             bad = function() error("fail") end,
         })
-        local passed, failed, skipped = luna.system.getBatchResults(results)
+        local passed, failed, skipped = luna.platform.getBatchResults(results)
         assert(passed + failed == 2)
         assert(failed >= 1)
         "#,

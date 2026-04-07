@@ -13,7 +13,7 @@ use crate::engine::resource_keys::{
 use crate::graphics::image_effect::ShaderPassDescriptor;
 use crate::graphics::mesh::Mesh;
 
-/// Stencil comparison mode for `luna.graphics.setStencilTest`.
+/// Stencil comparison mode for `luna.render.setStencilTest`.
 ///
 /// # Variants
 /// - `Equal` — Equal variant.
@@ -44,7 +44,7 @@ pub enum CompareMode {
     Never,
 }
 
-/// Stencil write action for `luna.graphics.stencil` and `luna.graphics.setStencilMode`.
+/// Stencil write action for `luna.render.stencil` and `luna.render.setStencilMode`.
 ///
 /// # Variants
 /// - `Keep` — Keep variant.
@@ -106,7 +106,7 @@ impl Default for StencilMode {
     }
 }
 
-/// Depth test comparison mode for `luna.graphics.setDepthMode`.
+/// Depth test comparison mode for `luna.render.setDepthMode`.
 ///
 /// # Variants
 /// - `Always` — Always variant.
@@ -638,7 +638,7 @@ pub struct ParticleInstance {
     pub quad_tex_dims: Option<(f32, f32)>,
 }
 
-/// Type discriminator for resources that can be passed to luna.graphics.draw.
+/// Type discriminator for resources that can be passed to luna.render.draw.
 ///
 /// Used to dispatch the polymorphic draw(drawable, ...) Lua API to the
 /// correct DrawCommand variant based on resource type.

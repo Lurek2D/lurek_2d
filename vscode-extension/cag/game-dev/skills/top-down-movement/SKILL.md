@@ -1,4 +1,4 @@
-# Top-Down Movement
+﻿# Top-Down Movement
 
 8-directional, grid-locked RPG, and analog movement for overhead perspective games.
 
@@ -81,7 +81,7 @@ end
 function luna.draw()
     local px = (player.gx + (player.tx and (player.tx - player.gx) * player.progress or 0)) * TILE_SIZE
     local py = (player.gy + (player.ty and (player.ty - player.gy) * player.progress or 0)) * TILE_SIZE
-    luna.graphics.rectangle("fill", px, py, TILE_SIZE, TILE_SIZE)
+    luna.render.rectangle("fill", px, py, TILE_SIZE, TILE_SIZE)
 end
 ```
 

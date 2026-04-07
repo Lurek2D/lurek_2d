@@ -1,10 +1,10 @@
-# `event` — Agent Reference
+﻿# `event` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.event`                                         |
+| **Lua API**    | `luna.signal`                                         |
 | **Source**     | `src/event/`                                         |
 | **Rust Tests** | `tests/rust/unit/event_tests.rs`                     |
 | **Lua Tests**  | `tests/lua/unit/test_event.lua`                      |

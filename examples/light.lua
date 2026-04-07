@@ -1,4 +1,4 @@
--- examples/light.lua
+﻿-- examples/light.lua
 -- luna.light — 2D lighting, shadow occluders, and ambient control.
 -- All luna.light API methods demonstrated with code and comments.
 
@@ -175,7 +175,7 @@ end
 
 function luna.draw()
     -- draw scene (lighting composited automatically)
-    luna.graphics.setColor(0.6, 0.4, 0.2)
-    luna.graphics.rectangle("fill", 200, 200, 80, 80)
+    luna.render.setColor(0.6, 0.4, 0.2)
+    luna.render.rectangle("fill", 200, 200, 80, 80)
 end
 ]]

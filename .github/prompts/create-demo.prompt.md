@@ -1,4 +1,4 @@
----
+﻿---
 description: "Create one or more new Luna2D demo projects in demos/. Generates conf.lua, main.lua, README.md, and screen.png for each demo. Use when: scaffolding demos from genre descriptions; creating batch demos from a list; adding demos that use library/ modules. Inputs: genre, count, specific luna.* features, library modules, resolution, complexity."
 name: "Create Demo"
 argument-hint: "genre(s), count, features, library modules, resolution, complexity"
@@ -74,7 +74,7 @@ Then for **all demos in this run**, update:
 - Library modules: add `require()` calls immediately after the header comment block
 - Implement at least the core mechanic loop and one win/fail/progress state
 - Controls: `escape` always quits, plus at least 2 meaningful interactions
-- No `print()` statements — use `luna.graphics.print()` for on-screen text
+- No `print()` statements — use `luna.render.print()` for on-screen text
 
 ### 5. Write `README.md`
 - Template from `demo-creation` skill: 4 required sections + optional `## Notes`
@@ -104,7 +104,7 @@ Each demo is complete when:
 
 - [ ] `cargo run -- demos/<name>` runs without errors
 - [ ] All 4 callbacks are defined in `main.lua`
-- [ ] `escape` quits via `luna.event.quit()`
+- [ ] `escape` quits via `luna.signal.quit()`
 - [ ] No undeclared globals, no bare `print()` calls
 - [ ] `screen.png` exists and is non-empty
 - [ ] `demos/README.md` table row and detail block both added

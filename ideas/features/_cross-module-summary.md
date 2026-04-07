@@ -1,4 +1,4 @@
-# Luna2D — Cross-Module Feature Analysis Summary
+﻿# Luna2D — Cross-Module Feature Analysis Summary
 
 This file aggregates findings from all 38 module-level feature analyses in `ideas/features/`.
 It provides a high-level view of structural issues, merge/split candidates, feature gaps, and priorities.
@@ -79,7 +79,7 @@ It provides a high-level view of structural issues, merge/split candidates, feat
 **Rationale**: `pathfinding` operates on graphs and imports `graph`. They share data structures. `luna.graph.*` + `luna.pathfinding.*` → `luna.graph.*` + `luna.graph.findPath()`. However, pathfinding is complex enough (A*, HPA*, flow fields) to justify its own namespace. **Verdict**: Keep separate but document the relationship clearly.
 
 ### 3. `spine` + `animation` → `animation` (with skeleton sub-system)
-**Rationale**: Both deal with animation but through different paradigms. A unified animation module with frame-based clips AND skeletal bones would be more discoverable. `luna.animation.newClip()` + `luna.animation.newSkeleton()`. The spine module is thin (11 functions) and would benefit from sharing timeline/keyframe infrastructure.
+**Rationale**: Both deal with animation but through different paradigms. A unified animation module with frame-based clips AND skeletal bones would be more discoverable. `luna.tween.newClip()` + `luna.tween.newSkeleton()`. The spine module is thin (11 functions) and would benefit from sharing timeline/keyframe infrastructure.
 **Impact**: Medium — requires API restructuring.
 
 ### 4. `sound` → already part of `audio`

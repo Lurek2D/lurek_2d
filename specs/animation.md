@@ -1,10 +1,10 @@
-# `animation` — Agent Reference
+﻿# `animation` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.animation`                                     |
+| **Lua API**    | `luna.tween`                                     |
 | **Source**     | `src/animation/`                                     |
 | **Rust Tests** | `tests/rust/unit/animation_tests.rs`                 |
 | **Lua Tests**  | `tests/lua/unit/test_animation.lua`                  |
@@ -18,14 +18,14 @@ The module is built around four data types working together: `AnimFrame` stores 
 
 The typical workflow is: (1) create an `Animation`, (2) add frames individually or by slicing a sprite-sheet grid, (3) register named clips referencing those frames, (4) call `play("clipName")` to start, (5) call `update(dt)` each tick, (6) read `current_quad()` for the source rectangle to draw. Frame timing uses per-frame `duration` if set (> 0.0), otherwise falls back to `1.0 / clip.fps`. The speed multiplier scales delta time globally.
 
-Scripts interact via `luna.animation.*` — the Lua API wraps `Animation` as a `LuaAnimation` UserData with 20 methods plus a constructor `luna.animation.new()`. There is no resource key or SlotMap — each `LuaAnimation` owns its `Animation` value directly.
+Scripts interact via `luna.tween.*` — the Lua API wraps `Animation` as a `LuaAnimation` UserData with 20 methods plus a constructor `luna.tween.new()`. There is no resource key or SlotMap — each `LuaAnimation` owns its `Animation` value directly.
 
-**Scope boundary**: This module contains no GPU code. It produces source rectangles (`Rect`) that the game script passes to `luna.graphics.draw()` or `luna.graphics.drawq()`. Sound or physics triggered by animation events must be wired by user scripts. The module does not depend on `graphics`, `audio`, `physics`, or any other Tier 1 module.
+**Scope boundary**: This module contains no GPU code. It produces source rectangles (`Rect`) that the game script passes to `luna.render.draw()` or `luna.render.drawq()`. Sound or physics triggered by animation events must be wired by user scripts. The module does not depend on `graphics`, `audio`, `physics`, or any other Tier 1 module.
 
 ## Architecture
 
 ```
-luna.animation.new()
+luna.tween.new()
         │
         ▼
 ┌─────────────────────────────────────────────────────────┐
@@ -141,7 +141,7 @@ Public methods:
 
 ## Lua API
 
-Exposed under `luna.animation.*` by `src/lua_api/animation_api.rs`.
+Exposed under `luna.tween.*` by `src/lua_api/animation_api.rs`.
 
 The Lua API provides a single constructor on the module table and 20 methods on the returned `Animation` UserData object. The `LuaAnimation` wrapper owns its `Animation` directly (no SlotMap key).
 
@@ -149,7 +149,7 @@ The Lua API provides a single constructor on the module table and 20 methods on 
 
 | Function | Returns | Description |
 |----------|---------|-------------|
-| `luna.animation.new()` | `Animation` | Creates a new, empty Animation controller. |
+| `luna.tween.new()` | `Animation` | Creates a new, empty Animation controller. |
 
 ### Animation UserData methods
 
@@ -200,7 +200,7 @@ The Lua API provides a single constructor on the module table and 20 methods on 
 local anim
 
 function luna.load()
-    anim = luna.animation.new()
+    anim = luna.tween.new()
 
     -- Slice a 128×32 sprite-sheet into 4 cells of 32×32
     anim:addClipFromGrid("walk", 128, 32, 32, 32, 0, 4, 10, true)
@@ -233,8 +233,8 @@ end
 function luna.draw()
     local q = anim:getQuad()
     if q then
-        -- Use the source quad with luna.graphics.drawq()
-        -- luna.graphics.drawq(spriteSheet, q.x, q.y, q.w, q.h, drawX, drawY)
+        -- Use the source quad with luna.render.drawq()
+        -- luna.render.drawq(spriteSheet, q.x, q.y, q.w, q.h, drawX, drawY)
     end
 end
 ```
@@ -255,7 +255,7 @@ end
 | `math`     | Imports from | Uses `Rect` for frame source quads.                                  |
 | `engine`   | Imports from | Uses `log_messages` for structured debug/warn log entries.            |
 | `lua_api`  | Imported by  | `animation_api.rs` wraps `Animation` as `LuaAnimation` UserData.     |
-| `graphics` | Related      | Not a code dependency. Scripts use animation quads with `luna.graphics.draw()` / `drawq()`. |
+| `graphics` | Related      | Not a code dependency. Scripts use animation quads with `luna.render.draw()` / `drawq()`. |
 
 **Similar modules**: `animation` is the only sprite animation module. It is distinct from `particle` (which handles emitter-based particle effects, not frame-based sprite animation) and from `graphics::sprite` (which stores sprite draw state but has no timeline or clip logic).
 

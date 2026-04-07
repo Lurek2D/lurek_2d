@@ -537,7 +537,7 @@ impl LunaApp {
 
         let state = Rc::new(RefCell::new(shared_state));
 
-        // Load the embedded OpenSans default font before Lua starts — all luna.graphics.print()
+        // Load the embedded OpenSans default font before Lua starts — all luna.render.print()
         // calls without an active font will use this instead of the bitmap fallback.
         state.borrow_mut().load_default_font();
 
@@ -1960,7 +1960,7 @@ impl ApplicationHandler for LunaApp {
                     return;
                 }
 
-                // Check quit flag from Lua (e.g., luna.event.quit()).
+                // Check quit flag from Lua (e.g., luna.signal.quit()).
                 if let Some(state) = &self.state {
                     if state.borrow().quit_requested {
                         event_loop.exit();
@@ -2527,7 +2527,7 @@ mod tests {
 
         let lua = app.lua.as_ref().expect("Lua VM should be initialized");
         let reported_identity: String = lua
-            .load("return luna.filesystem.getIdentity()")
+            .load("return luna.fs.getIdentity()")
             .eval()
             .expect("filesystem identity should be readable from Lua");
         assert_eq!(reported_identity, "phase01-save");

@@ -1,4 +1,4 @@
-# image — Feature Analysis
+﻿# image — Feature Analysis
 
 **Tier**: 1 (Core)
 **Spec**: `specs/image.md`
@@ -43,7 +43,7 @@ CPU-side image manipulation: load, create, read/write pixels, format conversion,
 3. **Add blit/composite**: `image:blit(source, x, y, blendMode?)` — draw one ImageData onto another with optional blending.
 4. **Add sub-image extraction**: `image:getSubImage(x, y, w, h)` — extract region as new ImageData.
 5. **Add grayscale**: `image:toGrayscale()` — collapse to luminance.
-6. **Add GPU readback**: `luna.image.fromScreen()` or `canvas:toImageData()` — capture renderer output into CPU ImageData.
+6. **Add GPU readback**: `luna.img.fromScreen()` or `canvas:toImageData()` — capture renderer output into CPU ImageData.
 
 ## Competitor Comparison
 

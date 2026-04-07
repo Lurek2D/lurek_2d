@@ -1,4 +1,4 @@
--- examples/network.lua
+﻿-- examples/network.lua
 -- UDP networking via ENet for multiplayer games
 -- API: luna.network
 --
@@ -209,7 +209,7 @@ local function pumpServer()
     while ev do
         if ev.type == "connect" then
             -- Send welcome message
-            net_server:send(ev.peer_id, 0, "welcome:servertime=" .. luna.timer.getTime())
+            net_server:send(ev.peer_id, 0, "welcome:servertime=" .. luna.time.getTime())
         elseif ev.type == "receive" then
             -- Echo back (simple test)
             net_server:broadcast(0, "echo:" .. ev.data)

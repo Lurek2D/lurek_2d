@@ -1,4 +1,4 @@
-# `input` — Agent Reference
+﻿# `input` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -256,7 +256,7 @@ end
 
 function luna.keypressed(key, scancode, isrepeat)
     if key == "escape" then
-        luna.event.push("quit")
+        luna.signal.push("quit")
     end
     if key == "f" then
         luna.mouse.setRelativeMode(not luna.mouse.getRelativeMode())

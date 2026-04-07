@@ -1,4 +1,4 @@
-# luna.scripting — Visual Block-Based Scripting
+﻿# luna.scripting — Visual Block-Based Scripting
 
 > **Lua namespace:** `luna.scripting`
 > **C++ module:** `src/modules/scripting/`
@@ -352,11 +352,11 @@ print(code)
 
 -- Serialize for saving
 local json = canvas:serialize()
-luna.filesystem.write("my_script.json", json)
+luna.fs.write("my_script.json", json)
 
 -- Load later
 local canvas2 = luna.scripting.newCanvas()
-canvas2:deserialize(luna.filesystem.read("my_script.json"))
+canvas2:deserialize(luna.fs.read("my_script.json"))
 ```
 
 ---

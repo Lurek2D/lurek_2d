@@ -1,26 +1,26 @@
--- examples/timer.lua
--- Luna2D luna.timer API Reference
+﻿-- examples/timer.lua
+-- Luna2D luna.time API Reference
 -- This file is documentation code, not a runnable game.
--- Every luna.timer function is demonstrated with inline comments.
+-- Every luna.time function is demonstrated with inline comments.
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Frame Timing (call from luna.update / luna.draw)
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Seconds since last frame (kept below 0.1 to avoid physics tunnelling)
-local dt = luna.timer.getDelta()
+local dt = luna.time.getDelta()
 
 -- Total seconds elapsed since the game started
-local elapsed = luna.timer.getTime()
+local elapsed = luna.time.getTime()
 
 -- Current frames-per-second (averaged over recent frames)
-local fps = luna.timer.getFPS()
+local fps = luna.time.getFPS()
 
 -- Smoothed mean frame delta (less noisy than getDelta() for display)
-local avg_dt = luna.timer.getAverageDelta()
+local avg_dt = luna.time.getAverageDelta()
 
 -- Block the current thread for a fixed duration (use sparingly — pauses the game loop)
--- luna.timer.sleep(0.001)  -- sleep 1 ms
+-- luna.time.sleep(0.001)  -- sleep 1 ms
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Scheduler
@@ -28,7 +28,7 @@ local avg_dt = luna.timer.getAverageDelta()
 -- Call scheduler:update(dt) each frame to drive it.
 -- ─────────────────────────────────────────────────────────────────────────────
 
-local sched = luna.timer.newScheduler()
+local sched = luna.time.newScheduler()
 
 -- ── One-shot callbacks ────────────────────────────────────────────────────────
 

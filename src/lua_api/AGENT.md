@@ -1,4 +1,4 @@
-# `lua_api` — Agent Reference
+﻿# `lua_api` — Agent Reference
 
 | Property | Value |
 |----------|-------|
@@ -23,19 +23,19 @@ translation layer — business logic stays in the domain modules below.
 |------|---------|
 | `mod.rs` | VM creation, StdLib selection, global nulling, module registration |
 | `userdata.rs` | `LunaType` trait, shared UserData patterns |
-| `graphics_api/` | `luna.graphics.*` — drawing, images, fonts, canvases, shaders |
+| `graphics_api/` | `luna.render.*` — drawing, images, fonts, canvases, shaders |
 | `audio_api.rs` | `luna.audio.*` — sources, playback, volume, buses |
 | `input_api.rs` | `luna.input.*`, `luna.keyboard.*`, `luna.mouse.*`, `luna.gamepad.*`, `luna.touch.*` |
-| `timer_api.rs` | `luna.timer.*` — delta time, FPS, sleep (Gold standard for docstring format) |
+| `timer_api.rs` | `luna.time.*` — delta time, FPS, sleep (Gold standard for docstring format) |
 | `math_api.rs` | `luna.math.*` — trig, random, noise, transforms, Bezier |
 | `physics_api.rs` | `luna.physics.*` — worlds, bodies, joints, raycasting |
-| `filesystem_api.rs` | `luna.filesystem.*` — sandboxed I/O, file handles, archives |
+| `filesystem_api.rs` | `luna.fs.*` — sandboxed I/O, file handles, archives |
 | `window_api.rs` | `luna.window.*` — fullscreen, VSync, display info, clipboard |
-| `event_api.rs` | `luna.event.*` — event queue, quit |
-| `system_api.rs` | `luna.system.*` — OS info, openURL, locales |
-| `particle_api.rs` | `luna.particle.*` — emitters, config, rendering |
+| `event_api.rs` | `luna.signal.*` — event queue, quit |
+| `system_api.rs` | `luna.platform.*` — OS info, openURL, locales |
+| `particle_api.rs` | `luna.particles.*` — emitters, config, rendering |
 | `data_api.rs` | `luna.data.*` — binary data, compression, hashing, encoding |
-| `image_api.rs` | `luna.image.*` — CPU pixel buffers, pixel manipulation |
+| `image_api.rs` | `luna.img.*` — CPU pixel buffers, pixel manipulation |
 | `sound_api.rs` | `luna.sound.*` — decoded PCM audio samples |
 | `thread_api/` | `luna.thread.*` — worker threads, channels |
 | `terminal_api.rs` | `luna.terminal.*` — in-game developer terminal |

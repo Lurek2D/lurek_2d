@@ -16,7 +16,7 @@
 //! - [`PerformanceConfig`] — target frame-rate cap (`fps_cap`).
 //!
 //! The `identity` field sets the name of the per-user save directory returned by
-//! `luna.filesystem.getSaveDirectory()`.  If unset, the engine uses the game directory
+//! `luna.fs.getSaveDirectory()`.  If unset, the engine uses the game directory
 //! name as a fallback.
 //!
 //! # Example `conf.lua`
@@ -147,14 +147,14 @@ pub struct WindowConfig {
 /// # Fields
 /// - `audio` — rodio audio subsystem (`luna.audio`).
 /// - `physics` — rapier2d physics world (`luna.physics`).
-/// - `graphics` — GPU render pipeline (`luna.graphics`, `luna.font`, `luna.sprite`).
+/// - `graphics` — GPU render pipeline (`luna.render`, `luna.font`, `luna.sprite`).
 /// - `input` — keyboard / mouse / gamepad input (`luna.input`).
-/// - `timer` — frame timer and scheduled callbacks (`luna.timer`).
-/// - `filesystem` — sandboxed game filesystem (`luna.filesystem`).
+/// - `timer` — frame timer and scheduled callbacks (`luna.time`).
+/// - `filesystem` — sandboxed game filesystem (`luna.fs`).
 /// - `window` — window state queries (`luna.window`).
-/// - `particle` — 2D particle emitters (`luna.particle`).
-/// - `image` — CPU-side image manipulation (`luna.image`).
-/// - `gui` — retained-mode GUI widgets (`luna.gui`).
+/// - `particle` — 2D particle emitters (`luna.particles`).
+/// - `image` — CPU-side image manipulation (`luna.img`).
+/// - `gui` — retained-mode GUI widgets (`luna.ui`).
 /// - `overlay` — fullscreen overlay and post-processing effects (`luna.overlay`, `luna.postfx`).
 /// - `tilemap` — tile maps, tile sets, and map generation (`luna.tilemap`).
 /// - `scene` — scene stack and transition management (`luna.scene`).
@@ -164,12 +164,12 @@ pub struct WindowConfig {
 /// - `pathfinding` — A★ and flow-field navigation grids (`luna.pathfinding`).
 /// - `thread` — background Rust threads and `Channel` objects (`luna.thread`).
 /// - `graph` — directed graphs and flow simulation (`luna.graph`).
-/// - `data` — binary data helpers, encoding/compression, and serial (`luna.data`, `luna.serial`).
-/// - `compute` — dense numerical arrays and `DataFrame` (`luna.compute`, `luna.dataframe`).
+/// - `data` — binary data helpers, encoding/compression, and serial (`luna.data`, `luna.codec`).
+/// - `compute` — dense numerical arrays and `DataFrame` (`luna.gpu`, `luna.dataframe`).
 /// - `minimap` — minimap extraction and FOV masking (`luna.minimap`).
 /// - `modding` — mod discovery and load ordering (`luna.modding`).
 /// - `pipeline` — data transformation pipelines and pattern helpers (`luna.pipeline`, `luna.patterns`).
-/// - `system` — system information queries (`luna.system`).
+/// - `system` — system information queries (`luna.platform`).
 /// - `localization` — string localisation tables (`luna.localization`).
 /// - `debug` — debug bridge, doc server, and automation helpers (`luna.debug`, `luna.debugbridge`, `luna.docs`, `luna.automation`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -201,7 +201,7 @@ pub struct ModulesConfig {
     pub system: bool,
     pub localization: bool,
     pub debug: bool,
-    /// Enable luna.animation sprite animation API.
+    /// Enable luna.tween sprite animation API.
     pub animation: bool,
     /// Enable luna.camera Camera2D API.
     pub camera: bool,

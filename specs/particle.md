@@ -1,10 +1,10 @@
-# `particle` — Agent Reference
+﻿# `particle` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 2 — Reusable Engine Extensions                  |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.particle`                                      |
+| **Lua API**    | `luna.particles`                                      |
 | **Source**      | `src/particle/`                                      |
 | **Rust Tests** | `tests/rust/unit/particle_tests.rs`                  |
 | **Lua Tests**  | `tests/lua/unit/test_particle.lua`                   |
@@ -23,7 +23,7 @@ CPU simulation was chosen over GPU-side simulation because 2D game particle coun
 ## Architecture
 
 ```
-luna.particle.newSystem(config)
+luna.particles.newSystem(config)
        |
        v
 +------------------------------------------------------+
@@ -72,7 +72,7 @@ luna.particle.newSystem(config)
 |     +-- ParticleInstance per particle                 |
 +------------------------------------------------------+
 
-luna.particle.newTrail(lifetime, start_width)
+luna.particles.newTrail(lifetime, start_width)
        |
        v
 +------------------------------------------------------+
@@ -208,14 +208,14 @@ Geometric shape for untextured particle rendering. 5 variants: `Square` (axis-al
 
 ## Lua API
 
-Registered by `src/lua_api/particle_api.rs` under `luna.particle`. The module exposes two factory functions on the `luna.particle` table and UserData methods on the returned objects.
+Registered by `src/lua_api/particle_api.rs` under `luna.particles`. The module exposes two factory functions on the `luna.particles` table and UserData methods on the returned objects.
 
 ### Module Functions
 
 | Function | Description |
 |----------|-------------|
-| `luna.particle.newSystem(config?)` | Create a new `ParticleSystem`. Accepts an optional config table with camelCase keys (e.g. `maxParticles`, `emissionRate`, `lifetimeMin`). Returns a ParticleSystem userdata. |
-| `luna.particle.newTrail(lifetime, start_width)` | Create a new `Trail` ribbon effect with the given point lifetime (seconds) and head width (pixels). Returns a Trail userdata. |
+| `luna.particles.newSystem(config?)` | Create a new `ParticleSystem`. Accepts an optional config table with camelCase keys (e.g. `maxParticles`, `emissionRate`, `lifetimeMin`). Returns a ParticleSystem userdata. |
+| `luna.particles.newTrail(lifetime, start_width)` | Create a new `Trail` ribbon effect with the given point lifetime (seconds) and head width (pixels). Returns a Trail userdata. |
 
 ### ParticleSystem Methods
 
@@ -301,7 +301,7 @@ The config table passed to `newSystem()` supports these camelCase keys (all opti
 ```lua
 -- Fire emitter with gravity and alpha fade
 function luna.load()
-    fire = luna.particle.newSystem({
+    fire = luna.particles.newSystem({
         maxParticles = 500,
         emissionRate = 80,
         lifetimeMin  = 0.5,
@@ -327,14 +327,14 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.draw(fire, 0, 0)
+    luna.render.draw(fire, 0, 0)
 end
 ```
 
 ```lua
 -- Trail ribbon following the mouse
 function luna.load()
-    ribbon = luna.particle.newTrail(0.8, 12)
+    ribbon = luna.particles.newTrail(0.8, 12)
     ribbon:setHeadColor(0.2, 0.6, 1.0, 1.0)
     ribbon:setTailColor(0.2, 0.6, 1.0, 0.0)
 end
@@ -363,7 +363,7 @@ end
 | `engine`    | Imports from  | Uses `SharedState`, `ParticleKey` (SlotMap key)    |
 | `math`      | Imports from  | `Color` type for trail head/tail colors            |
 | `graphics`  | Related       | Pushes `DrawCommand::DrawParticleSystem` into draw queue; `ParticleRenderShape` mirrors `ParticleShape` |
-| `lua_api`   | Imported by   | `src/lua_api/particle_api.rs` registers `luna.particle.*` with `LuaParticleSystem` and `LuaTrail` UserData |
+| `lua_api`   | Imported by   | `src/lua_api/particle_api.rs` registers `luna.particles.*` with `LuaParticleSystem` and `LuaTrail` UserData |
 | `compute`   | Alternative   | GPU compute path recommended for >10K particles; particle module is CPU-only |
 | `graphics::renderer` | Bridge | `ParticleInstance` and `ParticleRenderShape` are the GPU-side data types consumed by the renderer |
 

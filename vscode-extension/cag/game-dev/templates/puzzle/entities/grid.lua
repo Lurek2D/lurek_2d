@@ -1,4 +1,4 @@
-local Grid = {}
+﻿local Grid = {}
 Grid.__index = Grid
 
 function Grid.new(cols, rows, cellSize)
@@ -42,14 +42,14 @@ function Grid:draw()
             local x = self.ox + (c - 1) * self.cellSize
             local y = self.oy + (r - 1) * self.cellSize
             if self.cells[r][c] == 1 then
-                luna.graphics.setColor(0.3, 0.7, 0.9, 1)
+                luna.render.setColor(0.3, 0.7, 0.9, 1)
             else
-                luna.graphics.setColor(0.2, 0.2, 0.3, 1)
+                luna.render.setColor(0.2, 0.2, 0.3, 1)
             end
-            luna.graphics.rectangle("fill", x + 1, y + 1, self.cellSize - 2, self.cellSize - 2)
+            luna.render.rectangle("fill", x + 1, y + 1, self.cellSize - 2, self.cellSize - 2)
         end
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 
 return Grid

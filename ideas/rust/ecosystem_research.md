@@ -1,4 +1,4 @@
-# Luna2D Ecosystem Research — Are We Game Yet?
+﻿# Luna2D Ecosystem Research — Are We Game Yet?
 
 **Source**: [arewegameyet.rs/#ecosystem](https://arewegameyet.rs/#ecosystem)
 **Research date**: 2026-03-29
@@ -131,7 +131,7 @@ Luna2D is a software-rendered (tiny-skia → Pixmap → u32 buffer → minifb) 2
 
 6. **Sprite batching** — Currently each `DrawImage` is an independent skia call. For performance with hundreds of sprites, caching a sprite sheet into a single Pixmap and UV-slicing would help. This is a custom implementation; no crate does it for the tiny-skia model.
 
-7. **Software pixel shaders** — Since we control the pixel buffer, Lua could define a per-pixel callback invoked on a region (like a `luna.graphics.effect(fn, x, y, w, h)`). This would be a Luna2D-specific innovation not available in hardware-accelerated engines.
+7. **Software pixel shaders** — Since we control the pixel buffer, Lua could define a per-pixel callback invoked on a region (like a `luna.render.effect(fn, x, y, w, h)`). This would be a Luna2D-specific innovation not available in hardware-accelerated engines.
 
 **Verdict on GPU upgrade:** Migrating to `wgpu` or `pixels` would deliver major framerate improvements (hardware acceleration vs. CPU painting) but would break the architecture fundamentally. This is a future major-version concern, not an incremental improvement. The current tiny-skia pipeline is coherent, testable, and cross-platform without native dependencies beyond a window.
 
@@ -361,9 +361,9 @@ Luna2D has a hand-rolled `Vec2`, `Mat3`, and `Rect`. These are minimal but corre
 
 Luna2D has no animation system. The most impactful additions are:
 
-1. **Sprite sheet animation** — Slice a texture into frames (`frames: Vec<Rect>`), advance frame index by `fps * dt`, draw current frame. This is ~50 lines of Lua or Rust, no crate needed. Implement as a `Sprite` extension or a `luna.animation.newAnim(image, frames, fps)` API.
+1. **Sprite sheet animation** — Slice a texture into frames (`frames: Vec<Rect>`), advance frame index by `fps * dt`, draw current frame. This is ~50 lines of Lua or Rust, no crate needed. Implement as a `Sprite` extension or a `luna.tween.newAnim(image, frames, fps)` API.
 
-2. **Tweening** — Smoothly animate any numeric value over time: `luna.tween.to(target_table, {x=200, y=300}, 1.5, "easeInOut")`. The `keyframe` crate provides easing curves. A tween manager can be implemented entirely in Lua using `luna.timer.getDelta()`.
+2. **Tweening** — Smoothly animate any numeric value over time: `luna.tween.to(target_table, {x=200, y=300}, 1.5, "easeInOut")`. The `keyframe` crate provides easing curves. A tween manager can be implemented entirely in Lua using `luna.time.getDelta()`.
 
 3. **Spring animations** — `natura`'s spring model (critically damped spring) creates natural-feeling motion without keyframe data. Very useful for UI bouncing, camera snapping. Pure Rust, ~60 lines.
 
@@ -384,7 +384,7 @@ Luna2D has no animation system. The most impactful additions are:
 
 **Luna2D current state:**
 
-Luna2D uses a hardcoded embedded bitmap font for `luna.graphics.print()`. It renders ASCII characters only, at a fixed size, with no font choices. This is functional but limiting.
+Luna2D uses a hardcoded embedded bitmap font for `luna.render.print()`. It renders ASCII characters only, at a fixed size, with no font choices. This is functional but limiting.
 
 **What to implement:**
 
@@ -393,9 +393,9 @@ Luna2D uses a hardcoded embedded bitmap font for `luna.graphics.print()`. It ren
    - Implement `FontAtlas` struct: loads font, rasterizes all printable ASCII at a given `px_size` into a tiny-skia `Pixmap` atlas
    - Store atlas as a `Texture` in the renderer
    - `DrawCommand::Print` variant gains a `font_id: u32` and `size: f32` field
-   - Expose via `luna.graphics.newFont(path, size)` → handle, `luna.graphics.print(text, x, y, font)`
+   - Expose via `luna.render.newFont(path, size)` → handle, `luna.render.print(text, x, y, font)`
 
-2. **Glyph metrics** — After adding fontdue, expose `luna.graphics.getTextWidth(text, font)` and `luna.graphics.getTextHeight(font)` for layout calculations.
+2. **Glyph metrics** — After adding fontdue, expose `luna.render.getTextWidth(text, font)` and `luna.render.getTextHeight(font)` for layout calculations.
 
 3. **Bitmap font parser (.fnt)** — `bmfont` crate parses Angelcode .fnt atlas format. This allows designers to use tools like Hiero or Littera to generate custom pixel-art fonts, which get loaded at runtime. Complements TTF for retro aesthetics.
 
@@ -482,7 +482,7 @@ Luna2D has no UI library. In-game UI (health bars, buttons, menus) is built manu
 **A) In-game UI for game developers:**
 - Simple panel/button/text primitives
 - Should work with the existing DrawCommand queue
-- Best approach: implement a `luna.ui` Lua module built on top of existing `luna.graphics.*` primitives
+- Best approach: implement a `luna.ui` Lua module built on top of existing `luna.render.*` primitives
 - No Rust crate needed — pure Lua
 
 **B) Developer tools / debug overlay:**
@@ -548,7 +548,7 @@ Luna2D is a software renderer — it does not use GPU shaders. All shading is do
    - Color grading: LUT-based color remapping
    - Vignette: darken edges by distance from center
    - Pixelate: downsample, upsample
-   These can be exposed as `luna.graphics.setPostProcess("grayscale")` or via a Lua-defined function invoked per-pixel.
+   These can be exposed as `luna.render.setPostProcess("grayscale")` or via a Lua-defined function invoked per-pixel.
 
 2. **tiny-skia Paint operations** — `tiny-skia` supports `BlendMode` (multiple blend equations) and `FilterQuality`. No GPU needed; these are all CPU-side effects.
 
@@ -585,7 +585,7 @@ Luna2D is a software renderer — it does not use GPU shaders. All shading is do
 
 5. **Profiling** — `profiling` crate adds `profiling::scope!("name")` annotations that integrate with Superluminal, Tracy, or Chrome tracing. Valuable for performance debugging.
 
-6. **pixel art tools loading** — `aseprite` crate loads `.ase`/`.aseprite` files including animation frames, layers, and tags. Since many pixel artists use pixel art tools, this would be valuable: `luna.graphics.newAnimFrompixel art tools("hero.aseprite")`.
+6. **pixel art tools loading** — `aseprite` crate loads `.ase`/`.aseprite` files including animation frames, layers, and tags. Since many pixel artists use pixel art tools, this would be valuable: `luna.render.newAnimFrompixel art tools("hero.aseprite")`.
 
 ---
 
@@ -697,7 +697,7 @@ These features are well within Luna2D's own design space and should be implement
 3. **Easing functions** — 12 standard curves, pure math
 4. **Scene management skeleton** — A `luna.scene` module that manages screen transitions
 5. **In-game debug overlay** — Print variables on screen without a full UI framework
-6. **Tween manager** — Supported by Lua tables + `luna.timer.getDelta()`
+6. **Tween manager** — Supported by Lua tables + `luna.time.getDelta()`
 7. **Basic steering AI** — Seek/flee/arrive implemented as `Vec2`-returning functions
 8. **9-slice rendering** — 9 `DrawImage` calls, no new Drawcommand needed
 9. **`luna.math.clamp()`, `lerp()`, `map()` extensions** — Small but commonly needed

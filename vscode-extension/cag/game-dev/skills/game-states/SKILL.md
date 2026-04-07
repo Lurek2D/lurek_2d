@@ -1,4 +1,4 @@
-# Game States
+﻿# Game States
 
 State stack with push/pop for pause and overlays, state table pattern, transitions, and persistent state.
 
@@ -86,11 +86,11 @@ end
 
 function pause_state.draw()
     -- Draw semi-transparent overlay
-    luna.graphics.setColor(0, 0, 0, 0.6)
-    luna.graphics.rectangle("fill", 0, 0, 800, 600)
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("PAUSED", 370, 280)
-    luna.graphics.print("Press ESC to resume", 310, 310)
+    luna.render.setColor(0, 0, 0, 0.6)
+    luna.render.rectangle("fill", 0, 0, 800, 600)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("PAUSED", 370, 280)
+    luna.render.print("Press ESC to resume", 310, 310)
 end
 ```
 
@@ -132,13 +132,13 @@ function gameover_state.update(dt)
 end
 
 function gameover_state.draw()
-    luna.graphics.setColor(0.1, 0, 0, 0.9)
-    luna.graphics.rectangle("fill", 0, 0, 800, 600)
-    luna.graphics.setColor(1, 0.2, 0.2, 1)
-    luna.graphics.print("GAME OVER", 340, 260)
+    luna.render.setColor(0.1, 0, 0, 0.9)
+    luna.render.rectangle("fill", 0, 0, 800, 600)
+    luna.render.setColor(1, 0.2, 0.2, 1)
+    luna.render.print("GAME OVER", 340, 260)
     if gameover_state.timer > 2 then
-        luna.graphics.setColor(1, 1, 1, 1)
-        luna.graphics.print("Press ENTER", 350, 300)
+        luna.render.setColor(1, 1, 1, 1)
+        luna.render.print("Press ENTER", 350, 300)
     end
 end
 ```

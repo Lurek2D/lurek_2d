@@ -1,4 +1,4 @@
-# spine — Feature Analysis
+﻿# spine — Feature Analysis
 
 **Tier**: 2 (Extension)
 **Spec**: `specs/spine.md`
@@ -32,9 +32,9 @@ Skeletal 2D animation through bone hierarchies and world-transform propagation. 
 
 - **Disconnect from animation module**: `animation` handles frame-based clips. `spine` handles bone hierarchies. Neither integrates with the other. A game with skeletal animation must glue them together manually.
 - **Consider merging into animation**: Both modules deal with animation but through different paradigms (frame vs skeleton). A unified animation module with sub-systems would be cleaner:
-  - `luna.animation.newClip()` ← current frame-based
-  - `luna.animation.newSkeleton()` ← current spine
-  - `luna.animation.newTimeline()` ← new: animate any property over time
+  - `luna.tween.newClip()` ← current frame-based
+  - `luna.tween.newSkeleton()` ← current spine
+  - `luna.tween.newTimeline()` ← new: animate any property over time
 - **Name "spine" is misleading**: Suggests compatibility with the Spine animation tool. But there's no Spine file import. Consider renaming to `skeleton` or `bones`.
 - **Minimal API**: With only 11 Lua functions, this is one of the thinnest modules. It provides the data structure but not the tools to use it effectively.
 

@@ -1,4 +1,4 @@
-# `light` — Agent Reference
+﻿# `light` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -248,7 +248,7 @@ end
 
 function luna.draw()
     -- Draw your scene; the lighting system composites automatically
-    luna.graphics.print("Move the mouse to move the torch", 10, 10)
+    luna.render.print("Move the mouse to move the torch", 10, 10)
 end
 ```
 

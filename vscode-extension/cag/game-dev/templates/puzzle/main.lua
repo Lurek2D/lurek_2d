@@ -1,4 +1,4 @@
-local Grid = require("entities.grid")
+﻿local Grid = require("entities.grid")
 
 local grid
 local moves = 0
@@ -13,12 +13,12 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.12, 0.12, 0.18)
+    luna.render.clear(0.12, 0.12, 0.18)
     grid:draw()
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("Moves: " .. moves, 10, 10)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("Moves: " .. moves, 10, 10)
     if won then
-        luna.graphics.print("You Win!", 250, 280)
+        luna.render.print("You Win!", 250, 280)
     end
 end
 
@@ -34,7 +34,7 @@ function luna.mousepressed(x, y, btn)
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     if key == "r" then
         grid = Grid.new(8, 8, 60)
         moves = 0

@@ -1,4 +1,4 @@
-# `terminal` — Agent Reference
+﻿# `terminal` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -316,7 +316,7 @@ function luna.load()
 
     btn_quit = luna.terminal.newButton(8, 7, 14, 1, "Quit")
     btn_quit:setOnClick(function()
-        luna.event.quit()
+        luna.signal.quit()
     end)
     term:addWidget(btn_quit)
 end

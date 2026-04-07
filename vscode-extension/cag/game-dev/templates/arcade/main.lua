@@ -1,4 +1,4 @@
-local score = 0
+﻿local score = 0
 local lives = 3
 local state = "playing"
 
@@ -45,28 +45,28 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.05, 0.05, 0.1)
+    luna.render.clear(0.05, 0.05, 0.1)
 
     -- Ball
-    luna.graphics.setColor(1, 0.9, 0.2, 1)
-    luna.graphics.circle("fill", ball.x, ball.y, ball.r)
+    luna.render.setColor(1, 0.9, 0.2, 1)
+    luna.render.circle("fill", ball.x, ball.y, ball.r)
 
     -- Paddle
-    luna.graphics.setColor(0.2, 0.7, 1, 1)
-    luna.graphics.rectangle("fill", paddle.x, paddle.y, paddle.w, paddle.h)
+    luna.render.setColor(0.2, 0.7, 1, 1)
+    luna.render.rectangle("fill", paddle.x, paddle.y, paddle.w, paddle.h)
 
     -- UI
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("Score: " .. score, 10, 10)
-    luna.graphics.print("Lives: " .. lives, 710, 10)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("Score: " .. score, 10, 10)
+    luna.render.print("Lives: " .. lives, 710, 10)
 
     if state == "gameover" then
-        luna.graphics.print("GAME OVER - Press R to restart", 260, 280)
+        luna.render.print("GAME OVER - Press R to restart", 260, 280)
     end
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     if key == "r" and state == "gameover" then
         score = 0
         lives = 3

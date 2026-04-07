@@ -1,4 +1,4 @@
--- examples/thread.lua
+﻿-- examples/thread.lua
 -- luna.thread — Background worker threads and inter-thread Channel communication.
 -- All luna.thread API methods demonstrated with code and comments.
 --
@@ -12,8 +12,8 @@
 
 -- newThread(code) → Thread
 -- Creates a background thread from a Lua source string.
--- The worker VM has access to luna.math, luna.data, luna.thread, luna.filesystem,
--- luna.timer, and luna.system — but NOT luna.graphics, luna.audio, or luna.physics.
+-- The worker VM has access to luna.math, luna.data, luna.thread, luna.fs,
+-- luna.time, and luna.platform — but NOT luna.render, luna.audio, or luna.physics.
 local worker = luna.thread.newThread([[
     local input_ch  = luna.thread.getChannel("work_in")
     local output_ch = luna.thread.getChannel("work_out")
@@ -137,6 +137,6 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.print(result_text, 10, 10)
+    luna.render.print(result_text, 10, 10)
 end
 ]]

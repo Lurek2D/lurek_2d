@@ -1,4 +1,4 @@
-//! `luna.gui` — Retained-mode widget UI system.
+﻿//! `luna.ui` — Retained-mode widget UI system.
 
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -4084,7 +4084,7 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.gui` API table.
+/// Registers the `luna.ui` API table.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`. The Lua VM.
@@ -4995,6 +4995,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(c.borrow().widget_count()))?,
     )?;
 
-    luna.set("gui", tbl)?;
+    luna.set("ui", tbl)?;
     Ok(())
 }

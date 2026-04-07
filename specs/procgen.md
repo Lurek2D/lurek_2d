@@ -1,4 +1,4 @@
-# `procgen` — Agent Reference
+﻿# `procgen` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -202,8 +202,8 @@ function luna.draw()
         for y = 0, 149 do
             local n = luna.procgen.perlinNoise(x * 0.05, y * 0.05, 10.0, 7.5)
             local brightness = (n + 1) * 0.5  -- map [-1,1] to [0,1]
-            luna.graphics.setColor(brightness, brightness, brightness)
-            luna.graphics.points(x, y)
+            luna.render.setColor(brightness, brightness, brightness)
+            luna.render.points(x, y)
         end
     end
 end

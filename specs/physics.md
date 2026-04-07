@@ -1,4 +1,4 @@
-# `physics` — Agent Reference
+﻿# `physics` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -316,7 +316,7 @@ function luna.update(dt)
     local angle = ball:getAngle()
 
     -- Move kinematic platform
-    platform:setPosition(300 + math.sin(luna.timer.getTime()) * 100, 400)
+    platform:setPosition(300 + math.sin(luna.time.getTime()) * 100, 400)
 
     -- Check collision events
     local events = world:getBeginContactEvents()
@@ -337,11 +337,11 @@ end
 function luna.draw()
     -- Draw ball
     local bx, by = ball:getPosition()
-    luna.graphics.circle("fill", bx, by, 20)
+    luna.render.circle("fill", bx, by, 20)
 
     -- Draw ground
     local gx, gy = ground:getPosition()
-    luna.graphics.rectangle("fill", gx - 400, gy - 10, 800, 20)
+    luna.render.rectangle("fill", gx - 400, gy - 10, 800, 20)
 end
 ```
 

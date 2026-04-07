@@ -1,4 +1,4 @@
--- Luna2D Integration Test: Data + Filesystem
+﻿-- Luna2D Integration Test: Data + Filesystem
 -- Tests data encoding/compression with filesystem I/O
 
 describe("data + filesystem integration", function()
@@ -63,17 +63,17 @@ end)
 
 describe("system info integration", function()
     it("system provides OS info", function()
-        if luna.system and luna.system.getOS then
-            local os_name = luna.system.getOS()
+        if luna.platform and luna.platform.getOS then
+            local os_name = luna.platform.getOS()
             expect_not_nil(os_name, "OS name exists")
             expect_true(type(os_name) == "string", "OS is string")
         end
     end)
 
     it("system clipboard operations", function()
-        if luna.system and luna.system.setClipboardText then
-            luna.system.setClipboardText("Luna2D test")
-            local text = luna.system.getClipboardText()
+        if luna.platform and luna.platform.setClipboardText then
+            luna.platform.setClipboardText("Luna2D test")
+            local text = luna.platform.getClipboardText()
             -- Clipboard may or may not work in headless mode
             if text then
                 expect_equal("Luna2D test", text, "clipboard round-trip")

@@ -1,10 +1,10 @@
-# `animation` — Agent Reference
+﻿# `animation` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.animation`                                     |
+| **Lua API**    | `luna.tween`                                     |
 | **Source**     | `src/animation/`                                     |
 | **Rust Tests** | `tests/rust/unit/animation_tests.rs`                 |
 | **Lua Tests**  | `tests/lua/unit/test_animation.lua`                  |

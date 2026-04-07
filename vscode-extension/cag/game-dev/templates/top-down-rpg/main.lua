@@ -1,4 +1,4 @@
-local Player = require("entities.player")
+﻿local Player = require("entities.player")
 local HUD    = require("ui.hud")
 
 local scene = "title"
@@ -18,9 +18,9 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.15, 0.2, 0.1)
+    luna.render.clear(0.15, 0.2, 0.1)
     if scene == "title" then
-        luna.graphics.print("Press ENTER to start", 300, 280)
+        luna.render.print("Press ENTER to start", 300, 280)
     elseif scene == "game" then
         player:draw()
         hud:draw()
@@ -28,7 +28,7 @@ function luna.draw()
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     if key == "return" and scene == "title" then
         scene = "game"
     end

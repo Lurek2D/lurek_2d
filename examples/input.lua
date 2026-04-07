@@ -1,4 +1,4 @@
--- examples/input.lua
+﻿-- examples/input.lua
 -- Luna2D luna.keyboard / luna.mouse / luna.gamepad / luna.touch API Reference
 -- This file is documentation code, not a runnable game.
 -- Call these from luna.update, luna.keypressed, luna.mousepressed, etc.
@@ -41,7 +41,7 @@ local shifted = luna.keyboard.isModifierActive("lshift")
 
 function luna.keypressed(key, scancode, isrepeat)
     if key == "escape" then
-        luna.event.quit()
+        luna.signal.quit()
     end
     if key == "f" and not isrepeat then
         luna.window.setFullscreen(not luna.window.getFullscreen())
@@ -92,7 +92,7 @@ local sx, sy = luna.mouse.getWheelDelta()  -- sy > 0 = scrolled up
 -- ── Custom cursors ────────────────────────────────────────────────────────────
 
 -- Create a cursor from an ImageData (pixel grid), with a hotspot offset
--- local img_data = luna.image.newImageData("cursor.png")
+-- local img_data = luna.img.newImageData("cursor.png")
 -- local custom_cursor = luna.mouse.newCursor(img_data, 32, 32, 0, 0)
 
 -- Load a built-in OS cursor by name

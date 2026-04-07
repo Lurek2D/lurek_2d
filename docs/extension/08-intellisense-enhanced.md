@@ -1,4 +1,4 @@
-# Luna Toolkit — Enhanced IntelliSense Design
+﻿# Luna Toolkit — Enhanced IntelliSense Design
 
 > Expands the baseline IntelliSense design (02-intellisense-design.md) with deeper
 > intelligence specifically for LuaJIT game development with Luna2D.
@@ -42,9 +42,9 @@ New diagnostic rule category: `luna.luajit` (severity: Hint).
 | Rule ID | Pattern | Hint Message |
 |---|---|---|
 | `luajit.newTableHotPath` | `{}` or `table.create` in `luna.update`/`luna.draw` | "Table allocation in hot path prevents JIT compilation. Consider caching or using an object pool." |
-| `luajit.newImageHotPath` | `luna.graphics.newImage()` in `update`/`draw` | "Resource creation in hot path is expensive. Move to luna.load()." |
+| `luajit.newImageHotPath` | `luna.render.newImage()` in `update`/`draw` | "Resource creation in hot path is expensive. Move to luna.load()." |
 | `luajit.floatToInt` | `math.floor(x)` in computation chain | "Consider bit.tobit() for integer conversion — up to 4× faster on LuaJIT." |
-| `luajit.globalAccess` | Reading global variable repeatedly in loop | "Cache global in local: 'local draw = luna.graphics.draw' is ~2× faster." |
+| `luajit.globalAccess` | Reading global variable repeatedly in loop | "Cache global in local: 'local draw = luna.render.draw' is ~2× faster." |
 | `luajit.stringConcat` | `..` in loop body | "String concatenation in loops creates many temporaries. Use table.concat() instead." |
 | `luajit.pcallTrace` | `pcall` in hot path | "pcall interrupts trace compilation. Move error handling outside the inner loop." |
 | `luajit.mixedTypes` | Variable assigned both number and string | "Mixed types prevent optimal JIT trace. Keep variables single-typed." |
@@ -68,7 +68,7 @@ All `luna.*` factory functions have known return types. The extension tracks the
 through variable assignments and propagates completions:
 
 ```lua
-local img = luna.graphics.newImage("player.png")
+local img = luna.render.newImage("player.png")
 --    ^^^
 --    inferred: Image type
 --    enables: img:getDimensions(), img:getWidth(), img:getHeight(),
@@ -178,7 +178,7 @@ luna.input.isDown("|")
 
 ### 3.2 Blend Modes
 ```lua
-luna.graphics.setBlendMode("|")
+luna.render.setBlendMode("|")
 -- Suggests: "alpha", "add", "subtract", "multiply",
 --            "premultiplied", "replace", "screen", "darken", "lighten"
 ```
@@ -217,9 +217,9 @@ img:setWrap("|", "|")
 
 ### 3.8 Line Cap / Join
 ```lua
-luna.graphics.setLineCap("|")    -- "none", "butt", "square", "round"
-luna.graphics.setLineJoin("|")   -- "miter", "bevel", "none"
-luna.graphics.setLineStyle("|")  -- "rough", "smooth"
+luna.render.setLineCap("|")    -- "none", "butt", "square", "round"
+luna.render.setLineJoin("|")   -- "miter", "bevel", "none"
+luna.render.setLineStyle("|")  -- "rough", "smooth"
 ```
 
 ---
@@ -260,10 +260,10 @@ A curated set of idiomatic game programming patterns, provided as:
 |---|---|---|
 | **Class** | `luna.class` | Metatble-based OOP with `new()`, `__index`, inheritance |
 | **State Machine** | `luna.states` | State table with `enter`/`exit`/`update`/`draw` callbacks |
-| **Event Bus** | `luna.events` | Pub/sub: `on(event, handler)`, `emit(event, ...)` |
+| **Event Bus** | `luna.signals` | Pub/sub: `on(event, handler)`, `emit(event, ...)` |
 | **Object Pool** | `luna.pool` | Pre-allocated table, `acquire()` / `release()` → zero alloc in hot path |
 | **Component System** | `luna.components` | Entities as IDs, components as tables, systems as loops |
-| **Timer** | `luna.timer` | Delay/repeat without coroutines: `after(seconds, fn)`, `every(interval, fn)` |
+| **Timer** | `luna.time` | Delay/repeat without coroutines: `after(seconds, fn)`, `every(interval, fn)` |
 | **Tween** | `luna.tween` | Smooth value animation: `to(target, secs, {x=100}, "ease_out_quad")` |
 | **Finite State Machine** | `luna.fsm` | Strict FSM: states, transitions, guards |
 | **Signal** | `luna.signal` | Observer: `signal:connect(fn)`, `signal:emit(...)` |
@@ -346,8 +346,8 @@ HP = 100        -- ⚠ Global write: 'HP' also written in player.lua
 
 ### 6.3 Asset Reference Validation (Enhanced)
 
-Build an asset index at activation. Paths found in `luna.graphics.newImage()`,
-`luna.audio.newSource()`, and `luna.filesystem.read()` are validated against the real
+Build an asset index at activation. Paths found in `luna.render.newImage()`,
+`luna.audio.newSource()`, and `luna.fs.read()` are validated against the real
 filesystem. Results cached and updated on file save.
 
 Additional: detect **unused assets** — files in `assets/` that are never referenced.
@@ -388,7 +388,7 @@ reference locations. Updated incrementally on file change. Enables:
 
 ### 8.1 Hover on Color Values
 
-When hovering over `{0.2, 0.8, 1.0, 1.0}` or `luna.graphics.setColor(r, g, b)`:
+When hovering over `{0.2, 0.8, 1.0, 1.0}` or `luna.render.setColor(r, g, b)`:
 - Show an inline color swatch
 - Show both 0-1 and 0-255 representations
 - Suggest named palette color if close match is found
@@ -409,9 +409,9 @@ luna.physics.newWorld(0, 200)
 
 ### 8.4 Hover on Deprecated API
 ```lua
-luna.graphics.drawImage(img, x, y)
+luna.render.drawImage(img, x, y)
 -- ⚠ Deprecated since v0.3.0
--- Use: luna.graphics.draw(img, x, y) instead
+-- Use: luna.render.draw(img, x, y) instead
 -- See: migration guide
 ```
 

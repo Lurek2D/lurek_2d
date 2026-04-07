@@ -1,4 +1,4 @@
-# Luna2D VS Code Extension — Technical Specification
+﻿# Luna2D VS Code Extension — Technical Specification
 
 > **Version**: 0.8.2
 > **Engine**: Luna2D (LuaJIT, Rust)
@@ -312,14 +312,14 @@ interface CompletionItem {
   label: string        // e.g., "newImage"
   kind: string         // "function" | "method" | "enum" | "value" | "class"
   module: string       // e.g., "graphics"
-  detail: string       // e.g., "luna.graphics.newImage(filename)"
+  detail: string       // e.g., "luna.render.newImage(filename)"
   insertText: string   // snippet: "newImage(${1:filename})"
   documentation?: string
   parent?: string      // for methods: the type name (e.g., "Image")
 }
 
 interface SignatureItem {
-  label: string        // e.g., "luna.graphics.newImage"
+  label: string        // e.g., "luna.render.newImage"
   module: string
   parameters: string[] // ["filename: string", "settings?: table"]
   documentation?: string
@@ -397,7 +397,7 @@ All providers register for `{ language: "lua", scheme: "file" }`.
 
 | Context | Trigger | Example | What it returns |
 |---------|---------|---------|-----------------|
-| Module functions | `luna.graphics.` | typing after `luna.graphics.` | All functions in `graphics` module |
+| Module functions | `luna.render.` | typing after `luna.render.` | All functions in `graphics` module |
 | Type methods | `image:` | typing after a variable with `:` | All methods for the type |
 | Module names | `luna.` | typing after `luna.` | All module names |
 
@@ -424,7 +424,7 @@ Looks up the matched symbol in `apiData.getHoverDoc(key)` and returns a `Markdow
 
 **Trigger characters**: `(`, `,`
 
-Matches function calls like `luna.graphics.newImage(` and counts commas to determine the active parameter index. Returns `vscode.SignatureHelp` with parameter info from `apiData.getSignature()`.
+Matches function calls like `luna.render.newImage(` and counts commas to determine the active parameter index. Returns `vscode.SignatureHelp` with parameter info from `apiData.getSignature()`.
 
 ### 5.4 Diagnostics Provider
 
@@ -437,7 +437,7 @@ Matches function calls like `luna.graphics.newImage(` and counts commas to deter
 | Deprecated API calls | Warning/Error | `luna.window.setMode` → "Deprecated in Luna2D 12.0" |
 | Color range mistake | Warning | `setColor(255, 0, 0)` → "Use 0-1 range since 11.0" |
 | `math.random` usage | Hint | → "Prefer luna.math.random() for thread safety" |
-| Missing `luna.event.pump()` | Warning | Custom `luna.run()` without pump → "window will freeze" |
+| Missing `luna.signal.pump()` | Warning | Custom `luna.run()` without pump → "window will freeze" |
 | Unused `require()` | Hint | `local x = require("y")` where `x` is never used |
 | Wrong callback signature | Warning | `function luna.update()` without `dt` parameter |
 | Asset path validation | Warning | `newImage("missing.png")` when file doesn't exist |
@@ -463,9 +463,9 @@ Detects Luna2D color API calls (`setColor`, `setBackgroundColor`, `clear`) with 
 ### 5.7 Asset Path Provider
 
 Auto-completes file paths inside string arguments of asset loading functions:
-- `luna.graphics.newImage("` → suggests `.png`, `.jpg` files
+- `luna.render.newImage("` → suggests `.png`, `.jpg` files
 - `luna.audio.newSource("` → suggests `.ogg`, `.mp3`, `.wav` files
-- `luna.graphics.newFont("` → suggests `.ttf`, `.otf` files
+- `luna.render.newFont("` → suggests `.ttf`, `.otf` files
 
 Scans the workspace filesystem filtered by appropriate extensions.
 
@@ -483,7 +483,7 @@ Workspace-wide search for symbol references using regex patterns across all `.lu
 
 Shows inline parameter name hints at call sites for Luna2D API functions:
 ```lua
-luna.graphics.setColor(1, 0, 0, 1)
+luna.render.setColor(1, 0, 0, 1)
 --                     ^r ^g ^b ^a   ← inlay hints
 ```
 
@@ -636,7 +636,7 @@ Provides:
 
 ### 7.6 Particle Designer
 
-**Features**: Visual particle system tweaking — emitter properties, real-time preview, presets (fire, smoke, snow, etc.), export to `luna.particle.newParticleSystem()` Lua code.
+**Features**: Visual particle system tweaking — emitter properties, real-time preview, presets (fire, smoke, snow, etc.), export to `luna.particles.newParticleSystem()` Lua code.
 
 ### 7.7 Additional Editors
 
@@ -999,10 +999,10 @@ export class a similar game engineDebugBridge {
 
 | Pattern | Luna2D (Lua) | a similar JS game engine (JS/TS) |
 |---------|-------------|-------------------|
-| Trigger | `luna.graphics.` | `this.add.`, `this.physics.`, `a similar game engine.` |
+| Trigger | `luna.render.` | `this.add.`, `this.physics.`, `a similar game engine.` |
 | Module prefix regex | `/luna\.(\w+)\.$/` | `/this\.(\w+)\.$/` or `/a similar game engine\.(\w+)\.$/` |
 | Type methods | `Image:getWidth()` | `this.sprite.setScale()` |
-| Enum values | `luna.graphics.FilterMode` | `a similar game engine.BlendModes`, `a similar game engine.Physics.Arcade` |
+| Enum values | `luna.render.FilterMode` | `a similar game engine.BlendModes`, `a similar game engine.Physics.Arcade` |
 
 ```typescript
 // a similar JS game engine completion provider
@@ -1045,7 +1045,7 @@ Map Luna2D Extension diagnostics to a similar JS game engine equivalents:
 |-------------------|---------------------|
 | Color range 0-255 vs 0-1 | Hex color without `0x` prefix: `setTint(ff0000)` → should be `setTint(0xff0000)` |
 | Deprecated API calls | `game.add.sprite()` → "Use `this.add.sprite()` inside a Scene" |
-| Missing `luna.event.pump()` | Missing `super()` call in Scene's `create()` method |
+| Missing `luna.signal.pump()` | Missing `super()` call in Scene's `create()` method |
 | `math.random` vs `luna.math.random` | `Math.random()` vs `a similar game engine.Math.Between()` for reproducibility |
 | Unused `require()` | Unused `import` statements |
 | Asset validation | Check that preloaded asset keys match `this.load.*()` calls |
@@ -1165,9 +1165,9 @@ The webview editors are **90% engine-agnostic**. Only the Lua export format chan
 | Tile Map Editor | Lua table: `return { layers={...} }` | JSON Tiled format or JS module: `export default { layers: [...] }` |
 | Scene Flow Editor | Lua SceneManager class | JS Scene registry: `game.scene.add('key', SceneClass)` |
 | Entity Designer | Luna2D ECS components | a similar game engine `Sprite`/`Group` with components |
-| Particle Editor | `luna.particle.newParticleSystem()` calls | `this.add.particles()` a similar JS game engine config |
+| Particle Editor | `luna.particles.newParticleSystem()` calls | `this.add.particles()` a similar JS game engine config |
 | Dialog Editor | Lua dialog tables | JSON dialog data or JS module |
-| Pixel Art Editor | `luna.image.newImageData()` pixel writes | Canvas → PNG data URL → save as file |
+| Pixel Art Editor | `luna.img.newImageData()` pixel writes | Canvas → PNG data URL → save as file |
 
 **Reusable without changes:**
 - All HTML/CSS/JS for the editor UI

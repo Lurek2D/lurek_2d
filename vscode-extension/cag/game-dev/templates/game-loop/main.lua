@@ -1,4 +1,4 @@
-local Class  = require("lib.class")
+﻿local Class  = require("lib.class")
 local Events = require("lib.events")
 
 function luna.load()
@@ -10,11 +10,11 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.1, 0.1, 0.15)
+    luna.render.clear(0.1, 0.1, 0.15)
     Events.emit("game:draw")
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     Events.emit("input:keypressed", key)
 end

@@ -1,6 +1,7 @@
 # Luna2D Demos
 
-86 fully playable demo games showcasing `luna.*` engine features. Every demo is self-contained: it runs as-is with `cargo run -- demos/<name>`.
+111 fully playable demo games, organized by category.
+Every demo is self-contained: run with `cargo run -- demos/<category>/<name>`.
 
 For API reference code (not runnable games), see [`examples/`](../examples/).
 
@@ -9,1120 +10,163 @@ For API reference code (not runnable games), see [`examples/`](../examples/).
 ## Running a Demo
 
 ```bash
-cargo run -- demos/<name>          # debug build
-cargo run --release -- demos/<name>  # release build
-luna demos/<name>                  # installed binary
+cargo run -- demos/<category>/<name>          # debug build
+cargo run --release -- demos/<category>/<name>  # release build
+luna demos/<category>/<name>                  # installed binary
 ```
 
 ---
 
-## Demo Index
-
-| Demo | Description | Key APIs |
-|------|-------------|----------|
-| [hello_world](#hello_world) | Minimal game: shapes, text, keyboard | `graphics`, `timer`, `keypressed` |
-| [sprites](#sprites) | Sprite movement, mouse input | `keyboard.isDown`, `mouse`, `graphics` |
-| [physics_demo](#physics_demo) | Rigid bodies, sensors, collisions | `physics`, `world`, `body` |
-| [platformer](#platformer) | Side-scrolling character controller | `physics`, `keyboard`, `math.lerp` |
-| [particles_demo](#particles_demo) | Particle emitter systems | `particle`, `newEmitter`, effects |
-| [scene_demo](#scene_demo) | Multi-screen state machine | `scene`, `graphics` |
-| [tween_demo](#tween_demo) | All easing curves side-by-side | `math.newTween`, easing types |
-| [dialog_demo](#dialog_demo) | Typewriter text and branching | `dialog`, `sequencer`, `node` |
-| [signal_demo](#signal_demo) | Pub-sub event bus | `event.newSignal`, `connect`, `fire` |
-| [patterns_demo](#patterns_demo) | 6 game design patterns in Lua | `patterns`, EventBus, ObjectPool |
-| [minimap_demo](#minimap_demo) | Fog-of-war overhead minimap | `minimap`, terrain, fog, pings |
-| [nine_slice_demo](#nine_slice_demo) | Scalable 9-patch UI panels | `graphics.newNineSlice` |
-| [overlay_demo](#overlay_demo) | Z-ordered render layers | `graphics.newDrawLayer`, z-order |
-| [postfx_demo](#postfx_demo) | Post-processing effects stack | `postfx`, vignette, blur, aberration |
-| [localization_demo](#localization_demo) | Multi-language string system | `localization`, `t()`, `setLanguage` |
-| [light_demo](#light_demo) | 2D dynamic lighting | `light`, normal maps, shadows |
-| [light_showcase](#light_showcase) | Advanced lighting effects gallery | `light`, `luna.graphics` |
-| [loot_rpg_demo](#loot_rpg_demo) | RPG loot and inventory | `inventory`, `item`, `stats` |
-| [merchant_demo](#merchant_demo) | Shop and trading system | `economy`, `inventory`, merchant UI |
-| [modding_demo](#modding_demo) | Mod discovery and loading | `modding`, mod hooks |
-| [province_demo](#province_demo) | Province map strategy game | `province_map`, map rendering |
-| [debugbridge_demo](#debugbridge_demo) | TCP debug server (JSON-RPC) | `debugbridge`, network protocol |
-| [devtools_demo](#devtools_demo) | Runtime diagnostics overlay | `devtools`, profiler, watcher |
-| [automation_demo](#automation_demo) | Automated input replay | `automation`, input recording |
-| [docs_demo](#docs_demo) | In-game API browser | `docs.scan`, catalog, search |
-| [terminal_demo](#terminal_demo) | In-game developer terminal | `terminal`, widgets, REPL |
-| [demo_game](#demo_game) | Complete shooting gallery game | `physics`, `mouse`, scoring |
-| [adventure](#adventure) | Point-and-click adventure game | `entity`, `event`, `graphics` |
-| [alchemy](#alchemy) | Potion brewing with ingredient combos | `data`, `gui`, `graphics` |
-| [brick_breaker](#brick_breaker) | Breakout-style brick breaking game | `physics`, `graphics`, `input` |
-| [bridge_builder](#bridge_builder) | Structural bridge building puzzle | `physics`, `graphics`, `input` |
-| [bullet_hell](#bullet_hell) | Bullet-hell shoot-em-up | `entity`, `graphics`, `input` |
-| [card_game](#card_game) | Collectible card battles | `library/cardgame`, `graphics` |
-| [colony_sim](#colony_sim) | Ant colony management sim | `ai`, `entity`, `pathfinding` |
-| [cooking_sim](#cooking_sim) | Multi-step recipe cooking | `timer`, `gui`, `graphics` |
-| [courtroom](#courtroom) | Courtroom debate evidence game | `event`, `gui`, `graphics` |
-| [creature_collector](#creature_collector) | Monster catching and battling | `entity`, `library/combat`, `data` |
-| [deckbuilder](#deckbuilder) | Roguelike deckbuilding card game | `library/cardgame`, `graphics` |
-| [drift_racing](#drift_racing) | Top-down drift racing | `physics`, `camera`, `graphics` |
-| [endless_runner](#endless_runner) | Auto-scrolling obstacle runner | `physics`, `graphics`, `timer` |
-| [factory](#factory) | Factory automation conveyor sim | `entity`, `pathfinding`, `graphics` |
-| [farming_sim](#farming_sim) | Crop planting and harvesting sim | `tilemap`, `timer`, `graphics` |
-| [fighting_game](#fighting_game) | 2-player fighting game | `input`, `animation`, `graphics` |
-| [fishing](#fishing) | Fishing minigame with rod physics | `physics`, `timer`, `graphics` |
-| [god_game](#god_game) | God simulation with worshippers | `ai`, `entity`, `graphics` |
-| [hacking_game](#hacking_game) | Network-hacking puzzle game | `terminal`, `timer`, `graphics` |
-| [hex_strategy](#hex_strategy) | Hex-grid turn-based strategy | `tilemap`, `ai`, `pathfinding` |
-| [horde_survivor](#horde_survivor) | Vampire Survivors-style horde game | `entity`, `physics`, `graphics` |
-| [horror](#horror) | First-person horror exploration | `light`, `audio`, `graphics` |
-| [hotel_manager](#hotel_manager) | Hotel management tycoon | `ai`, `timer`, `graphics` |
-| [idle_game](#idle_game) | Incremental idle clicker | `timer`, `savegame`, `graphics` |
-| [infiltration](#infiltration) | Stealth infiltration stealth game | `ai`, `light`, `pathfinding` |
-| [logic_game](#logic_game) | Logic circuit puzzle game | `graph`, `gui`, `graphics` |
-| [match3](#match3) | Match-3 gem swapping puzzle | `animation`, `graphics`, `input` |
-| [maze_defense](#maze_defense) | Maze-building tower defense | `pathfinding`, `entity`, `graphics` |
-| [medical_sim](#medical_sim) | Medical diagnosis triage game | `timer`, `gui`, `graphics` |
-| [metroidvania](#metroidvania) | Metroidvania exploration platformer | `physics`, `tilemap`, `camera` |
-| [mining](#mining) | Dig-down mining resource game | `tilemap`, `physics`, `graphics` |
-| [music_composer](#music_composer) | Music sequencer and composer | `audio`, `gui`, `graphics` |
-| [party_games](#party_games) | Multi-minigame party collection | `scene`, `input`, `graphics` |
-| [physics_puzzle](#physics_puzzle) | Physics-based puzzle game | `physics`, `graphics`, `input` |
-| [physics_sandbox](#physics_sandbox) | Interactive physics sandbox | `physics`, `graphics`, `input` |
-| [pinball](#pinball) | Classic pinball machine | `physics`, `graphics`, `input` |
-| [platform_fighter](#platform_fighter) | Smash-style platform fighting | `physics`, `input`, `animation` |
-| [railroad](#railroad) | Train network railroad tycoon | `graph`, `pathfinding`, `graphics` |
-| [rhythm_game](#rhythm_game) | Musical rhythm note matching | `audio`, `timer`, `graphics` |
-| [roguelike](#roguelike) | Turn-based dungeon roguelike | `tilemap`, `ai`, `entity` |
-| [roguelite](#roguelite) | Action roguelite with runs | `physics`, `entity`, `graphics` |
-| [rts](#rts) | Real-time strategy base building | `ai`, `pathfinding`, `entity` |
-| [sniper](#sniper) | Precision sniping stealth game | `camera`, `physics`, `graphics` |
-| [social_deduction](#social_deduction) | Among Us-style social deduction | `ai`, `event`, `graphics` |
-| [soulslike](#soulslike) | Stamina-based combat action game | `physics`, `animation`, `entity` |
-| [sports_manager](#sports_manager) | Sports team management sim | `ai`, `data`, `graphics` |
-| [stealth](#stealth) | Stealth infiltration game | `ai`, `light`, `pathfinding` |
-| [survival_crafting](#survival_crafting) | Survival crafting game | `library/crafting`, `entity`, `tilemap` |
-| [tactical_battle](#tactical_battle) | Grid-based tactical combat | `tilemap`, `ai`, `entity` |
-| [tower_defense](#tower_defense) | Tower placement defense game | `ai`, `pathfinding`, `entity` |
-| [tower_sim](#tower_sim) | Corporate tower building sim | `entity`, `ai`, `graphics` |
-| [trajectory_sports](#trajectory_sports) | Trajectory-based sports game | `physics`, `graphics`, `camera` |
-| [tycoon](#tycoon) | Theme park tycoon management | `ai`, `entity`, `graphics` |
-| [vehicle_builder](#vehicle_builder) | Vehicle construction physics | `physics`, `graphics`, `input` |
-| [vertical_climber](#vertical_climber) | Vertical climbing platformer | `physics`, `camera`, `graphics` |
-| [visual_novel](#visual_novel) | Visual novel story engine | `library/dialog`, `graphics` |
-| [wargame](#wargame) | Hex-grid military wargame | `tilemap`, `ai`, `entity` |
-| [wildlife_photo](#wildlife_photo) | Wildlife photography safari | `ai`, `camera`, `graphics` |
-| [zoo_tycoon](#zoo_tycoon) | Zoo management tycoon | `ai`, `entity`, `graphics` |
-
----
-
-## hello_world
-
-The minimum viable Luna2D game. Draws colored shapes and text, shows FPS, and demonstrates the `luna.load / update / draw / keypressed` callback structure.
-
-**Key APIs**: `luna.graphics.rectangle`, `circle`, `line`, `print`, `setColor`, `luna.timer.getFPS`
-
-| Key | Action |
-|-----|--------|
-| Space | Randomize background color |
-
-```bash
-cargo run -- demos/hello_world
-```
-
----
-
-## sprites
-
-Moves a colored rectangle with keyboard input. Covers delta-time movement, boundary clamping, and mouse-click spawning.
-
-**Key APIs**: `luna.keyboard.isDown`, `luna.mouse.getPosition`, `luna.graphics.rectangle`
-
-| Key / Input | Action |
-|-------------|--------|
-| Arrow keys / WASD | Move rectangle |
-| Left click | Spawn a dot |
-
-```bash
-cargo run -- demos/sprites
-```
-
----
-
-## physics_demo
-
-rapier2d rigid bodies: dynamic circles and rects, static ground/walls, sensors, collision events, and layer filtering.
-
-**Key APIs**: `luna.physics.newWorld`, `newCircleBody`, `newRectBody`, `newCircleSensor`, `setLayerFilter`, `getCollisionEvents`, `step`
-
-| Key | Action |
-|-----|--------|
-| Space | Spawn ball |
-| R | Reset |
-
-```bash
-cargo run -- demos/physics_demo
-```
-
----
-
-## platformer
-
-Side-scrolling platformer with physics character controller, jump mechanics, and easing-based camera follow.
-
-**Key APIs**: `luna.physics`, `luna.keyboard.isDown`, `luna.math.lerp`, `luna.scene`
-
-| Key | Action |
-|-----|--------|
-| Arrow / WASD | Move |
-| Space | Jump |
-| R | Restart |
-
-```bash
-cargo run -- demos/platformer
-```
-
----
-
-## particles_demo
-
-Particle emitter systems with configurable emission rates, spread, color gradients, and physics integration.
-
-**Key APIs**: `luna.particle.newEmitter`, `setRate`, `setBurst`, `setLifetime`, `setSpread`, `setColors`
-
-| Key | Action |
-|-----|--------|
-| Mouse move | Move emitter |
-| Space | Burst emit |
-| 1–5 | Preset effects |
-
-```bash
-cargo run -- demos/particles_demo
-```
-
----
-
-## scene_demo
-
-A Lua-side scene state machine: Title Screen → Gameplay → Game Over with transitions.
-
-**Key APIs**: `luna.scene`, `luna.math.lerp`, `luna.graphics.print`
-
-| Key | Action |
-|-----|--------|
-| Enter | Advance |
-| Esc | Back |
-
-```bash
-cargo run -- demos/scene_demo
-```
-
----
-
-## tween_demo
-
-All `luna.math.newTween` easing curves shown side by side. Pause, reset, and compare `linear`, `ease_in`, `ease_out`, `bounce`, `elastic`, and more.
-
-**Key APIs**: `luna.math.newTween`, `tween:update`, `tween:isFinished`
-
-| Key | Action |
-|-----|--------|
-| R | Reset tweens |
-| Space | Pause / resume |
-
-```bash
-cargo run -- demos/tween_demo
-```
-
----
-
-## dialog_demo
-
-Typewriter text reveal, branching choice menus, event callbacks, and call nodes powered by `luna.dialog`.
-
-**Key APIs**: `luna.dialog.newSequencer`, `newNode`, `onEvent`
-
-| Key | Action |
-|-----|--------|
-| Space / Enter | Advance / confirm |
-| Up / Down | Navigate choices |
-
-```bash
-cargo run -- demos/dialog_demo
-```
-
----
-
-## signal_demo
-
-Pub-sub event bus with connection IDs, combo chain tracking, and scrolling event history.
-
-**Key APIs**: `luna.event.newSignal`, `signal:connect`, `signal:fire`, `signal:disconnect`
-
-| Key | Action |
-|-----|--------|
-| Space | Fire event |
-| C | Clear log |
-
-```bash
-cargo run -- demos/signal_demo
-```
-
----
-
-## patterns_demo
-
-Six classic Lua game design patterns: EventBus, ObjectPool, CommandStack, ServiceLocator, Factory, SimpleState FSM.
-
-**Key APIs**: `luna.patterns.newEventBus`, `newObjectPool`, `newCommandStack`, `newServiceLocator`, `newFactory`, `newSimpleState`
-
-```bash
-cargo run -- demos/patterns_demo
-```
-
----
-
-## minimap_demo
-
-Scrollable terrain minimap with fog of war, dynamic object markers, pings, and a viewport overlay.
-
-**Key APIs**: `luna.minimap.new`, `setTerrain`, `setFog`, `addObject`, `addPing`, `setViewport`, `draw`
-
-| Key | Action |
-|-----|--------|
-| Arrow / WASD | Move player |
-| P | Add ping |
-
-```bash
-cargo run -- demos/minimap_demo
-```
-
----
-
-## nine_slice_demo
-
-Scalable 9-patch UI panels and buttons that preserve corners while stretching edges and center.
-
-**Key APIs**: `luna.graphics.newNineSlice`, `drawNineSlice`
-
-| Key | Action |
-|-----|--------|
-| Arrow keys | Resize panel |
-| Tab | Cycle examples |
-
-```bash
-cargo run -- demos/nine_slice_demo
-```
-
----
-
-## overlay_demo
-
-Z-ordered render layers with runtime reordering — ideal for HUD-over-world depth control.
-
-**Key APIs**: `luna.graphics.newDrawLayer`, layer z-order, `flushLayers`
-
-| Key | Action |
-|-----|--------|
-| 1 / 2 / 3 | Select rectangle |
-| Up / Down | Change z-order |
-| R | Reset |
-
-```bash
-cargo run -- demos/overlay_demo
-```
-
----
-
-## postfx_demo
-
-Post-processing effects stack with vignette, chromatic aberration, blur, scanlines, and color grading.
-
-**Key APIs**: `luna.postfx.newEffect`, `newStack`, `stack:addEffect`, `setEnabled`, `setParam`, `apply`
-
-| Key | Action |
-|-----|--------|
-| 1–5 | Toggle effects |
-| Up / Down | Adjust parameter |
-
-```bash
-cargo run -- demos/postfx_demo
-```
-
----
-
-## localization_demo
-
-Multi-language text with interpolation, pluralization, and on-the-fly language switching.
-
-**Key APIs**: `luna.localization.load`, `t()`, `setLanguage`
-
-| Key | Action |
-|-----|--------|
-| L | Cycle languages |
-| + / - | Change item count |
-
-```bash
-cargo run -- demos/localization_demo
-```
-
----
-
-## light_demo
-
-2D dynamic lighting with normal maps, point lights, and shadow casting.
-
-**Key APIs**: `luna.light.newPointLight`, `setColor`, `setRadius`, `draw`
-
-| Key | Action |
-|-----|--------|
-| Mouse move | Move light |
-| +/- | Adjust radius |
-
-```bash
-cargo run -- demos/light_demo
-```
-
----
-
-## light_showcase
-
-Advanced lighting effects gallery: area lights, spotlights, colored shadows, and emissive materials.
-
-**Key APIs**: `luna.light`, multiple light types, blending modes
-
-| Key | Action |
-|-----|--------|
-| Tab | Cycle showcases |
-| Mouse | Interactive light |
-
-```bash
-cargo run -- demos/light_showcase
-```
-
----
-
-## loot_rpg_demo
-
-RPG loot system: item drops, rarity tiers, stat modifiers, and inventory management.
-
-**Key APIs**: `luna.item`, `luna.inventory`, `luna.stats`, item generation
-
-| Key | Action |
-|-----|--------|
-| Space | Generate loot |
-| Click | Pick up item |
-| I | Open inventory |
-
-```bash
-cargo run -- demos/loot_rpg_demo
-```
-
----
-
-## merchant_demo
-
-Shop and trading system with buy/sell mechanics, pricing, and transaction history.
-
-**Key APIs**: `luna.economy`, `luna.inventory`, merchant UI
-
-| Key | Action |
-|-----|--------|
-| Click | Buy / sell |
-| E | Interact with merchant |
-
-```bash
-cargo run -- demos/merchant_demo
-```
-
----
-
-## modding_demo
-
-Mod discovery, dependency resolution, and load ordering. Loads mods from a `mods/` directory.
-
-**Key APIs**: `luna.modding.discover`, `resolve`, `load`, mod hooks
-
-| Key | Action |
-|-----|--------|
-| R | Reload mods |
-| M | Toggle mod list |
-
-```bash
-cargo run -- demos/modding_demo
-```
-
----
-
-## province_demo
-
-Province-map strategy game: territory control, resource flow, and turn-based management.
-
-**Key APIs**: `luna.province_map`, territory adjacency, resource simulation
-
-| Key / Click | Action |
-|-------------|--------|
-| Click province | Select / expand |
-| Space | End turn |
-
-```bash
-cargo run -- demos/province_demo
-```
-
----
-
-## debugbridge_demo
-
-TCP debug server for connecting external tools to a running game over JSON-RPC.
-
-**Key APIs**: `luna.debugbridge.start`, `stop`, `register`
-
-**Connect**: `telnet 127.0.0.1 19740` or `nc 127.0.0.1 19740`
-
-```bash
-cargo run -- demos/debugbridge_demo
-```
-
----
-
-## devtools_demo
-
-Runtime diagnostics overlay: profiler, memory tracker, variable watcher, and log viewer.
-
-**Key APIs**: `luna.devtools.start`, `profile`, `watch`, `log`, `getFrameStats`
-
-| Key | Action |
-|-----|--------|
-| F1 | Toggle overlay |
-| F2 | Cycle panels |
-
-```bash
-cargo run -- demos/devtools_demo
-```
-
----
-
-## automation_demo
-
-Automated input recording and replay system. Records a play session and plays it back deterministically.
-
-**Key APIs**: `luna.automation.startRecording`, `stopRecording`, `play`, `setSpeed`
-
-| Key | Action |
-|-----|--------|
-| R | Start/stop recording |
-| P | Play back recording |
-| 1–3 | Playback speed |
-
-```bash
-cargo run -- demos/automation_demo
-```
-
----
-
-## docs_demo
-
-In-game API browser powered by `luna.docs.scan()`. Browse all `luna.*` modules, query signatures, and fuzzy-search function names.
-
-**Key APIs**: `luna.docs.scan`, `catalog:getModules`, `catalog:getFunctions`, `catalog:search`
-
-| Key | Action |
-|-----|--------|
-| Up / Down | Scroll list |
-| Tab | Cycle modules |
-| / | Search mode |
-
-```bash
-cargo run -- demos/docs_demo
-```
-
----
-
-## terminal_demo
-
-In-game developer terminal with widget toolkit: text boxes, buttons, lists, borders, and a built-in Lua REPL.
-
-**Key APIs**: `luna.terminal.new`, `newLabel`, `newButton`, `newTextBox`, `newList`, `newBorder`
-
-| Key | Action |
-|-----|--------|
-| F12 | Toggle terminal |
-| Enter | Execute command |
-| Tab | Autocomplete |
-
-```bash
-cargo run -- demos/terminal_demo
-```
-
----
-
-## demo_game
-
-A complete shooting gallery mini-game: aim with mouse, fire physics balls at targets, score points before time runs out.
-
-**Key APIs**: `luna.physics`, `luna.mouse.getPosition`, `luna.physics.getCollisionEvents`, `luna.timer.getTime`
-
-| Input | Action |
-|-------|--------|
-| Mouse move | Aim |
-| Left click | Fire |
-| R | Reset |
-
-```bash
-cargo run -- demos/demo_game
-```
-
----
-
-## maze_defense
-
-Maze-building tower defense: place walls to funnel enemies along longer paths and shoot them with towers. A BFS path check prevents placing walls that seal the exit.
-
-**Key APIs**: `luna.graphics`, `luna.mouse`, `luna.timer.getTime`
-
-| Key / Input | Action |
-|-------------|--------|
-| W | Select wall |
-| T | Select tower |
-| Left click | Place/upgrade |
-| Escape | Quit |
-
-```bash
-cargo run -- demos/maze_defense
-```
-
----
-
-## medical_sim
-
-Step-based medical diagnosis and triage sim. Your team treats a queue of patients with different conditions; each step of the treatment workflow must be completed in the correct order.
-
-**Key APIs**: `luna.timer`, `luna.gui`, `luna.graphics`
-
-| Input | Action |
-|-------|--------|
-| Click | Select tool / apply |
-| Space | Advance step |
-
-```bash
-cargo run -- demos/medical_sim
-```
-
----
-
-## metroidvania
-
-Multi-room exploration platformer with ability unlocks. Rooms connect through doors; some paths require abilities found in other areas.
-
-**Key APIs**: `luna.physics`, `luna.tilemap`, `luna.camera`
-
-| Key | Action |
-|-----|--------|
-| WASD / Arrow | Move |
-| Space | Jump |
-| Z | Use ability |
-
-```bash
-cargo run -- demos/metroidvania
-```
-
----
-
-## mining
-
-Dig-down resource extraction on a 50×80 destructible grid. Break tiles to expose ore veins and collect materials before oxygen runs out.
-
-**Key APIs**: `luna.tilemap`, `luna.physics`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| WASD | Move |
-| Space | Drill |
-| R | Restart |
-
-```bash
-cargo run -- demos/mining
-```
-
----
-
-## party_games
-
-Three quick minigames — avoid meteors, pop balloons, and play reaction bingo — in a single session. Demonstrates scene switching and per-game scoring.
-
-**Key APIs**: `luna.scene`, `luna.input`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| Arrow / WASD | Move |
-| Space | Action |
-| Tab | Skip to next game |
-
-```bash
-cargo run -- demos/party_games
-```
-
----
-
-## physics_puzzle
-
-Physics-based level progression: position ramps, wedges, and balls to knock a target into a goal. Physics joints let you hinge and anchor pieces.
-
-**Key APIs**: `luna.physics`, `luna.graphics`, `luna.input`
-
-| Input | Action |
-|-------|--------|
-| Drag | Place / move piece |
-| Space | Launch ball |
-| R | Reset level |
-
-```bash
-cargo run -- demos/physics_puzzle
-```
-
----
-
-## physics_sandbox
-
-Open-ended physics playground: spawn circles, rectangles, and polygons; apply gravity flips and explosions.
-
-**Key APIs**: `luna.physics`, `luna.graphics`, `luna.input`
-
-| Key / Input | Action |
-|-------------|--------|
-| Left click | Spawn shape |
-| G | Flip gravity |
-| E | Explosion |
-| C | Clear all |
-
-```bash
-cargo run -- demos/physics_sandbox
-```
-
----
-
-## pinball
-
-Classic electromechanical pinball with flippers, bumpers, ramps, and a persistent high-score.
-
-**Key APIs**: `luna.physics`, `luna.graphics`, `luna.input`
-
-| Key | Action |
-|-----|--------|
-| Z | Left flipper |
-| / | Right flipper |
-| Space | Launch ball |
-
-```bash
-cargo run -- demos/pinball
-```
-
----
-
-## platform_fighter
-
-Two-player Smash-style platform fighting: knockback, hitstun, and percent damage instead of HP.
-
-**Key APIs**: `luna.physics`, `luna.input`, `luna.animation`
-
-| Player 1 | Player 2 | Action |
-|----------|----------|--------|
-| WASD | Arrow keys | Move |
-| J / K | Numpad 1/2 | Attack / Special |
-
-```bash
-cargo run -- demos/platform_fighter
-```
-
----
-
-## railroad
-
-Train network logistics: lay H/V/curve track tiles to link stations, spawn trains automatically, and earn revenue per delivery.
-
-**Key APIs**: `luna.graph`, `luna.pathfinding`, `luna.graphics`
-
-| Input | Action |
-|-------|--------|
-| Left click | Place selected track |
-| 1–6 | Select track type |
-
-```bash
-cargo run -- demos/railroad
-```
-
----
-
-## rhythm_game
-
-Four-lane rhythm game with scrolling notes, three timing tiers (Perfect / Good / OK), and a combo multiplier that scales score.
-
-**Key APIs**: `luna.audio`, `luna.timer`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| D F J K | Hit lanes 1–4 |
-| Space | Start / skip |
-
-```bash
-cargo run -- demos/rhythm_game
-```
-
----
-
-## roguelike
-
-Turn-based dungeon crawler: BSP room generation, L-shaped corridors, fog of war, bump-to-attack combat, and procedural floor depth scaling.
-
-**Key APIs**: `luna.tilemap`, `luna.ai`, `luna.entity`
-
-| Key | Action |
-|-----|--------|
-| Arrow keys | Move / attack |
-| R | Restart on death |
-
-```bash
-cargo run -- demos/roguelike
-```
-
----
-
-## roguelite
-
-Hades-style real-time action roguelite: room-clearing combat, perk selection after each room, and boss encounters every 5 rooms.
-
-**Key APIs**: `luna.physics`, `luna.entity`, `luna.graphics`
-
-| Key / Input | Action |
-|-------------|--------|
-| WASD | Move |
-| Left click | Attack |
-| Shift | Dash |
-
-```bash
-cargo run -- demos/roguelite
-```
-
----
-
-## rts
-
-Real-time strategy with two unit types (workers and soldiers), base building, and resource gathering. Click to select and right-click to command.
-
-**Key APIs**: `luna.ai`, `luna.pathfinding`, `luna.entity`
-
-| Input | Action |
-|-------|--------|
-| Left click | Select |
-| Right click | Move / attack |
-| B | Build |
-
-```bash
-cargo run -- demos/rts
-```
-
----
-
-## sniper
-
-Long-range precision sniping with realistic bullet drag and drop. Hostile targets move along patrol paths; bullets travel ballistic arcs.
-
-**Key APIs**: `luna.camera`, `luna.physics`, `luna.graphics`
-
-| Key / Input | Action |
-|-------------|--------|
-| Mouse | Aim |
-| Left click | Fire |
-| Right click | Zoom |
-| R | Reload |
-
-```bash
-cargo run -- demos/sniper
-```
-
----
-
-## social_deduction
-
-Among Us-style social deduction: one traitor wins by sabotage; crew wins by completing tasks. NPC characters vote each round.
-
-**Key APIs**: `luna.ai`, `luna.event`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| WASD | Move |
-| E | Interact |
-| Space | Call meeting |
-
-```bash
-cargo run -- demos/social_deduction
-```
-
----
-
-## soulslike
-
-Stamina-gated combat boss duel: light and heavy attacks, block (with stamina drain), dodge with invincibility frames, and a two-phase boss that telegraphs its swings.
-
-**Key APIs**: `luna.physics`, `luna.animation`, `luna.entity`
-
-| Key | Action |
-|-----|--------|
-| A / D | Move left / right |
-| J | Light attack |
-| K | Heavy attack |
-| Space | Block |
-| Shift | Dodge |
-
-```bash
-cargo run -- demos/soulslike
-```
-
----
-
-## sports_manager
-
-Season-based football management: assemble a squad, choose tactics, simulate matches, and manage the wage bill to avoid relegation.
-
-**Key APIs**: `luna.ai`, `luna.data`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| Click | Select player / action |
-| Space | Simulate match |
-| T | Change tactics |
-
-```bash
-cargo run -- demos/sports_manager
-```
-
----
-
-## stealth
-
-Top-down stealth infiltration with guard vision cones, LoS occlusion through walls, suspicion meters, and hiding spots.
-
-**Key APIs**: `luna.ai`, `luna.light`, `luna.pathfinding`
-
-| Key | Action |
-|-----|--------|
-| WASD | Move |
-| Shift | Crouch (reduces LoS range) |
-| Escape | Quit |
-
-```bash
-cargo run -- demos/stealth
-```
-
----
-
-## survival_crafting
-
-Day/night survival: gather resources, craft tools and shelter, and survive increasingly harsh nights. A crafting-tree UI shows available recipes.
-
-**Key APIs**: `luna.library/crafting`, `luna.entity`, `luna.tilemap`
-
-| Key | Action |
-|-----|--------|
-| WASD | Move |
-| E | Interact / gather |
-| C | Open crafting |
-
-```bash
-cargo run -- demos/survival_crafting
-```
-
----
-
-## tactical_battle
-
-Grid-based tactical combat (8×8) with knights and archers. Manhattan-diamond movement, terrain cover, and alternating player / AI turns.
-
-**Key APIs**: `luna.tilemap`, `luna.ai`, `luna.entity`
-
-| Input | Action |
-|-------|--------|
-| Click unit | Select |
-| Click tile | Move |
-| Click enemy | Attack |
-| Enter | End turn |
-
-```bash
-cargo run -- demos/tactical_battle
-```
-
----
-
-## tower_defense
-
-Classic fixed-path tower defense: place towers to reduce the health of waves of enemies following a preset route.
-
-**Key APIs**: `luna.ai`, `luna.pathfinding`, `luna.entity`
-
-| Input | Action |
-|-------|--------|
-| Click tower button | Select type |
-| Click tile | Place tower |
-| Space | Start wave |
-
-```bash
-cargo run -- demos/tower_defense
-```
-
----
-
-## tower_sim
-
-Build-up corporate tower sim: stack floors — offices, labs, cafes — to attract tenants and maximize profit. Simulates elevator capacity and employee happiness.
-
-**Key APIs**: `luna.entity`, `luna.ai`, `luna.graphics`
-
-| Input | Action |
-|-------|--------|
-| Click floor type | Select |
-| Click column | Add floor |
-| Space | Advance day |
-
-```bash
-cargo run -- demos/tower_sim
-```
-
----
-
-## trajectory_sports
-
-Multi-sport trajectory challenge (golf, basketball, artillery). Aim angle + power determine the arc; wind and slope modify the result.
-
-**Key APIs**: `luna.physics`, `luna.graphics`, `luna.camera`
-
-| Key / Input | Action |
-|-------------|--------|
-| Left / Right | Adjust angle |
-| Hold Space | Charge power |
-| Release Space | Shoot |
-| Tab | Switch sport |
-
-```bash
-cargo run -- demos/trajectory_sports
-```
-
----
-
-## tycoon
-
-Restaurant tycoon on a 15×12 pixel-art grid: place kitchens, seating, and decor to attract customers, earn income, and expand.
-
-**Key APIs**: `luna.ai`, `luna.entity`, `luna.graphics`
-
-| Input | Action |
-|-------|--------|
-| Click item | Select |
-| Click tile | Place |
-| Space | Advance time |
-
-```bash
-cargo run -- demos/tycoon
-```
-
----
-
-## vehicle_builder
-
-Design a vehicle from parts (wheels, hull, engine, wings), then test it on a physics track. Adjust weight distribution to find the optimal configuration.
-
-**Key APIs**: `luna.physics`, `luna.graphics`, `luna.input`
-
-| Input | Action |
-|-------|--------|
-| Drag part | Position |
-| T | Test drive |
-| R | Reset |
-| B | Back to builder |
-
-```bash
-cargo run -- demos/vehicle_builder
-```
-
----
-
-## vertical_climber
-
-Doodle Jump-style endless vertical climber (400×600 portrait). Jump on platforms that scroll down; fall off the screen and it's over.
-
-**Key APIs**: `luna.physics`, `luna.camera`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| Left / Right (or A / D) | Move |
-| Space | Jump boost |
-
-```bash
-cargo run -- demos/vertical_climber
-```
-
----
-
-## visual_novel
-
-Branching visual novel engine with three romanceable characters (Luna, Sol, Nova). Affection scores determine which of three endings plays. Typewriter text with auto-advance on Space hold.
-
-**Key APIs**: `luna.library/dialog`, `luna.graphics`
-
-| Key | Action |
-|-----|--------|
-| Space / Enter | Advance / confirm choice |
-| 1 / 2 / 3 | Select choice |
-
-```bash
-cargo run -- demos/visual_novel
-```
-
----
-
-## wargame
-
-Hex-adjacent grid military wargame: command Blue versus a greedy Red AI. Three unit classes (infantry, cavalry, artillery), terrain modifiers, and d6 combat rolls.
-
-**Key APIs**: `luna.tilemap`, `luna.ai`, `luna.entity`
-
-| Key / Input | Action |
-|-------------|--------|
-| Click unit | Select |
-| Click tile / enemy | Move / attack (costs 1 CP) |
-| Space | End turn |
-
-```bash
-cargo run -- demos/wargame
-```
-
----
-
-## wildlife_photo
-
-Wildlife photography safari on a 1600×1200 scrolling world. Stalk animals, wait for good poses, and score bonus points for rare species.
-
-**Key APIs**: `luna.ai`, `luna.camera`, `luna.graphics`
-
-| Key / Input | Action |
-|-------------|--------|
-| WASD | Move |
-| Space / Left click | Take photo |
-| Zoom in when still | Bonus score |
-
-```bash
-cargo run -- demos/wildlife_photo
-```
-
----
-
-## zoo_tycoon
-
-Zoo management tycoon on a 20×15 grid: build enclosures, buy animals, hire keepers, and keep visitor happiness high to earn income.
-
-**Key APIs**: `luna.ai`, `luna.entity`, `luna.graphics`
-
-| Input | Action |
-|-------|--------|
-| Click button | Select object |
-| Click tile | Place |
-| Space | Advance day |
-
-```bash
-cargo run -- demos/zoo_tycoon
-```
+## Classic Arcade
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="arcade/pong/screen.png" width="160" height="120" alt="Pong"> | [Pong](arcade/pong) | Classic 2-player paddle game — first to 7 wins |
+| <img src="arcade/pac_man/screen.png" width="160" height="120" alt="Pac Man"> | [Pac Man](arcade/pac_man) | Grid maze, 4 ghosts, dots and power pellets |
+| <img src="arcade/tetris/screen.png" width="160" height="120" alt="Tetris"> | [Tetris](arcade/tetris) | 7 tetrominos, rotation, ghost piece, line clearing |
+| <img src="arcade/snake/screen.png" width="160" height="120" alt="Snake"> | [Snake](arcade/snake) | Growing snake — eat food, avoid yourself |
+| <img src="arcade/space_invaders/screen.png" width="160" height="120" alt="Space Invaders"> | [Space Invaders](arcade/space_invaders) | 11×5 invader grid, destructible barriers |
+| <img src="arcade/galaga/screen.png" width="160" height="120" alt="Galaga"> | [Galaga](arcade/galaga) | Formation enemies with dive attacks and capture beam |
+| <img src="arcade/asteroids/screen.png" width="160" height="120" alt="Asteroids"> | [Asteroids](arcade/asteroids) | Vector wireframe ship with inertia and splitting rocks |
+| <img src="arcade/centipede/screen.png" width="160" height="120" alt="Centipede"> | [Centipede](arcade/centipede) | Mushroom field, segmented centipede, bouncing spider |
+| <img src="arcade/frogger/screen.png" width="160" height="120" alt="Frogger"> | [Frogger](arcade/frogger) | Lane crossing, log riding, 5 lily-pad homes |
+| <img src="arcade/donkey_kong/screen.png" width="160" height="120" alt="Donkey Kong"> | [Donkey Kong](arcade/donkey_kong) | Sloped platforms, rolling barrels, ladders |
+
+## Retro Classics
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="retro/boulder_dash/screen.png" width="160" height="120" alt="Boulder Dash"> | [Boulder Dash](retro/boulder_dash) | Dig through a cave, collect diamonds to escape |
+| <img src="retro/giana_sisters/screen.png" width="160" height="120" alt="Giana Sisters"> | [Giana Sisters](retro/giana_sisters) | Side-scrolling platformer — gems, enemies, exit |
+| <img src="retro/commando/screen.png" width="160" height="120" alt="Commando"> | [Commando](retro/commando) | Vertical-scroll top-down shooter with grenades |
+| <img src="retro/paradroid/screen.png" width="160" height="120" alt="Paradroid"> | [Paradroid](retro/paradroid) | Space station shooter with robot transfer minigame |
+| <img src="retro/turrican/screen.png" width="160" height="120" alt="Turrican"> | [Turrican](retro/turrican) | Run-and-gun platformer with continuous energy beam |
+| <img src="retro/lemmings/screen.png" width="160" height="120" alt="Lemmings"> | [Lemmings](retro/lemmings) | Assign jobs to guide lemmings to the exit |
+| <img src="retro/cannon_fodder/screen.png" width="160" height="120" alt="Cannon Fodder"> | [Cannon Fodder](retro/cannon_fodder) | 3-man squad auto-fire shooter across 5 missions |
+| <img src="retro/sensible_soccer/screen.png" width="160" height="120" alt="Sensible Soccer"> | [Sensible Soccer](retro/sensible_soccer) | 5v5 top-down football with CPU team AI |
+| <img src="retro/another_world/screen.png" width="160" height="120" alt="Another World"> | [Another World](retro/another_world) | 3-scene cinematic platformer with shield deflection |
+| <img src="retro/shadow_beast/screen.png" width="160" height="120" alt="Shadow Beast"> | [Shadow Beast](retro/shadow_beast) | Atmospheric parallax side-scroller — 3 stages |
+
+## Sports
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="sports/tennis_classic/screen.png" width="160" height="120" alt="Tennis Classic"> | [Tennis Classic](sports/tennis_classic) | Top-down tennis — topspin, full scoring (Deuce/Adv) |
+| <img src="sports/track_and_field/screen.png" width="160" height="120" alt="Track And Field"> | [Track And Field](sports/track_and_field) | 4 Olympic events: sprint, long jump, hurdles, hammer |
+| <img src="sports/ski_jump/screen.png" width="160" height="120" alt="Ski Jump"> | [Ski Jump](sports/ski_jump) | 3-phase ski jump — crouch, fly, land |
+| <img src="sports/boxing_ring/screen.png" width="160" height="120" alt="Boxing Ring"> | [Boxing Ring](sports/boxing_ring) | 3-round boxing — jab, hook, block, CPU opponent |
+| <img src="sports/golf_classic/screen.png" width="160" height="120" alt="Golf Classic"> | [Golf Classic](sports/golf_classic) | 9-hole golf with wind, water, bunkers, trees |
+| <img src="sports/drift_racing/screen.png" width="160" height="120" alt="Drift Racing"> | [Drift Racing](sports/drift_racing) | Top-down drift racing with physics |
+| <img src="sports/fishing/screen.png" width="160" height="120" alt="Fishing"> | [Fishing](sports/fishing) | Fishing minigame with rod physics |
+| <img src="sports/pinball/screen.png" width="160" height="120" alt="Pinball"> | [Pinball](sports/pinball) | Classic pinball machine |
+| <img src="sports/rhythm_game/screen.png" width="160" height="120" alt="Rhythm Game"> | [Rhythm Game](sports/rhythm_game) | Musical rhythm note matching |
+| <img src="sports/trajectory_sports/screen.png" width="160" height="120" alt="Trajectory Sports"> | [Trajectory Sports](sports/trajectory_sports) | Trajectory-based sports game |
+| <img src="sports/sports_manager/screen.png" width="160" height="120" alt="Sports Manager"> | [Sports Manager](sports/sports_manager) | Sports team management sim |
+
+## Action / Platformer
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="action/platformer/screen.png" width="160" height="120" alt="Platformer"> | [Platformer](action/platformer) | Side-scrolling character controller |
+| <img src="action/metroidvania/screen.png" width="160" height="120" alt="Metroidvania"> | [Metroidvania](action/metroidvania) | Exploration platformer with locked areas |
+| <img src="action/bullet_hell/screen.png" width="160" height="120" alt="Bullet Hell"> | [Bullet Hell](action/bullet_hell) | Bullet-hell shoot-em-up |
+| <img src="action/horde_survivor/screen.png" width="160" height="120" alt="Horde Survivor"> | [Horde Survivor](action/horde_survivor) | Vampire Survivors-style horde defense |
+| <img src="action/roguelite/screen.png" width="160" height="120" alt="Roguelite"> | [Roguelite](action/roguelite) | Action roguelite with procedural runs |
+| <img src="action/soulslike/screen.png" width="160" height="120" alt="Soulslike"> | [Soulslike](action/soulslike) | Stamina-based combat action game |
+| <img src="action/fighting_game/screen.png" width="160" height="120" alt="Fighting Game"> | [Fighting Game](action/fighting_game) | 2-player fighting game |
+| <img src="action/platform_fighter/screen.png" width="160" height="120" alt="Platform Fighter"> | [Platform Fighter](action/platform_fighter) | Smash-style platform fighting |
+| <img src="action/vertical_climber/screen.png" width="160" height="120" alt="Vertical Climber"> | [Vertical Climber](action/vertical_climber) | Vertical climbing platformer |
+| <img src="action/stealth/screen.png" width="160" height="120" alt="Stealth"> | [Stealth](action/stealth) | Stealth infiltration game |
+| <img src="action/infiltration/screen.png" width="160" height="120" alt="Infiltration"> | [Infiltration](action/infiltration) | Stealth infiltration game (alternate) |
+| <img src="action/sniper/screen.png" width="160" height="120" alt="Sniper"> | [Sniper](action/sniper) | Precision sniping stealth game |
+| <img src="action/endless_runner/screen.png" width="160" height="120" alt="Endless Runner"> | [Endless Runner](action/endless_runner) | Auto-scrolling obstacle runner |
+| <img src="action/brick_breaker/screen.png" width="160" height="120" alt="Brick Breaker"> | [Brick Breaker](action/brick_breaker) | Breakout-style brick-breaking game |
+
+## Strategy / Puzzle
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="strategy/physics_puzzle/screen.png" width="160" height="120" alt="Physics Puzzle"> | [Physics Puzzle](strategy/physics_puzzle) | Physics-based puzzle game |
+| <img src="strategy/bridge_builder/screen.png" width="160" height="120" alt="Bridge Builder"> | [Bridge Builder](strategy/bridge_builder) | Structural bridge building puzzle |
+| <img src="strategy/logic_game/screen.png" width="160" height="120" alt="Logic Game"> | [Logic Game](strategy/logic_game) | Logic circuit puzzle game |
+| <img src="strategy/match3/screen.png" width="160" height="120" alt="Match3"> | [Match3](strategy/match3) | Match-3 gem swapping puzzle |
+| <img src="strategy/maze_defense/screen.png" width="160" height="120" alt="Maze Defense"> | [Maze Defense](strategy/maze_defense) | Maze-building tower defense |
+| <img src="strategy/hex_strategy/screen.png" width="160" height="120" alt="Hex Strategy"> | [Hex Strategy](strategy/hex_strategy) | Hex-grid turn-based strategy |
+| <img src="strategy/tactical_battle/screen.png" width="160" height="120" alt="Tactical Battle"> | [Tactical Battle](strategy/tactical_battle) | Grid-based tactical combat |
+| <img src="strategy/wargame/screen.png" width="160" height="120" alt="Wargame"> | [Wargame](strategy/wargame) | Hex-grid military wargame |
+| <img src="strategy/rts/screen.png" width="160" height="120" alt="Rts"> | [Rts](strategy/rts) | Real-time strategy base building |
+| <img src="strategy/deckbuilder/screen.png" width="160" height="120" alt="Deckbuilder"> | [Deckbuilder](strategy/deckbuilder) | Roguelike deckbuilding card game |
+| <img src="strategy/card_game/screen.png" width="160" height="120" alt="Card Game"> | [Card Game](strategy/card_game) | Collectible card battles |
+| <img src="strategy/tower_defense/screen.png" width="160" height="120" alt="Tower Defense"> | [Tower Defense](strategy/tower_defense) | Tower placement defense game |
+| <img src="strategy/party_games/screen.png" width="160" height="120" alt="Party Games"> | [Party Games](strategy/party_games) | Multi-minigame party collection |
+
+## Simulation / Management
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="simulation/physics_demo/screen.png" width="160" height="120" alt="Physics Demo"> | [Physics Demo](simulation/physics_demo) | Rigid bodies, sensors, collisions demo |
+| <img src="simulation/physics_sandbox/screen.png" width="160" height="120" alt="Physics Sandbox"> | [Physics Sandbox](simulation/physics_sandbox) | Interactive physics sandbox |
+| <img src="simulation/colony_sim/screen.png" width="160" height="120" alt="Colony Sim"> | [Colony Sim](simulation/colony_sim) | Ant colony management sim |
+| <img src="simulation/idle_game/screen.png" width="160" height="120" alt="Idle Game"> | [Idle Game](simulation/idle_game) | Incremental idle clicker |
+| <img src="simulation/tycoon/screen.png" width="160" height="120" alt="Tycoon"> | [Tycoon](simulation/tycoon) | Theme park tycoon management |
+| <img src="simulation/zoo_tycoon/screen.png" width="160" height="120" alt="Zoo Tycoon"> | [Zoo Tycoon](simulation/zoo_tycoon) | Zoo management tycoon |
+| <img src="simulation/hotel_manager/screen.png" width="160" height="120" alt="Hotel Manager"> | [Hotel Manager](simulation/hotel_manager) | Hotel management tycoon |
+| <img src="simulation/tower_sim/screen.png" width="160" height="120" alt="Tower Sim"> | [Tower Sim](simulation/tower_sim) | Corporate tower building sim |
+| <img src="simulation/factory/screen.png" width="160" height="120" alt="Factory"> | [Factory](simulation/factory) | Factory automation conveyor sim |
+| <img src="simulation/farming_sim/screen.png" width="160" height="120" alt="Farming Sim"> | [Farming Sim](simulation/farming_sim) | Crop planting and harvesting sim |
+| <img src="simulation/mining/screen.png" width="160" height="120" alt="Mining"> | [Mining](simulation/mining) | Dig-down mining resource game |
+| <img src="simulation/railroad/screen.png" width="160" height="120" alt="Railroad"> | [Railroad](simulation/railroad) | Train network railroad tycoon |
+| <img src="simulation/medical_sim/screen.png" width="160" height="120" alt="Medical Sim"> | [Medical Sim](simulation/medical_sim) | Medical diagnosis triage game |
+| <img src="simulation/god_game/screen.png" width="160" height="120" alt="God Game"> | [God Game](simulation/god_game) | God simulation with worshippers |
+| <img src="simulation/vehicle_builder/screen.png" width="160" height="120" alt="Vehicle Builder"> | [Vehicle Builder](simulation/vehicle_builder) | Vehicle construction physics |
+| <img src="simulation/cooking_sim/screen.png" width="160" height="120" alt="Cooking Sim"> | [Cooking Sim](simulation/cooking_sim) | Multi-step recipe cooking sim |
+| <img src="simulation/wildlife_photo/screen.png" width="160" height="120" alt="Wildlife Photo"> | [Wildlife Photo](simulation/wildlife_photo) | Wildlife photography safari |
+
+## RPG / Narrative
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="rpg/roguelike/screen.png" width="160" height="120" alt="Roguelike"> | [Roguelike](rpg/roguelike) | Turn-based dungeon roguelike |
+| <img src="rpg/adventure/screen.png" width="160" height="120" alt="Adventure"> | [Adventure](rpg/adventure) | Point-and-click adventure game |
+| <img src="rpg/creature_collector/screen.png" width="160" height="120" alt="Creature Collector"> | [Creature Collector](rpg/creature_collector) | Monster catching and battling |
+| <img src="rpg/loot_rpg_demo/screen.png" width="160" height="120" alt="Loot Rpg Demo"> | [Loot Rpg Demo](rpg/loot_rpg_demo) | RPG loot and inventory demo |
+| <img src="rpg/visual_novel/screen.png" width="160" height="120" alt="Visual Novel"> | [Visual Novel](rpg/visual_novel) | Visual novel story engine demo |
+| <img src="rpg/dialog_demo/screen.png" width="160" height="120" alt="Dialog Demo"> | [Dialog Demo](rpg/dialog_demo) | Typewriter text and branching dialog |
+| <img src="rpg/courtroom/screen.png" width="160" height="120" alt="Courtroom"> | [Courtroom](rpg/courtroom) | Courtroom debate evidence game |
+| <img src="rpg/social_deduction/screen.png" width="160" height="120" alt="Social Deduction"> | [Social Deduction](rpg/social_deduction) | Among Us-style social deduction |
+| <img src="rpg/alchemy/screen.png" width="160" height="120" alt="Alchemy"> | [Alchemy](rpg/alchemy) | Potion brewing with ingredient combos |
+| <img src="rpg/merchant_demo/screen.png" width="160" height="120" alt="Merchant Demo"> | [Merchant Demo](rpg/merchant_demo) | Shop and trading system demo |
+| <img src="rpg/horror/screen.png" width="160" height="120" alt="Horror"> | [Horror](rpg/horror) | First-person horror exploration |
+| <img src="rpg/survival_crafting/screen.png" width="160" height="120" alt="Survival Crafting"> | [Survival Crafting](rpg/survival_crafting) | Survival crafting game |
+
+## Engine Showcase
+
+| Preview | Demo | Description |
+|:-------:|------|-------------|
+| <img src="showcase/hello_world/screen.png" width="160" height="120" alt="Hello World"> | [Hello World](showcase/hello_world) | Minimal game: shapes, text, keyboard |
+| <img src="showcase/sprites/screen.png" width="160" height="120" alt="Sprites"> | [Sprites](showcase/sprites) | Sprite movement and mouse input |
+| <img src="showcase/demo_game/screen.png" width="160" height="120" alt="Demo Game"> | [Demo Game](showcase/demo_game) | Complete shooting gallery game |
+| <img src="showcase/particles_demo/screen.png" width="160" height="120" alt="Particles Demo"> | [Particles Demo](showcase/particles_demo) | Particle emitter systems showcase |
+| <img src="showcase/scene_demo/screen.png" width="160" height="120" alt="Scene Demo"> | [Scene Demo](showcase/scene_demo) | Multi-screen state machine demo |
+| <img src="showcase/tween_demo/screen.png" width="160" height="120" alt="Tween Demo"> | [Tween Demo](showcase/tween_demo) | All easing curves side-by-side |
+| <img src="showcase/signal_demo/screen.png" width="160" height="120" alt="Signal Demo"> | [Signal Demo](showcase/signal_demo) | Pub-sub event bus demo |
+| <img src="showcase/patterns_demo/screen.png" width="160" height="120" alt="Patterns Demo"> | [Patterns Demo](showcase/patterns_demo) | 6 game design patterns in Lua |
+| <img src="showcase/minimap_demo/screen.png" width="160" height="120" alt="Minimap Demo"> | [Minimap Demo](showcase/minimap_demo) | Fog-of-war overhead minimap demo |
+| <img src="showcase/nine_slice_demo/screen.png" width="160" height="120" alt="Nine Slice Demo"> | [Nine Slice Demo](showcase/nine_slice_demo) | Scalable 9-patch UI panels demo |
+| <img src="showcase/overlay_demo/screen.png" width="160" height="120" alt="Overlay Demo"> | [Overlay Demo](showcase/overlay_demo) | Z-ordered render layers demo |
+| <img src="showcase/postfx_demo/screen.png" width="160" height="120" alt="Postfx Demo"> | [Postfx Demo](showcase/postfx_demo) | Post-processing effects stack |
+| <img src="showcase/localization_demo/screen.png" width="160" height="120" alt="Localization Demo"> | [Localization Demo](showcase/localization_demo) | Multi-language string system demo |
+| <img src="showcase/light_demo/screen.png" width="160" height="120" alt="Light Demo"> | [Light Demo](showcase/light_demo) | 2D dynamic lighting demo |
+| <img src="showcase/light_showcase/screen.png" width="160" height="120" alt="Light Showcase"> | [Light Showcase](showcase/light_showcase) | Advanced lighting effects gallery |
+| <img src="showcase/terminal_demo/screen.png" width="160" height="120" alt="Terminal Demo"> | [Terminal Demo](showcase/terminal_demo) | In-game developer terminal |
+| <img src="showcase/automation_demo/screen.png" width="160" height="120" alt="Automation Demo"> | [Automation Demo](showcase/automation_demo) | Automated input replay demo |
+| <img src="showcase/debugbridge_demo/screen.png" width="160" height="120" alt="Debugbridge Demo"> | [Debugbridge Demo](showcase/debugbridge_demo) | TCP debug server (JSON-RPC) demo |
+| <img src="showcase/devtools_demo/screen.png" width="160" height="120" alt="Devtools Demo"> | [Devtools Demo](showcase/devtools_demo) | Runtime diagnostics overlay |
+| <img src="showcase/docs_demo/screen.png" width="160" height="120" alt="Docs Demo"> | [Docs Demo](showcase/docs_demo) | In-game API browser |
+| <img src="showcase/modding_demo/screen.png" width="160" height="120" alt="Modding Demo"> | [Modding Demo](showcase/modding_demo) | Mod discovery and loading demo |
+| <img src="showcase/province_demo/screen.png" width="160" height="120" alt="Province Demo"> | [Province Demo](showcase/province_demo) | Province map strategy demo |
+| <img src="showcase/hacking_game/screen.png" width="160" height="120" alt="Hacking Game"> | [Hacking Game](showcase/hacking_game) | Network-hacking puzzle game |
+| <img src="showcase/music_composer/screen.png" width="160" height="120" alt="Music Composer"> | [Music Composer](showcase/music_composer) | Music sequencer and composer |
 
 ---
 

@@ -1,4 +1,4 @@
--- examples/window.lua
+﻿-- examples/window.lua
 -- Luna2D luna.window API Reference
 -- This file is documentation code, not a runnable game.
 -- Every luna.window function is demonstrated with inline comments.
@@ -100,8 +100,8 @@ luna.window.setDisplaySleepEnabled(false)  -- keep display on
 -- Window Icon
 -- ─────────────────────────────────────────────────────────────────────────────
 
--- Set the window's taskbar / titlebar icon (load with luna.graphics.newImage)
--- local icon_img = luna.graphics.newImage("icon.png")
+-- Set the window's taskbar / titlebar icon (load with luna.render.newImage)
+-- local icon_img = luna.render.newImage("icon.png")
 -- luna.window.setIcon(icon_img)
 
 -- ─────────────────────────────────────────────────────────────────────────────

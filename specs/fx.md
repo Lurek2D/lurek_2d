@@ -1,10 +1,10 @@
-# `fx` — Agent Reference
+﻿# `fx` — Agent Reference
 
 | Property       | Value                                               |
 |----------------|-----------------------------------------------------|
 | **Tier**       | Tier 2 — Engine Extensions                          |
 | **Status**     | Implemented — Full                                  |
-| **Lua API**    | `luna.fx`                                           |
+| **Lua API**    | `luna.postfx`                                           |
 | **Source**      | `src/fx/`                                           |
 | **Rust Tests** | `tests/rust/unit/fx_tests.rs`                       |
 | **Lua Tests**  | —                                                   |
@@ -44,7 +44,7 @@ Domain modules never import `fx` — only `lua_api` reads these data models.
 ## Architecture
 
 ```
-luna.fx (Lua)
+luna.postfx (Lua)
     |
     v
 src/lua_api/fx_api.rs          <-- bridge: wraps data models as UserData
@@ -226,17 +226,17 @@ Weather particle types: None, Rain (fast narrow streaks), Snow (slow large dots)
 
 ## Lua API
 
-The full Lua-facing surface is registered in `src/lua_api/fx_api.rs` under the `luna.fx` namespace. The module exposes five factory functions and four UserData types.
+The full Lua-facing surface is registered in `src/lua_api/fx_api.rs` under the `luna.postfx` namespace. The module exposes five factory functions and four UserData types.
 
 ### Factory Functions
 
 | Function | Signature | Description |
 |----------|-----------|-------------|
-| `luna.fx.newEffect(type_name)` | `(string) -> PostFxEffect` | Creates a built-in post-processing effect by name (e.g. `"bloom"`, `"blur"`, `"crt"`). Errors on unknown names. |
-| `luna.fx.newCustomEffect(shader_id)` | `(integer) -> PostFxEffect` | Creates a custom shader post-processing effect referencing the given shader ID. |
-| `luna.fx.newStack(width, height)` | `(integer, integer) -> PostFxStack` | Creates a new post-processing pipeline stack with the given canvas dimensions. |
-| `luna.fx.newImageEffect(name)` | `(string) -> ImageEffect` | Creates a new per-image effect chain with the given label. |
-| `luna.fx.newOverlay(width, height)` | `(integer, integer) -> Overlay` | Creates a screen overlay controller for weather, flash, shake, fade, and atmospheric effects. |
+| `luna.postfx.newEffect(type_name)` | `(string) -> PostFxEffect` | Creates a built-in post-processing effect by name (e.g. `"bloom"`, `"blur"`, `"crt"`). Errors on unknown names. |
+| `luna.postfx.newCustomEffect(shader_id)` | `(integer) -> PostFxEffect` | Creates a custom shader post-processing effect referencing the given shader ID. |
+| `luna.postfx.newStack(width, height)` | `(integer, integer) -> PostFxStack` | Creates a new post-processing pipeline stack with the given canvas dimensions. |
+| `luna.postfx.newImageEffect(name)` | `(string) -> ImageEffect` | Creates a new per-image effect chain with the given label. |
+| `luna.postfx.newOverlay(width, height)` | `(integer, integer) -> Overlay` | Creates a screen overlay controller for weather, flash, shake, fade, and atmospheric effects. |
 
 ### PostFxEffect Methods
 
@@ -304,14 +304,14 @@ The full Lua-facing surface is registered in `src/lua_api/fx_api.rs` under the `
 
 ```lua
 -- Post-processing: apply bloom + CRT scanlines to the scene
-local bloom = luna.fx.newEffect("bloom")
+local bloom = luna.postfx.newEffect("bloom")
 bloom:setParameter("threshold", 0.6)
 bloom:setParameter("intensity", 1.5)
 
-local crt = luna.fx.newEffect("crt")
+local crt = luna.postfx.newEffect("crt")
 crt:setParameter("scanline_strength", 0.4)
 
-local stack = luna.fx.newStack(800, 600)
+local stack = luna.postfx.newStack(800, 600)
 stack:add(0)  -- bloom at index 0
 stack:add(1)  -- crt at index 1
 
@@ -325,7 +325,7 @@ end
 
 ```lua
 -- Screen overlay: weather + flash + shake
-local overlay = luna.fx.newOverlay(800, 600)
+local overlay = luna.postfx.newOverlay(800, 600)
 
 function luna.update(dt)
     overlay:update(dt)
@@ -344,15 +344,15 @@ end
 function luna.draw()
     -- Apply shake offset to camera
     local sx, sy = overlay:getShakeOffset()
-    luna.graphics.translate(sx, sy)
+    luna.render.translate(sx, sy)
 
     -- ... draw scene ...
 
     -- Draw flash overlay
     local flashAlpha = overlay:getFlashAlpha()
     if flashAlpha > 0 then
-        luna.graphics.setColor(1, 1, 1, flashAlpha)
-        luna.graphics.rectangle("fill", 0, 0, 800, 600)
+        luna.render.setColor(1, 1, 1, flashAlpha)
+        luna.render.rectangle("fill", 0, 0, 800, 600)
     end
 end
 ```
@@ -385,5 +385,5 @@ end
 - **Weather particle cap**: `WeatherState` caps live particles at `intensity * 200`. High-intensity weather (`intensity > 0.8`) can produce up to 200 particles per frame. The spawner uses a hash-based pseudo-random for deterministic-ish placement.
 - **Overlay update order**: `Overlay::update(dt)` processes subsystems in a fixed order: ambient, weather, flash, shake, fade, clouds, lightning. Inactive subsystems incur only a branch-check overhead.
 - **Shake PRNG**: `ShakeState` uses a simple xorshift32 PRNG (seeded at 12345) for deterministic shake sequences. The PRNG is not thread-safe but does not need to be — Lua VM is single-threaded.
-- **No Lua BDD tests**: There are currently no Lua-side tests for `luna.fx`. Rust-side coverage exists in `tests/rust/unit/fx_tests.rs` (27 tests covering effect types, stack operations, overlay defaults, and weather round-trips).
-- **Breaking change surface**: Renaming `PostFxEffectType` variant string names (e.g. `"bloom"` to `"glow"`) would break all Lua scripts using `luna.fx.newEffect()`. The `from_name`/`name` round-trip is a public API contract.
+- **No Lua BDD tests**: There are currently no Lua-side tests for `luna.postfx`. Rust-side coverage exists in `tests/rust/unit/fx_tests.rs` (27 tests covering effect types, stack operations, overlay defaults, and weather round-trips).
+- **Breaking change surface**: Renaming `PostFxEffectType` variant string names (e.g. `"bloom"` to `"glow"`) would break all Lua scripts using `luna.postfx.newEffect()`. The `from_name`/`name` round-trip is a public API contract.

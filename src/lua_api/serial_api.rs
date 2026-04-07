@@ -1,4 +1,4 @@
-//! `luna.serial` — Format-agnostic string serialization: JSON, TOML, and CSV.
+﻿//! `luna.codec` — Format-agnostic string serialization: JSON, TOML, and CSV.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -22,7 +22,7 @@ fn parse_delimiter(delim: Option<String>) -> u8 {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.serial` API table with the Lua VM.
+/// Registers the `luna.codec` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`. The Lua VM.
@@ -123,6 +123,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    luna.set("serial", tbl)?;
+    luna.set("codec", tbl)?;
     Ok(())
 }

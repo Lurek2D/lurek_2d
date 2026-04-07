@@ -1,10 +1,10 @@
-# `fx` — Agent Reference
+﻿# `fx` — Agent Reference
 
 | Property       | Value                                               |
 |----------------|-----------------------------------------------------|
 | **Tier**       | Tier 2 — Engine Extensions                          |
 | **Status**     | Implemented — Full                                  |
-| **Lua API**    | `luna.fx`                                           |
+| **Lua API**    | `luna.postfx`                                           |
 | **Source**      | `src/fx/`                                           |
 | **Rust Tests** | `tests/rust/unit/fx_tests.rs`                       |
 | **Lua Tests**  | —                                                   |

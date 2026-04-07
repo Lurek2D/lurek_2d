@@ -1,4 +1,4 @@
-# `lua_api` — Agent Reference
+﻿# `lua_api` — Agent Reference
 
 | Property | Value |
 |----------|-------|
@@ -28,19 +28,19 @@ follows the same registration contract — `pub fn register(lua, luna_table, sta
 src/lua_api/
 ├── mod.rs            — create_lua_vm(), VM init, StdLib selection, global nulling
 ├── userdata.rs       — LunaType trait, shared UserData patterns
-├── graphics_api/     — luna.graphics.*
+├── graphics_api/     — luna.render.*
 ├── audio_api.rs      — luna.audio.*
 ├── input_api.rs      — luna.input.*, luna.keyboard.*, luna.mouse.*, luna.gamepad.*
-├── timer_api.rs      — luna.timer.*
+├── timer_api.rs      — luna.time.*
 ├── math_api.rs       — luna.math.*
 ├── physics_api.rs    — luna.physics.*
-├── filesystem_api.rs — luna.filesystem.*
+├── filesystem_api.rs — luna.fs.*
 ├── window_api.rs     — luna.window.*
-├── event_api.rs      — luna.event.*
-├── system_api.rs     — luna.system.*
-├── particle_api.rs   — luna.particle.*
+├── event_api.rs      — luna.signal.*
+├── system_api.rs     — luna.platform.*
+├── particle_api.rs   — luna.particles.*
 ├── data_api.rs       — luna.data.*
-├── image_api.rs      — luna.image.*
+├── image_api.rs      — luna.img.*
 ├── sound_api.rs      — luna.sound.*
 ├── thread_api/       — luna.thread.*
 ├── terminal_api.rs   — luna.terminal.*
@@ -164,19 +164,19 @@ impl LuaUserData for LuaImage {
 |------|---------|
 | `mod.rs` | VM creation, StdLib selection, global nulling, module registration |
 | `userdata.rs` | `LunaType` trait, shared UserData patterns |
-| `graphics_api/` | `luna.graphics.*` — drawing, images, fonts, canvases, shaders |
+| `graphics_api/` | `luna.render.*` — drawing, images, fonts, canvases, shaders |
 | `audio_api.rs` | `luna.audio.*` — sources, playback, volume, buses |
 | `input_api.rs` | `luna.input.*`, `luna.keyboard.*`, `luna.mouse.*`, `luna.gamepad.*`, `luna.touch.*` |
-| `timer_api.rs` | `luna.timer.*` — delta time, FPS, sleep (Gold standard for docstring format) |
+| `timer_api.rs` | `luna.time.*` — delta time, FPS, sleep (Gold standard for docstring format) |
 | `math_api.rs` | `luna.math.*` — trig, random, noise, transforms, Bezier |
 | `physics_api.rs` | `luna.physics.*` — worlds, bodies, joints, raycasting |
-| `filesystem_api.rs` | `luna.filesystem.*` — sandboxed I/O, file handles, archives |
+| `filesystem_api.rs` | `luna.fs.*` — sandboxed I/O, file handles, archives |
 | `window_api.rs` | `luna.window.*` — fullscreen, VSync, display info, clipboard |
-| `event_api.rs` | `luna.event.*` — event queue, quit |
-| `system_api.rs` | `luna.system.*` — OS info, openURL, locales |
-| `particle_api.rs` | `luna.particle.*` — emitters, config, rendering |
+| `event_api.rs` | `luna.signal.*` — event queue, quit |
+| `system_api.rs` | `luna.platform.*` — OS info, openURL, locales |
+| `particle_api.rs` | `luna.particles.*` — emitters, config, rendering |
 | `data_api.rs` | `luna.data.*` — binary data, compression, hashing, encoding |
-| `image_api.rs` | `luna.image.*` — CPU pixel buffers, pixel manipulation |
+| `image_api.rs` | `luna.img.*` — CPU pixel buffers, pixel manipulation |
 | `sound_api.rs` | `luna.sound.*` — decoded PCM audio samples |
 | `thread_api/` | `luna.thread.*` — worker threads, channels |
 | `terminal_api.rs` | `luna.terminal.*` — in-game developer terminal |

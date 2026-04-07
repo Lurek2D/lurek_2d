@@ -1,4 +1,4 @@
-# `engine` — Agent Reference
+﻿# `engine` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -338,8 +338,8 @@ Five error categories: `Init`, `Runtime`, `Resource`, `Script`, `System`. Used b
 No Lua API — foundation module. The engine module does not expose a `luna.engine`
 namespace. It provides the infrastructure consumed by all other modules and by
 `src/lua_api/` for lifecycle orchestration. Lua interacts with engine functionality
-indirectly through `luna.system` (log level, system info), `luna.window` (window
-state), `luna.event` (quit, restart), and `luna.graphics` (draw commands, screenshot).
+indirectly through `luna.platform` (log level, system info), `luna.window` (window
+state), `luna.signal` (quit, restart), and `luna.render` (draw commands, screenshot).
 
 ## Lua Examples
 

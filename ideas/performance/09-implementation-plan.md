@@ -1,4 +1,4 @@
-# Implementation Plan — Phased Performance Improvements
+﻿# Implementation Plan — Phased Performance Improvements
 
 ## Guiding Principles
 
@@ -135,7 +135,7 @@
 
 ### 3.4 Async asset Lua API
 - **Priority**: P2
-- **What**: `luna.graphics.newImageAsync()`, `luna.audio.newSourceAsync()`
+- **What**: `luna.render.newImageAsync()`, `luna.audio.newSourceAsync()`
 - **Impact**: Non-blocking asset loading from game scripts
 - **Files**: `src/lua_api/graphics_api.rs`, `src/lua_api/audio_api.rs`
 - **Test**: Loading screen example that polls asset readiness
@@ -149,7 +149,7 @@
 - **What**: Instance buffer for repeated sprites (same texture, different transforms)
 - **Impact**: 100–1000× draw call reduction for particle-like effects
 - **Files**: `src/graphics/gpu_renderer/`, shader changes
-- **Lua API**: Automatic when using SpriteBatch, manual via `luna.graphics.newInstanceBatch()`
+- **Lua API**: Automatic when using SpriteBatch, manual via `luna.render.newInstanceBatch()`
 - **Test**: 10k sprites benchmark, draw call counter
 
 ### 4.2 Texture atlas auto-packing
@@ -164,7 +164,7 @@
 - **What**: wgpu compute shaders for element-wise ops and convolution
 - **Impact**: 10–100× for 100k+ elements
 - **Files**: New compute pipeline in `src/graphics/gpu_renderer/`
-- **Lua API**: `luna.compute.gpuAdd(a, b)` or automatic offload
+- **Lua API**: `luna.gpu.gpuAdd(a, b)` or automatic offload
 - **Test**: GPU vs CPU benchmark for 1M element add
 
 ### 4.4 GPU tilemap rendering
@@ -198,7 +198,7 @@
 - **What**: Cache tessellated vertex data for non-moving draw commands
 - **Impact**: Eliminate re-tessellation for backgrounds, UI
 - **Files**: `src/graphics/gpu_renderer/render_pass.rs`, new cache layer
-- **Lua API**: `luna.graphics.newGeometryCache()`
+- **Lua API**: `luna.render.newGeometryCache()`
 
 ### 5.4 Render thread separation
 - **Priority**: P4

@@ -1,4 +1,4 @@
-# filesystem — Feature Analysis
+﻿# filesystem — Feature Analysis
 
 **Tier**: 1 (Core)
 **Spec**: `specs/filesystem.md`
@@ -28,7 +28,7 @@ Sandboxed filesystem access via GameFS: read/write files within game directory a
 5. **No temp files**: No `createTempFile()` for intermediate processing.
 6. **No symlink support**: Symlinks are resolved but can't be created. Low priority.
 7. **No file locking**: Can't lock files for exclusive access. Relevant for save files with multiple processes.
-8. **No file copy/move**: Must read+write to copy a file. `luna.filesystem.copy(src, dst)` would be convenient.
+8. **No file copy/move**: Must read+write to copy a file. `luna.fs.copy(src, dst)` would be convenient.
 
 ## Structural Issues
 
@@ -38,11 +38,11 @@ Sandboxed filesystem access via GameFS: read/write files within game directory a
 
 ## Suggestions
 
-1. **Add ZIP mounting** (high priority): `luna.filesystem.mountZip(path, mountPoint)` — unlocks `.luna` distribution format and mod archives.
-2. **Add file watcher**: `luna.filesystem.watch(path, fn)` — callback when file changes. Enables hot reload — the most requested missing feature.
-3. **Add glob listing**: `luna.filesystem.glob("assets/**/*.png")` → filtered file list. Quality-of-life.
-4. **Add file copy**: `luna.filesystem.copy(src, dst)` and `luna.filesystem.move(src, dst)`.
-5. **Add recursive rmdir**: `luna.filesystem.removeDir(path, recursive)`.
+1. **Add ZIP mounting** (high priority): `luna.fs.mountZip(path, mountPoint)` — unlocks `.luna` distribution format and mod archives.
+2. **Add file watcher**: `luna.fs.watch(path, fn)` — callback when file changes. Enables hot reload — the most requested missing feature.
+3. **Add glob listing**: `luna.fs.glob("assets/**/*.png")` → filtered file list. Quality-of-life.
+4. **Add file copy**: `luna.fs.copy(src, dst)` and `luna.fs.move(src, dst)`.
+5. **Add recursive rmdir**: `luna.fs.removeDir(path, recursive)`.
 
 ## Competitor Comparison
 

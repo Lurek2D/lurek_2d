@@ -1,10 +1,10 @@
-# `serial` — Agent Reference
+﻿# `serial` — Agent Reference
 
 | Property         | Value                                                |
 |------------------|------------------------------------------------------|
 | **Tier**         | Tier 2 — Engine Extensions                           |
 | **Status**       | Implemented — Full                                   |
-| **Lua API**      | `luna.serial`                                        |
+| **Lua API**      | `luna.codec`                                        |
 | **Source**        | `src/serial/`                                        |
 | **Rust Tests**   | `tests/rust/unit/serial_tests.rs`                    |
 | **Lua Tests**    | `tests/lua/unit/test_serial.lua`                     |
@@ -16,7 +16,7 @@ The `serial` module provides format-agnostic serialization and deserialization f
 
 Three format drivers are active: **JSON** (via `serde_json`), **TOML** (via the `toml` crate), and **CSV** (via the `csv` crate with `indexmap` for ordered column maps). A fourth driver, **YAML** (via `serde_yml`), exists on disk as `yaml.rs` but is commented out of `mod.rs` and not compiled; design constraint B-05 prohibits YAML anywhere in the project, so TOML is the canonical human-authored config format and JSON handles external interop. The `lua_table.rs` file is named after its primary use case — bridging Lua tables and text formats — but its `SerialValue` enum is format-neutral and used by all drivers.
 
-The module performs pure string-in / string-out transformations; it contains no file I/O, no GPU interaction, no audio, and no physics. Callers supply raw text and receive parsed `SerialValue` trees (or serialized strings). File loading is handled by `luna.filesystem` or `luna.data`. The Lua API layer (`serial_api.rs`) provides bidirectional conversion between `SerialValue` and Lua tables via two internal helpers (`serial_value_to_lua` and `lua_value_to_serial`) that handle integer/float discrimination, sequence vs. map detection, and string-key enforcement.
+The module performs pure string-in / string-out transformations; it contains no file I/O, no GPU interaction, no audio, and no physics. Callers supply raw text and receive parsed `SerialValue` trees (or serialized strings). File loading is handled by `luna.fs` or `luna.data`. The Lua API layer (`serial_api.rs`) provides bidirectional conversion between `SerialValue` and Lua tables via two internal helpers (`serial_value_to_lua` and `lua_value_to_serial`) that handle integer/float discrimination, sequence vs. map detection, and string-key enforcement.
 
 **Scope boundary**: `serial` owns text format parsing and serialization only. Binary serialization (`pack`/`unpack`) belongs to `data`. Save-file orchestration belongs to `savegame`. Configuration loading (`conf.lua`) belongs to `engine`.
 
@@ -24,7 +24,7 @@ The module performs pure string-in / string-out transformations; it contains no 
 
 ```
                       ┌─────────────────────────────┐
-                      │       luna.serial (Lua)      │
+                      │       luna.codec (Lua)      │
                       │  fromJson  toJson            │
                       │  fromToml  toToml            │
                       │  fromCsv   toCsv             │
@@ -120,16 +120,16 @@ Derives `Debug` and `Clone`.
 
 ## Lua API
 
-Exposed under `luna.serial.*` by `src/lua_api/serial_api.rs`. The API provides six functions covering three formats (JSON, TOML, CSV), each with a parse (`from*`) and serialize (`to*`) direction. Two internal helper functions (`serial_value_to_lua` and `lua_value_to_serial`) handle bidirectional conversion between `SerialValue` trees and Lua tables. Integer/float discrimination is performed automatically: whole-number floats within `i64` range are promoted to `Int`.
+Exposed under `luna.codec.*` by `src/lua_api/serial_api.rs`. The API provides six functions covering three formats (JSON, TOML, CSV), each with a parse (`from*`) and serialize (`to*`) direction. Two internal helper functions (`serial_value_to_lua` and `lua_value_to_serial`) handle bidirectional conversion between `SerialValue` trees and Lua tables. Integer/float discrimination is performed automatically: whole-number floats within `i64` range are promoted to `Int`.
 
 | Function                                      | Description                                                        |
 |-----------------------------------------------|--------------------------------------------------------------------|
-| `luna.serial.fromJson(s)`                     | Parse a JSON string, return a Lua table.                           |
-| `luna.serial.toJson(value, pretty?)`          | Serialize a Lua value to a JSON string. `pretty` defaults to false.|
-| `luna.serial.fromToml(s)`                     | Parse a TOML string, return a Lua table.                           |
-| `luna.serial.toToml(value)`                   | Serialize a Lua table to a TOML string. Root must be a table.      |
-| `luna.serial.fromCsv(s, delimiter?, headers?)`| Parse a CSV string. `delimiter` defaults to `","`, `headers` to true.|
-| `luna.serial.toCsv(value, delimiter?, headers?)`| Serialize a sequence of row tables to a CSV string.              |
+| `luna.codec.fromJson(s)`                     | Parse a JSON string, return a Lua table.                           |
+| `luna.codec.toJson(value, pretty?)`          | Serialize a Lua value to a JSON string. `pretty` defaults to false.|
+| `luna.codec.fromToml(s)`                     | Parse a TOML string, return a Lua table.                           |
+| `luna.codec.toToml(value)`                   | Serialize a Lua table to a TOML string. Root must be a table.      |
+| `luna.codec.fromCsv(s, delimiter?, headers?)`| Parse a CSV string. `delimiter` defaults to `","`, `headers` to true.|
+| `luna.codec.toCsv(value, delimiter?, headers?)`| Serialize a sequence of row tables to a CSV string.              |
 
 ## Lua Examples
 
@@ -139,11 +139,11 @@ function luna.load()
     local data = { name = "Luna2D", version = 4, features = { "physics", "audio" } }
 
     -- Serialize to JSON (pretty-printed)
-    local json = luna.serial.toJson(data, true)
+    local json = luna.codec.toJson(data, true)
     print(json)
 
     -- Parse back
-    local parsed = luna.serial.fromJson(json)
+    local parsed = luna.codec.fromJson(json)
     print(parsed.name)       -- "Luna2D"
     print(parsed.version)    -- 4
     print(parsed.features[1]) -- "physics"
@@ -153,15 +153,15 @@ end
 ```lua
 -- TOML config parsing
 function luna.load()
-    local toml_str = luna.filesystem.read("settings.toml")
-    local cfg = luna.serial.fromToml(toml_str)
+    local toml_str = luna.fs.read("settings.toml")
+    local cfg = luna.codec.fromToml(toml_str)
     print(cfg.window.title)
     print(cfg.window.width)
 
     -- Modify and write back
     cfg.window.width = 1920
-    local out = luna.serial.toToml(cfg)
-    luna.filesystem.write("settings.toml", out)
+    local out = luna.codec.toToml(cfg)
+    luna.fs.write("settings.toml", out)
 end
 ```
 
@@ -169,13 +169,13 @@ end
 -- CSV data loading
 function luna.load()
     local csv_text = "name,score\nalice,100\nbob,85\n"
-    local rows = luna.serial.fromCsv(csv_text)
+    local rows = luna.codec.fromCsv(csv_text)
     for i, row in ipairs(rows) do
         print(row.name .. ": " .. row.score)
     end
 
     -- Tab-separated with custom delimiter
-    local tsv = luna.serial.fromCsv("a\tb\n1\t2", "\t")
+    local tsv = luna.codec.fromCsv("a\tb\n1\t2", "\t")
 end
 ```
 
@@ -199,12 +199,12 @@ Note: counts reflect the active (compiled) surface only. The disabled `yaml.rs` 
 | `data`       | Similar      | `data` owns binary formats (pack/unpack, compression, hashing). `serial` owns text formats (JSON, TOML, CSV). |
 | `savegame`   | Related      | `savegame` orchestrates save/load; may use `serial` for structured data persistence. |
 | `filesystem` | Related      | `filesystem` provides file I/O; `serial` provides string parsing. Combine them for file-based config. |
-| `lua_api`    | Imported by  | `serial_api.rs` binds the public API to `luna.serial.*`.         |
+| `lua_api`    | Imported by  | `serial_api.rs` binds the public API to `luna.codec.*`.         |
 
 ## Notes
 
 - **Constraint B-05**: TOML is the human-authored config format; JSON is for external interop. YAML is not used anywhere in the project. The `yaml.rs` file is kept on disk but commented out of `mod.rs` and the `serde_yml` dependency has been dropped.
-- **No file I/O**: The module is purely string-in / string-out. Game scripts combine `luna.filesystem.read()` with `luna.serial.fromJson()` (or similar) to load structured data from files.
+- **No file I/O**: The module is purely string-in / string-out. Game scripts combine `luna.fs.read()` with `luna.codec.fromJson()` (or similar) to load structured data from files.
 - **Map ordering**: `SerialValue::Map` uses `IndexMap` (from the `indexmap` crate) to preserve insertion order. This is important for CSV column ordering and for producing stable TOML/JSON output.
 - **Integer promotion**: The `lua_value_to_serial` helper in `serial_api.rs` promotes whole-number Lua floats to `SerialValue::Int` when they fit in `i64` range.
 - **TOML root constraint**: `to_toml` requires the root value to be a Map (i.e., a Lua table with string keys). Calling it with a sequence or scalar produces an error.
@@ -218,7 +218,7 @@ Note: counts reflect the active (compiled) surface only. The disabled `yaml.rs` 
 -- Example: Basic serial usage
 function luna.load()
     -- TODO: replace with real serial setup
-    local obj = luna.serial.serial()
+    local obj = luna.codec.serial()
 end
 
 function luna.update(dt)

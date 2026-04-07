@@ -1,4 +1,4 @@
-//! `luna.event` — Event queue polling and pub-sub signal dispatching.
+﻿//! `luna.signal` — Event queue polling and pub-sub signal dispatching.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -134,7 +134,7 @@ impl LuaUserData for LuaSignal {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.event` API table with the Lua VM.
+/// Registers the `luna.signal` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`. The Lua VM.
@@ -272,6 +272,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("event", tbl)?;
+    luna.set("signal", tbl)?;
     Ok(())
 }

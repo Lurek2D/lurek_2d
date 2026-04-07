@@ -1,4 +1,4 @@
--- Simple tower defense starter
+﻿-- Simple tower defense starter
 local path = {
     { x = 0,   y = 300 },
     { x = 200, y = 300 },
@@ -96,30 +96,30 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.1, 0.15, 0.1)
+    luna.render.clear(0.1, 0.15, 0.1)
 
     -- Draw path
-    luna.graphics.setColor(0.3, 0.3, 0.25, 1)
+    luna.render.setColor(0.3, 0.3, 0.25, 1)
     for i = 1, #path - 1 do
-        luna.graphics.line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y)
+        luna.render.line(path[i].x, path[i].y, path[i + 1].x, path[i + 1].y)
     end
 
     -- Draw towers
     for _, t in ipairs(towers) do
-        luna.graphics.setColor(0.2, 0.6, 1, 1)
-        luna.graphics.rectangle("fill", t.x - 12, t.y - 12, 24, 24)
+        luna.render.setColor(0.2, 0.6, 1, 1)
+        luna.render.rectangle("fill", t.x - 12, t.y - 12, 24, 24)
     end
 
     -- Draw enemies
     for _, e in ipairs(enemies) do
-        luna.graphics.setColor(0.9, 0.2, 0.2, 1)
-        luna.graphics.circle("fill", e.x, e.y, 8)
+        luna.render.setColor(0.9, 0.2, 0.2, 1)
+        luna.render.circle("fill", e.x, e.y, 8)
     end
 
     -- UI
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("Wave: " .. wave .. "  Gold: " .. gold .. "  Lives: " .. lives, 10, 10)
-    luna.graphics.print("Click to place tower (" .. TOWER_COST .. "g)", 10, 580)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("Wave: " .. wave .. "  Gold: " .. gold .. "  Lives: " .. lives, 10, 10)
+    luna.render.print("Click to place tower (" .. TOWER_COST .. "g)", 10, 580)
 end
 
 function luna.mousepressed(x, y, btn)
@@ -130,5 +130,5 @@ function luna.mousepressed(x, y, btn)
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
 end

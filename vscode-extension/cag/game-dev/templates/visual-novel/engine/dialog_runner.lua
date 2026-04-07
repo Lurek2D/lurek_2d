@@ -1,4 +1,4 @@
-local DialogRunner = {}
+﻿local DialogRunner = {}
 DialogRunner.__index = DialogRunner
 
 local CHAR_SPEED = 30 -- characters per second
@@ -48,9 +48,9 @@ end
 
 function DialogRunner:draw()
     if self.finished then
-        luna.graphics.setColor(0.6, 0.6, 0.6, 1)
-        luna.graphics.print("~ End ~", 360, 480)
-        luna.graphics.setColor(1, 1, 1, 1)
+        luna.render.setColor(0.6, 0.6, 0.6, 1)
+        luna.render.print("~ End ~", 360, 480)
+        luna.render.setColor(1, 1, 1, 1)
         return
     end
 
@@ -58,25 +58,25 @@ function DialogRunner:draw()
     if not line then return end
 
     -- Dialog box
-    luna.graphics.setColor(0, 0, 0, 0.8)
-    luna.graphics.rectangle("fill", 20, 420, 760, 160)
-    luna.graphics.setColor(0.5, 0.4, 0.7, 1)
-    luna.graphics.rectangle("line", 20, 420, 760, 160)
+    luna.render.setColor(0, 0, 0, 0.8)
+    luna.render.rectangle("fill", 20, 420, 760, 160)
+    luna.render.setColor(0.5, 0.4, 0.7, 1)
+    luna.render.rectangle("line", 20, 420, 760, 160)
 
     -- Speaker name
-    luna.graphics.setColor(0.9, 0.7, 1, 1)
-    luna.graphics.print(line.speaker, 40, 430)
+    luna.render.setColor(0.9, 0.7, 1, 1)
+    luna.render.print(line.speaker, 40, 430)
 
     -- Typewriter text
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
     local visible = string.sub(line.text, 1, math.floor(self.char_count))
-    luna.graphics.print(visible, 40, 460)
+    luna.render.print(visible, 40, 460)
 
     -- Continue indicator
     if self.line_done then
-        luna.graphics.setColor(0.7, 0.7, 0.7, 1)
-        luna.graphics.print("▼", 750, 560)
-        luna.graphics.setColor(1, 1, 1, 1)
+        luna.render.setColor(0.7, 0.7, 0.7, 1)
+        luna.render.print("▼", 750, 560)
+        luna.render.setColor(1, 1, 1, 1)
     end
 end
 

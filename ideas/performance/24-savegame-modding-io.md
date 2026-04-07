@@ -1,4 +1,4 @@
-# Savegame, Modding, and I/O Threading Deep Dive
+﻿# Savegame, Modding, and I/O Threading Deep Dive
 
 ## Modules Covered
 - `src/savegame/` — slot-based save/load, schema migration
@@ -232,11 +232,11 @@ Pre-announce assets that will be needed 2–3 seconds in future:
 
 ```lua
 -- In a loading screen:
-luna.filesystem.prefetch("level_data/world2.dat")
-luna.filesystem.prefetch("audio/boss_music.ogg")
+luna.fs.prefetch("level_data/world2.dat")
+luna.fs.prefetch("audio/boss_music.ogg")
 
 -- When actually used 3 seconds later:
-local data = luna.filesystem.read("level_data/world2.dat")  -- already in cache
+local data = luna.fs.read("level_data/world2.dat")  -- already in cache
 ```
 
 ---

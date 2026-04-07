@@ -1,21 +1,21 @@
--- examples/image.lua
--- luna.image — CPU-side pixel buffer manipulation (ImageData and CompressedImageData).
--- All luna.image API methods demonstrated with code and comments.
+﻿-- examples/image.lua
+-- luna.img — CPU-side pixel buffer manipulation (ImageData and CompressedImageData).
+-- All luna.img API methods demonstrated with code and comments.
 
 -- ── ImageData ────────────────────────────────────────────────────────────────
 
 -- newImageData(width, height) → ImageData
 -- Creates a new RGBA8 pixel buffer filled with transparent black.
-local img_data = luna.image.newImageData(64, 64)
+local img_data = luna.img.newImageData(64, 64)
 
 -- newImageData(path) → ImageData
 -- Loads an image file from the game filesystem into a CPU pixel buffer.
-local loaded = luna.image.newImageData("textures/player.png")
+local loaded = luna.img.newImageData("textures/player.png")
 
 -- newImageData(width, height, bytes) → ImageData
 -- Creates an ImageData from raw bytes (must be width*height*4 bytes, RGBA8 order).
 local raw_bytes = string.rep("\xFF\x00\x00\xFF", 4 * 4)  -- 4x4 solid red
-local from_bytes = luna.image.newImageData(4, 4, raw_bytes)
+local from_bytes = luna.img.newImageData(4, 4, raw_bytes)
 
 -- ── ImageData : dimensions ────────────────────────────────────────────────────
 
@@ -49,7 +49,7 @@ end)
 
 -- paste(source_img_data, dest_x, dest_y)
 -- Copies all pixels from source into this buffer at (dest_x, dest_y).
-local stamp = luna.image.newImageData(8, 8)
+local stamp = luna.img.newImageData(8, 8)
 stamp:mapPixel(function(_, _, _, _, _, _)
     return 255, 0, 0, 255  -- fill with red
 end)
@@ -65,25 +65,25 @@ local byte_count = #raw  -- 64 * 64 * 4 = 16384
 
 -- encode("png") → string  — PNG-compressed bytes, ready to write to a file.
 local png_bytes = img_data:encode("png")
-luna.filesystem.write("output.png", png_bytes)
+luna.fs.write("output.png", png_bytes)
 
 -- ── Using ImageData to modify a GPU texture ───────────────────────────────────
 
 -- Luna2D allows uploading an ImageData as a GPU texture:
---   local tex = luna.graphics.newImage(img_data)
---   luna.graphics.draw(tex, x, y)
+--   local tex = luna.render.newImage(img_data)
+--   luna.render.draw(tex, x, y)
 
 -- ── CompressedImageData ───────────────────────────────────────────────────────
 
 -- newCompressedData(path) → CompressedImageData
 -- Loads a DXT/BCn compressed texture from disk (e.g. a .dds file).
 -- The data stays GPU-compressed in CPU memory for fast upload.
--- local cdata = luna.image.newCompressedData("textures/rock_bc3.dds")
+-- local cdata = luna.img.newCompressedData("textures/rock_bc3.dds")
 
 -- isCompressed(imagedata_value) → boolean
 -- Returns true if the value is a CompressedImageData (not a standard ImageData).
--- local is_compressed = luna.image.isCompressed(cdata)  -- true
--- local is_standard   = luna.image.isCompressed(img_data)  -- false
+-- local is_compressed = luna.img.isCompressed(cdata)  -- true
+-- local is_standard   = luna.img.isCompressed(img_data)  -- false
 
 -- CompressedImageData : dimensions
 -- cdata:getWidth()   → integer
@@ -102,7 +102,7 @@ luna.filesystem.write("output.png", png_bytes)
 
 --[[
 function luna.load()
-    local pixels = luna.image.newImageData(256, 256)
+    local pixels = luna.img.newImageData(256, 256)
     pixels:mapPixel(function(x, y)
         -- Simple noise-based terrain colour
         local n = luna.math.noise(x / 50, y / 50)
@@ -114,10 +114,10 @@ function luna.load()
             return 20, 80, 200, 255    -- water
         end
     end)
-    terrain_tex = luna.graphics.newImage(pixels)
+    terrain_tex = luna.render.newImage(pixels)
 end
 
 function luna.draw()
-    luna.graphics.draw(terrain_tex, 0, 0)
+    luna.render.draw(terrain_tex, 0, 0)
 end
 ]]

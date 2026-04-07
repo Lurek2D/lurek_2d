@@ -1,4 +1,4 @@
-# compute — Feature Analysis
+﻿# compute — Feature Analysis
 
 **Tier**: 1 (Core)
 **Spec**: `specs/compute.md`
@@ -39,7 +39,7 @@ Dense N-dimensional numerical array operations: create, reshape, slice, element-
 
 ## Suggestions
 
-1. **Rename to `ndarray`**: `luna.ndarray.new(shape)` is clearer than `luna.compute.new(shape)`. The current name implies GPU compute which doesn't exist.
+1. **Rename to `ndarray`**: `luna.ndarray.new(shape)` is clearer than `luna.gpu.new(shape)`. The current name implies GPU compute which doesn't exist.
 2. **Consider merging with data**: Create a unified `luna.data` namespace: `luna.data.newBuffer(size)` for binary, `luna.data.newArray(shape)` for numerical. Reduces module count.
 3. **Move to Tier 2**: Unless game simulation commonly needs dense array math, this is more of an extension than core. Pathfinding flow fields and AI utility scoring might use it, but those are Tier 2 themselves.
 4. **Add ImageData interop**: `ndarray:fromImage(imageData)` / `ndarray:toImage()` — enables numerical image processing.

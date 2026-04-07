@@ -1,12 +1,12 @@
--- examples/animation.lua
--- luna.animation — Sprite animation: frame pools, named clips, speed control, events.
--- All luna.animation API methods demonstrated with code and comments.
+﻿-- examples/animation.lua
+-- luna.tween — Sprite animation: frame pools, named clips, speed control, events.
+-- All luna.tween API methods demonstrated with code and comments.
 
 -- ── Construction ─────────────────────────────────────────────────────────────
 
 -- Create a new, empty animation controller. Clips and frames are added
 -- manually before playback begins.
-local anim = luna.animation.new()
+local anim = luna.tween.new()
 
 -- ── Frame Pools ───────────────────────────────────────────────────────────────
 
@@ -40,7 +40,7 @@ anim:addClip("jump", {8, 9, 10}, 10, false)    -- plays once
 
 -- addClipFromGrid(name, tex_w, tex_h, frame_w, frame_h, start, count, fps, looping)
 -- Convenience form that slices and registers in one call.
-local anim2 = luna.animation.new()
+local anim2 = luna.tween.new()
 anim2:addClipFromGrid("run", 512, 64, 64, 64, 0, 8, 12, true)
 
 -- getClipCount() → integer
@@ -93,11 +93,11 @@ anim:setSpeed(1.0)   -- restore normal
 
 -- getQuad() → {x, y, w, h} or nil
 -- Returns the source rectangle for the current animation frame.
--- Use this to pass the correct UV region to luna.graphics.draw().
+-- Use this to pass the correct UV region to luna.render.draw().
 local quad = anim:getQuad()
 if quad then
     -- quad.x, quad.y, quad.w, quad.h define the source crop on the sprite sheet
-    -- luna.graphics.drawRegion(img, quad.x, quad.y, quad.w, quad.h, dest_x, dest_y)
+    -- luna.render.drawRegion(img, quad.x, quad.y, quad.w, quad.h, dest_x, dest_y)
 end
 
 -- ── Poll Events ───────────────────────────────────────────────────────────────
@@ -122,8 +122,8 @@ end
 
 --[[
 function luna.load()
-    img = luna.graphics.newImage("character.png")
-    anim = luna.animation.new()
+    img = luna.render.newImage("character.png")
+    anim = luna.tween.new()
     anim:addClipFromGrid("idle", 512, 64, 64, 64,  0, 4, 6, true)
     anim:addClipFromGrid("run",  512, 64, 64, 64,  4, 6, 12, true)
     anim:addClipFromGrid("jump", 512, 64, 64, 64, 10, 4, 10, false)
@@ -154,7 +154,7 @@ end
 function luna.draw()
     local q = anim:getQuad()
     if q then
-        luna.graphics.drawRegion(img, q.x, q.y, q.w, q.h, x, y)
+        luna.render.drawRegion(img, q.x, q.y, q.w, q.h, x, y)
     end
 end
 ]]

@@ -1,10 +1,10 @@
-# `filesystem` — Agent Reference
+﻿# `filesystem` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.filesystem`                                    |
+| **Lua API**    | `luna.fs`                                    |
 | **Source**     | `src/filesystem/`                                    |
 | **Rust Tests** | `tests/rust/unit/filesystem_tests.rs`                |
 | **Lua Tests**  | `tests/lua/unit/test_filesystem.lua`                 |

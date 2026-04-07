@@ -1,4 +1,4 @@
-//! `luna.filesystem` — Sandboxed file I/O, directory queries, and async asset loading.
+﻿//! `luna.fs` — Sandboxed file I/O, directory queries, and async asset loading.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -135,7 +135,7 @@ impl LuaUserData for LuaFileHandle {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.filesystem` API table with the Lua VM.
+/// Registers the `luna.fs` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`.
@@ -452,6 +452,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("filesystem", tbl)?;
+    luna.set("fs", tbl)?;
     Ok(())
 }

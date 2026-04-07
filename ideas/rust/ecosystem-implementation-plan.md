@@ -1,4 +1,4 @@
-# Luna2D Ecosystem Implementation Plan
+﻿# Luna2D Ecosystem Implementation Plan
 
 > **Purpose**: Detailed, task-level implementation plan for all ecosystem changes described in `docs/ecosystem-recommendations.md` (v2, 2026-03-31).
 > Each task has: scope, affected files, acceptance criteria, estimated SLoC, dependencies, and priority.
@@ -257,11 +257,11 @@ Breaking version bumps that require code changes. Each is a dedicated migration 
 1. Update `sysinfo` version to `"0.38"` with `default-features = false, features = ["system"]`.
 2. Rewrite CPU/memory queries to use new API.
 3. Add CPU utilization % and memory utilization % queries (replacing static CPU count / memory size).
-4. Add Lua bindings: `luna.system.getCpuUsage()`, `luna.system.getMemoryUsage()`, `luna.system.getProcessMemory()`.
-5. Keep backwards-compatible: `luna.system.getProcessorCount()` and `luna.system.getMemorySize()` still work.
+4. Add Lua bindings: `luna.platform.getCpuUsage()`, `luna.platform.getMemoryUsage()`, `luna.platform.getProcessMemory()`.
+5. Keep backwards-compatible: `luna.platform.getProcessorCount()` and `luna.platform.getMemorySize()` still work.
 6. Run `cargo test system`.
 
-**Acceptance gate**: `luna.system.getCpuUsage()` returns a percentage. `luna.system.getMemoryUsage()` returns used/total. Tests pass.
+**Acceptance gate**: `luna.platform.getCpuUsage()` returns a percentage. `luna.platform.getMemoryUsage()` returns used/total. Tests pass.
 
 ---
 
@@ -629,7 +629,7 @@ Expand game system modules with more features. All native Rust, no new crates.
 **Steps**:
 1. Add **PNG saving**: `ImageData:save(path)` using `image::save_buffer()`. ~20 SLoC.
 2. Add **PNG encoding to memory**: `ImageData:encode("png") → ByteData`. ~30 SLoC.
-3. Add **screenshot capture**: `luna.graphics.captureScreenshot(path)` that reads the GPU framebuffer and saves to PNG. ~50 SLoC.
+3. Add **screenshot capture**: `luna.render.captureScreenshot(path)` that reads the GPU framebuffer and saves to PNG. ~50 SLoC.
 4. Add **sub-image extraction**: `ImageData:getSubImage(x, y, w, h)`. ~20 SLoC.
 5. Add **image paste/blit**: `ImageData:paste(source, x, y)`. ~20 SLoC.
 6. Add **clone**: `ImageData:clone()`. ~10 SLoC.
@@ -731,7 +731,7 @@ Expand game system modules with more features. All native Rust, no new crates.
    - GPU buffer management for NdArray data.
    - Compute shader for parallel matmul.
    - Compute shader for parallel element-wise operations.
-2. Register `luna.compute.gpuMatmul(a, b)` in Lua API.
+2. Register `luna.gpu.gpuMatmul(a, b)` in Lua API.
 3. Implement fallback to CPU when GPU compute is unavailable.
 4. Benchmark: measure speedup for large arrays (>100K elements).
 

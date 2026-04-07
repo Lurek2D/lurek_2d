@@ -1,13 +1,13 @@
--- Luna2D Integration Test: Compute + DataFrame
+﻿-- Luna2D Integration Test: Compute + DataFrame
 -- Tests NdArray statistical operations feeding into DataFrame reports
 
 describe("integration: compute statistics to dataframe", function()
     it("compute array stats populate dataframe", function()
         -- Create arrays with known distributions
         local datasets = {
-            luna.compute.range(1, 101, 1, "float32"),    -- 1-100
-            luna.compute.ones({100}, "float32"),          -- all ones
-            luna.compute.range(50, 150, 1, "float32"),    -- 50-149
+            luna.gpu.range(1, 101, 1, "float32"),    -- 1-100
+            luna.gpu.ones({100}, "float32"),          -- all ones
+            luna.gpu.range(50, 150, 1, "float32"),    -- 50-149
         }
         local names = {"linear", "uniform", "offset"}
 
@@ -51,7 +51,7 @@ describe("integration: image data to compute array", function()
     it("image pixel data can be analyzed with compute", function()
         -- Create a gradient image
         local width, height = 16, 16
-        local img = luna.image.newImageData(width, height)
+        local img = luna.img.newImageData(width, height)
 
         -- Set pixels with gradient
         for y = 0, height - 1 do
@@ -70,7 +70,7 @@ describe("integration: image data to compute array", function()
         end
 
         -- Create compute array from red channel
-        local arr = luna.compute.fromTable(red_values, nil, "float32")
+        local arr = luna.gpu.fromTable(red_values, nil, "float32")
         expect_equal(256, arr:getSize(), "256 pixels")
 
         -- Analyze

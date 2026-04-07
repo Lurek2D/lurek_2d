@@ -1,4 +1,4 @@
--- examples/spine.lua
+﻿-- examples/spine.lua
 -- luna.spine — Hierarchical bone skeleton for 2D character animation rigs.
 -- Build skeletons at runtime, attach slots, query world transforms, and
 -- integrate with the graphics pipeline for frame-by-frame bone-driven rendering.
@@ -80,7 +80,7 @@ skel:updateWorldTransforms()
 --[[
 -- Pre-defined sub-image quads for each body part in the spritesheet
 local sprites = {}   -- sprites["head"], sprites["torso"], sprites["arm"], etc.
-local sheet         -- luna.graphics.newImage("characters.png")
+local sheet         -- luna.render.newImage("characters.png")
 
 -- Animate a bone angle over time
 local angle = 0
@@ -98,7 +98,7 @@ function luna.draw()
         local w = skel:getBoneWorld(i)
         if w then
             -- local quad = sprites[attachment_at_slot(i)]
-            -- luna.graphics.draw(sheet, quad, w.x, w.y, w.rotation, w.scale_x, w.scale_y)
+            -- luna.render.draw(sheet, quad, w.x, w.y, w.rotation, w.scale_x, w.scale_y)
         end
     end
 end

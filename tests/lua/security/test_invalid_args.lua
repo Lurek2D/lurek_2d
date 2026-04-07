@@ -1,4 +1,4 @@
--- Luna2D Validation Test: Invalid API Arguments
+﻿-- Luna2D Validation Test: Invalid API Arguments
 -- Tests that API functions handle bad inputs without crashing
 
 describe("validation: physics invalid args", function()
@@ -53,25 +53,25 @@ end)
 describe("validation: compute invalid args", function()
     it("rejects zero-dimension array", function()
         expect_error(function()
-            luna.compute.zeros({0}, "float32")
+            luna.gpu.zeros({0}, "float32")
         end, "zero dimension should error")
     end)
 
     it("rejects negative dimension", function()
         expect_error(function()
-            luna.compute.zeros({-5}, "float32")
+            luna.gpu.zeros({-5}, "float32")
         end, "negative dimension should error")
     end)
 
     it("rejects invalid dtype string", function()
         expect_error(function()
-            luna.compute.zeros({10}, "invalid_type")
+            luna.gpu.zeros({10}, "invalid_type")
         end, "invalid dtype should error")
     end)
 
     it("rejects too many dimensions", function()
         expect_error(function()
-            luna.compute.zeros({2, 3, 4, 5}, "float32")
+            luna.gpu.zeros({2, 3, 4, 5}, "float32")
         end, "4D should error")
     end)
 end)
@@ -150,13 +150,13 @@ describe("validation: image invalid operations", function()
     it("handles zero-size image gracefully", function()
         -- Engine may accept zero-size image without error
         expect_no_error(function()
-            luna.image.newImageData(0, 0)
+            luna.img.newImageData(0, 0)
         end, "zero size image should not crash")
     end)
 
     it("rejects loading nonexistent file", function()
         expect_error(function()
-            luna.image.newImageData("nonexistent_file.png")
+            luna.img.newImageData("nonexistent_file.png")
         end, "nonexistent file should error")
     end)
 end)

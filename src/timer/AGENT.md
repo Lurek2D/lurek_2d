@@ -1,10 +1,10 @@
-# `timer` — Agent Reference
+﻿# `timer` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.timer`                                         |
+| **Lua API**    | `luna.time`                                         |
 | **Source**     | `src/timer/`                                         |
 | **Rust Tests** | `tests/rust/unit/timer_tests.rs`                     |
 | **Lua Tests**  | `tests/lua/unit/test_timer.lua`                      |

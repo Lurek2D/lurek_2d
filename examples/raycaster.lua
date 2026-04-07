@@ -1,4 +1,4 @@
--- examples/raycaster.lua
+﻿-- examples/raycaster.lua
 -- luna.raycaster — DDA-based grid raycasting for retro FPS and dungeon-crawler games.
 -- Cast rays through a cell grid, project wall columns, check line of sight.
 -- All luna.raycaster API methods and utilities demonstrated with code and comments.
@@ -101,7 +101,7 @@ for col = 1, SCREEN_W do
     if h and h.hit then
         local top, col_h, bottom = luna.raycaster.projectColumn(h.distance, fov, SCREEN_H)
         -- draw textured vertical stripe at screen column (col-1)
-        -- luna.graphics.draw(wall_tex, col-1, top, 0, 1, col_h / wall_h, h.tex_u, 0, 1, 1)
+        -- luna.render.draw(wall_tex, col-1, top, 0, 1, col_h / wall_h, h.tex_u, 0, 1, 1)
     end
 end
 
@@ -115,7 +115,7 @@ for col = 1, SCREEN_W do
     local h = hits[col]
     if h and h.hit then
         local brightness = luna.raycaster.distanceShade(h.distance, max_dist)
-        -- luna.graphics.setColor(brightness, brightness, brightness)
+        -- luna.render.setColor(brightness, brightness, brightness)
     end
 end
 
@@ -147,7 +147,7 @@ if sp.visible then
     local sprite_h = SCREEN_H * sp.scale
     local draw_x   = sp.screen_x - sprite_h / 2
     local draw_y   = (SCREEN_H - sprite_h) / 2
-    -- luna.graphics.draw(sprite_img, draw_x, draw_y, 0, sp.scale, sp.scale)
+    -- luna.render.draw(sprite_img, draw_x, draw_y, 0, sp.scale, sp.scale)
 end
 
 -- ── Minimal FPS-Style Game Loop ───────────────────────────────────────────────
@@ -177,8 +177,8 @@ function luna.draw()
         if h and h.hit then
             local top, col_h, _ = luna.raycaster.projectColumn(h.distance, math.pi/2, SCREEN_H)
             local brightness = luna.raycaster.distanceShade(h.distance, 20)
-            luna.graphics.setColor(brightness, brightness * 0.5, 0)   -- brownish
-            luna.graphics.rectangle("fill", col-1, top, 1, col_h)
+            luna.render.setColor(brightness, brightness * 0.5, 0)   -- brownish
+            luna.render.rectangle("fill", col-1, top, 1, col_h)
         end
     end
 end

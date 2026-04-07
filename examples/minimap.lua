@@ -1,4 +1,4 @@
--- examples/minimap.lua
+﻿-- examples/minimap.lua
 -- luna.minimap — Mini-map renderer: terrain colors, fog of war, tracked
 -- objects, owner/faction tinting, zoom, and viewport indicator.
 -- All luna.minimap API methods demonstrated with code and comments.
@@ -175,6 +175,6 @@ end
 
 function luna.draw()
     -- draw minimap in top-right corner
-    luna.graphics.draw(mm:getImageData(), SCREEN_W - 210, 10)
+    luna.render.draw(mm:getImageData(), SCREEN_W - 210, 10)
 end
 ]]

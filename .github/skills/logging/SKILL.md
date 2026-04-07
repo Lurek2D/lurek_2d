@@ -1,4 +1,4 @@
----
+﻿---
 name: logging
 description: "Load this skill when adding, tuning, or analysing log output in Luna2D: setting up the log crate facade, choosing the right log level, controlling output with RUST_LOG, writing structured log messages, logging from Lua scripts, or using log output to debug engine and game behaviour. Use for: engine log instrumentation, RUST_LOG syntax, per-crate/per-module filtering, log-to-file patterns. Skip it for general debugging strategy (use dev-debugging skill) or analytics from collected log files (use analytics skill)."
 ---
@@ -150,8 +150,8 @@ logWarn("save file missing, starting fresh")
 local LOG_FILE = "game.log"
 
 local function logToFile(level, msg)
-    local line = string.format("[%s] %.3f  %s\n", level, luna.timer.getTime(), msg)
-    luna.filesystem.append(LOG_FILE, line)
+    local line = string.format("[%s] %.3f  %s\n", level, luna.time.getTime(), msg)
+    luna.fs.append(LOG_FILE, line)
 end
 
 logToFile("INFO",  "Level 1 started")
@@ -168,7 +168,7 @@ function luna.conf(t)
 end
 
 -- main.lua: enable verbose logging via a flag file
-local VERBOSE = luna.filesystem.exists("debug.flag")
+local VERBOSE = luna.fs.exists("debug.flag")
 
 local function dbg(msg)
     if VERBOSE then print("[DBG] " .. msg) end

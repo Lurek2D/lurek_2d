@@ -1,4 +1,4 @@
-local DialogRunner = require("engine.dialog_runner")
+﻿local DialogRunner = require("engine.dialog_runner")
 
 local dialog
 
@@ -16,16 +16,16 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.08, 0.06, 0.12)
+    luna.render.clear(0.08, 0.06, 0.12)
     -- Background area
-    luna.graphics.setColor(0.15, 0.1, 0.2, 1)
-    luna.graphics.rectangle("fill", 0, 0, 800, 400)
+    luna.render.setColor(0.15, 0.1, 0.2, 1)
+    luna.render.rectangle("fill", 0, 0, 800, 400)
     -- Dialog box
     dialog:draw()
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     if key == "space" or key == "return" then
         dialog:advance()
     end

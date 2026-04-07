@@ -1,4 +1,4 @@
-//! Per-widget-type, per-state styling system.
+﻿//! Per-widget-type, per-state styling system.
 //!
 //! A [`Theme`] maps `(WidgetType, WidgetState)` pairs to [`WidgetStyle`]
 //! records.  When the GUI context draws a widget it looks up the style for
@@ -6,8 +6,8 @@
 //! style if no state-specific entry exists, and finally to a hard-coded
 //! default if the type has no theme entry at all.
 //!
-//! The Lua API exposes `luna.gui.newTheme()`, `theme:setStyle()`, and
-//! `luna.gui.setTheme()` so game scripts can fully customise appearance
+//! The Lua API exposes `luna.ui.newTheme()`, `theme:setStyle()`, and
+//! `luna.ui.setTheme()` so game scripts can fully customise appearance
 //! without touching Rust.
 
 use std::collections::HashMap;

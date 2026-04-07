@@ -38,11 +38,11 @@ Create a folder with a `main.lua`:
 
 ```lua
 function luna.load()
-    luna.graphics.setBackgroundColor(0.1, 0.1, 0.2)
+    luna.render.setBackgroundColor(0.1, 0.1, 0.2)
 end
 
 function luna.draw()
-    luna.graphics.print("Hello, Luna2D!", 100, 100)
+    luna.render.print("Hello, Luna2D!", 100, 100)
 end
 ```
 
@@ -83,10 +83,10 @@ That's it. No project files, no build steps, no configuration. An empty `main.lu
 All bindings live under `luna.*` — a single, consistent namespace:
 
 ```
-luna.graphics    luna.audio      luna.keyboard    luna.mouse
-luna.gamepad     luna.touch      luna.timer       luna.math
-luna.physics     luna.filesystem luna.window      luna.event
-luna.system      luna.particle   luna.data        luna.image
+luna.render    luna.audio      luna.keyboard    luna.mouse
+luna.gamepad     luna.touch      luna.time       luna.math
+luna.physics     luna.fs luna.window      luna.signal
+luna.platform      luna.particles   luna.data        luna.img
 luna.sound       luna.thread     luna.terminal
 ```
 

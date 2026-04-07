@@ -1,4 +1,4 @@
-# tests/lua/security — Lua Security Tests
+﻿# tests/lua/security — Lua Security Tests
 
 Adversarial tests for sandbox enforcement, nil spam, path traversal, and resource exhaustion from Lua.
 
@@ -9,7 +9,7 @@ Adversarial tests for sandbox enforcement, nil spam, path traversal, and resourc
 ## Coverage
 
 - Lua sandbox: disallowed globals, Lua FFI restrictions
-- `luna.filesystem` path-traversal guard
+- `luna.fs` path-traversal guard
 - `luna.savegame` validation against corrupt/path-traversal data
 - TOML/config injection
 

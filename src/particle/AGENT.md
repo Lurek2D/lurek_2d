@@ -1,10 +1,10 @@
-# `particle` — Agent Reference
+﻿# `particle` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 2 — Reusable Engine Extensions                  |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.particle`                                      |
+| **Lua API**    | `luna.particles`                                      |
 | **Source**      | `src/particle/`                                      |
 | **Rust Tests** | `tests/rust/unit/particle_tests.rs`                  |
 | **Lua Tests**  | `tests/lua/unit/test_particle.lua`                   |

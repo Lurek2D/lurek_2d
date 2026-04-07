@@ -1,4 +1,4 @@
-local M = {}
+﻿local M = {}
 
 local sprites = {}
 
@@ -28,12 +28,12 @@ function M.update(dt)
 end
 
 function M.draw()
-    luna.graphics.print("Scene 1: Bouncing Sprites", 10, 10)
+    luna.render.print("Scene 1: Bouncing Sprites", 10, 10)
     for _, s in ipairs(sprites) do
-        luna.graphics.setColor(s.r, s.g, s.b, 1)
-        luna.graphics.rectangle("fill", s.x, s.y, s.size, s.size)
+        luna.render.setColor(s.r, s.g, s.b, 1)
+        luna.render.rectangle("fill", s.x, s.y, s.size, s.size)
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 
 return M

@@ -1,4 +1,4 @@
-//! `luna.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.
+﻿//! `luna.time` - Frame timing, FPS tracking, and scheduled Lua callbacks.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -277,7 +277,7 @@ impl LuaUserData for LuaScheduler {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.timer` API table with the Lua VM.
+/// Registers the `luna.time` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`.
@@ -360,6 +360,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|lua, ()| lua.create_userdata(LuaScheduler::new()))?,
     )?;
 
-    luna.set("timer", tbl)?;
+    luna.set("time", tbl)?;
     Ok(())
 }

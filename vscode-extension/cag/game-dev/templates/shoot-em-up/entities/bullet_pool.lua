@@ -1,4 +1,4 @@
-local BulletPool = {}
+﻿local BulletPool = {}
 BulletPool.__index = BulletPool
 
 function BulletPool.new(max)
@@ -35,14 +35,14 @@ function BulletPool:update(dt)
 end
 
 function BulletPool:draw()
-    luna.graphics.setColor(1, 1, 0.3, 1)
+    luna.render.setColor(1, 1, 0.3, 1)
     for i = 1, self.max do
         local b = self.pool[i]
         if b.active then
-            luna.graphics.rectangle("fill", b.x - 2, b.y - 4, 4, 8)
+            luna.render.rectangle("fill", b.x - 2, b.y - 4, 4, 8)
         end
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 
 return BulletPool

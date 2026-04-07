@@ -1,4 +1,4 @@
-# Luna Toolkit — IntelliSense & Language Provider Design
+﻿# Luna Toolkit — IntelliSense & Language Provider Design
 
 > Defines how the extension provides Lua language intelligence
 > powered by Luna2D's generated API documentation.
@@ -59,8 +59,8 @@ generated API metadata
 interface ApiFunction {
   module: string;          // "graphics"
   name: string;            // "draw"
-  fullPath: string;        // "luna.graphics.draw"
-  signature: string;       // "luna.graphics.draw(drawable, x, y, r, sx, sy, ox, oy)"
+  fullPath: string;        // "luna.render.draw"
+  signature: string;       // "luna.render.draw(drawable, x, y, r, sx, sy, ox, oy)"
   description: string;     // "Draws a drawable object..."
   parameters: ApiParam[];  // [{name: "drawable", type: "Drawable", desc: "..."}]
   returns?: string;        // "number" or undefined
@@ -106,8 +106,8 @@ class ApiDataService {
 | User types | Completions offered |
 |---|---|
 | `luna.` | All top-level modules: `graphics`, `audio`, `physics`, `input`, ... |
-| `luna.graphics.` | All functions in `luna.graphics`: `draw`, `rectangle`, `circle`, ... |
-| `luna.graphics.new` | Filtered: `newImage`, `newCanvas`, `newFont`, `newShader`, ... |
+| `luna.render.` | All functions in `luna.render`: `draw`, `rectangle`, `circle`, ... |
+| `luna.render.new` | Filtered: `newImage`, `newCanvas`, `newFont`, `newShader`, ... |
 | `sprite:` | Method completions for Drawable objects |
 | `body:` | Method completions for physics Body objects |
 | `world:` | Method completions for physics World objects |
@@ -125,7 +125,7 @@ class ApiDataService {
 **Behavior**: When hovering over any `luna.*` function call, show:
 
 ```
-luna.graphics.draw(drawable, x, y, r, sx, sy, ox, oy)
+luna.render.draw(drawable, x, y, r, sx, sy, ox, oy)
 
 Draws a drawable object (Image, Canvas, etc.) at the specified position.
 
@@ -159,7 +159,7 @@ Since: 0.1.0
 | Symbol | Goes to |
 |---|---|
 | `require("module")` | Resolved `module.lua` file |
-| `luna.graphics.draw` | Generated API doc (virtual document) or source |
+| `luna.render.draw` | Generated API doc (virtual document) or source |
 | Local function | Declaration site in current file |
 | Local variable | Assignment site |
 
@@ -184,9 +184,9 @@ Since: 0.1.0
 | Rule ID | Severity | Pattern | Message |
 |---|---|---|---|
 | `luna.deprecated` | Warning | `luna.X.deprecatedFunc()` | "luna.X.deprecatedFunc is deprecated. Use luna.X.newFunc instead." |
-| `luna.colorRange` | Warning | `luna.graphics.setColor(255, ...)` | "Luna2D uses 0-1 color range, not 0-255. Did you mean 1.0?" |
+| `luna.colorRange` | Warning | `luna.render.setColor(255, ...)` | "Luna2D uses 0-1 color range, not 0-255. Did you mean 1.0?" |
 | `luna.unusedRequire` | Hint | `local x = require(...)` unused | "Unused require: 'x' is never referenced" |
-| `luna.assetNotFound` | Warning | `luna.graphics.newImage("missing.png")` | "Asset file not found: missing.png" |
+| `luna.assetNotFound` | Warning | `luna.render.newImage("missing.png")` | "Asset file not found: missing.png" |
 | `luna.threadRandom` | Info | `math.random` in threaded code | "Consider luna.math.random for thread-safety" |
 | `luna.missingCallback` | Info | No `luna.draw` defined | "No luna.draw() callback — nothing will be rendered" |
 
@@ -216,8 +216,8 @@ Since: 0.1.0
 ### 2.8 Color Provider (`providers/color.ts`)
 
 **Behavior**: Detect Luna2D color values (0.0–1.0 range) in:
-- `luna.graphics.setColor(r, g, b, a)`
-- `luna.graphics.setBackgroundColor(r, g, b)`
+- `luna.render.setColor(r, g, b, a)`
+- `luna.render.setBackgroundColor(r, g, b)`
 - Color table literals `{0.5, 0.3, 0.8, 1.0}`
 
 Show inline color swatch. Clicking opens VS Code color picker.
@@ -226,9 +226,9 @@ Convert between 0–1 range when editing.
 ### 2.9 Asset Path Provider (`providers/assetPath.ts`)
 
 **Trigger**: Inside string arguments to asset-loading functions:
-- `luna.graphics.newImage("...")`
+- `luna.render.newImage("...")`
 - `luna.audio.newSource("...")`
-- `luna.filesystem.read("...")`
+- `luna.fs.read("...")`
 
 **Behavior**:
 - Autocomplete file paths relative to game root
@@ -240,13 +240,13 @@ Convert between 0–1 range when editing.
 **Behavior**: Show parameter names inline for `luna.*` calls:
 
 ```lua
-luna.graphics.draw(sprite, 100, 200, 0, 2, 2)
+luna.render.draw(sprite, 100, 200, 0, 2, 2)
 --                        ↑x   ↑y  ↑r ↑sx ↑sy
 ```
 
 Rendered as:
 ```
-luna.graphics.draw(sprite, x:100, y:200, r:0, sx:2, sy:2)
+luna.render.draw(sprite, x:100, y:200, r:0, sx:2, sy:2)
 ```
 
 ### 2.11 Code Actions Provider (`providers/codeActions.ts`)
@@ -280,7 +280,7 @@ luna.graphics.draw(sprite, x:100, y:200, r:0, sx:2, sy:2)
 luna = {}
 
 ---Graphics module — drawing, images, shaders, canvas
-luna.graphics = {}
+luna.render = {}
 
 ---Draws a drawable object at the specified position.
 ---@param drawable Drawable The object to draw
@@ -291,7 +291,7 @@ luna.graphics = {}
 ---@param sy? number Scale Y (default: sx)
 ---@param ox? number Origin X (default: 0)
 ---@param oy? number Origin Y (default: 0)
-function luna.graphics.draw(drawable, x, y, r, sx, sy, ox, oy) end
+function luna.render.draw(drawable, x, y, r, sx, sy, ox, oy) end
 
 ---@class Drawable
 ---@field getWidth fun(self: Drawable): number
@@ -369,9 +369,9 @@ The extension provides IntelliSense through **two complementary systems**:
 
 ```lua
 -- WARN: Luna2D uses 0-1 color range
-luna.graphics.setColor(255, 128, 0)         -- ⚠ all three > 1.0
-luna.graphics.setColor(1, 0.5, 0)           -- ✓ valid 0-1 range
-luna.graphics.setColor(1, 1, 1, 255)        -- ⚠ alpha > 1.0
+luna.render.setColor(255, 128, 0)         -- ⚠ all three > 1.0
+luna.render.setColor(1, 0.5, 0)           -- ✓ valid 0-1 range
+luna.render.setColor(1, 1, 1, 255)        -- ⚠ alpha > 1.0
 
 -- Detection heuristic:
 -- If ANY numeric argument > 1.0, flag as potential 0-255 mistake
@@ -382,7 +382,7 @@ luna.graphics.setColor(1, 1, 1, 255)        -- ⚠ alpha > 1.0
 
 ```lua
 -- Check file existence relative to game root
-local img = luna.graphics.newImage("player.png")     -- ✓ if player.png exists
+local img = luna.render.newImage("player.png")     -- ✓ if player.png exists
 local snd = luna.audio.newSource("music.ogg")        -- ⚠ if music.ogg missing
 
 -- Don't warn for:

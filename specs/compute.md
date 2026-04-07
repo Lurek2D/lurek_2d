@@ -1,10 +1,10 @@
-# `compute` — Agent Reference
+﻿# `compute` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.compute`                                       |
+| **Lua API**    | `luna.gpu`                                       |
 | **Source**      | `src/compute/`                                       |
 | **Rust Tests** | `tests/rust/unit/compute_tests.rs`                   |
 | **Lua Tests**  | `tests/lua/unit/test_compute.lua`                    |
@@ -39,7 +39,7 @@ tabular data, use the `dataframe` module instead.
 ## Architecture
 
 ```
-luna.compute (Lua API)
+luna.gpu (Lua API)
   │
   ▼
 LuaArray (UserData wrapper)
@@ -160,7 +160,7 @@ Methods: `parse(s)` parses `"float32"` / `"float64"` / `"int32"`, `byte_size()` 
 
 ## Lua API
 
-Exposed under `luna.compute.*` by `src/lua_api/compute_api.rs`. The API provides
+Exposed under `luna.gpu.*` by `src/lua_api/compute_api.rs`. The API provides
 five module-level constructor functions and a `LuaArray` UserData type with 52 methods.
 All indices in the Lua API are 1-based. The default dtype is `"float32"`.
 
@@ -168,11 +168,11 @@ All indices in the Lua API are 1-based. The default dtype is `"float32"`.
 
 | Function | Description |
 |----------|-------------|
-| `luna.compute.newArray(shape, dtype?)` | Create a zero-initialized array |
-| `luna.compute.zeros(shape, dtype?)` | Create a zero-filled array |
-| `luna.compute.ones(shape, dtype?)` | Create a one-filled array |
-| `luna.compute.range(start, stop, step?, dtype?)` | Create a 1D array from start to stop |
-| `luna.compute.fromTable(data, shape?, dtype?)` | Create an array from a Lua table |
+| `luna.gpu.newArray(shape, dtype?)` | Create a zero-initialized array |
+| `luna.gpu.zeros(shape, dtype?)` | Create a zero-filled array |
+| `luna.gpu.ones(shape, dtype?)` | Create a one-filled array |
+| `luna.gpu.range(start, stop, step?, dtype?)` | Create a 1D array from start to stop |
+| `luna.gpu.fromTable(data, shape?, dtype?)` | Create an array from a Lua table |
 
 ### Array methods
 
@@ -236,7 +236,7 @@ All indices in the Lua API are 1-based. The default dtype is `"float32"`.
 ```lua
 function luna.load()
     -- Create a 10×10 heightmap filled with zeros
-    heightmap = luna.compute.zeros({10, 10}, "float32")
+    heightmap = luna.gpu.zeros({10, 10}, "float32")
 
     -- Fill with some procedural values
     for r = 1, 10 do
@@ -246,7 +246,7 @@ function luna.load()
     end
 
     -- Apply a blur kernel via 2D convolution
-    local kernel = luna.compute.fromTable(
+    local kernel = luna.gpu.fromTable(
         {1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9},
         {3, 3}
     )
@@ -268,13 +268,13 @@ end
 ```lua
 -- Matrix multiplication example
 function luna.load()
-    local a = luna.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
-    local b = luna.compute.fromTable({7, 8, 9, 10, 11, 12}, {3, 2})
+    local a = luna.gpu.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
+    local b = luna.gpu.fromTable({7, 8, 9, 10, 11, 12}, {3, 2})
     local c = a:matmul(b)  -- result is 2×2
 
     -- Dot product of 1D arrays
-    local v1 = luna.compute.fromTable({1, 0, 0})
-    local v2 = luna.compute.fromTable({0, 1, 0})
+    local v1 = luna.gpu.fromTable({1, 0, 0})
+    local v2 = luna.gpu.fromTable({0, 1, 0})
     local dp = v1:dot(v2)  -- 0.0
 end
 ```
@@ -295,7 +295,7 @@ end
 | `engine`    | Imports from | Uses `log_messages` constants for allocation warnings    |
 | `math`      | Peer         | Both are Tier 1 leaf-like modules; `compute` does not import `math` |
 | `dataframe` | Related      | `dataframe` stores named-column tabular data; `compute` stores raw N-dimensional numeric arrays |
-| `lua_api`   | Imported by  | `src/lua_api/compute_api.rs` registers `luna.compute.*`  |
+| `lua_api`   | Imported by  | `src/lua_api/compute_api.rs` registers `luna.gpu.*`  |
 
 **Similar modules**: `dataframe` provides named-column tabular data (think spreadsheet rows);
 `compute` provides raw numerical arrays (think NumPy ndarrays). Use `compute` for spatial

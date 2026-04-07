@@ -1,4 +1,4 @@
-# File I/O & Filesystem — Threading Opportunities
+﻿# File I/O & Filesystem — Threading Opportunities
 
 ## Current Architecture
 
@@ -140,7 +140,7 @@ Most 2D games use textures ≤ 512×512 where full loading is fast.
 ## Opportunity 4: Write-Behind for Save Files (Effort: Low)
 
 ### Problem
-`luna.filesystem.write()` and `luna.savegame.save()` block the main thread
+`luna.fs.write()` and `luna.savegame.save()` block the main thread
 during disk I/O. Large save files (100KB+) can cause frame drops.
 
 ### Solution
@@ -166,7 +166,7 @@ pub fn write_async(&self, path: &str, data: Vec<u8>) -> WriteHandle {
 ## Opportunity 5: Directory Scanning Parallelism (Effort: Low)
 
 ### Problem
-`luna.filesystem.getDirectoryItems()` scans directories synchronously.
+`luna.fs.getDirectoryItems()` scans directories synchronously.
 `luna.modding.scan()` reads mod manifests from disk sequentially.
 
 ### Solution
@@ -209,8 +209,8 @@ However, **asset preloading** triggered by scripts can be async:
 ```lua
 function luna.load()
     -- These should return immediately, load in background
-    local img1 = luna.graphics.newImageAsync("player.png")
-    local img2 = luna.graphics.newImageAsync("enemy.png")
+    local img1 = luna.render.newImageAsync("player.png")
+    local img2 = luna.render.newImageAsync("enemy.png")
     local snd1 = luna.audio.newSourceAsync("music.ogg")
 
     -- Game loop polls readiness

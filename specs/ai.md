@@ -1,4 +1,4 @@
-# `ai` — Agent Reference
+﻿# `ai` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -589,7 +589,7 @@ end
 
 -- Save trained policy
 local json = ql:serialize()
-luna.filesystem.write("ai_policy.json", json)
+luna.fs.write("ai_policy.json", json)
 ```
 
 ## Item Summary

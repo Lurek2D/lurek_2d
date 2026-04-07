@@ -1,4 +1,4 @@
--- tests/lua/config/test_config.lua
+﻿-- tests/lua/config/test_config.lua
 -- BDD tests for the luna.conf(t) configuration API.
 -- These tests verify that the conf table is readable at runtime, that
 -- luna.conf() merges overrides correctly, and that conf keys are
@@ -51,19 +51,19 @@ end)
 -- 3. Modules table
 -- ═════════════════════════════════════════════════════════════════════════
 
-describe("luna.system module flags", function()
-    it("luna.system is a table", function()
-        expect_type("table", luna.system)
+describe("luna.platform module flags", function()
+    it("luna.platform is a table", function()
+        expect_type("table", luna.platform)
     end)
 
-    it("luna.system.getVersion returns a string", function()
-        local v = luna.system.getVersion()
+    it("luna.platform.getVersion returns a string", function()
+        local v = luna.platform.getVersion()
         expect_type("string", v)
         expect_equal(#v > 0, true)
     end)
 
-    it("luna.system.getOS returns a known platform string", function()
-        local os = luna.system.getOS()
+    it("luna.platform.getOS returns a known platform string", function()
+        local os = luna.platform.getOS()
         local valid = { Windows = true, Linux = true, macOS = true }
         expect_equal(valid[os] ~= nil, true)
     end)

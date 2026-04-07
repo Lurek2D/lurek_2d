@@ -1,4 +1,4 @@
-# Luna Toolkit — Webview Editor Specifications
+﻿# Luna Toolkit — Webview Editor Specifications
 
 > Design specifications for each of the 16 visual editors.
 > All editors share the same base architecture and CSS theme.
@@ -457,4 +457,4 @@ ground = [0, 0, 1, 1, 2, 2]
 walls = [0, 0, 0, 3, 3, 0]
 ```
 
-Both formats are loadable by the Luna2D engine at runtime via `luna.filesystem.read()` + `luna.data.parseToml()`.
+Both formats are loadable by the Luna2D engine at runtime via `luna.fs.read()` + `luna.data.parseToml()`.

@@ -1,4 +1,4 @@
-# gui — Feature Analysis
+﻿# gui — Feature Analysis
 
 **Tier**: 2 (Extension)
 **Spec**: `specs/gui.md`
@@ -41,7 +41,7 @@ GUI system: retained-mode widget tree with layout, styling, and event handling. 
 
 ## Suggestions
 
-1. **Add theming system**: `luna.gui.setTheme({primary="#2196F3", font="default", spacing=8})` — global style application. Huge productivity boost for consistent UI.
+1. **Add theming system**: `luna.ui.setTheme({primary="#2196F3", font="default", spacing=8})` — global style application. Huge productivity boost for consistent UI.
 2. **Add drag-and-drop**: `widget:setDraggable(true)` / `container:setDropTarget(true, onDrop)` — enables inventory, card games, editor tools.
 3. **Add tooltips**: `widget:setTooltip(text)` or `widget:setTooltip(widgetTree)` — hover tooltip with configurable delay.
 4. **Add data binding**: `label:bind("text", gameState, "playerHealth")` — auto-update when value changes. Reactive UI pattern.

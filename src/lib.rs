@@ -1,4 +1,4 @@
-//! Luna2D — a 2D game engine written in Rust that loads and executes Lua game scripts.
+﻿//! Luna2D — a 2D game engine written in Rust that loads and executes Lua game scripts.
 //!
 //! This crate is the engine library. It re-exports every subsystem through public submodules so
 //! that the `luna2d` binary, integration tests, and tooling can all share the same code paths.
@@ -24,7 +24,7 @@
 //! | [`battle`] | Turn-based battle engine: combatants, actions, statuses, turn order |
 //! | [`cardgame`] | Card game backend: cards, decks (stacks), zones, card pools, history |
 //! | [`combat`] | Vehicle combat: chassis, turrets, weapons, projectiles |
-//! | [`compute`] | N-dimensional numerical arrays (luna.compute) |
+//! | [`compute`] | N-dimensional numerical arrays (luna.gpu) |
 //! | [`crafting`] | Recipe-based crafting queues and upgrade trees |
 //! | [`data`] | LÖVE2D-compatible binary data: ByteData, compress, hash, encode, LÖVE2D pack format |
 //! | [`dataframe`] | In-memory column-major tabular data |
@@ -78,7 +78,7 @@ pub mod camera;
 // migration-state: pub mod battle; — now library/battle/init.lua
 // migration-state: pub mod cardgame; — now library/cardgame/init.lua
 // migration-state: pub mod combat; — now library/combat/init.lua
-/// Dense N-dimensional numerical arrays (luna.compute).
+/// Dense N-dimensional numerical arrays (luna.gpu).
 pub mod compute;
 // migration-state: pub mod crafting; — now library/crafting/init.lua
 /// LÖVE2D-compatible binary data API: ByteData, compress, hash, encode, and LÖVE2D pack format.

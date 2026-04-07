@@ -1,4 +1,4 @@
-# `minimap` — Agent Reference
+﻿# `minimap` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
@@ -352,7 +352,7 @@ end
 
 function luna.draw()
     -- Draw the minimap at screen position (580, 10)
-    -- (actual rendering is done by luna.graphics using the minimap data)
+    -- (actual rendering is done by luna.render using the minimap data)
 end
 ```
 

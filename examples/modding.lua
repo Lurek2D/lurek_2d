@@ -1,4 +1,4 @@
--- examples/modding.lua
+﻿-- examples/modding.lua
 -- luna.modding — Mod metadata containers and managers for game modding support.
 -- Discover, validate, hot-reload, and hook into game logic from external mods.
 -- All luna.modding API methods demonstrated with code and comments.
@@ -165,7 +165,7 @@ function luna.load()
 
     for _, info in ipairs(mod_manager:getLoadOrder()) do
         -- load each mod's main.lua in order
-        luna.filesystem.load("mods/" .. info.id .. "/main.lua")
+        luna.fs.load("mods/" .. info.id .. "/main.lua")
     end
 end
 ]]

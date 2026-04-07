@@ -1,10 +1,10 @@
-# `image` — Agent Reference
+﻿# `image` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.image`                                         |
+| **Lua API**    | `luna.img`                                         |
 | **Source**     | `src/image/`                                         |
 | **Rust Tests** | `tests/rust/unit/image_tests.rs`                     |
 | **Lua Tests**  | `tests/lua/unit/test_image.lua`                      |
@@ -12,7 +12,7 @@
 
 ## Summary
 
-The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.graphics.newImage(imgdata)`). The module covers three distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
+The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.render.newImage(imgdata)`). The module covers three distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
 
 `ImageData` supports loading PNG/JPEG files from disk via the `image` crate, creating blank buffers, constructing from raw bytes, per-pixel read/write (`get_pixel` / `set_pixel`), bulk transforms (`map_pixel`, `paste`), PNG encoding, and raw byte extraction. Because it is pure `Vec<u8>` arithmetic with no GPU state, operations can be called freely during `luna.load()` or inside background thread workers.
 
@@ -135,16 +135,16 @@ GPU-compressed texture format identifier. Used by `CompressedImageData` to repor
 
 ## Lua API
 
-Exposed under `luna.image.*` by `src/lua_api/image_api.rs`. The Lua wrapper also defines `LuaCompressedImageData` as a UserData type wrapping `CompressedImageData`.
+Exposed under `luna.img.*` by `src/lua_api/image_api.rs`. The Lua wrapper also defines `LuaCompressedImageData` as a UserData type wrapping `CompressedImageData`.
 
 ### Module Functions
 
 | Function                           | Description                                                                 |
 |------------------------------------|-----------------------------------------------------------------------------|
-| `luna.image.newImageData(w, h)`    | Creates a new blank RGBA8 pixel buffer of the given dimensions              |
-| `luna.image.newImageData(filename)`| Loads an image file (PNG/JPEG) from the game directory as `ImageData`       |
-| `luna.image.newCompressedData(filename)` | Loads compressed texture data from a DDS file                         |
-| `luna.image.isCompressed(filename)`| Returns `true` if the file at the given path is a DDS file                  |
+| `luna.img.newImageData(w, h)`    | Creates a new blank RGBA8 pixel buffer of the given dimensions              |
+| `luna.img.newImageData(filename)`| Loads an image file (PNG/JPEG) from the game directory as `ImageData`       |
+| `luna.img.newCompressedData(filename)` | Loads compressed texture data from a DDS file                         |
+| `luna.img.isCompressed(filename)`| Returns `true` if the file at the given path is a DDS file                  |
 
 ### ImageData Methods (UserData)
 
@@ -174,7 +174,7 @@ Exposed under `luna.image.*` by `src/lua_api/image_api.rs`. The Lua wrapper also
 ```lua
 function luna.load()
     -- Create a CPU-side pixel buffer and fill with a gradient
-    imgdata = luna.image.newImageData(64, 64)
+    imgdata = luna.img.newImageData(64, 64)
     for y = 0, 63 do
         for x = 0, 63 do
             imgdata:setPixel(x, y, x * 4, y * 4, 128, 255)
@@ -182,29 +182,29 @@ function luna.load()
     end
 
     -- Upload to GPU for rendering
-    tex = luna.graphics.newImage(imgdata)
+    tex = luna.render.newImage(imgdata)
 end
 
 function luna.draw()
-    luna.graphics.draw(tex, 100, 100)
+    luna.render.draw(tex, 100, 100)
 end
 ```
 
 ```lua
 -- Load an image file, invert its colours, and upload the result
 function luna.load()
-    local src = luna.image.newImageData("sprites/player.png")
+    local src = luna.img.newImageData("sprites/player.png")
     src:mapPixel(function(x, y, r, g, b, a)
         return 255 - r, 255 - g, 255 - b, a
     end)
-    inverted = luna.graphics.newImage(src)
+    inverted = luna.render.newImage(src)
 end
 ```
 
 ```lua
 -- Check whether a file is a compressed DDS texture
-if luna.image.isCompressed("textures/terrain.dds") then
-    local cid = luna.image.newCompressedData("textures/terrain.dds")
+if luna.img.isCompressed("textures/terrain.dds") then
+    local cid = luna.img.newCompressedData("textures/terrain.dds")
     print("Format:", cid:getFormat())
     print("Size:", cid:getWidth(), "x", cid:getHeight())
     print("Mipmaps:", cid:getMipmapCount())
@@ -229,11 +229,11 @@ end
 | `graphics` | Related       | `image` is CPU-side; `graphics` uploads `ImageData` to GPU via `newImage(imgdata)` |
 | `data`     | Related       | `data` holds raw bytes (`ByteData`); `image` decodes them into RGBA pixel buffers |
 | `sound`    | Similar       | `sound` is the audio equivalent — CPU-side PCM samples vs CPU-side pixels    |
-| `lua_api`  | Imported by   | `src/lua_api/image_api.rs` registers `luna.image.*`                          |
+| `lua_api`  | Imported by   | `src/lua_api/image_api.rs` registers `luna.img.*`                          |
 
 ## Notes
 
-- `ImageData` is a CPU-side RGBA8 buffer; it has no GPU resources until `luna.graphics.newImage(imgdata)` is called.
+- `ImageData` is a CPU-side RGBA8 buffer; it has no GPU resources until `luna.render.newImage(imgdata)` is called.
 - `ImageData` implements `mlua::UserData` directly in `image_data.rs`, exposing Lua methods alongside the Rust API.
 - `mapPixel(fn)` calls the Lua function for every pixel — avoid for large images due to Lua→Rust boundary overhead per pixel.
 - PNG encoding via `encode("png")` is blocking and allocates; offload to a thread worker for non-blocking export of large images.

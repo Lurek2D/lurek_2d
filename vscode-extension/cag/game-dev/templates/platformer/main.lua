@@ -1,4 +1,4 @@
-local Player = require("entities.player")
+﻿local Player = require("entities.player")
 local Camera = require("lib.camera")
 
 local player, camera
@@ -14,13 +14,13 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.2, 0.6, 0.9)
+    luna.render.clear(0.2, 0.6, 0.9)
     camera:apply()
     player:draw()
     camera:reset()
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     player:keypressed(key)
 end

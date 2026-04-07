@@ -1,4 +1,4 @@
-//! `luna.compute` — Dense N-dimensional numerical arrays with NumPy-style operations.
+﻿//! `luna.gpu` — Dense N-dimensional numerical arrays with NumPy-style operations.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -604,7 +604,7 @@ impl LuaUserData for LuaArray {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.compute` API table with the Lua VM.
+/// Registers the `luna.gpu` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`.
@@ -704,6 +704,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    luna.set("compute", tbl)?;
+    luna.set("gpu", tbl)?;
     Ok(())
 }

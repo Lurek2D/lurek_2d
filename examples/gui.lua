@@ -1,6 +1,6 @@
--- examples/gui.lua
+﻿-- examples/gui.lua
 -- Retained-mode widget GUI system for Luna2D
--- API: luna.gui
+-- API: luna.ui
 -- Constructors return widget tables; all forward events from game callbacks.
 
 --------------------------------------------------------------------------------
@@ -8,54 +8,54 @@
 --------------------------------------------------------------------------------
 
 -- Create and apply a custom theme
-local theme = luna.gui.newTheme()
-luna.gui.setTheme(theme)
-local t = luna.gui.getTheme()   -- returns theme table or nil
+local theme = luna.ui.newTheme()
+luna.ui.setTheme(theme)
+local t = luna.ui.getTheme()   -- returns theme table or nil
 
 -- Access root context widget count
-local n = luna.gui.getWidgetCount()  -- number
+local n = luna.ui.getWidgetCount()  -- number
 
 -- Toast notifications
-luna.gui.addToast({ message = "Hello!", duration = 3.0 })
-local tc = luna.gui.getToastCount()  -- number
+luna.ui.addToast({ message = "Hello!", duration = 3.0 })
+local tc = luna.ui.getToastCount()  -- number
 
 -- Focus management
-luna.gui.setFocus(nil)              -- clear focus
-local focused = luna.gui.getFocus() -- number or nil
-luna.gui.focusNext()
-luna.gui.focusPrev()
-luna.gui.clearFocus()
+luna.ui.setFocus(nil)              -- clear focus
+local focused = luna.ui.getFocus() -- number or nil
+luna.ui.focusNext()
+luna.ui.focusPrev()
+luna.ui.clearFocus()
 
 --------------------------------------------------------------------------------
 -- Event forwarding (call from game callbacks)
 --------------------------------------------------------------------------------
 
 luna.mousepressed = function(x, y, btn)
-    luna.gui.mousepressed(x, y, btn)
+    luna.ui.mousepressed(x, y, btn)
 end
 
 luna.mousereleased = function(x, y, btn)
-    luna.gui.mousereleased(x, y, btn)
+    luna.ui.mousereleased(x, y, btn)
 end
 
 luna.mousemoved = function(x, y)
-    local consumed = luna.gui.mousemoved(x, y)  -- returns boolean
+    local consumed = luna.ui.mousemoved(x, y)  -- returns boolean
 end
 
 luna.keypressed = function(key)
-    local consumed = luna.gui.keypressed(key)   -- returns boolean
+    local consumed = luna.ui.keypressed(key)   -- returns boolean
 end
 
 luna.textinput = function(text)
-    luna.gui.textinput(text)
+    luna.ui.textinput(text)
 end
 
 luna.wheelmoved = function(x, y)
-    luna.gui.wheelmoved(x, y)
+    luna.ui.wheelmoved(x, y)
 end
 
 luna.update = function(dt)
-    luna.gui.update(dt)
+    luna.ui.update(dt)
 end
 
 --------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ end
 -- Button
 --------------------------------------------------------------------------------
 
-local btn = luna.gui.newButton("Click me")
+local btn = luna.ui.newButton("Click me")
 btn:setText("Submit")
 local txt = btn:getText()    -- "Submit"
 btn:setOnClick(function() print("clicked!") end)
@@ -100,7 +100,7 @@ btn:setSize(100, 30)
 -- Label
 --------------------------------------------------------------------------------
 
-local lbl = luna.gui.newLabel("Hello, World!")
+local lbl = luna.ui.newLabel("Hello, World!")
 lbl:setText("Updated text")
 local s = lbl:getText()    -- "Updated text"
 lbl:setPosition(10, 50)
@@ -109,7 +109,7 @@ lbl:setPosition(10, 50)
 -- TextInput
 --------------------------------------------------------------------------------
 
-local ti = luna.gui.newTextInput()
+local ti = luna.ui.newTextInput()
 ti:setText("initial value")
 ti:setPlaceholder("Type here...")
 local ph = ti:getPlaceholder()    -- "Type here..."
@@ -122,7 +122,7 @@ ti:setOnChange(function() print("changed:", ti:getText()) end)
 -- CheckBox
 --------------------------------------------------------------------------------
 
-local cb = luna.gui.newCheckbox("Enable feature")
+local cb = luna.ui.newCheckbox("Enable feature")
 cb:setChecked(true)
 local checked = cb:isChecked()   -- boolean
 cb:setOnChange(function() print("checked:", cb:isChecked()) end)
@@ -131,7 +131,7 @@ cb:setOnChange(function() print("checked:", cb:isChecked()) end)
 -- Slider
 --------------------------------------------------------------------------------
 
-local sl = luna.gui.newSlider(0, 100)
+local sl = luna.ui.newSlider(0, 100)
 sl:setValue(50)
 local v = sl:getValue()   -- 50
 sl:setRange(0, 200)
@@ -144,7 +144,7 @@ sl:setOnChange(function() print("slider:", sl:getValue()) end)
 -- ProgressBar
 --------------------------------------------------------------------------------
 
-local pb = luna.gui.newProgressBar(0, 100)
+local pb = luna.ui.newProgressBar(0, 100)
 pb:setValue(75)
 local pv = pb:getValue()      -- 75
 local pp = pb:getProgress()   -- 0.75 (normalized)
@@ -156,7 +156,7 @@ local pmx = pb:getMax()       -- 200
 -- ComboBox (dropdown)
 --------------------------------------------------------------------------------
 
-local combo = luna.gui.newComboBox()
+local combo = luna.ui.newComboBox()
 combo:addItem("Option A")
 combo:addItem("Option B")
 combo:addItem("Option C")
@@ -173,7 +173,7 @@ combo:clearItems()
 -- ListBox
 --------------------------------------------------------------------------------
 
-local lb = luna.gui.newList()
+local lb = luna.ui.newList()
 lb:addItem("Row 1")
 lb:addItem("Row 2")
 lb:addItem("Row 3")
@@ -189,7 +189,7 @@ lb:clearItems()
 -- TabBar
 --------------------------------------------------------------------------------
 
-local tabs = luna.gui.newTabBar()
+local tabs = luna.ui.newTabBar()
 tabs:addTab("General")
 tabs:addTab("Advanced")
 tabs:addTab("Help")
@@ -203,7 +203,7 @@ local active = tabs:getActiveTab()  -- integer (1-based)
 -- Panel (container with optional title)
 --------------------------------------------------------------------------------
 
-local panel = luna.gui.newPanel()
+local panel = luna.ui.newPanel()
 panel:setTitle("Settings")
 local pt = panel:getTitle()     -- "Settings"
 panel:setScrollable(true)
@@ -214,7 +214,7 @@ panel:addChild(lbl)
 -- Layout (flex-style auto-layout container)
 --------------------------------------------------------------------------------
 
-local layout = luna.gui.newLayout("horizontal")  -- or "vertical" (default)
+local layout = luna.ui.newLayout("horizontal")  -- or "vertical" (default)
 layout:setDirection("vertical")
 local dir = layout:getDirection()   -- "vertical"
 layout:setSpacing(5)
@@ -233,7 +233,7 @@ layout:addChild(lbl)
 -- ScrollPanel
 --------------------------------------------------------------------------------
 
-local sp2 = luna.gui.newScrollPanel()
+local sp2 = luna.ui.newScrollPanel()
 sp2:setContentSize(400, 800)
 local cw, ch = sp2:getContentSize()  -- content dimensions
 sp2:setScrollPosition(0, 100)
@@ -246,20 +246,20 @@ local speed = sp2:getScrollSpeed()  -- number
 -- Separator and Spacer
 --------------------------------------------------------------------------------
 
-local sep = luna.gui.newSeparator(false)  -- false = horizontal (default)
+local sep = luna.ui.newSeparator(false)  -- false = horizontal (default)
 sep:setVertical(true)
 local vert = sep:isVertical()   -- boolean
 sep:setThickness(2)
 local thick = sep:getThickness()   -- number
 
-local spacer = luna.gui.newSpacer(10, 20)   -- fixed w, h
+local spacer = luna.ui.newSpacer(10, 20)   -- fixed w, h
 spacer:setSize(30, 30)
 
 --------------------------------------------------------------------------------
 -- TreeView
 --------------------------------------------------------------------------------
 
-local tree = luna.gui.newTreeView()
+local tree = luna.ui.newTreeView()
 tree:addNode("Root")                 -- returns node index (1-based)
 tree:addNode("Child A", 1)           -- add child of node 1
 tree:addNode("Child B", 1)
@@ -286,7 +286,7 @@ tree:clearNodes()
 -- RadioButton
 --------------------------------------------------------------------------------
 
-local rb = luna.gui.newRadioButton("Option 1", "group_a")
+local rb = luna.ui.newRadioButton("Option 1", "group_a")
 rb:setGroup("group_a")
 local g = rb:getGroup()      -- "group_a"
 rb:setSelected(true)
@@ -297,7 +297,7 @@ rb:setOnChange(function() print("radio changed:", rb:isSelected()) end)
 -- ScrollBar
 --------------------------------------------------------------------------------
 
-local sb = luna.gui.newScrollBar(false)  -- false = horizontal
+local sb = luna.ui.newScrollBar(false)  -- false = horizontal
 sb:setScrollPosition(50)
 local spos = sb:getScrollPosition()   -- number
 sb:setContentSize(500)
@@ -311,7 +311,7 @@ sb:setOnChange(function() print("scroll:", sb:getScrollPosition()) end)
 -- GUIWindow (floating dialog-style window)
 --------------------------------------------------------------------------------
 
-local win = luna.gui.newWindow("My Window")
+local win = luna.ui.newWindow("My Window")
 win:setTitle("Updated Title")
 local wt = win:getTitle()       -- string
 win:setCloseable(true)
@@ -327,7 +327,7 @@ win:addChild(lbl)
 -- SplitPanel (resizable two-pane split)
 --------------------------------------------------------------------------------
 
-local split = luna.gui.newSplitPanel("horizontal")  -- or "vertical"
+local split = luna.ui.newSplitPanel("horizontal")  -- or "vertical"
 split:setOrientation("vertical")
 local orient = split:getOrientation()  -- "vertical"
 split:setSplitPosition(0.5)
@@ -343,7 +343,7 @@ local sc = split:getSecondChild()  -- widget table
 -- DockPanel (dockable child panels)
 --------------------------------------------------------------------------------
 
-local dock = luna.gui.newDockPanel()
+local dock = luna.ui.newDockPanel()
 dock:dock(panel, "left")      -- sides: "left", "right", "top", "bottom"
 dock:dock(layout, "bottom")
 dock:undock(panel)
@@ -355,7 +355,7 @@ local ds = dock:getSplitSize()    -- number
 -- Toolbar
 --------------------------------------------------------------------------------
 
-local toolbar = luna.gui.newToolbar("horizontal")
+local toolbar = luna.ui.newToolbar("horizontal")
 toolbar:setOrientation("vertical")
 local to = toolbar:getOrientation()   -- "vertical"
 toolbar:addButton("save", "Save file")
@@ -369,9 +369,9 @@ local toggled = toolbar:isButtonToggled("save")  -- boolean
 -- MenuBar
 --------------------------------------------------------------------------------
 
-local menu = luna.gui.newMenuBar()
-local fileMenu = luna.gui.newMenuItem("File")
-local editMenu = luna.gui.newMenuItem("Edit")
+local menu = luna.ui.newMenuBar()
+local fileMenu = luna.ui.newMenuItem("File")
+local editMenu = luna.ui.newMenuItem("Edit")
 menu:addChild(fileMenu)
 menu:addChild(editMenu)
 
@@ -380,25 +380,25 @@ menu:addChild(editMenu)
 --------------------------------------------------------------------------------
 
 -- Dialog (modal workflow)
-local dlg = luna.gui.newDialog("Confirm?")
+local dlg = luna.ui.newDialog("Confirm?")
 dlg:setTitle("Are you sure?")
-dlg:addChild(luna.gui.newLabel("This cannot be undone."))
-dlg:addChild(luna.gui.newButton("OK"))
-dlg:addChild(luna.gui.newButton("Cancel"))
+dlg:addChild(luna.ui.newLabel("This cannot be undone."))
+dlg:addChild(luna.ui.newButton("OK"))
+dlg:addChild(luna.ui.newButton("Cancel"))
 
 -- StatusBar
-local status = luna.gui.newStatusBar()
-status:addChild(luna.gui.newLabel("Ready"))
+local status = luna.ui.newStatusBar()
+status:addChild(luna.ui.newLabel("Ready"))
 
 -- Accordion (collapsing sections)
-local accord = luna.gui.newAccordion()
-accord:addChild(luna.gui.newPanel())
+local accord = luna.ui.newAccordion()
+accord:addChild(luna.ui.newPanel())
 
 -- TooltipPanel
-local tip = luna.gui.newTooltipPanel("Helpful hint here")
+local tip = luna.ui.newTooltipPanel("Helpful hint here")
 
 -- NinePatch (scalable 9-slice image)
-local nine = luna.gui.newNinePatch()
+local nine = luna.ui.newNinePatch()
 nine:setInsets(10, 10, 10, 10)    -- top, right, bottom, left
 local t2, r2, b2, l2 = nine:getInsets()
 nine:setImageDimensions(64, 64)
@@ -406,7 +406,7 @@ local nw, nh = nine:getImageDimensions()
 local slices = nine:getSlices()   -- table of patch rects
 
 -- Toast (auto-dismissing notification)
-local toast = luna.gui.newToast("Saved!", 2.0)
+local toast = luna.ui.newToast("Saved!", 2.0)
 toast:setMessage("File saved.")
 local msg = toast:getMessage()    -- string
 toast:setDuration(3)
@@ -415,22 +415,22 @@ local prog = toast:getProgress()  -- 0.0–1.0 elapsed
 local exp = toast:isExpired()     -- boolean
 
 -- ColorPicker
-local picker = luna.gui.newColorPicker()
+local picker = luna.ui.newColorPicker()
 picker:setOnChange(function() print("color changed") end)
 
 -- Table widget (grid data view)
-local tblWidget = luna.gui.newTable()
-tblWidget:addChild(luna.gui.newLabel("Header"))
+local tblWidget = luna.ui.newTable()
+tblWidget:addChild(luna.ui.newLabel("Header"))
 
 -- ImageWidget
-local imgW = luna.gui.newImageWidget()
+local imgW = luna.ui.newImageWidget()
 imgW:setSize(128, 128)
 
 --------------------------------------------------------------------------------
 -- Root container usage pattern
 --------------------------------------------------------------------------------
 
-local root = luna.gui.getRoot()   -- main root panel widget
+local root = luna.ui.getRoot()   -- main root panel widget
 root:addChild(panel)
 root:addChild(toolbar)
 

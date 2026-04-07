@@ -1,10 +1,10 @@
-# `compute` — Agent Reference
+﻿# `compute` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.compute`                                       |
+| **Lua API**    | `luna.gpu`                                       |
 | **Source**      | `src/compute/`                                       |
 | **Rust Tests** | `tests/rust/unit/compute_tests.rs`                   |
 | **Lua Tests**  | `tests/lua/unit/test_compute.lua`                    |

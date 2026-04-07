@@ -1,4 +1,4 @@
-local M = {}
+﻿local M = {}
 
 local particles = {}
 local time = 0
@@ -33,13 +33,13 @@ function M.update(dt)
 end
 
 function M.draw()
-    luna.graphics.print("Scene 3: Particles", 10, 10)
+    luna.render.print("Scene 3: Particles", 10, 10)
     for _, p in ipairs(particles) do
         local alpha = 1 - (p.age / p.life)
-        luna.graphics.setColor(1, 0.5 + alpha * 0.5, 0.1, alpha)
-        luna.graphics.circle("fill", p.x, p.y, 3)
+        luna.render.setColor(1, 0.5 + alpha * 0.5, 0.1, alpha)
+        luna.render.circle("fill", p.x, p.y, 3)
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 
 return M

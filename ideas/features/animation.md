@@ -1,4 +1,4 @@
-# animation — Feature Analysis
+﻿# animation — Feature Analysis
 
 **Tier**: 1 (Core)
 **Spec**: `specs/animation.md`
@@ -37,9 +37,9 @@ Frame-based sprite animation: clips with frame sequences, looping, speed, events
 
 ## Suggestions
 
-1. **Add animation state machine**: `luna.animation.newStateMachine({idle=clipA, walk=clipB, jump=clipC}, transitions)` — declarative state transitions with optional blend times.
+1. **Add animation state machine**: `luna.tween.newStateMachine({idle=clipA, walk=clipB, jump=clipC}, transitions)` — declarative state transitions with optional blend times.
 2. **Add crossfade**: `anim:crossfade(targetClip, duration)` — smooth transition between clips.
-3. **Add Aseprite import**: `luna.animation.fromAseprite(jsonPath)` — load frame data from Aseprite export. Very common pixel art workflow.
+3. **Add Aseprite import**: `luna.tween.fromAseprite(jsonPath)` — load frame data from Aseprite export. Very common pixel art workflow.
 4. **Create a tween module** (new): Extract property animation from math/animation into `luna.tween.to(target, {x=100}, 2.0, "easeOutQuad")`. Solar2D's `transition.to()` is the gold standard here.
 5. **Bridge with spine**: Allow animation clips to drive bone transforms from the spine module.
 

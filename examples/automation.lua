@@ -1,4 +1,4 @@
--- examples/automation.lua
+﻿-- examples/automation.lua
 -- luna.simulator — Scripted input automation / replay system.
 -- Load named automation scripts, play them back step by step, and integrate with
 -- the game loop for deterministic testing or demo playback.
@@ -116,7 +116,7 @@ function luna.update(dt)
     luna.simulator.update(dt)
     if luna.simulator.isComplete() then
         print("Smoke test passed — quitting")
-        luna.event.quit()
+        luna.signal.quit()
     end
 end
 ]]

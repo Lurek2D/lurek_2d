@@ -1,5 +1,5 @@
--- examples/event.lua
--- Luna2D luna.event API Reference
+﻿-- examples/event.lua
+-- Luna2D luna.signal API Reference
 -- This file is documentation code, not a runnable game.
 -- Covers the Signal event bus and the engine event queue.
 
@@ -8,7 +8,7 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Create a standalone signal object (not tied to a name)
-local signal = luna.event.newSignal()
+local signal = luna.signal.newSignal()
 
 -- Subscribe a listener; returns an opaque handle for later removal
 local handle = signal:register("player_died", function(player_id, cause)
@@ -36,8 +36,8 @@ local total = signal:getTotalCount()
 -- ── Named global signals ─────────────────────────────────────────────────────
 
 -- Get (or create) a globally named signal — same name returns the same object
-local ui_events = luna.event.getSignal("ui")
-local sfx_bus   = luna.event.getSignal("sfx")
+local ui_events = luna.signal.getSignal("ui")
+local sfx_bus   = luna.signal.getSignal("sfx")
 
 -- Multiple subscribers on the same signal
 local h1 = ui_events:register("button_click", function(id)
@@ -55,9 +55,9 @@ ui_events:emit("button_click", "start_button")
 
 -- Define all game events in one place:
 local events = {
-    game_over = luna.event.newSignal(),
-    item_picked_up = luna.event.newSignal(),
-    level_complete = luna.event.newSignal(),
+    game_over = luna.signal.newSignal(),
+    item_picked_up = luna.signal.newSignal(),
+    level_complete = luna.signal.newSignal(),
 }
 
 -- Subscribe from different systems:
@@ -77,15 +77,15 @@ events.item_picked_up:emit("item_picked_up", "health_potion", 1)
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Push a custom event into the queue with optional payload values
-luna.event.push("score_changed", 1500)
-luna.event.push("cutscene_start", "intro")
-luna.event.push("achievement_unlocked", "first_kill", { icon = "sword" })
+luna.signal.push("score_changed", 1500)
+luna.signal.push("cutscene_start", "intro")
+luna.signal.push("achievement_unlocked", "first_kill", { icon = "sword" })
 
 -- Count events currently waiting in the queue
-local queued = luna.event.getCount()
+local queued = luna.signal.getCount()
 
 -- Poll the next event from the queue (returns name + extra values, or nil if empty)
-local name, a1, a2 = luna.event.poll()
+local name, a1, a2 = luna.signal.poll()
 if name then
     print("event:", name, a1, a2)
 end
@@ -95,7 +95,7 @@ function luna.update(dt)
     local ev, v1, v2, v3
     local safety = 0
     repeat
-        ev, v1, v2, v3 = luna.event.poll()
+        ev, v1, v2, v3 = luna.signal.poll()
         if ev == "score_changed" then
             -- update score display using v1
         elseif ev == "cutscene_start" then
@@ -108,14 +108,14 @@ function luna.update(dt)
 end
 
 -- Discard all remaining queued events
-luna.event.clear()
+luna.signal.clear()
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Quitting
 -- ─────────────────────────────────────────────────────────────────────────────
 
 -- Request the engine to exit cleanly (runs luna.quit() callback if defined)
--- luna.event.quit()
+-- luna.signal.quit()
 
 -- Request exit with a specific process exit code
--- luna.event.quit(1)  -- non-zero = error exit
+-- luna.signal.quit(1)  -- non-zero = error exit

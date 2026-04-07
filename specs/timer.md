@@ -1,10 +1,10 @@
-# `timer` — Agent Reference
+﻿# `timer` — Agent Reference
 
 | Property       | Value                                                |
 |----------------|------------------------------------------------------|
 | **Tier**       | Tier 1 — Core Engine Subsystems                      |
 | **Status**     | Implemented — Full                                   |
-| **Lua API**    | `luna.timer`                                         |
+| **Lua API**    | `luna.time`                                         |
 | **Source**     | `src/timer/`                                         |
 | **Rust Tests** | `tests/rust/unit/timer_tests.rs`                     |
 | **Lua Tests**  | `tests/lua/unit/test_timer.lua`                      |
@@ -31,7 +31,7 @@ bullet-time, or 2.0 for fast-forward (clamped to 0.0–100.0). Named events
 replace existing events with the same name, preventing timer accumulation when
 setup code runs repeatedly on scene re-entry. Per-event pause and resume allow
 individual timers to be suspended without stopping the entire scheduler.
-Schedulers are created on the Lua side via `luna.timer.newScheduler()` and
+Schedulers are created on the Lua side via `luna.time.newScheduler()` and
 wrapped in a `LuaScheduler` UserData that pairs the Rust `Scheduler` with a
 `HashMap<u32, LuaRegistryKey>` for callback storage. Expired callbacks are
 automatically unregistered from the Lua registry after each `update()` call.
@@ -78,7 +78,7 @@ lua_api/timer_api.rs
   │         getRemaining, getInterval, getRepeatCount, getCount,
   │         isEmpty, setInterval, resetEvent, setTimeScale,
   │         getTimeScale, update
-  └── luna.timer table
+  └── luna.time table
         ├── getDelta, getFPS, getTime, getAverageDelta
         ├── step, getMicroTime, sleep
         └── newScheduler → LuaScheduler
@@ -199,24 +199,24 @@ No public enums in this module.
 
 ## Lua API
 
-Registered by `src/lua_api/timer_api.rs` under `luna.timer`. The file defines
+Registered by `src/lua_api/timer_api.rs` under `luna.time`. The file defines
 a `LuaScheduler` UserData struct that wraps a Rust `Scheduler` with a
 `HashMap<u32, LuaRegistryKey>` for Lua callback storage and a
 `HashMap<String, u32>` for named event ID tracking. Expired callbacks are
 automatically unregistered from the Lua registry after each `update()` call.
 
-### `luna.timer` table functions
+### `luna.time` table functions
 
 | Function                       | Signature                 | Description                                                  |
 |--------------------------------|---------------------------|--------------------------------------------------------------|
-| `luna.timer.getDelta()`        | `() → number`            | Frame delta time in seconds from `SharedState.delta_time`    |
-| `luna.timer.getFPS()`          | `() → number`            | Current FPS from `SharedState.fps`                           |
-| `luna.timer.getTime()`         | `() → number`            | Total elapsed time from `SharedState.total_time`             |
-| `luna.timer.getAverageDelta()` | `() → number`            | Rolling 60-frame average delta from `Clock.average_delta()`  |
-| `luna.timer.step()`            | `() → number`            | Advance clock one tick; returns delta. Calls `SharedState.step_timer()` |
-| `luna.timer.getMicroTime()`    | `() → number`            | High-resolution elapsed time from `Clock.elapsed()`          |
-| `luna.timer.sleep(seconds)`    | `(number) → nil`         | Block the main thread for `seconds` (≤ 0 is ignored)        |
-| `luna.timer.newScheduler()`    | `() → Scheduler`         | Create a new independent `LuaScheduler` UserData             |
+| `luna.time.getDelta()`        | `() → number`            | Frame delta time in seconds from `SharedState.delta_time`    |
+| `luna.time.getFPS()`          | `() → number`            | Current FPS from `SharedState.fps`                           |
+| `luna.time.getTime()`         | `() → number`            | Total elapsed time from `SharedState.total_time`             |
+| `luna.time.getAverageDelta()` | `() → number`            | Rolling 60-frame average delta from `Clock.average_delta()`  |
+| `luna.time.step()`            | `() → number`            | Advance clock one tick; returns delta. Calls `SharedState.step_timer()` |
+| `luna.time.getMicroTime()`    | `() → number`            | High-resolution elapsed time from `Clock.elapsed()`          |
+| `luna.time.sleep(seconds)`    | `(number) → nil`         | Block the main thread for `seconds` (≤ 0 is ignored)        |
+| `luna.time.newScheduler()`    | `() → Scheduler`         | Create a new independent `LuaScheduler` UserData             |
 
 ### `Scheduler` UserData methods
 
@@ -248,16 +248,16 @@ automatically unregistered from the Lua registry after each `update()` call.
 ```lua
 -- Basic frame timing
 function luna.update(dt)
-    local fps = luna.timer.getFPS()
-    local total = luna.timer.getTime()
-    local avg = luna.timer.getAverageDelta()
+    local fps = luna.time.getFPS()
+    local total = luna.time.getTime()
+    local avg = luna.time.getAverageDelta()
 end
 ```
 
 ```lua
 -- Scheduler: one-shot, repeating, named, pause/resume
 function luna.load()
-    sched = luna.timer.newScheduler()
+    sched = luna.time.newScheduler()
 
     -- Fire once after 3 seconds
     sched:after(3.0, function()
@@ -293,9 +293,9 @@ end
 
 ```lua
 -- High-resolution timing for benchmarks
-local t1 = luna.timer.getMicroTime()
+local t1 = luna.time.getMicroTime()
 do_expensive_work()
-local elapsed = luna.timer.getMicroTime() - t1
+local elapsed = luna.time.getMicroTime() - t1
 print("Took " .. elapsed .. " seconds")
 ```
 
@@ -314,14 +314,14 @@ print("Took " .. elapsed .. " seconds")
 |-----------|---------------|--------------------------------------------------------------|
 | `engine`  | Imports from  | `Clock` stored in `SharedState`; `delta_time`, `fps`, `total_time` fields mirrored from `Clock` |
 | `math`    | —             | No direct dependency; timer is pure `std::time`              |
-| `lua_api`  | Imported by  | `src/lua_api/timer_api.rs` registers `luna.timer.*`          |
+| `lua_api`  | Imported by  | `src/lua_api/timer_api.rs` registers `luna.time.*`          |
 | `animation` | Similar     | Animation/tweening uses delta time but does NOT own timing — consumes `dt` from timer |
 | `engine::log_messages` | Imports from | Uses log message constants `TI01`–`TI04` for debug logging |
 
 ## Notes
 
-- **Clock is engine-owned**: `Clock` lives inside `SharedState` and is ticked by the engine loop. Game scripts read timing through `luna.timer.getDelta()` / `luna.timer.getFPS()` / `luna.timer.getTime()` rather than ticking the clock themselves. `luna.timer.step()` exists but is primarily for test harness use.
-- **Schedulers are Lua-owned**: Each call to `luna.timer.newScheduler()` creates an independent scheduler. Games can have multiple schedulers (e.g., one for UI, one for gameplay with different time scales). The scheduler is a UserData object — its lifetime is managed by Lua's garbage collector.
+- **Clock is engine-owned**: `Clock` lives inside `SharedState` and is ticked by the engine loop. Game scripts read timing through `luna.time.getDelta()` / `luna.time.getFPS()` / `luna.time.getTime()` rather than ticking the clock themselves. `luna.time.step()` exists but is primarily for test harness use.
+- **Schedulers are Lua-owned**: Each call to `luna.time.newScheduler()` creates an independent scheduler. Games can have multiple schedulers (e.g., one for UI, one for gameplay with different time scales). The scheduler is a UserData object — its lifetime is managed by Lua's garbage collector.
 - **Callback cleanup**: `LuaScheduler` stores callbacks as `LuaRegistryKey` values. After `update()`, any event IDs no longer in the Scheduler's active set are cleaned up from both the callback map and the named-IDs map, preventing registry leaks.
 - **Named event replacement**: `afterNamed` / `everyNamed` cancel and remove the old callback before inserting the new one. This is safe for scene re-entry patterns where `luna.load()` sets up timers that might already exist.
 - **Time scale clamping**: `set_time_scale` clamps to [0.0, 100.0]. A scale of 0.0 freezes all timers without cancelling them. Scale does not affect `Clock` — only `Scheduler`.

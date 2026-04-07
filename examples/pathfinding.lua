@@ -1,4 +1,4 @@
--- examples/pathfinding.lua
+﻿-- examples/pathfinding.lua
 -- luna.pathfinding — Grid-based A*, flow fields, hierarchical pathfinding,
 -- NavGrid, UnitPathfinder, PathGrid, FlowField, and AiFlowField.
 -- All luna.pathfinding API methods demonstrated with code and comments.
@@ -170,7 +170,7 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.setColor(0.3, 0.7, 1.0)
-    luna.graphics.circle("fill", unit_x, unit_y, 8)
+    luna.render.setColor(0.3, 0.7, 1.0)
+    luna.render.circle("fill", unit_x, unit_y, 8)
 end
 ]]

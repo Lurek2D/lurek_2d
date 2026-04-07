@@ -1,4 +1,4 @@
-local Dungeon = require("generator.dungeon")
+﻿local Dungeon = require("generator.dungeon")
 
 local TILE = 16
 local map
@@ -23,26 +23,26 @@ function luna.update(dt)
 end
 
 function luna.draw()
-    luna.graphics.clear(0.05, 0.05, 0.08)
+    luna.render.clear(0.05, 0.05, 0.08)
     -- Draw map
     for y = 1, #map do
         for x = 1, #map[1] do
             if map[y][x] == 1 then
-                luna.graphics.setColor(0.3, 0.3, 0.35, 1)
-                luna.graphics.rectangle("fill", (x - 1) * TILE, (y - 1) * TILE, TILE, TILE)
+                luna.render.setColor(0.3, 0.3, 0.35, 1)
+                luna.render.rectangle("fill", (x - 1) * TILE, (y - 1) * TILE, TILE, TILE)
             end
         end
     end
     -- Draw player
-    luna.graphics.setColor(0.2, 0.8, 0.4, 1)
-    luna.graphics.rectangle("fill", (player.gx - 1) * TILE, (player.gy - 1) * TILE, TILE, TILE)
+    luna.render.setColor(0.2, 0.8, 0.4, 1)
+    luna.render.rectangle("fill", (player.gx - 1) * TILE, (player.gy - 1) * TILE, TILE, TILE)
     -- UI
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("Turn: " .. turn, 10, 580)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("Turn: " .. turn, 10, 580)
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     local dx, dy = 0, 0
     if key == "left"  or key == "a" then dx = -1 end
     if key == "right" or key == "d" then dx =  1 end

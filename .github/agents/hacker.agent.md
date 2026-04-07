@@ -1,4 +1,4 @@
----
+﻿---
 description: "**Hacker** — Red-team adversarial tester. Find edge cases, crash paths, API misuse, and boundary conditions that break the Luna2D engine or escape the Lua sandbox. Reports findings to Security and Tester — never implements fixes."
 tools: [vscode, execute, read, agent, edit, search, web, browser, todo]
 name: Hacker
@@ -37,7 +37,7 @@ Hacker requires from the caller:
 - **Target API surface** — which `luna.*` namespaces or modules to probe (or “all” for a full sweep)
 - **Severity threshold** — minimum severity to report (default: MEDIUM and above)
 - **Time-box** — whether this is a quick spot-check or a thorough adversarial review
-- **Known concerns** — any specific attack surfaces already suspected (e.g., “path traversal in `luna.filesystem.mount`”)
+- **Known concerns** — any specific attack surfaces already suspected (e.g., “path traversal in `luna.fs.mount`”)
 
 ## OUTPUT CONTRACT
 
@@ -75,13 +75,13 @@ Every Hacker output includes:
 
 ```lua
 -- Stale key: release then draw
-local img = luna.graphics.newImage("test.png")
-luna.graphics.release(img)
-luna.graphics.draw(img, 0, 0)   -- must LuaError, not panic
+local img = luna.render.newImage("test.png")
+luna.render.release(img)
+luna.render.draw(img, 0, 0)   -- must LuaError, not panic
 
 -- Path traversal probes
-luna.filesystem.read("../../../etc/passwd")      -- must fail
-luna.filesystem.read("/etc/passwd")              -- must fail
+luna.fs.read("../../../etc/passwd")      -- must fail
+luna.fs.read("/etc/passwd")              -- must fail
 
 -- Sandbox escape probes
 print(os)       -- must be nil
@@ -90,19 +90,19 @@ print(dofile)   -- must be nil
 print(debug)    -- must be nil or restricted
 
 -- Double release
-local c = luna.graphics.newCanvas(100, 100)
-luna.graphics.releaseCanvas(c)
-luna.graphics.releaseCanvas(c)   -- must not crash
+local c = luna.render.newCanvas(100, 100)
+luna.render.releaseCanvas(c)
+luna.render.releaseCanvas(c)   -- must not crash
 
 -- Nil argument spam
-luna.graphics.draw(nil, nil, nil)
+luna.render.draw(nil, nil, nil)
 luna.audio.newSource(nil, nil)
 luna.physics.newWorld(nil, nil)
-luna.graphics.newImage("")        -- empty path
+luna.render.newImage("")        -- empty path
 
 -- Boundary values
-luna.graphics.rectangle("fill", math.maxinteger, math.maxinteger, 0, 0)
-luna.graphics.newCanvas(0, 0)    -- zero-size canvas
+luna.render.rectangle("fill", math.maxinteger, math.maxinteger, 0, 0)
+luna.render.newCanvas(0, 0)    -- zero-size canvas
 
 -- Resource exhaustion
 for i = 1, 100000 do
@@ -111,7 +111,7 @@ for i = 1, 100000 do
 end
 
 -- Sequence attack: setCanvas before newCanvas
-luna.graphics.setCanvas(nil)     -- unset without ever setting
+luna.render.setCanvas(nil)     -- unset without ever setting
 ```
 
 ## WORKFLOW

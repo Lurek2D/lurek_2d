@@ -1,4 +1,4 @@
-# Compute, DataFrame & GPU Compute — Threading Opportunities
+﻿# Compute, DataFrame & GPU Compute — Threading Opportunities
 
 ## Part 1: NdArray (src/compute/)
 
@@ -158,7 +158,7 @@ fn add(@builtin(global_invocation_id) id: vec3<u32>) {
 1. Add compute pipeline to `GpuRenderer` (alongside existing render pipelines)
 2. Create storage buffers for input/output arrays
 3. Dispatch compute shader, read back results
-4. Expose via `luna.compute.gpu_add(a, b)` or automatic GPU offload for large arrays
+4. Expose via `luna.gpu.gpu_add(a, b)` or automatic GPU offload for large arrays
 
 **Expected Speedup**: 10–100× for 100k+ elements (GPU has hundreds of ALUs)
 
@@ -271,7 +271,7 @@ fn element_wise_op(a: &NdArray, b: &NdArray, op: fn(f64, f64) -> f64) -> NdArray
 | 2 | Implement element-wise GPU ops (add, mul) | Medium |
 | 3 | Implement GPU convolution 2D | High |
 | 4 | Automatic CPU→GPU offload for large arrays | High |
-| 5 | Expose via `luna.compute.gpuAdd()` Lua API | Low |
+| 5 | Expose via `luna.gpu.gpuAdd()` Lua API | Low |
 
 ---
 

@@ -1,4 +1,4 @@
-//! `luna.timer` — Frame timing and scheduled callback API.
+﻿//! `luna.time` — Frame timing and scheduled callback API.
 //!
 //! Provides delta time, total elapsed time, FPS tracking, and a Scheduler
 //! object for delayed and repeating Lua callbacks.
@@ -16,7 +16,7 @@ use std::rc::Rc;
 /// Lua-side wrapper around a [`Scheduler`].
 ///
 /// Represents a scheduled event manager. Create one with
-/// `luna.timer.newScheduler()` and call `scheduler:step(dt)` every frame.
+/// `luna.time.newScheduler()` and call `scheduler:step(dt)` every frame.
 pub struct LuaScheduler {
     inner: Scheduler,
     callback_key: Option<LuaRegistryKey>,
@@ -92,7 +92,7 @@ impl LuaUserData for LuaScheduler {
 // register
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Registers the `luna.timer` API table with the Lua VM.
+/// Registers the `luna.time` API table with the Lua VM.
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
@@ -161,6 +161,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("timer", tbl)?;
+    luna.set("time", tbl)?;
     Ok(())
 }

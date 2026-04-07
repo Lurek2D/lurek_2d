@@ -1,4 +1,4 @@
-//! `luna.image` — CPU-side pixel-level image manipulation.
+﻿//! `luna.img` — CPU-side pixel-level image manipulation.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -61,7 +61,7 @@ impl LuaUserData for LuaCompressedImageData {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `luna.image` API table with the Lua VM.
+/// Registers the `luna.img` API table with the Lua VM.
 ///
 /// # Parameters
 /// - `lua` — `&Lua`.
@@ -148,6 +148,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("image", tbl)?;
+    luna.set("img", tbl)?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-# Quest Tracker
+﻿# Quest Tracker
 
 Quest tables, objective types, multi-step progression, journal UI, and completion rewards.
 
@@ -125,27 +125,27 @@ end
 
 ```lua
 local function draw_journal()
-    luna.graphics.setColor(0, 0, 0, 0.9)
-    luna.graphics.rectangle("fill", 50, 30, 700, 540)
-    luna.graphics.setColor(1, 1, 1, 1)
-    luna.graphics.print("QUEST JOURNAL", 60, 40)
+    luna.render.setColor(0, 0, 0, 0.9)
+    luna.render.rectangle("fill", 50, 30, 700, 540)
+    luna.render.setColor(1, 1, 1, 1)
+    luna.render.print("QUEST JOURNAL", 60, 40)
 
     local y = 80
     for _, q in ipairs(active_quests) do
-        luna.graphics.setColor(1, 1, 0.5, 1)
-        luna.graphics.print(q.title, 70, y)
+        luna.render.setColor(1, 1, 0.5, 1)
+        luna.render.print(q.title, 70, y)
         y = y + 20
         for _, obj in ipairs(q.objectives) do
             local mark = obj.done and "[x] " or "[ ] "
             local progress = ""
             if obj.count then progress = " (" .. (obj.current or 0) .. "/" .. obj.count .. ")" end
-            luna.graphics.setColor(obj.done and {0.5,0.5,0.5} or {1,1,1})
-            luna.graphics.print("  " .. mark .. obj.label .. progress, 80, y)
+            luna.render.setColor(obj.done and {0.5,0.5,0.5} or {1,1,1})
+            luna.render.print("  " .. mark .. obj.label .. progress, 80, y)
             y = y + 18
         end
         y = y + 10
     end
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(1, 1, 1, 1)
 end
 ```
 

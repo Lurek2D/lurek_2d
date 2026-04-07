@@ -1,4 +1,4 @@
-//! Luna2D application lifecycle using winit 0.30 + wgpu GPU rendering.
+﻿//! Luna2D application lifecycle using winit 0.30 + wgpu GPU rendering.
 //!
 //! # DEAD FILE
 //! This file is NOT declared in `src/engine/mod.rs` and is not compiled.
@@ -410,7 +410,7 @@ impl ApplicationHandler for LunaApp {
             }
 
             WindowEvent::RedrawRequested => {
-                // Check quit flag from Lua (e.g., luna.event.quit()).
+                // Check quit flag from Lua (e.g., luna.signal.quit()).
                 if let Some(state) = &self.state {
                     if state.borrow().quit_requested {
                         event_loop.exit();

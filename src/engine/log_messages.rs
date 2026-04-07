@@ -1,4 +1,4 @@
-//! Structured logging with stable message IDs for the Luna2D engine.
+﻿//! Structured logging with stable message IDs for the Luna2D engine.
 //!
 //! Every engine log message has a stable ID (`L001`..`L099`) so that external
 //! tools and Lua scripts can filter or match on them.  Use the [`log_msg!`]
@@ -14,7 +14,7 @@ use std::sync::atomic::{AtomicU8, Ordering};
 /// 0 = Off, 1 = Error, 2 = Warn, 3 = Info, 4 = Debug, 5 = Trace.
 static LOG_LEVEL_OVERRIDE: AtomicU8 = AtomicU8::new(0); // 0 = not overridden
 
-/// Sets the global log level at runtime (called from `luna.system.setLogLevel`).
+/// Sets the global log level at runtime (called from `luna.platform.setLogLevel`).
 ///
 /// # Parameters
 /// - `level` — `&str`.

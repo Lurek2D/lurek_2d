@@ -1,4 +1,4 @@
-# New Feature Suggestions
+﻿# New Feature Suggestions
 
 ## Features That Don't Exist Yet
 
@@ -139,7 +139,7 @@
 **Concept**: Collect and visualize game session data from test runs.
 
 **Features**:
-- Track events from luna.event.emit() during play sessions
+- Track events from luna.signal.emit() during play sessions
 - Show event frequency, timing, and distribution
 - Player path visualization (death map, progression funnel)
 - Auto-detect difficulty spikes

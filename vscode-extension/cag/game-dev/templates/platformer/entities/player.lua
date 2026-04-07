@@ -1,4 +1,4 @@
-local Player = {}
+﻿local Player = {}
 Player.__index = Player
 
 local SPEED = 160
@@ -42,9 +42,9 @@ function Player:keypressed(key)
 end
 
 function Player:draw()
-    luna.graphics.setColor(0.2, 0.8, 0.3, 1)
-    luna.graphics.rectangle("fill", self.x, self.y - self.height, self.width, self.height)
-    luna.graphics.setColor(1, 1, 1, 1)
+    luna.render.setColor(0.2, 0.8, 0.3, 1)
+    luna.render.rectangle("fill", self.x, self.y - self.height, self.width, self.height)
+    luna.render.setColor(1, 1, 1, 1)
 end
 
 return Player

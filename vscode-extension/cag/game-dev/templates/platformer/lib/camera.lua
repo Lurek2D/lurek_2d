@@ -1,4 +1,4 @@
-local Camera = {}
+﻿local Camera = {}
 Camera.__index = Camera
 
 function Camera.new()
@@ -11,12 +11,12 @@ function Camera:follow(target, dt)
 end
 
 function Camera:apply()
-    luna.graphics.push()
-    luna.graphics.translate(-self.x, -self.y)
+    luna.render.push()
+    luna.render.translate(-self.x, -self.y)
 end
 
 function Camera:reset()
-    luna.graphics.pop()
+    luna.render.pop()
 end
 
 return Camera

@@ -1,4 +1,4 @@
-# Library Module Integration
+﻿# Library Module Integration
 
 How to use `library/` Lunasome modules inside `demos/`.
 
@@ -60,7 +60,7 @@ local choices  = {}
 
 function luna.load()
     luna.window.setTitle("Dialog Demo")
-    luna.graphics.setBackgroundColor(0.06, 0.06, 0.06)
+    luna.render.setBackgroundColor(0.06, 0.06, 0.06)
 
     -- Build sequence
     seq = dialog.newSequencer()
@@ -99,17 +99,17 @@ end
 
 function luna.draw()
     -- dialog box at bottom 25% of screen
-    luna.graphics.setColor(0, 0, 0, 0.8)
-    luna.graphics.rectangle("fill", 20, 450, 760, 140)
-    luna.graphics.setColor(0.9, 0.9, 0.9)
-    luna.graphics.print(current_speaker .. ": " .. current_line, 30, 465)
+    luna.render.setColor(0, 0, 0, 0.8)
+    luna.render.rectangle("fill", 20, 450, 760, 140)
+    luna.render.setColor(0.9, 0.9, 0.9)
+    luna.render.print(current_speaker .. ": " .. current_line, 30, 465)
     for i, opt in ipairs(choices) do
-        luna.graphics.print(i .. ". " .. opt, 40, 480 + i * 20)
+        luna.render.print(i .. ". " .. opt, 40, 480 + i * 20)
     end
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
     if key == "space" or key == "return" then
         if #choices == 0 then seq:advance() end
     end
@@ -131,7 +131,7 @@ local world_drops = {}
 
 function luna.load()
     luna.window.setTitle("Loot RPG")
-    luna.graphics.setBackgroundColor(0.05, 0.05, 0.1)
+    luna.render.setBackgroundColor(0.05, 0.05, 0.1)
 
     -- Define item types (do this once in luna.load)
     item.clearTypes()
@@ -175,27 +175,27 @@ end
 function luna.draw()
     -- draw world drops
     for _, d in ipairs(world_drops) do
-        luna.graphics.setColor(1, 0.8, 0.2)
-        luna.graphics.circle("fill", d.x, d.y, 8)
-        luna.graphics.setColor(1, 1, 1)
-        luna.graphics.print(d.inst.type_id, d.x + 10, d.y - 6)
+        luna.render.setColor(1, 0.8, 0.2)
+        luna.render.circle("fill", d.x, d.y, 8)
+        luna.render.setColor(1, 1, 1)
+        luna.render.print(d.inst.type_id, d.x + 10, d.y - 6)
     end
 
     -- draw inventory sidebar
-    luna.graphics.setColor(0.1, 0.1, 0.2, 0.9)
-    luna.graphics.rectangle("fill", 620, 10, 170, 300)
-    luna.graphics.setColor(0.8, 0.8, 1)
-    luna.graphics.print("Inventory", 630, 16)
+    luna.render.setColor(0.1, 0.1, 0.2, 0.9)
+    luna.render.rectangle("fill", 620, 10, 170, 300)
+    luna.render.setColor(0.8, 0.8, 1)
+    luna.render.print("Inventory", 630, 16)
     local slots = inventory.getSlots(player_inv)
     for i, slot in ipairs(slots) do
         if slot then
-            luna.graphics.print(slot.type_id, 630, 16 + i * 18)
+            luna.render.print(slot.type_id, 630, 16 + i * 18)
         end
     end
 end
 
 function luna.keypressed(key)
-    if key == "escape" then luna.event.quit() end
+    if key == "escape" then luna.signal.quit() end
 end
 ```
 

@@ -1,4 +1,4 @@
---- luna.doll — Socket-Based Visual Composition Engine
+﻿--- luna.doll — Socket-Based Visual Composition Engine
 -- Assembles composite visual objects (characters, vehicles, faces) from
 -- interchangeable Part sprites attached to named Socket positions on a
 -- DollTemplate blueprint. No physics, no collision, no gameplay logic —
@@ -316,11 +316,11 @@ function M.newDoll(template)
         return list
     end
 
-    --- Convenience draw method — renders all visible parts via luna.graphics.
-    -- Requires luna.graphics to be available in the global environment.
+    --- Convenience draw method — renders all visible parts via luna.render.
+    -- Requires luna.render to be available in the global environment.
     function doll:draw()
         if not _visible then return end
-        local g = luna and luna.graphics
+        local g = luna and luna.render
         if not g then return end
 
         local drawList = self:getDrawList()

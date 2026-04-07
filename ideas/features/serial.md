@@ -1,4 +1,4 @@
-# serial — Feature Analysis
+﻿# serial — Feature Analysis
 
 **Tier**: 1 (Core)
 **Spec**: `specs/serial.md`
@@ -10,9 +10,9 @@ Format-neutral serialization to/from Lua tables: JSON, TOML, CSV. Operates purel
 
 ## Current Feature Summary
 
-- `luna.serial.encodeJson(tbl, pretty?)` / `luna.serial.decodeJson(str)` — JSON round-trip
-- `luna.serial.encodeToml(tbl, pretty?)` / `luna.serial.decodeToml(str)` — TOML round-trip
-- `luna.serial.encodeCsv(rows, headers?)` / `luna.serial.decodeCsv(str, headers?)` — CSV with optional headers
+- `luna.codec.encodeJson(tbl, pretty?)` / `luna.codec.decodeJson(str)` — JSON round-trip
+- `luna.codec.encodeToml(tbl, pretty?)` / `luna.codec.decodeToml(str)` — TOML round-trip
+- `luna.codec.encodeCsv(rows, headers?)` / `luna.codec.decodeCsv(str, headers?)` — CSV with optional headers
 - Pretty-printing for JSON and TOML (human-readable output)
 - All functions are pure: string in → table out, table in → string out
 - TOML is the primary human-authored format (per B-05 constraint)
@@ -36,10 +36,10 @@ Format-neutral serialization to/from Lua tables: JSON, TOML, CSV. Operates purel
 
 ## Suggestions
 
-1. **Add MessagePack**: `luna.serial.encodeMsgPack(tbl)` / `luna.serial.decodeMsgPack(str)` — binary-compact serialization. High value for network payloads and save data.
-2. **Add XML decode (read-only)**: `luna.serial.decodeXml(str)` — parse XML into Lua tables. Needed for Tiled TMX import and third-party data. Encoding XML is less important.
-3. **Add schema validation**: `luna.serial.validate(tbl, schema)` — check that a decoded table matches expected structure. Useful for save file migration and network protocol validation.
-4. **Consider `encode`/`decode` with format parameter**: Instead of format-specific functions, offer `luna.serial.encode(tbl, "json")` / `luna.serial.decode(str, "json")`. Makes it easy to switch formats.
+1. **Add MessagePack**: `luna.codec.encodeMsgPack(tbl)` / `luna.codec.decodeMsgPack(str)` — binary-compact serialization. High value for network payloads and save data.
+2. **Add XML decode (read-only)**: `luna.codec.decodeXml(str)` — parse XML into Lua tables. Needed for Tiled TMX import and third-party data. Encoding XML is less important.
+3. **Add schema validation**: `luna.codec.validate(tbl, schema)` — check that a decoded table matches expected structure. Useful for save file migration and network protocol validation.
+4. **Consider `encode`/`decode` with format parameter**: Instead of format-specific functions, offer `luna.codec.encode(tbl, "json")` / `luna.codec.decode(str, "json")`. Makes it easy to switch formats.
 
 ## Competitor Comparison
 
