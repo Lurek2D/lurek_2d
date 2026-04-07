@@ -173,6 +173,15 @@ use mlua::prelude::*;
 
 impl EventArg {
     /// Converts a [`LuaValue`] to an [`EventArg`] for event queue storage.
+    ///
+    /// Strings, integers, numbers, and booleans are each mapped to their
+    /// corresponding variant; any other type maps to [`EventArg::Nil`].
+    ///
+    /// # Parameters
+    /// - `val` — `&LuaValue`. The Lua value to convert.
+    ///
+    /// # Returns
+    /// `LuaResult<EventArg>`.
     pub fn from_lua_val(val: &LuaValue) -> LuaResult<Self> {
         match val {
             LuaValue::String(s) => Ok(EventArg::Str(
@@ -189,6 +198,16 @@ impl EventArg {
 }
 
 /// Converts an [`Event`] into a Lua multi-value (name followed by args).
+///
+/// The first value is the event name as a Lua string; subsequent values
+/// are each [`EventArg`] converted to its Lua equivalent.
+///
+/// # Parameters
+/// - `lua` — `&Lua`. The Lua VM.
+/// - `event` — `&Event`. The event to convert.
+///
+/// # Returns
+/// `LuaResult<LuaMultiValue>`.
 pub fn event_to_lua_multi<'lua>(lua: &'lua Lua, event: &Event) -> LuaResult<LuaMultiValue<'lua>> {
     let mut values = Vec::with_capacity(1 + event.args.len());
     values.push(LuaValue::String(lua.create_string(&event.name)?));

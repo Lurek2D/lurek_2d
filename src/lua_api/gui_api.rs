@@ -3865,6 +3865,14 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
 // -------------------------------------------------------------------------------
 
 /// Registers the `luna.gui` API table.
+///
+/// # Parameters
+/// - `lua` — `&Lua`. The Lua VM.
+/// - `luna` — `&LuaTable`. The top-level `luna` table to register into.
+/// - `state` — `Rc<RefCell<SharedState>>`. Shared engine state.
+///
+/// # Returns
+/// `LuaResult<()>`.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let ctx = Rc::new(RefCell::new(GuiContext::new()));

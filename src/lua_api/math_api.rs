@@ -904,6 +904,14 @@ impl LuaUserData for LuaNoiseGenerator {
 // -------------------------------------------------------------------------------
 
 /// Registers the `luna.math` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`. The Lua VM.
+/// - `luna` — `&LuaTable`. The top-level `luna` table to register into.
+/// - `_state` — `Rc<RefCell<SharedState>>`. Shared engine state (unused by this module).
+///
+/// # Returns
+/// `LuaResult<()>`.
 #[allow(clippy::type_complexity)]
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
