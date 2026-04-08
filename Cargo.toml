@@ -257,6 +257,18 @@ name = "filesystem_tests"
 path = "tests/rust/unit/filesystem_tests.rs"
 
 [[test]]
+name = "devtools_tests"
+path = "tests/rust/unit/devtools_tests.rs"
+
+[[test]]
+name = "localization_tests"
+path = "tests/rust/unit/localization_tests.rs"
+
+[[test]]
+name = "patterns_tests"
+path = "tests/rust/unit/patterns_tests.rs"
+
+[[test]]
 name = "graph_tests"
 path = "tests/rust/unit/graph_tests.rs"
 

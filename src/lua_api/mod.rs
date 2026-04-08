@@ -130,6 +130,21 @@ pub mod graphics_api;
 /// Exposes low-level system queries (processor count, memory size, URL opening, locale, power).
 pub mod system_api;
 
+/// Registers the `luna.devtools.*` developer diagnostics API.
+pub mod devtools_api;
+
+/// Registers the `luna.localization.*` multi-locale string catalog API.
+pub mod localization_api;
+
+/// Registers the `luna.docs.*` documentation management API.
+pub mod docs_api;
+
+/// Registers the `luna.patterns.*` game programming patterns API.
+pub mod patterns_api;
+
+/// Shared `LunaType` trait and `add_type_methods` helper for typed UserData objects.
+pub mod lua_types;
+
 /// Creates and configures the Lua VM, registers `luna.*` sub-APIs according to the
 /// provided module flags, and returns the ready `Lua` instance.
 ///
@@ -183,6 +198,16 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         automation_api::register(&lua, &luna, state.clone())?;
     }
 
+    // devtools: luna.devtools
+    if modules.debug {
+        devtools_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // localization: luna.localization
+    if modules.localization {
+        localization_api::register(&lua, &luna, state.clone())?;
+    }
+
     // input: luna.keyboard / luna.mouse / luna.gamepad / luna.touch
     if modules.input {
         input_api::register(&lua, &luna, state.clone())?;
@@ -190,6 +215,9 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
 
     // savegame: luna.savegame (always registered — no config flag)
     savegame_api::register(&lua, &luna, state.clone())?;
+
+    // docs: luna.docs (always registered — no config flag)
+    docs_api::register(&lua, &luna)?;
 
     // data: luna.data (always registered — no config flag)
     data_api::register(&lua, &luna, state.clone())?;
@@ -269,6 +297,11 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     // pipeline: luna.pipeline
     if modules.pipeline {
         pipeline_api::register(&lua, &luna, state.clone())?;
+    }
+
+    // patterns: luna.patterns
+    if modules.pipeline {
+        patterns_api::register(&lua, &luna, state.clone())?;
     }
 
     // graph: luna.graph

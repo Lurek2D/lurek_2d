@@ -193,7 +193,6 @@ fn lua_test_signal() {
 }
 
 #[test]
-#[ignore = "luna.patterns not yet registered in Lua VM"]
 fn lua_test_patterns() {
     run_lua_test("unit/test_patterns.lua");
 }
@@ -204,7 +203,6 @@ fn lua_test_light() {
 }
 
 #[test]
-#[ignore = "luna.localization not yet registered in Lua VM"]
 fn lua_test_localization() {
     run_lua_test("unit/test_localization.lua");
 }
@@ -215,7 +213,6 @@ fn lua_test_joystick_ext() {
 }
 
 #[test]
-#[ignore = "luna.devtools not yet registered in Lua VM"]
 fn lua_test_devtools() {
     run_lua_test("unit/test_devtools.lua");
 }

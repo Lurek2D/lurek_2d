@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-04-08T00:36:24.564799+00:00",
+    "generated": "2026-04-08T11:01:54.328305+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.5.0",
     "stats": {
-      "rust_items": 1136,
-      "rust_modules": 259,
+      "rust_items": 1173,
+      "rust_modules": 275,
       "rust_tests": 0,
-      "lua_tests": 103
+      "lua_tests": 104
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 1136,
-      "documented": 1136,
-      "modules": 259
+      "total_items": 1173,
+      "documented": 1160,
+      "modules": 275
     },
     "modules": {
       "ai::agent": {
@@ -1687,6 +1687,120 @@
             "description": "Execute a SQL query on a Database (supports FROM and JOIN).  # Parameters - `db` — `&Database`. - `sql` — `&str`.  # Returns `Result<DataFrame, String>`.",
             "file": "src/dataframe/sql.rs",
             "line": 685
+          }
+        ]
+      },
+      "devtools::frame_stats": {
+        "module_doc": "Rolling frame-time statistics: averages, percentiles, and FPS.  [`FrameStats`] maintains a fixed-capacity ring of frame durations and derives aggregate statistics on demand without allocating per query.",
+        "source_file": "src/devtools/frame_stats.rs",
+        "items": [
+          {
+            "name": "FrameStats",
+            "kind": "struct",
+            "description": "Rolling-window frame-time accumulator.  # Fields - `history` — `Vec<f64>`. - `capacity` — `usize`.",
+            "file": "src/devtools/frame_stats.rs",
+            "line": 14
+          },
+          {
+            "name": "FrameSnapshot",
+            "kind": "struct",
+            "description": "Computed statistics snapshot from [`FrameStats::snapshot`].  # Fields - `fps` — `f64`. - `dt` — `f64`. - `avg` — `f64`. - `min` — `f64`. - `max` — `f64`. - `p50` — `f64`. - `p95` — `f64`. - `p99` — `f64`. - `samples` — `usize`.",
+            "file": "src/devtools/frame_stats.rs",
+            "line": 108
+          }
+        ]
+      },
+      "devtools::logger": {
+        "module_doc": "Structured logger for the developer-tools system.  Provides a level-filtered, history-buffered in-process logger.  Messages are timestamped by seconds elapsed since the [`Logger`] was created and optionally mirrored to stderr.  The rolling history makes previous log output available for overlay display or programmatic inspection.",
+        "source_file": "src/devtools/logger.rs",
+        "items": [
+          {
+            "name": "LogLevel",
+            "kind": "enum",
+            "description": "Log severity level.  # Variants - `Trace` — Most verbose; disabled by default. - `Debug` — Detailed diagnostics. - `Info` — Normal lifecycle events. - `Warn` — Recoverable unexpected conditions. - `Error` — Errors that affect correctness. - `Fatal` — Unrecoverable errors.",
+            "file": "src/devtools/logger.rs",
+            "line": 22
+          },
+          {
+            "name": "LogEntry",
+            "kind": "struct",
+            "description": "A single log entry captured in the rolling history.  # Fields - `level` — `String`. - `timestamp` — `f64`. - `message` — `String`. - `source` — `String`. - `line` — `u32`. - `category` — `Option<String>`.",
+            "file": "src/devtools/logger.rs",
+            "line": 79
+          },
+          {
+            "name": "Logger",
+            "kind": "struct",
+            "description": "Structured in-process logger with level filtering and rolling history.  # Fields - `min_level` — `LogLevel`. - `console_enabled` — `bool`. - `log_file` — `String`. - `history` — `Vec<LogEntry>`. - `max_history` — `usize`. - `epoch` — `Instant`.",
+            "file": "src/devtools/logger.rs",
+            "line": 106
+          }
+        ]
+      },
+      "devtools": {
+        "module_doc": "Developer-tools subsystem for Luna2D.  Provides four collaborating facilities exposed to Lua games via `luna.devtools.*`:  | Facility | Type | Purpose | |---|---|---| | Logger | [`Logger`] | Level-filtered, categorised in-process log with rolling history | | Profiler | [`Profiler`] | Hierarchical zone-based frame profiler | | Frame stats | [`FrameStats`] | Rolling FPS / frame-time statistics and percentiles | | File watcher | [`FileWatcher`] | Polling mtime watcher for hot-reload detection |  This module is a **Tier 2** Engine Extension and may import from any Tier-1 module or the Baseline, but must never import from `lua_api`.  ## Source files | File | Contents | |---|---| | `logger.rs` | [`Logger`], [`LogLevel`], [`LogEntry`] | | `profiler.rs` | [`Profiler`], [`ProfileZone`] | | `frame_stats.rs` | [`FrameStats`], [`FrameSnapshot`] | | `watcher.rs` | [`FileWatcher`] |",
+        "source_file": "src/devtools/mod.rs",
+        "items": [
+          {
+            "name": "frame_stats",
+            "kind": "mod",
+            "description": "",
+            "file": "src/devtools/mod.rs",
+            "line": 24
+          },
+          {
+            "name": "logger",
+            "kind": "mod",
+            "description": "",
+            "file": "src/devtools/mod.rs",
+            "line": 25
+          },
+          {
+            "name": "profiler",
+            "kind": "mod",
+            "description": "",
+            "file": "src/devtools/mod.rs",
+            "line": 26
+          },
+          {
+            "name": "watcher",
+            "kind": "mod",
+            "description": "",
+            "file": "src/devtools/mod.rs",
+            "line": 27
+          }
+        ]
+      },
+      "devtools::profiler": {
+        "module_doc": "Hierarchical frame profiler with zone push/pop and rolling frame storage.  The profiler tracks nested timing zones — each [`profilePush`][luna.devtools.profilePush] opens a zone and each [`profilePop`][luna.devtools.profilePop] closes it. Completed frames are stored in a capped ring and can be queried for the flame-graph data needed by an overlay panel.",
+        "source_file": "src/devtools/profiler.rs",
+        "items": [
+          {
+            "name": "ProfileZone",
+            "kind": "struct",
+            "description": "A completed timing zone with optional nested children.  # Fields - `name` — `String`. - `start_time` — `f64`. - `end_time` — `f64`. - `children` — `Vec<ProfileZone>`.",
+            "file": "src/devtools/profiler.rs",
+            "line": 20
+          },
+          {
+            "name": "Profiler",
+            "kind": "struct",
+            "description": "Hierarchical frame profiler.  # Fields - `enabled` — `bool`. - `frames` — `Vec<Vec<ProfileZone>>`. - `max_frames` — `usize`. - `zone_stack` — internal open zone stack. - `epoch` — `Instant`.",
+            "file": "src/devtools/profiler.rs",
+            "line": 73
+          }
+        ]
+      },
+      "devtools::watcher": {
+        "module_doc": "File-system watcher that detects modifications by polling `mtime`.  [`FileWatcher`] keeps a snapshot of last-modified times for each watched path.  On every [`poll`][FileWatcher::poll] call it checks for changes and returns any modified paths.  Directories are watched non-recursively; add individual file paths for precise control.",
+        "source_file": "src/devtools/watcher.rs",
+        "items": [
+          {
+            "name": "FileWatcher",
+            "kind": "struct",
+            "description": "Polling-based file-modification watcher.  # Fields - `paths` — `HashMap<PathBuf, Option<SystemTime>>`.",
+            "file": "src/devtools/watcher.rs",
+            "line": 19
           }
         ]
       },
@@ -5922,6 +6036,100 @@
           }
         ]
       },
+      "localization::catalog": {
+        "module_doc": "Translation catalog: language maps, key resolution, and fallback chains.  A [`Catalog`] holds message tables keyed by locale code (e.g. `\"en-US\"`). Keys are dot-separated paths into nested string tables.  When a key is missing in the requested locale the catalog walks a configurable fallback chain before returning the key itself as a last resort.",
+        "source_file": "src/localization/catalog.rs",
+        "items": [
+          {
+            "name": "CatalogError",
+            "kind": "enum",
+            "description": "Errors produced by catalog operations.  # Variants - `UnknownLocale` — The requested locale is not loaded. - `KeyNotFound` — The key was not found in any fallback locale.",
+            "file": "src/localization/catalog.rs",
+            "line": 18
+          },
+          {
+            "name": "Catalog",
+            "kind": "struct",
+            "description": "Multi-locale string catalog with dot-path key resolution.  # Fields - `locale` — `String`. - `fallbacks` — `Vec<String>`. - `tables` — `HashMap<String, HashMap<String, String>>`.",
+            "file": "src/localization/catalog.rs",
+            "line": 36
+          }
+        ]
+      },
+      "localization::interpolation": {
+        "module_doc": "Variable interpolation for translation strings.  Replaces `{key}` placeholders in a template string with values from a lookup map.  Unrecognised keys are kept as-is so templates remain readable even with partial variable sets.",
+        "source_file": "src/localization/interpolation.rs",
+        "items": [
+          {
+            "name": "interpolate",
+            "kind": "fn",
+            "description": "Interpolates `{key}` placeholders in `template` with values from `vars`.  All placeholders in double-braces (`{{foo}}`) are treated as literal text `{foo}` (standard escape convention).  Unknown placeholders keep the original `{key}` marker.  # Parameters - `template` — `&str`. - `vars` — `&HashMap<String, String>`.  # Returns `String`.",
+            "file": "src/localization/interpolation.rs",
+            "line": 21
+          },
+          {
+            "name": "interpolate_pairs",
+            "kind": "fn",
+            "description": "Thin wrapper: accepts `&[(impl Display, impl Display)]` pairs as the variable map.  # Parameters - `template` — `&str`. - `pairs` — `&[(String, String)]`.  # Returns `String`.",
+            "file": "src/localization/interpolation.rs",
+            "line": 75
+          }
+        ]
+      },
+      "localization": {
+        "module_doc": "Localization subsystem for Luna2D.  Provides translation catalog management and text formatting utilities exposed to Lua games via `luna.localization.*`.  ## Architecture  | Component | Type | Purpose | |---|---|---| | Catalog | [`Catalog`] | Multi-locale string table with dot-path keys and fallback chains | | Interpolation | [`interpolate`] | `{variable}` substitution in translation strings | | Plural forms | [`pluralize`] | CLDR-style count-based plural form selection |  This module is a **Tier 2** Engine Extension.  It has no runtime dependencies on GraphicsState, PhysicsWorld, or other subsystems.  ## Source files | File | Contents | |---|---| | `catalog.rs` | [`Catalog`], [`CatalogError`] | | `interpolation.rs` | [`interpolate`], [`interpolate_pairs`] | | `plural.rs` | [`PluralForm`], [`pluralize`], [`pluralize_slavic`] |",
+        "source_file": "src/localization/mod.rs",
+        "items": [
+          {
+            "name": "catalog",
+            "kind": "mod",
+            "description": "",
+            "file": "src/localization/mod.rs",
+            "line": 24
+          },
+          {
+            "name": "interpolation",
+            "kind": "mod",
+            "description": "",
+            "file": "src/localization/mod.rs",
+            "line": 25
+          },
+          {
+            "name": "plural",
+            "kind": "mod",
+            "description": "",
+            "file": "src/localization/mod.rs",
+            "line": 26
+          }
+        ]
+      },
+      "localization::plural": {
+        "module_doc": "CLDR-inspired plural form selection.  Provides [`PluralForm`] and [`pluralize`] to select the correct grammatical form of a word or phrase based on a count value.  Supports the six CLDR plural categories: `zero`, `one`, `two`, `few`, `many`, and `other`.",
+        "source_file": "src/localization/plural.rs",
+        "items": [
+          {
+            "name": "PluralForm",
+            "kind": "enum",
+            "description": "CLDR plural category.  # Variants - `Zero` — Exactly zero (some locales treat it specially). - `One` — Singular. - `Two` — Dual form (e.g. Arabic, Latvian). - `Few` — Small number of items (Slavic languages). - `Many` — Larger numbers with special grammar (Polish, Russian). - `Other` — The default catch-all plural.",
+            "file": "src/localization/plural.rs",
+            "line": 19
+          },
+          {
+            "name": "pluralize",
+            "kind": "fn",
+            "description": "Selects the correct plural string from a form map for the given count.  The `forms` map may contain any subset of `\"zero\"`, `\"one\"`, `\"two\"`, `\"few\"`, `\"many\"`, `\"other\"` keys.  Resolution order: 1. Exact form key for the count (using [`PluralForm::english`]). 2. `\"other\"` fallback. 3. First available key.  # Parameters - `n` — `f64`. - `forms` — `&std::collections::HashMap<String, String>`.  # Returns `String`.",
+            "file": "src/localization/plural.rs",
+            "line": 111
+          },
+          {
+            "name": "pluralize_slavic",
+            "kind": "fn",
+            "description": "Like [`pluralize`] but accepts integer counts and uses Slavic rules.  # Parameters - `n` — `u64`. - `forms` — `&std::collections::HashMap<String, String>`.  # Returns `String`.",
+            "file": "src/localization/plural.rs",
+            "line": 130
+          }
+        ]
+      },
       "math::bezier": {
         "module_doc": "Bezier curve evaluation using De Casteljau's algorithm.  Supports arbitrary-degree curves with control point manipulation, rendering to polylines, derivative computation, and geometric transforms.  This module is part of Luna2D's `math` subsystem and provides the implementation details for bezier-related operations and data management. Key types exported from this module: `BezierCurve`. Primary functions: `new()`, `evaluate()`, `render()`, `render_segment()`.  All public items are documented. See the parent module for architectural context and the `luna.*` Lua API for the scripting interface.",
         "source_file": "src/math/bezier.rs",
@@ -7331,6 +7539,153 @@
             "description": "A pathfinder that operates on a shared `NavGrid` with optional result caching.  # Fields - `grid` — `Rc<RefCell<NavGrid>>`. - `cache` — `HashMap<CacheKey`. - `cache_order` — `Vec<CacheKey>`. - `cache_enabled` — `bool`. - `cache_max_size` — `usize`.",
             "file": "src/pathfinding/unit_pathfinder.rs",
             "line": 51
+          }
+        ]
+      },
+      "patterns::command_stack": {
+        "module_doc": "Undo/redo command-stack metadata tracker.  [`CommandStack`] manages cursor position and entry metadata.  The actual execute/undo Lua callbacks are stored in the API layer.",
+        "source_file": "src/patterns/command_stack.rs",
+        "items": [
+          {
+            "name": "CommandEntry",
+            "kind": "struct",
+            "description": "Metadata for a single recorded command.  # Fields - `id` — `u64`. - `name` — `String`. - `has_undo` — `bool`.",
+            "file": "src/patterns/command_stack.rs",
+            "line": 15
+          },
+          {
+            "name": "CommandStack",
+            "kind": "struct",
+            "description": "Undo/redo command history with named groups and batch support.  # Fields - `max_size` — `usize`. - `batch_depth` — `usize`.",
+            "file": "src/patterns/command_stack.rs",
+            "line": 32
+          }
+        ]
+      },
+      "patterns::event_bus": {
+        "module_doc": "Pure-Rust event bus: subscription metadata without Lua dependencies.  [`EventBus`] manages named-event subscriptions as integer handles. The bus tracks the order and priority of listeners but stores **no callbacks** — callbacks are stored in the Lua API layer, keyed by the handles this module returns.",
+        "source_file": "src/patterns/event_bus.rs",
+        "items": [
+          {
+            "name": "Subscription",
+            "kind": "struct",
+            "description": "Event subscription record (metadata only).  # Fields - `id` — `u64`. - `event` — `String`. - `priority` — `i64`. - `once` — `bool`.",
+            "file": "src/patterns/event_bus.rs",
+            "line": 19
+          },
+          {
+            "name": "EventBus",
+            "kind": "struct",
+            "description": "Ordered subscription registry for a named event bus.  # Fields - `name` — `String`. - `enabled` — `bool`.",
+            "file": "src/patterns/event_bus.rs",
+            "line": 36
+          }
+        ]
+      },
+      "patterns::factory": {
+        "module_doc": "Factory type-name registry without Lua coupling.  [`Factory`] tracks which constructor names are registered.  The actual constructor callbacks live in the Lua API layer.",
+        "source_file": "src/patterns/factory.rs",
+        "items": [
+          {
+            "name": "Factory",
+            "kind": "struct",
+            "description": "Constructor-name registry (metadata only; constructors stored in lua_api layer).  # Fields - `types` — `HashSet<String>`.",
+            "file": "src/patterns/factory.rs",
+            "line": 13
+          }
+        ]
+      },
+      "patterns": {
+        "module_doc": "Game programming patterns for Luna2D Lua games.  Provides five classic game-code patterns as UserData objects exposed to Lua via `luna.patterns.*`.  Callbacks are stored in the Lua API layer; this module holds only pure-Rust state and logic.  | Pattern | Type | Purpose | |---|---|---| | Event Bus | [`EventBus`] | Named-event pub/sub with priority ordering and wildcard events | | Object Pool | [`ObjectPool`] | Slot-tracking pool to recycle Lua objects without GC pressure | | Command Stack | [`CommandStack`] | Undo/redo history with batching support | | Service Locator | [`ServiceLocator`] | Singleton-like named service registry | | Factory | [`Factory`] | Type-name constructor registry with aliasing | | State Machine | [`StateMachine`] | Finite-state machine with transition validation and history |  This module is a **Tier 2** Engine Extension.  It may import from Tier 1 and Baseline but must never import from `lua_api`.  ## Source files | File | Contents | |---|---| | `event_bus.rs` | [`EventBus`], [`Subscription`] | | `object_pool.rs` | [`ObjectPool`] | | `command_stack.rs` | [`CommandStack`], [`CommandEntry`] | | `service_locator.rs` | [`ServiceLocator`] | | `factory.rs` | [`Factory`] | | `state_machine.rs` | [`StateMachine`], [`TransitionRule`] |",
+        "source_file": "src/patterns/mod.rs",
+        "items": [
+          {
+            "name": "command_stack",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 29
+          },
+          {
+            "name": "event_bus",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 30
+          },
+          {
+            "name": "factory",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 31
+          },
+          {
+            "name": "object_pool",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 32
+          },
+          {
+            "name": "service_locator",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 33
+          },
+          {
+            "name": "state_machine",
+            "kind": "mod",
+            "description": "",
+            "file": "src/patterns/mod.rs",
+            "line": 34
+          }
+        ]
+      },
+      "patterns::object_pool": {
+        "module_doc": "Object-pool slot manager without Lua coupling.  [`ObjectPool`] tracks which pool slots are idle or active.  The actual Lua values stored in slots live in the Lua API layer.",
+        "source_file": "src/patterns/object_pool.rs",
+        "items": [
+          {
+            "name": "ObjectPool",
+            "kind": "struct",
+            "description": "Slot-tracking object pool (metadata only; Lua objects stored in lua_api layer).  # Fields - `name` — `String`. - `capacity` — `usize`. - `min_idle` — `usize`.",
+            "file": "src/patterns/object_pool.rs",
+            "line": 15
+          }
+        ]
+      },
+      "patterns::service_locator": {
+        "module_doc": "Service-locator name registry without Lua coupling.  [`ServiceLocator`] tracks which service names are registered.  The actual Lua values are stored in the API layer.",
+        "source_file": "src/patterns/service_locator.rs",
+        "items": [
+          {
+            "name": "ServiceLocator",
+            "kind": "struct",
+            "description": "Named-service registry (metadata only; values stored in lua_api layer).  # Fields - `services` — `HashSet<String>`.",
+            "file": "src/patterns/service_locator.rs",
+            "line": 13
+          }
+        ]
+      },
+      "patterns::state_machine": {
+        "module_doc": "Finite-state machine graph and transition logic without Lua coupling.  [`StateMachine`] stores state names, transition guards (as string conditions), and history.  Enter/exit/update Lua callbacks are stored in the API layer.",
+        "source_file": "src/patterns/state_machine.rs",
+        "items": [
+          {
+            "name": "TransitionRule",
+            "kind": "struct",
+            "description": "A permitted transition between two states.  # Fields - `from` — `String`. - `to` — `String`. - `label` — `String`. - `has_guard` — `bool`.",
+            "file": "src/patterns/state_machine.rs",
+            "line": 19
+          },
+          {
+            "name": "StateMachine",
+            "kind": "struct",
+            "description": "Finite-state machine with history stack and transition validation.  # Fields - `current` — `String`. - `previous` — `Option<String>`. - `history_cap` — `usize`.",
+            "file": "src/patterns/state_machine.rs",
+            "line": 39
           }
         ]
       },
@@ -9542,7 +9897,7 @@
         "file": "tests/lua/init.lua",
         "module": "init",
         "name": "init",
-        "description": "Luna2D Lua Test Framework",
+        "description": "Luna2D Lua Test Framework v2",
         "kind": "lua"
       },
       {
@@ -9893,6 +10248,13 @@
         "module": "test_camera",
         "name": "test_camera",
         "description": "Luna2D Lua BDD tests for luna.camera",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/unit/test_compute.lua",
+        "module": "test_compute",
+        "name": "test_compute",
+        "description": "Luna2D Compute Array Tests",
         "kind": "lua"
       },
       {

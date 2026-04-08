@@ -10,28 +10,62 @@ This report identifies three categories of coverage issues:
 
 ---
 
-## 1. Rust→Lua Gaps (0 items)
+## 1. Rust→Lua Gaps (3 items)
 
 These public Rust functions are **not exposed** to the `luna.*` Lua API.
 This may be intentional (engine internals) or an oversight.
 
-*All public Rust functions appear to be exposed to Lua.*
+### `localization::interpolation`
+
+- `interpolate_pairs` — Thin wrapper: accepts `&[(impl Display, impl Display)]` pair `src/localization/interpolation.rs:75`
+
+### `localization::plural`
+
+- `pluralize` — Selects the correct plural string from a form map for the gi `src/localization/plural.rs:111`
+- `pluralize_slavic` — Like [`pluralize`] but accepts integer counts and uses Slavi `src/localization/plural.rs:130`
 
 ---
 
-## 2. Rust Docstring Issues (0 items)
+## 2. Rust Docstring Issues (13 items)
 
 Public Rust items with missing or very short descriptions (< 15 chars).
 These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
-*All public Rust items have adequate docstrings.*
+### `devtools`
+
+- `mod` **frame_stats** `src/devtools/mod.rs:24`
+- `mod` **logger** `src/devtools/mod.rs:25`
+- `mod` **profiler** `src/devtools/mod.rs:26`
+- `mod` **watcher** `src/devtools/mod.rs:27`
+
+### `localization`
+
+- `mod` **catalog** `src/localization/mod.rs:24`
+- `mod` **interpolation** `src/localization/mod.rs:25`
+- `mod` **plural** `src/localization/mod.rs:26`
+
+### `patterns`
+
+- `mod` **command_stack** `src/patterns/mod.rs:29`
+- `mod` **event_bus** `src/patterns/mod.rs:30`
+- `mod` **factory** `src/patterns/mod.rs:31`
+- `mod` **object_pool** `src/patterns/mod.rs:32`
+- `mod` **service_locator** `src/patterns/mod.rs:33`
+- `mod` **state_machine** `src/patterns/mod.rs:34`
 
 ---
 
-## 3. Lua Docstring Issues (8 items)
+## 3. Lua Docstring Issues (14 items)
 
 Lua API items with missing or very short descriptions (< 15 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
+
+### `docs`
+
+- `class` **`luna.docs.ApiCatalog`** — *(no description)*
+- `class` **`luna.docs.DocEntry`** — *(no description)*
+- `class` **`luna.docs.QualityReport`** — *(no description)*
+- `class` **`luna.docs.ValidationReport`** — *(no description)*
 
 ### `event`
 
@@ -56,6 +90,11 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 ### `particle`
 
 - `module` **`luna.particle`** — *(no description)*
+
+### `patterns`
+
+- `function` **`luna.patterns.newEventBus`** — *"New event bus."* (too short)
+- `function` **`luna.patterns.newFactory`** — *"New factory."* (too short)
 
 ### `serial`
 

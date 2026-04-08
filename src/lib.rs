@@ -83,6 +83,8 @@ pub mod compute;
 // migration-state: pub mod crafting; — now library/crafting/init.lua
 /// LÖVE2D-compatible binary data API: ByteData, compress, hash, encode, and LÖVE2D pack format.
 pub mod data;
+/// Structured logger, hierarchical profiler, frame stats counter, and filesystem watcher for in-engine developer diagnostics.
+pub mod devtools;
 /// In-memory column-major tabular data (luna.dataframe).
 pub mod dataframe;
 /// Format-agnostic serialization: JSON, TOML, CSV, and YAML via shared SerialValue.
@@ -109,6 +111,8 @@ pub mod image;
 pub mod input;
 /// 2D point-light data container for dynamic lighting systems.
 pub mod light;
+/// Multi-locale string catalog, variable interpolation, and CLDR plural rules.
+pub mod localization;
 // migration-state: pub mod inventory; — now library/inventory/init.lua
 // migration-state: pub mod item; — now library/item/init.lua
 /// Composable visual effects layer: post-processing pipeline (bloom, blur, CRT, color grading) and screen overlays (weather, ambient, shake, fog).
@@ -125,6 +129,8 @@ pub mod network;
 // pub mod overlay; — superseded by fx::screen
 /// Emitter-based 2D particle effects.
 pub mod particle;
+/// Game programming patterns: EventBus, ObjectPool, CommandStack, ServiceLocator, Factory, and StateMachine.
+pub mod patterns;
 /// Grid pathfinding: A★, HPA★, flow fields, and NavGrid unit-size navigation.
 pub mod pathfinding;
 /// Physics simulation with rigid bodies (rect and circle shapes), collision events, sensors, and layer filtering.
