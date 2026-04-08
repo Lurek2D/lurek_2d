@@ -33,6 +33,15 @@ function AIWorld:getGlobalBlackboard() end
 ---@return nil
 function AIWorld:removeAgent(agent) end
 
+--- Returns the type name of this object.
+---@return string
+function AIWorld:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function AIWorld:typeOf(name) end
+
 --- Advances all agents by dt seconds.
 ---@param dt any
 ---@return nil
@@ -121,6 +130,15 @@ function Agent:setPriority(p) end
 ---@return nil
 function Agent:setVelocity(x, y) end
 
+--- Returns the type name of this object.
+---@return string
+function Agent:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Agent:typeOf(name) end
+
 --- Lua-side wrapper around a [`BTNode`].
 ---@class BTNode
 local BTNode = {}
@@ -166,6 +184,15 @@ function BTNode:setFailurePolicy(policy) end
 ---@return nil
 function BTNode:setSuccessPolicy(policy) end
 
+--- Returns the type name of this object.
+---@return string
+function BTNode:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function BTNode:typeOf(name) end
+
 --- Lua-side wrapper around a [`BehaviorTree`].
 ---@class BehaviorTree
 local BehaviorTree = {}
@@ -178,6 +205,15 @@ function BehaviorTree:getLastStatus() end
 ---@param node_ud any
 ---@return nil
 function BehaviorTree:setRoot(node_ud) end
+
+--- Returns the type name of this object.
+---@return string
+function BehaviorTree:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function BehaviorTree:typeOf(name) end
 
 --- Lua-side wrapper around a [`Blackboard`].
 ---@class Blackboard
@@ -223,6 +259,15 @@ function Blackboard:setNumber(key, value) end
 ---@return nil
 function Blackboard:setString(key, value) end
 
+--- Returns the type name of this object.
+---@return string
+function Blackboard:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Blackboard:typeOf(name) end
+
 --- Lua-side wrapper around a [`CommandQueue`].
 ---@class CommandQueue
 local CommandQueue = {}
@@ -251,6 +296,15 @@ function CommandQueue:getCurrentType() end
 ---@return boolean
 function CommandQueue:isEmpty() end
 
+--- Returns the type name of this object.
+---@return string
+function CommandQueue:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function CommandQueue:typeOf(name) end
+
 --- Lua-side wrapper around a [`GOAPPlanner`].
 ---@class GOAPPlanner
 local GOAPPlanner = {}
@@ -262,6 +316,15 @@ function GOAPPlanner:getActionCount() end
 --- Returns the number of registered goals.
 ---@return integer
 function GOAPPlanner:getGoalCount() end
+
+--- Returns the type name of this object.
+---@return string
+function GOAPPlanner:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function GOAPPlanner:typeOf(name) end
 
 --- Lua-side wrapper around an [`InfluenceMap`].
 ---@class InfluenceMap
@@ -313,6 +376,15 @@ function InfluenceMap:getWidth() end
 ---@param name any
 ---@return boolean
 function InfluenceMap:hasLayer(name) end
+
+--- Returns the type name of this object.
+---@return string
+function InfluenceMap:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function InfluenceMap:typeOf(name) end
 
 --- Lua-side wrapper around a [`QLearner`].
 ---@class QLearner
@@ -395,6 +467,15 @@ function QLearner:setExplorationRate(v) end
 ---@return nil
 function QLearner:setLearningRate(v) end
 
+--- Returns the type name of this object.
+---@return string
+function QLearner:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function QLearner:typeOf(name) end
+
 --- Lua-side wrapper around a [`Squad`].
 ---@class Squad
 local Squad = {}
@@ -442,6 +523,15 @@ function Squad:removeMember(name) end
 ---@return nil
 function Squad:setLeader(name) end
 
+--- Returns the type name of this object.
+---@return string
+function Squad:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Squad:typeOf(name) end
+
 --- Lua-side wrapper around a [`StateMachine`].
 ---@class StateMachine
 local StateMachine = {}
@@ -470,6 +560,15 @@ function StateMachine:getTimeInState() end
 ---@return nil
 function StateMachine:setInitialState(name) end
 
+--- Returns the type name of this object.
+---@return string
+function StateMachine:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function StateMachine:typeOf(name) end
+
 --- Lua-side wrapper around a [`SteeringManager`].
 ---@class SteeringManager
 local SteeringManager = {}
@@ -491,6 +590,15 @@ function SteeringManager:getLastSteering() end
 ---@return nil
 function SteeringManager:setCombineMode(mode) end
 
+--- Returns the type name of this object.
+---@return string
+function SteeringManager:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function SteeringManager:typeOf(name) end
+
 --- Lua-side wrapper around a [`UtilityAI`].
 ---@class UtilityAI
 local UtilityAI = {}
@@ -506,6 +614,15 @@ function UtilityAI:getActionCount() end
 --- Returns the name of the last chosen action, or nil.
 ---@return string?
 function UtilityAI:getLastAction() end
+
+--- Returns the type name of this object.
+---@return string
+function UtilityAI:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function UtilityAI:typeOf(name) end
 
 --- Creates a BT action leaf with a Lua callback.
 ---@param callback any
@@ -721,6 +838,15 @@ function Bus:setPitch(pitch) end
 ---@param vol any
 ---@return nil
 function Bus:setVolume(vol) end
+
+--- Returns the type name of this object.
+---@return string
+function Bus:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Bus:typeOf(name) end
 
 --- Lua-side wrapper for a streaming audio decoder.
 ---@class Decoder
@@ -958,6 +1084,15 @@ function MidiPlayer:stop() end
 --- Returns the current playback position in seconds.
 ---@return number
 function MidiPlayer:tell() end
+
+--- Returns the type name of this object.
+---@return string
+function MidiPlayer:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function MidiPlayer:typeOf(name) end
 
 --- Clears solo on all channels.
 ---@return nil
@@ -1535,6 +1670,12 @@ function luna.automation.isRunning() end
 ---@return nil
 function luna.automation.load(name, data) end
 
+--- Parses a TOML string and registers it as a named script.
+---@param name any
+---@param toml_str any
+---@return nil
+function luna.automation.loadFromToml(name, toml_str) end
+
 --- Pauses playback at the current step position.
 ---@return nil
 function luna.automation.pause() end
@@ -1872,6 +2013,11 @@ function Array:toTable() end
 --- Returns the transposed 2D array.
 ---@return Array
 function Array:transpose() end
+
+function Array:type() end
+
+---@param name any
+function Array:typeOf(name) end
 
 --- Creates an array from a Lua table of numbers with optional shape and dtype.
 ---@param data any
@@ -2222,6 +2368,15 @@ function DataFrame:toString() end
 ---@return table
 function DataFrame:toTable() end
 
+--- Returns the type name of this object.
+---@return string
+function DataFrame:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function DataFrame:typeOf(name) end
+
 --- Returns unique values in a column as a table.
 ---@param col any
 ---@return table
@@ -2277,6 +2432,15 @@ function Database:tableCount() end
 ---@return string
 function Database:toJSON() end
 
+--- Returns the type name of this object.
+---@return string
+function Database:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Database:typeOf(name) end
+
 --- Deserializes a binary LVDF string into a DataFrame.
 ---@param s any
 ---@return DataFrame
@@ -2330,7 +2494,7 @@ function luna.debugbridge.capturePrint(msg, source, line) end
 function luna.debugbridge.clearPrintHistory() end
 
 --- Returns the number of connected TCP clients.
----@return any
+---@return integer
 function luna.debugbridge.getClientCount() end
 
 --- Returns performance statistics.
@@ -2338,7 +2502,7 @@ function luna.debugbridge.getClientCount() end
 function luna.debugbridge.getPerformance() end
 
 --- Returns the server port (0 if not running).
----@return any
+---@return integer
 function luna.debugbridge.getPort() end
 
 --- Returns the print history.
@@ -2347,15 +2511,14 @@ function luna.debugbridge.getPort() end
 function luna.debugbridge.getPrintHistory(count) end
 
 --- Returns whether the server is currently running.
----@return any
+---@return bool
 function luna.debugbridge.isRunning() end
 
 --- Returns whether a screenshot is currently requested.
----@return any
+---@return bool
 function luna.debugbridge.isScreenshotRequested() end
 
 --- Poll for pending Lua-dependent requests from TCP clients.
----@return any
 function luna.debugbridge.poll() end
 
 --- Records a frame time sample.
@@ -2435,6 +2598,10 @@ function luna.devtools.getProfileData(frame) end
 ---@return integer
 function luna.devtools.getProfileFrameCount() end
 
+--- Returns the file watch poll interval in seconds.
+---@return number
+function luna.devtools.getWatchInterval() end
+
 --- Returns an array of all watched paths.
 ---@return table
 function luna.devtools.getWatchedPaths() end
@@ -2497,6 +2664,10 @@ function luna.devtools.setLogLevel(level) end
 ---@param enabled any
 function luna.devtools.setProfilingEnabled(enabled) end
 
+--- Sets the file watch poll interval in seconds.
+---@param interval any
+function luna.devtools.setWatchInterval(interval) end
+
 --- Removes a file path from the watch list.
 ---@param path any
 ---@return boolean
@@ -2513,263 +2684,262 @@ luna.docs = {}
 ---@class ApiCatalog
 local ApiCatalog = {}
 
---- Entry count on this Object.
----@param module? string `string` optional.
----@return any
+--- Returns the number of entries, optionally scoped to a module.
+---@param module? any (optional)
+---@return integer
 function ApiCatalog:entryCount(module) end
 
---- Returns a filtered subset.
----@param predicate function `function`.
+--- Returns a new catalog containing only entries for which predicate returns true.
+---@param predicate any
 ---@return any
 function ApiCatalog:filter(predicate) end
 
---- Returns the entries.
----@param module? string `string` optional.
+--- Returns all entries, optionally filtered to a single module.
+---@param module? any (optional)
 ---@return table
 function ApiCatalog:getEntries(module) end
 
---- Returns the entry.
----@param qualified_name string `string`.
----@return number
+--- Returns a single entry by qualified name, or nil.
+---@param qualified_name any
+---@return any
 function ApiCatalog:getEntry(qualified_name) end
 
---- Returns the modules.
+--- Returns a sorted list of module names present in the catalog.
 ---@return table
 function ApiCatalog:getModules() end
 
---- Returns the type methods.
----@param qualified_name string `string`.
----@return number
+--- Returns entries that are methods of the given type qualified name.
+---@param qualified_name any
+---@return table
 function ApiCatalog:getTypeMethods(qualified_name) end
 
---- Returns the types.
----@param module_name string `string`.
----@return number
+--- Returns the names of all entries with kind "type" in the given module.
+---@param module_name any
+---@return table
 function ApiCatalog:getTypes(module_name) end
 
---- Merge on this Object.
----@param other any `userdata`.
+--- Returns a new catalog that is the union of this and another catalog, with other overriding duplicates.
+---@param other any
 ---@return any
 function ApiCatalog:merge(other) end
 
---- Search on this Object.
----@param query string `string`.
+--- Returns a table of entries whose name, qualified name, or description contains query.
+---@param query any
 ---@return table
 function ApiCatalog:search(query) end
 
---- To j s o n on this Object.
----@return any
+--- Serialises the catalog to a pretty-printed JSON string.
+---@return string
 function ApiCatalog:toJSON() end
 
---- To table on this Object.
+--- Converts the catalog to a plain Lua table array.
 ---@return table
 function ApiCatalog:toTable() end
 
 ---@class DocEntry
 local DocEntry = {}
 
---- Returns the deprecated.
----@return any
+--- Returns the deprecation message, or nil.
+---@return string?
 function DocEntry:getDeprecated() end
 
 --- Returns the description.
----@return any
+---@return string
 function DocEntry:getDescription() end
 
---- Returns the example.
----@return number
+--- Returns the example snippet, or nil.
+---@return string?
 function DocEntry:getExample() end
 
 --- Returns the kind.
----@return any
+---@return string
 function DocEntry:getKind() end
 
 --- Returns the module.
----@return any
+---@return string
 function DocEntry:getModule() end
 
 --- Returns the name.
----@return any
+---@return string
 function DocEntry:getName() end
 
---- Returns the parameters.
+--- Returns the parameters as a table of `{name, type, description, optional, default?}` records.
 ---@return table
 function DocEntry:getParameters() end
 
 --- Returns the qualified name.
----@return any
+---@return string
 function DocEntry:getQualifiedName() end
 
---- Returns the returns.
+--- Returns the return values as a table of `{type, description}` records.
 ---@return table
 function DocEntry:getReturns() end
 
---- Returns the score.
----@return any
+--- Returns the quality score in [0,1].
+---@return number
 function DocEntry:getScore() end
 
---- Returns the since.
----@return any
+--- Returns the since version string, or nil.
+---@return string?
 function DocEntry:getSince() end
 
---- Returns `true` if description.
+--- Returns true when the entry has a non-empty description.
 ---@return boolean
 function DocEntry:hasDescription() end
 
---- Returns `true` if example.
+--- Returns true when the entry has an example snippet.
 ---@return boolean
 function DocEntry:hasExample() end
 
---- Returns `true` if parameters.
+--- Returns true when the entry has at least one parameter.
 ---@return boolean
 function DocEntry:hasParameters() end
 
---- Returns `true` if return type.
+--- Returns true when the entry declares at least one return type.
 ---@return boolean
 function DocEntry:hasReturnType() end
 
 ---@class QualityReport
 local QualityReport = {}
 
---- Returns the best.
----@param count? number `integer` optional.
+--- Returns up to count entries with the highest quality scores.
+---@param count? any (optional)
 ---@return table
 function QualityReport:getBest(count) end
 
---- Returns the by grade.
----@param grade string `string`.
----@return number
+--- Returns entries whose grade exactly matches the given letter grade.
+---@param grade any
+---@return table
 function QualityReport:getByGrade(grade) end
 
---- Returns the grade.
----@return any
+--- Returns the letter grade for the overall score.
+---@return string
 function QualityReport:getGrade() end
 
---- Returns the module scores.
----@param count? number `integer` optional.
+--- Returns a table mapping module name to its average quality score.
 ---@return table
-function QualityReport:getModuleScores(count) end
+function QualityReport:getModuleScores() end
 
---- Returns the overall score.
----@return any
+--- Returns the overall quality score in [0,1].
+---@return number
 function QualityReport:getOverallScore() end
 
---- Returns the summary.
----@return number
+--- Returns a multi-line human-readable summary of quality by module.
+---@return string
 function QualityReport:getSummary() end
 
---- Returns the worst.
----@param count? number `integer` optional.
+--- Returns up to count entries with the lowest quality scores.
+---@param count? any (optional)
 ---@return table
 function QualityReport:getWorst(count) end
 
---- To j s o n on this Object.
----@return any
+--- Serialises the quality report to a pretty-printed JSON string.
+---@return string
 function QualityReport:toJSON() end
 
---- To table on this Object.
+--- Converts the quality report to a plain Lua table.
 ---@return table
 function QualityReport:toTable() end
 
 ---@class ValidationReport
 local ValidationReport = {}
 
---- Returns the incomplete.
+--- Returns the list of qualified names whose catalog entry is incomplete.
 ---@return table
 function ValidationReport:getIncomplete() end
 
---- Returns the missing.
+--- Returns the list of qualified names present in the live API but missing from the catalog.
 ---@return table
 function ValidationReport:getMissing() end
 
---- Returns the phantom.
+--- Returns the list of qualified names in the catalog that are not present in the live API.
 ---@return table
 function ValidationReport:getPhantom() end
 
---- Returns the summary.
----@return number
+--- Returns a single-line summary of the validation results.
+---@return string
 function ValidationReport:getSummary() end
 
---- Incomplete count on this Object.
+--- Returns the count of incomplete entries.
 ---@return integer
 function ValidationReport:incompleteCount() end
 
---- Returns `true` if valid.
+--- Returns true when the report has no missing entries.
 ---@return boolean
 function ValidationReport:isValid() end
 
---- Missing count on this Object.
+--- Returns the count of missing entries.
 ---@return integer
 function ValidationReport:missingCount() end
 
---- Phantom count on this Object.
+--- Returns the count of phantom entries.
 ---@return integer
 function ValidationReport:phantomCount() end
 
---- To j s o n on this Object.
----@return any
+--- Serialises the report to a pretty-printed JSON string.
+---@return string
 function ValidationReport:toJSON() end
 
---- To table on this Object.
+--- Converts the report to a plain Lua table.
 ---@return table
 function ValidationReport:toTable() end
 
---- Compare catalog timestamps against source files.
+--- Compare catalog entries against source files in a directory for staleness.
 ---@param catalog_ud any
 ---@param source_dir any
 ---@return table
 function luna.docs.checkStaleness(catalog_ud, source_dir) end
 
---- Coverage: (documented, total).
+--- Return (documented_count, total_live_count) coverage tuple.
 ---@param catalog_ud? any (optional)
 ---@return any
 function luna.docs.coverage(catalog_ud) end
 
---- Module-level coverage.
+--- Return (documented_count, total_live_count) for a single module.
 ---@param module_name any
 ---@param catalog_ud? any (optional)
 ---@return any
 function luna.docs.coverageModule(module_name, catalog_ud) end
 
---- Inject a description for an API entry.
+--- Inject or update a description for a named API entry.
 ---@param qualified_name any
 ---@param description any
 function luna.docs.describe(qualified_name, description) end
 
---- Export all three files to a directory.
+--- Export completions.json, hover.json, and signatures.json to a directory.
 ---@param catalog_ud any
 ---@param output_dir any
 function luna.docs.exportAll(catalog_ud, output_dir) end
 
---- Export one-line-per-function cheatsheet.
+--- Export a one-line-per-function plain-text cheatsheet.
 ---@param catalog_ud any
 ---@param path any
 function luna.docs.exportCheatsheet(catalog_ud, path) end
 
---- Export completions JSON for VS Code IntelliSense.
+--- Export VS Code IntelliSense completions JSON to a file.
 ---@param catalog_ud any
 ---@param path any
 function luna.docs.exportCompletions(catalog_ud, path) end
 
---- Export hover JSON.
+--- Export VS Code hover JSON to a file.
 ---@param catalog_ud any
 ---@param path any
 function luna.docs.exportHover(catalog_ud, path) end
 
---- Export markdown API reference.
+--- Export a Markdown API reference file.
 ---@param catalog_ud any
 ---@param path any
 function luna.docs.exportMarkdown(catalog_ud, path) end
 
---- Export signatures JSON.
+--- Export VS Code signature-help JSON to a file.
 ---@param catalog_ud any
 ---@param path any
 function luna.docs.exportSignatures(catalog_ud, path) end
 
---- Get the current internal catalog.
+--- Return the current internal catalog as an ApiCatalog userdata.
 function luna.docs.getCatalog() end
 
---- Load all .toml files in a directory and merge.
+--- Load all .toml files in a directory and merge into a single ApiCatalog.
 ---@param directory any
 ---@return any
 function luna.docs.loadAll(directory) end
@@ -2779,18 +2949,18 @@ function luna.docs.loadAll(directory) end
 ---@return any
 function luna.docs.loadToml(path) end
 
---- Calculate quality metrics for a catalog.
+--- Calculate quality metrics for a catalog or the internal catalog.
 ---@param catalog_ud? any (optional)
 ---@return any
 function luna.docs.quality(catalog_ud) end
 
---- Quality for a single module.
+--- Calculate quality metrics for a single module.
 ---@param module_name any
 ---@param catalog_ud? any (optional)
 ---@return any
 function luna.docs.qualityModule(module_name, catalog_ud) end
 
---- Reset the internal catalog.
+--- Clear all entries from the internal catalog.
 function luna.docs.resetCatalog() end
 
 --- Scan the luna.* namespace to build an API catalog from live bindings.
@@ -2803,22 +2973,22 @@ function luna.docs.scan(opts) end
 ---@return any
 function luna.docs.scanModule(module_name) end
 
---- Set parameter info for an entry.
+--- Set the parameter metadata for a catalog entry.
 ---@param qualified_name any
 ---@param params any
 function luna.docs.setParamInfo(qualified_name, params) end
 
---- Set return type info for an entry.
+--- Set the return type metadata for a catalog entry.
 ---@param qualified_name any
 ---@param returns any
 function luna.docs.setReturnInfo(qualified_name, returns) end
 
---- Validate catalog completeness against live bindings.
+--- Validate catalog completeness against the live luna.* bindings.
 ---@param catalog_ud? any (optional)
 ---@return any
 function luna.docs.validate(catalog_ud) end
 
---- Validate a single module.
+--- Validate a single module against the live luna.<module>.* bindings.
 ---@param module_name any
 ---@param catalog_ud? any (optional)
 ---@return any
@@ -3334,20 +3504,37 @@ luna.fx = {}
 ---@class ImageEffect
 local ImageEffect = {}
 
---- Appends a post-processing effect to this image effect chain.
----@param effect any
----@return nil
-function ImageEffect:addEffect(effect) end
+--- Creates a new effect by type name, appends it, and returns the shared PostFxEffect.
+---@param name any
+---@return PostFxEffect
+function ImageEffect:addEffect(name) end
 
---- Removes all effects from the chain.
+--- Removes all effects from the chain (alias for clearEffects).
 ---@return nil
 function ImageEffect:clear() end
 
+--- Removes all effects from the chain.
+---@return nil
+function ImageEffect:clearEffects() end
+
+--- Returns a deep copy of this ImageEffect chain.
+---@return ImageEffect
+function ImageEffect:clone() end
+
 --- Returns the number of effects in the chain.
+---@return integer
+function ImageEffect:effectCount() end
+
+--- Returns the effect at the given 1-based index or with the given type name.
+---@param key any
+---@return PostFxEffect|nil
+function ImageEffect:getEffect(key) end
+
+--- Returns the number of effects in the chain (alias for effectCount).
 ---@return integer
 function ImageEffect:getEffectCount() end
 
---- Removes the effect at the given index from the chain.
+--- Removes the effect at the given 0-based index from the chain.
 ---@param idx any
 ---@return boolean
 function ImageEffect:removeByIndex(idx) end
@@ -3356,6 +3543,20 @@ function ImageEffect:removeByIndex(idx) end
 ---@param name any
 ---@return boolean
 function ImageEffect:removeByName(name) end
+
+--- Removes the effect at the given 1-based index or with the given type name.
+---@param key any
+---@return boolean
+function ImageEffect:removeEffect(key) end
+
+--- Stub: no-op serialisation placeholder.
+---@return boolean
+function ImageEffect:save() end
+
+function ImageEffect:type() end
+
+---@param name any
+function ImageEffect:typeOf(name) end
 
 --- Lua-side wrapper around [`Overlay`].
 ---@class Overlay
@@ -3629,15 +3830,23 @@ function Overlay:update(dt) end
 ---@class PostFxEffect
 local PostFxEffect = {}
 
+--- Returns the type name of this effect (alias for getTypeName).
+---@return string
+function PostFxEffect:getEffectType() end
+
 --- Returns a named parameter value, or the default if not set.
 ---@param name any
----@param default any
+---@param default? any (optional)
 ---@return number
 function PostFxEffect:getParameter(name, default) end
 
 --- Returns a list of all parameter names on this effect.
 ---@return table
 function PostFxEffect:getParameterNames() end
+
+--- Returns the type name of this effect (alias for getTypeName).
+---@return string
+function PostFxEffect:getType() end
 
 --- Returns the display name of this effect type.
 ---@return string
@@ -3656,10 +3865,22 @@ function PostFxEffect:isBuiltIn() end
 ---@return boolean
 function PostFxEffect:isEnabled() end
 
+---@param v any
+function PostFxEffect:setBrightness(v) end
+
+---@param v any
+function PostFxEffect:setContrast(v) end
+
 --- Enables or disables this effect.
 ---@param enabled any
 ---@return nil
 function PostFxEffect:setEnabled(enabled) end
+
+---@param v any
+function PostFxEffect:setIntensity(v) end
+
+---@param v any
+function PostFxEffect:setOffset(v) end
 
 --- Sets a named float parameter on this effect.
 ---@param name any
@@ -3667,14 +3888,34 @@ function PostFxEffect:setEnabled(enabled) end
 ---@return nil
 function PostFxEffect:setParameter(name, value) end
 
+---@param v any
+function PostFxEffect:setRadius(v) end
+
+---@param v any
+function PostFxEffect:setSaturation(v) end
+
+---@param v any
+function PostFxEffect:setScanlineStrength(v) end
+
+---@param v any
+function PostFxEffect:setStrength(v) end
+
+---@param v any
+function PostFxEffect:setThreshold(v) end
+
+function PostFxEffect:type() end
+
+---@param name any
+function PostFxEffect:typeOf(name) end
+
 --- Lua-side wrapper around [`PostFxStack`].
 ---@class PostFxStack
 local PostFxStack = {}
 
---- Appends an effect index to the end of the pipeline.
----@param effect_idx any
+--- Appends a PostFxEffect to the end of the pipeline.
+---@param effect_ud any
 ---@return nil
-function PostFxStack:add(effect_idx) end
+function PostFxStack:add(effect_ud) end
 
 --- Removes all effects from the pipeline.
 ---@return nil
@@ -3684,16 +3925,16 @@ function PostFxStack:clear() end
 ---@return integer
 function PostFxStack:getDimensions() end
 
---- Returns the effect index at the given pipeline position, or nil.
+--- Returns the effect at the given 1-based position, or nil.
 ---@param index any
----@return integer?
+---@return PostFxEffect?
 function PostFxStack:getEffect(index) end
 
 --- Returns the number of effects in the pipeline.
 ---@return integer
 function PostFxStack:getEffectCount() end
 
---- Returns a list of currently enabled effect indices.
+--- Returns a list of currently enabled effect objects.
 ---@return table
 function PostFxStack:getEnabledEffects() end
 
@@ -3705,29 +3946,42 @@ function PostFxStack:getHeight() end
 ---@return integer
 function PostFxStack:getWidth() end
 
+--- Returns whether the stack is currently capturing the scene.
+---@return boolean
+function PostFxStack:isCapturing() end
+
 --- Returns true if the pipeline has no effect slots.
 ---@return boolean
 function PostFxStack:isEmpty() end
 
---- Returns whether the effect at the given index is enabled.
----@param effect_idx any
+--- Returns whether the effect at the given 1-based position is enabled.
+---@param position any
 ---@return boolean
-function PostFxStack:isEnabled(effect_idx) end
+function PostFxStack:isEnabled(position) end
 
 --- Returns the total number of effect slots in the pipeline.
 ---@return integer
 function PostFxStack:len() end
 
---- Removes an effect index from the pipeline.
----@param effect_idx any
+--- Removes the given PostFxEffect from the pipeline.
+---@param effect_ud any
 ---@return boolean
-function PostFxStack:remove(effect_idx) end
+function PostFxStack:remove(effect_ud) end
 
 --- Resizes the render target to the given dimensions.
 ---@param w any
 ---@param h any
 ---@return nil
 function PostFxStack:resize(w, h) end
+
+function PostFxStack:type() end
+
+---@param name any
+function PostFxStack:typeOf(name) end
+
+--- Returns the list of all built-in effect type names.
+---@return table
+function luna.fx.getEffectTypes() end
 
 --- Creates a custom shader post-processing effect.
 ---@param shader_id any
@@ -3739,10 +3993,10 @@ function luna.fx.newCustomEffect(shader_id) end
 ---@return PostFxEffect
 function luna.fx.newEffect(type_name) end
 
---- Creates a new per-image effect chain.
----@param name any
+--- Creates a new per-image effect chain. Accepts:
+---@param args any
 ---@return ImageEffect
-function luna.fx.newImageEffect(name) end
+function luna.fx.newImageEffect(args) end
 
 --- Creates a new screen overlay controller for weather, flash, shake, and fade effects.
 ---@param w any
@@ -3756,10 +4010,13 @@ function luna.fx.newOverlay(w, h) end
 ---@return Overlay
 function luna.fx.newOverlay(w, h) end
 
---- Creates a new post-processing pipeline stack.
----@param w any
----@param h any
----@return PostFxStack
+--- Creates a custom-shader post-processing effect (alias for newCustomEffect).
+---@param shader_id any
+---@return PostFxEffect
+function luna.fx.newPass(shader_id) end
+
+---@param w? any (optional)
+---@param h? any (optional)
 function luna.fx.newStack(w, h) end
 
 ---@class luna.graph
@@ -3885,6 +4142,11 @@ function Edge:setType(t) end
 ---@return nil
 function Edge:setWeight(w) end
 
+function Edge:type() end
+
+---@param name any
+function Edge:typeOf(name) end
+
 --- Lua wrapper around a directed `Graph` with event callback registry.
 ---@class Graph
 local Graph = {}
@@ -3972,6 +4234,15 @@ function Graph:step() end
 ---@return table?
 function Graph:topologicalSort() end
 
+--- Returns the type name of this object.
+---@return string
+function Graph:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Graph:typeOf(name) end
+
 --- Advances simulation by dt seconds and fires event callbacks.
 ---@param dt any
 ---@return nil
@@ -4023,6 +4294,15 @@ function GraphItem:setPriority(p) end
 ---@param t any
 ---@return nil
 function GraphItem:setType(t) end
+
+--- Returns the type name of this object.
+---@return string
+function GraphItem:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function GraphItem:typeOf(name) end
 
 --- Lua handle for a node inside a `Graph`.
 ---@class Node
@@ -4222,6 +4502,11 @@ function Node:setQueueEnabled(e) end
 ---@return nil
 function Node:setType(t) end
 
+function Node:type() end
+
+---@param name any
+function Node:typeOf(name) end
+
 --- Creates a new empty directed graph for item flow simulation.
 ---@return Graph
 function luna.graph.newGraph() end
@@ -4334,7 +4619,7 @@ function Font:type() end
 ---@return string
 function Font:typeOf() end
 
---- Lua-side handle to a loaded texture stored in SharedState.
+--- # Fields
 ---@class Image
 local Image = {}
 
@@ -4361,6 +4646,19 @@ function Image:type() end
 --- Returns the type name of this object.
 ---@return string
 function Image:typeOf() end
+
+--- Lua-side handle to a loaded texture stored in SharedState.
+---@class ImageData
+local ImageData = {}
+
+function ImageData:getHeight() end
+
+function ImageData:getWidth() end
+
+function ImageData:type() end
+
+---@param name any
+function ImageData:typeOf(name) end
 
 --- Lua-side handle to a mesh stored in SharedState.
 ---@class Mesh
@@ -4397,6 +4695,31 @@ function Mesh:type() end
 --- Returns the type name of this object.
 ---@return string
 function Mesh:typeOf() end
+
+--- Lua-side 9-slice descriptor.
+---@class NineSlice
+local NineSlice = {}
+
+--- Compatibility stub: queuing handled by luna.gfx.drawNineSlice.
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+---@return nil
+function NineSlice:draw(x, y, w, h) end
+
+--- Returns the four inset values as (top, right, bottom, left).
+---@return number
+function NineSlice:getInsets() end
+
+--- Returns the width and height of the source texture.
+---@return integer
+function NineSlice:getTextureSize() end
+
+function NineSlice:type() end
+
+---@param name any
+function NineSlice:typeOf(name) end
 
 --- Lua-side quad viewport into a texture.
 ---@class Quad
@@ -4521,6 +4844,11 @@ function luna.graphics.applyTransform(mat) end
 ---@param segments? integer? (optional)
 function luna.graphics.arc(mode, x, y, radius, angle1, angle2, segments) end
 
+--- Calls the given callback with an ImageData captured from the current frame (stub: creates blank).
+---@param callback any
+---@return nil
+function luna.graphics.captureScreenshot(callback) end
+
 --- Draws a circle.
 ---@param mode any
 ---@param x any
@@ -4534,9 +4862,22 @@ function luna.graphics.circle(mode, x, y, radius) end
 ---@param b? any (optional)
 function luna.graphics.clear(r, g, b) end
 
+--- Resets the stencil mode to the default (keep / always / 0).
+---@return nil
+function luna.graphics.clearStencil() end
+
 --- Draws a drawable (Image, Canvas, SpriteBatch, Mesh) at the given position.
 ---@param args any
 function luna.graphics.draw(args) end
+
+--- Queues a 9-slice draw call inside luna.render / luna.render_ui.
+---@param slice any
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+---@return nil
+function luna.graphics.drawNineSlice(slice, x, y, w, h) end
 
 --- Draws a portion of an image defined by a Quad.
 ---@param image Image
@@ -4587,6 +4928,10 @@ function luna.graphics.getColorMask() end
 ---@return string
 function luna.graphics.getDefaultFilter() end
 
+--- Returns the current depth mode as (mode, write).
+---@return string
+function luna.graphics.getDepthMode() end
+
 --- Returns window width and height.
 ---@return integer
 function luna.graphics.getDimensions() end
@@ -4609,6 +4954,11 @@ function luna.graphics.getFontDescent(ud) end
 ---@param ud any
 ---@return number
 function luna.graphics.getFontHeight(ud) end
+
+--- Returns the line height of the given font (alias for getFontHeight).
+---@param ud any
+---@return number
+function luna.graphics.getFontLineHeight(ud) end
 
 --- Returns the pixel width of text in the given font.
 ---@param ud any
@@ -4645,6 +4995,10 @@ function luna.graphics.getShader() end
 --- Returns a table of renderer statistics.
 ---@return table
 function luna.graphics.getStats() end
+
+--- Returns the current stencil mode as (action, compare, value).
+---@return string
+function luna.graphics.getStencilMode() end
 
 --- Returns the window width in pixels.
 ---@return integer
@@ -4691,6 +5045,15 @@ function luna.graphics.newImage(arg) end
 ---@param mode? any (optional)
 ---@return Mesh
 function luna.graphics.newMesh(verts, mode) end
+
+--- Creates a 9-slice descriptor from a texture and inset values.
+---@param image any
+---@param top any
+---@param right any
+---@param bottom any
+---@param left any
+---@return NineSlice
+function luna.graphics.newNineSlice(image, top, right, bottom, left) end
 
 --- Creates a new Quad viewport into a texture.
 ---@param x any
@@ -4803,9 +5166,20 @@ function luna.graphics.setColorMask(args) end
 ---@param anisotropy? any (optional)
 function luna.graphics.setDefaultFilter(min, mag, anisotropy) end
 
+--- Sets the depth test comparison and write enable.
+---@param mode any
+---@param write? any (optional)
+function luna.graphics.setDepthMode(mode, write) end
+
 --- Sets the active font for print calls.
 ---@param ud any
 function luna.graphics.setFont(ud) end
+
+--- Sets the line height of the given font (stub — returns nil; fonts are immutable in headless mode).
+---@param font any
+---@param lh any
+---@return nil
+function luna.graphics.setFontLineHeight(font, lh) end
 
 --- Sets the line width for outline drawing.
 ---@param w any
@@ -4822,6 +5196,12 @@ function luna.graphics.setScissor(args) end
 --- Sets the active shader, or clears it.
 ---@param ud? any (optional)
 function luna.graphics.setShader(ud) end
+
+--- Sets the stencil buffer write/test mode.
+---@param action any
+---@param compare? any (optional)
+---@param value? any (optional)
+function luna.graphics.setStencilMode(action, compare, value) end
 
 --- Sets the stencil comparison test, or disables stencil testing.
 ---@param compare? any (optional)
@@ -7088,6 +7468,14 @@ function luna.light.setMaxLights(n) end
 ---@class luna.localization
 luna.localization = {}
 
+--- Returns all loaded locale codes (alias for getLanguages).
+---@return table
+function luna.localization.getAvailableLanguages() end
+
+--- Returns the base/fallback language.
+---@return string
+function luna.localization.getBase() end
+
 --- Returns the current fallback locale array.
 ---@return table
 function luna.localization.getFallbacks() end
@@ -7096,8 +7484,8 @@ function luna.localization.getFallbacks() end
 ---@return table
 function luna.localization.getKeys() end
 
---- Returns the currently active locale code.
----@return string
+--- Returns the currently active locale code, or nil if unset.
+---@return string?
 function luna.localization.getLanguage() end
 
 --- Returns all loaded locale codes.
@@ -7108,6 +7496,11 @@ function luna.localization.getLanguages() end
 ---@param key any
 ---@return boolean
 function luna.localization.hasKey(key) end
+
+--- Returns whether a locale has been loaded.
+---@param locale any
+---@return boolean
+function luna.localization.hasLanguage(locale) end
 
 --- Interpolates {name} placeholders in a template string.
 ---@param template any
@@ -7120,6 +7513,13 @@ function luna.localization.interpolate(template, vars) end
 ---@param tbl any
 function luna.localization.loadTable(locale, tbl) end
 
+--- Unregisters all onChange callbacks.
+function luna.localization.offChange() end
+
+--- Registers a callback invoked when setLanguage() is called (alias: onChange).
+---@param cb any
+function luna.localization.onChange(cb) end
+
 --- Registers a callback invoked when setLanguage() is called.
 ---@param cb any
 function luna.localization.onLanguageChange(cb) end
@@ -7128,6 +7528,10 @@ function luna.localization.onLanguageChange(cb) end
 ---@param n any
 ---@return string
 function luna.localization.pluralFor(n) end
+
+--- Sets the base/fallback language (adds it as first fallback).
+---@param locale any
+function luna.localization.setBase(locale) end
 
 --- Sets the ordered list of fallback locale codes tried when a key is missing.
 ---@param locales any
@@ -7159,32 +7563,32 @@ function luna.localization.unloadTable(locale) end
 luna.log = {}
 
 --- Emit a debug-severity log message from Lua.
----@param message string The message string to log.
+---@param message any
 function luna.log.debug(message) end
 
 --- Emit an error-severity log message from Lua.
----@param message string The message string to log.
+---@param message any
 function luna.log.error(message) end
 
 --- Return the name of the currently active minimum log level.
----@return any
+---@return string
 function luna.log.getLevel() end
 
 --- Emit an info-severity log message from Lua.
----@param message string The message string to log.
+---@param message any
 function luna.log.info(message) end
 
 --- Emit a log message from Lua at the specified severity level.
----@param level string Severity level string.
----@param message string The message string to log.
+---@param level any
+---@param message any
 function luna.log.print(level, message) end
 
 --- Set the minimum severity level for runtime log messages.
----@param level any One of `"off"`, `"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`.
+---@param level any
 function luna.log.setLevel(level) end
 
 --- Emit a warn-severity log message from Lua.
----@param message string The message string to log.
+---@param message any
 function luna.log.warn(message) end
 
 ---@class luna.math
@@ -7934,6 +8338,13 @@ function luna.math.sign(x) end
 ---@return number
 function luna.math.simplex2d(x, y, seed) end
 
+--- Returns a simplex noise value in [-1, 1] for 2D or 3D coordinates.
+---@param x any
+---@param y any
+---@param z? any (optional)
+---@return number
+function luna.math.simplexNoise(x, y, z) end
+
 --- Returns the sine of x (radians).
 ---@param x any
 ---@return number
@@ -8167,6 +8578,15 @@ function Minimap:setViewportVisible(visible) end
 ---@param zoom any
 ---@return nil
 function Minimap:setZoom(zoom) end
+
+--- Returns the type name of this object.
+---@return string
+function Minimap:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Minimap:typeOf(name) end
 
 --- Advances time-based effects by dt seconds (expires pings).
 ---@param dt any
@@ -8441,6 +8861,10 @@ luna.particle = {}
 --- Lua-side handle to a particle system stored in SharedState.
 ---@class ParticleSystem
 local ParticleSystem = {}
+
+--- Creates a copy of this particle system (config only, no live particles).
+---@return ParticleSystem
+function ParticleSystem:clone() end
 
 --- Returns the number of living particles.
 ---@return integer
@@ -8823,6 +9247,15 @@ function AiFlowField:hasGoal() end
 ---@return nil
 function AiFlowField:setGoal(x, y) end
 
+--- Returns the type name of this object.
+---@return string
+function AiFlowField:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function AiFlowField:typeOf(name) end
+
 --- Lua-side wrapper around a [`FlowField`].
 ---@class FlowField
 local FlowField = {}
@@ -8852,6 +9285,15 @@ function FlowField:getTargets() end
 --- Returns true if the flow field has been computed at least once.
 ---@return boolean
 function FlowField:isCalculated() end
+
+--- Returns the type name of this object.
+---@return string
+function FlowField:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function FlowField:typeOf(name) end
 
 --- Lua-side wrapper around a [`NavGrid`] with optional HPA★ abstract graph.
 ---@class NavGrid
@@ -8936,6 +9378,15 @@ function NavGrid:setDiagonalMode(mode) end
 ---@return nil
 function NavGrid:setDirty(x, y, w, h) end
 
+--- Returns the type name of this object.
+---@return string
+function NavGrid:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function NavGrid:typeOf(name) end
+
 --- Lua-side wrapper around a [`PathGrid`] (A★ weighted grid with per-cell cost).
 ---@class PathGrid
 local PathGrid = {}
@@ -8978,6 +9429,15 @@ function PathGrid:setCost(x, y, cost) end
 ---@return nil
 function PathGrid:setWalkable(x, y, w) end
 
+--- Returns the type name of this object.
+---@return string
+function PathGrid:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function PathGrid:typeOf(name) end
+
 --- Lua-side wrapper around a [`UnitPathfinder`].
 ---@class UnitPathfinder
 local UnitPathfinder = {}
@@ -9013,6 +9473,15 @@ function UnitPathfinder:setCacheEnabled(enabled) end
 ---@param n any
 ---@return nil
 function UnitPathfinder:setCacheMaxSize(n) end
+
+--- Returns the type name of this object.
+---@return string
+function UnitPathfinder:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function UnitPathfinder:typeOf(name) end
 
 --- Returns the background pathfinding thread count (currently always 0).
 ---@return integer
@@ -9065,37 +9534,36 @@ luna.patterns = {}
 ---@class CommandStack
 local CommandStack = {}
 
---- Returns `true` if redo.
+--- Returns true if there is a command available to redo.
 ---@return boolean
 function CommandStack:canRedo() end
 
---- Returns `true` if undo.
+--- Returns true if the most recent command can be undone.
 ---@return boolean
 function CommandStack:canUndo() end
 
---- Clear all on this CommandStack.
----@return any
+--- Clears all command history, releasing Lua registry values.
 function CommandStack:clearAll() end
 
---- Execute on this CommandStack.
----@param name string `string`.
----@param exec_fn function `function`.
----@param undo_fn? function `function` optional.
+--- Executes a named command and records it in undo/redo history.
+---@param name any
+---@param exec_fn any
+---@param undo_fn? any (optional)
 function CommandStack:execute(name, exec_fn, undo_fn) end
 
---- Returns the current name.
----@return any
+--- Returns the name of the most recently executed command, or nil.
+---@return string?
 function CommandStack:getCurrentName() end
 
---- Returns the history size.
----@return number
+--- Returns the total number of recorded commands (undo + redo).
+---@return integer
 function CommandStack:getHistorySize() end
 
---- Redo on this CommandStack.
+--- Re-executes the next undone command. Returns true if successful.
 ---@return boolean
 function CommandStack:redo() end
 
---- Undo on this CommandStack.
+--- Undoes the most recent command. Returns true if successful.
 ---@return boolean
 function CommandStack:undo() end
 
@@ -9103,188 +9571,190 @@ function CommandStack:undo() end
 ---@class EventBus
 local EventBus = {}
 
---- Removes all entries.
----@param event string `string`.
+--- Removes all listeners for a specific event.
+---@param event any
 function EventBus:clear(event) end
 
---- Clear all on this EventBus.
----@return any
+--- Removes all listeners on this EventBus.
 function EventBus:clearAll() end
 
---- Emits an event.
----@param args any `LuaMultiValue`.
+--- Dispatches an event, calling all registered listeners in priority order.
+---@param args any
 function EventBus:emit(args) end
 
---- Returns the events.
----@return any
+--- Returns all event names that have at least one listener.
+---@return table
 function EventBus:getEvents() end
 
---- Returns the listener count.
----@param event string `string`.
----@return any
+--- Returns the number of listeners registered for an event.
+---@param event any
+---@return integer
 function EventBus:getListenerCount(event) end
 
---- Removes a previously registered event listener.
----@param id number `integer`.
+--- Removes a previously registered event listener by subscription ID.
+---@param id any
 function EventBus:off(id) end
 
---- Registers an event listener callback.
----@param event string `string`.
----@param callback function `function`.
----@param priority? number `integer` optional.
----@return any
+--- Registers a listener callback for an event.
+---@param event any
+---@param callback any
+---@param priority? any (optional)
+---@return integer
 function EventBus:on(event, callback, priority) end
 
 --- Lua wrapper for the Factory pattern.
 ---@class Factory
 local Factory = {}
 
---- Clear all on this Factory.
----@return any
+--- Registers an alias pointing to an existing canonical type name.
+---@param alias any
+---@param canonical any
+function Factory:alias(alias, canonical) end
+
+--- Removes all registered type constructors and aliases.
 function Factory:clearAll() end
 
---- Creates a new Factory instance.
----@param args any `LuaMultiValue`.
+--- Creates an instance of the named type by invoking its constructor.
+---@param args any
+---@return any
 function Factory:create(args) end
 
---- Returns the types.
----@return number
+--- Returns a table of all registered type names.
+---@return table
 function Factory:getTypes() end
 
---- Returns `true` if the condition is met.
----@param type_name string `string`.
+--- Returns true if the named type (or alias) is registered.
+---@param type_name any
 ---@return boolean
 function Factory:has(type_name) end
 
---- Adds an entry to the collection.
----@param type_name string `string`.
----@param ctor function `function`.
+--- Registers a named type constructor function.
+---@param type_name any
+---@param ctor any
 function Factory:register(type_name, ctor) end
 
---- Removes the entry from the collection.
----@param type_name string `string`.
+--- Unregisters a type constructor (and any aliases pointing to it).
+---@param type_name any
 function Factory:remove(type_name) end
 
 --- Lua wrapper for the ObjectPool pattern.
 ---@class ObjectPool
 local ObjectPool = {}
 
---- Acquire on this ObjectPool.
+--- Acquires an available object from the pool; returns nil if empty.
 ---@return any
 function ObjectPool:acquire() end
 
---- Adds an entry to the collection.
----@param value number `any`.
+--- Inserts a pre-built object into the available pool.
+---@param value any
 function ObjectPool:add(value) end
 
---- Clear all on this ObjectPool.
----@return any
+--- Clears all objects from the pool, releasing Lua registry values.
 function ObjectPool:clearAll() end
 
---- Returns the active count.
----@return any
+--- Returns the number of currently active (acquired) objects.
+---@return integer
 function ObjectPool:getActiveCount() end
 
---- Returns the available count.
+--- Returns the number of available (idle) objects in the pool.
 ---@return integer
 function ObjectPool:getAvailableCount() end
 
---- Returns the total count.
+--- Returns the total number of tracked objects (active + available).
 ---@return integer
 function ObjectPool:getTotalCount() end
 
---- Releases the underlying resource handle.
----@param value number `any`.
+--- Returns an object to the available pool.
+---@param value any
 function ObjectPool:release(value) end
 
 --- Lua wrapper for the ServiceLocator pattern.
 ---@class ServiceLocator
 local ServiceLocator = {}
 
---- Clear all on this ServiceLocator.
----@return any
+--- Removes all registered services.
 function ServiceLocator:clearAll() end
 
---- Returns the services.
----@return any
+--- Returns a table of all registered service names.
+---@return table
 function ServiceLocator:getServices() end
 
---- Returns `true` if the condition is met.
----@param name string `string`.
+--- Returns true if a service with the given name is registered.
+---@param name any
 ---@return boolean
 function ServiceLocator:has(name) end
 
---- Locate on this ServiceLocator.
----@param name string `string`.
+--- Retrieves a registered service by name; returns nil if not found.
+---@param name any
 ---@return any
 function ServiceLocator:locate(name) end
 
---- Provide on this ServiceLocator.
----@param name string `string`.
----@param value number `any`.
+--- Registers a named service with an associated Lua value.
+---@param name any
+---@param value any
 function ServiceLocator:provide(name, value) end
 
---- Removes the entry from the collection.
----@param name string `string`.
+--- Unregisters and removes a named service.
+---@param name any
 function ServiceLocator:remove(name) end
 
---- Lua wrapper for the SimpleState pattern.
+--- Lua wrapper for the SimpleState finite state machine pattern.
 ---@class SimpleState
 local SimpleState = {}
 
---- Adds state to the collection.
----@param name string `string`.
----@param callbacks? table `table` optional.
+--- Registers a named state with optional enter, exit, and update callbacks.
+---@param name any
+---@param callbacks? any (optional)
 function SimpleState:addState(name, callbacks) end
 
---- Clear all on this SimpleState.
----@return any
+--- Removes all states and callbacks from this state machine.
 function SimpleState:clearAll() end
 
---- Returns the current.
----@param name string `string`.
----@return any
-function SimpleState:getCurrent(name) end
+--- Returns the name of the current state, or nil if none is active.
+---@return string?
+function SimpleState:getCurrent() end
 
---- Returns the states.
----@return any
+--- Returns a table of all registered state names.
+---@return table
 function SimpleState:getStates() end
 
---- Returns `true` if state.
----@param name string `string`.
+--- Returns true if a state with the given name is registered.
+---@param name any
 ---@return boolean
 function SimpleState:hasState(name) end
 
---- Transition to on this SimpleState.
----@param name string `string`.
+--- Transitions to a named state, calling exit/enter callbacks as needed.
+---@param name any
 ---@return boolean
 function SimpleState:transitionTo(name) end
 
---- Advances the simulation by `dt` seconds.
----@param dt number `number`.
+--- Calls the update callback of the current state with the given delta time.
+---@param dt any
 function SimpleState:update(dt) end
 
---- New command stack.
+--- Creates a new CommandStack instance.
+---@param max_size? any (optional)
 ---@return any
-function luna.patterns.newCommandStack() end
+function luna.patterns.newCommandStack(max_size) end
 
---- New event bus.
+--- Creates a new EventBus instance.
+---@param name? any (optional)
 ---@return any
-function luna.patterns.newEventBus() end
+function luna.patterns.newEventBus(name) end
 
---- New factory.
+--- Creates a new Factory instance.
 ---@return any
 function luna.patterns.newFactory() end
 
---- New object pool.
+--- Creates a new ObjectPool instance.
 ---@return any
 function luna.patterns.newObjectPool() end
 
---- New service locator.
+--- Creates a new ServiceLocator instance.
 ---@return any
 function luna.patterns.newServiceLocator() end
 
---- New simple state.
+--- Creates a new SimpleState finite state machine instance.
 ---@return any
 function luna.patterns.newSimpleState() end
 
@@ -9669,6 +10139,11 @@ function luna.physics.destroyWorld(world_ud) end
 ---@return number
 function luna.physics.getBody(world_ud, body_ud) end
 
+--- Returns all collision events from the last simulation step.
+---@param world_ud any
+---@return table
+function luna.physics.getCollisions(world_ud) end
+
 --- Returns whether the body is allowed to sleep.
 ---@param world_ud any
 ---@param body_ud any
@@ -9852,6 +10327,15 @@ function Pipeline:setOnStepError(cb) end
 ---@return table
 function Pipeline:toTable() end
 
+--- Returns the type name of this object.
+---@return string
+function Pipeline:type() end
+
+--- Returns true if this object is of the given type.
+---@param name any
+---@return boolean
+function Pipeline:typeOf(name) end
+
 --- Advances the async pipeline by one tick. Returns true when all steps are done.
 ---@param dt any
 ---@return boolean
@@ -9973,6 +10457,11 @@ function Step:setTag(tag) end
 ---@param seconds any
 ---@return nil
 function Step:setTimeout(seconds) end
+
+function Step:type() end
+
+---@param name any
+function Step:typeOf(name) end
 
 --- Deserialises a pipeline from a definition table.
 ---@param def any

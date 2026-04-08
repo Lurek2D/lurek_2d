@@ -10,10 +10,20 @@ This report identifies three categories of coverage issues:
 
 ---
 
-## 1. Rust→Lua Gaps (3 items)
+## 1. Rust→Lua Gaps (8 items)
 
 These public Rust functions are **not exposed** to the `luna.*` Lua API.
 This may be intentional (engine internals) or an oversight.
+
+### `debugbridge::server`
+
+- `handle_client_message` — Parses a newline-terminated JSON message from a client and e `src/debugbridge/server.rs:110`
+- `server_thread` — Accept loop: runs on a background thread and handles all TCP `src/debugbridge/server.rs:19`
+
+### `docs::report`
+
+- `quality_grade` — Converts a quality score into a letter grade.  A ≥ 0.9, B ≥  `src/docs/report.rs:46`
+- `quality_score` — Computes a quality score in `[0.0, 1.0]` for a single doc en `src/docs/report.rs:13`
 
 ### `localization::interpolation`
 
@@ -24,12 +34,21 @@ This may be intentional (engine internals) or an oversight.
 - `pluralize` — Selects the correct plural string from a form map for the gi `src/localization/plural.rs:111`
 - `pluralize_slavic` — Like [`pluralize`] but accepts integer counts and uses Slavi `src/localization/plural.rs:130`
 
+### `log`
+
+- `enabled_for` — Returns `true` when messages at `level` would be emitted und `src/log/mod.rs:25`
+
 ---
 
-## 2. Rust Docstring Issues (13 items)
+## 2. Rust Docstring Issues (20 items)
 
 Public Rust items with missing or very short descriptions (< 15 chars).
 These appear as `// (undocumented)` in `docs/API/rust-api.md`.
+
+### `debugbridge`
+
+- `mod` **bridge** `src/debugbridge/mod.rs:14`
+- `mod` **server** `src/debugbridge/mod.rs:15`
 
 ### `devtools`
 
@@ -37,6 +56,13 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 - `mod` **logger** `src/devtools/mod.rs:25`
 - `mod` **profiler** `src/devtools/mod.rs:26`
 - `mod` **watcher** `src/devtools/mod.rs:27`
+
+### `docs`
+
+- `mod` **catalog** `src/docs/mod.rs:15`
+- `mod` **entry** `src/docs/mod.rs:16`
+- `mod` **export** `src/docs/mod.rs:17`
+- `mod` **report** `src/docs/mod.rs:18`
 
 ### `localization`
 
@@ -51,14 +77,20 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 - `mod` **factory** `src/patterns/mod.rs:31`
 - `mod` **object_pool** `src/patterns/mod.rs:32`
 - `mod` **service_locator** `src/patterns/mod.rs:33`
-- `mod` **state_machine** `src/patterns/mod.rs:34`
+- `mod` **simple_state** `src/patterns/mod.rs:34`
+- `mod` **state_machine** `src/patterns/mod.rs:35`
 
 ---
 
-## 3. Lua Docstring Issues (14 items)
+## 3. Lua Docstring Issues (43 items)
 
 Lua API items with missing or very short descriptions (< 15 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
+
+### `compute`
+
+- `method` **`Array:type`** — *(no description)*
+- `method` **`Array:typeOf`** — *(no description)*
 
 ### `docs`
 
@@ -77,7 +109,40 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
 ### `fx`
 
+- `function` **`luna.fx.newStack`** — *(no description)*
+- `method` **`ImageEffect:type`** — *(no description)*
+- `method` **`ImageEffect:typeOf`** — *(no description)*
+- `method` **`PostFxEffect:setBrightness`** — *(no description)*
+- `method` **`PostFxEffect:setContrast`** — *(no description)*
+- `method` **`PostFxEffect:setIntensity`** — *(no description)*
+- `method` **`PostFxEffect:setOffset`** — *(no description)*
+- `method` **`PostFxEffect:setRadius`** — *(no description)*
+- `method` **`PostFxEffect:setSaturation`** — *(no description)*
+- `method` **`PostFxEffect:setScanlineStrength`** — *(no description)*
+- `method` **`PostFxEffect:setStrength`** — *(no description)*
+- `method` **`PostFxEffect:setThreshold`** — *(no description)*
+- `method` **`PostFxEffect:type`** — *(no description)*
+- `method` **`PostFxEffect:typeOf`** — *(no description)*
+- `method` **`PostFxStack:type`** — *(no description)*
+- `method` **`PostFxStack:typeOf`** — *(no description)*
 - `module` **`luna.fx`** — *(no description)*
+
+### `graph`
+
+- `method` **`Edge:type`** — *(no description)*
+- `method` **`Edge:typeOf`** — *(no description)*
+- `method` **`Node:type`** — *(no description)*
+- `method` **`Node:typeOf`** — *(no description)*
+
+### `graphics`
+
+- `class` **`luna.graphics.Image`** — *"# Fields"* (too short)
+- `method` **`ImageData:getHeight`** — *(no description)*
+- `method` **`ImageData:getWidth`** — *(no description)*
+- `method` **`ImageData:type`** — *(no description)*
+- `method` **`ImageData:typeOf`** — *(no description)*
+- `method` **`NineSlice:type`** — *(no description)*
+- `method` **`NineSlice:typeOf`** — *(no description)*
 
 ### `gui`
 
@@ -91,10 +156,10 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
 - `module` **`luna.particle`** — *(no description)*
 
-### `patterns`
+### `pipeline`
 
-- `function` **`luna.patterns.newEventBus`** — *"New event bus."* (too short)
-- `function` **`luna.patterns.newFactory`** — *"New factory."* (too short)
+- `method` **`Step:type`** — *(no description)*
+- `method` **`Step:typeOf`** — *(no description)*
 
 ### `serial`
 

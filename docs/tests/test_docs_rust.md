@@ -297,6 +297,12 @@
 - `action_from_str_unknown_returns_none`
 - `action_from_str_wait`
 - `script_empty_steps`
+- `script_from_toml_empty_steps_creates_empty_script`
+- `script_from_toml_invalid_toml_returns_error`
+- `script_from_toml_minimal_steps` — ── Script::from_toml tests ───────────────────────────────────────────
+- `script_from_toml_missing_action_returns_error`
+- `script_from_toml_unknown_action_returns_error`
+- `script_from_toml_with_meta`
 - `script_new_has_no_description`
 - `script_new_sorts_by_time` — ── Script tests ──────────────────────────────────────────────────────
 - `script_step_count`
