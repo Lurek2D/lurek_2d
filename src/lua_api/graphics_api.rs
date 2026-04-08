@@ -8,12 +8,12 @@ use std::rc::Rc;
 
 use crate::engine::resource_keys::*;
 use crate::engine::ScreenshotRequest;
+use crate::graphics::shape::{CompoundShape, ShapeCommand};
 use crate::graphics::sprite_batch::BatchEntry;
 use crate::graphics::{
     BlendMode, Canvas, CompareMode, DrawCommand, DrawMode, Font, Mesh, MeshDrawMode, MeshVertex,
     Shader, SpriteBatch, StencilAction, TextAlign, Texture, UniformValue,
 };
-use crate::graphics::shape::{CompoundShape, ShapeCommand};
 use crate::image::ImageData;
 use crate::math::Rect;
 
@@ -807,12 +807,22 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "rectangle",
             |_, this, (mode, x, y, w, h): (String, f32, f32, f32, f32)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
                 })?;
-                shape.push_command(ShapeCommand::Rectangle { mode: dm, x, y, w, h });
+                shape.push_command(ShapeCommand::Rectangle {
+                    mode: dm,
+                    x,
+                    y,
+                    w,
+                    h,
+                });
                 Ok(())
             },
         );
@@ -849,7 +859,11 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "circle",
             |_, this, (mode, x, y, r): (String, f32, f32, f32)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -869,12 +883,22 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "ellipse",
             |_, this, (mode, x, y, rx, ry): (String, f32, f32, f32, f32)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
                 })?;
-                shape.push_command(ShapeCommand::Ellipse { mode: dm, x, y, rx, ry });
+                shape.push_command(ShapeCommand::Ellipse {
+                    mode: dm,
+                    x,
+                    y,
+                    rx,
+                    ry,
+                });
                 Ok(())
             },
         );
@@ -891,12 +915,24 @@ impl LuaUserData for LuaShape {
         methods.add_method(
             "triangle",
             |_, this, (mode, x1, y1, x2, y2, x3, y3): (String, f32, f32, f32, f32, f32, f32)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
                 })?;
-                shape.push_command(ShapeCommand::Triangle { mode: dm, x1, y1, x2, y2, x3, y3 });
+                shape.push_command(ShapeCommand::Triangle {
+                    mode: dm,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    x3,
+                    y3,
+                });
                 Ok(())
             },
         );
@@ -914,7 +950,11 @@ impl LuaUserData for LuaShape {
                         "polygon requires at least 3 vertices (6 coordinate values)".into(),
                     ));
                 }
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
@@ -930,38 +970,32 @@ impl LuaUserData for LuaShape {
         /// @param y1 : number
         /// @param x2 : number
         /// @param y2 : number
-        methods.add_method(
-            "line",
-            |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
-                let mut st = this.state.borrow_mut();
-                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
-                    LuaError::RuntimeError("Shape handle is stale or was released".into())
-                })?;
-                shape.push_command(ShapeCommand::Line { x1, y1, x2, y2 });
-                Ok(())
-            },
-        );
+        methods.add_method("line", |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::Line { x1, y1, x2, y2 });
+            Ok(())
+        });
 
         // -- polyline --
         /// Queues a polyline command from variadic (x, y) coordinate pairs.
         /// @param ... : number  flat x1, y1, x2, y2, … (minimum 4 numbers = 2 points)
-        methods.add_method(
-            "polyline",
-            |_, this, coords: mlua::Variadic<f32>| {
-                let points: Vec<f32> = coords.into_iter().collect();
-                if points.len() < 4 {
-                    return Err(LuaError::RuntimeError(
-                        "polyline requires at least 2 points (4 coordinate values)".into(),
-                    ));
-                }
-                let mut st = this.state.borrow_mut();
-                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
-                    LuaError::RuntimeError("Shape handle is stale or was released".into())
-                })?;
-                shape.push_command(ShapeCommand::Polyline { points });
-                Ok(())
-            },
-        );
+        methods.add_method("polyline", |_, this, coords: mlua::Variadic<f32>| {
+            let points: Vec<f32> = coords.into_iter().collect();
+            if points.len() < 4 {
+                return Err(LuaError::RuntimeError(
+                    "polyline requires at least 2 points (4 coordinate values)".into(),
+                ));
+            }
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::Polyline { points });
+            Ok(())
+        });
 
         // -- arc --
         /// Queues an arc command.
@@ -974,15 +1008,33 @@ impl LuaUserData for LuaShape {
         /// @param segments : integer?  curve resolution (default 32)
         methods.add_method(
             "arc",
-            |_, this, (mode, x, y, r, astart, aend, segments): (String, f32, f32, f32, f32, f32, Option<u32>)| {
-                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+            |_,
+             this,
+             (mode, x, y, r, astart, aend, segments): (
+                String,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                Option<u32>,
+            )| {
+                let dm = if mode == "line" {
+                    DrawMode::Line
+                } else {
+                    DrawMode::Fill
+                };
                 let mut st = this.state.borrow_mut();
                 let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
                     LuaError::RuntimeError("Shape handle is stale or was released".into())
                 })?;
                 shape.push_command(ShapeCommand::Arc {
-                    mode: dm, x, y, radius: r,
-                    angle1: astart, angle2: aend,
+                    mode: dm,
+                    x,
+                    y,
+                    radius: r,
+                    angle1: astart,
+                    angle2: aend,
                     segments: segments.unwrap_or(32),
                 });
                 Ok(())
@@ -1002,17 +1054,30 @@ impl LuaUserData for LuaShape {
         /// @param oy       : number?  origin Y (object space), default 0
         methods.add_method(
             "draw",
-            |_, this, (x, y, rotation, sx, sy, ox, oy): (f32, f32, Option<f32>, Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
-                this.state.borrow_mut().draw_commands.push(DrawCommand::DrawShape {
-                    shape_key: this.key,
-                    x,
-                    y,
-                    rotation: rotation.unwrap_or(0.0),
-                    sx: sx.unwrap_or(1.0),
-                    sy: sy.unwrap_or(1.0),
-                    ox: ox.unwrap_or(0.0),
-                    oy: oy.unwrap_or(0.0),
-                });
+            |_,
+             this,
+             (x, y, rotation, sx, sy, ox, oy): (
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
+                this.state
+                    .borrow_mut()
+                    .draw_commands
+                    .push(DrawCommand::DrawShape {
+                        shape_key: this.key,
+                        x,
+                        y,
+                        rotation: rotation.unwrap_or(0.0),
+                        sx: sx.unwrap_or(1.0),
+                        sy: sy.unwrap_or(1.0),
+                        ox: ox.unwrap_or(0.0),
+                        oy: oy.unwrap_or(0.0),
+                    });
                 Ok(())
             },
         );
@@ -1867,9 +1932,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(font);
             let mut st = s.borrow_mut();
             let f = st.fonts.get_mut(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "luna.gfx.getFontWidth: font handle is not valid".into(),
-                )
+                LuaError::RuntimeError("luna.gfx.getFontWidth: font handle is not valid".into())
             })?;
             Ok(f.text_width(&text))
         })?,
@@ -1888,9 +1951,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(font);
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "luna.gfx.getFontHeight: font handle is not valid".into(),
-                )
+                LuaError::RuntimeError("luna.gfx.getFontHeight: font handle is not valid".into())
             })?;
             Ok(f.line_height())
         })?,
@@ -1909,9 +1970,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(font);
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "luna.gfx.getFontAscent: font handle is not valid".into(),
-                )
+                LuaError::RuntimeError("luna.gfx.getFontAscent: font handle is not valid".into())
             })?;
             Ok(f.ascent())
         })?,
@@ -1930,9 +1989,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(font);
             let st = s.borrow();
             let f = st.fonts.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "luna.gfx.getFontDescent: font handle is not valid".into(),
-                )
+                LuaError::RuntimeError("luna.gfx.getFontDescent: font handle is not valid".into())
             })?;
             Ok(f.descent())
         })?,
@@ -2115,9 +2172,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             drop(canvas);
             let st = s.borrow();
             let c = st.canvases.get(key).ok_or_else(|| {
-                LuaError::RuntimeError(
-                    "luna.gfx.getCanvasSize: canvas handle is not valid".into(),
-                )
+                LuaError::RuntimeError("luna.gfx.getCanvasSize: canvas handle is not valid".into())
             })?;
             Ok((c.width, c.height))
         })?,
@@ -2210,9 +2265,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     graphics.set(
         "newShader",
         lua.create_function(move |_, code: String| {
-            let shader = Shader::new(code).map_err(|err| {
-                LuaError::RuntimeError(format!("luna.gfx.newShader: {}", err))
-            })?;
+            let shader = Shader::new(code)
+                .map_err(|err| LuaError::RuntimeError(format!("luna.gfx.newShader: {}", err)))?;
             let key = s.borrow_mut().shaders.insert(shader);
             Ok(LuaShader {
                 state: s.clone(),
@@ -2728,7 +2782,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "newShape",
         lua.create_function(move |_, ()| {
             let key = s.borrow_mut().shapes.insert(CompoundShape::new());
-            Ok(LuaShape { state: s.clone(), key })
+            Ok(LuaShape {
+                state: s.clone(),
+                key,
+            })
         })?,
     )?;
 

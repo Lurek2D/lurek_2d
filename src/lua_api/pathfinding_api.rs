@@ -5,13 +5,13 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use super::tilemap_api::LuaTileMap;
 use crate::engine::log_messages::LA08_PATHFINDING_THREAD_UNIMPL;
 use crate::log_msg;
 use crate::pathfinding::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfinding::hpa::{build_abstract, AbstractGraph};
 use crate::pathfinding::pathgrid::PathGrid;
 use crate::pathfinding::{DiagonalMode, FlowField, NavGrid, UnitPathfinder, Waypoint};
-use super::tilemap_api::LuaTileMap;
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -36,10 +36,7 @@ fn lua_to_waypoints(tbl: &LuaTable) -> LuaResult<Vec<Waypoint>> {
         let entry = pair?;
         let x: u32 = entry.get("x")?;
         let y: u32 = entry.get("y")?;
-        waypoints.push(Waypoint {
-            x: x - 1,
-            y: y - 1,
-        });
+        waypoints.push(Waypoint { x: x - 1, y: y - 1 });
     }
     Ok(waypoints)
 }
@@ -56,7 +53,6 @@ pub struct LuaNavGrid {
 
 impl LuaUserData for LuaNavGrid {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- getWidth --
         /// Returns the grid width in cells.
         /// @return integer
@@ -253,7 +249,6 @@ impl LuaUserData for LuaNavGrid {
                 .to_lua_str()
                 .to_string())
         });
-
     }
 }
 
@@ -268,7 +263,6 @@ pub struct LuaUnitPathfinder {
 
 impl LuaUserData for LuaUnitPathfinder {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- findPath --
         /// Finds an A★ path between two cells (1-based coordinates).
         /// @param x1 : integer
@@ -280,10 +274,13 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "findPath",
             |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
-                let result = this
-                    .inner
-                    .borrow_mut()
-                    .find_path(x1 - 1, y1 - 1, x2 - 1, y2 - 1, unit_size.unwrap_or(1));
+                let result = this.inner.borrow_mut().find_path(
+                    x1 - 1,
+                    y1 - 1,
+                    x2 - 1,
+                    y2 - 1,
+                    unit_size.unwrap_or(1),
+                );
                 match result {
                     Some(path) => Ok(LuaValue::Table(waypoints_to_lua(lua, &path)?)),
                     None => Ok(LuaValue::Nil),
@@ -376,19 +373,16 @@ impl LuaUserData for LuaUnitPathfinder {
         /// @return integer?, integer?
         methods.add_method(
             "findNearestWalkable",
-            |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| {
-                match this.inner.borrow().find_nearest_walkable(
-                    x - 1,
-                    y - 1,
-                    max_radius,
-                    unit_size.unwrap_or(1),
-                ) {
-                    Some((rx, ry)) => Ok((
-                        LuaValue::Integer((rx + 1) as i64),
-                        LuaValue::Integer((ry + 1) as i64),
-                    )),
-                    None => Ok((LuaValue::Nil, LuaValue::Nil)),
-                }
+            |_, this, (x, y, max_radius, unit_size): (u32, u32, u32, Option<u32>)| match this
+                .inner
+                .borrow()
+                .find_nearest_walkable(x - 1, y - 1, max_radius, unit_size.unwrap_or(1))
+            {
+                Some((rx, ry)) => Ok((
+                    LuaValue::Integer((rx + 1) as i64),
+                    LuaValue::Integer((ry + 1) as i64),
+                )),
+                None => Ok((LuaValue::Nil, LuaValue::Nil)),
             },
         );
 
@@ -492,7 +486,6 @@ impl LuaUserData for LuaUnitPathfinder {
             this.inner.borrow_mut().set_cache_max_size(n);
             Ok(())
         });
-
     }
 }
 
@@ -507,7 +500,6 @@ pub struct LuaFlowField {
 
 impl LuaUserData for LuaFlowField {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- calculate --
         /// Computes the flow field toward a single target (1-based coordinates).
         /// @param tx : integer
@@ -609,7 +601,6 @@ impl LuaUserData for LuaFlowField {
                 Ok(this.inner.borrow().steer(wx, wy, speed, tw, th))
             },
         );
-
     }
 }
 
@@ -624,7 +615,6 @@ pub struct LuaPathGrid {
 
 impl LuaUserData for LuaPathGrid {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- getWidth --
         /// Returns the grid width in cells.
         /// @return integer
@@ -745,7 +735,6 @@ impl LuaUserData for LuaPathGrid {
                 }
             },
         );
-
     }
 }
 
@@ -760,7 +749,6 @@ pub struct LuaAiFlowField {
 
 impl LuaUserData for LuaAiFlowField {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- getWidth --
         /// Returns the grid width.
         /// @return integer
@@ -795,15 +783,18 @@ impl LuaUserData for LuaAiFlowField {
         // -- getGoal --
         /// Returns the goal cell (1-based coordinates) or nil if unset.
         /// @return integer?, integer?
-        methods.add_method("getGoal", |_, this, ()| -> LuaResult<(LuaValue, LuaValue)> {
-            match this.inner.borrow().goal {
-                None => Ok((LuaValue::Nil, LuaValue::Nil)),
-                Some((gx, gy)) => Ok((
-                    LuaValue::Integer((gx + 1) as i64),
-                    LuaValue::Integer((gy + 1) as i64),
-                )),
-            }
-        });
+        methods.add_method(
+            "getGoal",
+            |_, this, ()| -> LuaResult<(LuaValue, LuaValue)> {
+                match this.inner.borrow().goal {
+                    None => Ok((LuaValue::Nil, LuaValue::Nil)),
+                    Some((gx, gy)) => Ok((
+                        LuaValue::Integer((gx + 1) as i64),
+                        LuaValue::Integer((gy + 1) as i64),
+                    )),
+                }
+            },
+        );
 
         // -- getDirection --
         /// Returns the normalised direction toward the goal (1-based coordinates).
@@ -822,7 +813,6 @@ impl LuaUserData for LuaAiFlowField {
         methods.add_method("getDistance", |_, this, (x, y): (usize, usize)| {
             Ok(this.inner.borrow().get_distance(x - 1, y - 1))
         });
-
     }
 }
 
@@ -952,35 +942,37 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return NavGrid
     tbl.set(
         "newNavGridFromTileMap",
-        lua.create_function(|_, (tm_ud, layer_index, blocked_table): (LuaAnyUserData, usize, mlua::Table)| {
-            let tilemap_ud = tm_ud.borrow::<LuaTileMap>()?;
-            let tm = tilemap_ud.inner.borrow();
-            let layer_idx = layer_index.saturating_sub(1); // 1-based → 0-based
-            let (w, h) = tm.get_layer_dimensions(layer_idx).ok_or_else(|| {
-                LuaError::RuntimeError(format!("layer {} does not exist", layer_index))
-            })?;
+        lua.create_function(
+            |_, (tm_ud, layer_index, blocked_table): (LuaAnyUserData, usize, mlua::Table)| {
+                let tilemap_ud = tm_ud.borrow::<LuaTileMap>()?;
+                let tm = tilemap_ud.inner.borrow();
+                let layer_idx = layer_index.saturating_sub(1); // 1-based → 0-based
+                let (w, h) = tm.get_layer_dimensions(layer_idx).ok_or_else(|| {
+                    LuaError::RuntimeError(format!("layer {} does not exist", layer_index))
+                })?;
 
-            // Collect blocked GIDs into a HashSet for O(1) lookup
-            let mut blocked: std::collections::HashSet<u32> = std::collections::HashSet::new();
-            for v in blocked_table.sequence_values::<u32>() {
-                blocked.insert(v?);
-            }
+                // Collect blocked GIDs into a HashSet for O(1) lookup
+                let mut blocked: std::collections::HashSet<u32> = std::collections::HashSet::new();
+                for v in blocked_table.sequence_values::<u32>() {
+                    blocked.insert(v?);
+                }
 
-            let mut grid = NavGrid::new(w, h);
-            for y in 0..h {
-                for x in 0..w {
-                    let gid = tm.get_tile(layer_idx, x, y);
-                    if blocked.contains(&gid) {
-                        grid.set_cost(x, y, 0);
+                let mut grid = NavGrid::new(w, h);
+                for y in 0..h {
+                    for x in 0..w {
+                        let gid = tm.get_tile(layer_idx, x, y);
+                        if blocked.contains(&gid) {
+                            grid.set_cost(x, y, 0);
+                        }
                     }
                 }
-            }
 
-            Ok(LuaNavGrid {
-                inner: Rc::new(RefCell::new(grid)),
-                abstract_graph: Rc::new(RefCell::new(None)),
-            })
-        })?,
+                Ok(LuaNavGrid {
+                    inner: Rc::new(RefCell::new(grid)),
+                    abstract_graph: Rc::new(RefCell::new(None)),
+                })
+            },
+        )?,
     )?;
 
     luna.set("pathfinding", tbl)?;

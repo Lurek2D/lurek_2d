@@ -8,8 +8,8 @@ use std::rc::Rc;
 use super::SharedState;
 use crate::math::color::{gamma_to_linear, linear_to_gamma};
 use crate::math::easing;
-use crate::math::noise_functions;
 use crate::math::geometry;
+use crate::math::noise_functions;
 use crate::math::polygon;
 use crate::math::BezierCurve;
 use crate::math::NoiseGenerator;
@@ -62,7 +62,9 @@ impl LuaUserData for LuaRandomGenerator {
         methods.add_method_mut(
             "randomNormal",
             |_, this, (stddev, mean): (Option<f64>, Option<f64>)| {
-                Ok(this.inner.random_normal(stddev.unwrap_or(1.0), mean.unwrap_or(0.0)))
+                Ok(this
+                    .inner
+                    .random_normal(stddev.unwrap_or(1.0), mean.unwrap_or(0.0)))
             },
         );
 
@@ -90,9 +92,7 @@ impl LuaUserData for LuaRandomGenerator {
         /// @param state : string
         /// @return nil
         methods.add_method_mut("setState", |_, this, state: String| {
-            this.inner
-                .set_state(&state)
-                .map_err(LuaError::external)?;
+            this.inner.set_state(&state).map_err(LuaError::external)?;
             Ok(())
         });
     }
@@ -229,9 +229,7 @@ impl LuaUserData for LuaTransform {
         /// Returns a copy of this transform.
         /// @return Transform
         methods.add_method("clone", |lua, this, ()| {
-            lua.create_userdata(LuaTransform {
-                inner: this.inner,
-            })
+            lua.create_userdata(LuaTransform { inner: this.inner })
         });
 
         // -- getMatrix --
@@ -425,22 +423,20 @@ impl LuaUserData for LuaTween {
         /// table when called with no argument.
         /// @param index : integer | nil
         /// @return number | table
-        methods.add_method("getValue", |lua, this, index: Option<usize>| {
-            match index {
-                Some(i) => {
-                    if i == 0 {
-                        return Ok(LuaValue::Number(0.0));
-                    }
-                    Ok(LuaValue::Number(this.inner.get_value(i - 1)))
+        methods.add_method("getValue", |lua, this, index: Option<usize>| match index {
+            Some(i) => {
+                if i == 0 {
+                    return Ok(LuaValue::Number(0.0));
                 }
-                None => {
-                    let vals = this.inner.get_all_values();
-                    let t = lua.create_table()?;
-                    for (i, v) in vals.iter().enumerate() {
-                        t.set(i + 1, *v)?;
-                    }
-                    Ok(LuaValue::Table(t))
+                Ok(LuaValue::Number(this.inner.get_value(i - 1)))
+            }
+            None => {
+                let vals = this.inner.get_all_values();
+                let t = lua.create_table()?;
+                for (i, v) in vals.iter().enumerate() {
+                    t.set(i + 1, *v)?;
                 }
+                Ok(LuaValue::Table(t))
             }
         });
 
@@ -464,9 +460,7 @@ impl LuaUserData for LuaTween {
         // -- getValueCount --
         /// Returns the number of values in this tween.
         /// @return integer
-        methods.add_method("getValueCount", |_, this, ()| {
-            Ok(this.inner.value_count())
-        });
+        methods.add_method("getValueCount", |_, this, ()| Ok(this.inner.value_count()));
 
         // -- getEasingName --
         /// Returns the easing function name.
@@ -584,14 +578,17 @@ impl LuaUserData for LuaSpatialHash {
         /// @param w : number
         /// @param h : number
         /// @return table
-        methods.add_method("queryRect", |lua, this, (x, y, w, h): (f32, f32, f32, f32)| {
-            let ids = this.inner.query_rect(x, y, w, h);
-            let t = lua.create_table()?;
-            for (i, id) in ids.iter().enumerate() {
-                t.set(i + 1, id.as_str())?;
-            }
-            Ok(t)
-        });
+        methods.add_method(
+            "queryRect",
+            |lua, this, (x, y, w, h): (f32, f32, f32, f32)| {
+                let ids = this.inner.query_rect(x, y, w, h);
+                let t = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    t.set(i + 1, id.as_str())?;
+                }
+                Ok(t)
+            },
+        );
 
         // -- queryCircle --
         /// Returns IDs of items overlapping the query circle.
@@ -619,9 +616,7 @@ impl LuaUserData for LuaSpatialHash {
         // -- getItemCount --
         /// Returns the number of items in the hash.
         /// @return integer
-        methods.add_method("getItemCount", |_, this, ()| {
-            Ok(this.inner.item_count())
-        });
+        methods.add_method("getItemCount", |_, this, ()| Ok(this.inner.item_count()));
     }
 }
 
@@ -666,9 +661,7 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Returns 1D Perlin noise at x.
         /// @param x : number
         /// @return number
-        methods.add_method("perlin1d", |_, this, x: f64| {
-            Ok(this.inner.perlin_1d(x))
-        });
+        methods.add_method("perlin1d", |_, this, x: f64| Ok(this.inner.perlin_1d(x)));
 
         // -- perlin2d --
         /// Returns 2D Perlin noise at (x, y).
@@ -704,9 +697,7 @@ impl LuaUserData for LuaNoiseGenerator {
         /// Returns 1D Simplex noise at x.
         /// @param x : number
         /// @return number
-        methods.add_method("simplex1d", |_, this, x: f64| {
-            Ok(this.inner.simplex_1d(x))
-        });
+        methods.add_method("simplex1d", |_, this, x: f64| Ok(this.inner.simplex_1d(x)));
 
         // -- simplex2d --
         /// Returns 2D Simplex noise at (x, y).
@@ -785,7 +776,10 @@ impl LuaUserData for LuaNoiseGenerator {
                 Option<f64>,
                 Option<String>,
             )| {
-                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                let nk = kind
+                    .as_deref()
+                    .map(resolve_noise_kind)
+                    .unwrap_or(NoiseKind::Perlin);
                 Ok(this.inner.fbm(
                     x,
                     y,
@@ -818,7 +812,10 @@ impl LuaUserData for LuaNoiseGenerator {
                 Option<f64>,
                 Option<String>,
             )| {
-                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                let nk = kind
+                    .as_deref()
+                    .map(resolve_noise_kind)
+                    .unwrap_or(NoiseKind::Perlin);
                 Ok(this.inner.ridged(
                     x,
                     y,
@@ -851,7 +848,10 @@ impl LuaUserData for LuaNoiseGenerator {
                 Option<f64>,
                 Option<String>,
             )| {
-                let nk = kind.as_deref().map(resolve_noise_kind).unwrap_or(NoiseKind::Perlin);
+                let nk = kind
+                    .as_deref()
+                    .map(resolve_noise_kind)
+                    .unwrap_or(NoiseKind::Perlin);
                 Ok(this.inner.turbulence(
                     x,
                     y,
@@ -869,9 +869,10 @@ impl LuaUserData for LuaNoiseGenerator {
         /// @param y : number
         /// @param strength : number
         /// @return number, number
-        methods.add_method("warpDomain", |_, this, (x, y, strength): (f64, f64, f64)| {
-            Ok(this.inner.warp_domain(x, y, strength))
-        });
+        methods.add_method(
+            "warpDomain",
+            |_, this, (x, y, strength): (f64, f64, f64)| Ok(this.inner.warp_domain(x, y, strength)),
+        );
 
         // -- generateMap --
         /// Generates a 2D noise map as a flat table (row-major).
@@ -879,37 +880,40 @@ impl LuaUserData for LuaNoiseGenerator {
         /// @param height : integer
         /// @param opts : table?
         /// @return table
-        methods.add_method("generateMap", |lua, this, (w, h, opts): (u32, u32, Option<LuaTable>)| {
-            let map_opts = if let Some(t) = opts {
-                MapGenOptions {
-                    scale_x: t.get::<_, Option<f64>>("scaleX")?.unwrap_or(1.0),
-                    scale_y: t.get::<_, Option<f64>>("scaleY")?.unwrap_or(1.0),
-                    octaves: t.get::<_, Option<u32>>("octaves")?.unwrap_or(4),
-                    lacunarity: t.get::<_, Option<f64>>("lacunarity")?.unwrap_or(2.0),
-                    persistence: t.get::<_, Option<f64>>("persistence")?.unwrap_or(0.5),
-                    kind: t
-                        .get::<_, Option<String>>("kind")?
-                        .as_deref()
-                        .map(resolve_noise_kind)
-                        .unwrap_or(NoiseKind::Perlin),
-                    fractal: t
-                        .get::<_, Option<String>>("fractal")?
-                        .as_deref()
-                        .map(resolve_fractal_type)
-                        .unwrap_or(FractalType::Fbm),
-                    offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
-                    offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+        methods.add_method(
+            "generateMap",
+            |lua, this, (w, h, opts): (u32, u32, Option<LuaTable>)| {
+                let map_opts = if let Some(t) = opts {
+                    MapGenOptions {
+                        scale_x: t.get::<_, Option<f64>>("scaleX")?.unwrap_or(1.0),
+                        scale_y: t.get::<_, Option<f64>>("scaleY")?.unwrap_or(1.0),
+                        octaves: t.get::<_, Option<u32>>("octaves")?.unwrap_or(4),
+                        lacunarity: t.get::<_, Option<f64>>("lacunarity")?.unwrap_or(2.0),
+                        persistence: t.get::<_, Option<f64>>("persistence")?.unwrap_or(0.5),
+                        kind: t
+                            .get::<_, Option<String>>("kind")?
+                            .as_deref()
+                            .map(resolve_noise_kind)
+                            .unwrap_or(NoiseKind::Perlin),
+                        fractal: t
+                            .get::<_, Option<String>>("fractal")?
+                            .as_deref()
+                            .map(resolve_fractal_type)
+                            .unwrap_or(FractalType::Fbm),
+                        offset_x: t.get::<_, Option<f64>>("offsetX")?.unwrap_or(0.0),
+                        offset_y: t.get::<_, Option<f64>>("offsetY")?.unwrap_or(0.0),
+                    }
+                } else {
+                    MapGenOptions::default()
+                };
+                let data = this.inner.generate_map(w, h, &map_opts);
+                let result = lua.create_table()?;
+                for (i, v) in data.iter().enumerate() {
+                    result.set(i + 1, *v)?;
                 }
-            } else {
-                MapGenOptions::default()
-            };
-            let data = this.inner.generate_map(w, h, &map_opts);
-            let result = lua.create_table()?;
-            for (i, v) in data.iter().enumerate() {
-                result.set(i + 1, *v)?;
-            }
-            Ok(result)
-        });
+                Ok(result)
+            },
+        );
 
         // -- getSeed --
         /// Returns the current seed.
@@ -1129,7 +1133,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "fbm",
         lua.create_function(
-            |_, (x, y, seed, octaves, lac, gain): (f32, f32, Option<u32>, Option<u32>, Option<f32>, Option<f32>)| {
+            |_,
+             (x, y, seed, octaves, lac, gain): (
+                f32,
+                f32,
+                Option<u32>,
+                Option<u32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
                 Ok(noise_functions::fbm(
                     x,
                     y,
@@ -1152,9 +1164,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "applyEasing",
         lua.create_function(|_, (name, t): (String, f32)| {
-            easing::apply(&name, t).ok_or_else(|| {
-                LuaError::external(format!("Unknown easing function: {}", name))
-            })
+            easing::apply(&name, t)
+                .ok_or_else(|| LuaError::external(format!("Unknown easing function: {}", name)))
         })?,
     )?;
 
@@ -1162,133 +1173,199 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Linear easing (identity).
     /// @param t : number
     /// @return number
-    tbl.set("linear", lua.create_function(|_, t: f32| Ok(easing::linear(t)))?)?;
+    tbl.set(
+        "linear",
+        lua.create_function(|_, t: f32| Ok(easing::linear(t)))?,
+    )?;
 
     // -- inQuad --
     /// Quadratic ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inQuad", lua.create_function(|_, t: f32| Ok(easing::ease_in_quad(t)))?)?;
+    tbl.set(
+        "inQuad",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_quad(t)))?,
+    )?;
 
     // -- outQuad --
     /// Quadratic ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outQuad", lua.create_function(|_, t: f32| Ok(easing::ease_out_quad(t)))?)?;
+    tbl.set(
+        "outQuad",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_quad(t)))?,
+    )?;
 
     // -- inOutQuad --
     /// Quadratic ease-in-out.
     /// @param t : number
     /// @return number
-    tbl.set("inOutQuad", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quad(t)))?)?;
+    tbl.set(
+        "inOutQuad",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quad(t)))?,
+    )?;
 
     // -- inCubic --
     /// Cubic ease-in — acceleration starts slowly then increases sharply.
     /// @param t : number
     /// @return number
-    tbl.set("inCubic", lua.create_function(|_, t: f32| Ok(easing::ease_in_cubic(t)))?)?;
+    tbl.set(
+        "inCubic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_cubic(t)))?,
+    )?;
 
     // -- outCubic --
     /// Cubic ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outCubic", lua.create_function(|_, t: f32| Ok(easing::ease_out_cubic(t)))?)?;
+    tbl.set(
+        "outCubic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_cubic(t)))?,
+    )?;
 
     // -- inOutCubic --
     /// Cubic ease-in-out.
     /// @param t : number
     /// @return number
-    tbl.set("inOutCubic", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_cubic(t)))?)?;
+    tbl.set(
+        "inOutCubic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_cubic(t)))?,
+    )?;
 
     // -- inQuart --
     /// Quartic ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inQuart", lua.create_function(|_, t: f32| Ok(easing::ease_in_quart(t)))?)?;
+    tbl.set(
+        "inQuart",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_quart(t)))?,
+    )?;
 
     // -- outQuart --
     /// Quartic ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outQuart", lua.create_function(|_, t: f32| Ok(easing::ease_out_quart(t)))?)?;
+    tbl.set(
+        "outQuart",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_quart(t)))?,
+    )?;
 
     // -- inOutQuart --
     /// Quartic ease-in-out.
     /// @param t : number
     /// @return number
-    tbl.set("inOutQuart", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quart(t)))?)?;
+    tbl.set(
+        "inOutQuart",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_quart(t)))?,
+    )?;
 
     // -- inSine --
     /// Sinusoidal ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inSine", lua.create_function(|_, t: f32| Ok(easing::ease_in_sine(t)))?)?;
+    tbl.set(
+        "inSine",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_sine(t)))?,
+    )?;
 
     // -- outSine --
     /// Sinusoidal ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outSine", lua.create_function(|_, t: f32| Ok(easing::ease_out_sine(t)))?)?;
+    tbl.set(
+        "outSine",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_sine(t)))?,
+    )?;
 
     // -- inOutSine --
     /// Sinusoidal ease-in-out.
     /// @param t : number
     /// @return number
-    tbl.set("inOutSine", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_sine(t)))?)?;
+    tbl.set(
+        "inOutSine",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_sine(t)))?,
+    )?;
 
     // -- inExpo --
     /// Exponential ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inExpo", lua.create_function(|_, t: f32| Ok(easing::ease_in_expo(t)))?)?;
+    tbl.set(
+        "inExpo",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_expo(t)))?,
+    )?;
 
     // -- outExpo --
     /// Exponential ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outExpo", lua.create_function(|_, t: f32| Ok(easing::ease_out_expo(t)))?)?;
+    tbl.set(
+        "outExpo",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_expo(t)))?,
+    )?;
 
     // -- inOutExpo --
     /// Exponential ease-in-out.
     /// @param t : number
     /// @return number
-    tbl.set("inOutExpo", lua.create_function(|_, t: f32| Ok(easing::ease_in_out_expo(t)))?)?;
+    tbl.set(
+        "inOutExpo",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_expo(t)))?,
+    )?;
 
     // -- inElastic --
     /// Elastic ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inElastic", lua.create_function(|_, t: f32| Ok(easing::ease_in_elastic(t)))?)?;
+    tbl.set(
+        "inElastic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_elastic(t)))?,
+    )?;
 
     // -- outElastic --
     /// Elastic ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outElastic", lua.create_function(|_, t: f32| Ok(easing::ease_out_elastic(t)))?)?;
+    tbl.set(
+        "outElastic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_elastic(t)))?,
+    )?;
 
     // -- outBounce --
     /// Bounce ease-out.
     /// @param t : number
     /// @return number
-    tbl.set("outBounce", lua.create_function(|_, t: f32| Ok(easing::ease_out_bounce(t)))?)?;
+    tbl.set(
+        "outBounce",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_bounce(t)))?,
+    )?;
 
     // -- inBounce --
     /// Bounce ease-in.
     /// @param t : number
     /// @return number
-    tbl.set("inBounce", lua.create_function(|_, t: f32| Ok(easing::ease_in_bounce(t)))?)?;
+    tbl.set(
+        "inBounce",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_bounce(t)))?,
+    )?;
 
     // -- inBack --
     /// Back ease-in — overshoots slightly before settling at the target.
     /// @param t : number
     /// @return number
-    tbl.set("inBack", lua.create_function(|_, t: f32| Ok(easing::ease_in_back(t)))?)?;
+    tbl.set(
+        "inBack",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_back(t)))?,
+    )?;
 
     // -- outBack --
     /// Back ease-out — overshoots the target then snaps back into place.
     /// @param t : number
     /// @return number
-    tbl.set("outBack", lua.create_function(|_, t: f32| Ok(easing::ease_out_back(t)))?)?;
+    tbl.set(
+        "outBack",
+        lua.create_function(|_, t: f32| Ok(easing::ease_out_back(t)))?,
+    )?;
 
     // ── Geometry ─────────────────────────────────────────────────────
 
@@ -1431,20 +1508,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "circleIntersectsLine",
         lua.create_function(
-            |_,
-             (cx, cy, r, lx1, ly1, lx2, ly2): (f32, f32, f32, f32, f32, f32, f32)| {
-                let (hit, p1, p2) =
-                    geometry::circle_intersects_line(cx, cy, r, lx1, ly1, lx2, ly2);
+            |_, (cx, cy, r, lx1, ly1, lx2, ly2): (f32, f32, f32, f32, f32, f32, f32)| {
+                let (hit, p1, p2) = geometry::circle_intersects_line(cx, cy, r, lx1, ly1, lx2, ly2);
                 if hit {
                     let (hx1, hy1) = p1.unwrap_or((0.0, 0.0));
                     let (hx2, hy2) = p2.unwrap_or((0.0, 0.0));
-                    Ok((
-                        true,
-                        Some(hx1),
-                        Some(hy1),
-                        p2.map(|_| hx2),
-                        p2.map(|_| hy2),
-                    ))
+                    Ok((true, Some(hx1), Some(hy1), p2.map(|_| hx2), p2.map(|_| hy2)))
                 } else {
                     Ok((false, None, None, None, None))
                 }
@@ -1465,20 +1534,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "circleIntersectsSegment",
         lua.create_function(
-            |_,
-             (cx, cy, r, sx1, sy1, sx2, sy2): (f32, f32, f32, f32, f32, f32, f32)| {
+            |_, (cx, cy, r, sx1, sy1, sx2, sy2): (f32, f32, f32, f32, f32, f32, f32)| {
                 let (hit, p1, p2) =
                     geometry::circle_intersects_segment(cx, cy, r, sx1, sy1, sx2, sy2);
                 if hit {
                     let (hx1, hy1) = p1.unwrap_or((0.0, 0.0));
                     let (hx2, hy2) = p2.unwrap_or((0.0, 0.0));
-                    Ok((
-                        true,
-                        Some(hx1),
-                        Some(hy1),
-                        p2.map(|_| hx2),
-                        p2.map(|_| hy2),
-                    ))
+                    Ok((true, Some(hx1), Some(hy1), p2.map(|_| hx2), p2.map(|_| hy2)))
                 } else {
                     Ok((false, None, None, None, None))
                 }
@@ -1569,17 +1631,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "lineIntersect",
         lua.create_function(
-            |_,
-             (x1, y1, x2, y2, x3, y3, x4, y4): (
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-            )| {
+            |_, (x1, y1, x2, y2, x3, y3, x4, y4): (f32, f32, f32, f32, f32, f32, f32, f32)| {
                 match geometry::line_intersect(x1, y1, x2, y2, x3, y3, x4, y4) {
                     Some((ix, iy)) => Ok((Some(ix), Some(iy))),
                     None => Ok((None, None)),
@@ -1655,20 +1707,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "segmentIntersectsSegment",
         lua.create_function(
-            |_,
-             (x1, y1, x2, y2, x3, y3, x4, y4): (
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-                f32,
-            )| {
-                match geometry::segment_intersects_segment(
-                    x1, y1, x2, y2, x3, y3, x4, y4,
-                ) {
+            |_, (x1, y1, x2, y2, x3, y3, x4, y4): (f32, f32, f32, f32, f32, f32, f32, f32)| {
+                match geometry::segment_intersects_segment(x1, y1, x2, y2, x3, y3, x4, y4) {
                     (true, Some((ix, iy))) => Ok((true, Some(ix), Some(iy))),
                     _ => Ok((false, None, None)),
                 }
@@ -1783,10 +1823,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns the largest integer ≤ x.
     /// @param x : number
     /// @return number
-    tbl.set(
-        "floor",
-        lua.create_function(|_, x: f64| Ok(x.floor()))?,
-    )?;
+    tbl.set("floor", lua.create_function(|_, x: f64| Ok(x.floor()))?)?;
 
     // -- ceil --
     /// Returns the smallest integer ≥ x.
@@ -1798,10 +1835,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns x rounded to the nearest integer (half-up).
     /// @param x : number
     /// @return number
-    tbl.set(
-        "round",
-        lua.create_function(|_, x: f64| Ok(x.round()))?,
-    )?;
+    tbl.set("round", lua.create_function(|_, x: f64| Ok(x.round()))?)?;
 
     // -- exp --
     /// Returns e raised to the power x.
@@ -1841,10 +1875,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "min",
         lua.create_function(|_, args: mlua::Variadic<f64>| {
-            args.iter()
-                .copied()
-                .reduce(f64::min)
-                .ok_or_else(|| mlua::Error::RuntimeError("min() requires at least one argument".into()))
+            args.iter().copied().reduce(f64::min).ok_or_else(|| {
+                mlua::Error::RuntimeError("min() requires at least one argument".into())
+            })
         })?,
     )?;
 
@@ -1855,10 +1888,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "max",
         lua.create_function(|_, args: mlua::Variadic<f64>| {
-            args.iter()
-                .copied()
-                .reduce(f64::max)
-                .ok_or_else(|| mlua::Error::RuntimeError("max() requires at least one argument".into()))
+            args.iter().copied().reduce(f64::max).ok_or_else(|| {
+                mlua::Error::RuntimeError("max() requires at least one argument".into())
+            })
         })?,
     )?;
 
@@ -1880,7 +1912,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "sign",
         lua.create_function(|_, x: f64| {
-            Ok(if x > 0.0 { 1.0_f64 } else if x < 0.0 { -1.0_f64 } else { 0.0_f64 })
+            Ok(if x > 0.0 {
+                1.0_f64
+            } else if x < 0.0 {
+                -1.0_f64
+            } else {
+                0.0_f64
+            })
         })?,
     )?;
 
@@ -1987,4 +2025,3 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     luna.set("math", tbl)?;
     Ok(())
 }
-

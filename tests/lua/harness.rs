@@ -57,9 +57,9 @@ fn run_lua_test(filename: &str) {
         .get("_test_results")
         .expect("Missing _test_results global");
 
-    let total:   i64 = results.get("total").unwrap_or(0);
-    let passed:  i64 = results.get("passed").unwrap_or(0);
-    let failed:  i64 = results.get("failed").unwrap_or(0);
+    let total: i64 = results.get("total").unwrap_or(0);
+    let passed: i64 = results.get("passed").unwrap_or(0);
+    let failed: i64 = results.get("failed").unwrap_or(0);
     let skipped: i64 = results.get("skipped").unwrap_or(0);
 
     let elapsed = start.elapsed();
@@ -67,7 +67,11 @@ fn run_lua_test(filename: &str) {
     // Print structured result line (parseable by parse_test_log.py)
     println!(
         "{}: {}/{} passed, {} failed, {} skipped [{:.2}s]",
-        filename, passed, total, failed, skipped,
+        filename,
+        passed,
+        total,
+        failed,
+        skipped,
         elapsed.as_secs_f64()
     );
 
@@ -77,7 +81,7 @@ fn run_lua_test(filename: &str) {
             for pair in errors.pairs::<i64, mlua::Table>() {
                 if let Ok((_, err_tbl)) = pair {
                     let suite: String = err_tbl.get("suite").unwrap_or_default();
-                    let test:  String = err_tbl.get("test").unwrap_or_default();
+                    let test: String = err_tbl.get("test").unwrap_or_default();
                     let error: String = err_tbl.get("error").unwrap_or_default();
                     eprintln!("  FAIL: [{}] {} - {}", suite, test, error);
                 }
@@ -86,9 +90,12 @@ fn run_lua_test(filename: &str) {
     }
 
     assert_eq!(failed, 0, "{} Lua tests failed in {}", failed, filename);
-    assert!(total > 0 || skipped > 0, "No tests were run in {}", filename);
+    assert!(
+        total > 0 || skipped > 0,
+        "No tests were run in {}",
+        filename
+    );
 }
-
 
 #[test]
 fn lua_test_math() {
