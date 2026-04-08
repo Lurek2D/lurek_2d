@@ -2547,8 +2547,8 @@ function Universe:update(dt) end
 ---@return Universe
 function luna.entity.newUniverse() end
 
----@class luna.signal
-luna.signal = {}
+---@class luna.event
+luna.event = {}
 
 --- Lua-side wrapper around a [`Signal`] with registry-stored callbacks.
 ---@class Signal
@@ -2584,41 +2584,41 @@ function Signal:remove(handle) end
 
 --- Discards all pending events in the queue.
 ---@return nil
-function luna.signal.clear() end
+function luna.event.clear() end
+
+--- Pushes an exit event, requesting the engine to stop.
+---@param code? any (optional)
+---@return nil
+function luna.event.exit(code) end
 
 --- Creates a new pub-sub Signal dispatcher.
 ---@return Signal
-function luna.signal.newSignal() end
+function luna.event.newSignal() end
 
 --- Returns an iterator function that pops events from the queue.
 ---@return function
-function luna.signal.poll() end
+function luna.event.poll() end
 
 --- Syncs OS-level events into the queue (no-op in Luna2D push model).
 ---@return nil
-function luna.signal.pump() end
+function luna.event.pump() end
 
 --- Pushes a custom event onto the event queue.
 ---@param args any
 ---@return nil
-function luna.signal.push(args) end
-
---- Pushes a quit event, requesting the engine to stop.
----@param code? any (optional)
----@return nil
-function luna.signal.quit(code) end
+function luna.event.push(args) end
 
 --- Requests that the engine restart at the beginning of the next frame.
 ---@return nil
-function luna.signal.restart() end
+function luna.event.restart() end
 
 --- Blocks until the next event arrives or the optional timeout elapses.
 ---@param timeout? any (optional)
 ---@return string?
-function luna.signal.wait(timeout) end
+function luna.event.wait(timeout) end
 
----@class luna.fs
-luna.fs = {}
+---@class luna.filesystem
+luna.filesystem = {}
 
 --- Lua-side wrapper around a [`FileData`] buffer.
 ---@class FileData
@@ -2687,123 +2687,123 @@ function FileHandle:write(data) end
 ---@param path any
 ---@param data any
 ---@return nil
-function luna.fs.append(path, data) end
+function luna.filesystem.append(path, data) end
 
 --- Creates a directory and any missing parent directories in the save area.
 ---@param path any
 ---@return nil
-function luna.fs.createDirectory(path) end
+function luna.filesystem.createDirectory(path) end
 
 --- Returns whether the given file or directory exists.
 ---@param path any
 ---@return boolean
-function luna.fs.exists(path) end
+function luna.filesystem.exists(path) end
 
 --- Returns a table containing the names of every file and subdirectory in the given path.
 ---@param path any
 ---@return table
-function luna.fs.getDirectoryItems(path) end
+function luna.filesystem.getDirectoryItems(path) end
 
 --- Returns the identity string used to locate the game's save directory.
 ---@return string
-function luna.fs.getIdentity() end
+function luna.filesystem.getIdentity() end
 
 --- Returns a table of metadata for a path, or nil if the path does not exist.
 ---@param path any
 ---@return table?
-function luna.fs.getInfo(path) end
+function luna.filesystem.getInfo(path) end
 
 --- Returns the sandboxed save data directory path.
 ---@return string
-function luna.fs.getSaveDirectory() end
+function luna.filesystem.getSaveDirectory() end
 
 --- Returns the absolute path of the directory the game was loaded from.
 ---@return string
-function luna.fs.getSource() end
+function luna.filesystem.getSource() end
 
 --- Returns the current user's home directory path.
 ---@return string
-function luna.fs.getUserDirectory() end
+function luna.filesystem.getUserDirectory() end
 
 --- Returns the current working directory path.
 ---@return string
-function luna.fs.getWorkingDirectory() end
+function luna.filesystem.getWorkingDirectory() end
 
 --- Returns whether the given path is a directory.
 ---@param path any
 ---@return boolean
-function luna.fs.isDirectory(path) end
+function luna.filesystem.isDirectory(path) end
 
 --- Returns whether the given path is a regular file.
 ---@param path any
 ---@return boolean
-function luna.fs.isFile(path) end
+function luna.filesystem.isFile(path) end
 
 --- Returns an iterator function over the lines of a text file.
 ---@param path any
 ---@return function
-function luna.fs.lines(path) end
+function luna.filesystem.lines(path) end
 
 --- Loads and compiles a Lua file from the VFS, returning it as a callable function.
 ---@param path any
 ---@return function
-function luna.fs.load(path) end
+function luna.filesystem.load(path) end
 
 --- Mounts a directory at a virtual path inside the game filesystem.
 ---@param src any
 ---@param mp any
 ---@return boolean
-function luna.fs.mount(src, mp) end
+function luna.filesystem.mount(src, mp) end
 
 --- Loads a file from the VFS into a FileData buffer.
 ---@param path any
 ---@return FileData
-function luna.fs.newFileData(path) end
+function luna.filesystem.newFileData(path) end
 
 --- Opens a file and returns a readable/writable file handle.
 ---@param path any
 ---@param mode any
 ---@return FileHandle
-function luna.fs.openFile(path, mode) end
+function luna.filesystem.openFile(path, mode) end
 
 --- Polls an async load handle, returning status and optional data.
 ---@param handle_id any
 ---@return string
-function luna.fs.pollAsync(handle_id) end
+function luna.filesystem.pollAsync(handle_id) end
 
 --- Reads a text file and returns its contents as a string.
 ---@param path any
 ---@return string
-function luna.fs.read(path) end
+function luna.filesystem.read(path) end
 
 --- Starts loading a file in the background and returns an opaque handle.
 ---@param path any
 ---@return integer
-function luna.fs.readAsync(path) end
+function luna.filesystem.readAsync(path) end
 
 --- Permanently deletes a file or empty directory from the save directory.
 ---@param path any
 ---@return nil
-function luna.fs.remove(path) end
+function luna.filesystem.remove(path) end
 
 --- Sets the identity string that names the game's sandboxed save-data directory.
 ---@param name any
 ---@return nil
-function luna.fs.setIdentity(name) end
+function luna.filesystem.setIdentity(name) end
 
 --- Removes a virtual mount layer by mountpoint.
 ---@param mp any
 ---@return boolean
-function luna.fs.unmount(mp) end
+function luna.filesystem.unmount(mp) end
 
 --- Writes a string to a file in the save directory.
 ---@param path any
 ---@param data any
 ---@return nil
-function luna.fs.write(path, data) end
+function luna.filesystem.write(path, data) end
 
----@class luna.postfx
-luna.postfx = {}
+---@class luna.fx
+luna.fx = {}
 
 --- Lua-side wrapper around [`ImageEffect`].
 ---@class ImageEffect
@@ -2904,7 +2904,7 @@ function Overlay:getLightningColor() end
 ---@return number
 function Overlay:getShakeOffset() end
 
---- Returns the current simulated time-of-day (0�24).
+--- Returns the current simulated time-of-day (0–24).
 ---@return number
 function Overlay:getTimeOfDay() end
 
@@ -3017,7 +3017,7 @@ function Overlay:setCloudSpeed(v) end
 ---@return nil
 function Overlay:setFilmGrainEnabled(v) end
 
---- Sets the film-grain noise intensity (0.0�1.0).
+--- Sets the film-grain noise intensity (0.0–1.0).
 ---@param v any
 ---@return nil
 function Overlay:setFilmGrainIntensity(v) end
@@ -3037,12 +3037,12 @@ function Overlay:setFogEnabled(v) end
 ---@return nil
 function Overlay:setHeatHazeEnabled(v) end
 
---- Sets the heat-haze distortion intensity (0.0�1.0).
+--- Sets the heat-haze distortion intensity (0.0–1.0).
 ---@param v any
 ---@return nil
 function Overlay:setHeatHazeIntensity(v) end
 
---- Sets the simulated time-of-day (0�24) which drives ambient colour.
+--- Sets the simulated time-of-day (0–24) which drives ambient colour.
 ---@param v any
 ---@return nil
 function Overlay:setTimeOfDay(v) end
@@ -3052,7 +3052,7 @@ function Overlay:setTimeOfDay(v) end
 ---@return nil
 function Overlay:setVignetteEnabled(v) end
 
---- Sets the vignette darkening strength (0.0�1.0).
+--- Sets the vignette darkening strength (0.0–1.0).
 ---@param v any
 ---@return nil
 function Overlay:setVignetteStrength(v) end
@@ -3067,12 +3067,12 @@ function Overlay:setWeather(name) end
 ---@return nil
 function Overlay:setWeatherEnabled(v) end
 
---- Sets the particle spawn rate multiplier (0.0�1.0).
+--- Sets the particle spawn rate multiplier (0.0–1.0).
 ---@param v any
 ---@return nil
 function Overlay:setWeatherIntensity(v) end
 
---- Sets the wind direction in radians (0 = right, ?/2 = down).
+--- Sets the wind direction in radians (0 = right, π/2 = down).
 ---@param v any
 ---@return nil
 function Overlay:setWindDirection(v) end
@@ -3207,35 +3207,35 @@ function PostFxStack:resize(w, h) end
 --- Creates a custom shader post-processing effect.
 ---@param shader_id any
 ---@return PostFxEffect
-function luna.postfx.newCustomEffect(shader_id) end
+function luna.fx.newCustomEffect(shader_id) end
 
 --- Creates a new built-in post-processing effect by type name.
 ---@param type_name any
 ---@return PostFxEffect
-function luna.postfx.newEffect(type_name) end
+function luna.fx.newEffect(type_name) end
 
 --- Creates a new per-image effect chain.
 ---@param name any
 ---@return ImageEffect
-function luna.postfx.newImageEffect(name) end
+function luna.fx.newImageEffect(name) end
 
 --- Creates a new screen overlay controller for weather, flash, shake, and fade effects.
 ---@param w any
 ---@param h any
 ---@return Overlay
-function luna.postfx.newOverlay(w, h) end
+function luna.fx.newOverlay(w, h) end
 
 --- Creates a new screen overlay controller for weather, flash, shake, and fade effects.
 ---@param w? any (optional)
 ---@param h? any (optional)
 ---@return Overlay
-function luna.postfx.newOverlay(w, h) end
+function luna.fx.newOverlay(w, h) end
 
 --- Creates a new post-processing pipeline stack.
 ---@param w any
 ---@param h any
 ---@return PostFxStack
-function luna.postfx.newStack(w, h) end
+function luna.fx.newStack(w, h) end
 
 ---@class luna.graph
 luna.graph = {}
@@ -3701,8 +3701,8 @@ function Node:setType(t) end
 ---@return Graph
 function luna.graph.newGraph() end
 
----@class luna.gfx
-luna.gfx = {}
+---@class luna.graphics
+luna.graphics = {}
 
 --- Lua-side handle to an off-screen render target stored in SharedState.
 ---@class Canvas
@@ -3921,7 +3921,7 @@ function SpriteBatch:typeOf() end
 
 --- Applies an affine transform matrix.
 ---@param mat any
-function luna.gfx.applyTransform(mat) end
+function luna.graphics.applyTransform(mat) end
 
 --- Draws a partial circle arc at the given position with specified radius and angle range.
 ---@param mode string
@@ -3931,24 +3931,24 @@ function luna.gfx.applyTransform(mat) end
 ---@param angle1 number
 ---@param angle2 number
 ---@param segments? integer? (optional)
-function luna.gfx.arc(mode, x, y, radius, angle1, angle2, segments) end
+function luna.graphics.arc(mode, x, y, radius, angle1, angle2, segments) end
 
 --- Draws a circle.
 ---@param mode any
 ---@param x any
 ---@param y any
 ---@param radius any
-function luna.gfx.circle(mode, x, y, radius) end
+function luna.graphics.circle(mode, x, y, radius) end
 
 --- Clears the draw command queue (resets the screen).
 ---@param r? any (optional)
 ---@param g? any (optional)
 ---@param b? any (optional)
-function luna.gfx.clear(r, g, b) end
+function luna.graphics.clear(r, g, b) end
 
 --- Draws a drawable (Image, Canvas, SpriteBatch, Mesh) at the given position.
 ---@param args any
-function luna.gfx.draw(args) end
+function luna.graphics.draw(args) end
 
 --- Draws a portion of an image defined by a Quad.
 ---@param image Image
@@ -3960,7 +3960,7 @@ function luna.gfx.draw(args) end
 ---@param sy? number? (optional)
 ---@param ox? number? (optional)
 ---@param oy? number? (optional)
-function luna.gfx.drawq(image, quad, x, y, r, sx, sy, ox, oy) end
+function luna.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy) end
 
 --- Draws an ellipse.
 ---@param mode any
@@ -3968,137 +3968,137 @@ function luna.gfx.drawq(image, quad, x, y, r, sx, sy, ox, oy) end
 ---@param y any
 ---@param rx any
 ---@param ry any
-function luna.gfx.ellipse(mode, x, y, rx, ry) end
+function luna.graphics.ellipse(mode, x, y, rx, ry) end
 
 --- Returns the current background color.
 ---@return number
-function luna.gfx.getBackgroundColor() end
+function luna.graphics.getBackgroundColor() end
 
 --- Returns the current blend mode as a string.
 ---@return string
-function luna.gfx.getBlendMode() end
+function luna.graphics.getBlendMode() end
 
 --- Returns the current canvas, or nil if drawing to screen.
 ---@return Canvas?
-function luna.gfx.getCanvas() end
+function luna.graphics.getCanvas() end
 
 --- Returns the dimensions of a canvas.
 ---@param ud any
 ---@return integer
-function luna.gfx.getCanvasSize(ud) end
+function luna.graphics.getCanvasSize(ud) end
 
 --- Returns the current drawing color.
 ---@return number
-function luna.gfx.getColor() end
+function luna.graphics.getColor() end
 
 --- Returns the current color mask.
 ---@return boolean
-function luna.gfx.getColorMask() end
+function luna.graphics.getColorMask() end
 
 --- Returns the default texture filter mode.
 ---@return string
-function luna.gfx.getDefaultFilter() end
+function luna.graphics.getDefaultFilter() end
 
 --- Returns window width and height.
 ---@return integer
-function luna.gfx.getDimensions() end
+function luna.graphics.getDimensions() end
 
 --- Returns the currently active font, or nil.
 ---@return Font?
-function luna.gfx.getFont() end
+function luna.graphics.getFont() end
 
 --- Returns the ascent of the given font.
 ---@param ud any
 ---@return number
-function luna.gfx.getFontAscent(ud) end
+function luna.graphics.getFontAscent(ud) end
 
 --- Returns the descent of the given font.
 ---@param ud any
 ---@return number
-function luna.gfx.getFontDescent(ud) end
+function luna.graphics.getFontDescent(ud) end
 
 --- Returns the line height of the given font.
 ---@param ud any
 ---@return number
-function luna.gfx.getFontHeight(ud) end
+function luna.graphics.getFontHeight(ud) end
 
 --- Returns the pixel width of text in the given font.
 ---@param ud any
 ---@param text any
 ---@return number
-function luna.gfx.getFontWidth(ud, text) end
+function luna.graphics.getFontWidth(ud, text) end
 
 --- Returns wrapped lines and the maximum line width.
 ---@param text any
 ---@param limit any
 ---@return table
-function luna.gfx.getFontWrap(text, limit) end
+function luna.graphics.getFontWrap(text, limit) end
 
 --- Returns the window height in pixels.
 ---@return integer
-function luna.gfx.getHeight() end
+function luna.graphics.getHeight() end
 
 --- Returns the current line width.
 ---@return number
-function luna.gfx.getLineWidth() end
+function luna.graphics.getLineWidth() end
 
 --- Returns the current point size.
 ---@return number
-function luna.gfx.getPointSize() end
+function luna.graphics.getPointSize() end
 
 --- Returns the active scissor rectangle, or nothing.
 ---@return number?
-function luna.gfx.getScissor() end
+function luna.graphics.getScissor() end
 
 --- Returns the active shader, or nil.
 ---@return Shader?
-function luna.gfx.getShader() end
+function luna.graphics.getShader() end
 
 --- Returns a table of renderer statistics.
 ---@return table
-function luna.gfx.getStats() end
+function luna.graphics.getStats() end
 
 --- Returns the window width in pixels.
 ---@return integer
-function luna.gfx.getWidth() end
+function luna.graphics.getWidth() end
 
 --- Intersects the current scissor with a new rectangle.
 ---@param x any
 ---@param y any
 ---@param w any
 ---@param h any
-function luna.gfx.intersectScissor(x, y, w, h) end
+function luna.graphics.intersectScissor(x, y, w, h) end
 
 --- Returns whether wireframe mode is active.
 ---@return boolean
-function luna.gfx.isWireframe() end
+function luna.graphics.isWireframe() end
 
 --- Draws a line between two points.
 ---@param args any
-function luna.gfx.line(args) end
+function luna.graphics.line(args) end
 
 --- Creates an off-screen render canvas.
 ---@param width any
 ---@param height any
 ---@return Canvas
-function luna.gfx.newCanvas(width, height) end
+function luna.graphics.newCanvas(width, height) end
 
 --- Loads a TTF/OTF font from a file.
 ---@param path any
 ---@param size? any (optional)
 ---@return Font
-function luna.gfx.newFont(path, size) end
+function luna.graphics.newFont(path, size) end
 
 --- Loads an image from a file path or creates one from ImageData.
 ---@param arg any
 ---@return Image
-function luna.gfx.newImage(arg) end
+function luna.graphics.newImage(arg) end
 
 --- Creates a custom mesh from vertex data.
 ---@param verts any
 ---@param mode? any (optional)
 ---@return Mesh
-function luna.gfx.newMesh(verts, mode) end
+function luna.graphics.newMesh(verts, mode) end
 
 --- Creates a new Quad viewport into a texture.
 ---@param x any
@@ -4108,39 +4108,39 @@ function luna.gfx.newMesh(verts, mode) end
 ---@param sw any
 ---@param sh any
 ---@return Quad
-function luna.gfx.newQuad(x, y, w, h, sw, sh) end
+function luna.graphics.newQuad(x, y, w, h, sw, sh) end
 
 --- Compiles a custom WGSL shader and returns its handle.
 ---@param code any
 ---@return Shader
-function luna.gfx.newShader(code) end
+function luna.graphics.newShader(code) end
 
 --- Creates a new sprite batch for the given image.
 ---@param ud any
 ---@param max? any (optional)
 ---@return SpriteBatch
-function luna.gfx.newSpriteBatch(ud, max) end
+function luna.graphics.newSpriteBatch(ud, max) end
 
 --- Resets the transform to the identity.
-function luna.gfx.origin() end
+function luna.graphics.origin() end
 
 --- Draws a list of points.
 ---@param args any
-function luna.gfx.points(args) end
+function luna.graphics.points(args) end
 
 --- Draws a polygon from a list of vertices.
 ---@param args any
-function luna.gfx.polygon(args) end
+function luna.graphics.polygon(args) end
 
 --- Pops the transform from the stack.
-function luna.gfx.pop() end
+function luna.graphics.pop() end
 
 --- Draws text at the given position.
 ---@param text any
 ---@param x? any (optional)
 ---@param y? any (optional)
 ---@param scale? any (optional)
-function luna.gfx.print(text, x, y, scale) end
+function luna.graphics.print(text, x, y, scale) end
 
 --- Draws word-wrapped text within a given width.
 ---@param text any
@@ -4148,10 +4148,10 @@ function luna.gfx.print(text, x, y, scale) end
 ---@param y any
 ---@param limit any
 ---@param align? any (optional)
-function luna.gfx.printf(text, x, y, limit, align) end
+function luna.graphics.printf(text, x, y, limit, align) end
 
 --- Pushes the current transform onto the stack.
-function luna.gfx.push() end
+function luna.graphics.push() end
 
 --- Draws a rectangle.
 ---@param mode string
@@ -4161,95 +4161,95 @@ function luna.gfx.push() end
 ---@param h number
 ---@param rx? number? (optional)
 ---@param ry? number? (optional)
-function luna.gfx.rectangle(mode, x, y, w, h, rx, ry) end
+function luna.graphics.rectangle(mode, x, y, w, h, rx, ry) end
 
 --- Rotates the coordinate system.
 ---@param angle any
-function luna.gfx.rotate(angle) end
+function luna.graphics.rotate(angle) end
 
 --- Queues a screenshot to be saved after the current frame.
 ---@param path any
-function luna.gfx.saveScreenshot(path) end
+function luna.graphics.saveScreenshot(path) end
 
 --- Scales the coordinate system.
 ---@param sx any
 ---@param sy? any (optional)
-function luna.gfx.scale(sx, sy) end
+function luna.graphics.scale(sx, sy) end
 
 --- Sets the background clear color.
 ---@param r any
 ---@param g any
 ---@param b any
-function luna.gfx.setBackgroundColor(r, g, b) end
+function luna.graphics.setBackgroundColor(r, g, b) end
 
 --- Sets the blend mode for drawing.
 ---@param mode any
-function luna.gfx.setBlendMode(mode) end
+function luna.graphics.setBlendMode(mode) end
 
 --- Sets the active render target to a Canvas, or back to the screen.
 ---@param ud? any (optional)
-function luna.gfx.setCanvas(ud) end
+function luna.graphics.setCanvas(ud) end
 
 --- Sets the current drawing color.
 ---@param r any
 ---@param g any
 ---@param b any
 ---@param a? any (optional)
-function luna.gfx.setColor(r, g, b, a) end
+function luna.graphics.setColor(r, g, b, a) end
 
 --- Sets which RGBA channels are written. Reset with no args.
 ---@param args any
-function luna.gfx.setColorMask(args) end
+function luna.graphics.setColorMask(args) end
 
 --- Sets the default texture filter mode.
 ---@param min any
 ---@param mag any
 ---@param anisotropy? any (optional)
-function luna.gfx.setDefaultFilter(min, mag, anisotropy) end
+function luna.graphics.setDefaultFilter(min, mag, anisotropy) end
 
 --- Sets the active font for print calls.
 ---@param ud any
-function luna.gfx.setFont(ud) end
+function luna.graphics.setFont(ud) end
 
 --- Sets the line width for outline drawing.
 ---@param w any
-function luna.gfx.setLineWidth(w) end
+function luna.graphics.setLineWidth(w) end
 
 --- Sets the point diameter in pixels.
 ---@param size any
-function luna.gfx.setPointSize(size) end
+function luna.graphics.setPointSize(size) end
 
 --- Restricts drawing to a rectangle, or clears scissor if no args.
 ---@param args any
-function luna.gfx.setScissor(args) end
+function luna.graphics.setScissor(args) end
 
 --- Sets the active shader, or clears it.
 ---@param ud? any (optional)
-function luna.gfx.setShader(ud) end
+function luna.graphics.setShader(ud) end
 
 --- Sets the stencil comparison test, or disables stencil testing.
 ---@param compare? any (optional)
 ---@param value? any (optional)
-function luna.gfx.setStencilTest(compare, value) end
+function luna.graphics.setStencilTest(compare, value) end
 
 --- Enables or disables wireframe rendering.
 ---@param enabled any
-function luna.gfx.setWireframe(enabled) end
+function luna.graphics.setWireframe(enabled) end
 
 --- Shears the coordinate system.
 ---@param kx any
 ---@param ky any
-function luna.gfx.shear(kx, ky) end
+function luna.graphics.shear(kx, ky) end
 
 --- Begins stencil writing with the given action and value.
 ---@param action? any (optional)
 ---@param value? any (optional)
-function luna.gfx.stencil(action, value) end
+function luna.graphics.stencil(action, value) end
 
 --- Translates the coordinate system.
 ---@param x any
 ---@param y any
-function luna.gfx.translate(x, y) end
+function luna.graphics.translate(x, y) end
 
 --- Draws a triangle.
 ---@param mode any
@@ -4259,10 +4259,10 @@ function luna.gfx.translate(x, y) end
 ---@param y2 any
 ---@param x3 any
 ---@param y3 any
-function luna.gfx.triangle(mode, x1, y1, x2, y2, x3, y3) end
+function luna.graphics.triangle(mode, x1, y1, x2, y2, x3, y3) end
 
----@class luna.ui
-luna.ui = {}
+---@class luna.gui
+luna.gui = {}
 
 --- Adds Accordion-specific methods (1-based sections in Lua).
 ---@class Accordion
@@ -5635,87 +5635,87 @@ function Tree_View:toggleNode(index) end
 --- Adds a child widget to this container.
 ---@param child any
 ---@return nil
-function luna.ui.addChild(child) end
+function luna.gui.addChild(child) end
 
 --- Removes all anchor constraints.
 ---@return nil
-function luna.ui.clearAnchor() end
+function luna.gui.clearAnchor() end
 
 --- Returns whether (x, y) is inside this widget.
 ---@param x any
 ---@param y any
 ---@return boolean
-function luna.ui.containsPoint(x, y) end
+function luna.gui.containsPoint(x, y) end
 
 --- Recursively searches for a widget by id starting from this widget.
 ---@param id any
 ---@return table
-function luna.ui.findById(id) end
+function luna.gui.findById(id) end
 
 --- Returns the number of children in this container.
 ---@return number
-function luna.ui.getChildCount() end
+function luna.gui.getChildCount() end
 
 --- Returns the flex-grow factor.
 ---@return number
-function luna.ui.getFlexGrow() end
+function luna.gui.getFlexGrow() end
 
 --- Returns the flex-shrink factor.
 ---@return number
-function luna.ui.getFlexShrink() end
+function luna.gui.getFlexShrink() end
 
 --- Returns the widget string identifier.
 ---@return string
-function luna.ui.getId() end
+function luna.gui.getId() end
 
 --- Returns the widget margin (top, right, bottom, left).
 ---@return number
-function luna.ui.getMargin() end
+function luna.gui.getMargin() end
 
 --- Returns the maximum widget size.
 ---@return number
-function luna.ui.getMaxSize() end
+function luna.gui.getMaxSize() end
 
 --- Returns the minimum widget size.
 ---@return number
-function luna.ui.getMinSize() end
+function luna.gui.getMinSize() end
 
 --- Returns the widget padding (top, right, bottom, left).
 ---@return number
-function luna.ui.getPadding() end
+function luna.gui.getPadding() end
 
 --- Returns the widget position.
 ---@return number
-function luna.ui.getPosition() end
+function luna.gui.getPosition() end
 
 --- Returns the widget size.
 ---@return number
-function luna.ui.getSize() end
+function luna.gui.getSize() end
 
 --- Returns the widget interaction state name.
 ---@return string
-function luna.ui.getState() end
+function luna.gui.getState() end
 
 --- Returns the widget tooltip text.
 ---@return string
-function luna.ui.getTooltip() end
+function luna.gui.getTooltip() end
 
 --- Returns the widget z-order.
 ---@return number
-function luna.ui.getZOrder() end
+function luna.gui.getZOrder() end
 
 --- Returns whether the widget is enabled.
 ---@return boolean
-function luna.ui.isEnabled() end
+function luna.gui.isEnabled() end
 
 --- Returns whether the widget is visible.
 ---@return boolean
-function luna.ui.isVisible() end
+function luna.gui.isVisible() end
 
 --- Removes a child widget from this container.
 ---@param child any
 ---@return nil
-function luna.ui.removeChild(child) end
+function luna.gui.removeChild(child) end
 
 --- Sets anchor edges (left, top, right, bottom).
 ---@param left number
@@ -5723,33 +5723,33 @@ function luna.ui.removeChild(child) end
 ---@param right number
 ---@param bottom number
 ---@return nil
-function luna.ui.setAnchor(left, top, right, bottom) end
+function luna.gui.setAnchor(left, top, right, bottom) end
 
 --- Sets center anchor offsets.
 ---@param cx? any (optional)
 ---@param cy? any (optional)
 ---@return nil
-function luna.ui.setAnchorCenter(cx, cy) end
+function luna.gui.setAnchorCenter(cx, cy) end
 
 --- Sets whether the widget is enabled.
 ---@param v any
 ---@return nil
-function luna.ui.setEnabled(v) end
+function luna.gui.setEnabled(v) end
 
 --- Sets the flex-grow factor.
 ---@param grow any
 ---@return nil
-function luna.ui.setFlexGrow(grow) end
+function luna.gui.setFlexGrow(grow) end
 
 --- Sets the flex-shrink factor.
 ---@param shrink any
 ---@return nil
-function luna.ui.setFlexShrink(shrink) end
+function luna.gui.setFlexShrink(shrink) end
 
 --- Sets the widget string identifier.
 ---@param id any
 ---@return nil
-function luna.ui.setId(id) end
+function luna.gui.setId(id) end
 
 --- Sets widget margin (CSS-like: top, right?, bottom?, left?).
 ---@param top any
@@ -5757,34 +5757,34 @@ function luna.ui.setId(id) end
 ---@param bottom? any (optional)
 ---@param left? any (optional)
 ---@return nil
-function luna.ui.setMargin(top, right, bottom, left) end
+function luna.gui.setMargin(top, right, bottom, left) end
 
 --- Sets the maximum widget size.
 ---@param w any
 ---@param h any
 ---@return nil
-function luna.ui.setMaxSize(w, h) end
+function luna.gui.setMaxSize(w, h) end
 
 --- Sets the minimum widget size.
 ---@param w any
 ---@param h any
 ---@return nil
-function luna.ui.setMinSize(w, h) end
+function luna.gui.setMinSize(w, h) end
 
 --- Registers a callback invoked when this widget's value changes.
 ---@param f any
 ---@return nil
-function luna.ui.setOnChange(f) end
+function luna.gui.setOnChange(f) end
 
 --- Registers a callback invoked when this widget is clicked.
 ---@param f any
 ---@return nil
-function luna.ui.setOnClick(f) end
+function luna.gui.setOnClick(f) end
 
 --- Stores a custom draw callback for later invocation.
 ---@param f any
 ---@return nil
-function luna.ui.setOnDraw(f) end
+function luna.gui.setOnDraw(f) end
 
 --- Sets widget padding (CSS-like: top, right?, bottom?, left?).
 ---@param top any
@@ -5792,37 +5792,37 @@ function luna.ui.setOnDraw(f) end
 ---@param bottom? any (optional)
 ---@param left? any (optional)
 ---@return nil
-function luna.ui.setPadding(top, right, bottom, left) end
+function luna.gui.setPadding(top, right, bottom, left) end
 
 --- Sets the widget position.
 ---@param x any
 ---@param y any
 ---@return nil
-function luna.ui.setPosition(x, y) end
+function luna.gui.setPosition(x, y) end
 
 --- Sets the widget size.
 ---@param w any
 ---@param h any
 ---@return nil
-function luna.ui.setSize(w, h) end
+function luna.gui.setSize(w, h) end
 
 --- Sets the widget tooltip text.
 ---@param text any
 ---@return nil
-function luna.ui.setTooltip(text) end
+function luna.gui.setTooltip(text) end
 
 --- Sets widget visibility.
 ---@param v any
 ---@return nil
-function luna.ui.setVisible(v) end
+function luna.gui.setVisible(v) end
 
 --- Sets the widget z-order for draw sorting.
 ---@param z any
 ---@return nil
-function luna.ui.setZOrder(z) end
+function luna.gui.setZOrder(z) end
 
----@class luna.img
-luna.img = {}
+---@class luna.image
+luna.image = {}
 
 --- Lua-side wrapper around [`CompressedImageData`].
 ---@class CompressedImageData
@@ -5851,17 +5851,17 @@ function CompressedImageData:getWidth() end
 --- Returns true if the file at the given path is a DDS file.
 ---@param filename any
 ---@return boolean
-function luna.img.isCompressed(filename) end
+function luna.image.isCompressed(filename) end
 
 --- Loads compressed texture data from a DDS file.
 ---@param filename any
 ---@return CompressedImageData
-function luna.img.newCompressedData(filename) end
+function luna.image.newCompressedData(filename) end
 
 --- Creates a new blank ImageData or loads one from a file.
 ---@param args any
 ---@return ImageData
-function luna.img.newImageData(args) end
+function luna.image.newImageData(args) end
 
 ---@class luna.input
 luna.input = {}
@@ -6386,7 +6386,7 @@ function Occluder:setEnabled(b) end
 ---@return nil
 function Occluder:setLightMask(mask) end
 
---- Sets the shadow opacity (0.0�1.0).
+--- Sets the shadow opacity (0.0–1.0).
 ---@param o any
 ---@return nil
 function Occluder:setOpacity(o) end
@@ -6484,7 +6484,7 @@ function luna.light.setGroupEnabled(group_id, enabled) end
 ---@return nil
 function luna.light.setGroupIntensity(group_id, intensity) end
 
---- Sets the maximum number of lights processed per frame (clamped 1�256).
+--- Sets the maximum number of lights processed per frame (clamped 1–256).
 ---@param n any
 ---@return nil
 function luna.light.setMaxLights(n) end
@@ -6892,7 +6892,7 @@ function luna.math.fbm(x, y, seed, octaves, lac, gain) end
 ---@return number
 function luna.math.gammaToLinear(c) end
 
---- Back ease-in � overshoots slightly before settling at the target.
+--- Back ease-in — overshoots slightly before settling at the target.
 ---@param t any
 ---@return number
 function luna.math.inBack(t) end
@@ -6902,7 +6902,7 @@ function luna.math.inBack(t) end
 ---@return number
 function luna.math.inBounce(t) end
 
---- Cubic ease-in � acceleration starts slowly then increases sharply.
+--- Cubic ease-in — acceleration starts slowly then increases sharply.
 ---@param t any
 ---@return number
 function luna.math.inCubic(t) end
@@ -7023,7 +7023,7 @@ function luna.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky) end
 ---@return Tween
 function luna.math.newTween(duration, easing_name) end
 
---- Back ease-out � overshoots the target then snaps back into place.
+--- Back ease-out — overshoots the target then snaps back into place.
 ---@param t any
 ---@return number
 function luna.math.outBack(t) end
@@ -7600,8 +7600,8 @@ function NetworkHost:setChannelLimit(limit) end
 ---@return NetworkHost
 function luna.network.newHost(opts) end
 
----@class luna.particles
-luna.particles = {}
+---@class luna.particle
+luna.particle = {}
 
 --- Lua-side handle to a particle system stored in SharedState.
 ---@class ParticleSystem
@@ -7721,13 +7721,13 @@ function Trail:update(dt) end
 --- Creates a new particle system and stores it in the engine pool.
 ---@param config? any (optional)
 ---@return ParticleSystem
-function luna.particles.newSystem(config) end
+function luna.particle.newSystem(config) end
 
 --- Creates a new trail ribbon effect.
 ---@param lifetime any
 ---@param start_width any
 ---@return Trail
-function luna.particles.newTrail(lifetime, start_width) end
+function luna.particle.newTrail(lifetime, start_width) end
 
 ---@class luna.pathfinding
 luna.pathfinding = {}
@@ -7800,7 +7800,7 @@ function FlowField:getTargets() end
 ---@return boolean
 function FlowField:isCalculated() end
 
---- Lua-side wrapper around a [`NavGrid`] with optional HPA? abstract graph.
+--- Lua-side wrapper around a [`NavGrid`] with optional HPA★ abstract graph.
 ---@class NavGrid
 local NavGrid = {}
 
@@ -7813,7 +7813,7 @@ function NavGrid:clearDirty() end
 ---@return nil
 function NavGrid:fill(cost) end
 
---- Returns the current HPA? chunk size.
+--- Returns the current HPA★ chunk size.
 ---@return integer
 function NavGrid:getChunkSize() end
 
@@ -7850,7 +7850,7 @@ function NavGrid:isBlocked(x, y) end
 ---@return nil
 function NavGrid:loadFromString(data) end
 
---- Rebuilds the HPA? abstract graph from the current grid state.
+--- Rebuilds the HPA★ abstract graph from the current grid state.
 ---@return nil
 function NavGrid:rebuildAbstract() end
 
@@ -7858,7 +7858,7 @@ function NavGrid:rebuildAbstract() end
 ---@return string
 function NavGrid:saveToString() end
 
---- Sets the HPA? chunk size.
+--- Sets the HPA★ chunk size.
 ---@param size any
 ---@return nil
 function NavGrid:setChunkSize(size) end
@@ -7875,7 +7875,7 @@ function NavGrid:setCost(x, y, cost) end
 ---@return nil
 function NavGrid:setDiagonalMode(mode) end
 
---- Records a dirty rectangle for incremental HPA? updates (1-based coordinates).
+--- Records a dirty rectangle for incremental HPA★ updates (1-based coordinates).
 ---@param x any
 ---@param y any
 ---@param w any
@@ -7883,7 +7883,7 @@ function NavGrid:setDiagonalMode(mode) end
 ---@return nil
 function NavGrid:setDirty(x, y, w, h) end
 
---- Lua-side wrapper around a [`PathGrid`] (A? weighted grid with per-cell cost).
+--- Lua-side wrapper around a [`PathGrid`] (A★ weighted grid with per-cell cost).
 ---@class PathGrid
 local PathGrid = {}
 
@@ -8833,7 +8833,7 @@ function DepthSorter:sort() end
 ---@return nil
 function luna.scene.clear() end
 
---- Draws all scenes in the stack from bottom to top.
+--- Draws all scenes in the stack from bottom to top (legacy name; prefer `render`).
 ---@return nil
 function luna.scene.draw() end
 
@@ -8896,6 +8896,21 @@ function luna.scene.pop(transition, duration) end
 ---@return boolean
 function luna.scene.popTo(name) end
 
+--- Calls `scene:ready(self)` on the top scene if not yet fired, then `scene:process(dt)`.
+---@param dt any
+---@return nil
+function luna.scene.process(dt) end
+
+--- Calls `scene:process_late(dt)` on the topmost scene (after process, before render).
+---@param dt any
+---@return nil
+function luna.scene.processLate(dt) end
+
+--- Calls `scene:process_physics(dt)` on the topmost scene (fixed timestep).
+---@param dt any
+---@return nil
+function luna.scene.processPhysics(dt) end
+
 --- Pushes a scene table onto the stack with an optional transition.
 ---@param scene table
 ---@param transition? string? (optional)
@@ -8914,6 +8929,14 @@ function luna.scene.registerScene(name, scene) end
 ---@param key any
 ---@return nil
 function luna.scene.removeData(key) end
+
+--- Draws all scenes in the stack from bottom to top.
+---@return nil
+function luna.scene.render() end
+
+--- Draws UI overlay for all scenes in the stack from bottom to top.
+---@return nil
+function luna.scene.renderUi() end
 
 --- Stores a value in the inter-scene data store under the given key.
 ---@param key any
@@ -8934,48 +8957,48 @@ function luna.scene.switchTo(scene, transition, duration, params) end
 ---@return nil
 function luna.scene.unregisterScene(name) end
 
---- Updates the top scene and any active transition.
+--- Updates the top scene and any active transition (legacy name; prefer `process`).
 ---@param dt any
 ---@return nil
 function luna.scene.update(dt) end
 
----@class luna.codec
-luna.codec = {}
+---@class luna.serial
+luna.serial = {}
 
 --- Parses a CSV string and returns a sequence of row tables.
 ---@param s any
 ---@param delim? any (optional)
 ---@param headers? any (optional)
 ---@return table
-function luna.codec.fromCsv(s, delim, headers) end
+function luna.serial.fromCsv(s, delim, headers) end
 
 --- Parses a JSON string and returns a Lua table.
 ---@param s any
 ---@return table
-function luna.codec.fromJson(s) end
+function luna.serial.fromJson(s) end
 
 --- Parses a TOML string and returns a Lua table.
 ---@param s any
 ---@return table
-function luna.codec.fromToml(s) end
+function luna.serial.fromToml(s) end
 
 --- Serializes a sequence of row tables to a CSV string.
 ---@param value any
 ---@param delim? any (optional)
 ---@param headers? any (optional)
 ---@return string
-function luna.codec.toCsv(value, delim, headers) end
+function luna.serial.toCsv(value, delim, headers) end
 
 --- Serializes a Lua value to a JSON string.
 ---@param value any
 ---@param pretty? any (optional)
 ---@return string
-function luna.codec.toJson(value, pretty) end
+function luna.serial.toJson(value, pretty) end
 
 --- Serializes a Lua table to a TOML string.
 ---@param value any
 ---@return string
-function luna.codec.toToml(value) end
+function luna.serial.toToml(value) end
 
 ---@class luna.spine
 luna.spine = {}
@@ -9028,101 +9051,101 @@ function Skeleton:updateWorldTransforms() end
 ---@return Skeleton
 function luna.spine.newSkeleton(name) end
 
----@class luna.platform
-luna.platform = {}
+---@class luna.system
+luna.system = {}
 
 --- Returns the CPU architecture string for the current machine.
 ---@return number
-function luna.platform.getArch() end
+function luna.system.getArch() end
 
 --- Returns the command-line arguments as a table.
 ---@return table
-function luna.platform.getArgs() end
+function luna.system.getArgs() end
 
 --- Returns the output table from the most recently completed runBatch call.
----@param handle number ��� Batch handle returned by runBatch.
+---@param handle number ÔÇö Batch handle returned by runBatch.
 ---@return string
-function luna.platform.getBatchResults(handle) end
+function luna.system.getBatchResults(handle) end
 
 --- Returns the current contents of the system clipboard.
 ---@return any
-function luna.platform.getClipboardText() end
+function luna.system.getClipboardText() end
 
 --- Returns whether the debug overlay is currently visible.
-function luna.platform.getDebugOverlay() end
+function luna.system.getDebugOverlay() end
 
 --- Returns the value of the named OS environment variable, or nil if not set.
----@param name number ��� Environment variable name (case-sensitive on Linux/macOS).
+---@param name number ÔÇö Environment variable name (case-sensitive on Linux/macOS).
 ---@return string
-function luna.platform.getEnv(name) end
+function luna.system.getEnv(name) end
 
 --- Returns a table of system information including OS name, CPU model, and installed RAM.
 ---@return table
-function luna.platform.getInfo() end
+function luna.system.getInfo() end
 
 --- Returns the last unhandled error message, or nil.
 ---@return any
-function luna.platform.getLastError() end
+function luna.system.getLastError() end
 
 --- Returns the name of the current minimum log level for runtime messages.
 ---@return any
-function luna.platform.getLogLevel() end
+function luna.system.getLogLevel() end
 
 --- Returns the total amount of installed system RAM in megabytes.
 ---@return number
-function luna.platform.getMemorySize() end
+function luna.system.getMemorySize() end
 
 --- Returns the host operating system name ('Windows', 'Linux', 'macOS').
 ---@return any
-function luna.platform.getOS() end
+function luna.system.getOS() end
 
 --- Returns battery state, percentage charged, and estimated time remaining.
 ---@return number
-function luna.platform.getPowerInfo() end
+function luna.system.getPowerInfo() end
 
 --- Returns an ordered list of the user's preferred locale strings (e.g. 'en-US').
 ---@return string
-function luna.platform.getPreferredLocales() end
+function luna.system.getPreferredLocales() end
 
 --- Returns the number of logical CPU cores available.
 ---@return any
-function luna.platform.getProcessorCount() end
+function luna.system.getProcessorCount() end
 
 --- Returns the Luna2D engine version string.
 ---@return any
-function luna.platform.getVersion() end
+function luna.system.getVersion() end
 
 --- Emit a log message from Lua at the specified level.
 ---@param level any
 ---@param message any
-function luna.platform.log(level, message) end
+function luna.system.log(level, message) end
 
 --- Opens a URL in the system's default browser.
 ---@param url any
 ---@return any
-function luna.platform.openURL(url) end
+function luna.system.openURL(url) end
 
 --- Parses a command-line argument string and returns a structured key/value table.
----@param args string ��� Argument string or table (e.g. '--flag=value --bool').
+---@param args string ÔÇö Argument string or table (e.g. '--flag=value --bool').
 ---@return boolean
-function luna.platform.parseArgs(args) end
+function luna.system.parseArgs(args) end
 
 --- Runs a list of shell commands in parallel and returns immediately without blocking.
----@param commands string ��� Table of command strings to execute concurrently.
+---@param commands string ÔÇö Table of command strings to execute concurrently.
 ---@return number
-function luna.platform.runBatch(commands) end
+function luna.system.runBatch(commands) end
 
 --- Replaces the system clipboard contents with the given string.
 ---@param text any
-function luna.platform.setClipboardText(text) end
+function luna.system.setClipboardText(text) end
 
 --- Shows or hides the FPS/draw-call debug overlay.
 ---@param enabled any
-function luna.platform.setDebugOverlay(enabled) end
+function luna.system.setDebugOverlay(enabled) end
 
 --- Sets the minimum severity level for runtime log messages.
----@param level any ��� One of 'debug', 'info', 'warn', or 'error'.
-function luna.platform.setLogLevel(level) end
+---@param level any ÔÇö One of 'debug', 'info', 'warn', or 'error'.
+function luna.system.setLogLevel(level) end
 
 ---@class luna.terminal
 luna.terminal = {}
@@ -10036,8 +10059,8 @@ function luna.tilemap.toScreenHex(q, r, size) end
 ---@return number
 function luna.tilemap.toScreenIso(tx, ty, tw, th) end
 
----@class luna.time
-luna.time = {}
+---@class luna.timer
+luna.timer = {}
 
 --- Lua-side wrapper around a [`Scheduler`] with per-event callback storage.
 ---@class Scheduler
@@ -10128,36 +10151,45 @@ function Scheduler:update(dt) end
 
 --- Returns the rolling-average frame delta time in seconds.
 ---@return number
-function luna.time.getAverageDelta() end
+function luna.timer.getAverageDelta() end
 
 --- Returns the delta time in seconds for the current frame.
 ---@return number
-function luna.time.getDelta() end
+function luna.timer.getDelta() end
 
 --- Returns the current frames-per-second measurement.
 ---@return number
-function luna.time.getFPS() end
+function luna.timer.getFPS() end
 
 --- Returns the high-resolution elapsed time since engine start in seconds.
 ---@return number
-function luna.time.getMicroTime() end
+function luna.timer.getMicroTime() end
+
+--- Returns the fixed timestep used by `process_physics` callbacks (seconds).
+---@return number
+function luna.timer.getPhysicsDelta() end
 
 --- Returns the total elapsed time since engine start in seconds.
 ---@return number
-function luna.time.getTime() end
+function luna.timer.getTime() end
 
 --- Creates a new independent Scheduler for managing timed callbacks.
 ---@return Scheduler
-function luna.time.newScheduler() end
+function luna.timer.newScheduler() end
+
+--- Sets the fixed timestep for `process_physics` callbacks (seconds).
+---@param dt any
+---@return nil
+function luna.timer.setPhysicsDelta(dt) end
 
 --- Suspends execution for the given number of seconds.
 ---@param seconds any
 ---@return nil
-function luna.time.sleep(seconds) end
+function luna.timer.sleep(seconds) end
 
 --- Advances the timer by one frame, returning the delta time.
 ---@return number
-function luna.time.step() end
+function luna.timer.step() end
 
 ---@class luna.window
 luna.window = {}

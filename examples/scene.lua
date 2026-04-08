@@ -2,29 +2,13 @@
 -- luna.scene — Scene stack, transitions, registry, data store, depth-sorted rendering.
 -- All luna.scene API methods demonstrated with code and comments.
 
--- ── Scene Table Structure ─────────────────────────────────────────────────────
+-- ── Scene Factory (recommended) ───────────────────────────────────────────────
 
--- A scene is a plain Lua table with optional callback methods.
--- The engine calls these methods automatically as scenes are pushed/popped.
---
--- Callbacks:
---   enter(self, params?)     — called when this scene becomes active
---   leave(self)              — called when this scene is removed from the stack
---   pause(self)              — called when a new scene is pushed above this one
---   resume(self)             — called when the scene above is popped off
---   update(self, dt)         — called each frame while this is the active scene
---   draw(self)               — called each frame for rendering
---   drawSorted(self)         — called by a DepthSorter:flush() for depth-ordered objects
-
-local MenuScene = {}
-MenuScene.__index = MenuScene
-
-function MenuScene.new()
-    return setmetatable({}, MenuScene)
-end
+-- luna.scene.define(def) returns a constructor function.
+-- Define methods on the class table, then call ClassName() to create instances.
+local MenuScene = luna.scene.define({})
 
 function MenuScene:enter(params)
-    -- params is whatever was passed as the 4th arg to luna.scene.push()
     print("MenuScene entered", params and params.from or "")
 end
 
@@ -40,44 +24,55 @@ function MenuScene:resume()
     print("MenuScene resumed")
 end
 
-function MenuScene:update(dt)
+function MenuScene:process(dt)
     if luna.keyboard.isDown("return") then
-        luna.scene.switchTo(GameScene.new(), "fade", 0.5, { level = 1 })
+        luna.scene.switchTo(GameScene(), "fade", 0.5, { level = 1 })
     end
 end
 
-function MenuScene:draw()
+function MenuScene:render()
     luna.gfx.print("Press Enter to start", 100, 100)
 end
 
-local GameScene = {}
-GameScene.__index = GameScene
+-- GameScene — another class defined with luna.scene.define()
+local GameScene = luna.scene.define({})
 
-function GameScene.new()
-    return setmetatable({ score = 0 }, GameScene)
+function GameScene:ready()
+    self.score = 0
 end
 
 function GameScene:enter(params)
     print("GameScene entered, level =", params and params.level)
 end
 
-function GameScene:update(dt)
+function GameScene:process(dt)
     if luna.keyboard.isDown("escape") then
         luna.scene.pop("slide_right", 0.3)
     end
 end
 
-function GameScene:draw()
-    luna.gfx.print("Score: " .. self.score, 100, 100)
+function GameScene:render()
+    luna.gfx.print("Score: " .. (self.score or 0), 100, 100)
 end
+
+-- ── One-off scene with luna.scene.new() ───────────────────────────────────────
+
+-- luna.scene.new(def) creates a single scene instance directly.
+-- Use when you need an unnamed, one-time scene.
+local splash = luna.scene.new({
+    ready  = function(self) self.t = 0 end,
+    process= function(self, dt) self.t = self.t + dt; if self.t > 2 then luna.scene.pop() end end,
+    render = function(self) luna.gfx.print("Loading…", 300, 280) end,
+})
 
 -- ── Stack Operations ──────────────────────────────────────────────────────────
 
 -- push(scene, transition?, duration?, params?)
 -- Pushes a scene onto the stack. The previous scene receives pause().
 -- Transition strings: "none", "fade", "slide_left", "slide_right", "slide_up", "slide_down"
-luna.scene.push(MenuScene.new())
-luna.scene.push(GameScene.new(), "fade", 0.4, { level = 1 })
+luna.scene.push(MenuScene())
+luna.scene.push(GameScene(), "fade", 0.4, { level = 1 })
+luna.scene.push(splash)   -- one-off instance, no ()
 
 -- pop(transition?, duration?)
 -- Removes the top scene. The newly revealed scene receives resume().
@@ -85,7 +80,7 @@ luna.scene.pop("none")
 
 -- switchTo(scene, transition?, duration?, params?)
 -- Replaces the top scene in one operation (leave old → enter new).
-luna.scene.switchTo(MenuScene.new(), "slide_left", 0.3)
+luna.scene.switchTo(MenuScene(), "slide_left", 0.3)
 
 -- clear()
 -- Removes all scenes, calling leave() on each in reverse order.
@@ -117,8 +112,8 @@ local progress = luna.scene.getTransitionProgress()
 -- ── Scene Registry ────────────────────────────────────────────────────────────
 
 -- registerScene(name, scene_table) — store a scene by name for deferred push
-luna.scene.registerScene("menu", MenuScene.new())
-luna.scene.registerScene("game", GameScene.new())
+luna.scene.registerScene("menu", MenuScene())
+luna.scene.registerScene("game", GameScene())
 
 -- getRegistered(name) → table? — retrieve by name
 local menu_scene = luna.scene.getRegistered("menu")

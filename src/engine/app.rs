@@ -157,6 +157,12 @@ struct LunaApp {
     // Frame-rate limiting.
     last_frame: Instant,
 
+    // Main-loop pipeline state.
+    /// `true` after the `ready` callback has fired for the first time.
+    ready_fired: bool,
+    /// Accumulator for fixed-timestep `process_physics` callbacks (seconds).
+    physics_accumulator: f64,
+
     // Input tracking for keypressed / keyreleased callbacks.
     prev_mouse: [bool; 5],
     mouse_x: f32,
@@ -248,6 +254,8 @@ impl LunaApp {
             state: None,
             has_game: false,
             last_frame: Instant::now(),
+            ready_fired: false,
+            physics_accumulator: 0.0,
             prev_mouse: [false; 5],
             mouse_x: 0.0,
             mouse_y: 0.0,
@@ -492,6 +500,10 @@ impl LunaApp {
     }
 
     fn init_lua(&mut self) {
+        // Reset per-game pipeline state.
+        self.ready_fired = false;
+        self.physics_accumulator = 0.0;
+
         // Show conf.lua error if present
         if let Some(conf_err) = self.conf_error.take() {
             self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
@@ -516,6 +528,8 @@ impl LunaApp {
         }
         shared_state.window_state.vsync_mode = self.window_vsync_mode;
         shared_state.window = self.window.as_ref().map(Arc::clone);
+        shared_state.physics_fixed_dt =
+            1.0 / self.config.performance.physics_tick_rate.max(1) as f64;
 
         // Initialize viewport state from config.
         {
@@ -803,14 +817,55 @@ impl LunaApp {
             self.auto_screenshot_frame_count += 1;
         }
 
+        // ── 1. ready (fires once, before first process) ─────────────────
+        if !self.ready_fired {
+            self.ready_fired = true;
+            if let Err(e) = call_lua_callback_checked(lua, "ready", ()) {
+                self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                return;
+            }
+        }
+
         let dt = state.borrow().clock.delta();
+
+        // ── 2. process_physics (fixed timestep, may fire 0..N times) ────
+        {
+            let fixed_dt = state.borrow().physics_fixed_dt;
+            self.physics_accumulator += dt;
+            // Safety cap: max 8 physics steps per frame to avoid spiral of death.
+            let max_steps = 8;
+            let mut steps = 0;
+            while self.physics_accumulator >= fixed_dt && steps < max_steps {
+                self.physics_accumulator -= fixed_dt;
+                steps += 1;
+                if let Err(e) = call_lua_callback_checked(lua, "process_physics", fixed_dt) {
+                    self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+                    return;
+                }
+            }
+        }
+
+        // ── 3. process(dt) (variable timestep, once per frame) ──────────
         if let Err(e) = call_lua_callback_checked(lua, "process", dt) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }
 
+        // ── 4. process_late(dt) (after process, before render) ──────────
+        if let Err(e) = call_lua_callback_checked(lua, "process_late", dt) {
+            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+            return;
+        }
+
+        // ── 5. render (main draw pass) ──────────────────────────────────
         state.borrow_mut().draw_commands.clear();
         if let Err(e) = call_lua_callback_checked(lua, "render", ()) {
+            self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
+            return;
+        }
+
+        // ── 6. render_ui (UI/HUD overlay pass) ──────────────────────────
+        if let Err(e) = call_lua_callback_checked(lua, "render_ui", ()) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }

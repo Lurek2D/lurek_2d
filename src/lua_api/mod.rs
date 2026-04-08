@@ -144,8 +144,11 @@ pub mod system_api;
 pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -> LuaResult<Lua> {
     let lua = Lua::new();
 
-    // Create the luna namespace table
+    // Create the luna namespace table and expose it as the `luna` global immediately.
+    // This must happen before any register() call so that inline Lua snippets (e.g.
+    // scene_api.rs) can reference `luna.*` during module registration.
     let luna = lua.create_table()?;
+    lua.globals().set("luna", luna.clone())?;
 
     // event: luna.signal (always registered — mandatory API)
     event_api::register(&lua, &luna, state.clone())?;

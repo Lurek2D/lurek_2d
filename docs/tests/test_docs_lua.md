@@ -7,19 +7,19 @@
 
 ## Tests by Module
 
-### `ai` � 117/118 (99.2%)
+### `ai` — 117/118 (99.2%)
 
 **Uncovered Lua API functions** (1):
 
 - `luna.ai.CommandQueue:getCurrentTarget`
 
-### `animation` � 17/18 (94.4%)
+### `animation` — 17/18 (94.4%)
 
 **Uncovered Lua API functions** (1):
 
 - `luna.animation.Animation:getCurrentFrame`
 
-### `audio` � 127/164 (77.4%)
+### `audio` — 127/164 (77.4%)
 
 **Uncovered Lua API functions** (37):
 
@@ -45,9 +45,9 @@
 - `luna.audio.luna.audio.getSourceCount`
 - *...and 17 more*
 
-### `automation` � 16/16 (100.0%)
+### `automation` — 16/16 (100.0%)
 
-### `camera` � 17/23 (73.9%)
+### `camera` — 17/23 (73.9%)
 
 **Uncovered Lua API functions** (6):
 
@@ -58,9 +58,9 @@
 - `luna.camera.Camera2D:setDeadZone`
 - `luna.camera.Camera2D:setLookAhead`
 
-### `compute` � 43/43 (100.0%)
+### `compute` — 43/43 (100.0%)
 
-### `data` � 20/24 (83.3%)
+### `data` — 20/24 (83.3%)
 
 **Uncovered Lua API functions** (4):
 
@@ -69,9 +69,9 @@
 - `luna.data.DataView:getInt32`
 - `luna.data.luna.data.newByteData`
 
-### `dataframe` � 53/53 (100.0%)
+### `dataframe` — 53/53 (100.0%)
 
-### `entity` � 42/45 (93.3%)
+### `entity` — 42/45 (93.3%)
 
 **Uncovered Lua API functions** (3):
 
@@ -79,100 +79,100 @@
 - `luna.entity.Universe:getBitmapTagBit`
 - `luna.entity.Universe:killRecursive`
 
-### `event` � 14/14 (100.0%)
+### `event` — 14/14 (100.0%)
 
-### `filesystem` � 22/37 (59.5%)
+### `filesystem` — 22/37 (59.5%)
 
 **Uncovered Lua API functions** (15):
 
-- `luna.fs.FileData:getFilename`
-- `luna.fs.FileHandle:readLine`
-- `luna.fs.FileHandle:isEOF`
-- `luna.fs.luna.fs.openFile`
-- `luna.fs.luna.fs.getDirectoryItems`
-- `luna.fs.luna.fs.isFile`
-- `luna.fs.luna.fs.isDirectory`
-- `luna.fs.luna.fs.createDirectory`
-- `luna.fs.luna.fs.getSaveDirectory`
-- `luna.fs.luna.fs.getWorkingDirectory`
-- `luna.fs.luna.fs.getUserDirectory`
-- `luna.fs.luna.fs.getIdentity`
-- `luna.fs.luna.fs.setIdentity`
-- `luna.fs.luna.fs.readAsync`
-- `luna.fs.luna.fs.pollAsync`
+- `luna.filesystem.FileData:getFilename`
+- `luna.filesystem.FileHandle:readLine`
+- `luna.filesystem.FileHandle:isEOF`
+- `luna.filesystem.luna.filesystem.openFile`
+- `luna.filesystem.luna.filesystem.getDirectoryItems`
+- `luna.filesystem.luna.filesystem.isFile`
+- `luna.filesystem.luna.filesystem.isDirectory`
+- `luna.filesystem.luna.filesystem.createDirectory`
+- `luna.filesystem.luna.filesystem.getSaveDirectory`
+- `luna.filesystem.luna.filesystem.getWorkingDirectory`
+- `luna.filesystem.luna.filesystem.getUserDirectory`
+- `luna.filesystem.luna.filesystem.getIdentity`
+- `luna.filesystem.luna.filesystem.setIdentity`
+- `luna.filesystem.luna.filesystem.readAsync`
+- `luna.filesystem.luna.filesystem.pollAsync`
 
-### `fx` � 86/92 (93.5%)
+### `fx` — 86/92 (93.5%)
 
 **Uncovered Lua API functions** (6):
 
-- `luna.postfx.PostFxStack:getEnabledEffects`
-- `luna.postfx.ImageEffect:removeByIndex`
-- `luna.postfx.ImageEffect:removeByName`
-- `luna.postfx.Overlay:getFlashAlpha`
-- `luna.postfx.Overlay:getLightningAlpha`
-- `luna.postfx.luna.postfx.newCustomEffect`
+- `luna.fx.PostFxStack:getEnabledEffects`
+- `luna.fx.ImageEffect:removeByIndex`
+- `luna.fx.ImageEffect:removeByName`
+- `luna.fx.Overlay:getFlashAlpha`
+- `luna.fx.Overlay:getLightningAlpha`
+- `luna.fx.luna.fx.newCustomEffect`
 
-### `graph` � 100/100 (100.0%)
+### `graph` — 100/100 (100.0%)
 
-### `graphics` � 69/110 (62.7%)
+### `graphics` — 69/110 (62.7%)
 
 **Uncovered Lua API functions** (41):
 
-- `luna.gfx.Font:getLineHeight`
-- `luna.gfx.Font:setLineHeight`
-- `luna.gfx.Font:getAscent`
-- `luna.gfx.Font:getDescent`
-- `luna.gfx.Font:getWrap`
-- `luna.gfx.Mesh:getVertexCount`
-- `luna.gfx.Mesh:getVertex`
-- `luna.gfx.Mesh:setVertex`
-- `luna.gfx.Shader:hasUniform`
-- `luna.gfx.Quad:getTextureDimensions`
-- `luna.gfx.luna.gfx.getBackgroundColor`
-- `luna.gfx.luna.gfx.drawq`
-- `luna.gfx.luna.gfx.printf`
-- `luna.gfx.luna.gfx.setPointSize`
-- `luna.gfx.luna.gfx.getPointSize`
-- `luna.gfx.luna.gfx.newFont`
-- `luna.gfx.luna.gfx.getFontWidth`
-- `luna.gfx.luna.gfx.getFontHeight`
-- `luna.gfx.luna.gfx.getFontWrap`
-- `luna.gfx.luna.gfx.newCanvas`
+- `luna.graphics.Font:getLineHeight`
+- `luna.graphics.Font:setLineHeight`
+- `luna.graphics.Font:getAscent`
+- `luna.graphics.Font:getDescent`
+- `luna.graphics.Font:getWrap`
+- `luna.graphics.Mesh:getVertexCount`
+- `luna.graphics.Mesh:getVertex`
+- `luna.graphics.Mesh:setVertex`
+- `luna.graphics.Shader:hasUniform`
+- `luna.graphics.Quad:getTextureDimensions`
+- `luna.graphics.luna.graphics.getBackgroundColor`
+- `luna.graphics.luna.graphics.drawq`
+- `luna.graphics.luna.graphics.printf`
+- `luna.graphics.luna.graphics.setPointSize`
+- `luna.graphics.luna.graphics.getPointSize`
+- `luna.graphics.luna.graphics.newFont`
+- `luna.graphics.luna.graphics.getFontWidth`
+- `luna.graphics.luna.graphics.getFontHeight`
+- `luna.graphics.luna.graphics.getFontWrap`
+- `luna.graphics.luna.graphics.newCanvas`
 - *...and 21 more*
 
-### `gui` � 260/302 (86.1%)
+### `gui` — 260/302 (86.1%)
 
 **Uncovered Lua API functions** (42):
 
-- `luna.ui.luna.ui.setAnchor`
-- `luna.ui.luna.ui.setAnchorCenter`
-- `luna.ui.luna.ui.clearAnchor`
-- `luna.ui.Text_Input:isFocused`
-- `luna.ui.Text_Input:getCursorPosition`
-- `luna.ui.Progress_Bar:getProgress`
-- `luna.ui.Combo_Box:getSelectedItem`
-- `luna.ui.List_Box:setItemHeight`
-- `luna.ui.Panel:setScrollable`
-- `luna.ui.Layout:setColumns`
-- `luna.ui.Layout:setWrap`
-- `luna.ui.Layout:getWrap`
-- `luna.ui.Scroll_Panel:getMaxScroll`
-- `luna.ui.Scroll_Panel:getScrollSpeed`
-- `luna.ui.Nine_Patch:setInsets`
-- `luna.ui.Nine_Patch:setImageDimensions`
-- `luna.ui.Nine_Patch:getImageDimensions`
-- `luna.ui.Nine_Patch:getSlices`
-- `luna.ui.Toast:setMessage`
-- `luna.ui.Toast:getMessage`
+- `luna.gui.luna.gui.setAnchor`
+- `luna.gui.luna.gui.setAnchorCenter`
+- `luna.gui.luna.gui.clearAnchor`
+- `luna.gui.Text_Input:isFocused`
+- `luna.gui.Text_Input:getCursorPosition`
+- `luna.gui.Progress_Bar:getProgress`
+- `luna.gui.Combo_Box:getSelectedItem`
+- `luna.gui.List_Box:setItemHeight`
+- `luna.gui.Panel:setScrollable`
+- `luna.gui.Layout:setColumns`
+- `luna.gui.Layout:setWrap`
+- `luna.gui.Layout:getWrap`
+- `luna.gui.Scroll_Panel:getMaxScroll`
+- `luna.gui.Scroll_Panel:getScrollSpeed`
+- `luna.gui.Nine_Patch:setInsets`
+- `luna.gui.Nine_Patch:setImageDimensions`
+- `luna.gui.Nine_Patch:getImageDimensions`
+- `luna.gui.Nine_Patch:getSlices`
+- `luna.gui.Toast:setMessage`
+- `luna.gui.Toast:getMessage`
 - *...and 22 more*
 
-### `image` � 7/8 (87.5%)
+### `image` — 7/8 (87.5%)
 
 **Uncovered Lua API functions** (1):
 
-- `luna.img.CompressedImageData:getMipmapCount`
+- `luna.image.CompressedImageData:getMipmapCount`
 
-### `input` � 46/52 (88.5%)
+### `input` — 46/52 (88.5%)
 
 **Uncovered Lua API functions** (6):
 
@@ -183,9 +183,9 @@
 - `luna.input.luna.input.newCursor`
 - `luna.input.luna.input.getWheelDelta`
 
-### `light` � 75/75 (100.0%)
+### `light` — 75/75 (100.0%)
 
-### `math` � 39/105 (37.1%)
+### `math` — 39/105 (37.1%)
 
 **Uncovered Lua API functions** (66):
 
@@ -211,9 +211,9 @@
 - `luna.math.NoiseGenerator:simplex2d`
 - *...and 46 more*
 
-### `minimap` � 47/47 (100.0%)
+### `minimap` — 47/47 (100.0%)
 
-### `modding` � 18/33 (54.5%)
+### `modding` — 18/33 (54.5%)
 
 **Uncovered Lua API functions** (15):
 
@@ -233,7 +233,7 @@
 - `luna.modding.ModManager:getReloadQueue`
 - `luna.modding.ModManager:clearReloadQueue`
 
-### `network` � 8/20 (40.0%)
+### `network` — 8/20 (40.0%)
 
 **Uncovered Lua API functions** (12):
 
@@ -250,19 +250,19 @@
 - `luna.network.NetworkHost:getConnectedPeerIds`
 - `luna.network.NetworkHost:getPeerStats`
 
-### `particle` � 19/26 (73.1%)
+### `particle` — 19/26 (73.1%)
 
 **Uncovered Lua API functions** (7):
 
-- `luna.particles.Trail:pushPoint`
-- `luna.particles.Trail:setWidth`
-- `luna.particles.Trail:setLifetime`
-- `luna.particles.Trail:getLifetime`
-- `luna.particles.Trail:setMinDistance`
-- `luna.particles.Trail:getPointCount`
-- `luna.particles.luna.particles.newTrail`
+- `luna.particle.Trail:pushPoint`
+- `luna.particle.Trail:setWidth`
+- `luna.particle.Trail:setLifetime`
+- `luna.particle.Trail:getLifetime`
+- `luna.particle.Trail:setMinDistance`
+- `luna.particle.Trail:getPointCount`
+- `luna.particle.luna.particle.newTrail`
 
-### `pathfinding` � 36/49 (73.5%)
+### `pathfinding` — 36/49 (73.5%)
 
 **Uncovered Lua API functions** (13):
 
@@ -280,7 +280,7 @@
 - `luna.pathfinding.FlowField:getTargets`
 - `luna.pathfinding.luna.pathfinding.setThreadCount`
 
-### `physics` � 31/72 (43.1%)
+### `physics` — 31/72 (43.1%)
 
 **Uncovered Lua API functions** (41):
 
@@ -306,7 +306,7 @@
 - `luna.physics.World:getBodyType`
 - *...and 21 more*
 
-### `pipeline` � 42/53 (79.2%)
+### `pipeline` — 42/53 (79.2%)
 
 **Uncovered Lua API functions** (11):
 
@@ -322,51 +322,51 @@
 - `luna.pipeline.Pipeline:setOnComplete`
 - `luna.pipeline.Pipeline:setOnStepError`
 
-### `procgen` � 5/5 (100.0%)
+### `procgen` — 5/5 (100.0%)
 
-### `raycaster` � 7/9 (77.8%)
+### `raycaster` — 7/9 (77.8%)
 
 **Uncovered Lua API functions** (2):
 
 - `luna.raycaster.luna.raycaster.projectColumn`
 - `luna.raycaster.luna.raycaster.distanceShade`
 
-### `savegame` � 18/19 (94.7%)
+### `savegame` — 18/19 (94.7%)
 
 **Uncovered Lua API functions** (1):
 
 - `luna.savegame.SaveManager:getSlotInfo`
 
-### `scene` � 28/28 (100.0%)
+### `scene` — 28/28 (100.0%)
 
-### `serial` � 6/6 (100.0%)
+### `serial` — 6/6 (100.0%)
 
-### `spine` � 9/9 (100.0%)
+### `spine` — 9/9 (100.0%)
 
-### `system` � 8/22 (36.4%)
+### `system` — 8/22 (36.4%)
 
 **Uncovered Lua API functions** (14):
 
-- `luna.platform.luna.platform.getProcessorCount`
-- `luna.platform.luna.platform.getMemorySize`
-- `luna.platform.luna.platform.openURL`
-- `luna.platform.luna.platform.getPreferredLocales`
-- `luna.platform.luna.platform.getPowerInfo`
-- `luna.platform.luna.platform.setDebugOverlay`
-- `luna.platform.luna.platform.getDebugOverlay`
-- `luna.platform.luna.platform.getLastError`
-- `luna.platform.luna.platform.getArch`
-- `luna.platform.luna.platform.getEnv`
-- `luna.platform.luna.platform.getArgs`
-- `luna.platform.luna.platform.parseArgs`
-- `luna.platform.luna.platform.runBatch`
-- `luna.platform.luna.platform.getBatchResults`
+- `luna.system.luna.system.getProcessorCount`
+- `luna.system.luna.system.getMemorySize`
+- `luna.system.luna.system.openURL`
+- `luna.system.luna.system.getPreferredLocales`
+- `luna.system.luna.system.getPowerInfo`
+- `luna.system.luna.system.setDebugOverlay`
+- `luna.system.luna.system.getDebugOverlay`
+- `luna.system.luna.system.getLastError`
+- `luna.system.luna.system.getArch`
+- `luna.system.luna.system.getEnv`
+- `luna.system.luna.system.getArgs`
+- `luna.system.luna.system.parseArgs`
+- `luna.system.luna.system.runBatch`
+- `luna.system.luna.system.getBatchResults`
 
-### `terminal` � 55/55 (100.0%)
+### `terminal` — 55/55 (100.0%)
 
-### `thread` � 9/9 (100.0%)
+### `thread` — 9/9 (100.0%)
 
-### `tilemap` � 87/102 (85.3%)
+### `tilemap` — 87/102 (85.3%)
 
 **Uncovered Lua API functions** (15):
 
@@ -386,21 +386,21 @@
 - `luna.tilemap.MapBlock:getHeightInSegments`
 - `luna.tilemap.MapGroup:removeBlock`
 
-### `timer` � 16/25 (64.0%)
+### `timer` — 16/25 (64.0%)
 
 **Uncovered Lua API functions** (9):
 
-- `luna.time.Scheduler:cancelNamed`
-- `luna.time.Scheduler:cancelAll`
-- `luna.time.Scheduler:getInterval`
-- `luna.time.Scheduler:getRepeatCount`
-- `luna.time.Scheduler:setInterval`
-- `luna.time.Scheduler:resetEvent`
-- `luna.time.Scheduler:setTimeScale`
-- `luna.time.Scheduler:getTimeScale`
-- `luna.time.luna.time.newScheduler`
+- `luna.timer.Scheduler:cancelNamed`
+- `luna.timer.Scheduler:cancelAll`
+- `luna.timer.Scheduler:getInterval`
+- `luna.timer.Scheduler:getRepeatCount`
+- `luna.timer.Scheduler:setInterval`
+- `luna.timer.Scheduler:resetEvent`
+- `luna.timer.Scheduler:setTimeScale`
+- `luna.timer.Scheduler:getTimeScale`
+- `luna.timer.luna.timer.newScheduler`
 
-### `window` � 43/47 (91.5%)
+### `window` — 43/47 (91.5%)
 
 **Uncovered Lua API functions** (4):
 

@@ -25,7 +25,6 @@ pub struct LuaSignal {
 
 impl LuaUserData for LuaSignal {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- register --
         /// Registers a callback for the named event and returns its handle ID.
         /// @param name : string
@@ -127,6 +126,18 @@ impl LuaUserData for LuaSignal {
             Ok(this.inner.borrow().get_total_count())
         });
 
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return string
+        methods.add_method("type", |_, _, ()| Ok("Signal"));
+
+        // -- typeOf --
+        /// Returns true if the given type name matches this object's type or any parent type.
+        /// @param name : string  type name to test
+        /// @return boolean
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Signal" || name == "Object")
+        });
     }
 }
 
@@ -198,12 +209,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "poll",
         lua.create_function(move |lua, ()| {
             let state_ref = s.clone();
-            lua.create_function(move |lua, ()| {
-                match state_ref.borrow_mut().event_queue.poll() {
+            lua.create_function(
+                move |lua, ()| match state_ref.borrow_mut().event_queue.poll() {
                     Some(event) => event_to_lua_multi(lua, &event),
                     None => Ok(LuaMultiValue::new()),
-                }
-            })
+                },
+            )
         })?,
     )?;
 
@@ -268,6 +279,20 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "restart",
         lua.create_function(move |_, ()| {
             s.borrow_mut().restart_requested = true;
+            Ok(())
+        })?,
+    )?;
+
+    // -- quit --
+    /// Alias for `exit()` — requests the engine to stop at the end of the current frame.
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "quit",
+        lua.create_function(move |_, ()| {
+            let mut st = s.borrow_mut();
+            st.quit_requested = true;
+            st.exit_code = 0;
             Ok(())
         })?,
     )?;

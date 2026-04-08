@@ -28,12 +28,42 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
 ---
 
-## 3. Lua Docstring Issues (0 items)
+## 3. Lua Docstring Issues (8 items)
 
 Lua API items with missing or very short descriptions (< 15 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 
-*All Lua API items have adequate descriptions.*
+### `event`
+
+- `module` **`luna.event`** — *(no description)*
+
+### `filesystem`
+
+- `module` **`luna.filesystem`** — *(no description)*
+
+### `fx`
+
+- `module` **`luna.fx`** — *(no description)*
+
+### `gui`
+
+- `module` **`luna.gui`** — *(no description)*
+
+### `image`
+
+- `module` **`luna.image`** — *(no description)*
+
+### `particle`
+
+- `module` **`luna.particle`** — *(no description)*
+
+### `serial`
+
+- `module` **`luna.serial`** — *(no description)*
+
+### `timer`
+
+- `module` **`luna.timer`** — *(no description)*
 
 ---
 

@@ -268,7 +268,7 @@ pub fn luna_run() {
         env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."))
     };
 
-    let (mut config, conf_error) = Config::load_from_conf_lua(&game_dir);
+    let (mut config, conf_error) = Config::load(&game_dir);
     config.modules.validate_and_fix();
     let app = App::new(config, conf_error);
     app.run(

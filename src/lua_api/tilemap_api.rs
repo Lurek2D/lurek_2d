@@ -84,47 +84,72 @@ impl LuaUserData for LuaTileSet {
         });
 
         // -- getQuad --
-        /// Computes the atlas source rectangle for a 0-based local tile ID.
+        /// Computes the atlas source rectangle for a 1-based local tile ID.
         /// @param tileId : integer
-        /// @return number, number, number, number
-        methods.add_method("getQuad", |_, this, tile_id: u32| {
-            let r = this.inner.borrow().get_quad(tile_id);
-            Ok((r.x, r.y, r.width, r.height))
+        /// @return table  {x, y, width, height}
+        methods.add_method("getQuad", |lua, this, tile_id: u32| {
+            if tile_id == 0 {
+                return Err(LuaError::RuntimeError(
+                    "getQuad: tile_id must be >= 1".to_string(),
+                ));
+            }
+            let r = this.inner.borrow().get_quad(tile_id - 1);
+            let tbl = lua.create_table()?;
+            tbl.set("x", r.x)?;
+            tbl.set("y", r.y)?;
+            tbl.set("width", r.width)?;
+            tbl.set("height", r.height)?;
+            Ok(tbl)
         });
 
         // -- setAnimation --
-        /// Sets the animation frames for a local tile ID from a table of {tileId, durationMs}.
+        /// Sets the animation frames for a 1-based local tile ID from a table of {tileid, duration}.
         /// @param tileId : integer
         /// @param frames : table
         /// @return nil
         methods.add_method("setAnimation", |_, this, (tile_id, frames): (u32, LuaTable)| {
+            if tile_id == 0 {
+                return Err(LuaError::RuntimeError(
+                    "setAnimation: tile_id must be >= 1".to_string(),
+                ));
+            }
             let mut anim_frames = Vec::new();
             for pair in frames.sequence_values::<LuaTable>() {
                 let frame_tbl = pair?;
-                let fid: u32 = frame_tbl.get(1)?;
-                let dur: f32 = frame_tbl.get(2)?;
+                let fid: u32 = frame_tbl.get("tileid")?;
+                let dur: f32 = frame_tbl.get("duration")?;
+                if fid == 0 {
+                    return Err(LuaError::RuntimeError(
+                        "setAnimation: frame tileid must be >= 1".to_string(),
+                    ));
+                }
                 anim_frames.push(TileAnimFrame {
-                    tile_id: fid,
+                    tile_id: fid - 1,
                     duration_ms: dur,
                 });
             }
-            this.inner.borrow_mut().set_animation(tile_id, anim_frames);
+            this.inner.borrow_mut().set_animation(tile_id - 1, anim_frames);
             Ok(())
         });
 
         // -- getAnimation --
-        /// Returns the animation frames for a local tile ID as a table, or nil.
+        /// Returns the animation frames for a 1-based local tile ID as a table of {tileid, duration}, or nil.
         /// @param tileId : integer
         /// @return table?
         methods.add_method("getAnimation", |lua, this, tile_id: u32| {
+            if tile_id == 0 {
+                return Err(LuaError::RuntimeError(
+                    "getAnimation: tile_id must be >= 1".to_string(),
+                ));
+            }
             let inner = this.inner.borrow();
-            match inner.get_animation(tile_id) {
+            match inner.get_animation(tile_id - 1) {
                 Some(frames) => {
                     let tbl = lua.create_table()?;
                     for (i, f) in frames.iter().enumerate() {
                         let entry = lua.create_table()?;
-                        entry.set(1, f.tile_id)?;
-                        entry.set(2, f.duration_ms)?;
+                        entry.set("tileid", f.tile_id + 1)?;
+                        entry.set("duration", f.duration_ms)?;
                         tbl.set(i + 1, entry)?;
                     }
                     Ok(LuaValue::Table(tbl))
@@ -134,21 +159,31 @@ impl LuaUserData for LuaTileSet {
         });
 
         // -- setSolid --
-        /// Sets whether a local tile ID is solid for collision purposes.
+        /// Sets whether a 1-based local tile ID is solid for collision purposes.
         /// @param tileId : integer
         /// @param solid : boolean
         /// @return nil
         methods.add_method("setSolid", |_, this, (tile_id, solid): (u32, bool)| {
-            this.inner.borrow_mut().set_solid(tile_id, solid);
+            if tile_id == 0 {
+                return Err(LuaError::RuntimeError(
+                    "setSolid: tile_id must be >= 1".to_string(),
+                ));
+            }
+            this.inner.borrow_mut().set_solid(tile_id - 1, solid);
             Ok(())
         });
 
         // -- isSolid --
-        /// Returns whether a local tile ID is solid.
+        /// Returns whether a 1-based local tile ID is solid.
         /// @param tileId : integer
         /// @return boolean
         methods.add_method("isSolid", |_, this, tile_id: u32| {
-            Ok(this.inner.borrow().is_solid(tile_id))
+            if tile_id == 0 {
+                return Err(LuaError::RuntimeError(
+                    "isSolid: tile_id must be >= 1".to_string(),
+                ));
+            }
+            Ok(this.inner.borrow().is_solid(tile_id - 1))
         });
 
         // -- setAutoTileRule --
@@ -214,7 +249,7 @@ impl LuaUserData for LuaTileSet {
 /// Lua-side wrapper around a [`TileMap`].
 #[derive(Clone)]
 pub struct LuaTileMap {
-    inner: Rc<RefCell<TileMap>>,
+    pub(super) inner: Rc<RefCell<TileMap>>,
 }
 
 impl LuaUserData for LuaTileMap {
@@ -236,6 +271,25 @@ impl LuaUserData for LuaTileMap {
         /// @return integer
         methods.add_method("getTileSetCount", |_, this, ()| {
             Ok(this.inner.borrow().get_tileset_count())
+        });
+
+        // -- getTileSet --
+        /// Returns a tileset by 1-based index, or nil if out of range.
+        /// @param idx : integer
+        /// @return TileSet?
+        methods.add_method("getTileSet", |_, this, idx: usize| {
+            if idx == 0 {
+                return Err(LuaError::RuntimeError(
+                    "getTileSet: idx must be >= 1".to_string(),
+                ));
+            }
+            let inner = this.inner.borrow();
+            match inner.get_tileset(idx - 1) {
+                Some(ts) => Ok(Some(LuaTileSet {
+                    inner: Rc::new(RefCell::new(ts.clone())),
+                })),
+                None => Ok(None),
+            }
         });
 
         // -- addLayer --
@@ -1468,8 +1522,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let tbl = lua.create_table()?;
             for (i, (nq, nr)) in n.iter().enumerate() {
                 let entry = lua.create_table()?;
-                entry.set(1, *nq)?;
-                entry.set(2, *nr)?;
+                entry.set("q", *nq)?;
+                entry.set("r", *nr)?;
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)

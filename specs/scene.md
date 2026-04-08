@@ -209,6 +209,40 @@ Registered in `src/lua_api/scene_api.rs`. The module creates a private `SceneSta
 `String → LuaRegistryKey` (inter-scene data values). The `LuaDepthSorter` UserData
 wraps a `DepthSorter` plus a `Vec<LuaRegistryKey>` for callback storage.
 
+### Scene Factory
+
+Two convenience helpers let you define scenes without manual `__index` boilerplate:
+
+| Function | Signature | Description |
+|----------|-----------|-------------|
+| `luna.scene.new` | `(def: table) → table` | Create a scene **instance** directly from a methods table — equivalent to `setmetatable({}, {__index = def})` |
+| `luna.scene.define` | `(def: table) → function` | Create a reusable scene **class** — returns a zero-argument constructor that produces fresh instances sharing `def` as their metatable |
+
+**`luna.scene.define` pattern (recommended for reusable scenes):**
+
+```lua
+-- Define a class once
+local GameScene = luna.scene.define({})
+
+function GameScene:ready()   self.score = 0 end
+function GameScene:process(dt) ... end
+function GameScene:render()    ... end
+
+-- Instantiate with ()
+luna.scene.push(GameScene())
+luna.scene.switchTo(GameScene(), nil, 0.5, nil)
+```
+
+**`luna.scene.new` pattern (for one-off or inline scenes):**
+
+```lua
+luna.scene.push(luna.scene.new({
+    ready   = function(self) ... end,
+    process = function(self, dt) ... end,
+    render  = function(self) ... end,
+}))
+```
+
 ### Stack Operations
 
 | Function | Signature | Description |

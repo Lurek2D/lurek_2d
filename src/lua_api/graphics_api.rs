@@ -13,6 +13,7 @@ use crate::graphics::{
     BlendMode, Canvas, CompareMode, DrawCommand, DrawMode, Font, Mesh, MeshDrawMode, MeshVertex,
     Shader, SpriteBatch, StencilAction, TextAlign, Texture, UniformValue,
 };
+use crate::graphics::shape::{CompoundShape, ShapeCommand};
 use crate::image::ImageData;
 use crate::math::Rect;
 
@@ -725,6 +726,309 @@ fn parse_draw_mode(mode: &str) -> DrawMode {
         DrawMode::Fill
     } else {
         DrawMode::Line
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaShape UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side handle to a [`CompoundShape`] stored in [`SharedState::shapes`].
+///
+/// Created via `luna.gfx.newShape()`. Builder methods accumulate draw commands
+/// in the backing slot; `shape:draw(x, y)` queues a `DrawShape` command each frame.
+#[derive(Clone)]
+pub struct LuaShape {
+    pub(crate) state: Rc<RefCell<SharedState>>,
+    pub(crate) key: ShapeKey,
+}
+
+impl LuaUserData for LuaShape {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getCommandCount --
+        /// Returns the number of drawing commands currently stored.
+        /// @return integer
+        methods.add_method("getCommandCount", |_, this, ()| {
+            let st = this.state.borrow();
+            let shape = st.shapes.get(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            Ok(shape.command_count() as i64)
+        });
+
+        // -- clear --
+        /// Removes all commands and resets the shape to empty.
+        methods.add_method("clear", |_, this, ()| {
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.clear();
+            Ok(())
+        });
+
+        // -- setColor --
+        /// Sets the drawing color for subsequent primitives.
+        /// @param r : number   red [0,1]
+        /// @param g : number   green [0,1]
+        /// @param b : number   blue [0,1]
+        /// @param a : number?  alpha [0,1], default 1
+        methods.add_method(
+            "setColor",
+            |_, this, (r, g, b, a): (f32, f32, f32, Option<f32>)| {
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::SetColor(r, g, b, a.unwrap_or(1.0)));
+                Ok(())
+            },
+        );
+
+        // -- setLineWidth --
+        /// Sets the stroke width for subsequent outlined primitives.
+        /// @param w : number  width in pixels
+        methods.add_method("setLineWidth", |_, this, w: f32| {
+            let mut st = this.state.borrow_mut();
+            let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                LuaError::RuntimeError("Shape handle is stale or was released".into())
+            })?;
+            shape.push_command(ShapeCommand::SetLineWidth(w));
+            Ok(())
+        });
+
+        // -- rectangle --
+        /// Queues a rectangle command.
+        /// @param mode : string  "fill" or "line"
+        /// @param x    : number
+        /// @param y    : number
+        /// @param w    : number
+        /// @param h    : number
+        methods.add_method(
+            "rectangle",
+            |_, this, (mode, x, y, w, h): (String, f32, f32, f32, f32)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Rectangle { mode: dm, x, y, w, h });
+                Ok(())
+            },
+        );
+
+        // -- roundedRectangle --
+        /// Queues a rounded rectangle command.
+        /// @param mode : string  "fill" or "line"
+        /// @param x    : number
+        /// @param y    : number
+        /// @param w    : number
+        /// @param h    : number
+        /// @param rx   : number  horizontal corner radius
+        /// @param ry   : number?  vertical corner radius (default = rx)
+        methods.add_method(
+            "roundedRectangle",
+            |_, this, (mode, x, y, w, h, rx, ry): (String, f32, f32, f32, f32, f32, Option<f32>)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let ry = ry.unwrap_or(rx);
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::RoundedRectangle { mode: dm, x, y, w, h, rx, ry });
+                Ok(())
+            },
+        );
+
+        // -- circle --
+        /// Queues a circle command.
+        /// @param mode : string  "fill" or "line"
+        /// @param x    : number  centre X
+        /// @param y    : number  centre Y
+        /// @param r    : number  radius
+        methods.add_method(
+            "circle",
+            |_, this, (mode, x, y, r): (String, f32, f32, f32)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Circle { mode: dm, x, y, r });
+                Ok(())
+            },
+        );
+
+        // -- ellipse --
+        /// Queues an ellipse command.
+        /// @param mode : string  "fill" or "line"
+        /// @param x    : number  centre X
+        /// @param y    : number  centre Y
+        /// @param rx   : number  horizontal radius
+        /// @param ry   : number  vertical radius
+        methods.add_method(
+            "ellipse",
+            |_, this, (mode, x, y, rx, ry): (String, f32, f32, f32, f32)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Ellipse { mode: dm, x, y, rx, ry });
+                Ok(())
+            },
+        );
+
+        // -- triangle --
+        /// Queues a triangle command.
+        /// @param mode : string  "fill" or "line"
+        /// @param x1   : number
+        /// @param y1   : number
+        /// @param x2   : number
+        /// @param y2   : number
+        /// @param x3   : number
+        /// @param y3   : number
+        methods.add_method(
+            "triangle",
+            |_, this, (mode, x1, y1, x2, y2, x3, y3): (String, f32, f32, f32, f32, f32, f32)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Triangle { mode: dm, x1, y1, x2, y2, x3, y3 });
+                Ok(())
+            },
+        );
+
+        // -- polygon --
+        /// Queues a polygon command from variadic (x, y) coordinate pairs.
+        /// @param mode : string   "fill" or "line"
+        /// @param ...  : number   flat x1, y1, x2, y2, … (minimum 6 numbers = 3 vertices)
+        methods.add_method(
+            "polygon",
+            |_, this, (mode, coords): (String, mlua::Variadic<f32>)| {
+                let vertices: Vec<f32> = coords.into_iter().collect();
+                if vertices.len() < 6 {
+                    return Err(LuaError::RuntimeError(
+                        "polygon requires at least 3 vertices (6 coordinate values)".into(),
+                    ));
+                }
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polygon { mode: dm, vertices });
+                Ok(())
+            },
+        );
+
+        // -- line --
+        /// Queues a line segment command.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        methods.add_method(
+            "line",
+            |_, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Line { x1, y1, x2, y2 });
+                Ok(())
+            },
+        );
+
+        // -- polyline --
+        /// Queues a polyline command from variadic (x, y) coordinate pairs.
+        /// @param ... : number  flat x1, y1, x2, y2, … (minimum 4 numbers = 2 points)
+        methods.add_method(
+            "polyline",
+            |_, this, coords: mlua::Variadic<f32>| {
+                let points: Vec<f32> = coords.into_iter().collect();
+                if points.len() < 4 {
+                    return Err(LuaError::RuntimeError(
+                        "polyline requires at least 2 points (4 coordinate values)".into(),
+                    ));
+                }
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Polyline { points });
+                Ok(())
+            },
+        );
+
+        // -- arc --
+        /// Queues an arc command.
+        /// @param mode     : string   "fill" or "line"
+        /// @param x        : number   centre X
+        /// @param y        : number   centre Y
+        /// @param r        : number   radius
+        /// @param astart   : number   start angle in radians
+        /// @param aend     : number   end angle in radians
+        /// @param segments : integer?  curve resolution (default 32)
+        methods.add_method(
+            "arc",
+            |_, this, (mode, x, y, r, astart, aend, segments): (String, f32, f32, f32, f32, f32, Option<u32>)| {
+                let dm = if mode == "line" { DrawMode::Line } else { DrawMode::Fill };
+                let mut st = this.state.borrow_mut();
+                let shape = st.shapes.get_mut(this.key).ok_or_else(|| {
+                    LuaError::RuntimeError("Shape handle is stale or was released".into())
+                })?;
+                shape.push_command(ShapeCommand::Arc {
+                    mode: dm, x, y, radius: r,
+                    angle1: astart, angle2: aend,
+                    segments: segments.unwrap_or(32),
+                });
+                Ok(())
+            },
+        );
+
+        // -- draw --
+        /// Queues a draw command for this shape at the given position.
+        ///
+        /// Must be called from a `luna.render` or `luna.render_ui` callback.
+        /// @param x        : number   world X
+        /// @param y        : number   world Y
+        /// @param rotation : number?  radians, default 0
+        /// @param sx       : number?  horizontal scale, default 1
+        /// @param sy       : number?  vertical scale, default 1
+        /// @param ox       : number?  origin X (object space), default 0
+        /// @param oy       : number?  origin Y (object space), default 0
+        methods.add_method(
+            "draw",
+            |_, this, (x, y, rotation, sx, sy, ox, oy): (f32, f32, Option<f32>, Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
+                this.state.borrow_mut().draw_commands.push(DrawCommand::DrawShape {
+                    shape_key: this.key,
+                    x,
+                    y,
+                    rotation: rotation.unwrap_or(0.0),
+                    sx: sx.unwrap_or(1.0),
+                    sy: sy.unwrap_or(1.0),
+                    ox: ox.unwrap_or(0.0),
+                    oy: oy.unwrap_or(0.0),
+                });
+                Ok(())
+            },
+        );
+
+        // -- typeOf --
+        /// Returns true if the given type name matches this object's type or any parent type.
+        /// @param name : string  type name to test
+        /// @return boolean
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Shape" || name == "Object")
+        });
+
+        // -- type --
+        /// Returns the type name of this object.
+        /// @return string
+        methods.add_method("type", |_, _, ()| Ok("Shape"));
     }
 }
 
@@ -2408,6 +2712,23 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, path: String| {
             s.borrow_mut().pending_screenshot = Some(ScreenshotRequest { path });
             Ok(())
+        })?,
+    )?;
+
+    // -- newShape --
+    /// Creates a new empty [`CompoundShape`] stored in the resource pool.
+    ///
+    /// Build up primitives with `shape:rectangle()`, `shape:circle()`, etc.
+    /// Call `shape:draw(x, y)` inside `luna.render` or `luna.render_ui` to
+    /// replay all commands with a unified affine transform each frame.
+    ///
+    /// @return Shape
+    let s = state.clone();
+    graphics.set(
+        "newShape",
+        lua.create_function(move |_, ()| {
+            let key = s.borrow_mut().shapes.insert(CompoundShape::new());
+            Ok(LuaShape { state: s.clone(), key })
         })?,
     )?;
 

@@ -11,6 +11,7 @@ use crate::pathfinding::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfinding::hpa::{build_abstract, AbstractGraph};
 use crate::pathfinding::pathgrid::PathGrid;
 use crate::pathfinding::{DiagonalMode, FlowField, NavGrid, UnitPathfinder, Waypoint};
+use super::tilemap_api::LuaTileMap;
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -936,6 +937,50 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "getThreadCount",
         lua.create_function(|_, ()| -> LuaResult<u32> { Ok(0) })?,
+    )?;
+
+    // -- newNavGridFromTileMap --
+    /// Builds a NavGrid from a TileMap layer, treating specified GIDs as blocked (unwalkable).
+    ///
+    /// The resulting grid has the same dimensions as the tilemap layer.
+    /// Tiles whose GID appears in `blocked_gids` get cost 0 (unwalkable);
+    /// all other tiles get cost 1.
+    ///
+    /// @param tilemap     : TileMap  source tilemap
+    /// @param layer_index : integer  1-based layer index
+    /// @param blocked_gids: table    list of GID integers that are impassable
+    /// @return NavGrid
+    tbl.set(
+        "newNavGridFromTileMap",
+        lua.create_function(|_, (tm_ud, layer_index, blocked_table): (LuaAnyUserData, usize, mlua::Table)| {
+            let tilemap_ud = tm_ud.borrow::<LuaTileMap>()?;
+            let tm = tilemap_ud.inner.borrow();
+            let layer_idx = layer_index.saturating_sub(1); // 1-based → 0-based
+            let (w, h) = tm.get_layer_dimensions(layer_idx).ok_or_else(|| {
+                LuaError::RuntimeError(format!("layer {} does not exist", layer_index))
+            })?;
+
+            // Collect blocked GIDs into a HashSet for O(1) lookup
+            let mut blocked: std::collections::HashSet<u32> = std::collections::HashSet::new();
+            for v in blocked_table.sequence_values::<u32>() {
+                blocked.insert(v?);
+            }
+
+            let mut grid = NavGrid::new(w, h);
+            for y in 0..h {
+                for x in 0..w {
+                    let gid = tm.get_tile(layer_idx, x, y);
+                    if blocked.contains(&gid) {
+                        grid.set_cost(x, y, 0);
+                    }
+                }
+            }
+
+            Ok(LuaNavGrid {
+                inner: Rc::new(RefCell::new(grid)),
+                abstract_graph: Rc::new(RefCell::new(None)),
+            })
+        })?,
     )?;
 
     luna.set("pathfinding", tbl)?;

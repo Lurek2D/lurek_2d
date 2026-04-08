@@ -1288,6 +1288,146 @@ impl LuaUserData for LuaBody {
 }
 
 // -------------------------------------------------------------------------------
+// LuaPhysicsShape UserData
+// -------------------------------------------------------------------------------
+
+/// Internal data for a standalone Lua physics shape.
+struct LuaPhysicsShapeData {
+    shape: Shape,
+    density: f32,
+    friction: f32,
+    restitution: f32,
+    sensor: bool,
+}
+
+/// Lua-side standalone shape object (circle, rectangle, edge, polygon, chain).
+///
+/// Created via `luna.physics.newCircleShape`, `newRectangleShape`, etc.
+/// Attach to a body with `luna.physics.attachShape(body, shape)`.
+#[derive(Clone)]
+pub struct LuaPhysicsShape {
+    inner: Rc<RefCell<LuaPhysicsShapeData>>,
+}
+
+impl LuaPhysicsShape {
+    fn new(shape: Shape) -> Self {
+        Self {
+            inner: Rc::new(RefCell::new(LuaPhysicsShapeData {
+                shape,
+                density: 1.0,
+                friction: 0.2,
+                restitution: 0.0,
+                sensor: false,
+            })),
+        }
+    }
+}
+
+impl LuaUserData for LuaPhysicsShape {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getType --
+        /// Returns the shape type string: "circle", "rectangle", "polygon", "edge", or "chain".
+        /// @return string
+        methods.add_method("getType", |_, this, ()| {
+            let name = match this.inner.borrow().shape {
+                Shape::Circle { .. } => "circle",
+                Shape::Rect { .. } => "rectangle",
+                Shape::Polygon { .. } => "polygon",
+                Shape::Edge { .. } => "edge",
+                Shape::Chain { .. } => "chain",
+            };
+            Ok(name)
+        });
+
+        // -- getRadius --
+        /// Returns the radius. Only valid for circle shapes.
+        /// @return number
+        methods.add_method("getRadius", |_, this, ()| {
+            match this.inner.borrow().shape {
+                Shape::Circle { radius } => Ok(radius),
+                _ => Err(LuaError::RuntimeError(
+                    "getRadius: shape is not a circle".to_string(),
+                )),
+            }
+        });
+
+        // -- getBoundingBox --
+        /// Returns the axis-aligned bounding box (x1, y1, x2, y2).
+        /// @return number, number, number, number
+        methods.add_method("getBoundingBox", |_, this, ()| {
+            let d = this.inner.borrow();
+            let (x1, y1, x2, y2) = match &d.shape {
+                Shape::Circle { radius } => (-radius, -radius, *radius, *radius),
+                Shape::Rect { width, height } => {
+                    (-width / 2.0, -height / 2.0, *width / 2.0, *height / 2.0)
+                }
+                Shape::Edge { v1, v2 } => (
+                    v1.x.min(v2.x),
+                    v1.y.min(v2.y),
+                    v1.x.max(v2.x),
+                    v1.y.max(v2.y),
+                ),
+                Shape::Polygon { vertices } | Shape::Chain { vertices, .. } => {
+                    let mut min_x = f32::INFINITY;
+                    let mut min_y = f32::INFINITY;
+                    let mut max_x = f32::NEG_INFINITY;
+                    let mut max_y = f32::NEG_INFINITY;
+                    for v in vertices {
+                        min_x = min_x.min(v.x);
+                        min_y = min_y.min(v.y);
+                        max_x = max_x.max(v.x);
+                        max_y = max_y.max(v.y);
+                    }
+                    (min_x, min_y, max_x, max_y)
+                }
+            };
+            Ok((x1, y1, x2, y2))
+        });
+
+        // -- setDensity --
+        /// Sets the density for this shape (used when attaching to a body).
+        /// @param density : number
+        /// @return nil
+        methods.add_method("setDensity", |_, this, density: f32| {
+            this.inner.borrow_mut().density = density;
+            Ok(())
+        });
+
+        // -- setFriction --
+        /// Sets the friction coefficient.
+        /// @param friction : number
+        /// @return nil
+        methods.add_method("setFriction", |_, this, friction: f32| {
+            this.inner.borrow_mut().friction = friction;
+            Ok(())
+        });
+
+        // -- setRestitution --
+        /// Sets the restitution (bounciness) coefficient.
+        /// @param restitution : number
+        /// @return nil
+        methods.add_method("setRestitution", |_, this, restitution: f32| {
+            this.inner.borrow_mut().restitution = restitution;
+            Ok(())
+        });
+
+        // -- setSensor --
+        /// Sets whether this shape is a sensor (non-colliding trigger).
+        /// @param sensor : boolean
+        /// @return nil
+        methods.add_method("setSensor", |_, this, sensor: bool| {
+            this.inner.borrow_mut().sensor = sensor;
+            Ok(())
+        });
+
+        // -- destroy --
+        /// Releases this shape handle (GC handles cleanup).
+        /// @return nil
+        methods.add_method("destroy", |_, _this, ()| Ok(()));
+    }
+}
+
+// -------------------------------------------------------------------------------
 // Registration
 // -------------------------------------------------------------------------------
 
@@ -1317,36 +1457,221 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- step -- (flat wrapper)
+    /// Advances the physics world by dt seconds.
+    /// @param world : World
+    /// @param dt : number
+    /// @return nil
+    tbl.set(
+        "step",
+        lua.create_function(|_, (world_ud, dt): (LuaAnyUserData, f32)| {
+            let world = world_ud.borrow::<LuaWorld>()?;
+            world.world.borrow_mut().step(dt);
+            Ok(())
+        })?,
+    )?;
+
+    // -- newBody -- (flat wrapper)
+    /// Creates a new rectangular body in the given world.
+    /// @param world : World
+    /// @param x : number
+    /// @param y : number
+    /// @param bodyType : string
+    /// @return Body
+    tbl.set(
+        "newBody",
+        lua.create_function(
+            |_, (world_ud, x, y, bt): (LuaAnyUserData, f32, f32, String)| {
+                let world = world_ud.borrow::<LuaWorld>()?;
+                let body_type = parse_body_type(&bt)?;
+                let body = Body::new(x, y, body_type);
+                let id = world.world.borrow_mut().add_body(body);
+                Ok(LuaBody {
+                    world: Rc::clone(&world.world),
+                    id,
+                })
+            },
+        )?,
+    )?;
+
+    // -- getBody -- (flat)
+    /// Returns the position and velocity of a body (x, y, vx, vy).
+    /// @param world : World  (kept for API symmetry; body already holds the world ref)
+    /// @param body : Body
+    /// @return number, number, number, number
+    tbl.set(
+        "getBody",
+        lua.create_function(|_, (_world_ud, body_ud): (LuaAnyUserData, LuaAnyUserData)| {
+            let body = body_ud.borrow::<LuaBody>()?;
+            let w = body.world.borrow();
+            let (x, y) = w
+                .get_body(body.id)
+                .map_or((0.0_f32, 0.0_f32), |b| (b.position.x, b.position.y));
+            let (vx, vy) = w
+                .get_body(body.id)
+                .map_or((0.0_f32, 0.0_f32), |b| (b.velocity.x, b.velocity.y));
+            Ok((x, y, vx, vy))
+        })?,
+    )?;
+
+    // -- setBodyVelocity -- (flat)
+    /// Sets the velocity of a body.
+    /// @param world : World  (kept for API symmetry)
+    /// @param body : Body
+    /// @param vx : number
+    /// @param vy : number
+    /// @return nil
+    tbl.set(
+        "setBodyVelocity",
+        lua.create_function(
+            |_, (_world_ud, body_ud, vx, vy): (LuaAnyUserData, LuaAnyUserData, f32, f32)| {
+                let body = body_ud.borrow::<LuaBody>()?;
+                let mut w = body.world.borrow_mut();
+                if let Some(b) = w.get_body_mut(body.id) {
+                    b.velocity.x = vx;
+                    b.velocity.y = vy;
+                }
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- isSleepingAllowed -- (flat)
+    /// Returns whether the body is allowed to sleep.
+    /// @param world : World  (kept for API symmetry)
+    /// @param body : Body
+    /// @return boolean
+    tbl.set(
+        "isSleepingAllowed",
+        lua.create_function(|_, (_world_ud, body_ud): (LuaAnyUserData, LuaAnyUserData)| {
+            let body = body_ud.borrow::<LuaBody>()?;
+            let allowed = body.world.borrow().is_sleeping_allowed(body.id);
+            Ok(allowed)
+        })?,
+    )?;
+
+    // -- setSleepingAllowed -- (flat)
+    /// Sets whether the body is allowed to sleep.
+    /// @param world : World  (kept for API symmetry)
+    /// @param body : Body
+    /// @param allowed : boolean
+    /// @return nil
+    tbl.set(
+        "setSleepingAllowed",
+        lua.create_function(
+            |_, (_world_ud, body_ud, allowed): (LuaAnyUserData, LuaAnyUserData, bool)| {
+                let body = body_ud.borrow::<LuaBody>()?;
+                body.world
+                    .borrow_mut()
+                    .set_sleeping_allowed(body.id, allowed);
+                Ok(())
+            },
+        )?,
+    )?;
+
     // -- newRectangleShape --
-    /// Creates a rectangle shape value.
+    /// Creates a rectangle shape userdata.
     /// @param width : number
     /// @param height : number
-    /// @return string, number, number
+    /// @return Shape
     tbl.set(
         "newRectangleShape",
-        lua.create_function(|_, (w, h): (f32, f32)| Ok(("rectangle", w, h)))?,
+        lua.create_function(|_, (w, h): (f32, f32)| {
+            Ok(LuaPhysicsShape::new(Shape::Rect {
+                width: w,
+                height: h,
+            }))
+        })?,
     )?;
 
     // -- newCircleShape --
-    /// Creates a circle shape value.
+    /// Creates a circle shape userdata.
     /// @param radius : number
-    /// @return string, number
+    /// @return Shape
     tbl.set(
         "newCircleShape",
-        lua.create_function(|_, r: f32| Ok(("circle", r)))?,
+        lua.create_function(|_, r: f32| Ok(LuaPhysicsShape::new(Shape::Circle { radius: r })))?,
     )?;
 
     // -- newEdgeShape --
-    /// Creates an edge shape value.
+    /// Creates an edge (line segment) shape userdata.
     /// @param x1 : number
     /// @param y1 : number
     /// @param x2 : number
     /// @param y2 : number
-    /// @return string, number, number, number, number
+    /// @return Shape
     tbl.set(
         "newEdgeShape",
         lua.create_function(|_, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
-            Ok(("edge", x1, y1, x2, y2))
+            Ok(LuaPhysicsShape::new(Shape::Edge {
+                v1: crate::math::Vec2::new(x1, y1),
+                v2: crate::math::Vec2::new(x2, y2),
+            }))
+        })?,
+    )?;
+
+    // -- newPolygonShape --
+    /// Creates a convex polygon shape userdata from flat variadic vertex pairs.
+    /// Requires at least 3 vertices (6 numbers).
+    /// @param x1 y1 x2 y2 x3 y3 ... : numbers
+    /// @return Shape
+    tbl.set(
+        "newPolygonShape",
+        lua.create_function(|_, coords: mlua::Variadic<f32>| {
+            if coords.len() < 6 || coords.len() % 2 != 0 {
+                return Err(LuaError::RuntimeError(
+                    "newPolygonShape: requires at least 3 vertex pairs (6 numbers)".to_string(),
+                ));
+            }
+            let vertices: Vec<crate::math::Vec2> = coords
+                .chunks(2)
+                .map(|c| crate::math::Vec2::new(c[0], c[1]))
+                .collect();
+            Ok(LuaPhysicsShape::new(Shape::Polygon { vertices }))
+        })?,
+    )?;
+
+    // -- newChainShape --
+    /// Creates a chain shape userdata from flat variadic vertex pairs.
+    /// @param closed : boolean  whether the chain closes back to start
+    /// @param x1 y1 x2 y2 ... : numbers  (at least 2 pairs)
+    /// @return Shape
+    tbl.set(
+        "newChainShape",
+        lua.create_function(|_, (closed, coords): (bool, mlua::Variadic<f32>)| {
+            if coords.len() < 4 || coords.len() % 2 != 0 {
+                return Err(LuaError::RuntimeError(
+                    "newChainShape: requires at least 2 vertex pairs (4 numbers)".to_string(),
+                ));
+            }
+            let vertices: Vec<crate::math::Vec2> = coords
+                .chunks(2)
+                .map(|c| crate::math::Vec2::new(c[0], c[1]))
+                .collect();
+            Ok(LuaPhysicsShape::new(Shape::Chain { vertices, closed }))
+        })?,
+    )?;
+
+    // -- attachShape --
+    /// Attaches a standalone shape to a body as an additional fixture.
+    /// @param body : Body
+    /// @param shape : Shape
+    /// @return nil
+    tbl.set(
+        "attachShape",
+        lua.create_function(|_, (body_ud, shape_ud): (LuaAnyUserData, LuaAnyUserData)| {
+            let body = body_ud.borrow::<LuaBody>()?;
+            let shape_lua = shape_ud.borrow::<LuaPhysicsShape>()?;
+            let d = shape_lua.inner.borrow();
+            body.world.borrow_mut().add_fixture(
+                body.id,
+                d.shape.clone(),
+                d.density,
+                d.friction,
+                d.restitution,
+                d.sensor,
+            );
+            Ok(())
         })?,
     )?;
 

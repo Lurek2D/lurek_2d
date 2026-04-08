@@ -421,14 +421,27 @@ impl LuaUserData for LuaTween {
         });
 
         // -- getValue --
-        /// Returns the interpolated value at 1-based index.
-        /// @param index : integer
-        /// @return number
-        methods.add_method("getValue", |_, this, index: usize| {
-            if index == 0 {
-                return Ok(0.0);
+        /// Returns the interpolated value at 1-based index, or all values as a
+        /// table when called with no argument.
+        /// @param index : integer | nil
+        /// @return number | table
+        methods.add_method("getValue", |lua, this, index: Option<usize>| {
+            match index {
+                Some(i) => {
+                    if i == 0 {
+                        return Ok(LuaValue::Number(0.0));
+                    }
+                    Ok(LuaValue::Number(this.inner.get_value(i - 1)))
+                }
+                None => {
+                    let vals = this.inner.get_all_values();
+                    let t = lua.create_table()?;
+                    for (i, v) in vals.iter().enumerate() {
+                        t.set(i + 1, *v)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
             }
-            Ok(this.inner.get_value(index - 1))
         });
 
         // -- getAllValues --
@@ -472,11 +485,25 @@ impl LuaUserData for LuaTween {
         /// @return number
         methods.add_method("getTime", |_, this, ()| Ok(this.inner.clock()));
 
+        // -- getClock --
+        /// Alias for getTime(). Returns the current clock time.
+        /// @return number
+        methods.add_method("getClock", |_, this, ()| Ok(this.inner.clock()));
+
         // -- setTime --
         /// Sets the clock to a specific time, clamped to [0, duration].
         /// @param t : number
         /// @return nil
         methods.add_method_mut("setTime", |_, this, t: f64| {
+            this.inner.set_time(t);
+            Ok(())
+        });
+
+        // -- set --
+        /// Alias for setTime(). Sets the clock to t, clamped to [0, duration].
+        /// @param t : number
+        /// @return nil
+        methods.add_method_mut("set", |_, this, t: f64| {
             this.inner.set_time(t);
             Ok(())
         });
@@ -1671,6 +1698,293 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // ── Basic math functions (delegates to Lua built-in math.*) ─────────
+
+    // -- pi --
+    /// The mathematical constant π ≈ 3.14159265358979.
+    tbl.set("pi", std::f64::consts::PI)?;
+
+    // -- tau --
+    /// The mathematical constant τ = 2π ≈ 6.28318530717959.
+    tbl.set("tau", std::f64::consts::TAU)?;
+
+    // -- huge --
+    /// Positive infinity (math.huge equivalent).
+    tbl.set("huge", f64::INFINITY)?;
+
+    // -- sin --
+    /// Returns the sine of x (radians).
+    /// @param x : number
+    /// @return number
+    tbl.set("sin", lua.create_function(|_, x: f64| Ok(x.sin()))?)?;
+
+    // -- cos --
+    /// Returns the cosine of x (radians).
+    /// @param x : number
+    /// @return number
+    tbl.set("cos", lua.create_function(|_, x: f64| Ok(x.cos()))?)?;
+
+    // -- tan --
+    /// Returns the tangent of x (radians).
+    /// @param x : number
+    /// @return number
+    tbl.set("tan", lua.create_function(|_, x: f64| Ok(x.tan()))?)?;
+
+    // -- asin --
+    /// Returns the arcsine of x, in radians.
+    /// @param x : number
+    /// @return number
+    tbl.set("asin", lua.create_function(|_, x: f64| Ok(x.asin()))?)?;
+
+    // -- acos --
+    /// Returns the arccosine of x, in radians.
+    /// @param x : number
+    /// @return number
+    tbl.set("acos", lua.create_function(|_, x: f64| Ok(x.acos()))?)?;
+
+    // -- atan --
+    /// Returns the arctangent of x (or atan2(y, x) when two args given).
+    /// @param y : number
+    /// @param x : number?
+    /// @return number
+    tbl.set(
+        "atan",
+        lua.create_function(|_, (y, x): (f64, Option<f64>)| {
+            Ok(match x {
+                Some(xv) => y.atan2(xv),
+                None => y.atan(),
+            })
+        })?,
+    )?;
+
+    // -- atan2 --
+    /// Returns atan(y/x) using the signs of both args to determine the quadrant.
+    /// @param y : number
+    /// @param x : number
+    /// @return number
+    tbl.set(
+        "atan2",
+        lua.create_function(|_, (y, x): (f64, f64)| Ok(y.atan2(x)))?,
+    )?;
+
+    // -- sqrt --
+    /// Returns the square root of x.
+    /// @param x : number
+    /// @return number
+    tbl.set("sqrt", lua.create_function(|_, x: f64| Ok(x.sqrt()))?)?;
+
+    // -- abs --
+    /// Returns the absolute value of x.
+    /// @param x : number
+    /// @return number
+    tbl.set("abs", lua.create_function(|_, x: f64| Ok(x.abs()))?)?;
+
+    // -- floor --
+    /// Returns the largest integer ≤ x.
+    /// @param x : number
+    /// @return number
+    tbl.set(
+        "floor",
+        lua.create_function(|_, x: f64| Ok(x.floor()))?,
+    )?;
+
+    // -- ceil --
+    /// Returns the smallest integer ≥ x.
+    /// @param x : number
+    /// @return number
+    tbl.set("ceil", lua.create_function(|_, x: f64| Ok(x.ceil()))?)?;
+
+    // -- round --
+    /// Returns x rounded to the nearest integer (half-up).
+    /// @param x : number
+    /// @return number
+    tbl.set(
+        "round",
+        lua.create_function(|_, x: f64| Ok(x.round()))?,
+    )?;
+
+    // -- exp --
+    /// Returns e raised to the power x.
+    /// @param x : number
+    /// @return number
+    tbl.set("exp", lua.create_function(|_, x: f64| Ok(x.exp()))?)?;
+
+    // -- log --
+    /// Returns the natural log of x, or log base b if b is supplied.
+    /// @param x : number
+    /// @param b : number?
+    /// @return number
+    tbl.set(
+        "log",
+        lua.create_function(|_, (x, b): (f64, Option<f64>)| {
+            Ok(match b {
+                Some(base) => x.log(base),
+                None => x.ln(),
+            })
+        })?,
+    )?;
+
+    // -- pow --
+    /// Returns x raised to the power y.
+    /// @param x : number
+    /// @param y : number
+    /// @return number
+    tbl.set(
+        "pow",
+        lua.create_function(|_, (x, y): (f64, f64)| Ok(x.powf(y)))?,
+    )?;
+
+    // -- min --
+    /// Returns the smallest of the supplied numbers.
+    /// @param ... : number
+    /// @return number
+    tbl.set(
+        "min",
+        lua.create_function(|_, args: mlua::Variadic<f64>| {
+            args.iter()
+                .copied()
+                .reduce(f64::min)
+                .ok_or_else(|| mlua::Error::RuntimeError("min() requires at least one argument".into()))
+        })?,
+    )?;
+
+    // -- max --
+    /// Returns the largest of the supplied numbers.
+    /// @param ... : number
+    /// @return number
+    tbl.set(
+        "max",
+        lua.create_function(|_, args: mlua::Variadic<f64>| {
+            args.iter()
+                .copied()
+                .reduce(f64::max)
+                .ok_or_else(|| mlua::Error::RuntimeError("max() requires at least one argument".into()))
+        })?,
+    )?;
+
+    // -- clamp --
+    /// Returns x clamped to [lo, hi].
+    /// @param x   : number
+    /// @param lo  : number
+    /// @param hi  : number
+    /// @return number
+    tbl.set(
+        "clamp",
+        lua.create_function(|_, (x, lo, hi): (f64, f64, f64)| Ok(x.clamp(lo, hi)))?,
+    )?;
+
+    // -- sign --
+    /// Returns -1, 0, or 1 depending on the sign of x.
+    /// @param x : number
+    /// @return number
+    tbl.set(
+        "sign",
+        lua.create_function(|_, x: f64| {
+            Ok(if x > 0.0 { 1.0_f64 } else if x < 0.0 { -1.0_f64 } else { 0.0_f64 })
+        })?,
+    )?;
+
+    // -- fmod --
+    /// Returns the remainder of x / y (fmod).
+    /// @param x : number
+    /// @param y : number
+    /// @return number
+    tbl.set(
+        "fmod",
+        lua.create_function(|_, (x, y): (f64, f64)| Ok(x % y))?,
+    )?;
+
+    // -- lerp --
+    /// Linear interpolation between a and b by fraction t.
+    /// @param a : number
+    /// @param b : number
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "lerp",
+        lua.create_function(|_, (a, b, t): (f64, f64, f64)| Ok(a + (b - a) * t))?,
+    )?;
+
+    // -- distance --
+    /// Returns the Euclidean distance between (x1,y1) and (x2,y2).
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @return number
+    tbl.set(
+        "distance",
+        lua.create_function(|_, (x1, y1, x2, y2): (f64, f64, f64, f64)| {
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+            Ok((dx * dx + dy * dy).sqrt())
+        })?,
+    )?;
+
+    // -- distanceSq --
+    /// Returns the squared Euclidean distance between (x1,y1) and (x2,y2) (avoids sqrt).
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @return number
+    tbl.set(
+        "distanceSq",
+        lua.create_function(|_, (x1, y1, x2, y2): (f64, f64, f64, f64)| {
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+            Ok(dx * dx + dy * dy)
+        })?,
+    )?;
+
+    // -- random --
+    /// Returns a pseudo-random number in [0,1) with no args,
+    /// in [0, max) with one arg, or in [min, max) with two args.
+    /// Uses Lua's built-in math.random for compatibility.
+    /// @param min_or_max : number?
+    /// @param max        : number?
+    /// @return number
+    tbl.set(
+        "random",
+        lua.create_function(|lua, (a, b): (Option<f64>, Option<f64>)| {
+            let math: mlua::Table = lua.globals().get("math")?;
+            match (a, b) {
+                (None, _) => {
+                    let f: mlua::Function = math.get("random")?;
+                    let v: f64 = f.call(())?;
+                    Ok(v)
+                }
+                (Some(max), None) => {
+                    // [0, max)
+                    let f: mlua::Function = math.get("random")?;
+                    let v: f64 = f.call(())?;
+                    Ok(v * max)
+                }
+                (Some(lo), Some(hi)) => {
+                    let f: mlua::Function = math.get("random")?;
+                    let v: f64 = f.call(())?;
+                    Ok(lo + v * (hi - lo))
+                }
+            }
+        })?,
+    )?;
+
+    // -- randomInt --
+    /// Returns a pseudo-random integer in [lo, hi] (inclusive).
+    /// @param lo : integer
+    /// @param hi : integer
+    /// @return integer
+    tbl.set(
+        "randomInt",
+        lua.create_function(|lua, (lo, hi): (i64, i64)| {
+            let math: mlua::Table = lua.globals().get("math")?;
+            let f: mlua::Function = math.get("random")?;
+            let v: i64 = f.call((lo, hi))?;
+            Ok(v)
+        })?,
+    )?;
+
     luna.set("math", tbl)?;
     Ok(())
 }
+

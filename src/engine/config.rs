@@ -1,10 +1,8 @@
-//! Engine and window configuration loaded from `conf.lua`.
+//! Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).
 //!
-//! When the engine starts it looks for a `conf.lua` file in the game directory.
-//! If found, it is evaluated in a minimal Lua VM.  The file must return a Lua table
-//! whose structure mirrors the [`Config`] struct.  Missing fields fall back to
-//! built-in defaults so authors only need to specify the settings they actually want
-//! to change.
+//! When the engine starts it looks for `conf.toml` first; if absent it falls back to
+//! `conf.lua` for backward compatibility.  Missing fields fall back to built-in
+//! defaults so authors only need to specify the settings they actually want to change.
 //!
 //! # Structure
 //!
@@ -20,19 +18,19 @@
 //! `luna.fs.getSaveDirectory()`.  If unset, the engine uses the game directory
 //! name as a fallback.
 //!
-//! # Example `conf.lua`
+//! # Example `conf.toml`
 //!
-//! ```lua
-//! return {
-//!     window = {
-//!         title  = "My Game",
-//!         width  = 1280,
-//!         height = 720,
-//!         vsync  = true,
-//!     },
-//!     -- GPU backend: "auto" | "dx12" | "vulkan" | "metal"
-//!     graphics = { backend = "auto", power_preference = "high" },
-//! }
+//! ```toml
+//! [window]
+//! title  = "My Game"
+//! width  = 1280
+//! height = 720
+//! vsync  = true
+//!
+//! # GPU backend: "auto" | "dx12" | "vulkan" | "metal"
+//! [graphics]
+//! backend = "auto"
+//! power_preference = "high"
 //! ```
 
 use crate::engine::log_messages::{
@@ -257,9 +255,12 @@ impl ModulesConfig {
 ///
 /// # Fields
 /// - `target_fps` — Desired frames per second for the game loop.
+/// - `physics_tick_rate` — Fixed tick rate for `process_physics` callback (Hz, default 60).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PerformanceConfig {
     pub target_fps: u32,
+    /// Fixed tick rate in Hz for the `process_physics` callback (default 60).
+    pub physics_tick_rate: u32,
 }
 
 impl Default for Config {
@@ -326,7 +327,10 @@ impl Default for Config {
                 spine: true,
                 terminal: true,
             },
-            performance: PerformanceConfig { target_fps: 60 },
+            performance: PerformanceConfig {
+                target_fps: 60,
+                physics_tick_rate: 60,
+            },
             identity: None,
             version: None,
             log_file: None,
@@ -337,15 +341,99 @@ impl Default for Config {
 }
 
 impl Config {
+    /// Loads engine configuration from the game directory.
+    ///
+    /// Tries `conf.toml` first (preferred TOML format), then falls back to `conf.lua`
+    /// for backward compatibility.  If neither file exists, returns `Config::default()`.
+    ///
+    /// # Parameters
+    /// - `game_dir` — Absolute path to the directory containing the game files.
+    ///
+    /// # Returns
+    /// A tuple of `(Config, Option<String>)`. The second element is `Some(msg)` if
+    /// loading had errors; the returned `Config` still holds usable defaults.
+    pub fn load(game_dir: &Path) -> (Self, Option<String>) {
+        let toml_path = game_dir.join("conf.toml");
+        if toml_path.exists() {
+            return Self::load_from_conf_toml(game_dir);
+        }
+        Self::load_from_conf_lua(game_dir)
+    }
+
+    /// Loads engine configuration from `conf.toml` in the game directory.
+    ///
+    /// The file must be valid TOML whose top-level keys match the [`Config`] struct.
+    /// Missing keys fall back to defaults from [`Config::default`].  Nested tables are
+    /// merged field-by-field so a `[window]` block with only `title` still keeps the
+    /// default `width` and `height`.
+    ///
+    /// # Parameters
+    /// - `game_dir` — Absolute path to the directory containing `conf.toml`.
+    ///
+    /// # Returns
+    /// A tuple of `(Config, Option<String>)`. The second element is `Some(msg)` if
+    /// `conf.toml` had errors; the returned `Config` still holds usable defaults.
+    pub fn load_from_conf_toml(game_dir: &Path) -> (Self, Option<String>) {
+        let conf_path = game_dir.join("conf.toml");
+        let default = Config::default();
+
+        if !conf_path.exists() {
+            return (default, None);
+        }
+
+        let text = match std::fs::read_to_string(&conf_path) {
+            Ok(c) => c,
+            Err(e) => {
+                log_msg!(warn, L051_CONF_READ_ERR, "{}", e);
+                return (default, Some(format!("Failed to read conf.toml: {}", e)));
+            }
+        };
+
+        let override_val = match toml::from_str::<toml::Value>(&text) {
+            Ok(v) => v,
+            Err(e) => {
+                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
+                return (default, Some(format!("Error in conf.toml: {}", e)));
+            }
+        };
+
+        // Merge override on top of serialised defaults so omitted keys keep
+        // their default values rather than triggering a serde error.
+        let default_text = match toml::to_string(&default) {
+            Ok(s) => s,
+            Err(_) => return (default, None),
+        };
+        let mut merged: toml::Value =
+            toml::from_str(&default_text).unwrap_or(toml::Value::Table(toml::Table::new()));
+
+        if let (toml::Value::Table(base), toml::Value::Table(over_)) = (&mut merged, override_val) {
+            for (k, v) in over_ {
+                // Merge nested tables to preserve unspecified defaults within sections.
+                if let (Some(toml::Value::Table(base_tbl)), toml::Value::Table(over_tbl)) =
+                    (base.get_mut(&k), v.clone())
+                {
+                    for (sk, sv) in over_tbl {
+                        base_tbl.insert(sk, sv);
+                    }
+                } else {
+                    base.insert(k, v);
+                }
+            }
+        }
+
+        match merged.try_into::<Config>() {
+            Ok(cfg) => (cfg, None),
+            Err(e) => {
+                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
+                (default, Some(format!("Error in conf.toml: {}", e)))
+            }
+        }
+    }
+
     /// Loads engine configuration from `conf.lua` in the game directory.
     ///
     /// If `conf.lua` is absent or contains errors, returns `Config::default()` silently.
-    /// The expected format is a Lua file that returns a configuration table:
-    /// ```lua
-    /// return {
-    ///     window = { title = "My Game", width = 1280, height = 720 },
-    /// }
-    /// ```
+    /// Prefer `conf.toml` for new games — this loader exists for backward compatibility.
     ///
     /// # Parameters
     /// - `game_dir` — Absolute path to the directory containing `conf.lua` (and `main.lua`).
@@ -562,6 +650,11 @@ impl Config {
         if let Ok(perf) = t.get::<_, LuaTable>("performance") {
             if let Ok(v) = perf.get::<_, u32>("target_fps") {
                 config.performance.target_fps = v;
+            }
+            if let Ok(v) = perf.get::<_, u32>("physics_tick_rate") {
+                if v > 0 {
+                    config.performance.physics_tick_rate = v;
+                }
             }
         }
 

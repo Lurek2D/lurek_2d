@@ -340,6 +340,30 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().clock.elapsed()))?,
     )?;
 
+    // -- getPhysicsDelta --
+    /// Returns the fixed timestep used by `process_physics` callbacks (seconds).
+    /// @return number
+    let s = state.clone();
+    tbl.set(
+        "getPhysicsDelta",
+        lua.create_function(move |_, ()| Ok(s.borrow().physics_fixed_dt))?,
+    )?;
+
+    // -- setPhysicsDelta --
+    /// Sets the fixed timestep for `process_physics` callbacks (seconds).
+    /// Clamped to [1/240, 1/10] to prevent instability.
+    /// @param dt : number
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "setPhysicsDelta",
+        lua.create_function(move |_, dt: f64| {
+            let clamped = dt.clamp(1.0 / 240.0, 1.0 / 10.0);
+            s.borrow_mut().physics_fixed_dt = clamped;
+            Ok(())
+        })?,
+    )?;
+
     // -- sleep --
     /// Suspends execution for the given number of seconds.
     /// @param seconds : number

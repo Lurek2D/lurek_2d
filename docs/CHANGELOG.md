@@ -18,6 +18,11 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.5.1] — 2026-04-08
+
+### Added
+- Added `LICENSE_INVENTORY.md` at the repository root with explicit first-party Rust module and Lua library lists, direct Cargo dependency license tables, the direct VS Code extension runtime dependency license, and a no-models-found audit summary.
+
 ## [0.5.0] — 2026-04-08
 
 ### Changed
@@ -38,15 +43,15 @@ Always update this file **in the same commit** as the change. Use the commit typ
 ## [X.Y.Z] — YYYY-MM-DD
 
 ### Added
-- 
+-
 
 ### Changed
-- 
+-
 
 ### Fixed
-- 
+-
 
 ### Removed
-- 
+-
 
 -->

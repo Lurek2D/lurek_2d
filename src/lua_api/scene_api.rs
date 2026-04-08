@@ -3,7 +3,7 @@
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use crate::scene::depth_sorter::DepthSorter;
@@ -22,6 +22,8 @@ struct SceneState {
     scene_refs: HashMap<SceneId, LuaRegistryKey>,
     /// Maps string keys to Lua values stored in the registry.
     data_refs: HashMap<String, LuaRegistryKey>,
+    /// Scenes whose `ready` callback has not yet fired (fires on first process tick).
+    scene_ready_pending: HashSet<SceneId>,
 }
 
 // -------------------------------------------------------------------------------
@@ -54,7 +56,6 @@ pub struct LuaDepthSorter {
 
 impl LuaUserData for LuaDepthSorter {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- add --
         /// Registers a draw callback at the given depth layer.
         /// @param callback : function
@@ -140,7 +141,6 @@ impl LuaUserData for LuaDepthSorter {
         methods.add_method("getCount", |_, this, ()| {
             Ok(this.inner.borrow().get_count())
         });
-
     }
 }
 
@@ -161,6 +161,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         stack: SceneStack::new(),
         scene_refs: HashMap::new(),
         data_refs: HashMap::new(),
+        scene_ready_pending: HashSet::new(),
     }));
 
     // ── Stack operations ─────────────────────────────────────────────────
@@ -201,6 +202,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
 
                 s.scene_refs.insert(scene_id, key);
+                s.scene_ready_pending.insert(scene_id);
 
                 let params_arg = params.unwrap_or(LuaValue::Nil);
                 if let Some(new_key) = s.scene_refs.get(&scene_id) {
@@ -283,6 +285,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
 
                 s.scene_refs.insert(scene_id, key);
+                s.scene_ready_pending.insert(scene_id);
 
                 let params_arg = params.unwrap_or(LuaValue::Nil);
                 if let Some(new_key) = s.scene_refs.get(&scene_id) {
@@ -345,7 +348,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- update --
-    /// Updates the top scene and any active transition.
+    /// Updates the top scene and any active transition (legacy name; prefer `process`).
+    /// Calls `scene:update(dt)` on the topmost scene only.
     /// @param dt : number
     /// @return nil
     let st = state.clone();
@@ -365,8 +369,70 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- process --
+    /// Calls `scene:ready(self)` on the top scene if not yet fired, then `scene:process(dt)`.
+    /// Preferred over `update` — matches the engine's main-loop naming.
+    /// @param dt : number
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "process",
+        lua.create_function(move |lua, dt: f64| {
+            let mut s = st.borrow_mut();
+            if let Some(top_id) = s.stack.get_current() {
+                // Fire ready once, on the first process tick after enter.
+                if s.scene_ready_pending.remove(&top_id) {
+                    if let Some(top_key) = s.scene_refs.get(&top_id) {
+                        let _ = call_scene_method(lua, top_key, "ready", ());
+                    }
+                }
+                if let Some(top_key) = s.scene_refs.get(&top_id) {
+                    let _ = call_scene_method(lua, top_key, "process", dt);
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+
+    // -- processPhysics --
+    /// Calls `scene:process_physics(dt)` on the topmost scene (fixed timestep).
+    /// @param dt : number
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "processPhysics",
+        lua.create_function(move |lua, dt: f64| {
+            let s = st.borrow();
+            if let Some(top_id) = s.stack.get_current() {
+                if let Some(top_key) = s.scene_refs.get(&top_id) {
+                    let _ = call_scene_method(lua, top_key, "process_physics", dt);
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+
+    // -- processLate --
+    /// Calls `scene:process_late(dt)` on the topmost scene (after process, before render).
+    /// @param dt : number
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "processLate",
+        lua.create_function(move |lua, dt: f64| {
+            let s = st.borrow();
+            if let Some(top_id) = s.stack.get_current() {
+                if let Some(top_key) = s.scene_refs.get(&top_id) {
+                    let _ = call_scene_method(lua, top_key, "process_late", dt);
+                }
+            }
+            Ok(())
+        })?,
+    )?;
+
     // -- draw --
-    /// Draws all scenes in the stack from bottom to top.
+    /// Draws all scenes in the stack from bottom to top (legacy name; prefer `render`).
+    /// Calls `scene:draw()` on every scene in the stack.
     /// @return nil
     let st = state.clone();
     tbl.set(
@@ -378,6 +444,48 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             for id in &all_ids {
                 if let Some(scene_key) = s.scene_refs.get(id) {
                     let _ = call_scene_method(lua, scene_key, "draw", ());
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
+
+    // -- render --
+    /// Draws all scenes in the stack from bottom to top.
+    /// Calls `scene:render(self)` on every scene. Preferred over `draw`.
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "render",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let all_ids: Vec<SceneId> = s.stack.get_all().to_vec();
+
+            for id in &all_ids {
+                if let Some(scene_key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, scene_key, "render", ());
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
+
+    // -- renderUi --
+    /// Draws UI overlay for all scenes in the stack from bottom to top.
+    /// Calls `scene:render_ui(self)` on every scene in the stack.
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "renderUi",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let all_ids: Vec<SceneId> = s.stack.get_all().to_vec();
+
+            for id in &all_ids {
+                if let Some(scene_key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, scene_key, "render_ui", ());
                 }
             }
 
@@ -489,9 +597,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     let st = state.clone();
     tbl.set(
         "hasRegistered",
-        lua.create_function(move |_, name: String| {
-            Ok(st.borrow().stack.has_registered(&name))
-        })?,
+        lua.create_function(move |_, name: String| Ok(st.borrow().stack.has_registered(&name)))?,
     )?;
 
     // -- unregisterScene --
@@ -593,6 +699,42 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("scene", tbl)?;
+    // ── Scene helpers ─────────────────────────────────────────────────────
+
+    // Expose `luna.scene` in the global namespace BEFORE running inline Lua so
+    // that `luna.scene` is resolvable when the snippet executes.
+    luna.set("scene", tbl.clone())?;
+
+    // Inline Lua helpers registered directly so they have zero Rust overhead.
+    // `luna.scene.new(def)` — creates a scene instance from a methods table.
+    // `luna.scene.define(def)` — creates a reusable scene class (callable constructor).
+    lua.load(
+        r#"
+local _tbl = luna.scene
+
+--- luna.scene.new(def) — create a scene instance directly from a methods table.
+--- @param def table  A table of optional scene callbacks (ready, process, render, …).
+--- @return table     A new scene instance whose metatable delegates to `def`.
+function _tbl.new(def)
+    def = def or {}
+    def.__index = def
+    return setmetatable({}, def)
+end
+
+--- luna.scene.define(def) — create a reusable scene class.
+--- Returns a zero-argument constructor function that produces new instances.
+--- @param def table  A table of optional scene callbacks shared across instances.
+--- @return function  Constructor: call it (no args) to get a fresh scene instance.
+function _tbl.define(def)
+    def = def or {}
+    def.__index = def
+    return function()
+        return setmetatable({}, def)
+    end
+end
+    "#,
+    )
+    .exec()?;
+
     Ok(())
 }

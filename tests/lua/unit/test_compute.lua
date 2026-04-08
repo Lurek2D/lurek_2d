@@ -446,7 +446,7 @@ describe("masking", function()
         -- Let's verify: ops::where_mask(mask, this, other)
         -- Lua: this:where(mask, other) => where_mask(mask, this, other)
         -- So a:where(cond, b) puts mask=cond, this=a, other=b
-        -- where mask=1 › this(a), where mask=0 › other(b)
+        -- where mask=1 Â› this(a), where mask=0 Â› other(b)
         local result = a["where"](a, cond, b)
         expect_near(10.0, result:get(1), 1e-5)
         expect_near(200.0, result:get(2), 1e-5)
@@ -530,10 +530,10 @@ describe("reductions", function()
     end)
 
     it("sum along axis 1 of a 3x3 array", function()
-        -- 3x3 array, sum along rows (axis 1) › each column summed
+        -- 3x3 array, sum along rows (axis 1) Â› each column summed
         local a = luna.compute.fromTable({1,2,3, 4,5,6, 7,8,9}, {3,3})
         local s = a:sum(1)
-        -- sum axis=0 (Rust 0-based) › sums over rows › {12, 15, 18}
+        -- sum axis=0 (Rust 0-based) Â› sums over rows Â› {12, 15, 18}
         expect_equal(3, s:getSize())
         expect_near(12.0, s:get(1), 1e-5)
         expect_near(15.0, s:get(2), 1e-5)
@@ -543,7 +543,7 @@ describe("reductions", function()
     it("sum along axis 2 of a 3x3 array", function()
         local a = luna.compute.fromTable({1,2,3, 4,5,6, 7,8,9}, {3,3})
         local s = a:sum(2)
-        -- sum axis=1 (Rust 0-based) › sums over cols › {6, 15, 24}
+        -- sum axis=1 (Rust 0-based) Â› sums over cols Â› {6, 15, 24}
         expect_equal(3, s:getSize())
         expect_near(6.0, s:get(1), 1e-5)
         expect_near(15.0, s:get(2), 1e-5)
@@ -759,7 +759,7 @@ describe("2D spatial operations", function()
 
     it("floodFill fills connected region", function()
         local a = luna.compute.zeros({3, 3})
-        -- Fill from (1,1) › 0-region with value 5
+        -- Fill from (1,1) Â› 0-region with value 5
         local filled = a:floodFill(1, 1, 5.0)
         -- All zeros connected to (1,1) should become 5
         expect_near(5.0, filled:get(1, 1), 1e-5)

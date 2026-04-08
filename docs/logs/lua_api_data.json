@@ -1,17 +1,17 @@
 {
   "meta": {
-    "generated": "2026-04-07T21:43:41.375654+00:00",
+    "generated": "2026-04-08T00:36:25.540590+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "0.5.0",
     "stats": {
-      "lua_functions": 2035,
+      "lua_functions": 2042,
       "lua_modules": 38
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 2035,
-      "documented": 2035,
+      "total_functions": 2042,
+      "documented": 2042,
       "coverage_pct": 100.0,
       "modules": 38
     },
@@ -2232,7 +2232,7 @@
         }
       },
       "animation": {
-        "description": "`luna.animation` — Sprite animation: frame pools, named clips, speed control, and playback events.",
+        "description": "`luna.tween` — Sprite animation: frame pools, named clips, speed control, and playback events.",
         "source_file": "src/lua_api/animation_api.rs",
         "functions": [
           {
@@ -6621,7 +6621,7 @@
         }
       },
       "compute": {
-        "description": "`luna.compute` — Dense N-dimensional numerical arrays with NumPy-style operations.",
+        "description": "`luna.gpu` — Dense N-dimensional numerical arrays with NumPy-style operations.",
         "source_file": "src/lua_api/compute_api.rs",
         "functions": [
           {
@@ -10084,16 +10084,16 @@
         }
       },
       "event": {
-        "description": "`luna.event` — Event queue polling and pub-sub signal dispatching.",
+        "description": "",
         "source_file": "src/lua_api/event_api.rs",
         "functions": [
           {
-            "name": "quit",
-            "lua_name": "luna.event.quit",
+            "name": "exit",
+            "lua_name": "luna.event.exit",
             "kind": "function",
             "owner_type": "",
-            "description": "Pushes a quit event, requesting the engine to stop.",
-            "full_doc": "Pushes a quit event, requesting the engine to stop.\n@param code : integer?\n@return nil",
+            "description": "Pushes an exit event, requesting the engine to stop.",
+            "full_doc": "Pushes an exit event, requesting the engine to stop.\n@param code : integer?\n@return nil",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "([code])",
@@ -10105,7 +10105,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 154,
+            "line": 152,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10126,7 +10126,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 169,
+            "line": 167,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10141,7 +10141,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "function",
-            "line": 197,
+            "line": 195,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10156,7 +10156,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 214,
+            "line": 212,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10171,7 +10171,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Signal",
-            "line": 225,
+            "line": 223,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10186,7 +10186,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 239,
+            "line": 237,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10207,7 +10207,7 @@
               ]
             ],
             "inferred_return": "string?",
-            "line": 252,
+            "line": 250,
             "file": "src/lua_api/event_api.rs"
           },
           {
@@ -10222,7 +10222,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 267,
+            "line": 265,
             "file": "src/lua_api/event_api.rs"
           }
         ],
@@ -10248,7 +10248,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 48,
+                "line": 47,
                 "file": "src/lua_api/event_api.rs"
               },
               {
@@ -10269,7 +10269,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 77,
+                "line": 76,
                 "file": "src/lua_api/event_api.rs"
               },
               {
@@ -10290,7 +10290,7 @@
                   ]
                 ],
                 "inferred_return": "integer",
-                "line": 91,
+                "line": 90,
                 "file": "src/lua_api/event_api.rs"
               },
               {
@@ -10305,7 +10305,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 106,
+                "line": 105,
                 "file": "src/lua_api/event_api.rs"
               },
               {
@@ -10326,7 +10326,7 @@
                   ]
                 ],
                 "inferred_return": "integer",
-                "line": 119,
+                "line": 118,
                 "file": "src/lua_api/event_api.rs"
               },
               {
@@ -10341,7 +10341,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 126,
+                "line": 125,
                 "file": "src/lua_api/event_api.rs"
               }
             ]
@@ -10349,7 +10349,7 @@
         }
       },
       "filesystem": {
-        "description": "`luna.filesystem` — Sandboxed file I/O, directory queries, and async asset loading.",
+        "description": "",
         "source_file": "src/lua_api/filesystem_api.rs",
         "functions": [
           {
@@ -11074,7 +11074,7 @@
         }
       },
       "fx": {
-        "description": "`luna.fx` — Composable visual effects: post-processing pipeline and screen overlays.",
+        "description": "",
         "source_file": "src/lua_api/fx_api.rs",
         "functions": [
           {
@@ -14560,7 +14560,7 @@
         }
       },
       "graphics": {
-        "description": "`luna.graphics` — 2D drawing, images, fonts, canvases, meshes, shaders and sprite batches.",
+        "description": "`luna.gfx` — 2D drawing, images, fonts, canvases, meshes, shaders and sprite batches.",
         "source_file": "src/lua_api/graphics_api.rs",
         "functions": [
           {
@@ -17017,7 +17017,7 @@
         }
       },
       "gui": {
-        "description": "`luna.gui` — Retained-mode widget UI system.",
+        "description": "",
         "source_file": "src/lua_api/gui_api.rs",
         "functions": [
           {
@@ -22176,7 +22176,7 @@
         }
       },
       "image": {
-        "description": "`luna.image` — CPU-side pixel-level image manipulation.",
+        "description": "",
         "source_file": "src/lua_api/image_api.rs",
         "functions": [
           {
@@ -29319,7 +29319,7 @@
         }
       },
       "particle": {
-        "description": "`luna.particle` — Emitter-based 2D particle systems and trail ribbons.",
+        "description": "",
         "source_file": "src/lua_api/particle_api.rs",
         "functions": [
           {
@@ -34045,7 +34045,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 176,
+            "line": 179,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34071,7 +34071,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 221,
+            "line": 225,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34107,7 +34107,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 258,
+            "line": 262,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34122,7 +34122,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 301,
+            "line": 306,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34143,7 +34143,7 @@
               ]
             ],
             "inferred_return": "boolean",
-            "line": 322,
+            "line": 327,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34151,8 +34151,8 @@
             "lua_name": "luna.scene.update",
             "kind": "function",
             "owner_type": "",
-            "description": "Updates the top scene and any active transition.",
-            "full_doc": "Updates the top scene and any active transition.\n@param dt : number\n@return nil",
+            "description": "Updates the top scene and any active transition (legacy name; prefer `process`).",
+            "full_doc": "Updates the top scene and any active transition (legacy name; prefer `process`).\nCalls `scene:update(dt)` on the topmost scene only.\n@param dt : number\n@return nil",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "(dt)",
@@ -34164,7 +34164,70 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 352,
+            "line": 358,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "process",
+            "lua_name": "luna.scene.process",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Calls `scene:ready(self)` on the top scene if not yet fired, then `scene:process(dt)`.",
+            "full_doc": "Calls `scene:ready(self)` on the top scene if not yet fired, then `scene:process(dt)`.\nPreferred over `update` — matches the engine's main-loop naming.\n@param dt : number\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(dt)",
+            "typed_params": [
+              [
+                "dt",
+                "number",
+                false
+              ]
+            ],
+            "inferred_return": "nil",
+            "line": 380,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "processPhysics",
+            "lua_name": "luna.scene.processPhysics",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Calls `scene:process_physics(dt)` on the topmost scene (fixed timestep).",
+            "full_doc": "Calls `scene:process_physics(dt)` on the topmost scene (fixed timestep).\n@param dt : number\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(dt)",
+            "typed_params": [
+              [
+                "dt",
+                "number",
+                false
+              ]
+            ],
+            "inferred_return": "nil",
+            "line": 404,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "processLate",
+            "lua_name": "luna.scene.processLate",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Calls `scene:process_late(dt)` on the topmost scene (after process, before render).",
+            "full_doc": "Calls `scene:process_late(dt)` on the topmost scene (after process, before render).\n@param dt : number\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(dt)",
+            "typed_params": [
+              [
+                "dt",
+                "number",
+                false
+              ]
+            ],
+            "inferred_return": "nil",
+            "line": 422,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34172,14 +34235,44 @@
             "lua_name": "luna.scene.draw",
             "kind": "function",
             "owner_type": "",
-            "description": "Draws all scenes in the stack from bottom to top.",
-            "full_doc": "Draws all scenes in the stack from bottom to top.\n@return nil",
+            "description": "Draws all scenes in the stack from bottom to top (legacy name; prefer `render`).",
+            "full_doc": "Draws all scenes in the stack from bottom to top (legacy name; prefer `render`).\nCalls `scene:draw()` on every scene in the stack.\n@return nil",
             "params_doc": "",
             "returns_doc": "",
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 372,
+            "line": 440,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "render",
+            "lua_name": "luna.scene.render",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Draws all scenes in the stack from bottom to top.",
+            "full_doc": "Draws all scenes in the stack from bottom to top.\nCalls `scene:render(self)` on every scene. Preferred over `draw`.\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "nil",
+            "line": 461,
+            "file": "src/lua_api/scene_api.rs"
+          },
+          {
+            "name": "renderUi",
+            "lua_name": "luna.scene.renderUi",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Draws UI overlay for all scenes in the stack from bottom to top.",
+            "full_doc": "Draws UI overlay for all scenes in the stack from bottom to top.\nCalls `scene:render_ui(self)` on every scene in the stack.\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "nil",
+            "line": 482,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34194,7 +34287,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "integer",
-            "line": 394,
+            "line": 504,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34209,7 +34302,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 403,
+            "line": 513,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34224,7 +34317,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "table?",
-            "line": 412,
+            "line": 522,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34239,7 +34332,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 432,
+            "line": 542,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34254,7 +34347,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 441,
+            "line": 551,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34280,7 +34373,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 454,
+            "line": 564,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34301,7 +34394,7 @@
               ]
             ],
             "inferred_return": "table?",
-            "line": 471,
+            "line": 581,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34322,7 +34415,7 @@
               ]
             ],
             "inferred_return": "boolean",
-            "line": 490,
+            "line": 600,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34343,7 +34436,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 502,
+            "line": 612,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34358,7 +34451,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "table",
-            "line": 514,
+            "line": 624,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34384,7 +34477,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 527,
+            "line": 637,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34405,7 +34498,7 @@
               ]
             ],
             "inferred_return": "table?",
-            "line": 544,
+            "line": 654,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34426,7 +34519,7 @@
               ]
             ],
             "inferred_return": "boolean",
-            "line": 561,
+            "line": 671,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34447,7 +34540,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 571,
+            "line": 681,
             "file": "src/lua_api/scene_api.rs"
           },
           {
@@ -34462,7 +34555,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "DepthSorter",
-            "line": 586,
+            "line": 696,
             "file": "src/lua_api/scene_api.rs"
           }
         ],
@@ -34493,7 +34586,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 63,
+                "line": 65,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -34514,7 +34607,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 76,
+                "line": 78,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -34529,7 +34622,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 89,
+                "line": 91,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -34544,7 +34637,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 97,
+                "line": 99,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -34559,7 +34652,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 131,
+                "line": 133,
                 "file": "src/lua_api/scene_api.rs"
               },
               {
@@ -34574,7 +34667,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 140,
+                "line": 142,
                 "file": "src/lua_api/scene_api.rs"
               }
             ]
@@ -34582,7 +34675,7 @@
         }
       },
       "serial": {
-        "description": "`luna.serial` — Format-agnostic string serialization: JSON, TOML, and CSV.",
+        "description": "",
         "source_file": "src/lua_api/serial_api.rs",
         "functions": [
           {
@@ -38998,7 +39091,7 @@
         }
       },
       "timer": {
-        "description": "`luna.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.",
+        "description": "",
         "source_file": "src/lua_api/timer_api.rs",
         "functions": [
           {
@@ -39092,6 +39185,42 @@
             "file": "src/lua_api/timer_api.rs"
           },
           {
+            "name": "getPhysicsDelta",
+            "lua_name": "luna.timer.getPhysicsDelta",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the fixed timestep used by `process_physics` callbacks (seconds).",
+            "full_doc": "Returns the fixed timestep used by `process_physics` callbacks (seconds).\n@return number",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "number",
+            "line": 347,
+            "file": "src/lua_api/timer_api.rs"
+          },
+          {
+            "name": "setPhysicsDelta",
+            "lua_name": "luna.timer.setPhysicsDelta",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Sets the fixed timestep for `process_physics` callbacks (seconds).",
+            "full_doc": "Sets the fixed timestep for `process_physics` callbacks (seconds).\nClamped to [1/240, 1/10] to prevent instability.\n@param dt : number\n@return nil",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "(dt)",
+            "typed_params": [
+              [
+                "dt",
+                "number",
+                false
+              ]
+            ],
+            "inferred_return": "nil",
+            "line": 358,
+            "file": "src/lua_api/timer_api.rs"
+          },
+          {
             "name": "sleep",
             "lua_name": "luna.timer.sleep",
             "kind": "function",
@@ -39109,7 +39238,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 347,
+            "line": 371,
             "file": "src/lua_api/timer_api.rs"
           },
           {
@@ -39124,7 +39253,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Scheduler",
-            "line": 358,
+            "line": 382,
             "file": "src/lua_api/timer_api.rs"
           }
         ],

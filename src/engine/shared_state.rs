@@ -352,6 +352,8 @@ pub struct SharedState {
     pub depth_mode: (DepthMode, bool),
     /// 2D lighting system world containing lights and occluders.
     pub light_world: LightWorld,
+    /// Fixed time-step for `process_physics` callback, in seconds (default 1/60).
+    pub physics_fixed_dt: f64,
 }
 
 impl SharedState {
@@ -429,6 +431,7 @@ impl SharedState {
             stencil_mode: StencilMode::default(),
             depth_mode: (DepthMode::Always, false),
             light_world: LightWorld::new(),
+            physics_fixed_dt: 1.0 / 60.0,
         }
     }
 

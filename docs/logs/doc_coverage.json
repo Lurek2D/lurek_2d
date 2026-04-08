@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-07T21:43:41.862002+00:00",
+  "generated_at": "2026-04-08T00:36:26.101613+00:00",
   "summary": {
     "rust": {
-      "total": 3264,
-      "covered": 3264,
+      "total": 3266,
+      "covered": 3266,
       "missing": 0,
       "pct": 100.0
     },
@@ -14,8 +14,8 @@
       "pct": 100.0
     },
     "total": {
-      "total": 3293,
-      "covered": 3293,
+      "total": 3295,
+      "covered": 3295,
       "missing": 0,
       "pct": 100.0
     }
@@ -5687,7 +5687,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app.rs",
-      "line": 2169,
+      "line": 2227,
       "kind": "struct",
       "name": "App",
       "has_doc": true
@@ -5696,7 +5696,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app.rs",
-      "line": 2184,
+      "line": 2242,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -5705,7 +5705,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app.rs",
-      "line": 2195,
+      "line": 2253,
       "kind": "fn",
       "name": "run",
       "has_doc": true
@@ -5714,7 +5714,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app_winit.rs",
-      "line": 451,
+      "line": 454,
       "kind": "struct",
       "name": "App",
       "has_doc": true
@@ -5723,7 +5723,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app_winit.rs",
-      "line": 463,
+      "line": 466,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -5732,7 +5732,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/app_winit.rs",
-      "line": 471,
+      "line": 474,
       "kind": "fn",
       "name": "run",
       "has_doc": true
@@ -5741,7 +5741,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 61,
+      "line": 60,
       "kind": "struct",
       "name": "Config",
       "has_doc": true
@@ -5750,7 +5750,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 95,
+      "line": 94,
       "kind": "struct",
       "name": "GraphicsConfig",
       "has_doc": true
@@ -5759,7 +5759,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 119,
+      "line": 118,
       "kind": "struct",
       "name": "WindowConfig",
       "has_doc": true
@@ -5768,7 +5768,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 176,
+      "line": 175,
       "kind": "struct",
       "name": "ModulesConfig",
       "has_doc": true
@@ -5777,7 +5777,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 229,
+      "line": 228,
       "kind": "fn",
       "name": "validate_and_fix",
       "has_doc": true
@@ -5795,7 +5795,25 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/config.rs",
-      "line": 357,
+      "line": 355,
+      "kind": "fn",
+      "name": "load",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "engine",
+      "file": "src/engine/config.rs",
+      "line": 376,
+      "kind": "fn",
+      "name": "load_from_conf_toml",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "engine",
+      "file": "src/engine/config.rs",
+      "line": 444,
       "kind": "fn",
       "name": "load_from_conf_lua",
       "has_doc": true
@@ -8513,7 +8531,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 371,
+      "line": 373,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -8522,7 +8540,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 439,
+      "line": 442,
       "kind": "fn",
       "name": "step_timer",
       "has_doc": true
@@ -8531,7 +8549,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 454,
+      "line": 457,
       "kind": "fn",
       "name": "request_async_load",
       "has_doc": true
@@ -8540,7 +8558,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 466,
+      "line": 469,
       "kind": "fn",
       "name": "load_default_font",
       "has_doc": true
@@ -8549,7 +8567,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 489,
+      "line": 492,
       "kind": "fn",
       "name": "poll_async_load",
       "has_doc": true
@@ -8558,7 +8576,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 514,
+      "line": 517,
       "kind": "struct",
       "name": "RendererStats",
       "has_doc": true
@@ -8567,7 +8585,7 @@
       "source": "rust",
       "module": "engine",
       "file": "src/engine/shared_state.rs",
-      "line": 532,
+      "line": 535,
       "kind": "fn",
       "name": "compute_stats",
       "has_doc": true
@@ -17108,7 +17126,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/event_api.rs",
-      "line": 146,
+      "line": 144,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -17666,7 +17684,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 50,
+      "line": 52,
       "kind": "struct",
       "name": "LuaDepthSorter",
       "has_doc": true
@@ -17675,7 +17693,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/scene_api.rs",
-      "line": 157,
+      "line": 159,
       "kind": "fn",
       "name": "register",
       "has_doc": true
