@@ -18,6 +18,33 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.6.14] — 2026-04-09
+
+### Fixed
+- **`tools/audit/audit_module.py`** — fixed VS Code extension-host pipe deadlock that hung the entire IDE on batch audits:
+  - Root cause: `sys.stdout = io.TextIOWrapper(sys.stdout.buffer, ...)` created a block-buffered pipe wrapper (8 KB blocks). Printing hundreds of KB of text for `--all` mode filled the 64 KB Windows pipe buffer, then blocked indefinitely waiting for VS Code's pipe reader to drain it. CPU stayed at 8% (single thread, waiting on OS pipe write).
+  - Fix: replaced the `TextIOWrapper` assignment with `sys.stdout.reconfigure(encoding="utf-8", errors="replace")` — modifies the existing wrapper in-place, leaving its buffer mode unchanged.
+  - Fix: replaced `print(output)` (one giant string) with line-by-line `print(ln, flush=True)` so the pipe drains continuously.
+  - Fix: when `--docs-quality` is active, suppressed the large text report on stdout entirely — the per-module Markdown files in `docs/quality/` are the primary artifact.
+  - Added `sys.stdout.flush()` in a `try/finally` block before interpreter teardown to prevent partial output on `sys.exit()`.
+  - **Benchmark**: `--all --docs-quality` for 46 modules completes in **2.4 seconds** with no VS Code UI freeze.
+
+---
+
+## [0.6.13] — 2026-04-09
+
+### Fixed
+- **`tools/audit/audit_module.py`** — major performance overhaul to eliminate VS Code extension-host crashes when batch-auditing 15+ modules:
+  - Added module-level `_FILE_CACHE` dict so each `.rs` file is read from disk exactly once per audit run instead of being re-read by each of the 8 independent check functions (previously: 8 reads per file per module; now: 1 read per file).
+  - Added `_analyze_module_files()` which performs a single sequential pass over the module's source files, accumulating all findings (D-01/D-02/D-04/R-02/R-03/Q-01/Q-03/Q-04 and file sizes) in one loop. Individual check functions now query the pre-computed `ModuleFileAnalysis` instead of re-iterating files.
+  - Fixed wrong `REQUIRED_SECTIONS` list (`Summary`, `Key Types`, `Item Summary`) that was generating false A-02 ERRORs on every module. Updated to the canonical AGENT.md format: `Purpose`, `Source Files`, `Full Specification` (also accepting the short form `Full Spec`).
+  - Fixed contradictory A-05 check (previously required `\`\`\`lua` blocks in AGENT.md, contradicting the agent-md skill which places Lua examples in `specs/`). A-05 now checks for the existence of the `specs/<module>.md` companion file instead.
+  - Fixed duplicate `if __name__ == "__main__":` UTF-8 wrapper block; added `try/except AttributeError` guard for subprocess contexts.
+  - Added `clear_file_cache()` call between modules in batch runs to bound memory usage.
+  - **Benchmark**: 1 module: 0.12 s; 15 modules: 0.18 s; all 46 modules: 0.35 s (previously blocked VS Code on 15-module batches).
+
+---
+
 ## [0.6.12] — 2026-04-08
 
 ### Fixed
