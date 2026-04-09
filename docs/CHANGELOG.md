@@ -18,6 +18,26 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.6.23] — 2026-04-10
+### Fixed
+- **Quality: D-04/D-03/T-03/SP-03/SP-04/SP-05/A-03** — Audit pre-fixes across 14 modules:
+  - **network**: D-04 stubs (host.rs), T-03 test_ prefixes; T-04 float asserts in network_tests.rs
+  - **compute**: D-04 stubs (array.rs, ops.rs, compute_api.rs), T-03 prefixes
+  - **particle**: D-04 stubs (config.rs, emitter.rs, trail.rs), SP-03 trim, SP-04 API row
+  - **raycaster**: D-04 stubs (column_batch.rs, depth_buffer.rs, doors.rs), SP-03 trim, SP-05 keys
+  - **gui**: D-04 stubs (context.rs, controls.rs, extras.rs, widget.rs, gui_api.rs), SP-03/SP-04/SP-05
+  - **event**: D-04 stubs (event_queue.rs, signal.rs, event_api.rs)
+  - **scene**: D-04 stubs (depth_sorter.rs, stack.rs, transition.rs), T-03 prefixes
+  - **docs**: D-04 stubs (catalog.rs, entry.rs, report.rs)
+  - **image**: SP-05 — moved ImageLayer/LayeredImage headings inside Key Types section
+  - **devtools**: D-07 — added @return annotations to p95/p99/samples in devtools_api.rs
+  - **filesystem**: D-04 stubs (async_loader.rs, file_handle.rs, vfs.rs), D-03 LoadHandle # Fields, A-03 AGENT.md trim
+  - **pathfinding**: D-04 stubs (5 files), T-03 (54 prefixes), A-03 AGENT.md trim, SP-03/SP-04/SP-05 fixes
+  - **engine**: D-04 stubs (config.rs, resource_keys.rs), D-03 on 14 key structs + 4 types, T-03 (8 prefixes), SP-03/SP-05
+  - **dataframe**: D-04 stubs (frame.rs×9, query.rs×2, serial.rs×2), T-03 (100 prefixes), T-04 (10 float asserts), SP-03
+  - **fx**: SP-04 (newPass/getEffectTypes API rows), SP-03 Summary trim, T-02 (test_fx.lua created + registered in harness.rs)
+  → All 14 modules now at PRE (≤2E ≤2W); will auto-PASS when Developer resolves B-02/B-03
+
 ## [0.6.22] — 2026-04-09
 ### Fixed
 - **data** module audit: D-04 stubs (byte_data×2, compress, encode, hash), D-03 LuaDataView # Fields, SP-05 LuaDataView heading, T-03 six test_ prefixes removed → PASS (8th)

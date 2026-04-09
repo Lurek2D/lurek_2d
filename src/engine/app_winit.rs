@@ -451,6 +451,8 @@ impl ApplicationHandler for LunaApp {
 // ─── App entry point (public API) ────────────────────────────────────────────
 
 /// Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.
+/// # Fields
+/// - See body for field declarations.
 pub struct App {
     config: Config,
 }

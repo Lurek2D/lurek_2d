@@ -204,9 +204,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "poll",
         lua.create_function(move |lua, ()| {
-            let state_ref = s.clone();
+            let s2 = s.clone();
             lua.create_function(
-                move |lua, ()| match state_ref.borrow_mut().event_queue.poll() {
+                move |lua, ()| match s2.borrow_mut().event_queue.poll() {
                     Some(event) => event_to_lua_multi(lua, &event),
                     None => Ok(LuaMultiValue::new()),
                 },

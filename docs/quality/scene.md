@@ -1,6 +1,6 @@
 # Module Quality Report: `scene`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,10 +13,7 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2499 chars)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: depth_sorter:11, depth_sorter:26, depth_sorter:49, stack:62, stack:98 (+2 more)
 - [ ] **B-04** — No business logic in closures: '<closure@223>' (24 LOC, line 223) — extract body to src/scene/ | '<closure@325>' (21 LOC, line 325) — extract body to src/scene/ | '<closure@304>' has if/match/for — extract to src/scene/ | '<closure@356>' has if/match/for — extract to src/scene/
-- [ ] **T-03** — Test naming: test_ prefix found — use <subject>_<scenario>_<expected>: test_transition_type_from_lua_str_all_variants, test_transition_type_from_lua_str_unknown_returns_none, test_active_transition_progress_zero_to_one, test_active_transition_zero_duration_instant, test_active_transition_is_complete (+31 more)
 - [ ] **Q-04** — Error handling: .unwrap() calls: stack:118, stack:145, stack:194, stack:403
 
 ## Full Check Results
@@ -50,7 +47,7 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/scene.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2499 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1910 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 27 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 5 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
@@ -62,7 +59,7 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: depth_sorter:11, depth_sorter:26, depth_sorter:49, stack:62, stack:98 (+2 more) |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -96,7 +93,7 @@
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\scene_tests.rs |
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_scene.lua registered in harness |
-| **T-03** Test naming | ⚠️ WARNING | test_ prefix found — use <subject>_<scenario>_<expected>: test_transition_type_from_lua_str_all_variants, test_transition_type_from_lua_str_unknown_returns_none, test_active_transition_progress_zero_to_one, test_active_transition_zero_duration_instant, test_active_transition_is_complete (+31 more) |
+| **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 36 tests / 36 pub methods (100%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |

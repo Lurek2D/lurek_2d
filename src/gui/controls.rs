@@ -80,13 +80,12 @@ impl Label {
 
 /// Editable single-line text input field.
 ///
-/// Supports placeholder text, maximum character length, cursor position
+/// Supports hint text, maximum character length, cursor position
 /// tracking, and an `onChange` callback triggered when the text mutates.
 ///
 /// # Fields
 /// - `base` — `WidgetBase`. Shared widget properties.
 /// - `text` — `String`. Current input value.
-/// - `placeholder` — `String`. Greyed-out hint when empty.
 /// - `max_length` — `usize`. Maximum character count (0 = unlimited).
 /// - `cursor_pos` — `usize`. Byte offset of the editing cursor.
 /// - `focused` — `bool`. Whether this input has keyboard focus.

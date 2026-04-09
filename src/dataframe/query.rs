@@ -119,7 +119,7 @@ impl DataFrame {
         Ok(self.extract_rows(&indices))
     }
 
-    /// Return the first `n` rows. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the first `n` rows.
     ///
     /// # Parameters
     /// - `n` — `usize`.
@@ -132,7 +132,7 @@ impl DataFrame {
         self.extract_rows(&indices)
     }
 
-    /// Return the last `n` rows. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the last `n` rows.
     ///
     /// # Parameters
     /// - `n` — `usize`.

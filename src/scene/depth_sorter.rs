@@ -8,7 +8,7 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-/// Entry in the depth-sorted draw queue. Consult the module-level documentation for the broader usage context and preconditions.
+/// Entry in the depth-sorted draw queue.
 ///
 /// # Fields
 /// - `depth` — `f32`.
@@ -23,7 +23,7 @@ pub struct DepthEntry {
     pub is_object: bool,
 }
 
-/// Per-frame depth-sorted draw batcher. Consult the module-level documentation for the broader usage context and preconditions.
+/// Per-frame depth-sorted draw batcher.
 ///
 /// Collects draw callbacks with depth values, sorts them, and flushes
 /// them in ascending depth order each frame.
@@ -46,7 +46,7 @@ impl DepthSorter {
         }
     }
 
-    /// Add a callback at the given depth. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Add a callback at the given depth.
     ///
     /// # Parameters
     /// - `callback_index` — `usize`.

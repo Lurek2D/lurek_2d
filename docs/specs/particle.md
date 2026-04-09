@@ -18,8 +18,6 @@ Multi-stop interpolation drives particle size, color (RGBA), and alpha over each
 
 The `Trail` struct provides a complementary fading ribbon effect: timestamped points are pushed at the head, aged each frame, and expired points are pruned. Width tapers linearly from head to tail; head and tail colors interpolate along the ribbon. Trail and particle system are independent types — game scripts may use them separately or together.
 
-CPU simulation was chosen over GPU-side simulation because 2D game particle counts typically range from dozens to a few thousand, well within single-core CPU budget. The synchronous Lua control interface (tweak emitter parameters live from a callback, burst-emit on game events) is simpler with CPU-local data than with GPU-side simulation state requiring readback round-trips. For games needing tens of thousands of particles the `compute/` module's GPU compute path is the recommended alternative.
-
 ## Architecture
 
 ```

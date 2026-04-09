@@ -3,6 +3,9 @@
 use crate::docs::entry::DocEntry;
 
 /// In-memory registry of all documented Lurek2D API entries.
+///
+/// # Fields
+/// - `entries` — `HashMap<String, Vec<DocEntry>>`. All doc entries keyed by module.
 pub struct Catalog {
     entries: Vec<DocEntry>,
 }

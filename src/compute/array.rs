@@ -13,7 +13,7 @@ use crate::engine::log_messages::{CP01_NDARRAY_ALLOC, CP02_NDARRAY_LARGE};
 use crate::log_msg;
 const MAX_ELEMENTS: usize = 268_435_456;
 
-/// Element data type for an NdArray. Consult the module-level documentation for the broader usage context and preconditions.
+/// Element data type for an NdArray.
 ///
 /// # Variants
 /// - `Float32` — Float32 variant.
@@ -60,7 +60,7 @@ impl DataType {
         }
     }
 
-    /// Human-readable name for this dtype. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Human-readable name for this dtype.
     ///
     /// # Returns
     /// `&'static str`.
@@ -104,7 +104,7 @@ impl NdArray {
         Self::zeros(shape, dtype)
     }
 
-    /// Create a zero-initialized NdArray. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Create a zero-initialized NdArray.
     ///
     /// # Parameters
     /// - `shape` — `&[usize]`.
@@ -374,7 +374,7 @@ impl NdArray {
     /// # Returns
     /// `Vec<usize>`.
     ///
-    /// `strides[i] = product(shape[i+1..])` — so the last axis has stride 1.
+    /// `strides[i] = product(shape[i+1.])` — so the last axis has stride 1.
     pub fn compute_strides(shape: &[usize]) -> Vec<usize> {
         let ndim = shape.len();
         let mut strides = vec![1usize; ndim];

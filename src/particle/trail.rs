@@ -29,7 +29,7 @@ pub struct TrailPoint {
     pub age: f32,
 }
 
-/// Fading textured ribbon renderer. Consult the module-level documentation for the broader usage context and preconditions.
+/// Fading textured ribbon renderer.
 ///
 /// # Fields
 /// - `points` — `Vec<TrailPoint>`.

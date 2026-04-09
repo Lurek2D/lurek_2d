@@ -1,6 +1,6 @@
 # Module Quality Report: `filesystem`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,11 +13,8 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **A-03** — Purpose quality: Purpose too long (1739 chars, target ≤500)
-- [ ] **D-03** — Structured doc sections: Missing structured sections: async_loader::LoadHandle (# Fields)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: async_loader:94, file_handle:16, file_handle:95, vfs:17
 - [ ] **B-04** — No business logic in closures: '<closure@284>' has if/match/for — extract to src/filesystem/
-- [ ] **Q-04** — Error handling: .unwrap() calls: async_loader:199, async_loader:201, async_loader:202, async_loader:245, async_loader:247
+- [ ] **Q-04** — Error handling: .unwrap() calls: async_loader:201, async_loader:203, async_loader:204, async_loader:247, async_loader:249
 
 ## Full Check Results
 
@@ -38,7 +35,7 @@
 |-------|---------|---------|
 | **A-01** AGENT.md exists | ✅ PASS | src\filesystem\AGENT.md |
 | **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ⚠️ WARNING | Purpose too long (1739 chars, target ≤500) |
+| **A-03** Purpose quality | ✅ PASS | Purpose section is 405 chars |
 | **A-04** Content sync | ✅ PASS | All .rs files listed |
 | **A-05** Spec pointer | ✅ PASS | docs/specs/filesystem.md exists |
 | **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
@@ -61,8 +58,8 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: async_loader::LoadHandle (# Fields) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: async_loader:94, file_handle:16, file_handle:95, vfs:17 |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -120,7 +117,7 @@
 | **Q-01** No println! | ✅ PASS | No println!/eprintln! calls |
 | **Q-02** Logger levels | 🔵 MANUAL | Verify log severity levels are appropriate (debug/info/warn/error) |
 | **Q-03** No unsafe | ✅ PASS | No undocumented unsafe blocks |
-| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: async_loader:199, async_loader:201, async_loader:202, async_loader:245, async_loader:247 |
+| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: async_loader:201, async_loader:203, async_loader:204, async_loader:247, async_loader:249 |
 | **Q-07** Log prefix | ✅ PASS | All log calls use log:: prefix |
 | **Q-05** Rust best practices | 🔵 MANUAL | Review for anti-patterns: unnecessary clones, redundant allocs |
 | **Q-06** Clippy clean | 🔵 MANUAL | Run: cargo clippy --lib -- -D warnings |

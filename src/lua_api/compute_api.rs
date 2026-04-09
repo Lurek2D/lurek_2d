@@ -637,8 +637,13 @@ impl LuaUserData for LuaArray {
         });
 
         // -- type --
+        /// Returns the type name "Array".
+        /// @return string
         methods.add_method("type", |_, _, ()| Ok("Array"));
         // -- typeOf --
+        /// Returns true when the given name matches "Array" or a parent type.
+        /// @param name : string
+        /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "Array" || name == "Object")
         });

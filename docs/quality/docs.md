@@ -1,6 +1,6 @@
 # Module Quality Report: `docs`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 42 ✅ / 4 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,8 +13,6 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: FieldRule, FieldType, Schema, SchemaError, SchemaResult
-- [ ] **D-03** — Structured doc sections: Missing structured sections: catalog::Catalog (# Fields), entry::ParamInfo (# Fields), entry::ReturnInfo (# Fields), entry::DocEntry (# Fields), report::ValidationReport (# Fields), report::QualityReport (# Fields)
 - [ ] **D-07** — @param/@return annotations: Missing @param/@return before: phantom, incomplete, stale, current, missing
 - [ ] **B-04** — No business logic in closures: '<closure@794>' (27 LOC, line 794) — extract body to src/docs/ | '<closure@829>' (40 LOC, line 829) — extract body to src/docs/ | '<closure@878>' (27 LOC, line 878) — extract body to src/docs/ | '<closure@914>' (22 LOC, line 914) — extract body to src/docs/ | '<closure@1126>' has if/match/for — extract to src/docs/ | '<closure@1143>' has if/match/for — extract to src/docs/
 
@@ -51,7 +49,7 @@
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
 | **SP-03** Summary quality | ✅ PASS | Summary is 1772 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 34 bound functions in spec |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: FieldRule, FieldType, Schema, SchemaError, SchemaResult |
+| **SP-05** Key Types accuracy | ✅ PASS | 11 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -60,7 +58,7 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: catalog::Catalog (# Fields), entry::ParamInfo (# Fields), entry::ReturnInfo (# Fields), entry::DocEntry (# Fields), report::ValidationReport (# Fields), report::QualityReport (# Fields) |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
 | **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |

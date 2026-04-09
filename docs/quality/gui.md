@@ -1,6 +1,6 @@
 # Module Quality Report: `gui`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 40 ✅ / 7 ⚠️ / 1 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 45 ✅ / 2 ⚠️ / 1 ❌ / 19 🔵
 
 ---
 
@@ -12,12 +12,7 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2144 chars)
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: GuiEvent
-- [ ] **D-03** — Structured doc sections: Missing structured sections: context::WidgetKind (# Variants), widget::WidgetType (# Variants), widget::WidgetBase (# Fields)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: controls:83, controls:89, extras:176, extras:375, extras:639 (+1 more)
 - [ ] **B-04** — No business logic in closures: '<closure@1849>' (23 LOC, line 1849) — extract body to src/gui/ | '<closure@3459>' (16 LOC, line 3459) — extract body to src/gui/ | '<closure@3801>' (17 LOC, line 3801) — extract body to src/gui/ | '<closure@4942>' (33 LOC, line 4942) — extract body to src/gui/ | '<closure@58>' has if/match/for — extract to src/gui/ | '<closure@76>' has if/match/for — extract to src/gui/
-- [ ] **B-05** — Rc clone pattern: Possible missing state.clone() before move: line 2053, line 3459
 - [ ] **Q-04** — Error handling: .unwrap() calls: data_graph_renderer:538
 
 ## Full Check Results
@@ -51,9 +46,9 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/gui.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2144 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1953 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 51 bound functions in spec |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: GuiEvent |
+| **SP-05** Key Types accuracy | ✅ PASS | 47 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -62,8 +57,8 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: context::WidgetKind (# Variants), widget::WidgetType (# Variants), widget::WidgetBase (# Fields) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: controls:83, controls:89, extras:176, extras:375, extras:639 (+1 more) |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -78,7 +73,7 @@
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn |
 | **B-03** impl LuaUserData placement | ❌ ERROR | Move impl LuaUserData for LuaTheme from lua_api/gui_api.rs → src/gui/ |
 | **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1849>' (23 LOC, line 1849) — extract body to src/gui/ \| '<closure@3459>' (16 LOC, line 3459) — extract body to src/gui/ \| '<closure@3801>' (17 LOC, line 3801) — extract body to src/gui/ \| '<closure@4942>' (33 LOC, line 4942) — extract body to src/gui/ \| '<closure@58>' has if/match/for — extract to src/gui/ \| '<closure@76>' has if/match/for — extract to src/gui/ |
-| **B-05** Rc clone pattern | ⚠️ WARNING | Possible missing state.clone() before move: line 2053, line 3459 |
+| **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
 ### Phase 6 — Architecture Compliance

@@ -156,7 +156,7 @@ fn make_vm() -> (Rc<RefCell<SharedState>>, mlua::Lua) {
 }
 
 #[test]
-fn test_lua_get_arch() {
+fn lua_get_arch() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -170,7 +170,7 @@ fn test_lua_get_arch() {
 }
 
 #[test]
-fn test_lua_get_env_existing() {
+fn lua_get_env_existing() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -185,7 +185,7 @@ fn test_lua_get_env_existing() {
 }
 
 #[test]
-fn test_lua_get_env_missing() {
+fn lua_get_env_missing() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -198,7 +198,7 @@ fn test_lua_get_env_missing() {
 }
 
 #[test]
-fn test_lua_get_args() {
+fn lua_get_args() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -211,7 +211,7 @@ fn test_lua_get_args() {
 }
 
 #[test]
-fn test_lua_parse_args_with_table() {
+fn lua_parse_args_with_table() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -227,7 +227,7 @@ fn test_lua_parse_args_with_table() {
 }
 
 #[test]
-fn test_lua_parse_args_end_of_options() {
+fn lua_parse_args_end_of_options() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -241,7 +241,7 @@ fn test_lua_parse_args_end_of_options() {
 }
 
 #[test]
-fn test_lua_run_batch_basic() {
+fn lua_run_batch_basic() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -260,7 +260,7 @@ fn test_lua_run_batch_basic() {
 }
 
 #[test]
-fn test_lua_run_batch_with_error() {
+fn lua_run_batch_with_error() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"

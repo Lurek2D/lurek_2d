@@ -1,6 +1,6 @@
 # Module Quality Report: `raycaster`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,11 +13,8 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2013 chars)
-- [ ] **D-03** — Structured doc sections: Missing structured sections: depth_buffer::DepthBuffer (# Fields), doors::DoorManager (# Fields)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: column_batch:144
 - [ ] **T-05** — Test adequacy: 10 tests / 44 pub methods (23%) — low coverage
-- [ ] **Q-04** — Error handling: .unwrap() calls: dda:488, doors:200, segment:101, visibility:39, visibility:55
+- [ ] **Q-04** — Error handling: .unwrap() calls: dda:488, doors:203, segment:101, visibility:39, visibility:55
 
 ## Full Check Results
 
@@ -50,7 +47,7 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/raycaster.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2013 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1782 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 3 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 13 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
@@ -61,8 +58,8 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: depth_buffer::DepthBuffer (# Fields), doors::DoorManager (# Fields) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: column_batch:144 |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -120,7 +117,7 @@
 | **Q-01** No println! | ✅ PASS | No println!/eprintln! calls |
 | **Q-02** Logger levels | 🔵 MANUAL | Verify log severity levels are appropriate (debug/info/warn/error) |
 | **Q-03** No unsafe | ✅ PASS | No undocumented unsafe blocks |
-| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: dda:488, doors:200, segment:101, visibility:39, visibility:55 |
+| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: dda:488, doors:203, segment:101, visibility:39, visibility:55 |
 | **Q-07** Log prefix | ✅ PASS | All log calls use log:: prefix |
 | **Q-05** Rust best practices | 🔵 MANUAL | Review for anti-patterns: unnecessary clones, redundant allocs |
 | **Q-06** Clippy clean | 🔵 MANUAL | Run: cargo clippy --lib -- -D warnings |

@@ -1,6 +1,6 @@
 # Module Quality Report: `engine`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 39 ✅ / 7 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -14,12 +14,7 @@
 ### 🟡 Warnings — Should Fix
 
 - [ ] **S-04** — File naming: Potentially misleading names: temp_test.rs
-- [ ] **SP-03** — Summary quality: Summary very long (3946 chars)
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: RendererStats
-- [ ] **D-03** — Structured doc sections: Missing structured sections: app_winit::App (# Fields), config::ModulesConfig (# Fields), error_screen::ErrorScreen (# Fields), messages::MessageCatalog (# Fields), resource_keys::TextureKey (# Fields), resource_keys::FontKey (# Fields) (+14 more)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: config:45, resource_keys:24, resource_keys:26, resource_keys:28, resource_keys:30 (+1 more)
-- [ ] **T-03** — Test naming: test_ prefix found — use <subject>_<scenario>_<expected>: test_lua_get_arch, test_lua_get_env_existing, test_lua_get_env_missing, test_lua_get_args, test_lua_parse_args_with_table (+3 more)
-- [ ] **Q-04** — Error handling: .unwrap() calls: app:1117, app:1182, shared_state:462
+- [ ] **Q-04** — Error handling: .unwrap() calls: app:1117, app:1182, shared_state:464
 
 ## Full Check Results
 
@@ -52,9 +47,9 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/engine.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (3946 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1855 chars |
 | **SP-04** Lua API completeness | ✅ PASS | No Lua API file — skip |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: RendererStats |
+| **SP-05** Key Types accuracy | ✅ PASS | 17 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -63,8 +58,8 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: app_winit::App (# Fields), config::ModulesConfig (# Fields), error_screen::ErrorScreen (# Fields), messages::MessageCatalog (# Fields), resource_keys::TextureKey (# Fields), resource_keys::FontKey (# Fields) (+14 more) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: config:45, resource_keys:24, resource_keys:26, resource_keys:28, resource_keys:30 (+1 more) |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | No Lua API file — skip |
 | **D-07** @param/@return annotations | ✅ PASS | No Lua API file — skip |
@@ -98,7 +93,7 @@
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\engine_tests.rs |
 | **T-02** Lua test file | ✅ PASS | Module has no Lua API — skip |
-| **T-03** Test naming | ⚠️ WARNING | test_ prefix found — use <subject>_<scenario>_<expected>: test_lua_get_arch, test_lua_get_env_existing, test_lua_get_env_missing, test_lua_get_args, test_lua_parse_args_with_table (+3 more) |
+| **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 25 tests / 29 pub methods (86%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
@@ -122,7 +117,7 @@
 | **Q-01** No println! | ✅ PASS | No println!/eprintln! calls |
 | **Q-02** Logger levels | 🔵 MANUAL | Verify log severity levels are appropriate (debug/info/warn/error) |
 | **Q-03** No unsafe | ✅ PASS | No undocumented unsafe blocks |
-| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: app:1117, app:1182, shared_state:462 |
+| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: app:1117, app:1182, shared_state:464 |
 | **Q-07** Log prefix | ✅ PASS | All log calls use log:: prefix |
 | **Q-05** Rust best practices | 🔵 MANUAL | Review for anti-patterns: unnecessary clones, redundant allocs |
 | **Q-06** Clippy clean | 🔵 MANUAL | Run: cargo clippy --lib -- -D warnings |

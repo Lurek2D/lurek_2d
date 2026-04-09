@@ -40,16 +40,6 @@ name via `popTo`, supporting reusable scene definitions. An inter-scene key-valu
 data store (`setData`/`getData`/`hasData`/`removeData`) lets scenes share
 arbitrary Lua values without polluting globals.
 
-The `DepthSorter` is a standalone per-frame draw batcher that collects draw
-callbacks with numeric depth values, stable-sorts them ascending, and flushes
-them in order. It supports both plain function callbacks and object tables with a
-`:drawSorted()` method, enabling z-ordered rendering within a single scene's draw
-pass without manual sort logic.
-
-The module intentionally does NOT own rendering, input handling, or physics — it
-is purely a lifecycle and ordering coordinator. Scenes are Lua tables with
-optional method keys; the module imposes no base class or inheritance hierarchy.
-
 ## Architecture
 
 ```

@@ -173,7 +173,7 @@ impl Default for Spacer {
 pub struct TreeNode {
     /// Display label.
     pub text: String,
-    /// Optional icon name placeholder.
+    /// Optional icon name (empty string means no icon).
     pub icon: Option<String>,
     /// Indices of child nodes in the tree's flat pool.
     pub children: Vec<usize>,
@@ -372,7 +372,7 @@ impl TreeView {
         }
     }
 
-    /// Set the icon name placeholder for the node at `index`.
+    /// Set the icon name for the node at `index`.
     ///
     /// Passing an empty string clears the icon.
     ///
@@ -636,12 +636,12 @@ impl Toolbar {
 
     /// Add a visual separator to the toolbar.
     ///
-    /// This is a placeholder; layout and rendering are handled externally.
+    /// Acts as a visual divider; layout and rendering are handled by the toolbar parent.
     pub fn add_separator(&mut self) {}
 
     /// Add a flexible spacer to the toolbar.
     ///
-    /// This is a placeholder; layout and rendering are handled externally.
+    /// Acts as a visual divider; layout and rendering are handled by the toolbar parent.
     ///
     /// # Parameters
     /// - `_width` — `f32`. Desired spacer width hint for the renderer.

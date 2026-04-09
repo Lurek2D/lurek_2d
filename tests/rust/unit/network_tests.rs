@@ -8,7 +8,7 @@ use std::net::SocketAddr;
 // ── Constants ────────────────────────────────────────────────────────
 
 #[test]
-fn test_constants_values() {
+fn constants_values() {
     assert_eq!(MAX_PEERS, 8);
     assert_eq!(DEFAULT_PEERS, 4);
     assert_eq!(MAX_CHANNELS, 255);
@@ -16,14 +16,14 @@ fn test_constants_values() {
 }
 
 #[test]
-fn test_default_peers_within_max() {
+fn default_peers_within_max() {
     assert!(DEFAULT_PEERS <= MAX_PEERS);
 }
 
 // ── Host creation ────────────────────────────────────────────────────
 
 #[test]
-fn test_create_host_client_defaults() {
+fn create_host_client_defaults() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, None, None, None, None).unwrap();
     assert!(!host.is_destroyed());
@@ -32,21 +32,21 @@ fn test_create_host_client_defaults() {
 }
 
 #[test]
-fn test_create_host_custom_peers() {
+fn create_host_custom_peers() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, Some(6), None, None, None).unwrap();
     assert_eq!(host.peer_limit().unwrap(), 6);
 }
 
 #[test]
-fn test_create_host_max_peers() {
+fn create_host_max_peers() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, Some(MAX_PEERS), None, None, None).unwrap();
     assert_eq!(host.peer_limit().unwrap(), MAX_PEERS);
 }
 
 #[test]
-fn test_create_host_exceeds_peer_limit() {
+fn create_host_exceeds_peer_limit() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let result = NetworkHost::new(addr, Some(MAX_PEERS + 1), None, None, None);
     assert!(result.is_err());
@@ -61,14 +61,14 @@ fn test_create_host_exceeds_peer_limit() {
 }
 
 #[test]
-fn test_create_host_custom_channels() {
+fn create_host_custom_channels() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, None, Some(4), None, None).unwrap();
     assert_eq!(host.channel_limit().unwrap(), 4);
 }
 
 #[test]
-fn test_create_host_with_bandwidth() {
+fn create_host_with_bandwidth() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, None, None, Some(56000), Some(14000)).unwrap();
     let (in_bw, out_bw) = host.bandwidth_limit().unwrap();
@@ -77,7 +77,7 @@ fn test_create_host_with_bandwidth() {
 }
 
 #[test]
-fn test_create_host_unlimited_bandwidth() {
+fn create_host_unlimited_bandwidth() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, None, None, None, None).unwrap();
     let (in_bw, out_bw) = host.bandwidth_limit().unwrap();
@@ -88,7 +88,7 @@ fn test_create_host_unlimited_bandwidth() {
 // ── Local address ────────────────────────────────────────────────────
 
 #[test]
-fn test_local_address_assigned() {
+fn local_address_assigned() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, None, None, None, None).unwrap();
     let local = host.local_address();
@@ -99,7 +99,7 @@ fn test_local_address_assigned() {
 // ── Service (no events) ─────────────────────────────────────────────
 
 #[test]
-fn test_service_no_events() {
+fn service_no_events() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     let event = host.service().unwrap();
@@ -107,7 +107,7 @@ fn test_service_no_events() {
 }
 
 #[test]
-fn test_service_multiple_calls_no_events() {
+fn service_multiple_calls_no_events() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     for _ in 0..10 {
@@ -119,7 +119,7 @@ fn test_service_multiple_calls_no_events() {
 // ── Connected peer count ─────────────────────────────────────────────
 
 #[test]
-fn test_connected_peer_count_initially_zero() {
+fn connected_peer_count_initially_zero() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     assert_eq!(host.connected_peer_count().unwrap(), 0);
@@ -128,7 +128,7 @@ fn test_connected_peer_count_initially_zero() {
 // ── Destroy ──────────────────────────────────────────────────────────
 
 #[test]
-fn test_destroy_host() {
+fn destroy_host() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     assert!(!host.is_destroyed());
@@ -137,7 +137,7 @@ fn test_destroy_host() {
 }
 
 #[test]
-fn test_service_after_destroy_errors() {
+fn service_after_destroy_errors() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.destroy();
@@ -151,7 +151,7 @@ fn test_service_after_destroy_errors() {
 }
 
 #[test]
-fn test_peer_limit_after_destroy_errors() {
+fn peer_limit_after_destroy_errors() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.destroy();
@@ -159,7 +159,7 @@ fn test_peer_limit_after_destroy_errors() {
 }
 
 #[test]
-fn test_flush_after_destroy_errors() {
+fn flush_after_destroy_errors() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.destroy();
@@ -167,7 +167,7 @@ fn test_flush_after_destroy_errors() {
 }
 
 #[test]
-fn test_double_destroy_safe() {
+fn double_destroy_safe() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.destroy();
@@ -178,7 +178,7 @@ fn test_double_destroy_safe() {
 // ── Bandwidth limits ─────────────────────────────────────────────────
 
 #[test]
-fn test_set_bandwidth_limit() {
+fn set_bandwidth_limit() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.set_bandwidth_limit(Some(100_000), Some(50_000))
@@ -191,7 +191,7 @@ fn test_set_bandwidth_limit() {
 // ── Flush ────────────────────────────────────────────────────────────
 
 #[test]
-fn test_flush_no_pending() {
+fn flush_no_pending() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let mut host = NetworkHost::new(addr, None, None, None, None).unwrap();
     host.flush().unwrap();
@@ -200,7 +200,7 @@ fn test_flush_no_pending() {
 // ── Server bind ──────────────────────────────────────────────────────
 
 #[test]
-fn test_create_server_host() {
+fn create_server_host() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host = NetworkHost::new(addr, Some(4), Some(2), None, None).unwrap();
     let local = host.local_address();
@@ -212,7 +212,7 @@ fn test_create_server_host() {
 // ── Multiple hosts ───────────────────────────────────────────────────
 
 #[test]
-fn test_multiple_hosts_different_ports() {
+fn multiple_hosts_different_ports() {
     let addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
     let host1 = NetworkHost::new(addr, None, None, None, None).unwrap();
     let host2 = NetworkHost::new(addr, None, None, None, None).unwrap();
@@ -222,7 +222,7 @@ fn test_multiple_hosts_different_ports() {
 // ── Error display ────────────────────────────────────────────────────
 
 #[test]
-fn test_error_display_peer_limit() {
+fn error_display_peer_limit() {
     let err = NetworkError::PeerLimitExceeded {
         requested: 16,
         max: 8,
@@ -233,21 +233,21 @@ fn test_error_display_peer_limit() {
 }
 
 #[test]
-fn test_error_display_host_destroyed() {
+fn error_display_host_destroyed() {
     let err = NetworkError::HostDestroyed;
     let msg = format!("{err}");
     assert!(msg.contains("destroyed"));
 }
 
 #[test]
-fn test_error_display_invalid_peer() {
+fn error_display_invalid_peer() {
     let err = NetworkError::InvalidPeer(42);
     let msg = format!("{err}");
     assert!(msg.contains("42"));
 }
 
 #[test]
-fn test_error_display_invalid_address() {
+fn error_display_invalid_address() {
     let err = NetworkError::InvalidAddress("bad:addr".to_string());
     let msg = format!("{err}");
     assert!(msg.contains("bad:addr"));

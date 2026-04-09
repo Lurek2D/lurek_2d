@@ -138,7 +138,7 @@ fn parse_csv_records(s: &str) -> Result<Vec<Vec<String>>, String> {
 
 /// Serialize a DataFrame to CSV format.
 impl DataFrame {
-    /// Serialize to CSV string (RFC 4180). Consult the module-level documentation for the broader usage context and preconditions.
+    /// Serialize to CSV string (RFC 4180).
     ///
     /// # Returns
     /// `String`.
@@ -198,7 +198,7 @@ fn csv_write_field(out: &mut String, field: &str) {
 /// # Returns
 /// `Result<DataFrame, String>`.
 ///
-/// Expects format: `[{"col1": val1, "col2": val2}, ...]`
+/// Expects format: `[{"col1": val1, "col2": val2}, ..]`
 /// Maps JSON types: number→Number, string→Text, true/false→Bool, null→Nil.
 pub fn from_json(s: &str) -> Result<DataFrame, String> {
     let trimmed = s.trim();
@@ -590,7 +590,7 @@ fn json_write_value(out: &mut String, val: &CellValue) {
 //     payload: (Number=8 bytes f64 LE, Text=u32 LE len + bytes, Bool=1 byte, Nil=none)
 
 impl DataFrame {
-    /// Serialize to LVDF binary format. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Serialize to LVDF binary format.
     ///
     /// # Returns
     /// `Vec<u8>`.

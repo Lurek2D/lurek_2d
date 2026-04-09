@@ -12,6 +12,8 @@ use std::thread;
 
 /// Opaque handle returned to callers (and to Lua) that identifies a pending load.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// # Fields
+/// - `rx` — `Receiver<FileResult>`. Channel receiving completed file results.
 pub struct LoadHandle(pub u64);
 
 /// Outcome of a completed load request. Returns an error if the source data is malformed or missing.
@@ -91,7 +93,7 @@ impl AsyncLoader {
         }
     }
 
-    /// Submit a file-read request. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Submit a file-read request.
     ///
     /// # Parameters
     /// - `resolved_path` — `PathBuf`.

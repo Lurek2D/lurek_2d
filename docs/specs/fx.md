@@ -37,9 +37,8 @@ darkening (`VignetteState`), film grain noise (`FilmGrainState`), lightning flas
 (`ShakeState`), and fade (`FadeState`). All subsystems start inactive and are advanced by a
 single `Overlay::update(dt)` call each frame.
 
-**Scope boundary**: `fx` models effect state only. It imports `math` and `engine` (Baseline)
-plus `graphics::ShaderPassDescriptor` from Tier 1. It does not import other Tier 2 modules.
-Domain modules never import `fx` — only `lua_api` reads these data models.
+**Scope boundary**: `fx` models effect state only.
+
 
 ## Architecture
 
@@ -237,6 +236,8 @@ The full Lua-facing surface is registered in `src/lua_api/fx_api.rs` under the `
 | `lurek.postfx.newStack(width, height)` | `(integer, integer) -> PostFxStack` | Creates a new post-processing pipeline stack with the given canvas dimensions. |
 | `lurek.postfx.newImageEffect(name)` | `(string) -> ImageEffect` | Creates a new per-image effect chain with the given label. |
 | `lurek.postfx.newOverlay(width, height)` | `(integer, integer) -> Overlay` | Creates a screen overlay controller for weather, flash, shake, fade, and atmospheric effects. |
+| `lurek.fx.newPass(shader_name, params)` | Creates a new single-pass post-processing effect using the named shader with optional parameter table. |
+| `lurek.fx.getEffectTypes()` | Returns a table listing all built-in post-processing effect type names available. |
 
 ### PostFxEffect Methods
 

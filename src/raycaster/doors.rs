@@ -66,6 +66,9 @@ pub struct Door {
 ///
 /// Stores a list of [`Door`] objects and drives their open/close animations
 /// each frame via [`DoorManager::update()`].
+///
+/// # Fields
+/// - `doors` — `Vec<Door>`. All registered doors in the current level.
 pub struct DoorManager {
     doors: Vec<Door>,
 }

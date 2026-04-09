@@ -13,7 +13,7 @@ use crate::filesystem::GameFS;
 use std::io::{BufRead, BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 use std::path::PathBuf;
 
-/// File access mode. Consult the module-level documentation for the broader usage context and preconditions.
+/// File access mode.
 ///
 /// # Variants
 /// - `Read` — open for reading; file must exist
@@ -92,7 +92,7 @@ pub struct FileHandle {
 }
 
 impl FileHandle {
-    /// Open a file within the sandbox. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Open a file within the sandbox.
     ///
     /// Read mode is allowed from `base_dir`; Write and Append are restricted to `save/`.
     ///

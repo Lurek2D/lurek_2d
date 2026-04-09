@@ -134,7 +134,7 @@ pub enum ColRef {
     Index(usize),
 }
 
-/// In-memory column-major tabular data. Consult the module-level documentation for the broader usage context and preconditions.
+/// In-memory column-major tabular data.
 ///
 /// # Fields
 /// - `column_names` — `Vec<String>`.
@@ -148,7 +148,7 @@ pub struct DataFrame {
     pub(crate) data: Vec<Vec<CellValue>>,
 }
 
-/// Named catalog of DataFrames. Consult the module-level documentation for the broader usage context and preconditions.
+/// Named catalog of DataFrames.
 ///
 /// # Fields
 /// - `tables` — `HashMap<String`.
@@ -211,7 +211,7 @@ impl DataFrame {
         }
     }
 
-    /// Return the number of rows. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the number of rows.
     ///
     /// # Returns
     /// `usize`.
@@ -223,7 +223,7 @@ impl DataFrame {
         }
     }
 
-    /// Return the number of columns. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the number of columns.
     ///
     /// # Returns
     /// `usize`.
@@ -231,7 +231,7 @@ impl DataFrame {
         self.column_names.len()
     }
 
-    /// Return the column names. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the column names.
     ///
     /// # Returns
     /// `&[String]`.
@@ -309,7 +309,7 @@ impl DataFrame {
         Ok(())
     }
 
-    /// Rename a column. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Rename a column.
     ///
     /// # Parameters
     /// - `col` — `ColRef`.
@@ -436,7 +436,7 @@ impl DataFrame {
         Ok(())
     }
 
-    /// Deep-clone this DataFrame. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Deep-clone this DataFrame.
     ///
     /// # Returns
     /// `DataFrame`.
@@ -482,7 +482,7 @@ impl DataFrame {
         &self.data
     }
 
-    /// Generate a DataFrame with random data. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Generate a DataFrame with random data.
     ///
     /// # Parameters
     /// - `defs` — `&[(String, String)]`.
@@ -677,7 +677,7 @@ impl Database {
         names
     }
 
-    /// Return the number of tables. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Return the number of tables.
     ///
     /// # Returns
     /// `usize`.

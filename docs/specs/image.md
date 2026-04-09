@@ -161,6 +161,14 @@ GPU-compressed texture format identifier. Used by `CompressedImageData` to repor
 
 **Key methods**: `as_str()` — returns the Lua-facing format name string.
 
+
+#### `image::layered::ImageLayer`
+
+A single layer within a `LayeredImage`. Holds an `ImageData` buffer and a string `name`. Layers are composited top-to-bottom using alpha blending when the parent is flattened.
+
+#### `image::layered::LayeredImage`
+
+A stack of named `ImageLayer` objects. Created with `lurek.image.newLayeredImage(w, h)` or `lurek.image.loadLayered(path)`. Supports add/remove, per-layer pixel manipulation, and `flattenToImageData()` export.
 ## Lua API
 
 Exposed under `lurek.img.*` by `src/lua_api/image_api.rs`. The Lua wrapper also defines `LuaCompressedImageData` as a UserData type wrapping `CompressedImageData`.
@@ -244,6 +252,20 @@ Exposed under `lurek.img.*` by `src/lua_api/image_api.rs`. The Lua wrapper also 
 | `cid:getDimensions()`   | Returns base mip width and height               |
 | `cid:getMipmapCount()`  | Returns the number of mipmap levels              |
 | `cid:getFormat()`       | Returns the compressed format name string        |
+
+### Layered Image Functions
+
+| Function | Description |
+|---|---|
+| `lurek.image.newLayeredImage(w, h)` | Creates a new layered `ImageData` with given dimensions |
+| `lurek.image.saveImage(data, path)` | Saves an `ImageData` to a PNG file |
+| `lurek.image.loadImage(path)` | Loads an image file and returns an `ImageData` |
+| `lurek.image.loadLayered(path)` | Loads a layered image and returns a `LayeredImage` |
+
+| `lid:getLayer(n)` | Returns the nth `ImageLayer` from a `LayeredImage` |
+| `lid:addLayer(name)` | Adds a named layer to the `LayeredImage` |
+| `lid:removeLayer(n)` | Removes the nth layer |
+| `lid:flattenToImageData()` | Merges all layers into one `ImageData` |
 
 ## Lua Examples
 

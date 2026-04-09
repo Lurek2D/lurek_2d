@@ -10,7 +10,7 @@ use lurek2d::pathfinding::{DiagonalMode, FlowField, NavGrid, UnitPathfinder, Way
 // ============================================================
 
 #[test]
-fn test_nav_grid_new_dimensions() {
+fn nav_grid_new_dimensions() {
     let grid = NavGrid::new(20, 15);
     assert_eq!(grid.get_width(), 20);
     assert_eq!(grid.get_height(), 15);
@@ -18,7 +18,7 @@ fn test_nav_grid_new_dimensions() {
 }
 
 #[test]
-fn test_nav_grid_new_all_walkable() {
+fn nav_grid_new_all_walkable() {
     let grid = NavGrid::new(10, 10);
     for y in 0..10 {
         for x in 0..10 {
@@ -36,7 +36,7 @@ fn test_nav_grid_new_all_walkable() {
 }
 
 #[test]
-fn test_nav_grid_set_get_cost() {
+fn nav_grid_set_get_cost() {
     let mut grid = NavGrid::new(5, 5);
     grid.set_cost(2, 3, 10);
     assert_eq!(grid.get_cost(2, 3), 10);
@@ -45,13 +45,13 @@ fn test_nav_grid_set_get_cost() {
 }
 
 #[test]
-fn test_nav_grid_cost_out_of_bounds() {
+fn nav_grid_cost_out_of_bounds() {
     let grid = NavGrid::new(5, 5);
     assert_eq!(grid.get_cost(10, 10), 0, "out-of-bounds cost should be 0");
 }
 
 #[test]
-fn test_nav_grid_blocked() {
+fn nav_grid_blocked() {
     let mut grid = NavGrid::new(5, 5);
     assert!(!grid.is_blocked(2, 2));
     grid.set_blocked(2, 2, true);
@@ -64,7 +64,7 @@ fn test_nav_grid_blocked() {
 }
 
 #[test]
-fn test_nav_grid_walkable_unit_size() {
+fn nav_grid_walkable_unit_size() {
     let mut grid = NavGrid::new(10, 10);
     // 1x1 should be walkable on open grid
     assert!(grid.is_walkable(0, 0, 1));
@@ -81,7 +81,7 @@ fn test_nav_grid_walkable_unit_size() {
 }
 
 #[test]
-fn test_nav_grid_walkable_out_of_bounds() {
+fn nav_grid_walkable_out_of_bounds() {
     let grid = NavGrid::new(5, 5);
     // 2x2 at edge should fail
     assert!(!grid.is_walkable(4, 4, 2));
@@ -90,7 +90,7 @@ fn test_nav_grid_walkable_out_of_bounds() {
 }
 
 #[test]
-fn test_nav_grid_fill() {
+fn nav_grid_fill() {
     let mut grid = NavGrid::new(5, 5);
     grid.fill(5);
     for y in 0..5 {
@@ -105,7 +105,7 @@ fn test_nav_grid_fill() {
 }
 
 #[test]
-fn test_nav_grid_fill_rect() {
+fn nav_grid_fill_rect() {
     let mut grid = NavGrid::new(10, 10);
     grid.fill_rect(2, 3, 4, 3, 0);
     // Inside rect → blocked
@@ -119,7 +119,7 @@ fn test_nav_grid_fill_rect() {
 }
 
 #[test]
-fn test_nav_grid_save_load_roundtrip() {
+fn nav_grid_save_load_roundtrip() {
     let mut grid = NavGrid::new(4, 4);
     grid.set_cost(0, 0, 10);
     grid.set_cost(3, 3, 200);
@@ -138,14 +138,14 @@ fn test_nav_grid_save_load_roundtrip() {
 }
 
 #[test]
-fn test_nav_grid_load_from_bytes_wrong_size() {
+fn nav_grid_load_from_bytes_wrong_size() {
     let mut grid = NavGrid::new(4, 4);
     let result = grid.load_from_bytes(&[1, 2, 3]);
     assert!(result.is_err());
 }
 
 #[test]
-fn test_nav_grid_neighbors_cardinal_only() {
+fn nav_grid_neighbors_cardinal_only() {
     let mut grid = NavGrid::new(5, 5);
     grid.set_diagonal_mode(DiagonalMode::None);
     // Center cell (2,2) with no walls → 4 cardinal neighbors
@@ -158,7 +158,7 @@ fn test_nav_grid_neighbors_cardinal_only() {
 }
 
 #[test]
-fn test_nav_grid_neighbors_with_diagonals() {
+fn nav_grid_neighbors_with_diagonals() {
     let mut grid = NavGrid::new(5, 5);
     grid.set_diagonal_mode(DiagonalMode::Always);
     let n = grid.neighbors(2, 2);
@@ -170,7 +170,7 @@ fn test_nav_grid_neighbors_with_diagonals() {
 }
 
 #[test]
-fn test_nav_grid_neighbors_corner_no_cut() {
+fn nav_grid_neighbors_corner_no_cut() {
     let mut grid = NavGrid::new(5, 5);
     grid.set_diagonal_mode(DiagonalMode::NoCornerCut);
     // Block the cell to the left of center
@@ -189,7 +189,7 @@ fn test_nav_grid_neighbors_corner_no_cut() {
 }
 
 #[test]
-fn test_nav_grid_dirty_rects() {
+fn nav_grid_dirty_rects() {
     let mut grid = NavGrid::new(10, 10);
     assert!(grid.dirty_rects().is_empty());
     grid.set_dirty(0, 0, 5, 5);
@@ -200,7 +200,7 @@ fn test_nav_grid_dirty_rects() {
 }
 
 #[test]
-fn test_nav_grid_chunk_size() {
+fn nav_grid_chunk_size() {
     let mut grid = NavGrid::new(100, 100);
     assert_eq!(grid.get_chunk_size(), 16); // default
     grid.set_chunk_size(8);
@@ -211,7 +211,7 @@ fn test_nav_grid_chunk_size() {
 }
 
 #[test]
-fn test_nav_grid_diagonal_mode_getset() {
+fn nav_grid_diagonal_mode_getset() {
     let mut grid = NavGrid::new(5, 5);
     // Default is NoCornerCut
     assert_eq!(grid.get_diagonal_mode(), DiagonalMode::NoCornerCut);
@@ -226,7 +226,7 @@ fn test_nav_grid_diagonal_mode_getset() {
 // ============================================================
 
 #[test]
-fn test_diagonal_mode_from_lua_str() {
+fn diagonal_mode_from_lua_str() {
     assert_eq!(DiagonalMode::from_lua_str("none"), Some(DiagonalMode::None));
     assert_eq!(
         DiagonalMode::from_lua_str("always"),
@@ -249,7 +249,7 @@ fn test_diagonal_mode_from_lua_str() {
 }
 
 #[test]
-fn test_diagonal_mode_from_lua_str_unknown() {
+fn diagonal_mode_from_lua_str_unknown() {
     assert_eq!(DiagonalMode::from_lua_str("unknown"), Option::None);
     assert_eq!(DiagonalMode::from_lua_str(""), Option::None);
     assert_eq!(DiagonalMode::from_lua_str("diagonal"), Option::None);
@@ -260,7 +260,7 @@ fn test_diagonal_mode_from_lua_str_unknown() {
 // ============================================================
 
 #[test]
-fn test_pathfinder_finds_simple_path() {
+fn pathfinder_finds_simple_path() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut pf = UnitPathfinder::new(grid);
     let path = pf.find_path(0, 0, 9, 9, 1);
@@ -270,7 +270,7 @@ fn test_pathfinder_finds_simple_path() {
 }
 
 #[test]
-fn test_pathfinder_returns_none_when_blocked() {
+fn pathfinder_returns_none_when_blocked() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     // Block start cell — no expansion possible → None
     {
@@ -283,7 +283,7 @@ fn test_pathfinder_returns_none_when_blocked() {
 }
 
 #[test]
-fn test_pathfinder_wall_returns_partial_path() {
+fn pathfinder_wall_returns_partial_path() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     // Build a wall across column 5
     {
@@ -302,7 +302,7 @@ fn test_pathfinder_wall_returns_partial_path() {
 }
 
 #[test]
-fn test_pathfinder_path_starts_and_ends_correctly() {
+fn pathfinder_path_starts_and_ends_correctly() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut pf = UnitPathfinder::new(grid);
     let path = pf.find_path(1, 2, 8, 7, 1).unwrap();
@@ -313,7 +313,7 @@ fn test_pathfinder_path_starts_and_ends_correctly() {
 }
 
 #[test]
-fn test_pathfinder_smooth_path() {
+fn pathfinder_smooth_path() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut pf = UnitPathfinder::new(grid);
     let normal = pf.find_path(0, 0, 9, 9, 1).unwrap();
@@ -328,7 +328,7 @@ fn test_pathfinder_smooth_path() {
 }
 
 #[test]
-fn test_pathfinder_unit_size_aware() {
+fn pathfinder_unit_size_aware() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     // Create a 1-wide gap at column 5, row 5
     {
@@ -353,7 +353,7 @@ fn test_pathfinder_unit_size_aware() {
 }
 
 #[test]
-fn test_pathfinder_partial_path() {
+fn pathfinder_partial_path() {
     let grid = Rc::new(RefCell::new(NavGrid::new(20, 20)));
     let pf = UnitPathfinder::new(grid);
     // Very few max_nodes on a long path
@@ -367,7 +367,7 @@ fn test_pathfinder_partial_path() {
 }
 
 #[test]
-fn test_pathfinder_partial_path_complete() {
+fn pathfinder_partial_path_complete() {
     let grid = Rc::new(RefCell::new(NavGrid::new(3, 3)));
     let pf = UnitPathfinder::new(grid);
     // Small grid, unlimited nodes (0 = unlimited)
@@ -377,7 +377,7 @@ fn test_pathfinder_partial_path_complete() {
 }
 
 #[test]
-fn test_pathfinder_find_nearest_walkable() {
+fn pathfinder_find_nearest_walkable() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -394,7 +394,7 @@ fn test_pathfinder_find_nearest_walkable() {
 }
 
 #[test]
-fn test_pathfinder_find_nearest_walkable_already_walkable() {
+fn pathfinder_find_nearest_walkable_already_walkable() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let pf = UnitPathfinder::new(grid);
     let result = pf.find_nearest_walkable(3, 3, 5, 1);
@@ -402,7 +402,7 @@ fn test_pathfinder_find_nearest_walkable_already_walkable() {
 }
 
 #[test]
-fn test_pathfinder_find_nearest_walkable_none() {
+fn pathfinder_find_nearest_walkable_none() {
     let grid = Rc::new(RefCell::new(NavGrid::new(5, 5)));
     {
         let mut g = grid.borrow_mut();
@@ -414,14 +414,14 @@ fn test_pathfinder_find_nearest_walkable_none() {
 }
 
 #[test]
-fn test_pathfinder_is_reachable() {
+fn pathfinder_is_reachable() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let pf = UnitPathfinder::new(grid);
     assert!(pf.is_reachable(0, 0, 9, 9, 1), "open grid is reachable");
 }
 
 #[test]
-fn test_pathfinder_is_reachable_disconnected() {
+fn pathfinder_is_reachable_disconnected() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -434,7 +434,7 @@ fn test_pathfinder_is_reachable_disconnected() {
 }
 
 #[test]
-fn test_pathfinder_is_reachable_blocked_start() {
+fn pathfinder_is_reachable_blocked_start() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -448,7 +448,7 @@ fn test_pathfinder_is_reachable_blocked_start() {
 }
 
 #[test]
-fn test_pathfinder_heuristic_distance() {
+fn pathfinder_heuristic_distance() {
     // Same cell
     let d = UnitPathfinder::heuristic_distance(5, 5, 5, 5);
     assert!((d - 0.0).abs() < 1e-5, "same cell distance should be 0");
@@ -471,7 +471,7 @@ fn test_pathfinder_heuristic_distance() {
 }
 
 #[test]
-fn test_pathfinder_line_of_sight() {
+fn pathfinder_line_of_sight() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let pf = UnitPathfinder::new(grid);
     // Clear grid — LoS everywhere
@@ -480,7 +480,7 @@ fn test_pathfinder_line_of_sight() {
 }
 
 #[test]
-fn test_pathfinder_line_of_sight_blocked() {
+fn pathfinder_line_of_sight_blocked() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -493,7 +493,7 @@ fn test_pathfinder_line_of_sight_blocked() {
 }
 
 #[test]
-fn test_pathfinder_cache_operations() {
+fn pathfinder_cache_operations() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut pf = UnitPathfinder::new(grid);
     assert!(pf.is_cache_enabled(), "cache enabled by default");
@@ -522,7 +522,7 @@ fn test_pathfinder_cache_operations() {
 }
 
 #[test]
-fn test_pathfinder_cache_max_size() {
+fn pathfinder_cache_max_size() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut pf = UnitPathfinder::new(grid);
     pf.set_cache_max_size(2);
@@ -534,7 +534,7 @@ fn test_pathfinder_cache_max_size() {
 }
 
 #[test]
-fn test_pathfinder_path_length() {
+fn pathfinder_path_length() {
     // Straight horizontal path
     let path = vec![
         Waypoint { x: 0, y: 0 },
@@ -547,20 +547,20 @@ fn test_pathfinder_path_length() {
 }
 
 #[test]
-fn test_pathfinder_path_length_diagonal() {
+fn pathfinder_path_length_diagonal() {
     let path = vec![Waypoint { x: 0, y: 0 }, Waypoint { x: 1, y: 1 }];
     let len = UnitPathfinder::get_path_length(&path);
     assert!((len - std::f32::consts::SQRT_2).abs() < 1e-5);
 }
 
 #[test]
-fn test_pathfinder_path_length_empty() {
+fn pathfinder_path_length_empty() {
     let len = UnitPathfinder::get_path_length(&[]);
     assert!((len - 0.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_pathfinder_path_cost() {
+fn pathfinder_path_cost() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -583,7 +583,7 @@ fn test_pathfinder_path_cost() {
 // ============================================================
 
 #[test]
-fn test_flow_field_new_not_calculated() {
+fn flow_field_new_not_calculated() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let ff = FlowField::new(grid);
     assert!(!ff.is_calculated());
@@ -591,7 +591,7 @@ fn test_flow_field_new_not_calculated() {
 }
 
 #[test]
-fn test_flow_field_calculate_single_target() {
+fn flow_field_calculate_single_target() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(9, 9, 1);
@@ -608,7 +608,7 @@ fn test_flow_field_calculate_single_target() {
 }
 
 #[test]
-fn test_flow_field_target_cell_direction() {
+fn flow_field_target_cell_direction() {
     let grid = Rc::new(RefCell::new(NavGrid::new(5, 5)));
     let mut ff = FlowField::new(grid);
     ff.calculate(2, 2, 1);
@@ -622,7 +622,7 @@ fn test_flow_field_target_cell_direction() {
 }
 
 #[test]
-fn test_flow_field_cost_to_target() {
+fn flow_field_cost_to_target() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(5, 5, 1);
@@ -645,7 +645,7 @@ fn test_flow_field_cost_to_target() {
 }
 
 #[test]
-fn test_flow_field_direction_angle() {
+fn flow_field_direction_angle() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(9, 9, 1);
@@ -662,7 +662,7 @@ fn test_flow_field_direction_angle() {
 }
 
 #[test]
-fn test_nav_grid_from_costs() {
+fn nav_grid_from_costs() {
     let costs = vec![1, 0, 1, 1, 1, 0, 0, 1, 1];
     let grid = NavGrid::from_costs(3, 3, costs);
     assert_eq!(grid.get_width(), 3);
@@ -674,7 +674,7 @@ fn test_nav_grid_from_costs() {
 }
 
 #[test]
-fn test_flow_field_steer() {
+fn flow_field_steer() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(9, 9, 1);
@@ -689,7 +689,7 @@ fn test_flow_field_steer() {
 }
 
 #[test]
-fn test_flow_field_steer_zero_tile_size() {
+fn flow_field_steer_zero_tile_size() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(9, 9, 1);
@@ -699,7 +699,7 @@ fn test_flow_field_steer_zero_tile_size() {
 }
 
 #[test]
-fn test_flow_field_blocked_cell_unreachable() {
+fn flow_field_blocked_cell_unreachable() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     {
         let mut g = grid.borrow_mut();
@@ -715,7 +715,7 @@ fn test_flow_field_blocked_cell_unreachable() {
 }
 
 #[test]
-fn test_flow_field_multi_target() {
+fn flow_field_multi_target() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     let targets = vec![(0, 0), (9, 9)];
@@ -735,7 +735,7 @@ fn test_flow_field_multi_target() {
 }
 
 #[test]
-fn test_flow_field_out_of_bounds() {
+fn flow_field_out_of_bounds() {
     let grid = Rc::new(RefCell::new(NavGrid::new(5, 5)));
     let mut ff = FlowField::new(grid);
     ff.calculate(2, 2, 1);
@@ -746,7 +746,7 @@ fn test_flow_field_out_of_bounds() {
 }
 
 #[test]
-fn test_flow_field_get_targets() {
+fn flow_field_get_targets() {
     let grid = Rc::new(RefCell::new(NavGrid::new(10, 10)));
     let mut ff = FlowField::new(grid);
     ff.calculate(3, 7, 1);

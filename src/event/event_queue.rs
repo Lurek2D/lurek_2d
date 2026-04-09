@@ -21,7 +21,7 @@ pub enum EventArg {
     Nil,
 }
 
-/// A single event in the event queue. Consult the module-level documentation for the broader usage context and preconditions.
+/// A single event in the event queue.
 ///
 /// # Fields
 /// - `name` — `String`.
@@ -54,7 +54,7 @@ impl EventQueue {
         }
     }
 
-    /// Push an event onto the queue. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Push an event onto the queue.
     ///
     /// # Parameters
     /// - `event` — `Event`.
@@ -74,7 +74,7 @@ impl EventQueue {
         });
     }
 
-    /// Poll the next event from the queue. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Poll the next event from the queue.
     ///
     /// # Returns
     /// `Option<Event>`.

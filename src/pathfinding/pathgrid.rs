@@ -12,7 +12,7 @@
 use std::cmp::Ordering;
 use std::collections::BinaryHeap;
 
-/// Single cell of the navigation grid. Consult the module-level documentation for the broader usage context and preconditions.
+/// Single cell of the navigation grid.
 ///
 /// # Fields
 /// - `walkable` — `bool`.
@@ -62,7 +62,7 @@ impl Ord for AStarNode {
     }
 }
 
-/// A★ navigation grid. Consult the module-level documentation for the broader usage context and preconditions.
+/// A★ navigation grid.
 ///
 /// # Fields
 /// - `width` — `usize`.

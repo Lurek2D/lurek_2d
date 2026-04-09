@@ -24,19 +24,6 @@ The module contains four orthogonal components:
 
 2. **Profiler** — A hierarchical push/pop zone profiler that records start/end timestamps for named CPU regions. Each frame's zones form a tree (via nested push calls). The last N frames are retained for rolling display in an in-game profiler panel. It gracefully handles unbalanced push/pop by producing zero-duration zones.
 
-3. **FrameStats** — A circular buffer of per-frame delta times that provides FPS, min/max, average, and p50/p95/p99 percentiles via `snapshot()`. All statistics are computed lazily from the raw sample buffer — no running state to corrupt.
-
-4. **FileWatcher** — A polling-based path watcher that compares `std::fs::metadata` modification timestamps between polls. It produces a list of changed paths on each `poll()` call, enabling hot-reload patterns. The polling interval is controlled entirely by the caller; the module provides no background threads.
-
-All four types are **pure Rust** with no mlua dependency. All Lua plumbing lives in `src/lua_api/devtools_api.rs`.
-
-This module intentionally does **not** provide:
-- Physical file logging (use the `log` crate with `env_logger`)
-- Visual profiler rendering (render the data with `lurek.gfx` in game code)
-- Filesystem events (OS-level inotify/FSEvents — polling only)
-- Network inspection or memory allocation tracking
-- Frame-timing basics — those come from `timer::Clock` via `lurek.time` (auto-ticked, no setup)
-
 ## Architecture
 
 ```
@@ -173,6 +160,14 @@ A `DevtoolsShared` bridge struct holds Arc-cloned domain types so all Lua closur
 | `watcher:poll()` | `→ table` | Array of changed paths |
 | `watcher:watchedPaths()` | `→ table` | All currently watched paths |
 | `watcher:clear()` | — | Remove all watch entries |
+
+
+### Additional Zone Properties
+
+| Function | Description |
+|---|---|
+| `zone:selfTime()` | Exclusive self-time excluding child zones |
+| `zone:startTime()` | Wall-clock start timestamp for this zone |
 
 ## Lua Examples
 

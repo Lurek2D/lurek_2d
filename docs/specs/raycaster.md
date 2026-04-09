@@ -18,8 +18,6 @@ The core DDA algorithm (`dda.rs`) traverses cells along a ray direction, returni
 
 Extension subsystems are all optional and additive — a game can use only `castRays` and nothing else. `ColumnBatch` stores per-column projected wall data ready for batch rendering. `DoorManager` drives sliding-door animations with per-frame `update(dt)`. `HeightMap` adds per-cell variable floor and ceiling heights for stepped environments. `DepthBuffer` provides a 1D per-column depth tracker for correct sprite-vs-wall occlusion. `PointLight` and `compute_lighting` aggregate ambient + point-light illumination. `extract_minimap` rasterises a view-radius top-down crop of the grid to a flat RGBA pixel buffer suitable for `lurek.img`.
 
-This module satisfies design constraint A-03 (2D graphics only) — the raycaster produces 2D column draw data, not a 3D scene graph, making it an explicitly allowed use of pseudo-3D rendering within Lurek2D's 2D-only architecture.
-
 ## Architecture
 
 ```

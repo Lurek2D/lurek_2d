@@ -139,7 +139,7 @@ impl PathThreadPool {
         }
     }
 
-    /// Submit a pathfinding request. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Submit a pathfinding request.
     ///
     /// # Parameters
     /// - `id` — `u64`.

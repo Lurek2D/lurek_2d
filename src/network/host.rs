@@ -21,6 +21,10 @@ use crate::log_msg;
 ///
 /// Created once per logical network endpoint (server or client). The caller
 /// must pump [`service`](Self::service) every frame to process I/O.
+///
+/// # Fields
+/// - `inner` — `Option<Host<UdpSocket>>`. The underlying ENet host; `None` after `destroy`.
+/// - `local_addr` — `SocketAddr`. The local address the socket is bound to.
 pub struct NetworkHost {
     /// The underlying ENet host. `None` after [`destroy`](Self::destroy).
     inner: Option<Host<UdpSocket>>,

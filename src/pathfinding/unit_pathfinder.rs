@@ -17,7 +17,7 @@ use crate::log_msg;
 use crate::pathfinding::astar;
 use crate::pathfinding::nav_grid::NavGrid;
 
-/// A waypoint along a computed path. Consult the module-level documentation for the broader usage context and preconditions.
+/// A waypoint along a computed path.
 ///
 /// # Fields
 /// - `x` — `u32`.

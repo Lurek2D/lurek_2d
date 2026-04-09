@@ -80,6 +80,7 @@ pub enum FullscreenType {
 ///
 /// Query fields are written by `app.rs` from window events and read by Lua.
 /// Pending fields are written by Lua closures and consumed by `app.rs`.
+/// # Fields
 #[derive(Debug)]
 pub struct WindowState {
     // --- Query state (set by app.rs events, read by Lua) ---
@@ -247,6 +248,7 @@ pub struct ScreenshotRequest {
 /// - `fs` — Persistent sandboxed `GameFS` instance with mount layer support.
 /// - `shapes` — Stores all compound shape instances.
 ///
+/// # Fields
 /// Shared mutable state accessible by both the engine loop and Lua closures.
 pub struct SharedState {
     pub draw_commands: Vec<DrawCommand>,

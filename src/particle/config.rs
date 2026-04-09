@@ -147,63 +147,24 @@ pub enum RelativeMode {
     Attached,
 }
 
-/// Configuration for a particle emitter. Consult the module-level documentation for the broader usage context and preconditions.
+/// Configuration for a particle emitter. Controls emission rate, lifetime,
+/// physics, rendering, and the full set of per-particle randomisation ranges.
+///
+/// All range fields (e.g. `speed_min` / `speed_max`) are sampled uniformly per particle at spawn.
 ///
 /// # Fields
-/// - `max_particles` — `u32`.
-/// - `emission_rate` — `f32`.
-/// - `lifetime_min` — `f32`.
-/// - `lifetime_max` — `f32`.
-/// - `speed_min` — `f32`.
-/// - `speed_max` — `f32`.
-/// - `direction` — `f32`.
-/// - `spread` — `f32`.
-/// - `gravity_x` — `f32`.
-/// - `gravity_y` — `f32`.
-/// - `sizes` — `Vec<f32>`.
-/// - `colors` — `Vec<[f32; 4]>`.
-/// - `spin_min` — `f32`.
-/// - `spin_max` — `f32`.
-/// - `rotation_min` — `f32`.
-/// - `rotation_max` — `f32`.
-/// - `spin_variation` — `f32`.
-/// - `size_variation` — `f32`.
-/// - `linear_accel_x_min` — `f32`.
-/// - `linear_accel_x_max` — `f32`.
-/// - `linear_accel_y_min` — `f32`.
-/// - `linear_accel_y_max` — `f32`.
-/// - `radial_accel_min` — `f32`.
-/// - `radial_accel_max` — `f32`.
-/// - `tangential_accel_min` — `f32`.
-/// - `tangential_accel_max` — `f32`.
-/// - `linear_damping_min` — `f32`.
-/// - `linear_damping_max` — `f32`.
-/// - `area_distribution` — `AreaDistribution`.
-/// - `area_width` — `f32`.
-/// - `area_height` — `f32`.
-/// - `area_angle` — `f32`.
-/// - `area_direction_relative` — `bool`.
-/// - `emitter_lifetime` — `f32`.
-/// - `insert_mode` — `InsertMode`.
-/// - `offset_x` — `f32`.
-/// - `offset_y` — `f32`.
-/// - `relative_rotation` — `bool`.
-/// - `texture_id` — `Option<TextureKey>`.
-/// - `quads` — `Vec<[f32; 4]>`.
-/// - `alpha_keyframes` — `Vec<f32>`.
-/// - `emission_shape` — `EmissionShape`.
-/// - `relative_mode` — `RelativeMode`.
-/// - `turbulence` — `f32`.
-/// - `drag` — `f32`.
-/// - `orbit_speed` — `f32`.
-/// - `animated_frames` — `u32`.
-/// - `frame_rate` — `f32`.
-/// - `color_by_speed` — `bool`.
-/// - `speed_color_min` — `f32`.
-/// - `speed_color_max` — `f32`.
-/// - `shape` — `ParticleShape`.
-///
-/// All ranges are sampled uniformly per-particle at spawn time.
+/// - `max_particles` — `u32`. Pool size cap.
+/// - `emission_rate` — `f32`. Particles per second.
+/// - `lifetime_min` / `lifetime_max` — `f32`. Particle lifetime range in seconds.
+/// - `speed_min` / `speed_max` — `f32`. Initial speed range.
+/// - `direction` — `f32`. Base emission angle in radians.
+/// - `spread` — `f32`. Angular spread around `direction`.
+/// - `sizes` — `Vec<f32>`. Keyframe sizes over particle lifetime.
+/// - `colors` — `Vec<[f32; 4]>`. RGBA colour gradient keyframes.
+/// - `emission_shape` — `EmissionShape`. Spawn-point distribution shape.
+/// - `relative_mode` — `RelativeMode`. Whether particles follow the emitter.
+/// - `shape` — `ParticleShape`. Rendered primitive type (point, rect, sprite).
+/// - (additional fields: gravity, accel, damping, turbulence, drag, orbit, animation, etc.)
 #[derive(Clone, Debug)]
 pub struct ParticleConfig {
     /// Maximum number of live particles (pool size).

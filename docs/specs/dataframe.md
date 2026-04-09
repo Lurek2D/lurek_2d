@@ -22,7 +22,6 @@ Three serialization formats are supported: RFC 4180 CSV (with auto type-detectio
 
 The `Database` type acts as a named catalog of `DataFrame` tables, supporting add/remove/get/merge operations and cross-table SQL `JOIN` queries. Deterministic random data generation (`DataFrame::random`) supports type hints (`"int"`, `"float"`, `"bool"`, `"name"`, `"id"`, `"string"`, `"email"`, `"date"`, `"phone"`, `"uuid"`, `"sentence"`) using an internal xorshift64 PRNG, making it useful for test data and procedural content.
 
-This module is **not** for real-time per-frame simulation arrays — use `compute` (`NdArray`) for that. `dataframe` is designed for structured game data: loot tables, stat sheets, leaderboards, level databases, dialogue CSV imports, telemetry logs, and any tabular dataset that benefits from filter/sort/group/aggregate workflows.
 
 ## Architecture
 

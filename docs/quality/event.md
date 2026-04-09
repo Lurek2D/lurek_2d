@@ -1,6 +1,6 @@
 # Module Quality Report: `event`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,10 +13,7 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2358 chars)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: event_queue:24, event_queue:57, event_queue:77, signal:25
 - [ ] **B-04** — No business logic in closures: '<closure@178>' (20 LOC, line 178) — extract body to src/event/ | '<closure@208>' has if/match/for — extract to src/event/ | '<closure@261>' has if/match/for — extract to src/event/
-- [ ] **B-05** — Rc clone pattern: Possible missing state.clone() before move: line 209
 - [ ] **Q-04** — Error handling: .unwrap() calls: event_queue:245, event_queue:246, event_queue:275
 
 ## Full Check Results
@@ -50,7 +47,7 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/event.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2358 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 937 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 9 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 5 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
@@ -62,7 +59,7 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: event_queue:24, event_queue:57, event_queue:77, signal:25 |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -77,7 +74,7 @@
 | **B-02** Registration-only | ❌ ERROR | struct definitions (move to src/event/): LuaSignal |
 | **B-03** impl LuaUserData placement | ❌ ERROR | Move impl LuaUserData for LuaSignal from lua_api/event_api.rs → src/event/ |
 | **B-04** No business logic in closures | ⚠️ WARNING | '<closure@178>' (20 LOC, line 178) — extract body to src/event/ \| '<closure@208>' has if/match/for — extract to src/event/ \| '<closure@261>' has if/match/for — extract to src/event/ |
-| **B-05** Rc clone pattern | ⚠️ WARNING | Possible missing state.clone() before move: line 209 |
+| **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
 ### Phase 6 — Architecture Compliance

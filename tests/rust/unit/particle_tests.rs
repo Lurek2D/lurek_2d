@@ -35,7 +35,7 @@ fn assert_lua_error_contains(result: mlua::Result<()>, expected: &str) {
 // ── Existing tests (updated for new API) ────────────────────────────────
 
 #[test]
-fn test_phase01_released_particle_handle_reuse_reports_invalid_system() {
+fn phase01_released_particle_handle_reuse_reports_invalid_system() {
     let (_state, lua) = make_vm();
     let result = lua
         .load(
@@ -56,7 +56,7 @@ fn test_phase01_released_particle_handle_reuse_reports_invalid_system() {
 }
 
 #[test]
-fn test_phase01_released_particle_long_tail_accessors_report_invalid_system() {
+fn phase01_released_particle_long_tail_accessors_report_invalid_system() {
     let cases = [
         (
             "lurek.particles.getEmitterLifetime(released)",
@@ -117,7 +117,7 @@ fn test_phase01_released_particle_long_tail_accessors_report_invalid_system() {
 }
 
 #[test]
-fn test_phase01_released_particle_long_tail_mutators_report_invalid_system() {
+fn phase01_released_particle_long_tail_mutators_report_invalid_system() {
     let cases = [
         (
             "lurek.particles.setEmitterLifetime(released, 5.0)",
@@ -150,7 +150,7 @@ fn test_phase01_released_particle_long_tail_mutators_report_invalid_system() {
 }
 
 #[test]
-fn test_particle_new_system_default() {
+fn particle_new_system_default() {
     let (state, lua) = make_vm();
     lua.load("local id = luna.particles.newSystem(); assert(type(id) == 'userdata')")
         .exec()
@@ -161,7 +161,7 @@ fn test_particle_new_system_default() {
 }
 
 #[test]
-fn test_particle_new_system_with_config() {
+fn particle_new_system_with_config() {
     let (state, lua) = make_vm();
     lua.load(
         r#"
@@ -193,7 +193,7 @@ fn test_particle_new_system_with_config() {
 }
 
 #[test]
-fn test_particle_update_and_count() {
+fn particle_update_and_count() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -208,7 +208,7 @@ fn test_particle_update_and_count() {
 }
 
 #[test]
-fn test_particle_stop_and_start() {
+fn particle_stop_and_start() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -232,7 +232,7 @@ fn test_particle_stop_and_start() {
 }
 
 #[test]
-fn test_particle_reset() {
+fn particle_reset() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -248,7 +248,7 @@ fn test_particle_reset() {
 }
 
 #[test]
-fn test_particle_set_position() {
+fn particle_set_position() {
     let (state, lua) = make_vm();
     lua.load(
         r#"
@@ -265,7 +265,7 @@ fn test_particle_set_position() {
 }
 
 #[test]
-fn test_particle_set_emission_rate() {
+fn particle_set_emission_rate() {
     let (state, lua) = make_vm();
     lua.load(
         r#"
@@ -290,7 +290,7 @@ fn test_particle_set_emission_rate() {
 }
 
 #[test]
-fn test_particle_draw_generates_commands() {
+fn particle_draw_generates_commands() {
     let (state, lua) = make_vm();
     lua.load(
         r#"
@@ -317,7 +317,7 @@ fn test_particle_draw_generates_commands() {
 }
 
 #[test]
-fn test_particle_multiple_systems() {
+fn particle_multiple_systems() {
     let (state, lua) = make_vm();
     lua.load(
         r#"
@@ -336,7 +336,7 @@ fn test_particle_multiple_systems() {
 // ── Phase 12: New Rust-level tests ──────────────────────────────────────
 
 #[test]
-fn test_multi_stop_size_interpolation() {
+fn multi_stop_size_interpolation() {
     // 3-stop: [10, 20, 5]
     let sizes = [10.0, 20.0, 5.0];
     assert!((interpolate_sizes(&sizes, 0.0, 0.0) - 10.0).abs() < 1e-5);
@@ -348,7 +348,7 @@ fn test_multi_stop_size_interpolation() {
 }
 
 #[test]
-fn test_multi_stop_color_interpolation() {
+fn multi_stop_color_interpolation() {
     let colors = [
         [1.0, 0.0, 0.0, 1.0], // red
         [0.0, 1.0, 0.0, 1.0], // green
@@ -367,7 +367,7 @@ fn test_multi_stop_color_interpolation() {
 }
 
 #[test]
-fn test_burst_emit() {
+fn burst_emit() {
     let mut cfg = ParticleConfig::default();
     cfg.max_particles = 1000;
     cfg.lifetime_min = 10.0;
@@ -378,7 +378,7 @@ fn test_burst_emit() {
 }
 
 #[test]
-fn test_burst_emit_respects_max() {
+fn burst_emit_respects_max() {
     let mut cfg = ParticleConfig::default();
     cfg.max_particles = 10;
     cfg.lifetime_min = 10.0;
@@ -389,7 +389,7 @@ fn test_burst_emit_respects_max() {
 }
 
 #[test]
-fn test_emitter_lifetime_auto_stop() {
+fn emitter_lifetime_auto_stop() {
     let mut cfg = ParticleConfig::default();
     cfg.emitter_lifetime = 0.5;
     cfg.emission_rate = 100.0;
@@ -407,7 +407,7 @@ fn test_emitter_lifetime_auto_stop() {
 }
 
 #[test]
-fn test_pause_freezes_particles() {
+fn pause_freezes_particles() {
     let mut cfg = ParticleConfig::default();
     cfg.emission_rate = 100.0;
     cfg.lifetime_min = 10.0;
@@ -430,7 +430,7 @@ fn test_pause_freezes_particles() {
 }
 
 #[test]
-fn test_clone_copies_config_not_particles() {
+fn clone_copies_config_not_particles() {
     let mut cfg = ParticleConfig::default();
     cfg.emission_rate = 100.0;
     cfg.lifetime_min = 10.0;
@@ -445,7 +445,7 @@ fn test_clone_copies_config_not_particles() {
 }
 
 #[test]
-fn test_area_emission_ellipse() {
+fn area_emission_ellipse() {
     let mut cfg = ParticleConfig::default();
     cfg.area_distribution = AreaDistribution::Ellipse;
     cfg.area_width = 100.0;
@@ -473,7 +473,7 @@ fn test_area_emission_ellipse() {
 }
 
 #[test]
-fn test_radial_acceleration() {
+fn radial_acceleration() {
     let mut cfg = ParticleConfig::default();
     cfg.radial_accel_min = 100.0;
     cfg.radial_accel_max = 100.0;
@@ -508,7 +508,7 @@ fn test_radial_acceleration() {
 }
 
 #[test]
-fn test_tangential_acceleration() {
+fn tangential_acceleration() {
     let mut cfg = ParticleConfig::default();
     cfg.tangential_accel_min = 200.0;
     cfg.tangential_accel_max = 200.0;
@@ -541,7 +541,7 @@ fn test_tangential_acceleration() {
 }
 
 #[test]
-fn test_linear_damping() {
+fn linear_damping() {
     let mut cfg = ParticleConfig::default();
     cfg.linear_damping_min = 5.0;
     cfg.linear_damping_max = 5.0;
@@ -570,7 +570,7 @@ fn test_linear_damping() {
 }
 
 #[test]
-fn test_relative_rotation() {
+fn relative_rotation() {
     let mut cfg = ParticleConfig::default();
     cfg.relative_rotation = true;
     cfg.emission_rate = 0.0;
@@ -596,7 +596,7 @@ fn test_relative_rotation() {
 }
 
 #[test]
-fn test_insert_mode_top() {
+fn insert_mode_top() {
     let mut cfg = ParticleConfig::default();
     cfg.insert_mode = InsertMode::Top;
     cfg.emission_rate = 0.0;
@@ -611,7 +611,7 @@ fn test_insert_mode_top() {
 }
 
 #[test]
-fn test_emitter_state_transitions() {
+fn emitter_state_transitions() {
     let mut sys = ParticleSystem::new(ParticleConfig::default());
     assert!(sys.is_active());
     assert!(!sys.is_paused());
@@ -632,7 +632,7 @@ fn test_emitter_state_transitions() {
 }
 
 #[test]
-fn test_move_to_updates_position() {
+fn move_to_updates_position() {
     let mut sys = ParticleSystem::new(ParticleConfig::default());
     assert!((sys.emitter_x - 0.0).abs() < 1e-5);
     assert!((sys.emitter_y - 0.0).abs() < 1e-5);
@@ -644,7 +644,7 @@ fn test_move_to_updates_position() {
 }
 
 #[test]
-fn test_backward_compat_size_start_end() {
+fn backward_compat_size_start_end() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -664,7 +664,7 @@ fn test_backward_compat_size_start_end() {
 }
 
 #[test]
-fn test_backward_compat_color_start_end() {
+fn backward_compat_color_start_end() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -687,7 +687,7 @@ fn test_backward_compat_color_start_end() {
 // ── Phase 12: Lua API tests for new functions ───────────────────────────
 
 #[test]
-fn test_lua_pause_resume() {
+fn lua_pause_resume() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -705,7 +705,7 @@ fn test_lua_pause_resume() {
 }
 
 #[test]
-fn test_lua_emit_burst() {
+fn lua_emit_burst() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -724,7 +724,7 @@ fn test_lua_emit_burst() {
 }
 
 #[test]
-fn test_lua_clone_system() {
+fn lua_clone_system() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -746,7 +746,7 @@ fn test_lua_clone_system() {
 }
 
 #[test]
-fn test_lua_get_set_position() {
+fn lua_get_set_position() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -762,7 +762,7 @@ fn test_lua_get_set_position() {
 }
 
 #[test]
-fn test_lua_move_to() {
+fn lua_move_to() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -778,7 +778,7 @@ fn test_lua_move_to() {
 }
 
 #[test]
-fn test_lua_is_empty_is_full() {
+fn lua_is_empty_is_full() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -800,7 +800,7 @@ fn test_lua_is_empty_is_full() {
 }
 
 #[test]
-fn test_lua_lifetime_getters_setters() {
+fn lua_lifetime_getters_setters() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -818,7 +818,7 @@ fn test_lua_lifetime_getters_setters() {
 }
 
 #[test]
-fn test_lua_speed_direction_spread() {
+fn lua_speed_direction_spread() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -838,7 +838,7 @@ fn test_lua_speed_direction_spread() {
 }
 
 #[test]
-fn test_lua_acceleration_setters() {
+fn lua_acceleration_setters() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -866,7 +866,7 @@ fn test_lua_acceleration_setters() {
 }
 
 #[test]
-fn test_lua_sizes_api() {
+fn lua_sizes_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -883,7 +883,7 @@ fn test_lua_sizes_api() {
 }
 
 #[test]
-fn test_lua_colors_api() {
+fn lua_colors_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -901,7 +901,7 @@ fn test_lua_colors_api() {
 }
 
 #[test]
-fn test_lua_rotation_spin_variation() {
+fn lua_rotation_spin_variation() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -925,7 +925,7 @@ fn test_lua_rotation_spin_variation() {
 }
 
 #[test]
-fn test_lua_relative_rotation_api() {
+fn lua_relative_rotation_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -940,7 +940,7 @@ fn test_lua_relative_rotation_api() {
 }
 
 #[test]
-fn test_lua_emission_area() {
+fn lua_emission_area() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -959,7 +959,7 @@ fn test_lua_emission_area() {
 }
 
 #[test]
-fn test_lua_insert_mode() {
+fn lua_insert_mode() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -976,7 +976,7 @@ fn test_lua_insert_mode() {
 }
 
 #[test]
-fn test_lua_buffer_size() {
+fn lua_buffer_size() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -991,7 +991,7 @@ fn test_lua_buffer_size() {
 }
 
 #[test]
-fn test_lua_offset() {
+fn lua_offset() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1009,7 +1009,7 @@ fn test_lua_offset() {
 // ── Phase 30 — Particle System Extended ────────────────────────────────
 
 #[test]
-fn test_lua_gravity_api() {
+fn lua_gravity_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1028,7 +1028,7 @@ fn test_lua_gravity_api() {
 }
 
 #[test]
-fn test_lua_alphas_api() {
+fn lua_alphas_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1046,7 +1046,7 @@ fn test_lua_alphas_api() {
 }
 
 #[test]
-fn test_lua_alphas_config() {
+fn lua_alphas_config() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1064,7 +1064,7 @@ fn test_lua_alphas_config() {
 }
 
 #[test]
-fn test_lua_emission_shape_api() {
+fn lua_emission_shape_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1105,7 +1105,7 @@ fn test_lua_emission_shape_api() {
 }
 
 #[test]
-fn test_lua_emission_shape_config() {
+fn lua_emission_shape_config() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1125,7 +1125,7 @@ fn test_lua_emission_shape_config() {
 }
 
 #[test]
-fn test_lua_relative_mode_api() {
+fn lua_relative_mode_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1145,7 +1145,7 @@ fn test_lua_relative_mode_api() {
 }
 
 #[test]
-fn test_lua_relative_mode_config() {
+fn lua_relative_mode_config() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1160,7 +1160,7 @@ fn test_lua_relative_mode_config() {
 }
 
 #[test]
-fn test_oo_gravity_api() {
+fn oo_gravity_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1176,7 +1176,7 @@ fn test_oo_gravity_api() {
 }
 
 #[test]
-fn test_oo_alphas_api() {
+fn oo_alphas_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1193,7 +1193,7 @@ fn test_oo_alphas_api() {
 }
 
 #[test]
-fn test_oo_emission_shape_api() {
+fn oo_emission_shape_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1210,7 +1210,7 @@ fn test_oo_emission_shape_api() {
 }
 
 #[test]
-fn test_oo_relative_mode_api() {
+fn oo_relative_mode_api() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1226,7 +1226,7 @@ fn test_oo_relative_mode_api() {
 }
 
 #[test]
-fn test_oo_clone_method() {
+fn oo_clone_method() {
     let (_state, lua) = make_vm();
     lua.load(
         r#"
@@ -1263,7 +1263,7 @@ fn test_oo_clone_method() {
 }
 
 #[test]
-fn test_emission_shape_enum_derive() {
+fn emission_shape_enum_derive() {
     // Verify PartialEq works for EmissionShape
     assert_eq!(EmissionShape::Point, EmissionShape::Point);
     assert_ne!(
@@ -1286,7 +1286,7 @@ fn test_emission_shape_enum_derive() {
 }
 
 #[test]
-fn test_relative_mode_enum_derive() {
+fn relative_mode_enum_derive() {
     assert_eq!(RelativeMode::Detached, RelativeMode::Detached);
     assert_eq!(RelativeMode::Attached, RelativeMode::Attached);
     assert_ne!(RelativeMode::Detached, RelativeMode::Attached);

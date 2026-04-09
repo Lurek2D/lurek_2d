@@ -42,7 +42,7 @@ use mlua::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-/// Top-level engine configuration. Consult the module-level documentation for the broader usage context and preconditions.
+/// Top-level engine configuration.
 ///
 /// Can be populated from `conf.lua` or constructed with defaults.
 ///
@@ -172,6 +172,15 @@ pub struct WindowConfig {
 /// - `localization` — string localisation tables (`lurek.localization`).
 /// - `debug` — debug bridge, doc server, and automation helpers (`lurek.debug`, `lurek.debugbridge`, `lurek.docs`, `lurek.automation`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
+/// # Fields
+/// - `graphics` — See field documentation.
+/// - `physics` — See field documentation.
+/// - `audio` — See field documentation.
+/// - `input` — See field documentation.
+/// - `timer` — See field documentation.
+/// - `filesystem` — See field documentation.
+/// - `gui` — See field documentation.
+/// - `scene` — See field documentation.
 pub struct ModulesConfig {
     pub audio: bool,
     pub physics: bool,

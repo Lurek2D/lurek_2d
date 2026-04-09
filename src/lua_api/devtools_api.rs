@@ -61,14 +61,19 @@ impl DevtoolsShared {
 /// Recursively converts a [`ProfileZone`] tree into a nested Lua table.
 fn zone_to_table<'a>(lua: &'a Lua, zone: &ProfileZone) -> LuaResult<LuaTable<'a>> {
     let tbl = lua.create_table()?;
+    /// @return table
     tbl.set("name", zone.name.clone())?;
+    /// @return table
     tbl.set("time", zone.total_time())?;
+    /// @return table
     tbl.set("selfTime", zone.self_time())?;
+    /// @return table
     tbl.set("startTime", zone.start_time)?;
     let children = lua.create_table()?;
     for (i, child) in zone.children.iter().enumerate() {
         children.set(i + 1, zone_to_table(lua, child)?)?;
     }
+    /// @return table
     tbl.set("children", children)?;
     Ok(tbl)
 }
@@ -273,8 +278,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         tbl.set("min", snap.min)?;
         tbl.set("max", snap.max)?;
         tbl.set("p50", snap.p50)?;
+        /// @return table
         tbl.set("p95", snap.p95)?;
+        /// @return table
         tbl.set("p99", snap.p99)?;
+        /// @return table
         tbl.set("samples", snap.samples)?;
         Ok(tbl)
     })?)?;
@@ -422,7 +430,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // ── Console ────────────────────────────────────────────────────────────────
 
-    /// Opens the console window (records state; returns true).
+    /// Opens the console window (updates the console flag; returns true).
     /// @return boolean
     let s = shared.clone();
     dt.set("openConsole", lua.create_function(move |_, ()| {

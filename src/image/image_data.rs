@@ -12,7 +12,7 @@ use crate::engine::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
 use crate::log_msg;
 use mlua::prelude::*;
 
-/// CPU-side pixel buffer in RGBA8 format. Consult the module-level documentation for the broader usage context and preconditions.
+/// CPU-side pixel buffer in RGBA8 format.
 ///
 /// Stores pixel data in row-major order, 4 bytes per pixel (R, G, B, A).
 /// Can be created empty, from a file, or from raw bytes.
@@ -102,7 +102,7 @@ impl ImageData {
         })
     }
 
-    /// Get the width of the image. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Get the width of the image.
     ///
     /// # Returns
     /// `u32`.
@@ -110,7 +110,7 @@ impl ImageData {
         self.width
     }
 
-    /// Get the height of the image. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Get the height of the image.
     ///
     /// # Returns
     /// `u32`.
@@ -118,7 +118,7 @@ impl ImageData {
         self.height
     }
 
-    /// Get both dimensions. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Get both dimensions.
     ///
     /// # Returns
     /// `(u32, u32)`.
@@ -220,7 +220,7 @@ impl ImageData {
         }
     }
 
-    /// Encode the image as PNG bytes. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Encode the image as PNG bytes.
     ///
     /// # Returns
     /// `Result<Vec<u8>, String>`.

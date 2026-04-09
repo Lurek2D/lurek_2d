@@ -10,7 +10,7 @@
 use crate::engine::log_messages::{TR01, TR02};
 use crate::log_msg;
 
-/// Visual transition types between scenes. Consult the module-level documentation for the broader usage context and preconditions.
+/// Visual transition types between scenes.
 ///
 /// # Variants
 /// - `None` — None variant.

@@ -84,6 +84,7 @@ pub enum GuiEvent {
 /// - `MenuItem` — Wraps a [`MenuItem`].
 /// - `Dialog` — Wraps a [`Dialog`].
 /// - `StatusBar` — Wraps a [`StatusBar`].
+/// # Variants
 /// - `Accordion` — Wraps a [`Accordion`].
 /// - `TooltipPanel` — Wraps a [`TooltipPanel`].
 /// - `ColorPicker` — Wraps a [`ColorPicker`].

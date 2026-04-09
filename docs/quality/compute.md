@@ -1,6 +1,6 @@
 # Module Quality Report: `compute`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 42 ✅ / 4 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,9 +13,7 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: array:16, array:63, array:107, ops:130, ops:154 (+16 more)
 - [ ] **B-04** — No business logic in closures: '<closure@733>' has if/match/for — extract to src/compute/
-- [ ] **T-03** — Test naming: test_ prefix found — use <subject>_<scenario>_<expected>: test_new_creates_zero_initialized_array, test_zeros_1d, test_ones_fills_with_one, test_ones_int32, test_range_ascending (+74 more)
 - [ ] **Q-04** — Error handling: .unwrap() calls: array:463, array:464, array:465, array:478, array:489 (+53 more)
 
 ## Full Check Results
@@ -61,7 +59,7 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: array:16, array:63, array:107, ops:130, ops:154 (+16 more) |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -95,7 +93,7 @@
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\compute_tests.rs |
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_compute.lua registered in harness |
-| **T-03** Test naming | ⚠️ WARNING | test_ prefix found — use <subject>_<scenario>_<expected>: test_new_creates_zero_initialized_array, test_zeros_1d, test_ones_fills_with_one, test_ones_int32, test_range_ascending (+74 more) |
+| **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 79 tests / 25 pub methods (316%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |

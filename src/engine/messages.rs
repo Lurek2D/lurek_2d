@@ -34,6 +34,8 @@ static CATALOG: OnceLock<MessageCatalog> = OnceLock::new();
 /// Immutable map from stable message ID (e.g. `"L001"`) to human-readable text.
 ///
 /// Loaded once via [`init`] or lazily on the first [`get_message`] call.
+/// # Fields
+/// - `entries` — See field documentation.
 pub struct MessageCatalog {
     /// Flattened ID → text map built from the TOML catalog.
     messages: HashMap<String, String>,

@@ -59,7 +59,7 @@ impl SceneStack {
         }
     }
 
-    /// Allocate a new unique scene ID. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Allocate a new unique scene ID.
     ///
     /// # Returns
     /// `SceneId`.
@@ -95,7 +95,7 @@ impl SceneStack {
         prev
     }
 
-    /// Pop the top scene from the stack. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Pop the top scene from the stack.
     ///
     /// # Parameters
     /// - `transition_type` — `TransitionType`.
@@ -297,7 +297,7 @@ impl SceneStack {
         self.registry.contains_key(name)
     }
 
-    /// Unregister a scene by name. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Unregister a scene by name.
     ///
     /// # Parameters
     /// - `name` — `&str`.

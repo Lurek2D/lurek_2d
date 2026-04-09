@@ -1,6 +1,6 @@
 # Module Quality Report: `devtools`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 45 ✅ / 2 ⚠️ / 1 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,11 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **SP-04** — Lua API completeness: Missing from spec: selfTime, startTime — add to ## Lua API in docs/specs/devtools.md
 - [ ] **T-04** — Float comparisons: assert_eq! with float literals (use abs()<epsilon): line 148
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2717 chars)
-- [ ] **D-07** — @param/@return annotations: Missing @param/@return before: name, time, selfTime, startTime, children (+3 more)
-- [ ] **B-04** — No business logic in closures: '<closure@159>' (18 LOC, line 159) — extract body to src/devtools/ | '<closure@386>' (19 LOC, line 386) — extract body to src/devtools/ | '<closure@482>' (16 LOC, line 482) — extract body to src/devtools/ | '<closure@503>' (52 LOC, line 503) — extract body to src/devtools/ | '<closure@110>' has if/match/for — extract to src/devtools/ | '<closure@235>' has if/match/for — extract to src/devtools/
-- [ ] **B-05** — Rc clone pattern: Possible missing state.clone() before move: line 428
+- [ ] **B-04** — No business logic in closures: '<closure@164>' (18 LOC, line 164) — extract body to src/devtools/ | '<closure@272>' (17 LOC, line 272) — extract body to src/devtools/ | '<closure@394>' (19 LOC, line 394) — extract body to src/devtools/ | '<closure@490>' (16 LOC, line 490) — extract body to src/devtools/ | '<closure@115>' has if/match/for — extract to src/devtools/ | '<closure@240>' has if/match/for — extract to src/devtools/
 - [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
@@ -50,8 +46,8 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/devtools.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2717 chars) |
-| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: selfTime, startTime — add to ## Lua API in docs/specs/devtools.md |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1647 chars |
+| **SP-04** Lua API completeness | ✅ PASS | All 14 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 8 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
@@ -65,7 +61,7 @@
 | **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
-| **D-07** @param/@return annotations | ⚠️ WARNING | Missing @param/@return before: name, time, selfTime, startTime, children (+3 more) |
+| **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
 | **D-08** No rustdoc in lua_api | ✅ PASS | No rustdoc sections in Lua API file |
 | **D-09** Section separators | ✅ PASS | Separators present |
 
@@ -76,8 +72,8 @@
 | **B-01** Dedicated API file | ✅ PASS | lua_api/devtools_api.rs present |
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn |
 | **B-03** impl LuaUserData placement | ✅ PASS | No LuaUserData impl in lua_api file |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@159>' (18 LOC, line 159) — extract body to src/devtools/ \| '<closure@386>' (19 LOC, line 386) — extract body to src/devtools/ \| '<closure@482>' (16 LOC, line 482) — extract body to src/devtools/ \| '<closure@503>' (52 LOC, line 503) — extract body to src/devtools/ \| '<closure@110>' has if/match/for — extract to src/devtools/ \| '<closure@235>' has if/match/for — extract to src/devtools/ |
-| **B-05** Rc clone pattern | ⚠️ WARNING | Possible missing state.clone() before move: line 428 |
+| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@164>' (18 LOC, line 164) — extract body to src/devtools/ \| '<closure@272>' (17 LOC, line 272) — extract body to src/devtools/ \| '<closure@394>' (19 LOC, line 394) — extract body to src/devtools/ \| '<closure@490>' (16 LOC, line 490) — extract body to src/devtools/ \| '<closure@115>' has if/match/for — extract to src/devtools/ \| '<closure@240>' has if/match/for — extract to src/devtools/ |
+| **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
 ### Phase 6 — Architecture Compliance

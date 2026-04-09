@@ -2046,7 +2046,7 @@ fn add_tree_view_methods(
         })?,
     )?;
     let c = ctx.clone();
-    /// Toggles the node state of this Tree_View widget.
+    /// Toggles the expanded/collapsed status of a Tree_View node.
     /// @return nil
     t.set(
         "toggleNode",
@@ -3452,7 +3452,7 @@ fn add_accordion_methods(
         })?,
     )?;
     let c = ctx.clone();
-    /// Toggles the section state of this Accordion widget.
+    /// Toggles the expanded/collapsed status of an Accordion section.
     /// @return nil
     t.set(
         "toggleSection",

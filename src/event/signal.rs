@@ -22,7 +22,7 @@ pub struct Subscription {
     pub name: String,
 }
 
-/// Handle-based pub-sub signal dispatcher. Consult the module-level documentation for the broader usage context and preconditions.
+/// Handle-based pub-sub signal dispatcher.
 ///
 /// Listeners register for named events and receive a unique handle ID.
 /// When an event is emitted, all matching callbacks fire in registration order.

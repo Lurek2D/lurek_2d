@@ -86,7 +86,7 @@ impl Grid {
         }
     }
 
-    /// Returns the grid width in cells. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Returns the grid width in cells.
     ///
     /// # Returns
     /// `u32`.
@@ -94,7 +94,7 @@ impl Grid {
         self.width
     }
 
-    /// Returns the grid height in cells. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Returns the grid height in cells.
     ///
     /// # Returns
     /// `u32`.

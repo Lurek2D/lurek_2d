@@ -7,7 +7,7 @@ use lurek2d::scene::{ActiveTransition, DepthSorter, SceneStack, TransitionType};
 // ============================================================
 
 #[test]
-fn test_transition_type_from_lua_str_all_variants() {
+fn transition_type_from_lua_str_all_variants() {
     assert_eq!(TransitionType::from_lua_str("fade"), TransitionType::Fade);
     assert_eq!(
         TransitionType::from_lua_str("slideleft"),
@@ -29,7 +29,7 @@ fn test_transition_type_from_lua_str_all_variants() {
 }
 
 #[test]
-fn test_transition_type_from_lua_str_unknown_returns_none() {
+fn transition_type_from_lua_str_unknown_returns_none() {
     assert_eq!(TransitionType::from_lua_str("wipe"), TransitionType::None);
     assert_eq!(TransitionType::from_lua_str(""), TransitionType::None);
     assert_eq!(TransitionType::from_lua_str("FADE"), TransitionType::None);
@@ -40,7 +40,7 @@ fn test_transition_type_from_lua_str_unknown_returns_none() {
 // ============================================================
 
 #[test]
-fn test_active_transition_progress_zero_to_one() {
+fn active_transition_progress_zero_to_one() {
     let mut t = ActiveTransition::new(TransitionType::Fade, 1.0);
     assert!((t.progress() - 0.0).abs() < 1e-5);
     t.update(0.5);
@@ -50,13 +50,13 @@ fn test_active_transition_progress_zero_to_one() {
 }
 
 #[test]
-fn test_active_transition_zero_duration_instant() {
+fn active_transition_zero_duration_instant() {
     let t = ActiveTransition::new(TransitionType::Fade, 0.0);
     assert!((t.progress() - 1.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_active_transition_is_complete() {
+fn active_transition_is_complete() {
     let mut t = ActiveTransition::new(TransitionType::SlideLeft, 0.5);
     assert!(!t.is_complete());
     t.update(0.25);
@@ -66,7 +66,7 @@ fn test_active_transition_is_complete() {
 }
 
 #[test]
-fn test_active_transition_progress_clamps_at_one() {
+fn active_transition_progress_clamps_at_one() {
     let mut t = ActiveTransition::new(TransitionType::SlideUp, 0.5);
     t.update(2.0);
     assert!((t.progress() - 1.0).abs() < 1e-5);
@@ -78,7 +78,7 @@ fn test_active_transition_progress_clamps_at_one() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_new_is_empty() {
+fn scene_stack_new_is_empty() {
     let stack = SceneStack::new();
     assert!(stack.is_empty());
     assert_eq!(stack.get_stack_size(), 0);
@@ -86,7 +86,7 @@ fn test_scene_stack_new_is_empty() {
 }
 
 #[test]
-fn test_scene_stack_push_increments_size() {
+fn scene_stack_push_increments_size() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -100,7 +100,7 @@ fn test_scene_stack_push_increments_size() {
 }
 
 #[test]
-fn test_scene_stack_push_returns_previous() {
+fn scene_stack_push_returns_previous() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -113,7 +113,7 @@ fn test_scene_stack_push_returns_previous() {
 }
 
 #[test]
-fn test_scene_stack_pop_returns_popped_and_revealed() {
+fn scene_stack_pop_returns_popped_and_revealed() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -128,14 +128,14 @@ fn test_scene_stack_pop_returns_popped_and_revealed() {
 }
 
 #[test]
-fn test_scene_stack_pop_empty_returns_error() {
+fn scene_stack_pop_empty_returns_error() {
     let mut stack = SceneStack::new();
     let result = stack.pop(TransitionType::None, 0.0);
     assert!(result.is_err());
 }
 
 #[test]
-fn test_scene_stack_pop_last_reveals_none() {
+fn scene_stack_pop_last_reveals_none() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     stack.push(a, TransitionType::None, 0.0);
@@ -146,7 +146,7 @@ fn test_scene_stack_pop_last_reveals_none() {
 }
 
 #[test]
-fn test_scene_stack_switch_to_returns_old() {
+fn scene_stack_switch_to_returns_old() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -159,7 +159,7 @@ fn test_scene_stack_switch_to_returns_old() {
 }
 
 #[test]
-fn test_scene_stack_switch_to_empty_pushes() {
+fn scene_stack_switch_to_empty_pushes() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
 
@@ -170,7 +170,7 @@ fn test_scene_stack_switch_to_empty_pushes() {
 }
 
 #[test]
-fn test_scene_stack_clear_returns_all_and_empties() {
+fn scene_stack_clear_returns_all_and_empties() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -186,7 +186,7 @@ fn test_scene_stack_clear_returns_all_and_empties() {
 }
 
 #[test]
-fn test_scene_stack_get_current() {
+fn scene_stack_get_current() {
     let mut stack = SceneStack::new();
     assert_eq!(stack.get_current(), None);
 
@@ -200,7 +200,7 @@ fn test_scene_stack_get_current() {
 }
 
 #[test]
-fn test_scene_stack_get_all_bottom_to_top() {
+fn scene_stack_get_all_bottom_to_top() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -218,7 +218,7 @@ fn test_scene_stack_get_all_bottom_to_top() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_registry_crud() {
+fn scene_stack_registry_crud() {
     let mut stack = SceneStack::new();
     let menu_id = stack.next_scene_id();
     let game_id = stack.next_scene_id();
@@ -253,7 +253,7 @@ fn test_scene_stack_registry_crud() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_data_crud() {
+fn scene_stack_data_crud() {
     let mut stack = SceneStack::new();
 
     // set & get
@@ -280,7 +280,7 @@ fn test_scene_stack_data_crud() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_transition_lifecycle() {
+fn scene_stack_transition_lifecycle() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
 
@@ -303,7 +303,7 @@ fn test_scene_stack_transition_lifecycle() {
 }
 
 #[test]
-fn test_scene_stack_no_transition_when_none_type() {
+fn scene_stack_no_transition_when_none_type() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
 
@@ -313,7 +313,7 @@ fn test_scene_stack_no_transition_when_none_type() {
 }
 
 #[test]
-fn test_scene_stack_no_transition_when_zero_duration() {
+fn scene_stack_no_transition_when_zero_duration() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
 
@@ -326,7 +326,7 @@ fn test_scene_stack_no_transition_when_zero_duration() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_pop_to_finds_registered() {
+fn scene_stack_pop_to_finds_registered() {
     let mut stack = SceneStack::new();
     let menu_id = stack.next_scene_id();
     stack.register_scene("menu".to_string(), menu_id);
@@ -335,13 +335,13 @@ fn test_scene_stack_pop_to_finds_registered() {
 }
 
 #[test]
-fn test_scene_stack_pop_to_missing_returns_none() {
+fn scene_stack_pop_to_missing_returns_none() {
     let stack = SceneStack::new();
     assert_eq!(stack.pop_to("nonexistent"), None);
 }
 
 #[test]
-fn test_scene_stack_pop_until() {
+fn scene_stack_pop_until() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -361,7 +361,7 @@ fn test_scene_stack_pop_until() {
 }
 
 #[test]
-fn test_scene_stack_pop_until_target_already_on_top() {
+fn scene_stack_pop_until_target_already_on_top() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     stack.push(a, TransitionType::None, 0.0);
@@ -372,7 +372,7 @@ fn test_scene_stack_pop_until_target_already_on_top() {
 }
 
 #[test]
-fn test_scene_stack_pop_until_target_not_found_empties() {
+fn scene_stack_pop_until_target_not_found_empties() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     let b = stack.next_scene_id();
@@ -390,7 +390,7 @@ fn test_scene_stack_pop_until_target_not_found_empties() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_next_scene_id_monotonic() {
+fn scene_stack_next_scene_id_monotonic() {
     let mut stack = SceneStack::new();
     let id1 = stack.next_scene_id();
     let id2 = stack.next_scene_id();
@@ -404,7 +404,7 @@ fn test_scene_stack_next_scene_id_monotonic() {
 // ============================================================
 
 #[test]
-fn test_scene_stack_clear_clears_transition() {
+fn scene_stack_clear_clears_transition() {
     let mut stack = SceneStack::new();
     let a = stack.next_scene_id();
     stack.push(a, TransitionType::Fade, 1.0);
@@ -419,13 +419,13 @@ fn test_scene_stack_clear_clears_transition() {
 // ============================================================
 
 #[test]
-fn test_depth_sorter_new_empty() {
+fn depth_sorter_new_empty() {
     let sorter = DepthSorter::new();
     assert_eq!(sorter.get_count(), 0);
 }
 
 #[test]
-fn test_depth_sorter_add_increments_count() {
+fn depth_sorter_add_increments_count() {
     let mut sorter = DepthSorter::new();
     sorter.add(0, 1.0);
     sorter.add(1, 2.0);
@@ -434,7 +434,7 @@ fn test_depth_sorter_add_increments_count() {
 }
 
 #[test]
-fn test_depth_sorter_sort_ascending_depth() {
+fn depth_sorter_sort_ascending_depth() {
     let mut sorter = DepthSorter::new();
     sorter.add(0, 10.0);
     sorter.add(1, 0.0);
@@ -452,7 +452,7 @@ fn test_depth_sorter_sort_ascending_depth() {
 }
 
 #[test]
-fn test_depth_sorter_clear_resets_count() {
+fn depth_sorter_clear_resets_count() {
     let mut sorter = DepthSorter::new();
     sorter.add(0, 1.0);
     sorter.add(1, 2.0);
@@ -463,7 +463,7 @@ fn test_depth_sorter_clear_resets_count() {
 }
 
 #[test]
-fn test_depth_sorter_sorted_entries_returns_sorted() {
+fn depth_sorter_sorted_entries_returns_sorted() {
     let mut sorter = DepthSorter::new();
     sorter.add(10, 99.0);
     sorter.add(20, -5.0);
@@ -477,7 +477,7 @@ fn test_depth_sorter_sorted_entries_returns_sorted() {
 }
 
 #[test]
-fn test_depth_sorter_add_object_sets_is_object() {
+fn depth_sorter_add_object_sets_is_object() {
     let mut sorter = DepthSorter::new();
     sorter.add(0, 1.0);
     sorter.add_object(1, 2.0);
@@ -488,7 +488,7 @@ fn test_depth_sorter_add_object_sets_is_object() {
 }
 
 #[test]
-fn test_depth_sorter_default_trait() {
+fn depth_sorter_default_trait() {
     let sorter = DepthSorter::default();
     assert_eq!(sorter.get_count(), 0);
 }

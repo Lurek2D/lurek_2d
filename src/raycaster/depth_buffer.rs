@@ -7,6 +7,10 @@
 ///
 /// Stores one depth value per screen column. After rendering walls, each
 /// column's depth is recorded so that sprites can be correctly occluded.
+///
+/// # Fields
+/// - `width` — `u32`. Number of screen columns.
+/// - `buffer` — `Vec<f32>`. Per-column depth value; initialized to `f32::MAX`.
 pub struct DepthBuffer {
     width: u32,
     buffer: Vec<f32>,

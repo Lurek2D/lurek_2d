@@ -64,7 +64,7 @@ impl DiagonalMode {
 /// A 2D grid of traversal costs used by pathfinding algorithms.
 ///
 /// Cells are addressed with 0-based `(x, y)` coordinates in row-major order.
-/// A cost of `0` marks a cell as blocked; values `1..=255` represent movement cost.
+/// A cost of `0` marks a cell as blocked; values `1.=255` represent movement cost.
 ///
 /// # Fields
 /// - `width` — `u32`.
@@ -237,7 +237,7 @@ impl NavGrid {
         true
     }
 
-    /// Set every cell to `cost`. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Set every cell to `cost`.
     ///
     /// # Parameters
     /// - `cost` — `u8`.

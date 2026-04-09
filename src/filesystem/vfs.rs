@@ -14,7 +14,7 @@ use crate::filesystem::file_handle::{FileHandle, FileMode};
 use crate::log_msg;
 use std::path::{Path, PathBuf};
 
-/// File metadata returned by `get_info()`. Consult the module-level documentation for the broader usage context and preconditions.
+/// File metadata returned by `get_info()`.
 ///
 /// # Fields
 /// - `file_type` — whether the entry is a file, directory, symlink, or other
@@ -498,7 +498,7 @@ impl GameFS {
 
     /// Mounts a host directory (relative to the game dir) at a virtual mountpoint.
     ///
-    /// The source path must not contain `..` components and must resolve to a
+    /// The source path must not contain `.` components and must resolve to a
     /// directory inside the game directory, preventing arbitrary filesystem access.
     ///
     /// # Parameters
@@ -651,7 +651,7 @@ impl GameFS {
 
     /// Resolve a logical path to an absolute path for reading.
     ///
-    /// Rejects path-traversal sequences (`..`) via `canonicalize()`.
+    /// Rejects path-traversal sequences (`.`) via `canonicalize()`.
     ///
     /// # Parameters
     /// - `path` — logical path relative to the game root

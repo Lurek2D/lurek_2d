@@ -11,7 +11,7 @@ use crate::graphics::renderer::{DrawCommand, ParticleInstance, ParticleRenderSha
 use crate::log_msg;
 use crate::particle::shapes::ParticleShape;
 
-/// An emitter-based particle system. Consult the module-level documentation for the broader usage context and preconditions.
+/// An emitter-based particle system.
 ///
 /// # Fields
 /// - `config` — `ParticleConfig`.

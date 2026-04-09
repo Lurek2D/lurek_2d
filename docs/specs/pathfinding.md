@@ -12,7 +12,8 @@
 
 ## Summary
 
-The pathfinding module provides a comprehensive multi-layer grid pathfinding stack for 2D games, covering everything from simple A★ grid searches to hierarchical long-range navigation and crowd-steering flow fields. The module is organized around three grid abstractions — `NavGrid`, `PathGrid`, and `Grid` — each serving different use cases: `NavGrid` is the primary u8-cost grid used by the A★ engine, HPA★ hierarchy, flow fields, and the `UnitPathfinder` wrapper; `PathGrid` is a legacy f32-cost grid from the former `ai/pathgrid` with built-in A★, Dijkstra, and string-pulling; `Grid` is a standalone grid supporting A★, Dijkstra, BFS, and flow field generation with f32 costs. The A★ implementation in `astar.rs` supports octile and Manhattan heuristics, partial paths with node expansion limits, unit-size-aware footprint checking, and Theta★ line-of-sight path smoothing. `FlowField` provides Dijkstra-sourced direction vectors for steering crowds of units toward single or multiple targets with integrated cost queries and world-space velocity steering. `AiFlowField` (in `ai_flow_field.rs`) is a simpler BFS-based variant for basic walkability grids. Hierarchical A★ (`hpa.rs`) pre-computes an abstract graph by dividing the `NavGrid` into chunks, finding entrance pairs on chunk boundaries, and connecting intra-chunk entrances via local A★ — enabling fast long-range queries that skip fine-grained grid search. `UnitPathfinder` wraps `NavGrid` with LRU path caching, unit-radius-aware passability checks, partial path support, nearest-walkable BFS, flood-fill reachability, and heuristic distance queries. `PathThreadPool` dispatches A★ requests to background worker threads with cancellation support, keeping the game loop unblocked for expensive queries. Graph-level pathfinding (`graph_path.rs`) operates on abstract adjacency graphs with centroid-based A★ and Dijkstra reachability within cost budgets — suitable for province maps, world graphs, or any sparse neighbor topology without relying on a grid. `InfluenceMap` provides a multi-layer spatial float grid for strategic AI reasoning, supporting circular influence stamping with linear falloff, 3×3 averaging propagation, decay, rectangular queries, and weighted layer blending.
+The pathfinding module provides a comprehensive multi-layer grid pathfinding stack for 2D games, covering everything from simple A★ grid searches to hierarchical long-range navigation and crowd-steering flow fields. The module is organized around three grid abstractions — `NavGrid`, `PathGrid`, and `Grid` — each serving different use cases: `NavGrid` is the primary u8-cost grid used by the A★ engine, HPA★ hierarchy, flow fields, and the `UnitPathfinder` wrapper; `PathGrid` is a legacy f32-cost grid from the former `ai/pathgrid` with built-in A★, Dijkstra, and string-pulling; `Grid` is a standalone grid supporting A★, Dijkstra, BFS, and flow field generation with f32 costs. The A★ implementation in `astar.rs` supports octile and Manhattan heuristics, partial paths with node expansion limits, unit-size-aware footprint checking, and Theta★ line-of-sight path smoothing. `FlowField` provides Dijkstra-sourced direction vectors for steering crowds of units toward single or multiple targets with integrated cost queries and world-space velocity steering. `AiFlowField` (in `ai_flow_field.rs`) is a simpler BFS-based variant for basic walkability grids. Hierarchical A★ (`hpa.rs`) pre-computes an abstract graph by dividing the `NavGrid` into chunks, finding entrance pairs on chunk boundaries, and connecting intra-chunk entrances via local A★ — enabling fast long-range queries that skip fine-grained grid search. `UnitPathfinder` wraps `NavGrid` with LRU path caching, unit-radius-aware passability checks, partial path support, nearest-walkable BFS, flood-fill reachability, and heuristic distance queries. `PathThreadPool` dispatches A★ requests to background worker threads with cancellation support, keeping the game loop unblocked for expensive queries. Graph-level pathfinding (`graph_path.
+
 
 ## Architecture
 
@@ -260,11 +261,7 @@ Controls how diagonal movement is handled. Variants:
 - `Always` — 8-directional; diagonals always allowed at cost √2.
 - `NoCornerCut` — 8-directional but diagonals blocked when either adjacent cardinal neighbour is impassable.
 
-### Type Aliases
-
-#### `pathfinding::async_pool::PathResult`
-
-`(u64, Option<Vec<(u32, u32)>>)` — A completed path result with request ID and optional path.
+**Type Aliases**: `PathResult` = `(u64, Option<Vec<(u32, u32)>>)` — A completed path result with request ID and optional path.
 
 ## Lua API
 
@@ -281,6 +278,7 @@ Exposed under `lurek.pathfinding.*` by `src/lua_api/pathfinding_api.rs`. All gri
 | `lurek.pathfinding.newPathFlowField(grid)` | `AiFlowField` | Create a BFS flow field from a PathGrid |
 | `lurek.pathfinding.setThreadCount(n)` | `nil` | Set background thread count (currently no-op) |
 | `lurek.pathfinding.getThreadCount()` | `integer` | Get background thread count (currently always 0) |
+| `lurek.pathfinding.newNavGridFromTileMap(tilemap, walkable)` | Creates a `NavGrid` from an existing `TileMap`, marking tiles as walkable based on the `walkable` predicate function. |
 
 ### NavGrid Methods
 

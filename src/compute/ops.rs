@@ -127,7 +127,7 @@ pub fn sub(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     elementwise_binary(a, b, |x, y| x - y)
 }
 
-/// Subtract a scalar from every element. Consult the module-level documentation for the broader usage context and preconditions.
+/// Subtract a scalar from every element.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -151,7 +151,7 @@ pub fn mul(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     elementwise_binary(a, b, |x, y| x * y)
 }
 
-/// Multiply every element by a scalar. Consult the module-level documentation for the broader usage context and preconditions.
+/// Multiply every element by a scalar.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -175,7 +175,7 @@ pub fn div(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     elementwise_binary(a, b, |x, y| x / y)
 }
 
-/// Divide every element by a scalar. Consult the module-level documentation for the broader usage context and preconditions.
+/// Divide every element by a scalar.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -203,7 +203,7 @@ pub fn pow_scalar(a: &NdArray, exp: f64) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Element-wise square root. Consult the module-level documentation for the broader usage context and preconditions.
+/// Element-wise square root.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -214,7 +214,7 @@ pub fn sqrt(a: &NdArray) -> Result<NdArray, String> {
     elementwise_unary(a, f64::sqrt)
 }
 
-/// Element-wise absolute value. Consult the module-level documentation for the broader usage context and preconditions.
+/// Element-wise absolute value.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -225,7 +225,7 @@ pub fn abs(a: &NdArray) -> Result<NdArray, String> {
     elementwise_unary(a, f64::abs)
 }
 
-/// Element-wise negation. Consult the module-level documentation for the broader usage context and preconditions.
+/// Element-wise negation.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -652,7 +652,7 @@ pub fn all(a: &NdArray) -> bool {
 // Reductions — global
 // ---------------------------------------------------------------------------
 
-/// Sum of all elements. Consult the module-level documentation for the broader usage context and preconditions.
+/// Sum of all elements.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -667,7 +667,7 @@ pub fn sum(a: &NdArray) -> f64 {
     s
 }
 
-/// Mean of all elements. Consult the module-level documentation for the broader usage context and preconditions.
+/// Mean of all elements.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -678,7 +678,7 @@ pub fn mean(a: &NdArray) -> f64 {
     sum(a) / a.size() as f64
 }
 
-/// Minimum value across all elements. Consult the module-level documentation for the broader usage context and preconditions.
+/// Minimum value across all elements.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -696,7 +696,7 @@ pub fn min_val(a: &NdArray) -> f64 {
     m
 }
 
-/// Maximum value across all elements. Consult the module-level documentation for the broader usage context and preconditions.
+/// Maximum value across all elements.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -785,7 +785,7 @@ pub fn sum_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Mean along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
+/// Mean along a given axis.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -803,7 +803,7 @@ pub fn mean_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Minimum along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
+/// Minimum along a given axis.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -839,7 +839,7 @@ pub fn min_axis(a: &NdArray, axis: usize) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Maximum along a given axis. Consult the module-level documentation for the broader usage context and preconditions.
+/// Maximum along a given axis.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -946,7 +946,7 @@ pub fn fill(a: &mut NdArray, val: f64) {
     }
 }
 
-/// Clone an array (convenience wrapper). Consult the module-level documentation for the broader usage context and preconditions.
+/// Clone an array (convenience wrapper).
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -961,7 +961,7 @@ pub fn clone_array(a: &NdArray) -> NdArray {
 // Bitwise — Int32 only
 // ---------------------------------------------------------------------------
 
-/// Bitwise AND of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
+/// Bitwise AND of two Int32 arrays.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -980,7 +980,7 @@ pub fn bitwise_and(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Bitwise OR of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
+/// Bitwise OR of two Int32 arrays.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -999,7 +999,7 @@ pub fn bitwise_or(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Bitwise XOR of two Int32 arrays. Consult the module-level documentation for the broader usage context and preconditions.
+/// Bitwise XOR of two Int32 arrays.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.
@@ -1018,7 +1018,7 @@ pub fn bitwise_xor(a: &NdArray, b: &NdArray) -> Result<NdArray, String> {
     Ok(out)
 }
 
-/// Bitwise NOT of an Int32 array. Consult the module-level documentation for the broader usage context and preconditions.
+/// Bitwise NOT of an Int32 array.
 ///
 /// # Parameters
 /// - `a` — `&NdArray`.

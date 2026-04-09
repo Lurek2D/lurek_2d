@@ -21,9 +21,13 @@
 //! | `frame_stats.rs` | [`FrameStats`], [`FrameSnapshot`] |
 //! | `watcher.rs` | [`FileWatcher`] |
 
+/// Rolling FPS and frame-time statistics with percentile reporting.
 pub mod frame_stats;
+/// Level-filtered, categorised in-process log with rolling history.
 pub mod logger;
+/// Hierarchical zone-based frame profiler.
 pub mod profiler;
+/// Polling mtime watcher for hot-reload detection.
 pub mod watcher;
 
 pub use frame_stats::{FrameSnapshot, FrameStats};

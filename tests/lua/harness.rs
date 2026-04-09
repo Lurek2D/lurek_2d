@@ -603,6 +603,11 @@ fn lua_test_terminal() {
 }
 
 #[test]
+fn lua_test_fx() {
+    run_lua_test("unit/test_fx.lua");
+}
+
+#[test]
 fn lua_test_config() {
     run_lua_test("config/test_config.lua");
 }

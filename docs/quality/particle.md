@@ -1,6 +1,6 @@
 # Module Quality Report: `particle`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 5 ⚠️ / 2 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 45 ✅ / 1 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -13,11 +13,7 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2255 chars)
-- [ ] **D-03** — Structured doc sections: Missing structured sections: config::ParticleConfig (# Fields)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: config:150, emitter:14, trail:32
 - [ ] **B-04** — No business logic in closures: '<closure@958>' has if/match/for — extract to src/particle/ | '<closure@1007>' has if/match/for — extract to src/particle/
-- [ ] **T-03** — Test naming: test_ prefix found — use <subject>_<scenario>_<expected>: test_phase01_released_particle_handle_reuse_reports_invalid_system, test_phase01_released_particle_long_tail_accessors_report_invalid_system, test_phase01_released_particle_long_tail_mutators_report_invalid_system, test_particle_new_system_default, test_particle_new_system_with_config (+55 more)
 
 ## Full Check Results
 
@@ -50,7 +46,7 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/particle.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2255 chars) |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1754 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 2 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 11 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
@@ -61,8 +57,8 @@
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
-| **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: config::ParticleConfig (# Fields) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: config:150, emitter:14, trail:32 |
+| **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -96,7 +92,7 @@
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\particle_tests.rs |
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_particle.lua registered in harness |
-| **T-03** Test naming | ⚠️ WARNING | test_ prefix found — use <subject>_<scenario>_<expected>: test_phase01_released_particle_handle_reuse_reports_invalid_system, test_phase01_released_particle_long_tail_accessors_report_invalid_system, test_phase01_released_particle_long_tail_mutators_report_invalid_system, test_particle_new_system_default, test_particle_new_system_with_config (+55 more) |
+| **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 84 tests / 30 pub methods (280%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |

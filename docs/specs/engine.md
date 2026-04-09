@@ -39,39 +39,6 @@ of the window and the banner near the bottom, preserves the drag-and-drop hint a
 hover highlight, and keeps the engine version out of the draw list by appending it
 to the window title only while the splash is active.
 
-`SharedState` is the central hub connecting every subsystem to every Lua API closure.
-It is `Rc<RefCell<SharedState>>` — not `Arc<Mutex<>>` — because all Lua callbacks
-execute on a single thread; this eliminates data-race bugs and avoids lock overhead.
-`SharedState` holds SlotMap resource pools (textures, fonts, canvases, meshes,
-shaders, particle systems, shapes, sprite batches), subsystem instances (Mixer,
-Clock, GameFS, Camera, EventQueue, KeyboardState, MouseState, TouchState), draw
-state (draw commands, color, blend mode, scissor, stencil, depth mode), and
-per-frame statistics.
-
-`Config` is loaded from `conf.lua` in the game directory at startup using a
-temporary Lua VM.  It captures `WindowConfig` (title, size, vsync, fullscreen,
-scale mode, game resolution), `GraphicsConfig` (backend, power preference),
-`ModulesConfig` (30+ boolean flags for optional subsystems), and
-`PerformanceConfig` (target FPS).  `ModulesConfig::validate_and_fix()` enforces
-dependency constraints (e.g. particle/gui/overlay/terminal require graphics).
-
-Error handling uses `EngineError`, a `thiserror`-derived enum with 12 variants
-carrying stable four-digit codes (E1001–E1012) grouped into five `ErrorCategory`
-values.  `ErrorScreen` renders a blue full-screen error display with word-wrapped
-message, traceback, and recovery instructions (Escape to quit, R to restart,
-Ctrl+C to copy).  The engine never crashes on Lua errors; it transitions to
-`RunState::Error` and displays the error screen.
-
-Structured logging uses stable message IDs (L001–L082, plus subsystem prefixes
-A/G/P/DF/LA) defined as `pub const` values.  The `log_msg!` macro looks up
-human-readable text from a TOML-backed `MessageCatalog` embedded at compile time
-from `src/engine/cfg/messages.toml`.  Resource keys are 14 typed SlotMap newtypes
-providing compile-time safety: a `TextureKey` cannot be passed where a `FontKey` is
-expected.
-
-The engine module intentionally does NOT expose a `lurek.engine` Lua namespace.  It
-is a pure foundation layer consumed by all other modules and by `lua_api` for
-lifecycle orchestration.
 
 ## Architecture
 
@@ -333,6 +300,10 @@ Five error categories: `Init`, `Runtime`, `Resource`, `Script`, `System`. Used b
 
 `Desktop` (borderless fullscreen at desktop resolution) or `Exclusive` (true fullscreen that takes over the display).
 
+
+#### `engine::shared_state::RendererStats`
+
+Per-frame renderer statistics snapshot. Tracks draw call count, triangle count, batch count, and GPU frame time for profiling and debugging.
 ## Lua API
 
 No Lua API — foundation module. The engine module does not expose a `lurek.engine`

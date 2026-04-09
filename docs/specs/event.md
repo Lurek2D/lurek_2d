@@ -19,12 +19,6 @@ The event module provides two complementary messaging primitives for Lurek2D gam
 > - `lurek.signal.newSignal()` — a factory that creates handle-based **pub-sub `Signal`** dispatchers; emitting on a `Signal` does **not** affect the `EventQueue`.
 > These are independent. When you need priority-ordered listeners or automatic one-shot removal, use `lurek.patterns.newEventBus()` instead of `newSignal()`.
 
-The `EventQueue` stores `Event` values consisting of a string name and a list of typed `EventArg` arguments (`Str`, `Num`, `Bool`, `Nil`). The engine pushes system events (input, window lifecycle) into the queue automatically; game scripts can also push custom events with `lurek.signal.push()`. Consumption is explicit via `lurek.signal.poll()`, which returns a Lua iterator that pops events one at a time. The queue also supports `pump()` (a no-op sync point, since Lurek2D uses a push model) and `wait(timeout)` for blocking until an event arrives or a timeout elapses.
-
-The `Signal` type is an independent pub-sub dispatcher. Subscribers call `Signal:register(name, callback)` and receive a monotonically increasing handle ID. When `Signal:emit(name, ...)` fires, all callbacks registered for that name execute in registration order with the extra arguments forwarded. Handles can be removed individually via `Signal:remove(handle)`, per-event via `Signal:clear(name)`, or wholesale via `Signal:clearAll()`. Callback functions are stored in the Lua registry; the Rust-side `Signal` struct tracks only subscription metadata (handle→name mappings).
-
-Engine lifecycle control is also routed through this module: `lurek.signal.quit()` sets the quit flag, and `lurek.signal.restart()` sets the restart flag, both read by the main loop at frame boundaries. This keeps shutdown and restart logic out of every other module.
-
 ## Architecture
 
 ```

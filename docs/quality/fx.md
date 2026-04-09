@@ -1,6 +1,6 @@
 # Module Quality Report: `fx`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 3 ⚠️ / 4 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,12 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **SP-04** — Lua API completeness: Missing from spec: newPass, getEffectTypes — add to ## Lua API in docs/specs/fx.md
 - [ ] **B-02** — Registration-only: struct definitions (move to src/fx/): LuaPostFxEffect, LuaPostFxStack, LuaImageEffect, LuaOverlay
 - [ ] **B-03** — impl LuaUserData placement: Move impl LuaUserData for LuaPostFxEffect, LuaPostFxStack, LuaImageEffect, LuaOverlay from lua_api/fx_api.rs → src/fx/
-- [ ] **T-02** — Lua test file: Module has Lua API but no tests/lua/unit/test_fx.lua
 
 ### 🟡 Warnings — Should Fix
 
 - [ ] **A-04b** — Source Files completeness (incl. subdirs): Nested .rs files not listed in AGENT.md: mod.rs
-- [ ] **SP-03** — Summary quality: Summary very long (2118 chars)
 - [ ] **B-04** — No business logic in closures: '<closure@1192>' (19 LOC, line 1192) — extract body to src/fx/ | '<closure@1222>' (45 LOC, line 1222) — extract body to src/fx/
 
 ## Full Check Results
@@ -50,8 +47,8 @@
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/fx.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2118 chars) |
-| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: newPass, getEffectTypes — add to ## Lua API in docs/specs/fx.md |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1909 chars |
+| **SP-04** Lua API completeness | ✅ PASS | All 8 bound functions in spec |
 | **SP-05** Key Types accuracy | ✅ PASS | 18 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
@@ -95,7 +92,7 @@
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\fx_tests.rs |
-| **T-02** Lua test file | ❌ ERROR | Module has Lua API but no tests/lua/unit/test_fx.lua |
+| **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_fx.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 27 tests / 57 pub methods (47%) |

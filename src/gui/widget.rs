@@ -103,6 +103,7 @@ impl WidgetState {
 /// - `MenuItem` — Menu item.
 /// - `Dialog` — Modal dialog.
 /// - `StatusBar` — Status bar with sections.
+/// # Variants
 /// - `Accordion` — Collapsible accordion.
 /// - `TooltipPanel` — Rich tooltip panel.
 /// - `ColorPicker` — Color picker.
@@ -247,6 +248,7 @@ impl WidgetType {
 /// - `anchor_left` — `Option<f32>`. Left anchor edge offset.
 /// - `anchor_top` — `Option<f32>`. Top anchor edge offset.
 /// - `anchor_right` — `Option<f32>`. Right anchor edge offset.
+/// # Fields
 /// - `anchor_bottom` — `Option<f32>`. Bottom anchor edge offset.
 /// - `anchor_center_x` — `Option<f32>`. Horizontal centre anchor.
 /// - `anchor_center_y` — `Option<f32>`. Vertical centre anchor.

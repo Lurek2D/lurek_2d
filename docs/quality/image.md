@@ -1,6 +1,6 @@
 # Module Quality Report: `image`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 41 ✅ / 4 ⚠️ / 3 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-09  |  **Score**: 44 ✅ / 2 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,12 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **SP-04** — Lua API completeness: Missing from spec: newLayeredImage, saveImage, loadImage, loadLayered — add to ## Lua API in docs/specs/image.md
 - [ ] **B-02** — Registration-only: struct definitions (move to src/image/): LuaLayeredImage, LuaCompressedImageData
 - [ ] **B-03** — impl LuaUserData placement: Move impl LuaUserData for LuaLayeredImage, LuaCompressedImageData from lua_api/image_api.rs → src/image/
 
 ### 🟡 Warnings — Should Fix
 
 - [ ] **A-04b** — Source Files completeness (incl. subdirs): Nested .rs files not listed in AGENT.md: mod.rs
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: ImageLayer, LayeredImage
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: image_data:15, image_data:105, image_data:113, image_data:121, image_data:223
 - [ ] **B-04** — No business logic in closures: '<closure@288>' (36 LOC, line 288) — extract body to src/image/
 
 ## Full Check Results
@@ -51,8 +48,8 @@
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/image.md exists |
 | **SP-02** Required spec sections | ✅ PASS | All required sections present |
 | **SP-03** Summary quality | ✅ PASS | Summary is 1769 chars |
-| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: newLayeredImage, saveImage, loadImage, loadLayered — add to ## Lua API in docs/specs/image.md |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: ImageLayer, LayeredImage |
+| **SP-04** Lua API completeness | ✅ PASS | All 7 bound functions in spec |
+| **SP-05** Key Types accuracy | ✅ PASS | 6 types — spec Key Types in sync |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -62,7 +59,7 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: image_data:15, image_data:105, image_data:113, image_data:121, image_data:223 |
+| **D-04** Doc quality | ✅ PASS | No stub docs found |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |

@@ -41,9 +41,6 @@ scripts full control over which GUI instance is active. `GuiContext` manages foc
 (`focus_next`, `focus_prev`), a toast notification queue with timer-based expiration, and
 mouse/keyboard hit-testing against widget bounds.
 
-**Scope boundary**: The `gui` module holds layout and state as CPU data only. Actual rendering
-is done via `lurek.gfx` draw calls issued by `lua_api/gui_api.rs`. No GPU resources live here.
-
 ## Architecture
 
 ```
@@ -355,6 +352,11 @@ Data series: `Line { name, points, color }`, `Scatter { name, points, color, siz
 #### `gui::context::WidgetKind`
 
 Type-erased widget storage with 32 variants wrapping all concrete widget types. Provides `base()`/`base_mut()` for accessing the embedded `WidgetBase`, and `children()`/`children_mut()` for container child access.
+
+
+#### `gui::context::GuiEvent`
+
+Event emitted by `GuiContext` when a widget changes state (button clicked, text changed, list selection changed, etc.). Scripts receive events via `lurek.gui.poll_events()` or the per-instance `context:poll()` call.
 
 ## Lua API
 

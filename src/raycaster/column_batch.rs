@@ -141,7 +141,7 @@ impl ColumnBatch {
         self.columns.get(col)
     }
 
-    /// Bulk-update columns from raw ray data. Consult the module-level documentation for the broader usage context and preconditions.
+    /// Bulk-update columns from raw ray data.
     ///
     /// # Parameters
     /// - `rays` — `&[f32]`.
