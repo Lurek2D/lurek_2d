@@ -383,17 +383,20 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
 
     lua.globals().set("lurek", luna)?;
 
-    // Add `library/` to the Lua package path so games can use
+    // Add content-library paths to the Lua package path so games and tests can use
     // `require("library.dialog")`, `require("library.item")`, etc.
     {
         let package: LuaTable = lua.globals().get("package")?;
         let old_path: String = package.get("path")?;
         let mut new_path = old_path;
-        new_path.push_str(";./?/init.lua;./?.lua");
+        new_path.push_str(";./?/init.lua;./?.lua;./content/?/init.lua;./content/?.lua");
         if let Ok(exe) = std::env::current_exe() {
             if let Some(dir) = exe.parent() {
                 let d = dir.to_string_lossy().replace('\\', "/");
-                new_path.push_str(&format!(";{}/?/init.lua;{}/?.lua", d, d));
+                new_path.push_str(&format!(
+                    ";{}/?/init.lua;{}/?.lua;{}/content/?/init.lua;{}/content/?.lua",
+                    d, d, d, d
+                ));
             }
         }
         package.set("path", new_path)?;

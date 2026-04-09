@@ -30,3 +30,4 @@
 
 # Reference repositories (cloned for analysis)
 /references/
+extensions/vscode/node_modules/*

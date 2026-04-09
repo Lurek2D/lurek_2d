@@ -20,6 +20,7 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ## [0.6.23] — 2026-04-10
 ### Fixed
+- Lua test/runtime compatibility: added `content/` package-path fallbacks for `require("library.*")`, refreshed `tests/lua/examples/test_examples.lua` for the current single-file `content/examples/*.lua` layout, and aligned Lua font/UI tests with the live `lurek.gfx` and `lurek.ui` APIs.
 - **Quality: D-04/D-03/T-03/SP-03/SP-04/SP-05/A-03** — Audit pre-fixes across 14 modules:
   - **network**: D-04 stubs (host.rs), T-03 test_ prefixes; T-04 float asserts in network_tests.rs
   - **compute**: D-04 stubs (array.rs, ops.rs, compute_api.rs), T-03 prefixes

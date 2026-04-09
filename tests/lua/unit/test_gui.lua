@@ -933,7 +933,7 @@ end)
 describe("lurek.ui Theme", function()
     it("creates a theme", function()
         local theme = lurek.ui.newTheme()
-        expect_type("table", theme)
+        expect_type("userdata", theme)
     end)
 
     it("can set and get theme", function()
