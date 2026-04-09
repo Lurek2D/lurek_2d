@@ -1,7 +1,11 @@
 ﻿-- tests/lua/unit/test_image.lua
--- BDD tests for luna.img compressed texture API.
--- The headless VM has no filesystem, so only function existence and
--- error-handling behaviour are tested here.
+-- BDD tests for luna.img ImageData API including all 20 effect methods.
+-- The headless VM has no filesystem, GPU, audio, or window APIs.
+-- All tests use luna.img.newImageData(w, h) for image construction.
+
+-- =============================================================================
+-- Compressed API (existing tests)
+-- =============================================================================
 
 describe("luna.img compressed API", function()
     it("luna.img is a table", function()
@@ -28,6 +32,10 @@ describe("luna.img compressed API", function()
     end)
 end)
 
+-- =============================================================================
+-- Basic API (existing tests)
+-- =============================================================================
+
 describe("luna.img existing API still works", function()
     it("newImageData is a function", function()
         expect_type("function", luna.img.newImageData)
@@ -36,6 +44,771 @@ describe("luna.img existing API still works", function()
     it("newImageData creates a blank buffer", function()
         local img = luna.img.newImageData(4, 4)
         expect_type("userdata", img)
+    end)
+end)
+
+-- =============================================================================
+-- Effect method existence — one it per effect
+-- =============================================================================
+
+describe("ImageData effect method existence", function()
+    local img
+    before_each(function()
+        img = luna.img.newImageData(4, 4)
+    end)
+
+    it("brightness is a function", function()
+        expect_type("function", img.brightness)
+    end)
+
+    it("contrast is a function", function()
+        expect_type("function", img.contrast)
+    end)
+
+    it("saturation is a function", function()
+        expect_type("function", img.saturation)
+    end)
+
+    it("gamma is a function", function()
+        expect_type("function", img.gamma)
+    end)
+
+    it("tint is a function", function()
+        expect_type("function", img.tint)
+    end)
+
+    it("grayscale is a function", function()
+        expect_type("function", img.grayscale)
+    end)
+
+    it("sepia is a function", function()
+        expect_type("function", img.sepia)
+    end)
+
+    it("invert is a function", function()
+        expect_type("function", img.invert)
+    end)
+
+    it("threshold is a function", function()
+        expect_type("function", img.threshold)
+    end)
+
+    it("posterize is a function", function()
+        expect_type("function", img.posterize)
+    end)
+
+    it("fill is a function", function()
+        expect_type("function", img.fill)
+    end)
+
+    it("noise is a function", function()
+        expect_type("function", img.noise)
+    end)
+
+    it("alphaMask is a function", function()
+        expect_type("function", img.alphaMask)
+    end)
+
+    it("flipHorizontal is a function", function()
+        expect_type("function", img.flipHorizontal)
+    end)
+
+    it("flipVertical is a function", function()
+        expect_type("function", img.flipVertical)
+    end)
+
+    it("rotate90cw is a function", function()
+        expect_type("function", img.rotate90cw)
+    end)
+
+    it("crop is a function", function()
+        expect_type("function", img.crop)
+    end)
+
+    it("resizeNearest is a function", function()
+        expect_type("function", img.resizeNearest)
+    end)
+
+    it("blur is a function", function()
+        expect_type("function", img.blur)
+    end)
+
+    it("sharpen is a function", function()
+        expect_type("function", img.sharpen)
+    end)
+end)
+
+-- =============================================================================
+-- Color / Tone effects
+-- =============================================================================
+
+describe("ImageData color/tone effects: brightness", function()
+    it("brightness factor=2 brightens a mid-grey pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 128, 128, 128, 255)
+        img:brightness(2.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        -- 128 * 2 = 256, clamped to 255
+        expect_equal(r >= 200, true)
+        expect_equal(g >= 200, true)
+        expect_equal(b >= 200, true)
+        expect_equal(a, 255)
+    end)
+
+    it("brightness factor=1 leaves pixel unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:brightness(1.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 100)
+        expect_equal(g, 150)
+        expect_equal(b, 200)
+        expect_equal(a, 255)
+    end)
+
+    it("brightness returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:brightness(1.0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData color/tone effects: contrast", function()
+    it("contrast factor=1 leaves pixel unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 128, 200, 50, 255)
+        -- ((ch - 128)*1 + 128) = ch exactly
+        img:contrast(1.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 128)
+        expect_equal(g, 200)
+        expect_equal(b, 50)
+        expect_equal(a, 255)
+    end)
+
+    it("contrast factor=2 increases distance from mid-grey", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 200, 200, 200, 255)
+        img:contrast(2.0)
+        local r, _, _, _ = img:getPixel(0, 0)
+        -- ((200 - 128)*2 + 128) = 72*2 + 128 = 272, clamped to 255
+        expect_equal(r, 255)
+    end)
+
+    it("contrast returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:contrast(1.0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData color/tone effects: saturation", function()
+    it("saturation factor=0 desaturates a pure-red pixel to grey", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 255, 0, 0, 255)
+        img:saturation(0.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        -- All channels interpolated to luma ≈ 54; must be equal within rounding
+        expect_equal(math.abs(r - g) <= 2, true)
+        expect_equal(math.abs(g - b) <= 2, true)
+        expect_equal(a, 255)
+    end)
+
+    it("saturation factor=1 leaves pixel unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:saturation(1.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 100)
+        expect_equal(g, 150)
+        expect_equal(b, 200)
+        expect_equal(a, 255)
+    end)
+
+    it("saturation returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:saturation(1.0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData color/tone effects: gamma", function()
+    it("gamma 1.0 leaves pixel unchanged (within rounding)", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:gamma(1.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        -- (ch/255)^(1/1.0)*255 = ch exactly (up to rounding)
+        expect_equal(math.abs(r - 100) <= 1, true)
+        expect_equal(math.abs(g - 150) <= 1, true)
+        expect_equal(math.abs(b - 200) <= 1, true)
+        expect_equal(a, 255)
+    end)
+
+    it("gamma > 1 brightens mid-tones", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 128, 128, 128, 255)
+        img:gamma(2.0)
+        local r, _, _, _ = img:getPixel(0, 0)
+        -- (128/255)^0.5 * 255 ≈ 180; must be brighter than 128
+        expect_equal(r > 128, true)
+    end)
+
+    it("gamma returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:gamma(1.0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData color/tone effects: tint", function()
+    it("tint factor=1.0 replaces RGB with tint colour, preserving alpha", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 128, 64, 32, 200)
+        img:tint(0, 255, 0, 1.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        -- lerp(original, tint, 1.0) = tint exactly
+        expect_equal(r, 0)
+        expect_equal(g, 255)
+        expect_equal(b, 0)
+        expect_equal(a, 200)
+    end)
+
+    it("tint factor=0 leaves pixel unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:tint(0, 255, 0, 0.0)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 100)
+        expect_equal(g, 150)
+        expect_equal(b, 200)
+        expect_equal(a, 255)
+    end)
+
+    it("tint returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:tint(255, 0, 0, 0.5)
+        expect_equal(ret, nil)
+    end)
+end)
+
+-- =============================================================================
+-- Filter effects
+-- =============================================================================
+
+describe("ImageData filter effects: grayscale", function()
+    it("grayscale makes r==g==b for a pure-red pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 255, 0, 0, 255)
+        img:grayscale()
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, g)
+        expect_equal(g, b)
+        expect_equal(a, 255)
+    end)
+
+    it("grayscale makes r==g==b for a pure-blue pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 0, 0, 255, 255)
+        img:grayscale()
+        local r, g, b, _ = img:getPixel(0, 0)
+        expect_equal(r, g)
+        expect_equal(g, b)
+    end)
+
+    it("grayscale returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:grayscale()
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: sepia", function()
+    it("sepia produces warm-toned output on a red pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 255, 0, 0, 255)
+        img:sepia()
+        local r, g, b, a = img:getPixel(0, 0)
+        -- sepia: r≈100, g≈89, b≈69 — all positive, r >= g >= b
+        expect_equal(r > 0, true)
+        expect_equal(g > 0, true)
+        expect_equal(b > 0, true)
+        expect_equal(r >= g, true)
+        expect_equal(g >= b, true)
+        expect_equal(a, 255)
+    end)
+
+    it("sepia leaves alpha unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 200, 100, 50, 128)
+        img:sepia()
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 128)
+    end)
+
+    it("sepia returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:sepia()
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: invert", function()
+    it("invert inverts RGB channels, leaving alpha unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:invert()
+        local r, g, b, a = img:getPixel(0, 0)
+        -- 255 - 100 = 155, 255 - 150 = 105, 255 - 200 = 55
+        expect_equal(math.abs(r - 155) <= 2, true)
+        expect_equal(math.abs(g - 105) <= 2, true)
+        expect_equal(math.abs(b - 55) <= 2, true)
+        expect_equal(a, 255)
+    end)
+
+    it("invert applied twice returns to original", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 80, 120, 200, 200)
+        img:invert()
+        img:invert()
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 80)
+        expect_equal(g, 120)
+        expect_equal(b, 200)
+        expect_equal(a, 200)
+    end)
+
+    it("invert returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:invert()
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: threshold", function()
+    it("threshold above value produces white pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 255, 255, 255, 255)  -- luma=255 >= 128
+        img:threshold(128)
+        local r, g, b, _ = img:getPixel(0, 0)
+        expect_equal(r, 255)
+        expect_equal(g, 255)
+        expect_equal(b, 255)
+    end)
+
+    it("threshold below value produces black pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 10, 10, 10, 255)  -- luma≈10 < 128
+        img:threshold(128)
+        local r, g, b, _ = img:getPixel(0, 0)
+        expect_equal(r, 0)
+        expect_equal(g, 0)
+        expect_equal(b, 0)
+    end)
+
+    it("threshold leaves alpha unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 200, 200, 200, 99)
+        img:threshold(128)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 99)
+    end)
+
+    it("threshold returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:threshold(128)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: posterize", function()
+    it("posterize levels=2 maps each channel to 0 or 255", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 200, 50, 128, 255)
+        img:posterize(2)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r == 0 or r == 255, true)
+        expect_equal(g == 0 or g == 255, true)
+        expect_equal(b == 0 or b == 255, true)
+        expect_equal(a, 255)
+    end)
+
+    it("posterize leaves alpha unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 100, 100, 77)
+        img:posterize(4)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 77)
+    end)
+
+    it("posterize returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:posterize(4)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: fill", function()
+    it("fill sets all pixels to the given RGBA colour", function()
+        local img = luna.img.newImageData(4, 4)
+        img:fill(255, 0, 0, 255)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 255)
+        expect_equal(g, 0)
+        expect_equal(b, 0)
+        expect_equal(a, 255)
+    end)
+
+    it("fill sets a corner pixel too", function()
+        local img = luna.img.newImageData(4, 4)
+        img:fill(0, 128, 255, 200)
+        local r, g, b, a = img:getPixel(3, 3)
+        expect_equal(r, 0)
+        expect_equal(g, 128)
+        expect_equal(b, 255)
+        expect_equal(a, 200)
+    end)
+
+    it("fill returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:fill(0, 0, 0, 255)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: noise", function()
+    it("noise(0) leaves pixels exactly unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 150, 200, 255)
+        img:noise(0)
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 100)
+        expect_equal(g, 150)
+        expect_equal(b, 200)
+        expect_equal(a, 255)
+    end)
+
+    it("noise(0) leaves alpha unchanged on a transparent pixel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 50, 50, 50, 128)
+        img:noise(0)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 128)
+    end)
+
+    it("noise returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:noise(0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData filter effects: alphaMask", function()
+    it("alphaMask(0.5) halves the alpha channel", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 128, 64, 255, 200)
+        img:alphaMask(0.5)
+        local r, g, b, a = img:getPixel(0, 0)
+        -- alpha = floor/round(200 * 0.5) = 100; RGB unchanged
+        expect_equal(math.abs(a - 100) <= 2, true)
+        expect_equal(r, 128)
+        expect_equal(g, 64)
+        expect_equal(b, 255)
+    end)
+
+    it("alphaMask(1.0) leaves alpha unchanged", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 100, 100, 100, 180)
+        img:alphaMask(1.0)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 180)
+    end)
+
+    it("alphaMask(0.0) makes pixel fully transparent", function()
+        local img = luna.img.newImageData(1, 1)
+        img:setPixel(0, 0, 255, 255, 255, 200)
+        img:alphaMask(0.0)
+        local _, _, _, a = img:getPixel(0, 0)
+        expect_equal(a, 0)
+    end)
+
+    it("alphaMask returns nil (in-place)", function()
+        local img = luna.img.newImageData(1, 1)
+        local ret = img:alphaMask(1.0)
+        expect_equal(ret, nil)
+    end)
+end)
+
+-- =============================================================================
+-- Geometric in-place effects
+-- =============================================================================
+
+describe("ImageData geometric in-place: flipHorizontal", function()
+    it("flipHorizontal mirrors pixel from column 0 to column 3 in a 4-wide image", function()
+        local img = luna.img.newImageData(4, 1)
+        img:setPixel(0, 0, 255, 0, 0, 255)    -- red at left
+        img:setPixel(3, 0, 0, 0, 255, 255)    -- blue at right
+        img:flipHorizontal()
+        local r0, _, b0, _ = img:getPixel(0, 0)  -- was right edge → now blue
+        local r3, _, b3, _ = img:getPixel(3, 0)  -- was left edge  → now red
+        expect_equal(b0, 255)
+        expect_equal(r3, 255)
+    end)
+
+    it("flipHorizontal preserves image dimensions", function()
+        local img = luna.img.newImageData(4, 2)
+        img:flipHorizontal()
+        expect_equal(img:getWidth(), 4)
+        expect_equal(img:getHeight(), 2)
+    end)
+
+    it("flipHorizontal applied twice returns to original", function()
+        local img = luna.img.newImageData(4, 1)
+        img:setPixel(0, 0, 200, 100, 50, 255)
+        img:flipHorizontal()
+        img:flipHorizontal()
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 200)
+        expect_equal(g, 100)
+        expect_equal(b, 50)
+        expect_equal(a, 255)
+    end)
+
+    it("flipHorizontal returns nil (in-place)", function()
+        local img = luna.img.newImageData(2, 2)
+        local ret = img:flipHorizontal()
+        expect_equal(ret, nil)
+    end)
+end)
+
+describe("ImageData geometric in-place: flipVertical", function()
+    it("flipVertical mirrors pixel from row 0 to row 3 in a 4-tall image", function()
+        local img = luna.img.newImageData(1, 4)
+        img:setPixel(0, 0, 255, 0, 0, 255)    -- red at top
+        img:setPixel(0, 3, 0, 0, 255, 255)    -- blue at bottom
+        img:flipVertical()
+        local r0, _, b0, _ = img:getPixel(0, 0)  -- was bottom → now blue
+        local r3, _, b3, _ = img:getPixel(0, 3)  -- was top    → now red
+        expect_equal(b0, 255)
+        expect_equal(r3, 255)
+    end)
+
+    it("flipVertical preserves image dimensions", function()
+        local img = luna.img.newImageData(2, 4)
+        img:flipVertical()
+        expect_equal(img:getWidth(), 2)
+        expect_equal(img:getHeight(), 4)
+    end)
+
+    it("flipVertical applied twice returns to original", function()
+        local img = luna.img.newImageData(1, 4)
+        img:setPixel(0, 0, 200, 100, 50, 255)
+        img:flipVertical()
+        img:flipVertical()
+        local r, g, b, a = img:getPixel(0, 0)
+        expect_equal(r, 200)
+        expect_equal(g, 100)
+        expect_equal(b, 50)
+        expect_equal(a, 255)
+    end)
+
+    it("flipVertical returns nil (in-place)", function()
+        local img = luna.img.newImageData(2, 2)
+        local ret = img:flipVertical()
+        expect_equal(ret, nil)
+    end)
+end)
+
+-- =============================================================================
+-- Geometric new-image effects
+-- =============================================================================
+
+describe("ImageData geometric new-image: rotate90cw", function()
+    it("rotate90cw returns a new userdata", function()
+        local img = luna.img.newImageData(4, 2)
+        local out = img:rotate90cw()
+        expect_type("userdata", out)
+    end)
+
+    it("rotate90cw swaps dimensions (4x2 → 2x4)", function()
+        local img = luna.img.newImageData(4, 2)
+        local out = img:rotate90cw()
+        expect_equal(out:getWidth(), 2)
+        expect_equal(out:getHeight(), 4)
+    end)
+
+    it("rotate90cw on a square returns the same dimensions", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:rotate90cw()
+        expect_equal(out:getWidth(), 4)
+        expect_equal(out:getHeight(), 4)
+    end)
+
+    it("rotate90cw returns a distinct object from the source", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:rotate90cw()
+        -- Modify source after rotation; output must be unaffected
+        img:fill(255, 0, 0, 255)
+        local r, _, _, _ = out:getPixel(0, 0)
+        expect_equal(r, 0)  -- out was blank before fill
+    end)
+end)
+
+describe("ImageData geometric new-image: crop", function()
+    it("crop returns a new userdata", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:crop(0, 0, 2, 2)
+        expect_type("userdata", out)
+    end)
+
+    it("crop(0,0,2,2) on a 4x4 image produces a 2x2 image", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:crop(0, 0, 2, 2)
+        expect_equal(out:getWidth(), 2)
+        expect_equal(out:getHeight(), 2)
+    end)
+
+    it("crop copies pixel values from the source region", function()
+        local img = luna.img.newImageData(4, 4)
+        img:setPixel(1, 1, 200, 100, 50, 255)
+        local out = img:crop(1, 1, 2, 2)  -- region starting at (1,1)
+        local r, g, b, a = out:getPixel(0, 0)  -- (1,1) in src → (0,0) in crop
+        expect_equal(r, 200)
+        expect_equal(g, 100)
+        expect_equal(b, 50)
+        expect_equal(a, 255)
+    end)
+
+    it("crop out-of-bounds raises an error", function()
+        local img = luna.img.newImageData(4, 4)
+        expect_error(function()
+            img:crop(3, 3, 5, 5)  -- 3+5=8 > 4, out of bounds
+        end)
+    end)
+
+    it("crop zero-width raises an error", function()
+        local img = luna.img.newImageData(4, 4)
+        expect_error(function()
+            img:crop(0, 0, 0, 2)  -- w=0 is invalid
+        end)
+    end)
+end)
+
+describe("ImageData geometric new-image: resizeNearest", function()
+    it("resizeNearest returns a new userdata", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:resizeNearest(2, 2)
+        expect_type("userdata", out)
+    end)
+
+    it("resizeNearest(2,2) downscales a 4x4 to 2x2", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:resizeNearest(2, 2)
+        expect_equal(out:getWidth(), 2)
+        expect_equal(out:getHeight(), 2)
+    end)
+
+    it("resizeNearest(8,8) upscales a 4x4 to 8x8", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:resizeNearest(8, 8)
+        expect_equal(out:getWidth(), 8)
+        expect_equal(out:getHeight(), 8)
+    end)
+
+    it("resizeNearest preserves top-left pixel colour", function()
+        local img = luna.img.newImageData(4, 4)
+        img:setPixel(0, 0, 200, 100, 50, 255)
+        local out = img:resizeNearest(2, 2)
+        local r, g, b, a = out:getPixel(0, 0)
+        expect_equal(r, 200)
+        expect_equal(g, 100)
+        expect_equal(b, 50)
+        expect_equal(a, 255)
+    end)
+end)
+
+-- =============================================================================
+-- Convolution effects
+-- =============================================================================
+
+describe("ImageData convolution: blur", function()
+    it("blur(0) returns a new userdata", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:blur(0)
+        expect_type("userdata", out)
+    end)
+
+    it("blur(0) returns an image with the same dimensions", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:blur(0)
+        expect_equal(out:getWidth(), 4)
+        expect_equal(out:getHeight(), 4)
+    end)
+
+    it("blur(1) returns an image with the same dimensions", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:blur(1)
+        expect_equal(out:getWidth(), 4)
+        expect_equal(out:getHeight(), 4)
+    end)
+
+    it("blur(0) preserves pixel values (returns a clone)", function()
+        local img = luna.img.newImageData(4, 4)
+        img:fill(100, 150, 200, 255)
+        local out = img:blur(0)
+        local r, g, b, a = out:getPixel(1, 1)
+        expect_equal(r, 100)
+        expect_equal(g, 150)
+        expect_equal(b, 200)
+        expect_equal(a, 255)
+    end)
+
+    it("blur(1) on a solid-colour image preserves colour", function()
+        local img = luna.img.newImageData(4, 4)
+        img:fill(80, 120, 160, 255)
+        local out = img:blur(1)
+        -- All neighbours are the same; box average = same value
+        local r, g, b, a = out:getPixel(1, 1)
+        expect_equal(r, 80)
+        expect_equal(g, 120)
+        expect_equal(b, 160)
+        expect_equal(a, 255)
+    end)
+end)
+
+describe("ImageData convolution: sharpen", function()
+    it("sharpen returns a new userdata", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:sharpen()
+        expect_type("userdata", out)
+    end)
+
+    it("sharpen returns an image with the same dimensions", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:sharpen()
+        expect_equal(out:getWidth(), 4)
+        expect_equal(out:getHeight(), 4)
+    end)
+
+    it("sharpen on a solid-colour image preserves pixel values", function()
+        local img = luna.img.newImageData(4, 4)
+        img:fill(128, 64, 32, 255)
+        local out = img:sharpen()
+        -- 5*C - top - bottom - left - right = 5*C - 4*C = C for uniform colour
+        local r, g, b, a = out:getPixel(1, 1)
+        expect_equal(math.abs(r - 128) <= 2, true)
+        expect_equal(math.abs(g - 64) <= 2, true)
+        expect_equal(math.abs(b - 32) <= 2, true)
+        expect_equal(a, 255)
+    end)
+
+    it("sharpen returns a distinct object from the source", function()
+        local img = luna.img.newImageData(4, 4)
+        local out = img:sharpen()
+        img:fill(255, 0, 0, 255)
+        -- out was created before fill; its pixel 1,1 (blank=0) is unaffected
+        local r, _, _, _ = out:getPixel(1, 1)
+        expect_equal(r, 0)
     end)
 end)
 

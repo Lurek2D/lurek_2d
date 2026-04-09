@@ -47,11 +47,12 @@ src/image/
 
 ## Source Files
 
-| File             | Purpose                                                                     |
-|------------------|-----------------------------------------------------------------------------|
-| `image_data.rs`  | CPU-side RGBA8 pixel buffer with per-pixel access, paste, map, PNG encode   |
-| `compressed.rs`  | DDS/DXT compressed GPU texture container with format detection and loading  |
-| `palette_lut.rs` | Colour palette lookup table mapping source colours to target colours        |
+| File             | Purpose                                                                                         |
+|------------------|-------------------------------------------------------------------------------------------------|
+| `image_data.rs`  | CPU-side RGBA8 pixel buffer with per-pixel access, paste, map, PNG encode, and `mlua::UserData` impl |
+| `effects.rs`     | 20 CPU-side pixel-processing effects (brightness, blur, sepia, geometric transforms, etc.)      |
+| `compressed.rs`  | DDS/DXT compressed GPU texture container with format detection and loading                      |
+| `palette_lut.rs` | Colour palette lookup table mapping source colours to target colours                            |
 
 ## Submodules
 
@@ -89,6 +90,31 @@ CPU-side pixel buffer in RGBA8 format. Wraps a `Vec<u8>` in row-major order with
 | `pixels` | `Vec<u8>` | RGBA8 pixel data, row-major (4 bytes per pixel)   |
 
 **Key methods**: `new(w, h)`, `from_file(path)`, `from_bytes(w, h, bytes)`, `get_pixel(x, y)`, `set_pixel(x, y, r, g, b, a)`, `paste(source, dx, dy)`, `map_pixel(f)`, `encode_png()`, `as_bytes()`, `get_string()`, `width()`, `height()`, `dimensions()`.
+
+**Effect methods** (defined in `effects.rs` as `impl ImageData` — all accessible via the same `ImageData` type):
+
+| Method | Signature | Returns | Description |
+|--------|-----------|---------|-------------|
+| `brightness` | `(factor: f32)` | `()` | Multiply all RGB channels by `factor`; alpha unchanged |
+| `contrast` | `(factor: f32)` | `()` | Scale each channel distance from mid-grey (128); alpha unchanged |
+| `saturation` | `(factor: f32)` | `()` | 0 = greyscale, 1 = original, >1 = boosted saturation |
+| `gamma` | `(gamma: f32)` | `()` | Gamma-correct each RGB channel; alpha unchanged |
+| `tint` | `(tr, tg, tb: u8, factor: f32)` | `()` | Blend pixels toward tint colour; alpha unchanged |
+| `grayscale` | `()` | `()` | Convert to greyscale using perceptual weights |
+| `sepia` | `()` | `()` | Apply the standard sepia tone matrix |
+| `invert` | `()` | `()` | Invert RGB channels (`255 - ch`); alpha unchanged |
+| `threshold` | `(value: u8)` | `()` | Pixels with luma ≥ value → white; below → black |
+| `posterize` | `(levels: u8)` | `()` | Reduce each channel to N evenly-spaced levels (min 2) |
+| `fill` | `(r, g, b, a: u8)` | `()` | Overwrite every pixel with solid colour including alpha |
+| `noise` | `(amount: u8)` | `()` | Add pseudo-random ±amount noise to each RGB channel |
+| `alpha_mask` | `(factor: f32)` | `()` | Multiply alpha channel by `factor`; RGB unchanged |
+| `flip_horizontal` | `()` | `()` | Mirror image left ↔ right in-place |
+| `flip_vertical` | `()` | `()` | Mirror image top ↔ bottom in-place |
+| `rotate_90_cw` | `()` | `ImageData` | Return new image rotated 90° clockwise (dims swapped) |
+| `crop` | `(x, y, w, h: u32)` | `Option<ImageData>` | Extract sub-rectangle; `None` if out of bounds |
+| `resize_nearest` | `(w, h: u32)` | `ImageData` | Return new image scaled to `w×h` using nearest-neighbour |
+| `blur` | `(radius: u32)` | `ImageData` | Return new image blurred with two-pass box filter |
+| `sharpen` | `()` | `ImageData` | Return new image sharpened with 3×3 unsharp kernel |
 
 #### `image::compressed::CompressedImageData`
 
@@ -148,6 +174,8 @@ Exposed under `luna.img.*` by `src/lua_api/image_api.rs`. The Lua wrapper also d
 
 ### ImageData Methods (UserData)
 
+#### Core
+
 | Method                                  | Description                                              |
 |-----------------------------------------|----------------------------------------------------------|
 | `img:getWidth()`                        | Returns width in pixels                                  |
@@ -158,6 +186,52 @@ Exposed under `luna.img.*` by `src/lua_api/image_api.rs`. The Lua wrapper also d
 | `img:mapPixel(fn)`                      | Applies a function to every pixel `(x, y, r, g, b, a) → (r, g, b, a)` |
 | `img:encode("png")`                     | Encodes the image as PNG bytes                           |
 | `img:getString()`                       | Returns the raw RGBA pixel bytes                         |
+| `img:paste(src, dx, dy)`               | Copy all pixels from `src` onto self at `(dx, dy)`       |
+
+#### Color / Tone Effects (in-place, return `nil`)
+
+| Method                              | Description                                                        |
+|-------------------------------------|--------------------------------------------------------------------|
+| `img:brightness(factor)`            | Multiply RGB by `factor`; >1 brightens, <1 darkens                 |
+| `img:contrast(factor)`              | Scale each channel's distance from mid-grey (128)                  |
+| `img:saturation(factor)`            | 0 = greyscale, 1 = unchanged, >1 = boosted                        |
+| `img:gamma(gamma)`                  | Apply gamma correction per channel                                 |
+| `img:tint(tr, tg, tb, factor)`      | Blend pixels toward tint colour by `factor` (0–1)                  |
+
+#### Filter Effects (in-place, return `nil`)
+
+| Method                              | Description                                                        |
+|-------------------------------------|--------------------------------------------------------------------|
+| `img:grayscale()`                   | Convert to greyscale (perceptual luminance weights)                |
+| `img:sepia()`                       | Apply classic sepia tone matrix                                    |
+| `img:invert()`                      | Invert RGB channels; alpha unchanged                               |
+| `img:threshold(value)`              | Luminance ≥ value → white; below → black                           |
+| `img:posterize(levels)`             | Reduce each channel to N evenly-spaced levels (min 2)              |
+| `img:fill(r, g, b, a)`             | Overwrite every pixel with solid RGBA colour                       |
+| `img:noise(amount)`                 | Add pseudo-random ±amount noise to each RGB channel                |
+| `img:alphaMask(factor)`             | Multiply alpha by `factor`; 0 = transparent, 1 = unchanged         |
+
+#### Geometric Effects — In-place (return `nil`)
+
+| Method                              | Description                                                        |
+|-------------------------------------|--------------------------------------------------------------------|
+| `img:flipHorizontal()`              | Mirror left ↔ right; dimensions unchanged                          |
+| `img:flipVertical()`                | Mirror top ↔ bottom; dimensions unchanged                          |
+
+#### Geometric Effects — New Image (return `ImageData`)
+
+| Method                              | Description                                                        |
+|-------------------------------------|--------------------------------------------------------------------|
+| `img:rotate90cw()`                  | Rotate 90° clockwise; new_w = old_h, new_h = old_w                |
+| `img:crop(x, y, w, h)`             | Extract sub-rectangle; **errors** if out of bounds                 |
+| `img:resizeNearest(w, h)`           | Scale to `w×h` via nearest-neighbour interpolation                 |
+
+#### Convolution Effects — New Image (return `ImageData`)
+
+| Method                              | Description                                                        |
+|-------------------------------------|--------------------------------------------------------------------|
+| `img:blur(radius)`                  | Two-pass box blur; radius=0 returns a copy                         |
+| `img:sharpen()`                     | 3×3 unsharp kernel; edge pixels clamped                            |
 
 ### CompressedImageData Methods (UserData)
 
@@ -213,12 +287,14 @@ end
 
 ## Item Summary
 
-| Kind     | Count |
-|----------|-------|
-| `struct` | 3     |
-| `enum`   | 1     |
-| `fn`     | 27    |
-| **Total**| **31**|
+| Kind           | Count |
+|----------------|-------|
+| `struct`       | 3     |
+| `enum`         | 1     |
+| `fn` (Rust)    | 47    |
+| Lua methods    | 28    |
+| Effects        | 20    |
+| **Total items**| **51**|
 
 ## References
 

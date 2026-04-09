@@ -18,14 +18,17 @@ use mlua::prelude::*;
 /// Can be created empty, from a file, or from raw bytes.
 ///
 /// # Fields
-/// - `width` — `u32`.
-/// - `height` — `u32`.
-/// - `pixels` — `Vec<u8>`.
+/// - `width` — `u32`. Image width in pixels.
+/// - `height` — `u32`. Image height in pixels.
+/// - `pixels` — `Vec<u8>`. Raw RGBA8 pixel data in row-major order (4 bytes per pixel).
 #[derive(Debug, Clone)]
 pub struct ImageData {
-    width: u32,
-    height: u32,
-    pixels: Vec<u8>,
+    /// Image width in pixels.
+    pub(super) width: u32,
+    /// Image height in pixels.
+    pub(super) height: u32,
+    /// Raw RGBA8 pixel data in row-major order (4 bytes per pixel).
+    pub(super) pixels: Vec<u8>,
 }
 
 impl ImageData {
@@ -310,6 +313,109 @@ impl mlua::UserData for ImageData {
                 }
             }
             Ok(())
+        });
+
+        // -- brightness --
+        methods.add_method_mut("brightness", |_, this, factor: f32| {
+            this.brightness(factor);
+            Ok(())
+        });
+        // -- contrast --
+        methods.add_method_mut("contrast", |_, this, factor: f32| {
+            this.contrast(factor);
+            Ok(())
+        });
+        // -- saturation --
+        methods.add_method_mut("saturation", |_, this, factor: f32| {
+            this.saturation(factor);
+            Ok(())
+        });
+        // -- gamma --
+        methods.add_method_mut("gamma", |_, this, gamma: f32| {
+            this.gamma(gamma);
+            Ok(())
+        });
+        // -- tint --
+        methods.add_method_mut("tint", |_, this, (tr, tg, tb, factor): (u8, u8, u8, f32)| {
+            this.tint(tr, tg, tb, factor);
+            Ok(())
+        });
+        // -- grayscale --
+        methods.add_method_mut("grayscale", |_, this, ()| {
+            this.grayscale();
+            Ok(())
+        });
+        // -- sepia --
+        methods.add_method_mut("sepia", |_, this, ()| {
+            this.sepia();
+            Ok(())
+        });
+        // -- invert --
+        methods.add_method_mut("invert", |_, this, ()| {
+            this.invert();
+            Ok(())
+        });
+        // -- threshold --
+        methods.add_method_mut("threshold", |_, this, value: u8| {
+            this.threshold(value);
+            Ok(())
+        });
+        // -- posterize --
+        methods.add_method_mut("posterize", |_, this, levels: u8| {
+            this.posterize(levels);
+            Ok(())
+        });
+        // -- fill --
+        methods.add_method_mut("fill", |_, this, (r, g, b, a): (u8, u8, u8, u8)| {
+            this.fill(r, g, b, a);
+            Ok(())
+        });
+        // -- noise --
+        methods.add_method_mut("noise", |_, this, amount: u8| {
+            this.noise(amount);
+            Ok(())
+        });
+        // -- alphaMask --
+        methods.add_method_mut("alphaMask", |_, this, factor: f32| {
+            this.alpha_mask(factor);
+            Ok(())
+        });
+        // -- flipHorizontal --
+        methods.add_method_mut("flipHorizontal", |_, this, ()| {
+            this.flip_horizontal();
+            Ok(())
+        });
+        // -- flipVertical --
+        methods.add_method_mut("flipVertical", |_, this, ()| {
+            this.flip_vertical();
+            Ok(())
+        });
+        // -- rotate90cw --
+        methods.add_method("rotate90cw", |lua, this, ()| {
+            lua.create_userdata(this.rotate_90_cw())
+        });
+        // -- crop --
+        methods.add_method("crop", |lua, this, (x, y, w, h): (u32, u32, u32, u32)| {
+            this.crop(x, y, w, h)
+                .ok_or_else(|| {
+                    LuaError::RuntimeError(format!(
+                        "crop ({},{},{},{}) out of bounds ({}x{})",
+                        x, y, w, h, this.width(), this.height()
+                    ))
+                })
+                .and_then(|img| lua.create_userdata(img))
+        });
+        // -- resizeNearest --
+        methods.add_method("resizeNearest", |lua, this, (new_w, new_h): (u32, u32)| {
+            lua.create_userdata(this.resize_nearest(new_w, new_h))
+        });
+        // -- blur --
+        methods.add_method("blur", |lua, this, radius: u32| {
+            lua.create_userdata(this.blur(radius))
+        });
+        // -- sharpen --
+        methods.add_method("sharpen", |lua, this, ()| {
+            lua.create_userdata(this.sharpen())
         });
     }
 }

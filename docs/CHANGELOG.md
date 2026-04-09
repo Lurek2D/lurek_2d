@@ -18,6 +18,29 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.6.15] — 2026-04-09
+
+### Added
+- **`src/image/effects.rs`** — 20 CPU-side pixel-processing effects on `ImageData`:
+  - **Color / Tone** (in-place): `brightness`, `contrast`, `saturation`, `gamma`, `tint`
+  - **Filters** (in-place): `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`, `noise`, `alpha_mask`
+  - **Geometric in-place**: `flip_horizontal`, `flip_vertical`
+  - **Geometric new-image**: `rotate_90_cw`, `crop`, `resize_nearest`
+  - **Convolution new-image**: `blur` (two-pass box), `sharpen` (3×3 unsharp)
+- All 20 effects exposed to Lua on `ImageData` userdata: `brightness`, `contrast`, `saturation`, `gamma`, `tint`, `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`, `noise`, `alphaMask`, `flipHorizontal`, `flipVertical`, `rotate90cw`, `crop`, `resizeNearest`, `blur`, `sharpen`
+
+### Fixed
+- **`src/image/image_data.rs`** — fields `width`, `height`, `pixels` changed from private to `pub(super)` to allow the sibling `effects.rs` module to access them directly without going through the public API on every pixel — necessary for efficient in-place operations on large images.
+
+### Tests
+- `tests/rust/unit/image_tests.rs` — 23 new tests covering all 20 effects (43 total, all passing)
+- `tests/lua/unit/test_image.lua` — 91 new BDD tests for all 20 Lua-exposed effect methods (98 total, all passing)
+
+### Documentation
+- `examples/image.lua` — expanded with full effects section demonstrating all 20 methods with comments
+- `specs/image.md` — updated source files table, added effects table to `ImageData` key types, expanded Lua API section with all 28 methods organised by category
+- `src/image/AGENT.md` — updated source files table, added Key Types and Lua API Summary sections
+
 ## [0.6.14] — 2026-04-09
 
 ### Fixed

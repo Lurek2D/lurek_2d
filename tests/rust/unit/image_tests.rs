@@ -184,3 +184,276 @@ fn palette_lut_default_equals_new() {
     let lut: PaletteLUT = Default::default();
     assert_eq!(lut.get_color_count(), 0);
 }
+
+// ===========================================================================
+// Effects: Color / Tone
+// ===========================================================================
+
+#[test]
+fn brightness_factor2_doubles_mid_grey_channels() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 100, 100, 100, 200);
+    img.brightness(2.0);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    assert!((r as i32 - 200).abs() <= 1, "R expected ~200 got {r}");
+    assert!((g as i32 - 200).abs() <= 1, "G expected ~200 got {g}");
+    assert!((b as i32 - 200).abs() <= 1, "B expected ~200 got {b}");
+    assert_eq!(a, 200); // alpha unchanged
+}
+
+#[test]
+fn contrast_factor2_pushes_channels_away_from_midpoint() {
+    let mut img = ImageData::new(1, 1);
+    // R=200 → (200-128)*2+128 = 272 → 255 (clamped)
+    // G=50  → (50-128)*2+128  = -28 → 0   (clamped)
+    // B=128 → (128-128)*2+128 = 128 (unchanged)
+    img.set_pixel(0, 0, 200, 50, 128, 255);
+    img.contrast(2.0);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    assert_eq!(r, 255);
+    assert_eq!(g, 0);
+    assert!((b as i32 - 128).abs() <= 1, "B expected ~128 got {b}");
+    assert_eq!(a, 255);
+}
+
+#[test]
+fn saturation_factor0_produces_greyscale() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 200, 100, 50, 255);
+    img.saturation(0.0);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    // All channels converge to luma = 0.2126*200 + 0.7152*100 + 0.0722*50 ≈ 117
+    assert_eq!(r, g, "R and G must be equal after full desaturation");
+    assert_eq!(g, b, "G and B must be equal after full desaturation");
+    assert!((r as i32 - 117).abs() <= 1, "luma expected ~117 got {r}");
+    assert_eq!(a, 255);
+}
+
+#[test]
+fn gamma_1_leaves_pixel_unchanged() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 100, 150, 200, 128);
+    img.gamma(1.0);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    assert!((r as i32 - 100).abs() <= 1, "R expected ~100 got {r}");
+    assert!((g as i32 - 150).abs() <= 1, "G expected ~150 got {g}");
+    assert!((b as i32 - 200).abs() <= 1, "B expected ~200 got {b}");
+    assert_eq!(a, 128);
+}
+
+#[test]
+fn tint_factor1_replaces_pixel_with_tint_colour() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 50, 100, 150, 200);
+    img.tint(255, 0, 0, 1.0);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    assert_eq!(r, 255);
+    assert_eq!(g, 0);
+    assert_eq!(b, 0);
+    assert_eq!(a, 200); // alpha unchanged
+}
+
+// ===========================================================================
+// Effects: Filters
+// ===========================================================================
+
+#[test]
+fn grayscale_pure_red_becomes_perceptual_grey() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 255, 0, 0, 255);
+    img.grayscale();
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    // luma = round(0.2126 * 255) = round(54.213) = 54
+    assert_eq!(r, g, "R and G must be equal after greyscale");
+    assert_eq!(g, b, "G and B must be equal after greyscale");
+    assert!((r as i32 - 54).abs() <= 1, "perceptual luma expected ~54, got {r}");
+    assert_eq!(a, 255);
+}
+
+#[test]
+fn sepia_white_pixel_produces_expected_values() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 255, 255, 255, 255);
+    img.sepia();
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    // Row sums: R-row = 1.351 > 1, G-row = 1.203 > 1 → both saturate to 255.
+    // B = 0.937 * 255 = 238.9 → 238.
+    assert_eq!(r, 255, "R expected 255 (saturated), got {r}");
+    assert_eq!(g, 255, "G expected 255 (saturated), got {g}");
+    assert!((b as i32 - 238).abs() <= 1, "B expected ~238, got {b}");
+    assert_eq!(a, 255);
+}
+
+#[test]
+fn invert_produces_complement_values() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 100, 150, 200, 255);
+    img.invert();
+    // 255-100=155, 255-150=105, 255-200=55, alpha unchanged
+    assert_eq!(img.get_pixel(0, 0), Some((155, 105, 55, 255)));
+}
+
+#[test]
+fn threshold_above_produces_white_below_produces_black() {
+    let mut img = ImageData::new(1, 2);
+    img.set_pixel(0, 0, 200, 200, 200, 255); // luma ≈ 200 ≥ 128 → white
+    img.set_pixel(0, 1, 10, 10, 10, 255);   // luma ≈ 10 < 128 → black
+    img.threshold(128);
+    assert_eq!(img.get_pixel(0, 0), Some((255, 255, 255, 255)));
+    assert_eq!(img.get_pixel(0, 1), Some((0, 0, 0, 255)));
+}
+
+#[test]
+fn posterize_levels2_quantises_to_black_or_white() {
+    let mut img = ImageData::new(1, 2);
+    img.set_pixel(0, 0, 64, 64, 64, 255);   // round(64/255) = 0 → 0*255 = 0
+    img.set_pixel(0, 1, 200, 200, 200, 255); // round(200/255) = 1 → 1*255 = 255
+    img.posterize(2);
+    assert_eq!(img.get_pixel(0, 0), Some((0, 0, 0, 255)));
+    assert_eq!(img.get_pixel(0, 1), Some((255, 255, 255, 255)));
+}
+
+#[test]
+fn fill_overwrites_all_pixels_with_solid_colour() {
+    let mut img = ImageData::new(3, 3);
+    img.set_pixel(1, 1, 10, 20, 30, 40);
+    img.fill(255, 0, 0, 255);
+    assert_eq!(img.get_pixel(0, 0), Some((255, 0, 0, 255)));
+    assert_eq!(img.get_pixel(1, 1), Some((255, 0, 0, 255)));
+    assert_eq!(img.get_pixel(2, 2), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn noise_amount0_leaves_pixel_unchanged() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 128, 128, 128, 200);
+    img.noise(0);
+    assert_eq!(img.get_pixel(0, 0), Some((128, 128, 128, 200)));
+}
+
+#[test]
+fn noise_amount255_preserves_alpha_channel() {
+    let mut img = ImageData::new(2, 2);
+    img.set_pixel(0, 0, 128, 128, 128, 200);
+    img.set_pixel(1, 0, 128, 128, 128, 200);
+    img.noise(255);
+    // Noise only modifies RGB channels (0..3 exclusive of alpha index 3)
+    let (_, _, _, a0) = img.get_pixel(0, 0).unwrap();
+    let (_, _, _, a1) = img.get_pixel(1, 0).unwrap();
+    assert_eq!(a0, 200);
+    assert_eq!(a1, 200);
+}
+
+#[test]
+fn alpha_mask_factor_half_halves_alpha() {
+    let mut img = ImageData::new(1, 1);
+    img.set_pixel(0, 0, 100, 150, 200, 200);
+    img.alpha_mask(0.5);
+    let (r, g, b, a) = img.get_pixel(0, 0).unwrap();
+    assert_eq!(r, 100);
+    assert_eq!(g, 150);
+    assert_eq!(b, 200);
+    assert!((a as i32 - 100).abs() <= 1, "alpha expected ~100, got {a}");
+}
+
+// ===========================================================================
+// Effects: Geometric (in-place)
+// ===========================================================================
+
+#[test]
+fn flip_horizontal_moves_left_pixel_to_right_edge() {
+    let mut img = ImageData::new(3, 1);
+    img.set_pixel(0, 0, 255, 0, 0, 255); // red at left
+    img.set_pixel(2, 0, 0, 0, 255, 255); // blue at right
+    img.flip_horizontal();
+    // Left (0,0) becomes right (2,0) and vice-versa
+    assert_eq!(img.get_pixel(0, 0), Some((0, 0, 255, 255)));
+    assert_eq!(img.get_pixel(2, 0), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn flip_vertical_moves_top_pixel_to_bottom_edge() {
+    let mut img = ImageData::new(1, 3);
+    img.set_pixel(0, 0, 255, 0, 0, 255); // red at top
+    img.set_pixel(0, 2, 0, 0, 255, 255); // blue at bottom
+    img.flip_vertical();
+    assert_eq!(img.get_pixel(0, 0), Some((0, 0, 255, 255)));
+    assert_eq!(img.get_pixel(0, 2), Some((255, 0, 0, 255)));
+}
+
+// ===========================================================================
+// Effects: Geometric (new image)
+// ===========================================================================
+
+#[test]
+fn rotate_90_cw_swaps_dimensions_and_maps_pixels() {
+    // Source: width=3, height=2
+    let mut img = ImageData::new(3, 2);
+    img.set_pixel(0, 0, 255, 0, 0, 255); // red at top-left
+    let rotated = img.rotate_90_cw();
+    // new_w = old_h = 2, new_h = old_w = 3
+    assert_eq!(rotated.width(), 2);
+    assert_eq!(rotated.height(), 3);
+    // Pixel (x=0, y=0) → nx = old_h-1-0 = 1, ny = x = 0 → new position (1, 0)
+    assert_eq!(rotated.get_pixel(1, 0), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn crop_returns_correct_dimensions_and_pixels() {
+    let mut img = ImageData::new(4, 4);
+    img.set_pixel(1, 1, 255, 0, 0, 255);
+    let cropped = img.crop(1, 1, 2, 2).expect("in-bounds crop should succeed");
+    assert_eq!(cropped.width(), 2);
+    assert_eq!(cropped.height(), 2);
+    // Source (1,1) becomes (0,0) in the cropped image
+    assert_eq!(cropped.get_pixel(0, 0), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn crop_out_of_bounds_returns_none() {
+    let img = ImageData::new(4, 4);
+    // x=3 + w=2 = 5 > 4: rect exceeds image boundary
+    assert!(img.crop(3, 3, 2, 2).is_none());
+}
+
+#[test]
+fn resize_nearest_4x4_to_2x2_has_correct_dimensions() {
+    let img = ImageData::new(4, 4);
+    let resized = img.resize_nearest(2, 2);
+    assert_eq!(resized.width(), 2);
+    assert_eq!(resized.height(), 2);
+}
+
+// ===========================================================================
+// Effects: Convolution
+// ===========================================================================
+
+#[test]
+fn blur_radius0_returns_copy_with_same_pixels() {
+    let mut img = ImageData::new(2, 2);
+    img.set_pixel(0, 0, 100, 150, 200, 255);
+    img.set_pixel(1, 1, 50, 75, 100, 128);
+    let blurred = img.blur(0);
+    assert_eq!(blurred.get_pixel(0, 0), Some((100, 150, 200, 255)));
+    assert_eq!(blurred.get_pixel(1, 1), Some((50, 75, 100, 128)));
+}
+
+#[test]
+fn blur_radius1_solid_colour_image_is_unchanged() {
+    let mut img = ImageData::new(4, 4);
+    img.fill(100, 150, 200, 255);
+    let blurred = img.blur(1);
+    // Every neighbour has the same value; box average equals the original.
+    assert_eq!(blurred.get_pixel(0, 0), Some((100, 150, 200, 255)));
+    assert_eq!(blurred.get_pixel(2, 2), Some((100, 150, 200, 255)));
+}
+
+#[test]
+fn sharpen_flat_colour_image_is_unchanged() {
+    let mut img = ImageData::new(4, 4);
+    img.fill(100, 150, 200, 255);
+    let sharpened = img.sharpen();
+    // 5*c - top - bottom - left - right = 5*c - 4*c = c
+    assert_eq!(sharpened.get_pixel(0, 0), Some((100, 150, 200, 255)));
+    assert_eq!(sharpened.get_pixel(2, 2), Some((100, 150, 200, 255)));
+}

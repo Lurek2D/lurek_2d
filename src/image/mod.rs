@@ -13,6 +13,9 @@
 pub mod image_data;
 pub use image_data::ImageData;
 
+/// Image-processing effects (brightness, blur, sharpen, geometric transforms, etc.).
+pub mod effects;
+
 /// DDS/DXT compressed GPU texture data, loaded without CPU decompression.
 pub mod compressed;
 pub use compressed::{CompressedFormat, CompressedImageData};

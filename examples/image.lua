@@ -1,6 +1,7 @@
 -- examples/image.lua
 -- luna.img — CPU-side pixel buffer manipulation (ImageData and CompressedImageData).
 -- All luna.img API methods demonstrated with code and comments.
+-- Includes all 20 image-processing effects added in 0.6.0.
 -- This file is documentation code, not a runnable game.
 
 -- ── ImageData ────────────────────────────────────────────────────────────────
@@ -99,6 +100,108 @@ luna.fs.write("output.png", png_bytes)
 -- cdata:getString(mip_level?) → raw bytes for a specific mip level (0-based)
 -- cdata:getSize(mip_level?) → integer  byte count for that mip level
 
+-- ── Image-processing effects ──────────────────────────────────────────────────
+-- All 20 effects operate on ImageData in CPU memory.
+-- Effects that work in-place take no return value; geometric operations that
+-- produce a new image return a new ImageData.
+
+local pixels = luna.img.newImageData(64, 64)
+
+-- ── Color / Tone — in-place ───────────────────────────────────────────────────
+
+-- brightness(factor)  — multiply RGB by factor; >1 brightens, <1 darkens, 0 = black
+pixels:brightness(1.5)      -- 50% brighter
+pixels:brightness(0.7)      -- 30% darker
+
+-- contrast(factor)  — scale distance of each channel from mid-grey (128)
+pixels:contrast(1.2)        -- higher contrast
+pixels:contrast(0.8)        -- lower contrast (flatter look)
+
+-- saturation(factor)  — 0 = greyscale, 1 = original, >1 = boosted
+pixels:saturation(0.0)      -- fully desaturated (greyscale)
+pixels:saturation(1.8)      -- over-saturated
+
+-- gamma(gamma)  — apply gamma correction per channel
+pixels:gamma(2.2)           -- standard monitor gamma (lighten)
+pixels:gamma(0.45)          -- inverse gamma (darken midtones)
+
+-- tint(tr, tg, tb, factor)  — blend each pixel toward tint colour
+pixels:tint(255, 200, 150, 0.3)  -- 30% warm orange cast
+pixels:tint(0, 0, 0, 1.0)        -- factor=1.0 → fully black (destructive)
+
+-- ── Filters — in-place ───────────────────────────────────────────────────────
+
+-- grayscale()  — perceptual luminance (0.2126R + 0.7152G + 0.0722B) to all channels
+pixels:grayscale()
+
+-- sepia()  — classic warm sepia tone using the standard matrix
+pixels:sepia()
+
+-- invert()  — 255 - channel for each RGB channel; alpha unchanged
+pixels:invert()
+
+-- threshold(value)  — pixels above luminance threshold → white; below → black
+pixels:threshold(128)   -- midpoint threshold
+
+-- posterize(levels)  — reduce each channel to N evenly-spaced levels (min 2)
+pixels:posterize(4)     -- 4-level per channel (paint.net-style)
+pixels:posterize(2)     -- pure black-and-white per channel
+
+-- fill(r, g, b, a)  — overwrite every pixel with the given solid colour
+pixels:fill(255, 0, 0, 255)   -- solid red
+pixels:fill(0, 0, 0, 0)       -- fully transparent black
+
+-- noise(amount)  — add pseudo-random noise ±amount to each RGB channel
+pixels:noise(20)   -- subtle grain
+pixels:noise(80)   -- heavy grain
+
+-- alphaMask(factor)  — multiply alpha by factor; 0=transparent, 1=unchanged
+pixels:alphaMask(0.5)   -- 50% opacity
+pixels:alphaMask(0.0)   -- fully transparent
+
+-- ── Geometric — in-place ─────────────────────────────────────────────────────
+
+-- flipHorizontal()  — mirror left ↔ right; dimensions unchanged
+pixels:flipHorizontal()
+
+-- flipVertical()  — mirror top ↔ bottom; dimensions unchanged
+pixels:flipVertical()
+
+-- ── Geometric — returns new ImageData ────────────────────────────────────────
+
+-- rotate90cw()  — rotate 90° clockwise; new_width = old_height, new_height = old_width
+local rotated = pixels:rotate90cw()
+
+-- crop(x, y, w, h)  — extract a sub-rectangle; returns nil if out of bounds
+local cropped = pixels:crop(10, 10, 32, 32)  -- 32×32 region from (10,10)
+if cropped then
+    luna.fs.write("crop.png", cropped:encode("png"))
+end
+
+-- resizeNearest(new_w, new_h)  — nearest-neighbour scale to any size
+local thumb = pixels:resizeNearest(16, 16)
+
+-- ── Convolution — returns new ImageData ──────────────────────────────────────
+
+-- blur(radius)  — separated box blur; radius=0 returns a copy
+local blurred1 = pixels:blur(0)   -- copy
+local blurred2 = pixels:blur(3)   -- soft blur (7×7 window)
+
+-- sharpen()  — 3×3 unsharp (5C − N − S − E − W); alpha copied from source
+local sharpened = pixels:sharpen()
+
+-- ── Common pipeline: load → edit → upload ────────────────────────────────────
+--[[
+function luna.init()
+    local pixels = luna.img.newImageData("textures/player.png")
+    pixels:brightness(1.2)     -- slightly brighter
+    pixels:sharpen()           -- wrong: sharpen returns NEW image
+    pixels = pixels:sharpen()  -- correct: assign the returned image
+    pixels:sepia()             -- apply sepia in-place
+    player_tex = luna.gfx.newImage(pixels)
+end
+]]
+
 -- ── Typical use — procedural texture ─────────────────────────────────────────
 
 --[[
@@ -115,6 +218,7 @@ function luna.init()
             return 20, 80, 200, 255    -- water
         end
     end)
+    pixels:saturation(1.3)     -- boost saturation before uploading
     terrain_tex = luna.gfx.newImage(pixels)
 end
 
