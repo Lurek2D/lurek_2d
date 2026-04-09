@@ -1,6 +1,6 @@
 //! Integration tests for the image data module.
 
-use luna2d::image::{CompressedImageData, ImageData, PaletteLUT};
+use luna2d::image::{CompressedImageData, ImageData, LayeredImage, PaletteLUT};
 use luna2d::math::Color;
 
 #[test]
@@ -456,4 +456,237 @@ fn sharpen_flat_colour_image_is_unchanged() {
     // 5*c - top - bottom - left - right = 5*c - 4*c = c
     assert_eq!(sharpened.get_pixel(0, 0), Some((100, 150, 200, 255)));
     assert_eq!(sharpened.get_pixel(2, 2), Some((100, 150, 200, 255)));
+}
+
+// -----------------------------------------------------------------------
+// LayeredImage tests
+// -----------------------------------------------------------------------
+
+#[test]
+fn layered_image_new_is_empty() {
+    let stack = LayeredImage::new(64, 64);
+    assert_eq!(stack.layer_count(), 0);
+    assert_eq!(stack.width(), 64);
+    assert_eq!(stack.height(), 64);
+}
+
+#[test]
+fn layered_image_add_layer_increments_count() {
+    let mut stack = LayeredImage::new(8, 8);
+    let idx0 = stack.add_layer("bg");
+    let idx1 = stack.add_layer("fg");
+    assert_eq!(idx0, 0);
+    assert_eq!(idx1, 1);
+    assert_eq!(stack.layer_count(), 2);
+}
+
+#[test]
+fn layered_image_remove_layer_decrements_count() {
+    let mut stack = LayeredImage::new(8, 8);
+    stack.add_layer("a");
+    stack.add_layer("b");
+    assert!(stack.remove_layer(0).is_some());
+    assert_eq!(stack.layer_count(), 1);
+    assert!(stack.remove_layer(99).is_none());
+}
+
+#[test]
+fn layered_image_set_get_opacity() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("x");
+    assert!(stack.set_opacity(0, 0.5));
+    assert!((stack.get_layer(0).unwrap().opacity - 0.5).abs() < 1e-5);
+    // clamp above 1.0
+    stack.set_opacity(0, 2.0);
+    assert!((stack.get_layer(0).unwrap().opacity - 1.0).abs() < 1e-5);
+    // invalid index
+    assert!(!stack.set_opacity(99, 0.5));
+}
+
+#[test]
+fn layered_image_set_visible() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("x");
+    assert!(stack.set_visible(0, false));
+    assert!(!stack.get_layer(0).unwrap().visible);
+    assert!(stack.set_visible(0, true));
+    assert!(stack.get_layer(0).unwrap().visible);
+}
+
+#[test]
+fn layered_image_set_name() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("original");
+    assert!(stack.set_name(0, "renamed"));
+    assert_eq!(&stack.get_layer(0).unwrap().name, "renamed");
+}
+
+#[test]
+fn layered_image_swap_layers() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("first");
+    stack.add_layer("second");
+    assert!(stack.swap_layers(0, 1));
+    assert_eq!(&stack.get_layer(0).unwrap().name, "second");
+    assert_eq!(&stack.get_layer(1).unwrap().name, "first");
+    // invalid index
+    assert!(!stack.swap_layers(0, 99));
+    // same index = no-op
+    assert!(!stack.swap_layers(0, 0));
+}
+
+#[test]
+fn layered_image_move_layer() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("a");
+    stack.add_layer("b");
+    stack.add_layer("c");
+    assert!(stack.move_layer(0, 2));
+    // a was at 0, moved to 2 → order becomes b, c, a
+    assert_eq!(&stack.get_layer(0).unwrap().name, "b");
+    assert_eq!(&stack.get_layer(2).unwrap().name, "a");
+}
+
+#[test]
+fn layered_image_set_layer_image() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("x");
+    let mut src = ImageData::new(4, 4);
+    src.fill(255, 0, 0, 255);
+    assert!(stack.set_layer_image(0, &src));
+    assert_eq!(
+        stack.get_layer(0).unwrap().data.get_pixel(0, 0),
+        Some((255, 0, 0, 255))
+    );
+    // invalid index
+    assert!(!stack.set_layer_image(99, &src));
+}
+
+#[test]
+fn layered_image_merge_single_opaque_layer() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("bg");
+    stack.get_layer_mut(0).unwrap().data.fill(255, 0, 0, 255);
+    let merged = stack.merge();
+    assert_eq!(merged.get_pixel(0, 0), Some((255, 0, 0, 255)));
+    assert_eq!(merged.get_pixel(3, 3), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn layered_image_merge_hidden_layer_is_excluded() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("bg");
+    stack.get_layer_mut(0).unwrap().data.fill(255, 0, 0, 255);
+    stack.add_layer("fg");
+    stack.get_layer_mut(1).unwrap().data.fill(0, 0, 255, 255);
+    stack.set_visible(1, false);
+    let merged = stack.merge();
+    // fg is hidden, so only red background visible
+    assert_eq!(merged.get_pixel(0, 0), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn layered_image_merge_zero_opacity_layer_is_transparent() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("bg");
+    stack.get_layer_mut(0).unwrap().data.fill(255, 0, 0, 255);
+    stack.add_layer("fg");
+    stack.get_layer_mut(1).unwrap().data.fill(0, 0, 255, 255);
+    stack.set_opacity(1, 0.0);
+    let merged = stack.merge();
+    // fg is fully transparent, so only red background visible
+    assert_eq!(merged.get_pixel(0, 0), Some((255, 0, 0, 255)));
+}
+
+#[test]
+fn layered_image_merge_full_overlap_top_wins() {
+    let mut stack = LayeredImage::new(4, 4);
+    stack.add_layer("bg");
+    stack.get_layer_mut(0).unwrap().data.fill(255, 0, 0, 255);
+    stack.add_layer("fg");
+    stack.get_layer_mut(1).unwrap().data.fill(0, 0, 255, 255);
+    let merged = stack.merge();
+    // fg at full opacity covers bg entirely
+    assert_eq!(merged.get_pixel(0, 0), Some((0, 0, 255, 255)));
+}
+
+#[test]
+fn layered_image_merge_empty_stack_is_transparent() {
+    let stack = LayeredImage::new(4, 4);
+    let merged = stack.merge();
+    assert_eq!(merged.get_pixel(0, 0), Some((0, 0, 0, 0)));
+}
+
+// -----------------------------------------------------------------------
+// LIMG binary serialization tests
+// -----------------------------------------------------------------------
+
+use luna2d::image::serial;
+
+#[test]
+fn serial_flat_roundtrip() {
+    let tmp = std::env::temp_dir().join("luna2d_test_flat.lim");
+    let path = tmp.to_str().unwrap();
+    let mut img = ImageData::new(4, 4);
+    img.set_pixel(0, 0, 255, 128, 64, 200);
+    img.set_pixel(3, 3, 10, 20, 30, 40);
+    serial::save_image(&img, path).expect("save_image");
+    let loaded = serial::load_image(path).expect("load_image");
+    assert_eq!(loaded.width(), img.width());
+    assert_eq!(loaded.height(), img.height());
+    assert_eq!(loaded.get_pixel(0, 0), Some((255, 128, 64, 200)));
+    assert_eq!(loaded.get_pixel(3, 3), Some((10, 20, 30, 40)));
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
+fn serial_load_image_wrong_type_returns_error() {
+    let tmp = std::env::temp_dir().join("luna2d_test_wrongtype.lim");
+    let path = tmp.to_str().unwrap();
+    let stack = LayeredImage::new(4, 4);
+    serial::save_layered(&stack, path).expect("save_layered");
+    let result = serial::load_image(path);
+    assert!(result.is_err(), "Loading layered file as flat should error");
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
+fn serial_layered_roundtrip_preserves_layers() {
+    let tmp = std::env::temp_dir().join("luna2d_test_layered.lim");
+    let path = tmp.to_str().unwrap();
+    let mut stack = LayeredImage::new(8, 8);
+    let idx = stack.add_layer("background");
+    stack.get_layer_mut(idx).unwrap().data.fill(255, 0, 0, 255);
+    stack.set_opacity(idx, 0.8);
+    let idx2 = stack.add_layer("foreground");
+    stack.set_visible(idx2, false);
+    serial::save_layered(&stack, path).expect("save_layered");
+    let loaded = serial::load_layered(path).expect("load_layered");
+    assert_eq!(loaded.layer_count(), 2);
+    assert_eq!(loaded.width(), 8);
+    assert_eq!(loaded.height(), 8);
+    let bg = loaded.get_layer(0).unwrap();
+    assert_eq!(&bg.name, "background");
+    assert!((bg.opacity - 0.8).abs() < 1e-4);
+    assert!(bg.visible);
+    assert_eq!(bg.data.get_pixel(0, 0), Some((255, 0, 0, 255)));
+    let fg = loaded.get_layer(1).unwrap();
+    assert_eq!(&fg.name, "foreground");
+    assert!(!fg.visible);
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
+fn serial_bad_magic_returns_error() {
+    let tmp = std::env::temp_dir().join("luna2d_test_badmagic.lim");
+    let path = tmp.to_str().unwrap();
+    std::fs::write(path, b"NOPE\x01\x00" as &[u8]).unwrap();
+    assert!(serial::load_image(path).is_err());
+    let _ = std::fs::remove_file(path);
+}
+
+#[test]
+fn serial_load_nonexistent_file_returns_error() {
+    assert!(serial::load_image("/nonexistent/path/test.lim").is_err());
+    assert!(serial::load_layered("/nonexistent/path/test.lim").is_err());
 }

@@ -226,3 +226,58 @@ function luna.render()
     luna.gfx.draw(terrain_tex, 0, 0)
 end
 ]]
+
+-- ── LayeredImage — compositing layer stack ──────────────────────────────────
+
+--[[
+-- Create a 128x128 layered canvas
+local stack = luna.img.newLayeredImage(128, 128)
+
+-- Add a red background layer
+local bg_idx = stack:addLayer("background")
+local bg_px = luna.img.newImageData(128, 128)
+bg_px:fill(200, 60, 60, 255)
+stack:setLayer(bg_idx, bg_px)
+
+-- Add a semi-transparent blue overlay
+local fg_idx = stack:addLayer("overlay")
+local fg_px = luna.img.newImageData(128, 128)
+fg_px:fill(40, 80, 220, 128)       -- alpha = 128 → half transparent
+stack:setLayer(fg_idx, fg_px)
+
+-- Per-layer opacity (independent of per-pixel alpha)
+stack:setOpacity(fg_idx, 0.8)      -- 80% layer opacity
+stack:setVisible(bg_idx, true)
+
+-- Reorder layers
+stack:swapLayers(1, 2)             -- swap bg and overlay in z-order
+
+-- Flatten all visible layers into one ImageData (Porter-Duff "over")
+local flat = stack:merge()
+local texture = luna.gfx.newImage(flat)
+]]
+
+-- ── LIMG binary save / load ─────────────────────────────────────────────────
+
+--[[
+-- Save a flat ImageData as a compressed .lim binary file
+local img = luna.img.newImageData(64, 64)
+img:fill(180, 90, 30, 255)
+luna.img.saveImage(img, "my_image.lim")
+
+-- Load it back
+local loaded = luna.img.loadImage("my_image.lim")
+assert(loaded:getWidth() == 64)
+
+-- Save a full LayeredImage stack
+local stack = luna.img.newLayeredImage(64, 64)
+stack:addLayer("base")
+stack:addLayer("decal")
+stack:setOpacity(2, 0.5)
+stack:save("my_layers.lim")         -- :save() method on LayeredImage
+
+-- Load it back
+local stack2 = luna.img.loadLayered("my_layers.lim")
+assert(stack2:layerCount() == 2)
+assert(stack2:getName(2) == "decal")
+]]

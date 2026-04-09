@@ -12,7 +12,7 @@
 
 ## Summary
 
-The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.gfx.newImage(imgdata)`). The module covers three distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
+The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.gfx.newImage(imgdata)`). The module covers five distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), a compositing layer stack (`LayeredImage` / `ImageLayer`), a compressed binary serialisation format (`serial` / LIMG), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
 
 `ImageData` supports loading PNG/JPEG files from disk via the `image` crate, creating blank buffers, constructing from raw bytes, per-pixel read/write (`get_pixel` / `set_pixel`), bulk transforms (`map_pixel`, `paste`), PNG encoding, and raw byte extraction. Because it is pure `Vec<u8>` arithmetic with no GPU state, operations can be called freely during `luna.load()` or inside background thread workers.
 
@@ -51,6 +51,8 @@ src/image/
 |------------------|-------------------------------------------------------------------------------------------------|
 | `image_data.rs`  | CPU-side RGBA8 pixel buffer with per-pixel access, paste, map, PNG encode, and `mlua::UserData` impl |
 | `effects.rs`     | 20 CPU-side pixel-processing effects (brightness, blur, sepia, geometric transforms, etc.)      |
+| `layers.rs`      | `ImageLayer` + `LayeredImage`: compositing stack with opacity, visibility, and Porter-Duff merge |
+| `serial.rs`      | LIMG binary format: save/load `ImageData` and `LayeredImage` with zlib compression              |
 | `compressed.rs`  | DDS/DXT compressed GPU texture container with format detection and loading                      |
 | `palette_lut.rs` | Colour palette lookup table mapping source colours to target colours                            |
 
@@ -289,12 +291,12 @@ end
 
 | Kind           | Count |
 |----------------|-------|
-| `struct`       | 3     |
+| `struct`       | 5     |
 | `enum`         | 1     |
-| `fn` (Rust)    | 47    |
-| Lua methods    | 28    |
+| `fn` (Rust)    | 66    |
+| Lua methods    | 42    |
 | Effects        | 20    |
-| **Total items**| **51**|
+| **Total items**| **70**|
 
 ## References
 
@@ -313,9 +315,13 @@ end
 - `ImageData` implements `mlua::UserData` directly in `image_data.rs`, exposing Lua methods alongside the Rust API.
 - `mapPixel(fn)` calls the Lua function for every pixel — avoid for large images due to Lua→Rust boundary overhead per pixel.
 - PNG encoding via `encode("png")` is blocking and allocates; offload to a thread worker for non-blocking export of large images.
+- `LayeredImage::merge()` uses Porter-Duff "over" compositing: each layer's per-pixel alpha is multiplied by its layer `opacity` before blending, then layers are composited from bottom to top.
+- `LayeredImage` layers are 0-indexed in Rust but **1-indexed in Lua** (matching Lua array conventions).
+- The LIMG binary format uses magic bytes `LIMG`, a version byte, and a type flag (0=flat, 1=layered). Pixel data is zlib-compressed. The format is self-describing and forward-extension-safe for unknown future flags.
+- `serial::save_image` / `load_image` handle only flat `ImageData`. Calling `load_image` on a layered LIMG file returns a descriptive error.
 - `CompressedImageData` depends on the `ddsfile` crate for DDS parsing. It does NOT decompress — raw bytes are for direct GPU upload.
 - `PaletteLUT` is a pure data structure with no GPU dependency; it is designed to be consumed by a shader uniform for palette-swap rendering.
 - `PaletteLUT::set_color` auto-extends the internal vectors with `Color::WHITE` filler entries if the index exceeds the current length.
 - The Lua API resolves file paths relative to the game directory via `state.borrow().game_dir.join(filename)`.
 - `CompressedFormat` supports DXT1/3/5, BC7, ETC1, and ETC2 variants; unrecognised DDS formats report `Unknown` rather than erroring.
-- The `image` crate (external) handles PNG/JPEG decoding and PNG encoding; `ddsfile` crate handles DDS parsing.
+- The `image` crate (external) handles PNG/JPEG decoding and PNG encoding; `ddsfile` crate handles DDS parsing; `flate2` crate handles LIMG zlib compression.

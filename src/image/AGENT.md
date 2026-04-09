@@ -6,13 +6,13 @@
 | **Status**     | Implemented — Full                                   |
 | **Lua API**    | `luna.img`                                         |
 | **Source**     | `src/image/`                                         |
-| **Rust Tests** | `tests/rust/unit/image_tests.rs`                     |
+| **Rust Tests** | `tests/rust/unit/image_tests.rs` (62 tests)          |
 | **Lua Tests**  | `tests/lua/unit/test_image.lua`                      |
-| **Architecture** | See `specs/image.md` — 4 source files, 20 CPU effects, thin Lua wrapper |
+| **Architecture** | See `specs/image.md` — 6 source files, 20 CPU effects, layer compositor, LIMG binary format |
 
 ## Purpose
 
-The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.gfx.newImage(imgdata)`). The module covers three distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
+The `image` module provides CPU-side pixel-level access to RGBA image data. It is the raw pixel layer that sits beneath the GPU texture pipeline — `ImageData` is never on the GPU until explicitly uploaded via the graphics API (`luna.gfx.newImage(imgdata)`). The module covers four distinct concerns: uncompressed RGBA pixel buffers (`ImageData`), GPU-compressed DDS texture containers (`CompressedImageData`), a compositing layer stack (`LayeredImage`), LIMG binary serialization (`serial`), and colour palette lookup tables for shader-based palette swapping (`PaletteLUT`).
 
 ## Source Files
 
@@ -20,6 +20,8 @@ The `image` module provides CPU-side pixel-level access to RGBA image data. It i
 |------------------|-----------------------------------------------------------------------------------------------|
 | `image_data.rs`  | CPU-side RGBA8 pixel buffer: per-pixel access, paste, map, PNG encode, `mlua::UserData` impl |
 | `effects.rs`     | 20 image-processing effects: brightness, contrast, saturation, gamma, tint, grayscale, sepia, invert, threshold, posterize, fill, noise, alpha_mask, flip_horizontal, flip_vertical, rotate_90_cw, crop, resize_nearest, blur, sharpen |
+| `layers.rs`      | `ImageLayer` + `LayeredImage`: compositing layer stack with order, opacity, visibility, Porter-Duff merge |
+| `serial.rs`      | LIMG binary format: save/load `ImageData` and `LayeredImage` with zlib compression            |
 | `compressed.rs`  | DDS/DXT compressed GPU texture container with format detection and loading                    |
 | `palette_lut.rs` | Colour palette lookup table mapping source colours to target colours                          |
 
@@ -28,24 +30,31 @@ The `image` module provides CPU-side pixel-level access to RGBA image data. It i
 | Type                  | Kind   | Location            | Description                                          |
 |-----------------------|--------|---------------------|------------------------------------------------------|
 | `ImageData`           | struct | `image_data.rs`     | CPU-side RGBA8 pixel buffer; also implements 20 effects via `effects.rs` |
+| `ImageLayer`          | struct | `layers.rs`         | Single compositing layer: `name`, `opacity`, `visible`, `data: ImageData` |
+| `LayeredImage`        | struct | `layers.rs`         | Stack of `ImageLayer` values; supports merge via Porter-Duff "over" |
 | `CompressedImageData` | struct | `compressed.rs`     | DDS compressed texture data for direct GPU upload    |
 | `CompressedFormat`    | enum   | `compressed.rs`     | Format tag: Dxt1/Dxt3/Dxt5/Bc7/Etc1/Etc2…           |
 | `PaletteLUT`          | struct | `palette_lut.rs`    | Source→target colour map for palette-swap shaders    |
 
 ## Lua API Summary
 
-| Namespace / Method           | Description                                                     |
-|------------------------------|-----------------------------------------------------------------|
-| `luna.img.newImageData(w,h)` | Create blank RGBA8 buffer                                       |
-| `luna.img.newImageData(fn)`  | Load PNG/JPEG from game directory                               |
-| `luna.img.newCompressedData` | Load DDS file as CompressedImageData                            |
-| `luna.img.isCompressed`      | Check if path is a DDS file                                     |
-| **ImageData core**           | `getWidth`, `getHeight`, `getDimensions`, `getPixel`, `setPixel`, `mapPixel`, `encode`, `getString`, `paste` |
-| **Color/Tone (in-place)**    | `brightness`, `contrast`, `saturation`, `gamma`, `tint`         |
-| **Filters (in-place)**       | `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`, `noise`, `alphaMask` |
-| **Geometric in-place**       | `flipHorizontal`, `flipVertical`                                |
-| **Geometric new-image**      | `rotate90cw`, `crop`, `resizeNearest`                           |
-| **Convolution new-image**    | `blur`, `sharpen`                                               |
+| Namespace / Method                       | Description                                               |
+|------------------------------------------|-----------------------------------------------------------|
+| `luna.img.newImageData(w,h)`             | Create blank RGBA8 buffer                                 |
+| `luna.img.newImageData(fn)`              | Load PNG/JPEG from game directory                         |
+| `luna.img.newCompressedData`             | Load DDS file as CompressedImageData                      |
+| `luna.img.isCompressed`                  | Check if path is a DDS file                               |
+| `luna.img.newLayeredImage(w, h)`         | Create empty LayeredImage canvas                          |
+| `luna.img.saveImage(imgdata, path)`      | Save ImageData to LIMG binary file                        |
+| `luna.img.loadImage(path)`               | Load ImageData from LIMG binary file                      |
+| `luna.img.loadLayered(path)`             | Load LayeredImage from LIMG binary file                   |
+| **ImageData core**                       | `getWidth`, `getHeight`, `getDimensions`, `getPixel`, `setPixel`, `mapPixel`, `encode`, `getString`, `paste` |
+| **Color/Tone (in-place)**                | `brightness`, `contrast`, `saturation`, `gamma`, `tint`  |
+| **Filters (in-place)**                   | `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`, `noise`, `alphaMask` |
+| **Geometric in-place**                   | `flipHorizontal`, `flipVertical`                          |
+| **Geometric new-image**                  | `rotate90cw`, `crop`, `resizeNearest`                     |
+| **Convolution new-image**                | `blur`, `sharpen`                                         |
+| **LayeredImage**                         | `getWidth`, `getHeight`, `layerCount`, `addLayer`, `removeLayer`, `getLayer`, `setLayer`, `getOpacity`, `setOpacity`, `isVisible`, `setVisible`, `getName`, `setName`, `swapLayers`, `moveLayer`, `merge`, `save` |
 
 ## Full Specification
 

@@ -23,3 +23,10 @@ pub use compressed::{CompressedFormat, CompressedImageData};
 /// Color palette lookup table mapping source colors to target colors for shader-based palette swapping.
 pub mod palette_lut;
 pub use palette_lut::PaletteLUT;
+
+/// Compositing layer stack: [`ImageLayer`] + [`LayeredImage`] with Porter-Duff "over" merge.
+pub mod layers;
+pub use layers::{ImageLayer, LayeredImage};
+
+/// Binary `.lim` format serialization for [`ImageData`] and [`LayeredImage`].
+pub mod serial;
