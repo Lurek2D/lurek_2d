@@ -23,7 +23,13 @@
 14. [Quality Gates](#quality-gates)
 15. [Test Coverage Tooling](#test-coverage-tooling)
 16. [Test-Driven Development Workflow](#test-driven-development-workflow)
-17. [Problem Areas and Known Issues](#problem-areas-and-known-issues)
+17. [Marker Annotations for API Coverage](#marker-annotations-for-api-coverage)
+18. [Evidence-Based Testing](#evidence-based-testing)
+19. [Stress Test Standardization](#stress-test-standardization)
+20. [Integration Tests](#integration-tests)
+21. [Describe-Block Coverage Tracking](#describe-block-coverage-tracking)
+22. [Advanced Analytics](#advanced-analytics)
+23. [Problem Areas and Known Issues](#problem-areas-and-known-issues)
 
 ---
 
@@ -332,19 +338,28 @@ All Lua tests use a custom BDD framework defined in `tests/lua/init.lua`. This f
 |---|---|
 | `describe(name, fn)` | Group related tests under a named section |
 | `it(name, fn)` | Define a single test case |
-| `expect_equal(expected, actual)` | Assert strict equality |
-| `expect_near(expected, actual, tolerance)` | Assert float proximity |
-| `expect_type(value, type_name)` | Assert Lua type (`"number"`, `"table"`, etc.) |
-| `expect_error(fn)` | Assert fn throws an error |
-| `expect_not_nil(value)` | Assert value is not nil |
-| `expect_true(value)` | Assert truthy |
-| `expect_false(value)` | Assert falsy |
-| `expect_gt(a, b)` | Assert `a > b` |
-| `expect_lt(a, b)` | Assert `a < b` |
-| `expect_gte(a, b)` | Assert `a >= b` |
-| `expect_lte(a, b)` | Assert `a <= b` |
-| `expect_contains(table, value)` | Assert value in table |
-| `expect_match(string, pattern)` | Assert Lua pattern match |
+| `before_each(fn)` | Run before each `it()` in the enclosing `describe()` |
+| `after_each(fn)` | Run after each `it()` in the enclosing `describe()` |
+| `expect_equal(expected, actual, msg)` | Assert strict equality (strings, integers, booleans) |
+| `expect_not_equal(a, b, msg)` | Assert values differ |
+| `expect_near(expected, actual, tol, msg)` | Assert float proximity; `tol` defaults to `1e-5` |
+| `expect_true(val, msg)` | Assert truthy |
+| `expect_false(val, msg)` | Assert falsy |
+| `expect_nil(val, msg)` | Assert nil |
+| `expect_not_nil(val, msg)` | Assert not nil |
+| `expect_type(type_str, val, msg)` | Assert `type(val) == type_str` (e.g., `"table"`, `"number"`) |
+| `expect_error(fn, msg)` | Assert fn raises a Lua error |
+| `expect_no_error(fn, msg)` | Assert fn does not raise a Lua error |
+| `expect_greater(a, b, msg)` | Assert `a > b` |
+| `expect_less(a, b, msg)` | Assert `a < b` |
+| `expect_in_range(val, min, max, msg)` | Assert `min <= val <= max` |
+| `expect_contains(tbl, value, msg)` | Assert value appears in table |
+| `expect_match(str, pattern, msg)` | Assert Lua string pattern matches |
+| `expect_length(tbl, n, msg)` | Assert `#tbl == n` |
+| `expect_deep_equal(expected, actual, msg)` | Recursive table equality |
+| `measure(name, count, fn)` | Run fn, print `[PERF]` line, return `elapsed, ops_per_sec` |
+| `expect_golden(name, data, expected)` | Deterministic comparison against inline expected string |
+| `expect_canvas_pixel(canvas, x, y, r, g, b, a, tol, msg)` | Verify Canvas pixel RGBA within tolerance |
 | `test_summary()` | **MANDATORY** — must be the last call in every file |
 
 ### Lua Test File Template
@@ -723,10 +738,15 @@ Every commit must pass all of these:
 
 | Tool | Purpose | Output |
 |---|---|---|
-| `python tools/test_coverage.py` | Test coverage analytics | `docs/logs/test_coverage.json` |
-| `python tools/test_coverage.py --suggest` | Generate stubs for uncovered items | stdout |
-| `python tools/module_audit.py` | Full module audit (includes test status) | stdout |
-| `python tools/audit_module.py <name>` | Single module quality audit | PASS/WARN/ERROR |
+| `python tools/audit/test_coverage.py` | Test coverage analytics | `docs/logs/test_coverage.json` |
+| `python tools/audit/test_coverage.py --suggest` | Generate stubs for uncovered items | stdout |
+| `python tools/audit/module_audit.py` | Full module audit (includes test status) | stdout |
+| `python tools/audit/audit_module.py <name>` | Single module quality audit | PASS/WARN/ERROR |
+| `python tools/audit/lua_api_test_coverage.py` | Per-function API coverage (marker + heuristic) | stdout / JSON |
+| `python tools/audit/lua_api_test_coverage.py --json` | JSON export for CI/tooling | `docs/logs/lua_api_test_coverage.json` |
+| `python tools/audit/lua_api_test_coverage.py --markdown` | Markdown report | stdout |
+| `python tools/audit/lua_api_test_coverage.py --suggest` | Suggest missing `@covers` markers | stdout |
+| `python tools/audit/lua_api_test_coverage.py --strict --threshold 40` | Exit 1 if coverage below 40% | — |
 
 ---
 
@@ -758,6 +778,136 @@ Every commit must pass all of these:
 
 ---
 
+## Marker Annotations for API Coverage
+
+Lua test files can declare which `lurek.*` API functions they cover using `-- @covers` annotations. The coverage scanner (`tools/audit/lua_api_test_coverage.py`) reads these markers to produce accurate per-function coverage data, replacing the heuristic substring-matching approach.
+
+### Syntax
+
+```lua
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.newBody
+-- @covers Body:applyForce
+describe("lurek.physics world creation", function()
+    it("creates a world with gravity", function()
+        local world = lurek.physics.newWorld(0, 980)
+        expect_not_nil(world)
+    end)
+end)
+```
+
+### Placement Rules
+
+- Place `-- @covers` lines **before** the `describe` or `it` block that tests the function
+- One function per `-- @covers` line
+- Module-level functions: `-- @covers lurek.<module>.<function>`
+- UserData methods: `-- @covers <ClassName>:<method>`
+- The regex pattern: `^--\s*@covers\s+((?:lurek\.\w+\.\w+)|(?:\w+:\w+))\s*$`
+
+### Additional Tags (Planned)
+
+| Tag | Purpose |
+|---|---|
+| `-- @covers lurek.x.y` | Marks function coverage |
+| `-- @evidence file` | Test produces file-based evidence (saved output) |
+| `-- @evidence pixel` | Test uses Canvas pixel readback for visual evidence |
+| `-- @golden` | Test compares against a golden baseline |
+| `-- @stress` | Test measures throughput performance |
+
+### Coverage Scanner
+
+```powershell
+# Basic run — prints per-module coverage bars
+python tools/audit/lua_api_test_coverage.py
+
+# JSON output for CI/tooling
+python tools/audit/lua_api_test_coverage.py --json
+
+# Markdown report
+python tools/audit/lua_api_test_coverage.py --markdown
+
+# Suggest missing coverage
+python tools/audit/lua_api_test_coverage.py --suggest
+
+# Strict mode — exit 1 if below threshold
+python tools/audit/lua_api_test_coverage.py --strict --threshold 40
+```
+
+The scanner uses a **hybrid approach**: explicit `-- @covers` markers when present, heuristic substring matching as fallback for unmarked files. As markers are added, heuristic coverage is gradually replaced by verified marker coverage.
+
+Output: `docs/logs/lua_api_test_coverage.json`
+
+---
+
+## Evidence-Based Testing
+
+Not all API functions can be verified by checking return values alone. Evidence testing uses observable side effects to prove functions work correctly.
+
+### Three Tiers
+
+| Tier | Method | Requires | Example |
+|---|---|---|---|
+| **Headless State Readback** | Query engine state after API calls | Nothing extra | `getBody():getPosition()` after `applyForce()` |
+| **Canvas Pixel Readback** | `Canvas:renderTo` + `Canvas:getPixel` | Canvas API | Draw red rect → verify red pixel at center |
+| **Runtime Smoke Tests** | Full GPU rendering + screenshot | GPU device, `tests/rust/ext/` | Render scene → `saveScreenshot()` → compare |
+
+### Canvas Evidence Pattern (Headless)
+
+```lua
+-- Verify that lurek.gfx.rectangle actually draws pixels
+local canvas = lurek.gfx.newCanvas(100, 100)
+canvas:renderTo(function()
+    lurek.gfx.setColor(1, 0, 0, 1)
+    lurek.gfx.rectangle("fill", 0, 0, 100, 100)
+end)
+local r, g, b, a = canvas:getPixel(50, 50)
+expect_near(1.0, r, 0.01) -- red channel proves rectangle was drawn
+expect_near(0.0, g, 0.01)
+expect_near(0.0, b, 0.01)
+```
+
+### Priority Modules for Evidence Testing
+
+- **P0**: `gfx` (shapes, colors), `light` (illumination), `particle` (emission)
+- **P1**: `camera` (viewport), `tilemap` (tile rendering), `entity` (draw components)
+- **P2**: `animation` (frame display), `postfx` (shader effects), `gui` (widget rendering)
+
+### Known Evidence Gap — Light System
+
+The light module (`lurek.light.*`) currently passes all unit tests by verifying function existence and return types, but **does not validate visual output**. Tests confirm the API accepts calls without errors, but no test verifies that lights actually illuminate the scene or that shadows are drawn. Canvas pixel readback or runtime smoke tests are required to provide evidence of correct light rendering.
+
+---
+
+## Stress Test Standardization
+
+### Standard Output Format
+
+All stress tests should print performance data in a parseable format:
+
+```lua
+-- [PERF] test_name: count ops in Xs (Y ops/sec)
+print(string.format("[PERF] entity_create: %d ops in %.3fs (%.0f ops/sec)",
+    count, elapsed, count / elapsed))
+```
+
+### Measurement Helper
+
+The `measure()` function in `tests/lua/init.lua` standardizes stress-test timing output:
+
+```lua
+-- measure(name, count, fn) returns elapsed, ops_per_sec and prints a [PERF] line
+local elapsed, ops = measure("entity_create", 10000, function()
+    for i = 1, 10000 do lurek.entity.newEntity() end
+end)
+expect_less(elapsed, 2.0, "10k entity creates must finish under 2s")
+```
+
+Output format: `[PERF] entity_create: 10000 ops in 0.142s (70423 ops/sec)`
+
+Use `expect_less(elapsed, threshold)` to turn performance measurements into hard test assertions. Stress tests without a timing assertion are informational only.
+
+---
+
 ## Problem Areas and Known Issues
 
 These are documented issues in the test suite that should be addressed over time:
@@ -772,3 +922,120 @@ These are documented issues in the test suite that should be addressed over time
 | Unregistered test files | `.rs` files in `tests/rust/` not listed in `Cargo.toml` are silently ignored | Medium — tests exist but never run |
 | Golden coverage gaps | Graphics, audio, and text processing need golden snapshots in `tests/rust/golden/expected/image/`, `/audio/`, `/text/` | High — no byte-level regression detection for renderer output |
 | Lua stress has no perf assertions | Most Lua stress tests measure iteration count but not wall time | Low — tests pass even on degraded hardware |
+| Heuristic-only API coverage | Existing `test_coverage.py` uses substring matching — 12-18% false-positive rate | Medium — coverage numbers are inflated |
+| No `@covers` markers | Zero test files have explicit API coverage markers — all coverage is heuristic | Medium — prevents accurate per-function tracking |
+| Light module evidence gap | Light tests pass by checking API existence, not visual output | High — lights may not work and tests still pass |
+| Integration test misplacement | 4 integration tests (system, devtools, debugbridge, docs) are single-module tests | Low — wrong category, inflates integration count |
+
+---
+
+## Integration Tests
+
+Integration tests are located in `tests/lua/integration/` and test two or more modules working together in one scenario. Single-module scenarios belong in `tests/lua/unit/`.
+
+### Volume Target: 58+ integration tests across two phases
+
+**Phase 1 (complete)** — 43 integration tests across the core module grid. Each test exercises at least two modules; see the `tests/lua/integration/` directory for the current set.
+
+**Phase 2 (planned)** — additional integration tests covering more complex module combinations, including three-way interactions. Planned groups:
+
+| Group | Tests | Key Combinations |
+|-------|-------|-----------------|
+| Graphics Pipeline | 9 | gfx+camera, gfx+light, gfx+effect, gfx+animation, gfx+particle, gfx+tilemap, canvas+postfx, image+gfx, spine+animation |
+| Audio | 4 | audio+timer, audio+event, audio+data, audio+filesystem |
+| AI/Behavior | 5 | ai+entity+scene, ai+signal, pathfinding+entity, pathfinding+tilemap+entity, ai+scene+camera |
+| Persistence | 5 | savegame+entity+scene, savegame+animation, data+compute, thread+filesystem, savegame+modding |
+| UI/Input | 4 | ui+input, ui+localization+data, gui+animation, input+tween |
+| Procedural/Rendering | 6 | procgen+tilemap, procgen+entity, tween+animation, postfx+camera, minimap+tilemap+camera, raycaster+tilemap |
+
+Three-way integration tests (three modules exercised in one test) are the highest-value targets — they Surface emergent bugs that two-way tests miss.
+
+### Naming Convention
+
+```
+tests/lua/integration/test_<primary>_<secondary>[_<tertiary>].lua
+```
+
+Example: `test_ai_entity_scene.lua` tests `lurek.ai`, `lurek.entity`, and `lurek.scene` in one scenario.
+
+---
+
+## Describe-Block Coverage Tracking
+
+Beyond `-- @covers` markers, the naming convention of `describe()` blocks enables automatic coverage tracking at the method level.
+
+### Convention
+
+Name every `describe()` block that targets a specific API function after that function:
+
+```lua
+describe("lurek.audio.newBus", function()   -- module function
+    it("creates bus with given name", ...) 
+    it("rejects empty name", ...)
+end)
+
+describe("AudioBus:setVolume", function()   -- UserData method
+    it("stores volume", ...)
+    it("clamps to [0,1]", ...)
+end)
+```
+
+**Recognized patterns** (scanner extracts these):
+- `"lurek.<module>.<function>"` → module-level function
+- `"<ClassName>:<method>"` → UserData method
+- `"lurek.<module> error handling"` → module-scoped, no specific function
+
+### Coverage Score per Method
+
+A function's describe block earns a score of 0–4:
+- +1 if the block has ≥1 `it()` calls
+- +1 if the block has ≥3 `it()` calls
+- +1 if any `it()` uses `expect_error` or `pcall`
+- +1 if the test has any `-- @evidence` tag
+
+A module's **describe coverage score** is the average score across all its API functions, scaled to 0–100%.
+
+### Migration Plan
+
+1. Start with `lurek.audio.*` — rename all existing describe blocks to follow the convention
+2. Extend `tools/audit/lua_api_test_coverage.py` to parse describe-block names
+3. Report describe coverage score alongside existing heuristic and marker coverage
+4. Set CI gate: modules with describe coverage score < 25% emit a warning
+
+---
+
+## Advanced Analytics
+
+The planned `tools/audit/test_analytics.py` script aggregates all coverage data sources into a unified report.
+
+### Data Sources Combined
+
+| Source | Data |
+|--------|------|
+| `lua_api_data.json` | Complete API surface (48 modules, 2588 functions) |
+| `-- @covers` markers | Explicit per-function coverage |
+| `describe()` naming | Per-method test count, error tests, nil tests |
+| `-- @evidence` tags | Evidence tier per function |
+| `-- @stress` / `-- @golden` | Stress and golden coverage flags |
+
+### Invocation
+
+```powershell
+python tools/audit/test_analytics.py                   # full stdout report
+python tools/audit/test_analytics.py --html            # HTML dashboard → docs/quality/test_analytics.html
+python tools/audit/test_analytics.py --json            # JSON → docs/logs/test_analytics.json
+python tools/audit/test_analytics.py --module physics  # single module deep-dive
+python tools/audit/test_analytics.py --worst 10        # 10 lowest-scoring modules
+python tools/audit/test_analytics.py --trend           # compare to last run (fail if regression)
+```
+
+### Module Grading
+
+Each module scores 0–10 based on: heuristic coverage (20%), marker coverage (25%), evidence count (20%), error test count (15%), stress test presence (10%), golden test presence (10%).
+
+Grades: A (9–10), B (7–8), C (5–6), D (3–4) ⚠, F (0–2) 🚨
+
+### Output Files
+
+- `docs/quality/test_analytics.html` — browsable dashboard with sortable module table, category charts, uncovered function explorer
+- `docs/logs/test_analytics.json` — git-tracked for trend comparison across runs

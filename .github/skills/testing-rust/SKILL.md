@@ -256,8 +256,37 @@ test_summary()
 | `expect_type(type_str, val, msg)` | `type(val) == type_str` (e.g., `"table"`, `"function"`, `"number"`) |
 | `expect_error(fn, msg)` | `fn()` must raise a Lua error |
 | `expect_no_error(fn, msg)` | `fn()` must not raise a Lua error |
+| `expect_greater(a, b, msg)` | Assert `a > b` |
+| `expect_less(a, b, msg)` | Assert `a < b` |
+| `expect_in_range(val, min, max, msg)` | Assert `min <= val <= max` |
+| `expect_contains(tbl, value, msg)` | Assert `value` appears in table |
+| `expect_match(str, pattern, msg)` | Assert Lua string pattern matches |
+| `expect_length(tbl, n, msg)` | Assert `#tbl == n` |
+| `expect_deep_equal(expected, actual, msg)` | Recursive table equality |
 
 **Never use `assert()` directly** — it aborts the suite rather than recording a failure.
+
+### Performance and Golden helpers
+
+```lua
+-- measure(name, count, fn) — wraps fn(), prints [PERF] line, returns elapsed, ops_per_sec
+local elapsed, ops = measure("entity_create", 10000, function()
+    for i = 1, 10000 do lurek.entity.newEntity() end
+end)
+expect_less(elapsed, 1.0, "10k entity creates must finish under 1s")
+
+-- expect_golden(name, data, expected) — deterministic inline comparison
+expect_golden("path_result", lurek.pathfinding.findPath(...), "[(1,1),(2,1),(3,1)]")
+
+-- expect_canvas_pixel(canvas, x, y, r, g, b, a, tolerance, msg)
+-- Reads canvas:getPixel(x, y) and checks each RGBA channel within tolerance
+local canvas = lurek.gfx.newCanvas(64, 64)
+canvas:renderTo(function()
+    lurek.gfx.setColor(1, 0, 0, 1)
+    lurek.gfx.rectangle("fill", 0, 0, 64, 64)
+end)
+expect_canvas_pixel(canvas, 32, 32, 1.0, 0.0, 0.0, 1.0, 0.05, "center pixel must be red")
+```
 
 ---
 
@@ -313,6 +342,8 @@ python tools/audit/test_coverage.py                  # coverage metrics → docs
 python tools/audit/integration_coverage.py           # Lua integration coverage map
 python tools/docs/collect_docs.py --report-missing  # undocumented public items (exit 1 if any)
 python tools/audit/quality_report.py                 # combined quality snapshot
+python tools/audit/lua_api_test_coverage.py          # per-function API coverage (marker + heuristic)
+python tools/audit/test_analytics.py --worst 10     # 10 lowest-scoring modules (planned)
 ```
 
 ### Adding missing docs
@@ -329,6 +360,8 @@ python tools/docs/collect_docs.py --suggest         # starter /// lines for undo
 
 ## 8. Golden Tests
 
+### Rust golden tests (byte-level)
+
 Golden tests compare deterministic binary/text output against a committed baseline file.
 
 **Baseline files:** `tests/rust/golden/expected/<category>/<name>.<ext>`
@@ -336,7 +369,7 @@ Golden tests compare deterministic binary/text output against a committed baseli
 
 Categories: `encoding/`, `hashes/`, `compression/`, `images/`, `config/`, `sound/`
 
-**To add a new golden test:**
+**To add a new Rust golden test:**
 1. Add expected file to `tests/rust/golden/expected/<category>/`
 2. Add a `#[test]` in `tests/rust/golden/harness.rs` using `assert_golden("category/name.ext", ...)`
 3. Run once to confirm match: `cargo test --test golden_tests`
@@ -346,6 +379,148 @@ Categories: `encoding/`, `hashes/`, `compression/`, `images/`, `config/`, `sound
 cargo test --test golden_tests -- --nocapture
 # copy tests/rust/golden/actual/<file> to tests/rust/golden/expected/<file>
 ```
+
+### Lua golden tests (inline expected string)
+
+Lua golden tests use the `expect_golden(name, data, expected)` helper from `init.lua`. The expected value is an **inline string** — no external file dependency, no git-ignored output directory.
+
+```lua
+-- tests/lua/golden/test_pathfinding_golden.lua
+-- Golden tests for lurek.pathfinding — seeded results must be deterministic
+
+describe("pathfinding golden", function()
+    it("A* on fixed 5x5 grid produces exact path", function()
+        local grid = lurek.pathfinding.newGrid(5, 5)
+        local path = lurek.pathfinding.findPath(grid, 0, 0, 4, 4)
+        expect_golden("astar_5x5", path, "[(0,0),(1,1),(2,2),(3,3),(4,4)]")
+    end)
+end)
+
+test_summary()
+```
+
+**Rules for Lua golden tests:**
+- The expected string must be deterministic — use seeded RNG, fixed input, or pure math
+- Format values with fixed precision: `string.format("%.4f", val)` not `tostring(val)`
+- Use LuaJIT-safe formatting — avoid `%g` which may differ between Lua versions
+- If output is a table, format it with a canonical serializer, not `tostring(tbl)`
+- All Lua golden test files live in `tests/lua/golden/test_<module>_golden.lua`
+
+---
+
+## 9. Marker Annotations — `@covers`
+
+Lua test files declare which API functions they verify using `-- @covers` markers. The coverage scanner (`tools/audit/lua_api_test_coverage.py`) reads these for accurate per-function tracking.
+
+### Syntax
+
+```lua
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.newBody
+-- @covers Body:applyForce
+describe("lurek.physics world creation", function()
+    it("creates a world with gravity", function()
+        local world = lurek.physics.newWorld(0, 980)
+        expect_not_nil(world)
+    end)
+end)
+```
+
+**Placement rules:**
+- One `-- @covers` line per API function
+- Place the block **before** the `describe` or `it` that tests the function
+- Module functions: `-- @covers lurek.<module>.<function>`
+- UserData methods: `-- @covers <ClassName>:<method>`
+- The scanner regex: `^--\s*@covers\s+(lurek\.\w+\.\w+|\w+:\w+)\s*$`
+
+**Describe-block naming as implicit coverage:**
+
+Name every `describe()` block after the exact API function it tests. The scanner extracts these as secondary coverage Evidence:
+
+```lua
+describe("lurek.audio.newBus", function()  -- module function
+    it("creates bus with given name", ...)
+    it("rejects empty name", ...)           -- error path earns a bonus score point
+end)
+
+describe("AudioBus:setVolume", function()  -- UserData method
+    it("stores volume", ...)
+    it("clamps to [0,1]", ...)
+end)
+```
+
+**Running the scanner:**
+```powershell
+python tools/audit/lua_api_test_coverage.py                # per-module coverage bars
+python tools/audit/lua_api_test_coverage.py --json         # JSON output
+python tools/audit/lua_api_test_coverage.py --markdown     # Markdown report
+python tools/audit/lua_api_test_coverage.py --suggest      # suggest missing markers
+python tools/audit/lua_api_test_coverage.py --strict --threshold 40  # exit 1 if below 40%
+```
+
+---
+
+## 10. Evidence-Based Testing
+
+Some API functions can only be proven correct through observable side effects. Evidence testing provides three tiers.
+
+### Tier 1 — Headless State Readback (preferred)
+
+Query engine state after API calls. Works in the headless test VM without GPU or audio.
+
+```lua
+describe("Body:applyForce", function()
+    it("changes velocity after step", function()
+        local world = lurek.physics.newWorld(0, 0)  -- no gravity
+        local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+        body:applyForce(100, 0)
+        lurek.physics.step(world, 1.0 / 60)
+        local vx, vy = body:getLinearVelocity()
+        expect_greater(vx, 0, "force must produce positive x velocity")
+    end)
+end)
+```
+
+### Tier 2 — Canvas Pixel Readback (headless GPU simulation)
+
+Draw to a Canvas and read pixels back. Proves rendering functions produce output.
+
+```lua
+-- @covers lurek.gfx.rectangle
+-- @evidence pixel
+describe("lurek.gfx.rectangle", function()
+    it("fills rectangle region with current color", function()
+        local canvas = lurek.gfx.newCanvas(64, 64)
+        canvas:renderTo(function()
+            lurek.gfx.setColor(1, 0, 0, 1)
+            lurek.gfx.rectangle("fill", 0, 0, 64, 64)
+        end)
+        expect_canvas_pixel(canvas, 32, 32, 1.0, 0.0, 0.0, 1.0, 0.05,
+            "center pixel must be red after filled rectangle")
+    end)
+end)
+```
+
+### Tier 3 — Runtime Smoke Tests (GPU required)
+
+Full rendering pipeline with screenshot. Lives in `tests/rust/ext/` only — not callable from headless Lua tests.
+
+```rust
+// tests/rust/ext/graphics_runtime_smoke_tests.rs
+#[test]
+fn rectangle_render_smoke() {
+    // Launch game process, render one frame, save screenshot, compare pixel
+}
+```
+
+### Evidence Tags in Test Files
+
+| Tag | Purpose |
+|---|---|
+| `-- @evidence pixel` | Test uses Canvas pixel readback for visual proof |
+| `-- @evidence file` | Test writes an output file as evidence |
+| `-- @stress` | Test measures throughput performance |
+| `-- @golden` | Test compares against a golden baseline |
 
 ---
 
@@ -364,3 +539,190 @@ cargo test --test golden_tests -- --nocapture
 - [ ] No network I/O of any kind
 - [ ] Integration tests do not call private functions — use `pub(crate)` or `#[cfg(test)]` inline modules for test-only access
 - [ ] Test is independently runnable — does not depend on execution order or shared mutable globals
+
+---
+
+## 10. API Coverage Markers (`-- @covers`)
+
+When writing Lua tests, annotate which API functions are covered using `-- @covers` markers. This enables the coverage scanner to track per-function coverage accurately.
+
+### Syntax
+
+```lua
+-- @covers lurek.physics.newWorld
+-- @covers lurek.physics.newBody
+describe("lurek.physics world creation", function()
+    it("creates a world", function()
+        local world = lurek.physics.newWorld(0, 980)
+        expect_not_nil(world)
+    end)
+end)
+
+-- @covers Body:getPosition
+-- @covers Body:applyForce
+describe("Body methods", function()
+    it("gets position after force", function()
+        -- ...
+    end)
+end)
+```
+
+### Rules
+
+- One `-- @covers` per line, placed **before** the `describe` or `it` block
+- Module functions: `-- @covers lurek.<module>.<function>`
+- UserData methods: `-- @covers <ClassName>:<method>`
+- The scanner regex: `^--\s*@covers\s+((?:lurek\.\w+\.\w+)|(?:\w+:\w+))\s*$`
+- Coverage without markers still works via heuristic fallback, but markers are preferred
+
+### Coverage Scanner
+
+```powershell
+python tools/audit/lua_api_test_coverage.py              # summary with per-module bars
+python tools/audit/lua_api_test_coverage.py --json        # JSON output
+python tools/audit/lua_api_test_coverage.py --markdown    # markdown report
+python tools/audit/lua_api_test_coverage.py --suggest     # show uncovered functions
+python tools/audit/lua_api_test_coverage.py --strict --threshold 40  # CI gate
+```
+
+---
+
+## 11. Evidence-Based Testing Patterns
+
+Some API functions cannot be verified by return values alone. Use these patterns to produce observable evidence:
+
+### Canvas Pixel Readback (Headless)
+
+```lua
+-- Verify drawing actually produces pixels
+local canvas = lurek.gfx.newCanvas(100, 100)
+canvas:renderTo(function()
+    lurek.gfx.setColor(1, 0, 0, 1)
+    lurek.gfx.rectangle("fill", 0, 0, 100, 100)
+end)
+local r, g, b, a = canvas:getPixel(50, 50)
+expect_near(1.0, r, 0.01)  -- proves rectangle was drawn
+```
+
+### File Evidence
+
+```lua
+-- Verify file I/O by writing and reading back
+lurek.filesystem.write("test_output.txt", "hello")
+local content = lurek.filesystem.read("test_output.txt")
+expect_equal("hello", content)
+```
+
+### Runtime Smoke Tests (GPU Required)
+
+For tests requiring actual GPU rendering, use `tests/rust/ext/` with the smoke test infrastructure:
+```rust
+// tests/rust/ext/light_smoke_tests.rs
+#[test]
+fn light_illumination_visible() {
+    // Launch example with --smoke flag
+    // Capture screenshot via lurek.gfx.saveScreenshot()
+    // Verify pixel values in the saved PNG
+}
+```
+
+---
+
+## 12. Golden Test Conventions
+
+### Lua Golden Tests
+
+Write golden tests in `tests/lua/golden/` for deterministic operations:
+
+```lua
+-- tests/lua/golden/test_data_golden.lua
+describe("JSON round-trip golden", function()
+    it("encodes table to expected JSON string", function()
+        local data = { name = "test", value = 42 }
+        local json = lurek.data.encode(data, "json")
+        local expected = '{"name":"test","value":42}'
+        expect_equal(expected, json)
+    end)
+end)
+test_summary()
+```
+
+### Key Rules
+
+- Use fixed seeds for any random/procedural operations
+- Use `string.format("%.6f", val)` for float formatting
+- Compare inline expected data (not external files) for Lua golden tests
+- For binary golden tests, use the Rust golden harness in `tests/rust/golden/`
+- The two-track golden approach: (a) Lua headless state golden (draw-list contents, bone positions, config snapshots) and (b) Rust pixel golden (PNG byte comparison in `tests/rust/golden/expected/image/`)
+
+### Stress Test Output Format
+
+All stress tests should print `[PERF]` lines for parseable performance data:
+
+```lua
+print(string.format("[PERF] %s: %d ops in %.3fs (%.0f ops/sec)",
+    name, count, elapsed, count / elapsed))
+```
+
+---
+
+## 13. Describe-Block Coverage Naming
+
+Name every `describe()` block that targets a specific API function after that function. This enables the coverage scanner to extract per-method test counts without requiring explicit `-- @covers` annotations.
+
+### Recognized Patterns
+
+```lua
+describe("lurek.<module>.<function>", function()  -- module-level function
+    ...
+end)
+
+describe("<ClassName>:<method>", function()        -- UserData method
+    ...
+end)
+
+describe("lurek.<module> error handling", function() -- module-scoped group
+    ...
+end)
+```
+
+### Example: Well-Named Describe Blocks
+
+```lua
+describe("lurek.audio.newBus", function()     -- scanner recognizes pattern
+    it("creates bus with given name", ...)
+    it("bus is retrievable by name", ...)
+    it("rejects empty name", function()
+        expect_error(function() lurek.audio.newBus("") end)
+    end)
+    it("rejects duplicate name", ...)
+end)
+
+describe("AudioBus:setVolume", function()     -- UserData method pattern
+    it("stores value correctly", ...)
+    it("clamps to [0,1]", ...)
+end)
+```
+
+### Coverage Score Per Method (0–4)
+
+- +1 if ≥1 `it()` calls
+- +1 if ≥3 `it()` calls
+- +1 if any `it()` contains `expect_error` or `pcall`
+- +1 if the describe block has a `-- @evidence` annotation
+
+Use this system to prioritize which modules to improve: a module averaging <2/4 needs more error tests or evidence.
+
+---
+
+## 14. Integration Test Rules
+
+Integration tests live in `tests/lua/integration/` and target two or more **named modules** in one scenario. Rules:
+
+- Both module namespaces must appear in the file (`lurek.physics.*` AND `lurek.timer.*`, for example)
+- Name the file `test_<module1>_<module2>[_<module3>].lua`
+- Register a corresponding `#[test] fn lua_test_integration_<name>()` in harness.rs
+- Three-way integrations (three modules) are high-value — prioritize those over simple two-way repeats
+- Do not use this category for single-module lifecycle tests — those belong in `tests/lua/unit/`
+
+Current volume target: **58+ integration tests** (Phase 1: 29 done; Phase 2: 29 planned).

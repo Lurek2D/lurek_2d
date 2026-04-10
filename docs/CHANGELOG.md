@@ -18,6 +18,13 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.6.32] — 2026-04-10
+### Changed
+- **Test skill** (`testing-rust/SKILL.md`) — expanded BDD assertion table with `expect_greater`, `expect_less`, `expect_in_range`, `expect_contains`, `expect_match`, `expect_length`, `expect_deep_equal`; added "Performance and Golden helpers" subsection documenting `measure()`, `expect_golden()`, `expect_canvas_pixel()`; expanded "Golden Tests" section with Lua golden test pattern; added section 9 "Marker Annotations" (`@covers` syntax, placement rules, describe-block naming, scanner commands); added section 10 "Evidence-Based Testing" (all 3 tiers with code examples, evidence tags table).
+- **Test architecture doc** (`test-framework.md`) — updated Framework API table to include all BDD helpers (`before_each`, `after_each`, `expect_greater`, `expect_less`, `expect_in_range`, `expect_contains`, `expect_match`, `expect_length`, `expect_deep_equal`, `measure`, `expect_golden`, `expect_canvas_pixel`); fixed Test Coverage Tooling section with correct tool paths (`tools/audit/` prefix); updated Measurement Helper from "planned" to implemented with usage example; updated ToC to include sections 17–23; updated integration test count from 29 to 43.
+- **Roadmap** (`ideas/tests/roadmap.md`) — marked Phase 0.2 documentation tasks as complete.
+- **Implementation plan** (`ideas/tests/implementation-plan.md`) — marked sections 5.1 and 5.2 as complete with detailed checklists.
+
 ## [0.6.31] — 2026-04-10
 ### Fixed
 - **VS Code extension** — promoted `extension2.ts` (full implementation) as the esbuild entry point; fixed 63 command IDs from `luna.*` → `lurek.*` namespace throughout `extension2.ts` and `apiData.ts`; fixed bad `import("./debug/debugBridge")` path → `./services/debugBridge`; updated `package.json` from `package2.json` (v0.9.0, named `luna-toolkit`, full command/view manifest); updated `esbuild.config.mjs` entry to `extension2.ts`; added `loadFromLuaApiMd()` parser in `apiData.ts` so IntelliSense completions load from the real `docs/API/lua-api.md`; fixed Priority-3 lookup path from non-existent `lua_api_reference_generated.md` → `lua-api.md`; packaged as `luna-toolkit-0.9.0.vsix`.

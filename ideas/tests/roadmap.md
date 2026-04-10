@@ -12,11 +12,11 @@
 - [x] Add `expect_canvas_pixel()` helper to `tests/lua/init.lua`
 
 ### 0.2 Documentation
-- [ ] Update `docs/architecture/test-framework.md` with marker system, evidence tiers, golden conventions
-- [ ] Update `.github/skills/testing-rust/SKILL.md` with new patterns
+- [x] Update `docs/architecture/test-framework.md` with marker system, evidence tiers, golden conventions
+- [x] Update `.github/skills/testing-rust/SKILL.md` with new patterns
 - [x] Create all `ideas/tests/*.md` design documents (this deliverable)
 
-**Gate**: All 10 design documents created. Coverage scanner runs and produces correct output.
+**Gate**: All 10 design documents created. Coverage scanner runs and produces correct output. ✅ DONE
 
 ---
 

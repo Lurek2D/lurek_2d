@@ -146,25 +146,31 @@ For every new `.lua` test file, add a corresponding entry in `tests/lua/harness.
 
 ## 5. Documentation Updates
 
-### 5.1 Architecture Doc
-- [ ] Update `docs/architecture/test-framework.md`:
-  - Add "Marker Annotations" section with `@covers` syntax
-  - Add "Evidence Testing" section with 3 tiers
-  - Add "Golden Tests" section with conventions
-  - Add "Coverage Tooling" section with commands
+### 5.1 Architecture Doc ✅ DONE
+- [x] Update `docs/architecture/test-framework.md`:
+  - [x] Add/verify "Marker Annotations" section with `@covers` syntax
+  - [x] Add/verify "Evidence Testing" section with 3 tiers
+  - [x] Add Lua Golden Tests sub-section under `## Golden Tests`
+  - [x] Fix "Coverage Tooling" section with correct tool paths
+  - [x] Update Framework API table with `measure()`, `expect_golden()`, `expect_canvas_pixel()`
+  - [x] Update "Measurement Helper" from planned to implemented
+  - [x] Update integration test count (43 actual, not 29)
+  - [x] Update Table of Contents
 
-### 5.2 CAG Skill
-- [ ] Update `.github/skills/testing-rust/SKILL.md`:
-  - Add marker rules and examples
-  - Add coverage tool commands
-  - Add evidence test patterns
-  - Add golden test template
+### 5.2 CAG Skill ✅ DONE
+- [x] Update `.github/skills/testing-rust/SKILL.md`:
+  - [x] Expand assertions table with `expect_greater`, `expect_less`, `expect_in_range`, `expect_contains`, `expect_match`, `expect_length`, `expect_deep_equal`
+  - [x] Add "Performance and Golden helpers" subsection with `measure()`, `expect_golden()`, `expect_canvas_pixel()` examples
+  - [x] Expand "Golden Tests" section with Lua golden test pattern using `expect_golden()`
+  - [x] Add "Marker Annotations" section (section 9) with `@covers` syntax, placement rules, describe-block naming
+  - [x] Add "Evidence-Based Testing" section (section 10) with all 3 tiers and code examples
+  - [x] Add evidence tags table (`@evidence pixel`, `@evidence file`, `@stress`, `@golden`)
 
 ### 5.3 Cross-Artifact Sync
 - [ ] Verify `docs/specs/*.md` test sections match new patterns
 - [ ] Update `tests/README.md` with new test categories
 
-**Note**: Sections 5.1 and 5.2 are the remaining documentation tasks. Core infrastructure (tooling, tests, harness) is fully implemented.
+**Note**: Sections 5.1 and 5.2 are now complete. Only the lower-priority sync tasks (5.3) remain.
 
 ---
 
