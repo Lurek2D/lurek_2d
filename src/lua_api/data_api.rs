@@ -489,3 +489,33 @@ impl LuaUserData for LuaDataView {
         methods.add_method("getSize", |_, this, ()| Ok(this.inner.get_size() as i64));
     }
 }
+
+impl mlua::UserData for ByteData {
+    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_method("getSize", |_, this, ()| Ok(this.len()));
+        methods.add_method("getString", |_, this, ()| Ok(this.get_string()));
+        methods.add_method("getByte", |_, this, offset: usize| {
+            this.get_byte(offset).ok_or_else(|| {
+                LuaError::RuntimeError(format!(
+                    "Offset {} out of bounds (size {})",
+                    offset,
+                    this.len()
+                ))
+            })
+        });
+        methods.add_method_mut("setByte", |_, this, (offset, value): (usize, u8)| {
+            if this.set_byte(offset, value) {
+                Ok(())
+            } else {
+                Err(LuaError::RuntimeError(format!(
+                    "Offset {} out of bounds (size {})",
+                    offset,
+                    this.len()
+                )))
+            }
+        });
+        methods.add_method("clone", |lua, this, ()| {
+            lua.create_userdata(this.clone_data())
+        });
+    }
+}

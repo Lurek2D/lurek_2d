@@ -1,4 +1,4 @@
-//! `luna.tween` — thin Lua registration wrapper for the property tween system.
+//! `lurek.tween` — thin Lua registration wrapper for the property tween system.
 //!
 //! # Purpose
 //!

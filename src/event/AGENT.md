@@ -34,20 +34,6 @@ The event module provides two complementary messaging primitives for Lurek2D gam
 | `Subscription` | Principal type for the `signal` module. |
 | `Signal` | Principal type for the `signal` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.event.exit()` | See `docs/specs/signal.md`. |
-| `lurek.event.push()` | See `docs/specs/signal.md`. |
-| `lurek.event.poll()` | See `docs/specs/signal.md`. |
-| `lurek.event.clear()` | See `docs/specs/signal.md`. |
-| `lurek.event.newSignal()` | See `docs/specs/signal.md`. |
-| `lurek.event.pump()` | See `docs/specs/signal.md`. |
-| `lurek.event.wait()` | See `docs/specs/signal.md`. |
-| `lurek.event.restart()` | See `docs/specs/signal.md`. |
-| `lurek.event.quit()` | See `docs/specs/signal.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

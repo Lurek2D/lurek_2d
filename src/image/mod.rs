@@ -33,3 +33,11 @@ pub mod visualization;
 
 /// Binary `.lim` format serialization for [`ImageData`] and [`LayeredImage`].
 pub mod serial;
+
+/// GPU texture handle with dimensions, format, and filtering.
+pub mod texture;
+/// Atlas of named sub-regions within a single texture.
+pub mod texture_atlas;
+
+pub use texture::Texture;
+pub use texture_atlas::TextureAtlas;

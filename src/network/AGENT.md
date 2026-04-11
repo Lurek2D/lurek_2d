@@ -32,12 +32,6 @@ The `network` module provides UDP networking for peer-to-peer and client-server 
 | `NetworkEvent` | Principal type for the `network` module. |
 | `PeerStats` | Principal type for the `network` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.network.newHost()` | See `docs/specs/network.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

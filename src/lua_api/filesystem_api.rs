@@ -1,4 +1,4 @@
-//! `luna.fs` — Sandboxed file I/O, directory queries, and async asset loading.
+//! `lurek.fs` — Sandboxed file I/O, directory queries, and async asset loading.
 
 use super::SharedState;
 use mlua::prelude::*;

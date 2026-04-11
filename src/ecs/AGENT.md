@@ -31,12 +31,6 @@ The entity module provides Lurek2D's lightweight entity-component-system (ECS) b
 | `RelationshipManager` | Principal type for the `entity` module. |
 | `Universe` | Principal type for the `entity` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.entity.newUniverse()` | See `docs/specs/entity.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

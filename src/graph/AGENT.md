@@ -47,12 +47,6 @@ The graph module provides a general-purpose directed weighted graph with item fl
 | `Node` | Principal type for the `graph` module. |
 | `PathResult` | Principal type for the `graph` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.graph.newGraph()` | See `docs/specs/graph.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

@@ -52,10 +52,6 @@ The `patterns` module provides pure-Rust implementations of six classic game-pro
 | `ObserverEntry` | Principal type for the `patterns` module. |
 | `Observer` | Principal type for the `patterns` module. |
 
-## Lua API Summary
-
-_No `lurek.*` bindings registered for this module._
-
 ## Full Specification
 
 See [`docs/specs/patterns.md`](../../../docs/specs/patterns.md) for full architecture, type details, Lua API, examples, and notes.

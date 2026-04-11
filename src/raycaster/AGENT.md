@@ -12,7 +12,11 @@
 
 ## Purpose
 
-The `raycaster` module implements a DDA-based 2D grid raycaster designed for Wolfenstein-style retro FPS and dungeon-crawler games. It operates entirely on a flat integer cell grid (`Raycaster2D`) and produces results as plain numeric data — distances, texture coordinates, hit positions — that Lua scripts consume to drive their own column rendering via `lurek.gfx` draw calls. The module is intentionally renderer-agnostic: it never writes GPU resources, pushes draw commands, or accesses SharedState resource pools. The engine owns column drawing; the raycaster provides the geometry.
+The `raycaster` module implements a DDA-based 2D grid raycaster designed for Wolfenstein-style retro FPS and dungeon-crawler games. It operates on a flat integer cell grid (`Raycaster2D`) and produces results as either plain numeric column data **or** as a complete `RaycasterScene` of textured quads with per-polygon lighting — suitable for dungeon-crawler style rendering where each surface (wall, floor, ceiling, sprite) is a full textured quad, not a column strip.
+
+The module provides two rendering paths:
+1. **Column-strip** (`ColumnBatch` / `ColumnData`) — classic Wolfenstein-style per-column rendering via `lurek.gfx` draw calls.
+2. **Textured-quad** (`RaycasterScene` / `WallQuad` / `FloorQuad` / `CeilingQuad` / `BillboardSprite`) — dungeon-crawler style rendering where each surface is a textured quad with per-polygon `light_color` tint. Built by `RaycasterScene::build()` and converted to `Vec<RenderCommand>` by `generate_render_commands()`.
 
 ## Source Files
 
@@ -31,23 +35,30 @@ The `raycaster` module implements a DDA-based 2D grid raycaster designed for Wol
 | `heightmap.rs`           | `HeightMap` — per-cell variable floor and ceiling heights      |
 | `lighting.rs`            | `PointLight`, `compute_lighting`, `apply_lit_shade`            |
 | `minimap_overlay.rs`     | `extract_minimap` (RGBA crop) and `draw_player_arrow`          |
+| `scene.rs`               | `RaycasterScene`, `WallQuad`, `FloorQuad`, `CeilingQuad`, `BillboardSprite` — textured-quad scene types with per-polygon `light_color` |
+| `build_scene.rs`         | `RaycasterScene::build()`, `SceneBuildParams`, `WorldSprite` — builds a complete scene from a `Raycaster2D` grid with per-polygon lighting |
+| `render.rs`              | `generate_render_commands()` on `RaycasterScene` — converts the scene into `Vec<RenderCommand>` (SetColor + DrawQuad/DrawImageEx/Rectangle per quad) |
 
 ## Key Types
 
 | Type | Description |
 |------|-------------|
-| `ColumnData` | Principal type for the `raycaster` module. |
-| `ColumnBatch` | Principal type for the `raycaster` module. |
-| `Raycaster2D` | Principal type for the `raycaster` module. |
-| `DepthBuffer` | Principal type for the `raycaster` module. |
-| `DoorDirection` | Principal type for the `raycaster` module. |
-| `DoorState` | Principal type for the `raycaster` module. |
-| `Door` | Principal type for the `raycaster` module. |
-| `DoorManager` | Principal type for the `raycaster` module. |
-| `HeightMap` | Principal type for the `raycaster` module. |
-| `PointLight` | Principal type for the `raycaster` module. |
-| `RayHit` | Principal type for the `raycaster` module. |
-| `Segment` | Principal type for the `raycaster` module. |
+| `Raycaster2D` | DDA grid raycaster — cast_rays, set_cell, get_cell. |
+| `RayHit` | Per-ray hit result: distance, hit position, tex_u, cell_value. |
+| `ColumnBatch` | Column-strip rendering batch (legacy path). |
+| `ColumnData` | Per-column wall rendering state (legacy path). |
+| `RaycasterScene` | Complete textured-quad scene: walls, floors, ceilings, sprites. |
+| `WallQuad` | Single wall segment as a textured quad with per-polygon light_color. |
+| `FloorQuad` | Single floor tile as a textured quad with per-polygon light_color. |
+| `CeilingQuad` | Single ceiling tile as a textured quad with per-polygon light_color. |
+| `BillboardSprite` | World-space sprite projected as a camera-facing textured quad. |
+| `SceneBuildParams` | Camera, lighting, and rendering parameters for scene building. |
+| `WorldSprite` | Input sprite definition (world position, texture, size). |
+| `PointLight` | Point light source for per-polygon lighting calculation. |
+| `DepthBuffer` | 1D per-column depth buffer for sprite occlusion. |
+| `Door` / `DoorManager` | Sliding door animation and management. |
+| `HeightMap` | Per-cell variable floor and ceiling heights. |
+| `Segment` | Line segment with ray intersection testing. |
 
 ## Lua API Summary
 

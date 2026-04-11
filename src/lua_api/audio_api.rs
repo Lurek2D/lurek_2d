@@ -2302,3 +2302,28 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     luna.set("audio", tbl)?;
     Ok(())
 }
+
+impl mlua::UserData for SoundData {
+    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_method("getSampleCount", |_, this, ()| Ok(this.sample_count()));
+        methods.add_method("getSampleRate", |_, this, ()| Ok(this.sample_rate()));
+        methods.add_method("getChannelCount", |_, this, ()| Ok(this.channel_count()));
+        methods.add_method("getDuration", |_, this, ()| Ok(this.duration()));
+        methods.add_method("getBitDepth", |_, this, ()| Ok(this.bit_depth()));
+        methods.add_method("getSample", |_, this, index: usize| {
+            this.get_sample(index).ok_or_else(|| {
+                LuaError::RuntimeError(format!("Sample index {} out of bounds", index))
+            })
+        });
+        methods.add_method_mut("setSample", |_, this, (index, value): (usize, f32)| {
+            if this.set_sample(index, value) {
+                Ok(())
+            } else {
+                Err(LuaError::RuntimeError(format!(
+                    "Sample index {} out of bounds",
+                    index
+                )))
+            }
+        });
+    }
+}

@@ -31,10 +31,6 @@ The `localization` module provides the internationalization (i18n) backend for L
 | `Catalog` | Principal type for the `localization` module. |
 | `PluralForm` | Principal type for the `localization` module. |
 
-## Lua API Summary
-
-_No `lurek.*` bindings registered for this module._
-
 ## Full Specification
 
 See [`docs/specs/localization.md`](../../../docs/specs/localization.md) for full architecture, type details, Lua API, examples, and notes.

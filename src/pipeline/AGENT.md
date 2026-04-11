@@ -40,14 +40,6 @@ import `crate::math`, `mlua`, or any other Tier 1/Tier 2 module.
 | `ErrorPolicy` | Principal type for the `pipeline` module. |
 | `PipelineStep` | Principal type for the `pipeline` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.pipeline.newStep()` | See `docs/specs/pipeline.md`. |
-| `lurek.pipeline.newPipeline()` | See `docs/specs/pipeline.md`. |
-| `lurek.pipeline.fromTable()` | See `docs/specs/pipeline.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

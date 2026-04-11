@@ -57,10 +57,6 @@ translation layer — business logic stays in the domain modules below.
 | `LuaSignal` | Principal type for the `lua_api` module. |
 | `LuaFileData` | Principal type for the `lua_api` module. |
 
-## Lua API Summary
-
-_No `lurek.*` bindings registered for this module._
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

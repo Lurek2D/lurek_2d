@@ -34,18 +34,6 @@ The `terminal` module provides a grid-based character-cell terminal emulator wit
 | `WidgetKind` | Principal type for the `terminal` module. |
 | `Widget` | Principal type for the `terminal` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.terminal.newTerminal()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newLabel()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newButton()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newTextBox()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newList()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newBorder()` | See `docs/specs/terminal.md`. |
-| `lurek.terminal.newPanel()` | See `docs/specs/terminal.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

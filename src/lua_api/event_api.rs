@@ -1,4 +1,4 @@
-//! `luna.signal` — Event queue polling and pub-sub signal dispatching.
+//! `lurek.signal` — Event queue polling and pub-sub signal dispatching.
 
 use super::SharedState;
 use mlua::prelude::*;

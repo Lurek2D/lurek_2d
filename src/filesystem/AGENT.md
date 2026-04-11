@@ -40,31 +40,6 @@ The `filesystem` module provides all game I/O through `GameFS`, a sandboxed virt
 | `MountLayer` | Principal type for the `filesystem` module. |
 | `GameFS` | Principal type for the `filesystem` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.filesystem.read()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.write()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.exists()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.append()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.openFile()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getDirectoryItems()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.isFile()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.isDirectory()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.createDirectory()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.remove()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getInfo()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getSource()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getSaveDirectory()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getWorkingDirectory()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getUserDirectory()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.getIdentity()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.setIdentity()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.lines()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.readAsync()` | See `docs/specs/filesystem.md`. |
-| `lurek.filesystem.pollAsync()` | See `docs/specs/filesystem.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

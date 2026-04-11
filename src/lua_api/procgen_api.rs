@@ -153,3 +153,25 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     luna.set("procgen", tbl)?;
     Ok(())
 }
+
+impl CellularOpts {
+    pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
+        let mut opts = Self::default();
+        if let Ok(v) = t.get::<_, f32>("fill") { opts.fill = v; }
+        if let Ok(v) = t.get::<_, u32>("iterations") { opts.iterations = v; }
+        if let Ok(v) = t.get::<_, u32>("birth") { opts.birth = v; }
+        if let Ok(v) = t.get::<_, u32>("survive") { opts.survive = v; }
+        if let Ok(v) = t.get::<_, u64>("seed") { opts.seed = v; }
+        Ok(opts)
+    }
+}
+
+impl VoronoiOpts {
+pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
+        let mut opts = Self::default();
+        if let Ok(v) = t.get::<_, f32>("warp_scale") { opts.warp_scale = v; }
+        if let Ok(v) = t.get::<_, f32>("warp_strength") { opts.warp_strength = v; }
+        if let Ok(v) = t.get::<_, u64>("seed") { opts.seed = v; }
+        Ok(opts)
+    }
+}

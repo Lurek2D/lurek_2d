@@ -1,4 +1,4 @@
-//! `luna.modding` - Mod discovery, dependency resolution, load ordering, and hot-reload.
+//! `lurek.modding` - Mod discovery, dependency resolution, load ordering, and hot-reload.
 
 use super::SharedState;
 use mlua::prelude::*;

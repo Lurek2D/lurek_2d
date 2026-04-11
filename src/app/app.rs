@@ -1148,7 +1148,7 @@ impl LunaApp {
             self.drag_hover,
         );
         let bg = [0.12, 0.08, 0.20, 1.0];
-        let no_batches: SlotMap<SpriteBatchKey, crate::render::SpriteBatch> = SlotMap::with_key();
+        let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> = SlotMap::with_key();
         let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
         let empty_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
         let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
@@ -1216,7 +1216,7 @@ impl LunaApp {
             Some(*body_key),
         );
         let bg = [0.11, 0.22, 0.53, 1.0];
-        let no_batches: SlotMap<SpriteBatchKey, crate::render::SpriteBatch> = SlotMap::with_key();
+        let no_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch> = SlotMap::with_key();
         let no_canvases: SlotMap<CanvasKey, crate::render::Canvas> = SlotMap::with_key();
         let no_textures: SlotMap<TextureKey, TextureData> = SlotMap::with_key();
         let no_meshes: SlotMap<MeshKey, crate::render::Mesh> = SlotMap::with_key();
@@ -1554,7 +1554,7 @@ fn load_embedded_splash_texture(
 
     let rgba = image.to_rgba8();
     let (width, height) = rgba.dimensions();
-    match crate::render::Texture::from_rgba(width, height, rgba.into_raw(), textures) {
+    match crate::image::Texture::from_rgba(width, height, rgba.into_raw(), textures) {
         Ok(texture) => Some(SplashTexture {
             texture_key: texture.key,
             width: texture.width,

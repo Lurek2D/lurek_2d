@@ -39,6 +39,8 @@ pub mod controls;
 pub mod extras;
 /// Visual theme tokens (colors, fonts, spacing) used across all widgets.
 pub mod theme;
+/// Render command generation for the widget tree.
+pub mod render;
 /// Core widget trait and shared widget-state types.
 pub mod widget;
 

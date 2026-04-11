@@ -33,18 +33,6 @@ The `dataframe` module provides an in-memory, column-major tabular data engine w
 | `DataFrame` | Principal type for the `dataframe` module. |
 | `Database` | Principal type for the `dataframe` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.dataframe.newDataFrame()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.newDatabase()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.fromTable()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.fromCSV()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.fromJSON()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.fromBinary()` | See `docs/specs/dataframe.md`. |
-| `lurek.dataframe.random()` | See `docs/specs/dataframe.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

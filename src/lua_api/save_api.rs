@@ -1,4 +1,4 @@
-//! `luna.savegame` - Slot-based save/load system with collectors, schema versioning, and auto-save.
+//! `lurek.savegame` - Slot-based save/load system with collectors, schema versioning, and auto-save.
 
 use super::SharedState;
 use mlua::prelude::*;

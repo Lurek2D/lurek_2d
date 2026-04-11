@@ -32,12 +32,6 @@ The `spine` module implements skeletal 2D animation through bone hierarchies, sl
 | `Skeleton` | Principal type for the `spine` module. |
 | `Slot` | Principal type for the `spine` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.spine.newSkeleton()` | See `docs/specs/spine.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

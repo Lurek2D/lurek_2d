@@ -38,10 +38,6 @@ The input module is Lurek2D's Tier 1 device-state tracking layer. It converts ra
 | `TouchPoint` | Principal type for the `input` module. |
 | `TouchState` | Principal type for the `input` module. |
 
-## Lua API Summary
-
-_No `lurek.*` bindings registered for this module._
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

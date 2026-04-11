@@ -18,10 +18,11 @@ The `camera` module provides camera and viewport types for 2D rendering. It is a
 
 | File                | Purpose                                                                                 |
 |---------------------|-----------------------------------------------------------------------------------------|
-| `mod.rs`            | Module root — declares types, viewport, viewport_scale submodules and re-exports Camera, Camera2D, ScaleMode, Viewport, ViewportScale |
+| `mod.rs`            | Module root — declares types, viewport, viewport_scale, render submodules and re-exports Camera, Camera2D, ScaleMode, Viewport, ViewportScale |
 | `types.rs`          | `Camera` (flat API) and `Camera2D` (smooth follow, dead zone, bounds, shake) structs    |
 | `viewport.rs`       | `ScaleMode` enum and `Viewport` struct for virtual-resolution mapping                   |
 | `viewport_scale.rs` | `ViewportScale` struct — `Viewport` variant with automatic scaled-dimension tracking     |
+| `render.rs`         | `begin_render_commands()` and `end_render_command()` on `Camera` and `Camera2D`; emits `PushTransform` / `Translate` / `Rotate` / `Scale` / `PopTransform` render commands. |
 
 ## Key Types
 | Type | Location | Purpose |

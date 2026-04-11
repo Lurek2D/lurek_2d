@@ -10,10 +10,9 @@ use crate::runtime::resource_keys::*;
 use crate::runtime::ScreenshotRequest;
 use crate::render::shape::{CompoundShape, ShapeCommand};
 use crate::render::sprite_batch::BatchEntry;
-use crate::render::{
-    BlendMode, Canvas, CompareMode, DepthMode, RenderCommand, DrawMode, Font, Mesh, MeshDrawMode,
-    MeshVertex, Shader, SpriteBatch, StencilAction, StencilMode, TextAlign, Texture, UniformValue,
-};
+use crate::render::{BlendMode, Canvas, CompareMode, DepthMode, RenderCommand, DrawMode, Font, Mesh, MeshDrawMode, MeshVertex, Shader, StencilAction, StencilMode, TextAlign, UniformValue, };
+use crate::sprite::{SpriteBatch};
+use crate::image::{Texture};
 use crate::image::ImageData;
 use crate::math::Rect;
 

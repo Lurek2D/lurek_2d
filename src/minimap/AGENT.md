@@ -34,12 +34,6 @@ The `minimap` module provides a self-contained, grid-based minimap data model fo
 | `MinimapPing` | Principal type for the `minimap` module. |
 | `MinimapMarker` | Principal type for the `minimap` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.minimap.newMinimap()` | See `docs/specs/minimap.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

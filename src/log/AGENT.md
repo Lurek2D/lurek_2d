@@ -27,21 +27,6 @@ The Lua API at `lurek.log.*` allows scripts to emit messages at specific severit
 | `mod.rs`    | `set_level()`, `get_level()`, `enabled_for()` — delegates to `engine::log_messages`; re-exports `sinks` |
 | `sinks.rs`  | `SinkLevel`, `MemoryEntry`, `SinkKind`, `Sink`, `SinkRegistry` — configurable sink dispatch  |
 
-## Lua API additions (v0.5.x)
-
-| Function | Signature | Description |
-|---|---|---|
-| `debug` | `(msg, tag?)` | Emits debug message; tag defaults to "Lua" |
-| `info` | `(msg, tag?)` | Emits info message |
-| `warn` | `(msg, tag?)` | Emits warn message |
-| `error` | `(msg, tag?)` | Emits error message |
-| `addSink` | `(config) → id` | Adds a file or memory sink |
-| `removeSink` | `(id) → bool` | Removes a sink by id |
-| `clearSinks` | `()` | Removes all sinks |
-| `listSinks` | `() → table` | Lists active sinks |
-| `readMemory` | `(id, drain?) → table?` | Reads entries from a memory sink |
-| `flushFile` | `(id)` | Flushes OS buffer for a file sink |
-
 ## Key Types
 
 | Type | Description |
@@ -51,10 +36,6 @@ The Lua API at `lurek.log.*` allows scripts to emit messages at specific severit
 | `SinkKind` | Principal type for the `log` module. |
 | `Sink` | Principal type for the `log` module. |
 | `SinkRegistry` | Principal type for the `log` module. |
-
-## Lua API Summary
-
-_No `lurek.*` bindings registered for this module._
 
 ## Full Specification
 

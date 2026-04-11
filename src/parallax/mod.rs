@@ -67,5 +67,7 @@
 
 /// Parallax layer data model and draw-call batch builder.
 pub mod layer;
+/// Render-command generation for parallax layers.
+pub mod render;
 
 pub use layer::{ParallaxDrawBatch, ParallaxLayer};

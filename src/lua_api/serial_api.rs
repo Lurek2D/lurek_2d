@@ -1,4 +1,4 @@
-//! `luna.codec` — Format-agnostic string serialization: JSON, TOML, and CSV.
+//! `lurek.codec` — Format-agnostic string serialization: JSON, TOML, and CSV.
 
 use super::SharedState;
 use mlua::prelude::*;

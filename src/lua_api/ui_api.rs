@@ -1,4 +1,4 @@
-//! `luna.ui` — Retained-mode widget UI system.
+//! `lurek.ui` — Retained-mode widget UI system.
 
 use mlua::prelude::*;
 use std::cell::RefCell;

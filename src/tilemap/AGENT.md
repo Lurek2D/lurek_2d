@@ -49,31 +49,6 @@ The `tilemap` module provides a comprehensive tilemap toolkit for 2D game develo
 | `Edge` | Principal type for the `tilemap` module. |
 | `MapBlock` | Principal type for the `tilemap` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.tilemap.x()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.y()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.width()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.height()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newTileSet()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newTileMap()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newAutoTileSheet()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newChunkMap()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newIsoMap()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newMapBlock()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.newMapGroup()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.toScreenIso()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.fromScreenIso()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.toScreenHex()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.fromScreenHex()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.hexNeighbors()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.hexDistance()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.hexRound()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.hexLine()` | See `docs/specs/tilemap.md`. |
-| `lurek.tilemap.hexRing()` | See `docs/specs/tilemap.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

@@ -1,4 +1,4 @@
-//! `luna.time` - Frame timing, FPS tracking, and scheduled Lua callbacks.
+//! `lurek.time` - Frame timing, FPS tracking, and scheduled Lua callbacks.
 
 use super::SharedState;
 use mlua::prelude::*;

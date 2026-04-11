@@ -29,6 +29,7 @@ that depends only on `math` and `engine` (Baseline).
 | `context.rs` | Central coordinator: `GuiContext` (widget pool, child management, focus cycling, toast queue, input routing), `WidgetKind` (type-erased enum wrapping all 32 widget types) |
 | `data_graph_renderer.rs` | Data visualization: `GraphRenderer` for line/scatter/bar charts with viewport↔world mapping, `GraphSeries` enum |
 | `chart.rs`           | Configurable chart rendering to `ImageData`: line, bar, scatter, pie, and area charts with shared `ChartConfig`; no GPU dependency |
+| `render.rs`          | Render command generation for the widget tree. `GuiContext::build_render_commands(FontKey)` walks the tree depth-first, emitting styled rectangles and text. |
 
 ## Key Types
 

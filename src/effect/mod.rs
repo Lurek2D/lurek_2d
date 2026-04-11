@@ -35,6 +35,8 @@ pub mod effect;
 pub mod effect_type;
 /// Lightweight per-image effect chain (subset of the full pipeline).
 pub mod image_effect;
+/// Render-command generation for post-processing effects.
+pub mod render;
 /// Ordered pipeline of post-processing passes applied to the rendered scene.
 pub mod stack;
 

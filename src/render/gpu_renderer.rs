@@ -877,7 +877,7 @@ impl GpuRenderer {
     /// - `commands` — `&[RenderCommand]`.
     /// - `textures` — `&SlotMap<TextureKey, TextureData>`.
     /// - `fonts` — `&mut SlotMap<FontKey, crate::render::Font>`.
-    /// - `sprite_batches` — `&SlotMap<SpriteBatchKey, crate::render::SpriteBatch>`.
+    /// - `sprite_batches` — `&SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>`.
     /// - `canvases` — `&SlotMap<CanvasKey, crate::render::Canvas>`.
     /// - `meshes` — `&SlotMap<MeshKey, Mesh>`.
     /// - `shaders` — `&SlotMap<ShaderKey, Shader>`.
@@ -896,7 +896,7 @@ impl GpuRenderer {
         textures: &SlotMap<TextureKey, TextureData>,
         fonts: &mut SlotMap<FontKey, crate::render::Font>,
         light_world: &crate::light::light_world::LightWorld,
-        sprite_batches: &SlotMap<SpriteBatchKey, crate::render::SpriteBatch>,
+        sprite_batches: &SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
         canvases: &SlotMap<CanvasKey, crate::render::Canvas>,
         meshes: &SlotMap<MeshKey, Mesh>,
         shaders: &SlotMap<ShaderKey, Shader>,
@@ -1970,7 +1970,7 @@ impl GpuRenderer {
                 } => {
                     if self.gpu_textures.get(*texture_key).is_some() {
                         let t = transform_stack.last().unwrap();
-                        let ns = crate::render::NineSlice::new(
+                        let ns = crate::sprite::NineSlice::new(
                             *texture_key,
                             *top,
                             *right,

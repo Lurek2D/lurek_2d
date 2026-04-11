@@ -23,6 +23,8 @@ pub mod types;
 pub mod viewport;
 /// Virtual-resolution viewport that also exposes scaled content dimensions for transform-stack integration.
 pub mod viewport_scale;
+/// Render-command generation for camera transforms.
+pub mod render;
 
 pub use types::{Camera, Camera2D};
 pub use viewport::{ScaleMode, Viewport};

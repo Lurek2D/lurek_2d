@@ -36,12 +36,6 @@ just valid Lua source.
 | `SaveManager` | Principal type for the `savegame` module. |
 | `SaveValue` | Principal type for the `savegame` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.savegame.newSaveManager()` | See `docs/specs/savegame.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

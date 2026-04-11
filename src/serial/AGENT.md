@@ -32,17 +32,6 @@ The `serial` module provides format-agnostic serialization and deserialization f
 | `CsvOptions` | Principal type for the `serial` module. |
 | `SerialValue` | Principal type for the `serial` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.serial.fromJson()` | See `docs/specs/serial.md`. |
-| `lurek.serial.toJson()` | See `docs/specs/serial.md`. |
-| `lurek.serial.fromToml()` | See `docs/specs/serial.md`. |
-| `lurek.serial.toToml()` | See `docs/specs/serial.md`. |
-| `lurek.serial.fromCsv()` | See `docs/specs/serial.md`. |
-| `lurek.serial.toCsv()` | See `docs/specs/serial.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

@@ -1,4 +1,4 @@
-//! `luna.effect` — Composable visual effects: post-processing pipeline and screen overlays.
+//! `lurek.effect` — Composable visual effects: post-processing pipeline and screen overlays.
 
 use super::render_api::LuaImageData;
 use super::SharedState;

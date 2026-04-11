@@ -8,8 +8,6 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use mlua::prelude::*;
-
 /// Contiguous byte buffer for binary data manipulation.
 ///
 /// Wraps a `Vec<u8>` with indexed get/set operations and string conversion.
@@ -135,36 +133,6 @@ impl ByteData {
         Self {
             data: self.data.clone(),
         }
-    }
-}
-
-impl mlua::UserData for ByteData {
-    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        methods.add_method("getSize", |_, this, ()| Ok(this.len()));
-        methods.add_method("getString", |_, this, ()| Ok(this.get_string()));
-        methods.add_method("getByte", |_, this, offset: usize| {
-            this.get_byte(offset).ok_or_else(|| {
-                LuaError::RuntimeError(format!(
-                    "Offset {} out of bounds (size {})",
-                    offset,
-                    this.len()
-                ))
-            })
-        });
-        methods.add_method_mut("setByte", |_, this, (offset, value): (usize, u8)| {
-            if this.set_byte(offset, value) {
-                Ok(())
-            } else {
-                Err(LuaError::RuntimeError(format!(
-                    "Offset {} out of bounds (size {})",
-                    offset,
-                    this.len()
-                )))
-            }
-        });
-        methods.add_method("clone", |lua, this, ()| {
-            lua.create_userdata(this.clone_data())
-        });
     }
 }
 

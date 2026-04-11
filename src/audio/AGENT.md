@@ -37,15 +37,6 @@ The audio module wraps the `rodio` cross-platform audio library into a game-orie
 | \AtomicParam\ | \src/audio/dsp.rs\ | Lock-free atomic float for real-time DSP parameter updates |
 | \ActiveEffect\ | \src/audio/dsp.rs\ | Tracks a live DSP effect applied to a bus |
 
-## Lua API Summary
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| \lurek.audio.newSource\ | \(path: string, streaming: boolean?) → AudioSource\ | Load audio from file |
-| \lurek.audio.newBus\ | \(name: string) → Bus\ | Create a named audio bus |
-| \lurek.audio.play\ | \(source: AudioSource, bus: Bus?) → nil\ | Begin playback |
-| \lurek.audio.stop\ | \(source: AudioSource) → nil\ | Stop and reset playback |
-| \lurek.audio.setVolume\ | \(source: AudioSource, vol: number) → nil\ | Set playback volume 0–1 |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

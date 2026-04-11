@@ -283,7 +283,7 @@ pub struct SharedState {
     /// All 6 built-in bitmap font sizes, indexed by `AVAILABLE_HEIGHTS` order.
     pub default_fonts: [Option<FontKey>; 6],
     /// Loaded sprite batches for batched rendering.
-    pub sprite_batches: SlotMap<SpriteBatchKey, crate::render::SpriteBatch>,
+    pub sprite_batches: SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>,
     /// Off-screen render targets (canvases) for compositing.
     pub canvases: SlotMap<CanvasKey, Canvas>,
     /// Active particle systems.

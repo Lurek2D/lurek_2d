@@ -48,19 +48,6 @@ The `pathfinding` module provides a multi-layer grid pathfinding stack for 2D ga
 | `DiagonalMode` | Principal type for the `pathfinding` module. |
 | `NavGrid` | Principal type for the `pathfinding` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.pathfinding.newNavGrid()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.newPathfinder()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.newFlowField()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.newPathGrid()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.newPathFlowField()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.setThreadCount()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.getThreadCount()` | See `docs/specs/pathfinding.md`. |
-| `lurek.pathfinding.newNavGridFromTileMap()` | See `docs/specs/pathfinding.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

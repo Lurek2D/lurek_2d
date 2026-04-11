@@ -15,8 +15,11 @@ pub mod controller;
 pub mod event;
 /// Single animation frame: source quad and optional per-frame duration.
 pub mod frame;
+/// Render-command generation for sprite animations.
+pub mod render;
 
 pub use clip::AnimClip;
 pub use controller::Animation;
 pub use event::AnimEvent;
 pub use frame::{AnimFrame, AnimationFrame};
+pub use render::AnimRenderParams;

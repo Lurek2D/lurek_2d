@@ -21,7 +21,6 @@ pub mod image_effect;
 /// Custom geometry mesh with per-vertex position, UV, and color data.
 pub mod mesh;
 /// Nine-slice (9-patch) image rendering for scalable UI elements.
-pub mod nine_slice;
 /// RenderCommand queue, draw enums, and texture data types.
 pub mod renderer;
 /// Custom WGSL shader support with uniform variables.
@@ -29,15 +28,10 @@ pub mod shader;
 /// Compound shape builder that accumulates vector primitives for batched drawing.
 pub mod shape;
 /// Sprite struct combining a texture, transform, and tint color.
-pub mod sprite;
 /// Sprite batching for efficient rendering of many sprites sharing one texture.
-pub mod sprite_batch;
 /// Grid-based sprite sheet with directional support and named groups.
-pub mod sprite_sheet;
 /// Texture loading and TextureData storage for the renderer.
-pub mod texture;
 /// CPU-side bin-packing texture atlas using shelf algorithm.
-pub mod texture_atlas;
 
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
@@ -46,15 +40,9 @@ pub use font::Font;
 pub use gpu_renderer::GpuRenderer;
 pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
-pub use nine_slice::{NineSlice, Patch};
 pub use renderer::{
     BlendMode, CompareMode, DepthMode, RenderCommand, DrawMode, DrawableKind, StencilAction,
     StencilMode, TextAlign, TextureData,
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};
-pub use sprite::Sprite;
-pub use sprite_batch::SpriteBatch;
-pub use sprite_sheet::SpriteSheet;
-pub use texture::Texture;
-pub use texture_atlas::TextureAtlas;

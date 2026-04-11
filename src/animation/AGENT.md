@@ -18,11 +18,12 @@ The `animation` module provides frame-based sprite animation for 2D characters a
 
 | File            | Purpose                                                                  |
 |-----------------|--------------------------------------------------------------------------|
-| `mod.rs`        | Module root � declares submodules and re-exports `AnimClip`, `Animation`, `AnimEvent`, `AnimFrame`, `AnimationFrame`. |
-| `clip.rs`       | `AnimClip` � a named animation clip with frame indices, FPS, and loop flag. |
-| `controller.rs` | `Animation` � the main playback controller with frame pool, clip registry, update loop, and event queue. |
-| `event.rs`      | `AnimEvent` � enum of playback events (`Finished`, `FrameChanged`, `Looped`). |
-| `frame.rs`      | `AnimFrame` � a single frame with a source rectangle and optional duration override. Also defines `AnimationFrame` type alias. |
+| `mod.rs`        | Module root — declares submodules and re-exports `AnimClip`, `Animation`, `AnimEvent`, `AnimFrame`, `AnimationFrame`, `AnimRenderParams`. |
+| `clip.rs`       | `AnimClip` — a named animation clip with frame indices, FPS, and loop flag. |
+| `controller.rs` | `Animation` — the main playback controller with frame pool, clip registry, update loop, and event queue. |
+| `event.rs`      | `AnimEvent` — enum of playback events (`Finished`, `FrameChanged`, `Looped`). |
+| `frame.rs`      | `AnimFrame` — a single frame with a source rectangle and optional duration override. Also defines `AnimationFrame` type alias. |
+| `render.rs`     | `AnimRenderParams` struct and `generate_render_command()` on `Animation`; converts current frame quad into `DrawQuad` render command. |
 
 ## Key Types
 | Type | Location | Purpose |

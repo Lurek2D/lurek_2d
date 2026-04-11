@@ -115,6 +115,8 @@ pub mod input;
 pub mod log;
 /// 2D GPU rendering pipeline, draw commands, and graphics types.
 pub mod render;
+/// Sprite handling: individual sprites, sprite batches, sheets, nine-slice.
+pub mod sprite;
 /// 2D camera system: viewport, scaling, zoom, smooth follow, dead-zone, and shake.
 pub mod camera;
 /// Visual effects pipeline: post-processing, overlays, weather, and atmosphere.

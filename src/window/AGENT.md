@@ -30,31 +30,6 @@ The `window` module is a Tier 1 core engine subsystem that manages all window li
 | `ModeInfo` | Principal type for the `window` module. |
 | `ScaleInfo` | Principal type for the `window` module. |
 
-## Lua API Summary
-
-| Function | Description |
-|----------|-------------|
-| `lurek.window.setTitle()` | See `docs/specs/window.md`. |
-| `lurek.window.getTitle()` | See `docs/specs/window.md`. |
-| `lurek.window.getWidth()` | See `docs/specs/window.md`. |
-| `lurek.window.getHeight()` | See `docs/specs/window.md`. |
-| `lurek.window.getDimensions()` | See `docs/specs/window.md`. |
-| `lurek.window.setFullscreen()` | See `docs/specs/window.md`. |
-| `lurek.window.getFullscreen()` | See `docs/specs/window.md`. |
-| `lurek.window.isOpen()` | See `docs/specs/window.md`. |
-| `lurek.window.setVSync()` | See `docs/specs/window.md`. |
-| `lurek.window.getVSync()` | See `docs/specs/window.md`. |
-| `lurek.window.hasFocus()` | See `docs/specs/window.md`. |
-| `lurek.window.hasMouseFocus()` | See `docs/specs/window.md`. |
-| `lurek.window.isMinimized()` | See `docs/specs/window.md`. |
-| `lurek.window.isMaximized()` | See `docs/specs/window.md`. |
-| `lurek.window.isVisible()` | See `docs/specs/window.md`. |
-| `lurek.window.minimize()` | See `docs/specs/window.md`. |
-| `lurek.window.maximize()` | See `docs/specs/window.md`. |
-| `lurek.window.restore()` | See `docs/specs/window.md`. |
-| `lurek.window.getPosition()` | See `docs/specs/window.md`. |
-| `lurek.window.setPosition()` | See `docs/specs/window.md`. |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

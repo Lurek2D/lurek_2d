@@ -33,15 +33,6 @@ The `automation` module provides automated input simulation through timed step s
 | \Step\ | \src/automation/mod.rs\ | Single automation instruction |
 | \Action\ | \src/automation/mod.rs\ | Low-level action variant executed by the simulator |
 
-## Lua API Summary
-| Function | Signature | Purpose |
-|----------|-----------|---------|
-| \lurek.simulator.load\ | \(path: string) → nil\ | Load a TOML automation script |
-| \lurek.simulator.loadFromToml\ | \(name: string, toml: string) → nil\ | Parse and register a TOML script |
-| \lurek.simulator.play\ | \(name: string) → nil\ | Start script playback |
-| \lurek.simulator.stop\ | \() → nil\ | Halt playback |
-| \lurek.simulator.isPlaying\ | \() → boolean\ | Check if a script is active |
-
 ## Full Specification
 
 All architecture diagrams, detailed type documentation, Lua API reference, examples, and cross-module references live in the consolidated spec:

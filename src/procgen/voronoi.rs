@@ -3,7 +3,6 @@
 //! Assigns each pixel in a grid to its nearest seed point, returning region IDs,
 //! distances, and second-closest distances.
 
-use mlua::prelude::*;
 use super::lcg::Lcg;
 use crate::runtime::log_messages::{VR01, VR02};
 use crate::log_msg;
@@ -32,23 +31,6 @@ impl Default for VoronoiOpts {
             warp_strength: 0.0,
             seed: 0,
         }
-    }
-}
-
-impl VoronoiOpts {
-    /// Constructs `VoronoiOpts` from a Lua table, using defaults for missing keys.
-    ///
-    /// # Parameters
-    /// - `t` -- `&LuaTable`.
-    ///
-    /// # Returns
-    /// `LuaResult<Self>`.
-    pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
-        let mut opts = Self::default();
-        if let Ok(v) = t.get::<_, f32>("warp_scale") { opts.warp_scale = v; }
-        if let Ok(v) = t.get::<_, f32>("warp_strength") { opts.warp_strength = v; }
-        if let Ok(v) = t.get::<_, u64>("seed") { opts.seed = v; }
-        Ok(opts)
     }
 }
 

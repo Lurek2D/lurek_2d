@@ -20,10 +20,11 @@ The Lua bridge lives in `src/lua_api/parallax_api.rs`.
 
 ## Source Files
 
-| File      | Purpose                                                                     |
-|-----------|-----------------------------------------------------------------------------|
-| `mod.rs`  | Module root; re-exports `ParallaxLayer` and `ParallaxDrawBatch`.            |
-| `layer.rs`| `ParallaxLayer` scroll logic, `ParallaxDrawBatch`, 9 inline unit tests.     |
+| File       | Purpose                                                                     |
+|------------|-----------------------------------------------------------------------------|
+| `mod.rs`   | Module root; re-exports `ParallaxLayer` and `ParallaxDrawBatch`.            |
+| `layer.rs` | `ParallaxLayer` scroll logic, `ParallaxDrawBatch`, 9 inline unit tests.     |
+| `render.rs`| `generate_render_commands()` on `ParallaxLayer`; converts `ParallaxDrawBatch` into `Vec<RenderCommand>` (`SetColor` + `SetBlendMode` + `DrawImageEx` per tile). |
 
 ## Full Specification
 

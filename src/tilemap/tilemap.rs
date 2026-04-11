@@ -14,7 +14,7 @@ use crate::math::{Rect, Vec2};
 
 use super::mapgen::MapOrientation;
 use super::tileset::TileSet;
-use crate::runtime::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
+use crate::engine::log_messages::{TM01_TILEMAP_INIT, TM02_TILESET_ADD, TM03_LAYER_ADD};
 use crate::log_msg;
 
 /// A single layer of tiles in a [`TileMap`].
@@ -665,7 +665,9 @@ impl TileMap {
                 let tile_rect = Rect::new(tx as f32 * tw, ty as f32 * th, tw, th);
 
                 if let Some(result) = sweep_aabb_vs_aabb(rect, dx, dy, tile_rect, tx, ty) {
-                    if best.is_none() || result.t < best.as_ref().expect("best is Some when not is_none").t {
+                    if best.is_none()
+                        || result.t < best.as_ref().expect("best is Some when not is_none").t
+                    {
                         best = Some(result);
                     }
                 }
@@ -886,7 +888,6 @@ impl TileMap {
         None
     }
 
-
     // ------------------------------------------------------------------
     // Visualization
     // ------------------------------------------------------------------
@@ -976,8 +977,8 @@ impl TileMap {
         &self,
         offset_x: f32,
         offset_y: f32,
-    ) -> Vec<crate::render::renderer::RenderCommand> {
-        use crate::render::renderer::{DrawMode, RenderCommand};
+    ) -> Vec<crate::graphics::renderer::RenderCommand> {
+        use crate::graphics::renderer::{DrawMode, RenderCommand};
 
         let mut cmds: Vec<RenderCommand> = Vec::new();
         if self.layers.is_empty() {
@@ -1076,7 +1077,16 @@ impl TileMap {
         // Grid lines at tile_width / tile_height intervals
         let mut x = 0u32;
         while x <= img_width {
-            img.draw_line(x as i32, 0, x as i32, img_height as i32 - 1, 60, 60, 80, 255);
+            img.draw_line(
+                x as i32,
+                0,
+                x as i32,
+                img_height as i32 - 1,
+                60,
+                60,
+                80,
+                255,
+            );
             x += self.tile_width;
         }
         let mut y = 0u32;
@@ -1091,9 +1101,14 @@ impl TileMap {
             let cell_x = tx * self.tile_width;
             let cell_y = ty * self.tile_height;
             img.draw_rect(
-                cell_x as i32, cell_y as i32,
-                self.tile_width, self.tile_height,
-                r, g, b, 128,
+                cell_x as i32,
+                cell_y as i32,
+                self.tile_width,
+                self.tile_height,
+                r,
+                g,
+                b,
+                128,
             );
             img.draw_circle(wx as i32, wy as i32, 5, r, g, b, 255);
         }
@@ -1113,7 +1128,12 @@ impl TileMap {
     ///
     /// # Returns
     /// `ImageData`.
-    pub fn draw_layers_to_image(&self, tile_px: u32, width: u32, height: u32) -> crate::image::ImageData {
+    pub fn draw_layers_to_image(
+        &self,
+        tile_px: u32,
+        width: u32,
+        height: u32,
+    ) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(25, 25, 35, 255);
 
@@ -1124,7 +1144,9 @@ impl TileMap {
             for y in 0..lh {
                 for x in 0..lw {
                     let gid = self.get_tile(layer_idx, x as u32, y as u32);
-                    if gid == 0 { continue; }
+                    if gid == 0 {
+                        continue;
+                    }
                     let px = x as i32 * tile_px as i32 + margin;
                     let py = y as i32 * tile_px as i32 + margin;
                     let (r, g, b) = match (layer_idx, gid) {
@@ -1137,7 +1159,16 @@ impl TileMap {
                     if layer_idx == 0 {
                         img.draw_rect(px, py, tile_px, tile_px, r, g, b, 255);
                     } else {
-                        img.draw_rect(px + 1, py + 1, tile_px.saturating_sub(2), tile_px.saturating_sub(2), r, g, b, 255);
+                        img.draw_rect(
+                            px + 1,
+                            py + 1,
+                            tile_px.saturating_sub(2),
+                            tile_px.saturating_sub(2),
+                            r,
+                            g,
+                            b,
+                            255,
+                        );
                     }
                 }
             }
@@ -1148,8 +1179,6 @@ impl TileMap {
         img.draw_label("TILEMAP LAYERS OK", 80, (height - 20) as i32, 100, 255, 100);
         img
     }
-
-
 }
 
 // ---------------------------------------------------------------------------
@@ -1234,7 +1263,6 @@ fn sweep_aabb_vs_aabb(
         t,
     })
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -1436,5 +1464,4 @@ mod tests {
         // Center (1,1) has all 4 cardinal neighbors → mask=15 → GID = 1+42 = 43
         assert_eq!(map.get_tile(0, 1, 1), 43);
     }
-
 }
