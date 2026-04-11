@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-04-11T09:05:57.108909+00:00",
+    "generated": "2026-04-11T19:17:20.932514+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.7.0",
     "stats": {
-      "rust_items": 1320,
-      "rust_modules": 305,
+      "rust_items": 1356,
+      "rust_modules": 328,
       "rust_tests": 0,
       "lua_tests": 185
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 1320,
-      "documented": 1320,
-      "modules": 305
+      "total_items": 1356,
+      "documented": 1356,
+      "modules": 328
     },
     "modules": {
       "ai::agent": {
@@ -245,6 +245,13 @@
             "description": "Spatial AI container that owns all agents, provides O(1) name-based lookup, holds the global blackboard, and ticks agents in priority order each frame.",
             "file": "src/ai/mod.rs",
             "line": 82
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Debug render commands and image export for AI subsystems.",
+            "file": "src/ai/mod.rs",
+            "line": 84
           }
         ]
       },
@@ -260,6 +267,11 @@
             "line": 52
           }
         ]
+      },
+      "ai::render": {
+        "module_doc": "Debug render-command generation for AI subsystems.  Adds `generate_render_commands` and (where applicable) `draw_to_image` to `StateMachine` and `BehaviorTree`.  Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/ai/render.rs",
+        "items": []
       },
       "ai::squad": {
         "module_doc": "Multi-agent formation groups with offset computation.  A [`Squad`] groups named agents under an optional leader and computes world-space formation positions relative to the leader's current location. Five formation shapes are supported: `Line`, `Wedge`, `Circle`, `Column`, and `None` (no formation — all members collapse to the leader's position).  Squads also carry a shared [`Blackboard`] for intra-group communication. The leader's blackboard and the squad blackboard are independent — link them via parent-chain if you need automatic fact propagation.",
@@ -459,6 +471,33 @@
             "description": "Single animation frame: source quad and optional per-frame duration.",
             "file": "src/animation/mod.rs",
             "line": 17
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation for sprite animations.",
+            "file": "src/animation/mod.rs",
+            "line": 19
+          }
+        ]
+      },
+      "animation::render": {
+        "module_doc": "Render-command generation for sprite animations.  Provides a helper to convert the current animation frame into a [`RenderCommand::DrawQuad`].  Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/animation/render.rs",
+        "items": [
+          {
+            "name": "AnimRenderParams",
+            "kind": "struct",
+            "description": "Parameters for rendering an animated sprite.  Since [`Animation`] is a pure frame/clip controller and does not store position, texture, or transform, the caller supplies those via this struct.  # Fields - `texture_key` — `TextureKey`. Handle to the sprite-sheet texture. - `tex_w` — `f32`. Full texture width in pixels (for UV normalisation). - `tex_h` — `f32`. Full texture height in pixels (for UV normalisation). - `x` — `f32`. World X position. - `y` — `f32`. World Y position. - `rotation` — `f32`. Rotation in radians. - `sx` — `f32`. Horizontal scale. - `sy` — `f32`. Vertical scale. - `ox` — `f32`. Origin X offset. - `oy` — `f32`. Origin Y offset.",
+            "file": "src/animation/render.rs",
+            "line": 28
+          },
+          {
+            "name": "quad_to_draw_command",
+            "kind": "fn",
+            "description": "Converts a source quad and render parameters into a `DrawQuad` command.  # Parameters - `quad` — `&Rect`. Source rectangle within the sprite-sheet. - `params` — `&AnimRenderParams`. Texture and transform info.  # Returns `RenderCommand`.",
+            "file": "src/animation/render.rs",
+            "line": 76
           }
         ]
       },
@@ -471,7 +510,7 @@
             "kind": "struct",
             "description": "Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.  # Fields - `config` — `Config`. - `conf_error` — `Option<String>`.",
             "file": "src/app/app.rs",
-            "line": 2255
+            "line": 2320
           }
         ]
       },
@@ -788,7 +827,7 @@
             "kind": "struct",
             "description": "Decoded audio samples in f32 PCM format.  Stores interleaved samples (for stereo: L, R, L, R, ...). Samples are always clamped to `[-1.0, 1.0]` on write. Can be constructed as a silent buffer or decoded from a file. Exposes per-sample access for procedural audio, oscillators, and effect processing from Lua.  # Fields - `samples` — `Vec<f32>`. - `sample_rate` — `u32`. - `channels` — `u16`. - `bit_depth` — `u16`.",
             "file": "src/audio/sound_data.rs",
-            "line": 24
+            "line": 23
           }
         ]
       },
@@ -852,14 +891,14 @@
             "kind": "enum",
             "description": "The action type for a simulation step.  Each variant maps to a synthetic input event that the [`Simulator`](super::Simulator) injects into the engine's [`EventQueue`](crate::event::EventQueue) during playback. Injected events are indistinguishable from real hardware input as far as the game is concerned.  Use [`Action::parse_action`] to convert a Lua string such as `\"keypress\"` into the corresponding variant, and [`Action::as_str`] for the reverse.  # Variants - `KeyPress` — Simulate a key press event (`\"keypressed\"` dispatch). - `KeyRelease` — Simulate a key release event (`\"keyreleased\"` dispatch). - `MouseMove` — Simulate mouse movement (`\"mousemoved\"` dispatch). - `MousePress` — Simulate a mouse button press (`\"mousepressed\"` dispatch). - `MouseRelease` — Simulate a mouse button release (`\"mousereleased\"` dispatch). - `MouseWheel` — Simulate a mouse wheel scroll (`\"wheelmoved\"` dispatch). - `TextInput` — Simulate raw text input (`\"textinput\"` dispatch). - `Wait` — No-op pause; just a timed delay with no event dispatched.",
             "file": "src/automation/step.rs",
-            "line": 34
+            "line": 32
           },
           {
             "name": "Step",
             "kind": "struct",
             "description": "A single timed step in a simulation script.  Each step records a wall-clock offset from script start (`time`) and an [`Action`] to perform, along with action-specific optional fields. Only `time` and `action` are required; all other fields default to `None` and are read only when relevant to the chosen action type.  Steps are ordinarily declared in Lua via `lurek.simulator.load`, but can also be constructed in Rust integration tests using [`Step::new`] plus direct field assignment.  ## Field usage by action  | Action | Used fields | Defaults when `None` | |---|---|---| | `keypress` / `keyrelease` | `key`, `scancode`, `is_repeat` | scancode = key, is_repeat = false | | `mousemove` | `x`, `y`, `dx`, `dy` | all `0.0` | | `mousepress` | `x`, `y`, `button`, `clicks` | pos `(0,0)`, btn `1`, clicks `1` | | `mouserelease` | `x`, `y`, `button` | pos `(0,0)`, btn `1` | | `mousewheel` | `x`, `y` (scroll deltas) | both `0.0` | | `textinput` | `text` | `\"\"` | | `wait` | — | — |  # Fields - `time` — `f32`. - `action` — `Action`. - `key` — `Option<String>`. - `scancode` — `Option<String>`. - `x` — `Option<f64>`. - `y` — `Option<f64>`. - `dx` — `Option<f64>`. - `dy` — `Option<f64>`. - `button` — `Option<u32>`. - `text` — `Option<String>`. - `is_repeat` — `bool`. - `clicks` — `Option<u32>`.",
             "file": "src/automation/step.rs",
-            "line": 167
+            "line": 165
           }
         ]
       },
@@ -892,8 +931,20 @@
             "description": "Virtual-resolution viewport that also exposes scaled content dimensions for transform-stack integration.",
             "file": "src/camera/mod.rs",
             "line": 25
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation for camera transforms.",
+            "file": "src/camera/mod.rs",
+            "line": 27
           }
         ]
+      },
+      "camera::render": {
+        "module_doc": "Render-command generation for camera transforms.  Converts a [`Camera`] or [`Camera2D`] into transform-stack [`RenderCommand`]s (push/translate/scale/rotate/pop). Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/camera/render.rs",
+        "items": []
       },
       "camera::types": {
         "module_doc": "Camera types for 2D viewport control.  Provides the original [`Camera`] (used by `SharedState` for the flat `lurek.gfx.setCamera()` API) and the new Phase 24 [`Camera2D`] with smooth follow, dead zone, bounds clamping, and screen-shake.",
@@ -1456,7 +1507,7 @@
             "kind": "struct",
             "description": "Contiguous byte buffer for binary data manipulation.  Wraps a `Vec<u8>` with indexed get/set operations and string conversion.  # Fields - `data` — `Vec<u8>`.",
             "file": "src/data/byte_data.rs",
-            "line": 20
+            "line": 18
           }
         ]
       },
@@ -2303,6 +2354,11 @@
           }
         ]
       },
+      "effect::draw": {
+        "module_doc": "CPU software-rendering fallback for the effect module.  Provides `draw_to_image()` on [`PostFxStack`] for headless testing. GPU post-processing render commands live in `src/effect/render.rs`. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/effect/draw.rs",
+        "items": []
+      },
       "effect::effect": {
         "module_doc": "Post-processing effect data model.  Defines [`PostFxEffect`] — a single named effect with typed parameters for the post-processing pipeline.",
         "source_file": "src/effect/effect.rs",
@@ -2368,46 +2424,60 @@
             "line": 37
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation for post-processing effects.",
+            "file": "src/effect/mod.rs",
+            "line": 39
+          },
+          {
+            "name": "draw",
+            "kind": "mod",
+            "description": "CPU software-rendering fallback for headless draw-to-image.",
+            "file": "src/effect/mod.rs",
+            "line": 41
+          },
+          {
             "name": "stack",
             "kind": "mod",
             "description": "Ordered pipeline of post-processing passes applied to the rendered scene.",
             "file": "src/effect/mod.rs",
-            "line": 39
+            "line": 43
           },
           {
             "name": "ambient",
             "kind": "mod",
             "description": "Ambient lighting state with time-of-day colour cycling (night → dawn → day → dusk).",
             "file": "src/effect/mod.rs",
-            "line": 44
+            "line": 48
           },
           {
             "name": "atmosphere",
             "kind": "mod",
             "description": "Atmospheric effects: clouds, fog, heat haze, vignette, film grain, lightning.",
             "file": "src/effect/mod.rs",
-            "line": 46
+            "line": 50
           },
           {
             "name": "overlay",
             "kind": "mod",
             "description": "Main `Overlay` struct combining all screen-effect subsystems into one per-frame controller.",
             "file": "src/effect/mod.rs",
-            "line": 48
+            "line": 52
           },
           {
             "name": "screen_effects",
             "kind": "mod",
             "description": "One-shot screen effects: flash (colour burst), shake (jitter), fade (alpha transition).",
             "file": "src/effect/mod.rs",
-            "line": 50
+            "line": 54
           },
           {
             "name": "weather",
             "kind": "mod",
             "description": "Weather simulation: rain, snow, hail, dust, leaves, ash, pollen particles.",
             "file": "src/effect/mod.rs",
-            "line": 52
+            "line": 56
           }
         ]
       },
@@ -2423,6 +2493,11 @@
             "line": 47
           }
         ]
+      },
+      "effect::render": {
+        "module_doc": "Render-command generation for post-processing effects.  Converts a [`PostFxStack`] into the `BeginPostFx` / `EndPostFx` / `ApplyPostFx` render commands that bracket scene capture and shader application.  Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/effect/render.rs",
+        "items": []
       },
       "effect::screen_effects": {
         "module_doc": "Full-screen transient effects.  Provides [`FlashState`], [`FadeState`], and [`ShakeState`] for brief screen-wide visual feedback.",
@@ -2810,18 +2885,25 @@
             "line": 18
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Debug render commands for graph visualization.",
+            "file": "src/graph/mod.rs",
+            "line": 20
+          },
+          {
             "name": "simulation",
             "kind": "mod",
             "description": "Tick-based simulation: decay, transit, push/pull flow.",
             "file": "src/graph/mod.rs",
-            "line": 20
+            "line": 22
           },
           {
             "name": "supply_demand",
             "kind": "mod",
             "description": "Supply and demand processing for resource flow graphs.",
             "file": "src/graph/mod.rs",
-            "line": 22
+            "line": 24
           }
         ]
       },
@@ -2885,6 +2967,11 @@
             "line": 15
           }
         ]
+      },
+      "graph::render": {
+        "module_doc": "Debug render-command generation for the `Graph` flow-simulation structure.  Adds `generate_render_commands` to `Graph` using the same circular node layout as the existing `draw_to_image`.  Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/graph/render.rs",
+        "items": []
       },
       "graph::simulation": {
         "module_doc": "Simulation engine — update(dt) and step() for item flow, decay, transit, and conversions.  This module is part of Lurek2D's `graph` subsystem and provides the implementation details for simulation-related operations and data management. Key types exported from this module: `GraphEvent`. Primary functions: `update()`, `step()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
@@ -3045,7 +3132,7 @@
             "kind": "struct",
             "description": "CPU-side pixel buffer in RGBA8 format.  Stores pixel data in row-major order, 4 bytes per pixel (R, G, B, A). Can be created empty, from a file, or from raw bytes.  # Fields - `width` — `u32`. Image width in pixels. - `height` — `u32`. Image height in pixels. - `pixels` — `Vec<u8>`. Raw RGBA8 pixel data in row-major order (4 bytes per pixel).",
             "file": "src/image/image_data.rs",
-            "line": 25
+            "line": 24
           }
         ]
       },
@@ -3121,6 +3208,27 @@
             "description": "Binary `.lim` format serialization for [`ImageData`] and [`LayeredImage`].",
             "file": "src/image/mod.rs",
             "line": 35
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation for [`ImageData`].",
+            "file": "src/image/mod.rs",
+            "line": 38
+          },
+          {
+            "name": "texture",
+            "kind": "mod",
+            "description": "GPU texture handle with dimensions, format, and filtering.",
+            "file": "src/image/mod.rs",
+            "line": 41
+          },
+          {
+            "name": "texture_atlas",
+            "kind": "mod",
+            "description": "Atlas of named sub-regions within a single texture.",
+            "file": "src/image/mod.rs",
+            "line": 43
           }
         ]
       },
@@ -3136,6 +3244,11 @@
             "line": 25
           }
         ]
+      },
+      "image::render": {
+        "module_doc": "Render-command generation for the image module.  Provides methods on [`ImageData`] to produce GPU-facing [`RenderCommand`]s and a CPU identity copy (`draw_to_image`).  The caller is responsible for uploading pixel data to a GPU texture before submitting the draw command. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/image/render.rs",
+        "items": []
       },
       "image::serial": {
         "module_doc": "Binary serialization for [`ImageData`] and [`LayeredImage`] using the `.lim` format.  # LIMG Format  Luna Image (LIMG) is a compact, self-describing binary format for both flat RGBA8 images and multi-layer compositing stacks.  Pixel data is compressed with zlib (deflate) using the [`flate2`] crate.  ## File layout  | Offset | Size | Description | |--------|------|-------------| | 0      | 4    | Magic: `LIMG` (ASCII) | | 4      | 1    | Version: `1` | | 5      | 1    | Type: `0` = flat image, `1` = layered image | | 6      | …    | Payload (varies by type) |  ### Flat image payload (type=0)  | Field  | Size | Description | |--------|------|-------------| | width  | 4    | `u32` little-endian | | height | 4    | `u32` little-endian | | pixels | rest | zlib-compressed RGBA8 bytes |  ### Layered image payload (type=1)  | Field        | Size | Description | |--------------|------|-------------| | canvas_w     | 4    | `u32` little-endian | | canvas_h     | 4    | `u32` little-endian | | layer_count  | 4    | `u32` little-endian | | per-layer… | —    | see below |  #### Per-layer record  | Field     | Size           | Description | |-----------|----------------|-------------| | name_len  | 2              | `u16` little-endian byte length of UTF-8 name | | name      | name_len       | UTF-8 bytes (no NUL terminator) | | opacity   | 4              | `f32` little-endian | | visible   | 1              | `0` = hidden, `1` = visible | | pixels    | rest of record | zlib-compressed RGBA8 bytes |  The compressed pixel block for each layer is prefixed with a 4-byte `u32` (little-endian) giving the **compressed byte count** so the reader can extract each record without seeking.  All public items are documented.  See the parent module for architectural context.",
@@ -3168,6 +3281,39 @@
             "description": "Load a [`LayeredImage`] from a LIMG binary file.  Returns an error if the file is not a valid LIMG file, the version is unsupported, or the recorded type is not `1` (layered).  # Parameters - `path` — `&str`. Source file path.  # Returns `Result<LayeredImage, String>`.",
             "file": "src/image/serial.rs",
             "line": 143
+          }
+        ]
+      },
+      "image::texture": {
+        "module_doc": "Texture implementation for the `graphics` subsystem.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for texture-related operations and data management. Key types exported from this module: `Texture`. Primary functions: `load()`, `from_rgba()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "source_file": "src/image/texture.rs",
+        "items": [
+          {
+            "name": "Texture",
+            "kind": "struct",
+            "description": "A loaded image asset referenced by its index into the renderer's texture list.  `Texture` is a lightweight handle; the actual pixel data lives in `TextureData` inside `Renderer::textures` (or `SharedState::textures`).  # Fields - `id` — Index into the renderer's `TextureData` list. - `width` — Image width in pixels. - `height` — Image height in pixels.",
+            "file": "src/image/texture.rs",
+            "line": 28
+          }
+        ]
+      },
+      "image::texture_atlas": {
+        "module_doc": "CPU-side bin-packing texture atlas using a shelf algorithm.  Packs named rectangular regions into a fixed-size atlas without any GPU interaction. Useful for building sprite-sheet layouts at load time.",
+        "source_file": "src/image/texture_atlas.rs",
+        "items": [
+          {
+            "name": "AtlasRegion",
+            "kind": "struct",
+            "description": "A named rectangular region packed into the atlas.  # Fields - `name` — `String`. - `x` — `u32`. - `y` — `u32`. - `w` — `u32`. - `h` — `u32`.",
+            "file": "src/image/texture_atlas.rs",
+            "line": 17
+          },
+          {
+            "name": "TextureAtlas",
+            "kind": "struct",
+            "description": "CPU-side bin-packing atlas for sprite regions.  # Fields - `width` — `u32`. - `height` — `u32`. - `padding` — `u32`.  Uses a shelf-packing algorithm: regions are placed left-to-right on horizontal shelves. When a region does not fit on any existing shelf a new shelf is opened below the last one.",
+            "file": "src/image/texture_atlas.rs",
+            "line": 50
           }
         ]
       },
@@ -3496,6 +3642,20 @@
             "description": "Draw a bezier advanced operations overview.  Renders the original curve, its derivative, a segment highlight, control point editing, and transform operations.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
             "line": 2497
+          },
+          {
+            "name": "draw_animation_to_image",
+            "kind": "fn",
+            "description": "Render an animation as a CPU image for headless testing.  Delegates to [`draw_animation_frame_grid_to_image`] with cell dimensions derived from the requested output size and frame count.  # Parameters - `anim` — `&Animation`. Animation controller to render. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
+            "file": "src/image/visualization.rs",
+            "line": 2641
+          },
+          {
+            "name": "draw_camera_to_image",
+            "kind": "fn",
+            "description": "Render a camera as a CPU image for headless testing.  Delegates to [`draw_camera_debug_to_image`] using the output dimensions as world dimensions, producing a 1:1 grid with the camera viewport overlaid.  # Parameters - `cam` — `&Camera2D`. Camera to visualize. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
+            "file": "src/image/visualization.rs",
+            "line": 2661
           }
         ]
       },
@@ -4631,13 +4791,25 @@
             "line": 13
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation for the minimap overlay.",
+            "file": "src/minimap/mod.rs",
+            "line": 15
+          },
+          {
             "name": "types",
             "kind": "mod",
             "description": "Supporting type definitions: enums and plain data structs.",
             "file": "src/minimap/mod.rs",
-            "line": 15
+            "line": 17
           }
         ]
+      },
+      "minimap::render": {
+        "module_doc": "GPU render-command generation for the minimap overlay.  Pure CPU — no wgpu, winit, or mlua imports.  Generates a flat [`Vec<RenderCommand>`] that the GPU renderer can execute to draw the minimap at any screen position.",
+        "source_file": "src/minimap/render.rs",
+        "items": []
       },
       "minimap::types": {
         "module_doc": "Supporting types for the minimap module: enums and plain data structs.",
@@ -4821,6 +4993,11 @@
           }
         ]
       },
+      "parallax::draw": {
+        "module_doc": "CPU software-rendering fallback for the parallax module.  Provides `draw_to_image()` on [`ParallaxLayer`] for headless testing. GPU render commands live in `src/parallax/render.rs`. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/parallax/draw.rs",
+        "items": []
+      },
       "parallax::layer": {
         "module_doc": "Parallax background layer data model.  Pure-Rust domain module — no mlua imports. All Lua binding code lives in `src/lua_api/parallax_api.rs`.",
         "source_file": "src/parallax/layer.rs",
@@ -4851,6 +5028,33 @@
             "description": "Parallax layer data model and draw-call batch builder.",
             "file": "src/parallax/mod.rs",
             "line": 69
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation for parallax layers.",
+            "file": "src/parallax/mod.rs",
+            "line": 71
+          },
+          {
+            "name": "draw",
+            "kind": "mod",
+            "description": "CPU software-rendering fallback for headless draw-to-image.",
+            "file": "src/parallax/mod.rs",
+            "line": 73
+          }
+        ]
+      },
+      "parallax::render": {
+        "module_doc": "Render-command generation for parallax layers.  Converts [`ParallaxDrawBatch`] output into [`RenderCommand`] sequences ready for the GPU renderer queue.  Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/parallax/render.rs",
+        "items": [
+          {
+            "name": "batch_to_render_commands",
+            "kind": "fn",
+            "description": "Converts a pre-computed [`ParallaxDrawBatch`] into render commands.  Each tile in the batch becomes a `SetColor` + `SetBlendMode` + `DrawImageEx` triple.  Blend-mode and color are set once at the start, then each tile emits a single `DrawImageEx`.  # Parameters - `batch` — `&ParallaxDrawBatch`. The draw batch to convert.  # Returns `Vec<RenderCommand>`.",
+            "file": "src/parallax/render.rs",
+            "line": 51
           }
         ]
       },
@@ -5023,18 +5227,25 @@
             "line": 34
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation interface (`generate_render_commands()` wrappers).",
+            "file": "src/particle/mod.rs",
+            "line": 36
+          },
+          {
             "name": "shapes",
             "kind": "mod",
             "description": "`ParticleShape` geometric render primitive enum.",
             "file": "src/particle/mod.rs",
-            "line": 36
+            "line": 38
           },
           {
             "name": "trail",
             "kind": "mod",
             "description": "Time-fading ribbon effect (trail renderer).",
             "file": "src/particle/mod.rs",
-            "line": 46
+            "line": 48
           }
         ]
       },
@@ -5050,6 +5261,11 @@
             "line": 21
           }
         ]
+      },
+      "particle::render": {
+        "module_doc": "Consolidated render-command interface for the particle module.  Pure CPU — no wgpu, winit, or mlua imports.  Provides the standard `generate_render_commands()` wrapper on [`ParticleSystem`] and [`Trail`] that delegates to the existing `build_render_commands()` methods with a zero world offset.",
+        "source_file": "src/particle/render.rs",
+        "items": []
       },
       "particle::shapes": {
         "module_doc": "Particle shape enum defining the geometric primitive used to render untextured particles.",
@@ -5073,14 +5289,14 @@
             "kind": "struct",
             "description": "A point in a trail with age tracking.  # Fields - `x` — `f32`. - `y` — `f32`. - `age` — `f32`.",
             "file": "src/particle/trail.rs",
-            "line": 23
+            "line": 24
           },
           {
             "name": "Trail",
             "kind": "struct",
             "description": "Fading textured ribbon renderer.  # Fields - `points` — `Vec<TrailPoint>`. - `lifetime` — `f32`. - `start_width` — `f32`. - `end_width` — `f32`. - `head_color` — `Color`. - `tail_color` — `Color`. - `min_distance` — `f32`.  Points are pushed at the head and automatically removed once their age exceeds the configured lifetime. Width tapers linearly from `start_width` at the head to `end_width` at the tail.",
             "file": "src/particle/trail.rs",
-            "line": 46
+            "line": 47
           }
         ]
       },
@@ -5347,11 +5563,18 @@
             "line": 27
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Debug render commands and image export for pathfinding data structures.",
+            "file": "src/pathfind/mod.rs",
+            "line": 29
+          },
+          {
             "name": "unit_pathfinder",
             "kind": "mod",
             "description": "Unit-radius-aware pathfinding wrapper over NavGrid.",
             "file": "src/pathfind/mod.rs",
-            "line": 29
+            "line": 31
           }
         ]
       },
@@ -5394,6 +5617,11 @@
             "line": 74
           }
         ]
+      },
+      "pathfind::render": {
+        "module_doc": "Debug render-command generation for pathfinding data structures.  Adds `generate_render_commands` to `NavGrid`, `FlowField`, and `InfluenceMap`. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/pathfind/render.rs",
+        "items": []
       },
       "pathfind::unit_pathfinder": {
         "module_doc": "Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
@@ -5803,20 +6031,32 @@
             "line": 15
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Debug render commands and image export for the physics world.",
+            "file": "src/physics/mod.rs",
+            "line": 17
+          },
+          {
             "name": "shape",
             "kind": "mod",
             "description": "Extended shape types: Polygon, Edge, and Chain colliders.",
             "file": "src/physics/mod.rs",
-            "line": 17
+            "line": 19
           },
           {
             "name": "world",
             "kind": "mod",
             "description": "The `World` struct and all simulation management: bodies, joints, raycasting, contacts.",
             "file": "src/physics/mod.rs",
-            "line": 19
+            "line": 21
           }
         ]
+      },
+      "physics::render": {
+        "module_doc": "Debug render-command generation for the physics world.  Pure CPU — no wgpu, winit, or mlua imports.  Intended to be called from the debug-overlay collect phase in `src/app/`.",
+        "source_file": "src/physics/render.rs",
+        "items": []
       },
       "physics::shape": {
         "module_doc": "Extended shape types for physics bodies.  Provides polygon, edge, and chain shapes beyond the basic rect/circle.  This module is part of Lurek2D's `physics` subsystem and provides the implementation details for shape-related operations and data management. Key types exported from this module: `Shape`. Primary functions: `to_rapier_collider()`, `regular_polygon()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
@@ -5995,14 +6235,14 @@
             "kind": "struct",
             "description": "Options for cellular automata generation.  # Fields - `fill` — `f32`. - `iterations` — `u32`. - `birth` — `u32`. - `survive` — `u32`. - `seed` — `u64`.",
             "file": "src/procgen/cellular.rs",
-            "line": 20
+            "line": 19
           },
           {
             "name": "cellular_automata",
             "kind": "fn",
             "description": "Generates a cave/dungeon map using cellular automata.  # Parameters - `width` — `u32`. - `height` — `u32`. - `opts` — `&CellularOpts`.  # Returns `Vec<u8>`.  Returns a flat `Vec<u8>` of size `width * height` where 1 = wall, 0 = open.",
             "file": "src/procgen/cellular.rs",
-            "line": 75
+            "line": 55
           }
         ]
       },
@@ -6077,6 +6317,13 @@
             "description": "Voronoi diagram generation with optional warp.",
             "file": "src/procgen/mod.rs",
             "line": 17
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Procedural generation visualization: `NoiseGrid` with `generate_render_commands` and `draw_to_image`.",
+            "file": "src/procgen/mod.rs",
+            "line": 19
           }
         ]
       },
@@ -6106,6 +6353,19 @@
           }
         ]
       },
+      "procgen::render": {
+        "module_doc": "Procedural generation visualization helpers.  Provides `NoiseGrid` — a precomputed 2-D noise buffer that can be visualised as both a sequence of `RenderCommand`s (for screen overlay) and as a CPU `ImageData` (for headless testing or export).",
+        "source_file": "src/procgen/render.rs",
+        "items": [
+          {
+            "name": "NoiseGrid",
+            "kind": "struct",
+            "description": "A precomputed 2-D noise grid sampled from periodic Perlin noise.  Values are normalised to `[0.0, 1.0]` before storage.  # Fields - `width` — `u32`. Number of columns. - `height` — `u32`. Number of rows. - `cells` — `Vec<f32>`. Row-major noise values, each in `[0.0, 1.0]`.",
+            "file": "src/procgen/render.rs",
+            "line": 19
+          }
+        ]
+      },
       "procgen::voronoi": {
         "module_doc": "Voronoi diagram generation with optional warp.  Assigns each pixel in a grid to its nearest seed point, returning region IDs, distances, and second-closest distances.",
         "source_file": "src/procgen/voronoi.rs",
@@ -6115,14 +6375,41 @@
             "kind": "struct",
             "description": "Options for Voronoi diagram generation. Controls seed points, grid dimensions, and optional domain-warp parameters for organic region shapes.  # Fields - `warp_scale` — `f32`. - `warp_strength` — `f32`. - `seed` — `u64`.",
             "file": "src/procgen/voronoi.rs",
-            "line": 19
+            "line": 18
           },
           {
             "name": "voronoi_diagram",
             "kind": "fn",
             "description": "Generates a Voronoi diagram over a `width × height` grid for the given seed points. Returns region IDs, nearest-point distances, and second-closest distances for each cell.  # Parameters - `width` — `u32`. - `height` — `u32`. - `points` — `&[(f32, f32)]`. - `opts` — `&VoronoiOpts`.  # Returns `(Vec<u32>, Vec<f32>, Vec<f32>)`.  Returns `(regions, distances, second_distances)`: - `regions`: flat `Vec<u32>` mapping each pixel to its closest point index - `distances`: distance to closest point - `second_distances`: distance to second-closest point",
             "file": "src/procgen/voronoi.rs",
-            "line": 71
+            "line": 53
+          }
+        ]
+      },
+      "raycaster::build_scene": {
+        "module_doc": "Scene builder for textured-quad raycaster rendering.  Builds a [`RaycasterScene`] from a [`Raycaster2D`] grid, camera parameters, and lighting data. Every surface is represented as a textured quad with per-polygon lighting — no column-strip rendering.",
+        "source_file": "src/raycaster/build_scene.rs",
+        "items": [
+          {
+            "name": "SceneBuildParams",
+            "kind": "struct",
+            "description": "Parameters for building a raycaster scene.  # Fields - `player_x` — `f32`. Player world X position. - `player_y` — `f32`. Player world Y position. - `player_angle` — `f32`. Player facing angle in radians. - `fov` — `f32`. Horizontal field of view in radians. - `ray_count` — `u32`. Number of rays to cast (screen columns). - `max_distance` — `f32`. Maximum ray distance. - `screen_width` — `f32`. Screen width in pixels. - `screen_height` — `f32`. Screen height in pixels. - `ambient_light` — `f32`. Base ambient light level `[0.0, 1.0]`. - `shade_distance` — `f32`. Maximum shading distance. - `floor_color` — `Color`. Fallback floor colour when no texture. - `ceiling_color` — `Color`. Fallback ceiling colour when no texture.",
+            "file": "src/raycaster/build_scene.rs",
+            "line": 73
+          },
+          {
+            "name": "WorldSprite",
+            "kind": "struct",
+            "description": "A world-space sprite for scene building.  # Fields - `world_x` — `f32`. Sprite world X. - `world_y` — `f32`. Sprite world Y. - `texture_key` — `TextureKey`. Sprite texture. - `size` — `f32`. Sprite size in world units (used for screen projection).",
+            "file": "src/raycaster/build_scene.rs",
+            "line": 108
+          },
+          {
+            "name": "TextureLookup",
+            "kind": "type",
+            "description": "Texture lookup function type. Given a cell value, returns a texture key.",
+            "file": "src/raycaster/build_scene.rs",
+            "line": 120
           }
         ]
       },
@@ -6206,6 +6493,11 @@
           }
         ]
       },
+      "raycaster::draw": {
+        "module_doc": "CPU software-rendering fallback for raycaster scenes.  Provides [`RaycasterScene::draw_to_image`] for headless testing and screenshot generation. Rasterizes each quad type as a solid-coloured rectangle using the pre-computed per-polygon `light` tint — no texture sampling occurs since no GPU is available. Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/raycaster/draw.rs",
+        "items": []
+      },
       "raycaster::heightmap": {
         "module_doc": "Floor and ceiling height variations for stepped or multi-level environments.  Provides a [`HeightMap`] that stores per-cell floor and ceiling heights, enabling variable-height corridors in grid-based raycaster levels.",
         "source_file": "src/raycaster/heightmap.rs",
@@ -6267,92 +6559,120 @@
         ]
       },
       "raycaster": {
-        "module_doc": "2D grid-based raycaster engine for retro FPS and dungeon-crawler games.  Provides DDA ray traversal, segment-based raycasting, visibility polygons, wall column projection, sprite projection, lighting, doors, heightmaps, depth buffering, and minimap extraction.",
+        "module_doc": "2D grid-based raycaster engine for retro FPS and dungeon-crawler games.  Provides DDA ray traversal, segment-based raycasting, visibility polygons, wall column projection, sprite projection, lighting, doors, heightmaps, depth buffering, minimap extraction, and textured-quad scene building.",
         "source_file": "src/raycaster/mod.rs",
         "items": [
+          {
+            "name": "build_scene",
+            "kind": "mod",
+            "description": "Scene builder for textured-quad raycaster rendering.",
+            "file": "src/raycaster/mod.rs",
+            "line": 8
+          },
           {
             "name": "column_batch",
             "kind": "mod",
             "description": "Wolfenstein-style raycasting column batch renderer.",
             "file": "src/raycaster/mod.rs",
-            "line": 8
+            "line": 10
           },
           {
             "name": "dda",
             "kind": "mod",
             "description": "Grid-based raycaster using DDA (Digital Differential Analyzer) traversal.",
             "file": "src/raycaster/mod.rs",
-            "line": 10
+            "line": 12
           },
           {
             "name": "depth_buffer",
             "kind": "mod",
             "description": "Column-based depth buffer for sprite occlusion.",
             "file": "src/raycaster/mod.rs",
-            "line": 12
+            "line": 14
+          },
+          {
+            "name": "draw",
+            "kind": "mod",
+            "description": "CPU software-rendering fallback for headless testing.",
+            "file": "src/raycaster/mod.rs",
+            "line": 16
           },
           {
             "name": "doors",
             "kind": "mod",
             "description": "Sliding door support for grid-based raycaster levels.",
             "file": "src/raycaster/mod.rs",
-            "line": 14
+            "line": 18
           },
           {
             "name": "heightmap",
             "kind": "mod",
             "description": "Floor and ceiling height variations for stepped or multi-level environments.",
             "file": "src/raycaster/mod.rs",
-            "line": 16
+            "line": 20
           },
           {
             "name": "lighting",
             "kind": "mod",
             "description": "Static and dynamic point lighting for raycaster worlds.",
             "file": "src/raycaster/mod.rs",
-            "line": 18
+            "line": 22
           },
           {
             "name": "minimap_overlay",
             "kind": "mod",
             "description": "Top-down minimap extraction from a raycaster grid.",
             "file": "src/raycaster/mod.rs",
-            "line": 20
+            "line": 24
           },
           {
             "name": "projection",
             "kind": "mod",
             "description": "Wall column projection and distance-based shading.",
             "file": "src/raycaster/mod.rs",
-            "line": 22
+            "line": 26
           },
           {
             "name": "ray_hit",
             "kind": "mod",
             "description": "Ray hit result from DDA grid traversal.",
             "file": "src/raycaster/mod.rs",
-            "line": 24
+            "line": 28
+          },
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation for raycaster scenes.",
+            "file": "src/raycaster/mod.rs",
+            "line": 30
+          },
+          {
+            "name": "scene",
+            "kind": "mod",
+            "description": "Raycaster scene types for textured-quad rendering.",
+            "file": "src/raycaster/mod.rs",
+            "line": 32
           },
           {
             "name": "segment",
             "kind": "mod",
             "description": "Line segment definition and ray-segment intersection testing.",
             "file": "src/raycaster/mod.rs",
-            "line": 26
+            "line": 34
           },
           {
             "name": "sprite_projection",
             "kind": "mod",
             "description": "Sprite screen-space projection for billboard rendering.",
             "file": "src/raycaster/mod.rs",
-            "line": 28
+            "line": 36
           },
           {
             "name": "visibility",
             "kind": "mod",
             "description": "Visibility polygon via endpoint raycasting.",
             "file": "src/raycaster/mod.rs",
-            "line": 30
+            "line": 38
           }
         ]
       },
@@ -6386,6 +6706,52 @@
             "description": "Result of a single ray cast.  Returned by the DDA raycaster when a ray hits a wall or reaches its maximum distance without hitting anything (`hit = false`).  # Fields - `distance` — `f32`. - `raw_distance` — `f32`. - `cell_value` — `u32`. - `side` — `u8`. - `tex_u` — `f32`. - `hit_x` — `f32`. - `hit_y` — `f32`. - `hit` — `bool`.",
             "file": "src/raycaster/ray_hit.rs",
             "line": 21
+          }
+        ]
+      },
+      "raycaster::render": {
+        "module_doc": "Render-command generation for raycaster scenes.  Converts a [`RaycasterScene`] into [`RenderCommand`] sequences. Each surface (wall, floor, ceiling, sprite) emits a single [`RenderCommand::DrawTexturedQuad`] with perspective-correct UV corners and a per-polygon RGBA light tint. Untextured quads fall back to a coloured [`RenderCommand::Rectangle`]. Pure CPU — no wgpu, winit, or mlua.",
+        "source_file": "src/raycaster/render.rs",
+        "items": []
+      },
+      "raycaster::scene": {
+        "module_doc": "Raycaster scene types for textured-quad rendering.  Defines the scene representation produced by [`build_scene`](RaycasterScene::build) for dungeon-crawler and retro FPS games. Every surface (wall, floor, ceiling, sprite) is a textured quad with per-polygon lighting — no column-strip rendering.",
+        "source_file": "src/raycaster/scene.rs",
+        "items": [
+          {
+            "name": "WallQuad",
+            "kind": "struct",
+            "description": "A single wall segment projected onto the screen as a perspective-correct textured quad.  Each wall quad represents one grid-cell face visible to the camera. The texture is mapped with perspective-correct UV coordinates at each corner.  # Fields - `corners` — `[Vec2; 4]`. Screen-space corner positions: top-left, top-right, bottom-right, bottom-left. - `uvs` — `[Vec2; 4]`. Normalized UV coordinates `[0.0, 1.0]` for each corner (same order as `corners`). - `texture_key` — `Option<TextureKey>`. Wall texture (solid colour fallback when `None`). - `light` — `[f32; 4]`. Per-face RGBA light multiplier (`[r, g, b, 1.0]`). - `depth` — `f32`. Distance from camera for depth sorting. - `cell_value` — `u32`. Map cell value for multi-texture lookup.",
+            "file": "src/raycaster/scene.rs",
+            "line": 25
+          },
+          {
+            "name": "FloorQuad",
+            "kind": "struct",
+            "description": "A single floor tile projected onto the screen as a textured quad.  # Fields - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left. - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner. - `texture_key` — `Option<TextureKey>`. Floor texture (solid colour fallback when `None`). - `light` — `[f32; 4]`. Per-face RGBA light multiplier. - `depth` — `f32`. Distance from camera.",
+            "file": "src/raycaster/scene.rs",
+            "line": 51
+          },
+          {
+            "name": "CeilingQuad",
+            "kind": "struct",
+            "description": "A single ceiling tile projected onto the screen as a textured quad.  Mirrors [`FloorQuad`] but drawn above the wall segments.  # Fields - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left. - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner. - `texture_key` — `Option<TextureKey>`. Ceiling texture (solid colour fallback when `None`). - `light` — `[f32; 4]`. Per-face RGBA light multiplier. - `depth` — `f32`. Distance from camera.",
+            "file": "src/raycaster/scene.rs",
+            "line": 77
+          },
+          {
+            "name": "BillboardSprite",
+            "kind": "struct",
+            "description": "A world-space sprite rendered as a camera-facing quad (billboard).  Used for objects, monsters, items, etc. The entire texture is drawn on a single square quad — dungeon-crawler style (beholder, monsters).  # Fields - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left. - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner. - `texture_key` — `TextureKey`. Sprite texture. - `light` — `[f32; 4]`. Per-face RGBA light multiplier. - `depth` — `f32`. Distance from camera (for depth sorting / occlusion).",
+            "file": "src/raycaster/scene.rs",
+            "line": 104
+          },
+          {
+            "name": "RaycasterScene",
+            "kind": "struct",
+            "description": "Complete raycaster scene ready for rendering as textured quads.  Built by [`RaycasterScene::build`] from a [`Raycaster2D`](super::Raycaster2D) grid and camera parameters. Contains all visible wall, floor, ceiling, and sprite quads with per-polygon lighting pre-computed.  # Fields - `walls` — `Vec<WallQuad>`. Visible wall segments. - `floors` — `Vec<FloorQuad>`. Visible floor tiles. - `ceilings` — `Vec<CeilingQuad>`. Visible ceiling tiles. - `sprites` — `Vec<BillboardSprite>`. Billboard sprites sorted back-to-front. - `screen_width` — `f32`. Screen width used for projection. - `screen_height` — `f32`. Screen height used for projection.",
+            "file": "src/raycaster/scene.rs",
+            "line": 133
           }
         ]
       },
@@ -6445,19 +6811,6 @@
             "description": "An off-screen render target with a fixed pixel resolution.  # Fields - `width` — `u32`. - `height` — `u32`.  The GPU-side texture is managed by `GpuRenderer`; this struct holds only the logical metadata exposed to the Lua API.",
             "file": "src/render/canvas.rs",
             "line": 18
-          }
-        ]
-      },
-      "render::color": {
-        "module_doc": "RGBA color type stored as f32 components in [0.0, 1.0].",
-        "source_file": "src/render/color.rs",
-        "items": [
-          {
-            "name": "Color",
-            "kind": "struct",
-            "description": "RGBA color stored as `f32` components in the range `[0.0, 1.0]`.  Used everywhere the API accepts a color: `lurek.gfx.setColor`, sprite tints, background color, etc.  # Fields - `r` — Red channel, `[0.0, 1.0]`. - `g` — Green channel, `[0.0, 1.0]`. - `b` — Blue channel, `[0.0, 1.0]`. - `a` — Alpha channel, `[0.0, 1.0]`; `1.0` = fully opaque.",
-            "file": "src/render/color.rs",
-            "line": 13
           }
         ]
       },
@@ -6642,87 +6995,25 @@
             "line": 22
           },
           {
-            "name": "nine_slice",
-            "kind": "mod",
-            "description": "Nine-slice (9-patch) image rendering for scalable UI elements.",
-            "file": "src/render/mod.rs",
-            "line": 24
-          },
-          {
             "name": "renderer",
             "kind": "mod",
-            "description": "RenderCommand queue, draw enums, and texture data types.",
+            "description": "Nine-slice (9-patch) image rendering for scalable UI elements. RenderCommand queue, draw enums, and texture data types.",
             "file": "src/render/mod.rs",
-            "line": 26
+            "line": 25
           },
           {
             "name": "shader",
             "kind": "mod",
             "description": "Custom WGSL shader support with uniform variables.",
             "file": "src/render/mod.rs",
-            "line": 28
+            "line": 27
           },
           {
             "name": "shape",
             "kind": "mod",
             "description": "Compound shape builder that accumulates vector primitives for batched drawing.",
             "file": "src/render/mod.rs",
-            "line": 30
-          },
-          {
-            "name": "sprite",
-            "kind": "mod",
-            "description": "Sprite struct combining a texture, transform, and tint color.",
-            "file": "src/render/mod.rs",
-            "line": 32
-          },
-          {
-            "name": "sprite_batch",
-            "kind": "mod",
-            "description": "Sprite batching for efficient rendering of many sprites sharing one texture.",
-            "file": "src/render/mod.rs",
-            "line": 34
-          },
-          {
-            "name": "sprite_sheet",
-            "kind": "mod",
-            "description": "Grid-based sprite sheet with directional support and named groups.",
-            "file": "src/render/mod.rs",
-            "line": 36
-          },
-          {
-            "name": "texture",
-            "kind": "mod",
-            "description": "Texture loading and TextureData storage for the renderer.",
-            "file": "src/render/mod.rs",
-            "line": 38
-          },
-          {
-            "name": "texture_atlas",
-            "kind": "mod",
-            "description": "CPU-side bin-packing texture atlas using shelf algorithm.",
-            "file": "src/render/mod.rs",
-            "line": 40
-          }
-        ]
-      },
-      "render::nine_slice": {
-        "module_doc": "Nine-slice (9-patch) image rendering for scalable UI elements.  A nine-slice divides a texture into 9 regions using 4 border insets: corners are drawn at fixed size, edges stretch in one axis, and the center stretches in both axes. This preserves visual quality when scaling UI panels, buttons, and dialog boxes.",
-        "source_file": "src/render/nine_slice.rs",
-        "items": [
-          {
-            "name": "Patch",
-            "kind": "type",
-            "description": "A single patch rectangle: `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)`.",
-            "file": "src/render/nine_slice.rs",
-            "line": 11
-          },
-          {
-            "name": "NineSlice",
-            "kind": "struct",
-            "description": "A nine-slice image definition: a texture plus border insets.  The four insets (`top`, `right`, `bottom`, `left`) define pixel distances from each edge of the source texture. These divide the texture into 9 regions:  ```text ┌───────┬─────────────────┬───────┐ │ TL    │    Top Edge      │  TR   │ ├───────┼─────────────────┼───────┤ │ Left  │    Center        │ Right │ │ Edge  │   (stretches)    │ Edge  │ ├───────┼─────────────────┼───────┤ │ BL    │   Bottom Edge    │  BR   │ └───────┴─────────────────┴───────┘ ```  Corners maintain their original pixel dimensions. Edges stretch along one axis. The center stretches in both axes.  # Fields - `e` — `:textures` for the source image.`. - `texture_key` — `TextureKey`. - `top` — `f32`. - `right` — `f32`. - `bottom` — `f32`. - `left` — `f32`. - `tex_width` — `f32`. - `tex_height` — `f32`.",
-            "file": "src/render/nine_slice.rs",
-            "line": 43
+            "line": 29
           }
         ]
       },
@@ -6735,84 +7026,84 @@
             "kind": "enum",
             "description": "Stencil comparison mode for `lurek.gfx.setStencilTest`.  # Variants - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant. - `Always` — Always variant. - `Never` — Never variant.",
             "file": "src/render/renderer.rs",
-            "line": 28
+            "line": 29
           },
           {
             "name": "StencilAction",
             "kind": "enum",
             "description": "Stencil write action for `lurek.gfx.stencil` and `lurek.gfx.setStencilMode`.  # Variants - `Keep` — Keep variant. - `Zero` — Zero variant. - `Replace` — Replace variant. - `Increment` — Increment variant. - `Decrement` — Decrement variant. - `IncrementWrap` — IncrementWrap variant. - `DecrementWrap` — DecrementWrap variant. - `Invert` — Invert variant.",
             "file": "src/render/renderer.rs",
-            "line": 59
+            "line": 60
           },
           {
             "name": "StencilMode",
             "kind": "struct",
             "description": "Combined stencil rendering mode stored in `SharedState`.  Controls what happens to stencil buffer values when draws occur (`action`), the test that subsequent draws must pass (`compare`), and the reference value (`value`) used by the comparison.  The GPU applies this lazily when the pipeline is rebuilt.  # Fields - `action` — `StencilAction`. - `compare` — `CompareMode`. - `value` — `u8`.",
             "file": "src/render/renderer.rs",
-            "line": 90
+            "line": 91
           },
           {
             "name": "DepthMode",
             "kind": "enum",
             "description": "Depth test comparison mode for `lurek.gfx.setDepthMode`.  # Variants - `Always` — Always variant. - `Never` — Never variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant.",
             "file": "src/render/renderer.rs",
-            "line": 121
+            "line": 122
           },
           {
             "name": "TextAlign",
             "kind": "enum",
             "description": "Text alignment mode for formatted text printing.  # Variants - `Left` — Left variant. - `Center` — Center variant. - `Right` — Right variant. - `Justify` — Justify variant.",
             "file": "src/render/renderer.rs",
-            "line": 149
+            "line": 150
           },
           {
             "name": "DrawMode",
             "kind": "enum",
             "description": "Whether a shape is drawn filled or as an outline.  # Variants - `Fill` — Draw shapes as solid filled areas. - `Line` — Draw shapes as outlines using the current line width.",
             "file": "src/render/renderer.rs",
-            "line": 166
+            "line": 167
           },
           {
             "name": "BlendMode",
             "kind": "enum",
             "description": "Blending mode for draw operations. Consult the module-level documentation for the broader usage context and preconditions.  # Variants - `Alpha` — Alpha variant. - `Add` — Add variant. - `Multiply` — Multiply variant. - `Replace` — Replace variant. - `Screen` — Screen variant.",
             "file": "src/render/renderer.rs",
-            "line": 180
+            "line": 181
           },
           {
             "name": "RenderCommand",
             "kind": "enum",
-            "description": "A single deferred draw operation queued during `lurek.draw()` and executed by `GpuRenderer`.  # Variants - `SetColor(r, g, b, a)` — Sets the active draw color; affects all subsequent draw calls. - `Rectangle` — Draws an axis-aligned rectangle. - `RoundedRectangle` — Draws a rectangle with rounded corners. - `Circle` — Draws a circle at center `(x, y)` with radius `r`. - `Ellipse` — Draws an ellipse with semi-axes `rx`, `ry`. - `Triangle` — Draws a triangle with three explicit vertices. - `Polygon` — Draws an arbitrary polygon from a flat `[x0, y0, x1, y1, ...]` vertex list. - `Line` — Draws a line segment from `(x1, y1)` to `(x2, y2)`. - `Polyline` — Draws a connected sequence of line segments through a flat `[x0,y0,x1,y1,…]` list. - `DrawImage` — Blits a texture (by index) at position `(x, y)`. - `DrawImageEx` — Draws a texture with full transform (rotation, scale, origin offset). - `DrawQuad` — Draws a sub-region (quad) of a texture with full transform. - `Print` — Renders text using a loaded bitmap font. - `SetLineWidth` — Sets the stroke width for subsequent outline draws. - `PushTransform` — Saves the current transform onto the stack. - `PopTransform` — Restores the previous transform from the stack. - `Translate` — Applies a translation to the current transform. - `Rotate` — Applies a rotation (in radians) to the current transform. - `Scale` — Applies a scale to the current transform. - `Arc` — Draws an arc (sector or outline) of a circle. - `DrawShape` — Draw all primitives in a compound shape with a unified affine transform. - `DrawParticleSystem` — Renders all particles in a single batched command, dispatching per-shape geometry helpers internally. - `BeginPostFx` — Start capturing the framebuffer for post-processing; subsequent draw calls render into the capture target. - `EndPostFx` — Stop capturing; resume rendering to the previous target. - `ApplyPostFx` — Apply the registered post-processing effects from the named stack and composite the result onto the current target.",
+            "description": "A single deferred draw operation queued during `lurek.draw()` and executed by `GpuRenderer`.  # Variants - `SetColor(r, g, b, a)` — Sets the active draw color; affects all subsequent draw calls. - `Rectangle` — Draws an axis-aligned rectangle. - `RoundedRectangle` — Draws a rectangle with rounded corners. - `Circle` — Draws a circle at center `(x, y)` with radius `r`. - `Ellipse` — Draws an ellipse with semi-axes `rx`, `ry`. - `Triangle` — Draws a triangle with three explicit vertices. - `Polygon` — Draws an arbitrary polygon from a flat `[x0, y0, x1, y1, ...]` vertex list. - `Line` — Draws a line segment from `(x1, y1)` to `(x2, y2)`. - `Polyline` — Draws a connected sequence of line segments through a flat `[x0,y0,x1,y1,…]` list. - `DrawImage` — Blits a texture (by index) at position `(x, y)`. - `DrawImageEx` — Draws a texture with full transform (rotation, scale, origin offset). - `DrawQuad` — Draws a sub-region (quad) of a texture with full transform. - `Print` — Renders text using a loaded bitmap font. - `SetLineWidth` — Sets the stroke width for subsequent outline draws. - `PushTransform` — Saves the current transform onto the stack. - `PopTransform` — Restores the previous transform from the stack. - `Translate` — Applies a translation to the current transform. - `Rotate` — Applies a rotation (in radians) to the current transform. - `Scale` — Applies a scale to the current transform. - `Arc` — Draws an arc (sector or outline) of a circle. - `DrawShape` — Draw all primitives in a compound shape with a unified affine transform. - `DrawParticleSystem` — Renders all particles in a single batched command, dispatching per-shape geometry helpers internally. - `BeginPostFx` — Start capturing the framebuffer for post-processing; subsequent draw calls render into the capture target. - `EndPostFx` — Stop capturing; resume rendering to the previous target. - `ApplyPostFx` — Apply the registered post-processing effects from the named stack and composite the result onto the current target. - `DrawTexturedQuad` — Draws an arbitrary textured quad specified by four explicit screen-space corners and four UV coordinates.",
             "file": "src/render/renderer.rs",
-            "line": 223
+            "line": 225
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw RGBA pixel data for a loaded texture, stored in the renderer's texture atlas.  # Fields - `pixels` — Raw RGBA byte data in RGBA format. - `width` — Texture width in pixels. - `height` — Texture height in pixels.",
             "file": "src/render/renderer.rs",
-            "line": 549
+            "line": 573
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Geometric shape used when rendering a single untextured particle via `DrawParticleSystem`.  This mirrors `particle::ParticleShape` one-for-one. The particle module converts `ParticleShape` -> `ParticleRenderShape` when building the `DrawParticleSystem` command, keeping the Tier-1 `graphics` module free of an upward Tier-2 import.  # Variants - `Square` — Square variant. - `Circle` — Circle variant. - `Triangle` — Triangle variant. - `Spark` — Spark variant. - `Diamond` — Diamond variant.",
             "file": "src/render/renderer.rs",
-            "line": 568
+            "line": 592
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "Per-particle render data for a single frame.  Produced by `ParticleSystem::build_render_commands()` and consumed by the GPU renderer's `DrawParticleSystem` arm. All positions are in world space.  # Fields - `x` — `f32`. - `y` — `f32`. - `r` — `f32`. - `g` — `f32`. - `b` — `f32`. - `a` — `f32`. - `rotation` — `f32`. - `size` — `f32`. - `shape` — `ParticleRenderShape`. - `texture_key` — `Option<TextureKey>`. - `quad` — `Option<[f32; 4]>`. - `quad_tex_dims` — `Option<(f32, f32)>`.",
             "file": "src/render/renderer.rs",
-            "line": 601
+            "line": 625
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
             "description": "Type discriminator for resources that can be passed to lurek.gfx.draw.  Used to dispatch the polymorphic draw(drawable, ...) Lua API to the correct RenderCommand variant based on resource type.  # Variants - Image(TextureKey) — A loaded texture (Image). - Canvas(CanvasKey) — An off-screen render target. - SpriteBatch(SpriteBatchKey) — A batched sprite collection. - Mesh(MeshKey) — A custom geometry mesh.",
             "file": "src/render/renderer.rs",
-            "line": 641
+            "line": 665
           }
         ]
       },
@@ -6860,99 +7151,6 @@
             "description": "A compound shape that accumulates draw primitives in local (object-space) coordinates and replays them as a unified entity via [`crate::render::RenderCommand::DrawShape`].  Build up commands with [`push_command`](CompoundShape::push_command), then submit a [`crate::render::RenderCommand::DrawShape`] each frame to draw with an affine transform.  # Fields - `commands` — `Vec<ShapeCommand>`. The ordered list of drawing commands. - `current_color` — `[f32; 4]`. Last color set via a `SetColor` command (retained for reference). - `current_line_width` — `f32`. Last line width set via a `SetLineWidth` command.",
             "file": "src/render/shape.rs",
             "line": 164
-          }
-        ]
-      },
-      "render::sprite": {
-        "module_doc": "Sprite implementation for the `graphics` subsystem.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for sprite-related operations and data management. Key types exported from this module: `Sprite`. Primary functions: `new()`, `set_position()`, `set_scale()`, `set_rotation()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
-        "source_file": "src/render/sprite.rs",
-        "items": [
-          {
-            "name": "Sprite",
-            "kind": "struct",
-            "description": "A textured game object with position, scale, rotation, and tint color.  `Sprite` acts as a transform + tint wrapper around a `Texture`. It does not own the texture; it references it by id in the renderer's texture atlas.  # Fields - `texture_id` — Index into the renderer's texture atlas. - `position` — World-space position of the sprite's origin. - `scale` — Per-axis scale factor; `Vec2::ONE` = original size. - `rotation` — Rotation in radians. - `color` — Multiplicative tint applied to the texture; `Color::WHITE` = no tint.",
-            "file": "src/render/sprite.rs",
-            "line": 25
-          }
-        ]
-      },
-      "render::sprite_batch": {
-        "module_doc": "Sprite batching for efficient rendering of many sprites sharing one texture.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for sprite batch-related operations and data management. Key types exported from this module: `SpriteBatch`, `BatchEntry`. Primary functions: `new()`, `add()`, `clear()`, `texture_key()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
-        "source_file": "src/render/sprite_batch.rs",
-        "items": [
-          {
-            "name": "SpriteBatch",
-            "kind": "struct",
-            "description": "A batch of sprites sharing a single texture, drawn in one GPU call.  Created via `lurek.gfx.newSpriteBatch(image_id, max_sprites?)`. Use `add()` to queue sprites and the engine draws them all at once.  # Fields - `e` — `:textures`.`. - `texture_key` — `TextureKey`. - `entries` — `Vec<BatchEntry>`. - `max_entries` — `usize`.",
-            "file": "src/render/sprite_batch.rs",
-            "line": 23
-          },
-          {
-            "name": "BatchEntry",
-            "kind": "struct",
-            "description": "A single sprite in a batch, describing position, region, and transform.  # Fields - `x` — `f32`. - `y` — `f32`. - `quad_x` — `f32`. - `quad_y` — `f32`. - `quad_w` — `f32`. - `quad_h` — `f32`. - `rotation` — `f32`. - `sx` — `f32`. - `sy` — `f32`. - `ox` — `f32`. - `oy` — `f32`.",
-            "file": "src/render/sprite_batch.rs",
-            "line": 46
-          }
-        ]
-      },
-      "render::sprite_sheet": {
-        "module_doc": "Grid-based sprite sheet with directional support and named groups.  Splits a texture into a uniform grid of frames and provides indexed, row/column, named-group, and directional access to the resulting quads.",
-        "source_file": "src/render/sprite_sheet.rs",
-        "items": [
-          {
-            "name": "FrameGroup",
-            "kind": "struct",
-            "description": "Named frame group within the sprite sheet.  # Fields - `name` — `String`. - `start_frame` — `usize`. - `count` — `usize`.",
-            "file": "src/render/sprite_sheet.rs",
-            "line": 19
-          },
-          {
-            "name": "DirectionLayout",
-            "kind": "enum",
-            "description": "Directional layout for sprite sets. Consult the module-level documentation for the broader usage context and preconditions.  # Variants - `Rows` — Rows variant. - `Columns` — Columns variant.",
-            "file": "src/render/sprite_sheet.rs",
-            "line": 34
-          },
-          {
-            "name": "SpriteSheet",
-            "kind": "struct",
-            "description": "Grid-based sprite sheet with directional support and named groups.  # Fields - `frame_width` — `u32`. - `frame_height` — `u32`. - `columns` — `u32`. - `rows` — `u32`. - `texture_width` — `u32`. - `texture_height` — `u32`.  Divides a texture into equal-sized cells and pre-computes UV quads for every frame. Supports named groups and 4/8-directional layouts.",
-            "file": "src/render/sprite_sheet.rs",
-            "line": 53
-          }
-        ]
-      },
-      "render::texture": {
-        "module_doc": "Texture implementation for the `graphics` subsystem.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for texture-related operations and data management. Key types exported from this module: `Texture`. Primary functions: `load()`, `from_rgba()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
-        "source_file": "src/render/texture.rs",
-        "items": [
-          {
-            "name": "Texture",
-            "kind": "struct",
-            "description": "A loaded image asset referenced by its index into the renderer's texture list.  `Texture` is a lightweight handle; the actual pixel data lives in `TextureData` inside `Renderer::textures` (or `SharedState::textures`).  # Fields - `id` — Index into the renderer's `TextureData` list. - `width` — Image width in pixels. - `height` — Image height in pixels.",
-            "file": "src/render/texture.rs",
-            "line": 28
-          }
-        ]
-      },
-      "render::texture_atlas": {
-        "module_doc": "CPU-side bin-packing texture atlas using a shelf algorithm.  Packs named rectangular regions into a fixed-size atlas without any GPU interaction. Useful for building sprite-sheet layouts at load time.",
-        "source_file": "src/render/texture_atlas.rs",
-        "items": [
-          {
-            "name": "AtlasRegion",
-            "kind": "struct",
-            "description": "A named rectangular region packed into the atlas.  # Fields - `name` — `String`. - `x` — `u32`. - `y` — `u32`. - `w` — `u32`. - `h` — `u32`.",
-            "file": "src/render/texture_atlas.rs",
-            "line": 17
-          },
-          {
-            "name": "TextureAtlas",
-            "kind": "struct",
-            "description": "CPU-side bin-packing atlas for sprite regions.  # Fields - `width` — `u32`. - `height` — `u32`. - `padding` — `u32`.  Uses a shelf-packing algorithm: regions are placed left-to-right on horizontal shelves. When a region does not fit on any existing shelf a new shelf is opened below the last one.",
-            "file": "src/render/texture_atlas.rs",
-            "line": 50
           }
         ]
       },
@@ -8918,42 +9116,42 @@
             "kind": "enum",
             "description": "Fullscreen mode type for window management.  # Variants - `Desktop` — Desktop variant. - `Exclusive` — Exclusive variant.",
             "file": "src/runtime/shared_state.rs",
-            "line": 39
+            "line": 44
           },
           {
             "name": "WindowState",
             "kind": "struct",
             "description": "Tracks window state and queues window operations for the event loop.  # Fields - `focused` — `bool`. - `mouse_focused` — `bool`. - `minimized` — `bool`. - `maximized` — `bool`. - `visible` — `bool`. - `dpi_scale` — `f64`. - `position_x` — `i32`. - `position_y` — `i32`. - `pending_title` — `Option<String>`. - `pending_fullscreen` — `Option<bool>`. - `pending_fullscreen_type` — `FullscreenType`. - `pending_position` — `Option<(i32, i32)>`. - `pending_size` — `Option<(u32, u32)>`. - `pending_minimize` — `bool`. - `pending_maximize` — `bool`. - `pending_restore` — `bool`. - `pending_close` — `bool`. - `pending_attention` — `bool`. - `pending_icon_path` — `Option<String>`. - `vsync_mode` — `i32`. - `pending_vsync` — `Option<i32>`. - `fullscreen` — `bool`. - `fullscreen_type` — `FullscreenType`. - `game_width` — `f32`. - `game_height` — `f32`. - `scale_mode_str` — `String`. - `viewport_scale_x` — `f32`. - `viewport_scale_y` — `f32`. - `viewport_offset_x` — `f32`. - `viewport_offset_y` — `f32`. - `pending_scale_mode` — `Option<String>`.  Query fields are written by `app.rs` from window events and read by Lua. Pending fields are written by Lua closures and consumed by `app.rs`. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 85
+            "line": 90
           },
           {
             "name": "ErrorInfo",
             "kind": "struct",
             "description": "Structured error information for the last engine error.  # Fields - `message` — `String`. - `code` — `String`. - `category` — `String`. - `hint` — `Option<String>`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 201
+            "line": 206
           },
           {
             "name": "ScreenshotRequest",
             "kind": "struct",
             "description": "Pending request to save the next rendered screen frame as a PNG.  # Fields - `path` — `String`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 217
+            "line": 222
           },
           {
             "name": "SharedState",
             "kind": "struct",
             "description": "Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.  # Fields - `render_commands` — Queue of pending `RenderCommand` values, flushed each frame. - `current_color` — Active RGBA draw color `[r, g, b, a]`. - `background_color` — Screen clear color set by `lurek.gfx.setBackgroundColor`. - `textures` — Loaded texture pixel data, indexed by `Texture::id`. - `keys_down` — Set of currently held key name strings. - `mouse` — Mouse cursor position, button state, scroll, and cursor settings. - `delta_time` — Elapsed time for the current frame in seconds. - `total_time` — Accumulated time since engine start in seconds. - `fps` — Rolling frames-per-second measurement. - `window_width` — Current window width in pixels. - `window_height` — Current window height in pixels. - `window_title` — Current window title string. - `mixer` — The rodio audio mixer managing all sound sources. - `game_dir` — Absolute path to the game directory. - `quit_requested` — Set to `true` by `lurek.signal.quit()` to end the game loop. - `exit_code` — Exit code to return when `quit_requested` is `true`. - `restart_requested` — Set to `true` by `lurek.signal.restart()` to trigger engine restart. - `line_width` — Current stroke width for outline draw commands. - `blend_mode` — Current blend mode for draw operations. - `fonts` — Loaded TTF fonts for text rendering. - `active_font` — Index of the currently active font (`None` = use bitmap fallback). - `canvases` — Off-screen render targets (canvases) for compositing. - `gamepads` — Connected gamepad state instances. - `fs` — Persistent sandboxed `GameFS` instance with mount layer support. - `shapes` — Stores all compound shape instances.  # Fields Shared mutable state accessible by both the engine loop and Lua closures.",
             "file": "src/runtime/shared_state.rs",
-            "line": 253
+            "line": 258
           },
           {
             "name": "RendererStats",
             "kind": "struct",
             "description": "Snapshot of renderer statistics for a single frame.  # Fields - `draw_calls` — `usize`. - `textures` — `usize`. - `fonts` — `usize`. - `canvases` — `usize`. - `texture_memory` — `usize`. RGBA byte estimate.",
             "file": "src/runtime/shared_state.rs",
-            "line": 527
+            "line": 558
           }
         ]
       },
@@ -9076,20 +9274,32 @@
             "line": 8
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation and CPU drawing for the scene module.",
+            "file": "src/scene/mod.rs",
+            "line": 10
+          },
+          {
             "name": "stack",
             "kind": "mod",
             "description": "LIFO scene stack with lifecycle callbacks (`enter`, `leave`, `pause`, `resume`, `update`, `draw`) and a named scene registry.",
             "file": "src/scene/mod.rs",
-            "line": 10
+            "line": 12
           },
           {
             "name": "transition",
             "kind": "mod",
             "description": "Animated scene transitions with configurable types (fade, slide) and easing, plus inter-scene data passing.",
             "file": "src/scene/mod.rs",
-            "line": 12
+            "line": 14
           }
         ]
+      },
+      "scene::render": {
+        "module_doc": "Render-command generation and CPU drawing for the scene module.  [`SceneStack`] is a pure ID-based LIFO stack — it stores no render data, only scene identifiers. GPU rendering is driven by Lua-side `draw()` callbacks; the Rust domain layer has no scene content to iterate.  These implementations satisfy the render-command interface contract so that `SceneStack` participates uniformly in the engine draw pipeline. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/scene/render.rs",
+        "items": []
       },
       "scene::stack": {
         "module_doc": "LIFO scene stack with registry and inter-scene data store.  This module is part of Lurek2D's `scene` subsystem and provides the implementation details for stack-related operations and data management. Key types exported from this module: `SceneStack`. Primary functions: `new()`, `next_scene_id()`, `push()`, `pop()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
@@ -9304,20 +9514,32 @@
             "line": 9
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation for skeletal animation skeletons.",
+            "file": "src/spine/mod.rs",
+            "line": 11
+          },
+          {
             "name": "skeleton",
             "kind": "mod",
             "description": "`Skeleton` root type: manages the bone tree and calls `update_world_transforms()` to compute world-space positions.",
             "file": "src/spine/mod.rs",
-            "line": 11
+            "line": 13
           },
           {
             "name": "slot",
             "kind": "mod",
             "description": "Attachment slot that links a bone to a displayable resource (sprite, mesh, or point attachment).",
             "file": "src/spine/mod.rs",
-            "line": 13
+            "line": 15
           }
         ]
+      },
+      "spine::render": {
+        "module_doc": "GPU render-command generation for skeletal animation skeletons.  Pure CPU — no wgpu, winit, or mlua imports.  Visualises a [`Skeleton`] as bone-position circles and slot-tinted rectangles so the rig can be inspected as a debug overlay without a texture atlas.",
+        "source_file": "src/spine/render.rs",
+        "items": []
       },
       "spine::skeleton": {
         "module_doc": "Skeleton container holding bones, slots, and Atlas data.",
@@ -9349,6 +9571,120 @@
             "description": "A slot binding a visual attachment to a bone in the skeleton.  Slots determine which bone drives an attachment's position and define the draw order and tint colour for that attachment.  # Fields - `name` — `String`. Unique slot name. - `bone_index` — `usize`. Index of the bone this slot is bound to. - `color_r` — `f32`. Red tint (0–1). - `color_g` — `f32`. Green tint (0–1). - `color_b` — `f32`. Blue tint (0–1). - `color_a` — `f32`. Alpha (0–1). - `attachment_name` — `Option<String>`. Name of the current attachment, or `None`. - `draw_order` — `i32`. Z-sort key for rendering.",
             "file": "src/spine/slot.rs",
             "line": 17
+          }
+        ]
+      },
+      "sprite": {
+        "module_doc": "Sprite handling for Lurek2D.  Contains sprite, sprite batch, sprite sheet, and nine-slice types extracted from the render module.",
+        "source_file": "src/sprite/mod.rs",
+        "items": [
+          {
+            "name": "sprite",
+            "kind": "mod",
+            "description": "Individual sprite with position, scale, rotation, and color.",
+            "file": "src/sprite/mod.rs",
+            "line": 7
+          },
+          {
+            "name": "sprite_batch",
+            "kind": "mod",
+            "description": "Batched sprite renderer for efficient multi-sprite drawing.",
+            "file": "src/sprite/mod.rs",
+            "line": 9
+          },
+          {
+            "name": "sprite_sheet",
+            "kind": "mod",
+            "description": "Sprite sheet with named frame regions.",
+            "file": "src/sprite/mod.rs",
+            "line": 11
+          },
+          {
+            "name": "nine_slice",
+            "kind": "mod",
+            "description": "Nine-slice scalable sprite for UI panels and borders.",
+            "file": "src/sprite/mod.rs",
+            "line": 13
+          }
+        ]
+      },
+      "sprite::nine_slice": {
+        "module_doc": "Nine-slice (9-patch) image rendering for scalable UI elements.  A nine-slice divides a texture into 9 regions using 4 border insets: corners are drawn at fixed size, edges stretch in one axis, and the center stretches in both axes. This preserves visual quality when scaling UI panels, buttons, and dialog boxes.",
+        "source_file": "src/sprite/nine_slice.rs",
+        "items": [
+          {
+            "name": "Patch",
+            "kind": "type",
+            "description": "A single patch rectangle: `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)`.",
+            "file": "src/sprite/nine_slice.rs",
+            "line": 11
+          },
+          {
+            "name": "NineSlice",
+            "kind": "struct",
+            "description": "A nine-slice image definition: a texture plus border insets.  The four insets (`top`, `right`, `bottom`, `left`) define pixel distances from each edge of the source texture. These divide the texture into 9 regions:  ```text ┌───────┬─────────────────┬───────┐ │ TL    │    Top Edge      │  TR   │ ├───────┼─────────────────┼───────┤ │ Left  │    Center        │ Right │ │ Edge  │   (stretches)    │ Edge  │ ├───────┼─────────────────┼───────┤ │ BL    │   Bottom Edge    │  BR   │ └───────┴─────────────────┴───────┘ ```  Corners maintain their original pixel dimensions. Edges stretch along one axis. The center stretches in both axes.  # Fields - `e` — `:textures` for the source image.`. - `texture_key` — `TextureKey`. - `top` — `f32`. - `right` — `f32`. - `bottom` — `f32`. - `left` — `f32`. - `tex_width` — `f32`. - `tex_height` — `f32`.",
+            "file": "src/sprite/nine_slice.rs",
+            "line": 43
+          }
+        ]
+      },
+      "sprite::sprite": {
+        "module_doc": "Sprite implementation for the `graphics` subsystem.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for sprite-related operations and data management. Key types exported from this module: `Sprite`. Primary functions: `new()`, `set_position()`, `set_scale()`, `set_rotation()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "source_file": "src/sprite/sprite.rs",
+        "items": [
+          {
+            "name": "Sprite",
+            "kind": "struct",
+            "description": "A textured game object with position, scale, rotation, and tint color.  `Sprite` acts as a transform + tint wrapper around a `Texture`. It does not own the texture; it references it by id in the renderer's texture atlas.  # Fields - `texture_id` — Index into the renderer's texture atlas. - `position` — World-space position of the sprite's origin. - `scale` — Per-axis scale factor; `Vec2::ONE` = original size. - `rotation` — Rotation in radians. - `color` — Multiplicative tint applied to the texture; `Color::WHITE` = no tint.",
+            "file": "src/sprite/sprite.rs",
+            "line": 25
+          }
+        ]
+      },
+      "sprite::sprite_batch": {
+        "module_doc": "Sprite batching for efficient rendering of many sprites sharing one texture.  This module is part of Lurek2D's `graphics` subsystem and provides the implementation details for sprite batch-related operations and data management. Key types exported from this module: `SpriteBatch`, `BatchEntry`. Primary functions: `new()`, `add()`, `clear()`, `texture_key()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "source_file": "src/sprite/sprite_batch.rs",
+        "items": [
+          {
+            "name": "SpriteBatch",
+            "kind": "struct",
+            "description": "A batch of sprites sharing a single texture, drawn in one GPU call.  Created via `lurek.gfx.newSpriteBatch(image_id, max_sprites?)`. Use `add()` to queue sprites and the engine draws them all at once.  # Fields - `e` — `:textures`.`. - `texture_key` — `TextureKey`. - `entries` — `Vec<BatchEntry>`. - `max_entries` — `usize`.",
+            "file": "src/sprite/sprite_batch.rs",
+            "line": 23
+          },
+          {
+            "name": "BatchEntry",
+            "kind": "struct",
+            "description": "A single sprite in a batch, describing position, region, and transform.  # Fields - `x` — `f32`. - `y` — `f32`. - `quad_x` — `f32`. - `quad_y` — `f32`. - `quad_w` — `f32`. - `quad_h` — `f32`. - `rotation` — `f32`. - `sx` — `f32`. - `sy` — `f32`. - `ox` — `f32`. - `oy` — `f32`.",
+            "file": "src/sprite/sprite_batch.rs",
+            "line": 46
+          }
+        ]
+      },
+      "sprite::sprite_sheet": {
+        "module_doc": "Grid-based sprite sheet with directional support and named groups.  Splits a texture into a uniform grid of frames and provides indexed, row/column, named-group, and directional access to the resulting quads.",
+        "source_file": "src/sprite/sprite_sheet.rs",
+        "items": [
+          {
+            "name": "FrameGroup",
+            "kind": "struct",
+            "description": "Named frame group within the sprite sheet.  # Fields - `name` — `String`. - `start_frame` — `usize`. - `count` — `usize`.",
+            "file": "src/sprite/sprite_sheet.rs",
+            "line": 19
+          },
+          {
+            "name": "DirectionLayout",
+            "kind": "enum",
+            "description": "Directional layout for sprite sets. Consult the module-level documentation for the broader usage context and preconditions.  # Variants - `Rows` — Rows variant. - `Columns` — Columns variant.",
+            "file": "src/sprite/sprite_sheet.rs",
+            "line": 34
+          },
+          {
+            "name": "SpriteSheet",
+            "kind": "struct",
+            "description": "Grid-based sprite sheet with directional support and named groups.  # Fields - `frame_width` — `u32`. - `frame_height` — `u32`. - `columns` — `u32`. - `rows` — `u32`. - `texture_width` — `u32`. - `texture_height` — `u32`.  Divides a texture into equal-sized cells and pre-computes UV quads for every frame. Supports named groups and 4/8-directional layouts.",
+            "file": "src/sprite/sprite_sheet.rs",
+            "line": 53
           }
         ]
       },
@@ -9389,6 +9725,19 @@
       "terminal": {
         "module_doc": "Grid-based character-cell terminal emulator and widget toolkit.  The `terminal` module provides a 2D grid of [`TCell`] records together with a lightweight widget system for text-mode UIs such as roguelikes, debug consoles, and retro adventure interfaces.  Grid dimensions are capped at 512 columns by 256 rows. All public coordinate parameters are 1-based while internal storage is 0-based.  ## Tier  `terminal` is a Tier 2 engine extension. It may depend on `math`, `engine`, and Tier 1 modules. It must not import other Tier 2 modules.",
         "source_file": "src/terminal/mod.rs",
+        "items": [
+          {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation and CPU drawing for the terminal module.",
+            "file": "src/terminal/mod.rs",
+            "line": 19
+          }
+        ]
+      },
+      "terminal::render": {
+        "module_doc": "Render-command generation and CPU drawing for the terminal module.  Converts a [`Terminal`] grid into [`RenderCommand`] sequences for GPU rendering, and into an [`ImageData`] for headless CPU rendering. Pure CPU — no wgpu, winit, or mlua imports.",
+        "source_file": "src/terminal/render.rs",
         "items": []
       },
       "terminal::terminal_state": {
@@ -9896,25 +10245,32 @@
             "line": 25
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation for TileMap layers.",
+            "file": "src/tilemap/mod.rs",
+            "line": 27
+          },
+          {
             "name": "large_map_renderer",
             "kind": "mod",
             "description": "Optimized renderer data model for large tile-based maps with chunking and LOD.",
             "file": "src/tilemap/mod.rs",
-            "line": 41
+            "line": 43
           },
           {
             "name": "tile_walker",
             "kind": "mod",
             "description": "Grid-direction walker for tile stepping.",
             "file": "src/tilemap/mod.rs",
-            "line": 43
+            "line": 45
           },
           {
             "name": "polygon_map",
             "kind": "mod",
             "description": "Polygon map with named regions, hit detection, and labeling.",
             "file": "src/tilemap/mod.rs",
-            "line": 46
+            "line": 48
           }
         ]
       },
@@ -9937,6 +10293,11 @@
             "line": 49
           }
         ]
+      },
+      "tilemap::render": {
+        "module_doc": "GPU render-command generation for TileMap layers.  Pure CPU — no wgpu, winit, or mlua imports.  Emits one `SetColor + Rectangle` (or `Circle` for object tiles ≥ 10) per visible non-empty tile across all layers, using the same fallback colour table as [`TileMap::draw_to_image`](super::tilemap::TileMap::draw_to_image).",
+        "source_file": "src/tilemap/render.rs",
+        "items": []
       },
       "tilemap::tile_walker": {
         "module_doc": "Tile-based first-person movement controller with cardinal directions.  This module is part of Lurek2D's `tilemap` subsystem and provides the implementation details for tile walker-related operations and data management. Key types exported from this module: `Facing`, `TileWalker`. Primary functions: `parse()`, `to_str()`, `angle()`, `dx()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
@@ -10696,27 +11057,39 @@
             "line": 41
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render command generation for the widget tree.",
+            "file": "src/ui/mod.rs",
+            "line": 43
+          },
+          {
             "name": "widget",
             "kind": "mod",
             "description": "Core widget trait and shared widget-state types.",
             "file": "src/ui/mod.rs",
-            "line": 43
+            "line": 45
           },
           {
             "name": "data_graph_renderer",
             "kind": "mod",
             "description": "Mathematical function graph and chart renderer (data series, viewport mapping).",
             "file": "src/ui/mod.rs",
-            "line": 63
+            "line": 65
           },
           {
             "name": "chart",
             "kind": "mod",
             "description": "Configurable chart rendering to `ImageData` (line, bar, scatter, pie, area).",
             "file": "src/ui/mod.rs",
-            "line": 67
+            "line": 69
           }
         ]
+      },
+      "ui::render": {
+        "module_doc": "Render command generation for the GUI widget tree.  Converts a [`GuiContext`] widget tree into a flat list of [`RenderCommand`]s that the GPU renderer can execute.  Walks the tree depth-first from the root panel, emitting background rectangles, borders, and text labels for each visible widget according to the active [`Theme`](super::Theme).",
+        "source_file": "src/ui/render.rs",
+        "items": []
       },
       "ui::theme": {
         "module_doc": "A [`Theme`] maps `(WidgetType, WidgetState)` pairs to [`WidgetStyle`] records.  When the GUI context draws a widget it looks up the style for the widget's type and current state, falling back to the `Normal` state style if no state-specific entry exists, and finally to a hard-coded default if the type has no theme entry at all.  The Lua API exposes `lurek.ui.newTheme()`, `theme:setStyle()`, and `lurek.ui.setTheme()` so game scripts can fully customise appearance without touching Rust.",

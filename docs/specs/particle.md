@@ -94,6 +94,7 @@ lurek.particles.newTrail(lifetime, start_width)
 | `shapes.rs`   | `ParticleShape` enum — five geometric render primitives (Square, Circle, Triangle, Spark, Diamond) |
 | `particle.rs` | `Particle` struct — per-particle live state (position, velocity, lifetime, rotation, acceleration) |
 | `emitter.rs`  | `ParticleSystem` struct — simulation loop, physics integration, `build_render_commands()` builder, and inline unit tests |
+| `render.rs`   | `generate_render_commands()` wrappers on `ParticleSystem` and `Trail` — zero-arg aliases used by the engine auto-collection loop |
 | `math.rs`     | Math helpers: `lerp`, `interpolate_sizes`, `interpolate_colors`, `interpolate_alphas`, `rand_range`, `rand_normal` |
 | `emission.rs` | Spawn-offset calculators for area distribution (`emission_offset`) and emission shapes (`emission_shape_offset`) |
 | `trail.rs`    | `Trail` and `TrailPoint` — time-fading ribbon effect with width taper and color gradient |

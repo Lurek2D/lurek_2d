@@ -74,6 +74,9 @@ Segment (segment.rs) ── geometry-only raycaster (no grid)
 | `heightmap.rs`           | `HeightMap` — per-cell variable floor and ceiling heights      |
 | `lighting.rs`            | `PointLight`, `compute_lighting`, `apply_lit_shade`            |
 | `minimap_overlay.rs`     | `extract_minimap` (RGBA crop) and `draw_player_arrow`          |
+| `scene.rs`               | `RaycasterScene` — frame-assembled list of typed quads (WallQuad, FloorQuad, CeilingQuad) |
+| `render.rs`              | `RaycasterScene::generate_render_commands()` — converts scene quads to `RenderCommand::DrawTexturedQuad` (textured) or `SetColor`+`Rectangle` (untextured) |
+| `build_scene.rs`         | `build_scene()` helper — casts rays and fills a `RaycasterScene` from a `Raycaster2D` grid |
 
 ## Submodules
 
@@ -215,6 +218,10 @@ Slide axis for a door. Variants: `Horizontal`, `Vertical`.
 #### `raycaster::doors::DoorState`
 
 Animation state of a door. Variants: `Closed`, `Opening`, `Open`, `Closing`.
+
+## Render Command Generation
+
+`RaycasterScene::generate_render_commands()` (in `render.rs`) converts an assembled scene into a `Vec<RenderCommand>` ready for the GPU render queue. Each textured `WallQuad`, `FloorQuad`, or `CeilingQuad` emits one `RenderCommand::DrawTexturedQuad { corners, uvs, texture_key, color }` with perspective-correct per-corner UV coordinates. Untextured quads fall back to `RenderCommand::SetColor` + `RenderCommand::Rectangle`. The `build_scene()` helper in `build_scene.rs` populates a `RaycasterScene` by casting rays over the full screen width from a player position, fov, and `Raycaster2D` grid.
 
 ## Lua API
 

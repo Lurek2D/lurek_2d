@@ -1447,7 +1447,7 @@ impl LuaUserData for LuaPhysicsShape {
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 /// @return LuaResult<()>
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newWorld --
@@ -1714,6 +1714,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 tbl.set(i + 1, entry)?;
             }
             Ok(tbl)
+        })?,
+    )?;
+
+    // ── debugDraw ──────────────────────────────────
+    /// Enables or disables the physics debug overlay (AABB boxes and velocity vectors).
+    /// @param enable : boolean
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "debugDraw",
+        lua.create_function(move |_, enable: bool| {
+            s.borrow_mut().physics_debug_draw = enable;
+            Ok(())
         })?,
     )?;
 

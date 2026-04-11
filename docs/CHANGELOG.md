@@ -18,6 +18,18 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.7.13] — 2026-04-11
+### Added
+- **Phase 8 — Lua API Exposure** (`lurek.*` surface for render-command capabilities)
+  - `lurek.physics.debugDraw(enable)` — enables/disables the physics debug render overlay (AABB outlines + velocity arrows). Controlled via `SharedState.physics_debug_draw` bool field.
+  - `lurek.ui.drawToImage(w, h)` — renders the full UI widget tree to a CPU `ImageData` at the given pixel resolution; returns a `LuaImageData` userdata. Delegates to `GuiContext::draw_to_image()` in `src/ui/render.rs`.
+- **Phase 9 — Quality gate pass**
+  - `docs/specs/raycaster.md` — added `render.rs`, `scene.rs`, `build_scene.rs` to Source Files table; added "Render Command Generation" section documenting `DrawTexturedQuad` emission.
+  - `docs/specs/ui.md` — added `render.rs` to Source Files table documenting `generate_render_commands()` and `draw_to_image()`.
+  - `docs/specs/particle.md` — added `render.rs` to Source Files table.
+  - All five impacted `AGENT.md` files already list `render.rs` — no changes required.
+  - `SharedState.physics_debug_draw: bool` added (default `false`).
+
 ## [0.7.12] — 2026-04-11
 ### Added
 - **Phase 1 — App auto-collection loop**: `src/app/app.rs` now automatically collects render commands from registered engine modules each frame in the correct draw order, without requiring Lua scripts to call module-level `render()` methods manually.

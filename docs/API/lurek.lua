@@ -1222,6 +1222,26 @@ function Source:stop() end
 ---@return number
 function Source:tell() end
 
+---@class mlua
+local mlua = {}
+
+function mlua:getBitDepth() end
+
+function mlua:getChannelCount() end
+
+function mlua:getDuration() end
+
+---@param index any
+function mlua:getSample(index) end
+
+function mlua:getSampleCount() end
+
+function mlua:getSampleRate() end
+
+---@param index any
+---@param value any
+function mlua:setSample(index, value) end
+
 --- Adds a DSP effect to a bus.
 ---@param bus_name any
 ---@param effect_type_str any
@@ -2111,6 +2131,22 @@ function DataView:getUInt32(offset) end
 ---@param offset any
 ---@return integer
 function DataView:getUInt8(offset) end
+
+---@class mlua
+local mlua = {}
+
+function mlua:clone() end
+
+---@param offset any
+function mlua:getByte(offset) end
+
+function mlua:getSize() end
+
+function mlua:getString() end
+
+---@param offset any
+---@param value any
+function mlua:setByte(offset, value) end
 
 --- Compresses data using the given algorithm (deflate, gzip, lz4).
 ---@param format_str any
@@ -4875,6 +4911,84 @@ function LayeredImage:setVisible(index, visible) end
 ---@param b any
 ---@return boolean
 function LayeredImage:swapLayers(a, b) end
+
+---@class mlua
+local mlua = {}
+
+---@param factor any
+function mlua:alphaMask(factor) end
+
+---@param radius any
+function mlua:blur(radius) end
+
+---@param factor any
+function mlua:brightness(factor) end
+
+---@param factor any
+function mlua:contrast(factor) end
+
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+function mlua:crop(x, y, w, h) end
+
+---@param format any
+function mlua:encode(format) end
+
+---@param r any
+---@param g any
+---@param b any
+---@param a any
+function mlua:fill(r, g, b, a) end
+
+function mlua:flipHorizontal() end
+
+function mlua:flipVertical() end
+
+---@param gamma any
+function mlua:gamma(gamma) end
+
+function mlua:getDimensions() end
+
+function mlua:getHeight() end
+
+---@param x any
+---@param y any
+function mlua:getPixel(x, y) end
+
+function mlua:getString() end
+
+function mlua:getWidth() end
+
+function mlua:grayscale() end
+
+function mlua:invert() end
+
+---@param func any
+function mlua:mapPixel(func) end
+
+---@param amount any
+function mlua:noise(amount) end
+
+---@param levels any
+function mlua:posterize(levels) end
+
+---@param new_w any
+---@param new_h any
+function mlua:resizeNearest(new_w, new_h) end
+
+function mlua:rotate90cw() end
+
+---@param factor any
+function mlua:saturation(factor) end
+
+function mlua:sepia() end
+
+function mlua:sharpen() end
+
+---@param value any
+function mlua:threshold(value) end
 
 --- Returns true if the file at the given path is a DDS file.
 ---@param filename any
@@ -8706,6 +8820,11 @@ function World:toPixels(m) end
 ---@return nil
 function lurek.physics.attachShape(body_ud, shape_ud) end
 
+--- Enables or disables the physics debug overlay (AABB boxes and velocity vectors).
+---@param enable any
+---@return nil
+function lurek.physics.debugDraw(enable) end
+
 --- Marks a physics world for destruction. Subsequent operations on the world
 ---@param world_ud any
 ---@return nil
@@ -11981,6 +12100,12 @@ function Image_Widget:clearFocus() end
 --- Headless compatibility stub for GUI draw.
 ---@return nil
 function Image_Widget:draw() end
+
+--- Renders the UI widget tree to a CPU ImageData at the given resolution.
+---@param w any
+---@param h any
+---@return ImageData
+function Image_Widget:drawToImage(w, h) end
 
 --- Moves focus to the next focusable widget.
 ---@return nil

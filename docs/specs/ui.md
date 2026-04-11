@@ -118,6 +118,7 @@ lurek.ui.update(dt)       →    GuiContext.update(dt) → expire toasts
 | `context.rs` | Central coordinator: `GuiContext` (widget pool, child management, focus cycling, toast queue, input routing), `WidgetKind` (type-erased 32-variant enum), `GuiEvent` (widget state change events). |
 | `data_graph_renderer.rs` | Data visualization: `GraphRenderer` for line/scatter/bar charts with viewport ↔ world mapping, `GraphSeries` enum. Data-only — actual draw calls issued externally by `graphic_api.rs`. |
 | `chart.rs` | CPU-rendered chart images: `ChartConfig`, `ChartMargin`, and `draw_to_image()` functions for line, bar, scatter, pie, and area chart types. Outputs `ImageData` with no GPU dependency. |
+| `render.rs` | `GuiContext::generate_render_commands()` — zero-arg alias for `build_render_commands(FontKey::default())`. `draw_to_image(w, h)` rasterises widget bounding boxes into CPU `ImageData`. Used by the engine auto-collection loop and `lurek.ui.drawToImage`. |
 
 ## Submodules
 

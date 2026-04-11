@@ -363,6 +363,11 @@ pub struct SharedState {
     pub light_world: LightWorld,
     /// Fixed time-step for `process_physics` callback, in seconds (default 1/60).
     pub physics_fixed_dt: f64,
+    /// Whether the physics debug overlay (AABB + velocity vectors) is enabled.
+    ///
+    /// Set via `lurek.physics.debugDraw(true)`.  When `true` the engine appends
+    /// physics render commands after the game-world render pass each frame.
+    pub physics_debug_draw: bool,
     /// Parallax layers registered for engine auto-collection.
     ///
     /// Objects are added here when created via `lurek.parallax.newLayer()`.
@@ -459,6 +464,7 @@ impl SharedState {
             depth_mode: (DepthMode::Always, false),
             light_world: LightWorld::new(),
             physics_fixed_dt: 1.0 / 60.0,
+            physics_debug_draw: false,
             auto_parallax_layers: Vec::new(),
             auto_tilemaps: Vec::new(),
             auto_ui_ctx: None,
