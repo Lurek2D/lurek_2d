@@ -1,16 +1,13 @@
-# `runtime` — Agent Reference
+# runtime
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Core Runtime |
-| **Status** | Implemented |
-| **Lua API** | Indirect / none |
-| **Source** | `src/runtime/` |
-| **Rust Tests** | `tests/rust/unit/window_tests.rs`, `tests/rust/ext/graphics_runtime_smoke_tests.rs`, plus runtime-focused unit coverage embedded in `src/runtime/messages.rs` |
-| **Lua Tests** | `tests/lua/config/test_config.lua`, `tests/lua/harness.rs` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Core Runtime` |
+## General Info
 
----
+- Module group: `Core Runtime`
+- Source path: `src/runtime/`
+- Lua API path(s): None direct
+- Primary Lua namespace: None direct
+- Rust test path(s): tests/rust/unit/window_tests.rs, tests/rust/ext/graphics_runtime_smoke_tests.rs, plus runtime-focused unit coverage embedded in src/runtime/messages.rs
+- Lua test path(s): tests/lua/config/test_config.lua, tests/lua/harness.rs
 
 ## Summary
 
@@ -22,177 +19,97 @@ It intentionally does not own subsystem behavior. Rendering logic lives in `rend
 
 **Scope boundary**: This module currently depends on `audio`, `camera`, `event`, `filesystem`, `input`, `light`, `parallax`, `particle`, and other adjacent modules. It stays within the Core Runtime responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `config.rs`: Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).
+- `error.rs`: Structured error types and result alias for the Lurek2D engine.
+- `log_messages.rs`: Structured logging with stable message IDs for the Lurek2D engine.
+- `messages.rs`: TOML-backed message catalog for stable, human-readable engine log messages.
+- `mod.rs`: Core engine runtime: configuration, error handling, shared state, and resource management.
+- `resource_keys.rs`: Typed resource keys for generational ID-based resource pools.
+- `shared_state.rs`: Central shared runtime state for the Lurek2D engine.
 
-```
-No direct Lua namespace — consumed through app/runtime integration or other bindings
-    |
-    v
-src/runtime/mod.rs
-    |- config.rs - config
-    |- error.rs - error
-    |- log_messages.rs - log_messages
-    |- messages.rs - messages
-    |- resource_keys.rs - resource_keys
-    |- shared_state.rs - shared_state
-```
+## Types
 
----
+- `Config` (`struct`, `config.rs`): Top-level engine configuration.
+- `GraphicsConfig` (`struct`, `config.rs`): GPU backend and power-preference settings resolved once at engine startup.
+- `WindowConfig` (`struct`, `config.rs`): Window dimensions, title, vsync, fullscreen, and resize settings.
+- `ModulesConfig` (`struct`, `config.rs`): Flags to enable or disable optional engine subsystems.
+- `PerformanceConfig` (`struct`, `config.rs`): Frame rate cap and other performance tuning options.
+- `ErrorCategory` (`enum`, `error.rs`): Error category for grouping related engine errors.
+- `EngineError` (`enum`, `error.rs`): All possible error conditions that can occur in the Lurek2D engine.
+- `EngineResult` (`type`, `error.rs`): Convenience alias for `Result<T, EngineError>` used throughout the engine.
+- `MessageCatalog` (`struct`, `messages.rs`): Immutable map from stable message ID (e.g.
+- `TextureKey` (`struct`, `resource_keys.rs`): Key for texture resources stored in SharedState.
+- `FontKey` (`struct`, `resource_keys.rs`): Key for font resources stored in SharedState.
+- `CanvasKey` (`struct`, `resource_keys.rs`): Key for canvas off-screen render targets.
+- `SoundKey` (`struct`, `resource_keys.rs`): Key for audio source entries in the Mixer.
+- `ParticleKey` (`struct`, `resource_keys.rs`): Key for particle system instances.
+- `SpriteBatchKey` (`struct`, `resource_keys.rs`): Key for sprite batch instances.
+- `ShaderKey` (`struct`, `resource_keys.rs`): Key for custom shader instances.
+- `MeshKey` (`struct`, `resource_keys.rs`): Key for mesh instances.
+- `ShapeKey` (`struct`, `resource_keys.rs`): Key for compound shape instances.
+- `BusKey` (`struct`, `resource_keys.rs`): Key for audio bus instances in the Mixer.
+- `MidiPlayerKey` (`struct`, `resource_keys.rs`): Key for MIDI player instances.
+- `QueueableKey` (`struct`, `resource_keys.rs`): Key for queueable audio source instances in the Mixer.
+- `LightKey` (`struct`, `resource_keys.rs`): Key for light source instances in LightWorld.
+- `OccluderKey` (`struct`, `resource_keys.rs`): Key for shadow occluder instances in LightWorld.
+- `FullscreenType` (`enum`, `shared_state.rs`): Fullscreen mode type for window management.
+- `WindowState` (`struct`, `shared_state.rs`): Tracks window state and queues window operations for the event loop.
+- `ErrorInfo` (`struct`, `shared_state.rs`): Structured error information for the last engine error.
+- `ScreenshotRequest` (`struct`, `shared_state.rs`): Pending request to save the next rendered screen frame as a PNG.
+- `SharedState` (`struct`, `shared_state.rs`): Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.
+- `RendererStats` (`struct`, `shared_state.rs`): Snapshot of renderer statistics for a single frame.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `config.rs` | Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy). |
-| `error.rs` | Structured error types and result alias for the Lurek2D engine. |
-| `log_messages.rs` | Structured logging with stable message IDs for the Lurek2D engine. |
-| `messages.rs` | TOML-backed message catalog for stable, human-readable engine log messages. |
-| `mod.rs` | Core engine runtime: configuration, error handling, shared state, and resource management. |
-| `resource_keys.rs` | Typed resource keys for generational ID-based resource pools. |
-| `shared_state.rs` | Central shared runtime state for the Lurek2D engine. |
+- `ModulesConfig::validate_and_fix` (`config.rs`): Enforces dependency constraints so that a partially-disabled config is never internally inconsistent.
+- `Config::load` (`config.rs`): Loads engine configuration from the game directory.
+- `Config::load_from_conf_toml` (`config.rs`): Loads engine configuration from `conf.toml` in the game directory.
+- `Config::load_from_conf_lua` (`config.rs`): Loads engine configuration from `conf.lua` in the game directory.
+- `ErrorCategory::as_str` (`error.rs`): Returns the category name as a lowercase string.
+- `EngineError::code` (`error.rs`): Returns the stable error code for this variant.
+- `EngineError::category` (`error.rs`): Returns the error category for this variant.
+- `EngineError::recovery_hint` (`error.rs`): Returns a human-readable recovery hint for this error variant.
+- `set_log_level` (`log_messages.rs`): Sets the global log level at runtime (called from `lurek.platform.setLogLevel`).
+- `get_log_level` (`log_messages.rs`): Returns the current log level name.
+- `MessageCatalog::from_toml` (`messages.rs`): Parse the embedded TOML source and build a flat ID → text map.
+- `MessageCatalog::get` (`messages.rs`): Look up the human-readable text for a message ID.
+- `MessageCatalog::len` (`messages.rs`): Number of registered message entries.
+- `MessageCatalog::is_empty` (`messages.rs`): Returns `true` if the catalog contains no entries.
+- `init` (`messages.rs`): Initialise the global message catalog from the embedded TOML.
+- `get_message` (`messages.rs`): Resolve a stable message ID to its human-readable text.
+- `catalog` (`messages.rs`): Returns a reference to the global [`MessageCatalog`], or `None` if [`init`] has not been called yet.
+- `SharedState::new` (`shared_state.rs`): Creates a new `SharedState` with the given window dimensions, title, and game directory.
+- `SharedState::step_timer` (`shared_state.rs`): Advances the clock by one tick and syncs `delta_time`, `total_time`, and `fps`.
+- `SharedState::request_async_load` (`shared_state.rs`): Submits a background file-read request, lazily creating the async loader.
+- `SharedState::load_default_fonts` (`shared_state.rs`): Loads all 6 embedded bitmap fonts into `fonts` and stores their keys in `default_fonts`.
+- `SharedState::poll_async_load` (`shared_state.rs`): Polls a pending async load and returns the status and optional data.
+- `SharedState::compute_stats` (`shared_state.rs`): Computes a snapshot of the current renderer statistics.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `runtime::config`
-
-Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).
-
-- **`Config`** (struct): Top-level engine configuration.
-- **`GraphicsConfig`** (struct): GPU backend and power-preference settings resolved once at engine startup.
-- **`WindowConfig`** (struct): Window dimensions, title, vsync, fullscreen, and resize settings.
-- **`ModulesConfig`** (struct): Flags to enable or disable optional engine subsystems.
-- **`PerformanceConfig`** (struct): Frame rate cap and other performance tuning options.
-
-### `runtime::error`
-
-Structured error types and result alias for the Lurek2D engine.
-
-- **`ErrorCategory`** (enum): Error category for grouping related engine errors.
-- **`EngineError`** (enum): All possible error conditions that can occur in the Lurek2D engine.
-- **`EngineResult`** (type): Convenience alias for `Result<T, EngineError>` used throughout the engine.
-
-### `runtime::log_messages`
-
-Structured logging with stable message IDs for the Lurek2D engine.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
-### `runtime::messages`
-
-TOML-backed message catalog for stable, human-readable engine log messages.
-
-- **`MessageCatalog`** (struct): Immutable map from stable message ID (e.g.
-
-### `runtime::resource_keys`
-
-Typed resource keys for generational ID-based resource pools.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
-### `runtime::shared_state`
-
-Central shared runtime state for the Lurek2D engine.
-
-- **`FullscreenType`** (enum): Fullscreen mode type for window management.
-- **`WindowState`** (struct): Tracks window state and queues window operations for the event loop.
-- **`ErrorInfo`** (struct): Structured error information for the last engine error.
-- **`ScreenshotRequest`** (struct): Pending request to save the next rendered screen frame as a PNG.
-- **`SharedState`** (struct): Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.
-- **`RendererStats`** (struct): Snapshot of renderer statistics for a single frame.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `Config`
-
-Top-level engine configuration.
-
-#### `GraphicsConfig`
-
-GPU backend and power-preference settings resolved once at engine startup.
-
-#### `WindowConfig`
-
-Window dimensions, title, vsync, fullscreen, and resize settings.
-
-#### `ModulesConfig`
-
-Flags to enable or disable optional engine subsystems.
-
-#### `PerformanceConfig`
-
-Frame rate cap and other performance tuning options.
-
-#### `ErrorCategory`
-
-Error category for grouping related engine errors.
-
-#### `EngineError`
-
-All possible error conditions that can occur in the Lurek2D engine.
-
-#### `EngineResult`
-
-Convenience alias for `Result<T, EngineError>` used throughout the engine.
-
----
-
-## Lua API
-
-This module does not expose a dedicated direct Lua namespace. It is consumed indirectly through higher-level engine callbacks, shared state, or other `lurek.*` surfaces.
-
----
-
-## Lua Examples
-
-```lua
--- This module has no dedicated direct Lua namespace.
--- It is used indirectly through other engine systems.
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 11 |
-| `enum` | 3 |
-| `fn` (Lua API) | 0 |
-| **Total** | **14** |
-
----
+- No dedicated direct `lurek.*` namespace is exposed by this module.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `audio` | Imports or references `audio` from `src/audio/`. | Cross-group dependency from Core Runtime to Platform Services. |
-| `camera` | Imports or references `camera` from `src/camera/`. | Cross-group dependency from Core Runtime to Platform Services. |
-| `event` | Imports or references `event` from `src/event/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-| `filesystem` | Imports or references `filesystem` from `src/filesystem/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-| `input` | Imports or references `input` from `src/input/`. | Cross-group dependency from Core Runtime to Platform Services. |
-| `light` | Imports or references `light` from `src/light/`. | Cross-group dependency from Core Runtime to Platform Services. |
-| `parallax` | Imports or references `parallax` from `src/parallax/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-| `particle` | Imports or references `particle` from `src/particle/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-| `raycaster` | Imports or references `raycaster` from `src/raycaster/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-| `render` | Imports or references `render` from `src/render/`. | Cross-group dependency from Core Runtime to Platform Services. |
-| `sprite` | Imports or references `sprite` from `src/sprite/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-| `tilemap` | Imports or references `tilemap` from `src/tilemap/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-| `timer` | Imports or references `timer` from `src/timer/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-| `ui` | Imports or references `ui` from `src/ui/`. | Cross-group dependency from Core Runtime to Feature Systems. |
-
----
+- `audio`: Imports or references `audio` from `src/audio/`.
+- `camera`: Imports or references `camera` from `src/camera/`.
+- `event`: Imports or references `event` from `src/event/`.
+- `filesystem`: Imports or references `filesystem` from `src/filesystem/`.
+- `input`: Imports or references `input` from `src/input/`.
+- `light`: Imports or references `light` from `src/light/`.
+- `parallax`: Imports or references `parallax` from `src/parallax/`.
+- `particle`: Imports or references `particle` from `src/particle/`.
+- `raycaster`: Imports or references `raycaster` from `src/raycaster/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `sprite`: Imports or references `sprite` from `src/sprite/`.
+- `tilemap`: Imports or references `tilemap` from `src/tilemap/`.
+- `timer`: Imports or references `timer` from `src/timer/`.
+- `ui`: Imports or references `ui` from `src/ui/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/runtime/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
-- **Lua surface**: This module has no dedicated direct `lurek.*` namespace and is typically consumed through higher integration layers.
+- Keep this module reference synchronized with `src/runtime/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.

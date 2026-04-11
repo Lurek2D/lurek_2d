@@ -1,16 +1,13 @@
-# `automation` — Agent Reference
+# automation
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Feature Systems |
-| **Status** | Implemented |
-| **Lua API** | `lurek.automation` |
-| **Source** | `src/automation/` |
-| **Rust Tests** | tests/rust/unit/automation_tests.rs |
-| **Lua Tests** | tests/lua/unit/test_automation.lua |
-| **Architecture** | `docs/architecture/engine-architecture.md § Feature Systems` |
+## General Info
 
----
+- Module group: `Feature Systems`
+- Source path: `src/automation/`
+- Lua API path(s): `src/lua_api/automation_api.rs`
+- Primary Lua namespace: `lurek.automation`
+- Rust test path(s): tests/rust/unit/automation_tests.rs
+- Lua test path(s): tests/lua/unit/test_automation.lua
 
 ## Summary
 
@@ -22,138 +19,78 @@ This module does not own input state, window events, or general scheduling. Real
 
 **Scope boundary**: This module currently depends on `event`, `runtime`. It stays within the Feature Systems responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `mod.rs`: Module root that documents the automation surface and re-exports Script, Simulator, Action, and Step. This is the shortest entry point for understanding what the module exposes to other Rust code.
+- `script.rs`: Defines Script, the named container for a time-sorted list of Steps. It also enforces the step-count cap and supports TOML-based script loading.
+- `simulator.rs`: Defines Simulator and its internal playback state machine. This is the runtime engine that loads scripts, starts and stops playback, advances elapsed time, and pushes synthetic events into the EventQueue.
+- `step.rs`: Defines the Action enum and Step record that describe a single timed automation action. This file is the schema for every script entry regardless of whether it comes from Lua, TOML, or Rust-side tests.
 
-```
-lurek.automation.* (Lua API — src/lua_api/automation_api.rs)
-    |
-    v
-src/automation/mod.rs
-    |- script.rs - script
-    |- simulator.rs - simulator
-    |- step.rs - step
-```
+## Types
 
----
+- `Script` (`struct`, `script.rs`): Named automation script with optional human-readable metadata and an ordered Vec of Step values. It is the durable unit loaded into the simulator and reused across playback runs.
+- `Simulator` (`struct`, `simulator.rs`): Playback engine that owns the script registry, current script selection, elapsed time, next-step index, and running or paused state. This is the type to inspect when behavior changes around script lifecycle, event dispatch timing, or completion rules.
+- `Action` (`enum`, `step.rs`): Enum of supported automation actions such as keypress, mousemove, mousepress, and wait. It is the boundary between script data and concrete EventQueue dispatch behavior.
+- `Step` (`struct`, `step.rs`): One timed automation record with optional fields for key names, scancodes, mouse coordinates, wheel deltas, button data, and text input. It is intentionally flexible so a single structure can represent all supported synthetic input events.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Module root that documents the automation surface and re-exports Script, Simulator, Action, and Step. This is the shortest entry point for understanding what the module exposes to other Rust code. |
-| `script.rs` | Defines Script, the named container for a time-sorted list of Steps. It also enforces the step-count cap and supports TOML-based script loading. |
-| `simulator.rs` | Defines Simulator and its internal playback state machine. This is the runtime engine that loads scripts, starts and stops playback, advances elapsed time, and pushes synthetic events into the EventQueue. |
-| `step.rs` | Defines the Action enum and Step record that describe a single timed automation action. This file is the schema for every script entry regardless of whether it comes from Lua, TOML, or Rust-side tests. |
+- `Script::new` (`script.rs`): Create a new script with the given name and steps.
+- `Script::with_description` (`script.rs`): Create a script with an explicit description string.
+- `Script::step_count` (`script.rs`): Return the number of steps in this script.
+- `Script::from_toml` (`script.rs`): Parse a Script from a TOML string.
+- `Simulator::new` (`simulator.rs`): Create a new `Simulator` with an empty script registry.
+- `Simulator::load` (`simulator.rs`): Load a script into the simulator, replacing any script with the same name.
+- `Simulator::unload` (`simulator.rs`): Remove a loaded script by name.
+- `Simulator::has_script` (`simulator.rs`): Return `true` if a script with the given name is registered.
+- `Simulator::get_scripts` (`simulator.rs`): Return the names of all loaded scripts.
+- `Simulator::start` (`simulator.rs`): Start playback of the named script from the beginning.
+- `Simulator::stop` (`simulator.rs`): Stop playback and reset the simulator to `Idle`.
+- `Simulator::pause` (`simulator.rs`): Pause playback, freezing `elapsed` and the step index.
+- `Simulator::resume` (`simulator.rs`): Resume paused playback from the current position.
+- `Simulator::is_running` (`simulator.rs`): Return `true` if the simulator is in the `Running` state.
+- `Simulator::is_paused` (`simulator.rs`): Return `true` if the simulator is in the `Paused` state.
+- `Simulator::is_complete` (`simulator.rs`): Return `true` if all steps in the active script have been dispatched.
+- `Simulator::current_step` (`simulator.rs`): Return the index of the next step to be dispatched.
+- `Simulator::step_count` (`simulator.rs`): Return the total number of steps in the active script.
+- `Simulator::current_script` (`simulator.rs`): Return the name of the currently active script.
+- `Simulator::elapsed_time` (`simulator.rs`): Return the seconds elapsed since playback started.
+- `Simulator::update` (`simulator.rs`): Advance the playback clock by `dt` seconds and dispatch all due steps.
+- `Action::parse_action` (`step.rs`): Parse an action string into the corresponding variant.
+- `Action::as_str` (`step.rs`): Return the canonical lowercase string representation of this action.
+- `Step::new` (`step.rs`): Create a new Step with required fields set and all optional fields at defaults.
+- `Step::effective_scancode` (`step.rs`): Return the effective scancode for a key event.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `automation::script`
-
-Defines Script, the named container for a time-sorted list of Steps. It also enforces the step-count cap and supports TOML-based script loading.
-
-- **`Script`** (struct): A named simulation script containing an ordered sequence of timed steps.
-
-### `automation::simulator`
-
-Defines Simulator and its internal playback state machine. This is the runtime engine that loads scripts, starts and stops playback, advances elapsed time, and pushes synthetic events into the EventQueue.
-
-- **`Simulator`** (struct): Automated input simulation engine.
-
-### `automation::step`
-
-Defines the Action enum and Step record that describe a single timed automation action. This file is the schema for every script entry regardless of whether it comes from Lua, TOML, or Rust-side tests.
-
-- **`Action`** (enum): The action type for a simulation step.
-- **`Step`** (struct): A single timed step in a simulation script.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `Script`
-
-Named automation script with optional human-readable metadata and an ordered Vec of Step values.
-
-#### `Simulator`
-
-Playback engine that owns the script registry, current script selection, elapsed time, next-step index, and running or paused state.
-
-#### `Step`
-
-One timed automation record with optional fields for key names, scancodes, mouse coordinates, wheel deltas, button data, and text input.
-
-#### `Action`
-
-Enum of supported automation actions such as keypress, mousemove, mousepress, and wait.
-
----
-
-## Lua API
-
-Exposed under `lurek.automation.*` by `src/lua_api/automation_api.rs`.
+- Binding path(s): `src/lua_api/automation_api.rs`
+- Namespace: `lurek.automation`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.automation.load` | Loads a named script from a Lua data table containing a steps array. |
-| `lurek.automation.unload` | Removes a loaded script by name, returning true if it existed. |
-| `lurek.automation.hasScript` | Returns true if a script with the given name is registered. |
-| `lurek.automation.getScripts` | Returns an array of all registered script names. |
-| `lurek.automation.start` | Starts playback of the named script from the beginning. |
-| `lurek.automation.stop` | Stops playback and resets the simulator to idle. |
-| `lurek.automation.pause` | Pauses playback at the current step position. |
-| `lurek.automation.resume` | Resumes playback from a paused position. |
-| `lurek.automation.update` | Advances the playback clock by dt seconds, dispatching due steps. |
-| `lurek.automation.isRunning` | Returns true if the simulator is actively playing a script. |
-| `lurek.automation.isPaused` | Returns true if playback is currently paused. |
-| `lurek.automation.isComplete` | Returns true if all steps in the active script have been dispatched. |
-| `lurek.automation.getCurrentStep` | Returns the index of the next step to be dispatched. |
-| `lurek.automation.getStepCount` | Returns the total number of steps in the active script. |
-| `lurek.automation.getCurrentScript` | Returns the name of the active script, or nil if idle. |
-| `lurek.automation.getElapsedTime` | Returns seconds elapsed since playback started. |
-| `lurek.automation.loadFromToml` | Parses a TOML string and registers it as a named script. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.automation.
-if lurek.automation then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 3 |
-| `enum` | 1 |
-| `fn` (Lua API) | 17 |
-| **Total** | **21** |
-
----
+- `lurek.automation.load`: Loads a named script from a Lua data table containing a steps array.
+- `lurek.automation.unload`: Removes a loaded script by name, returning true if it existed.
+- `lurek.automation.hasScript`: Returns true if a script with the given name is registered.
+- `lurek.automation.getScripts`: Returns an array of all registered script names.
+- `lurek.automation.start`: Starts playback of the named script from the beginning.
+- `lurek.automation.stop`: Stops playback and resets the simulator to idle.
+- `lurek.automation.pause`: Pauses playback at the current step position.
+- `lurek.automation.resume`: Resumes playback from a paused position.
+- `lurek.automation.update`: Advances the playback clock by dt seconds, dispatching due steps.
+- `lurek.automation.isRunning`: Returns true if the simulator is actively playing a script.
+- `lurek.automation.isPaused`: Returns true if playback is currently paused.
+- `lurek.automation.isComplete`: Returns true if all steps in the active script have been dispatched.
+- `lurek.automation.getCurrentStep`: Returns the index of the next step to be dispatched.
+- `lurek.automation.getStepCount`: Returns the total number of steps in the active script.
+- `lurek.automation.getCurrentScript`: Returns the name of the active script, or nil if idle.
+- `lurek.automation.getElapsedTime`: Returns seconds elapsed since playback started.
+- `lurek.automation.loadFromToml`: Parses a TOML string and registers it as a named script.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `event` | Imports or references `event` from `src/event/`. | Cross-group dependency from Feature Systems to Core Runtime. |
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Feature Systems to Core Runtime. |
-
----
+- `event`: Imports or references `event` from `src/event/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/automation/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/automation/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

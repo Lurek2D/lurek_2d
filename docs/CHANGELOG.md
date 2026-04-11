@@ -3,9 +3,14 @@
 All notable changes to Lurek2D are recorded here.
 
 ## [0.7.16] — 2026-04-11
+### Fixed
+- Fixed missing `lurek.animation` methods (`addClip`, `addFramesFromGrid`, `addClipFromGrid`) from generated API docs by correcting rustfmt multiline bindings in `animation_api.rs` to allow parser extraction.
+- Re-encoded `content/examples/animation.lua` to remove cp1252 corruption and updated sprite drawing API usage in comments.
+
 ### Changed
 - Rewrote every `src/<module>/AGENT.md` into a new module-reference format centered on `Module Info`, `Module Purpose`, `Files`, and `Key Types`, and preserved the prior content as sibling `AGENT.legacy.md` backups across all 50 `src/` modules.
 - Generated complete `docs/specs/<module>.md` files for all 50 top-level `src/` modules, added `tools/docs/gen_module_specs.py` as the reusable spec generator, and aligned `tools/validate/validate_module_coverage.py` with the full top-level module set including `bin` and `lua_api`.
+- Merged the former `src/<module>/AGENT.md` content model into `docs/specs/<module>.md`, updated the generator and validators to emit the new `General Info` / `Summary` / `Files` / `Types` / `Functions` / `Lua API Reference` / `References` / `Notes` format, and retired the legacy per-module AGENT files.
 
 ## Versioning scheme
 

@@ -9,7 +9,7 @@ description: "Diagnose and fix threading issues in Lurek2D: Channel deadlocks, W
 - Read `src/thread/mod.rs` for Channel and Worker types
 - Read `src/lua_api/thread_api.rs` for Lua bindings
 - Read `tests/rust/unit/thread_tests.rs` for test patterns
-- Read `src/thread/AGENT.md` for Channel/Worker patterns
+- Read `docs/specs/thread.md` for Channel/Worker patterns
 
 ## Steps
 

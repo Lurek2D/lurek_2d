@@ -1,199 +1,64 @@
-# `<module>` — Agent Reference
+# `<module>`
 
 <!--
-  TEMPLATE — derived from docs/specs/data.md (golden example).
+  TEMPLATE — merged module reference format.
   Copy this file to docs/specs/<module>.md and fill in every section.
-  Required sections: all 10 H2 headers below (Summary through Notes).
-  Follow the data.md pattern: tables of functions with 1-line descriptions.
-  No size limits — match the module's actual complexity.
+  Summary and Notes are manual prose.
+  Files, Types, Functions, Lua API Reference, and References are intended to be
+  scaffolded by tools/docs/gen_module_specs.py and then revised manually.
 -->
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Tier N — <name> |
-| **Status** | Implemented / Partial / Stub |
-| **Lua API** | `lurek.<namespace>` |
-| **Source** | `src/<module>/` |
-| **Rust Tests** | `tests/rust/unit/<module>_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_<module>.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md` § <section> |
+## General Info
 
----
+- Module group: `<Foundations | Core Runtime | Platform Services | Feature Systems | Edge/Integration>`
+- Source path: `src/<module>/`
+- Lua API path(s): `src/lua_api/<module>_api.rs` or `None direct`
+- Primary Lua namespace: `lurek.<namespace>` or `None direct`
+- Rust test path(s): `tests/rust/unit/<module>_tests.rs`
+- Lua test path(s): `tests/lua/unit/test_<module>.lua`
 
 ## Summary
 
-<!-- Purpose, main types, key design decisions, scope boundary.
-     Use bold for the first mention of each major type.
-     End with a "Scope boundary" sentence naming any modules this one does NOT depend on. -->
+Write several paragraphs of plain text covering the module's overall purpose,
+scope boundary, and why its current responsibilities belong here. Start from
+the old AGENT.md purpose text when migrating, then expand it manually using the
+actual source code for this module.
 
-The `<module>` module is …
+## Files
 
-**TypeA** does X …
-**TypeB** does Y …
+- `mod.rs`: Module root and re-export surface.
+- `type_a.rs`: Describe the file's purpose.
+- `type_b.rs`: Describe the file's purpose.
 
-**Scope boundary**: This module depends only on `math` and `engine` (Baseline). It has no
-GPU, audio, or window dependencies.
+## Types
 
----
+- `TypeA` (`struct`, `type_a.rs`): Describe what the type is for.
+- `TypeB` (`enum`, `type_b.rs`): Describe what the type is for.
 
-## Architecture
+## Functions
 
-<!-- ASCII box diagram showing data flow through the module.
-     Start from the Lua API line → internal components → external crates. -->
+- `TypeA::new` (`type_a.rs`): Describe what the function or method does.
+- `do_work` (`type_b.rs`): Describe what the function does.
 
-```
-lurek.<ns>.* (Lua API — src/lua_api/<module>_api.rs)
-    │
-    ▼
-src/<module>/mod.rs
-    ├── type_a.rs ── TypeA
-    └── type_b.rs ── TypeB (depends on TypeA)
-```
+## Lua API Reference
 
----
-
-## Source Files
-
-<!-- One row per .rs file in src/<module>/. 1–2 sentence purpose per file.
-     DO NOT list files that don't exist. -->
-
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Module root — declares submodules, re-exports public types. |
-| `type_a.rs` | <TypeA description> |
-| `type_b.rs` | <TypeB description> |
-
----
-
-## Submodules
-
-<!-- One H3 per .rs file (excluding mod.rs). Describe what the submodule does
-     and how it connects to the rest of the module. Then a bullet list of its public types. -->
-
-### `<module>::type_a`
-
-<What type_a.rs does, its key algorithm or data structure, and how it's used by the rest.>
-
-- **`TypeA`** (struct): <One-line description>.
-- **`TypeAConfig`** (struct): <One-line description>.
-
-### `<module>::type_b`
-
-<What type_b.rs does.>
-
-- **`TypeB`** (struct): <One-line description>.
-- **`Mode`** (enum): <One-line description — list variants inline>: `VariantA`, `VariantB`.
-
----
-
-## Key Types
-
-<!-- One H4 per exported Rust type that a developer would touch.
-     Cover: what it is, constructors, important methods, relevant fields.
-     DO NOT repeat the Lua API table row description here. -->
-
-### Structs
-
-#### `<module>::type_a::TypeA`
-
-<2–4 sentences: what it holds, constructors, key methods used externally.>
-
-#### `<module>::type_b::TypeB`
-
-<2–4 sentences.>
-
-### Enums
-
-#### `<module>::type_b::Mode`
-
-Variants: `VariantA` (<meaning>), `VariantB` (<meaning>). Parsed via `Mode::from_str()`.
-
----
-
-## Lua API
-
-<!-- This is the CORE section. List EVERY user-visible Lua function.
-     Use one row per function. Format: `lurek.ns.fn(params)` → 1-line description.
-     Group by functional area. UserData methods go in their own sub-table.
-     DO NOT omit any function. DO NOT paste Rust code. DO NOT write paragraphs.
-     Target: 1 table row = 1 function = 1 line of description.
-
-     Reference the actual source: src/lua_api/<module>_api.rs
--->
-
-Exposed under `lurek.<namespace>.*` by `src/lua_api/<module>_api.rs`.
+- Binding path(s): `src/lua_api/<module>_api.rs`
+- Namespace: `lurek.<namespace>`
 
 ### Module Functions
 
-| Function | Description |
-|----------|-------------|
-| `lurek.<ns>.newThing(args)` | Creates a … Returns a `Thing` handle. |
-| `lurek.<ns>.doSomething(thing, x, y)` | Does X to `thing` at position (x, y). |
-| `lurek.<ns>.getCount()` | Returns the total number of active instances. |
+- `lurek.<namespace>.example`: Describe what the binding exposes.
 
-### `Thing` Methods
+### `TypeA` Methods
 
-<!-- One sub-table per UserData type that has methods -->
-
-| Method | Description |
-|--------|-------------|
-| `thing:methodA(param)` | Does A. Returns boolean. |
-| `thing:methodB()` | Does B. No return value. |
-| `thing:getType()` | Returns the string type name of this object. |
-
----
-
-## Lua Examples
-
-<!-- Runnable Lua code block(s). Cover the primary use cases end-to-end.
-     Must be syntactically correct and use only real lurek.* functions.
-     Use comments to label each step. -->
-
-```lua
--- Create and use a Thing
-local t = lurek.<ns>.newThing(...)
-
-lurek.process = function(dt)
-    t:methodA(true)
-end
-
-lurek.render = function()
-    lurek.<ns>.doSomething(t, 100, 200)
-end
-```
-
----
-
-## Item Summary
-
-<!-- Count every exported public Rust item in the module. -->
-
-| Kind | Count |
-|------|-------|
-| `struct` | N |
-| `enum` | N |
-| `fn` (Lua API) | N |
-| **Total** | **N** |
-
----
+- `TypeA:method`: Describe what the Lua-visible method does.
 
 ## References
 
-<!-- Dependencies to OTHER modules. One row per dependency.
-     Only list dependencies that actually exist in the code. -->
-
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `math` | Imports `Vec2`, `Color` from `src/math/`. | Read-only; no writes back to `math`. |
-| `runtime` | Reads `SharedState` for resource pool access. | — |
-
----
+- `math`: Explain why this module depends on or interacts with `src/math/`.
+- `runtime`: Explain the separation of duties with `src/runtime/`.
 
 ## Notes
 
-<!-- Anything that doesn't fit above: gotchas, known limitations, performance notes,
-     planned changes, migration warnings. -->
-
-- **Key gotcha**: …
-- **Performance**: …
-- **Planned**: …
+- Record any important facts that do not fit the sections above.
+- Capture constraints, gotchas, migration warnings, or platform caveats here.

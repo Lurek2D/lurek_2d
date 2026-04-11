@@ -1,17 +1,17 @@
 {
   "meta": {
-    "generated": "2026-04-11T19:17:21.257674+00:00",
+    "generated": "2026-04-11T21:36:08.553237+00:00",
     "generator": "tools/gen_lua_api_data.py",
     "version": "0.7.0",
     "stats": {
-      "lua_functions": 2687,
+      "lua_functions": 2693,
       "lua_modules": 46
     }
   },
   "lua_api": {
     "summary": {
-      "total_functions": 2687,
-      "documented": 2640,
+      "total_functions": 2693,
+      "documented": 2646,
       "coverage_pct": 98.3,
       "modules": 46
     },
@@ -2715,7 +2715,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Animation",
-            "line": 249,
+            "line": 239,
             "file": "src/lua_api/animation_api.rs"
           }
         ],
@@ -2760,6 +2760,149 @@
                 "file": "src/lua_api/animation_api.rs"
               },
               {
+                "name": "addFramesFromGrid",
+                "lua_name": "Animation:addFramesFromGrid",
+                "kind": "method",
+                "owner_type": "Animation",
+                "description": "Slices a sprite-sheet grid into frames and appends them.",
+                "full_doc": "Slices a sprite-sheet grid into frames and appends them.\n@param tex_w : integer\n@param tex_h : integer\n@param frame_w : integer\n@param frame_h : integer\n@param start : integer\n@param count : integer\n@return integer",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "(tw, th, fw, fh, start, count)",
+                "typed_params": [
+                  [
+                    "tex_w",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "tex_h",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "frame_w",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "frame_h",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "start",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "count",
+                    "integer",
+                    false
+                  ]
+                ],
+                "inferred_return": "integer",
+                "line": 42,
+                "file": "src/lua_api/animation_api.rs"
+              },
+              {
+                "name": "addClip",
+                "lua_name": "Animation:addClip",
+                "kind": "method",
+                "owner_type": "Animation",
+                "description": "Adds a named clip from explicit frame indices.",
+                "full_doc": "Adds a named clip from explicit frame indices.\n@param name : string\n@param indices : table\n@param fps : number\n@param looping : boolean\n@return nil",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "(name, indices_tbl, fps, looping)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false
+                  ],
+                  [
+                    "indices",
+                    "table",
+                    false
+                  ],
+                  [
+                    "fps",
+                    "number",
+                    false
+                  ],
+                  [
+                    "looping",
+                    "boolean",
+                    false
+                  ]
+                ],
+                "inferred_return": "nil",
+                "line": 56,
+                "file": "src/lua_api/animation_api.rs"
+              },
+              {
+                "name": "addClipFromGrid",
+                "lua_name": "Animation:addClipFromGrid",
+                "kind": "method",
+                "owner_type": "Animation",
+                "description": "Adds a named clip sliced from a sprite-sheet grid.",
+                "full_doc": "Adds a named clip sliced from a sprite-sheet grid.\n@param name : string\n@param tex_w : integer\n@param tex_h : integer\n@param frame_w : integer\n@param frame_h : integer\n@param start : integer\n@param count : integer\n@param fps : number\n@param looping : boolean\n@return nil",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "(name, tw, th, fw, fh, start, count, fps, looping)",
+                "typed_params": [
+                  [
+                    "name",
+                    "string",
+                    false
+                  ],
+                  [
+                    "tex_w",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "tex_h",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "frame_w",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "frame_h",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "start",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "count",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "fps",
+                    "number",
+                    false
+                  ],
+                  [
+                    "looping",
+                    "boolean",
+                    false
+                  ]
+                ],
+                "inferred_return": "nil",
+                "line": 78,
+                "file": "src/lua_api/animation_api.rs"
+              },
+              {
                 "name": "play",
                 "lua_name": "Animation:play",
                 "kind": "method",
@@ -2777,7 +2920,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 107,
+                "line": 89,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2792,7 +2935,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 112,
+                "line": 94,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2807,7 +2950,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 120,
+                "line": 102,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2822,7 +2965,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 128,
+                "line": 110,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2843,7 +2986,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 137,
+                "line": 119,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2858,7 +3001,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table?",
-                "line": 145,
+                "line": 127,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2873,7 +3016,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 161,
+                "line": 143,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2888,7 +3031,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 178,
+                "line": 160,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2903,7 +3046,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 183,
+                "line": 165,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2918,7 +3061,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string?",
-                "line": 188,
+                "line": 170,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2933,7 +3076,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 195,
+                "line": 177,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2954,7 +3097,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 201,
+                "line": 183,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2969,7 +3112,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 209,
+                "line": 191,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2984,7 +3127,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 216,
+                "line": 198,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -2999,7 +3142,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 223,
+                "line": 205,
                 "file": "src/lua_api/animation_api.rs"
               },
               {
@@ -3020,7 +3163,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 231,
+                "line": 213,
                 "file": "src/lua_api/animation_api.rs"
               }
             ]
@@ -33635,7 +33778,7 @@
               ]
             ],
             "inferred_return": "World",
-            "line": 1458,
+            "line": 1445,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33661,7 +33804,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1472,
+            "line": 1459,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33682,7 +33825,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1486,
+            "line": 1473,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33718,7 +33861,7 @@
               ]
             ],
             "inferred_return": "Body",
-            "line": 1501,
+            "line": 1488,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33744,7 +33887,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 1522,
+            "line": 1509,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33780,7 +33923,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1544,
+            "line": 1533,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33806,7 +33949,7 @@
               ]
             ],
             "inferred_return": "boolean",
-            "line": 1564,
+            "line": 1553,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33837,7 +33980,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1579,
+            "line": 1570,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33863,7 +34006,7 @@
               ]
             ],
             "inferred_return": "Shape",
-            "line": 1597,
+            "line": 1588,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33884,7 +34027,7 @@
               ]
             ],
             "inferred_return": "Shape",
-            "line": 1611,
+            "line": 1602,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33920,7 +34063,7 @@
               ]
             ],
             "inferred_return": "Shape",
-            "line": 1623,
+            "line": 1614,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33935,7 +34078,7 @@
             "inferred_sig": "",
             "typed_params": [],
             "inferred_return": "Shape",
-            "line": 1638,
+            "line": 1629,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33956,7 +34099,7 @@
               ]
             ],
             "inferred_return": "Shape",
-            "line": 1659,
+            "line": 1650,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -33982,7 +34125,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1680,
+            "line": 1671,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -34003,7 +34146,7 @@
               ]
             ],
             "inferred_return": "table",
-            "line": 1703,
+            "line": 1694,
             "file": "src/lua_api/physics_api.rs"
           },
           {
@@ -34024,7 +34167,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 1725,
+            "line": 1716,
             "file": "src/lua_api/physics_api.rs"
           }
         ],
@@ -34239,6 +34382,37 @@
                 "file": "src/lua_api/physics_api.rs"
               },
               {
+                "name": "newBody",
+                "lua_name": "World:newBody",
+                "kind": "method",
+                "owner_type": "World",
+                "description": "Creates a new rectangular body and adds it to the world.",
+                "full_doc": "Creates a new rectangular body and adds it to the world.\n@param x : number\n@param y : number\n@param bodyType : string\n@return Body",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "(x, y, bt)",
+                "typed_params": [
+                  [
+                    "x",
+                    "number",
+                    false
+                  ],
+                  [
+                    "y",
+                    "number",
+                    false
+                  ],
+                  [
+                    "bodyType",
+                    "string",
+                    false
+                  ]
+                ],
+                "inferred_return": "Body",
+                "line": 195,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
                 "name": "fixtureCount",
                 "lua_name": "World:fixtureCount",
                 "kind": "method",
@@ -34417,7 +34591,7 @@
                   ]
                 ],
                 "inferred_return": "integer|nil",
-                "line": 768,
+                "line": 772,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34432,7 +34606,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 777,
+                "line": 781,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34447,7 +34621,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 793,
+                "line": 797,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34462,7 +34636,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 809,
+                "line": 813,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34477,7 +34651,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 825,
+                "line": 829,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34498,7 +34672,33 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 844,
+                "line": 848,
+                "file": "src/lua_api/physics_api.rs"
+              },
+              {
+                "name": "setBodyType",
+                "lua_name": "World:setBodyType",
+                "kind": "method",
+                "owner_type": "World",
+                "description": "Changes the body type.",
+                "full_doc": "Changes the body type.\n@param bodyId : integer\n@param bodyType : string",
+                "params_doc": "",
+                "returns_doc": "",
+                "inferred_sig": "(id, bt)",
+                "typed_params": [
+                  [
+                    "bodyId",
+                    "integer",
+                    false
+                  ],
+                  [
+                    "bodyType",
+                    "string",
+                    false
+                  ]
+                ],
+                "inferred_return": "",
+                "line": 867,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34519,7 +34719,7 @@
                   ]
                 ],
                 "inferred_return": "string",
-                "line": 876,
+                "line": 877,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -34539,7 +34739,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 898,
+                "line": 899,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34554,7 +34754,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 903,
+                "line": 904,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34580,7 +34780,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 916,
+                "line": 917,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34595,7 +34795,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 924,
+                "line": 925,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34610,7 +34810,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 932,
+                "line": 933,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34625,7 +34825,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 940,
+                "line": 941,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34651,7 +34851,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 953,
+                "line": 954,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34666,7 +34866,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 965,
+                "line": 966,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34687,7 +34887,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 973,
+                "line": 974,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34702,7 +34902,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 981,
+                "line": 982,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34723,7 +34923,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 989,
+                "line": 990,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34738,7 +34938,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 999,
+                "line": 998,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34759,7 +34959,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1007,
+                "line": 1006,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34774,7 +34974,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1015,
+                "line": 1014,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34795,7 +34995,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1027,
+                "line": 1022,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34810,7 +35010,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1036,
+                "line": 1031,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34825,7 +35025,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1044,
+                "line": 1039,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34840,7 +35040,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1052,
+                "line": 1047,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34861,7 +35061,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1061,
+                "line": 1056,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34876,7 +35076,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1072,
+                "line": 1067,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34897,7 +35097,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1081,
+                "line": 1076,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34912,7 +35112,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1092,
+                "line": 1087,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34933,7 +35133,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1101,
+                "line": 1096,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34948,7 +35148,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1112,
+                "line": 1107,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34969,7 +35169,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1121,
+                "line": 1116,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -34995,7 +35195,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1134,
+                "line": 1129,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35021,7 +35221,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1144,
+                "line": 1139,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35042,7 +35242,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1153,
+                "line": 1148,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35063,7 +35263,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1178,
+                "line": 1173,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35078,7 +35278,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1188,
+                "line": 1183,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35099,7 +35299,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1196,
+                "line": 1191,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35114,7 +35314,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 1206,
+                "line": 1199,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35135,7 +35335,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1214,
+                "line": 1207,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35150,7 +35350,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1224,
+                "line": 1215,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35171,7 +35371,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1232,
+                "line": 1223,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35186,7 +35386,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1242,
+                "line": 1231,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35207,7 +35407,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1250,
+                "line": 1239,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35222,7 +35422,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 1260,
+                "line": 1249,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35243,7 +35443,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1268,
+                "line": 1257,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35258,7 +35458,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 1276,
+                "line": 1265,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35279,7 +35479,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1284,
+                "line": 1273,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35294,7 +35494,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1294,
+                "line": 1283,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -35314,7 +35514,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1342,
+                "line": 1331,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35329,7 +35529,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1356,
+                "line": 1345,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35344,7 +35544,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1368,
+                "line": 1355,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35365,7 +35565,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1402,
+                "line": 1389,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35386,7 +35586,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1411,
+                "line": 1398,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35407,7 +35607,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1420,
+                "line": 1407,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35428,7 +35628,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1429,
+                "line": 1416,
                 "file": "src/lua_api/physics_api.rs"
               },
               {
@@ -35443,7 +35643,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1437,
+                "line": 1424,
                 "file": "src/lua_api/physics_api.rs"
               }
             ]
@@ -36730,7 +36930,7 @@
               ]
             ],
             "inferred_return": "Raycaster",
-            "line": 304,
+            "line": 436,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -36761,7 +36961,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 319,
+            "line": 452,
             "file": "src/lua_api/raycaster_api.rs"
           },
           {
@@ -36787,7 +36987,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 331,
+            "line": 464,
             "file": "src/lua_api/raycaster_api.rs"
           }
         ],
@@ -36823,7 +37023,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 47,
+                "line": 52,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -36849,7 +37049,7 @@
                   ]
                 ],
                 "inferred_return": "integer",
-                "line": 57,
+                "line": 62,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -36870,7 +37070,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 65,
+                "line": 70,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -36896,7 +37096,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 78,
+                "line": 83,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -36911,7 +37111,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 85,
+                "line": 90,
                 "file": "src/lua_api/raycaster_api.rs"
               },
               {
@@ -36926,7 +37126,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 92,
+                "line": 95,
                 "file": "src/lua_api/raycaster_api.rs"
               }
             ]
@@ -36970,7 +37170,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1232,
+            "line": 1235,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -36985,7 +37185,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 1247,
+            "line": 1250,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37016,7 +37216,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1266,
+            "line": 1269,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37031,7 +37231,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 1278,
+            "line": 1281,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37082,7 +37282,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1303,
+            "line": 1306,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37118,7 +37318,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1354,
+            "line": 1359,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37159,7 +37359,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1375,
+            "line": 1380,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37210,7 +37410,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1402,
+            "line": 1407,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37246,7 +37446,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1427,
+            "line": 1434,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37272,7 +37472,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1459,
+            "line": 1466,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37323,7 +37523,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1499,
+            "line": 1506,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37338,7 +37538,7 @@
             "inferred_sig": "(args)",
             "typed_params": [],
             "inferred_return": "",
-            "line": 1530,
+            "line": 1537,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37394,7 +37594,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1579,
+            "line": 1586,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37455,7 +37655,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1715,
+            "line": 1722,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37491,7 +37691,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1779,
+            "line": 1788,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37532,7 +37732,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1816,
+            "line": 1825,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37563,7 +37763,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1857,
+            "line": 1866,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37584,7 +37784,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1873,
+            "line": 1882,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37599,7 +37799,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 1887,
+            "line": 1896,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37620,7 +37820,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1896,
+            "line": 1905,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37635,7 +37835,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 1910,
+            "line": 1919,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37656,7 +37856,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 1921,
+            "line": 1930,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37671,7 +37871,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 1942,
+            "line": 1951,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37697,7 +37897,7 @@
               ]
             ],
             "inferred_return": "Font",
-            "line": 1965,
+            "line": 1974,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37718,7 +37918,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2039,
+            "line": 2068,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37733,7 +37933,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Font?",
-            "line": 2060,
+            "line": 2089,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37748,7 +37948,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "table",
-            "line": 2077,
+            "line": 2106,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37769,7 +37969,7 @@
               ]
             ],
             "inferred_return": "Font",
-            "line": 2093,
+            "line": 2122,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37790,7 +37990,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2117,
+            "line": 2146,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37816,7 +38016,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2139,
+            "line": 2168,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37837,7 +38037,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2160,
+            "line": 2189,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37858,7 +38058,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2181,
+            "line": 2210,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37884,7 +38084,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 2202,
+            "line": 2231,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37905,7 +38105,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2212,
+            "line": 2241,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37926,7 +38126,7 @@
               ]
             ],
             "inferred_return": "number",
-            "line": 2233,
+            "line": 2262,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37952,7 +38152,7 @@
               ]
             ],
             "inferred_return": "table",
-            "line": 2255,
+            "line": 2284,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37973,7 +38173,7 @@
               ]
             ],
             "inferred_return": "Image",
-            "line": 2287,
+            "line": 2316,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -37999,7 +38199,7 @@
               ]
             ],
             "inferred_return": "Canvas",
-            "line": 2343,
+            "line": 2372,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38020,7 +38220,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2369,
+            "line": 2398,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38035,7 +38235,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Canvas?",
-            "line": 2399,
+            "line": 2428,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38056,7 +38256,7 @@
               ]
             ],
             "inferred_return": "integer",
-            "line": 2418,
+            "line": 2447,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38082,7 +38282,7 @@
               ]
             ],
             "inferred_return": "SpriteBatch",
-            "line": 2442,
+            "line": 2471,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38108,7 +38308,7 @@
               ]
             ],
             "inferred_return": "Mesh",
-            "line": 2472,
+            "line": 2501,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38129,7 +38329,7 @@
               ]
             ],
             "inferred_return": "Shader",
-            "line": 2518,
+            "line": 2547,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38150,7 +38350,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2536,
+            "line": 2565,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38165,7 +38365,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Shader?",
-            "line": 2566,
+            "line": 2595,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38211,7 +38411,7 @@
               ]
             ],
             "inferred_return": "Quad",
-            "line": 2592,
+            "line": 2621,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38226,7 +38426,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "",
-            "line": 2606,
+            "line": 2635,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38241,7 +38441,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "",
-            "line": 2619,
+            "line": 2648,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38267,7 +38467,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2632,
+            "line": 2663,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38288,7 +38488,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2646,
+            "line": 2677,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38314,7 +38514,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2661,
+            "line": 2692,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38340,7 +38540,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2677,
+            "line": 2708,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38355,7 +38555,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "",
-            "line": 2690,
+            "line": 2721,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38376,7 +38576,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2702,
+            "line": 2733,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38412,7 +38612,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2727,
+            "line": 2758,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38427,7 +38627,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number?",
-            "line": 2756,
+            "line": 2787,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38463,7 +38663,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2779,
+            "line": 2810,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38499,7 +38699,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2805,
+            "line": 2836,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38514,7 +38714,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 2830,
+            "line": 2862,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38535,7 +38735,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2841,
+            "line": 2873,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38550,7 +38750,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 2855,
+            "line": 2888,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38576,7 +38776,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2867,
+            "line": 2900,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38602,7 +38802,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2895,
+            "line": 2928,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38633,7 +38833,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 2933,
+            "line": 2966,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38648,7 +38848,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 2977,
+            "line": 3010,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38663,7 +38863,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 3010,
+            "line": 3043,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38689,7 +38889,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 3023,
+            "line": 3056,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38704,7 +38904,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 3050,
+            "line": 3083,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38719,7 +38919,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "integer",
-            "line": 3075,
+            "line": 3108,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38734,7 +38934,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "integer",
-            "line": 3084,
+            "line": 3117,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38749,7 +38949,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "integer",
-            "line": 3093,
+            "line": 3126,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38780,7 +38980,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 3109,
+            "line": 3142,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38795,7 +38995,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 3123,
+            "line": 3156,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38810,7 +39010,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "table",
-            "line": 3141,
+            "line": 3174,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38831,7 +39031,7 @@
               ]
             ],
             "inferred_return": "",
-            "line": 3163,
+            "line": 3202,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38852,7 +39052,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 3181,
+            "line": 3220,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38893,7 +39093,7 @@
               ]
             ],
             "inferred_return": "NineSlice",
-            "line": 3199,
+            "line": 3238,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38934,7 +39134,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 3237,
+            "line": 3276,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38949,7 +39149,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "Shape",
-            "line": 3278,
+            "line": 3317,
             "file": "src/lua_api/render_api.rs"
           },
           {
@@ -38964,7 +39164,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "DrawLayer",
-            "line": 3292,
+            "line": 3331,
             "file": "src/lua_api/render_api.rs"
           }
         ],
@@ -38984,7 +39184,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 38,
+                "line": 41,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -38999,7 +39199,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 41,
+                "line": 44,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39014,7 +39214,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 44,
+                "line": 47,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39035,7 +39235,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 48,
+                "line": 51,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39055,7 +39255,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 81,
+                "line": 84,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39070,7 +39270,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 87,
+                "line": 90,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39085,7 +39285,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 97,
+                "line": 100,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39106,7 +39306,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 101,
+                "line": 104,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39126,7 +39326,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 112,
+                "line": 115,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39141,7 +39341,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 123,
+                "line": 126,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39156,7 +39356,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 134,
+                "line": 137,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39171,7 +39371,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 145,
+                "line": 148,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39186,7 +39386,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 158,
+                "line": 161,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39201,7 +39401,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 163,
+                "line": 166,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39227,7 +39427,7 @@
                   ]
                 ],
                 "inferred_return": "number",
-                "line": 185,
+                "line": 188,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39242,7 +39442,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 196,
+                "line": 199,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39257,7 +39457,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 207,
+                "line": 210,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39278,7 +39478,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 219,
+                "line": 222,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39293,7 +39493,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 231,
+                "line": 234,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39308,7 +39508,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 242,
+                "line": 245,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39334,7 +39534,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 255,
+                "line": 258,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39349,7 +39549,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 278,
+                "line": 281,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39364,7 +39564,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 293,
+                "line": 296,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39379,7 +39579,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 298,
+                "line": 301,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39399,7 +39599,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 319,
+                "line": 322,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39414,7 +39614,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 330,
+                "line": 333,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39429,7 +39629,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 341,
+                "line": 344,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39444,7 +39644,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 352,
+                "line": 355,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39459,7 +39659,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 368,
+                "line": 371,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39474,7 +39674,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 373,
+                "line": 376,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39494,7 +39694,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 434,
+                "line": 437,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39509,7 +39709,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 445,
+                "line": 448,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39524,7 +39724,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 456,
+                "line": 459,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39539,7 +39739,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 467,
+                "line": 470,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39554,7 +39754,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 475,
+                "line": 478,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39569,7 +39769,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 480,
+                "line": 483,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39589,7 +39789,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 501,
+                "line": 504,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39610,7 +39810,7 @@
                   ]
                 ],
                 "inferred_return": "number",
-                "line": 513,
+                "line": 516,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39636,7 +39836,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 529,
+                "line": 532,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39657,7 +39857,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 557,
+                "line": 560,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39672,7 +39872,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 576,
+                "line": 579,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39687,7 +39887,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 584,
+                "line": 587,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39702,7 +39902,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 589,
+                "line": 592,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39733,7 +39933,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 612,
+                "line": 615,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39754,7 +39954,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 626,
+                "line": 629,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39769,7 +39969,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 637,
+                "line": 640,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39784,7 +39984,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 652,
+                "line": 655,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39799,7 +39999,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 657,
+                "line": 660,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39819,7 +40019,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 688,
+                "line": 691,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39834,7 +40034,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 713,
+                "line": 716,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39849,7 +40049,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 718,
+                "line": 721,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39864,7 +40064,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 723,
+                "line": 726,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -39884,7 +40084,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 797,
+                "line": 800,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39899,7 +40099,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 808,
+                "line": 811,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39920,7 +40120,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 839,
+                "line": 842,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39956,7 +40156,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1022,
+                "line": 1025,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39971,7 +40171,7 @@
                 "inferred_sig": "",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1035,
+                "line": 1038,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -39992,7 +40192,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1139,
+                "line": 1142,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40007,7 +40207,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1146,
+                "line": 1149,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -40038,7 +40238,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 1165,
+                "line": 1168,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40053,7 +40253,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1173,
+                "line": 1176,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40068,7 +40268,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "void",
-                "line": 1187,
+                "line": 1190,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40083,7 +40283,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1196,
+                "line": 1199,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40098,7 +40298,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1200,
+                "line": 1203,
                 "file": "src/lua_api/render_api.rs"
               },
               {
@@ -40119,7 +40319,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 1205,
+                "line": 1208,
                 "file": "src/lua_api/render_api.rs"
               }
             ]
@@ -47032,6 +47232,21 @@
             "file": "src/lua_api/ui_api.rs"
           },
           {
+            "name": "getRect",
+            "lua_name": "lurek.ui.getRect",
+            "kind": "function",
+            "owner_type": "",
+            "description": "Returns the computed screen-space rectangle after layout.",
+            "full_doc": "Returns the computed screen-space rectangle after layout.\n@return number, number, number, number",
+            "params_doc": "",
+            "returns_doc": "",
+            "inferred_sig": "()",
+            "typed_params": [],
+            "inferred_return": "number",
+            "line": 129,
+            "file": "src/lua_api/ui_api.rs"
+          },
+          {
             "name": "setVisible",
             "lua_name": "lurek.ui.setVisible",
             "kind": "function",
@@ -47049,7 +47264,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 130,
+            "line": 147,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47064,7 +47279,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 146,
+            "line": 163,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47085,7 +47300,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 159,
+            "line": 176,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47100,7 +47315,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "boolean",
-            "line": 181,
+            "line": 198,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47121,7 +47336,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 194,
+            "line": 211,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47136,7 +47351,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 210,
+            "line": 227,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47157,7 +47372,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 225,
+            "line": 242,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47172,7 +47387,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 241,
+            "line": 258,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47187,7 +47402,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "string",
-            "line": 256,
+            "line": 273,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47208,7 +47423,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 272,
+            "line": 289,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47229,7 +47444,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 295,
+            "line": 312,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47244,7 +47459,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 318,
+            "line": 335,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47265,7 +47480,7 @@
               ]
             ],
             "inferred_return": "table",
-            "line": 332,
+            "line": 349,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47286,7 +47501,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 352,
+            "line": 369,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47307,7 +47522,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 366,
+            "line": 383,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47328,7 +47543,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 380,
+            "line": 397,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47354,7 +47569,7 @@
               ]
             ],
             "inferred_return": "boolean",
-            "line": 396,
+            "line": 413,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47390,7 +47605,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 414,
+            "line": 431,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47405,7 +47620,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 435,
+            "line": 452,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47441,7 +47656,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 456,
+            "line": 473,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47456,7 +47671,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 477,
+            "line": 494,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47477,7 +47692,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 495,
+            "line": 512,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47492,7 +47707,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 511,
+            "line": 528,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47518,7 +47733,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 525,
+            "line": 542,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47533,7 +47748,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 543,
+            "line": 560,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47559,7 +47774,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 561,
+            "line": 578,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47574,7 +47789,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 579,
+            "line": 596,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47610,7 +47825,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 599,
+            "line": 616,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47636,7 +47851,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 628,
+            "line": 645,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47651,7 +47866,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "nil",
-            "line": 645,
+            "line": 662,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47672,7 +47887,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 661,
+            "line": 678,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47687,7 +47902,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 677,
+            "line": 694,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47708,7 +47923,7 @@
               ]
             ],
             "inferred_return": "nil",
-            "line": 690,
+            "line": 707,
             "file": "src/lua_api/ui_api.rs"
           },
           {
@@ -47723,7 +47938,7 @@
             "inferred_sig": "()",
             "typed_params": [],
             "inferred_return": "number",
-            "line": 706,
+            "line": 723,
             "file": "src/lua_api/ui_api.rs"
           }
         ],
@@ -47743,7 +47958,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 732,
+                "line": 749,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47758,7 +47973,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 746,
+                "line": 763,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -47778,7 +47993,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 769,
+                "line": 786,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47793,7 +48008,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 782,
+                "line": 799,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -47813,7 +48028,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 805,
+                "line": 822,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47828,7 +48043,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 819,
+                "line": 836,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47843,7 +48058,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 832,
+                "line": 849,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47858,7 +48073,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 845,
+                "line": 862,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47873,7 +48088,7 @@
                 "inferred_sig": "(n)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 858,
+                "line": 875,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47888,7 +48103,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 871,
+                "line": 888,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47903,7 +48118,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 884,
+                "line": 901,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -47923,7 +48138,7 @@
                 "inferred_sig": "(checked)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 907,
+                "line": 924,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47938,7 +48153,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 920,
+                "line": 937,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47953,7 +48168,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 933,
+                "line": 950,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -47968,7 +48183,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 946,
+                "line": 963,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -47988,7 +48203,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 969,
+                "line": 986,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48003,7 +48218,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 982,
+                "line": 999,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48018,7 +48233,7 @@
                 "inferred_sig": "(min, max)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 995,
+                "line": 1012,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48033,7 +48248,7 @@
                 "inferred_sig": "(step)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1010,
+                "line": 1027,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48048,7 +48263,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1023,
+                "line": 1040,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48063,7 +48278,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1036,
+                "line": 1053,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48083,7 +48298,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1059,
+                "line": 1076,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48098,7 +48313,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1072,
+                "line": 1089,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48113,7 +48328,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1085,
+                "line": 1102,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48128,7 +48343,7 @@
                 "inferred_sig": "(min, max)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1098,
+                "line": 1115,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48143,7 +48358,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1113,
+                "line": 1130,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48158,7 +48373,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1126,
+                "line": 1143,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48178,7 +48393,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1149,
+                "line": 1166,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48193,7 +48408,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1162,
+                "line": 1179,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48208,7 +48423,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1178,
+                "line": 1195,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48223,7 +48438,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1191,
+                "line": 1208,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48238,7 +48453,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1204,
+                "line": 1221,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48253,7 +48468,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1223,
+                "line": 1240,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48268,7 +48483,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1238,
+                "line": 1255,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48283,7 +48498,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1251,
+                "line": 1268,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48303,7 +48518,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1274,
+                "line": 1291,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48318,7 +48533,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1287,
+                "line": 1304,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48333,7 +48548,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1302,
+                "line": 1319,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48348,7 +48563,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1315,
+                "line": 1332,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48363,7 +48578,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1328,
+                "line": 1345,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48378,7 +48593,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1347,
+                "line": 1364,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48393,7 +48608,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1362,
+                "line": 1379,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48408,7 +48623,7 @@
                 "inferred_sig": "(h)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1375,
+                "line": 1392,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48428,7 +48643,7 @@
                 "inferred_sig": "(label)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1398,
+                "line": 1415,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48443,7 +48658,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1411,
+                "line": 1428,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48458,7 +48673,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1427,
+                "line": 1444,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48473,7 +48688,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1446,
+                "line": 1463,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48488,7 +48703,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1459,
+                "line": 1476,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48503,7 +48718,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1474,
+                "line": 1491,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48523,7 +48738,7 @@
                 "inferred_sig": "(title)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1497,
+                "line": 1514,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48538,7 +48753,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1510,
+                "line": 1527,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48553,7 +48768,7 @@
                 "inferred_sig": "(scrollable)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1523,
+                "line": 1540,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48573,7 +48788,7 @@
                 "inferred_sig": "(dir)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1546,
+                "line": 1563,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48588,7 +48803,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1561,
+                "line": 1578,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48603,7 +48818,7 @@
                 "inferred_sig": "(spacing)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1574,
+                "line": 1591,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48618,7 +48833,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1587,
+                "line": 1604,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48633,7 +48848,7 @@
                 "inferred_sig": "(n)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1600,
+                "line": 1617,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48648,7 +48863,7 @@
                 "inferred_sig": "(wrap)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1613,
+                "line": 1630,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48663,7 +48878,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 1626,
+                "line": 1643,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48678,7 +48893,7 @@
                 "inferred_sig": "(align)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1639,
+                "line": 1656,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48693,7 +48908,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1652,
+                "line": 1669,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48708,7 +48923,7 @@
                 "inferred_sig": "(justify)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1665,
+                "line": 1682,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48723,7 +48938,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1678,
+                "line": 1695,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48743,7 +48958,7 @@
                 "inferred_sig": "(w, h)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1701,
+                "line": 1718,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48758,7 +48973,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1716,
+                "line": 1733,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48773,7 +48988,7 @@
                 "inferred_sig": "(x, y)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1729,
+                "line": 1746,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48788,7 +49003,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1744,
+                "line": 1761,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48803,7 +49018,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1757,
+                "line": 1774,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48818,7 +49033,7 @@
                 "inferred_sig": "(speed)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1770,
+                "line": 1787,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48833,7 +49048,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1783,
+                "line": 1800,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48853,7 +49068,7 @@
                 "inferred_sig": "(left, top, right, bottom)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1806,
+                "line": 1823,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48868,7 +49083,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1822,
+                "line": 1839,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48883,7 +49098,7 @@
                 "inferred_sig": "(w, h)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1837,
+                "line": 1854,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48898,7 +49113,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 1851,
+                "line": 1868,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48913,7 +49128,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 1864,
+                "line": 1881,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -48933,7 +49148,7 @@
                 "inferred_sig": "(msg)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1903,
+                "line": 1920,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48948,7 +49163,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 1916,
+                "line": 1933,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48963,7 +49178,7 @@
                 "inferred_sig": "(d)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1929,
+                "line": 1946,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48978,7 +49193,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1942,
+                "line": 1959,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -48993,7 +49208,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 1955,
+                "line": 1972,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49008,7 +49223,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 1968,
+                "line": 1985,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49028,7 +49243,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 1991,
+                "line": 2008,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49043,7 +49258,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2004,
+                "line": 2021,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49058,7 +49273,7 @@
                 "inferred_sig": "(thickness)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2017,
+                "line": 2034,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49073,7 +49288,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2030,
+                "line": 2047,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49093,7 +49308,7 @@
                 "inferred_sig": "(text, [parent_index])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2053,
+                "line": 2070,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49108,7 +49323,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2068,
+                "line": 2085,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49123,7 +49338,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2084,
+                "line": 2101,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49138,7 +49353,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 2099,
+                "line": 2116,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49153,7 +49368,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2112,
+                "line": 2129,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49168,7 +49383,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2126,
+                "line": 2143,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49183,7 +49398,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2139,
+                "line": 2156,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49198,7 +49413,7 @@
                 "inferred_sig": "(index, text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2156,
+                "line": 2173,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49213,7 +49428,7 @@
                 "inferred_sig": "(index, icon)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2172,
+                "line": 2189,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49228,7 +49443,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2188,
+                "line": 2205,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49243,7 +49458,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2202,
+                "line": 2219,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49258,7 +49473,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2216,
+                "line": 2233,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49273,7 +49488,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2230,
+                "line": 2247,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49288,7 +49503,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2243,
+                "line": 2260,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49303,7 +49518,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2256,
+                "line": 2273,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49318,7 +49533,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 2272,
+                "line": 2289,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49333,7 +49548,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2286,
+                "line": 2303,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49348,7 +49563,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2304,
+                "line": 2321,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49363,7 +49578,7 @@
                 "inferred_sig": "(index)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2322,
+                "line": 2339,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49383,7 +49598,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2347,
+                "line": 2364,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49398,7 +49613,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2360,
+                "line": 2377,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49413,7 +49628,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2373,
+                "line": 2390,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49428,7 +49643,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2386,
+                "line": 2403,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49443,7 +49658,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2399,
+                "line": 2416,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49458,7 +49673,7 @@
                 "inferred_sig": "(group)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2412,
+                "line": 2429,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49479,7 +49694,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 2426,
+                "line": 2443,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49499,7 +49714,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2448,
+                "line": 2465,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49514,7 +49729,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2461,
+                "line": 2478,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49529,7 +49744,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2474,
+                "line": 2491,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49544,7 +49759,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2487,
+                "line": 2504,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49559,7 +49774,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2500,
+                "line": 2517,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49574,7 +49789,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2513,
+                "line": 2530,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49589,7 +49804,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2526,
+                "line": 2543,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49610,7 +49825,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 2540,
+                "line": 2557,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49630,7 +49845,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2562,
+                "line": 2579,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49645,7 +49860,7 @@
                 "inferred_sig": "(title)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2575,
+                "line": 2592,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49660,7 +49875,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2588,
+                "line": 2605,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49675,7 +49890,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2601,
+                "line": 2618,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49690,7 +49905,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2614,
+                "line": 2631,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49705,7 +49920,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2627,
+                "line": 2644,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49720,7 +49935,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2640,
+                "line": 2657,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49735,7 +49950,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2653,
+                "line": 2670,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49756,7 +49971,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 2667,
+                "line": 2684,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49776,7 +49991,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2688,
+                "line": 2705,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49791,7 +50006,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2701,
+                "line": 2718,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49806,7 +50021,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2714,
+                "line": 2731,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49821,7 +50036,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2727,
+                "line": 2744,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49836,7 +50051,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 2740,
+                "line": 2757,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49851,7 +50066,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2753,
+                "line": 2770,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49866,7 +50081,7 @@
                 "inferred_sig": "(child_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2766,
+                "line": 2783,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49881,7 +50096,7 @@
                 "inferred_sig": "(child_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2779,
+                "line": 2796,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49896,7 +50111,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2792,
+                "line": 2809,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49911,7 +50126,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2805,
+                "line": 2822,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -49931,7 +50146,7 @@
                 "inferred_sig": "(child_idx, side)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2828,
+                "line": 2845,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49946,7 +50161,7 @@
                 "inferred_sig": "(child_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2841,
+                "line": 2858,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49961,7 +50176,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 2854,
+                "line": 2871,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49976,7 +50191,7 @@
                 "inferred_sig": "(side, size)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2867,
+                "line": 2884,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -49991,7 +50206,7 @@
                 "inferred_sig": "(side)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2884,
+                "line": 2901,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50011,7 +50226,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 2911,
+                "line": 2928,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50026,7 +50241,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2924,
+                "line": 2941,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50041,7 +50256,7 @@
                 "inferred_sig": "(id, [tooltip])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2937,
+                "line": 2954,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50056,7 +50271,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2951,
+                "line": 2968,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50077,7 +50292,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 2962,
+                "line": 2979,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50092,7 +50307,7 @@
                 "inferred_sig": "(id)",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 2972,
+                "line": 2989,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50107,7 +50322,7 @@
                 "inferred_sig": "(id, enabled)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 2992,
+                "line": 3009,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50122,7 +50337,7 @@
                 "inferred_sig": "(id, toggled)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3005,
+                "line": 3022,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50137,7 +50352,7 @@
                 "inferred_sig": "(id)",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3018,
+                "line": 3035,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50157,7 +50372,7 @@
                 "inferred_sig": "(menu_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3041,
+                "line": 3058,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50172,7 +50387,7 @@
                 "inferred_sig": "(menu_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3056,
+                "line": 3073,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50187,7 +50402,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3071,
+                "line": 3088,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50202,7 +50417,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3084,
+                "line": 3101,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50222,7 +50437,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3108,
+                "line": 3125,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50237,7 +50452,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3121,
+                "line": 3138,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50252,7 +50467,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3134,
+                "line": 3151,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50267,7 +50482,7 @@
                 "inferred_sig": "(shortcut)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3147,
+                "line": 3164,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50282,7 +50497,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3160,
+                "line": 3177,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50297,7 +50512,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3173,
+                "line": 3190,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50312,7 +50527,7 @@
                 "inferred_sig": "(child_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3186,
+                "line": 3203,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50327,7 +50542,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3201,
+                "line": 3218,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50348,7 +50563,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 3215,
+                "line": 3232,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50368,7 +50583,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3237,
+                "line": 3254,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50383,7 +50598,7 @@
                 "inferred_sig": "(title)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3250,
+                "line": 3267,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50398,7 +50613,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3263,
+                "line": 3280,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50413,7 +50628,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3276,
+                "line": 3293,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50428,7 +50643,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3289,
+                "line": 3306,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50443,7 +50658,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3302,
+                "line": 3319,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50458,7 +50673,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3315,
+                "line": 3332,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50479,7 +50694,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 3333,
+                "line": 3350,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50494,7 +50709,7 @@
                 "inferred_sig": "([content_idx])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3344,
+                "line": 3361,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50509,7 +50724,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3357,
+                "line": 3374,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50524,7 +50739,7 @@
                 "inferred_sig": "(text, [cb])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3370,
+                "line": 3387,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50544,7 +50759,7 @@
                 "inferred_sig": "(text, [width])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3395,
+                "line": 3412,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50559,7 +50774,7 @@
                 "inferred_sig": "(section_idx, text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3408,
+                "line": 3425,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50574,7 +50789,7 @@
                 "inferred_sig": "(section_idx)",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3423,
+                "line": 3440,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50589,7 +50804,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3442,
+                "line": 3459,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50604,7 +50819,7 @@
                 "inferred_sig": "(count)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3455,
+                "line": 3472,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50619,7 +50834,7 @@
                 "inferred_sig": "(section_idx, widget)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3474,
+                "line": 3491,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50639,7 +50854,7 @@
                 "inferred_sig": "(title, [content_idx])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3494,
+                "line": 3511,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50654,7 +50869,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3511,
+                "line": 3528,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50669,7 +50884,7 @@
                 "inferred_sig": "(section_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3524,
+                "line": 3541,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50684,7 +50899,7 @@
                 "inferred_sig": "(section_idx)",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3546,
+                "line": 3563,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50699,7 +50914,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3563,
+                "line": 3580,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50714,7 +50929,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3576,
+                "line": 3593,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50729,7 +50944,7 @@
                 "inferred_sig": "(section_idx)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3589,
+                "line": 3606,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50749,7 +50964,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3618,
+                "line": 3635,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50764,7 +50979,7 @@
                 "inferred_sig": "(text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3631,
+                "line": 3648,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50779,7 +50994,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 3644,
+                "line": 3661,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50794,7 +51009,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3657,
+                "line": 3674,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50809,7 +51024,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3670,
+                "line": 3687,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50824,7 +51039,7 @@
                 "inferred_sig": "([target])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3683,
+                "line": 3700,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50844,7 +51059,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 3707,
+                "line": 3724,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50859,7 +51074,7 @@
                 "inferred_sig": "(r, green, b, [a])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3720,
+                "line": 3737,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50874,7 +51089,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3736,
+                "line": 3753,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50889,7 +51104,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3749,
+                "line": 3766,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50904,7 +51119,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3762,
+                "line": 3779,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50919,7 +51134,7 @@
                 "inferred_sig": "(mode)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3775,
+                "line": 3792,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50940,7 +51155,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 3789,
+                "line": 3806,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -50960,7 +51175,7 @@
                 "inferred_sig": "(header, [width])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3811,
+                "line": 3828,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50975,7 +51190,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3827,
+                "line": 3844,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -50990,7 +51205,7 @@
                 "inferred_sig": "(cells)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3840,
+                "line": 3857,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51005,7 +51220,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "integer",
-                "line": 3853,
+                "line": 3870,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51020,7 +51235,7 @@
                 "inferred_sig": "(row, col)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3866,
+                "line": 3883,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51035,7 +51250,7 @@
                 "inferred_sig": "(row, col, text)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3889,
+                "line": 3906,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51050,7 +51265,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3904,
+                "line": 3921,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51065,7 +51280,7 @@
                 "inferred_sig": "([row])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3917,
+                "line": 3934,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51080,7 +51295,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 3930,
+                "line": 3947,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51095,7 +51310,7 @@
                 "inferred_sig": "(v)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3943,
+                "line": 3960,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51116,7 +51331,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 3957,
+                "line": 3974,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]
@@ -51136,7 +51351,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "string",
-                "line": 3978,
+                "line": 3995,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51151,7 +51366,7 @@
                 "inferred_sig": "(mode)",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 3991,
+                "line": 4008,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51166,7 +51381,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 4004,
+                "line": 4021,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51181,7 +51396,7 @@
                 "inferred_sig": "(r, green, b, [a])",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 4017,
+                "line": 4034,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51202,7 +51417,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4167,
+                "line": 4184,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51223,7 +51438,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4186,
+                "line": 4203,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51238,7 +51453,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4204,
+                "line": 4221,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51259,7 +51474,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4223,
+                "line": 4240,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51285,7 +51500,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4243,
+                "line": 4260,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51311,7 +51526,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4263,
+                "line": 4280,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51326,7 +51541,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4281,
+                "line": 4298,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51341,7 +51556,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4299,
+                "line": 4316,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51356,7 +51571,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4317,
+                "line": 4334,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51377,7 +51592,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4336,
+                "line": 4353,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51392,7 +51607,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4358,
+                "line": 4375,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51407,7 +51622,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4376,
+                "line": 4393,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51422,7 +51637,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4394,
+                "line": 4411,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51443,7 +51658,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4413,
+                "line": 4430,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51469,7 +51684,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4433,
+                "line": 4450,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51495,7 +51710,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4452,
+                "line": 4469,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51510,7 +51725,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4474,
+                "line": 4491,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51536,7 +51751,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4494,
+                "line": 4511,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51557,7 +51772,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4515,
+                "line": 4532,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51578,7 +51793,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4534,
+                "line": 4551,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51599,7 +51814,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4553,
+                "line": 4570,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51614,7 +51829,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4571,
+                "line": 4588,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51635,7 +51850,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4590,
+                "line": 4607,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51650,7 +51865,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4608,
+                "line": 4625,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51671,7 +51886,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4627,
+                "line": 4644,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51692,7 +51907,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4646,
+                "line": 4663,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51707,7 +51922,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4664,
+                "line": 4681,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51722,7 +51937,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4682,
+                "line": 4699,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51743,7 +51958,7 @@
                   ]
                 ],
                 "inferred_return": "table",
-                "line": 4701,
+                "line": 4718,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51758,7 +51973,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4719,
+                "line": 4736,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51773,7 +51988,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4737,
+                "line": 4754,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51788,7 +52003,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4755,
+                "line": 4772,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51803,7 +52018,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "Theme",
-                "line": 4770,
+                "line": 4787,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51824,7 +52039,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 4785,
+                "line": 4802,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51839,7 +52054,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "boolean",
-                "line": 4801,
+                "line": 4818,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51854,7 +52069,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "table",
-                "line": 4812,
+                "line": 4829,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51875,7 +52090,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 4827,
+                "line": 4844,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51890,7 +52105,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 4845,
+                "line": 4862,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51905,7 +52120,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 4855,
+                "line": 4872,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51920,7 +52135,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 4868,
+                "line": 4885,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51935,7 +52150,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 4881,
+                "line": 4898,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51956,7 +52171,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 4895,
+                "line": 4912,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -51971,7 +52186,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 4916,
+                "line": 4933,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52002,7 +52217,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4930,
+                "line": 4947,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52033,7 +52248,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4946,
+                "line": 4963,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52059,7 +52274,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4961,
+                "line": 4978,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52080,7 +52295,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4973,
+                "line": 4990,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52101,7 +52316,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4985,
+                "line": 5002,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52127,7 +52342,7 @@
                   ]
                 ],
                 "inferred_return": "boolean",
-                "line": 4998,
+                "line": 5015,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52148,7 +52363,7 @@
                   ]
                 ],
                 "inferred_return": "nil",
-                "line": 5009,
+                "line": 5026,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52163,7 +52378,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "nil",
-                "line": 5049,
+                "line": 5066,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52178,7 +52393,7 @@
                 "inferred_sig": "()",
                 "typed_params": [],
                 "inferred_return": "number",
-                "line": 5057,
+                "line": 5074,
                 "file": "src/lua_api/ui_api.rs"
               },
               {
@@ -52204,7 +52419,7 @@
                   ]
                 ],
                 "inferred_return": "ImageData",
-                "line": 5068,
+                "line": 5085,
                 "file": "src/lua_api/ui_api.rs"
               }
             ]

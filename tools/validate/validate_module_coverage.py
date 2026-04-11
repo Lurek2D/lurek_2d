@@ -2,16 +2,17 @@
 """
 validate_module_coverage.py
 ============================
-Validates that every top-level src/<module>/ directory has:
-    1. An AGENT.md file inside it
-    2. A matching docs/specs/<module>.md file
+Validates that every top-level src/<module>/ directory has a matching
+docs/specs/<module>.md file.
 
-Also reports any docs/specs/*.md files that have NO matching src/<module>/ dir
-(these are orphaned specs that should be removed or merged).
+Also reports:
+    - orphan docs/specs/*.md files with no matching src/<module>/ dir
+    - legacy src/<module>/AGENT.md files that should be removed after the
+      merged specs-only migration
 
 Usage:
     python tools/validate/validate_module_coverage.py
-    python tools/validate/validate_module_coverage.py --fix-readme   # also update docs/specs/README.md
+    python tools/validate/validate_module_coverage.py --fix-readme
 """
 
 import os
@@ -25,7 +26,7 @@ SPECS = ROOT / "docs" / "specs"
 SPECS_README = SPECS / "README.md"
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate module spec/AGENT.md coverage")
+    parser = argparse.ArgumentParser(description="Validate merged module spec coverage")
     parser.add_argument("--fix-readme", action="store_true",
                         help="Rewrite docs/specs/README.md to match actual src/ modules")
     args = parser.parse_args()
@@ -46,7 +47,7 @@ def main():
 
     # --- Report ---
     missing_spec = sorted(src_set - spec_set)
-    missing_agent = sorted(m for m in src_modules if not (SRC / m / "AGENT.md").exists())
+    legacy_agent = sorted(m for m in src_modules if (SRC / m / "AGENT.md").exists())
     orphan_specs = sorted(spec_set - src_set)
 
     has_errors = False
@@ -65,23 +66,23 @@ def main():
             print(f"  MISSING_SPEC  src/{m}/")
         print()
 
-    if missing_agent:
+    if legacy_agent:
         has_errors = True
-        print("FAIL — src/ modules without AGENT.md:")
-        for m in missing_agent:
-            print(f"  MISSING_AGENT  src/{m}/AGENT.md")
+        print("FAIL — legacy src/ module AGENT.md files still present:")
+        for m in legacy_agent:
+            print(f"  LEGACY_AGENT  src/{m}/AGENT.md")
         print()
 
 
     if not has_errors:
-        print(f"PASS — All {len(src_modules)} src/ modules have AGENT.md and docs/specs/*.md")
+        print(f"PASS — All {len(src_modules)} src/ modules have docs/specs/*.md and no legacy AGENT.md files")
 
     # Summary counts
     print(f"\nSummary: {len(src_modules)} src modules | "
           f"{len(spec_files)} spec files | "
           f"{len(orphan_specs)} orphans | "
           f"{len(missing_spec)} missing specs | "
-          f"{len(missing_agent)} missing AGENT.md")
+          f"{len(legacy_agent)} legacy AGENT.md files")
 
     if args.fix_readme:
         _rewrite_readme(src_modules)

@@ -718,6 +718,27 @@ lurek.animation = {}
 ---@class Animation
 local Animation = {}
 
+--- Adds a named clip from explicit frame indices.
+---@param name any
+---@param indices_tbl any
+---@param fps any
+---@param looping any
+---@return nil
+function Animation:addClip(name, indices_tbl, fps, looping) end
+
+--- Adds a named clip sliced from a sprite-sheet grid.
+---@param name any
+---@param tw any
+---@param th any
+---@param fw any
+---@param fh any
+---@param start any
+---@param count any
+---@param fps any
+---@param looping any
+---@return nil
+function Animation:addClipFromGrid(name, tw, th, fw, fh, start, count, fps, looping) end
+
 --- Adds a single frame to the frame pool by source rectangle.
 ---@param x any
 ---@param y any
@@ -725,6 +746,16 @@ local Animation = {}
 ---@param h any
 ---@return integer
 function Animation:addFrame(x, y, w, h) end
+
+--- Slices a sprite-sheet grid into frames and appends them.
+---@param tw any
+---@param th any
+---@param fw any
+---@param fh any
+---@param start any
+---@param count any
+---@return integer
+function Animation:addFramesFromGrid(tw, th, fw, fh, start, count) end
 
 --- Returns the name of the currently playing clip, or nil.
 ---@return string?
@@ -8788,6 +8819,18 @@ function World:getMeter() end
 ---@return integer
 function World:jointCount() end
 
+--- Creates a new rectangular body and adds it to the world.
+---@param x any
+---@param y any
+---@param bt any
+---@return Body
+function World:newBody(x, y, bt) end
+
+--- Changes the body type.
+---@param id any
+---@param bt any
+function World:setBodyType(id, bt) end
+
 --- Sets the gravity vector.
 ---@param gx any
 ---@param gy any
@@ -13197,6 +13240,10 @@ function lurek.ui.getPadding() end
 --- Returns the widget position.
 ---@return number
 function lurek.ui.getPosition() end
+
+--- Returns the computed screen-space rectangle after layout.
+---@return number
+function lurek.ui.getRect() end
 
 --- Returns the widget size.
 ---@return number

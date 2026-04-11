@@ -38,16 +38,16 @@ description: "Load this skill when working with the Lurek2D CAG (Copilot Agent C
 
 | Artifact | When to use | Loaded |
 |----------|-------------|--------|
-| **AGENT.md** (`src/<module>/`) | Module-specific architecture, types, constraints, patterns | By agents reading domain context |
+| **Module spec** (`docs/specs/<module>.md`) | Module-specific architecture, types, constraints, patterns | By agents reading domain context |
 | **Skill** (`.github/skills/`) | Cross-cutting reusable workflow — used across multiple modules | Explicitly with `read_file` before task |
 | **Agent** (`.github/agents/`) | Specialist role with a defined mission and restricted scope | Via `runSubagent` or `@AgentName` |
 | **Prompt** (`.github/prompts/`) | Task-driven playbook for a specific operation type | Operator selection |
 
-## Decision Rule: AGENT.md vs Skill vs Prompt
+## Decision Rule: Module Spec vs Skill vs Prompt
 
 ```
 Is the knowledge MODULE-SPECIFIC (types, patterns, invariants for one src/ module)?
-  → AGENT.md in src/<module>/AGENT.md
+  → Module spec in docs/specs/<module>.md
 
 Is it a REUSABLE WORKFLOW or domain pattern used across multiple files/modules?
   → Skill in .github/skills/<name>/SKILL.md
@@ -117,7 +117,7 @@ python tools/validate/cag_validate.py --file .github/skills/my-skill/SKILL.md
 ## Load Order (Runtime)
 
 1. `copilot-instructions.md` — always loaded, system backbone
-2. `src/<module>/AGENT.md` — read explicitly when working in that module
+2. `docs/specs/<module>.md` — read explicitly when working in that module
 3. **Skills** — must be explicitly loaded via `read_file` BEFORE working on task
 4. **Prompts** — operator selects a playbook
 5. **Agents** — spawned via `runSubagent` for specialist work

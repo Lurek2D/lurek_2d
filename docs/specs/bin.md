@@ -1,16 +1,13 @@
-# `bin` — Agent Reference
+# bin
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Edge/Integration |
-| **Status** | Implemented |
-| **Lua API** | Indirect / none |
-| **Source** | `src/bin/` |
-| **Rust Tests** | None dedicated |
-| **Lua Tests** | None |
-| **Architecture** | `docs/architecture/engine-architecture.md § Edge / Integration` |
+## General Info
 
----
+- Module group: `Edge/Integration`
+- Source path: `src/bin/`
+- Lua API path(s): None direct
+- Primary Lua namespace: None direct
+- Rust test path(s): None dedicated
+- Lua test path(s): None
 
 ## Summary
 
@@ -22,84 +19,28 @@ This module does not own configuration parsing, platform initialization, splash 
 
 **Scope boundary**: This module currently acts as a mostly self-contained part of the Edge/Integration layer. Cross-module behavior should remain anchored to the top-level source files and Lua bindings listed below.
 
----
+## Files
 
-## Architecture
+- `lurekc.rs`: Minimal console-less launcher for Windows builds that applies the windows_subsystem attribute and then delegates straight to lurek2d::lurek_run(). This file should stay intentionally tiny because it is only a wrapper binary.
 
-```
-No direct Lua namespace — consumed through app/runtime integration or other bindings
-    |
-    v
-src/bin/mod.rs
-    |- lurekc.rs - lurekc
-```
+## Types
 
----
+- No public Rust types are currently exposed from this module.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `lurekc.rs` | Minimal console-less launcher for Windows builds that applies the windows_subsystem attribute and then delegates straight to lurek2d::lurek_run(). This file should stay intentionally tiny because it is only a wrapper binary. |
+- No public Rust functions are currently exposed from this module.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `bin::lurekc`
-
-Minimal console-less launcher for Windows builds that applies the windows_subsystem attribute and then delegates straight to lurek2d::lurek_run(). This file should stay intentionally tiny because it is only a wrapper binary.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `main`
-
-The only meaningful symbol in this module is the binary entry function in lurekc.rs.
-
----
-
-## Lua API
-
-This module does not expose a dedicated direct Lua namespace. It is consumed indirectly through higher-level engine callbacks, shared state, or other `lurek.*` surfaces.
-
----
-
-## Lua Examples
-
-```lua
--- This module has no dedicated direct Lua namespace.
--- It is used indirectly through other engine systems.
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 0 |
-| `enum` | 0 |
-| `fn` (Lua API) | 0 |
-| **Total** | **0** |
-
----
+- No dedicated direct `lurek.*` namespace is exposed by this module.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| — | No top-level `crate::<module>` imports were detected in this module's source files. | Keep the source files as the primary dependency reference. |
-
----
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/bin/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
-- **Lua surface**: This module has no dedicated direct `lurek.*` namespace and is typically consumed through higher integration layers.
+- Keep this module reference synchronized with `src/bin/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.

@@ -1,6 +1,6 @@
 ---
 name: lua-rust-bridge
-description: "Load this skill when designing or implementing the bridge between Rust engine modules and the lurek.* Lua API: creating UserData types, registration functions, binding domain types to Lua, or keeping src/lua_api/ thin. Use for: new Lua API modules, Lua↔Rust data conversion, AGENT.md↔lua_api sync. Skip it for domain Rust logic, game scripting, or GPU code."
+description: "Load this skill when designing or implementing the bridge between Rust engine modules and the lurek.* Lua API: creating UserData types, registration functions, binding domain types to Lua, or keeping src/lua_api/ thin. Use for: new Lua API modules, Lua↔Rust data conversion, docs/specs↔lua_api sync. Skip it for domain Rust logic, game scripting, or GPU code."
 ---
 
 # Lua↔Rust Bridge — Lurek2D
@@ -10,7 +10,7 @@ description: "Load this skill when designing or implementing the bridge between 
 - Creating a new `lurek.*` API module (`.rs` file in `src/lua_api/`)
 - Wrapping a Rust domain type as a Lua `UserData` object
 - Designing Lua-callable functions for a new subsystem
-- Syncing `src/<module>/AGENT.md` ↔ `src/lua_api/<module>_api.rs`
+- Syncing `docs/specs/<module>.md` ↔ `src/lua_api/<module>_api.rs`
 - Converting data between Lua tables and Rust structs/enums
 - Debugging `LuaError` messages or type mismatch panics at the Lua boundary
 
@@ -21,7 +21,7 @@ description: "Load this skill when designing or implementing the bridge between 
 - `UserData` wrapping and `LunaType` trait
 - Lua↔Rust data conversion patterns (`lua.to_value` / `lua.from_value`)
 - Error conversion to `LuaError` at the bridge boundary
-- AGENT.md ↔ lua_api sync contract
+- docs/specs ↔ lua_api sync contract
 
 ## Bridge Architecture
 
@@ -168,15 +168,15 @@ let result = lua.load(code).eval::<LuaMultiValue>()?;
 | `src/lua_api/debugbridge_api.rs` | `lurek.debug.eval` binding | Eval IS the feature — executes arbitrary code provided by the developer REPL |
 | `src/lua_api/devtools_api.rs` | `debug.getinfo` introspection | Lua `debug` library has no Rust equivalent; needed for stack inspection |
 
-## AGENT.md ↔ lua_api Sync Contract
+## docs/specs ↔ lua_api Sync Contract
 
-Every `src/<module>/AGENT.md` has a `## Lua API` footer pointing to `src/lua_api/<module>_api.rs`.
-Every `src/lua_api/<module>_api.rs` must stay aligned with the module's AGENT.md:
+Every `docs/specs/<module>.md` has a `## Lua API Reference` section aligned with `src/lua_api/<module>_api.rs`.
+Every `src/lua_api/<module>_api.rs` must stay aligned with the module spec:
 
-| AGENT.md | lua_api |
-|----------|---------|
+| docs/specs | lua_api |
+|------------|---------|
 | Public Rust API in `## Key Types` | Should have a Lua wrapper if user-facing |
-| `## Lua API` section describes `lurek.<module>.*` | All listed functions must exist in the api file |
+| `## Lua API Reference` section describes `lurek.<module>.*` | All listed functions must exist in the api file |
 | `## Notes` on constraints | Enforced as `LuaError` at the binding boundary |
 
 To check alignment: `python tools/docs/gen_lua_api_data.py`
@@ -186,7 +186,7 @@ To check alignment: `python tools/docs/gen_lua_api_data.py`
 1. Create `src/lua_api/<module>_api.rs` following the registration pattern
 2. Register it in `src/lua_api/mod.rs` under the appropriate `modules.<flag>` guard
 3. Add `/// @param` / `/// @return` docstrings to every public function
-4. Update `src/<module>/AGENT.md` — add `## Lua API` section listing new functions
+4. Update `docs/specs/<module>.md` — add or revise `## Lua API Reference` to list the new functions
 5. Regenerate API docs: `python tools/docs/gen_lua_api_data.py`
 6. Write Lua BDD test: `tests/lua/unit/test_<module>.lua`
 7. Register the test in `tests/lua/harness.rs`

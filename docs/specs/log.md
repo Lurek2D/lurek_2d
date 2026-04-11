@@ -1,16 +1,13 @@
-# `log` — Agent Reference
+# log
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Foundations |
-| **Status** | Implemented |
-| **Lua API** | `lurek.log` |
-| **Source** | `src/log/` |
-| **Rust Tests** | `tests/rust/unit/log_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_log.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Foundations` |
+## General Info
 
----
+- Module group: `Foundations`
+- Source path: `src/log/`
+- Lua API path(s): `src/lua_api/log_api.rs`
+- Primary Lua namespace: `lurek.log`
+- Rust test path(s): tests/rust/unit/log_tests.rs
+- Lua test path(s): tests/lua/unit/test_log.lua
 
 ## Summary
 
@@ -22,124 +19,65 @@ This module exists to separate logging policy from Lua registration code. The do
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Foundations responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `mod.rs`: Defines the small public domain surface for setting and querying the active log level and re-exports sink-related types.
+- `sinks.rs`: Implements sink filtering and fan-out, including file-backed sinks, bounded memory sinks, and the registry that tracks active outputs.
 
-```
-lurek.log.* (Lua API — src/lua_api/log_api.rs)
-    |
-    v
-src/log/mod.rs
-    |- sinks.rs - sinks
-```
+## Types
 
----
+- `SinkLevel` (`enum`, `sinks.rs`): Severity threshold used by sink filtering. It keeps file and memory sinks consistent even when the Lua caller uses string level names.
+- `MemoryEntry` (`struct`, `sinks.rs`): Captured log record stored by memory sinks. It is intentionally small so Lua tooling can inspect recent messages without coupling to the Rust `log` crate.
+- `SinkKind` (`enum`, `sinks.rs`): Backend enum for the supported sink storage strategies. It distinguishes append-to-file behavior from bounded in-memory buffering.
+- `Sink` (`struct`, `sinks.rs`): Single output destination with an id, minimum level, and concrete backend. It is the unit the Lua API creates, lists, flushes, and removes.
+- `SinkRegistry` (`struct`, `sinks.rs`): Mutable collection of active sinks for one runtime context. The Lua layer keeps one registry per VM and uses it to fan out every emitted message.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Defines the small public domain surface for setting and querying the active log level and re-exports sink-related types. |
-| `sinks.rs` | Implements sink filtering and fan-out, including file-backed sinks, bounded memory sinks, and the registry that tracks active outputs. |
+- `set_level` (`mod.rs`): Sets the active log level to the named value.
+- `get_level` (`mod.rs`): Returns the current log level name as a static string (e.g.
+- `enabled_for` (`mod.rs`): Returns `true` when messages at `level` would be emitted under the current filter.
+- `SinkLevel::from_str` (`sinks.rs`): Parses a level string ("debug", "info", "warn", "error").
+- `SinkLevel::as_str` (`sinks.rs`): Returns a short lowercase string representation.
+- `Sink::file` (`sinks.rs`): Creates a file sink.
+- `Sink::memory` (`sinks.rs`): Creates a memory sink.
+- `Sink::write` (`sinks.rs`): Dispatches a log entry to this sink (no-op when below `min_level`).
+- `Sink::type_name` (`sinks.rs`): Returns the sink type name string.
+- `Sink::path` (`sinks.rs`): Returns the path for a file sink, or `None`.
+- `Sink::read_memory` (`sinks.rs`): Reads all memory entries and optionally drains them.
+- `Sink::flush` (`sinks.rs`): Flushes a file sink (no-op on memory sinks).
+- `SinkRegistry::new` (`sinks.rs`): Creates an empty registry.
+- `SinkRegistry::add` (`sinks.rs`): Adds a sink, returning its assigned id.
+- `SinkRegistry::remove` (`sinks.rs`): Removes a sink by id.
+- `SinkRegistry::clear` (`sinks.rs`): Removes all sinks.
+- `SinkRegistry::dispatch` (`sinks.rs`): Dispatches a log entry to all registered sinks.
+- `SinkRegistry::get` (`sinks.rs`): Returns a sink by id.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `log::sinks`
-
-Implements sink filtering and fan-out, including file-backed sinks, bounded memory sinks, and the registry that tracks active outputs.
-
-- **`SinkLevel`** (enum): Minimum log level that a sink will accept.
-- **`MemoryEntry`** (struct): A single log entry retained by a [`SinkKind::Memory`] sink.
-- **`SinkKind`** (enum): The dispatching strategy for a registered sink.
-- **`Sink`** (struct): A registered log output destination.
-- **`SinkRegistry`** (struct): Thread-local registry of active log sinks.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `SinkLevel`
-
-Severity threshold used by sink filtering.
-
-#### `MemoryEntry`
-
-Captured log record stored by memory sinks.
-
-#### `SinkKind`
-
-Backend enum for the supported sink storage strategies.
-
-#### `Sink`
-
-Single output destination with an id, minimum level, and concrete backend.
-
-#### `SinkRegistry`
-
-Mutable collection of active sinks for one runtime context.
-
----
-
-## Lua API
-
-Exposed under `lurek.log.*` by `src/lua_api/log_api.rs`.
+- Binding path(s): `src/lua_api/log_api.rs`
+- Namespace: `lurek.log`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.log.debug` | Emits a debug-severity log message. Also dispatches to configured sinks. |
-| `lurek.log.info` | Emits an info-severity log message. Also dispatches to configured sinks. |
-| `lurek.log.warn` | Emits a warn-severity log message. Also dispatches to configured sinks. |
-| `lurek.log.error` | Emits an error-severity log message. Also dispatches to configured sinks. |
-| `lurek.log.print` | Emits a log message at the specified level. Also dispatches to sinks. |
-| `lurek.log.setLevel` | Sets the minimum severity level for the default log channel. |
-| `lurek.log.getLevel` | Returns the name of the currently active minimum log level. |
-| `lurek.log.addSink` | Registers a new output sink. Returns its numeric id. |
-| `lurek.log.removeSink` | Removes a sink by id. Returns true if one was removed. |
-| `lurek.log.clearSinks` | Removes all registered sinks (the default stderr channel is unaffected). |
-| `lurek.log.listSinks` | Returns a table describing all registered sinks. |
-| `lurek.log.readMemory` | Reads entries from a memory sink. If drain=true the buffer is cleared. |
-| `lurek.log.flushFile` | Flushes the OS write buffer for a file sink. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.log.
-if lurek.log then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 3 |
-| `enum` | 2 |
-| `fn` (Lua API) | 13 |
-| **Total** | **18** |
-
----
+- `lurek.log.debug`: Emits a debug-severity log message. Also dispatches to configured sinks.
+- `lurek.log.info`: Emits an info-severity log message. Also dispatches to configured sinks.
+- `lurek.log.warn`: Emits a warn-severity log message. Also dispatches to configured sinks.
+- `lurek.log.error`: Emits an error-severity log message. Also dispatches to configured sinks.
+- `lurek.log.print`: Emits a log message at the specified level. Also dispatches to sinks.
+- `lurek.log.setLevel`: Sets the minimum severity level for the default log channel.
+- `lurek.log.getLevel`: Returns the name of the currently active minimum log level.
+- `lurek.log.addSink`: Registers a new output sink. Returns its numeric id.
+- `lurek.log.removeSink`: Removes a sink by id. Returns true if one was removed.
+- `lurek.log.clearSinks`: Removes all registered sinks (the default stderr channel is unaffected).
+- `lurek.log.listSinks`: Returns a table describing all registered sinks.
+- `lurek.log.readMemory`: Reads entries from a memory sink. If drain=true the buffer is cleared.
+- `lurek.log.flushFile`: Flushes the OS write buffer for a file sink.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Foundations to Core Runtime. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/log/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/log/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

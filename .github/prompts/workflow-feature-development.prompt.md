@@ -78,19 +78,19 @@ description: "Full feature development workflow from design to merged code. Use 
     - Delete the original from `src/<module>/`
 14. Gate: no spec-only `.md` files remain inside `src/`
 
-### Phase 8: AGENT.md Update
+### Phase 8: Module Spec Update
 
-15. Update (or create) `src/<module>/AGENT.md`:
-    - **Tier** row must reflect the actual implemented tier (not "Design-stage / Stub")
-    - **Status** row must say `Implemented — Full` (or `Implemented — Partial` with notes)
-    - **Rust Tests** and **Lua Tests** rows must list correct file paths and test counts
-    - Include a **Key Types** table and **Lua API Summary** section listing all exposed functions
-    - Do NOT paste verbatim content from the deleted spec MDs — reference `docs/API/<module>-design.md` instead
-16. Gate: AGENT.md accurately describes the implemented module
+15. Update (or create) `docs/specs/<module>.md`:
+   - `## General Info` must list the correct group, source path, Lua API path(s), and test paths
+   - `## Summary` must describe the implemented module accurately in several paragraphs
+   - `## Files`, `## Types`, `## Functions`, and `## Lua API Reference` must match the implementation
+   - `## References` and `## Notes` must capture the actual dependency edges and important caveats
+   - Do NOT paste verbatim content from deleted design notes without reconciling it against the implementation
+16. Gate: the merged module reference accurately describes the implemented module
 
-### Phase 9: AGENT.md Validation
+### Phase 9: Module Spec Validation
 
-17. Run `python tools/validate/cag_validate.py --file src/<module>/AGENT.md`
+17. Run `python tools/audit/validate_agent_md.py --module <module>`
 18. Gate: validator exits 0 or warns only about non-critical style issues (no ERROR-level findings)
 
 ## Outputs
@@ -101,7 +101,7 @@ description: "Full feature development workflow from design to merged code. Use 
 - Updated `docs/architecture/engine-architecture.md` if modules changed
 - Expanded docstrings on all new public items (full description + structured sections)
 - Design doc at `docs/API/<module>-design.md`
-- Accurate `src/<module>/AGENT.md`
+- Accurate `docs/specs/<module>.md`
 - Clean `cargo check` (dev) → `cargo test && cargo clippy -- -D warnings` (final gate)
 
 ## Acceptance
@@ -114,8 +114,8 @@ description: "Full feature development workflow from design to merged code. Use 
 - [ ] All public items have expanded docstrings (`# Parameters`, `# Fields`, `# Returns` present)
 - [ ] `python tools/docs/collect_docs.py --report-missing` exits 0
 - [ ] Spec MDs removed from `src/` — content in `docs/API/<module>-design.md`
-- [ ] `src/<module>/AGENT.md` tier and test paths are accurate
-- [ ] `python tools/validate/cag_validate.py --file src/<module>/AGENT.md` passes
+- [ ] `docs/specs/<module>.md` general info and test paths are accurate
+- [ ] `python tools/audit/validate_agent_md.py --module <module>` passes
 
 ## References
 

@@ -1,16 +1,13 @@
-# `sprite` — Agent Reference
+# sprite
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Feature Systems |
-| **Status** | Implemented |
-| **Lua API** | Indirect / none |
-| **Source** | `src/sprite/` |
-| **Rust Tests** | none found in the workspace |
-| **Lua Tests** | none found in the workspace |
-| **Architecture** | `docs/architecture/engine-architecture.md § Feature Systems` |
+## General Info
 
----
+- Module group: `Feature Systems.`
+- Source path: `src/sprite/`
+- Lua API path(s): None direct
+- Primary Lua namespace: None direct
+- Rust test path(s): none found in the workspace
+- Lua test path(s): none found in the workspace
 
 ## Summary
 
@@ -20,142 +17,67 @@ Its boundary is deliberately CPU-side: these types hold transforms, atlas region
 
 **Scope boundary**: This module currently depends on `math`, `runtime`. It stays within the Feature Systems responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `mod.rs`: Module root and re-export surface for the public sprite-related types.
+- `nine_slice.rs`: Nine-slice descriptor and patch computation for scalable UI panels and borders.
+- `sprite.rs`: Single sprite data with transform and tint information around a texture identifier.
+- `sprite_batch.rs`: Batch container for many sprite entries that share one texture key.
+- `sprite_sheet.rs`: Grid-based sprite sheet, named frame groups, and optional directional layout helpers.
 
-```
-No direct Lua namespace — consumed through app/runtime integration or other bindings
-    |
-    v
-src/sprite/mod.rs
-    |- nine_slice.rs - nine_slice
-    |- sprite.rs - sprite
-    |- sprite_batch.rs - sprite_batch
-    |- sprite_sheet.rs - sprite_sheet
-```
+## Types
 
----
+- `Patch` (`type`, `nine_slice.rs`): One computed source/destination rectangle tuple produced by a nine-slice layout.
+- `NineSlice` (`struct`, `nine_slice.rs`): Scalable panel descriptor built from one texture plus four insets.
+- `Sprite` (`struct`, `sprite.rs`): Smallest textured sprite unit with position, scale, rotation, and tint.
+- `SpriteBatch` (`struct`, `sprite_batch.rs`): Shared-texture batch container used to prepare many sprite draws efficiently.
+- `BatchEntry` (`struct`, `sprite_batch.rs`): One packed sprite instance inside a batch, including source quad and transform fields.
+- `FrameGroup` (`struct`, `sprite_sheet.rs`): Named frame-range descriptor inside a sprite sheet.
+- `DirectionLayout` (`enum`, `sprite_sheet.rs`): Enum describing whether directional frames are arranged by rows or columns.
+- `SpriteSheet` (`struct`, `sprite_sheet.rs`): Atlas helper that maps grid frames and named groups to reusable regions.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Module root and re-export surface for the public sprite-related types. |
-| `nine_slice.rs` | Nine-slice descriptor and patch computation for scalable UI panels and borders. |
-| `sprite.rs` | Single sprite data with transform and tint information around a texture identifier. |
-| `sprite_batch.rs` | Batch container for many sprite entries that share one texture key. |
-| `sprite_sheet.rs` | Grid-based sprite sheet, named frame groups, and optional directional layout helpers. |
+- `NineSlice::new` (`nine_slice.rs`): Creates a new nine-slice definition.
+- `NineSlice::patches` (`nine_slice.rs`): Returns the 9 source and destination rectangles for rendering.
+- `Sprite::new` (`sprite.rs`): Creates a new `Sprite` at `position` using the texture identified by `texture_id`.
+- `Sprite::set_position` (`sprite.rs`): Sets the world-space position of the sprite.
+- `Sprite::set_scale` (`sprite.rs`): Sets the per-axis scale of the sprite.
+- `Sprite::set_rotation` (`sprite.rs`): Sets the rotation of the sprite in radians.
+- `Sprite::set_color` (`sprite.rs`): Sets the multiplicative tint color applied to the sprite.
+- `SpriteBatch::new` (`sprite_batch.rs`): Creates a new empty sprite batch for the given texture.
+- `SpriteBatch::add` (`sprite_batch.rs`): Adds a sprite entry to the batch.
+- `SpriteBatch::clear` (`sprite_batch.rs`): Removes all entries from the batch.
+- `SpriteBatch::texture_key` (`sprite_batch.rs`): Returns the texture key this batch draws from.
+- `SpriteBatch::entries` (`sprite_batch.rs`): Returns a slice of all batch entries.
+- `SpriteBatch::len` (`sprite_batch.rs`): Returns the number of entries in the batch.
+- `SpriteBatch::is_empty` (`sprite_batch.rs`): Returns true if the batch has no entries.
+- `SpriteBatch::buffer_size` (`sprite_batch.rs`): Returns the maximum number of entries (buffer size).
+- `SpriteSheet::new` (`sprite_sheet.rs`): Create a new sprite sheet by dividing a texture into a uniform grid.
+- `SpriteSheet::get_frame` (`sprite_sheet.rs`): Return the quad for a 0-based frame index.
+- `SpriteSheet::get_frame_count` (`sprite_sheet.rs`): Total number of frames in the sheet.
+- `SpriteSheet::get_frame_size` (`sprite_sheet.rs`): Dimensions of a single frame `(width, height)`.
+- `SpriteSheet::get_grid_size` (`sprite_sheet.rs`): Grid dimensions `(columns, rows)`.
+- `SpriteSheet::get_row` (`sprite_sheet.rs`): Return all frame quads in a 0-based row.
+- `SpriteSheet::get_column` (`sprite_sheet.rs`): Return all frame quads in a 0-based column.
+- `SpriteSheet::get_range` (`sprite_sheet.rs`): Return a contiguous range of frame quads starting at `start` (0-based).
+- `SpriteSheet::name_group` (`sprite_sheet.rs`): Store a named frame group.
+- `SpriteSheet::get_group` (`sprite_sheet.rs`): Return the frame quads for a named group.
+- `SpriteSheet::get_group_names` (`sprite_sheet.rs`): Return the names of all defined groups.
+- `SpriteSheet::set_directions` (`sprite_sheet.rs`): Set the directional mode (4 or 8 directions) and layout.
+- `SpriteSheet::get_direction_frames` (`sprite_sheet.rs`): Return the frame quads for a 0-based direction index.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `sprite::nine_slice`
-
-Nine-slice descriptor and patch computation for scalable UI panels and borders.
-
-- **`Patch`** (type): A single patch rectangle: `(src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)`.
-- **`NineSlice`** (struct): A nine-slice image definition: a texture plus border insets.
-
-### `sprite::sprite`
-
-Single sprite data with transform and tint information around a texture identifier.
-
-- **`Sprite`** (struct): A textured game object with position, scale, rotation, and tint color.
-
-### `sprite::sprite_batch`
-
-Batch container for many sprite entries that share one texture key.
-
-- **`SpriteBatch`** (struct): A batch of sprites sharing a single texture, drawn in one GPU call.
-- **`BatchEntry`** (struct): A single sprite in a batch, describing position, region, and transform.
-
-### `sprite::sprite_sheet`
-
-Grid-based sprite sheet, named frame groups, and optional directional layout helpers.
-
-- **`FrameGroup`** (struct): Named frame group within the sprite sheet.
-- **`DirectionLayout`** (enum): Directional layout for sprite sets.
-- **`SpriteSheet`** (struct): Grid-based sprite sheet with directional support and named groups.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `Sprite`
-
-Smallest textured sprite unit with position, scale, rotation, and tint.
-
-#### `SpriteBatch`
-
-Shared-texture batch container used to prepare many sprite draws efficiently.
-
-#### `BatchEntry`
-
-One packed sprite instance inside a batch, including source quad and transform fields.
-
-#### `SpriteSheet`
-
-Atlas helper that maps grid frames and named groups to reusable regions.
-
-#### `FrameGroup`
-
-Named frame-range descriptor inside a sprite sheet.
-
-#### `DirectionLayout`
-
-Enum describing whether directional frames are arranged by rows or columns.
-
-#### `NineSlice`
-
-Scalable panel descriptor built from one texture plus four insets.
-
-#### `Patch`
-
-One computed source/destination rectangle tuple produced by a nine-slice layout.
-
----
-
-## Lua API
-
-This module does not expose a dedicated direct Lua namespace. It is consumed indirectly through higher-level engine callbacks, shared state, or other `lurek.*` surfaces.
-
----
-
-## Lua Examples
-
-```lua
--- This module has no dedicated direct Lua namespace.
--- It is used indirectly through other engine systems.
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 6 |
-| `enum` | 1 |
-| `fn` (Lua API) | 0 |
-| **Total** | **7** |
-
----
+- No dedicated direct `lurek.*` namespace is exposed by this module.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `math` | Imports or references `math` from `src/math/`. | Cross-group dependency from Feature Systems to Foundations. |
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Feature Systems to Core Runtime. |
-
----
+- `math`: Imports or references `math` from `src/math/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/sprite/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
-- **Lua surface**: This module has no dedicated direct `lurek.*` namespace and is typically consumed through higher integration layers.
+- Keep this module reference synchronized with `src/sprite/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.

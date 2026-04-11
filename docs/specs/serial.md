@@ -1,16 +1,13 @@
-# `serial` — Agent Reference
+# serial
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Foundations |
-| **Status** | Implemented |
-| **Lua API** | `lurek.codec` |
-| **Source** | `src/serial/` |
-| **Rust Tests** | `tests/rust/unit/serial_tests.rs`; inline tests in `src/serial/csv.rs`, `src/serial/json.rs`, `src/serial/toml.rs`, `src/serial/yaml.rs` |
-| **Lua Tests** | `tests/lua/unit/test_serial.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Foundations` |
+## General Info
 
----
+- Module group: `Foundations`
+- Source path: `src/serial/`
+- Lua API path(s): `src/lua_api/serial_api.rs`
+- Primary Lua namespace: `lurek.codec`
+- Rust test path(s): tests/rust/unit/serial_tests.rs; inline tests in src/serial/csv.rs, src/serial/json.rs, src/serial/toml.rs, src/serial/yaml.rs
+- Lua test path(s): tests/lua/unit/test_serial.lua
 
 ## Summary
 
@@ -22,133 +19,51 @@ This module exists so the Lua API can expose one consistent `lurek.codec` namesp
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Foundations responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `csv.rs`: Parses and writes CSV using `CsvOptions`, with support for header-based row maps or positional row sequences.
+- `json.rs`: Converts between JSON text and `SerialValue`, including the module's only built-in structured success logging.
+- `lua_table.rs`: Defines `SerialValue` plus generic conversion between that tree and Lua values and tables.
+- `mod.rs`: Declares the active format drivers and re-exports the public serialization surface used by the Lua bridge and Rust callers.
+- `toml.rs`: Converts between TOML text and `SerialValue`, enforcing TOML-specific constraints such as a table root and no null values.
+- `yaml.rs`: Implements YAML conversion helpers on disk, but the module root does not compile or re-export it.
 
-```
-lurek.codec.* (Lua API — src/lua_api/serial_api.rs)
-    |
-    v
-src/serial/mod.rs
-    |- csv.rs - csv
-    |- json.rs - json
-    |- lua_table.rs - lua_table
-    |- toml.rs - toml
-    |- yaml.rs - yaml
-```
+## Types
 
----
+- `CsvOptions` (`struct`, `csv.rs`): Configuration for CSV parsing and encoding. It controls delimiter choice and whether the first row should be treated as headers.
+- `SerialValue` (`enum`, `lua_table.rs`): Common intermediate representation shared by every active text format driver. It is the central type that keeps JSON, TOML, CSV, and Lua-table conversion decoupled from one another.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `csv.rs` | Parses and writes CSV using `CsvOptions`, with support for header-based row maps or positional row sequences. |
-| `json.rs` | Converts between JSON text and `SerialValue`, including the module's only built-in structured success logging. |
-| `lua_table.rs` | Defines `SerialValue` plus generic conversion between that tree and Lua values and tables. |
-| `mod.rs` | Declares the active format drivers and re-exports the public serialization surface used by the Lua bridge and Rust callers. |
-| `toml.rs` | Converts between TOML text and `SerialValue`, enforcing TOML-specific constraints such as a table root and no null values. |
-| `yaml.rs` | Implements YAML conversion helpers on disk, but the module root does not compile or re-export it. |
+- `from_csv` (`csv.rs`): Parse a CSV string into a `SerialValue`.
+- `to_csv` (`csv.rs`): Serialize a `SerialValue` to a CSV string.
+- `from_json` (`json.rs`): Parse a JSON string into a `SerialValue`.
+- `to_json` (`json.rs`): Serialize a `SerialValue` to a JSON string.
+- `to_lua` (`lua_table.rs`): Converts a `SerialValue` tree into a Lua value tree.
+- `from_lua` (`lua_table.rs`): Converts a Lua value tree into a `SerialValue` tree.
+- `from_toml` (`toml.rs`): Parse a TOML string into a `SerialValue`.
+- `to_toml` (`toml.rs`): Serialize a `SerialValue` to a TOML string.
+- `from_yaml` (`yaml.rs`): Parse a YAML string into a `SerialValue`.
+- `to_yaml` (`yaml.rs`): Serialize a `SerialValue` to a YAML string.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `serial::csv`
-
-Parses and writes CSV using `CsvOptions`, with support for header-based row maps or positional row sequences.
-
-- **`CsvOptions`** (struct): Options for CSV parsing and serialization.
-
-### `serial::json`
-
-Converts between JSON text and `SerialValue`, including the module's only built-in structured success logging.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
-### `serial::lua_table`
-
-Defines `SerialValue` plus generic conversion between that tree and Lua values and tables.
-
-- **`SerialValue`** (enum): A Lurek2D serializable value — the common intermediate representation shared by all serial format modules.
-
-### `serial::toml`
-
-Converts between TOML text and `SerialValue`, enforcing TOML-specific constraints such as a table root and no null values.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
-### `serial::yaml`
-
-Implements YAML conversion helpers on disk, but the module root does not compile or re-export it.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `SerialValue`
-
-Common intermediate representation shared by every active text format driver.
-
-#### `CsvOptions`
-
-Configuration for CSV parsing and encoding.
-
----
-
-## Lua API
-
-Exposed under `lurek.codec.*` by `src/lua_api/serial_api.rs`.
+- Binding path(s): `src/lua_api/serial_api.rs`
+- Namespace: `lurek.codec`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.serial.fromJson` | Parses a JSON string and returns a Lua table. |
-| `lurek.serial.toJson` | Serializes a Lua value to a JSON string. |
-| `lurek.serial.fromToml` | Parses a TOML string and returns a Lua table. |
-| `lurek.serial.toToml` | Serializes a Lua table to a TOML string. |
-| `lurek.serial.fromCsv` | Parses a CSV string and returns a sequence of row tables. |
-| `lurek.serial.toCsv` | Serializes a sequence of row tables to a CSV string. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.codec.
-if lurek.codec then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 1 |
-| `enum` | 1 |
-| `fn` (Lua API) | 6 |
-| **Total** | **8** |
-
----
+- `lurek.serial.fromJson`: Parses a JSON string and returns a Lua table.
+- `lurek.serial.toJson`: Serializes a Lua value to a JSON string.
+- `lurek.serial.fromToml`: Parses a TOML string and returns a Lua table.
+- `lurek.serial.toToml`: Serializes a Lua table to a TOML string.
+- `lurek.serial.fromCsv`: Parses a CSV string and returns a sequence of row tables.
+- `lurek.serial.toCsv`: Serializes a sequence of row tables to a CSV string.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Foundations to Core Runtime. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/serial/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/serial/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

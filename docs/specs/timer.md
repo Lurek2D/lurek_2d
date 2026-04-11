@@ -1,16 +1,13 @@
-# `timer` — Agent Reference
+# timer
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Core Runtime |
-| **Status** | Implemented |
-| **Lua API** | `lurek.time` |
-| **Source** | `src/timer/` |
-| **Rust Tests** | `tests/rust/unit/timer_tests.rs`, `tests/fixtures/timer_api_fixture.rs`, plus inline unit coverage in `src/timer/scheduler.rs` |
-| **Lua Tests** | `tests/lua/unit/test_timer.lua`, `tests/lua/stress/test_timer_stress.lua`, `tests/lua/integration/test_timer_math.lua`, `tests/lua/integration/test_physics_timer.lua`, `tests/lua/integration/test_particle_timer.lua`, `tests/lua/integration/test_audio_timer.lua`, `tests/lua/integration/test_animation_timer.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Core Runtime` |
+## General Info
 
----
+- Module group: `Core Runtime`
+- Source path: `src/timer/`
+- Lua API path(s): `src/lua_api/timer_api.rs`
+- Primary Lua namespace: `lurek.time`
+- Rust test path(s): tests/rust/unit/timer_tests.rs, tests/fixtures/timer_api_fixture.rs, plus inline unit coverage in src/timer/scheduler.rs
+- Lua test path(s): tests/lua/unit/test_timer.lua, tests/lua/stress/test_timer_stress.lua, tests/lua/integration/test_timer_math.lua, tests/lua/integration/test_physics_timer.lua, tests/lua/integration/test_particle_timer.lua, tests/lua/integration/test_audio_timer.lua, tests/lua/integration/test_animation_timer.lua
 
 ## Summary
 
@@ -22,148 +19,93 @@ It intentionally does not own interpolation systems, animation state machines, o
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Core Runtime responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `clock.rs`: `Clock` struct � frame delta, total time, FPS, and rolling average
+- `mod.rs`: Re-exports `Clock` and `Scheduler`; provides free function `sleep()`
+- `scheduler.rs`: `Scheduler` and `ScheduledEvent` � delayed and repeating events
 
-```
-lurek.time.* (Lua API — src/lua_api/timer_api.rs)
-    |
-    v
-src/timer/mod.rs
-    |- clock.rs - clock
-    |- scheduler.rs - scheduler
-```
+## Types
 
----
+- `Clock` (`struct`, `clock.rs`): Tracks per-frame delta time, accumulated total time, and a rolling FPS measurement.
+- `ScheduledEvent` (`struct`, `scheduler.rs`): A single scheduled event with optional name and pause state.
+- `Scheduler` (`struct`, `scheduler.rs`): Manages a collection of timed events (one-shot and repeating).
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `clock.rs` | `Clock` struct � frame delta, total time, FPS, and rolling average |
-| `mod.rs` | Re-exports `Clock` and `Scheduler`; provides free function `sleep()` |
-| `scheduler.rs` | `Scheduler` and `ScheduledEvent` � delayed and repeating events |
+- `Clock::new` (`clock.rs`): Creates a new `Clock`, recording the current instant as the start time.
+- `Clock::tick` (`clock.rs`): Advances the clock by one frame, updating delta time, total time, and rolling FPS.
+- `Clock::delta` (`clock.rs`): Returns the delta time for the most recently completed frame in seconds.
+- `Clock::total` (`clock.rs`): Returns the total elapsed time since the clock was created, in seconds.
+- `Clock::fps` (`clock.rs`): Returns the rolling frames-per-second measurement.
+- `Clock::frame_count` (`clock.rs`): Returns the total number of frames that have elapsed since the clock was created.
+- `Clock::elapsed` (`clock.rs`): Returns a live high-resolution elapsed time since the clock was created, in seconds.
+- `Clock::average_delta` (`clock.rs`): Returns the average delta time over the last N frames (up to 60).
+- `sleep` (`mod.rs`): Suspends the current thread for the given number of seconds.
+- `Scheduler::new` (`scheduler.rs`): Create a new empty Scheduler with time-scale 1.0.
+- `Scheduler::after` (`scheduler.rs`): Schedule a one-shot callback after `delay` seconds.
+- `Scheduler::after_named` (`scheduler.rs`): Schedule a one-shot callback with a `name` for cancel-by-name support.
+- `Scheduler::every` (`scheduler.rs`): Schedule a repeating callback at `interval` seconds.
+- `Scheduler::every_named` (`scheduler.rs`): Schedule a named repeating callback.
+- `Scheduler::cancel` (`scheduler.rs`): Cancel a scheduled event by its ID.
+- `Scheduler::cancel_named` (`scheduler.rs`): Cancel a scheduled event by its name.
+- `Scheduler::cancel_all` (`scheduler.rs`): Cancel all scheduled events.
+- `Scheduler::pause` (`scheduler.rs`): Pause a single event by ID.
+- `Scheduler::resume` (`scheduler.rs`): Resume a previously paused event by ID.
+- `Scheduler::is_paused` (`scheduler.rs`): Returns `true` if the event with `id` is currently paused.
+- `Scheduler::get_remaining` (`scheduler.rs`): Returns the time remaining until the next fire for event `id`, or `None` if not found.
+- `Scheduler::get_interval` (`scheduler.rs`): Returns the base interval for event `id`, or `None` if not found.
+- `Scheduler::get_repeat_count` (`scheduler.rs`): Returns the repeat count remaining for event `id` (-1 = infinite), or `None` if not found.
+- `Scheduler::set_interval` (`scheduler.rs`): Change the interval of a repeating event.
+- `Scheduler::reset_event` (`scheduler.rs`): Reset an event's remaining time to its original interval.
+- `Scheduler::set_time_scale` (`scheduler.rs`): Set the global time-scale multiplier for this scheduler.
+- `Scheduler::get_time_scale` (`scheduler.rs`): Returns the current global time-scale.
+- `Scheduler::update` (`scheduler.rs`): Advance all non-paused timers by `dt * time_scale` seconds.
+- `Scheduler::count` (`scheduler.rs`): Get the number of active (non-expired) scheduled events.
+- `Scheduler::active_ids` (`scheduler.rs`): Get the IDs of all active events.
+- `Scheduler::is_empty` (`scheduler.rs`): Returns `true` if no events are scheduled.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `timer::clock`
-
-`Clock` struct � frame delta, total time, FPS, and rolling average
-
-- **`Clock`** (struct): Tracks per-frame delta time, accumulated total time, and a rolling FPS measurement.
-
-### `timer::scheduler`
-
-`Scheduler` and `ScheduledEvent` � delayed and repeating events
-
-- **`ScheduledEvent`** (struct): A single scheduled event with optional name and pause state.
-- **`Scheduler`** (struct): Manages a collection of timed events (one-shot and repeating).
-
----
-
-## Key Types
-
-### Public Types
-
-#### `Scheduler` is a standalone timed-event manager for delayed and repeating work. It is intentionally generic`
-
-it knows about seconds, intervals, IDs, names, and pause state, but not about Lua callbacks or engine subsystems.
-
-#### `sleep(seconds)` is a very small helper, but it is an important boundary marker`
-
-blocking waits live here only as an explicit utility, not as part of frame scheduling logic.
-
-#### `Clock`
-
-Principal type for the `timer` module.
-
-#### `ScheduledEvent`
-
-Principal type for the `timer` module.
-
-#### `Scheduler`
-
-Principal type for the `timer` module.
-
----
-
-## Lua API
-
-Exposed under `lurek.time.*` by `src/lua_api/timer_api.rs`.
+- Binding path(s): `src/lua_api/timer_api.rs`
+- Namespace: `lurek.time`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.timer.getDelta` | Returns the delta time in seconds for the current frame. |
-| `lurek.timer.getFPS` | Returns the current frames-per-second measurement. |
-| `lurek.timer.getTime` | Returns the total elapsed time since engine start in seconds. |
-| `lurek.timer.getAverageDelta` | Returns the rolling-average frame delta time in seconds. |
-| `lurek.timer.step` | Advances the timer by one frame, returning the delta time. |
-| `lurek.timer.getMicroTime` | Returns the high-resolution elapsed time since engine start in seconds. |
-| `lurek.timer.getPhysicsDelta` | Returns the fixed timestep used by `process_physics` callbacks (seconds). |
-| `lurek.timer.setPhysicsDelta` | Sets the fixed timestep for `process_physics` callbacks (seconds). |
-| `lurek.timer.sleep` | Suspends execution for the given number of seconds. |
-| `lurek.timer.newScheduler` | Creates a new independent Scheduler for managing timed callbacks. |
+- `lurek.timer.getDelta`: Returns the delta time in seconds for the current frame.
+- `lurek.timer.getFPS`: Returns the current frames-per-second measurement.
+- `lurek.timer.getTime`: Returns the total elapsed time since engine start in seconds.
+- `lurek.timer.getAverageDelta`: Returns the rolling-average frame delta time in seconds.
+- `lurek.timer.step`: Advances the timer by one frame, returning the delta time.
+- `lurek.timer.getMicroTime`: Returns the high-resolution elapsed time since engine start in seconds.
+- `lurek.timer.getPhysicsDelta`: Returns the fixed timestep used by `process_physics` callbacks (seconds).
+- `lurek.timer.setPhysicsDelta`: Sets the fixed timestep for `process_physics` callbacks (seconds).
+- `lurek.timer.sleep`: Suspends execution for the given number of seconds.
+- `lurek.timer.newScheduler`: Creates a new independent Scheduler for managing timed callbacks.
 
 ### `Scheduler` Methods
-
-| Method | Description |
-|--------|-------------|
-| `scheduler:after(...)` | Schedules a callback to fire once after a delay. |
-| `scheduler:cancel(...)` | Cancels a scheduled event by its numeric ID. |
-| `scheduler:cancelNamed(...)` | Cancels a scheduled event by its string name. |
-| `scheduler:cancelAll(...)` | Cancels all scheduled events and returns the count removed. |
-| `scheduler:pause(...)` | Pauses a scheduled event by its ID. |
-| `scheduler:resume(...)` | Resumes a paused event by its ID. |
-| `scheduler:isPaused(...)` | Returns whether the given event is currently paused. |
-| `scheduler:getRemaining(...)` | Returns the seconds remaining until the next fire for an event, or nil. |
-| `scheduler:getInterval(...)` | Returns the base interval in seconds for an event, or nil. |
-| `scheduler:getRepeatCount(...)` | Returns the repeat count remaining for an event, or nil. |
-| `scheduler:getCount(...)` | Returns the number of active scheduled events. |
-| `scheduler:isEmpty(...)` | Returns whether the scheduler has no active events. |
-| `scheduler:setInterval(...)` | Changes the repeat interval of an existing event. |
-| `scheduler:resetEvent(...)` | Resets an event's remaining time back to its original interval. |
-| `scheduler:setTimeScale(...)` | Sets a global time-scale multiplier for this scheduler. |
-| `scheduler:getTimeScale(...)` | Returns the current time-scale multiplier. |
-| `scheduler:update(...)` | Advances all timers by dt seconds, firing due callbacks. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.time.
-if lurek.time then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 3 |
-| `enum` | 0 |
-| `fn` (Lua API) | 27 |
-| **Total** | **30** |
-
----
+- `Scheduler:after`: Schedules a callback to fire once after a delay.
+- `Scheduler:cancel`: Cancels a scheduled event by its numeric ID.
+- `Scheduler:cancelNamed`: Cancels a scheduled event by its string name.
+- `Scheduler:cancelAll`: Cancels all scheduled events and returns the count removed.
+- `Scheduler:pause`: Pauses a scheduled event by its ID.
+- `Scheduler:resume`: Resumes a paused event by its ID.
+- `Scheduler:isPaused`: Returns whether the given event is currently paused.
+- `Scheduler:getRemaining`: Returns the seconds remaining until the next fire for an event, or nil.
+- `Scheduler:getInterval`: Returns the base interval in seconds for an event, or nil.
+- `Scheduler:getRepeatCount`: Returns the repeat count remaining for an event, or nil.
+- `Scheduler:getCount`: Returns the number of active scheduled events.
+- `Scheduler:isEmpty`: Returns whether the scheduler has no active events.
+- `Scheduler:setInterval`: Changes the repeat interval of an existing event.
+- `Scheduler:resetEvent`: Resets an event's remaining time back to its original interval.
+- `Scheduler:setTimeScale`: Sets a global time-scale multiplier for this scheduler.
+- `Scheduler:getTimeScale`: Returns the current time-scale multiplier.
+- `Scheduler:update`: Advances all timers by dt seconds, firing due callbacks.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/timer/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/timer/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

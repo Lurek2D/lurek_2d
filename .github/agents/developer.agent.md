@@ -181,7 +181,7 @@ some_engine_call().map_err(LuaError::external)?
 
 ## BEST PRACTICES
 
-- Read the relevant `src/<module>/AGENT.md` before touching that module — it contains the invariants, types, and patterns specific to that subsystem
+- Read the relevant `docs/specs/<module>.md` before touching that module — it contains the invariants, types, and patterns specific to that subsystem
 - Clone `Rc` before every closure; scope `borrow_mut()` to the narrowest block and never hold it across a Lua callback boundary
 - New resource types need a typed key in `src/runtime/resource_keys.rs` plus a corresponding `SlotMap` field in `SharedState` — never use `HashMap<String, T>` for resources
 - Add `///` doc comments to every `pub fn`, `pub struct`, `pub enum`, and `pub trait` before committing — `python tools/docs/collect_docs.py --report-missing` must exit 0

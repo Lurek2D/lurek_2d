@@ -33,5 +33,5 @@ Add a new RenderCommand variant to the rendering pipeline.
 ## References
 
 - `gpu-programming` skill
-- `src/render/AGENT.md`
+- `docs/specs/render.md`
 - `src/render/mod.rs`

@@ -1,16 +1,13 @@
-# `save` — Agent Reference
+# save
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Feature Systems |
-| **Status** | Implemented |
-| **Lua API** | `lurek.save` |
-| **Source** | `src/save/` |
-| **Rust Tests** | `tests/rust/unit/savegame_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_savegame.lua`, `tests/lua/stress/test_savegame_stress.lua`, `tests/lua/security/test_savegame_validation.lua`, `tests/lua/integration/test_save_entity.lua`, `tests/lua/integration/test_savegame_tilemap.lua`, `tests/lua/integration/test_savegame_entity_scene.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Feature Systems` |
+## General Info
 
----
+- Module group: `Feature Systems`
+- Source path: `src/save/`
+- Lua API path(s): `src/lua_api/save_api.rs`
+- Primary Lua namespace: `lurek.save`
+- Rust test path(s): tests/rust/unit/savegame_tests.rs
+- Lua test path(s): tests/lua/unit/test_savegame.lua, tests/lua/stress/test_savegame_stress.lua, tests/lua/security/test_savegame_validation.lua, tests/lua/integration/test_save_entity.lua, tests/lua/integration/test_savegame_tilemap.lua, tests/lua/integration/test_savegame_entity_scene.lua
 
 ## Summary
 
@@ -22,135 +19,96 @@ It intentionally does not own general filesystem policy, encryption, cloud sync,
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Feature Systems responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `mod.rs`: Declares the save submodules and re-exports the public save manager, value, metadata, and serialization-facing types.
+- `save_data.rs`: Holds an alternate save-data type definition set that currently lives in the module tree but is not the primary surface re-exported from `mod.rs`.
+- `save_manager.rs`: Implements `SaveManager`, slot metadata, schema versioning, dirty tracking, collector registration, restore hooks, and auto-save timing.
 
-```
-lurek.save.* (Lua API — src/lua_api/save_api.rs)
-    |
-    v
-src/save/mod.rs
-    |- save_data.rs - save_data
-    |- save_manager.rs - save_manager
-```
+## Types
 
----
+- `SlotMeta` (`struct`, `save_data.rs`): Metadata describing a save slot, such as name, timestamp, version, and summary fields.
+- `SaveManager` (`struct`, `save_data.rs`): The central save coordination object. It owns collectors, restore callbacks, schema versioning, dirty state, auto-save timers, and slot metadata handling.
+- `SaveValue` (`enum`, `save_data.rs`): The Lua-serializable value enum used to represent saved data trees without depending on arbitrary engine internals.
+- `SlotMeta` (`struct`, `save_manager.rs`): Metadata describing a save slot, such as name, timestamp, version, and summary fields.
+- `SaveManager` (`struct`, `save_manager.rs`): The central save coordination object. It owns collectors, restore callbacks, schema versioning, dirty state, auto-save timers, and slot metadata handling.
+- `SaveValue` (`enum`, `save_manager.rs`): The Lua-serializable value enum used to represent saved data trees without depending on arbitrary engine internals.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `mod.rs` | Declares the save submodules and re-exports the public save manager, value, metadata, and serialization-facing types. |
-| `save_data.rs` | Holds an alternate save-data type definition set that currently lives in the module tree but is not the primary surface re-exported from `mod.rs`. |
-| `save_manager.rs` | Implements `SaveManager`, slot metadata, schema versioning, dirty tracking, collector registration, restore hooks, and auto-save timing. |
+- `SaveManager::new` (`save_data.rs`): Create a new empty SaveManager.
+- `SaveManager::register` (`save_data.rs`): Register a named collector module.
+- `SaveManager::unregister` (`save_data.rs`): Removes a previously registered data collector from the save/restore cycle.
+- `SaveManager::registered_names` (`save_data.rs`): Get registered module names.
+- `SaveManager::set_schema_version` (`save_data.rs`): Set the current schema version.
+- `SaveManager::schema_version` (`save_data.rs`): Returns the schema version number used to detect save-file format upgrades.
+- `SaveManager::add_migration` (`save_data.rs`): Record a migration version key.
+- `SaveManager::applicable_migrations` (`save_data.rs`): Get migration versions >=`from` and < current, in ascending order.
+- `SaveManager::mark_dirty` (`save_data.rs`): Mark data as dirty (modified since last save/load).
+- `SaveManager::is_dirty` (`save_data.rs`): Whether data is dirty.
+- `SaveManager::clear_dirty` (`save_data.rs`): Clear the dirty flag (called after save/load).
+- `SaveManager::enable_auto_save` (`save_data.rs`): Enable auto-save with interval and target slot.
+- `SaveManager::disable_auto_save` (`save_data.rs`): Disables the automatic save timer, preventing any further background saves.
+- `SaveManager::update` (`save_data.rs`): Advance the auto-save timer.
+- `SaveManager::reset` (`save_data.rs`): Reset all state.
+- `serialize_table` (`save_data.rs`): Serialize a simple Lua-compatible value hierarchy into a `return { ...
+- `serialize_value` (`save_data.rs`): Serializes a single Lua value into the TOML-compatible wire format.
+- `SaveManager::new` (`save_manager.rs`): Create a new empty SaveManager.
+- `SaveManager::register` (`save_manager.rs`): Register a named collector module.
+- `SaveManager::unregister` (`save_manager.rs`): Unregister a collector by name.
+- `SaveManager::registered_names` (`save_manager.rs`): Get registered module names.
+- `SaveManager::set_schema_version` (`save_manager.rs`): Set the current schema version.
+- `SaveManager::schema_version` (`save_manager.rs`): Get the current schema version.
+- `SaveManager::add_migration` (`save_manager.rs`): Record a migration version key.
+- `SaveManager::applicable_migrations` (`save_manager.rs`): Get migration versions >=`from` and < current, in ascending order.
+- `SaveManager::mark_dirty` (`save_manager.rs`): Mark data as dirty (modified since last save/load).
+- `SaveManager::is_dirty` (`save_manager.rs`): Whether data is dirty.
+- `SaveManager::clear_dirty` (`save_manager.rs`): Clear the dirty flag (called after save/load).
+- `SaveManager::enable_auto_save` (`save_manager.rs`): Enable auto-save with interval and target slot.
+- `SaveManager::disable_auto_save` (`save_manager.rs`): Disable auto-save.
+- `SaveManager::update` (`save_manager.rs`): Advance the auto-save timer.
+- `SaveManager::reset` (`save_manager.rs`): Reset all state.
+- `SaveManager::slot_path` (`save_manager.rs`): Build the save file path for a given slot name.
+- `SaveManager::set_summary` (`save_manager.rs`): Set the summary string for save metadata.
+- `SaveManager::summary` (`save_manager.rs`): Get the summary string.
+- `SaveManager::parse_save_string` (`save_manager.rs`): Validates and returns save-file content, rejecting empty input.
+- `serialize_table` (`save_manager.rs`): Serialize a simple Lua-compatible value hierarchy into a `return { ...
+- `serialize_value` (`save_manager.rs`): Serialize a single value.
+- `SaveValue::from_lua` (`save_manager.rs`): Converts a [`LuaValue`] into a [`SaveValue`] for Rust-side serialization.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `save::save_data`
-
-Holds an alternate save-data type definition set that currently lives in the module tree but is not the primary surface re-exported from `mod.rs`.
-
-- **`SlotMeta`** (struct): Metadata extracted from a save-slot header without loading the full save data.
-- **`SaveManager`** (struct): Pure-data save manager providing registration of named collectors, schema versioning, dirty-state tracking, and auto-save timer.
-- **`SaveValue`** (enum): A simple value type matching the Lua subset we can serialize.
-
-### `save::save_manager`
-
-Implements `SaveManager`, slot metadata, schema versioning, dirty tracking, collector registration, restore hooks, and auto-save timing.
-
-- **`SlotMeta`** (struct): Metadata extracted from a save slot.
-- **`SaveManager`** (struct): Pure-data save manager providing registration of named collectors, schema versioning, dirty-state tracking, and auto-save timer.
-- **`SaveValue`** (enum): A simple value type matching the Lua subset we can serialize.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `SaveManager`
-
-The central save coordination object.
-
-#### `SaveValue`
-
-The Lua-serializable value enum used to represent saved data trees without depending on arbitrary engine internals.
-
-#### `SlotMeta`
-
-Metadata describing a save slot, such as name, timestamp, version, and summary fields.
-
----
-
-## Lua API
-
-Exposed under `lurek.save.*` by `src/lua_api/save_api.rs`.
+- Binding path(s): `src/lua_api/save_api.rs`
+- Namespace: `lurek.save`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.save.newSaveManager` | Creates a new SaveManager for slot-based save/load operations. |
+- `lurek.save.newSaveManager`: Creates a new SaveManager for slot-based save/load operations.
 
 ### `SaveManager` Methods
-
-| Method | Description |
-|--------|-------------|
-| `savemanager:unregister(...)` | Removes a named module and its callbacks. |
-| `savemanager:setSchemaVersion(...)` | Sets the current schema version for new saves. |
-| `savemanager:getSchemaVersion(...)` | Returns the current schema version. |
-| `savemanager:collect(...)` | Collects data from all registered collectors into a table with metadata. |
-| `savemanager:restore(...)` | Restores data from a table, applying migrations and calling restorers. |
-| `savemanager:markDirty(...)` | Marks data as modified since the last save or load. |
-| `savemanager:isDirty(...)` | Returns whether data has been modified since the last save or load. |
-| `savemanager:disableAutoSave(...)` | Disables auto-save. |
-| `savemanager:update(...)` | Advances the auto-save timer, returning the slot name if a save should trigger. |
-| `savemanager:setSummary(...)` | Sets the summary string included in save metadata. |
-| `savemanager:getSummary(...)` | Returns the current summary string. |
-| `savemanager:reset(...)` | Resets all state, removing callbacks and clearing the manager. |
-| `savemanager:save(...)` | Collects data and writes it to a slot file. |
-| `savemanager:load(...)` | Loads data from a slot file, applies migrations, and restores. |
-| `savemanager:delete(...)` | Deletes a save file for the given slot. |
-| `savemanager:exists(...)` | Returns whether a save file exists for the given slot. |
-| `savemanager:getSlots(...)` | Returns a list of all save slots with metadata. |
-| `savemanager:getSlotInfo(...)` | Returns metadata for a single slot, or nil if not found. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.save.
-if lurek.save then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 4 |
-| `enum` | 2 |
-| `fn` (Lua API) | 19 |
-| **Total** | **25** |
-
----
+- `SaveManager:unregister`: Removes a named module and its callbacks.
+- `SaveManager:setSchemaVersion`: Sets the current schema version for new saves.
+- `SaveManager:getSchemaVersion`: Returns the current schema version.
+- `SaveManager:collect`: Collects data from all registered collectors into a table with metadata.
+- `SaveManager:restore`: Restores data from a table, applying migrations and calling restorers.
+- `SaveManager:markDirty`: Marks data as modified since the last save or load.
+- `SaveManager:isDirty`: Returns whether data has been modified since the last save or load.
+- `SaveManager:disableAutoSave`: Disables auto-save.
+- `SaveManager:update`: Advances the auto-save timer, returning the slot name if a save should trigger.
+- `SaveManager:setSummary`: Sets the summary string included in save metadata.
+- `SaveManager:getSummary`: Returns the current summary string.
+- `SaveManager:reset`: Resets all state, removing callbacks and clearing the manager.
+- `SaveManager:save`: Collects data and writes it to a slot file.
+- `SaveManager:load`: Loads data from a slot file, applies migrations, and restores.
+- `SaveManager:delete`: Deletes a save file for the given slot.
+- `SaveManager:exists`: Returns whether a save file exists for the given slot.
+- `SaveManager:getSlots`: Returns a list of all save slots with metadata.
+- `SaveManager:getSlotInfo`: Returns metadata for a single slot, or nil if not found.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Feature Systems to Core Runtime. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/save/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/save/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

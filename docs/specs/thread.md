@@ -1,16 +1,13 @@
-# `thread` — Agent Reference
+# thread
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Core Runtime |
-| **Status** | Implemented |
-| **Lua API** | `lurek.thread` |
-| **Source** | `src/thread/` |
-| **Rust Tests** | `tests/rust/unit/thread_tests.rs` |
-| **Lua Tests** | `tests/lua/unit/test_thread.lua`, `tests/lua/stress/test_thread_stress.lua`, `tests/lua/integration/test_thread_data.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Core Runtime` |
+## General Info
 
----
+- Module group: `Core Runtime`
+- Source path: `src/thread/`
+- Lua API path(s): `src/lua_api/thread_api.rs`
+- Primary Lua namespace: `lurek.thread`
+- Rust test path(s): tests/rust/unit/thread_tests.rs
+- Lua test path(s): tests/lua/unit/test_thread.lua, tests/lua/stress/test_thread_stress.lua, tests/lua/integration/test_thread_data.lua
 
 ## Summary
 
@@ -22,146 +19,74 @@ It intentionally does not own async runtimes, shared-memory game objects, or cro
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Core Runtime responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `channel.rs`: `ChannelValue` enum, `Channel` MPMC queue, `LuaChannel` UserData, conversion functions
+- `mod.rs`: Module root — re-exports `channel` and `worker` submodules
+- `worker.rs`: `ThreadState` enum, `LuaThread` struct, worker VM registration
 
-```
-lurek.thread.* (Lua API — src/lua_api/thread_api.rs)
-    |
-    v
-src/thread/mod.rs
-    |- channel.rs - channel
-    |- worker.rs - worker
-```
+## Types
 
----
+- `ChannelValue` (`enum`, `channel.rs`): Serializable values that can be sent between threads.
+- `Channel` (`struct`, `channel.rs`): Thread-safe MPMC channel for Lua inter-thread communication.
+- `LuaChannel` (`struct`, `channel.rs`): Lua UserData wrapper for a thread-safe channel.
+- `ThreadState` (`enum`, `worker.rs`): Execution state of a background Lua thread.
+- `LuaThread` (`struct`, `worker.rs`): A background Lua thread running its own VM.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `channel.rs` | `ChannelValue` enum, `Channel` MPMC queue, `LuaChannel` UserData, conversion functions |
-| `mod.rs` | Module root — re-exports `channel` and `worker` submodules |
-| `worker.rs` | `ThreadState` enum, `LuaThread` struct, worker VM registration |
+- `Channel::new` (`channel.rs`): Create an unnamed channel.
+- `Channel::named` (`channel.rs`): Creates a named bidirectional channel pair, binding the channel name in the global registry.
+- `Channel::push` (`channel.rs`): Push a value to the back of the channel.
+- `Channel::pop` (`channel.rs`): Pop a value from the front of the channel (non-blocking).
+- `Channel::peek` (`channel.rs`): Peek at the front value without removing it.
+- `Channel::demand` (`channel.rs`): Wait for a value, blocking the calling thread.
+- `Channel::get_count` (`channel.rs`): Get the number of values currently in the channel.
+- `Channel::clear` (`channel.rs`): Remove all values from the channel.
+- `Channel::supply` (`channel.rs`): Push a value only if the channel is currently empty.
+- `Channel::name` (`channel.rs`): Get the channel name, if it is a named channel.
+- `lua_to_channel_value` (`channel.rs`): Convert a Lua value into a `ChannelValue` for cross-thread transfer.
+- `channel_value_to_lua` (`channel.rs`): Convert a `ChannelValue` back into a Lua value.
+- `LuaThread::new` (`worker.rs`): Create a new thread that will execute the given Lua code.
+- `LuaThread::start` (`worker.rs`): Start the thread, spawning a new OS thread with its own Lua VM.
+- `LuaThread::wait` (`worker.rs`): Block until the thread finishes execution.
+- `LuaThread::is_running` (`worker.rs`): Check whether the thread is currently running.
+- `LuaThread::get_error` (`worker.rs`): Get the error message if the thread terminated with an error.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `thread::channel`
-
-`ChannelValue` enum, `Channel` MPMC queue, `LuaChannel` UserData, conversion functions
-
-- **`ChannelValue`** (enum): Serializable values that can be sent between threads.
-- **`Channel`** (struct): Thread-safe MPMC channel for Lua inter-thread communication.
-- **`LuaChannel`** (struct): Lua UserData wrapper for a thread-safe channel.
-
-### `thread::worker`
-
-`ThreadState` enum, `LuaThread` struct, worker VM registration
-
-- **`ThreadState`** (enum): Execution state of a background Lua thread.
-- **`LuaThread`** (struct): A background Lua thread running its own VM.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `ChannelValue`
-
-Principal type for the `thread` module.
-
-#### `Channel`
-
-Principal type for the `thread` module.
-
-#### `LuaChannel`
-
-Principal type for the `thread` module.
-
-#### `ThreadState`
-
-Principal type for the `thread` module.
-
-#### `LuaThread`
-
-Principal type for the `thread` module.
-
----
-
-## Lua API
-
-Exposed under `lurek.thread.*` by `src/lua_api/thread_api.rs`.
+- Binding path(s): `src/lua_api/thread_api.rs`
+- Namespace: `lurek.thread`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.thread.newThread` | Creates a new background thread from a Lua code string. |
-| `lurek.thread.newChannel` | Creates an unnamed thread-safe channel for inter-thread communication. |
-| `lurek.thread.getChannel` | Gets or creates a named global channel shared across threads. |
+- `lurek.thread.newThread`: Creates a new background thread from a Lua code string.
+- `lurek.thread.newChannel`: Creates an unnamed thread-safe channel for inter-thread communication.
+- `lurek.thread.getChannel`: Gets or creates a named global channel shared across threads.
 
 ### `Channel` Methods
-
-| Method | Description |
-|--------|-------------|
-| `channel:type(...)` | Lua-facing function documented in the binding source. |
-| `channel:typeOf(...)` | Lua-facing function documented in the binding source. |
-| `channel:push(...)` | Lua-facing function documented in the binding source. |
-| `channel:pop(...)` | Lua-facing function documented in the binding source. |
-| `channel:peek(...)` | Lua-facing function documented in the binding source. |
-| `channel:demand(...)` | Lua-facing function documented in the binding source. |
-| `channel:getCount(...)` | Lua-facing function documented in the binding source. |
-| `channel:clear(...)` | Lua-facing function documented in the binding source. |
-| `channel:supply(...)` | Lua-facing function documented in the binding source. |
+- `Channel:type`: Lua-facing function documented in the binding source.
+- `Channel:typeOf`: Lua-facing function documented in the binding source.
+- `Channel:push`: Lua-facing function documented in the binding source.
+- `Channel:pop`: Lua-facing function documented in the binding source.
+- `Channel:peek`: Lua-facing function documented in the binding source.
+- `Channel:demand`: Lua-facing function documented in the binding source.
+- `Channel:getCount`: Lua-facing function documented in the binding source.
+- `Channel:clear`: Lua-facing function documented in the binding source.
+- `Channel:supply`: Lua-facing function documented in the binding source.
 
 ### `ThreadHandle` Methods
-
-| Method | Description |
-|--------|-------------|
-| `threadhandle:type(...)` | Returns the type name of this object. |
-| `threadhandle:typeOf(...)` | Returns whether this object is of the given type. |
-| `threadhandle:start(...)` | Launches the background thread, passing optional arguments via varargs. |
-| `threadhandle:wait(...)` | Blocks the calling thread until the background thread finishes. |
-| `threadhandle:isRunning(...)` | Returns whether the thread is currently executing. |
-| `threadhandle:getError(...)` | Returns the error message if the thread failed, or nil. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.thread.
-if lurek.thread then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 3 |
-| `enum` | 2 |
-| `fn` (Lua API) | 18 |
-| **Total** | **23** |
-
----
+- `ThreadHandle:type`: Returns the type name of this object.
+- `ThreadHandle:typeOf`: Returns whether this object is of the given type.
+- `ThreadHandle:start`: Launches the background thread, passing optional arguments via varargs.
+- `ThreadHandle:wait`: Blocks the calling thread until the background thread finishes.
+- `ThreadHandle:isRunning`: Returns whether the thread is currently executing.
+- `ThreadHandle:getError`: Returns the error message if the thread failed, or nil.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/thread/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/thread/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

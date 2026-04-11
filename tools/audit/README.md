@@ -35,7 +35,7 @@ coverage — producing reports that tell you what still needs work.
 | Script | Purpose | Output |
 |---|---|---|
 | `audit_module.py` | 12-phase module quality audit (PASS/WARN/ERROR) | `docs/quality/<module>.md` / JSON |
-| `validate_agent_md.py` | Validate AGENT.md structure (M-01 to M-12) | stdout / JSON |
+| `validate_agent_md.py` | Validate merged docs/specs module references (legacy script name) | stdout / JSON |
 | `module_audit.py` | Module restructuring & reference audit | stdout / JSON |
 
 ### Specialised audits
@@ -77,6 +77,6 @@ python tools/audit/integration_coverage.py       # integration test heatmap
 python tools/audit/audit_module.py physics       # one module
 python tools/audit/audit_module.py --all         # all modules
 python tools/audit/audit_module.py --all --docs-quality  # all + docs quality
-python tools/audit/validate_agent_md.py --all    # validate all AGENT.md
+python tools/audit/validate_agent_md.py --all    # validate all merged module specs
 python tools/audit/validate_agent_md.py --module audio  # one module
 ```

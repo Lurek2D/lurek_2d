@@ -82,7 +82,7 @@ Every Optimizer output includes:
 ## BEST PRACTICES
 
 - Load the relevant domain skill before starting any task in that area
-- Read the module AGENT.md before writing code for that module  
+- Read the module spec in `docs/specs/<module>.md` before writing code for that module
 - Run cargo check after every change; cargo test only at commit time
 - One logical change per commit — quality gate before every commit
 

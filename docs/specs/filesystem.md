@@ -1,16 +1,13 @@
-# `filesystem` — Agent Reference
+# filesystem
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Core Runtime |
-| **Status** | Implemented |
-| **Lua API** | `lurek.filesystem` |
-| **Source** | `src/filesystem/` |
-| **Rust Tests** | `tests/rust/unit/filesystem_tests.rs`, plus inline unit coverage in `src/filesystem/async_loader.rs` |
-| **Lua Tests** | `tests/lua/unit/test_filesystem.lua`, `tests/lua/stress/test_filesystem_stress.lua`, `tests/lua/integration/test_data_filesystem.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Core Runtime` |
+## General Info
 
----
+- Module group: `Core Runtime`
+- Source path: `src/filesystem/`
+- Lua API path(s): `src/lua_api/filesystem_api.rs`
+- Primary Lua namespace: `lurek.filesystem`
+- Rust test path(s): tests/rust/unit/filesystem_tests.rs, plus inline unit coverage in src/filesystem/async_loader.rs
+- Lua test path(s): tests/lua/unit/test_filesystem.lua, tests/lua/stress/test_filesystem_stress.lua, tests/lua/integration/test_data_filesystem.lua
 
 ## Summary
 
@@ -22,197 +19,137 @@ It intentionally does not own network I/O, archive formats, arbitrary process-wi
 
 **Scope boundary**: This module currently depends on `runtime`. It stays within the Core Runtime responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `async_loader.rs`: Background asset-loading worker that reads files off the main thread.
+- `file_data.rs`: Raw file data buffer loaded from the VFS.
+- `file_handle.rs`: File handle with buffered read/write and sandboxed path resolution.
+- `mod.rs`: Mod implementation for the `filesystem` subsystem.
+- `vfs.rs`: Vfs implementation for the `filesystem` subsystem.
 
-```
-lurek.filesystem.* (Lua API — src/lua_api/filesystem_api.rs)
-    |
-    v
-src/filesystem/mod.rs
-    |- async_loader.rs - async_loader
-    |- file_data.rs - file_data
-    |- file_handle.rs - file_handle
-    |- vfs.rs - vfs
-```
+## Types
 
----
+- `LoadHandle` (`struct`, `async_loader.rs`): Opaque handle returned to callers (and to Lua) that identifies a pending load.
+- `LoadResult` (`enum`, `async_loader.rs`): Outcome of a completed load request.
+- `LoadStatus` (`enum`, `async_loader.rs`): Status returned by [`AsyncLoader::poll`].
+- `AsyncLoader` (`struct`, `async_loader.rs`): A single-threaded background file reader.
+- `FileData` (`struct`, `file_data.rs`): Raw bytes loaded from the virtual filesystem.
+- `FileMode` (`enum`, `file_handle.rs`): File access mode.
+- `FileHandle` (`struct`, `file_handle.rs`): A sandboxed file handle for reading or writing game files.
+- `FileInfo` (`struct`, `vfs.rs`): File metadata returned by `get_info()`.
+- `FileType` (`enum`, `vfs.rs`): File type classification for `FileInfo`.
+- `MountLayer` (`struct`, `vfs.rs`): A virtual filesystem mount layer overlaid on top of the game directory.
+- `GameFS` (`struct`, `vfs.rs`): Sandboxed filesystem rooted at the game directory; prevents path-traversal attacks.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `async_loader.rs` | Background asset-loading worker that reads files off the main thread. |
-| `file_data.rs` | Raw file data buffer loaded from the VFS. |
-| `file_handle.rs` | File handle with buffered read/write and sandboxed path resolution. |
-| `mod.rs` | Mod implementation for the `filesystem` subsystem. |
-| `vfs.rs` | Vfs implementation for the `filesystem` subsystem. |
+- `AsyncLoader::new` (`async_loader.rs`): Spawns the background worker thread.
+- `AsyncLoader::request_load` (`async_loader.rs`): Submit a file-read request.
+- `AsyncLoader::poll` (`async_loader.rs`): Check the status of a previously-requested load.
+- `AsyncLoader::pending_results` (`async_loader.rs`): Returns the number of completed but un-polled results.
+- `FileData::new` (`file_data.rs`): Creates a new `FileData` with the given path and content.
+- `FileData::len` (`file_data.rs`): Returns the number of bytes in this buffer.
+- `FileData::is_empty` (`file_data.rs`): Returns `true` if the buffer is empty.
+- `FileData::as_str` (`file_data.rs`): Returns the bytes as a UTF-8 string slice, or an error if invalid.
+- `FileMode::parse_mode` (`file_handle.rs`): Convert a mode string ("r", "w", "a") to a `FileMode`.
+- `FileMode::as_str` (`file_handle.rs`): Convert a `FileMode` to its string representation.
+- `FileHandle::open` (`file_handle.rs`): Open a file within the sandbox.
+- `FileHandle::read` (`file_handle.rs`): Read up to `count` bytes, or all remaining bytes when `count` is `None`.
+- `FileHandle::read_line` (`file_handle.rs`): Read a single line without the trailing newline character.
+- `FileHandle::write` (`file_handle.rs`): Write raw bytes to the file.
+- `FileHandle::seek` (`file_handle.rs`): Seek to an absolute byte position in the file.
+- `FileHandle::tell` (`file_handle.rs`): Get the current byte position within the file.
+- `FileHandle::get_size` (`file_handle.rs`): Get the file size in bytes (cached at open time).
+- `FileHandle::get_mode` (`file_handle.rs`): Get the current file access mode.
+- `FileHandle::get_path` (`file_handle.rs`): Get the logical (game-relative) path of this file.
+- `FileHandle::flush` (`file_handle.rs`): Flush buffered writes to disk.
+- `FileHandle::close` (`file_handle.rs`): Close the file handle, flushing any pending writes first.
+- `FileHandle::is_eof` (`file_handle.rs`): Check whether the end of file has been reached (Read mode only).
+- `FileType::as_str` (`vfs.rs`): Returns the string name of this file type.
+- `GameFS::new` (`vfs.rs`): Creates a new `GameFS` rooted at `base_dir`.
+- `GameFS::base_dir` (`vfs.rs`): Returns a reference to the base directory path.
+- `GameFS::read_string` (`vfs.rs`): Reads the file at `path` (relative to base dir) and returns its contents as a `String`.
+- `GameFS::read_bytes` (`vfs.rs`): Reads the file at `path` as raw bytes.
+- `GameFS::write_string` (`vfs.rs`): Writes `content` to `path`, which must be inside the `save/` subdirectory.
+- `GameFS::write_bytes` (`vfs.rs`): Writes raw bytes to `path`, which must stay inside the `save/` subdirectory.
+- `GameFS::exists` (`vfs.rs`): Returns `true` if the file or directory at `path` exists within the game directory.
+- `GameFS::list` (`vfs.rs`): Lists all entries in the directory at `path` relative to the game directory.
+- `GameFS::get_directory_items` (`vfs.rs`): Get sorted directory items relative to `base_dir`.
+- `GameFS::is_file` (`vfs.rs`): Check if the given path refers to a regular file.
+- `GameFS::is_directory` (`vfs.rs`): Check if the given path refers to a directory.
+- `GameFS::create_directory` (`vfs.rs`): Create a directory (and all parent directories) inside the save area.
+- `GameFS::remove` (`vfs.rs`): Remove a file or empty directory from the save area.
+- `GameFS::get_info` (`vfs.rs`): Get file or directory metadata.
+- `GameFS::append_string` (`vfs.rs`): Append UTF-8 string content to a file in the save area.
+- `GameFS::get_source` (`vfs.rs`): Get the game source directory (where `main.lua` lives).
+- `GameFS::get_save_directory` (`vfs.rs`): Get the save directory path.
+- `GameFS::get_working_directory` (`vfs.rs`): Get the current working directory of the process.
+- `GameFS::get_user_directory` (`vfs.rs`): Get the current user's home directory.
+- `GameFS::get_identity` (`vfs.rs`): Get the game identity string used for save directory naming.
+- `GameFS::set_identity` (`vfs.rs`): Set the game identity string.
+- `GameFS::mount` (`vfs.rs`): Mounts a host directory (relative to the game dir) at a virtual mountpoint.
+- `GameFS::mount_full` (`vfs.rs`): Mounts an absolute host-OS path at a virtual mountpoint.
+- `GameFS::unmount` (`vfs.rs`): Removes the first mount layer matching `mountpoint`.
+- `GameFS::load_chunk` (`vfs.rs`): Reads file bytes from the VFS, searching mount layers newest-first before falling back to the base game directory.
+- `GameFS::get_directory_items_merged` (`vfs.rs`): Lists entries visible under a virtual path, merging all mount layers.
+- `GameFS::resolve_read_path` (`vfs.rs`): Resolve a logical path to an absolute path for reading.
+- `GameFS::resolve_save_path` (`vfs.rs`): Resolve a logical path to an absolute path for writing.
+- `GameFS::read_lines` (`vfs.rs`): Reads a text file and returns its contents split into lines.
+- `GameFS::open_file` (`vfs.rs`): Opens a file handle by parsing the mode string and delegating to `FileHandle::open`.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `filesystem::async_loader`
-
-Background asset-loading worker that reads files off the main thread.
-
-- **`LoadHandle`** (struct): Opaque handle returned to callers (and to Lua) that identifies a pending load.
-- **`LoadResult`** (enum): Outcome of a completed load request.
-- **`LoadStatus`** (enum): Status returned by [`AsyncLoader::poll`].
-- **`AsyncLoader`** (struct): A single-threaded background file reader.
-
-### `filesystem::file_data`
-
-Raw file data buffer loaded from the VFS.
-
-- **`FileData`** (struct): Raw bytes loaded from the virtual filesystem.
-
-### `filesystem::file_handle`
-
-File handle with buffered read/write and sandboxed path resolution.
-
-- **`FileMode`** (enum): File access mode.
-- **`FileHandle`** (struct): A sandboxed file handle for reading or writing game files.
-
-### `filesystem::vfs`
-
-Vfs implementation for the `filesystem` subsystem.
-
-- **`FileInfo`** (struct): File metadata returned by `get_info()`.
-- **`FileType`** (enum): File type classification for `FileInfo`.
-- **`MountLayer`** (struct): A virtual filesystem mount layer overlaid on top of the game directory.
-- **`GameFS`** (struct): Sandboxed filesystem rooted at the game directory; prevents path-traversal attacks.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `LoadHandle`
-
-Opaque handle returned to callers (and to Lua) that identifies a pending load.
-
-#### `LoadResult`
-
-Outcome of a completed load request.
-
-#### `LoadStatus`
-
-Status returned by [`AsyncLoader::poll`].
-
-#### `AsyncLoader`
-
-A single-threaded background file reader.
-
-#### `FileData`
-
-Raw bytes loaded from the virtual filesystem.
-
-#### `FileMode`
-
-File access mode.
-
-#### `FileHandle`
-
-A sandboxed file handle for reading or writing game files.
-
-#### `FileInfo`
-
-File metadata returned by `get_info()`.
-
----
-
-## Lua API
-
-Exposed under `lurek.filesystem.*` by `src/lua_api/filesystem_api.rs`.
+- Binding path(s): `src/lua_api/filesystem_api.rs`
+- Namespace: `lurek.filesystem`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.filesystem.read` | Reads a text file and returns its contents as a string. |
-| `lurek.filesystem.write` | Writes a string to a file in the save directory. |
-| `lurek.filesystem.exists` | Returns whether the given file or directory exists. |
-| `lurek.filesystem.append` | Opens the file in append mode and writes the given string at the end. |
-| `lurek.filesystem.openFile` | Opens a file and returns a readable/writable file handle. |
-| `lurek.filesystem.getDirectoryItems` | Returns a table containing the names of every file and subdirectory in the given path. |
-| `lurek.filesystem.isFile` | Returns whether the given path is a regular file. |
-| `lurek.filesystem.isDirectory` | Returns whether the given path is a directory. |
-| `lurek.filesystem.createDirectory` | Creates a directory and any missing parent directories in the save area. |
-| `lurek.filesystem.remove` | Permanently deletes a file or empty directory from the save directory. |
-| `lurek.filesystem.getInfo` | Returns a table of metadata for a path, or nil if the path does not exist. |
-| `lurek.filesystem.getSource` | Returns the absolute path of the directory the game was loaded from. |
-| `lurek.filesystem.getSaveDirectory` | Returns the sandboxed save data directory path. |
-| `lurek.filesystem.getWorkingDirectory` | Returns the current working directory path. |
-| `lurek.filesystem.getUserDirectory` | Returns the current user's home directory path. |
-| `lurek.filesystem.getIdentity` | Returns the identity string used to locate the game's save directory. |
-| `lurek.filesystem.setIdentity` | Sets the identity string that names the game's sandboxed save-data directory. |
-| `lurek.filesystem.lines` | Returns an iterator function over the lines of a text file. |
-| `lurek.filesystem.readAsync` | Starts loading a file in the background and returns an opaque handle. |
-| `lurek.filesystem.pollAsync` | Polls an async load handle, returning status and optional data. |
-| `lurek.filesystem.mount` | Mounts a directory at a virtual path inside the game filesystem. |
-| `lurek.filesystem.unmount` | Removes a virtual mount layer by mountpoint. |
-| `lurek.filesystem.load` | Loads and compiles a Lua file from the VFS, returning it as a callable function. |
-| `lurek.filesystem.newFileData` | Loads a file from the VFS into a FileData buffer. |
+- `lurek.filesystem.read`: Reads a text file and returns its contents as a string.
+- `lurek.filesystem.write`: Writes a string to a file in the save directory.
+- `lurek.filesystem.exists`: Returns whether the given file or directory exists.
+- `lurek.filesystem.append`: Opens the file in append mode and writes the given string at the end.
+- `lurek.filesystem.openFile`: Opens a file and returns a readable/writable file handle.
+- `lurek.filesystem.getDirectoryItems`: Returns a table containing the names of every file and subdirectory in the given path.
+- `lurek.filesystem.isFile`: Returns whether the given path is a regular file.
+- `lurek.filesystem.isDirectory`: Returns whether the given path is a directory.
+- `lurek.filesystem.createDirectory`: Creates a directory and any missing parent directories in the save area.
+- `lurek.filesystem.remove`: Permanently deletes a file or empty directory from the save directory.
+- `lurek.filesystem.getInfo`: Returns a table of metadata for a path, or nil if the path does not exist.
+- `lurek.filesystem.getSource`: Returns the absolute path of the directory the game was loaded from.
+- `lurek.filesystem.getSaveDirectory`: Returns the sandboxed save data directory path.
+- `lurek.filesystem.getWorkingDirectory`: Returns the current working directory path.
+- `lurek.filesystem.getUserDirectory`: Returns the current user's home directory path.
+- `lurek.filesystem.getIdentity`: Returns the identity string used to locate the game's save directory.
+- `lurek.filesystem.setIdentity`: Sets the identity string that names the game's sandboxed save-data directory.
+- `lurek.filesystem.lines`: Returns an iterator function over the lines of a text file.
+- `lurek.filesystem.readAsync`: Starts loading a file in the background and returns an opaque handle.
+- `lurek.filesystem.pollAsync`: Polls an async load handle, returning status and optional data.
+- `lurek.filesystem.mount`: Mounts a directory at a virtual path inside the game filesystem.
+- `lurek.filesystem.unmount`: Removes a virtual mount layer by mountpoint.
+- `lurek.filesystem.load`: Loads and compiles a Lua file from the VFS, returning it as a callable function.
+- `lurek.filesystem.newFileData`: Loads a file from the VFS into a FileData buffer.
 
 ### `FileData` Methods
-
-| Method | Description |
-|--------|-------------|
-| `filedata:getSize(...)` | Returns the file size in bytes. |
-| `filedata:getString(...)` | Returns the file content as a Lua string. |
-| `filedata:getFilename(...)` | Returns the virtual path this data was loaded from. |
+- `FileData:getSize`: Returns the file size in bytes.
+- `FileData:getString`: Returns the file content as a Lua string.
+- `FileData:getFilename`: Returns the virtual path this data was loaded from.
 
 ### `FileHandle` Methods
-
-| Method | Description |
-|--------|-------------|
-| `filehandle:read(...)` | Reads bytes from the file, returning them as a string. |
-| `filehandle:readLine(...)` | Reads the next line from the file without the trailing newline. |
-| `filehandle:write(...)` | Writes a string to the file and returns the number of bytes written. |
-| `filehandle:seek(...)` | Seeks the file position to the given byte offset from the start. |
-| `filehandle:tell(...)` | Returns the current read/write byte offset from the start of the file. |
-| `filehandle:getSize(...)` | Returns the size of the open file in bytes. |
-| `filehandle:getMode(...)` | Returns the access mode the file was opened with. |
-| `filehandle:flush(...)` | Flushes all buffered writes to disk without closing the handle. |
-| `filehandle:close(...)` | Flushes any pending writes and closes the file handle. |
-| `filehandle:isEOF(...)` | Returns whether the read cursor has reached the end of the file. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.filesystem.
-if lurek.filesystem then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 7 |
-| `enum` | 4 |
-| `fn` (Lua API) | 37 |
-| **Total** | **48** |
-
----
+- `FileHandle:read`: Reads bytes from the file, returning them as a string.
+- `FileHandle:readLine`: Reads the next line from the file without the trailing newline.
+- `FileHandle:write`: Writes a string to the file and returns the number of bytes written.
+- `FileHandle:seek`: Seeks the file position to the given byte offset from the start.
+- `FileHandle:tell`: Returns the current read/write byte offset from the start of the file.
+- `FileHandle:getSize`: Returns the size of the open file in bytes.
+- `FileHandle:getMode`: Returns the access mode the file was opened with.
+- `FileHandle:flush`: Flushes all buffered writes to disk without closing the handle.
+- `FileHandle:close`: Flushes any pending writes and closes the file handle.
+- `FileHandle:isEOF`: Returns whether the read cursor has reached the end of the file.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Same responsibility group; allowed when the dependency graph stays acyclic. |
-
----
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/filesystem/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/filesystem/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-11T19:17:20.932514+00:00",
+    "generated": "2026-04-11T21:36:08.230619+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.7.0",
     "stats": {
@@ -510,7 +510,7 @@
             "kind": "struct",
             "description": "Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.  # Fields - `config` — `Config`. - `conf_error` — `Option<String>`.",
             "file": "src/app/app.rs",
-            "line": 2320
+            "line": 2415
           }
         ]
       },
@@ -1547,14 +1547,14 @@
             "kind": "struct",
             "description": "A windowed, read-only view into a shared byte buffer.  Uses `Arc<Vec<u8>>` for shared ownership so that multiple views can reference the same buffer without copying.  # Fields - `data` — `Arc<Vec<u8>>`. The shared backing buffer. - `offset` — `usize`. The byte offset in `data` where this view starts. - `size` — `usize`. The number of bytes in this view.",
             "file": "src/data/dataview.rs",
-            "line": 19
+            "line": 18
           },
           {
             "name": "LuaDataView",
             "kind": "struct",
             "description": "Lua-side wrapper around [`DataView`].  # Fields - `inner` — `DataView`.",
             "file": "src/data/dataview.rs",
-            "line": 220
+            "line": 218
           }
         ]
       },
@@ -2403,37 +2403,37 @@
         "source_file": "src/effect/mod.rs",
         "items": [
           {
+            "name": "draw",
+            "kind": "mod",
+            "description": "CPU software-rendering fallback for headless draw-to-image.",
+            "file": "src/effect/mod.rs",
+            "line": 33
+          },
+          {
             "name": "effect",
             "kind": "mod",
             "description": "Per-effect parameter bag with builder helpers.",
             "file": "src/effect/mod.rs",
-            "line": 33
+            "line": 35
           },
           {
             "name": "effect_type",
             "kind": "mod",
             "description": "Enum of all built-in post-processing effect kinds (bloom, blur, CRT, colour grading, …).",
             "file": "src/effect/mod.rs",
-            "line": 35
+            "line": 37
           },
           {
             "name": "image_effect",
             "kind": "mod",
             "description": "Lightweight per-image effect chain (subset of the full pipeline).",
             "file": "src/effect/mod.rs",
-            "line": 37
+            "line": 39
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Render-command generation for post-processing effects.",
-            "file": "src/effect/mod.rs",
-            "line": 39
-          },
-          {
-            "name": "draw",
-            "kind": "mod",
-            "description": "CPU software-rendering fallback for headless draw-to-image.",
             "file": "src/effect/mod.rs",
             "line": 41
           },
@@ -3333,329 +3333,329 @@
             "kind": "fn",
             "description": "Render an animation playback strip as snapshot columns.  Draws `snapshots.len()` side-by-side panels, each showing a frame index highlighted in the sequence. The panel columns are colored to indicate which frame was active at that step.  # Parameters - `snapshots` — `&[usize]`. Frame index active at each step. - `total_frames` — `usize`. Total frame count. - `panel_w` — `u32`. Width of each step panel. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 80
+            "line": 85
           },
           {
             "name": "draw_camera_debug_to_image",
             "kind": "fn",
             "description": "Render a camera debug visualization showing viewport, position, and zoom.  Draws a world grid in the background with the camera viewport overlaid as a yellow rectangle indicating the visible area.  # Parameters - `cam` — `&Camera2D`. Camera to visualize. - `world_w` — `u32`. World width for background. - `world_h` — `u32`. World height for background. - `img_w` — `u32`. Output image width. - `img_h` — `u32`. Output image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 132
+            "line": 137
           },
           {
             "name": "draw_camera_zoom_comparison_to_image",
             "kind": "fn",
             "description": "Render a zoom comparison showing the world at multiple zoom levels.  Creates a horizontal strip of panels, each showing the camera viewport area at a different zoom level drawn over a dot grid.  # Parameters - `cam` — `&Camera2D`. Camera to copy baseline from. - `zoom_levels` — `&[f32]`. Zoom values to visualize. - `panel_w` — `u32`. - `panel_h` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 199
+            "line": 204
           },
           {
             "name": "noise_to_image",
             "kind": "fn",
             "description": "Render a 2D noise function to a grayscale image.  Samples `noise_fn` at each pixel scaled by `scale`, normalises the result from `[-1,1]` to `[0,255]`, and writes it as a grayscale pixel.  # Parameters - `noise_fn` — `impl Fn(f64, f64) -> f64`. Noise sampling function. - `width` — `u32`. - `height` — `u32`. - `scale` — `f64`. Coordinate multiplier before sampling.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 258
+            "line": 263
           },
           {
             "name": "noise_raw_to_image",
             "kind": "fn",
             "description": "Render a 2D noise function where the output is already in `[0,1]` range.  Unlike [`noise_to_image`], this does NOT apply the `*0.5+0.5` normalisation.  # Parameters - `noise_fn` — `impl Fn(f64, f64) -> f64`. Noise sampling function returning `[0,1]`. - `width` — `u32`. - `height` — `u32`. - `scale` — `f64`. Coordinate multiplier before sampling.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 287
+            "line": 292
           },
           {
             "name": "noise_terrain_to_image",
             "kind": "fn",
             "description": "Render a 2D noise function as a terrain-colored image.  Maps noise values to biome colors: deep water, shallow water, beach, grass, mountain, and snow.  # Parameters - `noise_fn` — `impl Fn(f64, f64) -> f64`. Noise function returning `[-1,1]`. - `width` — `u32`. - `height` — `u32`. - `scale` — `f64`. Coordinate multiplier.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 317
+            "line": 322
           },
           {
             "name": "heightmap_to_image",
             "kind": "fn",
             "description": "Render a flat heightmap buffer as a colored elevation image.  Maps normalised `[-1,1]` values through a blue→green→brown→white gradient.  # Parameters - `data` — `&[f64]`. Row-major height values, length = `width * height`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 358
+            "line": 363
           },
           {
             "name": "terrain_elevation_to_image",
             "kind": "fn",
             "description": "Render a flat heightmap buffer with terrain-band coloring.  Maps normalised `[0,1]` values to elevation bands: deep water, shallow water, beach, grass, hills, snow.  # Parameters - `data` — `&[f64]`. Row-major values pre-normalised to `[0,1]` via `*0.5+0.5`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 411
+            "line": 416
           },
           {
             "name": "easing_gallery_to_image",
             "kind": "fn",
             "description": "Render a gallery of easing curves as a grid of small charts.  Each entry in `curves` is a `(name, easing_fn)` pair. Charts are arranged in a 4-column grid with named labels. The easing function receives `t` in `[0,1]` and returns the eased value.  # Parameters - `curves` — `&[(&str, &dyn Fn(f32) -> f32)]`. Named easing functions. - `chart_w` — `u32`. Width of each chart cell. - `chart_h` — `u32`. Height of each chart cell.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 453
+            "line": 458
           },
           {
             "name": "easing_comparison_to_image",
             "kind": "fn",
             "description": "Render multiple easing curves overlaid on a single chart.  Each entry provides a name, color, and easing function. A background grid is drawn at 32-pixel intervals.  # Parameters - `curves` — `&[(&str, (u8,u8,u8), fn(f32) -> f32)]`. Named, colored easings. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 504
+            "line": 510
           },
           {
             "name": "bezier_curves_to_image",
             "kind": "fn",
             "description": "Render multiple cubic Bezier curves with control-point overlays.  Each entry is `(control_points, (r,g,b))`. Control polygons are drawn dimmed, control points as small circles, and the curve in full color.  # Parameters - `curves` — `&[(Vec<crate::math::vec2::Vec2>, (u8,u8,u8))]`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 549
+            "line": 554
           },
           {
             "name": "cellular_grid_to_image",
             "kind": "fn",
             "description": "Render a cellular automata grid (1=alive, 0=dead) as a scaled image.  # Parameters - `grid` — `&[u8]`. Flat row-major grid, 1=alive, 0=dead. - `grid_w` — `u32`. Grid width. - `grid_h` — `u32`. Grid height. - `cell_size` — `u32`. Pixels per cell. - `alive_color` — `(u8,u8,u8)`. Color for alive cells. - `dead_color` — `(u8,u8,u8)`. Color for dead cells.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 608
+            "line": 622
           },
           {
             "name": "voronoi_to_image",
             "kind": "fn",
             "description": "Render a Voronoi region map as a colored image.  Each region index is mapped to a deterministic palette color.  # Parameters - `regions` — `&[u32]`. Flat row-major region indices. - `num_sites` — `usize`. Number of Voronoi sites. - `width` — `u32`. - `height` — `u32`. - `palette` — `&[(u8,u8,u8)]`. Color palette (indexed by region mod len).  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 644
+            "line": 658
           },
           {
             "name": "points_to_image",
             "kind": "fn",
             "description": "Render a set of 2D points as dots on a dark background.  # Parameters - `points` — `&[(f64, f64)]`. - `width` — `u32`. - `height` — `u32`. - `radius` — `u32`. Circle radius per point. - `color` — `(u8,u8,u8)`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 672
+            "line": 686
           },
           {
             "name": "dungeon_grid_to_image",
             "kind": "fn",
             "description": "Render a BSP dungeon grid (0=floor, 1=wall) as a scaled tile image.  # Parameters - `grid` — `&[u8]`. Flat row-major grid, 0=floor, 1=wall. - `grid_w` — `u32`. - `grid_h` — `u32`. - `cell_size` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 699
+            "line": 713
           },
           {
             "name": "noise_map_to_image",
             "kind": "fn",
             "description": "Render a noise map buffer as a grayscale image (normalised `[-1,1]` → `[0,255]`).  # Parameters - `data` — `&[f64]`. Row-major noise values. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 738
+            "line": 747
           },
           {
             "name": "noise_comparison_to_image",
             "kind": "fn",
             "description": "Render multiple noise maps side by side as a horizontal strip.  Each tile is `tile_w × tile_h` pixels. Data slices must each have `tile_w * tile_h` elements.  # Parameters - `maps` — `&[&[f64]]`. One data slice per tile. - `tile_w` — `u32`. - `tile_h` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 762
+            "line": 771
           },
           {
             "name": "polygon_gallery_to_image",
             "kind": "fn",
             "description": "Render a gallery of regular polygons (triangle→dodecagon), a five-pointed star, and an arrow shape using `draw_line`.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 811
+            "line": 819
           },
           {
             "name": "spiral_to_image",
             "kind": "fn",
             "description": "Render concentric colored circles to demonstrate angular segment drawing.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 875
+            "line": 894
           },
           {
             "name": "filled_primitives_to_image",
             "kind": "fn",
             "description": "Render filled rectangle and circle primitives with HSV-coloured fills.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 906
+            "line": 925
           },
           {
             "name": "panel_layout_to_image",
             "kind": "fn",
             "description": "Render a mock settings panel with title bar, sliders, checkboxes, radio buttons, progress bar, colour swatches, and action buttons.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 952
+            "line": 971
           },
           {
             "name": "hud_bars_to_image",
             "kind": "fn",
             "description": "Render a game HUD with HP/MP/Stamina/XP bars and skill cooldown indicators.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1074
+            "line": 1097
           },
           {
             "name": "camera_rotation_to_image",
             "kind": "fn",
             "description": "Render six camera rotation steps in a 3-column grid.  Each panel shows 8 world objects projected through a Camera2D with the given rotation angle.  # Parameters - `rotations` — `&[f32]`. Rotation angles in radians. - `labels` — `&[&str]`. Short label for each panel. - `panel_w` — `u32`. Width of each column panel. - `panel_h` — `u32`. Height of each row panel.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1163
+            "line": 1187
           },
           {
             "name": "camera_bounds_to_image",
             "kind": "fn",
             "description": "Render a camera bounds-clamping summary panel.  Draws the world boundary box on the left and lists camera positions with labels on the right to verify that look_at clamping works.  # Parameters - `positions` — `&[(f32, f32, &str, u8, u8, u8)]`. (x, y, label, r, g, b). - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1242
+            "line": 1269
           },
           {
             "name": "camera_follow_to_image",
             "kind": "fn",
             "description": "Render a camera follow-and-deadzone trail diagram.  Draws the camera movement trail, coloured target markers, and the deadzone rectangle centred on the final camera position.  # Parameters - `trail` — `&[(f32, f32)]`. Camera position history. - `targets` — `&[(f32, f32)]`. Target positions visited. - `cam_pos` — `(f32, f32)`. Final camera position for deadzone centre. - `dz_size` — `(f32, f32)`. Dead-zone (width, height). - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1287
+            "line": 1316
           },
           {
             "name": "camera_shake_to_image",
             "kind": "fn",
             "description": "Render a camera shake trail and move-by result.  Draws per-frame screen positions as fading red circles, marks the world centre, and annotates the post-move-by camera position.  # Parameters - `positions` — `&[(f32, f32)]`. Screen coordinates sampled each frame. - `center` — `(f32, f32)`. World reference point. - `moved` — `(f32, f32)`. Camera position after move_by. - `area_info` — `&str`. Visible-area string to annotate. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1348
+            "line": 1387
           },
           {
             "name": "animation_playback_control_to_image",
             "kind": "fn",
             "description": "Render an animation playback-control timeline diagram.  Draws a run-frame bar, idle-frame bar, optional quad annotation, and a summary footer showing total frame and clip counts.  # Parameters - `run_frames` — `&[usize]`. Frame index active at each run step. - `idle_frames` — `&[usize]`. Frame index active at each idle step. - `total_frames` — `usize`. Total frame count in the animation. - `quad_str` — `Option<&str>`. Optional quad coordinate annotation. - `summary` — `&str`. Footer summary text. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1406
+            "line": 1456
           },
           {
             "name": "waveform_to_image",
             "kind": "fn",
             "description": "Render audio samples as a waveform visualization.  Draws a waveform with a dark background, grid lines, center-zero line, auto-scaled amplitude, and a blue waveform trace. Handles both oversampled (min/max per pixel column) and undersampled (single sample) cases.  # Parameters - `samples` — `&[f32]`. Audio samples, range typically –1.0..=1.0. - `_sample_rate` — `u32`. Not currently used; reserved for future time-axis labels. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1468
+            "line": 1535
           },
           {
             "name": "waveform_stereo_to_image",
             "kind": "fn",
             "description": "Render interleaved stereo audio samples as a two-channel waveform.  Splits interleaved L/R samples into two panels stacked vertically. Left channel is cyan, right channel is orange. Both channels are auto-scaled together based on the global peak amplitude.  # Parameters - `samples` — `&[f32]`. Interleaved stereo samples (L, R, L, R …). - `_sample_rate` — `u32`. Reserved for future time-axis labels. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1543
+            "line": 1623
           },
           {
             "name": "waveform_zoomed_to_image",
             "kind": "fn",
             "description": "Render a zoomed-in waveform showing individual sample cycles.  Only the first `max_samples` samples are rendered, enabling close inspection of individual wave cycles. Uses linear interpolation between adjacent samples and draws lines from the center to each sample value.  # Parameters - `samples` — `&[f32]`. Audio samples to visualize. - `max_samples` — `usize`. Maximum number of samples to show (leading window). - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1610
+            "line": 1705
           },
           {
             "name": "colored_points_to_image",
             "kind": "fn",
             "description": "Render a set of 2-D points, each colored by its index in the list.  Each point is a single pixel. The color is derived from the point index using three independent linear hash functions so nearby indices have visually distinct colors. Background is dark blue-grey.  # Parameters - `points` — `&[(f32, f32)]`. Point positions in `[0, width) × [0, height)` space. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1685
+            "line": 1798
           },
           {
             "name": "draw_camera_rotation_grid_to_image",
             "kind": "fn",
             "description": "Render a grid of camera rotation panels, each showing 8 coloured dots transformed through the rotation.  # Parameters - `rotations` — `&[(f32, &str)]`. (angle, label) pairs. - `viewport_w` — `f32`. - `viewport_h` — `f32`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1712
+            "line": 1824
           },
           {
             "name": "draw_camera_bounds_to_image",
             "kind": "fn",
             "description": "Render a set of camera positions as labelled coloured rectangles.  # Parameters - `positions` — `&[(f32, f32, &str, u8, u8, u8)]`. (x, y, label, r, g, b). - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1779
+            "line": 1901
           },
           {
             "name": "draw_camera_follow_trail_to_image",
             "kind": "fn",
             "description": "Render a camera follow trail with target points and dead-zone rectangle.  # Parameters - `trail` — `&[(f32, f32)]`. Recorded camera positions. - `targets` — `&[(f32, f32)]`. Target locations. - `dead_zone` — `(f32, f32)`. Width and height of dead zone. - `cam_pos` — `(f32, f32)`. Final camera position. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1815
+            "line": 1944
           },
           {
             "name": "draw_camera_shake_trail_to_image",
             "kind": "fn",
             "description": "Render a camera shake trail with fading circles and reference markers.  # Parameters - `positions` — `&[(f32, f32)]`. Screen-coords of centre point each frame. - `moved_pos` — `(f32, f32)`. Position after `move_by`. - `visible_area` — `(f32, f32, f32, f32)`. (x, y, w, h) from `get_visible_area`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1870
+            "line": 2009
           },
           {
             "name": "draw_graph_operations_to_image",
             "kind": "fn",
             "description": "Render a graph with explicit node positions, labels, edge list, and stats.  # Parameters - `positions` — `&[(f32, f32)]`. Node positions. - `labels` — `&[&str]`. Node labels. - `colors` — `&[(u8, u8, u8)]`. Node colours. - `edges` — `&[(usize, usize)]`. Active edge index pairs. - `removed_edges` — `&[(usize, usize)]`. Dashed/dim edge pairs. - `stats_text` — `&str`. Stats string to draw at bottom-left. - `title` — `&str`. Title text. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1921
+            "line": 2082
           },
           {
             "name": "draw_graph_item_flow_to_image",
             "kind": "fn",
             "description": "Render a pipeline graph with nodes, directional pipes, and item indicators.  # Parameters - `node_pos` — `&[(f32, f32)]`. Node centre positions. - `node_names` — `&[&str]`. Node labels drawn below each node. - `node_colors` — `&[(u8, u8, u8)]`. Node fill colours. - `items` — `&[(i32, i32, u8, u8, u8, &str)]`. (x, y, r, g, b, label) for item dots. - `stats_text` — `&str`. Bottom-left stats string. - `title` — `&str`. Top title. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 1981
+            "line": 2148
           },
           {
             "name": "draw_geometry_shapes_to_image",
             "kind": "fn",
             "description": "Draw a comprehensive geometry shapes & queries visualization.  Renders convex hull, polygon area/centroid, point-in-polygon test, Bresenham line, angle measurement, circle containment, and circle-circle intersection — all in a single composite image.  # Parameters - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2040
+            "line": 2236
           },
           {
             "name": "draw_geometry_intersections_to_image",
             "kind": "fn",
             "description": "Draw geometry intersection tests visualization.  Renders segment-segment, closest-point, circle-line, circle-segment, and line-line intersections in a single composite image.  # Parameters - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2149
+            "line": 2350
           },
           {
             "name": "draw_delaunay_to_image",
             "kind": "fn",
             "description": "Draw Delaunay triangulation visualization.  Renders triangles with HSV-colored edges and highlighted input points.  # Parameters - `points` — `&[(f64, f64)]`. Input point coordinates. - `triangles` — `&[[f64; 6]]`. Triangle vertex pairs from `delaunay_triangulate`. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2261
+            "line": 2450
           },
           {
             "name": "draw_image_comparison_to_image",
             "kind": "fn",
             "description": "Draw a side-by-side comparison of multiple images.  Places each input image horizontally with a label below, with 5px padding.  # Parameters - `images` — `&[&ImageData]`. Images to display side-by-side. - `labels` — `&[&str]`. Labels for each column. - `width` — `u32`. Total output width. - `height` — `u32`. Total output height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2305
+            "line": 2528
           },
           {
             "name": "draw_pixel_transform_grid_to_image",
             "kind": "fn",
             "description": "Draw a 4-column pixel transform grid: original, invert, grayscale, sepia.  Takes a source pattern (100×height) and produces a 4-column display.  # Parameters - `col_w` — `u32`. Width of each column. - `col_h` — `u32`. Height of each column.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2354
+            "line": 2577
           },
           {
             "name": "draw_color_wheel_to_image",
             "kind": "fn",
             "description": "Draw an HSV colour wheel.  Generates radial hue-saturation gradient in a circle centred in the image.  # Parameters - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2413
+            "line": 2645
           },
           {
             "name": "draw_sound_waveform_to_image",
             "kind": "fn",
             "description": "Draw a single waveform as a colored plot on a dark background.  # Parameters - `samples` — `&[f32]`. Audio sample data. - `label` — `&str`. Title text drawn at bottom. - `width` — `u32`. Image width. - `height` — `u32`. Image height. - `color` — `(u8, u8, u8)`. Line colour.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2447
+            "line": 2678
           },
           {
             "name": "draw_bezier_advanced_to_image",
             "kind": "fn",
             "description": "Draw a bezier advanced operations overview.  Renders the original curve, its derivative, a segment highlight, control point editing, and transform operations.  # Parameters - `width` — `u32`. Image width. - `height` — `u32`. Image height.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2497
+            "line": 2741
           },
           {
             "name": "draw_animation_to_image",
             "kind": "fn",
             "description": "Render an animation as a CPU image for headless testing.  Delegates to [`draw_animation_frame_grid_to_image`] with cell dimensions derived from the requested output size and frame count.  # Parameters - `anim` — `&Animation`. Animation controller to render. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2641
+            "line": 2926
           },
           {
             "name": "draw_camera_to_image",
             "kind": "fn",
             "description": "Render a camera as a CPU image for headless testing.  Delegates to [`draw_camera_debug_to_image`] using the output dimensions as world dimensions, producing a 1:1 grid with the camera viewport overlaid.  # Parameters - `cam` — `&Camera2D`. Camera to visualize. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization.rs",
-            "line": 2661
+            "line": 2946
           }
         ]
       },
@@ -5023,23 +5023,23 @@
         "source_file": "src/parallax/mod.rs",
         "items": [
           {
+            "name": "draw",
+            "kind": "mod",
+            "description": "CPU software-rendering fallback for headless draw-to-image.",
+            "file": "src/parallax/mod.rs",
+            "line": 69
+          },
+          {
             "name": "layer",
             "kind": "mod",
             "description": "Parallax layer data model and draw-call batch builder.",
             "file": "src/parallax/mod.rs",
-            "line": 69
+            "line": 71
           },
           {
             "name": "render",
             "kind": "mod",
             "description": "Render-command generation for parallax layers.",
-            "file": "src/parallax/mod.rs",
-            "line": 71
-          },
-          {
-            "name": "draw",
-            "kind": "mod",
-            "description": "CPU software-rendering fallback for headless draw-to-image.",
             "file": "src/parallax/mod.rs",
             "line": 73
           }
@@ -6890,14 +6890,14 @@
             "kind": "struct",
             "description": "Per-frame rendering statistics.  # Fields - `draw_calls` — `u32`. - `texture_switches` — `u32`. - `canvas_switches` — `u32`. - `shader_switches` — `u32`. - `batched_draws` — `u32`.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 112
+            "line": 132
           },
           {
             "name": "GpuRenderer",
             "kind": "struct",
             "description": "GPU-accelerated renderer that processes `RenderCommand` queues via wgpu.  # Fields - `device` — `wgpu::Device`. - `queue` — `wgpu::Queue`. - `width` — `u32`. - `height` — `u32`. - `render_stats` — `RenderStats`.  Owns the wgpu `Device` and `Queue`. The caller (App) owns the `Surface` and configuration; `render_frame` receives a shared reference each frame.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 354
+            "line": 458
           }
         ]
       },
@@ -9116,42 +9116,42 @@
             "kind": "enum",
             "description": "Fullscreen mode type for window management.  # Variants - `Desktop` — Desktop variant. - `Exclusive` — Exclusive variant.",
             "file": "src/runtime/shared_state.rs",
-            "line": 44
+            "line": 45
           },
           {
             "name": "WindowState",
             "kind": "struct",
             "description": "Tracks window state and queues window operations for the event loop.  # Fields - `focused` — `bool`. - `mouse_focused` — `bool`. - `minimized` — `bool`. - `maximized` — `bool`. - `visible` — `bool`. - `dpi_scale` — `f64`. - `position_x` — `i32`. - `position_y` — `i32`. - `pending_title` — `Option<String>`. - `pending_fullscreen` — `Option<bool>`. - `pending_fullscreen_type` — `FullscreenType`. - `pending_position` — `Option<(i32, i32)>`. - `pending_size` — `Option<(u32, u32)>`. - `pending_minimize` — `bool`. - `pending_maximize` — `bool`. - `pending_restore` — `bool`. - `pending_close` — `bool`. - `pending_attention` — `bool`. - `pending_icon_path` — `Option<String>`. - `vsync_mode` — `i32`. - `pending_vsync` — `Option<i32>`. - `fullscreen` — `bool`. - `fullscreen_type` — `FullscreenType`. - `game_width` — `f32`. - `game_height` — `f32`. - `scale_mode_str` — `String`. - `viewport_scale_x` — `f32`. - `viewport_scale_y` — `f32`. - `viewport_offset_x` — `f32`. - `viewport_offset_y` — `f32`. - `pending_scale_mode` — `Option<String>`.  Query fields are written by `app.rs` from window events and read by Lua. Pending fields are written by Lua closures and consumed by `app.rs`. # Fields",
             "file": "src/runtime/shared_state.rs",
-            "line": 90
+            "line": 91
           },
           {
             "name": "ErrorInfo",
             "kind": "struct",
             "description": "Structured error information for the last engine error.  # Fields - `message` — `String`. - `code` — `String`. - `category` — `String`. - `hint` — `Option<String>`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 206
+            "line": 207
           },
           {
             "name": "ScreenshotRequest",
             "kind": "struct",
             "description": "Pending request to save the next rendered screen frame as a PNG.  # Fields - `path` — `String`.",
             "file": "src/runtime/shared_state.rs",
-            "line": 222
+            "line": 223
           },
           {
             "name": "SharedState",
             "kind": "struct",
             "description": "Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.  # Fields - `render_commands` — Queue of pending `RenderCommand` values, flushed each frame. - `current_color` — Active RGBA draw color `[r, g, b, a]`. - `background_color` — Screen clear color set by `lurek.gfx.setBackgroundColor`. - `textures` — Loaded texture pixel data, indexed by `Texture::id`. - `keys_down` — Set of currently held key name strings. - `mouse` — Mouse cursor position, button state, scroll, and cursor settings. - `delta_time` — Elapsed time for the current frame in seconds. - `total_time` — Accumulated time since engine start in seconds. - `fps` — Rolling frames-per-second measurement. - `window_width` — Current window width in pixels. - `window_height` — Current window height in pixels. - `window_title` — Current window title string. - `mixer` — The rodio audio mixer managing all sound sources. - `game_dir` — Absolute path to the game directory. - `quit_requested` — Set to `true` by `lurek.signal.quit()` to end the game loop. - `exit_code` — Exit code to return when `quit_requested` is `true`. - `restart_requested` — Set to `true` by `lurek.signal.restart()` to trigger engine restart. - `line_width` — Current stroke width for outline draw commands. - `blend_mode` — Current blend mode for draw operations. - `fonts` — Loaded TTF fonts for text rendering. - `active_font` — Index of the currently active font (`None` = use bitmap fallback). - `canvases` — Off-screen render targets (canvases) for compositing. - `gamepads` — Connected gamepad state instances. - `fs` — Persistent sandboxed `GameFS` instance with mount layer support. - `shapes` — Stores all compound shape instances.  # Fields Shared mutable state accessible by both the engine loop and Lua closures.",
             "file": "src/runtime/shared_state.rs",
-            "line": 258
+            "line": 259
           },
           {
             "name": "RendererStats",
             "kind": "struct",
             "description": "Snapshot of renderer statistics for a single frame.  # Fields - `draw_calls` — `usize`. - `textures` — `usize`. - `fonts` — `usize`. - `canvases` — `usize`. - `texture_memory` — `usize`. RGBA byte estimate.",
             "file": "src/runtime/shared_state.rs",
-            "line": 558
+            "line": 566
           }
         ]
       },
@@ -9731,7 +9731,7 @@
             "kind": "mod",
             "description": "Render-command generation and CPU drawing for the terminal module.",
             "file": "src/terminal/mod.rs",
-            "line": 19
+            "line": 17
           }
         ]
       },
@@ -10224,30 +10224,30 @@
             "line": 18
           },
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "GPU render-command generation for TileMap layers.",
+            "file": "src/tilemap/mod.rs",
+            "line": 20
+          },
+          {
             "name": "tilemap",
             "kind": "mod",
             "description": "Core tilemap: layers, tile CRUD, sweep queries, and serialization.",
             "file": "src/tilemap/mod.rs",
-            "line": 21
+            "line": 23
           },
           {
             "name": "tileset",
             "kind": "mod",
             "description": "Tile set definition with per-tile properties and animation frames.",
             "file": "src/tilemap/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "tmx",
             "kind": "mod",
             "description": "Tiled TMX/TSX map format parser.",
-            "file": "src/tilemap/mod.rs",
-            "line": 25
-          },
-          {
-            "name": "render",
-            "kind": "mod",
-            "description": "GPU render-command generation for TileMap layers.",
             "file": "src/tilemap/mod.rs",
             "line": 27
           },
@@ -11132,9 +11132,9 @@
           {
             "name": "WidgetBase",
             "kind": "struct",
-            "description": "Shared base properties embedded by every concrete widget.  `WidgetBase` does not carry rendering or input-handling logic — it stores the common fields that the Lua API and the layout engine operate on. Concrete widgets (e.g. `Button`, `Label`) embed a `WidgetBase` and add type-specific data.  # Fields - `id` — `String`. Optional identifier for `findById` lookup. - `widget_type` — `WidgetType`. Discriminator for theme key lookup. - `x` — `f32`. Horizontal position relative to parent. - `y` — `f32`. Vertical position relative to parent. - `width` — `f32`. Widget width in pixels. - `height` — `f32`. Widget height in pixels. - `visible` — `bool`. Whether the widget is drawn and receives events. - `enabled` — `bool`. Whether the widget accepts input. - `state` — `WidgetState`. Current visual/interaction state. - `tooltip` — `String`. Tooltip text (displayed externally). - `z_order` — `i32`. Draw layer; higher values draw on top. - `padding` — `[f32; 4]`. Inner padding `[top, right, bottom, left]`. - `margin` — `[f32; 4]`. Outer margin `[top, right, bottom, left]`. - `min_width` — `f32`. Minimum width constraint. - `min_height` — `f32`. Minimum height constraint. - `max_width` — `f32`. Maximum width constraint (`f32::INFINITY` = none). - `max_height` — `f32`. Maximum height constraint (`f32::INFINITY` = none). - `anchor_left` — `Option<f32>`. Left anchor edge offset. - `anchor_top` — `Option<f32>`. Top anchor edge offset. - `anchor_right` — `Option<f32>`. Right anchor edge offset. # Fields - `anchor_bottom` — `Option<f32>`. Bottom anchor edge offset. - `anchor_center_x` — `Option<f32>`. Horizontal centre anchor. - `anchor_center_y` — `Option<f32>`. Vertical centre anchor. - `flex_grow` — `f32`. Flexbox grow factor. - `flex_shrink` — `f32`. Flexbox shrink factor.",
+            "description": "Shared base properties embedded by every concrete widget.  `WidgetBase` does not carry rendering or input-handling logic — it stores the common fields that the Lua API and the layout engine operate on. Concrete widgets (e.g. `Button`, `Label`) embed a `WidgetBase` and add type-specific data.  # Fields - `id` — `String`. Optional identifier for `findById` lookup. - `widget_type` — `WidgetType`. Discriminator for theme key lookup. - `x` — `f32`. Horizontal position relative to parent. - `y` — `f32`. Vertical position relative to parent. - `width` — `f32`. Widget width in pixels. - `height` — `f32`. Widget height in pixels. - `visible` — `bool`. Whether the widget is drawn and receives events. - `enabled` — `bool`. Whether the widget accepts input. - `state` — `WidgetState`. Current visual/interaction state. - `tooltip` — `String`. Tooltip text (displayed externally). - `z_order` — `i32`. Draw layer; higher values draw on top. - `padding` — `[f32; 4]`. Inner padding `[top, right, bottom, left]`. - `margin` — `[f32; 4]`. Outer margin `[top, right, bottom, left]`. - `min_width` — `f32`. Minimum width constraint. - `min_height` — `f32`. Minimum height constraint. - `max_width` — `f32`. Maximum width constraint (`f32::INFINITY` = none). - `max_height` — `f32`. Maximum height constraint (`f32::INFINITY` = none). - `anchor_left` — `Option<f32>`. Left anchor edge offset. - `anchor_top` — `Option<f32>`. Top anchor edge offset. - `anchor_right` — `Option<f32>`. Right anchor edge offset. # Fields - `anchor_bottom` — `Option<f32>`. Bottom anchor edge offset. - `anchor_center_x` — `Option<f32>`. Horizontal centre anchor. - `anchor_center_y` — `Option<f32>`. Vertical centre anchor. - `flex_grow` — `f32`. Flexbox grow factor. - `flex_shrink` — `f32`. Flexbox shrink factor. - `computed_rect` — `crate::math::Rect`. Computed screen-space rectangle after layout. - `is_visible` — `bool`. Whether this widget is visible after layout (not clipped by parent).",
             "file": "src/ui/widget.rs",
-            "line": 258
+            "line": 260
           }
         ]
       },

@@ -1,16 +1,13 @@
-# `devtools` — Agent Reference
+# devtools
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Edge/Integration |
-| **Status** | Implemented |
-| **Lua API** | `lurek.devtools` |
-| **Source** | `src/devtools/` |
-| **Rust Tests** | tests/rust/unit/devtools_tests.rs |
-| **Lua Tests** | tests/lua/unit/test_devtools.lua; tests/lua/integration/test_devtools.lua |
-| **Architecture** | `docs/architecture/engine-architecture.md § Edge / Integration` |
+## General Info
 
----
+- Module group: `Edge/Integration`
+- Source path: `src/devtools/`
+- Lua API path(s): `src/lua_api/devtools_api.rs`
+- Primary Lua namespace: `lurek.devtools`
+- Rust test path(s): tests/rust/unit/devtools_tests.rs
+- Lua test path(s): tests/lua/unit/test_devtools.lua; tests/lua/integration/test_devtools.lua
 
 ## Summary
 
@@ -22,184 +19,105 @@ This module does not own the main engine log facade, the app event loop, or hot-
 
 **Scope boundary**: This module currently acts as a mostly self-contained part of the Edge/Integration layer. Cross-module behavior should remain anchored to the top-level source files and Lua bindings listed below.
 
----
+## Files
 
-## Architecture
+- `frame_stats.rs`: Defines FrameStats and FrameSnapshot for rolling frame-time analysis. This file is responsible for summary metrics such as min, max, average, FPS, and percentile calculations.
+- `logger.rs`: Defines LogLevel, LogEntry, and Logger for runtime log capture and filtering. This is the place to inspect when diagnostic history, severity filtering, or category tagging changes.
+- `mod.rs`: Module root that re-exports the public devtools surface. It keeps the module easy to import without exposing internal file layout.
+- `profiler.rs`: Defines ProfileZone and Profiler for nested CPU timing zones recorded across frames. It owns the push or pop profiler model and the retained per-frame profiling history.
+- `watcher.rs`: Defines FileWatcher for lightweight path polling based on modification time. It is the module's file-change detection primitive for developer workflows.
 
-```
-lurek.devtools.* (Lua API — src/lua_api/devtools_api.rs)
-    |
-    v
-src/devtools/mod.rs
-    |- frame_stats.rs - frame_stats
-    |- logger.rs - logger
-    |- profiler.rs - profiler
-    |- watcher.rs - watcher
-```
+## Types
 
----
+- `FrameStats` (`struct`, `frame_stats.rs`): Rolling frame-duration buffer that turns raw dt samples into actionable summary metrics. It is the module boundary between raw timing collection and interpreted frame-health reporting.
+- `FrameSnapshot` (`struct`, `frame_stats.rs`): Immutable summary of the current FrameStats state. This is the structure most consumers should read instead of recalculating metrics themselves.
+- `LogLevel` (`enum`, `logger.rs`): Ordered logging enum used to filter messages and present consistent severity labels to Lua and Rust callers. It is the shared language for the module's diagnostic output.
+- `LogEntry` (`struct`, `logger.rs`): One captured runtime log record, including message, severity, source location, and optional category. It is the data unit exchanged between logger internals and diagnostics UIs.
+- `Logger` (`struct`, `logger.rs`): In-memory logging surface with severity filtering and bounded history. It is the right place to look when runtime diagnostics need to be retained, filtered, or surfaced in tools.
+- `ProfileZone` (`struct`, `profiler.rs`): One timed scope inside the profiler tree. It is useful when debugging incorrect nesting, missing pops, or self-time calculations.
+- `Profiler` (`struct`, `profiler.rs`): Frame-by-frame nested timing recorder built around push or pop zones. It exists for CPU-cost inspection, not for GPU profiling or OS-level tracing.
+- `FileWatcher` (`struct`, `watcher.rs`): Polling watcher for individual file paths. It is intentionally simple and should be treated as a developer convenience tool, not a full file-system event subsystem.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `frame_stats.rs` | Defines FrameStats and FrameSnapshot for rolling frame-time analysis. This file is responsible for summary metrics such as min, max, average, FPS, and percentile calculations. |
-| `logger.rs` | Defines LogLevel, LogEntry, and Logger for runtime log capture and filtering. This is the place to inspect when diagnostic history, severity filtering, or category tagging changes. |
-| `mod.rs` | Module root that re-exports the public devtools surface. It keeps the module easy to import without exposing internal file layout. |
-| `profiler.rs` | Defines ProfileZone and Profiler for nested CPU timing zones recorded across frames. It owns the push or pop profiler model and the retained per-frame profiling history. |
-| `watcher.rs` | Defines FileWatcher for lightweight path polling based on modification time. It is the module's file-change detection primitive for developer workflows. |
+- `FrameStats::new` (`frame_stats.rs`): Creates a new `FrameStats` with the given sample capacity.
+- `FrameStats::record` (`frame_stats.rs`): Pushes a new frame-time sample, evicting the oldest when full.
+- `FrameStats::set_capacity` (`frame_stats.rs`): Sets the capacity, trimming old samples if necessary.
+- `FrameStats::snapshot` (`frame_stats.rs`): Returns a snapshot of computed frame statistics.
+- `LogLevel::from_str` (`logger.rs`): Parse a case-insensitive level name string.
+- `LogLevel::as_str` (`logger.rs`): Returns the canonical lowercase name string.
+- `Logger::new` (`logger.rs`): Creates a new logger with sensible defaults (level = `Info`, console on, 1 000 entry history).
+- `Logger::elapsed` (`logger.rs`): Seconds elapsed since the logger was created.
+- `Logger::push` (`logger.rs`): Records a message at the given level, respecting the minimum filter.
+- `Logger::tail` (`logger.rs`): Returns the last `count` entries (or all when `count` is `None` or zero).
+- `Logger::filter_category` (`logger.rs`): Filters history by category tag (case-insensitive prefix match).
+- `Logger::clear` (`logger.rs`): Clears all log history without changing settings.
+- `ProfileZone::total_time` (`profiler.rs`): Total wall-clock duration of this zone (includes children).
+- `ProfileZone::self_time` (`profiler.rs`): Exclusive (self-only) duration, excluding children.
+- `ProfileZone::flatten` (`profiler.rs`): Flattens all zones and children into a single pre-order list.
+- `Profiler::new` (`profiler.rs`): Creates a new profiler (disabled by default, 300 frame buffer).
+- `Profiler::elapsed` (`profiler.rs`): Current seconds from the profiler epoch.
+- `Profiler::push` (`profiler.rs`): Opens a named timing zone.
+- `Profiler::pop` (`profiler.rs`): Closes the most recent open zone.
+- `Profiler::end_frame` (`profiler.rs`): Seals the current frame and stores the collected zones.
+- `Profiler::get_frame` (`profiler.rs`): Returns zone data for the frame at offset `idx` (0 = most recent, negative = relative).
+- `Profiler::reset` (`profiler.rs`): Clears all captured profiling data and resets the zone stack.
+- `FileWatcher::new` (`watcher.rs`): Creates a new empty watcher.
+- `FileWatcher::watch` (`watcher.rs`): Adds a path to the watch list.
+- `FileWatcher::unwatch` (`watcher.rs`): Removes a path from the watch list.
+- `FileWatcher::watched_paths` (`watcher.rs`): Returns all currently watched paths.
+- `FileWatcher::poll` (`watcher.rs`): Polls all watched paths and returns paths that have changed since the last call to `poll`.
+- `FileWatcher::clear` (`watcher.rs`): Clears all watched paths.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `devtools::frame_stats`
-
-Defines FrameStats and FrameSnapshot for rolling frame-time analysis. This file is responsible for summary metrics such as min, max, average, FPS, and percentile calculations.
-
-- **`FrameStats`** (struct): Rolling-window frame-time accumulator.
-- **`FrameSnapshot`** (struct): Computed statistics snapshot from [`FrameStats::snapshot`].
-
-### `devtools::logger`
-
-Defines LogLevel, LogEntry, and Logger for runtime log capture and filtering. This is the place to inspect when diagnostic history, severity filtering, or category tagging changes.
-
-- **`LogLevel`** (enum): Log severity level.
-- **`LogEntry`** (struct): A single log entry captured in the rolling history.
-- **`Logger`** (struct): Structured in-process logger with level filtering and rolling history.
-
-### `devtools::profiler`
-
-Defines ProfileZone and Profiler for nested CPU timing zones recorded across frames. It owns the push or pop profiler model and the retained per-frame profiling history.
-
-- **`ProfileZone`** (struct): A completed timing zone with optional nested children.
-- **`Profiler`** (struct): Hierarchical frame profiler.
-
-### `devtools::watcher`
-
-Defines FileWatcher for lightweight path polling based on modification time. It is the module's file-change detection primitive for developer workflows.
-
-- **`FileWatcher`** (struct): Polling-based file-modification watcher.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `Logger`
-
-In-memory logging surface with severity filtering and bounded history.
-
-#### `LogLevel`
-
-Ordered logging enum used to filter messages and present consistent severity labels to Lua and Rust callers.
-
-#### `LogEntry`
-
-One captured runtime log record, including message, severity, source location, and optional category.
-
-#### `Profiler`
-
-Frame-by-frame nested timing recorder built around push or pop zones.
-
-#### `ProfileZone`
-
-One timed scope inside the profiler tree.
-
-#### `FrameStats`
-
-Rolling frame-duration buffer that turns raw dt samples into actionable summary metrics.
-
-#### `FrameSnapshot`
-
-Immutable summary of the current FrameStats state.
-
-#### `FileWatcher`
-
-Polling watcher for individual file paths.
-
----
-
-## Lua API
-
-Exposed under `lurek.devtools.*` by `src/lua_api/devtools_api.rs`.
+- Binding path(s): `src/lua_api/devtools_api.rs`
+- Namespace: `lurek.devtools`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.devtools.log` | Logs a message at the given level. |
-| `lurek.devtools.setLogLevel` | Sets the minimum log level. |
-| `lurek.devtools.getLogLevel` | Returns the current minimum log level. |
-| `lurek.devtools.setLogConsole` | Enables or disables console log output. |
-| `lurek.devtools.getLogConsole` | Returns whether console log output is enabled. |
-| `lurek.devtools.setLogFile` | Sets the log file path (empty string disables file output). |
-| `lurek.devtools.getLogFile` | Returns the current log file path. |
-| `lurek.devtools.getLogHistory` | Returns recent log entries as an array of tables. |
-| `lurek.devtools.clearLog` | Clears all log history. |
-| `lurek.devtools.setProfilingEnabled` | Enables or disables the profiler. |
-| `lurek.devtools.isProfilingEnabled` | Returns whether the profiler is enabled. |
-| `lurek.devtools.profilePush` | Opens a named profiling zone on the stack. |
-| `lurek.devtools.profilePop` | Closes the most recent profiling zone. |
-| `lurek.devtools.profileFrame` | Seals the current frame of profiling data. |
-| `lurek.devtools.getProfileFrameCount` | Returns the number of retained profile frames. |
-| `lurek.devtools.getProfileData` | Returns zone data table for a specific frame (0 or nil = most recent). |
-| `lurek.devtools.resetProfile` | Clears all profiling data and resets the zone stack. |
-| `lurek.devtools.recordFrameTime` | Records a frame-time sample (call each frame with delta time in seconds). |
-| `lurek.devtools.getFrameStats` | Returns a table of computed frame statistics. |
-| `lurek.devtools.getFrameHistory` | Returns the raw frame-time sample array. |
-| `lurek.devtools.setFrameHistorySize` | Sets the frame-history buffer capacity (clamped 10-10000). |
-| `lurek.devtools.getFrameHistorySize` | Returns the current frame-history buffer capacity. |
-| `lurek.devtools.watch` | Adds a file path to the watch list. Returns false if already watched. |
-| `lurek.devtools.unwatch` | Removes a file path from the watch list. |
-| `lurek.devtools.getWatchedPaths` | Returns an array of all watched paths. |
-| `lurek.devtools.scan` | Polls all watched paths and returns paths whose mtime changed. |
-| `lurek.devtools.clearWatches` | Clears all watched paths. |
-| `lurek.devtools.getWatchInterval` | Returns the file watch poll interval in seconds. |
-| `lurek.devtools.setWatchInterval` | Sets the file watch poll interval in seconds. |
-| `lurek.devtools.getCallStack` | Returns the Lua call stack as a table of frames. |
-| `lurek.devtools.eval` | Evaluates a Lua string and returns (success, results...). |
-| `lurek.devtools.openConsole` | Opens the console window (updates the console flag; returns true). |
-| `lurek.devtools.isConsoleOpen` | Returns whether the console is considered open. |
-| `lurek.devtools.exposeWatch` | Registers a named live watch. The getter function is called on demand to sample a value. |
-| `lurek.devtools.removeWatch` | Removes a watch by the id returned from exposeWatch. Returns true if removed. |
-| `lurek.devtools.getWatches` | Calls all registered watch getters and returns a table of {name, category, value} records. |
-| `lurek.devtools.snapshot` | Takes a structured snapshot of all watches + frame stats + last profile frame. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.devtools.
-if lurek.devtools then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 7 |
-| `enum` | 1 |
-| `fn` (Lua API) | 37 |
-| **Total** | **45** |
-
----
+- `lurek.devtools.log`: Logs a message at the given level.
+- `lurek.devtools.setLogLevel`: Sets the minimum log level.
+- `lurek.devtools.getLogLevel`: Returns the current minimum log level.
+- `lurek.devtools.setLogConsole`: Enables or disables console log output.
+- `lurek.devtools.getLogConsole`: Returns whether console log output is enabled.
+- `lurek.devtools.setLogFile`: Sets the log file path (empty string disables file output).
+- `lurek.devtools.getLogFile`: Returns the current log file path.
+- `lurek.devtools.getLogHistory`: Returns recent log entries as an array of tables.
+- `lurek.devtools.clearLog`: Clears all log history.
+- `lurek.devtools.setProfilingEnabled`: Enables or disables the profiler.
+- `lurek.devtools.isProfilingEnabled`: Returns whether the profiler is enabled.
+- `lurek.devtools.profilePush`: Opens a named profiling zone on the stack.
+- `lurek.devtools.profilePop`: Closes the most recent profiling zone.
+- `lurek.devtools.profileFrame`: Seals the current frame of profiling data.
+- `lurek.devtools.getProfileFrameCount`: Returns the number of retained profile frames.
+- `lurek.devtools.getProfileData`: Returns zone data table for a specific frame (0 or nil = most recent).
+- `lurek.devtools.resetProfile`: Clears all profiling data and resets the zone stack.
+- `lurek.devtools.recordFrameTime`: Records a frame-time sample (call each frame with delta time in seconds).
+- `lurek.devtools.getFrameStats`: Returns a table of computed frame statistics.
+- `lurek.devtools.getFrameHistory`: Returns the raw frame-time sample array.
+- `lurek.devtools.setFrameHistorySize`: Sets the frame-history buffer capacity (clamped 10-10000).
+- `lurek.devtools.getFrameHistorySize`: Returns the current frame-history buffer capacity.
+- `lurek.devtools.watch`: Adds a file path to the watch list. Returns false if already watched.
+- `lurek.devtools.unwatch`: Removes a file path from the watch list.
+- `lurek.devtools.getWatchedPaths`: Returns an array of all watched paths.
+- `lurek.devtools.scan`: Polls all watched paths and returns paths whose mtime changed.
+- `lurek.devtools.clearWatches`: Clears all watched paths.
+- `lurek.devtools.getWatchInterval`: Returns the file watch poll interval in seconds.
+- `lurek.devtools.setWatchInterval`: Sets the file watch poll interval in seconds.
+- `lurek.devtools.getCallStack`: Returns the Lua call stack as a table of frames.
+- `lurek.devtools.eval`: Evaluates a Lua string and returns (success, results...).
+- `lurek.devtools.openConsole`: Opens the console window (updates the console flag; returns true).
+- `lurek.devtools.isConsoleOpen`: Returns whether the console is considered open.
+- `lurek.devtools.exposeWatch`: Registers a named live watch. The getter function is called on demand to sample a value.
+- `lurek.devtools.removeWatch`: Removes a watch by the id returned from exposeWatch. Returns true if removed.
+- `lurek.devtools.getWatches`: Calls all registered watch getters and returns a table of {name, category, value} records.
+- `lurek.devtools.snapshot`: Takes a structured snapshot of all watches + frame stats + last profile frame.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| — | No top-level `crate::<module>` imports were detected in this module's source files. | Keep the source files as the primary dependency reference. |
-
----
+- No top-level `crate::<module>` imports were detected in this module's Rust source files.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/devtools/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/devtools/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

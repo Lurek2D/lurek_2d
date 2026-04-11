@@ -1,218 +1,145 @@
 ---
 name: agent-md
-description: "Load this skill when creating or maintaining AGENT.md files inside Lurek2D src/ module directories. Owns required section structure (short overview in src/, full spec in docs/specs/), sync contracts, and the scaffold+validate workflow. Skip it for writing production Rust code, tests, or Lua scripts."
+description: "Load this skill when creating or maintaining merged module reference specs in docs/specs/<module>.md. It owns the required section structure, sync contract, and scaffold+validate workflow after the retirement of src/<module>/AGENT.md. Skip it for writing production Rust code, tests, or Lua scripts."
 ---
 
-# AGENT.md Authoring and Maintenance Skill
+# Module Reference Authoring and Maintenance Skill
 
-## The Two-Layer System
+## Single-Source System
 
-Every module uses a two-file documentation structure:
+Every engine module now uses one canonical documentation file:
 
 | File | Purpose | Content |
-|------|---------|--------|
-| `src/<module>/AGENT.md` | **Short overview** — loaded by every agent entering the module | Metadata table, one-paragraph Purpose, Source Files list, pointer to spec |
-| `docs/specs/<module>.md` | **Full technical spec** — loaded when deep detail is needed | Architecture diagram, all types, full Lua API, examples, references, notes |
+|------|---------|---------|
+| `docs/specs/<module>.md` | Merged module reference | General Info, Summary, Files, Types, Functions, Lua API Reference, References, Notes |
 
-**Read order**: Load `src/<module>/AGENT.md` first. Only load `docs/specs/<module>.md` when you need architecture diagrams, full type details, Lua API docs, or cross-module references.
-
-**Write rule**: When anything changes in a module, **both** files must be updated in the same commit — the short AGENT.md for the surface summary, and the full spec for deep detail.
+`src/<module>/AGENT.md` has been retired. Agents should load `docs/specs/<module>.md` directly when they need module context.
 
 ## Load When
 
-- Creating a new `src/<module>/AGENT.md` (short) and `docs/specs/<module>.md` (full) from scratch
-- Updating an existing AGENT.md or spec after changing source files, types, or Lua API bindings
-- Running `tools/audit/validate_agent_md.py` to check compliance
-- Reviewing whether AGENT.md / spec are in sync with the Lua wrapper
+- Creating a new `docs/specs/<module>.md` for a new engine module
+- Updating a module reference after changing source files, public types, public functions, or Lua bindings
+- Running `tools/audit/validate_agent_md.py` to validate the merged module reference format
+- Running `tools/docs/gen_module_specs.py` to regenerate the collected sections from source
+- Reviewing whether a module reference still matches its Rust source and Lua wrapper
 
 ## Owns
 
-- Required section structure for `src/<module>/AGENT.md` (short overview format)
-- Required section structure for `docs/specs/<module>.md` (full spec format)
-- `tools/audit/validate_agent_md.py` — validation and scaffold tool
-- Sync contract between AGENT.md, docs/specs/, source `.rs` files, `///` docstrings, and `src/lua_api/<module>_api.rs`
+- Required section structure for `docs/specs/<module>.md`
+- `tools/docs/gen_module_specs.py` generation workflow
+- `tools/audit/validate_agent_md.py` validation workflow
+- Sync contract between module specs, Rust source, docstrings, and `src/lua_api/<module>_api.rs`
 
 ## Does Not Cover
 
 - Writing production Rust code → use `rust-coding` skill
-- Writing or reviewing Lua API Rust bindings → use `lua-api-design` skill
+- Writing or reviewing Lua API Rust bindings → use `lua-api-design` or `lua-rust-bridge`
 - End-to-end module quality audits → use `module-audit` skill
 
 ## Purpose
 
-Every `src/<module>/` directory MUST contain a hand-maintained `AGENT.md` file.
-This file is the canonical domain reference an AI agent reads before working
-in that module. It is **not auto-generated** — it is written and updated
-by the agent that last touched the module. Scripts can scaffold repetitive
-sections and validate completeness, but the prose and accuracy are manual.
+The merged spec is the canonical module reference an agent reads before working in a module. It combines the old overview content and the former deep spec content in one file so agents no longer need to chase two documentation layers.
+
+Scripts may scaffold and refresh the source-derived sections, but the Summary and Notes remain manual prose. The goal is a reference that stays accurate enough for automated checks while still carrying module-specific design context that only a human or focused agent can write well.
 
 Validate with: `python tools/audit/validate_agent_md.py --module <name>`
-Scaffold missing sections: `python tools/audit/validate_agent_md.py --scaffold <name>`
+Regenerate with: `python tools/docs/gen_module_specs.py --module <name>`
 
----
+## Required Format (`docs/specs/<module>.md`)
 
-## Short AGENT.md Format (`src/<module>/AGENT.md`)
+The merged module reference must contain these sections in order:
 
-The short AGENT.md must contain exactly these sections in order:
+1. `# <module>`
+2. `## General Info`
+3. `## Summary`
+4. `## Files`
+5. `## Types`
+6. `## Functions`
+7. `## Lua API Reference`
+8. `## References`
+9. `## Notes`
 
-1. **H1 heading** — `# \`<module>\` — Agent Reference`
-2. **Metadata table** — Group, Status, Lua API, Source, Rust Tests, Lua Tests, Architecture link
-3. **`## Purpose`** — One paragraph: what the module does and its scope boundary. Target 2–5 sentences. Must let an agent decide whether to open this module or a different one.
-4. **`## Source Files`** — Table mapping every `.rs` file in `src/<module>/` to its one-line purpose. Keep in sync when files are added or removed.
-5. **`## Full Specification`** — Standard footer paragraph pointing to `docs/specs/<module>.md`.
+### `## General Info`
 
-**Do NOT copy full architecture diagrams, type docs, Lua API tables, or examples into the short AGENT.md.** Those live in `docs/specs/<module>.md`.
+Keep this short and factual. Minimum fields:
+- Module group
+- Source path
+- Lua API path(s)
+- Primary Lua namespace
+- Rust test path(s)
+- Lua test path(s)
 
----
+### `## Summary`
 
-## Full Spec Format (`docs/specs/<module>.md`)
+- Several paragraphs of plain text
+- Explain the module's purpose, scope boundary, and why its responsibilities live here
+- Start from the prior AGENT.md purpose text when migrating, then expand it manually from the actual source code
+- Write module by module; do not mass-generate vague summaries
 
-The full spec is the old AGENT.md with complete technical detail. Required sections (ERROR if missing) are listed below. The spec is the canonical reference an agent loads when it needs deep module knowledge.
+### `## Files`
 
----
+- One bullet per `.rs` file under `src/<module>/`
+- Format: `- \`file.rs\`: purpose`
+- Source-derived and safe to regenerate
 
-## Required Sections (ERROR if missing)
+### `## Types`
 
-### 1. Header Metadata Table
+- One bullet per public Rust type (`struct`, `enum`, `trait`, `type`)
+- Format: `- \`TypeName\` (\`kind\`, \`file.rs\`): purpose`
+- Source-derived and safe to regenerate
 
-Must be the first content after the `# \`<module>\` — Agent Reference` heading.
+### `## Functions`
 
-```markdown
-| Property       | Value                                                |
-|----------------|------------------------------------------------------|
-| **Group**      | Foundations / Core Runtime / Platform Services / Feature Systems / Edge⁠/⁠Integration |
-| **Status**     | Implemented — Full / Partial / Stub                  |
-| **Lua API**    | `lurek.<module>` (or `—` if none)                     |
-| **Source**     | `src/<module>/`                                      |
-| **Rust Tests** | `tests/unit/<module>_tests.rs`                       |
-| **Lua Tests**  | `tests/lua/unit/test_<module>.lua` (or `—` if none)  |
-| **Architecture** | `docs/API/<module>-design.md` (if exists, else `—`) |
-```
+- One bullet per public Rust function or method that the source scanner finds
+- Format: `- \`Type::method\` (\`file.rs\`): purpose`
+- Source-derived and safe to regenerate
 
-### 2. `## Summary`
+### `## Lua API Reference`
 
-- **Minimum 500 characters, target 1000**
-- Must cover: what the module does, how it works, key design decisions, what is
-  intentionally NOT included (scope boundary)
-- Agents must be able to determine from this alone whether to load this module
-  or a different one
+- Include binding path(s) and namespace when present
+- List module functions and UserData methods as bullets
+- Must stay aligned with `src/lua_api/<module>_api.rs`
 
-### 3. `## Architecture`
+### `## References`
 
-ASCII block diagram of the module's internal structure. Show: types, data flow,
-subsystems, and relationships between components.
+- One bullet per module dependency or closely related module
+- Explain relationship and separation of duties
+- Source-derived list can be regenerated, but the notes may need manual refinement
 
-### 4. `## Source Files`
+### `## Notes`
 
-Table mapping every `.rs` file in `src/<module>/` (except `mod.rs`) to its
-one-line purpose. Must stay in sync — run `validate_agent_md.py` to detect
-unlisted files.
-
-### 5. `## Submodules`
-
-One subsection per Rust submodule. Each entry names the submodule path and
-lists every public `struct` and `enum` with a one-line description.
-
-### 6. `## Key Types`
-
-Two H3 subsections: `### Structs` and `### Enums`. Every `pub struct` and
-`pub enum` gets an H4 entry with its full path (`<module>::<file>::Name`) and a
-description taken from its `///` doc comment. Every public function that is a
-constructor or primary operation should be mentioned here too.
-
-### 7. `## Lua API`
-
-Paragraph describing the full Lua-facing surface. Must reference the file
-`src/lua_api/<module>_api.rs` (or `src/lua_api/<module>_api/` for module dirs).
-Enumerate all exposed function names in `lurek.<module>.*`. If there is no Lua API,
-write `No Lua API — internal Rust module only.`
-
-### 8. `## Lua Examples`
-
-At least one `\`\`\`lua` block showing real usage of `lurek.<module>.*`. Must be
-correct against the actual API. Cover the most common use case in `lurek.load` /
-`lurek.update` / `lurek.draw` pattern.
-
-### 9. `## Item Summary`
-
-Markdown table:
-
-```markdown
-| Kind       | Count |
-|------------|-------|
-| `struct`   | N     |
-| `enum`     | N     |
-| `fn`       | N     |
-| **Total**  | **N** |
-```
-
-### 10. `## References`
-
-List every other module this module relates to, the direction of the
-relationship, and the separation of duties. Format:
-
-```markdown
-| Module          | Relationship | Notes                           |
-|-----------------|--------------|---------------------------------|
-| `engine`        | Imports from | Uses SharedState and SlotMap    |
-| `math`          | Imports from | Vec2, Color, Rect               |
-| `lua_api`       | Imported by  | Binds public API to Lua         |
-```
-
-Also include: which modules are **similar** and what differentiates them
-(e.g., `audio` vs `audio`, `image` vs `graphics`).
-
-### 11. `## Notes`
-
-Unique facts an agent must know before editing this module:
-- Hardware or OS-specific behaviour (e.g., "audio falls back to headless on CI")
-- External crate constraints (e.g., "rapier2d 0.32 — do not call from multiple threads")
-- Known limitations or intentional omissions
-- Best practices for this module (what patterns are safe, which are fragile)
-- Breaking change surface (what Lua scripts will break if this API changes)
-
----
+Capture anything important that does not fit above:
+- External crate constraints
+- Hardware or OS-specific behavior
+- Known omissions or sharp edges
+- Migration warnings
+- Practices future editors should not infer from the generated sections alone
 
 ## Sync Contract
 
-`AGENT.md` (short) and `docs/specs/<module>.md` (full) are both manual truth sources. Keep both in sync with:
+Keep `docs/specs/<module>.md` synchronized with:
 
-| What changes               | What to update                                      |
-|----------------------------|----------------------------------------------------- |
-| New `.rs` file added       | `AGENT.md` Source Files table + `docs/specs/` Source Files table + Submodules |
-| New `pub struct` / `enum`  | `docs/specs/` Submodules, Key Types, Item Summary count  |
-| New Lua binding added      | `docs/specs/` Lua API section + Lua Examples             |
-| Lua binding renamed        | `docs/specs/` Lua API section + Lua Examples             |
-| Dependency added / removed | `docs/specs/` References table + Notes if behaviour changes |
-| Scope boundary change      | `AGENT.md` Purpose + `docs/specs/` Summary + Notes       |
-| `content/demos/` or `examples/` changed | Re-verify `docs/specs/` Lua Examples are still correct |
-| `content/library/` module changed  | Re-verify any `docs/specs/` that document that API are still correct |
-
-**Rule**: If you touched a `.rs` file in `src/<module>/` or its Lua API wrapper,
-you MUST update both `AGENT.md` **and** `docs/specs/<module>.md` before the commit.
-
----
+| What changes | What to update |
+|--------------|----------------|
+| New `.rs` file added | `## Files` |
+| Public type added/removed | `## Types` |
+| Public function added/removed | `## Functions` |
+| Lua binding added/renamed/removed | `## Lua API Reference` |
+| Dependency added/removed | `## References` and, if behavior changes, `## Summary` or `## Notes` |
+| Scope boundary changed | `## Summary` and `## Notes` |
+| Tests moved or renamed | `## General Info` |
 
 ## Scaffolding vs Manual Prose
 
-The scaffold tool (`validate_agent_md.py --scaffold`) auto-fills:
-- Source Files table (from `src/<module>/*.rs`)
-- Submodules skeleton (from `//!` doc comments)
-- Key Types skeleton (from `pub struct` / `pub enum` names)
-- Item Summary counts (from a source scan)
+`tools/docs/gen_module_specs.py` refreshes the source-derived sections and preserves manual Summary and Notes text when it already exists.
 
-**All prose descriptions inside those sections are manual.** The scaffold
-produces `TODO:` placeholders that must be replaced with accurate descriptions.
-Do not leave `TODO:` entries in committed AGENT.md files.
-
----
+The Summary should not be treated as boilerplate. It must be reviewed and expanded module by module using the actual source code. The generated structure is only the starting point.
 
 ## Anti-Patterns
 
-- Writing Lua API descriptions without consulting `src/lua_api/<module>_api.rs`
-- Copying struct descriptions from a different module
-- Leaving the Summary under 500 characters
-- Omitting the References table (forces agents to guess dependencies)
-- Describing functions that no longer exist
-- Duplicating architecture facts that live in `docs/architecture/`
-  (reference, don't copy)
+- Reintroducing `src/<module>/AGENT.md` as a second source of truth
+- Leaving Summary as one generic sentence after regeneration
+- Listing files, types, or functions that no longer exist
+- Copying Lua API descriptions without checking `src/lua_api/<module>_api.rs`
+- Treating the generated sections as a substitute for Notes when important caveats exist
+- Leaving `TODO:` placeholders in committed module references

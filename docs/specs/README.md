@@ -1,8 +1,8 @@
-# docs/specs/ — Lurek2D Module Specifications
+# docs/specs/ — Lurek2D Module References
 
-This folder contains the **full technical specification** for every `src/<module>/` module in the Lurek2D engine.
+This folder contains the canonical merged module reference for every `src/<module>/` directory in the Lurek2D engine.
 
-Each file is named `<module>.md` and mirrors the module folder name. They are the canonical reference for architecture, public types, Lua API surface, examples, and cross-module relationships.
+Each file is named `<module>.md` and mirrors the module folder name. These files now hold the former AGENT overview content and the deeper technical material in a single place.
 
 ## Sync Contract
 
@@ -16,12 +16,17 @@ You **must** update **all** of the following in the same commit:
 
 | File | What to update |
 |------|----------------|
-| `docs/specs/<module>.md` | Full detail: architecture, types, Lua API, examples |
-| `src/<module>/AGENT.md` | Summary, source file table |
+| `docs/specs/<module>.md` | General Info, Summary, Files, Types, Functions, Lua API Reference, References, Notes |
 | `src/lua_api/<module>_api.rs` | Binding annotations (`@param`, `@return`) |
 | `docs/API/lua_api_reference_generated.md` | Run `tools/gen_lua_api.py` |
 | `content/demos/` and `content/examples/` | Update affected demo/example scripts |
 | `content/library/` | Update Lunasome modules that depend on the changed API |
+
+## Generation Workflow
+
+- `python tools/docs/gen_module_specs.py` rebuilds the auto-collected sections from source.
+- Summary paragraphs and Notes are manual prose and should be revised module by module.
+- `python tools/audit/validate_agent_md.py --module <name>` validates the merged spec format. The script name is kept for compatibility even though `src/<module>/AGENT.md` files have been retired.
 
 ## Modules
 - [ai](ai.md)

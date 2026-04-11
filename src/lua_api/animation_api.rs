@@ -39,9 +39,7 @@ impl LuaUserData for LuaAnimation {
         /// @param start : integer
         /// @param count : integer
         /// @return integer
-        methods.add_method_mut(
-            "addFramesFromGrid",
-            |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
+        methods.add_method_mut("addFramesFromGrid", |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
                 Ok(this
                     .inner
                     .add_frames_from_grid(tw, th, fw, fh, start, count))
@@ -55,9 +53,7 @@ impl LuaUserData for LuaAnimation {
         /// @param fps : number
         /// @param looping : boolean
         /// @return nil
-        methods.add_method_mut(
-            "addClip",
-            |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
+        methods.add_method_mut("addClip", |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
                 let mut indices: Vec<usize> = Vec::new();
                 for v in indices_tbl.sequence_values::<usize>() {
                     indices.push(v?);
@@ -79,21 +75,7 @@ impl LuaUserData for LuaAnimation {
         /// @param fps : number
         /// @param looping : boolean
         /// @return nil
-        methods.add_method_mut(
-            "addClipFromGrid",
-            |_,
-             this,
-             (name, tw, th, fw, fh, start, count, fps, looping): (
-                String,
-                u32,
-                u32,
-                u32,
-                u32,
-                usize,
-                usize,
-                f32,
-                bool,
-            )| {
+        methods.add_method_mut("addClipFromGrid", |_, this, (name, tw, th, fw, fh, start, count, fps, looping): (String, u32, u32, u32, u32, usize, usize, f32, bool)| {
                 this.inner
                     .add_clip_from_grid(&name, tw, th, fw, fh, start, count, fps, looping);
                 Ok(())
@@ -240,6 +222,14 @@ impl LuaUserData for LuaAnimation {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.animation` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
+///
+/// # Returns
+/// `LuaResult<()>`.
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 

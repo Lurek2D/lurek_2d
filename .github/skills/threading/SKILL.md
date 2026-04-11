@@ -1,6 +1,6 @@
 ---
 name: threading
-description: "Load this skill when designing or implementing multi-threaded Lua behaviour in Lurek2D using the lurek.thread API: spawning worker threads, using Channel for inter-VM communication, handling errors in background threads, or understanding which lurek.* modules are safe to use in worker VMs. Use for: background computation, async file I/O in workers, producer-consumer patterns, parallel data processing. Skip it for Rust-side thread management internals (see src/thread/AGENT.md), or for general game scripting (use lua-scripting)."
+description: "Load this skill when designing or implementing multi-threaded Lua behaviour in Lurek2D using the lurek.thread API: spawning worker threads, using Channel for inter-VM communication, handling errors in background threads, or understanding which lurek.* modules are safe to use in worker VMs. Use for: background computation, async file I/O in workers, producer-consumer patterns, parallel data processing. Skip it for Rust-side thread management internals (see docs/specs/thread.md), or for general game scripting (use lua-scripting)."
 ---
 
 # Threading — Lurek2D

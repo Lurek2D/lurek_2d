@@ -1,16 +1,13 @@
-# `parallax` — Agent Reference
+# parallax
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Feature Systems |
-| **Status** | Implemented |
-| **Lua API** | `lurek.parallax` |
-| **Source** | `src/parallax/` |
-| **Rust Tests** | inline tests in `src/parallax/layer.rs`, `src/parallax/render.rs`, and `src/parallax/draw.rs` |
-| **Lua Tests** | `tests/lua/unit/test_parallax.lua`, `tests/lua/integration/test_parallax_camera.lua` |
-| **Architecture** | `docs/architecture/engine-architecture.md § Feature Systems` |
+## General Info
 
----
+- Module group: `Feature Systems`
+- Source path: `src/parallax/`
+- Lua API path(s): `src/lua_api/parallax_api.rs`
+- Primary Lua namespace: `lurek.parallax`
+- Rust test path(s): inline tests in src/parallax/layer.rs, src/parallax/render.rs, and src/parallax/draw.rs
+- Lua test path(s): tests/lua/unit/test_parallax.lua, tests/lua/integration/test_parallax_camera.lua
 
 ## Summary
 
@@ -22,162 +19,84 @@ It intentionally does not own texture loading, GPU resources, or camera state it
 
 **Scope boundary**: This module currently depends on `image`, `render`, `runtime`. It stays within the Feature Systems responsibility boundary defined in the architecture docs.
 
----
+## Files
 
-## Architecture
+- `draw.rs`: Implements CPU-side image drawing for headless and test-friendly parallax output without depending on the GPU path.
+- `layer.rs`: Defines `ParallaxLayer` state, scroll calculations, autoscroll behavior, and batch-building logic.
+- `mod.rs`: Declares the parallax submodules and re-exports the main layer and batch types.
+- `render.rs`: Converts parallax batches into `RenderCommand` sequences with color, blend mode, and repeated image draws.
 
-```
-lurek.parallax.* (Lua API — src/lua_api/parallax_api.rs)
-    |
-    v
-src/parallax/mod.rs
-    |- draw.rs - draw
-    |- layer.rs - layer
-    |- render.rs - render
-```
+## Types
 
----
+- `ParallaxDrawBatch` (`struct`, `layer.rs`): A CPU-side batch description generated from a layer so the Lua bridge or renderer can issue the actual draw commands.
+- `ParallaxLayer` (`struct`, `layer.rs`): The main scrolling background layer. It owns camera-relative scroll factors, offsets, tiling, opacity, tint, scale, bounds, and z-order.
 
-## Source Files
+## Functions
 
-| File | Purpose |
-|------|---------|
-| `draw.rs` | Implements CPU-side image drawing for headless and test-friendly parallax output without depending on the GPU path. |
-| `layer.rs` | Defines `ParallaxLayer` state, scroll calculations, autoscroll behavior, and batch-building logic. |
-| `mod.rs` | Declares the parallax submodules and re-exports the main layer and batch types. |
-| `render.rs` | Converts parallax batches into `RenderCommand` sequences with color, blend mode, and repeated image draws. |
+- `ParallaxLayer::draw_to_image` (`draw.rs`): Render this parallax layer to a CPU image for headless testing.
+- `ParallaxLayer::new` (`layer.rs`): Creates a new `ParallaxLayer` with sensible defaults.
+- `ParallaxLayer::update` (`layer.rs`): Advances the autonomous scroll accumulator by `dt` seconds.
+- `ParallaxLayer::build_draw_calls` (`layer.rs`): Builds the draw tile batch for this layer.
+- `ParallaxLayer::reset_autoscroll` (`layer.rs`): Resets the autoscroll accumulator to zero.
+- `ParallaxLayer::generate_render_commands` (`render.rs`): Produces render commands for this layer given the current camera and screen.
+- `batch_to_render_commands` (`render.rs`): Converts a pre-computed [`ParallaxDrawBatch`] into render commands.
 
----
+## Lua API Reference
 
-## Submodules
-
-### `parallax::draw`
-
-Implements CPU-side image drawing for headless and test-friendly parallax output without depending on the GPU path.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
-### `parallax::layer`
-
-Defines `ParallaxLayer` state, scroll calculations, autoscroll behavior, and batch-building logic.
-
-- **`ParallaxDrawBatch`** (struct): Computed draw batch for a single parallax layer, produced by [`ParallaxLayer::build_draw_calls`].
-- **`ParallaxLayer`** (struct): A single scrolling background layer in a parallax background system.
-
-### `parallax::render`
-
-Converts parallax batches into `RenderCommand` sequences with color, blend mode, and repeated image draws.
-
-- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.
-
----
-
-## Key Types
-
-### Public Types
-
-#### `ParallaxLayer`
-
-The main scrolling background layer.
-
-#### `ParallaxDrawBatch`
-
-A CPU-side batch description generated from a layer so the Lua bridge or renderer can issue the actual draw commands.
-
----
-
-## Lua API
-
-Exposed under `lurek.parallax.*` by `src/lua_api/parallax_api.rs`.
+- Binding path(s): `src/lua_api/parallax_api.rs`
+- Namespace: `lurek.parallax`
 
 ### Module Functions
-
-| Function | Description |
-|----------|-------------|
-| `lurek.parallax.newLayer` | Creates a new parallax background layer from an options table. |
-| `lurek.parallax.newSet` | Creates a new empty parallax set with the given name. |
+- `lurek.parallax.newLayer`: Creates a new parallax background layer from an options table.
+- `lurek.parallax.newSet`: Creates a new empty parallax set with the given name.
 
 ### `ParallaxLayer` Methods
-
-| Method | Description |
-|--------|-------------|
-| `parallaxlayer:type(...)` | Returns the type name of this object. |
-| `parallaxlayer:update(...)` | Advances the autonomous scroll accumulator by `dt` seconds. |
-| `parallaxlayer:render(...)` | Draws the layer using an explicit camera world position. |
-| `parallaxlayer:renderAuto(...)` | Draws the layer using the engine active camera position automatically. |
-| `parallaxlayer:resetAutoscroll(...)` | Resets the autonomous scroll accumulator to zero. |
-| `parallaxlayer:setScrollFactor(...)` | Sets the scroll factor relative to camera movement on each axis. |
-| `parallaxlayer:getScrollFactor(...)` | Returns the scroll factor as `(x, y)`. |
-| `parallaxlayer:setOffset(...)` | Sets the static world-pixel position bias added on top of camera scroll. |
-| `parallaxlayer:getOffset(...)` | Returns the static offset as `(x, y)`. |
-| `parallaxlayer:setAutoscroll(...)` | Sets the autonomous scroll velocity in world-pixels per second. |
-| `parallaxlayer:getAutoscroll(...)` | Returns the autoscroll velocity as `(vx, vy)`. |
-| `parallaxlayer:setRepeat(...)` | Sets whether the layer tiles on the X and Y axes. |
-| `parallaxlayer:setScale(...)` | Sets the texture display scale factor on each axis. |
-| `parallaxlayer:setZ(...)` | Sets the draw-order depth. Lower values render first (further back). |
-| `parallaxlayer:getZ(...)` | Returns the draw-order depth. |
-| `parallaxlayer:setOpacity(...)` | Sets the layer-wide opacity override in `[0.0, 1.0]`. |
-| `parallaxlayer:getOpacity(...)` | Returns the current opacity. |
-| `parallaxlayer:setTint(...)` | Sets the multiplicative RGBA tint applied to all pixels of this layer. |
-| `parallaxlayer:getTint(...)` | Returns the current tint as `(r, g, b, a)`. |
-| `parallaxlayer:setBlendMode(...)` | Sets the GPU blend mode for this layer. |
-| `parallaxlayer:getBlendMode(...)` | Returns the current blend mode as a string. |
-| `parallaxlayer:setVisible(...)` | Shows or hides this layer. |
-| `parallaxlayer:isVisible(...)` | Returns `true` if the layer is currently visible. |
-| `parallaxlayer:clearClamp(...)` | Removes scroll clamping so the layer scrolls freely. |
+- `ParallaxLayer:type`: Returns the type name of this object.
+- `ParallaxLayer:update`: Advances the autonomous scroll accumulator by `dt` seconds.
+- `ParallaxLayer:render`: Draws the layer using an explicit camera world position.
+- `ParallaxLayer:renderAuto`: Draws the layer using the engine active camera position automatically.
+- `ParallaxLayer:resetAutoscroll`: Resets the autonomous scroll accumulator to zero.
+- `ParallaxLayer:setScrollFactor`: Sets the scroll factor relative to camera movement on each axis.
+- `ParallaxLayer:getScrollFactor`: Returns the scroll factor as `(x, y)`.
+- `ParallaxLayer:setOffset`: Sets the static world-pixel position bias added on top of camera scroll.
+- `ParallaxLayer:getOffset`: Returns the static offset as `(x, y)`.
+- `ParallaxLayer:setAutoscroll`: Sets the autonomous scroll velocity in world-pixels per second.
+- `ParallaxLayer:getAutoscroll`: Returns the autoscroll velocity as `(vx, vy)`.
+- `ParallaxLayer:setRepeat`: Sets whether the layer tiles on the X and Y axes.
+- `ParallaxLayer:setScale`: Sets the texture display scale factor on each axis.
+- `ParallaxLayer:setZ`: Sets the draw-order depth. Lower values render first (further back).
+- `ParallaxLayer:getZ`: Returns the draw-order depth.
+- `ParallaxLayer:setOpacity`: Sets the layer-wide opacity override in `[0.0, 1.0]`.
+- `ParallaxLayer:getOpacity`: Returns the current opacity.
+- `ParallaxLayer:setTint`: Sets the multiplicative RGBA tint applied to all pixels of this layer.
+- `ParallaxLayer:getTint`: Returns the current tint as `(r, g, b, a)`.
+- `ParallaxLayer:setBlendMode`: Sets the GPU blend mode for this layer.
+- `ParallaxLayer:getBlendMode`: Returns the current blend mode as a string.
+- `ParallaxLayer:setVisible`: Shows or hides this layer.
+- `ParallaxLayer:isVisible`: Returns `true` if the layer is currently visible.
+- `ParallaxLayer:clearClamp`: Removes scroll clamping so the layer scrolls freely.
 
 ### `ParallaxSet` Methods
-
-| Method | Description |
-|--------|-------------|
-| `parallaxset:type(...)` | Returns the type name of this object. |
-| `parallaxset:addLayer(...)` | Adds a layer to this set. |
-| `parallaxset:removeLayerAt(...)` | Removes the layer at the given 1-based index. |
-| `parallaxset:layerCount(...)` | Returns the number of layers in this set. |
-| `parallaxset:sortByZ(...)` | Re-sorts all layers by ascending `z` value. |
-| `parallaxset:setVisible(...)` | Shows or hides all layers in this set. |
-| `parallaxset:isVisible(...)` | Returns `true` if the set is currently visible. |
-| `parallaxset:update(...)` | Advances the autoscroll accumulator of every layer by `dt` seconds. |
-| `parallaxset:render(...)` | Draws all visible layers in ascending `z` order using an explicit camera position. |
-| `parallaxset:renderAuto(...)` | Draws all visible layers using the engine active camera position. |
-| `parallaxset:getName(...)` | Returns the name of this set. |
-| `parallaxset:setName(...)` | Sets the name of this set. |
-
----
-
-## Lua Examples
-
-```lua
--- Minimal namespace check for lurek.parallax.
-if lurek.parallax then
-    -- Call the documented functions in the Lua API tables above.
-end
-```
-
----
-
-## Item Summary
-
-| Kind | Count |
-|------|-------|
-| `struct` | 2 |
-| `enum` | 0 |
-| `fn` (Lua API) | 38 |
-| **Total** | **40** |
-
----
+- `ParallaxSet:type`: Returns the type name of this object.
+- `ParallaxSet:addLayer`: Adds a layer to this set.
+- `ParallaxSet:removeLayerAt`: Removes the layer at the given 1-based index.
+- `ParallaxSet:layerCount`: Returns the number of layers in this set.
+- `ParallaxSet:sortByZ`: Re-sorts all layers by ascending `z` value.
+- `ParallaxSet:setVisible`: Shows or hides all layers in this set.
+- `ParallaxSet:isVisible`: Returns `true` if the set is currently visible.
+- `ParallaxSet:update`: Advances the autoscroll accumulator of every layer by `dt` seconds.
+- `ParallaxSet:render`: Draws all visible layers in ascending `z` order using an explicit camera position.
+- `ParallaxSet:renderAuto`: Draws all visible layers using the engine active camera position.
+- `ParallaxSet:getName`: Returns the name of this set.
+- `ParallaxSet:setName`: Sets the name of this set.
 
 ## References
 
-| Module | Relationship | Notes |
-|--------|--------------|-------|
-| `image` | Imports or references `image` from `src/image/`. | Cross-group dependency from Feature Systems to Platform Services. |
-| `render` | Imports or references `render` from `src/render/`. | Cross-group dependency from Feature Systems to Platform Services. |
-| `runtime` | Imports or references `runtime` from `src/runtime/`. | Cross-group dependency from Feature Systems to Core Runtime. |
-
----
+- `image`: Imports or references `image` from `src/image/`.
+- `render`: Imports or references `render` from `src/render/`.
+- `runtime`: Imports or references `runtime` from `src/runtime/`.
 
 ## Notes
 
-- **Source of truth**: Keep this spec synchronized with `src/parallax/`, the matching AGENT files, and any relevant Lua bindings.
-- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.
+- Keep this module reference synchronized with `src/parallax/` and any matching Lua bindings.
+- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.

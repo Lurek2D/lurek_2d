@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-"""Generate docs/specs/<module>.md files for all top-level src modules.
+"""Generate merged docs/specs/<module>.md files for top-level src modules.
 
-This tool builds each spec from four sources of truth:
-- src/<module>/AGENT.md
-- src/<module>/AGENT.legacy.md (when present)
-- the actual Rust source files under src/<module>/
-- the Lua API parser in tools/docs/gen_lua_api.py
+This tool treats docs/specs/<module>.md as the canonical long-form module
+reference. During the AGENT.md retirement migration it can seed missing manual
+content from src/<module>/AGENT.md or src/<module>/AGENT.legacy.md, but after
+that transition it continues to work from the existing spec plus source code.
 
-It intentionally keeps the generated prose conservative. The goal is to create
-complete, maintainable module specs that match the current source tree without
-inventing missing implementation details.
+Manual sections preserved from the existing spec when present:
+- General Info
+- Summary
+- Notes
+
+Auto-collected sections rebuilt from source code and Lua binding data:
+- Files
+- Types
+- Functions
+- Lua API Reference
+- References
 """
 
 from __future__ import annotations
@@ -20,6 +27,7 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
 
 ROOT = Path(__file__).resolve().parent.parent.parent
@@ -93,21 +101,34 @@ GROUPS = {
 }
 
 
-ARCH_SECTION = {
-    "Foundations": "docs/architecture/engine-architecture.md § Foundations",
-    "Core Runtime": "docs/architecture/engine-architecture.md § Core Runtime",
-    "Platform Services": "docs/architecture/engine-architecture.md § Platform Services",
-    "Feature Systems": "docs/architecture/engine-architecture.md § Feature Systems",
-    "Edge/Integration": "docs/architecture/engine-architecture.md § Edge / Integration",
+SECTION_ALIASES = {
+    "general_info": ["General Info", "Module Info"],
+    "summary": ["Summary", "Module Purpose", "Purpose"],
+    "files": ["Files", "Source Files"],
+    "types": ["Types", "Key Types"],
+    "functions": ["Functions"],
+    "lua_api": ["Lua API Reference", "Lua API", "Lua API Summary"],
+    "references": ["References"],
+    "notes": ["Notes", "Constraints"],
 }
 
 
-PUB_ITEM_RE = re.compile(
-    r"^pub(?:\([^)]*\))?\s+(?:unsafe\s+|async\s+|const\s+|extern\s+\"[^\"]*\"\s+)?"
-    r"(struct|enum|trait|type|fn|const|static)\s+([A-Za-z_][A-Za-z0-9_]*)"
-)
 USE_RE = re.compile(r"(?:use\s+crate::|crate::)([A-Za-z_][A-Za-z0-9_]*)")
-SET_RE = re.compile(r"\b(?:luna|lurek)\.set\(\s*\"([^\"]+)\"")
+TYPE_RE = re.compile(
+    r'^\s*pub(?:\([^)]*\))?\s+'
+    r'(?:unsafe\s+|async\s+|const\s+|extern\s+"[^\"]*"\s+)?'
+    r'(struct|enum|trait|type)\s+([A-Za-z_][A-Za-z0-9_]*)'
+)
+FUNCTION_RE = re.compile(
+    r'^\s*pub(?:\([^)]*\))?\s+'
+    r'(?:unsafe\s+|async\s+|const\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)'
+)
+IMPL_RE = re.compile(
+    r'^\s*impl(?:<[^>{}]+>)?\s+'
+    r'(?:(?:[A-Za-z_][A-Za-z0-9_:<>]+)\s+for\s+)?'
+    r'([A-Za-z_][A-Za-z0-9_:<>]*)'
+)
+SET_RE = re.compile(r'\b(?:luna|lurek)\.set\(\s*"([^\"]+)"')
 
 
 def load_lua_parser():
@@ -141,10 +162,10 @@ def clean_doc_text(text: str) -> str:
     text = normalize_space(text)
     if not text:
         return ""
-    sentence_match = re.match(r"(.{1,240}?[.!?])(?:\s|$)", text)
+    sentence_match = re.match(r"(.{1,280}?[.!?])(?:\s|$)", text)
     if sentence_match:
         return sentence_match.group(1).strip()
-    return text[:240].rstrip()
+    return text[:280].rstrip()
 
 
 def split_section(text: str, heading: str) -> str:
@@ -157,19 +178,27 @@ def split_section(text: str, heading: str) -> str:
     next_heading = re.search(r"^##\s+", rest, re.MULTILINE)
     if next_heading:
         rest = rest[: next_heading.start()]
+    rest = re.sub(r"(^|\n)---+\s*(?=\n|$)", "\n", rest)
     return rest.strip()
 
 
-def parse_agent_sections(text: str) -> dict:
-    return {
-        "module_info": split_section(text, "Module Info"),
-        "module_purpose": split_section(text, "Module Purpose"),
-        "files": split_section(text, "Files"),
-        "key_types": split_section(text, "Key Types"),
-        "purpose": split_section(text, "Purpose"),
-        "source_files": split_section(text, "Source Files"),
-        "lua_api_summary": split_section(text, "Lua API Summary"),
-    }
+def parse_doc_sections(text: str) -> dict[str, str]:
+    sections: dict[str, str] = {}
+    for key, aliases in SECTION_ALIASES.items():
+        sections[key] = ""
+        for alias in aliases:
+            body = split_section(text, alias)
+            if body:
+                sections[key] = body
+                break
+    return sections
+
+
+def normalize_pair_key(text: str) -> str:
+    key = text.strip().strip("`")
+    key = re.sub(r"\s+\([^)]*\)$", "", key)
+    key = key.strip().strip("`")
+    return key
 
 
 def parse_bullet_pairs(section: str) -> dict[str, str]:
@@ -185,13 +214,14 @@ def parse_bullet_pairs(section: str) -> dict[str, str]:
             left, right = body.split(" - ", 1)
         else:
             continue
-        key = left.strip().strip("`")
+        key = normalize_pair_key(left)
         value = right.strip()
-        items[key] = value
+        if key and value:
+            items[key] = value
     return items
 
 
-def parse_legacy_table(section: str) -> dict[str, str]:
+def parse_markdown_table(section: str) -> dict[str, str]:
     items: dict[str, str] = {}
     for line in section.splitlines():
         stripped = line.strip()
@@ -200,28 +230,22 @@ def parse_legacy_table(section: str) -> dict[str, str]:
         cells = [c.strip() for c in stripped.strip("|").split("|")]
         if len(cells) < 2:
             continue
-        if cells[0].lower() in {"file", "type", "function", "method"}:
-            continue
         if set(cells[0]) == {"-"}:
             continue
-        key = cells[0].strip("`")
-        items[key] = cells[1]
+        header = cells[0].lower()
+        if header in {"file", "type", "function", "method", "module", "property", "kind"}:
+            continue
+        key = normalize_pair_key(cells[0])
+        value = cells[1].strip()
+        if key and value:
+            items[key] = value
     return items
 
 
-def parse_markdown_table(text: str) -> dict[str, str]:
-    items: dict[str, str] = {}
-    for line in text.splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            continue
-        cells = [c.strip() for c in stripped.strip("|").split("|")]
-        if len(cells) < 2:
-            continue
-        if set(cells[0]) == {"-"}:
-            continue
-        items[cells[0].strip("`")] = cells[1]
-    return items
+def parse_section_pairs(section: str) -> dict[str, str]:
+    merged = parse_markdown_table(section)
+    merged.update(parse_bullet_pairs(section))
+    return merged
 
 
 def collect_doc_above(lines: list[str], index: int) -> str:
@@ -231,7 +255,7 @@ def collect_doc_above(lines: list[str], index: int) -> str:
         stripped = lines[j].strip()
         if stripped.startswith("///"):
             docs.insert(0, stripped[3:].lstrip())
-        elif stripped.startswith("#[") or stripped == "":
+        elif stripped.startswith("#") or stripped == "":
             pass
         else:
             break
@@ -250,12 +274,18 @@ def first_module_doc_line(lines: list[str]) -> str:
     return clean_doc_text(" ".join(parts))
 
 
+def normalize_impl_target(raw: str) -> str:
+    target = raw.split("<", 1)[0].strip().rstrip("{")
+    return target.split("::")[-1]
+
+
 def scan_module_sources(module: str) -> dict:
     module_dir = SRC / module
     file_info = []
-    type_by_file: dict[str, list[dict]] = defaultdict(list)
+    types_by_file: dict[str, list[dict]] = defaultdict(list)
+    functions_by_file: dict[str, list[dict]] = defaultdict(list)
     refs: set[str] = set()
-    counts = {"struct": 0, "enum": 0}
+    counts = {"struct": 0, "enum": 0, "function": 0}
 
     for path in sorted(module_dir.rglob("*.rs")):
         rel = path.relative_to(module_dir).as_posix()
@@ -263,37 +293,77 @@ def scan_module_sources(module: str) -> dict:
         purpose = first_module_doc_line(lines)
         if not purpose:
             for idx, line in enumerate(lines):
-                item = PUB_ITEM_RE.match(line)
-                if item:
+                if TYPE_RE.match(line) or FUNCTION_RE.match(line):
                     purpose = collect_doc_above(lines, idx)
                     break
         file_info.append({"file": rel, "purpose": purpose or "Public API and internal module logic."})
 
-        for idx, line in enumerate(lines):
-            item = PUB_ITEM_RE.match(line)
-            if item:
-                kind, name = item.group(1), item.group(2)
-                desc = collect_doc_above(lines, idx)
-                type_by_file[rel].append({"kind": kind, "name": name, "description": desc})
-                if kind in counts:
-                    counts[kind] += 1
+        brace_depth = 0
+        pending_impl: Optional[str] = None
+        impl_stack: list[dict[str, object]] = []
 
+        for idx, line in enumerate(lines):
             stripped = line.strip()
-            if stripped.startswith("//") or stripped.startswith("///") or stripped.startswith("//!"):
-                continue
-            for ref in USE_RE.findall(line):
-                if ref != module and (SRC / ref).is_dir():
-                    refs.add(ref)
+            is_comment = stripped.startswith("//")
+
+            if not is_comment:
+                impl_match = IMPL_RE.match(line)
+                if impl_match:
+                    pending_impl = normalize_impl_target(impl_match.group(1))
+
+                type_match = TYPE_RE.match(line)
+                if type_match:
+                    kind, name = type_match.group(1), type_match.group(2)
+                    desc = collect_doc_above(lines, idx)
+                    types_by_file[rel].append(
+                        {
+                            "kind": kind,
+                            "name": name,
+                            "description": desc,
+                            "qualified": f"{module}::{Path(rel).stem}::{name}",
+                        }
+                    )
+                    if kind in counts:
+                        counts[kind] += 1
+
+                fn_match = FUNCTION_RE.match(line)
+                if fn_match:
+                    fn_name = fn_match.group(1)
+                    desc = collect_doc_above(lines, idx)
+                    owner = impl_stack[-1]["name"] if impl_stack else None
+                    label = f"{owner}::{fn_name}" if owner else fn_name
+                    functions_by_file[rel].append(
+                        {
+                            "name": label,
+                            "description": desc,
+                            "qualified": f"{module}::{Path(rel).stem}::{label}",
+                        }
+                    )
+                    counts["function"] += 1
+
+                for ref in USE_RE.findall(line):
+                    if ref != module and (SRC / ref).is_dir():
+                        refs.add(ref)
+
+            opens = line.count("{")
+            closes = line.count("}")
+            if pending_impl and opens > closes:
+                impl_stack.append({"name": pending_impl, "depth": brace_depth + opens - closes})
+                pending_impl = None
+            brace_depth += opens - closes
+            while impl_stack and brace_depth < int(impl_stack[-1]["depth"]):
+                impl_stack.pop()
 
     return {
         "files": file_info,
-        "types_by_file": type_by_file,
+        "types_by_file": types_by_file,
+        "functions_by_file": functions_by_file,
         "references": sorted(refs),
         "counts": counts,
     }
 
 
-def collect_lua_api(module: str, lua_parser, current_text: str, legacy_text: str) -> dict:
+def collect_lua_api(module: str, lua_parser, seed_texts: list[str]) -> dict:
     all_functions = lua_parser.collect_all_functions(ROOT / "src" / "lua_api")
     funcs = all_functions.get(module, [])
     module_functions = []
@@ -301,9 +371,9 @@ def collect_lua_api(module: str, lua_parser, current_text: str, legacy_text: str
     namespace_prefixes: list[str] = []
 
     for fn in funcs:
-        if fn.lua_name:
-            if "." in fn.lua_name:
-                namespace_prefixes.append(fn.lua_name.rsplit(".", 1)[0])
+        if fn.lua_name and "." in fn.lua_name:
+            namespace_prefixes.append(fn.lua_name.rsplit(".", 1)[0])
+
         entry = {
             "name": fn.name,
             "lua_name": fn.lua_name,
@@ -316,335 +386,299 @@ def collect_lua_api(module: str, lua_parser, current_text: str, legacy_text: str
             classes[owner].append(entry)
 
     namespace = namespace_prefixes[0] if namespace_prefixes else ""
-    namespace_patterns = [
-        re.search(r"Lua API path\(s\):[^\n]*`?(lurek\.[a-zA-Z0-9_.]+)`?", current_text),
-        re.search(r"Lua bridge:.*?`(lurek\.[a-zA-Z0-9_.]+)`", current_text),
-        re.search(r"\|\s*\*\*Lua API\*\*\s*\|\s*`(lurek\.[a-zA-Z0-9_.]+)`", legacy_text),
-        re.search(r"`(lurek\.[a-zA-Z0-9_.]+)`", current_text),
-    ]
-    for match in namespace_patterns:
-        if match:
-            namespace = match.group(1)
+    for text in seed_texts:
+        if not text:
+            continue
+        for pattern in [
+            r"`(lurek\.[A-Za-z0-9_.]+)`",
+            r"Namespace:\s*`(lurek\.[A-Za-z0-9_.]+)`",
+            r"Primary Lua namespace:\s*`(lurek\.[A-Za-z0-9_.]+)`",
+        ]:
+            match = re.search(pattern, text)
+            if match:
+                namespace = match.group(1)
+                break
+        if namespace:
             break
+
     api_file = ROOT / "src" / "lua_api" / f"{module}_api.rs"
+    api_dir = ROOT / "src" / "lua_api" / f"{module}_api"
     if not namespace and api_file.exists():
-        text = read_text(api_file)
-        match = SET_RE.search(text)
+        match = SET_RE.search(read_text(api_file))
         if match:
             namespace = f"lurek.{match.group(1)}"
 
+    binding_path = ""
+    if api_file.exists():
+        binding_path = api_file.relative_to(ROOT).as_posix()
+    elif api_dir.is_dir():
+        binding_path = api_dir.relative_to(ROOT).as_posix() + "/"
+
     return {
         "namespace": namespace,
+        "binding_path": binding_path,
         "module_functions": module_functions,
         "classes": dict(classes),
     }
 
 
+def normalize_info_key(key: str) -> str:
+    lowered = key.lower().replace("`", "")
+    lowered = re.sub(r"[^a-z0-9]+", " ", lowered)
+    return normalize_space(lowered)
+
+
+def build_info_maps(spec_text: str, spec_sections: dict[str, str], agent_text: str, agent_sections: dict[str, str], legacy_text: str) -> list[dict[str, str]]:
+    maps = [
+        parse_section_pairs(spec_sections["general_info"]),
+        parse_section_pairs(agent_sections["general_info"]),
+        parse_markdown_table(spec_text),
+        parse_markdown_table(agent_text),
+        parse_markdown_table(legacy_text),
+    ]
+    normalized_maps: list[dict[str, str]] = []
+    for info_map in maps:
+        normalized_maps.append({normalize_info_key(k): v for k, v in info_map.items()})
+    return normalized_maps
+
+
+def lookup_info(info_maps: list[dict[str, str]], *labels: str) -> str:
+    normalized_labels = [normalize_info_key(label) for label in labels]
+    for info_map in info_maps:
+        for label in normalized_labels:
+            if label in info_map:
+                return info_map[label]
+    return ""
+
+
+def combine_pair_maps(*sections: str) -> dict[str, str]:
+    merged: dict[str, str] = {}
+    for section in sections:
+        for key, value in parse_section_pairs(section).items():
+            merged.setdefault(key, value)
+    return merged
+
+
+def first_non_empty(*values: str) -> str:
+    for value in values:
+        if value and value.strip():
+            return value.strip()
+    return ""
+
+
+def strip_backticks(text: str) -> str:
+    return text.replace("`", "").strip()
+
+
 def build_scope_boundary(module: str, refs: list[str], group: str) -> str:
     if refs:
-        ref_text = ", ".join(f"`{r}`" for r in refs[:8])
+        ref_text = ", ".join(f"`{ref}`" for ref in refs[:8])
         if len(refs) > 8:
-            ref_text += ", and other adjacent modules"
+            ref_text += ", and adjacent engine modules"
         return (
-            f"**Scope boundary**: This module currently depends on {ref_text}. "
-            f"It stays within the {group} responsibility boundary defined in the architecture docs."
+            f"This module primarily collaborates with {ref_text}. "
+            f"Its responsibility should stay inside the {group} group rather than absorb behavior owned by those neighbors."
         )
     return (
-        f"**Scope boundary**: This module currently acts as a mostly self-contained part of the {group} layer. "
-        "Cross-module behavior should remain anchored to the top-level source files and Lua bindings listed below."
+        f"This module is mostly self-contained inside the {group} group. "
+        "Cross-module behavior should stay in the referenced Rust source files and Lua bindings rather than being duplicated here."
     )
 
 
-def infer_tests(agent_info: str, legacy_text: str) -> tuple[str, str]:
-    rust_tests = "none found in the workspace"
-    lua_tests = "none found in the workspace"
-
-    for line in agent_info.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("- Rust test path(s):"):
-            rust_tests = stripped.split(":", 1)[1].strip()
-        if stripped.startswith("- Lua test path(s):"):
-            lua_tests = stripped.split(":", 1)[1].strip()
-
-    legacy_table = parse_markdown_table(legacy_text)
-    if rust_tests == "none found in the workspace":
-        rust_tests = legacy_table.get("**Rust Tests**", legacy_table.get("Rust Tests", rust_tests))
-        rust_tests = normalize_space(rust_tests)
-    if lua_tests == "none found in the workspace":
-        lua_tests = legacy_table.get("**Lua Tests**", legacy_table.get("Lua Tests", lua_tests))
-        lua_tests = normalize_space(lua_tests)
-
-    return rust_tests, lua_tests
+def resolve_item_description(overrides: dict[str, str], *keys: str, fallback: str) -> str:
+    for key in keys:
+        normalized = normalize_pair_key(key)
+        if normalized in overrides:
+            return overrides[normalized]
+    return fallback
 
 
-def merge_file_descriptions(current_section: str, legacy_section: str) -> dict[str, str]:
-    merged = parse_bullet_pairs(current_section)
-    for key, value in parse_legacy_table(legacy_section).items():
-        merged.setdefault(key, value)
-    return merged
-
-
-def merge_key_types(current_section: str, legacy_section: str) -> dict[str, str]:
-    merged = parse_bullet_pairs(current_section)
-    for key, value in parse_legacy_table(legacy_section).items():
-        merged.setdefault(key, value)
-    return merged
-
-
-def format_architecture(module: str, namespace: str, files: list[dict]) -> str:
-    api_line = (
-        f"{namespace}.* (Lua API — src/lua_api/{module}_api.rs)"
-        if namespace
-        else "No direct Lua namespace — consumed through app/runtime integration or other bindings"
-    )
-    lines = ["```", api_line, "    |", "    v", f"src/{module}/mod.rs"]
-    for info in [f for f in files if f["file"] != "mod.rs"][:8]:
-        stem = Path(info["file"]).stem
-        lines.append(f"    |- {info['file']} - {stem}")
-    if len(files) > 8:
-        lines.append("    |- ...")
-    lines.append("```")
-    return "\n".join(lines)
-
-
-def format_source_files(file_rows: list[dict], descriptions: dict[str, str]) -> str:
-    lines = ["| File | Purpose |", "|------|---------|"]
-    for row in file_rows:
-        desc = descriptions.get(row["file"], row["purpose"]).replace("|", "\\|")
-        lines.append(f"| `{row['file']}` | {desc} |")
-    return "\n".join(lines)
-
-
-def bullet_for_type(item: dict) -> str:
-    desc = item["description"] or f"Public {item['kind']} in this submodule."
-    return f"- **`{item['name']}`** ({item['kind']}): {desc}"
-
-
-def format_submodules(module: str, file_rows: list[dict], descriptions: dict[str, str], types_by_file: dict[str, list[dict]]) -> str:
-    chunks = []
-    for row in file_rows:
-        if row["file"] == "mod.rs":
-            continue
-        stem = Path(row["file"]).stem
-        desc = descriptions.get(row["file"], row["purpose"]) or "Implements a focused part of the module surface."
-        items = [item for item in types_by_file.get(row["file"], []) if item["kind"] in {"struct", "enum", "trait", "type"}]
-        block = [f"### `{module}::{stem}`", "", desc]
-        if items:
-            block.append("")
-            block.extend(bullet_for_type(item) for item in items[:10])
-        else:
-            block.append("")
-            block.append("- **No exported Rust types in this file**: this submodule is primarily supporting logic or free functions.")
-        chunks.append("\n".join(block))
-    return "\n\n".join(chunks)
-
-
-def format_key_types(key_types: dict[str, str], source_types: dict[str, list[dict]]) -> str:
-    if not key_types:
-        flat_types = []
-        for items in source_types.values():
-            flat_types.extend([item for item in items if item["kind"] in {"struct", "enum", "trait", "type"}])
-        for item in flat_types[:8]:
-            key_types[item["name"]] = item["description"] or f"Public {item['kind']} in this module."
-
-    if not key_types:
-        return "This module does not expose reusable public Rust data types of its own. It is primarily entry-point or glue code."
-
-    lines = ["### Public Types", ""]
-    for name, desc in key_types.items():
-        lines.append(f"#### `{name}`")
-        lines.append("")
-        lines.append(clean_doc_text(desc) or "Important public type in this module.")
-        lines.append("")
-    return "\n".join(lines).rstrip()
-
-
-def format_lua_api(module: str, lua_api: dict) -> str:
-    namespace = lua_api["namespace"]
-    if not namespace and not lua_api["module_functions"] and not lua_api["classes"]:
-        return (
-            "This module does not expose a dedicated direct Lua namespace. It is consumed indirectly "
-            "through higher-level engine callbacks, shared state, or other `lurek.*` surfaces."
-        )
-
-    lines = []
-    if namespace:
-        lines.append(f"Exposed under `{namespace}.*` by `src/lua_api/{module}_api.rs`.")
-        lines.append("")
-
-    if lua_api["module_functions"]:
-        lines.append("### Module Functions")
-        lines.append("")
-        lines.append("| Function | Description |")
-        lines.append("|----------|-------------|")
-        for fn in lua_api["module_functions"]:
-            label = fn["lua_name"] or f"{namespace}.{fn['name']}"
-            lines.append(f"| `{label}` | {fn['description']} |")
-        lines.append("")
-
-    for class_name, methods in sorted(lua_api["classes"].items()):
-        lines.append(f"### `{class_name}` Methods")
-        lines.append("")
-        lines.append("| Method | Description |")
-        lines.append("|--------|-------------|")
-        for method in methods:
-            lines.append(f"| `{class_name.lower()}:{method['name']}(...)` | {method['description']} |")
-        lines.append("")
-
-    return "\n".join(lines).rstrip()
-
-
-def format_example(namespace: str) -> str:
-    if namespace:
-        return "```lua\n" + (
-            f"-- Minimal namespace check for {namespace}.\n"
-            f"if {namespace} then\n"
-            f"    -- Call the documented functions in the Lua API tables above.\n"
-            "end\n"
-        ) + "```"
-    return "```lua\n-- This module has no dedicated direct Lua namespace.\n-- It is used indirectly through other engine systems.\n```"
-
-
-def format_item_summary(counts: dict, lua_api: dict) -> str:
-    lua_count = len(lua_api["module_functions"]) + sum(len(v) for v in lua_api["classes"].values())
-    total = counts["struct"] + counts["enum"] + lua_count
+def format_general_info(module: str, group: str, rust_tests: str, lua_tests: str, lua_api: dict) -> str:
+    lua_paths = f"`{lua_api['binding_path']}`" if lua_api["binding_path"] else "None direct"
+    namespace = f"`{lua_api['namespace']}`" if lua_api["namespace"] else "None direct"
     return "\n".join(
         [
-            "| Kind | Count |",
-            "|------|-------|",
-            f"| `struct` | {counts['struct']} |",
-            f"| `enum` | {counts['enum']} |",
-            f"| `fn` (Lua API) | {lua_count} |",
-            f"| **Total** | **{total}** |",
+            f"- Module group: `{strip_backticks(group)}`",
+            f"- Source path: `src/{module}/`",
+            f"- Lua API path(s): {lua_paths}",
+            f"- Primary Lua namespace: {namespace}",
+            f"- Rust test path(s): {strip_backticks(rust_tests) or 'None found in the workspace'}",
+            f"- Lua test path(s): {strip_backticks(lua_tests) or 'None found in the workspace'}",
         ]
     )
 
 
-def reference_note(group: str, dep_group: str) -> str:
-    if group == dep_group:
-        return "Same responsibility group; allowed when the dependency graph stays acyclic."
-    return f"Cross-group dependency from {group} to {dep_group}."
-
-
-def format_references(group: str, refs: list[str]) -> str:
-    if not refs:
-        return "| Module | Relationship | Notes |\n|--------|--------------|-------|\n| — | No top-level `crate::<module>` imports were detected in this module's source files. | Keep the source files as the primary dependency reference. |"
-    lines = ["| Module | Relationship | Notes |", "|--------|--------------|-------|"]
-    for ref in refs:
-        dep_group = module_group(ref)
-        lines.append(
-            f"| `{ref}` | Imports or references `{ref}` from `src/{ref}/`. | {reference_note(group, dep_group)} |"
-        )
+def format_files(file_rows: list[dict], overrides: dict[str, str]) -> str:
+    lines = []
+    for row in file_rows:
+        desc = resolve_item_description(overrides, row["file"], fallback=row["purpose"])
+        lines.append(f"- `{row['file']}`: {desc}")
     return "\n".join(lines)
 
 
-def format_notes(namespace: str, module: str) -> str:
-    notes = [
-        f"- **Source of truth**: Keep this spec synchronized with `src/{module}/`, the matching AGENT files, and any relevant Lua bindings.",
-        "- **Generation note**: This file was generated from current source and AGENT metadata, then intended for manual refinement when behavior changes.",
+def format_types(module: str, file_rows: list[dict], types_by_file: dict[str, list[dict]], overrides: dict[str, str]) -> str:
+    lines: list[str] = []
+    for row in file_rows:
+        for item in types_by_file.get(row["file"], []):
+            desc = resolve_item_description(
+                overrides,
+                item["qualified"],
+                f"{Path(row['file']).stem}::{item['name']}",
+                item["name"],
+                fallback=item["description"] or f"Public {item['kind']} in `{row['file']}`.",
+            )
+            lines.append(f"- `{item['name']}` (`{item['kind']}`, `{row['file']}`): {desc}")
+    if not lines:
+        return "- No public Rust types are currently exposed from this module."
+    return "\n".join(lines)
+
+
+def format_functions(module: str, file_rows: list[dict], functions_by_file: dict[str, list[dict]], overrides: dict[str, str]) -> str:
+    lines: list[str] = []
+    for row in file_rows:
+        for item in functions_by_file.get(row["file"], []):
+            desc = resolve_item_description(
+                overrides,
+                item["qualified"],
+                f"{Path(row['file']).stem}::{item['name']}",
+                item["name"],
+                fallback=item["description"] or f"Public function or method declared in `{row['file']}`.",
+            )
+            lines.append(f"- `{item['name']}` (`{row['file']}`): {desc}")
+    if not lines:
+        return "- No public Rust functions are currently exposed from this module."
+    return "\n".join(lines)
+
+
+def format_lua_api(lua_api: dict) -> str:
+    if not lua_api["namespace"] and not lua_api["module_functions"] and not lua_api["classes"]:
+        return "- No dedicated direct `lurek.*` namespace is exposed by this module."
+
+    lines: list[str] = []
+    if lua_api["binding_path"]:
+        lines.append(f"- Binding path(s): `{lua_api['binding_path']}`")
+    if lua_api["namespace"]:
+        lines.append(f"- Namespace: `{lua_api['namespace']}`")
+
+    if lua_api["module_functions"]:
+        lines.extend(["", "### Module Functions"])
+        for fn in lua_api["module_functions"]:
+            label = fn["lua_name"] or fn["name"]
+            lines.append(f"- `{label}`: {fn['description']}")
+
+    for class_name, methods in sorted(lua_api["classes"].items()):
+        lines.extend(["", f"### `{class_name}` Methods"])
+        for method in methods:
+            lines.append(f"- `{class_name}:{method['name']}`: {method['description']}")
+
+    return "\n".join(lines).strip()
+
+
+def reference_note(group: str, dep_group: str) -> str:
+    if group == dep_group:
+        return f"Dependency stays inside `{group}` and should remain acyclic."
+    return f"Cross-group dependency from `{group}` into `{dep_group}`."
+
+
+def format_references(group: str, refs: list[str], overrides: dict[str, str]) -> str:
+    if not refs:
+        return "- No top-level `crate::<module>` imports were detected in this module's Rust source files."
+
+    lines = []
+    for ref in refs:
+        desc = resolve_item_description(
+            overrides,
+            ref,
+            fallback=f"Imports or references `src/{ref}/`. {reference_note(group, module_group(ref))}",
+        )
+        lines.append(f"- `{ref}`: {desc}")
+    return "\n".join(lines)
+
+
+def build_default_notes(module: str, lua_api: dict) -> str:
+    lines = [
+        f"- Keep this module reference synchronized with `src/{module}/` and any matching Lua bindings.",
+        "- Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.",
     ]
-    if not namespace:
-        notes.append("- **Lua surface**: This module has no dedicated direct `lurek.*` namespace and is typically consumed through higher integration layers.")
-    return "\n".join(notes)
+    if not lua_api["namespace"]:
+        lines.append("- This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.")
+    return "\n".join(lines)
 
 
 def build_spec(module: str, lua_parser) -> tuple[str, dict]:
-    current_text = read_text(SRC / module / "AGENT.md")
+    spec_path = SPECS / f"{module}.md"
+    spec_text = read_text(spec_path)
+    agent_text = read_text(SRC / module / "AGENT.md")
     legacy_text = read_text(SRC / module / "AGENT.legacy.md")
-    current = parse_agent_sections(current_text)
-    legacy = parse_agent_sections(legacy_text)
+
+    spec_sections = parse_doc_sections(spec_text)
+    agent_sections = parse_doc_sections(agent_text)
+    legacy_sections = parse_doc_sections(legacy_text)
     source = scan_module_sources(module)
-    lua_api = collect_lua_api(module, lua_parser, current_text, legacy_text)
-    group = module_group(module)
-    rust_tests, lua_tests = infer_tests(current["module_info"], legacy_text)
-    file_descriptions = merge_file_descriptions(current["files"], legacy["source_files"])
-    key_types = merge_key_types(current["key_types"], legacy["key_types"])
-    summary_text = current["module_purpose"] or current["purpose"] or legacy["purpose"]
-    summary_text = summary_text.strip() or f"The `{module}` module is documented from the current source tree and AGENT metadata."
-    summary_text = summary_text + "\n\n" + build_scope_boundary(module, source["references"], group)
-    lua_field = f"`{lua_api['namespace']}`" if lua_api["namespace"] else "Indirect / none"
+    lua_api = collect_lua_api(module, lua_parser, [spec_text, agent_text, legacy_text])
 
-    architecture = format_architecture(module, lua_api["namespace"], source["files"])
-    source_files = format_source_files(source["files"], file_descriptions)
-    submodules = format_submodules(module, source["files"], file_descriptions, source["types_by_file"])
-    key_types_text = format_key_types(key_types, source["types_by_file"])
-    lua_api_text = format_lua_api(module, lua_api)
-    example = format_example(lua_api["namespace"])
-    item_summary = format_item_summary(source["counts"], lua_api)
-    references = format_references(group, source["references"])
-    notes = format_notes(lua_api["namespace"], module)
+    info_maps = build_info_maps(spec_text, spec_sections, agent_text, agent_sections, legacy_text)
+    rust_tests = lookup_info(info_maps, "Rust test path(s)", "Rust Tests") or "None found in the workspace"
+    lua_tests = lookup_info(info_maps, "Lua test path(s)", "Lua Tests") or "None found in the workspace"
 
-    content = f"""# `{module}` — Agent Reference
+    group = lookup_info(info_maps, "Module group", "Group") or module_group(module)
+    summary_text = first_non_empty(spec_sections["summary"], agent_sections["summary"], legacy_sections["summary"])
+    if not summary_text:
+        summary_text = (
+            f"The `{module}` module is documented from the current source tree and existing module reference data.\n\n"
+            f"{build_scope_boundary(module, source['references'], group)}"
+        )
+    elif "\n\n" not in summary_text:
+        summary_text = summary_text + "\n\n" + build_scope_boundary(module, source["references"], group)
 
-| Property | Value |
-|----------|-------|
-| **Tier** | {group} |
-| **Status** | Implemented |
-| **Lua API** | {lua_field} |
-| **Source** | `src/{module}/` |
-| **Rust Tests** | {rust_tests} |
-| **Lua Tests** | {lua_tests} |
-| **Architecture** | `{ARCH_SECTION[group]}` |
+    file_overrides = combine_pair_maps(spec_sections["files"], agent_sections["files"], legacy_sections["files"])
+    type_overrides = combine_pair_maps(spec_sections["types"], agent_sections["types"], legacy_sections["types"])
+    function_overrides = combine_pair_maps(spec_sections["functions"], legacy_sections["functions"])
+    reference_overrides = combine_pair_maps(spec_sections["references"], legacy_sections["references"])
+    notes_text = first_non_empty(spec_sections["notes"], legacy_sections["notes"])
+    if not notes_text or "AGENT" in notes_text:
+        notes_text = build_default_notes(module, lua_api)
 
----
+    general_info = format_general_info(module, group, rust_tests, lua_tests, lua_api)
+    files_text = format_files(source["files"], file_overrides)
+    types_text = format_types(module, source["files"], source["types_by_file"], type_overrides)
+    functions_text = format_functions(module, source["files"], source["functions_by_file"], function_overrides)
+    lua_api_text = format_lua_api(lua_api)
+    references_text = format_references(group, source["references"], reference_overrides)
+
+    content = f"""# {module}
+
+## General Info
+
+{general_info}
 
 ## Summary
 
 {summary_text}
 
----
+## Files
 
-## Architecture
+{files_text}
 
-{architecture}
+## Types
 
----
+{types_text}
 
-## Source Files
+## Functions
 
-{source_files}
+{functions_text}
 
----
-
-## Submodules
-
-{submodules}
-
----
-
-## Key Types
-
-{key_types_text}
-
----
-
-## Lua API
+## Lua API Reference
 
 {lua_api_text}
 
----
-
-## Lua Examples
-
-{example}
-
----
-
-## Item Summary
-
-{item_summary}
-
----
-
 ## References
 
-{references}
-
----
+{references_text}
 
 ## Notes
 
-{notes}
+{notes_text}
 """
 
     inventory = {
@@ -654,6 +688,8 @@ def build_spec(module: str, lua_parser) -> tuple[str, dict]:
         "lua_tests": lua_tests,
         "references": source["references"],
         "file_count": len(source["files"]),
+        "type_count": sum(len(items) for items in source["types_by_file"].values()),
+        "function_count": sum(len(items) for items in source["functions_by_file"].values()),
         "lua_api_count": len(lua_api["module_functions"]) + sum(len(v) for v in lua_api["classes"].values()),
     }
     return content, inventory
@@ -670,7 +706,7 @@ def rewrite_readme(modules: list[str]) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate docs/specs/*.md for all top-level src modules.")
+    parser = argparse.ArgumentParser(description="Generate merged docs/specs/*.md files for top-level src modules.")
     parser.add_argument("--module", action="append", help="Only generate the named module (can be repeated).")
     args = parser.parse_args()
 
@@ -678,7 +714,7 @@ def main() -> None:
     modules = sorted(p.name for p in SRC.iterdir() if p.is_dir())
     if args.module:
         selected = set(args.module)
-        modules = [m for m in modules if m in selected]
+        modules = [module for module in modules if module in selected]
 
     SPECS.mkdir(parents=True, exist_ok=True)
     SESSION_DATA.parent.mkdir(parents=True, exist_ok=True)
@@ -686,7 +722,7 @@ def main() -> None:
     inventory: dict[str, dict] = {}
     for module in modules:
         content, meta = build_spec(module, lua_parser)
-        (SPECS / f"{module}.md").write_text(content, encoding="utf-8")
+        (SPECS / f"{module}.md").write_text(content.rstrip() + "\n", encoding="utf-8")
         inventory[module] = meta
 
     if not args.module:

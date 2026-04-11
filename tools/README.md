@@ -118,7 +118,7 @@ and `tools/audit/` in the correct dependency order. Produces:
 | Script | Purpose | Output | Args |
 |---|---|---|---|
 | `audit_module.py` | 12-phase module quality audit (PASS/WARN/ERROR) | `docs/quality/<module>.md` | `NAME`, `--all`, `--tier N`, `--json`, `--docs-quality` |
-| `validate_agent_md.py` | Validate AGENT.md structure (M-01 to M-12) | stdout / JSON | `--module`, `--all`, `--scaffold`, `--write`, `--strict`, `--json` |
+| `validate_agent_md.py` | Validate merged docs/specs module references (legacy script name) | stdout / JSON | `--module`, `--all`, `--scaffold`, `--write`, `--strict`, `--json` |
 | `module_audit.py` | Module restructuring & reference audit | stdout / JSON | `--json`, `--output` |
 
 **Specialised audits**:
@@ -139,7 +139,7 @@ All validators exit 0 on pass, 1 on failure.
 |---|---|---|
 | `cag_validate.py` | Validate `.github/` CAG files (agents, skills, prompts) | `--type agent\|skill\|prompt\|instruction`, `--file PATH` |
 | `validate_lua_api.py` | Validate `src/lua_api/*_api.rs` against SKILL.md contract | `FILE_OR_DIR`, `--errors-only` |
-| `validate_module_coverage.py` | Ensure every `src/` module has AGENT.md + spec | `--fix-readme` |
+| `validate_module_coverage.py` | Ensure every `src/` module has a spec and no legacy AGENT.md | `--fix-readme` |
 | `validate_game.py` | Validate game/demo directory structure | `PATH`, `--all-examples`, `--json`, `--output` |
 | `check_callbacks.py` | Verify gen_docs_lua callback output (internal) | — |
 
@@ -241,7 +241,7 @@ quality_report.py
 └── validate_game.py
 
 audit_module.py           (standalone, reads source directly)
-validate_agent_md.py      (standalone, reads AGENT.md files)
+validate_agent_md.py      (standalone, reads docs/specs/*.md module references)
 docstring_audit.py        (standalone, reads lua_api source)
 ```
 
@@ -253,7 +253,7 @@ docstring_audit.py        (standalone, reads lua_api source)
 | Lua API docstrings | `docstring_audit.py` | `doc_coverage.py --lua-only` | `docstring_audit` = per-function quality; `doc_coverage` = aggregate % |
 | Test coverage (Rust) | `test_coverage.py` | `unit_test_api_coverage.py` | `test_coverage` = heuristic cross-ref; `unit_test_api_coverage` = unit-level |
 | Test coverage (Lua) | `lua_api_test_coverage.py` | `test_coverage.py` | `lua_api_test_coverage` = precise `@covers`; `test_coverage` = broad heuristic |
-| AGENT.md quality | `validate_agent_md.py` | `audit_module.py` | `validate_agent_md` = structure only; `audit_module` = full 12-phase audit |
+| Module reference quality | `validate_agent_md.py` | `audit_module.py` | `validate_agent_md` = merged spec structure only; `audit_module` = broader module audit |
 | Module structure | `validate_module_coverage.py` | `module_audit.py` | `validate_module_coverage` = file existence; `module_audit` = restructuring ideas |
 
 ---
@@ -277,8 +277,8 @@ python tools/audit/docstring_audit.py                  # check docstring quality
 ### After adding/changing a module
 
 ```powershell
-python tools/validate/validate_module_coverage.py     # AGENT.md + spec exist?
-python tools/audit/validate_agent_md.py --module NAME # AGENT.md structure ok?
+python tools/validate/validate_module_coverage.py     # merged specs exist and AGENT.md is gone?
+python tools/audit/validate_agent_md.py --module NAME # merged spec structure ok?
 python tools/audit/audit_module.py NAME               # full 12-phase audit
 ```
 

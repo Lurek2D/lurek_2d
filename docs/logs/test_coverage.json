@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 2966,
+    "total": 2967,
     "covered": 2458,
-    "uncovered": 508,
-    "coverage_pct": 82.9,
+    "uncovered": 509,
+    "coverage_pct": 82.8,
     "covered_items": [
       {
         "module": "ai",
@@ -315,7 +315,7 @@
         "module": "ai",
         "name": "BehaviorTree::draw_to_image",
         "file": "src/ai/render.rs",
-        "line": 271
+        "line": 278
       },
       {
         "module": "ai",
@@ -603,13 +603,13 @@
         "module": "app",
         "name": "App::new",
         "file": "src/app/app.rs",
-        "line": 2335
+        "line": 2430
       },
       {
         "module": "app",
         "name": "App::run",
         "file": "src/app/app.rs",
-        "line": 2346
+        "line": 2441
       },
       {
         "module": "app",
@@ -2523,61 +2523,61 @@
         "module": "data",
         "name": "DataView::new",
         "file": "src/data/dataview.rs",
-        "line": 36
+        "line": 35
       },
       {
         "module": "data",
         "name": "DataView::new_slice",
         "file": "src/data/dataview.rs",
-        "line": 56
+        "line": 55
       },
       {
         "module": "data",
         "name": "DataView::get_size",
         "file": "src/data/dataview.rs",
-        "line": 72
+        "line": 71
       },
       {
         "module": "data",
         "name": "DataView::get_u8",
         "file": "src/data/dataview.rs",
-        "line": 83
+        "line": 82
       },
       {
         "module": "data",
         "name": "DataView::get_u16",
         "file": "src/data/dataview.rs",
-        "line": 107
+        "line": 106
       },
       {
         "module": "data",
         "name": "DataView::get_u32",
         "file": "src/data/dataview.rs",
-        "line": 133
+        "line": 132
       },
       {
         "module": "data",
         "name": "DataView::get_i32",
         "file": "src/data/dataview.rs",
-        "line": 151
+        "line": 150
       },
       {
         "module": "data",
         "name": "DataView::get_f32",
         "file": "src/data/dataview.rs",
-        "line": 169
+        "line": 168
       },
       {
         "module": "data",
         "name": "DataView::get_f64",
         "file": "src/data/dataview.rs",
-        "line": 187
+        "line": 186
       },
       {
         "module": "data",
         "name": "LuaDataView::new",
         "file": "src/data/dataview.rs",
-        "line": 232
+        "line": 230
       },
       {
         "module": "data",
@@ -5631,253 +5631,253 @@
         "module": "image",
         "name": "draw_animation_playback_to_image",
         "file": "src/image/visualization.rs",
-        "line": 80
+        "line": 85
       },
       {
         "module": "image",
         "name": "draw_camera_debug_to_image",
         "file": "src/image/visualization.rs",
-        "line": 132
+        "line": 137
       },
       {
         "module": "image",
         "name": "draw_camera_zoom_comparison_to_image",
         "file": "src/image/visualization.rs",
-        "line": 199
+        "line": 204
       },
       {
         "module": "image",
         "name": "noise_to_image",
         "file": "src/image/visualization.rs",
-        "line": 258
+        "line": 263
       },
       {
         "module": "image",
         "name": "noise_raw_to_image",
         "file": "src/image/visualization.rs",
-        "line": 287
+        "line": 292
       },
       {
         "module": "image",
         "name": "noise_terrain_to_image",
         "file": "src/image/visualization.rs",
-        "line": 317
+        "line": 322
       },
       {
         "module": "image",
         "name": "heightmap_to_image",
         "file": "src/image/visualization.rs",
-        "line": 358
+        "line": 363
       },
       {
         "module": "image",
         "name": "terrain_elevation_to_image",
         "file": "src/image/visualization.rs",
-        "line": 411
+        "line": 416
       },
       {
         "module": "image",
         "name": "easing_gallery_to_image",
         "file": "src/image/visualization.rs",
-        "line": 453
+        "line": 458
       },
       {
         "module": "image",
         "name": "easing_comparison_to_image",
         "file": "src/image/visualization.rs",
-        "line": 504
+        "line": 510
       },
       {
         "module": "image",
         "name": "bezier_curves_to_image",
         "file": "src/image/visualization.rs",
-        "line": 549
+        "line": 554
       },
       {
         "module": "image",
         "name": "cellular_grid_to_image",
         "file": "src/image/visualization.rs",
-        "line": 608
+        "line": 622
       },
       {
         "module": "image",
         "name": "voronoi_to_image",
         "file": "src/image/visualization.rs",
-        "line": 644
+        "line": 658
       },
       {
         "module": "image",
         "name": "points_to_image",
         "file": "src/image/visualization.rs",
-        "line": 672
+        "line": 686
       },
       {
         "module": "image",
         "name": "dungeon_grid_to_image",
         "file": "src/image/visualization.rs",
-        "line": 699
+        "line": 713
       },
       {
         "module": "image",
         "name": "noise_map_to_image",
         "file": "src/image/visualization.rs",
-        "line": 738
+        "line": 747
       },
       {
         "module": "image",
         "name": "noise_comparison_to_image",
         "file": "src/image/visualization.rs",
-        "line": 762
+        "line": 771
       },
       {
         "module": "image",
         "name": "polygon_gallery_to_image",
         "file": "src/image/visualization.rs",
-        "line": 811
+        "line": 819
       },
       {
         "module": "image",
         "name": "spiral_to_image",
         "file": "src/image/visualization.rs",
-        "line": 875
+        "line": 894
       },
       {
         "module": "image",
         "name": "filled_primitives_to_image",
         "file": "src/image/visualization.rs",
-        "line": 906
+        "line": 925
       },
       {
         "module": "image",
         "name": "panel_layout_to_image",
         "file": "src/image/visualization.rs",
-        "line": 952
+        "line": 971
       },
       {
         "module": "image",
         "name": "hud_bars_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1074
+        "line": 1097
       },
       {
         "module": "image",
         "name": "camera_bounds_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1242
+        "line": 1269
       },
       {
         "module": "image",
         "name": "animation_playback_control_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1406
+        "line": 1456
       },
       {
         "module": "image",
         "name": "waveform_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1468
+        "line": 1535
       },
       {
         "module": "image",
         "name": "waveform_stereo_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1543
+        "line": 1623
       },
       {
         "module": "image",
         "name": "waveform_zoomed_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1610
+        "line": 1705
       },
       {
         "module": "image",
         "name": "colored_points_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1685
+        "line": 1798
       },
       {
         "module": "image",
         "name": "draw_camera_rotation_grid_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1712
+        "line": 1824
       },
       {
         "module": "image",
         "name": "draw_camera_bounds_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1779
+        "line": 1901
       },
       {
         "module": "image",
         "name": "draw_camera_follow_trail_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1815
+        "line": 1944
       },
       {
         "module": "image",
         "name": "draw_camera_shake_trail_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1870
+        "line": 2009
       },
       {
         "module": "image",
         "name": "draw_graph_operations_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1921
+        "line": 2082
       },
       {
         "module": "image",
         "name": "draw_graph_item_flow_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1981
+        "line": 2148
       },
       {
         "module": "image",
         "name": "draw_geometry_shapes_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2040
+        "line": 2236
       },
       {
         "module": "image",
         "name": "draw_geometry_intersections_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2149
+        "line": 2350
       },
       {
         "module": "image",
         "name": "draw_delaunay_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2261
+        "line": 2450
       },
       {
         "module": "image",
         "name": "draw_image_comparison_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2305
+        "line": 2528
       },
       {
         "module": "image",
         "name": "draw_pixel_transform_grid_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2354
+        "line": 2577
       },
       {
         "module": "image",
         "name": "draw_color_wheel_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2413
+        "line": 2645
       },
       {
         "module": "image",
         "name": "draw_sound_waveform_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2447
+        "line": 2678
       },
       {
         "module": "image",
         "name": "draw_bezier_advanced_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2497
+        "line": 2741
       },
       {
         "module": "input",
@@ -6759,7 +6759,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/animation_api.rs",
-        "line": 243
+        "line": 233
       },
       {
         "module": "lua_api",
@@ -6945,7 +6945,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1450
+        "line": 1437
       },
       {
         "module": "lua_api",
@@ -6975,13 +6975,13 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 296
+        "line": 427
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/render_api.rs",
-        "line": 1220
+        "line": 1223
       },
       {
         "module": "lua_api",
@@ -7089,7 +7089,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4153
+        "line": 4170
       },
       {
         "module": "lua_api",
@@ -9609,31 +9609,31 @@
         "module": "patterns",
         "name": "SimpleState::add",
         "file": "src/patterns/simple_state.rs",
-        "line": 39
+        "line": 42
       },
       {
         "module": "patterns",
         "name": "SimpleState::remove",
         "file": "src/patterns/simple_state.rs",
-        "line": 52
+        "line": 55
       },
       {
         "module": "patterns",
         "name": "SimpleState::has",
         "file": "src/patterns/simple_state.rs",
-        "line": 67
+        "line": 70
       },
       {
         "module": "patterns",
         "name": "SimpleState::current",
         "file": "src/patterns/simple_state.rs",
-        "line": 75
+        "line": 78
       },
       {
         "module": "patterns",
         "name": "SimpleState::states",
         "file": "src/patterns/simple_state.rs",
-        "line": 103
+        "line": 106
       },
       {
         "module": "patterns",
@@ -10479,7 +10479,7 @@
         "module": "procgen",
         "name": "NoiseGrid::draw_to_image",
         "file": "src/procgen/render.rs",
-        "line": 103
+        "line": 106
       },
       {
         "module": "procgen",
@@ -10893,13 +10893,13 @@
         "module": "render",
         "name": "GpuRenderer::new",
         "file": "src/render/gpu_renderer.rs",
-        "line": 416
+        "line": 612
       },
       {
         "module": "render",
         "name": "GpuRenderer::resize",
         "file": "src/render/gpu_renderer.rs",
-        "line": 571
+        "line": 768
       },
       {
         "module": "render",
@@ -11025,7 +11025,7 @@
         "module": "runtime",
         "name": "SharedState::new",
         "file": "src/runtime/shared_state.rs",
-        "line": 404
+        "line": 411
       },
       {
         "module": "save",
@@ -13839,253 +13839,253 @@
         "module": "ui",
         "name": "GuiContext::add_button",
         "file": "src/ui/context.rs",
-        "line": 348
+        "line": 399
       },
       {
         "module": "ui",
         "name": "GuiContext::add_label",
         "file": "src/ui/context.rs",
-        "line": 361
+        "line": 412
       },
       {
         "module": "ui",
         "name": "GuiContext::add_text_input",
         "file": "src/ui/context.rs",
-        "line": 371
+        "line": 422
       },
       {
         "module": "ui",
         "name": "GuiContext::add_checkbox",
         "file": "src/ui/context.rs",
-        "line": 384
+        "line": 435
       },
       {
         "module": "ui",
         "name": "GuiContext::add_slider",
         "file": "src/ui/context.rs",
-        "line": 398
+        "line": 449
       },
       {
         "module": "ui",
         "name": "GuiContext::add_progress_bar",
         "file": "src/ui/context.rs",
-        "line": 412
+        "line": 463
       },
       {
         "module": "ui",
         "name": "GuiContext::add_combo_box",
         "file": "src/ui/context.rs",
-        "line": 423
+        "line": 474
       },
       {
         "module": "ui",
         "name": "GuiContext::add_list_box",
         "file": "src/ui/context.rs",
-        "line": 433
+        "line": 484
       },
       {
         "module": "ui",
         "name": "GuiContext::add_panel",
         "file": "src/ui/context.rs",
-        "line": 443
+        "line": 494
       },
       {
         "module": "ui",
         "name": "GuiContext::add_layout",
         "file": "src/ui/context.rs",
-        "line": 456
+        "line": 507
       },
       {
         "module": "ui",
         "name": "GuiContext::add_scroll_panel",
         "file": "src/ui/context.rs",
-        "line": 467
+        "line": 518
       },
       {
         "module": "ui",
         "name": "GuiContext::add_nine_patch",
         "file": "src/ui/context.rs",
-        "line": 478
+        "line": 529
       },
       {
         "module": "ui",
         "name": "GuiContext::add_tab_bar",
         "file": "src/ui/context.rs",
-        "line": 488
+        "line": 539
       },
       {
         "module": "ui",
         "name": "GuiContext::add_separator",
         "file": "src/ui/context.rs",
-        "line": 501
+        "line": 552
       },
       {
         "module": "ui",
         "name": "GuiContext::add_spacer",
         "file": "src/ui/context.rs",
-        "line": 516
+        "line": 567
       },
       {
         "module": "ui",
         "name": "GuiContext::add_tree_view",
         "file": "src/ui/context.rs",
-        "line": 527
+        "line": 578
       },
       {
         "module": "ui",
         "name": "GuiContext::add_radio_button",
         "file": "src/ui/context.rs",
-        "line": 541
+        "line": 592
       },
       {
         "module": "ui",
         "name": "GuiContext::add_scroll_bar",
         "file": "src/ui/context.rs",
-        "line": 555
+        "line": 606
       },
       {
         "module": "ui",
         "name": "GuiContext::add_gui_window",
         "file": "src/ui/context.rs",
-        "line": 569
+        "line": 620
       },
       {
         "module": "ui",
         "name": "GuiContext::add_split_panel",
         "file": "src/ui/context.rs",
-        "line": 583
+        "line": 634
       },
       {
         "module": "ui",
         "name": "GuiContext::add_dock_panel",
         "file": "src/ui/context.rs",
-        "line": 594
+        "line": 645
       },
       {
         "module": "ui",
         "name": "GuiContext::add_toolbar",
         "file": "src/ui/context.rs",
-        "line": 607
+        "line": 658
       },
       {
         "module": "ui",
         "name": "GuiContext::add_menu_bar",
         "file": "src/ui/context.rs",
-        "line": 618
+        "line": 669
       },
       {
         "module": "ui",
         "name": "GuiContext::add_menu_item",
         "file": "src/ui/context.rs",
-        "line": 631
+        "line": 682
       },
       {
         "module": "ui",
         "name": "GuiContext::add_dialog",
         "file": "src/ui/context.rs",
-        "line": 644
+        "line": 695
       },
       {
         "module": "ui",
         "name": "GuiContext::add_status_bar",
         "file": "src/ui/context.rs",
-        "line": 654
+        "line": 705
       },
       {
         "module": "ui",
         "name": "GuiContext::add_accordion",
         "file": "src/ui/context.rs",
-        "line": 664
+        "line": 715
       },
       {
         "module": "ui",
         "name": "GuiContext::add_tooltip_panel",
         "file": "src/ui/context.rs",
-        "line": 677
+        "line": 728
       },
       {
         "module": "ui",
         "name": "GuiContext::add_color_picker",
         "file": "src/ui/context.rs",
-        "line": 688
+        "line": 739
       },
       {
         "module": "ui",
         "name": "GuiContext::add_gui_table",
         "file": "src/ui/context.rs",
-        "line": 699
+        "line": 750
       },
       {
         "module": "ui",
         "name": "GuiContext::add_image_widget",
         "file": "src/ui/context.rs",
-        "line": 709
+        "line": 760
       },
       {
         "module": "ui",
         "name": "GuiContext::add_child",
         "file": "src/ui/context.rs",
-        "line": 728
+        "line": 779
       },
       {
         "module": "ui",
         "name": "GuiContext::remove_child",
         "file": "src/ui/context.rs",
-        "line": 751
+        "line": 802
       },
       {
         "module": "ui",
         "name": "GuiContext::child_count",
         "file": "src/ui/context.rs",
-        "line": 771
+        "line": 822
       },
       {
         "module": "ui",
         "name": "GuiContext::set_focus",
         "file": "src/ui/context.rs",
-        "line": 785
+        "line": 836
       },
       {
         "module": "ui",
         "name": "GuiContext::focus_next",
         "file": "src/ui/context.rs",
-        "line": 805
+        "line": 856
       },
       {
         "module": "ui",
         "name": "GuiContext::focus_prev",
         "file": "src/ui/context.rs",
-        "line": 825
+        "line": 876
       },
       {
         "module": "ui",
         "name": "GuiContext::add_toast",
         "file": "src/ui/context.rs",
-        "line": 852
+        "line": 903
       },
       {
         "module": "ui",
         "name": "GuiContext::update",
         "file": "src/ui/context.rs",
-        "line": 870
+        "line": 921
       },
       {
         "module": "ui",
         "name": "GuiContext::find_by_id",
         "file": "src/ui/context.rs",
-        "line": 888
+        "line": 939
       },
       {
         "module": "ui",
         "name": "GuiContext::mouse_pressed",
         "file": "src/ui/context.rs",
-        "line": 919
+        "line": 970
       },
       {
         "module": "ui",
         "name": "GuiContext::text_input",
         "file": "src/ui/context.rs",
-        "line": 1056
+        "line": 1109
       },
       {
         "module": "ui",
@@ -14619,7 +14619,7 @@
         "module": "ui",
         "name": "GuiContext::draw_to_image",
         "file": "src/ui/render.rs",
-        "line": 227
+        "line": 228
       },
       {
         "module": "ui",
@@ -14667,19 +14667,19 @@
         "module": "ui",
         "name": "WidgetBase::new",
         "file": "src/ui/widget.rs",
-        "line": 323
+        "line": 329
       },
       {
         "module": "ui",
         "name": "WidgetBase::contains_point",
         "file": "src/ui/widget.rs",
-        "line": 362
+        "line": 370
       },
       {
         "module": "ui",
         "name": "WidgetBase::clear_anchors",
         "file": "src/ui/widget.rs",
-        "line": 367
+        "line": 375
       },
       {
         "module": "window",
@@ -14837,7 +14837,7 @@
         "module": "ai",
         "name": "BehaviorTree::generate_render_commands",
         "file": "src/ai/render.rs",
-        "line": 231
+        "line": 238
       },
       {
         "module": "ai",
@@ -15197,13 +15197,13 @@
         "module": "data",
         "name": "DataView::get_i8",
         "file": "src/data/dataview.rs",
-        "line": 95
+        "line": 94
       },
       {
         "module": "data",
         "name": "DataView::get_i16",
         "file": "src/data/dataview.rs",
-        "line": 120
+        "line": 119
       },
       {
         "module": "dataframe",
@@ -15659,31 +15659,31 @@
         "module": "image",
         "name": "camera_rotation_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1163
+        "line": 1187
       },
       {
         "module": "image",
         "name": "camera_follow_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1287
+        "line": 1316
       },
       {
         "module": "image",
         "name": "camera_shake_to_image",
         "file": "src/image/visualization.rs",
-        "line": 1348
+        "line": 1387
       },
       {
         "module": "image",
         "name": "draw_animation_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2641
+        "line": 2926
       },
       {
         "module": "image",
         "name": "draw_camera_to_image",
         "file": "src/image/visualization.rs",
-        "line": 2661
+        "line": 2946
       },
       {
         "module": "input",
@@ -16649,19 +16649,19 @@
         "module": "patterns",
         "name": "SimpleState::set_current",
         "file": "src/patterns/simple_state.rs",
-        "line": 86
+        "line": 89
       },
       {
         "module": "patterns",
         "name": "SimpleState::clear_current",
         "file": "src/patterns/simple_state.rs",
-        "line": 95
+        "line": 98
       },
       {
         "module": "patterns",
         "name": "SimpleState::state_count",
         "file": "src/patterns/simple_state.rs",
-        "line": 113
+        "line": 116
       },
       {
         "module": "patterns",
@@ -16739,7 +16739,7 @@
         "module": "procgen",
         "name": "NoiseGrid::generate_render_commands",
         "file": "src/procgen/render.rs",
-        "line": 72
+        "line": 75
       },
       {
         "module": "raycaster",
@@ -16883,19 +16883,19 @@
         "module": "render",
         "name": "GpuRenderer::upload_texture",
         "file": "src/render/gpu_renderer.rs",
-        "line": 688
+        "line": 886
       },
       {
         "module": "render",
         "name": "GpuRenderer::create_canvas",
         "file": "src/render/gpu_renderer.rs",
-        "line": 728
+        "line": 926
       },
       {
         "module": "render",
         "name": "GpuRenderer::render_frame",
         "file": "src/render/gpu_renderer.rs",
-        "line": 892
+        "line": 1296
       },
       {
         "module": "render",
@@ -17015,31 +17015,31 @@
         "module": "runtime",
         "name": "SharedState::step_timer",
         "file": "src/runtime/shared_state.rs",
-        "line": 478
+        "line": 486
       },
       {
         "module": "runtime",
         "name": "SharedState::request_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 493
+        "line": 501
       },
       {
         "module": "runtime",
         "name": "SharedState::load_default_fonts",
         "file": "src/runtime/shared_state.rs",
-        "line": 510
+        "line": 518
       },
       {
         "module": "runtime",
         "name": "SharedState::poll_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 533
+        "line": 541
       },
       {
         "module": "runtime",
         "name": "SharedState::compute_stats",
         "file": "src/runtime/shared_state.rs",
-        "line": 576
+        "line": 584
       },
       {
         "module": "save",
@@ -17577,33 +17577,39 @@
       },
       {
         "module": "ui",
+        "name": "GuiContext::run_layout_pass",
+        "file": "src/ui/context.rs",
+        "line": 346
+      },
+      {
+        "module": "ui",
         "name": "GuiContext::toast_count",
         "file": "src/ui/context.rs",
-        "line": 860
+        "line": 911
       },
       {
         "module": "ui",
         "name": "GuiContext::mouse_released",
         "file": "src/ui/context.rs",
-        "line": 955
+        "line": 1006
       },
       {
         "module": "ui",
         "name": "GuiContext::mouse_moved",
         "file": "src/ui/context.rs",
-        "line": 991
+        "line": 1044
       },
       {
         "module": "ui",
         "name": "GuiContext::key_pressed",
         "file": "src/ui/context.rs",
-        "line": 1030
+        "line": 1083
       },
       {
         "module": "ui",
         "name": "GuiContext::wheel_moved",
         "file": "src/ui/context.rs",
-        "line": 1074
+        "line": 1127
       },
       {
         "module": "ui",
@@ -17657,7 +17663,7 @@
         "module": "ui",
         "name": "GuiContext::generate_render_commands",
         "file": "src/ui/render.rs",
-        "line": 211
+        "line": 212
       },
       {
         "module": "window",
@@ -17806,10 +17812,10 @@
     ]
   },
   "lua": {
-    "total": 2687,
-    "covered": 2268,
-    "uncovered": 419,
-    "coverage_pct": 84.4,
+    "total": 2693,
+    "covered": 2271,
+    "uncovered": 422,
+    "coverage_pct": 84.3,
     "covered_items": [
       {
         "module": "ai",
@@ -18821,122 +18827,136 @@
       },
       {
         "module": "animation",
+        "lua_name": "Animation:addFramesFromGrid",
+        "kind": "method",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 42
+      },
+      {
+        "module": "animation",
+        "lua_name": "Animation:addClip",
+        "kind": "method",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 56
+      },
+      {
+        "module": "animation",
         "lua_name": "Animation:play",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 107
+        "line": 89
       },
       {
         "module": "animation",
         "lua_name": "Animation:stop",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 112
+        "line": 94
       },
       {
         "module": "animation",
         "lua_name": "Animation:pause",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 120
+        "line": 102
       },
       {
         "module": "animation",
         "lua_name": "Animation:resume",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 128
+        "line": 110
       },
       {
         "module": "animation",
         "lua_name": "Animation:update",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 137
+        "line": 119
       },
       {
         "module": "animation",
         "lua_name": "Animation:getQuad",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 145
+        "line": 127
       },
       {
         "module": "animation",
         "lua_name": "Animation:pollEvents",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 161
+        "line": 143
       },
       {
         "module": "animation",
         "lua_name": "Animation:isPlaying",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 178
+        "line": 160
       },
       {
         "module": "animation",
         "lua_name": "Animation:isLooping",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 183
+        "line": 165
       },
       {
         "module": "animation",
         "lua_name": "Animation:getClip",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 188
+        "line": 170
       },
       {
         "module": "animation",
         "lua_name": "Animation:getSpeed",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 195
+        "line": 177
       },
       {
         "module": "animation",
         "lua_name": "Animation:setSpeed",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 201
+        "line": 183
       },
       {
         "module": "animation",
         "lua_name": "Animation:getFrameCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 209
+        "line": 191
       },
       {
         "module": "animation",
         "lua_name": "Animation:getClipCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 216
+        "line": 198
       },
       {
         "module": "animation",
         "lua_name": "Animation:getCurrentFrame",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 223
+        "line": 205
       },
       {
         "module": "animation",
         "lua_name": "Animation:setFrame",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 231
+        "line": 213
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.new",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 249
+        "line": 239
       },
       {
         "module": "audio",
@@ -28047,318 +28067,325 @@
       },
       {
         "module": "physics",
+        "lua_name": "World:newBody",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 195
+      },
+      {
+        "module": "physics",
         "lua_name": "Body:getId",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 898
+        "line": 899
       },
       {
         "module": "physics",
         "lua_name": "Body:getPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 903
+        "line": 904
       },
       {
         "module": "physics",
         "lua_name": "Body:setPosition",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 916
+        "line": 917
       },
       {
         "module": "physics",
         "lua_name": "Body:getX",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 924
+        "line": 925
       },
       {
         "module": "physics",
         "lua_name": "Body:getY",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 932
+        "line": 933
       },
       {
         "module": "physics",
         "lua_name": "Body:getVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 940
+        "line": 941
       },
       {
         "module": "physics",
         "lua_name": "Body:setVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 953
+        "line": 954
       },
       {
         "module": "physics",
         "lua_name": "Body:getAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 965
+        "line": 966
       },
       {
         "module": "physics",
         "lua_name": "Body:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1015
+        "line": 1014
       },
       {
         "module": "physics",
         "lua_name": "Body:setType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1027
+        "line": 1022
       },
       {
         "module": "physics",
         "lua_name": "Body:getWidth",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1036
+        "line": 1031
       },
       {
         "module": "physics",
         "lua_name": "Body:getHeight",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1044
+        "line": 1039
       },
       {
         "module": "physics",
         "lua_name": "Body:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1061
+        "line": 1056
       },
       {
         "module": "physics",
         "lua_name": "Body:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1081
+        "line": 1076
       },
       {
         "module": "physics",
         "lua_name": "Body:getLayer",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1092
+        "line": 1087
       },
       {
         "module": "physics",
         "lua_name": "Body:setLayer",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1101
+        "line": 1096
       },
       {
         "module": "physics",
         "lua_name": "Body:applyImpulse",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1134
+        "line": 1129
       },
       {
         "module": "physics",
         "lua_name": "Body:getLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1224
+        "line": 1215
       },
       {
         "module": "physics",
         "lua_name": "Body:setLinearDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1232
+        "line": 1223
       },
       {
         "module": "physics",
         "lua_name": "Body:isSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1276
+        "line": 1265
       },
       {
         "module": "physics",
         "lua_name": "Body:setSleepingAllowed",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1284
+        "line": 1273
       },
       {
         "module": "physics",
         "lua_name": "Body:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1294
+        "line": 1283
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:getType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1342
+        "line": 1331
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:getRadius",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1356
+        "line": 1345
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:getBoundingBox",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1368
+        "line": 1355
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:setDensity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1402
+        "line": 1389
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:setFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1411
+        "line": 1398
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:setRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1420
+        "line": 1407
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:setSensor",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1429
+        "line": 1416
       },
       {
         "module": "physics",
         "lua_name": "PhysicsShape:destroy",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1437
+        "line": 1424
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1458
+        "line": 1445
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.step",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1472
+        "line": 1459
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.destroyWorld",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1486
+        "line": 1473
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1501
+        "line": 1488
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getBody",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1522
+        "line": 1509
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setBodyVelocity",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1544
+        "line": 1533
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.isSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1564
+        "line": 1553
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.setSleepingAllowed",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1579
+        "line": 1570
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newRectangleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1597
+        "line": 1588
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newCircleShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1611
+        "line": 1602
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newEdgeShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1623
+        "line": 1614
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newPolygonShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1638
+        "line": 1629
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.newChainShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1659
+        "line": 1650
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.attachShape",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1680
+        "line": 1671
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.getCollisions",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1703
+        "line": 1694
       },
       {
         "module": "pipeline",
@@ -28722,805 +28749,805 @@
         "lua_name": "Raycaster:setCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 47
+        "line": 52
       },
       {
         "module": "raycaster",
         "lua_name": "Raycaster:getCell",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 57
+        "line": 62
       },
       {
         "module": "raycaster",
         "lua_name": "Raycaster:setCells",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 65
+        "line": 70
       },
       {
         "module": "raycaster",
         "lua_name": "Raycaster:isBlocked",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 78
+        "line": 83
       },
       {
         "module": "raycaster",
         "lua_name": "Raycaster:width",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 85
+        "line": 90
       },
       {
         "module": "raycaster",
         "lua_name": "Raycaster:height",
         "kind": "method",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 92
+        "line": 95
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.new",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 304
+        "line": 436
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.projectColumn",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 319
+        "line": 452
       },
       {
         "module": "raycaster",
         "lua_name": "lurek.raycaster.distanceShade",
         "kind": "function",
         "file": "src/lua_api/raycaster_api.rs",
-        "line": 331
+        "line": 464
       },
       {
         "module": "render",
         "lua_name": "ImageData:getWidth",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 38
+        "line": 41
       },
       {
         "module": "render",
         "lua_name": "ImageData:getHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 41
+        "line": 44
       },
       {
         "module": "render",
         "lua_name": "ImageData:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 44
+        "line": 47
       },
       {
         "module": "render",
         "lua_name": "ImageData:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 48
+        "line": 51
       },
       {
         "module": "render",
         "lua_name": "NineSlice:getInsets",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 81
+        "line": 84
       },
       {
         "module": "render",
         "lua_name": "NineSlice:getTextureSize",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 87
+        "line": 90
       },
       {
         "module": "render",
         "lua_name": "NineSlice:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 97
+        "line": 100
       },
       {
         "module": "render",
         "lua_name": "NineSlice:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 101
+        "line": 104
       },
       {
         "module": "render",
         "lua_name": "Image:getWidth",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 112
+        "line": 115
       },
       {
         "module": "render",
         "lua_name": "Image:getHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 123
+        "line": 126
       },
       {
         "module": "render",
         "lua_name": "Image:getDimensions",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 134
+        "line": 137
       },
       {
         "module": "render",
         "lua_name": "Image:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 145
+        "line": 148
       },
       {
         "module": "render",
         "lua_name": "Image:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 158
+        "line": 161
       },
       {
         "module": "render",
         "lua_name": "Image:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 163
+        "line": 166
       },
       {
         "module": "render",
         "lua_name": "Font:getWidth",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 185
+        "line": 188
       },
       {
         "module": "render",
         "lua_name": "Font:getHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 196
+        "line": 199
       },
       {
         "module": "render",
         "lua_name": "Font:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 278
+        "line": 281
       },
       {
         "module": "render",
         "lua_name": "Font:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 293
+        "line": 296
       },
       {
         "module": "render",
         "lua_name": "Font:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 298
+        "line": 301
       },
       {
         "module": "render",
         "lua_name": "Canvas:getWidth",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 319
+        "line": 322
       },
       {
         "module": "render",
         "lua_name": "Canvas:getHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 330
+        "line": 333
       },
       {
         "module": "render",
         "lua_name": "Canvas:getDimensions",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 341
+        "line": 344
       },
       {
         "module": "render",
         "lua_name": "Canvas:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 352
+        "line": 355
       },
       {
         "module": "render",
         "lua_name": "Canvas:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 368
+        "line": 371
       },
       {
         "module": "render",
         "lua_name": "Canvas:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 373
+        "line": 376
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:clear",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 434
+        "line": 437
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:getCount",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 445
+        "line": 448
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:getBufferSize",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 456
+        "line": 459
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 467
+        "line": 470
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 475
+        "line": 478
       },
       {
         "module": "render",
         "lua_name": "SpriteBatch:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 480
+        "line": 483
       },
       {
         "module": "render",
         "lua_name": "Mesh:setTexture",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 557
+        "line": 560
       },
       {
         "module": "render",
         "lua_name": "Mesh:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 576
+        "line": 579
       },
       {
         "module": "render",
         "lua_name": "Mesh:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 584
+        "line": 587
       },
       {
         "module": "render",
         "lua_name": "Mesh:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 589
+        "line": 592
       },
       {
         "module": "render",
         "lua_name": "Shader:send",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 612
+        "line": 615
       },
       {
         "module": "render",
         "lua_name": "Shader:release",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 637
+        "line": 640
       },
       {
         "module": "render",
         "lua_name": "Shader:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 652
+        "line": 655
       },
       {
         "module": "render",
         "lua_name": "Shader:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 657
+        "line": 660
       },
       {
         "module": "render",
         "lua_name": "Quad:getViewport",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 688
+        "line": 691
       },
       {
         "module": "render",
         "lua_name": "Quad:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 718
+        "line": 721
       },
       {
         "module": "render",
         "lua_name": "Quad:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 723
+        "line": 726
       },
       {
         "module": "render",
         "lua_name": "Shape:getCommandCount",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 797
+        "line": 800
       },
       {
         "module": "render",
         "lua_name": "Shape:clear",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 808
+        "line": 811
       },
       {
         "module": "render",
         "lua_name": "Shape:setLineWidth",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 839
+        "line": 842
       },
       {
         "module": "render",
         "lua_name": "Shape:line",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1022
+        "line": 1025
       },
       {
         "module": "render",
         "lua_name": "Shape:polyline",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1035
+        "line": 1038
       },
       {
         "module": "render",
         "lua_name": "Shape:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1139
+        "line": 1142
       },
       {
         "module": "render",
         "lua_name": "Shape:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1146
+        "line": 1149
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:queue",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1165
+        "line": 1168
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:flush",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1173
+        "line": 1176
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:clear",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1187
+        "line": 1190
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:getCount",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1196
+        "line": 1199
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:type",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1200
+        "line": 1203
       },
       {
         "module": "render",
         "lua_name": "DrawLayer:typeOf",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 1205
+        "line": 1208
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setColor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1232
+        "line": 1235
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getColor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1247
+        "line": 1250
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setBackgroundColor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1266
+        "line": 1269
       },
       {
         "module": "render",
         "lua_name": "lurek.render.rectangle",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1303
+        "line": 1306
       },
       {
         "module": "render",
         "lua_name": "lurek.render.circle",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1354
+        "line": 1359
       },
       {
         "module": "render",
         "lua_name": "lurek.render.ellipse",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1375
+        "line": 1380
       },
       {
         "module": "render",
         "lua_name": "lurek.render.triangle",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1402
+        "line": 1407
       },
       {
         "module": "render",
         "lua_name": "lurek.render.line",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1427
+        "line": 1434
       },
       {
         "module": "render",
         "lua_name": "lurek.render.polygon",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1459
+        "line": 1466
       },
       {
         "module": "render",
         "lua_name": "lurek.render.arc",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1499
+        "line": 1506
       },
       {
         "module": "render",
         "lua_name": "lurek.render.points",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1530
+        "line": 1537
       },
       {
         "module": "render",
         "lua_name": "lurek.render.draw",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1579
+        "line": 1586
       },
       {
         "module": "render",
         "lua_name": "lurek.render.print",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1779
+        "line": 1788
       },
       {
         "module": "render",
         "lua_name": "lurek.render.clear",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1857
+        "line": 1866
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setLineWidth",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1873
+        "line": 1882
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getLineWidth",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1887
+        "line": 1896
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setBlendMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1921
+        "line": 1930
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getBlendMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1942
+        "line": 1951
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newFont",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1965
+        "line": 1974
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setFont",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2039
+        "line": 2068
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFont",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2060
+        "line": 2089
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontWidth",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2139
+        "line": 2168
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontHeight",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2160
+        "line": 2189
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontLineHeight",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2181
+        "line": 2210
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setFontLineHeight",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2202
+        "line": 2231
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontAscent",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2212
+        "line": 2241
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontDescent",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2233
+        "line": 2262
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newImage",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2287
+        "line": 2316
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newCanvas",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2343
+        "line": 2372
       },
       {
         "module": "render",
         "lua_name": "lurek.render.push",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2606
+        "line": 2635
       },
       {
         "module": "render",
         "lua_name": "lurek.render.pop",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2619
+        "line": 2648
       },
       {
         "module": "render",
         "lua_name": "lurek.render.translate",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2632
+        "line": 2663
       },
       {
         "module": "render",
         "lua_name": "lurek.render.rotate",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2646
+        "line": 2677
       },
       {
         "module": "render",
         "lua_name": "lurek.render.scale",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2661
+        "line": 2692
       },
       {
         "module": "render",
         "lua_name": "lurek.render.origin",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2690
+        "line": 2721
       },
       {
         "module": "render",
         "lua_name": "lurek.render.stencil",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2867
+        "line": 2900
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setStencilMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2933
+        "line": 2966
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getStencilMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2977
+        "line": 3010
       },
       {
         "module": "render",
         "lua_name": "lurek.render.clearStencil",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3010
+        "line": 3043
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setDepthMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3023
+        "line": 3056
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getDepthMode",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3050
+        "line": 3083
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getWidth",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3075
+        "line": 3108
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getHeight",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3084
+        "line": 3117
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getDimensions",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3093
+        "line": 3126
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getStats",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3141
+        "line": 3174
       },
       {
         "module": "render",
         "lua_name": "lurek.render.saveScreenshot",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3163
+        "line": 3202
       },
       {
         "module": "render",
         "lua_name": "lurek.render.captureScreenshot",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3181
+        "line": 3220
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newNineSlice",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3199
+        "line": 3238
       },
       {
         "module": "render",
         "lua_name": "lurek.render.drawNineSlice",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3237
+        "line": 3276
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newShape",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3278
+        "line": 3317
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newDrawLayer",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3292
+        "line": 3331
       },
       {
         "module": "save",
@@ -31543,1848 +31570,1848 @@
         "lua_name": "lurek.ui.setVisible",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 130
+        "line": 147
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.isVisible",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 146
+        "line": 163
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setEnabled",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 159
+        "line": 176
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.isEnabled",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 181
+        "line": 198
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setId",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 194
+        "line": 211
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getId",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 210
+        "line": 227
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setTooltip",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 225
+        "line": 242
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getTooltip",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 241
+        "line": 258
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getState",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 256
+        "line": 273
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.addChild",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 272
+        "line": 289
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.removeChild",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 295
+        "line": 312
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getChildCount",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 318
+        "line": 335
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.findById",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 332
+        "line": 349
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setOnClick",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 352
+        "line": 369
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setOnChange",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 366
+        "line": 383
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setOnDraw",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 380
+        "line": 397
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.containsPoint",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 396
+        "line": 413
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setPadding",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 414
+        "line": 431
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getPadding",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 435
+        "line": 452
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setMargin",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 456
+        "line": 473
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getMargin",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 477
+        "line": 494
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setZOrder",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 495
+        "line": 512
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getZOrder",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 511
+        "line": 528
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setMinSize",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 525
+        "line": 542
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getMinSize",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 543
+        "line": 560
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setMaxSize",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 561
+        "line": 578
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getMaxSize",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 579
+        "line": 596
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setFlexGrow",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 661
+        "line": 678
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getFlexGrow",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 677
+        "line": 694
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setFlexShrink",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 690
+        "line": 707
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.getFlexShrink",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 706
+        "line": 723
       },
       {
         "module": "ui",
         "lua_name": "Button:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 732
+        "line": 749
       },
       {
         "module": "ui",
         "lua_name": "Button:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 746
+        "line": 763
       },
       {
         "module": "ui",
         "lua_name": "Label:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 769
+        "line": 786
       },
       {
         "module": "ui",
         "lua_name": "Label:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 782
+        "line": 799
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 805
+        "line": 822
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 819
+        "line": 836
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:setPlaceholder",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 832
+        "line": 849
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:getPlaceholder",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 845
+        "line": 862
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:setMaxLength",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 858
+        "line": 875
       },
       {
         "module": "ui",
         "lua_name": "Checkbox:setChecked",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 907
+        "line": 924
       },
       {
         "module": "ui",
         "lua_name": "Checkbox:isChecked",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 920
+        "line": 937
       },
       {
         "module": "ui",
         "lua_name": "Checkbox:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 933
+        "line": 950
       },
       {
         "module": "ui",
         "lua_name": "Checkbox:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 946
+        "line": 963
       },
       {
         "module": "ui",
         "lua_name": "Slider:setValue",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 969
+        "line": 986
       },
       {
         "module": "ui",
         "lua_name": "Slider:getValue",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 982
+        "line": 999
       },
       {
         "module": "ui",
         "lua_name": "Slider:setRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 995
+        "line": 1012
       },
       {
         "module": "ui",
         "lua_name": "Slider:setStep",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1010
+        "line": 1027
       },
       {
         "module": "ui",
         "lua_name": "Slider:getMin",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1023
+        "line": 1040
       },
       {
         "module": "ui",
         "lua_name": "Slider:getMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1036
+        "line": 1053
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:setValue",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1059
+        "line": 1076
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:getValue",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1072
+        "line": 1089
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:getProgress",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1085
+        "line": 1102
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:setRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1098
+        "line": 1115
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:getMin",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1113
+        "line": 1130
       },
       {
         "module": "ui",
         "lua_name": "Progress_Bar:getMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1126
+        "line": 1143
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:addItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1149
+        "line": 1166
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:removeItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1162
+        "line": 1179
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:clearItems",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1178
+        "line": 1195
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:getItemCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1191
+        "line": 1208
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:getItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1204
+        "line": 1221
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:setSelectedIndex",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1223
+        "line": 1240
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:getSelectedIndex",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1238
+        "line": 1255
       },
       {
         "module": "ui",
         "lua_name": "List_Box:addItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1274
+        "line": 1291
       },
       {
         "module": "ui",
         "lua_name": "List_Box:removeItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1287
+        "line": 1304
       },
       {
         "module": "ui",
         "lua_name": "List_Box:clearItems",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1302
+        "line": 1319
       },
       {
         "module": "ui",
         "lua_name": "List_Box:getItemCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1315
+        "line": 1332
       },
       {
         "module": "ui",
         "lua_name": "List_Box:getItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1328
+        "line": 1345
       },
       {
         "module": "ui",
         "lua_name": "List_Box:setSelectedIndex",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1347
+        "line": 1364
       },
       {
         "module": "ui",
         "lua_name": "List_Box:getSelectedIndex",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1362
+        "line": 1379
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:addTab",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1398
+        "line": 1415
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:removeTab",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1411
+        "line": 1428
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:getTab",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1427
+        "line": 1444
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:getTabCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1446
+        "line": 1463
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:setActiveTab",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1459
+        "line": 1476
       },
       {
         "module": "ui",
         "lua_name": "Tab_Bar:getActiveTab",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1474
+        "line": 1491
       },
       {
         "module": "ui",
         "lua_name": "Panel:setTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1497
+        "line": 1514
       },
       {
         "module": "ui",
         "lua_name": "Panel:getTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1510
+        "line": 1527
       },
       {
         "module": "ui",
         "lua_name": "Layout:setDirection",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1546
+        "line": 1563
       },
       {
         "module": "ui",
         "lua_name": "Layout:getDirection",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1561
+        "line": 1578
       },
       {
         "module": "ui",
         "lua_name": "Layout:setSpacing",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1574
+        "line": 1591
       },
       {
         "module": "ui",
         "lua_name": "Layout:getSpacing",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1587
+        "line": 1604
       },
       {
         "module": "ui",
         "lua_name": "Layout:setAlign",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1639
+        "line": 1656
       },
       {
         "module": "ui",
         "lua_name": "Layout:getAlign",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1652
+        "line": 1669
       },
       {
         "module": "ui",
         "lua_name": "Layout:setJustify",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1665
+        "line": 1682
       },
       {
         "module": "ui",
         "lua_name": "Layout:getJustify",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1678
+        "line": 1695
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:setContentSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1701
+        "line": 1718
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:getContentSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1716
+        "line": 1733
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:setScrollPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1729
+        "line": 1746
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:getScrollPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1744
+        "line": 1761
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:setScrollSpeed",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1770
+        "line": 1787
       },
       {
         "module": "ui",
         "lua_name": "Nine_Patch:getInsets",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1822
+        "line": 1839
       },
       {
         "module": "ui",
         "lua_name": "Toast:setDuration",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1929
+        "line": 1946
       },
       {
         "module": "ui",
         "lua_name": "Toast:getDuration",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1942
+        "line": 1959
       },
       {
         "module": "ui",
         "lua_name": "Toast:getProgress",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1955
+        "line": 1972
       },
       {
         "module": "ui",
         "lua_name": "Toast:isExpired",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1968
+        "line": 1985
       },
       {
         "module": "ui",
         "lua_name": "Separator:isVertical",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2004
+        "line": 2021
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:addNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2053
+        "line": 2070
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:toggleNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2068
+        "line": 2085
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getNodeCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2099
+        "line": 2116
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:removeNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2112
+        "line": 2129
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:clearNodes",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2126
+        "line": 2143
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getNodeText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2139
+        "line": 2156
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:setNodeText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2156
+        "line": 2173
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:setNodeIcon",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2172
+        "line": 2189
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:expandNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2188
+        "line": 2205
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:collapseNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2202
+        "line": 2219
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:isNodeExpanded",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2216
+        "line": 2233
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:expandAll",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2230
+        "line": 2247
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:collapseAll",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2243
+        "line": 2260
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:setSelectedNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2256
+        "line": 2273
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getSelectedNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2272
+        "line": 2289
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getChildNodes",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2286
+        "line": 2303
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getParentNode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2304
+        "line": 2321
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:getNodeDepth",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2322
+        "line": 2339
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2347
+        "line": 2364
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2360
+        "line": 2377
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:isSelected",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2373
+        "line": 2390
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:setSelected",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2386
+        "line": 2403
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:getGroup",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2399
+        "line": 2416
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:setGroup",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2412
+        "line": 2429
       },
       {
         "module": "ui",
         "lua_name": "Radio_Button:setOnChange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2426
+        "line": 2443
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:getScrollPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2448
+        "line": 2465
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:setScrollPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2461
+        "line": 2478
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:getContentSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2474
+        "line": 2491
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:setContentSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2487
+        "line": 2504
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:getViewSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2500
+        "line": 2517
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:setViewSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2513
+        "line": 2530
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:isVertical",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2526
+        "line": 2543
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Bar:setOnChange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2540
+        "line": 2557
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:getTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2562
+        "line": 2579
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:setTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2575
+        "line": 2592
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:isCloseable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2588
+        "line": 2605
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:setCloseable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2601
+        "line": 2618
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:isDraggable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2614
+        "line": 2631
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:isResizable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2640
+        "line": 2657
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:getOrientation",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2688
+        "line": 2705
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:getSplitPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2714
+        "line": 2731
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:setSplitPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2727
+        "line": 2744
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:getMinPanelSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2740
+        "line": 2757
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:setMinPanelSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2753
+        "line": 2770
       },
       {
         "module": "ui",
         "lua_name": "Dock_Panel:dock",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2828
+        "line": 2845
       },
       {
         "module": "ui",
         "lua_name": "Dock_Panel:getDockedCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2854
+        "line": 2871
       },
       {
         "module": "ui",
         "lua_name": "Dock_Panel:setSplitSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2867
+        "line": 2884
       },
       {
         "module": "ui",
         "lua_name": "Dock_Panel:getSplitSize",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2884
+        "line": 2901
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:getOrientation",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2911
+        "line": 2928
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:addButton",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2937
+        "line": 2954
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:addSeparator",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2951
+        "line": 2968
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:addSpacer",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2962
+        "line": 2979
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:getButton",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2972
+        "line": 2989
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:setButtonEnabled",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2992
+        "line": 3009
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:setButtonToggled",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3005
+        "line": 3022
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:isButtonToggled",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3018
+        "line": 3035
       },
       {
         "module": "ui",
         "lua_name": "Menu_Bar:addMenu",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3041
+        "line": 3058
       },
       {
         "module": "ui",
         "lua_name": "Menu_Bar:getMenuCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3084
+        "line": 3101
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3108
+        "line": 3125
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3121
+        "line": 3138
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:getShortcut",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3134
+        "line": 3151
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:setShortcut",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3147
+        "line": 3164
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:isChecked",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3160
+        "line": 3177
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:setChecked",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3173
+        "line": 3190
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:addSubItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3186
+        "line": 3203
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:getSubItems",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3201
+        "line": 3218
       },
       {
         "module": "ui",
         "lua_name": "Menu_Item:setOnClick",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3215
+        "line": 3232
       },
       {
         "module": "ui",
         "lua_name": "Dialog:getTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3237
+        "line": 3254
       },
       {
         "module": "ui",
         "lua_name": "Dialog:setTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3250
+        "line": 3267
       },
       {
         "module": "ui",
         "lua_name": "Dialog:isModal",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3263
+        "line": 3280
       },
       {
         "module": "ui",
         "lua_name": "Dialog:isOpen",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3289
+        "line": 3306
       },
       {
         "module": "ui",
         "lua_name": "Dialog:open",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3302
+        "line": 3319
       },
       {
         "module": "ui",
         "lua_name": "Dialog:close",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3315
+        "line": 3332
       },
       {
         "module": "ui",
         "lua_name": "Dialog:setContent",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3344
+        "line": 3361
       },
       {
         "module": "ui",
         "lua_name": "Dialog:getContent",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3357
+        "line": 3374
       },
       {
         "module": "ui",
         "lua_name": "Dialog:addButton",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3370
+        "line": 3387
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:addSection",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3395
+        "line": 3412
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:setSectionText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3408
+        "line": 3425
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:getSectionText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3423
+        "line": 3440
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:getSectionCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3442
+        "line": 3459
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:setSectionCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3455
+        "line": 3472
       },
       {
         "module": "ui",
         "lua_name": "Status_Bar:setSectionWidget",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3474
+        "line": 3491
       },
       {
         "module": "ui",
         "lua_name": "Accordion:addSection",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3494
+        "line": 3511
       },
       {
         "module": "ui",
         "lua_name": "Accordion:getSectionCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3511
+        "line": 3528
       },
       {
         "module": "ui",
         "lua_name": "Accordion:toggleSection",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3524
+        "line": 3541
       },
       {
         "module": "ui",
         "lua_name": "Accordion:isSectionExpanded",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3546
+        "line": 3563
       },
       {
         "module": "ui",
         "lua_name": "Accordion:isExclusive",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3563
+        "line": 3580
       },
       {
         "module": "ui",
         "lua_name": "Accordion:setExclusive",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3576
+        "line": 3593
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:getText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3618
+        "line": 3635
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:setText",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3631
+        "line": 3648
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:getDelay",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3644
+        "line": 3661
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:setDelay",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3657
+        "line": 3674
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:getTarget",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3670
+        "line": 3687
       },
       {
         "module": "ui",
         "lua_name": "Tooltip_Panel:setTarget",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3683
+        "line": 3700
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:getColor",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3707
+        "line": 3724
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:setColor",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3720
+        "line": 3737
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:getShowAlpha",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3736
+        "line": 3753
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:getColorMode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3762
+        "line": 3779
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:setColorMode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3775
+        "line": 3792
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:setOnChange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3789
+        "line": 3806
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:addColumn",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3811
+        "line": 3828
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:getColumnCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3827
+        "line": 3844
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:addRow",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3840
+        "line": 3857
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:getRowCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3853
+        "line": 3870
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:getCell",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3866
+        "line": 3883
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:setCell",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3889
+        "line": 3906
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:getSelectedRow",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3904
+        "line": 3921
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:setSelectedRow",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3917
+        "line": 3934
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:isSortable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3930
+        "line": 3947
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:setSortable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3943
+        "line": 3960
       },
       {
         "module": "ui",
         "lua_name": "Gui_Table:setOnSelect",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3957
+        "line": 3974
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getScaleMode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3978
+        "line": 3995
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:setScaleMode",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3991
+        "line": 4008
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getTint",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4004
+        "line": 4021
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:setTint",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4017
+        "line": 4034
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newButton",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4167
+        "line": 4184
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newLabel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4186
+        "line": 4203
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTextInput",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4204
+        "line": 4221
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newCheckbox",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4223
+        "line": 4240
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newSlider",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4243
+        "line": 4260
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newProgressBar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4263
+        "line": 4280
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newComboBox",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4281
+        "line": 4298
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newList",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4299
+        "line": 4316
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newPanel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4317
+        "line": 4334
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newLayout",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4336
+        "line": 4353
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newScrollPanel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4358
+        "line": 4375
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newNinePatch",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4376
+        "line": 4393
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTabBar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4394
+        "line": 4411
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newSeparator",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4413
+        "line": 4430
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newSpacer",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4433
+        "line": 4450
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newToast",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4452
+        "line": 4469
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTreeView",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4474
+        "line": 4491
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newRadioButton",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4494
+        "line": 4511
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newScrollBar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4515
+        "line": 4532
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newWindow",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4534
+        "line": 4551
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newSplitPanel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4553
+        "line": 4570
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newDockPanel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4571
+        "line": 4588
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newToolbar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4590
+        "line": 4607
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newMenuBar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4608
+        "line": 4625
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newMenuItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4627
+        "line": 4644
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newDialog",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4646
+        "line": 4663
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newStatusBar",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4664
+        "line": 4681
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newAccordion",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4682
+        "line": 4699
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTooltipPanel",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4701
+        "line": 4718
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newColorPicker",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4719
+        "line": 4736
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4737
+        "line": 4754
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newImageWidget",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4755
+        "line": 4772
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:newTheme",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4770
+        "line": 4787
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:setTheme",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4785
+        "line": 4802
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getTheme",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4801
+        "line": 4818
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getRoot",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4812
+        "line": 4829
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:setFocus",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4827
+        "line": 4844
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getFocus",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4845
+        "line": 4862
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:focusNext",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4855
+        "line": 4872
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:focusPrev",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4868
+        "line": 4885
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:clearFocus",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4881
+        "line": 4898
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:addToast",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4895
+        "line": 4912
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getToastCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4916
+        "line": 4933
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:mousepressed",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4930
+        "line": 4947
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:mousereleased",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4946
+        "line": 4963
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:mousemoved",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4961
+        "line": 4978
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:keypressed",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4973
+        "line": 4990
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:textinput",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4985
+        "line": 5002
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:wheelmoved",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 4998
+        "line": 5015
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:update",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 5009
+        "line": 5026
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:draw",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 5049
+        "line": 5066
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:getWidgetCount",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 5057
+        "line": 5074
       },
       {
         "module": "window",
@@ -33695,6 +33722,13 @@
         "kind": "method",
         "file": "src/lua_api/ai_api.rs",
         "line": 1897
+      },
+      {
+        "module": "animation",
+        "lua_name": "Animation:addClipFromGrid",
+        "kind": "method",
+        "file": "src/lua_api/animation_api.rs",
+        "line": 78
       },
       {
         "module": "audio",
@@ -35472,196 +35506,203 @@
         "lua_name": "World:getBodyAtPoint",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 768
+        "line": 772
       },
       {
         "module": "physics",
         "lua_name": "World:getCollisionEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 777
+        "line": 781
       },
       {
         "module": "physics",
         "lua_name": "World:getBeginContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 793
+        "line": 797
       },
       {
         "module": "physics",
         "lua_name": "World:getEndContactEvents",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 809
+        "line": 813
       },
       {
         "module": "physics",
         "lua_name": "World:getContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 825
+        "line": 829
       },
       {
         "module": "physics",
         "lua_name": "World:getBodyContacts",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 844
+        "line": 848
+      },
+      {
+        "module": "physics",
+        "lua_name": "World:setBodyType",
+        "kind": "method",
+        "file": "src/lua_api/physics_api.rs",
+        "line": 867
       },
       {
         "module": "physics",
         "lua_name": "World:getBodyType",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 876
+        "line": 877
       },
       {
         "module": "physics",
         "lua_name": "Body:setAngle",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 973
+        "line": 974
       },
       {
         "module": "physics",
         "lua_name": "Body:getAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 981
+        "line": 982
       },
       {
         "module": "physics",
         "lua_name": "Body:setAngularVelocity",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 989
+        "line": 990
       },
       {
         "module": "physics",
         "lua_name": "Body:getMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 999
+        "line": 998
       },
       {
         "module": "physics",
         "lua_name": "Body:setMass",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1007
+        "line": 1006
       },
       {
         "module": "physics",
         "lua_name": "Body:getFriction",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1052
+        "line": 1047
       },
       {
         "module": "physics",
         "lua_name": "Body:getRestitution",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1072
+        "line": 1067
       },
       {
         "module": "physics",
         "lua_name": "Body:getMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1112
+        "line": 1107
       },
       {
         "module": "physics",
         "lua_name": "Body:setMask",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1121
+        "line": 1116
       },
       {
         "module": "physics",
         "lua_name": "Body:applyForce",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1144
+        "line": 1139
       },
       {
         "module": "physics",
         "lua_name": "Body:applyTorque",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1153
+        "line": 1148
       },
       {
         "module": "physics",
         "lua_name": "Body:applyAngularImpulse",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1178
+        "line": 1173
       },
       {
         "module": "physics",
         "lua_name": "Body:getGravityScale",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1188
+        "line": 1183
       },
       {
         "module": "physics",
         "lua_name": "Body:setGravityScale",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1196
+        "line": 1191
       },
       {
         "module": "physics",
         "lua_name": "Body:isFixedRotation",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1206
+        "line": 1199
       },
       {
         "module": "physics",
         "lua_name": "Body:setFixedRotation",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1214
+        "line": 1207
       },
       {
         "module": "physics",
         "lua_name": "Body:getAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1242
+        "line": 1231
       },
       {
         "module": "physics",
         "lua_name": "Body:setAngularDamping",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1250
+        "line": 1239
       },
       {
         "module": "physics",
         "lua_name": "Body:isBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1260
+        "line": 1249
       },
       {
         "module": "physics",
         "lua_name": "Body:setBullet",
         "kind": "method",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1268
+        "line": 1257
       },
       {
         "module": "physics",
         "lua_name": "lurek.physics.debugDraw",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 1725
+        "line": 1716
       },
       {
         "module": "pipeline",
@@ -35745,280 +35786,280 @@
         "lua_name": "Font:getLineHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 207
+        "line": 210
       },
       {
         "module": "render",
         "lua_name": "Font:setLineHeight",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 219
+        "line": 222
       },
       {
         "module": "render",
         "lua_name": "Font:getAscent",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 231
+        "line": 234
       },
       {
         "module": "render",
         "lua_name": "Font:getDescent",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 242
+        "line": 245
       },
       {
         "module": "render",
         "lua_name": "Font:getWrap",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 255
+        "line": 258
       },
       {
         "module": "render",
         "lua_name": "Mesh:getVertexCount",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 501
+        "line": 504
       },
       {
         "module": "render",
         "lua_name": "Mesh:getVertex",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 513
+        "line": 516
       },
       {
         "module": "render",
         "lua_name": "Mesh:setVertex",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 529
+        "line": 532
       },
       {
         "module": "render",
         "lua_name": "Shader:hasUniform",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 626
+        "line": 629
       },
       {
         "module": "render",
         "lua_name": "Quad:getTextureDimensions",
         "kind": "method",
         "file": "src/lua_api/render_api.rs",
-        "line": 713
+        "line": 716
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getBackgroundColor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1278
+        "line": 1281
       },
       {
         "module": "render",
         "lua_name": "lurek.render.drawq",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1715
+        "line": 1722
       },
       {
         "module": "render",
         "lua_name": "lurek.render.printf",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1816
+        "line": 1825
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setPointSize",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1896
+        "line": 1905
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getPointSize",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 1910
+        "line": 1919
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontSizes",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2077
+        "line": 2106
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getDefaultFont",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2093
+        "line": 2122
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontCellWidth",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2117
+        "line": 2146
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getFontWrap",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2255
+        "line": 2284
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setCanvas",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2369
+        "line": 2398
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getCanvas",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2399
+        "line": 2428
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getCanvasSize",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2418
+        "line": 2447
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newSpriteBatch",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2442
+        "line": 2471
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newMesh",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2472
+        "line": 2501
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newShader",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2518
+        "line": 2547
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setShader",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2536
+        "line": 2565
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getShader",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2566
+        "line": 2595
       },
       {
         "module": "render",
         "lua_name": "lurek.render.newQuad",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2592
+        "line": 2621
       },
       {
         "module": "render",
         "lua_name": "lurek.render.shear",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2677
+        "line": 2708
       },
       {
         "module": "render",
         "lua_name": "lurek.render.applyTransform",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2702
+        "line": 2733
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setScissor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2727
+        "line": 2758
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getScissor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2756
+        "line": 2787
       },
       {
         "module": "render",
         "lua_name": "lurek.render.intersectScissor",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2779
+        "line": 2810
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setColorMask",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2805
+        "line": 2836
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getColorMask",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2830
+        "line": 2862
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setWireframe",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2841
+        "line": 2873
       },
       {
         "module": "render",
         "lua_name": "lurek.render.isWireframe",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2855
+        "line": 2888
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setStencilTest",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 2895
+        "line": 2928
       },
       {
         "module": "render",
         "lua_name": "lurek.render.setDefaultFilter",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3109
+        "line": 3142
       },
       {
         "module": "render",
         "lua_name": "lurek.render.getDefaultFilter",
         "kind": "function",
         "file": "src/lua_api/render_api.rs",
-        "line": 3123
+        "line": 3156
       },
       {
         "module": "save",
@@ -36316,283 +36357,290 @@
       },
       {
         "module": "ui",
+        "lua_name": "lurek.ui.getRect",
+        "kind": "function",
+        "file": "src/lua_api/ui_api.rs",
+        "line": 129
+      },
+      {
+        "module": "ui",
         "lua_name": "lurek.ui.setAnchor",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 599
+        "line": 616
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.setAnchorCenter",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 628
+        "line": 645
       },
       {
         "module": "ui",
         "lua_name": "lurek.ui.clearAnchor",
         "kind": "function",
         "file": "src/lua_api/ui_api.rs",
-        "line": 645
+        "line": 662
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:isFocused",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 871
+        "line": 888
       },
       {
         "module": "ui",
         "lua_name": "Text_Input:getCursorPosition",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 884
+        "line": 901
       },
       {
         "module": "ui",
         "lua_name": "Combo_Box:getSelectedItem",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1251
+        "line": 1268
       },
       {
         "module": "ui",
         "lua_name": "List_Box:setItemHeight",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1375
+        "line": 1392
       },
       {
         "module": "ui",
         "lua_name": "Panel:setScrollable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1523
+        "line": 1540
       },
       {
         "module": "ui",
         "lua_name": "Layout:setColumns",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1600
+        "line": 1617
       },
       {
         "module": "ui",
         "lua_name": "Layout:setWrap",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1613
+        "line": 1630
       },
       {
         "module": "ui",
         "lua_name": "Layout:getWrap",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1626
+        "line": 1643
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:getMaxScroll",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1757
+        "line": 1774
       },
       {
         "module": "ui",
         "lua_name": "Scroll_Panel:getScrollSpeed",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1783
+        "line": 1800
       },
       {
         "module": "ui",
         "lua_name": "Nine_Patch:setInsets",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1806
+        "line": 1823
       },
       {
         "module": "ui",
         "lua_name": "Nine_Patch:setImageDimensions",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1837
+        "line": 1854
       },
       {
         "module": "ui",
         "lua_name": "Nine_Patch:getImageDimensions",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1851
+        "line": 1868
       },
       {
         "module": "ui",
         "lua_name": "Nine_Patch:getSlices",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1864
+        "line": 1881
       },
       {
         "module": "ui",
         "lua_name": "Toast:setMessage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1903
+        "line": 1920
       },
       {
         "module": "ui",
         "lua_name": "Toast:getMessage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1916
+        "line": 1933
       },
       {
         "module": "ui",
         "lua_name": "Separator:setVertical",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 1991
+        "line": 2008
       },
       {
         "module": "ui",
         "lua_name": "Separator:setThickness",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2017
+        "line": 2034
       },
       {
         "module": "ui",
         "lua_name": "Separator:getThickness",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2030
+        "line": 2047
       },
       {
         "module": "ui",
         "lua_name": "Tree_View:isExpanded",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2084
+        "line": 2101
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:setDraggable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2627
+        "line": 2644
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:setResizable",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2653
+        "line": 2670
       },
       {
         "module": "ui",
         "lua_name": "Gui_Window:setOnClose",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2667
+        "line": 2684
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:setOrientation",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2701
+        "line": 2718
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:setFirstChild",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2766
+        "line": 2783
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:setSecondChild",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2779
+        "line": 2796
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:getFirstChild",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2792
+        "line": 2809
       },
       {
         "module": "ui",
         "lua_name": "Split_Panel:getSecondChild",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2805
+        "line": 2822
       },
       {
         "module": "ui",
         "lua_name": "Dock_Panel:undock",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2841
+        "line": 2858
       },
       {
         "module": "ui",
         "lua_name": "Toolbar:setOrientation",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 2924
+        "line": 2941
       },
       {
         "module": "ui",
         "lua_name": "Menu_Bar:removeMenu",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3056
+        "line": 3073
       },
       {
         "module": "ui",
         "lua_name": "Menu_Bar:getMenus",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3071
+        "line": 3088
       },
       {
         "module": "ui",
         "lua_name": "Dialog:setModal",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3276
+        "line": 3293
       },
       {
         "module": "ui",
         "lua_name": "Dialog:setOnClose",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3333
+        "line": 3350
       },
       {
         "module": "ui",
         "lua_name": "Accordion:getSectionTitle",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3589
+        "line": 3606
       },
       {
         "module": "ui",
         "lua_name": "Color_Picker:setShowAlpha",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 3749
+        "line": 3766
       },
       {
         "module": "ui",
         "lua_name": "Image_Widget:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 5068
+        "line": 5085
       },
       {
         "module": "window",
