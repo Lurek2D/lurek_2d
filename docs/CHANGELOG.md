@@ -18,6 +18,23 @@ Always update this file **in the same commit** as the change. Use the commit typ
 
 ---
 
+## [0.7.8] — 2026-04-13
+### Changed
+- `raycaster`: Upgraded `WallQuad`, `FloorQuad`, `CeilingQuad`, and `BillboardSprite` to perspective-correct textured-quad rendering.
+  - Replaced `screen_x/y/w/h` rect fields with `corners: [Vec2; 4]` and `uvs: [Vec2; 4]` for per-vertex control.
+  - Replaced `light_color: Color` with `light: [f32; 4]` RGBA multiplier matching `DrawTexturedQuad::color`.
+  - `generate_render_commands()` now emits `DrawTexturedQuad` per textured surface (untextured falls back to `SetColor` + `Rectangle`).
+### Added
+- `src/raycaster/draw.rs`: `RaycasterScene::draw_to_image(width, height) -> ImageData` — CPU software-rendering fallback for headless testing and screenshots (no GPU required).
+
+---
+
+## [0.7.7] — 2026-04-11
+### Added
+- `RenderCommand::DrawTexturedQuad { corners: [Vec2;4], uvs: [Vec2;4], texture_key, color }` — new variant for arbitrary perspective-correct textured quads (raycaster walls, portal surfaces). Added handler arm in `GpuRenderer::render_frame()` and `push_tex_quad_corners()` helper in `gpu_renderer.rs`.
+
+---
+
 ## [0.7.6] — 2026-04-13
 ### Fixed
 - Fixed `tools/audit/quality_report.py`: corrected 4 broken script path references (`doc_audit.py`→`audit/doc_audit.py`, `test_coverage.py`→`audit/test_coverage.py`, `module_audit.py`→`audit/module_audit.py`, `validate_game.py`→`validate/validate_game.py`). Dashboard now shows real data instead of 0% everywhere.

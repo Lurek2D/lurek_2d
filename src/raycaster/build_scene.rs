@@ -4,7 +4,7 @@
 //! and lighting data. Every surface is represented as a textured quad with
 //! per-polygon lighting — no column-strip rendering.
 
-use crate::math::Color;
+use crate::math::{Color, Vec2};
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};
 use crate::raycaster::projection::{distance_shade, project_column};
@@ -12,6 +12,47 @@ use crate::raycaster::scene::{
     BillboardSprite, CeilingQuad, FloorQuad, RaycasterScene, WallQuad,
 };
 use crate::runtime::resource_keys::TextureKey;
+
+// ── Private helpers ───────────────────────────────────────────────────────────
+
+/// Converts a screen-space rect `(x, y, w, h)` into four corner [`Vec2`] positions.
+///
+/// Order: top-left, top-right, bottom-right, bottom-left.
+fn corners_from_rect(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
+    [
+        Vec2::new(x, y),
+        Vec2::new(x + w, y),
+        Vec2::new(x + w, y + h),
+        Vec2::new(x, y + h),
+    ]
+}
+
+/// Standard `[0,1]` UV rectangle: `(0,0)`, `(1,0)`, `(1,1)`, `(0,1)`.
+fn rect_uvs() -> [Vec2; 4] {
+    [
+        Vec2::new(0.0, 0.0),
+        Vec2::new(1.0, 0.0),
+        Vec2::new(1.0, 1.0),
+        Vec2::new(0.0, 1.0),
+    ]
+}
+
+/// Column-strip UVs for a wall quad. Both left and right edges share `tex_u`,
+/// mapping a single texture column vertically from `v=0` (top) to `v=1` (bottom).
+fn wall_uvs(tex_u: f32) -> [Vec2; 4] {
+    [
+        Vec2::new(tex_u, 0.0), // top-left
+        Vec2::new(tex_u, 0.0), // top-right (same column)
+        Vec2::new(tex_u, 1.0), // bottom-right
+        Vec2::new(tex_u, 1.0), // bottom-left
+    ]
+}
+
+/// Converts a [`Color`] to an RGBA `[f32; 4]` light array.
+fn color_to_light(c: &Color) -> [f32; 4] {
+    [c.r, c.g, c.b, c.a]
+}
+
 
 /// Parameters for building a raycaster scene.
 ///
@@ -131,26 +172,18 @@ impl RaycasterScene {
                 let floor_lc = Color::new(floor_light[0], floor_light[1], floor_light[2], 1.0);
 
                 scene.floors.push(FloorQuad {
+                    corners: corners_from_rect(screen_x, half_height, col_width, half_height),
+                    uvs: rect_uvs(),
                     texture_key: None,
-                    screen_x,
-                    screen_y: half_height,
-                    screen_w: col_width,
-                    screen_h: half_height,
-                    world_x: params.player_x,
-                    world_y: params.player_y,
+                    light: color_to_light(&floor_lc),
                     depth: params.max_distance,
-                    light_color: floor_lc,
                 });
                 scene.ceilings.push(CeilingQuad {
+                    corners: corners_from_rect(screen_x, 0.0, col_width, half_height),
+                    uvs: rect_uvs(),
                     texture_key: None,
-                    screen_x,
-                    screen_y: 0.0,
-                    screen_w: col_width,
-                    screen_h: half_height,
-                    world_x: params.player_x,
-                    world_y: params.player_y,
+                    light: color_to_light(&floor_lc),
                     depth: params.max_distance,
-                    light_color: floor_lc,
                 });
                 continue;
             }
@@ -168,15 +201,11 @@ impl RaycasterScene {
             );
 
             scene.walls.push(WallQuad {
+                corners: corners_from_rect(screen_x, draw_start, col_width, draw_end - draw_start),
+                uvs: wall_uvs(hit.tex_u),
                 texture_key: wall_texture(hit.cell_value),
-                screen_x,
-                screen_y: draw_start,
-                screen_w: col_width,
-                screen_h: draw_end - draw_start,
-                tex_u_start: hit.tex_u,
-                tex_u_end: hit.tex_u,
+                light: color_to_light(&wall_color),
                 depth: hit.distance,
-                light_color: wall_color,
                 cell_value: hit.cell_value,
             });
 
@@ -195,15 +224,11 @@ impl RaycasterScene {
                 );
 
                 scene.floors.push(FloorQuad {
+                    corners: corners_from_rect(screen_x, floor_y, col_width, floor_h),
+                    uvs: rect_uvs(),
                     texture_key: None,
-                    screen_x,
-                    screen_y: floor_y,
-                    screen_w: col_width,
-                    screen_h: floor_h,
-                    world_x: hit.hit_x,
-                    world_y: hit.hit_y,
+                    light: color_to_light(&floor_color),
                     depth: hit.distance,
-                    light_color: floor_color,
                 });
             }
 
@@ -221,15 +246,11 @@ impl RaycasterScene {
                 );
 
                 scene.ceilings.push(CeilingQuad {
+                    corners: corners_from_rect(screen_x, 0.0, col_width, ceil_h),
+                    uvs: rect_uvs(),
                     texture_key: None,
-                    screen_x,
-                    screen_y: 0.0,
-                    screen_w: col_width,
-                    screen_h: ceil_h,
-                    world_x: hit.hit_x,
-                    world_y: hit.hit_y,
+                    light: color_to_light(&ceil_color),
                     depth: hit.distance,
-                    light_color: ceil_color,
                 });
             }
         }
@@ -275,15 +296,16 @@ impl RaycasterScene {
             );
 
             scene.sprites.push(BillboardSprite {
+                corners: corners_from_rect(
+                    screen_x_center - projected_size / 2.0,
+                    (params.screen_height - projected_size) / 2.0,
+                    projected_size,
+                    projected_size,
+                ),
+                uvs: rect_uvs(),
                 texture_key: ws.texture_key,
-                screen_x: screen_x_center,
-                screen_y: (params.screen_height - projected_size) / 2.0,
-                screen_w: projected_size,
-                screen_h: projected_size,
+                light: color_to_light(&sprite_color),
                 depth: dist,
-                light_color: sprite_color,
-                world_x: ws.world_x,
-                world_y: ws.world_y,
             });
         }
 
@@ -342,7 +364,9 @@ mod tests {
         assert!(!scene.walls.is_empty(), "Should have wall quads");
         for wall in &scene.walls {
             assert!(wall.depth > 0.0, "Wall depth should be positive");
-            assert!(wall.screen_h > 0.0, "Wall height should be positive");
+            // corners[3].y - corners[0].y = height
+            let wall_h = wall.corners[3].y - wall.corners[0].y;
+            assert!(wall_h > 0.0, "Wall height should be positive");
         }
     }
 
@@ -412,7 +436,7 @@ mod tests {
         if let Some(wall) = scene.walls.first() {
             // With an orange light nearby, red channel should be higher than blue
             assert!(
-                wall.light_color.r > 0.0,
+                wall.light[0] > 0.0,
                 "Wall should receive some light"
             );
         }

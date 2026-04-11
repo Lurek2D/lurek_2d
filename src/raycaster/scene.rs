@@ -4,47 +4,35 @@
 //! for dungeon-crawler and retro FPS games. Every surface (wall, floor, ceiling,
 //! sprite) is a textured quad with per-polygon lighting — no column-strip rendering.
 
-use crate::math::Color;
+use crate::math::Vec2;
 use crate::runtime::resource_keys::TextureKey;
 
 // ── WallQuad ─────────────────────────────────────────────────────────────────
 
-/// A single wall segment projected onto the screen as a textured quad.
+/// A single wall segment projected onto the screen as a perspective-correct textured quad.
 ///
 /// Each wall quad represents one grid-cell face visible to the camera.
-/// The texture covers the entire quad (no column strips).
+/// The texture is mapped with perspective-correct UV coordinates at each corner.
 ///
 /// # Fields
-/// - `texture_key` — `TextureKey`. Wall texture to draw.
-/// - `screen_x` — `f32`. Left edge on screen.
-/// - `screen_y` — `f32`. Top edge on screen.
-/// - `screen_w` — `f32`. Width on screen (typically 1 column, but may span more).
-/// - `screen_h` — `f32`. Height on screen (perspective-projected wall height).
-/// - `tex_u_start` — `f32`. Texture U start coordinate `[0.0, 1.0]`.
-/// - `tex_u_end` — `f32`. Texture U end coordinate `[0.0, 1.0]`.
-/// - `depth` — `f32`. Distance from camera (for depth sorting).
-/// - `light_color` — `Color`. Per-polygon light tint (ambient + point lights combined).
+/// - `corners` — `[Vec2; 4]`. Screen-space corner positions: top-left, top-right, bottom-right, bottom-left.
+/// - `uvs` — `[Vec2; 4]`. Normalized UV coordinates `[0.0, 1.0]` for each corner (same order as `corners`).
+/// - `texture_key` — `Option<TextureKey>`. Wall texture (solid colour fallback when `None`).
+/// - `light` — `[f32; 4]`. Per-face RGBA light multiplier (`[r, g, b, 1.0]`).
+/// - `depth` — `f32`. Distance from camera for depth sorting.
 /// - `cell_value` — `u32`. Map cell value for multi-texture lookup.
 #[derive(Debug, Clone)]
 pub struct WallQuad {
-    /// Wall texture to draw.
+    /// Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+    pub corners: [Vec2; 4],
+    /// Normalized UV coordinates `[0.0, 1.0]` for each corner in the same order as `corners`.
+    pub uvs: [Vec2; 4],
+    /// Wall texture (solid colour fallback when `None`).
     pub texture_key: Option<TextureKey>,
-    /// Left edge on screen in pixels.
-    pub screen_x: f32,
-    /// Top edge on screen in pixels.
-    pub screen_y: f32,
-    /// Width on screen in pixels.
-    pub screen_w: f32,
-    /// Height on screen in pixels.
-    pub screen_h: f32,
-    /// Texture U start coordinate `[0.0, 1.0]`.
-    pub tex_u_start: f32,
-    /// Texture U end coordinate `[0.0, 1.0]`.
-    pub tex_u_end: f32,
+    /// Per-face RGBA light multiplier (`[r, g, b, 1.0]`).
+    pub light: [f32; 4],
     /// Distance from camera for depth sorting.
     pub depth: f32,
-    /// Per-polygon light tint (combined ambient + point lights).
-    pub light_color: Color,
     /// Map cell value for multi-texture lookup.
     pub cell_value: u32,
 }
@@ -54,35 +42,23 @@ pub struct WallQuad {
 /// A single floor tile projected onto the screen as a textured quad.
 ///
 /// # Fields
-/// - `texture_key` — `Option<TextureKey>`. Floor texture (or solid colour if `None`).
-/// - `screen_x` — `f32`. Left edge on screen.
-/// - `screen_y` — `f32`. Top edge on screen.
-/// - `screen_w` — `f32`. Width on screen.
-/// - `screen_h` — `f32`. Height on screen.
-/// - `world_x` — `f32`. World-space X for texture mapping.
-/// - `world_y` — `f32`. World-space Y for texture mapping.
+/// - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+/// - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner.
+/// - `texture_key` — `Option<TextureKey>`. Floor texture (solid colour fallback when `None`).
+/// - `light` — `[f32; 4]`. Per-face RGBA light multiplier.
 /// - `depth` — `f32`. Distance from camera.
-/// - `light_color` — `Color`. Per-polygon light tint.
 #[derive(Debug, Clone)]
 pub struct FloorQuad {
-    /// Floor texture (or solid colour if `None`).
+    /// Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+    pub corners: [Vec2; 4],
+    /// Normalized UV coordinates for each corner.
+    pub uvs: [Vec2; 4],
+    /// Floor texture (solid colour fallback when `None`).
     pub texture_key: Option<TextureKey>,
-    /// Left edge on screen in pixels.
-    pub screen_x: f32,
-    /// Top edge on screen in pixels.
-    pub screen_y: f32,
-    /// Width on screen in pixels.
-    pub screen_w: f32,
-    /// Height on screen in pixels.
-    pub screen_h: f32,
-    /// World-space X for texture coordinate calculation.
-    pub world_x: f32,
-    /// World-space Y for texture coordinate calculation.
-    pub world_y: f32,
+    /// Per-face RGBA light multiplier.
+    pub light: [f32; 4],
     /// Distance from camera for depth sorting.
     pub depth: f32,
-    /// Per-polygon light tint.
-    pub light_color: Color,
 }
 
 // ── CeilingQuad ──────────────────────────────────────────────────────────────
@@ -92,35 +68,23 @@ pub struct FloorQuad {
 /// Mirrors [`FloorQuad`] but drawn above the wall segments.
 ///
 /// # Fields
-/// - `texture_key` — `Option<TextureKey>`. Ceiling texture (or solid colour if `None`).
-/// - `screen_x` — `f32`. Left edge on screen.
-/// - `screen_y` — `f32`. Top edge on screen.
-/// - `screen_w` — `f32`. Width on screen.
-/// - `screen_h` — `f32`. Height on screen.
-/// - `world_x` — `f32`. World-space X for texture mapping.
-/// - `world_y` — `f32`. World-space Y for texture mapping.
+/// - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+/// - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner.
+/// - `texture_key` — `Option<TextureKey>`. Ceiling texture (solid colour fallback when `None`).
+/// - `light` — `[f32; 4]`. Per-face RGBA light multiplier.
 /// - `depth` — `f32`. Distance from camera.
-/// - `light_color` — `Color`. Per-polygon light tint.
 #[derive(Debug, Clone)]
 pub struct CeilingQuad {
-    /// Ceiling texture (or solid colour if `None`).
+    /// Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+    pub corners: [Vec2; 4],
+    /// Normalized UV coordinates for each corner.
+    pub uvs: [Vec2; 4],
+    /// Ceiling texture (solid colour fallback when `None`).
     pub texture_key: Option<TextureKey>,
-    /// Left edge on screen in pixels.
-    pub screen_x: f32,
-    /// Top edge on screen in pixels.
-    pub screen_y: f32,
-    /// Width on screen in pixels.
-    pub screen_w: f32,
-    /// Height on screen in pixels.
-    pub screen_h: f32,
-    /// World-space X for texture coordinate calculation.
-    pub world_x: f32,
-    /// World-space Y for texture coordinate calculation.
-    pub world_y: f32,
+    /// Per-face RGBA light multiplier.
+    pub light: [f32; 4],
     /// Distance from camera for depth sorting.
     pub depth: f32,
-    /// Per-polygon light tint.
-    pub light_color: Color,
 }
 
 // ── BillboardSprite ──────────────────────────────────────────────────────────
@@ -131,35 +95,23 @@ pub struct CeilingQuad {
 /// on a single square quad — dungeon-crawler style (beholder, monsters).
 ///
 /// # Fields
+/// - `corners` — `[Vec2; 4]`. Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+/// - `uvs` — `[Vec2; 4]`. Normalized UV coordinates for each corner.
 /// - `texture_key` — `TextureKey`. Sprite texture.
-/// - `screen_x` — `f32`. Centre X on screen.
-/// - `screen_y` — `f32`. Top edge on screen.
-/// - `screen_w` — `f32`. Width on screen.
-/// - `screen_h` — `f32`. Height on screen.
+/// - `light` — `[f32; 4]`. Per-face RGBA light multiplier.
 /// - `depth` — `f32`. Distance from camera (for depth sorting / occlusion).
-/// - `light_color` — `Color`. Per-polygon light tint.
-/// - `world_x` — `f32`. World X position (for lighting calculation).
-/// - `world_y` — `f32`. World Y position (for lighting calculation).
 #[derive(Debug, Clone)]
 pub struct BillboardSprite {
+    /// Screen-space corners: top-left, top-right, bottom-right, bottom-left.
+    pub corners: [Vec2; 4],
+    /// Normalized UV coordinates for each corner.
+    pub uvs: [Vec2; 4],
     /// Sprite texture.
     pub texture_key: TextureKey,
-    /// Centre X on screen in pixels.
-    pub screen_x: f32,
-    /// Top edge on screen in pixels.
-    pub screen_y: f32,
-    /// Width on screen in pixels.
-    pub screen_w: f32,
-    /// Height on screen in pixels.
-    pub screen_h: f32,
+    /// Per-face RGBA light multiplier.
+    pub light: [f32; 4],
     /// Distance from camera for depth sorting.
     pub depth: f32,
-    /// Per-polygon light tint.
-    pub light_color: Color,
-    /// World X position (for lighting calculation).
-    pub world_x: f32,
-    /// World Y position (for lighting calculation).
-    pub world_y: f32,
 }
 
 // ── RaycasterScene ───────────────────────────────────────────────────────────
@@ -177,7 +129,7 @@ pub struct BillboardSprite {
 /// - `sprites` — `Vec<BillboardSprite>`. Billboard sprites sorted back-to-front.
 /// - `screen_width` — `f32`. Screen width used for projection.
 /// - `screen_height` — `f32`. Screen height used for projection.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct RaycasterScene {
     /// Visible wall segments as textured quads.
     pub walls: Vec<WallQuad>,
@@ -235,7 +187,19 @@ impl RaycasterScene {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::math::Color;
+
+    fn unit_corners(x: f32, y: f32, w: f32, h: f32) -> [Vec2; 4] {
+        [
+            Vec2::new(x, y),
+            Vec2::new(x + w, y),
+            Vec2::new(x + w, y + h),
+            Vec2::new(x, y + h),
+        ]
+    }
+
+    fn unit_uvs() -> [Vec2; 4] {
+        [Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0), Vec2::new(0.0, 1.0)]
+    }
 
     #[test]
     fn empty_scene_has_zero_quads() {
@@ -248,38 +212,26 @@ mod tests {
     fn scene_counts_all_quad_types() {
         let mut scene = RaycasterScene::new(800.0, 600.0);
         scene.walls.push(WallQuad {
+            corners: unit_corners(0.0, 0.0, 1.0, 100.0),
+            uvs: unit_uvs(),
             texture_key: None,
-            screen_x: 0.0,
-            screen_y: 0.0,
-            screen_w: 1.0,
-            screen_h: 100.0,
-            tex_u_start: 0.0,
-            tex_u_end: 1.0,
+            light: [1.0, 1.0, 1.0, 1.0],
             depth: 2.0,
-            light_color: Color::WHITE,
             cell_value: 1,
         });
         scene.floors.push(FloorQuad {
+            corners: unit_corners(0.0, 100.0, 1.0, 50.0),
+            uvs: unit_uvs(),
             texture_key: None,
-            screen_x: 0.0,
-            screen_y: 100.0,
-            screen_w: 1.0,
-            screen_h: 50.0,
-            world_x: 0.0,
-            world_y: 0.0,
+            light: [1.0, 1.0, 1.0, 1.0],
             depth: 2.0,
-            light_color: Color::WHITE,
         });
         scene.ceilings.push(CeilingQuad {
+            corners: unit_corners(0.0, 0.0, 1.0, 50.0),
+            uvs: unit_uvs(),
             texture_key: None,
-            screen_x: 0.0,
-            screen_y: 0.0,
-            screen_w: 1.0,
-            screen_h: 50.0,
-            world_x: 0.0,
-            world_y: 0.0,
+            light: [1.0, 1.0, 1.0, 1.0],
             depth: 2.0,
-            light_color: Color::WHITE,
         });
         assert_eq!(scene.quad_count(), 3);
         assert!(!scene.is_empty());

@@ -16,7 +16,7 @@ The `raycaster` module implements a DDA-based 2D grid raycaster designed for Wol
 
 The module provides two rendering paths:
 1. **Column-strip** (`ColumnBatch` / `ColumnData`) — classic Wolfenstein-style per-column rendering via `lurek.gfx` draw calls.
-2. **Textured-quad** (`RaycasterScene` / `WallQuad` / `FloorQuad` / `CeilingQuad` / `BillboardSprite`) — dungeon-crawler style rendering where each surface is a textured quad with per-polygon `light_color` tint. Built by `RaycasterScene::build()` and converted to `Vec<RenderCommand>` by `generate_render_commands()`.
+2. **Textured-quad** (`RaycasterScene` / `WallQuad` / `FloorQuad` / `CeilingQuad` / `BillboardSprite`) — dungeon-crawler style rendering where each surface is a perspective-correct textured quad with per-polygon `light` RGBA tint. Built by `RaycasterScene::build()` and converted to `Vec<RenderCommand>` by `generate_render_commands()`.
 
 ## Source Files
 
@@ -35,9 +35,10 @@ The module provides two rendering paths:
 | `heightmap.rs`           | `HeightMap` — per-cell variable floor and ceiling heights      |
 | `lighting.rs`            | `PointLight`, `compute_lighting`, `apply_lit_shade`            |
 | `minimap_overlay.rs`     | `extract_minimap` (RGBA crop) and `draw_player_arrow`          |
-| `scene.rs`               | `RaycasterScene`, `WallQuad`, `FloorQuad`, `CeilingQuad`, `BillboardSprite` — textured-quad scene types with per-polygon `light_color` |
+| `scene.rs`               | `RaycasterScene`, `WallQuad`, `FloorQuad`, `CeilingQuad`, `BillboardSprite` — textured-quad scene types with per-polygon `light: [f32; 4]` RGBA tint and `corners: [Vec2; 4]` / `uvs: [Vec2; 4]` |
 | `build_scene.rs`         | `RaycasterScene::build()`, `SceneBuildParams`, `WorldSprite` — builds a complete scene from a `Raycaster2D` grid with per-polygon lighting |
-| `render.rs`              | `generate_render_commands()` on `RaycasterScene` — converts the scene into `Vec<RenderCommand>` (SetColor + DrawQuad/DrawImageEx/Rectangle per quad) |
+| `render.rs`              | `generate_render_commands()` on `RaycasterScene` — converts the scene into `Vec<RenderCommand>` (DrawTexturedQuad per textured quad; SetColor + Rectangle for untextured fallbacks) |
+| `draw.rs`                | `draw_to_image()` on `RaycasterScene` — CPU software-rendering fallback; produces an `ImageData` for headless testing |
 
 ## Key Types
 
@@ -48,10 +49,10 @@ The module provides two rendering paths:
 | `ColumnBatch` | Column-strip rendering batch (legacy path). |
 | `ColumnData` | Per-column wall rendering state (legacy path). |
 | `RaycasterScene` | Complete textured-quad scene: walls, floors, ceilings, sprites. |
-| `WallQuad` | Single wall segment as a textured quad with per-polygon light_color. |
-| `FloorQuad` | Single floor tile as a textured quad with per-polygon light_color. |
-| `CeilingQuad` | Single ceiling tile as a textured quad with per-polygon light_color. |
-| `BillboardSprite` | World-space sprite projected as a camera-facing textured quad. |
+| `WallQuad` | Single wall segment as a perspective-correct textured quad with `corners`, `uvs`, and per-polygon `light` RGBA. |
+| `FloorQuad` | Single floor tile as a textured quad with `corners`, `uvs`, and per-polygon `light` RGBA. |
+| `CeilingQuad` | Single ceiling tile as a textured quad with `corners`, `uvs`, and per-polygon `light` RGBA. |
+| `BillboardSprite` | World-space sprite projected as a camera-facing textured quad with `corners`, `uvs`, and per-polygon `light` RGBA. |
 | `SceneBuildParams` | Camera, lighting, and rendering parameters for scene building. |
 | `WorldSprite` | Input sprite definition (world position, texture, size). |
 | `PointLight` | Point light source for per-polygon lighting calculation. |

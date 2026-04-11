@@ -12,6 +12,8 @@ pub mod column_batch;
 pub mod dda;
 /// Column-based depth buffer for sprite occlusion.
 pub mod depth_buffer;
+/// CPU software-rendering fallback for headless testing.
+pub mod draw;
 /// Sliding door support for grid-based raycaster levels.
 pub mod doors;
 /// Floor and ceiling height variations for stepped or multi-level environments.
