@@ -5,7 +5,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::automation::{Script, Simulator, Step};
+use crate::automation::{Action, Script, Simulator, Step};
 
 
 // -------------------------------------------------------------------------------
@@ -14,14 +14,6 @@ use crate::automation::{Script, Simulator, Step};
 
 /// Registers the `lurek.simulator` API table with the Lua VM.
 ///
-/// # Parameters
-/// - `lua` — `&Lua`.
-/// - `luna` — `&LuaTable`.
-/// - `state` — `Rc<RefCell<SharedState>>`.
-/// @param lua : &Lua
-/// @param luna : &LuaTable
-/// @param state : Rc<RefCell<SharedState>>
-/// @return LuaResult<()>
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let simulator = Rc::new(RefCell::new(Simulator::new()));
@@ -231,11 +223,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 impl Step {
 /// vec_from_lua_table.
 ///
-/// # Parameters
-/// - `t` — `&LuaTable`.
 ///
-/// # Returns
-/// `LuaResult<Vec<Self>>`.
 pub fn vec_from_lua_table(t: &LuaTable) -> LuaResult<Vec<Self>> {
         let len = t.len()? as usize;
         let mut steps = Vec::with_capacity(len);

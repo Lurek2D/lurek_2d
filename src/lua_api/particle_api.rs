@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::runtime::resource_keys::ParticleKey;
-use crate::particle::{ParticleConfig, ParticleSystem, Trail};
+use crate::particle::{AreaDistribution, EmissionShape, InsertMode, ParticleConfig, ParticleSystem, Trail, RelativeMode, ParticleShape};
 
 // -------------------------------------------------------------------------------
 // Config table → ParticleConfig marshalling
