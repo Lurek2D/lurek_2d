@@ -765,6 +765,11 @@ impl LuaUserData for LuaMinimap {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.minimap` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

@@ -1,6 +1,6 @@
 # Module Quality Report: `ecs`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 39 ✅ / 5 ⚠️ / 4 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 32 ✅ / 5 ⚠️ / 11 ❌ / 19 🔵
 
 ---
 
@@ -8,6 +8,13 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
 - [ ] **T-01** — Rust test file: No test file found for module 'ecs'
 - [ ] **T-02** — Lua test file: Module has Lua API but no tests/lua/unit/test_ecs.lua
 - [ ] **W-01** — Example file exists: content/examples/ecs.lua not found — create it
@@ -16,10 +23,10 @@
 ### 🟡 Warnings — Should Fix
 
 - [ ] **D-04** — Doc quality: Stub/placeholder docs found: relationships:335, universe:19, universe:693, universe:1017, universe:1171
-- [ ] **R-01** — Tier placement: Module not in tier registry — verify placement
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
 - [ ] **T-05** — Test adequacy: 63 pub methods, 0 Rust tests — create test file
 - [ ] **W-05** — Wiki page: No wiki page found (expected docs/wiki/Ecs-API.md)
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **I-03** — Config integration: Module not in src/runtime/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
 
@@ -38,23 +45,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\ecs\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 617 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/ecs.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: unassigned) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/ecs.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1693 chars |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1315 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 1 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 4 types — spec Key Types in sync |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -86,7 +93,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ⚠️ WARNING | Module not in tier registry — verify placement |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow unassigned rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -141,7 +148,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ⚠️ WARNING | Module not in src/runtime/config.rs — add to ModulesConfig if toggleable |
 
 ### Phase 12 — Localization & Logging
 

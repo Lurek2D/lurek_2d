@@ -1,6 +1,6 @@
 # Module Quality Report: `lua_api`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 36 ✅ / 5 ⚠️ / 7 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 31 ✅ / 4 ⚠️ / 13 ❌ / 19 🔵
 
 ---
 
@@ -9,19 +9,24 @@
 ### 🔴 Errors — Must Fix Before Merge
 
 - [ ] **S-02** — mod.rs simplicity: mod.rs has 150 logic lines — extract to named files
-- [ ] **S-03** — File size limits: Files >3000 LOC: lua_api/render_api.rs (3304 LOC); lua_api/ui_api.rs (5061 LOC)
-- [ ] **A-04** — Content sync: Files not in Source Files table: ai_api.rs, animation_api.rs, automation_api.rs, camera_api.rs, compute_api.rs, dataframe_api.rs, debugbridge_api.rs, devtools_api.rs, docs_api.rs, ecs_api.rs, effect_api.rs, graph_api.rs, i18n_api.rs, light_api.rs, log_api.rs, lua_types.rs, minimap_api.rs, mods_api.rs, network_api.rs, parallax_api.rs, pathfind_api.rs, patterns_api.rs, pipeline_api.rs, procgen_api.rs, raycaster_api.rs, render_api.rs, save_api.rs, scene_api.rs, serial_api.rs, spine_api.rs, thread_api.rs, tilemap_api.rs, tween_api.rs, ui_api.rs
-- [ ] **SP-02** — Required spec sections: Missing sections: Key Types
+- [ ] **S-03** — File size limits: Files >3000 LOC: lua_api/render_api.rs (3342 LOC); lua_api/ui_api.rs (5095 LOC)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **D-02** — Public item docs: Undocumented pub items: automation_api::vec_from_lua_table, particle_api::from_lua_opts, procgen_api::from_lua_table, procgen_api::from_lua_table
 - [ ] **T-01** — Rust test file: No test file found for module 'lua_api'
 - [ ] **W-01** — Example file exists: content/examples/lua_api.lua not found — create it
 - [ ] **W-02** — API surface coverage: Skipped — no example file
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **A-04b** — Source Files completeness (incl. subdirs): Nested .rs files not listed in AGENT.md: ai_api.rs, animation_api.rs, automation_api.rs, camera_api.rs, compute_api.rs, dataframe_api.rs
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: effect_api:491, i18n_api:247, system_api:93, ui_api:829, ui_api:842
-- [ ] **R-01** — Tier placement: No **Tier** row in AGENT.md; expected unassigned
-- [ ] **T-05** — Test adequacy: 7 pub methods, 0 Rust tests — create test file
+- [ ] **D-04** — Doc quality: Stub/placeholder docs found: effect_api:491, i18n_api:247, system_api:93, ui_api:847, ui_api:860
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **T-05** — Test adequacy: 8 pub methods, 0 Rust tests — create test file
 - [ ] **Q-04** — Error handling: .unwrap() calls: audio_api:2267, thread_api:49, thread_api:59, thread_api:67, thread_api:74 (+1 more)
 
 ## Full Check Results
@@ -32,7 +37,7 @@
 |-------|---------|---------|
 | **S-01** lib.rs registration | ✅ PASS | Registered in lib.rs |
 | **S-02** mod.rs simplicity | ❌ ERROR | mod.rs has 150 logic lines — extract to named files |
-| **S-03** File size limits | ❌ ERROR | Files >3000 LOC: lua_api/render_api.rs (3304 LOC); lua_api/ui_api.rs (5061 LOC) |
+| **S-03** File size limits | ❌ ERROR | Files >3000 LOC: lua_api/render_api.rs (3342 LOC); lua_api/ui_api.rs (5095 LOC) |
 | **S-04** File naming | ✅ PASS | File names follow conventions |
 | **S-05** Module necessity | 🔵 MANUAL | Requires manual review — could this be pure Lua? |
 | **S-06** Large crate deps | 🔵 MANUAL | Requires manual review — check Cargo.toml for heavy crates |
@@ -41,21 +46,21 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\lua_api\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 378 chars |
-| **A-04** Content sync | ❌ ERROR | Files not in Source Files table: ai_api.rs, animation_api.rs, automation_api.rs, camera_api.rs, compute_api.rs, dataframe_api.rs, debugbridge_api.rs, devtools_api.rs, docs_api.rs, ecs_api.rs, effect_api.rs, graph_api.rs, i18n_api.rs, light_api.rs, log_api.rs, lua_types.rs, minimap_api.rs, mods_api.rs, network_api.rs, parallax_api.rs, pathfind_api.rs, patterns_api.rs, pipeline_api.rs, procgen_api.rs, raycaster_api.rs, render_api.rs, save_api.rs, scene_api.rs, serial_api.rs, spine_api.rs, thread_api.rs, tilemap_api.rs, tween_api.rs, ui_api.rs |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/lua_api.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: unassigned) |
-| **A-04b** Source Files completeness (incl. subdirs) | ⚠️ WARNING | Nested .rs files not listed in AGENT.md: ai_api.rs, animation_api.rs, automation_api.rs, camera_api.rs, compute_api.rs, dataframe_api.rs |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/lua_api.md exists |
-| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Key Types |
-| **SP-03** Summary quality | ✅ PASS | Summary is 695 chars |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1251 chars |
 | **SP-04** Lua API completeness | ✅ PASS | No Lua API file — skip |
 | **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
@@ -65,9 +70,9 @@
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
-| **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
+| **D-02** Public item docs | ❌ ERROR | Undocumented pub items: automation_api::vec_from_lua_table, particle_api::from_lua_opts, procgen_api::from_lua_table, procgen_api::from_lua_table |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: effect_api:491, i18n_api:247, system_api:93, ui_api:829, ui_api:842 |
+| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: effect_api:491, i18n_api:247, system_api:93, ui_api:847, ui_api:860 |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | No Lua API file — skip |
 | **D-07** @param/@return annotations | ✅ PASS | No Lua API file — skip |
@@ -89,7 +94,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ⚠️ WARNING | No **Tier** row in AGENT.md; expected unassigned |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow unassigned rules |
 | **R-03** No lua_api import | ✅ PASS | Module IS lua_api — skip |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -103,7 +108,7 @@
 | **T-02** Lua test file | ✅ PASS | Module has no Lua API — skip |
 | **T-03** Test naming | ✅ PASS | No Rust test file — skip |
 | **T-04** Float comparisons | ✅ PASS | No Rust test file — skip |
-| **T-05** Test adequacy | ⚠️ WARNING | 7 pub methods, 0 Rust tests — create test file |
+| **T-05** Test adequacy | ⚠️ WARNING | 8 pub methods, 0 Rust tests — create test file |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test lua_api_tests -- --nocapture |
 

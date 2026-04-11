@@ -275,6 +275,9 @@ impl LuaUserData for LuaTileSet {
 // -------------------------------------------------------------------------------
 
 /// Lua-side wrapper around a [`TileMap`].
+///
+/// # Fields
+/// - `inner` — `Rc<RefCell<TileMap>>`.
 #[derive(Clone)]
 pub struct LuaTileMap {
     pub(super) inner: Rc<RefCell<TileMap>>,
@@ -1476,6 +1479,11 @@ impl LuaUserData for LuaMapGen {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.tilemap` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

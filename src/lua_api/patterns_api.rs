@@ -1472,6 +1472,11 @@ impl LuaFunnel {
 // ===========================================================================
 
 /// Registers the `lurek.patterns.*` Lua API namespace.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

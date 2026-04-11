@@ -69,12 +69,12 @@ ALL_TIERS = BASELINE | TIER1 | TIER2 | EXTRA
 # ── Explicit cross-tier exemptions ────────────────────────────────────────────
 # Format: {(importer_module, imported_module): "reason"}
 # Only list exemptions that have an explicit architectural justification
-# documented in docs/architecture/engine-architecture.md or the module AGENT.md.
+# documented in docs/architecture/engine-architecture.md or the module docs/specs.
 CROSS_TIER_EXEMPTIONS: dict = {
     # automation/simulator.rs pushes synthetic events into EventQueue.
     # EventQueue is a core data structure that both modules share; the
     # dependency direction (automation → event) is intentional and documented
-    # in src/automation/AGENT.md.
+    # in src/automation/docs/specs.
     ("automation", "event"): "Simulator injects synthetic input events into EventQueue — intentional by design",
 }
 
@@ -349,9 +349,9 @@ def check_file_naming(module: str) -> Check:
     return Check("S-04", "File naming", PASS, "File names follow conventions")
 
 
-# ── Phase 2: AGENT.md Quality ──
+# ── Phase 2: docs/specs Quality ──
 
-# Canonical AGENT.md sections (must match agent-md skill and actual src/<module>/AGENT.md files).
+# Canonical docs/specs sections (must match agent-md skill and actual src/<module>/docs/specs files).
 # See .github/skills/agent-md/SKILL.md for the authoritative template.
 REQUIRED_AGENT_SECTIONS = ["Purpose", "Source Files"]
 # "Full Specification" may appear as the short form "Full Spec" in older files.
@@ -360,21 +360,21 @@ RECOMMENDED_AGENT_SECTIONS = ["Key Types", "Lua API Summary"]
 
 
 def check_agent_md(module: str) -> List[Check]:
-    """A-01 through A-06: AGENT.md quality checks."""
+    """A-01 through A-06: docs/specs quality checks."""
     results: List[Check] = []
-    agent_path = SRC / module / "AGENT.md"
+    agent_path = WORKSPACE / "docs" / "specs" / f"{module}.md"
 
     # A-01: Exists
     if not agent_path.exists():
-        results.append(Check("A-01", "AGENT.md exists", ERROR, "AGENT.md not found"))
+        results.append(Check("A-01", "docs/specs exists", ERROR, "docs/specs not found"))
         # Can't check further
         for code, name in [("A-02", "Template structure"), ("A-03", "Purpose quality"),
                            ("A-04", "Content sync"), ("A-05", "Spec pointer"),
                            ("A-06", "Tier label")]:
-            results.append(Check(code, name, ERROR, "Skipped — no AGENT.md"))
+            results.append(Check(code, name, ERROR, "Skipped — no docs/specs"))
         return results
 
-    results.append(Check("A-01", "AGENT.md exists", PASS, str(agent_path.relative_to(WORKSPACE))))
+    results.append(Check("A-01", "docs/specs exists", PASS, str(agent_path.relative_to(WORKSPACE))))
     content = read_text(agent_path)
 
     # A-02: Required section headings present
@@ -421,8 +421,8 @@ def check_agent_md(module: str) -> List[Check]:
     else:
         results.append(Check("A-04", "Content sync", PASS, "All .rs files listed"))
 
-    # A-05: Spec pointer — AGENT.md must point to docs/specs/<module>.md
-    # Lua examples belong in docs/specs/, NOT in AGENT.md (per agent-md skill).
+    # A-05: Spec pointer — docs/specs must point to docs/specs/<module>.md
+    # Lua examples belong in docs/specs/, NOT in docs/specs (per agent-md skill).
     # We check that a docs/specs/<module>.md companion file exists.
     spec_path = WORKSPACE / "docs" / "specs" / f"{module}.md"
     api_file = LUA_API / f"{module}_api.rs"
@@ -442,7 +442,7 @@ def check_agent_md(module: str) -> List[Check]:
     tier = get_tier(module)
     has_tier = bool(re.search(r"\*\*Tier\*\*", content))
     if not has_tier:
-        results.append(Check("A-06", "Tier label", ERROR, "No Tier property in AGENT.md header"))
+        results.append(Check("A-06", "Tier label", ERROR, "No Tier property in docs/specs header"))
     else:
         results.append(Check("A-06", "Tier label", PASS, f"Tier label present (expected: {tier})"))
 
@@ -958,17 +958,17 @@ def check_lua_bridge(module: str) -> List[Check]:
 
 
 def check_tier_label(module: str) -> Check:
-    """R-01: Tier label in AGENT.md matches the tier registry."""
+    """R-01: Tier label in docs/specs matches the tier registry."""
     expected = get_tier(module)
-    agent_path = SRC / module / "AGENT.md"
+    agent_path = WORKSPACE / "docs" / "specs" / f"{module}.md"
     if not agent_path.exists():
-        return Check("R-01", "Tier placement", WARN, "No AGENT.md \u2014 tier label unverifiable")
+        return Check("R-01", "Tier placement", WARN, "No docs/specs \u2014 tier label unverifiable")
     content = read_text(agent_path)
     m = re.search(r"\*\*Tier\*\*.*?(Baseline|Tier\s*1|Tier\s*2|Unassigned)",
                   content, re.IGNORECASE)
     if not m:
         return Check("R-01", "Tier placement", WARN,
-                      f"No **Tier** row in AGENT.md; expected {expected}")
+                      f"No **Tier** row in docs/specs; expected {expected}")
     found = m.group(1).lower().replace(" ", "")
     normed = ("baseline" if "baseline" in found
               else "tier1" if "1" in found
@@ -979,7 +979,7 @@ def check_tier_label(module: str) -> Check:
                       "Module not in tier registry \u2014 verify placement")
     if normed != expected:
         return Check("R-01", "Tier placement", ERROR,
-                      f"AGENT.md tier '{m.group(1)}' \u2260 registry tier '{expected}'")
+                      f"Spec tier '{m.group(1)}' \u2260 registry tier '{expected}'")
     return Check("R-01", "Tier placement", PASS, f"Tier label matches: {expected}")
 
 
@@ -1341,10 +1341,10 @@ def check_example_spec_sync(module: str) -> Check:
 
 
 def check_agent_source_files_complete(module: str) -> Check:
-    """A-04b: AGENT.md Source Files table covers all .rs files including submodule dirs."""
-    agent_path = SRC / module / "AGENT.md"
+    """A-04b: docs/specs Source Files table covers all .rs files including submodule dirs."""
+    agent_path = WORKSPACE / "docs" / "specs" / f"{module}.md"
     if not agent_path.exists():
-        return Check("A-04b", "Source Files completeness", PASS, "No AGENT.md — other check handles this")
+        return Check("A-04b", "Source Files completeness", PASS, "No docs/specs — other check handles this")
     content = read_text(agent_path)
     mod_dir = SRC / module
     # All .rs files (including in subdirs, not just top-level)
@@ -1353,9 +1353,9 @@ def check_agent_source_files_complete(module: str) -> Check:
     unlisted = all_rs - listed
     if unlisted:
         return Check("A-04b", "Source Files completeness (incl. subdirs)", WARN,
-                      f"Nested .rs files not listed in AGENT.md: {', '.join(sorted(unlisted)[:6])}")
+                      f"Nested .rs files not listed in docs/specs: {', '.join(sorted(unlisted)[:6])}")
     return Check("A-04b", "Source Files completeness (incl. subdirs)", PASS,
-                  "All nested .rs files listed in AGENT.md")
+                  "All nested .rs files listed in docs/specs")
 
 
 # ── Orchestrator ──
@@ -1379,10 +1379,6 @@ def audit_module(module: str) -> Tuple[str, List[Check], str]:
                           "Requires manual review — could this be pure Lua?"))
     checks.append(Check("S-06", "Large crate deps", MANUAL,
                           "Requires manual review — check Cargo.toml for heavy crates"))
-
-    # Phase 2: AGENT.md Quality
-    checks.extend(check_agent_md(module))
-    checks.append(check_agent_source_files_complete(module))
 
     # Phase 3: Technical Specification (docs/specs/<module>.md)
     checks.extend(check_spec_file(module))
@@ -1513,7 +1509,6 @@ def format_quality_report(module: str, checks: List[Check], result: str, date: s
 
     phase_groups = [
         ("Phase 1 — Structure & Registration",    ["S-"]),
-        ("Phase 2 — AGENT.md Quality",            ["A-"]),
         ("Phase 3 — Technical Specification",     ["SP-"]),
         ("Phase 4 — Docstrings",                  ["D-"]),
         ("Phase 5 — Lua↔Rust Bridge",        ["B-"]),

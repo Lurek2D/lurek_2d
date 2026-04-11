@@ -111,6 +111,10 @@ fn extract_sound_data_args(args: LuaMultiValue) -> LuaResult<(Option<String>, us
 // -------------------------------------------------------------------------------
 
 /// Lua-side wrapper for an audio source resource.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `SoundKey`.
 /// Fields: `state` (`Rc<RefCell<SharedState>>`), `key` (`SoundKey`).
 #[derive(Clone)]
 pub struct LuaSource {
@@ -401,6 +405,10 @@ impl LuaUserData for LuaSource {
 // -------------------------------------------------------------------------------
 
 /// Lua-side wrapper for an audio bus resource.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `BusKey`.
 /// Fields: `state` (`Rc<RefCell<SharedState>>`), `key` (`BusKey`).
 #[derive(Clone)]
 pub struct LuaBus {
@@ -513,6 +521,10 @@ impl LuaUserData for LuaBus {
 // -------------------------------------------------------------------------------
 
 /// Lua-side wrapper for the MIDI player.
+///
+/// # Fields
+/// - `inner` — `Rc<RefCell<MidiPlayer>>`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// Fields: `inner` (`Rc<RefCell<MidiPlayer>>`), `state` (`Rc<RefCell<SharedState>>`).
 #[derive(Clone)]
 pub struct LuaMidiPlayer {
@@ -1038,6 +1050,11 @@ impl LuaUserData for LuaDecoder {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.audio` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

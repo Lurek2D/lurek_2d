@@ -159,6 +159,11 @@ impl LuaUserData for LuaSkeleton {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.spine` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

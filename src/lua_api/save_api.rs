@@ -41,6 +41,9 @@ pub struct LuaSaveManager {
 
 impl LuaSaveManager {
     /// Creates a new empty save manager wrapper.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(state: Rc<RefCell<SharedState>>) -> Self {
         Self {
             manager: SaveManager::new(),
@@ -465,6 +468,11 @@ impl LuaUserData for LuaSaveManager {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.savegame` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

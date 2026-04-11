@@ -222,6 +222,11 @@ impl LuaUserData for LuaAnimation {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.animation` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : Lua
 /// @param luna : LuaTable 
 /// @param _state : SharedState

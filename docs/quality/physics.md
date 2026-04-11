@@ -1,6 +1,6 @@
 # Module Quality Report: `physics`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 44 ✅ / 3 ⚠️ / 1 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 34 ✅ / 4 ⚠️ / 10 ❌ / 19 🔵
 
 ---
 
@@ -8,13 +8,23 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **R-02** — Dependency direction: body: Tier1 imports runtime(unassigned); world: Tier1 imports runtime(unassigned)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **SP-04** — Lua API completeness: Missing from spec: bodyId, normalX, normalY, toi, bodyA (+15 more) — add to ## Lua API in docs/specs/physics.md
+- [ ] **R-02** — Dependency direction: body: Tier1 imports runtime(unassigned); render: Tier1 imports image(tier1); render: Tier1 imports render(unassigned); world: Tier1 imports runtime(unassigned)
+- [ ] **W-02** — API surface coverage: Functions absent from content/examples/physics.lua: debugDraw
 
 ### 🟡 Warnings — Should Fix
 
 - [ ] **D-03** — Structured doc sections: Missing structured sections: world::World (# Fields)
-- [ ] **B-04** — No business logic in closures: '<closure@1546>' has if/match/for — extract to src/physics/ | '<closure@1640>' has if/match/for — extract to src/physics/
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **B-04** — No business logic in closures: '<closure@1535>' has if/match/for — extract to src/physics/ | '<closure@1631>' has if/match/for — extract to src/physics/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In example but not spec: bodyA, bodyB, bodyId, isTouching — add to ## Lua API in docs/specs/physics.md | In spec but not example: debugDraw — add to content/examples/physics.lua
 
 ## Full Check Results
 
@@ -33,23 +43,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\physics\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 285 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/physics.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/physics.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1877 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 37 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 10 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 846 chars |
+| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: bodyId, normalX, normalY, toi, bodyA (+15 more) — add to ## Lua API in docs/specs/physics.md |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -73,7 +83,7 @@
 | **B-01** Dedicated API file | ✅ PASS | lua_api/physics_api.rs present |
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn (Lua<X> wrapper structs allowed) |
 | **B-03** impl LuaUserData placement | ✅ PASS | All impl LuaUserData blocks are in lua_api (correct) |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1546>' has if/match/for — extract to src/physics/ \| '<closure@1640>' has if/match/for — extract to src/physics/ |
+| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1535>' has if/match/for — extract to src/physics/ \| '<closure@1631>' has if/match/for — extract to src/physics/ |
 | **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
@@ -81,8 +91,8 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier1 |
-| **R-02** Dependency direction | ❌ ERROR | body: Tier1 imports runtime(unassigned); world: Tier1 imports runtime(unassigned) |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
+| **R-02** Dependency direction | ❌ ERROR | body: Tier1 imports runtime(unassigned); render: Tier1 imports image(tier1); render: Tier1 imports render(unassigned); world: Tier1 imports runtime(unassigned) |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
 | **R-05** Module overlap | 🔵 MANUAL | Check for scope duplication with other modules |
@@ -95,7 +105,7 @@
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_physics.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
-| **T-05** Test adequacy | ✅ PASS | 117 tests / 95 pub methods (123%) |
+| **T-05** Test adequacy | ✅ PASS | 117 tests / 97 pub methods (121%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test physics_tests -- --nocapture |
 
@@ -104,9 +114,9 @@
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **W-01** Example file exists | ✅ PASS | content/examples/physics.lua present |
-| **W-02** API surface coverage | ✅ PASS | All 37 bound functions in example |
+| **W-02** API surface coverage | ❌ ERROR | Functions absent from content/examples/physics.lua: debugDraw |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/physics.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In example but not spec: bodyA, bodyB, bodyId, isTouching — add to ## Lua API in docs/specs/physics.md \| In spec but not example: debugDraw — add to content/examples/physics.lua |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Physics-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -136,7 +146,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

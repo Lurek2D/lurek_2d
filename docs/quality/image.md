@@ -1,6 +1,6 @@
 # Module Quality Report: `image`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 42 ✅ / 3 ⚠️ / 3 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 34 ✅ / 5 ⚠️ / 9 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,23 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **SP-04** — Lua API completeness: Missing from spec: savePNG — add to ## Lua API in docs/specs/image.md
-- [ ] **R-02** — Dependency direction: compressed: Tier1 imports runtime(unassigned); image_data: Tier1 imports runtime(unassigned); visualization: Tier1 imports animation(tier1); visualization: Tier1 imports camera(tier1); visualization: Tier1 imports animation(tier1)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **R-02** — Dependency direction: compressed: Tier1 imports runtime(unassigned); image_data: Tier1 imports runtime(unassigned); render: Tier1 imports render(unassigned); render: Tier1 imports runtime(unassigned); render: Tier1 imports runtime(unassigned)
 - [ ] **W-02** — API surface coverage: Functions absent from content/examples/image.lua: savePNG
 
 ### 🟡 Warnings — Should Fix
 
+- [ ] **S-03** — File size limits: Files >2000 LOC: image/visualization.rs (2980 LOC)
 - [ ] **B-04** — No business logic in closures: '<closure@275>' (34 LOC, line 275) — extract body to src/image/ | '<closure@385>' has if/match/for — extract to src/image/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In spec but not example: savePNG — add to content/examples/image.lua
 - [ ] **Q-04** — Error handling: .unwrap() calls: serial:401, serial:408, serial:410, serial:413
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
 
@@ -26,7 +34,7 @@
 |-------|---------|---------|
 | **S-01** lib.rs registration | ✅ PASS | Registered in lib.rs + lua_api (image_api) |
 | **S-02** mod.rs simplicity | ✅ PASS | mod.rs is a thin barrel file (0 logic lines) |
-| **S-03** File size limits | ✅ PASS | All files within size limits |
+| **S-03** File size limits | ⚠️ WARNING | Files >2000 LOC: image/visualization.rs (2980 LOC) |
 | **S-04** File naming | ✅ PASS | File names follow conventions |
 | **S-05** Module necessity | 🔵 MANUAL | Requires manual review — could this be pure Lua? |
 | **S-06** Large crate deps | 🔵 MANUAL | Requires manual review — check Cargo.toml for heavy crates |
@@ -35,23 +43,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\image\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 575 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/image.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/image.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1773 chars |
-| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: savePNG — add to ## Lua API in docs/specs/image.md |
-| **SP-05** Key Types accuracy | ✅ PASS | 6 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1199 chars |
+| **SP-04** Lua API completeness | ✅ PASS | All 8 bound functions in spec |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -83,8 +91,8 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier1 |
-| **R-02** Dependency direction | ❌ ERROR | compressed: Tier1 imports runtime(unassigned); image_data: Tier1 imports runtime(unassigned); visualization: Tier1 imports animation(tier1); visualization: Tier1 imports camera(tier1); visualization: Tier1 imports animation(tier1) |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
+| **R-02** Dependency direction | ❌ ERROR | compressed: Tier1 imports runtime(unassigned); image_data: Tier1 imports runtime(unassigned); render: Tier1 imports render(unassigned); render: Tier1 imports runtime(unassigned); render: Tier1 imports runtime(unassigned) |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
 | **R-05** Module overlap | 🔵 MANUAL | Check for scope duplication with other modules |
@@ -97,7 +105,7 @@
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_image.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
-| **T-05** Test adequacy | ✅ PASS | 62 tests / 67 pub methods (93%) |
+| **T-05** Test adequacy | ✅ PASS | 62 tests / 78 pub methods (79%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test image_tests -- --nocapture |
 
@@ -108,7 +116,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/image.lua present |
 | **W-02** API surface coverage | ❌ ERROR | Functions absent from content/examples/image.lua: savePNG |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/image.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In spec but not example: savePNG — add to content/examples/image.lua |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Image-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -138,7 +146,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

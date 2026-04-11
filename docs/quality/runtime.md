@@ -1,6 +1,6 @@
 # Module Quality Report: `runtime`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 41 ✅ / 4 ⚠️ / 3 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 36 ✅ / 2 ⚠️ / 10 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,20 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
 - [ ] **T-01** — Rust test file: No test file found for module 'runtime'
 - [ ] **W-01** — Example file exists: content/examples/runtime.lua not found — create it
 - [ ] **W-02** — API surface coverage: Skipped — no example file
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **A-02** — Template structure: Missing recommended sections: Key Types, Lua API Summary
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: Config, EngineError, ErrorCategory, ErrorInfo, FullscreenType
-- [ ] **R-01** — Tier placement: Module not in tier registry — verify placement
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
 - [ ] **T-05** — Test adequacy: 18 pub methods, 0 Rust tests — create test file
 
 ## Full Check Results
@@ -36,23 +41,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\runtime\AGENT.md |
-| **A-02** Template structure | ⚠️ WARNING | Missing recommended sections: Key Types, Lua API Summary |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 505 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/runtime.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: unassigned) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/runtime.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1890 chars |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1311 chars |
 | **SP-04** Lua API completeness | ✅ PASS | No Lua API file — skip |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: Config, EngineError, ErrorCategory, ErrorInfo, FullscreenType |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -84,7 +89,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ⚠️ WARNING | Module not in tier registry — verify placement |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow unassigned rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |

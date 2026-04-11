@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-04-11T21:36:08.230619+00:00",
+    "generated": "2026-04-11T21:52:58.390726+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.7.0",
     "stats": {
@@ -2063,16 +2063,16 @@
           {
             "name": "ReturnInfo",
             "kind": "struct",
-            "description": "Metadata about a single return value.",
+            "description": "Metadata about a single return value.  # Fields - `type_name` — `String`. - `description` — `String`.",
             "file": "src/docs/entry.rs",
-            "line": 26
+            "line": 30
           },
           {
             "name": "DocEntry",
             "kind": "struct",
             "description": "A single documented API entry (function, method, value, or type). # Fields - `name` — `String`. Entry name. - `module` — `String`. Owning module. - `kind` — `String`. Entry kind (function, method, value, type). - `description` — `String`. Full doc text. - `params` — `Vec<ParamInfo>`. Parameter metadata. - `returns` — `Vec<ReturnInfo>`. Return value metadata.",
             "file": "src/docs/entry.rs",
-            "line": 42
+            "line": 46
           }
         ]
       },
@@ -2158,30 +2158,30 @@
           {
             "name": "quality_score",
             "kind": "fn",
-            "description": "Computes a quality score in `[0.0, 1.0]` for a single doc entry.  Scores one point each for: non-empty description, non-empty qualified_name, at least one parameter or return (for non-value kinds), an example, and a since field.  The final score is the fraction of applicable checks that pass.",
+            "description": "Computes a quality score in `[0.0, 1.0]` for a single doc entry.  # Parameters - `entry` — `&DocEntry`.  # Returns `f64`.  Scores one point each for: non-empty description, non-empty qualified_name, at least one parameter or return (for non-value kinds), an example, and a since field.  The final score is the fraction of applicable checks that pass.",
             "file": "src/docs/report.rs",
-            "line": 13
+            "line": 19
           },
           {
             "name": "quality_grade",
             "kind": "fn",
-            "description": "Converts a quality score into a letter grade.  A ≥ 0.9, B ≥ 0.7, C ≥ 0.5, D ≥ 0.3, F < 0.3.",
+            "description": "Converts a quality score into a letter grade.  # Parameters - `score` — `f64`.  # Returns `&'static str`.  A ≥ 0.9, B ≥ 0.7, C ≥ 0.5, D ≥ 0.3, F < 0.3.",
             "file": "src/docs/report.rs",
-            "line": 46
+            "line": 58
           },
           {
             "name": "ValidationReport",
             "kind": "struct",
             "description": "A report comparing a known API surface against catalog coverage. # Fields - `missing` — `Vec<String>`. API items not found in catalog. - `phantom` — `Vec<String>`. Catalog items not in the known API. - `incomplete` — `Vec<String>`. Entries with incomplete documentation. - `score` — `f64`. Completeness score 0.0–1.0.",
             "file": "src/docs/report.rs",
-            "line": 61
+            "line": 73
           },
           {
             "name": "QualityReport",
             "kind": "struct",
             "description": "A quality report computed from all entries in a catalog. # Fields - `missing` — `Vec<String>`. API items not in catalog. - `phantom` — `Vec<String>`. Catalog entries absent from API spec. - `incomplete` — `Vec<String>`. Entries with incomplete docs.",
             "file": "src/docs/report.rs",
-            "line": 92
+            "line": 113
           }
         ]
       },

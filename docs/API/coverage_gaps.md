@@ -133,7 +133,7 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
 ---
 
-## 3. Lua Docstring Issues (14 items)
+## 3. Lua Docstring Issues (5 items)
 
 Lua API items with missing or very short descriptions (< 15 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
@@ -145,15 +145,6 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 ### `thread`
 
 - `class` **`lurek.thread.Channel`** — *(no description)*
-- `method` **`Channel:clear`** — *(no description)*
-- `method` **`Channel:demand`** — *(no description)*
-- `method` **`Channel:getCount`** — *(no description)*
-- `method` **`Channel:peek`** — *(no description)*
-- `method` **`Channel:pop`** — *(no description)*
-- `method` **`Channel:push`** — *(no description)*
-- `method` **`Channel:supply`** — *(no description)*
-- `method` **`Channel:type`** — *(no description)*
-- `method` **`Channel:typeOf`** — *(no description)*
 
 ### `tween`
 

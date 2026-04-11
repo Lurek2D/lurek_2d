@@ -421,6 +421,11 @@ impl LuaUserData for LuaRaycaster {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.raycaster` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

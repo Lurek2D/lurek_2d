@@ -1431,6 +1431,11 @@ impl LuaUserData for LuaPhysicsShape {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.physics` API namespace.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

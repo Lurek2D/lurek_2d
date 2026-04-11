@@ -70,6 +70,11 @@ fn flatten_lua_table(tbl: &LuaTable, prefix: &str, out: &mut HashMap<String, Str
 // ---------------------------------------------------------------------------
 
 /// Registers `lurek.localization.*`.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

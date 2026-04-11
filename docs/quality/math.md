@@ -1,16 +1,22 @@
 # Module Quality Report: `math`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 45 ✅ / 3 ⚠️ / 0 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 35 ✅ / 4 ⚠️ / 2 ❌ / 19 🔵
 
 ---
 
 ## Action Items
 
+### 🔴 Errors — Must Fix Before Merge
+
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **SP-04** — Lua API completeness: Missing from spec: tau, huge — add to ## Lua API in docs/specs/math.md
+
 ### 🟡 Warnings — Should Fix
 
-- [ ] **A-02** — Template structure: Missing recommended sections: Key Types, Lua API Summary
 - [ ] **D-04** — Doc quality: Stub/placeholder docs found: easing:8, easing:79, easing:95, easing:106, geometry:44 (+24 more)
 - [ ] **B-04** — No business logic in closures: '<closure@1018>' (17 LOC, line 1018) — extract body to src/math/ | '<closure@1375>' (27 LOC, line 1375) — extract body to src/math/ | '<closure@1593>' (21 LOC, line 1593) — extract body to src/math/ | '<closure@2004>' (21 LOC, line 2004) — extract body to src/math/ | '<closure@955>' has if/match/for — extract to src/math/ | '<closure@1410>' has if/match/for — extract to src/math/
+- [ ] **R-01** — Tier placement: No **Tier** row in docs/specs; expected baseline
+- [ ] **W-04** — Example–spec sync: In example but not spec: huge, tau — add to ## Lua API in docs/specs/math.md
 
 ## Full Check Results
 
@@ -25,27 +31,15 @@
 | **S-05** Module necessity | 🔵 MANUAL | Requires manual review — could this be pure Lua? |
 | **S-06** Large crate deps | 🔵 MANUAL | Requires manual review — check Cargo.toml for heavy crates |
 
-### Phase 2 — AGENT.md Quality
-
-| Check | Verdict | Details |
-|-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\math\AGENT.md |
-| **A-02** Template structure | ⚠️ WARNING | Missing recommended sections: Key Types, Lua API Summary |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 487 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/math.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: baseline) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
-
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/math.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1982 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 82 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 16 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1106 chars |
+| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: tau, huge — add to ## Lua API in docs/specs/math.md |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -77,7 +71,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: baseline |
+| **R-01** Tier placement | ⚠️ WARNING | No **Tier** row in docs/specs; expected baseline |
 | **R-02** Dependency direction | ✅ PASS | All imports follow baseline rules |
 | **R-03** No lua_api import | ✅ PASS | Baseline module — may bootstrap the Lua VM |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -102,7 +96,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/math.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 82 bound functions in example |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/math.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In example but not spec: huge, tau — add to ## Lua API in docs/specs/math.md |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Math-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 

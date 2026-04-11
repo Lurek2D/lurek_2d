@@ -1,6 +1,6 @@
 # Module Quality Report: `audio`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 42 ✅ / 3 ⚠️ / 3 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 35 ✅ / 4 ⚠️ / 9 ❌ / 19 🔵
 
 ---
 
@@ -8,15 +8,22 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **SP-04** — Lua API completeness: Missing from spec: saveWAV — add to ## Lua API in docs/specs/audio.md
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
 - [ ] **R-02** — Dependency direction: bus: Tier1 imports runtime(unassigned); decoder: Tier1 imports runtime(unassigned); decoder: Tier1 imports runtime(unassigned); dsp: Tier1 imports runtime(unassigned); midi_player: Tier1 imports runtime(unassigned)
 - [ ] **W-02** — API surface coverage: Functions absent from content/examples/audio.lua: saveWAV
 
 ### 🟡 Warnings — Should Fix
 
 - [ ] **B-04** — No business logic in closures: '<closure@1056>' (28 LOC, line 1056) — extract body to src/audio/ | '<closure@1094>' (17 LOC, line 1094) — extract body to src/audio/ | '<closure@1500>' (16 LOC, line 1500) — extract body to src/audio/ | '<closure@2199>' (20 LOC, line 2199) — extract body to src/audio/ | '<closure@1384>' has if/match/for — extract to src/audio/ | '<closure@1404>' has if/match/for — extract to src/audio/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In spec but not example: saveWAV — add to content/examples/audio.lua
 - [ ] **Q-04** — Error handling: .unwrap() calls: bus:138, bus:161, midi:129, midi:132, midi:138
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
 
@@ -35,23 +42,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\audio\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 667 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/audio.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/audio.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 819 chars |
-| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: saveWAV — add to ## Lua API in docs/specs/audio.md |
-| **SP-05** Key Types accuracy | ✅ PASS | 18 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1298 chars |
+| **SP-04** Lua API completeness | ✅ PASS | All 77 bound functions in spec |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -83,7 +90,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier1 |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ❌ ERROR | bus: Tier1 imports runtime(unassigned); decoder: Tier1 imports runtime(unassigned); decoder: Tier1 imports runtime(unassigned); dsp: Tier1 imports runtime(unassigned); midi_player: Tier1 imports runtime(unassigned) |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -108,7 +115,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/audio.lua present |
 | **W-02** API surface coverage | ❌ ERROR | Functions absent from content/examples/audio.lua: saveWAV |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/audio.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In spec but not example: saveWAV — add to content/examples/audio.lua |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Audio-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -138,7 +145,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

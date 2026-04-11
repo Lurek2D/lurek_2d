@@ -1,6 +1,6 @@
 # Module Quality Report: `render`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 33 ✅ / 10 ⚠️ / 5 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 29 ✅ / 7 ⚠️ / 12 ❌ / 19 🔵
 
 ---
 
@@ -8,7 +8,14 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **S-03** — File size limits: Files >3000 LOC: render/gpu_renderer.rs (4049 LOC)
+- [ ] **S-03** — File size limits: Files >3000 LOC: render/gpu_renderer.rs (4824 LOC)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
 - [ ] **T-01** — Rust test file: No test file found for module 'render'
 - [ ] **T-02** — Lua test file: Module has Lua API but no tests/lua/unit/test_render.lua
 - [ ] **W-01** — Example file exists: content/examples/render.lua not found — create it
@@ -16,16 +23,13 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **A-02** — Template structure: Missing recommended sections: Key Types, Lua API Summary
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: AtlasRegion, BatchEntry, Color, DecalSurface, DirectionLayout
 - [ ] **D-03** — Structured doc sections: Missing structured sections: renderer::RenderCommand (# Variants)
-- [ ] **D-04** — Doc quality: Stub/placeholder docs found: draw_layer:14, draw_layer:26, draw_layer:53, mesh:18, mesh:34 (+5 more)
-- [ ] **B-04** — No business logic in closures: '<closure@1430>' (23 LOC, line 1430) — extract body to src/render/ | '<closure@1462>' (25 LOC, line 1462) — extract body to src/render/ | '<closure@1533>' (31 LOC, line 1533) — extract body to src/render/ | '<closure@1582>' (119 LOC, line 1582) — extract body to src/render/ | '<closure@1924>' has if/match/for — extract to src/render/ | '<closure@1945>' has if/match/for — extract to src/render/
-- [ ] **R-01** — Tier placement: Module not in tier registry — verify placement
-- [ ] **T-05** — Test adequacy: 89 pub methods, 0 Rust tests — create test file
+- [ ] **D-04** — Doc quality: Stub/placeholder docs found: draw_layer:14, draw_layer:26, draw_layer:53, mesh:18, mesh:34 (+2 more)
+- [ ] **B-04** — No business logic in closures: '<closure@1436>' (23 LOC, line 1436) — extract body to src/render/ | '<closure@1468>' (25 LOC, line 1468) — extract body to src/render/ | '<closure@1539>' (31 LOC, line 1539) — extract body to src/render/ | '<closure@1588>' (119 LOC, line 1588) — extract body to src/render/ | '<closure@1932>' has if/match/for — extract to src/render/ | '<closure@1953>' has if/match/for — extract to src/render/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **T-05** — Test adequacy: 49 pub methods, 0 Rust tests — create test file
 - [ ] **W-05** — Wiki page: No wiki page found (expected docs/wiki/Render-API.md)
-- [ ] **Q-04** — Error handling: .unwrap() calls: gpu_renderer:964, gpu_renderer:974, gpu_renderer:979, gpu_renderer:984, gpu_renderer:989 (+39 more)
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **Q-04** — Error handling: .unwrap() calls: gpu_renderer:1368, gpu_renderer:1378, gpu_renderer:1383, gpu_renderer:1388, gpu_renderer:1393 (+43 more)
 
 ## Full Check Results
 
@@ -35,7 +39,7 @@
 |-------|---------|---------|
 | **S-01** lib.rs registration | ✅ PASS | Registered in lib.rs + lua_api (render_api) |
 | **S-02** mod.rs simplicity | ✅ PASS | mod.rs is a thin barrel file (3 logic lines) |
-| **S-03** File size limits | ❌ ERROR | Files >3000 LOC: render/gpu_renderer.rs (4049 LOC) |
+| **S-03** File size limits | ❌ ERROR | Files >3000 LOC: render/gpu_renderer.rs (4824 LOC) |
 | **S-04** File naming | ✅ PASS | File names follow conventions |
 | **S-05** Module necessity | 🔵 MANUAL | Requires manual review — could this be pure Lua? |
 | **S-06** Large crate deps | 🔵 MANUAL | Requires manual review — check Cargo.toml for heavy crates |
@@ -44,23 +48,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\render\AGENT.md |
-| **A-02** Template structure | ⚠️ WARNING | Missing recommended sections: Key Types, Lua API Summary |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 427 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/render.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: unassigned) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/render.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1825 chars |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 889 chars |
 | **SP-04** Lua API completeness | ✅ PASS | No tbl.set() bindings found |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: AtlasRegion, BatchEntry, Color, DecalSurface, DirectionLayout |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -70,7 +74,7 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ⚠️ WARNING | Missing structured sections: renderer::RenderCommand (# Variants) |
-| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: draw_layer:14, draw_layer:26, draw_layer:53, mesh:18, mesh:34 (+5 more) |
+| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: draw_layer:14, draw_layer:26, draw_layer:53, mesh:18, mesh:34 (+2 more) |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
 | **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
 | **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
@@ -84,7 +88,7 @@
 | **B-01** Dedicated API file | ✅ PASS | lua_api/render_api.rs present |
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn (Lua<X> wrapper structs allowed) |
 | **B-03** impl LuaUserData placement | ✅ PASS | All impl LuaUserData blocks are in lua_api (correct) |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1430>' (23 LOC, line 1430) — extract body to src/render/ \| '<closure@1462>' (25 LOC, line 1462) — extract body to src/render/ \| '<closure@1533>' (31 LOC, line 1533) — extract body to src/render/ \| '<closure@1582>' (119 LOC, line 1582) — extract body to src/render/ \| '<closure@1924>' has if/match/for — extract to src/render/ \| '<closure@1945>' has if/match/for — extract to src/render/ |
+| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1436>' (23 LOC, line 1436) — extract body to src/render/ \| '<closure@1468>' (25 LOC, line 1468) — extract body to src/render/ \| '<closure@1539>' (31 LOC, line 1539) — extract body to src/render/ \| '<closure@1588>' (119 LOC, line 1588) — extract body to src/render/ \| '<closure@1932>' has if/match/for — extract to src/render/ \| '<closure@1953>' has if/match/for — extract to src/render/ |
 | **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
@@ -92,7 +96,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ⚠️ WARNING | Module not in tier registry — verify placement |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow unassigned rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -106,7 +110,7 @@
 | **T-02** Lua test file | ❌ ERROR | Module has Lua API but no tests/lua/unit/test_render.lua |
 | **T-03** Test naming | ✅ PASS | No Rust test file — skip |
 | **T-04** Float comparisons | ✅ PASS | No Rust test file — skip |
-| **T-05** Test adequacy | ⚠️ WARNING | 89 pub methods, 0 Rust tests — create test file |
+| **T-05** Test adequacy | ⚠️ WARNING | 49 pub methods, 0 Rust tests — create test file |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test render_tests -- --nocapture |
 
@@ -128,7 +132,7 @@
 | **Q-01** No println! | ✅ PASS | No println!/eprintln! calls |
 | **Q-02** Logger levels | 🔵 MANUAL | Verify log severity levels are appropriate (debug/info/warn/error) |
 | **Q-03** No unsafe | ✅ PASS | No undocumented unsafe blocks |
-| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: gpu_renderer:964, gpu_renderer:974, gpu_renderer:979, gpu_renderer:984, gpu_renderer:989 (+39 more) |
+| **Q-04** Error handling | ⚠️ WARNING | .unwrap() calls: gpu_renderer:1368, gpu_renderer:1378, gpu_renderer:1383, gpu_renderer:1388, gpu_renderer:1393 (+43 more) |
 | **Q-07** Log prefix | ✅ PASS | All log calls use log:: prefix |
 | **Q-05** Rust best practices | 🔵 MANUAL | Review for anti-patterns: unnecessary clones, redundant allocs |
 | **Q-06** Clippy clean | 🔵 MANUAL | Run: cargo clippy --lib -- -D warnings |
@@ -147,7 +151,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

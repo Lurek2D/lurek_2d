@@ -1162,6 +1162,11 @@ impl LuaUserData for LuaOverlay {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.effect` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
@@ -1259,6 +1264,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- newImageEffect --
     /// Creates a new per-image effect chain. Accepts:
+    /// @param args : MultiValue
     ///   - no args  → empty chain
     ///   - "name"   → single effect
     ///   - "name", {params}  → single effect with parameters

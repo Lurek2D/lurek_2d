@@ -1,6 +1,6 @@
-# Module Quality Report: `effect`
+# Module Quality Report: `sprite`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 33 ✅ / 4 ⚠️ / 11 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 35 ✅ / 3 ⚠️ / 10 ❌ / 19 🔵
 
 ---
 
@@ -15,17 +15,15 @@
 - [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
 - [ ] **A-06** — Tier label: Skipped — no AGENT.md
 - [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
-- [ ] **T-01** — Rust test file: No test file found for module 'effect'
-- [ ] **T-02** — Lua test file: Module has Lua API but no tests/lua/unit/test_effect.lua
-- [ ] **W-01** — Example file exists: content/examples/effect.lua not found — create it
+- [ ] **T-01** — Rust test file: No test file found for module 'sprite'
+- [ ] **W-01** — Example file exists: content/examples/sprite.lua not found — create it
 - [ ] **W-02** — API surface coverage: Skipped — no example file
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **B-04** — No business logic in closures: '<closure@1239>' (19 LOC, line 1239) — extract body to src/effect/ | '<closure@1269>' (48 LOC, line 1269) — extract body to src/effect/
+- [ ] **D-04** — Doc quality: Stub/placeholder docs found: sprite_batch:120, sprite_sheet:28, sprite_sheet:222
 - [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
-- [ ] **T-05** — Test adequacy: 74 pub methods, 0 Rust tests — create test file
-- [ ] **W-05** — Wiki page: No wiki page found (expected docs/wiki/Effect-API.md)
+- [ ] **T-05** — Test adequacy: 28 pub methods, 0 Rust tests — create test file
 
 ## Full Check Results
 
@@ -33,8 +31,8 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **S-01** lib.rs registration | ✅ PASS | Registered in lib.rs + lua_api (effect_api) |
-| **S-02** mod.rs simplicity | ✅ PASS | mod.rs is a thin barrel file (2 logic lines) |
+| **S-01** lib.rs registration | ✅ PASS | Registered in lib.rs |
+| **S-02** mod.rs simplicity | ✅ PASS | mod.rs is a thin barrel file (0 logic lines) |
 | **S-03** File size limits | ✅ PASS | All files within size limits |
 | **S-04** File naming | ✅ PASS | File names follow conventions |
 | **S-05** Module necessity | 🔵 MANUAL | Requires manual review — could this be pure Lua? |
@@ -56,10 +54,10 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **SP-01** Spec file exists | ✅ PASS | docs/specs/effect.md exists |
+| **SP-01** Spec file exists | ✅ PASS | docs/specs/sprite.md exists |
 | **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
-| **SP-03** Summary quality | ✅ PASS | Summary is 749 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 7 bound functions in spec |
+| **SP-03** Summary quality | ✅ PASS | Summary is 783 chars |
+| **SP-04** Lua API completeness | ✅ PASS | No Lua API file — skip |
 | **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
@@ -70,23 +68,23 @@
 | **D-01** Module-level docs | ✅ PASS | All files have //! doc comments |
 | **D-02** Public item docs | ✅ PASS | All pub items have /// docs |
 | **D-03** Structured doc sections | ✅ PASS | All pub structs/enums have structured doc sections |
-| **D-04** Doc quality | ✅ PASS | No stub docs found |
+| **D-04** Doc quality | ⚠️ WARNING | Stub/placeholder docs found: sprite_batch:120, sprite_sheet:28, sprite_sheet:222 |
 | **D-05** Validation tool | 🔵 MANUAL | Run: python tools/docs/collect_docs.py --report-missing \| grep src/<module> |
-| **D-06** Lua API file docs | ✅ PASS | //! doc comment present |
-| **D-07** @param/@return annotations | ✅ PASS | All bindings have @param/@return annotations |
-| **D-08** No rustdoc in lua_api | ✅ PASS | No rustdoc sections in Lua API file |
-| **D-09** Section separators | ✅ PASS | Separators present |
+| **D-06** Lua API file docs | ✅ PASS | No Lua API file — skip |
+| **D-07** @param/@return annotations | ✅ PASS | No Lua API file — skip |
+| **D-08** No rustdoc in lua_api | ✅ PASS | No Lua API file — skip |
+| **D-09** Section separators | ✅ PASS | No Lua API file — skip |
 
 ### Phase 5 — Lua↔Rust Bridge
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **B-01** Dedicated API file | ✅ PASS | lua_api/effect_api.rs present |
-| **B-02** Registration-only | ✅ PASS | Only register() is pub fn (Lua<X> wrapper structs allowed) |
-| **B-03** impl LuaUserData placement | ✅ PASS | All impl LuaUserData blocks are in lua_api (correct) |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1239>' (19 LOC, line 1239) — extract body to src/effect/ \| '<closure@1269>' (48 LOC, line 1269) — extract body to src/effect/ |
-| **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
-| **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
+| **B-01** Dedicated API file | ✅ PASS | No Lua API — skip |
+| **B-02** Registration-only | ✅ PASS | No Lua API — skip |
+| **B-03** impl LuaUserData placement | ✅ PASS | No Lua API — skip |
+| **B-04** No business logic | ✅ PASS | No Lua API — skip |
+| **B-05** Rc clone pattern | ✅ PASS | No Lua API — skip |
+| **B-06** Flat registration body | ✅ PASS | No Lua API — skip |
 
 ### Phase 6 — Architecture Compliance
 
@@ -102,23 +100,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **T-01** Rust test file | ❌ ERROR | No test file found for module 'effect' |
-| **T-02** Lua test file | ❌ ERROR | Module has Lua API but no tests/lua/unit/test_effect.lua |
+| **T-01** Rust test file | ❌ ERROR | No test file found for module 'sprite' |
+| **T-02** Lua test file | ✅ PASS | Module has no Lua API — skip |
 | **T-03** Test naming | ✅ PASS | No Rust test file — skip |
 | **T-04** Float comparisons | ✅ PASS | No Rust test file — skip |
-| **T-05** Test adequacy | ⚠️ WARNING | 74 pub methods, 0 Rust tests — create test file |
+| **T-05** Test adequacy | ⚠️ WARNING | 28 pub methods, 0 Rust tests — create test file |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
-| **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test effect_tests -- --nocapture |
+| **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test sprite_tests -- --nocapture |
 
 ### Phase 8 — Documentation & Wiki
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **W-01** Example file exists | ❌ ERROR | content/examples/effect.lua not found — create it |
+| **W-01** Example file exists | ❌ ERROR | content/examples/sprite.lua not found — create it |
 | **W-02** API surface coverage | ❌ ERROR | Skipped — no example file |
-| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/effect.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
-| **W-05** Wiki page | ⚠️ WARNING | No wiki page found (expected docs/wiki/Effect-API.md) |
+| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/sprite.lua has realistic one-line comments per call |
+| **W-04** Example–spec sync | ✅ PASS | No Lua API — skip |
+| **W-05** Wiki page | ✅ PASS | Module has no Lua API — skip |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
 ### Phase 9 — Code Quality
@@ -147,7 +145,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
+| **I-03** Config integration | ✅ PASS | No Lua API — config flag not expected |
 
 ### Phase 12 — Localization & Logging
 
@@ -163,7 +161,7 @@
 Re-run this report after applying fixes:
 
 ```powershell
-python tools/audit/audit_module.py effect --docs-quality
+python tools/audit/audit_module.py sprite --docs-quality
 ```
 
 Fix all ❌ Errors, then address ⚠️ Warnings until status shows **PASS**.

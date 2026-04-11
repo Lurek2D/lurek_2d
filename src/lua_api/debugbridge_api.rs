@@ -18,6 +18,10 @@ use crate::debugbridge::{server_thread, BridgeShared, PendingRequest, PendingRes
 // ---------------------------------------------------------------------------
 
 /// Registers the `lurek.debugbridge` namespace.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @return LuaResult<()>
@@ -113,6 +117,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     /// the current frame delta from `lurek.time.getDelta()` into the performance
     /// buffer — no manual `recordFrame()` call is needed.
     let sh = shared.clone();
+    /// @return any
     db.set(
         "poll",
         lua.create_function(move |lua, ()| {

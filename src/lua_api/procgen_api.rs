@@ -15,6 +15,11 @@ use crate::procgen::{
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.procgen` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
@@ -155,6 +160,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 }
 
 impl CellularOpts {
+    /// from_lua_table.
+    ///
+    /// # Parameters
+    /// - `t` — `&LuaTable`.
+    ///
+    /// # Returns
+    /// `LuaResult<Self>`.
     pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
         let mut opts = Self::default();
         if let Ok(v) = t.get::<_, f32>("fill") { opts.fill = v; }
@@ -167,6 +179,13 @@ impl CellularOpts {
 }
 
 impl VoronoiOpts {
+/// from_lua_table.
+///
+/// # Parameters
+/// - `t` — `&LuaTable`.
+///
+/// # Returns
+/// `LuaResult<Self>`.
 pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
         let mut opts = Self::default();
         if let Ok(v) = t.get::<_, f32>("warp_scale") { opts.warp_scale = v; }

@@ -23,6 +23,11 @@ fn parse_delimiter(delim: Option<String>) -> u8 {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.codec` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

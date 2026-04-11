@@ -1,16 +1,28 @@
 # Module Quality Report: `docs`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 45 ✅ / 3 ⚠️ / 0 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 36 ✅ / 4 ⚠️ / 8 ❌ / 19 🔵
 
 ---
 
 ## Action Items
 
+### 🔴 Errors — Must Fix Before Merge
+
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **SP-04** — Lua API completeness: Missing from spec: overallScore, moduleScores — add to ## Lua API in docs/specs/docs.md
+
 ### 🟡 Warnings — Should Fix
 
 - [ ] **D-07** — @param/@return annotations: Missing @param/@return before: phantom, incomplete, moduleScores, stale, current (+1 more)
 - [ ] **B-04** — No business logic in closures: '<closure@802>' (26 LOC, line 802) — extract body to src/docs/ | '<closure@836>' (38 LOC, line 836) — extract body to src/docs/ | '<closure@883>' (27 LOC, line 883) — extract body to src/docs/ | '<closure@919>' (21 LOC, line 919) — extract body to src/docs/ | '<closure@1128>' has if/match/for — extract to src/docs/ | '<closure@1145>' has if/match/for — extract to src/docs/
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In example but not spec: moduleScores, overallScore — add to ## Lua API in docs/specs/docs.md
 
 ## Full Check Results
 
@@ -29,23 +41,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\docs\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 659 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/docs.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/docs.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1772 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 34 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 11 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1154 chars |
+| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: overallScore, moduleScores — add to ## Lua API in docs/specs/docs.md |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -77,7 +89,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier1 |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow tier1 rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -102,7 +114,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/docs.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 34 bound functions in example |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/docs.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In example but not spec: moduleScores, overallScore — add to ## Lua API in docs/specs/docs.md |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Docs-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -132,7 +144,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

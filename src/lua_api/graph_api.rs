@@ -1807,6 +1807,11 @@ fn dispatch_events(
 // ── Registration ────────────────────────────────────────────────────────
 
 /// Registers the `lurek.graph` API namespace.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

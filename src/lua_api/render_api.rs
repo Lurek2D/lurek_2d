@@ -29,6 +29,9 @@ use crate::sprite::SpriteBatch;
 
 /// Lua-side handle to a loaded texture stored in SharedState.
 ///
+/// # Fields
+/// - `inner` — `ImageData`.
+///
 /// Lua-side wrapper around a raw [`ImageData`] pixel buffer (e.g. from `captureScreenshot`).
 pub struct LuaImageData {
     pub(crate) inner: ImageData,
@@ -55,6 +58,10 @@ impl LuaUserData for LuaImageData {
 }
 
 /// Lua-side handle to a loaded GPU texture stored in the engine's texture pool.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `TextureKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (TextureKey).
 #[derive(Clone)]
 pub struct LuaImage {
@@ -172,6 +179,10 @@ impl LuaUserData for LuaImage {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a loaded font stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `FontKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (FontKey).
 #[derive(Clone)]
 pub struct LuaFont {
@@ -307,6 +318,10 @@ impl LuaUserData for LuaFont {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to an off-screen render target stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `CanvasKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (CanvasKey).
 #[derive(Clone)]
 pub struct LuaCanvas {
@@ -382,6 +397,10 @@ impl LuaUserData for LuaCanvas {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a sprite batch stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `SpriteBatchKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (SpriteBatchKey).
 #[derive(Clone)]
 pub struct LuaSpriteBatch {
@@ -489,6 +508,10 @@ impl LuaUserData for LuaSpriteBatch {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a mesh stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `MeshKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (MeshKey).
 #[derive(Clone)]
 pub struct LuaMesh {
@@ -598,6 +621,10 @@ impl LuaUserData for LuaMesh {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a compiled shader stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `ShaderKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (ShaderKey).
 #[derive(Clone)]
 pub struct LuaShader {
@@ -666,6 +693,14 @@ impl LuaUserData for LuaShader {
 // -------------------------------------------------------------------------------
 
 /// Lua-side quad viewport into a texture.
+///
+/// # Fields
+/// - `x` — `f32`.
+/// - `y` — `f32`.
+/// - `w` — `f32`.
+/// - `h` — `f32`.
+/// - `sw` — `f32`.
+/// - `sh` — `f32`.
 /// Fields: x (f32), y (f32), w (f32), h (f32), sw (f32), sh (f32).
 #[derive(Clone)]
 pub struct LuaQuad {
@@ -783,6 +818,10 @@ fn parse_draw_mode(mode: &str) -> DrawMode {
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a [`CompoundShape`] stored in [`SharedState::shapes`].
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `ShapeKey`.
 ///
 /// Created via `lurek.graphic.newShape()`. Builder methods accumulate draw commands
 /// in the backing slot; `shape:draw(x, y)` queues a `DrawShape` command each frame.
@@ -1216,6 +1255,11 @@ impl LuaUserData for LuaDrawLayer {
 // ===============================================================================
 
 /// Registers the `lurek.graphic` namespace on the given Lua table.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
@@ -1583,6 +1627,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @param oy : number?
     let s = state.clone();
     #[allow(clippy::type_complexity)]
+    /// @return any
     graphics.set(
         "draw",
         lua.create_function(move |_, args: LuaMultiValue| {

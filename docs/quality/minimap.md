@@ -1,6 +1,6 @@
 # Module Quality Report: `minimap`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 45 ✅ / 2 ⚠️ / 1 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 38 ✅ / 2 ⚠️ / 8 ❌ / 19 🔵
 
 ---
 
@@ -8,12 +8,19 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **R-02** — Dependency direction: minimap: Tier2 imports runtime(unassigned); minimap: Tier2 imports render(unassigned)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **R-02** — Dependency direction: minimap: Tier2 imports runtime(unassigned); minimap: Tier2 imports render(unassigned); render: Tier2 imports render(unassigned); render: Tier2 imports render(unassigned)
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **T-05** — Test adequacy: 65 pub methods, 0 Rust tests — create test file
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **T-05** — Test adequacy: 68 pub methods, 0 Rust tests — create test file
 
 ## Full Check Results
 
@@ -32,23 +39,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\minimap\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 433 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/minimap.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier2) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/minimap.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1911 chars |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 927 chars |
 | **SP-04** Lua API completeness | ✅ PASS | All 1 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 7 types — spec Key Types in sync |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -80,8 +87,8 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier2 |
-| **R-02** Dependency direction | ❌ ERROR | minimap: Tier2 imports runtime(unassigned); minimap: Tier2 imports render(unassigned) |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
+| **R-02** Dependency direction | ❌ ERROR | minimap: Tier2 imports runtime(unassigned); minimap: Tier2 imports render(unassigned); render: Tier2 imports render(unassigned); render: Tier2 imports render(unassigned) |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
 | **R-05** Module overlap | 🔵 MANUAL | Check for scope duplication with other modules |
@@ -94,7 +101,7 @@
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_minimap.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | No Rust test file — skip |
 | **T-04** Float comparisons | ✅ PASS | No Rust test file — skip |
-| **T-05** Test adequacy | ⚠️ WARNING | 65 pub methods, 0 Rust tests — create test file |
+| **T-05** Test adequacy | ⚠️ WARNING | 68 pub methods, 0 Rust tests — create test file |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test minimap_tests -- --nocapture |
 
@@ -105,7 +112,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/minimap.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 1 bound functions in example |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/minimap.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ✅ PASS | All 1 functions consistent across spec and example |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Minimap-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -135,7 +142,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

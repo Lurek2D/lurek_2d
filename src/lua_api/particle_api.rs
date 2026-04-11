@@ -19,6 +19,10 @@ use crate::particle::{ParticleConfig, ParticleSystem, Trail};
 // -------------------------------------------------------------------------------
 
 /// Lua-side handle to a particle system stored in SharedState.
+///
+/// # Fields
+/// - `state` — `Rc<RefCell<SharedState>>`.
+/// - `key` — `ParticleKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (ParticleKey).
 #[derive(Clone)]
 pub struct LuaParticleSystem {
@@ -1083,6 +1087,11 @@ impl LuaUserData for LuaTrail {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.particles` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
@@ -1164,6 +1173,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 }
 
 impl ParticleConfig {
+/// from_lua_opts.
+///
+/// # Parameters
+/// - `t` — `&LuaTable`.
+///
+/// # Returns
+/// `LuaResult<Self>`.
 pub fn from_lua_opts(t: &LuaTable) -> LuaResult<Self> {
         let mut c = ParticleConfig::default();
         if let Ok(v) = t.get::<_, u32>("maxParticles") {

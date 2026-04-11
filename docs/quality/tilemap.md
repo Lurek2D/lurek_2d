@@ -1,6 +1,6 @@
 # Module Quality Report: `tilemap`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 44 ✅ / 3 ⚠️ / 1 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 35 ✅ / 4 ⚠️ / 9 ❌ / 19 🔵
 
 ---
 
@@ -8,13 +8,22 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
-- [ ] **R-02** — Dependency direction: chunk: Tier2 imports runtime(unassigned); mapgen: Tier2 imports runtime(unassigned); tileset: Tier2 imports runtime(unassigned); tmx: Tier2 imports runtime(unassigned)
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **SP-04** — Lua API completeness: Missing from spec: FLOOR, NORTH_WALL, WEST_WALL, OBJECT — add to ## Lua API in docs/specs/tilemap.md
+- [ ] **R-02** — Dependency direction: chunk: Tier2 imports runtime(unassigned); mapgen: Tier2 imports runtime(unassigned); render: Tier2 imports render(unassigned); tileset: Tier2 imports runtime(unassigned); tmx: Tier2 imports runtime(unassigned)
 
 ### 🟡 Warnings — Should Fix
 
 - [ ] **D-04** — Doc quality: Stub/placeholder docs found: isomap:51, large_map_renderer:213, mapgen:797, polygon_map:18, polygon_map:289 (+10 more)
-- [ ] **B-04** — No business logic in closures: '<closure@1553>' (17 LOC, line 1553) — extract body to src/tilemap/ | '<closure@1938>' (115 LOC, line 1938) — extract body to src/tilemap/ | '<closure@2061>' (40 LOC, line 2061) — extract body to src/tilemap/ | '<closure@1714>' has if/match/for — extract to src/tilemap/ | '<closure@1763>' has if/match/for — extract to src/tilemap/
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **B-04** — No business logic in closures: '<closure@1559>' (17 LOC, line 1559) — extract body to src/tilemap/ | '<closure@1944>' (115 LOC, line 1944) — extract body to src/tilemap/ | '<closure@2067>' (40 LOC, line 2067) — extract body to src/tilemap/ | '<closure@1534>' has if/match/for — extract to src/tilemap/ | '<closure@1720>' has if/match/for — extract to src/tilemap/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In example but not spec: FLOOR, NORTH_WALL, OBJECT, WEST_WALL — add to ## Lua API in docs/specs/tilemap.md
 
 ## Full Check Results
 
@@ -33,23 +42,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\tilemap\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 1252 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/tilemap.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier2) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/tilemap.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1257 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 34 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 38 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1117 chars |
+| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: FLOOR, NORTH_WALL, WEST_WALL, OBJECT — add to ## Lua API in docs/specs/tilemap.md |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -73,7 +82,7 @@
 | **B-01** Dedicated API file | ✅ PASS | lua_api/tilemap_api.rs present |
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn (Lua<X> wrapper structs allowed) |
 | **B-03** impl LuaUserData placement | ✅ PASS | All impl LuaUserData blocks are in lua_api (correct) |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1553>' (17 LOC, line 1553) — extract body to src/tilemap/ \| '<closure@1938>' (115 LOC, line 1938) — extract body to src/tilemap/ \| '<closure@2061>' (40 LOC, line 2061) — extract body to src/tilemap/ \| '<closure@1714>' has if/match/for — extract to src/tilemap/ \| '<closure@1763>' has if/match/for — extract to src/tilemap/ |
+| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1559>' (17 LOC, line 1559) — extract body to src/tilemap/ \| '<closure@1944>' (115 LOC, line 1944) — extract body to src/tilemap/ \| '<closure@2067>' (40 LOC, line 2067) — extract body to src/tilemap/ \| '<closure@1534>' has if/match/for — extract to src/tilemap/ \| '<closure@1720>' has if/match/for — extract to src/tilemap/ |
 | **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
@@ -81,8 +90,8 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier2 |
-| **R-02** Dependency direction | ❌ ERROR | chunk: Tier2 imports runtime(unassigned); mapgen: Tier2 imports runtime(unassigned); tileset: Tier2 imports runtime(unassigned); tmx: Tier2 imports runtime(unassigned) |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
+| **R-02** Dependency direction | ❌ ERROR | chunk: Tier2 imports runtime(unassigned); mapgen: Tier2 imports runtime(unassigned); render: Tier2 imports render(unassigned); tileset: Tier2 imports runtime(unassigned); tmx: Tier2 imports runtime(unassigned) |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
 | **R-05** Module overlap | 🔵 MANUAL | Check for scope duplication with other modules |
@@ -95,7 +104,7 @@
 | **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_tilemap.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
-| **T-05** Test adequacy | ✅ PASS | 159 tests / 232 pub methods (69%) |
+| **T-05** Test adequacy | ✅ PASS | 159 tests / 233 pub methods (68%) |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test tilemap_tests -- --nocapture |
 
@@ -106,7 +115,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/tilemap.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 34 bound functions in example |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/tilemap.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In example but not spec: FLOOR, NORTH_WALL, OBJECT, WEST_WALL — add to ## Lua API in docs/specs/tilemap.md |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Tilemap-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -136,7 +145,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 

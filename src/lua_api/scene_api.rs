@@ -149,6 +149,11 @@ impl LuaUserData for LuaDepthSorter {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.scene` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

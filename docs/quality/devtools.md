@@ -1,16 +1,29 @@
 # Module Quality Report: `devtools`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 45 ✅ / 3 ⚠️ / 0 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 35 ✅ / 5 ⚠️ / 8 ❌ / 19 🔵
 
 ---
 
 ## Action Items
 
+### 🔴 Errors — Must Fix Before Merge
+
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
+- [ ] **SP-04** — Lua API completeness: Missing from spec: selfTime, startTime, fps, avg, p50 (+2 more) — add to ## Lua API in docs/specs/devtools.md
+
 ### 🟡 Warnings — Should Fix
 
 - [ ] **D-07** — @param/@return annotations: Missing @param/@return before: p50, p95, p99, samples
 - [ ] **B-04** — No business logic in closures: '<closure@188>' (18 LOC, line 188) — extract body to src/devtools/ | '<closure@481>' (23 LOC, line 481) — extract body to src/devtools/ | '<closure@601>' (20 LOC, line 601) — extract body to src/devtools/ | '<closure@629>' (56 LOC, line 629) — extract body to src/devtools/ | '<closure@125>' has if/match/for — extract to src/devtools/ | '<closure@289>' has if/match/for — extract to src/devtools/
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **W-04** — Example–spec sync: In example but not spec: avg, fps, p50, p95 — add to ## Lua API in docs/specs/devtools.md
+- [ ] **I-03** — Config integration: Module not in src/runtime/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
 
@@ -29,23 +42,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\devtools\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 962 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/devtools.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: tier1) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/devtools.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ✅ PASS | Summary is 1647 chars |
-| **SP-04** Lua API completeness | ✅ PASS | All 14 bound functions in spec |
-| **SP-05** Key Types accuracy | ✅ PASS | 8 types — spec Key Types in sync |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1135 chars |
+| **SP-04** Lua API completeness | ❌ ERROR | Missing from spec: selfTime, startTime, fps, avg, p50 (+2 more) — add to ## Lua API in docs/specs/devtools.md |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -77,7 +90,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ✅ PASS | Tier label matches: tier1 |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow tier1 rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -102,7 +115,7 @@
 | **W-01** Example file exists | ✅ PASS | content/examples/devtools.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 14 bound functions in example |
 | **W-03** Example comments | 🔵 MANUAL | Verify content/examples/devtools.lua has realistic one-line comments per call |
-| **W-04** Example–spec sync | ✅ PASS | Missing spec or example — other checks cover this |
+| **W-04** Example–spec sync | ⚠️ WARNING | In example but not spec: avg, fps, p50, p95 — add to ## Lua API in docs/specs/devtools.md |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Devtools-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |
 
@@ -132,7 +145,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ⚠️ WARNING | Module not in src/runtime/config.rs — add to ModulesConfig if toggleable |
 
 ### Phase 12 — Localization & Logging
 

@@ -745,6 +745,7 @@ fn add_button_methods(
     // -- setText --
     let c = ctx.clone();
     /// Sets the text for this Button widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -782,6 +783,7 @@ fn add_label_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the text for this Label widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -818,6 +820,7 @@ fn add_text_input_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the text for this Text_Input widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -845,6 +848,7 @@ fn add_text_input_methods(
     )?;
     let c = ctx.clone();
     /// Sets the placeholder for this Text_Input widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setPlaceholder",
@@ -871,6 +875,7 @@ fn add_text_input_methods(
     )?;
     let c = ctx.clone();
     /// Sets the max length for this Text_Input widget.
+    /// @param n : integer
     /// @return nil
     t.set(
         "setMaxLength",
@@ -920,6 +925,7 @@ fn add_checkbox_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the checked for this Checkbox widget.
+    /// @param checked : boolean
     /// @return nil
     t.set(
         "setChecked",
@@ -946,6 +952,7 @@ fn add_checkbox_methods(
     )?;
     let c = ctx.clone();
     /// Sets the text for this Checkbox widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -982,6 +989,7 @@ fn add_slider_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the value for this Slider widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setValue",
@@ -1008,6 +1016,8 @@ fn add_slider_methods(
     )?;
     let c = ctx.clone();
     /// Sets the range for this Slider widget.
+    /// @param min : number
+    /// @param max : number
     /// @return nil
     t.set(
         "setRange",
@@ -1023,6 +1033,7 @@ fn add_slider_methods(
     )?;
     let c = ctx.clone();
     /// Sets the step for this Slider widget.
+    /// @param step : number
     /// @return nil
     t.set(
         "setStep",
@@ -1072,6 +1083,7 @@ fn add_progress_bar_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the value for this Progress_Bar widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setValue",
@@ -1111,6 +1123,8 @@ fn add_progress_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the range for this Progress_Bar widget.
+    /// @param min : number
+    /// @param max : number
     /// @return nil
     t.set(
         "setRange",
@@ -1162,6 +1176,7 @@ fn add_combo_box_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a item entry to this Combo_Box widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "addItem",
@@ -1175,6 +1190,7 @@ fn add_combo_box_methods(
     )?;
     let c = ctx.clone();
     /// Removes the item from this Combo_Box widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "removeItem",
@@ -1217,6 +1233,7 @@ fn add_combo_box_methods(
     )?;
     let c = ctx.clone();
     /// Returns the item of this Combo_Box widget.
+    /// @param index : integer
     /// @return string
     t.set(
         "getItem",
@@ -1236,6 +1253,7 @@ fn add_combo_box_methods(
     )?;
     let c = ctx.clone();
     /// Sets the selected index for this Combo_Box widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "setSelectedIndex",
@@ -1287,6 +1305,7 @@ fn add_list_box_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a item entry to this List_Box widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "addItem",
@@ -1300,6 +1319,7 @@ fn add_list_box_methods(
     )?;
     let c = ctx.clone();
     /// Removes the item from this List_Box widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "removeItem",
@@ -1341,6 +1361,7 @@ fn add_list_box_methods(
     )?;
     let c = ctx.clone();
     /// Returns the item of this List_Box widget.
+    /// @param index : integer
     /// @return string
     t.set(
         "getItem",
@@ -1360,6 +1381,7 @@ fn add_list_box_methods(
     )?;
     let c = ctx.clone();
     /// Sets the selected index for this List_Box widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "setSelectedIndex",
@@ -1388,6 +1410,7 @@ fn add_list_box_methods(
     )?;
     let c = ctx.clone();
     /// Sets the item height for this List_Box widget.
+    /// @param h : number
     /// @return nil
     t.set(
         "setItemHeight",
@@ -1411,6 +1434,7 @@ fn add_tab_bar_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a tab entry to this Tab_Bar widget.
+    /// @param label : string
     /// @return nil
     t.set(
         "addTab",
@@ -1424,6 +1448,7 @@ fn add_tab_bar_methods(
     )?;
     let c = ctx.clone();
     /// Removes the tab from this Tab_Bar widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "removeTab",
@@ -1440,6 +1465,7 @@ fn add_tab_bar_methods(
     )?;
     let c = ctx.clone();
     /// Returns the tab of this Tab_Bar widget.
+    /// @param index : integer
     /// @return integer
     t.set(
         "getTab",
@@ -1472,6 +1498,7 @@ fn add_tab_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the active tab for this Tab_Bar widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "setActiveTab",
@@ -1510,6 +1537,7 @@ fn add_panel_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the title for this Panel widget.
+    /// @param title : string
     /// @return nil
     t.set(
         "setTitle",
@@ -1536,6 +1564,7 @@ fn add_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the scrollable for this Panel widget.
+    /// @param scrollable : boolean
     /// @return nil
     t.set(
         "setScrollable",
@@ -1559,6 +1588,7 @@ fn add_layout_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the direction for this Layout widget.
+    /// @param dir : string
     /// @return nil
     t.set(
         "setDirection",
@@ -1587,6 +1617,7 @@ fn add_layout_methods(
     )?;
     let c = ctx.clone();
     /// Sets the spacing for this Layout widget.
+    /// @param spacing : number
     /// @return nil
     t.set(
         "setSpacing",
@@ -1613,6 +1644,7 @@ fn add_layout_methods(
     )?;
     let c = ctx.clone();
     /// Sets the columns for this Layout widget.
+    /// @param n : integer
     /// @return nil
     t.set(
         "setColumns",
@@ -1626,6 +1658,7 @@ fn add_layout_methods(
     )?;
     let c = ctx.clone();
     /// Sets the wrap for this Layout widget.
+    /// @param wrap : boolean
     /// @return nil
     t.set(
         "setWrap",
@@ -1652,6 +1685,7 @@ fn add_layout_methods(
     )?;
     let c = ctx.clone();
     /// Sets the align for this Layout widget.
+    /// @param align : string
     /// @return nil
     t.set(
         "setAlign",
@@ -1678,6 +1712,7 @@ fn add_layout_methods(
     )?;
     let c = ctx.clone();
     /// Sets the justify for this Layout widget.
+    /// @param justify : string
     /// @return nil
     t.set(
         "setJustify",
@@ -1714,6 +1749,8 @@ fn add_scroll_panel_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the content size for this Scroll_Panel widget.
+    /// @param w : number
+    /// @param h : number
     /// @return nil
     t.set(
         "setContentSize",
@@ -1742,6 +1779,8 @@ fn add_scroll_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the scroll position for this Scroll_Panel widget.
+    /// @param x : number
+    /// @param y : number
     /// @return nil
     t.set(
         "setScrollPosition",
@@ -1783,6 +1822,7 @@ fn add_scroll_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the scroll speed for this Scroll_Panel widget.
+    /// @param speed : number
     /// @return nil
     t.set(
         "setScrollSpeed",
@@ -1819,6 +1859,10 @@ fn add_nine_patch_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the insets for this Nine_Patch widget.
+    /// @param left : integer
+    /// @param top : integer
+    /// @param right : integer
+    /// @param bottom : integer
     /// @return nil
     t.set(
         "setInsets",
@@ -1850,6 +1894,8 @@ fn add_nine_patch_methods(
     )?;
     let c = ctx.clone();
     /// Sets the image dimensions for this Nine_Patch widget.
+    /// @param w : integer
+    /// @param h : integer
     /// @return nil
     t.set(
         "setImageDimensions",
@@ -1916,6 +1962,7 @@ fn add_toast_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the message for this Toast widget.
+    /// @param msg : string
     /// @return nil
     t.set(
         "setMessage",
@@ -1942,6 +1989,7 @@ fn add_toast_methods(
     )?;
     let c = ctx.clone();
     /// Sets the duration for this Toast widget.
+    /// @param d : number
     /// @return nil
     t.set(
         "setDuration",
@@ -2004,6 +2052,7 @@ fn add_separator_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Sets the vertical for this Separator widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setVertical",
@@ -2030,6 +2079,7 @@ fn add_separator_methods(
     )?;
     let c = ctx.clone();
     /// Sets the thickness for this Separator widget.
+    /// @param thickness : number
     /// @return nil
     t.set(
         "setThickness",
@@ -2066,6 +2116,8 @@ fn add_tree_view_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a node entry to this Tree_View widget.
+    /// @param text : string
+    /// @param parent_index : integer?
     /// @return nil
     t.set(
         "addNode",
@@ -2081,6 +2133,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Toggles the expanded/collapsed status of a Tree_View node.
+    /// @param index : integer
     /// @return nil
     t.set(
         "toggleNode",
@@ -2097,6 +2150,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns true if expanded is enabled for this Tree_View widget.
+    /// @param index : integer
     /// @return boolean
     t.set(
         "isExpanded",
@@ -2125,6 +2179,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Removes the node from this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "removeNode",
@@ -2152,6 +2207,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns the node text of this Tree_View widget.
+    /// @param index : integer
     /// @return string
     t.set(
         "getNodeText",
@@ -2169,6 +2225,8 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Sets the node text for this Tree_View widget.
+    /// @param index : integer
+    /// @param text : string
     /// @return nil
     t.set(
         "setNodeText",
@@ -2185,6 +2243,8 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Sets the node icon for this Tree_View widget.
+    /// @param index : integer
+    /// @param icon : string
     /// @return nil
     t.set(
         "setNodeIcon",
@@ -2201,6 +2261,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Performs the expand node operation on this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "expandNode",
@@ -2215,6 +2276,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Performs the collapse node operation on this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "collapseNode",
@@ -2229,6 +2291,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns true if node expanded is enabled for this Tree_View widget.
+    /// @param index : integer
     /// @return boolean
     t.set(
         "isNodeExpanded",
@@ -2269,6 +2332,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Sets the selected node for this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "setSelectedNode",
@@ -2299,6 +2363,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns the child nodes of this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "getChildNodes",
@@ -2317,6 +2382,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns the parent node of this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "getParentNode",
@@ -2335,6 +2401,7 @@ fn add_tree_view_methods(
     )?;
     let c = ctx.clone();
     /// Returns the node depth of this Tree_View widget.
+    /// @param index : integer
     /// @return nil
     t.set(
         "getNodeDepth",
@@ -2373,6 +2440,7 @@ fn add_radio_button_methods(
     )?;
     let c = ctx.clone();
     /// Sets the text for this Radio_Button widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -2399,6 +2467,7 @@ fn add_radio_button_methods(
     )?;
     let c = ctx.clone();
     /// Sets the selected for this Radio_Button widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setSelected",
@@ -2425,6 +2494,7 @@ fn add_radio_button_methods(
     )?;
     let c = ctx.clone();
     /// Sets the group for this Radio_Button widget.
+    /// @param group : string
     /// @return nil
     t.set(
         "setGroup",
@@ -2474,6 +2544,7 @@ fn add_scroll_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the scroll position for this Scroll_Bar widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setScrollPosition",
@@ -2500,6 +2571,7 @@ fn add_scroll_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the content size for this Scroll_Bar widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setContentSize",
@@ -2526,6 +2598,7 @@ fn add_scroll_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the view size for this Scroll_Bar widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setViewSize",
@@ -2588,6 +2661,7 @@ fn add_gui_window_methods(
     )?;
     let c = ctx.clone();
     /// Sets the title for this Gui_Window widget.
+    /// @param title : string
     /// @return nil
     t.set(
         "setTitle",
@@ -2614,6 +2688,7 @@ fn add_gui_window_methods(
     )?;
     let c = ctx.clone();
     /// Sets the closeable for this Gui_Window widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setCloseable",
@@ -2640,6 +2715,7 @@ fn add_gui_window_methods(
     )?;
     let c = ctx.clone();
     /// Sets the draggable for this Gui_Window widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setDraggable",
@@ -2666,6 +2742,7 @@ fn add_gui_window_methods(
     )?;
     let c = ctx.clone();
     /// Sets the resizable for this Gui_Window widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setResizable",
@@ -2714,6 +2791,7 @@ fn add_split_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the orientation for this Split_Panel widget.
+    /// @param v : string
     /// @return nil
     t.set(
         "setOrientation",
@@ -2740,6 +2818,7 @@ fn add_split_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the split position for this Split_Panel widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setSplitPosition",
@@ -2766,6 +2845,7 @@ fn add_split_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the min panel size for this Split_Panel widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setMinPanelSize",
@@ -2779,6 +2859,7 @@ fn add_split_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the first child for this Split_Panel widget.
+    /// @param child_idx : integer
     /// @return nil
     t.set(
         "setFirstChild",
@@ -2792,6 +2873,7 @@ fn add_split_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the second child for this Split_Panel widget.
+    /// @param child_idx : integer
     /// @return nil
     t.set(
         "setSecondChild",
@@ -2841,6 +2923,8 @@ fn add_dock_panel_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Performs the dock operation on this Dock_Panel widget.
+    /// @param child_idx : integer
+    /// @param side : string
     /// @return nil
     t.set(
         "dock",
@@ -2854,6 +2938,7 @@ fn add_dock_panel_methods(
     )?;
     let c = ctx.clone();
     /// Performs the undock operation on this Dock_Panel widget.
+    /// @param child_idx : integer
     /// @return nil
     t.set(
         "undock",
@@ -2880,6 +2965,8 @@ fn add_dock_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the split size for this Dock_Panel widget.
+    /// @param side : string
+    /// @param size : number
     /// @return nil
     t.set(
         "setSplitSize",
@@ -2897,6 +2984,7 @@ fn add_dock_panel_methods(
     )?;
     let c = ctx.clone();
     /// Returns the split size of this Dock_Panel widget.
+    /// @param side : string
     /// @return nil
     t.set(
         "getSplitSize",
@@ -2937,6 +3025,7 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the orientation for this Toolbar widget.
+    /// @param v : string
     /// @return nil
     t.set(
         "setOrientation",
@@ -2950,6 +3039,8 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Adds a button entry to this Toolbar widget.
+    /// @param id : string
+    /// @param tooltip : string?
     /// @return nil
     t.set(
         "addButton",
@@ -2985,6 +3076,7 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Returns the button of this Toolbar widget.
+    /// @param id : string
     /// @return boolean
     t.set(
         "getButton",
@@ -3005,6 +3097,8 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the button enabled for this Toolbar widget.
+    /// @param id : string
+    /// @param enabled : boolean
     /// @return nil
     t.set(
         "setButtonEnabled",
@@ -3018,6 +3112,8 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the button toggled for this Toolbar widget.
+    /// @param id : string
+    /// @param toggled : boolean
     /// @return nil
     t.set(
         "setButtonToggled",
@@ -3031,6 +3127,7 @@ fn add_toolbar_methods(
     )?;
     let c = ctx.clone();
     /// Returns true if button toggled is enabled for this Toolbar widget.
+    /// @param id : string
     /// @return boolean
     t.set(
         "isButtonToggled",
@@ -3054,6 +3151,7 @@ fn add_menu_bar_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a menu entry to this Menu_Bar widget.
+    /// @param menu_idx : integer
     /// @return nil
     t.set(
         "addMenu",
@@ -3069,6 +3167,7 @@ fn add_menu_bar_methods(
     )?;
     let c = ctx.clone();
     /// Removes the menu from this Menu_Bar widget.
+    /// @param menu_idx : integer
     /// @return nil
     t.set(
         "removeMenu",
@@ -3134,6 +3233,7 @@ fn add_menu_item_methods(
     )?;
     let c = ctx.clone();
     /// Sets the text for this Menu_Item widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -3160,6 +3260,7 @@ fn add_menu_item_methods(
     )?;
     let c = ctx.clone();
     /// Sets the shortcut for this Menu_Item widget.
+    /// @param shortcut : string
     /// @return nil
     t.set(
         "setShortcut",
@@ -3186,6 +3287,7 @@ fn add_menu_item_methods(
     )?;
     let c = ctx.clone();
     /// Sets the checked for this Menu_Item widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setChecked",
@@ -3199,6 +3301,7 @@ fn add_menu_item_methods(
     )?;
     let c = ctx.clone();
     /// Adds a sub item entry to this Menu_Item widget.
+    /// @param child_idx : integer
     /// @return nil
     t.set(
         "addSubItem",
@@ -3263,6 +3366,7 @@ fn add_dialog_methods(
     )?;
     let c = ctx.clone();
     /// Sets the title for this Dialog widget.
+    /// @param title : string
     /// @return nil
     t.set(
         "setTitle",
@@ -3289,6 +3393,7 @@ fn add_dialog_methods(
     )?;
     let c = ctx.clone();
     /// Sets the modal for this Dialog widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setModal",
@@ -3357,6 +3462,7 @@ fn add_dialog_methods(
     )?;
     let c = ctx.clone();
     /// Sets the content for this Dialog widget.
+    /// @param content_idx : integer?
     /// @return nil
     t.set(
         "setContent",
@@ -3383,6 +3489,8 @@ fn add_dialog_methods(
     )?;
     let c = ctx.clone();
     /// Adds a button entry to this Dialog widget.
+    /// @param text : string
+    /// @param cb : function?
     /// @return nil
     t.set(
         "addButton",
@@ -3408,6 +3516,8 @@ fn add_status_bar_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a section entry to this Status_Bar widget.
+    /// @param text : string
+    /// @param width : number?
     /// @return nil
     t.set(
         "addSection",
@@ -3421,6 +3531,8 @@ fn add_status_bar_methods(
     )?;
     let c = ctx.clone();
     /// Sets the section text for this Status_Bar widget.
+    /// @param section_idx : integer
+    /// @param text : string
     /// @return nil
     t.set(
         "setSectionText",
@@ -3436,6 +3548,7 @@ fn add_status_bar_methods(
     )?;
     let c = ctx.clone();
     /// Returns the section text of this Status_Bar widget.
+    /// @param section_idx : integer
     /// @return integer
     t.set(
         "getSectionText",
@@ -3468,6 +3581,7 @@ fn add_status_bar_methods(
     )?;
     let c = ctx.clone();
     /// Resizes the section list for this Status_Bar widget.
+    /// @param count : integer
     /// @return nil
     t.set(
         "setSectionCount",
@@ -3487,6 +3601,8 @@ fn add_status_bar_methods(
     )?;
     let c = ctx.clone();
     /// Compatibility shim for assigning a widget to a section.
+    /// @param section_idx : integer
+    /// @param widget : any
     /// @return nil
     t.set(
         "setSectionWidget",
@@ -3507,6 +3623,8 @@ fn add_accordion_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a section entry to this Accordion widget.
+    /// @param title : string
+    /// @param content_idx : integer?
     /// @return nil
     t.set(
         "addSection",
@@ -3537,6 +3655,7 @@ fn add_accordion_methods(
     )?;
     let c = ctx.clone();
     /// Toggles the expanded/collapsed status of an Accordion section.
+    /// @param section_idx : integer
     /// @return nil
     t.set(
         "toggleSection",
@@ -3559,6 +3678,7 @@ fn add_accordion_methods(
     )?;
     let c = ctx.clone();
     /// Returns true if section expanded is enabled for this Accordion widget.
+    /// @param section_idx : integer
     /// @return boolean
     t.set(
         "isSectionExpanded",
@@ -3589,6 +3709,7 @@ fn add_accordion_methods(
     )?;
     let c = ctx.clone();
     /// Sets the exclusive for this Accordion widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setExclusive",
@@ -3602,6 +3723,7 @@ fn add_accordion_methods(
     )?;
     let c = ctx.clone();
     /// Returns the section title of this Accordion widget.
+    /// @param section_idx : integer
     /// @return nil
     t.set(
         "getSectionTitle",
@@ -3644,6 +3766,7 @@ fn add_tooltip_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the text for this Tooltip_Panel widget.
+    /// @param text : string
     /// @return nil
     t.set(
         "setText",
@@ -3670,6 +3793,7 @@ fn add_tooltip_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the delay for this Tooltip_Panel widget.
+    /// @param v : number
     /// @return nil
     t.set(
         "setDelay",
@@ -3696,6 +3820,7 @@ fn add_tooltip_panel_methods(
     )?;
     let c = ctx.clone();
     /// Sets the target for this Tooltip_Panel widget.
+    /// @param target : integer?
     /// @return nil
     t.set(
         "setTarget",
@@ -3733,6 +3858,10 @@ fn add_color_picker_methods(
     )?;
     let c = ctx.clone();
     /// Sets the color for this Color_Picker widget.
+    /// @param r : number
+    /// @param green : number
+    /// @param b : number
+    /// @param a : number?
     /// @return nil
     t.set(
         "setColor",
@@ -3762,6 +3891,7 @@ fn add_color_picker_methods(
     )?;
     let c = ctx.clone();
     /// Sets the show alpha for this Color_Picker widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setShowAlpha",
@@ -3788,6 +3918,7 @@ fn add_color_picker_methods(
     )?;
     let c = ctx.clone();
     /// Sets the color mode for this Color_Picker widget.
+    /// @param mode : string
     /// @return nil
     t.set(
         "setColorMode",
@@ -3824,6 +3955,8 @@ fn add_gui_table_methods(
 ) -> LuaResult<()> {
     let c = ctx.clone();
     /// Adds a column entry to this Gui_Table widget.
+    /// @param header : string
+    /// @param width : number?
     /// @return nil
     t.set(
         "addColumn",
@@ -3853,6 +3986,7 @@ fn add_gui_table_methods(
     )?;
     let c = ctx.clone();
     /// Adds a row entry to this Gui_Table widget.
+    /// @param cells : table
     /// @return nil
     t.set(
         "addRow",
@@ -3879,6 +4013,8 @@ fn add_gui_table_methods(
     )?;
     let c = ctx.clone();
     /// Returns the cell of this Gui_Table widget.
+    /// @param row : integer
+    /// @param col : integer
     /// @return nil
     t.set(
         "getCell",
@@ -3902,6 +4038,9 @@ fn add_gui_table_methods(
     )?;
     let c = ctx.clone();
     /// Sets the cell for this Gui_Table widget.
+    /// @param row : integer
+    /// @param col : integer
+    /// @param text : string
     /// @return nil
     t.set(
         "setCell",
@@ -3930,6 +4069,7 @@ fn add_gui_table_methods(
     )?;
     let c = ctx.clone();
     /// Sets the selected row for this Gui_Table widget.
+    /// @param row : integer?
     /// @return nil
     t.set(
         "setSelectedRow",
@@ -3956,6 +4096,7 @@ fn add_gui_table_methods(
     )?;
     let c = ctx.clone();
     /// Sets the sortable for this Gui_Table widget.
+    /// @param v : boolean
     /// @return nil
     t.set(
         "setSortable",
@@ -4004,6 +4145,7 @@ fn add_image_widget_methods(
     )?;
     let c = ctx.clone();
     /// Sets the scale mode for this Image_Widget widget.
+    /// @param mode : string
     /// @return nil
     t.set(
         "setScaleMode",
@@ -4030,6 +4172,10 @@ fn add_image_widget_methods(
     )?;
     let c = ctx.clone();
     /// Sets the tint for this Image_Widget widget.
+    /// @param r : number
+    /// @param green : number
+    /// @param b : number
+    /// @param a : number?
     /// @return nil
     t.set(
         "setTint",
@@ -4163,6 +4309,11 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.ui` API table.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>

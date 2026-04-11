@@ -80,6 +80,9 @@ fn string_slice_to_table<'a>(lua: &'a Lua, items: &[String]) -> LuaResult<LuaTab
 // -------------------------------------------------------------------------------
 
 /// Lua-side wrapper around [`ModInfo`] with per-mod hook and config storage.
+///
+/// # Fields
+/// - `inner` — `ModInfo`.
 pub struct LuaMod {
     pub(super) inner: ModInfo,
     hooks: HashMap<String, LuaRegistryKey>,
@@ -88,6 +91,12 @@ pub struct LuaMod {
 
 impl LuaMod {
     /// Creates a new [`LuaMod`] from a [`ModInfo`].
+    ///
+    /// # Parameters
+    /// - `inner` — `ModInfo`.
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new(inner: ModInfo) -> Self {
         Self {
             inner,
@@ -263,6 +272,9 @@ pub struct LuaModManager {
 
 impl LuaModManager {
     /// Creates a new empty [`LuaModManager`].
+    ///
+    /// # Returns
+    /// `Self`.
     pub fn new() -> Self {
         Self {
             inner: ModManager::new(),
@@ -410,6 +422,11 @@ impl LuaUserData for LuaModManager {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.modding` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>

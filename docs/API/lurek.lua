@@ -1256,21 +1256,35 @@ function Source:tell() end
 ---@class mlua
 local mlua = {}
 
+--- Get the bit depth.
+---@return integer
 function mlua:getBitDepth() end
 
+--- Get the number of channels.
+---@return integer
 function mlua:getChannelCount() end
 
+--- Get the audio duration in seconds.
+---@return number
 function mlua:getDuration() end
 
+--- Get a specific sample by index.
 ---@param index any
+---@return number
 function mlua:getSample(index) end
 
+--- Get the total number of samples.
+---@return integer
 function mlua:getSampleCount() end
 
+--- Get the sample rate.
+---@return integer
 function mlua:getSampleRate() end
 
+--- Set a specific sample by index.
 ---@param index any
 ---@param value any
+---@return nil
 function mlua:setSample(index, value) end
 
 --- Adds a DSP effect to a bus.
@@ -2166,17 +2180,27 @@ function DataView:getUInt8(offset) end
 ---@class mlua
 local mlua = {}
 
+--- Clone the ByteData.
+---@return ByteData
 function mlua:clone() end
 
+--- Get a byte at the specified offset.
 ---@param offset any
+---@return integer
 function mlua:getByte(offset) end
 
+--- Get the size.
+---@return integer
 function mlua:getSize() end
 
+--- Get the string representation.
+---@return string
 function mlua:getString() end
 
+--- Set a byte at the specified offset.
 ---@param offset any
 ---@param value any
+---@return nil
 function mlua:setByte(offset, value) end
 
 --- Compresses data using the given algorithm (deflate, gzip, lz4).
@@ -2595,6 +2619,7 @@ function lurek.debugbridge.isRunning() end
 function lurek.debugbridge.isScreenshotRequested() end
 
 --- Poll for pending Lua-dependent requests from TCP clients.
+---@return any
 function lurek.debugbridge.poll() end
 
 --- Flags a screenshot request for the next frame.
@@ -4946,78 +4971,108 @@ function LayeredImage:swapLayers(a, b) end
 ---@class mlua
 local mlua = {}
 
+--- Alpha mask.
 ---@param factor any
 function mlua:alphaMask(factor) end
 
+--- Blur.
 ---@param radius any
 function mlua:blur(radius) end
 
+--- Brightness.
 ---@param factor any
 function mlua:brightness(factor) end
 
+--- Contrast.
 ---@param factor any
 function mlua:contrast(factor) end
 
+--- Crop.
 ---@param x any
 ---@param y any
 ---@param w any
 ---@param h any
 function mlua:crop(x, y, w, h) end
 
+--- Encode.
 ---@param format any
 function mlua:encode(format) end
 
+--- Fill.
 ---@param r any
 ---@param g any
 ---@param b any
 ---@param a any
 function mlua:fill(r, g, b, a) end
 
+--- Flip horizontal.
 function mlua:flipHorizontal() end
 
+--- Flip vertical.
 function mlua:flipVertical() end
 
+--- Gamma.
 ---@param gamma any
 function mlua:gamma(gamma) end
 
+--- Returns the dimensions.
+---@return any
 function mlua:getDimensions() end
 
+--- Returns the height.
+---@return any
 function mlua:getHeight() end
 
+--- Returns the pixel.
 ---@param x any
 ---@param y any
 function mlua:getPixel(x, y) end
 
+--- Returns the string.
+---@return any
 function mlua:getString() end
 
+--- Returns the width.
+---@return any
 function mlua:getWidth() end
 
+--- Grayscale.
 function mlua:grayscale() end
 
+--- Invert.
 function mlua:invert() end
 
+--- Map pixel.
 ---@param func any
 function mlua:mapPixel(func) end
 
+--- Noise.
 ---@param amount any
 function mlua:noise(amount) end
 
+--- Posterize.
 ---@param levels any
 function mlua:posterize(levels) end
 
+--- Resize nearest.
 ---@param new_w any
 ---@param new_h any
 function mlua:resizeNearest(new_w, new_h) end
 
+--- Rotate90cw.
 function mlua:rotate90cw() end
 
+--- Saturation.
 ---@param factor any
 function mlua:saturation(factor) end
 
+--- Sepia.
 function mlua:sepia() end
 
+--- Sharpen.
 function mlua:sharpen() end
 
+--- Threshold.
 ---@param value any
 function mlua:threshold(value) end
 
@@ -8829,6 +8884,7 @@ function World:newBody(x, y, bt) end
 --- Changes the body type.
 ---@param id any
 ---@param bt any
+---@return nil
 function World:setBodyType(id, bt) end
 
 --- Sets the gravity vector.
@@ -9694,6 +9750,7 @@ function lurek.render.clearStencil() end
 
 --- Draws a drawable (Image, Canvas, SpriteBatch, Mesh) at the given position.
 ---@param args any
+---@return any
 function lurek.render.draw(args) end
 
 --- Queues a 9-slice draw call inside lurek.render / lurek.render_ui.
@@ -10839,33 +10896,42 @@ lurek.thread = {}
 ---@class Channel
 local Channel = {}
 
+--- Clears all items from the channel.
 ---@return nil
 function Channel:clear() end
 
+--- Blocks until a value is available or the timeout expires, then removes and returns it.
 ---@param timeout? any (optional)
 ---@return string|number|boolean|table|nil
 function Channel:demand(timeout) end
 
+--- Returns the number of items in the channel.
 ---@return integer
 function Channel:getCount() end
 
+--- Retrieves the value from the channel without removing it.
 ---@return string|number|boolean|table|nil
 function Channel:peek() end
 
+--- Retrieves and removes a value from the channel.
 ---@return string|number|boolean|table|nil
 function Channel:pop() end
 
+--- Pushes a value to the channel.
 ---@param value any
 ---@return integer
 function Channel:push(value) end
 
+--- Blocks until the channel has space, then adds the value.
 ---@param value any
 ---@return nil
 function Channel:supply(value) end
 
+--- Returns the type of the object.
 ---@return string
 function Channel:type() end
 
+--- Checks if the object is of the specified type.
 ---@param name any
 ---@return boolean
 function Channel:typeOf(name) end

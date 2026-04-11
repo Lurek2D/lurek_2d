@@ -7,8 +7,6 @@ docs/specs/<module>.md file.
 
 Also reports:
     - orphan docs/specs/*.md files with no matching src/<module>/ dir
-    - legacy src/<module>/AGENT.md files that should be removed after the
-      merged specs-only migration
 
 Usage:
     python tools/validate/validate_module_coverage.py
@@ -47,7 +45,6 @@ def main():
 
     # --- Report ---
     missing_spec = sorted(src_set - spec_set)
-    legacy_agent = sorted(m for m in src_modules if (SRC / m / "AGENT.md").exists())
     orphan_specs = sorted(spec_set - src_set)
 
     has_errors = False
@@ -66,23 +63,15 @@ def main():
             print(f"  MISSING_SPEC  src/{m}/")
         print()
 
-    if legacy_agent:
-        has_errors = True
-        print("FAIL — legacy src/ module AGENT.md files still present:")
-        for m in legacy_agent:
-            print(f"  LEGACY_AGENT  src/{m}/AGENT.md")
-        print()
-
 
     if not has_errors:
-        print(f"PASS — All {len(src_modules)} src/ modules have docs/specs/*.md and no legacy AGENT.md files")
+        print(f"PASS — All {len(src_modules)} src/ modules have docs/specs/*.md")
 
     # Summary counts
     print(f"\nSummary: {len(src_modules)} src modules | "
           f"{len(spec_files)} spec files | "
           f"{len(orphan_specs)} orphans | "
-          f"{len(missing_spec)} missing specs | "
-          f"{len(legacy_agent)} legacy AGENT.md files")
+          f"{len(missing_spec)} missing specs")
 
     if args.fix_readme:
         _rewrite_readme(src_modules)

@@ -772,14 +772,14 @@
 
 **Uncovered public functions** (10):
 
-- `Catalog::from_entries` in `src/docs/catalog.rs:28`
-- `Catalog::filter_by_kind` in `src/docs/catalog.rs:81`
+- `Catalog::from_entries` in `src/docs/catalog.rs:31`
+- `Catalog::filter_by_kind` in `src/docs/catalog.rs:120`
 - `export_completions` in `src/docs/export.rs:21`
 - `export_hover` in `src/docs/export.rs:53`
 - `export_signatures` in `src/docs/export.rs:93`
 - `export_all` in `src/docs/export.rs:136`
-- `QualityReport::module_grade` in `src/docs/report.rs:129`
-- `QualityReport::from_entries` in `src/docs/report.rs:140`
+- `QualityReport::module_grade` in `src/docs/report.rs:162`
+- `QualityReport::from_entries` in `src/docs/report.rs:173`
 - `Schema::add_rule` in `src/docs/schema.rs:216`
 - `Schema::validate_pairs` in `src/docs/schema.rs:230`
 
@@ -1253,18 +1253,18 @@
 
 **Uncovered public functions** (12):
 
-- `Step::vec_from_lua_table` in `src/lua_api/automation_api.rs:227`
-- `add_type_methods` in `src/lua_api/lua_types.rs:41`
+- `Step::vec_from_lua_table` in `src/lua_api/automation_api.rs:239`
+- `add_type_methods` in `src/lua_api/lua_types.rs:44`
 - `create_test_vm` in `src/lua_api/mod.rs:421`
-- `ParticleConfig::from_lua_opts` in `src/lua_api/particle_api.rs:1167`
-- `LuaStep::execute_sync` in `src/lua_api/pipeline_api.rs:38`
-- `LuaPipeline::from_parts` in `src/lua_api/pipeline_api.rs:383`
-- `pipeline_result_to_lua` in `src/lua_api/pipeline_api.rs:405`
-- `cancel_remaining_steps` in `src/lua_api/pipeline_api.rs:444`
-- `fire_step_callbacks` in `src/lua_api/pipeline_api.rs:455`
-- `finalize_pipeline_result` in `src/lua_api/pipeline_api.rs:484`
-- `CellularOpts::from_lua_table` in `src/lua_api/procgen_api.rs:158`
-- `VoronoiOpts::from_lua_table` in `src/lua_api/procgen_api.rs:170`
+- `ParticleConfig::from_lua_opts` in `src/lua_api/particle_api.rs:1183`
+- `LuaStep::execute_sync` in `src/lua_api/pipeline_api.rs:56`
+- `LuaPipeline::from_parts` in `src/lua_api/pipeline_api.rs:424`
+- `pipeline_result_to_lua` in `src/lua_api/pipeline_api.rs:452`
+- `cancel_remaining_steps` in `src/lua_api/pipeline_api.rs:494`
+- `fire_step_callbacks` in `src/lua_api/pipeline_api.rs:508`
+- `finalize_pipeline_result` in `src/lua_api/pipeline_api.rs:543`
+- `CellularOpts::from_lua_table` in `src/lua_api/procgen_api.rs:170`
+- `VoronoiOpts::from_lua_table` in `src/lua_api/procgen_api.rs:189`
 
 ### `math` — 147/157 (93.6%)
 

@@ -24,6 +24,11 @@ use crate::tween::{builtin_easing_names, LuaTween, LuaTweenParallel, LuaTweenSeq
 
 /// Registers the `lurek.tween` property tweening API.
 ///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
+///
 /// Exposes factory functions (`tween`, `sequence`, `parallel`, `delay`), lifecycle
 /// utilities (`update`, `cancelAll`, `getActiveCount`), and easing introspection
 /// (`registerEasing`, `getEasingNames`). Three UserData types — `LuaTween`,

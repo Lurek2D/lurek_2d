@@ -38,6 +38,7 @@ impl LuaUserData for LuaThreadHandle {
 
         // -- start --
         /// Launches the background thread, passing optional arguments via varargs.
+        /// @param args : MultiValue
         /// @return nil
         methods.add_method("start", |_, this, args: LuaMultiValue| {
             let channel_args: Vec<_> = args
@@ -82,6 +83,11 @@ impl LuaUserData for LuaThreadHandle {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.thread` API table with the Lua VM.
+///
+/// # Parameters
+/// - `lua` — `&Lua`.
+/// - `luna` — `&LuaTable`.
+/// - `_state` — `Rc<RefCell<SharedState>>`.
 /// @param lua : &Lua
 /// @param luna : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
@@ -135,13 +141,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
 impl LuaUserData for LuaChannel {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Returns the type of the object.
         /// @return string
         methods.add_method("type", |_, _, ()| Ok("Channel".to_string()));
+        /// Checks if the object is of the specified type.
+        /// @param name : string
         /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| {
             Ok("Channel" == name || ["Object"].contains(&name.as_str()))
         });
 
+        /// Pushes a value to the channel.
+        /// @param value : any
         /// @return integer
         methods.add_method("push", |_, this, value: LuaValue| {
             let cv = lua_to_channel_value(value)?;
@@ -149,18 +160,22 @@ impl LuaUserData for LuaChannel {
             Ok(id)
         });
 
+        /// Retrieves and removes a value from the channel.
         /// @return string|number|boolean|table|nil
         methods.add_method("pop", |lua, this, ()| match this.inner.pop() {
             Some(cv) => channel_value_to_lua(lua, cv),
             None => Ok(LuaValue::Nil),
         });
 
+        /// Retrieves the value from the channel without removing it.
         /// @return string|number|boolean|table|nil
         methods.add_method("peek", |lua, this, ()| match this.inner.peek() {
             Some(cv) => channel_value_to_lua(lua, cv),
             None => Ok(LuaValue::Nil),
         });
 
+        /// Blocks until a value is available or the timeout expires, then removes and returns it.
+        /// @param timeout : number?
         /// @return string|number|boolean|table|nil
         methods.add_method("demand", |lua, this, timeout: Option<f64>| {
             match this.inner.demand(timeout) {
@@ -169,15 +184,19 @@ impl LuaUserData for LuaChannel {
             }
         });
 
+        /// Returns the number of items in the channel.
         /// @return integer
         methods.add_method("getCount", |_, this, ()| Ok(this.inner.get_count()));
 
+        /// Clears all items from the channel.
         /// @return nil
         methods.add_method("clear", |_, this, ()| {
             this.inner.clear();
             Ok(())
         });
 
+        /// Blocks until the channel has space, then adds the value.
+        /// @param value : any
         /// @return nil
         methods.add_method("supply", |_, this, value: LuaValue| {
             let cv = lua_to_channel_value(value)?;

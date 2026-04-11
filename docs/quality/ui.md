@@ -1,6 +1,6 @@
 # Module Quality Report: `ui`
 
-> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 36 ✅ / 8 ⚠️ / 4 ❌ / 19 🔵
+> **Status**: 🔴 FAIL  |  **Date**: 2026-04-11  |  **Score**: 32 ✅ / 5 ⚠️ / 11 ❌ / 19 🔵
 
 ---
 
@@ -8,6 +8,13 @@
 
 ### 🔴 Errors — Must Fix Before Merge
 
+- [ ] **A-01** — AGENT.md exists: AGENT.md not found
+- [ ] **A-02** — Template structure: Skipped — no AGENT.md
+- [ ] **A-03** — Purpose quality: Skipped — no AGENT.md
+- [ ] **A-04** — Content sync: Skipped — no AGENT.md
+- [ ] **A-05** — Spec pointer: Skipped — no AGENT.md
+- [ ] **A-06** — Tier label: Skipped — no AGENT.md
+- [ ] **SP-02** — Required spec sections: Missing sections: Architecture, Source Files, Key Types
 - [ ] **T-01** — Rust test file: No test file found for module 'ui'
 - [ ] **T-02** — Lua test file: Module has Lua API but no tests/lua/unit/test_ui.lua
 - [ ] **W-01** — Example file exists: content/examples/ui.lua not found — create it
@@ -15,14 +22,11 @@
 
 ### 🟡 Warnings — Should Fix
 
-- [ ] **SP-03** — Summary quality: Summary very long (2393 chars)
-- [ ] **SP-05** — Key Types accuracy: Types not in spec: AreaChart, AreaLayer, BarCategory, BarChart, ChartSeries
-- [ ] **B-04** — No business logic in closures: '<closure@1865>' (23 LOC, line 1865) — extract body to src/ui/ | '<closure@3525>' (16 LOC, line 3525) — extract body to src/ui/ | '<closure@3867>' (17 LOC, line 3867) — extract body to src/ui/ | '<closure@5008>' (33 LOC, line 5008) — extract body to src/ui/ | '<closure@58>' has if/match/for — extract to src/ui/ | '<closure@76>' has if/match/for — extract to src/ui/
-- [ ] **R-01** — Tier placement: Module not in tier registry — verify placement
-- [ ] **T-05** — Test adequacy: 188 pub methods, 0 Rust tests — create test file
+- [ ] **B-04** — No business logic in closures: '<closure@1883>' (23 LOC, line 1883) — extract body to src/ui/ | '<closure@3543>' (16 LOC, line 3543) — extract body to src/ui/ | '<closure@3885>' (17 LOC, line 3885) — extract body to src/ui/ | '<closure@5028>' (33 LOC, line 5028) — extract body to src/ui/ | '<closure@59>' has if/match/for — extract to src/ui/ | '<closure@77>' has if/match/for — extract to src/ui/
+- [ ] **R-01** — Tier placement: No AGENT.md — tier label unverifiable
+- [ ] **T-05** — Test adequacy: 192 pub methods, 0 Rust tests — create test file
 - [ ] **W-05** — Wiki page: No wiki page found (expected docs/wiki/Ui-API.md)
 - [ ] **Q-04** — Error handling: .unwrap() calls: data_graph_renderer:538
-- [ ] **I-03** — Config integration: Module not in src/engine/config.rs — add to ModulesConfig if toggleable
 
 ## Full Check Results
 
@@ -41,23 +45,23 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **A-01** AGENT.md exists | ✅ PASS | src\ui\AGENT.md |
-| **A-02** Template structure | ✅ PASS | All sections present |
-| **A-03** Purpose quality | ✅ PASS | Purpose section is 236 chars |
-| **A-04** Content sync | ✅ PASS | All .rs files listed |
-| **A-05** Spec pointer | ✅ PASS | docs/specs/ui.md exists |
-| **A-06** Tier label | ✅ PASS | Tier label present (expected: unassigned) |
-| **A-04b** Source Files completeness (incl. subdirs) | ✅ PASS | All nested .rs files listed in AGENT.md |
+| **A-01** AGENT.md exists | ❌ ERROR | AGENT.md not found |
+| **A-02** Template structure | ❌ ERROR | Skipped — no AGENT.md |
+| **A-03** Purpose quality | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04** Content sync | ❌ ERROR | Skipped — no AGENT.md |
+| **A-05** Spec pointer | ❌ ERROR | Skipped — no AGENT.md |
+| **A-06** Tier label | ❌ ERROR | Skipped — no AGENT.md |
+| **A-04b** Source Files completeness | ✅ PASS | No AGENT.md — other check handles this |
 
 ### Phase 3 — Technical Specification
 
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **SP-01** Spec file exists | ✅ PASS | docs/specs/ui.md exists |
-| **SP-02** Required spec sections | ✅ PASS | All required sections present |
-| **SP-03** Summary quality | ⚠️ WARNING | Summary very long (2393 chars) |
-| **SP-04** Lua API completeness | ✅ PASS | All 52 bound functions in spec |
-| **SP-05** Key Types accuracy | ⚠️ WARNING | Types not in spec: AreaChart, AreaLayer, BarCategory, BarChart, ChartSeries |
+| **SP-02** Required spec sections | ❌ ERROR | Missing sections: Architecture, Source Files, Key Types |
+| **SP-03** Summary quality | ✅ PASS | Summary is 1036 chars |
+| **SP-04** Lua API completeness | ✅ PASS | All 53 bound functions in spec |
+| **SP-05** Key Types accuracy | ✅ PASS | No Key Types section or no public types — skip |
 | **SP-06** Spec quality | ✅ PASS | No stub content |
 
 ### Phase 4 — Docstrings
@@ -81,7 +85,7 @@
 | **B-01** Dedicated API file | ✅ PASS | lua_api/ui_api.rs present |
 | **B-02** Registration-only | ✅ PASS | Only register() is pub fn (Lua<X> wrapper structs allowed) |
 | **B-03** impl LuaUserData placement | ✅ PASS | All impl LuaUserData blocks are in lua_api (correct) |
-| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1865>' (23 LOC, line 1865) — extract body to src/ui/ \| '<closure@3525>' (16 LOC, line 3525) — extract body to src/ui/ \| '<closure@3867>' (17 LOC, line 3867) — extract body to src/ui/ \| '<closure@5008>' (33 LOC, line 5008) — extract body to src/ui/ \| '<closure@58>' has if/match/for — extract to src/ui/ \| '<closure@76>' has if/match/for — extract to src/ui/ |
+| **B-04** No business logic in closures | ⚠️ WARNING | '<closure@1883>' (23 LOC, line 1883) — extract body to src/ui/ \| '<closure@3543>' (16 LOC, line 3543) — extract body to src/ui/ \| '<closure@3885>' (17 LOC, line 3885) — extract body to src/ui/ \| '<closure@5028>' (33 LOC, line 5028) — extract body to src/ui/ \| '<closure@59>' has if/match/for — extract to src/ui/ \| '<closure@77>' has if/match/for — extract to src/ui/ |
 | **B-05** Rc clone pattern | ✅ PASS | Rc clone pattern looks correct |
 | **B-06** Flat registration body | ✅ PASS | All tbl.set() calls are flat statements |
 
@@ -89,7 +93,7 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **R-01** Tier placement | ⚠️ WARNING | Module not in tier registry — verify placement |
+| **R-01** Tier placement | ⚠️ WARNING | No AGENT.md — tier label unverifiable |
 | **R-02** Dependency direction | ✅ PASS | All imports follow unassigned rules |
 | **R-03** No lua_api import | ✅ PASS | No lua_api imports found |
 | **R-04** Design assumptions | 🔵 MANUAL | Verify against docs/architecture/philosophy.md |
@@ -103,7 +107,7 @@
 | **T-02** Lua test file | ❌ ERROR | Module has Lua API but no tests/lua/unit/test_ui.lua |
 | **T-03** Test naming | ✅ PASS | No Rust test file — skip |
 | **T-04** Float comparisons | ✅ PASS | No Rust test file — skip |
-| **T-05** Test adequacy | ⚠️ WARNING | 188 pub methods, 0 Rust tests — create test file |
+| **T-05** Test adequacy | ⚠️ WARNING | 192 pub methods, 0 Rust tests — create test file |
 | **T-06** Golden tests | 🔵 MANUAL | Check if module qualifies for golden/snapshot tests |
 | **T-07** Tests pass | 🔵 MANUAL | Run: cargo test --test ui_tests -- --nocapture |
 
@@ -144,7 +148,7 @@
 |-------|---------|---------|
 | **I-01** Lua API usability | 🔵 MANUAL | Review lurek.* conventions compliance |
 | **I-02** Extension panel | 🔵 MANUAL | Check for structured data I/O for vscode-extension |
-| **I-03** Config integration | ⚠️ WARNING | Module not in src/engine/config.rs — add to ModulesConfig if toggleable |
+| **I-03** Config integration | ✅ PASS | Module referenced in src/runtime/config.rs |
 
 ### Phase 12 — Localization & Logging
 
