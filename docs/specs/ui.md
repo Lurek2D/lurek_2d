@@ -94,6 +94,11 @@ It intentionally does not own native OS widgets, window management, or raw input
 - `WidgetType` (`enum`, `widget.rs`): Identifies the broad widget class for styling and state-dependent behavior.
 - `WidgetBase` (`struct`, `widget.rs`): Shared geometry, visibility, spacing, anchoring, and flex-like metadata embedded in every widget.
 
+## Lua API Reference Additions
+
+- `lurek.ui.parseWidgetState`: Parses a widget state string and returns the canonical lowercase state name or `nil` for invalid input.
+- `widget:getChildren`: Returns a table of child widget-handle tables for container-style widgets.
+
 ## Functions
 
 - `LineChart::new` (`chart.rs`): Creates a new line chart with the given configuration.

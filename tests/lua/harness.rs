@@ -543,6 +543,10 @@ fn lua_test_network_host() {
     run_lua_test("unit/test_network.lua");
 }
 #[test]
+fn lua_test_network_constants() {
+    run_lua_test("unit/test_network_constants.lua");
+}
+#[test]
 fn lua_test_procgen() {
     run_lua_test("unit/test_procgen.lua");
 }
@@ -717,6 +721,11 @@ fn lua_golden_procgen() {
 #[test]
 fn lua_security_api_fuzz() {
     run_lua_test("security/test_api_fuzz.lua");
+}
+
+#[test]
+fn lua_security_sandbox() {
+    run_lua_test("security/test_sandbox.lua");
 }
 
 // ─── Stress ───────────────────────────────────────────────────────────────────

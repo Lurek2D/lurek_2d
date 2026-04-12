@@ -75,6 +75,7 @@ It intentionally does not own interpolation systems, animation state machines, o
 - `lurek.timer.getFPS`: Returns the current frames-per-second measurement.
 - `lurek.timer.getTime`: Returns the total elapsed time since engine start in seconds.
 - `lurek.timer.getAverageDelta`: Returns the rolling-average frame delta time in seconds.
+- `lurek.timer.getFrameCount`: Returns the total number of frames recorded by the engine clock.
 - `lurek.timer.step`: Advances the timer by one frame, returning the delta time.
 - `lurek.timer.getMicroTime`: Returns the high-resolution elapsed time since engine start in seconds.
 - `lurek.timer.getPhysicsDelta`: Returns the fixed timestep used by `process_physics` callbacks (seconds).

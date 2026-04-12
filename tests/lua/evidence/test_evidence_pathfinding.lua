@@ -10,7 +10,7 @@ local function draw_nav_grid(grid, path, w, h, scale)
     scale = scale or 8
     local iw = w * scale
     local ih = h * scale
-    local img = lurek.image.newImageData(iw, ih)
+    local img = lurek.img.newImageData(iw, ih)
     img:fill(30, 30, 30, 255)
 
     -- Draw cells
@@ -34,7 +34,7 @@ local function draw_nav_grid(grid, path, w, h, scale)
         for _, step in ipairs(path) do
             local px = (step.x - 1) * scale + math.floor(scale / 2)
             local py = (step.y - 1) * scale + math.floor(scale / 2)
-            img:drawCircle(px, py, math.max(1, scale // 3), 255, 80, 80, 255)
+            img:drawCircle(px, py, math.max(1, math.floor(scale / 3)), 255, 80, 80, 255)
         end
     end
 
@@ -93,7 +93,7 @@ describe("Evidence: lurek.pathfinding A* basic", function()
         local path = pf:findPath(1, 1, 20, 15)
 
         local img = draw_nav_grid(grid, path, W, H, 10)
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_astar_wall.png")
+        lurek.img.savePNG(img, OUT .. "evidence_pathfinding_astar_wall.png")
     end)
 end)
 
@@ -113,7 +113,7 @@ describe("Evidence: lurek.pathfinding weighted terrain", function()
         local path = pf:findPath(1, 6, 12, 6)
 
         local img = draw_nav_grid(grid, path, W, H, 14)
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_weighted.png")
+        lurek.img.savePNG(img, OUT .. "evidence_pathfinding_weighted.png")
     end)
 end)
 
@@ -144,7 +144,7 @@ describe("Evidence: lurek.pathfinding FlowField", function()
         ff:compute(16, 16)
 
         local scale = 12
-        local img = lurek.image.newImageData(W * scale, H * scale)
+        local img = lurek.img.newImageData(W * scale, H * scale)
         img:fill(30, 30, 30, 255)
 
         for y = 1, H do
@@ -156,17 +156,17 @@ describe("Evidence: lurek.pathfinding FlowField", function()
                     img:fillRect((x-1)*scale+1, (y-1)*scale+1, scale-2, scale-2, 80, 80, 100, 255)
                     local dx, dy = ff:getDirection(x, y)
                     if dx ~= 0 or dy ~= 0 then
-                        local cx = (x-1)*scale + scale//2
-                        local cy = (y-1)*scale + scale//2
-                        local ex = cx + math.floor(dx * (scale//2 - 1))
-                        local ey = cy + math.floor(dy * (scale//2 - 1))
+                        local cx = (x-1)*scale + math.floor(scale / 2)
+                        local cy = (y-1)*scale + math.floor(scale / 2)
+                        local ex = cx + math.floor(dx * (math.floor(scale / 2) - 1))
+                        local ey = cy + math.floor(dy * (math.floor(scale / 2) - 1))
                         img:drawLine(cx, cy, ex, ey, 100, 220, 100, 255)
                     end
                 end
             end
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_pathfinding_flow_field.png")
+        lurek.img.savePNG(img, OUT .. "evidence_pathfinding_flow_field.png")
     end)
 end)
 

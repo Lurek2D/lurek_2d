@@ -1,47 +1,78 @@
--- Evidence test: physics debug drawing
--- Produces: draw_debug.png showing bouncing bodies after simulation
+-- Evidence test: physics simulation — body positions after stepping
+-- Produces: physics_sim.png showing colored dots at body positions
 -- @evidence file
 -- @covers lurek.physics.newWorld
--- @covers lurek.physics.newRectShape
+-- @covers lurek.physics.newRectangleShape
 -- @covers lurek.physics.newCircleShape
--- @covers World:drawDebug
+-- @covers lurek.physics.attachShape
+-- @covers World:newBody
+-- @covers World:step
 
-describe("evidence: physics debug drawing", function()
-    it("creates draw_debug.png from simulated world", function()
+describe("evidence: physics simulation", function()
+    it("simulates bodies and writes position evidence image", function()
         ensure_evidence_dir("physics")
-        local path = evidence_output_dir("physics") .. "draw_debug.png"
-
-        local img = lurek.image.newImageData(256, 256)
-        img:fill(20, 20, 40, 255)
+        local path = evidence_output_dir("physics") .. "physics_sim.png"
 
         local world = lurek.physics.newWorld(0, 50)
 
-        -- ground
-        local ground = world:newBody("STATIC", 128, 200)
-        local rect = lurek.physics.newRectShape(200, 20)
-        ground:setShape(rect)
+        -- ground (static)
+        local ground = world:newBody(128, 200, "static")
+        local rect = lurek.physics.newRectangleShape(200, 20)
+        lurek.physics.attachShape(ground, rect)
 
-        -- circle
-        local ball = world:newBody("DYNAMIC", 100, 50)
-        local circle = lurek.physics.newCircleShape(15)
-        ball:setShape(circle)
-        ball:setRestitution(0.8)
+        -- circle (dynamic — should fall under gravity)
+        local ball = world:newBody(100, 20, "dynamic")
+        local circle = lurek.physics.newCircleShape(10)
+        circle:setRestitution(0.5)
+        lurek.physics.attachShape(ball, circle)
 
-        -- box
-        local box = world:newBody("DYNAMIC", 150, 50)
-        local box_shape = lurek.physics.newRectShape(20, 20)
-        box:setShape(box_shape)
-        box:setRestitution(0.3)
+        -- box (dynamic)
+        local box = world:newBody(160, 20, "dynamic")
+        local box_shape = lurek.physics.newRectangleShape(16, 16)
+        box_shape:setRestitution(0.2)
+        lurek.physics.attachShape(box, box_shape)
 
-        -- run physics
+        -- run physics for 60 steps at 1/60 s each (1 second of sim)
         for i = 1, 60 do
-            world:step()
+            world:step(1/60)
         end
 
-        -- draw the world to the image
-        world:drawDebug(img, 255, 0, 255, 255)
-        img:savePNG(path)
+        -- paint evidence image from body positions
+        local img = lurek.img.newImageData(256, 256)
+        img:fill(20, 20, 40, 255)
 
+        -- ground — white bar
+        for px = 28, 228 do
+            for py = 190, 210 do
+                img:setPixel(px, py, 200, 200, 200, 255)
+            end
+        end
+
+        -- ball position (yellow dot)
+        local bx, by = ball:getPosition()
+        bx = math.floor(bx); by = math.floor(by)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx + dx; local py = by + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 255, 220, 0, 255)
+                end
+            end
+        end
+
+        -- box position (cyan dot)
+        local bx2, by2 = box:getPosition()
+        bx2 = math.floor(bx2); by2 = math.floor(by2)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx2 + dx; local py = by2 + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 0, 220, 255, 255)
+                end
+            end
+        end
+
+        lurek.img.savePNG(img, path)
         expect_evidence_created(path)
     end)
 end)

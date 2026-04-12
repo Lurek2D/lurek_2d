@@ -57,13 +57,13 @@ describe("Evidence: lurek.audio API + WAV output", function()
 
         lurek.audio.saveWAV(sd, OUT .. "audio_sine_440hz.wav")
 
-        local img = lurek.image.newImageData(800, 200)
+        local img = lurek.img.newImageData(800, 200)
         sd:drawWaveform(img, 0, 0, 800, 200, 0, 255, 0, 255)
-        lurek.image.savePNG(img, OUT .. "evidence_audio_sine.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_sine.png")
 
-        local img = lurek.image.newImageData(800, 200)
+        local img = lurek.img.newImageData(800, 200)
         sd:drawWaveform(img, 0, 0, 800, 200, 255, 128, 0, 255)
-        lurek.image.savePNG(img, OUT .. "evidence_audio_sine.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_sine.png")
     end)
 
     it("WAV: three-note chord (C4+E4+G4, 2 seconds)", function()
@@ -87,9 +87,9 @@ describe("Evidence: lurek.audio API + WAV output", function()
 
         lurek.audio.saveWAV(sd, OUT .. "audio_chord.wav")
 
-        local img = lurek.image.newImageData(800, 200)
+        local img = lurek.img.newImageData(800, 200)
         sd:drawWaveform(img, 0, 0, 800, 200, 255, 128, 0, 255)
-        lurek.image.savePNG(img, OUT .. "evidence_audio_chord.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_chord.png")
     end)
 
     it("WAV: frequency sweep 200→2000 Hz (2 seconds)", function()
@@ -109,9 +109,9 @@ describe("Evidence: lurek.audio API + WAV output", function()
 
         lurek.audio.saveWAV(sd, OUT .. "audio_sweep.wav")
 
-        local img = lurek.image.newImageData(800, 200)
+        local img = lurek.img.newImageData(800, 200)
         sd:drawWaveform(img, 0, 0, 800, 200, 128, 0, 255, 255)
-        lurek.image.savePNG(img, OUT .. "evidence_audio_sweep.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_sweep.png")
     end)
 
     it("WAV: stereo ping-pong (left/right alternating)", function()
@@ -139,9 +139,9 @@ describe("Evidence: lurek.audio API + WAV output", function()
 
         lurek.audio.saveWAV(sd, OUT .. "audio_stereo_ping.wav")
 
-        local img = lurek.image.newImageData(800, 200)
+        local img = lurek.img.newImageData(800, 200)
         sd:drawWaveform(img, 0, 0, 800, 200, 255, 255, 0, 255)
-        lurek.image.savePNG(img, OUT .. "evidence_audio_stereo_ping.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_stereo_ping.png")
     end)
 
 end)

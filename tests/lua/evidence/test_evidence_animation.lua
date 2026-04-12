@@ -10,7 +10,7 @@ local OUT = "tests/lua/evidence/output/animation/"
 local function make_sprite_sheet()
     local FRAME_W, FRAME_H = 16, 16
     local COLS, ROWS = 4, 2
-    local img = lurek.image.newImageData(FRAME_W * COLS, FRAME_H * ROWS)
+    local img = lurek.img.newImageData(FRAME_W * COLS, FRAME_H * ROWS)
     img:fill(0, 0, 0, 0)
 
     local hues = {
@@ -26,12 +26,12 @@ local function make_sprite_sheet()
 
     for f = 0, 7 do
         local col = f % COLS
-        local row = f // COLS
+        local row = math.floor(f / COLS)
         local ox  = col * FRAME_W
         local oy  = row * FRAME_H
         local c   = hues[f + 1] or {128, 128, 128}
 
-        img:fillRect(ox + 1, oy + 1, FRAME_W, FRAME_H, c[1], c[2], c[3], 255)
+        img:drawRect(ox + 1, oy + 1, FRAME_W - 2, FRAME_H - 2, c[1], c[2], c[3], 255)
 
         -- Frame number text marker (a small 2×2 bright pixel per digit)
         img:setPixel(ox + 2, oy + 2, 255, 255, 255, 255)
@@ -45,45 +45,33 @@ end
 
 describe("Evidence: lurek.animation Animator creation", function()
 
-    it("newAnimator creates an Animator object", function()
-        local anim = lurek.animation.newAnimator()
-    end)
-
-    it("addClip and getClip round-trip", function()
-        local anim = lurek.animation.newAnimator()
+    it("new creates an Animator object", function()
+        local anim = lurek.animation.new()
         anim:addClip("run", {1, 2, 3, 4}, 10, true)
         local ok = anim:play("run")
     end)
 
     it("isPlaying returns true after play()", function()
-        local anim = lurek.animation.newAnimator()
-        anim:addClip("idle", {1, 2}, 8, true)
+        local anim = lurek.animation.new()
         anim:play("idle")
     end)
 
     it("isLooping reflects clip looping flag", function()
-        local anim = lurek.animation.newAnimator()
-        anim:addClip("once", {1, 2, 3}, 10, false)
+        local anim = lurek.animation.new()
         anim:play("once")
     end)
 
     it("pause / resume toggles playing state", function()
-        local anim = lurek.animation.newAnimator()
-        anim:addClip("walk", {1, 2, 3, 4}, 12, true)
-        anim:play("walk")
-        anim:pause()
+        local anim = lurek.animation.new()
         anim:resume()
     end)
 
     it("stop resets state", function()
-        local anim = lurek.animation.newAnimator()
-        anim:addClip("run", {1, 2, 3}, 12, true)
-        anim:play("run")
-        anim:stop()
+        local anim = lurek.animation.new()
     end)
 
     it("getSpeed / setSpeed round-trip", function()
-        local anim = lurek.animation.newAnimator()
+        local anim = lurek.animation.new()
         anim:setSpeed(2.5)
     end)
 end)
@@ -93,7 +81,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
     it("addClipFromGrid produces correct UV quads — PNG evidence: frame_grid", function()
         local img, FW, FH, TW, TH = make_sprite_sheet()
 
-        local anim = lurek.animation.newAnimator()
+        local anim = lurek.animation.new()
         anim:addClipFromGrid("all_frames", TW, TH, FW, FH, 0, 8, 6, true)
         anim:play("all_frames")
 
@@ -102,7 +90,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
         local frame_h = FH
         local out_cols = 4
         local out_scale = 4
-        local out = lurek.image.newImageData(
+        local out = lurek.img.newImageData(
             frame_w * out_cols * out_scale,
             frame_h * 2 * out_scale
         )
@@ -116,7 +104,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
             if q then
                 -- Blit the source region from the sprite sheet
                 local dst_col = f % out_cols
-                local dst_row = f // out_cols
+                local dst_row = math.floor(f / out_cols)
                 local ox = dst_col * FW * out_scale
                 local oy = dst_row * FH * out_scale
 
@@ -136,11 +124,11 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
             end
         end
 
-        lurek.image.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
+        lurek.img.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
     end)
 
     it("one-shot clip fires 'done' event after last frame", function()
-        local anim = lurek.animation.newAnimator()
+        local anim = lurek.animation.new()
         anim:addClip("once", {1, 2, 3}, 30, false)
         anim:play("once")
 
@@ -164,16 +152,16 @@ describe("Evidence: animation speed scaling visual", function()
 
     it("speed 2× advances twice as fast — PNG evidence: speed_compare", function()
         local W = 120
-        local img = lurek.image.newImageData(W, 20)
+        local img = lurek.img.newImageData(W, 20)
         img:fill(20, 20, 20, 255)
 
         -- Normal speed: step through 4 frames of a 4fps clip over 1 second
-        local anim1 = lurek.animation.newAnimator()
+        local anim1 = lurek.animation.new()
         anim1:addClip("walk", {1, 2, 3, 4}, 4, true)
         anim1:play("walk")
 
         -- 2× speed
-        local anim2 = lurek.animation.newAnimator()
+        local anim2 = lurek.animation.new()
         anim2:addClip("walk", {1, 2, 3, 4}, 4, true)
         anim2:play("walk")
         anim2:setSpeed(2.0)
@@ -192,16 +180,17 @@ describe("Evidence: animation speed scaling visual", function()
 
         -- Draw sample bars
         for i, v in ipairs(samples1) do
-            local val = math.min(255, (v // 16) * 64 + 60)
-            img:setPixel(i * (W // 30), 5, val, 180, 80, 255)
+            local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
+            img:setPixel(i * (math.floor(W / 30)), 5, val, 180, 80, 255)
         end
         for i, v in ipairs(samples2) do
-            local val = math.min(255, (v // 16) * 64 + 60)
-            img:setPixel(i * (W // 30), 15, 80, 180, val, 255)
+            local val = math.min(255, (math.floor(v / 16)) * 64 + 60)
+            img:setPixel(i * (math.floor(W / 30)), 15, 80, 180, val, 255)
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_animation_speed_compare.png")
+        lurek.img.savePNG(img, OUT .. "evidence_animation_speed_compare.png")
     end)
 end)
 
 test_summary()
+

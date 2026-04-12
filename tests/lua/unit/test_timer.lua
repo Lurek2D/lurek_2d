@@ -1,5 +1,6 @@
 -- @covers lurek.time.getAverageDelta
 -- @covers lurek.time.getDelta
+-- @covers lurek.time.getFrameCount
 -- @covers lurek.time.getFPS
 -- @covers lurek.time.getMicroTime
 -- @covers lurek.time.getPhysicsDelta
@@ -293,6 +294,23 @@ describe("lurek.time.newScheduler", function()
         local ok = sched:cancelNamed("mytimer")
         expect_true(ok)
         expect_equal(sched:getCount(), 0)
+    end)
+end)
+
+describe("lurek.time.getFrameCount", function()
+    it("getFrameCount is a function", function()
+        expect_type("function", lurek.time.getFrameCount)
+    end)
+
+    it("getFrameCount returns a number", function()
+        local count = lurek.time.getFrameCount()
+        expect_type("number", count)
+    end)
+
+    it("getFrameCount returns a non-negative integer", function()
+        local count = lurek.time.getFrameCount()
+        expect_true(count >= 0, "frame count must be non-negative")
+        expect_true(count == math.floor(count), "frame count must be an integer")
     end)
 end)
 

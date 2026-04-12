@@ -5,20 +5,15 @@ local OUT = "tests/lua/evidence/output/graph/"
 
 -- ── helpers ──────────────────────────────────────────────────────────────────
 
---- Build a graph from a position table and edge list.
+--- Build a graph from a position table and edge index list.
 --- positions: array of {x, y}
 --- edges: array of {from_idx, to_idx}
---- Returns graph, nodes_array
+--- Returns graph, nodes_array (positions stored externally, not on nodes)
 local function build_graph(positions, edges)
     local g = lurek.graph.newGraph()
     local nodes = {}
-    for i, pos in ipairs(positions) do
-        local n = g:addNode()
-        -- Store world position as node metadata
-        n:setLabel(tostring(i))
-        n:setX(pos.x)
-        n:setY(pos.y)
-        nodes[i] = n
+    for i = 1, #positions do
+        nodes[i] = g:addNode()
     end
     for _, e in ipairs(edges) do
         g:addEdge(nodes[e[1]], nodes[e[2]])
@@ -27,40 +22,39 @@ local function build_graph(positions, edges)
 end
 
 --- Render a graph as a PNG.
---- nodes_array: array of LuaNode with getX/getY
---- path: optional path table from findPath (array of Nodes in .nodes)
-local function draw_graph(nodes_arr, edges_arr, path_nodes, iw, ih)
-    local img = lurek.image.newImageData(iw, ih)
+--- nodes_arr: array of LuaNode
+--- edges_idx: array of {from_idx, to_idx} (integer indices into nodes_arr and positions)
+--- path_nodes: optional array of nodes from findPath
+--- positions: array of {x, y} parallel to nodes_arr
+local function draw_graph(nodes_arr, edges_idx, path_nodes, positions, iw, ih)
+    local img = lurek.img.newImageData(iw, ih)
     img:fill(15, 20, 30, 255)
 
-    -- Build set of path node indices for highlighting
+    -- Build set of path nodes by tostring key for highlighting
     local path_set = {}
     if path_nodes then
         for _, n in ipairs(path_nodes) do
-            path_set[n:getLabel()] = true
+            path_set[tostring(n)] = true
         end
     end
 
-    -- Draw edges
-    for _, e in ipairs(edges_arr) do
-        local fn = e[1]
-        local tn = e[2]
-        local x1 = math.floor(fn:getX())
-        local y1 = math.floor(fn:getY())
-        local x2 = math.floor(tn:getX())
-        local y2 = math.floor(tn:getY())
+    -- Draw edges (index-based to avoid missing getX/getY node methods)
+    for _, e in ipairs(edges_idx) do
+        local x1 = positions[e[1]].x
+        local y1 = positions[e[1]].y
+        local x2 = positions[e[2]].x
+        local y2 = positions[e[2]].y
         img:drawLine(x1, y1, x2, y2, 60, 80, 100, 255)
     end
 
     -- Draw nodes
-    for _, n in ipairs(nodes_arr) do
-        local nx = math.floor(n:getX())
-        local ny = math.floor(n:getY())
-        local lbl = n:getLabel()
-        local is_path = path_set[lbl]
-        local r, g, b = 80, 120, 200
-        if is_path then r, g, b = 220, 160, 60 end
-        img:drawCircle(nx, ny, 5, r, g, b, 255)
+    for i, n in ipairs(nodes_arr) do
+        local nx = positions[i].x
+        local ny = positions[i].y
+        local is_path = path_set[tostring(n)]
+        local r, g_val, b = 80, 120, 200
+        if is_path then r, g_val, b = 220, 160, 60 end
+        img:drawCircle(nx, ny, 5, r, g_val, b, 255)
         img:drawCircle(nx, ny, 3, 255, 255, 255, 255)
     end
 
@@ -196,26 +190,13 @@ describe("Evidence: lurek.graph visual network PNG", function()
             edge_def[i] = {i, i % N + 1}
         end
 
-        local g = lurek.graph.newGraph()
-        local nodes = {}
-        for i, pos in ipairs(positions) do
-            local n = g:addNode()
-            n:setLabel(tostring(i))
-            n:setX(pos.x)
-            n:setY(pos.y)
-            nodes[i] = n
-        end
-        local edges = {}
-        for _, e in ipairs(edge_def) do
-            local ed = g:addEdge(nodes[e[1]], nodes[e[2]])
-            edges[#edges+1] = {nodes[e[1]], nodes[e[2]]}
-        end
+        local g, nodes = build_graph(positions, edge_def)
 
         local path_result = g:findPath(nodes[1], nodes[5])
         local path_nodes  = path_result and path_result.nodes or nil
 
-        local img = draw_graph(nodes, edges, path_nodes, 240, 240)
-        lurek.image.savePNG(img, OUT .. "evidence_graph_ring.png")
+        local img = draw_graph(nodes, edge_def, path_nodes, positions, 240, 240)
+        lurek.img.savePNG(img, OUT .. "evidence_graph_ring.png")
     end)
 
     it("hub-and-spoke topology — PNG evidence: hub_graph", function()
@@ -223,37 +204,34 @@ describe("Evidence: lurek.graph visual network PNG", function()
         local R = 80
         local SPOKES = 6
 
-        local g = lurek.graph.newGraph()
-        local hub = g:addNode()
-        hub:setLabel("H")
-        hub:setX(CX)
-        hub:setY(CY)
-
-        local spoke_nodes = {hub}
-        local edges = {}
-
+        -- positions: hub = index 1, spokes = indices 2..SPOKES+1
+        local positions = {}
+        positions[1] = {x = CX, y = CY}
         for i = 1, SPOKES do
             local angle = (i - 1) / SPOKES * 2 * math.pi
-            local n = g:addNode()
-            n:setLabel(tostring(i))
-            n:setX(CX + math.floor(R * math.cos(angle)))
-            n:setY(CY + math.floor(R * math.sin(angle)))
-            spoke_nodes[#spoke_nodes+1] = n
-            g:addEdge(hub, n)
-            edges[#edges+1] = {hub, n}
-            -- Cross edges between spokes
-            if i > 1 then
-                g:addEdge(spoke_nodes[i], n)
-                edges[#edges+1] = {spoke_nodes[i], n}
-            end
+            positions[i + 1] = {
+                x = CX + math.floor(R * math.cos(angle)),
+                y = CY + math.floor(R * math.sin(angle))
+            }
         end
 
-        -- Path from spoke 1 to spoke 4
-        local path_result = g:findPath(spoke_nodes[2], spoke_nodes[5])
+        -- Edges: hub(1) -> each spoke(2..N+1), plus adjacent spoke cross-edges
+        local edge_def = {}
+        for i = 1, SPOKES do
+            edge_def[#edge_def+1] = {1, i + 1}
+        end
+        for i = 1, SPOKES - 1 do
+            edge_def[#edge_def+1] = {i + 1, i + 2}
+        end
+
+        local g, nodes = build_graph(positions, edge_def)
+
+        -- Path from spoke 1 to spoke 4 (indices 2 and 5)
+        local path_result = g:findPath(nodes[2], nodes[5])
         local path_nodes  = path_result and path_result.nodes or nil
 
-        local img = draw_graph(spoke_nodes, edges, path_nodes, 240, 240)
-        lurek.image.savePNG(img, OUT .. "evidence_graph_hub.png")
+        local img = draw_graph(nodes, edge_def, path_nodes, positions, 240, 240)
+        lurek.img.savePNG(img, OUT .. "evidence_graph_hub.png")
     end)
 end)
 

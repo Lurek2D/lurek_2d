@@ -340,6 +340,32 @@ fn create_widget_table<'a>(
         })?,
     )?;
 
+    // -- getChildren --
+    /// Returns this container's children as widget-handle tables.
+    /// @return table
+    let c = ctx.clone();
+    t.set(
+        "getChildren",
+        lua.create_function(move |lua, ()| {
+            let child_indices = {
+                let g = c.borrow();
+                g.widgets
+                    .get(idx)
+                    .and_then(|w| w.children())
+                    .cloned()
+                    .unwrap_or_default()
+            };
+
+            let out = lua.create_table()?;
+            for (list_index, child_idx) in child_indices.into_iter().enumerate() {
+                let child = lua.create_table()?;
+                child.set("_idx", child_idx)?;
+                out.set(list_index + 1, child)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+
     // -- findById --
     /// Recursively searches for a widget by id starting from this widget.
     /// @param id : string
@@ -5402,6 +5428,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         };
         Ok(LuaAreaChart { inner: crate::ui::chart::AreaChart::new(cfg) })
     })?)?;
+
+    // -- parseWidgetState --
+    /// Parses a widget state string, returning the canonical form or nil if invalid.
+    /// Valid values are "normal", "hovered", "pressed", "disabled", "focused".
+    /// @param state : string
+    /// @return string?
+    tbl.set(
+        "parseWidgetState",
+        lua.create_function(|_, state: String| {
+            Ok(WidgetState::parse_str(&state).map(|ws| ws.as_str().to_string()))
+        })?,
+    )?;
 
     luna.set("ui", tbl)?;
     Ok(())

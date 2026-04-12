@@ -25,6 +25,56 @@ use crate::tween::{
     SequenceStep, TweenEngine, TweenState,
 };
 
+/// Lua-side wrapper around the pure-Rust [`TweenState`] timing core.
+pub struct LuaTweenState {
+    inner: TweenState,
+}
+
+impl LuaUserData for LuaTweenState {
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
+        fields.add_field_method_get("paused", |_, this| Ok(this.inner.paused));
+        fields.add_field_method_set("paused", |_, this, paused: bool| {
+            this.inner.paused = paused;
+            Ok(())
+        });
+    }
+
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- tick --
+        /// Advances the tween state by `dt` seconds.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method_mut("tick", |_, this, dt: f64| Ok(this.inner.tick(dt)));
+
+        // -- isComplete --
+        /// Returns whether the tween state has completed.
+        /// @return boolean
+        methods.add_method("isComplete", |_, this, ()| Ok(this.inner.is_complete()));
+
+        // -- t --
+        /// Returns the raw 0..1 playback progress.
+        /// @return number
+        methods.add_method("t", |_, this, ()| Ok(this.inner.t_raw() as f64));
+
+        // -- lerp --
+        /// Interpolates from `start` to `finish` using the eased tween progress.
+        /// @param start : number
+        /// @param finish : number
+        /// @return number
+        methods.add_method("lerp", |_, this, (start, finish): (f64, f64)| {
+            Ok(this.inner.lerp(start, finish))
+        });
+
+        // -- reset --
+        /// Resets the tween state to elapsed time zero.
+        /// @return nil
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.reset();
+            Ok(())
+        });
+    }
+}
+
 /// Registers the `lurek.tween` property tweening API.
 ///
 ///
@@ -210,6 +260,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 i += 1;
             }
             Ok(out)
+        })?,
+    )?;
+
+    // ─── newState ────────────────────────────────────────────────────────
+    /// Creates a standalone tween timing state without registering it with the engine.
+    /// Useful for unit-style Lua tests and custom interpolation flows.
+    /// @param duration : number
+    /// @param easing : string
+    /// @return TweenState
+    tbl.set(
+        "newState",
+        lua.create_function(|lua, (duration, easing): (f64, Option<String>)| {
+            lua.create_userdata(LuaTweenState {
+                inner: TweenState::new(duration, easing.as_deref().unwrap_or("linear")),
+            })
         })?,
     )?;
 

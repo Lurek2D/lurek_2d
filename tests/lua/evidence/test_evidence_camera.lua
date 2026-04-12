@@ -9,7 +9,7 @@ local PI  = math.pi
 --- Draw a mini world onto an ImageData then apply camera transforms for a viewport.
 --- Returns an ImageData of size vw×vh.
 local function render_world_through_cam(cam, world_w, world_h, vw, vh)
-    local img = lurek.image.newImageData(vw, vh)
+    local img = lurek.img.newImageData(vw, vh)
     img:fill(15, 20, 35, 255)
 
     -- draw a grid in world space
@@ -104,7 +104,7 @@ describe("Evidence: lurek.camera zoom and coordinate transforms", function()
         local VW, VH = 160, 120
         local WW, WH = 320, 240
 
-        local img = lurek.image.newImageData(VW * 2 + 4, VH)
+        local img = lurek.img.newImageData(VW * 2 + 4, VH)
         img:fill(8, 8, 16, 255)
 
         -- Zoom 1×
@@ -135,7 +135,7 @@ describe("Evidence: lurek.camera zoom and coordinate transforms", function()
             end
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_camera_zoom_compare.png")
+        lurek.img.savePNG(img, OUT .. "evidence_camera_zoom_compare.png")
     end)
 end)
 
@@ -157,7 +157,7 @@ describe("Evidence: lurek.camera rotation", function()
         cam:setRotation(PI / 6)  -- 30°
 
         local img = render_world_through_cam(cam, WW, WH, VW, VH)
-        lurek.image.savePNG(img, OUT .. "evidence_camera_rotation.png")
+        lurek.img.savePNG(img, OUT .. "evidence_camera_rotation.png")
     end)
 end)
 
@@ -165,7 +165,7 @@ describe("Evidence: lurek.camera follow behaviour", function()
 
     it("setTarget causes camera to track — PNG evidence: follow_trail", function()
         local VW, VH = 200, 80
-        local img = lurek.image.newImageData(VW, VH)
+        local img = lurek.img.newImageData(VW, VH)
         img:fill(12, 15, 25, 255)
 
         local cam = lurek.camera.newCamera()
@@ -189,7 +189,7 @@ describe("Evidence: lurek.camera follow behaviour", function()
             img:setPixel(px, py, 100, 220, 180, 255)
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_camera_follow_trail.png")
+        lurek.img.savePNG(img, OUT .. "evidence_camera_follow_trail.png")
     end)
 
     it("bounds clamp prevents camera from leaving world edges", function()
@@ -208,7 +208,7 @@ describe("Evidence: lurek.camera shake", function()
 
     it("shake causes non-zero offset — PNG evidence: shake_trail", function()
         local VW, VH = 200, 60
-        local img = lurek.image.newImageData(VW, VH)
+        local img = lurek.img.newImageData(VW, VH)
         img:fill(10, 10, 20, 255)
 
         local cam = lurek.camera.newCamera()
@@ -220,12 +220,12 @@ describe("Evidence: lurek.camera shake", function()
         for frame = 0, 199 do
             cam:update(DT)
             local x, y = cam:getPosition()
-            local px = math.min(VW, math.max(1, math.floor(x - 140) + VW // 2))
-            local py = math.min(VH, math.max(1, math.floor(y - 100) + VH // 2))
+            local px = math.min(VW, math.max(1, math.floor(x - 140) + math.floor(VW / 2)))
+            local py = math.min(VH, math.max(1, math.floor(y - 100) + math.floor(VH / 2)))
             img:setPixel(px, py, 255, 180, 60, 255)
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_camera_shake_trail.png")
+        lurek.img.savePNG(img, OUT .. "evidence_camera_shake_trail.png")
     end)
 end)
 

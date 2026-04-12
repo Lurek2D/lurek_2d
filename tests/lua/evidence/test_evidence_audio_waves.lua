@@ -10,7 +10,7 @@ local DUR = 0.05  -- 50 ms — short but enough to measure waveform properties
 
 --- Compute RMS of a SoundData buffer
 local function rms(sd)
-    local n   = sd:sampleCount()
+    local n   = sd:getSampleCount()
     if n == 0 then return 0.0 end
     local sum = 0.0
     for i = 0, n - 1 do
@@ -23,7 +23,7 @@ end
 --- Compute peak absolute amplitude
 local function peak(sd)
     local p = 0.0
-    for i = 0, sd:sampleCount() - 1 do
+    for i = 0, sd:getSampleCount() - 1 do
         local v = math.abs(sd:getSample(i))
         if v > p then p = v end
     end
@@ -144,7 +144,7 @@ describe("Evidence: lurek.audio newWhiteNoise", function()
         local sd1 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 99)
         local sd2 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 99)
         local all_same = true
-        for i = 0, sd1:sampleCount() - 1 do
+        for i = 0, sd1:getSampleCount() - 1 do
             if math.abs(sd1:getSample(i) - sd2:getSample(i)) > 0.0001 then
                 all_same = false
                 break
@@ -156,7 +156,7 @@ describe("Evidence: lurek.audio newWhiteNoise", function()
         local sd1 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 1)
         local sd2 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 2)
         local any_diff = false
-        for i = 0, sd1:sampleCount() - 1 do
+        for i = 0, sd1:getSampleCount() - 1 do
             if math.abs(sd1:getSample(i) - sd2:getSample(i)) > 0.001 then
                 any_diff = true
                 break
@@ -180,7 +180,7 @@ describe("Evidence: lurek.audio waveform PNG", function()
         }
         local IMG_W = 800
         local LANE_H = 80
-        local img = lurek.image.newImageData(IMG_W, LANE_H * #WAVES)
+        local img = lurek.img.newImageData(IMG_W, LANE_H * #WAVES)
         img:fill(12, 14, 20, 255)
 
         -- Draw separator lines
@@ -196,7 +196,7 @@ describe("Evidence: lurek.audio waveform PNG", function()
             waveform_strip(img, sd, i - 1, #WAVES, w.col)
         end
 
-        lurek.image.savePNG(img, OUT .. "evidence_audio_waves.png")
+        lurek.img.savePNG(img, OUT .. "evidence_audio_waves.png")
     end)
 
     it("WAV files: saves each waveform as a WAV file", function()

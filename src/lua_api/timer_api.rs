@@ -318,6 +318,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().clock.average_delta()))?,
     )?;
 
+    // -- getFrameCount --
+    /// Returns the total number of frames rendered since engine start.
+    /// @return integer
+    let s = state.clone();
+    tbl.set(
+        "getFrameCount",
+        lua.create_function(move |_, ()| Ok(s.borrow().clock.frame_count()))?,
+    )?;
+
     // -- step --
     /// Advances the timer by one frame, returning the delta time.
     /// @return number

@@ -6,6 +6,7 @@ use std::cell::RefCell;
 use std::net::SocketAddr;
 use std::rc::Rc;
 
+use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, MAX_PEERS};
 use crate::network::host::{NetworkEvent, NetworkHost, PeerStats};
 use rusty_enet::PeerID;
 
@@ -365,6 +366,22 @@ impl LuaUserData for LuaNetworkHost {
 ///
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+
+    // -- MAX_PEERS constant --
+    /// Maximum number of simultaneous peer connections a single host supports.
+    tbl.set("MAX_PEERS", MAX_PEERS as u64)?;
+
+    // -- DEFAULT_PEERS constant --
+    /// Default number of peers when no explicit value is provided.
+    tbl.set("DEFAULT_PEERS", DEFAULT_PEERS as u64)?;
+
+    // -- MAX_CHANNELS constant --
+    /// Maximum number of independent ENet channels per connection.
+    tbl.set("MAX_CHANNELS", MAX_CHANNELS as u64)?;
+
+    // -- DEFAULT_CHANNELS constant --
+    /// Default channel count for new connections when none is specified.
+    tbl.set("DEFAULT_CHANNELS", DEFAULT_CHANNELS as u64)?;
 
     // -- newHost --
     /// Creates a new network host bound to the given address.

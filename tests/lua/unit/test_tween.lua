@@ -3,6 +3,7 @@
 -- @covers lurek.tween.getActiveCount
 -- @covers lurek.tween.getEasingNames
 -- @covers lurek.tween.parallel
+-- @covers lurek.tween.newState
 -- @covers lurek.tween.registerEasing
 -- @covers lurek.tween.sequence
 -- @covers lurek.tween.tween
@@ -101,6 +102,66 @@ describe("lurek.tween", function()
             local obj = { x = 0 }
             local t = lurek.tween.tween(2.0, obj, { x = 100 })
             expect_near(0.0, t:getProgress(), 0.01)
+        end)
+    end)
+
+    describe("newState()", function()
+        it("returns a userdata handle", function()
+            local state = lurek.tween.newState(1.0, "linear")
+            expect_type("userdata", state)
+        end)
+
+        it("t() starts at zero", function()
+            local state = lurek.tween.newState(2.0, "linear")
+            expect_near(0.0, state:t(), 0.0001)
+        end)
+
+        it("tick advances progress", function()
+            local state = lurek.tween.newState(2.0, "linear")
+            expect_equal(false, state:tick(1.0))
+            expect_near(0.5, state:t(), 0.0001)
+        end)
+
+        it("tick returns true at completion", function()
+            local state = lurek.tween.newState(1.0, "linear")
+            expect_equal(true, state:tick(1.0))
+            expect_equal(true, state:isComplete())
+        end)
+
+        it("paused field freezes elapsed progress", function()
+            local state = lurek.tween.newState(2.0, "linear")
+            state:tick(0.5)
+            local before = state:t()
+            state.paused = true
+            state:tick(0.5)
+            expect_near(before, state:t(), 0.0001)
+        end)
+
+        it("reset restores progress to zero", function()
+            local state = lurek.tween.newState(1.0, "linear")
+            state:tick(1.0)
+            expect_equal(true, state:isComplete())
+            state:reset()
+            expect_equal(false, state:isComplete())
+            expect_near(0.0, state:t(), 0.0001)
+        end)
+
+        it("lerp uses the current tween progress", function()
+            local state = lurek.tween.newState(2.0, "linear")
+            state:tick(1.0)
+            expect_near(50.0, state:lerp(0.0, 100.0), 0.0001)
+        end)
+
+        it("zero duration clamps and completes on a small tick", function()
+            local state = lurek.tween.newState(0.0, "linear")
+            expect_equal(true, state:tick(0.001))
+            expect_equal(true, state:isComplete())
+        end)
+
+        it("accepts non-linear easing names", function()
+            local state = lurek.tween.newState(1.0, "cubicOut")
+            state:tick(0.5)
+            expect_true(state:lerp(0.0, 1.0) > 0.5)
         end)
     end)
 

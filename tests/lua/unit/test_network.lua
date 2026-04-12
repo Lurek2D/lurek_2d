@@ -311,4 +311,46 @@ if _G.enet then
   end) -- enet global alias
 end -- if _G.enet
 
+describe("lurek.network constants", function()
+  it("MAX_PEERS is a number", function()
+    expect_type("number", lurek.network.MAX_PEERS)
+  end)
+
+  it("MAX_PEERS equals 8", function()
+    expect_equal(lurek.network.MAX_PEERS, 8)
+  end)
+
+  it("DEFAULT_PEERS is a number", function()
+    expect_type("number", lurek.network.DEFAULT_PEERS)
+  end)
+
+  it("DEFAULT_PEERS equals 4", function()
+    expect_equal(lurek.network.DEFAULT_PEERS, 4)
+  end)
+
+  it("MAX_CHANNELS is a number", function()
+    expect_type("number", lurek.network.MAX_CHANNELS)
+  end)
+
+  it("MAX_CHANNELS equals 255", function()
+    expect_equal(lurek.network.MAX_CHANNELS, 255)
+  end)
+
+  it("DEFAULT_CHANNELS is a number", function()
+    expect_type("number", lurek.network.DEFAULT_CHANNELS)
+  end)
+
+  it("DEFAULT_CHANNELS equals 1", function()
+    expect_equal(lurek.network.DEFAULT_CHANNELS, 1)
+  end)
+
+  it("DEFAULT_PEERS is less than or equal to MAX_PEERS", function()
+    expect_true(lurek.network.DEFAULT_PEERS <= lurek.network.MAX_PEERS)
+  end)
+
+  it("DEFAULT_CHANNELS is less than or equal to MAX_CHANNELS", function()
+    expect_true(lurek.network.DEFAULT_CHANNELS <= lurek.network.MAX_CHANNELS)
+  end)
+end)
+
 test_summary()

@@ -21,6 +21,152 @@ use crate::math::Vec2;
 use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 
 // -------------------------------------------------------------------------------
+// LuaVec2 UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Vec2`] value type.
+pub struct LuaVec2 {
+    pub inner: Vec2,
+}
+
+impl LuaUserData for LuaVec2 {
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
+        // -- x --
+        /// The horizontal component of the vector.
+        fields.add_field_method_get("x", |_, this| Ok(this.inner.x as f64));
+        fields.add_field_method_set("x", |_, this, v: f64| {
+            this.inner.x = v as f32;
+            Ok(())
+        });
+        // -- y --
+        /// The vertical component of the vector.
+        fields.add_field_method_get("y", |_, this| Ok(this.inner.y as f64));
+        fields.add_field_method_set("y", |_, this, v: f64| {
+            this.inner.y = v as f32;
+            Ok(())
+        });
+    }
+
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- dot --
+        /// Returns the dot product with another vector.
+        /// @param other : Vec2
+        /// @return number
+        methods.add_method("dot", |_, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            Ok(this.inner.dot(o.inner) as f64)
+        });
+
+        // -- length --
+        /// Returns the Euclidean length of the vector.
+        /// @return number
+        methods.add_method("length", |_, this, ()| Ok(this.inner.length() as f64));
+
+        // -- x --
+        /// Returns the horizontal component of the vector.
+        /// @return number
+        methods.add_method("x", |_, this, ()| Ok(this.inner.x as f64));
+
+        // -- y --
+        /// Returns the vertical component of the vector.
+        /// @return number
+        methods.add_method("y", |_, this, ()| Ok(this.inner.y as f64));
+
+        // -- lengthSquared --
+        /// Returns the squared length of the vector (faster than length).
+        /// @return number
+        methods.add_method("lengthSquared", |_, this, ()| {
+            Ok(this.inner.length_squared() as f64)
+        });
+
+        // -- normalize --
+        /// Returns a unit-length copy of this vector. Returns zero if length is zero.
+        /// @return Vec2
+        methods.add_method("normalize", |lua, this, ()| {
+            lua.create_userdata(LuaVec2 { inner: this.inner.normalize() })
+        });
+
+        // -- normalized --
+        /// Compatibility alias for `normalize`.
+        /// @return Vec2
+        methods.add_method("normalized", |lua, this, ()| {
+            lua.create_userdata(LuaVec2 { inner: this.inner.normalize() })
+        });
+
+        // -- lerp --
+        /// Returns a linearly interpolated vector between this and other at parameter t.
+        /// @param other : Vec2
+        /// @param t : number
+        /// @return Vec2
+        methods.add_method("lerp", |lua, this, (other, t): (LuaAnyUserData, f64)| {
+            let o = other.borrow::<LuaVec2>()?;
+            lua.create_userdata(LuaVec2 { inner: this.inner.lerp(o.inner, t as f32) })
+        });
+
+        // -- distance --
+        /// Returns the Euclidean distance from this vector to another.
+        /// @param other : Vec2
+        /// @return number
+        methods.add_method("distance", |_, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            Ok(this.inner.distance(o.inner) as f64)
+        });
+
+        // -- angle --
+        /// Returns the angle of this vector in radians (atan2(y, x)).
+        /// @return number
+        methods.add_method("angle", |_, this, ()| Ok(this.inner.angle() as f64));
+
+        // -- rotate --
+        /// Returns a new vector rotated by the given angle in radians.
+        /// @param angle : number
+        /// @return Vec2
+        methods.add_method("rotate", |lua, this, angle: f64| {
+            lua.create_userdata(LuaVec2 { inner: this.inner.rotate(angle as f32) })
+        });
+
+        // -- perpendicular --
+        /// Returns the perpendicular vector (-y, x).
+        /// @return Vec2
+        methods.add_method("perpendicular", |lua, this, ()| {
+            lua.create_userdata(LuaVec2 { inner: this.inner.perpendicular() })
+        });
+
+        // -- cross --
+        /// Returns the 2D cross product (scalar) with another vector.
+        /// @param other : Vec2
+        /// @return number
+        methods.add_method("cross", |_, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            Ok(this.inner.cross(o.inner) as f64)
+        });
+
+        // Metamethods
+        methods.add_meta_method(LuaMetaMethod::Add, |lua, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            lua.create_userdata(LuaVec2 { inner: this.inner + o.inner })
+        });
+        methods.add_meta_method(LuaMetaMethod::Sub, |lua, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            lua.create_userdata(LuaVec2 { inner: this.inner - o.inner })
+        });
+        methods.add_meta_method(LuaMetaMethod::Mul, |lua, this, scalar: f64| {
+            lua.create_userdata(LuaVec2 { inner: this.inner * scalar as f32 })
+        });
+        methods.add_meta_method(LuaMetaMethod::Unm, |lua, this, ()| {
+            lua.create_userdata(LuaVec2 { inner: -this.inner })
+        });
+        methods.add_meta_method(LuaMetaMethod::Eq, |_, this, other: LuaAnyUserData| {
+            let o = other.borrow::<LuaVec2>()?;
+            Ok(this.inner == o.inner)
+        });
+        methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
+            Ok(format!("Vec2({}, {})", this.inner.x, this.inner.y))
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
 // LuaRandomGenerator UserData
 // -------------------------------------------------------------------------------
 
@@ -2050,6 +2196,30 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 None => noise_functions::simplex_noise_2d(x as f32, y as f32),
             };
             Ok(v as f64)
+        })?,
+    )?;
+
+    // -- vec2 --
+    /// Creates a 2D vector with x and y components.
+    /// @param x : number
+    /// @param y : number
+    /// @return Vec2
+    tbl.set(
+        "vec2",
+        lua.create_function(|lua, (x, y): (f64, f64)| {
+            lua.create_userdata(LuaVec2 { inner: Vec2::new(x as f32, y as f32) })
+        })?,
+    )?;
+
+    // -- Vec2 --
+    /// Compatibility alias for `vec2`.
+    /// @param x : number
+    /// @param y : number
+    /// @return Vec2
+    tbl.set(
+        "Vec2",
+        lua.create_function(|lua, (x, y): (f64, f64)| {
+            lua.create_userdata(LuaVec2 { inner: Vec2::new(x as f32, y as f32) })
         })?,
     )?;
 

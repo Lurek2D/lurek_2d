@@ -74,6 +74,7 @@ The module intentionally does not own the main game clock, frame scheduling, sce
 - `lurek.tween.getActiveCount`: Returns the number of currently active tween objects (tweens + seqs + pars).
 - `lurek.tween.registerEasing`: Registers a custom easing function under `name`. `fn(t)` receives 0..1, returns 0..1.
 - `lurek.tween.getEasingNames`: Returns a list of all available easing names (built-in + custom).
+- `lurek.tween.newState`: Creates a standalone `TweenState` userdata for custom interpolation and Lua-side timing tests.
 
 ### `Tween` Methods
 - `Tween:pause`: Pauses this tween; time stops advancing but the tween is not cancelled.
@@ -82,6 +83,14 @@ The module intentionally does not own the main game clock, frame scheduling, sce
 - `Tween:getProgress`: Returns raw 0..1 playback progress (not eased, not accounting for yoyo).
 - `Tween:setRepeat`: Sets the number of extra play cycles after the first (0 = play once, -1 = infinite).
 - `Tween:setYoyo`: Enables or disables yoyo (ping-pong) on each repeat cycle.
+
+### `TweenState` Methods
+- `TweenState:tick`: Advances the tween state by `dt` seconds and returns whether it completed.
+- `TweenState:isComplete`: Returns true if elapsed time has reached the duration.
+- `TweenState:t`: Returns raw 0..1 progress.
+- `TweenState:lerp`: Interpolates between two numeric values using the current eased progress.
+- `TweenState:reset`: Resets progress back to the start.
+- `TweenState.paused`: Boolean field that freezes or resumes `tick()`.
 
 ### `TweenParallel` Methods
 - `TweenParallel:cancel`: Cancels the parallel group immediately.

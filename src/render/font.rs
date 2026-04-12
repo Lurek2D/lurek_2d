@@ -24,14 +24,8 @@ const FONT_12X22: &[u8] = include_bytes!("../../assets/fonts/bitmap_12x22.png");
 pub const AVAILABLE_HEIGHTS: [u32; 6] = [5, 7, 10, 14, 18, 22];
 
 /// Available font cell sizes as `(width, height)` pairs, matching `AVAILABLE_HEIGHTS` order.
-pub const AVAILABLE_CELL_SIZES: [(u32, u32); 6] = [
-    (3, 5),
-    (5, 7),
-    (6, 10),
-    (8, 14),
-    (10, 18),
-    (12, 22),
-];
+pub const AVAILABLE_CELL_SIZES: [(u32, u32); 6] =
+    [(3, 5), (5, 7), (6, 10), (8, 14), (10, 18), (12, 22)];
 
 /// A bitmap font loaded from an embedded PNG sprite sheet.
 ///
@@ -109,9 +103,16 @@ impl Font {
     ///
     /// # Returns
     /// `EngineResult<Font>`.
-    pub fn from_png_bytes(data: &[u8], cell_w: u32, cell_h: u32, has_box: bool) -> EngineResult<Font> {
+    pub fn from_png_bytes(
+        data: &[u8],
+        cell_w: u32,
+        cell_h: u32,
+        has_box: bool,
+    ) -> EngineResult<Font> {
         let img = image::load_from_memory(data)
-            .map_err(|e| EngineError::RenderError(format!("Failed to decode bitmap font PNG: {}", e)))?
+            .map_err(|e| {
+                EngineError::RenderError(format!("Failed to decode bitmap font PNG: {}", e))
+            })?
             .to_rgba8();
 
         let atlas_width = img.width();
@@ -212,7 +213,7 @@ impl Font {
             uv_h: self.cell_height as f32 / self.atlas_height as f32,
             width: self.cell_width,
             height: self.cell_height,
-            advance_width: self.cell_width as f32,
+            advance_width: self.cell_width as f32 + 1.0,
             offset_x: 0.0,
             offset_y: 0.0,
         })

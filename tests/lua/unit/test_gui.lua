@@ -51,7 +51,7 @@
 -- @covers lurek.ui.update
 -- @covers lurek.ui.wheelmoved
 
-﻿-- Lurek2D GUI API Tests
+-- Lurek2D GUI API Tests
 
 -- =========================================================================
 -- 1. lurek.ui module exists
@@ -1608,6 +1608,44 @@ describe("lurek.ui.newImageWidget", function()
         expect_near(0.2, g, 0.001)
         expect_near(0.8, b, 0.001)
         expect_near(1.0, a, 0.001)
+    end)
+end)
+
+describe("lurek.ui.parseWidgetState", function()
+    it("is a function", function()
+        expect_type("function", lurek.ui.parseWidgetState)
+    end)
+
+    it("returns 'normal' for valid input", function()
+        expect_equal(lurek.ui.parseWidgetState("normal"), "normal")
+    end)
+
+    it("returns 'hovered' for valid input", function()
+        expect_equal(lurek.ui.parseWidgetState("hovered"), "hovered")
+    end)
+
+    it("returns 'pressed' for valid input", function()
+        expect_equal(lurek.ui.parseWidgetState("pressed"), "pressed")
+    end)
+
+    it("returns 'focused' for valid input", function()
+        expect_equal(lurek.ui.parseWidgetState("focused"), "focused")
+    end)
+
+    it("returns 'disabled' for valid input", function()
+        expect_equal(lurek.ui.parseWidgetState("disabled"), "disabled")
+    end)
+
+    it("returns nil for an invalid state string", function()
+        expect_equal(lurek.ui.parseWidgetState("invalid"), nil)
+    end)
+
+    it("returns nil for an empty string", function()
+        expect_equal(lurek.ui.parseWidgetState(""), nil)
+    end)
+
+    it("is case-sensitive — 'Normal' returns nil", function()
+        expect_equal(lurek.ui.parseWidgetState("Normal"), nil)
     end)
 end)
 

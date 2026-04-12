@@ -228,6 +228,8 @@ This module exists so rendering, physics, animation, UI, pathfinding, and Lua bi
 - `lurek.math.newTween`: Creates a new Tween with the given duration and easing name.
 - `lurek.math.newSpatialHash`: Creates a new SpatialHash with the given cell size.
 - `lurek.math.newNoiseGenerator`: Creates a new seeded noise generator.
+- `lurek.math.vec2`: Creates a Lua `Vec2` userdata with mutable `x`/`y` fields, arithmetic metamethods, and vector helpers.
+- `lurek.math.Vec2`: Compatibility alias for `lurek.math.vec2` used by existing Lua tests and scripts.
 - `lurek.math.perlin2d`: Returns 2D Perlin noise at (x, y) with the given seed.
 - `lurek.math.perlin3d`: Returns 3D Perlin noise at (x, y, z) with the given seed.
 - `lurek.math.simplex2d`: Returns 2D Simplex noise at (x, y) with the given seed.

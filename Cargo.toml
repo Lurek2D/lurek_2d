@@ -155,17 +155,14 @@ path = "src/lib.rs"
 
 [profile.dev]
 # opt-level 1 keeps game code debuggable while feeling reasonably smooth.
-# incremental = true speeds up rebuilds.
+# incremental is disabled because repeated debug rebuilds of the large
+# `lua_tests` binary produced unstable Windows MSVC link failures.
 # debug = "line-tables-only" preserves file/line info for backtraces and
-# basic debugger step-through, but drops full DWARF variable metadata —
-# saves ~15–20 MB vs debug = true. Use debug = true locally when you need
-# to inspect variables in a debugger (does not affect release builds).
+# basic debugger step-through, but drops full DWARF variable metadata.
 opt-level = 1
-incremental = true
+incremental = false
 debug = "line-tables-only"
-# split-debuginfo = "packed" keeps debug info in a side PDB/.dwo file,
-# which reduces the amount of data the linker has to copy each rebuild.
-split-debuginfo = "packed"
+# Use the toolchain default split debug behavior for stability.
 
 # Optimize all dependencies even in debug mode (common fast-iteration pattern)
 # Gives near-release performance for deps while keeping game code debuggable

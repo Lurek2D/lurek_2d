@@ -7,7 +7,7 @@
 - Lua API path(s): `src/lua_api/network_api.rs`
 - Primary Lua namespace: `lurek.network`
 - Rust test path(s): tests/rust/unit/network_tests.rs
-- Lua test path(s): tests/lua/unit/test_network.lua
+- Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua
 
 ## Summary
 
@@ -69,6 +69,10 @@ It intentionally does not own matchmaking, replication strategy, game-state seri
 - Namespace: `lurek.network`
 
 ### Module Functions
+- `lurek.network.MAX_PEERS`: Maximum supported peer slots for one host.
+- `lurek.network.DEFAULT_PEERS`: Default peer-slot count when host options omit `peers`.
+- `lurek.network.MAX_CHANNELS`: Maximum supported ENet channels per connection.
+- `lurek.network.DEFAULT_CHANNELS`: Default channel count when host options omit `channels`.
 - `lurek.network.newHost`: Creates a new network host bound to the given address.
 
 ### `NetworkHost` Methods

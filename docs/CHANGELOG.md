@@ -4,6 +4,9 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.7.20] — 2026-05-14
 ### Changed
+- **Windows debug linking** — Removed the forced `/DEBUG:FASTLINK` MSVC linker flag from `.cargo/config.toml` because it caused unstable `lua_tests` links with unresolved externals on large debug test binaries.
+- **Debug profile stability** — Disabled `incremental` and removed `split-debuginfo = "packed"` from `[profile.dev]` after repeated incremental `lua_tests` rebuilds on Windows MSVC produced unresolved-internal-symbol linker failures.
+- **UI Lua API** — Added the missing `widget:getChildren()` wrapper in `src/lua_api/ui_api.rs`, fixing the existing `lua_test_gui` failure for window child enumeration.
 - **Test migration Phase 5** — Expanded Lua BDD test coverage across 10 modules and deleted 3 fully-migrated Rust integration test files.
   - **Deleted RS files** (100% Lua-VM-only, all coverage now in Lua BDD layer): `fx_screen_tests.rs` (77 tests), `overlay_tests.rs` (78 tests), `window_tests.rs` (17 tests). Removed corresponding `mod` declarations from `tests/engine_tests.rs`.
   - **`test_terminal.lua`** — Added terminal low-level cell-method and widget-lookup tests: default cell values, clamped dimensions, setChar/setFg/setBg, print clipping, getCursor/setCursor, resize, getWidget(idx), findByTag, no-focus input.
@@ -16,6 +19,8 @@ All notable changes to Lurek2D are recorded here.
   - **`test_dataframe.lua`** — Added CellValue nil/number/text/bool round-trips via `getValue`, Database addTable/getTable/listTables/removeTable CRUD. +8 tests.
   - **`test_compute.lua`** — Added zeros/ones shape-table form, range sequence, getShape on 2D array, zero-step range error. +7 tests.
   - **`test_graph.lua`** — Added addEdge invalid src/dst, removeNode error on bad id, getNodes count. +5 tests.
+- **Test migration continuation** — Added Lua-side timer frame-count coverage, a headless network-constants suite, sandbox coverage under `tests/lua/security/test_sandbox.lua`, and a Lua `Vec2` userdata surface (`lurek.math.vec2` / `lurek.math.Vec2`) plus `lurek.ui.parseWidgetState` for GUI-state roundtrip checks.
+- **Tween migration continuation** — Added standalone `lurek.tween.newState()` userdata coverage so the pure `TweenState` timing core can be exercised from Lua BDD tests instead of only Rust integration tests.
 
 ### Changed
 - **Test migration Phase 4** — Fixed and expanded Lua BDD tests for 10 additional modules:
