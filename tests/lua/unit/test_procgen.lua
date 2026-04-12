@@ -142,4 +142,54 @@ describe("lurek.procgen", function()
     end)
 end)
 
+describe("procgen determinism", function()
+    it("poissonDisk with same seed returns same point count", function()
+        local pts1 = lurek.procgen.poissonDisk(100, 80, 12, 30, 42)
+        local pts2 = lurek.procgen.poissonDisk(100, 80, 12, 30, 42)
+        expect_equal(#pts1, #pts2)
+    end)
+
+    it("poissonDisk with different seeds may differ", function()
+        local pts1 = lurek.procgen.poissonDisk(100, 80, 8, 30, 1)
+        local pts2 = lurek.procgen.poissonDisk(100, 80, 8, 30, 9999)
+        -- Both should return non-empty tables
+        expect_true(#pts1 > 0, "seed 1 result non-empty")
+        expect_true(#pts2 > 0, "seed 9999 result non-empty")
+    end)
+
+    it("perlinNoise same coords same period returns identical value", function()
+        local v1 = lurek.procgen.perlinNoise(1.5, 2.5, 8.0, 8.0)
+        local v2 = lurek.procgen.perlinNoise(1.5, 2.5, 8.0, 8.0)
+        expect_near(v1, v2, 0.0001)
+    end)
+end)
+
+describe("procgen edge cases", function()
+    it("cellularAutomata with fill=0 produces mostly zeros", function()
+        local data = lurek.procgen.cellularAutomata(20, 20, { fill = 0.0, iterations = 0 })
+        local ones = 0
+        for _, v in ipairs(data) do
+            if v == 1 then ones = ones + 1 end
+        end
+        expect_equal(0, ones, "fill=0 should produce all zeros")
+    end)
+
+    it("cellularAutomata with fill=1 produces mostly ones", function()
+        local data = lurek.procgen.cellularAutomata(20, 20, { fill = 1.0, iterations = 0 })
+        local zeros = 0
+        for _, v in ipairs(data) do
+            if v == 0 then zeros = zeros + 1 end
+        end
+        expect_equal(0, zeros, "fill=1 should produce all ones")
+    end)
+
+    it("voronoi with single seed assigns all cells to region 1", function()
+        local pts = { { x = 4, y = 4 } }
+        local regions, _, _ = lurek.procgen.voronoi(8, 8, pts)
+        for _, r in ipairs(regions) do
+            expect_equal(1, r)
+        end
+    end)
+end)
+
 test_summary()

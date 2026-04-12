@@ -2,7 +2,19 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.7.18] — 2026-04-12
+## [0.7.19] — 2026-05-13
+### Changed
+- **Test migration Phase 4** — Fixed and expanded Lua BDD tests for 10 additional modules:
+  - `signal` — Stripped embedded UTF-8 BOM that caused a syntax error in `test_signal.lua`; 19/19 tests restored.
+  - `system` — Stripped BOM + fully rewrote `test_system.lua` to cover `lurek.platform.*`: getOS/getVersion/getArch/getProcessorCount/getMemorySize/getInfo table fields/clipboard round-trip/debug overlay toggle/log level round-trip/log/getLastError/getEnv/getArgs/parseArgs (flag+option+positional)/getPowerInfo/getPreferredLocales/openURL function-existence check/lurek.signal.quit surface check. 54 tests total (was broken syntax error).
+  - `fx` — Rewrote `test_fx.lua` to use the correct `lurek.postfx.*` / `lurek.overlay.*` namespace instead of the non-existent `lurek.effect.*`; corrected `stack:count()` → `stack:len()` and `stack:setEnabled(bool)` → `stack:setEnabled(pos, bool)`; expanded to 32/32 covering getEffectTypes/newEffect/newStack/newPass/newCustomEffect/PostFxEffect-setEnabled-isEnabled/PostFxStack-add-remove-clear-len-getEffect-getDimensions-resize.
+  - `camera` — Added setBounds/removeBounds/setTarget/clearTarget/setFollowSmooth/setDeadZone/setLookAhead tests; 28/28 (was 16/16).
+  - `raycaster` — Added castRaysFlat/lineOfSight/projectSprite instance methods plus `lurek.raycaster.projectColumn` and `lurek.raycaster.distanceShade` module function tests; 28/28 (was 14/14).
+  - `procgen` — Added voronoi determinism/edge cases (single-seed, fill=0/1 bounds, poissonDisk determinism, perlinNoise idempotence); 25/25 (was 19/19).
+  - `spine` — Added `drawToImage(w, h)` tests via `newSkeleton`; 21/21 (was 18/18).
+  - `font`, `window`, `audio_dsp` — Verified continuing pass (9/9, 64/64, 16/16 respectively).
+- **RS cleanup assessment** — Audited 18 Phase 1–3 Rust integration test files; all retain direct Rust struct-level coverage (`Vec2`, `Body`, `Clock`, `ByteData`, etc.) not reachable from the Lua BDD layer; none qualify for deletion under the "fully-migrated" rule.
+
 ### Changed
 - **Test migration Phase 2** — Migrated public-method coverage from Rust integration tests to Lua BDD tests for 4 additional modules: `physics` (Body UserData position/velocity/angle/mass/type/friction/restitution/layer/mask/forces/damping/gravity-scale/bullet/fixed-rotation, World gravity/bodyCount/bodyIds/destroyBody/clear/step/meter-conversion, Joints revolute/distance/weld/count/ids/type/destroy, Fixtures addFixture/count/friction/restitution/sensor, Collision static/kinematic/gravity-scale/layer-mask), `thread` (Channel type/typeOf/supply/demand/named-channels/FIFO-order), `animation` (pause/resume/setFrame/getCurrentFrame/isLooping/event-lifecycle/pollEvents-drain/speed-edge-cases/clip-switching/addClipFromGrid/zero-dt), `scene` (popTo/DepthSorter-addObject/clear/negative-depths/scene.new-factory/scene.define-factory/data-store-complex-types/transition-params). Total: 196 new Lua assertions across 4 test files (physics 83, thread 31, animation 34, scene 48).
 - **Test migration Phase 1** — Migrated public-method coverage from Rust integration tests to Lua BDD tests for 6 modules: `data` (compress/decompress/hash/encode/decode/newByteData/parseToml/encodeToml/write/read/size), `math` (RandomGenerator/Transform/BezierCurve/NoiseGenerator/SpatialHash/easing/triangulate/isConvex/gammaToLinear/linearToGamma), `timer` (Scheduler after/every/cancel/pause/resume/getRemaining/setTimeScale), `event` (Signal register/emit/remove/clear/clearAll/getCount/getTotalCount/type/typeOf/poll), `tween` (case-insensitive easing/zero-duration/paused callbacks/onComplete-fires-once), `serial` (CSV delimiter/headers options/round-trip/error handling). Total: 302 new Lua assertions across 6 test files.

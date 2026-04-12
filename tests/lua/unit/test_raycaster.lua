@@ -117,6 +117,103 @@ describe("lurek.raycaster", function()
             end
         end)
     end)
+
+    describe("castRaysFlat(ox, oy, angle, fov, count, max_dist)", function()
+        it("returns a table", function()
+            local rc = lurek.raycaster.new(20, 20)
+            local flat = rc:castRaysFlat(10.0, 10.0, 0.0, math.pi / 2, 8, 30.0)
+            expect_type("table", flat)
+        end)
+
+        it("contains only numbers", function()
+            local rc = lurek.raycaster.new(20, 20)
+            local flat = rc:castRaysFlat(10.0, 10.0, 0.0, math.pi / 2, 4, 30.0)
+            for _, v in ipairs(flat) do
+                expect_type("number", v)
+            end
+        end)
+    end)
+
+    describe("lineOfSight(x1, y1, x2, y2)", function()
+        it("returns true in empty grid", function()
+            local rc = lurek.raycaster.new(10, 10)
+            local visible = rc:lineOfSight(1.0, 5.0, 8.0, 5.0)
+            expect_equal(true, visible)
+        end)
+
+        it("returns false when wall blocks the path", function()
+            local rc = lurek.raycaster.new(10, 10)
+            rc:setCell(5, 5, 1)  -- wall in the middle
+            local visible = rc:lineOfSight(1.0, 5.5, 9.0, 5.5)
+            expect_equal(false, visible)
+        end)
+
+        it("returns a boolean", function()
+            local rc = lurek.raycaster.new(10, 10)
+            local result = rc:lineOfSight(0.5, 0.5, 9.5, 9.5)
+            expect_type("boolean", result)
+        end)
+    end)
+
+    describe("projectSprite(sx, sy, px, py, pa, fov, screen_w)", function()
+        it("returns a table with required fields", function()
+            local rc = lurek.raycaster.new(10, 10)
+            local sp = rc:projectSprite(5.0, 5.0, 1.0, 5.0, 0.0, math.pi / 2, 320.0)
+            expect_type("table", sp)
+            expect_type("number", sp.screen_x)
+            expect_type("number", sp.scale)
+            expect_type("number", sp.distance)
+            expect_type("boolean", sp.visible)
+        end)
+    end)
+end)
+
+describe("lurek.raycaster module functions", function()
+    describe("projectColumn(distance, fov, screen_height)", function()
+        it("is a function", function()
+            expect_type("function", lurek.raycaster.projectColumn)
+        end)
+
+        it("returns 3 numbers", function()
+            local a, b, c = lurek.raycaster.projectColumn(2.0, math.pi / 2, 480.0)
+            expect_type("number", a)
+            expect_type("number", b)
+            expect_type("number", c)
+        end)
+
+        it("column height is positive for distance 1.0", function()
+            local col_height, _, _ = lurek.raycaster.projectColumn(1.0, math.pi / 2, 480.0)
+            expect_true(col_height > 0.0, "column height should be positive")
+        end)
+
+        it("column height decreases with distance", function()
+            local h1, _, _ = lurek.raycaster.projectColumn(1.0, math.pi / 2, 480.0)
+            local h2, _, _ = lurek.raycaster.projectColumn(5.0, math.pi / 2, 480.0)
+            expect_true(h1 > h2, "closer wall should produce taller column")
+        end)
+    end)
+
+    describe("distanceShade(distance, max_distance)", function()
+        it("is a function", function()
+            expect_type("function", lurek.raycaster.distanceShade)
+        end)
+
+        it("returns 1.0 at distance 0", function()
+            local shade = lurek.raycaster.distanceShade(0.0, 10.0)
+            expect_near(1.0, shade, 0.001)
+        end)
+
+        it("returns 0.0 at or beyond max_distance", function()
+            local shade = lurek.raycaster.distanceShade(10.0, 10.0)
+            expect_near(0.0, shade, 0.001)
+        end)
+
+        it("returns value in [0, 1]", function()
+            local shade = lurek.raycaster.distanceShade(4.0, 10.0)
+            expect_true(shade >= 0.0 and shade <= 1.0,
+                "shade should be in [0,1], got: " .. tostring(shade))
+        end)
+    end)
 end)
 
 test_summary()

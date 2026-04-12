@@ -1,6 +1,6 @@
 -- @covers lurek.signal.newSignal
 
-﻿-- Signal module Lua tests
+-- Signal module Lua tests
 -- Tests are headless-safe (no window/GPU/audio needed)
 
 -- ============================================================
