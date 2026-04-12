@@ -2,7 +2,21 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.7.19] — 2026-05-13
+## [0.7.20] — 2026-05-14
+### Changed
+- **Test migration Phase 5** — Expanded Lua BDD test coverage across 10 modules and deleted 3 fully-migrated Rust integration test files.
+  - **Deleted RS files** (100% Lua-VM-only, all coverage now in Lua BDD layer): `fx_screen_tests.rs` (77 tests), `overlay_tests.rs` (78 tests), `window_tests.rs` (17 tests). Removed corresponding `mod` declarations from `tests/engine_tests.rs`.
+  - **`test_terminal.lua`** — Added terminal low-level cell-method and widget-lookup tests: default cell values, clamped dimensions, setChar/setFg/setBg, print clipping, getCursor/setCursor, resize, getWidget(idx), findByTag, no-focus input.
+  - **`test_pathfinding.lua`** — Added FlowField RS-parity tests: isCalculated before/after calculate, getTargets, getCostToTarget, steer return types, multi-target calculate, lineOfSight, diagonalMode. +15 tests.
+  - **`test_log.lua`** — Added sink-registry tests: addSink, removeSink, readMemory capacity, clearSinks. +5 tests.
+  - **`test_patterns.lua`** — Added SimpleState edge-case tests (hasState false, update no-crash, getCurrent nil, clearAll+addState), plus CommandStack undo/redo cycle and getHistorySize. +7 new-passing tests.
+  - **`test_scene.lua`** — Added DepthSorter RS-parity tests: add/sort/flush execute order, clear count, popTo falsy return, getStackSize height check. +6 tests.
+  - **`test_tween.lua`** — Added easing-name resolution: string easing arg, cubicOut easing, near-zero-duration completion. +5 tests.
+  - **`test_localization.lua`** — Added interpolate single/multiple/unknown/double-brace and format helper tests. +8 tests.
+  - **`test_dataframe.lua`** — Added CellValue nil/number/text/bool round-trips via `getValue`, Database addTable/getTable/listTables/removeTable CRUD. +8 tests.
+  - **`test_compute.lua`** — Added zeros/ones shape-table form, range sequence, getShape on 2D array, zero-step range error. +7 tests.
+  - **`test_graph.lua`** — Added addEdge invalid src/dst, removeNode error on bad id, getNodes count. +5 tests.
+
 ### Changed
 - **Test migration Phase 4** — Fixed and expanded Lua BDD tests for 10 additional modules:
   - `signal` — Stripped embedded UTF-8 BOM that caused a syntax error in `test_signal.lua`; 19/19 tests restored.

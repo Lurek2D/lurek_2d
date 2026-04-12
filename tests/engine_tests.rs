@@ -51,8 +51,6 @@ mod entity_tests;
 mod event_tests;
 #[path = "rust/integration/filesystem_tests.rs"]
 mod filesystem_tests;
-#[path = "rust/integration/fx_screen_tests.rs"]
-mod fx_screen_tests;
 #[path = "rust/integration/fx_tests.rs"]
 mod fx_tests;
 #[path = "rust/integration/graphics_tests.rs"]
@@ -79,8 +77,6 @@ mod messages_tests;
 mod modding_tests;
 #[path = "rust/integration/network_tests.rs"]
 mod network_tests;
-#[path = "rust/integration/overlay_tests.rs"]
-mod overlay_tests;
 #[path = "rust/integration/particle_tests.rs"]
 mod particle_tests;
 #[path = "rust/integration/pathfinding_tests.rs"]
@@ -115,5 +111,4 @@ mod tilemap_tests;
 mod timer_tests;
 #[path = "rust/integration/tween_tests.rs"]
 mod tween_tests;
-#[path = "rust/integration/window_tests.rs"]
-mod window_tests;
+

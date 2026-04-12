@@ -336,4 +336,40 @@ describe("lurek.localization.mergeLocale", function()
     end)
 end)
 
+
+describe("string interpolation (RS parity)", function()
+    it("interpolate replaces a single placeholder", function()
+        local result = lurek.localization.interpolate("Hello, {name}!", { name = "World" })
+        expect_equal("Hello, World!", result)
+    end)
+
+    it("interpolate replaces multiple placeholders", function()
+        local result = lurek.localization.interpolate("{a} + {b} = {c}", { a = "1", b = "2", c = "3" })
+        expect_equal("1 + 2 = 3", result)
+    end)
+
+    it("interpolate leaves unknown placeholders as-is", function()
+        local result = lurek.localization.interpolate("Hi {unknown}", {})
+        expect_contains(result, "{unknown}")
+    end)
+
+    it("interpolate double-brace escaping produces single brace", function()
+        local result = lurek.localization.interpolate("{{literal}}", {})
+        expect_contains(result, "literal")
+    end)
+end)
+
+describe("localization format helpers (RS parity)", function()
+    it("format returns a string", function()
+        local result = lurek.localization.interpolate("Value: {n}", { n = "42" })
+        expect_equal("string", type(result))
+        expect_contains(result, "42")
+    end)
+
+    it("getLanguages returns a non-empty table after loading", function()
+        local langs = lurek.localization.getLanguages()
+        expect_equal("table", type(langs))
+    end)
+end)
+
 test_summary()

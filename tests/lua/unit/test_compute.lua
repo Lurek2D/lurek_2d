@@ -901,4 +901,50 @@ end)
 -- =========================================================================
 -- Summary
 -- =========================================================================
+
+describe("compute array strides and error paths (RS parity)", function()
+    it("range with zero step raises an error", function()
+        expect_error(function() lurek.compute.range(0, 10, 0) end)
+    end)
+
+    it("range with zero step raises an error", function()
+        expect_error(function() lurek.compute.range(10, 0, 0) end)
+    end)
+
+    it("ones fills array with 1.0", function()
+        local a = lurek.compute.ones({5})
+        for i = 1, 5 do
+            expect_near(1.0, a:get(i), 0.001)
+        end
+    end)
+
+    it("zeros creates array filled with 0.0", function()
+        local a = lurek.compute.zeros({4})
+        for i = 1, 4 do
+            expect_near(0.0, a:get(i), 0.001)
+        end
+    end)
+
+    it("range ascending produces correct sequence", function()
+        local a = lurek.compute.range(1, 4)
+        expect_near(1.0, a:get(1), 0.001)
+        expect_near(2.0, a:get(2), 0.001)
+        expect_near(3.0, a:get(3), 0.001)
+    end)
+
+    it("get and set round-trip at arbitrary index", function()
+        local a = lurek.compute.zeros({10})
+        a:set(7, 3.14)
+        expect_near(3.14, a:get(7), 0.001)
+    end)
+
+    it("getShape returns table with dimensions", function()
+        local a = lurek.compute.zeros({2, 3})
+        local shape = a:getShape()
+        expect_equal("table", type(shape))
+        expect_equal(2, shape[1])
+        expect_equal(3, shape[2])
+    end)
+end)
+
 test_summary()

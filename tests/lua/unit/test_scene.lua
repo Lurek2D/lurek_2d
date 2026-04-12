@@ -617,4 +617,60 @@ describe("Transition params", function()
     end)
 end)
 
+
+describe("DepthSorter (RS parity)", function()
+    it("newDepthSorter returns userdata", function()
+        local ds = lurek.scene.newDepthSorter()
+        expect_equal("userdata", type(ds))
+    end)
+
+    it("add increments count", function()
+        local ds = lurek.scene.newDepthSorter()
+        ds:add(function() end, 10)
+        ds:add(function() end, 5)
+        expect_equal(2, ds:getCount())
+    end)
+
+    it("sort then flush executes items in ascending depth order", function()
+        local ds = lurek.scene.newDepthSorter()
+        local order = {}
+        ds:add(function() table.insert(order, "back") end, 10)
+        ds:add(function() table.insert(order, "front") end, 1)
+        ds:add(function() table.insert(order, "mid") end, 5)
+        ds:sort()
+        ds:flush()
+        expect_equal(3, #order)
+        expect_equal("front", order[1])
+        expect_equal("mid", order[2])
+        expect_equal("back", order[3])
+    end)
+
+    it("clear resets count to zero", function()
+        local ds = lurek.scene.newDepthSorter()
+        ds:add(function() end, 1)
+        ds:clear()
+        expect_equal(0, ds:getCount())
+    end)
+end)
+
+describe("scene popTo (RS parity)", function()
+    it("popTo returns falsy when name not found in stack", function()
+        local s1 = {}
+        lurek.scene.push(s1)
+        local r = lurek.scene.popTo("nonexistent")
+        expect_false(r)
+        lurek.scene.clear()
+    end)
+
+    it("scene.getStackSize returns stack height after push", function()
+        lurek.scene.clear()
+        local s1 = {}
+        local s2 = {}
+        lurek.scene.push(s1)
+        lurek.scene.push(s2)
+        expect_true(lurek.scene.getStackSize() >= 2)
+        lurek.scene.clear()
+    end)
+end)
+
 test_summary()

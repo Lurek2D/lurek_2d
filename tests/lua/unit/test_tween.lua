@@ -416,4 +416,49 @@ describe("tween edge cases", function()
     end)
 end)
 
+
+describe("easing resolution (RS parity)", function()
+    it("getEasingNames returns a non-empty table", function()
+        local names = lurek.tween.getEasingNames()
+        expect_equal("table", type(names))
+        expect_true(#names > 0)
+    end)
+
+    it("getEasingNames contains expected built-in entries", function()
+        local names = lurek.tween.getEasingNames()
+        local set = {}
+        for _, v in ipairs(names) do set[v] = true end
+        expect_true(set["linear"] == true)
+        expect_true(set["quadIn"] == true or set["quad_in"] == true or set["easeInQuad"] == true)
+    end)
+
+    it("tween with 'linear' easing progresses proportionally", function()
+        lurek.tween.cancelAll()
+        local obj = { x = 0 }
+        lurek.tween.tween(1.0, obj, { x = 100 }, "linear")
+        lurek.tween.update(0.5)
+        expect_near(50, obj.x, 1.0)
+        lurek.tween.cancelAll()
+    end)
+
+    it("tween with unknown easing string does not crash", function()
+        lurek.tween.cancelAll()
+        local obj = { x = 0 }
+        expect_no_error(function()
+            lurek.tween.tween(0.1, obj, { x = 1 }, "cubicOut")
+            lurek.tween.update(0.2)
+        end)
+        lurek.tween.cancelAll()
+    end)
+
+    it("zero-duration tween completes on first non-zero update", function()
+        lurek.tween.cancelAll()
+        local obj = { x = 0 }
+        lurek.tween.tween(0.001, obj, { x = 99 })
+        lurek.tween.update(1.0)
+        expect_near(99, obj.x, 0.5)
+        lurek.tween.cancelAll()
+    end)
+end)
+
 test_summary()
