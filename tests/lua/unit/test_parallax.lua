@@ -1,4 +1,4 @@
--- Lurek2D Parallax API Unit Tests (headless)
+﻿-- Lurek2D Parallax API Unit Tests (headless)
 -- Tests: module existence, layer creation, scroll math, autoscroll, repeat,
 --        opacity, tint, blend mode, z-ordering in sets, resetAutoscroll.
 --
@@ -47,48 +47,68 @@ local function load_image()
     return lurek.graphic.newImage("assets/icon.png")
 end
 
--- ── Module existence ──────────────────────────────────────────────────────────
+-- â”€â”€ Module existence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: lurek.parallax module exists.
 describe("lurek.parallax module exists", function()
+    -- @covers lurek.parallax
+    -- @description Verifies the parallax namespace is registered as a Lua table.
     it("lurek.parallax is a table", function()
         expect_type("table", lurek.parallax)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @description Verifies the parallax layer factory is exposed as a function.
     it("newLayer is a function", function()
         expect_type("function", lurek.parallax.newLayer)
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @description Verifies the parallax set factory is exposed as a function.
     it("newSet is a function", function()
         expect_type("function", lurek.parallax.newSet)
     end)
 end)
 
--- ── newLayer ─────────────────────────────────────────────────────────────────
+-- â”€â”€ newLayer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: lurek.parallax.newLayer.
 describe("lurek.parallax.newLayer", function()
+    -- @covers lurek.parallax.newLayer
+    -- @description Creates a parallax layer from a valid texture and verifies the factory returns userdata.
     it("returns userdata when given a valid texture", function()
         local img = load_image()
         local layer = lurek.parallax.newLayer({ texture = img })
         expect_type("userdata", layer)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.type
+    -- @description Verifies a newly created parallax layer reports the ParallaxLayer type name.
     it("type() returns 'ParallaxLayer'", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_equal("ParallaxLayer", layer:type())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @description Verifies the layer factory rejects config tables that omit the required texture field.
     it("errors when texture field is missing", function()
         expect_error(function()
             lurek.parallax.newLayer({})
         end)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @description Verifies the layer factory rejects a texture value that is not a LuaImage.
     it("errors when texture is not a LuaImage", function()
         expect_error(function()
             lurek.parallax.newLayer({ texture = "not an image" })
         end)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getScrollFactor
+    -- @description Creates a layer with explicit horizontal and vertical scroll factors and verifies both values.
     it("accepts scroll_factor_x and scroll_factor_y", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -100,6 +120,9 @@ describe("lurek.parallax.newLayer", function()
         expect_near(0.0, y)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getOffset
+    -- @description Creates a layer with explicit offsets and verifies both stored offset components.
     it("accepts offset_x and offset_y", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -111,6 +134,9 @@ describe("lurek.parallax.newLayer", function()
         expect_near(20.0, y)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getOpacity
+    -- @description Creates a layer with an explicit opacity and verifies the opacity getter.
     it("accepts opacity", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -119,6 +145,9 @@ describe("lurek.parallax.newLayer", function()
         expect_near(0.5, layer:getOpacity())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getZ
+    -- @description Creates a layer with an explicit z value and verifies the layer ordering value is stored.
     it("accepts z value", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -127,6 +156,9 @@ describe("lurek.parallax.newLayer", function()
         expect_equal(-5, layer:getZ())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getBlendMode
+    -- @description Creates a layer with an explicit blend mode and verifies the configured mode is returned.
     it("accepts blend_mode string", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -135,6 +167,9 @@ describe("lurek.parallax.newLayer", function()
         expect_equal("add", layer:getBlendMode())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.isVisible
+    -- @description Creates a layer with visible=false and verifies the visibility flag starts disabled.
     it("accepts visible = false", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -144,12 +179,16 @@ describe("lurek.parallax.newLayer", function()
     end)
 end)
 
--- ── Defaults ─────────────────────────────────────────────────────────────────
+-- â”€â”€ Defaults â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxLayer defaults.
 describe("LuaParallaxLayer defaults", function()
     local img
     local layer
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getScrollFactor
+    -- @description Verifies new layers default to a horizontal scroll factor of 1 and a vertical scroll factor of 0.
     it("scroll factor defaults to (1, 0)", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         local x, y = layer:getScrollFactor()
@@ -157,6 +196,9 @@ describe("LuaParallaxLayer defaults", function()
         expect_near(0.0, y)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getOffset
+    -- @description Verifies new layers default to zero positional offset.
     it("offset defaults to (0, 0)", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         local x, y = layer:getOffset()
@@ -164,26 +206,41 @@ describe("LuaParallaxLayer defaults", function()
         expect_near(0.0, y)
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getOpacity
+    -- @description Verifies new layers default to full opacity.
     it("opacity defaults to 1.0", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_near(1.0, layer:getOpacity())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getZ
+    -- @description Verifies new layers default to a z value of 0.
     it("z defaults to 0", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_equal(0, layer:getZ())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getBlendMode
+    -- @description Verifies new layers default to alpha blending.
     it("blend mode defaults to 'alpha'", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_equal("alpha", layer:getBlendMode())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.isVisible
+    -- @description Verifies new layers default to visible.
     it("isVisible defaults to true", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_equal(true, layer:isVisible())
     end)
 
+    -- @covers lurek.parallax.newLayer
+    -- @covers LuaParallaxLayer.getAutoscroll
+    -- @description Verifies new layers default to zero autoscroll velocity on both axes.
     it("autoscroll defaults to (0, 0)", function()
         layer = lurek.parallax.newLayer({ texture = load_image() })
         local vx, vy = layer:getAutoscroll()
@@ -192,9 +249,13 @@ describe("LuaParallaxLayer defaults", function()
     end)
 end)
 
--- ── Getters / setters ─────────────────────────────────────────────────────────
+-- â”€â”€ Getters / setters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxLayer setters and getters.
 describe("LuaParallaxLayer setters and getters", function()
+    -- @covers LuaParallaxLayer.setScrollFactor
+    -- @covers LuaParallaxLayer.getScrollFactor
+    -- @description Updates both scroll factors and verifies the pair round-trips through the getter.
     it("setScrollFactor / getScrollFactor round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setScrollFactor(0.25, 0.75)
@@ -203,6 +264,9 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_near(0.75, y)
     end)
 
+    -- @covers LuaParallaxLayer.setOffset
+    -- @covers LuaParallaxLayer.getOffset
+    -- @description Updates both layer offsets and verifies the pair round-trips through the getter.
     it("setOffset / getOffset round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setOffset(100.0, -50.0)
@@ -211,6 +275,9 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_near(-50.0, y)
     end)
 
+    -- @covers LuaParallaxLayer.setAutoscroll
+    -- @covers LuaParallaxLayer.getAutoscroll
+    -- @description Updates both autoscroll velocities and verifies the pair round-trips through the getter.
     it("setAutoscroll / getAutoscroll round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setAutoscroll(30.0, -10.0)
@@ -219,6 +286,9 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_near(-10.0, vy)
     end)
 
+    -- @covers LuaParallaxLayer.setZ
+    -- @covers LuaParallaxLayer.getZ
+    -- @description Updates the layer z order twice and verifies each assigned value is returned.
     it("setZ / getZ round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setZ(-3)
@@ -227,12 +297,18 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_equal(10, layer:getZ())
     end)
 
+    -- @covers LuaParallaxLayer.setOpacity
+    -- @covers LuaParallaxLayer.getOpacity
+    -- @description Sets the layer opacity and verifies the value round-trips through the getter.
     it("setOpacity / getOpacity round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setOpacity(0.4)
         expect_near(0.4, layer:getOpacity())
     end)
 
+    -- @covers LuaParallaxLayer.setOpacity
+    -- @covers LuaParallaxLayer.getOpacity
+    -- @description Verifies setOpacity clamps values outside the supported 0 to 1 range.
     it("setOpacity clamps to [0, 1]", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setOpacity(2.0)
@@ -241,6 +317,9 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_near(0.0, layer:getOpacity())
     end)
 
+    -- @covers LuaParallaxLayer.setTint
+    -- @covers LuaParallaxLayer.getTint
+    -- @description Sets the layer tint RGBA values and verifies all four channels round-trip.
     it("setTint / getTint round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setTint(0.5, 0.3, 0.8, 0.7)
@@ -251,6 +330,9 @@ describe("LuaParallaxLayer setters and getters", function()
         expect_near(0.7, a)
     end)
 
+    -- @covers LuaParallaxLayer.setBlendMode
+    -- @covers LuaParallaxLayer.getBlendMode
+    -- @description Iterates through each supported blend mode and verifies the currently configured mode round-trips.
     it("setBlendMode / getBlendMode round-trip for each mode", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         local modes = { "alpha", "add", "multiply", "replace", "screen" }
@@ -260,12 +342,18 @@ describe("LuaParallaxLayer setters and getters", function()
         end
     end)
 
+    -- @covers LuaParallaxLayer.setBlendMode
+    -- @covers LuaParallaxLayer.getBlendMode
+    -- @description Verifies an invalid blend mode falls back to alpha blending.
     it("unrecognised blend mode falls back to alpha", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setBlendMode("bogus")
         expect_equal("alpha", layer:getBlendMode())
     end)
 
+    -- @covers LuaParallaxLayer.setVisible
+    -- @covers LuaParallaxLayer.isVisible
+    -- @description Toggles layer visibility off and on and verifies both states round-trip.
     it("setVisible / isVisible round-trip", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setVisible(false)
@@ -275,9 +363,12 @@ describe("LuaParallaxLayer setters and getters", function()
     end)
 end)
 
--- ── Autoscroll / update ───────────────────────────────────────────────────────
+-- â”€â”€ Autoscroll / update â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxLayer autoscroll.
 describe("LuaParallaxLayer autoscroll", function()
+    -- @covers LuaParallaxLayer.update
+    -- @description Advances an autoscrolling layer and verifies the update path is error-free.
     it("update advances autoscroll accumulator", function()
         -- We cannot directly read the accumulator from Lua, but we can verify
         -- that update does not raise an error and that draw does not raise either.
@@ -290,6 +381,9 @@ describe("LuaParallaxLayer autoscroll", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.update
+    -- @covers LuaParallaxLayer.resetAutoscroll
+    -- @description Verifies resetAutoscroll is safe to call after the autoscroll state has advanced.
     it("resetAutoscroll does not raise an error", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -301,6 +395,10 @@ describe("LuaParallaxLayer autoscroll", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.update
+    -- @covers LuaParallaxLayer.resetAutoscroll
+    -- @covers LuaParallaxLayer.draw
+    -- @description Verifies a reset autoscroll state remains drawable after prior autoscroll updates.
     it("update followed by resetAutoscroll behaves identically to fresh layer", function()
         -- Both calls must be error-free; symmetry is verified by no exception.
         local layer = lurek.parallax.newLayer({ texture = load_image(), autoscroll_x = 80.0 })
@@ -312,9 +410,12 @@ describe("LuaParallaxLayer autoscroll", function()
     end)
 end)
 
--- ── draw / drawAuto ───────────────────────────────────────────────────────────
+-- â”€â”€ draw / drawAuto â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxLayer draw.
 describe("LuaParallaxLayer draw", function()
+    -- @covers LuaParallaxLayer.draw
+    -- @description Verifies drawing a visible layer is error-free.
     it("draw does not raise an error (visible layer)", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_no_error(function()
@@ -322,6 +423,9 @@ describe("LuaParallaxLayer draw", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.draw
+    -- @covers LuaParallaxLayer.setVisible
+    -- @description Verifies drawing an invisible layer is still a safe no-op.
     it("draw does not raise an error when invisible", function()
         local layer = lurek.parallax.newLayer({ texture = load_image(), visible = false })
         expect_no_error(function()
@@ -329,6 +433,8 @@ describe("LuaParallaxLayer draw", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.drawAuto
+    -- @description Verifies drawAuto is available and safe to call on a layer.
     it("drawAuto does not raise an error", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_no_error(function()
@@ -336,6 +442,9 @@ describe("LuaParallaxLayer draw", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.draw
+    -- @covers LuaParallaxLayer.setScrollFactor
+    -- @description Verifies drawing with a non-zero camera offset is error-free for a scrolling layer.
     it("draw with non-zero camera offset does not raise", function()
         local layer = lurek.parallax.newLayer({
             texture = load_image(),
@@ -347,9 +456,12 @@ describe("LuaParallaxLayer draw", function()
     end)
 end)
 
--- ── Clamp ────────────────────────────────────────────────────────────────────
+-- â”€â”€ Clamp â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxLayer clamp.
 describe("LuaParallaxLayer clamp", function()
+    -- @covers LuaParallaxLayer.setClamp
+    -- @description Verifies the layer clamp rectangle can be configured without error.
     it("setClamp does not raise", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         expect_no_error(function()
@@ -357,6 +469,9 @@ describe("LuaParallaxLayer clamp", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.setClamp
+    -- @covers LuaParallaxLayer.clearClamp
+    -- @description Verifies a previously configured clamp can be cleared without error.
     it("clearClamp does not raise after setClamp", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setClamp(-100, -100, 100, 100)
@@ -365,6 +480,9 @@ describe("LuaParallaxLayer clamp", function()
         end)
     end)
 
+    -- @covers LuaParallaxLayer.setClamp
+    -- @covers LuaParallaxLayer.draw
+    -- @description Verifies clamped layers remain drawable without error.
     it("draw after setClamp does not raise", function()
         local layer = lurek.parallax.newLayer({ texture = load_image() })
         layer:setClamp(-50, -50, 50, 50)
@@ -374,40 +492,63 @@ describe("LuaParallaxLayer clamp", function()
     end)
 end)
 
--- ── newSet ────────────────────────────────────────────────────────────────────
+-- â”€â”€ newSet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: lurek.parallax.newSet.
 describe("lurek.parallax.newSet", function()
+    -- @covers lurek.parallax.newSet
+    -- @description Creates a parallax set and verifies the factory returns userdata.
     it("returns userdata", function()
         local s = lurek.parallax.newSet("bg")
         expect_type("userdata", s)
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.type
+    -- @description Verifies a newly created parallax set reports the ParallaxSet type name.
     it("type() returns 'ParallaxSet'", function()
         local s = lurek.parallax.newSet("bg")
         expect_equal("ParallaxSet", s:type())
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.layerCount
+    -- @description Verifies a new parallax set starts with zero layers.
     it("layerCount starts at 0", function()
         local s = lurek.parallax.newSet("bg")
         expect_equal(0, s:layerCount())
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.getName
+    -- @description Verifies getName returns the name passed to the parallax set factory.
     it("getName returns the name passed to newSet", function()
         local s = lurek.parallax.newSet("my_scene")
         expect_equal("my_scene", s:getName())
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.setName
+    -- @covers LuaParallaxSet.getName
+    -- @description Renames a parallax set and verifies the updated name is returned.
     it("setName changes the name", function()
         local s = lurek.parallax.newSet("old")
         s:setName("new")
         expect_equal("new", s:getName())
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.isVisible
+    -- @description Verifies parallax sets are visible by default.
     it("isVisible returns true by default", function()
         local s = lurek.parallax.newSet("bg")
         expect_equal(true, s:isVisible())
     end)
 
+    -- @covers lurek.parallax.newSet
+    -- @covers LuaParallaxSet.setVisible
+    -- @covers LuaParallaxSet.isVisible
+    -- @description Toggles set visibility off and on and verifies both states round-trip.
     it("setVisible / isVisible round-trip", function()
         local s = lurek.parallax.newSet("bg")
         s:setVisible(false)
@@ -417,9 +558,13 @@ describe("lurek.parallax.newSet", function()
     end)
 end)
 
--- ── Set: addLayer / layerCount / removeLayerAt ────────────────────────────────
+-- â”€â”€ Set: addLayer / layerCount / removeLayerAt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxSet layer management.
 describe("LuaParallaxSet layer management", function()
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxSet.layerCount
+    -- @description Adds layers to a set and verifies the layer count increments for each insertion.
     it("addLayer increases layerCount", function()
         local s = lurek.parallax.newSet("bg")
         local img = load_image()
@@ -429,6 +574,10 @@ describe("LuaParallaxSet layer management", function()
         expect_equal(2, s:layerCount())
     end)
 
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxSet.removeLayerAt
+    -- @covers LuaParallaxSet.layerCount
+    -- @description Removes a valid layer index and verifies the removal succeeds and decrements the layer count.
     it("removeLayerAt with valid index returns true", function()
         local s = lurek.parallax.newSet("bg")
         s:addLayer(lurek.parallax.newLayer({ texture = load_image() }))
@@ -437,12 +586,18 @@ describe("LuaParallaxSet layer management", function()
         expect_equal(0, s:layerCount())
     end)
 
+    -- @covers LuaParallaxSet.removeLayerAt
+    -- @description Verifies removing an out-of-range layer index returns false.
     it("removeLayerAt with out-of-range index returns false", function()
         local s = lurek.parallax.newSet("bg")
         local ok = s:removeLayerAt(99)
         expect_equal(false, ok)
     end)
 
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxLayer.setZ
+    -- @covers LuaParallaxSet.sortByZ
+    -- @description Verifies sets observe mutations made through an external layer handle when sorting by z.
     it("mutations to layer are reflected in set (shared Rc)", function()
         local s = lurek.parallax.newSet("bg")
         local layer = lurek.parallax.newLayer({ texture = load_image(), z = 1 })
@@ -454,14 +609,20 @@ describe("LuaParallaxSet layer management", function()
     end)
 end)
 
--- ── Set: draw / update / sortByZ ─────────────────────────────────────────────
+-- â”€â”€ Set: draw / update / sortByZ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: LuaParallaxSet drawing.
 describe("LuaParallaxSet drawing", function()
+    -- @covers LuaParallaxSet.draw
+    -- @description Verifies drawing an empty parallax set is error-free.
     it("draw does not raise with zero layers", function()
         local s = lurek.parallax.newSet("bg")
         expect_no_error(function() s:draw(0, 0) end)
     end)
 
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxSet.draw
+    -- @description Verifies drawing a set with multiple layers and different z values is error-free.
     it("draw does not raise with multiple layers", function()
         local s = lurek.parallax.newSet("bg")
         local img = load_image()
@@ -470,12 +631,17 @@ describe("LuaParallaxSet drawing", function()
         expect_no_error(function() s:draw(300, 200) end)
     end)
 
+    -- @covers LuaParallaxSet.drawAuto
+    -- @description Verifies drawAuto is available and safe to call on a set.
     it("drawAuto does not raise", function()
         local s = lurek.parallax.newSet("bg")
         s:addLayer(lurek.parallax.newLayer({ texture = load_image() }))
         expect_no_error(function() s:drawAuto() end)
     end)
 
+    -- @covers LuaParallaxSet.setVisible
+    -- @covers LuaParallaxSet.draw
+    -- @description Verifies drawing an invisible parallax set remains a safe no-op.
     it("draw while invisible does not raise", function()
         local s = lurek.parallax.newSet("bg")
         s:addLayer(lurek.parallax.newLayer({ texture = load_image() }))
@@ -483,12 +649,19 @@ describe("LuaParallaxSet drawing", function()
         expect_no_error(function() s:draw(0, 0) end)
     end)
 
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxSet.update
+    -- @description Verifies updating a set forwards to its layers without error.
     it("update does not raise", function()
         local s = lurek.parallax.newSet("bg")
         s:addLayer(lurek.parallax.newLayer({ texture = load_image(), autoscroll_x = 50.0 }))
         expect_no_error(function() s:update(1.0 / 60.0) end)
     end)
 
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxSet.sortByZ
+    -- @covers LuaParallaxSet.draw
+    -- @description Sorts a multi-layer set by z and verifies the sorted set remains drawable.
     it("sortByZ does not raise with multiple layers of different z", function()
         local s = lurek.parallax.newSet("bg")
         local img = load_image()
@@ -501,9 +674,16 @@ describe("LuaParallaxSet drawing", function()
     end)
 end)
 
--- ── Scene-transition pattern ──────────────────────────────────────────────────
+-- â”€â”€ Scene-transition pattern â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Covers suite: Scene-transition: resetAutoscroll pattern.
 describe("Scene-transition: resetAutoscroll pattern", function()
+    -- @covers LuaParallaxSet.addLayer
+    -- @covers LuaParallaxLayer.update
+    -- @covers LuaParallaxSet.setVisible
+    -- @covers LuaParallaxLayer.resetAutoscroll
+    -- @covers LuaParallaxSet.draw
+    -- @description Simulates a scene transition by hiding a set, resetting each layer autoscroll state, and verifying the set still draws safely.
     it("resetAutoscroll on each layer in a set does not raise", function()
         local img = load_image()
         local layers = {

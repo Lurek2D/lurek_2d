@@ -6,7 +6,11 @@ local item = require("library.item")
 
 -- ─── Type registry ────────────────────────────────────────────────────────────
 
+-- @covers library.item.defineType
+-- @covers library.item.getType
+-- @description Covers item type registry definition, lookup, name enumeration, and clearing of registered item archetypes.
 describe("TypeRegistry", function()
+    -- @description Verifies case: clearTypes resets registry.
     it("clearTypes resets registry", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -14,6 +18,7 @@ describe("TypeRegistry", function()
         expect_equal(item.getType("sword"), nil)
     end)
 
+    -- @description Verifies case: defineType and getType round-trip.
     it("defineType and getType round-trip", function()
         item.clearTypes()
         item.defineType("axe", { category="weapon", base_stats={dmg=15}, base_tags={"equippable"} })
@@ -22,6 +27,7 @@ describe("TypeRegistry", function()
         expect_equal(def.base_stats.dmg, 15)
     end)
 
+    -- @description Verifies case: getTypeNames returns sorted names.
     it("getTypeNames returns sorted names", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -36,7 +42,10 @@ end)
 
 -- ─── Item object ──────────────────────────────────────────────────────────────
 
+-- @covers library.item.newItem
+-- @description Verifies item defaults and mutation helpers for stats, tags, counters, cloning, naming, slot assignment, and registry-seeded fields.
 describe("Item", function()
+    -- @description Verifies case: stats from base_stats.
     it("stats from base_stats", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10, spd=5}, base_tags={} })
@@ -45,6 +54,7 @@ describe("Item", function()
         expect_equal(it:getStat("spd"), 5)
     end)
 
+    -- @description Verifies case: setStat overrides base stat.
     it("setStat overrides base stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -53,6 +63,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), 99)
     end)
 
+    -- @description Verifies case: addStat accumulates delta.
     it("addStat accumulates delta", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -61,6 +72,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), 15)
     end)
 
+    -- @description Verifies case: removeStat clears the stat.
     it("removeStat clears the stat", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -69,6 +81,7 @@ describe("Item", function()
         expect_equal(it:getStat("dmg"), nil)
     end)
 
+    -- @description Verifies case: getStats returns shallow copy.
     it("getStats returns shallow copy", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -77,6 +90,7 @@ describe("Item", function()
         expect_equal(all.dmg, 10)
     end)
 
+    -- @description Verifies case: base_tags copied per instance.
     it("base_tags copied per instance", function()
         item.clearTypes()
         item.defineType("ring", { category="acc", base_stats={}, base_tags={"equippable","magic"} })
@@ -87,6 +101,7 @@ describe("Item", function()
         expect_equal(a:hasTag("equippable"), true)
     end)
 
+    -- @description Verifies case: addTag / removeTag / getTags.
     it("addTag / removeTag / getTags", function()
         item.clearTypes()
         local it = item.newItem("gem")
@@ -99,6 +114,7 @@ describe("Item", function()
         expect_equal(it:hasTag("rare"), false)
     end)
 
+    -- @description Verifies case: getCategory returns registry category.
     it("getCategory returns registry category", function()
         item.clearTypes()
         item.defineType("wand", { category="magic", base_stats={}, base_tags={} })
@@ -106,6 +122,7 @@ describe("Item", function()
         expect_equal(it:getCategory(), "magic")
     end)
 
+    -- @description Verifies case: setMeta / getMeta round-trip.
     it("setMeta / getMeta round-trip", function()
         item.clearTypes()
         local it = item.newItem("ancient_tome")
@@ -113,6 +130,7 @@ describe("Item", function()
         expect_equal(it:getMeta("origin"), "library")
     end)
 
+    -- @description Verifies case: setOwner / getOwner.
     it("setOwner / getOwner", function()
         item.clearTypes()
         local it = item.newItem("coin")
@@ -121,6 +139,7 @@ describe("Item", function()
         expect_equal(it:getOwner(), player)
     end)
 
+    -- @description Verifies case: clone creates independent copy (stats, tags, meta).
     it("clone creates independent copy (stats, tags, meta)", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={"equippable"} })
@@ -136,6 +155,7 @@ describe("Item", function()
         expect_equal(c:getStat("dmg"), 10)
     end)
 
+    -- @description Verifies case: getStats mutations don't affect item.
     it("getStats mutations don't affect item", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -148,7 +168,10 @@ end)
 
 -- ─── Stack ────────────────────────────────────────────────────────────────────
 
+-- @covers library.item.newStack
+-- @description Exercises generic item stacks for push or pop flow, indexing, filtering, sorting, snapshots, and capacity-aware behaviors.
 describe("Stack", function()
+    -- @description Verifies case: push / size / peek round-trip.
     it("push / size / peek round-trip", function()
         local s = item.newStack("test")
         local a = item.newItem("coin")
@@ -157,6 +180,7 @@ describe("Stack", function()
         expect_equal(s:peek(), a)
     end)
 
+    -- @description Verifies case: pop removes top.
     it("pop removes top", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -166,6 +190,7 @@ describe("Stack", function()
         expect_equal(s:size(), 1)
     end)
 
+    -- @description Verifies case: popBottom removes first item.
     it("popBottom removes first item", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -175,6 +200,7 @@ describe("Stack", function()
         expect_equal(s:size(), 1)
     end)
 
+    -- @description Verifies case: pushBottom inserts at index 1.
     it("pushBottom inserts at index 1", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -183,6 +209,7 @@ describe("Stack", function()
         expect_equal(s:popBottom(), b)
     end)
 
+    -- @description Verifies case: peekAt by 1-based index.
     it("peekAt by 1-based index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -190,6 +217,7 @@ describe("Stack", function()
         expect_equal(s:peekAt(2), b)
     end)
 
+    -- @description Verifies case: removeAt removes specific index.
     it("removeAt removes specific index", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local c = item.newItem("c")
@@ -199,6 +227,7 @@ describe("Stack", function()
         expect_equal(s:size(), 2)
     end)
 
+    -- @description Verifies case: insertAt inserts at position.
     it("insertAt inserts at position", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b"); local x = item.newItem("x")
@@ -208,6 +237,7 @@ describe("Stack", function()
         expect_equal(s:size(), 3)
     end)
 
+    -- @description Verifies case: findFirst returns matching item.
     it("findFirst returns matching item", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=10}, base_tags={} })
@@ -220,6 +250,7 @@ describe("Stack", function()
         expect_equal(found, sw)
     end)
 
+    -- @description Verifies case: getItems returns bottom-to-top copy.
     it("getItems returns bottom-to-top copy", function()
         local s = item.newStack("test")
         local a = item.newItem("a"); local b = item.newItem("b")
@@ -230,6 +261,7 @@ describe("Stack", function()
         expect_equal(all[2], b)
     end)
 
+    -- @description Verifies case: capacity limits push.
     it("capacity limits push", function()
         local s = item.newStack("tiny", 2)
         s:push(item.newItem("a"))
@@ -238,6 +270,7 @@ describe("Stack", function()
         expect_equal(s:push(item.newItem("c")), false)
     end)
 
+    -- @description Verifies case: clear empties stack.
     it("clear empties stack", function()
         local s = item.newStack("test")
         s:push(item.newItem("a"))
@@ -248,7 +281,10 @@ end)
 
 -- ─── ItemPool ─────────────────────────────────────────────────────────────────
 
+-- @covers library.item.newItemPool
+-- @description Tests weighted item pools for type management, random draws, weight mutation, emptiness checks, and total-weight bookkeeping.
 describe("ItemPool", function()
+    -- @description Verifies case: draw returns item from pool.
     it("draw returns item from pool", function()
         item.clearTypes()
         item.defineType("gold", { category="misc", base_stats={}, base_tags={} })
@@ -258,18 +294,21 @@ describe("ItemPool", function()
         expect_equal(drawn:getType(), "gold")
     end)
 
+    -- @description Verifies case: draw returns unknown item when empty.
     it("draw returns unknown item when empty", function()
         local pool = item.newItemPool()
         local drawn = pool:draw()
         expect_equal(drawn:getType(), "unknown")
     end)
 
+    -- @description Verifies case: size returns entry count.
     it("size returns entry count", function()
         local pool = item.newItemPool()
         pool:addType("a", 1); pool:addType("b", 2)
         expect_equal(pool:size(), 2)
     end)
 
+    -- @description Verifies case: drawTypes returns n items.
     it("drawTypes returns n items", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -279,6 +318,7 @@ describe("ItemPool", function()
         expect_equal(#drawn, 5)
     end)
 
+    -- @description Verifies case: drawUniqueTypes returns distinct type names.
     it("drawUniqueTypes returns distinct type names", function()
         item.clearTypes()
         item.defineType("a", { category="misc", base_stats={}, base_tags={} })
@@ -295,6 +335,7 @@ describe("ItemPool", function()
         for _, v in pairs(seen) do expect_equal(v, 1) end
     end)
 
+    -- @description Verifies case: setWeight updates total.
     it("setWeight updates total", function()
         item.clearTypes()
         local pool = item.newItemPool()
@@ -304,6 +345,7 @@ describe("ItemPool", function()
         expect_equal(entries[1].weight, 5.0)
     end)
 
+    -- @description Verifies case: remove decreases size.
     it("remove decreases size", function()
         local pool = item.newItemPool()
         pool:addType("common", 10); pool:addType("rare", 1)
@@ -311,6 +353,7 @@ describe("ItemPool", function()
         expect_equal(pool:size(), 1)
     end)
 
+    -- @description Verifies case: getEntries returns copy.
     it("getEntries returns copy", function()
         local pool = item.newItemPool()
         pool:addType("x", 2.0)
@@ -322,7 +365,10 @@ end)
 
 -- ─── StackHistory ─────────────────────────────────────────────────────────────
 
+-- @covers library.item.newStackHistory
+-- @description Covers history recording, pruning, source filtering, emptiness checks, and access to the latest recorded stack event.
 describe("StackHistory", function()
+    -- @description Verifies case: recordPush creates entry.
     it("recordPush creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "sword", 1)
@@ -333,6 +379,7 @@ describe("StackHistory", function()
         expect_equal(ents[1].item_type, "sword")
     end)
 
+    -- @description Verifies case: recordPop creates entry.
     it("recordPop creates entry", function()
         local h = item.newStackHistory(10)
         h:recordPop("bag", "gem", 0)
@@ -340,6 +387,7 @@ describe("StackHistory", function()
         expect_equal(ents[1].action, item.HistoryAction.Pop)
     end)
 
+    -- @description Verifies case: recordClear creates clear entry.
     it("recordClear creates clear entry", function()
         local h = item.newStackHistory(10)
         h:recordClear("bag")
@@ -347,12 +395,14 @@ describe("StackHistory", function()
         expect_equal(ents[1].action, item.HistoryAction.Clear)
     end)
 
+    -- @description Verifies case: bounded at max_entries.
     it("bounded at max_entries", function()
         local h = item.newStackHistory(3)
         for i = 1, 5 do h:recordCustom("src", "action_"..i, i) end
         expect_equal(h:count(), 3)
     end)
 
+    -- @description Verifies case: getLastN returns last n entries.
     it("getLastN returns last n entries", function()
         local h = item.newStackHistory(50)
         for i = 1, 5 do h:recordCustom("src", "ev_"..i, i) end
@@ -361,6 +411,7 @@ describe("StackHistory", function()
         expect_equal(last2[2].item_type, "ev_5")
     end)
 
+    -- @description Verifies case: clear resets log.
     it("clear resets log", function()
         local h = item.newStackHistory(10)
         h:recordCustom("x", "y", 1)
@@ -368,6 +419,7 @@ describe("StackHistory", function()
         expect_equal(h:count(), 0)
     end)
 
+    -- @description Verifies case: HistoryAction constants exist.
     it("HistoryAction constants exist", function()
         expect_equal(item.HistoryAction.Push,   "push")
         expect_equal(item.HistoryAction.Pop,    "pop")
@@ -378,7 +430,10 @@ end)
 
 -- ─── StackManager ─────────────────────────────────────────────────────────────
 
+-- @covers library.item.newStackManager
+-- @description Verifies stack-manager orchestration for named stacks, movement between stacks, aggregate counting, and existence checks.
 describe("StackManager", function()
+    -- @description Verifies case: addStack / getStack round-trip.
     it("addStack / getStack round-trip", function()
         local mgr = item.newStackManager()
         local s   = item.newStack("weapons")
@@ -386,6 +441,7 @@ describe("StackManager", function()
         expect_equal(mgr:getStack("weapons"), s)
     end)
 
+    -- @description Verifies case: removeStack returns true if existed.
     it("removeStack returns true if existed", function()
         local mgr = item.newStackManager()
         mgr:addStack("x", item.newStack("x"))
@@ -393,6 +449,7 @@ describe("StackManager", function()
         expect_equal(mgr:getStack("x"), nil)
     end)
 
+    -- @description Verifies case: keys returns sorted names.
     it("keys returns sorted names", function()
         local mgr = item.newStackManager()
         mgr:addStack("zz", item.newStack("zz"))
@@ -404,7 +461,10 @@ end)
 
 -- ─── Analysis ─────────────────────────────────────────────────────────────────
 
+-- @covers library.item.findNOfStat
+-- @description Tests selecting the top-N item indices by stat value while preserving the module's documented 0-based result convention.
 describe("findNOfStat", function()
+    -- @description Verifies case: returns top n indices (0-based).
     it("returns top n indices (0-based)", function()
         item.clearTypes()
         local items = {}
@@ -423,7 +483,10 @@ describe("findNOfStat", function()
     end)
 end)
 
+-- @covers library.item.groupByStat
+-- @description Verifies grouping items by stat value yields buckets keyed by each distinct stat.
 describe("groupByStat", function()
+    -- @description Verifies case: groups items by stat value.
     it("groups items by stat value", function()
         item.clearTypes()
         local items = {}
@@ -439,7 +502,10 @@ describe("groupByStat", function()
     end)
 end)
 
+-- @covers library.item.groupByTagPrefix
+-- @description Covers grouping items according to tags that share a specific prefix.
 describe("groupByTagPrefix", function()
+    -- @description Verifies case: groups items by tag prefix.
     it("groups items by tag prefix", function()
         item.clearTypes()
         local swords = {}
@@ -454,7 +520,10 @@ describe("groupByTagPrefix", function()
     end)
 end)
 
+-- @covers library.item.findSequences
+-- @description Exercises sequence detection for consecutive equal stat runs and the empty result case when no runs exist.
 describe("findSequences", function()
+    -- @description Verifies case: finds consecutive runs of same stat value.
     it("finds consecutive runs of same stat value", function()
         item.clearTypes()
         local items = {}
@@ -471,6 +540,7 @@ describe("findSequences", function()
         expect_equal(seqs[2].length, 3)
     end)
 
+    -- @description Verifies case: returns empty for all-distinct sequence.
     it("returns empty for all-distinct sequence", function()
         item.clearTypes()
         local items = {}
@@ -481,7 +551,10 @@ describe("findSequences", function()
     end)
 end)
 
+-- @covers library.item.newStackBuilder
+-- @description Validates stack builder recipes, overrides, shuffle-on-build behavior, validation helpers, and named stack creation.
 describe("StackBuilder", function()
+    -- @description Verifies case: build creates stack from recipe.
     it("build creates stack from recipe", function()
         item.clearTypes()
         item.defineType("arrow", { category="ammo", base_stats={}, base_tags={} })
@@ -493,6 +566,7 @@ describe("StackBuilder", function()
         expect_equal(s:size(), 5)
     end)
 
+    -- @description Verifies case: addWith applies stat overrides to built items.
     it("addWith applies stat overrides to built items", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={dmg=5}, base_tags={} })
@@ -506,6 +580,7 @@ describe("StackBuilder", function()
         expect_equal(items[2]:getStat("dmg"), 99)
     end)
 
+    -- @description Verifies case: setShuffleOnBuild does not lose items.
     it("setShuffleOnBuild does not lose items", function()
         item.clearTypes()
         item.defineType("card", { category="misc", base_stats={}, base_tags={} })
@@ -516,6 +591,7 @@ describe("StackBuilder", function()
         expect_equal(s:size(), 5)
     end)
 
+    -- @description Verifies case: validateEntries detects banned types.
     it("validateEntries detects banned types", function()
         item.clearTypes()
         item.defineType("bomb", { category="misc", base_stats={}, base_tags={} })
@@ -526,6 +602,7 @@ describe("StackBuilder", function()
         expect_equal(type(err), "string")
     end)
 
+    -- @description Verifies case: validateEntries passes clean recipe.
     it("validateEntries passes clean recipe", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -535,6 +612,7 @@ describe("StackBuilder", function()
         expect_equal(err, nil)
     end)
 
+    -- @description Verifies case: validateStack detects missing required type.
     it("validateStack detects missing required type", function()
         item.clearTypes()
         item.defineType("key", { category="misc", base_stats={}, base_tags={} })
@@ -545,6 +623,7 @@ describe("StackBuilder", function()
         expect_equal(type(err), "string")
     end)
 
+    -- @description Verifies case: buildNamed is alias for build.
     it("buildNamed is alias for build", function()
         item.clearTypes()
         item.defineType("gem", { category="misc", base_stats={}, base_tags={} })
@@ -558,13 +637,17 @@ end)
 
 -- ─── Item counters ────────────────────────────────────────────────────────────
 
+-- @covers library.item.newItem
+-- @description Adds focused counter coverage for unset defaults, mutation, deletion, shallow copies, and clone independence.
 describe("Item counters", function()
+    -- @description Verifies case: getCounter returns 0 for unset key.
     it("getCounter returns 0 for unset key", function()
         item.clearTypes()
         local it = item.newItem("thing")
         expect_equal(it:getCounter("charge"), 0)
     end)
 
+    -- @description Verifies case: setCounter / getCounter round-trip.
     it("setCounter / getCounter round-trip", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -572,6 +655,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("charge"), 5)
     end)
 
+    -- @description Verifies case: addCounter accumulates delta.
     it("addCounter accumulates delta", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -581,6 +665,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("durability"), 7)
     end)
 
+    -- @description Verifies case: addCounter creates counter at delta when absent.
     it("addCounter creates counter at delta when absent", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -588,6 +673,7 @@ describe("Item counters", function()
         expect_equal(v, 4)
     end)
 
+    -- @description Verifies case: removeCounter deletes the key.
     it("removeCounter deletes the key", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -596,6 +682,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("temp"), 0)
     end)
 
+    -- @description Verifies case: getCounters returns shallow copy.
     it("getCounters returns shallow copy", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -609,6 +696,7 @@ describe("Item counters", function()
         expect_equal(it:getCounter("a"), 1)
     end)
 
+    -- @description Verifies case: clone copies counters.
     it("clone copies counters", function()
         item.clearTypes()
         local it = item.newItem("thing")
@@ -622,7 +710,10 @@ end)
 
 -- ─── Item name / slot ─────────────────────────────────────────────────────────
 
+-- @covers library.item.newItem
+-- @description Covers item display names and slot metadata, including registry defaults and clone preservation.
 describe("Item name and slot", function()
+    -- @description Verifies case: getName seeds from type def name.
     it("getName seeds from type def name", function()
         item.clearTypes()
         item.defineType("legendary_sword", { name="Excalibur", category="weapon", base_stats={}, base_tags={} })
@@ -630,12 +721,14 @@ describe("Item name and slot", function()
         expect_equal(it:getName(), "Excalibur")
     end)
 
+    -- @description Verifies case: getName defaults to type_name when no def name.
     it("getName defaults to type_name when no def name", function()
         item.clearTypes()
         local it = item.newItem("plain_item")
         expect_equal(it:getName(), "plain_item")
     end)
 
+    -- @description Verifies case: setName / getName round-trip.
     it("setName / getName round-trip", function()
         item.clearTypes()
         local it = item.newItem("ring")
@@ -643,12 +736,14 @@ describe("Item name and slot", function()
         expect_equal(it:getName(), "Ring of Power")
     end)
 
+    -- @description Verifies case: getSlot returns empty string by default.
     it("getSlot returns empty string by default", function()
         item.clearTypes()
         local it = item.newItem("coin")
         expect_equal(it:getSlot(), "")
     end)
 
+    -- @description Verifies case: setSlot / getSlot round-trip.
     it("setSlot / getSlot round-trip", function()
         item.clearTypes()
         local it = item.newItem("sword")
@@ -656,6 +751,7 @@ describe("Item name and slot", function()
         expect_equal(it:getSlot(), "hand[0]")
     end)
 
+    -- @description Verifies case: clone copies slot and name.
     it("clone copies slot and name", function()
         item.clearTypes()
         local it = item.newItem("shield")
@@ -672,7 +768,10 @@ end)
 
 -- ─── Stack.peekBottom ─────────────────────────────────────────────────────────
 
+-- @covers library.item.newStack
+-- @description Verifies bottom-peek behavior returns the first pushed item without mutating stack contents.
 describe("Stack peekBottom", function()
+    -- @description Verifies case: returns first item without removing it.
     it("returns first item without removing it", function()
         local s = item.newStack("test")
         local a = item.newItem("a")
@@ -683,6 +782,7 @@ describe("Stack peekBottom", function()
         expect_equal(s:size(), 2)
     end)
 
+    -- @description Verifies case: returns nil on empty stack.
     it("returns nil on empty stack", function()
         local s = item.newStack("test")
         expect_equal(s:peekBottom(), nil)
@@ -691,18 +791,23 @@ end)
 
 -- ─── ItemPool extras ──────────────────────────────────────────────────────────
 
+-- @covers library.item.newItemPool
+-- @description Extends item-pool coverage for empty-state checks and total-weight updates after mutation.
 describe("ItemPool isEmpty and totalWeight", function()
+    -- @description Verifies case: isEmpty returns true when empty.
     it("isEmpty returns true when empty", function()
         local pool = item.newItemPool()
         expect_equal(pool:isEmpty(), true)
     end)
 
+    -- @description Verifies case: isEmpty returns false after addType.
     it("isEmpty returns false after addType", function()
         local pool = item.newItemPool()
         pool:addType("coin", 1)
         expect_equal(pool:isEmpty(), false)
     end)
 
+    -- @description Verifies case: totalWeight returns sum of weights.
     it("totalWeight returns sum of weights", function()
         local pool = item.newItemPool()
         pool:addType("common", 3)
@@ -710,6 +815,7 @@ describe("ItemPool isEmpty and totalWeight", function()
         expect_equal(pool:totalWeight(), 4)
     end)
 
+    -- @description Verifies case: totalWeight updates after setWeight.
     it("totalWeight updates after setWeight", function()
         local pool = item.newItemPool()
         pool:addType("a", 2)
@@ -717,6 +823,7 @@ describe("ItemPool isEmpty and totalWeight", function()
         expect_equal(pool:totalWeight(), 5)
     end)
 
+    -- @description Verifies case: totalWeight updates after remove.
     it("totalWeight updates after remove", function()
         local pool = item.newItemPool()
         pool:addType("x", 3)
@@ -728,18 +835,23 @@ end)
 
 -- ─── StackHistory extras ──────────────────────────────────────────────────────
 
+-- @covers library.item.newStackHistory
+-- @description Adds history coverage for emptiness, most-recent lookup, and source-based filtering of recorded actions.
 describe("StackHistory extras", function()
+    -- @description Verifies case: isEmpty is true on fresh history.
     it("isEmpty is true on fresh history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:isEmpty(), true)
     end)
 
+    -- @description Verifies case: isEmpty is false after record.
     it("isEmpty is false after record", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
         expect_equal(h:isEmpty(), false)
     end)
 
+    -- @description Verifies case: last returns most recent entry.
     it("last returns most recent entry", function()
         local h = item.newStackHistory(10)
         h:recordPush("bag", "coin", 1)
@@ -748,11 +860,13 @@ describe("StackHistory extras", function()
         expect_equal(e.item_type, "special")
     end)
 
+    -- @description Verifies case: last returns nil on empty history.
     it("last returns nil on empty history", function()
         local h = item.newStackHistory(10)
         expect_equal(h:last(), nil)
     end)
 
+    -- @description Verifies case: entriesFor filters by source.
     it("entriesFor filters by source", function()
         local h = item.newStackHistory(20)
         h:recordPush("bag",   "coin",  1)
@@ -767,18 +881,23 @@ end)
 
 -- ─── StackManager extras ──────────────────────────────────────────────────────
 
+-- @covers library.item.newStackManager
+-- @description Extends stack-manager coverage for creation helpers, top moves, typed moves, total counting, and error paths on missing stacks.
 describe("StackManager extras", function()
+    -- @description Verifies case: hasStack returns false when missing.
     it("hasStack returns false when missing", function()
         local mgr = item.newStackManager()
         expect_equal(mgr:hasStack("unknown"), false)
     end)
 
+    -- @description Verifies case: hasStack returns true after addStack.
     it("hasStack returns true after addStack", function()
         local mgr = item.newStackManager()
         mgr:addStack("inv", item.newStack("inv"))
         expect_equal(mgr:hasStack("inv"), true)
     end)
 
+    -- @description Verifies case: createStack adds empty unlimited stack.
     it("createStack adds empty unlimited stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("draw")
@@ -787,6 +906,7 @@ describe("StackManager extras", function()
         expect_equal(s:size(), 0)
     end)
 
+    -- @description Verifies case: createStackCapped respects capacity.
     it("createStackCapped respects capacity", function()
         local mgr = item.newStackManager()
         mgr:createStackCapped("hand", 3)
@@ -795,6 +915,7 @@ describe("StackManager extras", function()
         expect_equal(s:isFull(), true)
     end)
 
+    -- @description Verifies case: totalItems sums across all stacks.
     it("totalItems sums across all stacks", function()
         local mgr = item.newStackManager()
         mgr:createStack("a")
@@ -805,6 +926,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:totalItems(), 3)
     end)
 
+    -- @description Verifies case: moveItem moves item between stacks.
     it("moveItem moves item between stacks", function()
         item.clearTypes()
         item.defineType("coin", { category="misc", base_stats={}, base_tags={} })
@@ -819,6 +941,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:getStack("dst"):size(), 1)
     end)
 
+    -- @description Verifies case: moveItem returns error for missing stack.
     it("moveItem returns error for missing stack", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -827,6 +950,7 @@ describe("StackManager extras", function()
         expect_equal(type(err), "string")
     end)
 
+    -- @description Verifies case: moveItemByType finds item by type.
     it("moveItemByType finds item by type", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -841,6 +965,7 @@ describe("StackManager extras", function()
         expect_equal(mgr:getStack("equip"):size(), 1)
     end)
 
+    -- @description Verifies case: moveItemByType returns error when type not found.
     it("moveItemByType returns error when type not found", function()
         local mgr = item.newStackManager()
         mgr:createStack("src")
@@ -850,6 +975,7 @@ describe("StackManager extras", function()
         expect_equal(type(err), "string")
     end)
 
+    -- @description Verifies case: moveTop moves the top item.
     it("moveTop moves the top item", function()
         item.clearTypes()
         item.defineType("ball", { category="misc", base_stats={}, base_tags={} })
@@ -868,7 +994,10 @@ end)
 
 -- ─── Slot ─────────────────────────────────────────────────────────────────────
 
+-- @covers library.item.newSlot
+-- @description Tests slot containers for bounded capacity, indexed removal, peeking, clearing, and tag or type presence checks.
 describe("Slot", function()
+    -- @description Verifies case: push / size / peek round-trip.
     it("push / size / peek round-trip", function()
         local s = item.newSlot("weapon_slot")
         local sword = item.newItem("sword")
@@ -877,17 +1006,20 @@ describe("Slot", function()
         expect_equal(s:peek(), sword)
     end)
 
+    -- @description Verifies case: isEmpty returns true when empty.
     it("isEmpty returns true when empty", function()
         local s = item.newSlot("slot")
         expect_equal(s:isEmpty(), true)
     end)
 
+    -- @description Verifies case: isEmpty returns false after push.
     it("isEmpty returns false after push", function()
         local s = item.newSlot("slot")
         s:push(item.newItem("x"))
         expect_equal(s:isEmpty(), false)
     end)
 
+    -- @description Verifies case: isFull blocks push at capacity.
     it("isFull blocks push at capacity", function()
         local s = item.newSlot("hand", 1)
         s:push(item.newItem("sword"))
@@ -895,6 +1027,7 @@ describe("Slot", function()
         expect_equal(s:push(item.newItem("shield")), false)
     end)
 
+    -- @description Verifies case: getCapacity / setCapacity round-trip.
     it("getCapacity / setCapacity round-trip", function()
         local s = item.newSlot("ring_slot", 2)
         expect_equal(s:getCapacity(), 2)
@@ -902,6 +1035,7 @@ describe("Slot", function()
         expect_equal(s:getCapacity(), 4)
     end)
 
+    -- @description Verifies case: pop removes last item.
     it("pop removes last item", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -911,6 +1045,7 @@ describe("Slot", function()
         expect_equal(s:size(), 1)
     end)
 
+    -- @description Verifies case: removeAt removes item at index.
     it("removeAt removes item at index", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -921,6 +1056,7 @@ describe("Slot", function()
         expect_equal(s:size(), 1)
     end)
 
+    -- @description Verifies case: peekAt peeks without removal.
     it("peekAt peeks without removal", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -930,6 +1066,7 @@ describe("Slot", function()
         expect_equal(s:size(), 2)
     end)
 
+    -- @description Verifies case: clear returns all items.
     it("clear returns all items", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -940,6 +1077,7 @@ describe("Slot", function()
         expect_equal(s:isEmpty(), true)
     end)
 
+    -- @description Verifies case: items returns shallow copy.
     it("items returns shallow copy", function()
         local s = item.newSlot("slot")
         local a = item.newItem("a")
@@ -949,6 +1087,7 @@ describe("Slot", function()
         expect_equal(all[1], a)
     end)
 
+    -- @description Verifies case: hasItemWithTag detects tagged items.
     it("hasItemWithTag detects tagged items", function()
         item.clearTypes()
         local s = item.newSlot("slot")
@@ -959,6 +1098,7 @@ describe("Slot", function()
         expect_equal(s:hasItemWithTag("blessed"), false)
     end)
 
+    -- @description Verifies case: hasItemOfType detects item type.
     it("hasItemOfType detects item type", function()
         item.clearTypes()
         item.defineType("sword", { category="weapon", base_stats={}, base_tags={} })
@@ -968,6 +1108,7 @@ describe("Slot", function()
         expect_equal(s:hasItemOfType("bow"), false)
     end)
 
+    -- @description Verifies case: getName returns the slot name.
     it("getName returns the slot name", function()
         local s = item.newSlot("offhand")
         expect_equal(s:getName(), "offhand")
@@ -976,7 +1117,10 @@ end)
 
 -- ─── sortedIndicesByStat descending ──────────────────────────────────────────
 
+-- @covers library.item.sortedIndicesByStat
+-- @description Verifies stat-based index sorting for ascending, descending, and default-order calls.
 describe("sortedIndicesByStat descending", function()
+    -- @description Verifies case: ascending=false returns highest-first indices.
     it("ascending=false returns highest-first indices", function()
         item.clearTypes()
         local items = {}
@@ -991,6 +1135,7 @@ describe("sortedIndicesByStat descending", function()
         expect_equal(desc[2], 3)
     end)
 
+    -- @description Verifies case: ascending=true matches original behaviour.
     it("ascending=true matches original behaviour", function()
         item.clearTypes()
         local items = {}
@@ -1004,6 +1149,7 @@ describe("sortedIndicesByStat descending", function()
         expect_equal(asc[3], 1)  -- val=10
     end)
 
+    -- @description Verifies case: nil ascending defaults to ascending.
     it("nil ascending defaults to ascending", function()
         item.clearTypes()
         local items = {}

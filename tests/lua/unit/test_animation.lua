@@ -1,4 +1,4 @@
--- Lurek2D Lua BDD tests for lurek.animation
+﻿-- Lurek2D Lua BDD tests for lurek.animation
 -- Headless: no GPU, no audio, no window.
 -- @covers lurek.animation.new
 -- @covers lurek.animation.addFrame
@@ -23,52 +23,82 @@
 -- @covers lurek.animation.setFrame
 
 
+-- @description Covers suite: lurek.animation.
 describe("lurek.animation", function()
+    -- @description Covers suite: module interface.
     describe("module interface", function()
+        -- @covers lurek.animation.new
+        -- @description Verifies the animation module exposes the new() factory used to create animation userdata.
         it("exposes new factory", function()
             expect_type("function", lurek.animation.new)
         end)
     end)
 
+    -- @description Covers suite: new().
     describe("new()", function()
+        -- @covers lurek.animation.new
+        -- @description Confirms lurek.animation.new returns animation userdata rather than a plain Lua table.
         it("returns a userdata object", function()
             local a = lurek.animation.new()
             expect_type("userdata", a)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.getFrameCount
+        -- @description Checks that a freshly created animation reports zero frames before any frame data is added.
         it("getFrameCount returns 0 on empty animation", function()
             local a = lurek.animation.new()
             expect_equal(0, a:getFrameCount())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.getClipCount
+        -- @description Checks that a new animation starts with no named clips registered.
         it("getClipCount returns 0 with no clips", function()
             local a = lurek.animation.new()
             expect_equal(0, a:getClipCount())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.isPlaying
+        -- @description Verifies isPlaying() stays false until playback is explicitly started.
         it("isPlaying returns false before play()", function()
             local a = lurek.animation.new()
             expect_equal(false, a:isPlaying())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.getClip
+        -- @description Verifies getClip() returns nil when no clip has been selected for playback.
         it("getClip returns nil before play()", function()
             local a = lurek.animation.new()
             expect_equal(nil, a:getClip())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.getSpeed
+        -- @description Confirms newly created animations start with the default playback speed of 1.0.
         it("getSpeed returns default 1.0", function()
             local a = lurek.animation.new()
             expect_near(1.0, a:getSpeed(), 0.001)
         end)
     end)
 
+    -- @description Covers suite: addFrame().
     describe("addFrame()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @description Verifies the first added frame is assigned index 0.
         it("returns an index starting from 0", function()
             local a = lurek.animation.new()
             local idx = a:addFrame(0, 0, 32, 32)
             expect_equal(0, idx)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.getFrameCount
+        -- @description Confirms each addFrame() call increments the animation frame count.
         it("increments frame count", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -77,13 +107,21 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: addFramesFromGrid().
     describe("addFramesFromGrid()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFramesFromGrid
+        -- @description Verifies addFramesFromGrid() returns the number of frames it generated from the grid slice.
         it("returns the number of frames added", function()
             local a = lurek.animation.new()
             local n = a:addFramesFromGrid(128, 128, 32, 32, 0, 4)
             expect_equal(4, n)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFramesFromGrid
+        -- @covers lurek.animation.getFrameCount
+        -- @description Confirms grid-imported frames become visible through getFrameCount().
         it("increases frame count by the returned amount", function()
             local a = lurek.animation.new()
             local n = a:addFramesFromGrid(64, 64, 32, 32, 0, 2)
@@ -91,7 +129,13 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: addClip().
     describe("addClip()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.getClipCount
+        -- @description Verifies addClip() registers a named clip once the referenced frames exist.
         it("increases clip count by one", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -100,7 +144,14 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: play() / stop().
     describe("play() / stop()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.isPlaying
+        -- @description Confirms play() succeeds for a valid clip and flips isPlaying() to true.
         it("play transitions isPlaying to true", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -110,12 +161,22 @@ describe("lurek.animation", function()
             expect_equal(true, a:isPlaying())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.play
+        -- @description Verifies play() returns false instead of starting playback when the clip name is unknown.
         it("play returns false for unknown clip", function()
             local a = lurek.animation.new()
             local ok = a:play("nonexistent")
             expect_equal(false, ok)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.stop
+        -- @covers lurek.animation.isPlaying
+        -- @description Confirms stop() halts an active clip and makes isPlaying() report false again.
         it("stop makes isPlaying false", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -126,7 +187,12 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: setSpeed() / getSpeed().
     describe("setSpeed() / getSpeed()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.setSpeed
+        -- @covers lurek.animation.getSpeed
+        -- @description Verifies setSpeed() persists the requested playback speed for later reads.
         it("round-trips the speed value", function()
             local a = lurek.animation.new()
             a:setSpeed(2.5)
@@ -134,7 +200,15 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: update() + getQuad().
     describe("update() + getQuad()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.getQuad
+        -- @description Confirms update() prepares the current frame quad once a valid clip is playing.
         it("getQuad returns a table after play + update", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 32, 32)
@@ -149,6 +223,9 @@ describe("lurek.animation", function()
             expect_type("number", q.h)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.getQuad
+        -- @description Verifies getQuad() returns nil when no clip is currently playing.
         it("getQuad returns nil when not playing", function()
             local a = lurek.animation.new()
             local q = a:getQuad()
@@ -156,13 +233,20 @@ describe("lurek.animation", function()
         end)
     end)
 
+    -- @description Covers suite: pollEvents().
     describe("pollEvents()", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.pollEvents
+        -- @description Confirms pollEvents() always returns a Lua table, even when no events are pending.
         it("returns a table", function()
             local a = lurek.animation.new()
             local evs = a:pollEvents()
             expect_type("table", evs)
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.pollEvents
+        -- @description Verifies idle animations produce an empty event queue.
         it("returns empty table when idle", function()
             local a = lurek.animation.new()
             local evs = a:pollEvents()
@@ -170,9 +254,19 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── pause / resume ──────────────────────────────────────────────
+    -- â”€â”€ pause / resume â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: pause and resume.
     describe("pause and resume", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.pause
+        -- @covers lurek.animation.isPlaying
+        -- @covers lurek.animation.getCurrentFrame
+        -- @covers lurek.animation.update
+        -- @description Verifies pause() freezes playback state so update() no longer advances the current frame.
         it("pause stops advancement", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -186,6 +280,15 @@ describe("lurek.animation", function()
             expect_equal(f_before, a:getCurrentFrame())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.pause
+        -- @covers lurek.animation.resume
+        -- @covers lurek.animation.isPlaying
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Confirms resume() restarts playback without rewinding the paused frame index.
         it("resume continues from paused frame", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -200,9 +303,17 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── setFrame ────────────────────────────────────────────────────
+    -- â”€â”€ setFrame â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: setFrame.
     describe("setFrame", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.setFrame
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Verifies setFrame() jumps playback to the requested frame index inside the active clip.
         it("sets playback to a specific frame index", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -215,9 +326,16 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── getCurrentFrame ─────────────────────────────────────────────
+    -- â”€â”€ getCurrentFrame â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: getCurrentFrame.
     describe("getCurrentFrame", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Confirms a freshly started clip begins on frame 0.
         it("returns 0 at start of clip", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -228,9 +346,16 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── isLooping ───────────────────────────────────────────────────
+    -- â”€â”€ isLooping â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: isLooping.
     describe("isLooping", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.isLooping
+        -- @description Verifies isLooping() reports true for a looping clip definition.
         it("returns true for looping clip", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -239,6 +364,12 @@ describe("lurek.animation", function()
             expect_true(a:isLooping())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.isLooping
+        -- @description Verifies isLooping() reports false for a non-looping clip definition.
         it("returns false for non-looping clip", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -248,9 +379,17 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── event lifecycle ─────────────────────────────────────────────
+    -- â”€â”€ event lifecycle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: event lifecycle.
     describe("event lifecycle", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.pollEvents
+        -- @description Confirms a non-looping clip emits a finished event after advancing past its final frame.
         it("non-looping clip emits Finished event", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -265,6 +404,13 @@ describe("lurek.animation", function()
             expect_true(found, "expected Finished event")
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.pollEvents
+        -- @description Confirms a looping clip emits a looped event after playback wraps to the start.
         it("looping clip emits Looped event", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -279,6 +425,13 @@ describe("lurek.animation", function()
             expect_true(found, "expected Looped event")
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.pollEvents
+        -- @description Verifies pollEvents() drains queued playback events so a second poll is empty.
         it("pollEvents drains events", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -291,9 +444,18 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── speed edge cases ────────────────────────────────────────────
+    -- â”€â”€ speed edge cases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: speed edge cases.
     describe("speed edge cases", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.setSpeed
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Confirms a playback speed of 0 freezes the current frame across update() calls.
         it("speed 0 freezes playback", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -306,6 +468,10 @@ describe("lurek.animation", function()
             expect_equal(f0, a:getCurrentFrame())
         end)
 
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.setSpeed
+        -- @covers lurek.animation.getSpeed
+        -- @description Verifies negative speed inputs are clamped so the stored speed never goes below zero.
         it("setSpeed clamps negative to 0", function()
             local a = lurek.animation.new()
             a:setSpeed(-5)
@@ -313,9 +479,17 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── clip switching ──────────────────────────────────────────────
+    -- â”€â”€ clip switching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: clip switching.
     describe("clip switching", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Confirms starting a different clip resets playback to the new clip's first frame.
         it("switching clips resets frame to 0", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)
@@ -329,9 +503,15 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── addClipFromGrid ─────────────────────────────────────────────
+    -- â”€â”€ addClipFromGrid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: addClipFromGrid.
     describe("addClipFromGrid", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addClipFromGrid
+        -- @covers lurek.animation.getClipCount
+        -- @covers lurek.animation.getFrameCount
+        -- @description Verifies addClipFromGrid() creates both the clip entry and its backing frames in one call.
         it("creates clip from grid in one call", function()
             local a = lurek.animation.new()
             expect_no_error(function()
@@ -342,9 +522,17 @@ describe("lurek.animation", function()
         end)
     end)
 
-    -- ── frame advancement precision ─────────────────────────────────
+    -- â”€â”€ frame advancement precision â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    -- @description Covers suite: frame advancement.
     describe("frame advancement", function()
+        -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.getCurrentFrame
+        -- @description Confirms update(0) leaves the current frame unchanged.
         it("zero dt does not advance frame", function()
             local a = lurek.animation.new()
             a:addFrame(0, 0, 16, 16)

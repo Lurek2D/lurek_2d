@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Particle + Timer
+﻿-- Lurek2D Integration Test: Particle + Timer
 -- Tests time-based particle emission control.
 -- @covers lurek.particle.newEmitter
 -- @covers lurek.timer.getTime
 
+-- @description Covers suite: integration: particle emitter driven by timer.
 describe("integration: particle emitter driven by timer", function()
+    -- @covers lurek.particle.newEmitter
+    -- @covers lurek.timer.getTime
+    -- @description Verifies a particle emitter can be created and configured in a timer-driven update context without errors.
     it("emitter created and configured without error", function()
         expect_no_error(function()
             local pe = lurek.particle.newEmitter()
@@ -14,6 +18,9 @@ describe("integration: particle emitter driven by timer", function()
         end)
     end)
 
+    -- @covers lurek.particle.Emitter.emit
+    -- @covers lurek.timer.getTime
+    -- @description Verifies a particle emitter can schedule repeated bursts using elapsed time while timer readings remain monotonic.
     it("emitter tracks time between bursts", function()
         local pe             = lurek.particle.newEmitter()
         local burst_interval = 0.5  -- seconds
@@ -45,6 +52,9 @@ describe("integration: particle emitter driven by timer", function()
         expect_true(t1 >= t0, "timer is monotonic")
     end)
 
+    -- @covers lurek.particle.Emitter.setPosition
+    -- @covers lurek.timer
+    -- @description Verifies emitter positions can be updated frame by frame along a time-based trail.
     it("emitter position can be updated each frame", function()
         local pe    = lurek.particle.newEmitter()
         local trail = {}

@@ -1,4 +1,4 @@
--- Golden test: math — deterministic text output comparison
+﻿-- Golden test: math â€” deterministic text output comparison
 -- @golden
 -- @covers lurek.math.pi
 -- @covers lurek.math.sin
@@ -7,7 +7,16 @@
 -- @covers lurek.math.sqrt
 -- @covers lurek.math.rad
 
+-- @description Covers suite: golden: math Math constants and trig identities.
 describe("golden: math Math constants and trig identities", function()
+    -- @covers lurek.math.pi
+    -- @covers lurek.math.exp
+    -- @covers lurek.math.sqrt
+    -- @covers lurek.math.rad
+    -- @covers lurek.math.sin
+    -- @covers lurek.math.cos
+    -- @covers expect_evidence_created
+    -- @description Writes math_golden.txt with fixed constant values and sin/cos rows for every 45 degrees from 0 through 360, then checks that the evidence file exists.
     it("produces deterministic text output", function()
 
         local output = {}
@@ -29,6 +38,10 @@ describe("golden: math Math constants and trig identities", function()
         expect_evidence_created(path)
     end)
 
+    -- @golden
+    -- @covers expect_golden_text_match
+    -- @covers expect_golden_file_match
+    -- @description Compares math_golden.txt and the additional all_curves_gallery.png and comparison_chart.png artifacts against their committed math golden samples.
     it("matches golden sample", function()
         local evidence = evidence_output_dir("math") .. "math_golden.txt"
         local golden = "tests/lua/golden/samples/math/math_golden.txt"

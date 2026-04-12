@@ -1,10 +1,14 @@
--- Lurek2D Integration Test: Animation + Timer
+﻿-- Lurek2D Integration Test: Animation + Timer
 -- Tests timer-driven animation playback pacing.
 -- @covers lurek.animation.newTimeline
 -- @covers lurek.timer.getTime
 -- @covers lurek.timer.getDelta
 
+-- @description Covers suite: integration: animation driven by timer delta.
 describe("integration: animation driven by timer delta", function()
+    -- @covers lurek.animation.Timeline.update
+    -- @covers lurek.timer.getDelta
+    -- @description Verifies repeated timer-sized deltas advance a looping timeline without producing negative or runaway elapsed time.
     it("timeline advances by injected delta", function()
         local tl = lurek.animation.newTimeline()
         tl:addFrame(0.0, {sprite = "idle_0"})
@@ -24,6 +28,9 @@ describe("integration: animation driven by timer delta", function()
         expect_true(elapsed < 1.1, "looping timeline elapsed < 1.1s")
     end)
 
+    -- @covers lurek.animation.Timeline.update
+    -- @covers lurek.timer.getTime
+    -- @description Verifies animation updates can run alongside the timer API while reported engine time remains monotonic.
     it("timer.getTime is monotonic over updates", function()
         local t0 = lurek.timer.getTime()
         local tl = lurek.animation.newTimeline()
@@ -39,6 +46,9 @@ describe("integration: animation driven by timer delta", function()
         expect_true(t1 >= t0, "timer is monotonic")
     end)
 
+    -- @covers lurek.animation.Timeline.seek
+    -- @covers lurek.timer
+    -- @description Verifies seeking an animation to simulated times returns frame data at the expected timeline positions.
     it("animation frame changes at correct simulated time", function()
         local tl = lurek.animation.newTimeline()
         tl:addFrame(0.0, {frame = 1})
@@ -56,6 +66,9 @@ describe("integration: animation driven by timer delta", function()
         expect_not_nil(f1, "frame at t=0.25 is not nil")
     end)
 
+    -- @covers lurek.animation.Timeline.pause
+    -- @covers lurek.timer.getDelta
+    -- @description Verifies sampling timer delta does not advance a paused animation timeline and its state remains paused.
     it("paused animation preserves elapsed time on getDelta calls", function()
         local dt = lurek.timer.getDelta()
         expect_type("number", dt, "getDelta returns number")

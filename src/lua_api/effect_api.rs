@@ -1,6 +1,5 @@
 //! `lurek.effect` — Composable visual effects: post-processing pipeline and screen overlays.
 
-use super::render_api::LuaImageData;
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -1139,7 +1138,7 @@ impl LuaUserData for LuaOverlay {
         /// @return ImageData
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
             let img = this.inner.draw_state_to_image(w, h);
-            Ok(LuaImageData { inner: img })
+            Ok(img)
         });
 
         // -- type --

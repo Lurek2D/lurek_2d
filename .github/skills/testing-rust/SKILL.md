@@ -726,8 +726,9 @@ Evidence test files (`tests/lua/evidence/`) prove that side-effect-producing API
 - The `it()` block passes if the file was created at the expected path without errors; fails if the write threw an error.
 - **Never add value assertions** about the content — no `expect_equal`, no pixel checks, no format inspection. That is the golden test's job.
 - Evidence tests are for human-in-the-loop review (open the PNGs, listen to the audio) and as source material for golden tests.
-- Each evidence test writes to `tests/lua/evidence/output/<module>/` and the directory must exist before the test runs (create it at the top of the file or in a setup block).
-
+- Each evidence test writes to `tests/lua/evidence/output/<module>/` and the directory must exist before the test runs (create it at the top of the file or in a setup block).- **MUST use the module's `lurek.*` API** — The output content MUST be produced by calling the `lurek.*` module under test. An evidence test that draws shapes manually using only `setPixel` / `fill` / `drawRect` without exercising any meaningful domain module API is **invalid** and must be rewritten or deleted.
+- **Litmus test (read before writing any evidence test):** "If the module's Lua API was removed, would the output PNG/file look different?" If NO — the test is invalid. It only tests `newImageData`, not the module.
+- **Four mandatory steps:** (1) CREATE — instantiate the module object via `lurek.*` API; (2) CONFIGURE — call API methods to set module state; (3) EXECUTE — run the module to produce output (update loop, findPath, etc.); (4) DUMP — save what the module produced to a file. Steps 1–3 must touch the module being evidenced.
 ```lua
 -- CORRECT: evidence test creates a real file
 local OUT = "tests/lua/evidence/output/particle/"
@@ -750,11 +751,17 @@ end)
 
 ### Golden Tests — Compare Only
 
-Golden test files (`tests/lua/golden/`) verify that deterministic output matches a saved reference baseline. Rules:
+Golden test files (`tests/lua/golden/`) verify that deterministic evidence output matches a saved reference baseline.
 
-- **Compare content only** — read a file, re-run a deterministic algorithm, then compare the output against the expected value stored in `tests/lua/golden/samples/<module>/`.
-- **Never create or produce new files** in a golden test — evidence tests do the creation; golden tests only check regression.
-- Golden tests fail if output has changed from the baseline, not if output can't be produced.
+**Golden Test Contract — MANDATORY:**
+- A golden test is a **comparison harness only**. It must NEVER contain logic that creates content.
+- **Never call `lurek.*` module API to produce new output** in a golden test — that belongs in the evidence test.
+- **Never write new files** in a golden test — evidence tests do the writing; golden tests only compare.
+- Every `it()` block in a golden test must call a comparison helper (`expect_files_equal`, `expect_png_near`, `expect_text_equal`, etc.) and nothing else.
+- Reference sample files live in `tests/lua/golden/samples/<module>/` — committed once, never changed except to intentionally update a baseline.
+- **If a golden test contains content-creation code, move it** to the corresponding evidence test immediately.
+
+Golden tests fail when output diverges from the baseline. They do NOT produce output themselves.
 
 ```lua
 -- CORRECT: golden test re-runs algorithm and compares against baseline

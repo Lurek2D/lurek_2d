@@ -1,9 +1,9 @@
--- test_evidence_pathfinding.lua
+﻿-- test_evidence_pathfinding.lua
 -- Evidence test: lurek.pathfinding API contracts and visual grid evidence
 
 local OUT = "tests/lua/evidence/output/pathfinding/"
 
--- ── helpers ──────────────────────────────────────────────────────────────────
+-- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 --- Draw a NavGrid as a small PNG (white = walkable, black = blocked, red dots = path).
 local function draw_nav_grid(grid, path, w, h, scale)
@@ -41,29 +41,44 @@ local function draw_nav_grid(grid, path, w, h, scale)
     return img
 end
 
--- ── tests ────────────────────────────────────────────────────────────────────
+-- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers lurek.pathfinding.newNavGrid
+-- @covers lurek.pathfinding.newUnitPathfinder
+-- @description Covers suite: Evidence: lurek.pathfinding A* basic.
 describe("Evidence: lurek.pathfinding A* basic", function()
 
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @description Tests if `newNavGrid` correctly instantiates a grid of specified dimensions without errors.
     it("newNavGrid creates a grid", function()
         local grid = lurek.pathfinding.newNavGrid(10, 10)
     end)
 
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @description Validates that immediately after 2D grid instance generation, the underlying internal cost memory defaults correctly to 1.
     it("cell costs default to 1 (walkable)", function()
         local grid = lurek.pathfinding.newNavGrid(8, 8)
     end)
 
+    -- @covers NavGrid:setBlocked
+    -- @covers NavGrid:isBlocked
+    -- @description Tests boolean state mutation on grid cell blocking. Verifies that passing true blocks a specific node coordinate, and passing false subsequently clears it properly.
     it("setBlocked / isBlocked round-trip", function()
         local grid = lurek.pathfinding.newNavGrid(8, 8)
         grid:setBlocked(3, 3, true)
         grid:setBlocked(3, 3, false)
     end)
 
+    -- @covers NavGrid:setCost
+    -- @covers NavGrid:getCost
+    -- @description Tests integer cost assignments on terrain nodes mutating the underlying map representation, validating correct mapping assignment matching.
     it("setCost / getCost round-trip", function()
         local grid = lurek.pathfinding.newNavGrid(8, 8)
         grid:setCost(4, 4, 5)
     end)
 
+    -- @covers UnitPathfinder:findPath
+    -- @description Generates a path over unobstructed default terrain. Proof-test returning a successful linear/navigable node collection array.
     it("findPath returns a path in an open grid", function()
         local grid = lurek.pathfinding.newNavGrid(10, 10)
         local pf   = lurek.pathfinding.newUnitPathfinder(grid)
@@ -71,6 +86,8 @@ describe("Evidence: lurek.pathfinding A* basic", function()
         -- First waypoint should be near start, last near goal
     end)
 
+    -- @covers UnitPathfinder:findPath
+    -- @description Ensures pathfinding fails gracefully (returning nil/null payload) instead of infinite loops when the target coordinate is explicitly blocked.
     it("findPath returns nil when goal is blocked", function()
         local grid = lurek.pathfinding.newNavGrid(8, 8)
         grid:setBlocked(8, 8, true)
@@ -78,7 +95,10 @@ describe("Evidence: lurek.pathfinding A* basic", function()
         local path = pf:findPath(1, 1, 8, 8)
     end)
 
-    it("path avoids walls — PNG evidence: astar_basic", function()
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Verifies A* spatial awareness navigating around a rigid wall gap by exporting a PNG visual array showing path trace routing accurately passing through the non-blocked slot.
+    it("path avoids walls â€” PNG evidence: astar_basic", function()
         local W, H = 20, 15
         local grid = lurek.pathfinding.newNavGrid(W, H)
 
@@ -97,9 +117,14 @@ describe("Evidence: lurek.pathfinding A* basic", function()
     end)
 end)
 
+-- @covers lurek.pathfinding.newUnitPathfinder
+-- @covers UnitPathfinder:findPath
+-- @description Covers suite: Evidence: lurek.pathfinding weighted terrain.
 describe("Evidence: lurek.pathfinding weighted terrain", function()
 
-    it("higher-cost terrain is avoided when cheaper route exists — PNG evidence", function()
+    -- @evidence file
+    -- @description Confirms terrain weighting algorithm correctly biases algorithms against high-cost regions (swamps/mud) leading to finding optimal longer routes vs shorter, costly ones. Output generated to an image verification file.
+    it("higher-cost terrain is avoided when cheaper route exists â€” PNG evidence", function()
         local W, H = 12, 12
         local grid = lurek.pathfinding.newNavGrid(W, H)
 
@@ -117,13 +142,19 @@ describe("Evidence: lurek.pathfinding weighted terrain", function()
     end)
 end)
 
+-- @covers lurek.pathfinding.newFlowField
+-- @description Covers suite: Evidence: lurek.pathfinding FlowField.
 describe("Evidence: lurek.pathfinding FlowField", function()
 
+    -- @covers lurek.pathfinding.newFlowField
+    -- @description Asserts that given a constructed navigation grid map, newFlowField instance generates without crashing the VM.
     it("newFlowField creates a flow field", function()
         local grid = lurek.pathfinding.newNavGrid(8, 8)
         local ff   = lurek.pathfinding.newFlowField(grid, 8, 8)
     end)
 
+    -- @covers FlowField:compute
+    -- @description Calculates the vector influence values orienting the field toward goal coordinate (10, 10). Asserts math logic yields non-zero directional outputs at arbitrary coordinates correctly.
     it("flow field can be computed toward a goal", function()
         local grid = lurek.pathfinding.newNavGrid(10, 10)
         local ff   = lurek.pathfinding.newFlowField(grid, 10, 10)
@@ -132,6 +163,10 @@ describe("Evidence: lurek.pathfinding FlowField", function()
         local dx, dy = ff:getDirection(1, 1)
     end)
 
+    -- @evidence file
+    -- @covers FlowField:compute
+    -- @covers FlowField:getDirection
+    -- @description Visually outputs a grid map encoding obstacles, free tiles, and the generated path finding vectors via getDirection calls to show a robust global flow navigation visual.
     it("flow field PNG evidence: astar_flow_field", function()
         local W, H = 16, 16
         local grid = lurek.pathfinding.newNavGrid(W, H)

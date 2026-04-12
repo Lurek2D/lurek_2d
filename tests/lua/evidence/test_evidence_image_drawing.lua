@@ -1,10 +1,17 @@
--- test_evidence_image_drawing.lua
+﻿-- test_evidence_image_drawing.lua
 -- Evidence test: ImageData drawing methods (drawRect, drawLine, drawCircle)
 
 local OUT = "tests/lua/evidence/output/image/"
 
+-- @description Covers suite: Evidence: ImageData drawing methods.
 describe("Evidence: ImageData drawing methods", function()
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:getPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Renders a grid of colored rectangles and saves the result to prove rect drawing affects stored pixels.
     it("drawRect - grid of colored rectangles", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -33,6 +40,12 @@ describe("Evidence: ImageData drawing methods", function()
         local r, g, b, a = img:getPixel(3, 3)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawLine
+    -- @covers ImageData:getPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws a radial star of lines from the image center and exports the result for manual inspection.
     it("drawLine - star pattern from center", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -53,6 +66,12 @@ describe("Evidence: ImageData drawing methods", function()
         local r, g, b, a = img:getPixel(128, 128)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:getPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Renders concentric circles of different colors to cover circle rasterization and center-pixel updates.
     it("drawCircle - concentric circles", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -74,6 +93,14 @@ describe("Evidence: ImageData drawing methods", function()
         local r, g, b, a = img:getPixel(128, 128)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers ImageData:setPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Combines rectangles, circles, lines, and direct pixels into one scene to prove the drawing helpers compose correctly.
     it("combined scene with all drawing methods", function()
         local W, H = 512, 512
         local img = lurek.img.newImageData(W, H)

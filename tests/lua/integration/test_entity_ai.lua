@@ -1,10 +1,14 @@
--- Lurek2D Integration Test: Entity + AI
+﻿-- Lurek2D Integration Test: Entity + AI
 -- Tests entity system with AI decision-making components
 -- @covers lurek.ai.newStateMachine
 -- @covers lurek.entity.newUniverse
 
 
+-- @description Covers suite: integration: entity with AI state machine.
 describe("integration: entity with AI state machine", function()
+    -- @covers lurek.entity.Universe
+    -- @covers lurek.ai.newStateMachine
+    -- @description Verifies an AI state machine can drive shared behavior state while the spawned entities remain alive in the same universe.
     it("entities change state based on FSM", function()
         local universe = lurek.entity.newUniverse()
 
@@ -47,7 +51,11 @@ describe("integration: entity with AI state machine", function()
     end)
 end)
 
+-- @description Covers suite: integration: entity tags with AI agents.
 describe("integration: entity tags with AI agents", function()
+    -- @covers lurek.entity.Universe.addTag
+    -- @covers lurek.ai
+    -- @description Verifies entity tags can partition actors into groups that AI logic could consume when selecting hostile versus ally behavior.
     it("entity tags drive AI behavior", function()
         local universe = lurek.entity.newUniverse()
 

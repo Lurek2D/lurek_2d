@@ -1,4 +1,4 @@
--- @covers lurek.platform.getOS
+﻿-- @covers lurek.platform.getOS
 -- @covers lurek.platform.getVersion
 -- @covers lurek.window.getHeight
 -- @covers lurek.window.getTitle
@@ -6,70 +6,89 @@
 -- @covers lurek.window.isFullscreen
 -- @covers lurek.window.isResizable
 
-﻿-- tests/lua/config/test_config.lua
+ď»ż-- tests/lua/config/test_config.lua
 -- BDD tests for the lurek.conf(t) configuration API.
 -- These tests verify that the conf table is readable at runtime, that
 -- lurek.conf() merges overrides correctly, and that conf keys are
 -- accessible after the engine boots.
 --
 -- NOTE: lurek.conf(t) is a write-once function called during startup
--- (before the window opens). These tests verify the READ path only —
+-- (before the window opens). These tests verify the READ path only â€”
 -- they do not attempt to re-configure a running engine.
 
 require("tests/lua/init")
 
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- 1. lurek.conf existence
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+-- @description Covers suite: lurek.conf function.
 describe("lurek.conf function", function()
+    -- @covers lurek.conf
+    -- @description Verifies that the startup configuration entrypoint is exposed to Lua as a callable function in the test VM.
     it("lurek.conf is a function", function()
         expect_type("function", lurek.conf)
     end)
 end)
 
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- 2. lurek.window namespace mirrors conf.window
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+-- @description Covers suite: lurek.window runtime values.
 describe("lurek.window runtime values", function()
+    -- @covers lurek.window
+    -- @description Confirms the runtime window namespace is present as a Lua table before any individual accessors are exercised.
     it("lurek.window is a table", function()
         expect_type("table", lurek.window)
     end)
 
+    -- @covers lurek.window.getWidth
+    -- @description Reads the runtime window width and only asserts that the accessor returns a numeric value greater than zero.
     it("lurek.window.getWidth returns a positive number", function()
         local w = lurek.window.getWidth()
         expect_type("number", w)
         expect_equal(w > 0, true)
     end)
 
+    -- @covers lurek.window.getHeight
+    -- @description Reads the runtime window height and only asserts that the accessor returns a numeric value greater than zero.
     it("lurek.window.getHeight returns a positive number", function()
         local h = lurek.window.getHeight()
         expect_type("number", h)
         expect_equal(h > 0, true)
     end)
 
+    -- @covers lurek.window.getTitle
+    -- @description Checks that the boot-time window title is readable and surfaced as a Lua string.
     it("lurek.window.getTitle returns a string", function()
         local title = lurek.window.getTitle()
         expect_type("string", title)
     end)
 end)
 
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- 3. Modules table
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+-- @description Covers suite: lurek.platform module flags.
 describe("lurek.platform module flags", function()
+    -- @covers lurek.platform
+    -- @description Confirms the platform namespace itself is registered as a table before querying platform metadata.
     it("lurek.platform is a table", function()
         expect_type("table", lurek.platform)
     end)
 
+    -- @covers lurek.platform.getVersion
+    -- @description Verifies that the platform version accessor returns a non-empty version string.
     it("lurek.platform.getVersion returns a string", function()
         local v = lurek.platform.getVersion()
         expect_type("string", v)
         expect_equal(#v > 0, true)
     end)
 
+    -- @covers lurek.platform.getOS
+    -- @description Checks that the reported operating system name stays within the expected Windows, Linux, or macOS set.
     it("lurek.platform.getOS returns a known platform string", function()
         local os = lurek.platform.getOS()
         local valid = { Windows = true, Linux = true, macOS = true }
@@ -77,52 +96,68 @@ describe("lurek.platform module flags", function()
     end)
 end)
 
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- 4. lurek.conf merge semantics (introspection via lurek.window)
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+-- @description Covers suite: lurek.conf merge semantics.
 describe("lurek.conf merge semantics", function()
     -- In a headless test VM the engine is already booted with defaults.
     -- We verify that conf.window defaults are reflected in lurek.window.
 
+    -- @covers lurek.window.getWidth
+    -- @description Confirms only that the default boot width has been populated into the runtime window state, not that it equals an exact fixture value.
     it("default window width matches conf default of 800", function()
-        -- The test VM is created with 800×600 by default (see make_vm).
+        -- The test VM is created with 800Ă—600 by default (see make_vm).
         -- lurek.window.getWidth() should reflect that.
         local w = lurek.window.getWidth()
         expect_equal(w >= 1, true)  -- just confirm it's set
     end)
 
+    -- @covers lurek.window.getHeight
+    -- @description Confirms only that the default boot height has been populated into the runtime window state, not that it equals an exact fixture value.
     it("default window height matches conf default of 600", function()
         local h = lurek.window.getHeight()
         expect_equal(h >= 1, true)
     end)
 
+    -- @covers lurek.window.isResizable
+    -- @description Verifies that the runtime resizable flag is exposed as a boolean after configuration merging.
     it("lurek.window.isResizable returns a boolean", function()
         local r = lurek.window.isResizable()
         expect_type("boolean", r)
     end)
 
+    -- @covers lurek.window.isFullscreen
+    -- @description Verifies that the runtime fullscreen flag is exposed as a boolean after configuration merging.
     it("lurek.window.isFullscreen returns a boolean", function()
         local f = lurek.window.isFullscreen()
         expect_type("boolean", f)
     end)
 end)
 
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 -- 5. conf.lua conf() call does not crash with various overrides
--- ═════════════════════════════════════════════════════════════════════════
+-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
+-- @description Covers suite: lurek.conf call-time safety.
 describe("lurek.conf call-time safety", function()
+    -- @covers lurek.conf
+    -- @description Calls lurek.conf with an empty override table and only checks that the write-once startup function does not raise an error in the test VM.
     it("calling lurek.conf with an empty table does not crash", function()
         lurek.conf({})
         expect_equal(true, true)
     end)
 
+    -- @covers lurek.conf
+    -- @description Passes an unknown top-level key to lurek.conf and asserts only that the call remains non-fatal.
     it("calling lurek.conf with unknown keys does not crash", function()
         lurek.conf({ completely_unknown_key = true })
         expect_equal(true, true)
     end)
 
+    -- @covers lurek.conf
+    -- @description Passes a partial nested window override to lurek.conf and asserts only that the call remains non-fatal.
     it("calling lurek.conf with nested partial table does not crash", function()
         lurek.conf({ window = { title = "TestTitle" } })
         expect_equal(true, true)

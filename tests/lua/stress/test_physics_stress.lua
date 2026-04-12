@@ -1,13 +1,15 @@
--- Lurek2D Stress Test: Mass Body Creation
+﻿-- Lurek2D Stress Test: Mass Body Creation
 -- Creates 1000 physics bodies and steps the world
--- @stress lurek.math.floor
--- @stress lurek.physics.destroyWorld
--- @stress lurek.physics.newBody
--- @stress lurek.physics.newWorld
--- @stress lurek.physics.step
 
 
+-- @description Covers suite: physics stress: 1000 bodies.
 describe("physics stress: 1000 bodies", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers Body:getPosition
+    -- @covers lurek.physics.destroyWorld
+    -- @stress Creates 1000 dynamic bodies, samples positions from the first ten, and destroys the world.
+    -- @description Stresses large-body allocation plus userdata access by filling one world with 1000 bodies and performing spot-check position reads before teardown.
     it("creates 1000 bodies without error", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local bodies = {}
@@ -29,6 +31,12 @@ describe("physics stress: 1000 bodies", function()
         lurek.physics.destroyWorld(world_id)
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.destroyWorld
+    -- @stress Creates 1000 dynamic bodies and advances the full world for 60 fixed simulation steps.
+    -- @description Stresses steady-state world stepping at high body counts by running one second of simulation after bulk body creation.
     it("steps 1000-body world 60 times", function()
         local world_id = lurek.physics.newWorld(0, 100)
 

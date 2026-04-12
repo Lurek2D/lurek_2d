@@ -1,4 +1,4 @@
--- test_evidence_postfx.lua
+﻿-- test_evidence_postfx.lua
 -- Evidence test: ImageData post-processing effects + Effect/Stack API
 -- Produces: postfx_grayscale.png, postfx_invert.png, postfx_blur.png,
 --           postfx_sepia.png, postfx_effects_strip.png
@@ -28,37 +28,57 @@ local function draw_rect(img, x0, y0, w, h, r, g, b)
     end
 end
 
-describe("Evidence: PostFx + ImageData effects → PNG output", function()
+-- @description Covers suite: Evidence: PostFx + ImageData effects â†’ PNG output.
+describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
 
+    -- @covers lurek.postfx.newEffect
+    -- @description Creates a named post-processing effect to prove effect construction succeeds from Lua.
     it("newEffect creates an effect without error", function()
         local fx = lurek.postfx.newEffect("bloom")
     end)
 
+    -- @covers lurek.postfx.newStack
+    -- @description Creates an effect stack with explicit dimensions to cover stack construction.
     it("newStack creates a stack with correct dimensions", function()
         local stack = lurek.postfx.newStack(320, 240)
     end)
 
+    -- @covers lurek.postfx.newImageEffect
+    -- @description Creates an image-space effect wrapper to cover the image-effect constructor.
     it("newImageEffect creates an effect", function()
         local fx = lurek.postfx.newImageEffect("grayscale")
     end)
 
+    -- @covers PostFxStack:isEmpty
+    -- @description Reads the empty-state query on a new post-processing stack.
     it("stack isEmpty initially", function()
         local stack = lurek.postfx.newStack(64, 64)
     end)
 
+    -- @covers PostFxStack:len
+    -- @description Reads the element count on a new post-processing stack.
     it("stack len is 0 initially", function()
         local stack = lurek.postfx.newStack(64, 64)
     end)
 
+    -- @covers PostFxEffect:isEnabled
+    -- @description Reads the enabled flag on a newly created post-processing effect.
     it("effect isEnabled by default", function()
         local fx = lurek.postfx.newEffect("bloom")
     end)
 
+    -- @covers PostFxEffect:getTypeName
+    -- @description Reads the type name reported by a created effect instance.
     it("effect getTypeName returns the type string", function()
         local fx = lurek.postfx.newEffect("bloom")
         local name = fx:getTypeName()
     end)
 
+    -- @covers ImageData:grayscale
+    -- @covers ImageData:getPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies grayscale to a synthetic color gradient and saves the result as post-processing evidence.
     it("PNG: grayscale effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:grayscale()
@@ -67,6 +87,11 @@ describe("Evidence: PostFx + ImageData effects → PNG output", function()
         lurek.img.savePNG(img, OUT .. "postfx_grayscale.png")
     end)
 
+    -- @covers ImageData:invert
+    -- @covers ImageData:getPixel
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Inverts a color gradient, samples one pixel before and after, and writes the inverted PNG.
     it("PNG: invert effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         -- Read a pixel before invert
@@ -77,19 +102,38 @@ describe("Evidence: PostFx + ImageData effects → PNG output", function()
         lurek.img.savePNG(img, OUT .. "postfx_invert.png")
     end)
 
+    -- @covers ImageData:blur
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies blur to a gradient pattern and saves the softened output.
     it("PNG: blur effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:blur(3)
         lurek.img.savePNG(img, OUT .. "postfx_blur.png")
     end)
 
+    -- @covers ImageData:sepia
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies sepia toning to the gradient pattern and saves the transformed output.
     it("PNG: sepia effect on color gradient", function()
         local img = make_test_pattern(128, 128)
         img:sepia()
         lurek.img.savePNG(img, OUT .. "postfx_sepia.png")
     end)
 
-    it("PNG: effect strip — original + 8 effects side by side", function()
+    -- @covers ImageData:grayscale
+    -- @covers ImageData:sepia
+    -- @covers ImageData:invert
+    -- @covers ImageData:blur
+    -- @covers ImageData:sharpen
+    -- @covers ImageData:brightness
+    -- @covers ImageData:contrast
+    -- @covers ImageData:threshold
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Builds a horizontal strip comparing several image effects side by side on the same source pattern.
+    it("PNG: effect strip â€” original + 8 effects side by side", function()
         local CELL = 64
         local effects = {"original", "grayscale", "sepia", "invert", "blur", "sharpen", "brightness", "contrast", "threshold"}
         local count = #effects
@@ -122,6 +166,12 @@ describe("Evidence: PostFx + ImageData effects → PNG output", function()
         lurek.img.savePNG(strip, OUT .. "postfx_effects_strip.png")
     end)
 
+    -- @covers ImageData:posterize
+    -- @covers ImageData:gamma
+    -- @covers ImageData:tint
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Chains posterize, gamma, and tint adjustments on one image and saves the combined effect.
     it("PNG: posterize + gamma + tint combined", function()
         local img = make_test_pattern(128, 128)
         img:posterize(4)
@@ -130,6 +180,11 @@ describe("Evidence: PostFx + ImageData effects → PNG output", function()
         lurek.img.savePNG(img, OUT .. "postfx_posterize_tint.png")
     end)
 
+    -- @covers ImageData:saturation
+    -- @covers ImageData:flipHorizontal
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Boosts saturation, flips the result horizontally, and saves the transformed image.
     it("PNG: saturation and flipHorizontal", function()
         local img = make_test_pattern(128, 128)
         img:saturation(2.0)

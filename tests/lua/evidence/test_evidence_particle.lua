@@ -1,4 +1,4 @@
--- test_evidence_particle.lua
+﻿-- test_evidence_particle.lua
 -- Evidence test: lurek.particles API + renders particle positions to PNG
 -- Produces: particle_positions.png, particle_emitter_burst.png
 
@@ -16,28 +16,43 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
+-- @description Covers suite: Evidence: lurek.particles API + PNG visualization.
 describe("Evidence: lurek.particles API + PNG visualization", function()
 
+    -- @covers lurek.particles.newSystem
+    -- @description Creates a particle system to prove the constructor returns a usable emitter object.
     it("newSystem creates a ParticleSystem", function()
         local sys = lurek.particles.newSystem()
     end)
 
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:isEmpty
+    -- @description Queries emptiness on a fresh particle system before any emission occurs.
     it("new system isEmpty", function()
         local sys = lurek.particles.newSystem()
     end)
 
+    -- @covers ParticleSystem:emit
+    -- @covers ParticleSystem:count
+    -- @description Emits several particles and relies on the resulting count to cover immediate spawn behavior.
     it("emit adds particles", function()
         local sys = lurek.particles.newSystem()
         sys:emit(10)
         -- emit() places particles immediately; count must be positive
     end)
 
+    -- @covers ParticleSystem:start
+    -- @covers ParticleSystem:stop
+    -- @description Starts and stops the emitter to cover active-state transitions.
     it("start/stop change active state", function()
         local sys = lurek.particles.newSystem()
         sys:start()
         sys:stop()
     end)
 
+    -- @covers ParticleSystem:pause
+    -- @covers ParticleSystem:resume
+    -- @description Pauses and resumes an active emitter to cover paused-state transitions.
     it("pause/resume change paused state", function()
         local sys = lurek.particles.newSystem()
         sys:start()
@@ -45,30 +60,50 @@ describe("Evidence: lurek.particles API + PNG visualization", function()
         sys:resume()
     end)
 
+    -- @covers ParticleSystem:emit
+    -- @covers ParticleSystem:reset
+    -- @description Emits particles and then resets the system to cover particle clearing.
     it("reset clears particles", function()
         local sys = lurek.particles.newSystem()
         sys:emit(50)
         sys:reset()
     end)
 
+    -- @covers ParticleSystem:setPosition
+    -- @covers ParticleSystem:getPosition
+    -- @description Moves the emitter and reads the new coordinates back to cover position state.
     it("setPosition/getPosition round-trip", function()
         local sys = lurek.particles.newSystem()
         sys:setPosition(123, 456)
         local x, y = sys:getPosition()
     end)
 
+    -- @covers ParticleSystem:type
+    -- @description Reads the particle-system type tag exposed to Lua.
     it("type returns 'ParticleSystem'", function()
         local sys = lurek.particles.newSystem()
     end)
 
+    -- @covers ParticleSystem:typeOf
+    -- @description Queries typeOf against the ParticleSystem type name.
     it("typeOf returns true for 'ParticleSystem'", function()
         local sys = lurek.particles.newSystem()
     end)
 
+    -- @covers lurek.particles.newTrail
+    -- @description Creates a trail helper to cover auxiliary particle trail construction.
     it("newTrail creates a trail without error", function()
         local ok = pcall(lurek.particles.newTrail, 1.0, 5.0)
     end)
 
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:setPosition
+    -- @covers ParticleSystem:start
+    -- @covers ParticleSystem:emit
+    -- @covers ParticleSystem:getPosition
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Places several emitters, emits particles from each, and writes a PNG showing their simulated positions and spread.
     it("PNG: particle emitter positions as colored dots", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -120,6 +155,14 @@ describe("Evidence: lurek.particles API + PNG visualization", function()
         lurek.img.savePNG(img, OUT .. "particle_positions.png")
     end)
 
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:setPosition
+    -- @covers ParticleSystem:start
+    -- @covers ParticleSystem:emit
+    -- @covers ParticleSystem:count
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Emits several particle bursts over time and writes concentric ring evidence showing the successive burst radii.
     it("PNG: burst emission visualized over time", function()
         local W, H = 128, 128
         local img = lurek.img.newImageData(W, H)

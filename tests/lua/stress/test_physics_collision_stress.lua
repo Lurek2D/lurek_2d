@@ -1,15 +1,15 @@
--- Lurek2D Stress Test: Physics Collision Storm
+﻿-- Lurek2D Stress Test: Physics Collision Storm
 -- Tests mass body creation, extended simulation, and collision detection
--- @stress lurek.physics.getBody
--- @stress lurek.physics.getCollisions
--- @stress lurek.physics.newBody
--- @stress lurek.physics.newCircleBody
--- @stress lurek.physics.newWorld
--- @stress lurek.physics.setBodyVelocity
--- @stress lurek.physics.step
 
 
+-- @description Covers suite: physics stress: collision storm.
 describe("physics stress: collision storm", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.getBody
+    -- @stress Creates 500 dynamic bodies above one static ground body and simulates 300 fixed steps.
+    -- @description Stresses broad collision-heavy world stepping by stacking hundreds of falling bodies into one confined simulation and checking post-step motion.
     it("creates 500 bodies in a confined space", function()
         local world = lurek.physics.newWorld(0, 200)
 
@@ -36,6 +36,13 @@ describe("physics stress: collision storm", function()
         expect_true(y > -500 * 5, "body moved under gravity")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.setBodyVelocity
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.getCollisions
+    -- @stress Steps two opposing dynamic bodies for up to 120 frames while polling collision events every frame.
+    -- @description Stresses collision-event reporting by driving a head-on approach and checking that the simulation remains stable whether or not events appear.
     it("detects collisions between moving bodies", function()
         local world = lurek.physics.newWorld(0, 100)
 
@@ -62,6 +69,11 @@ describe("physics stress: collision storm", function()
         expect_true(true, "collision simulation completed without crash")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newCircleBody
+    -- @covers lurek.physics.step
+    -- @stress Creates 200 circle bodies and advances the world for 180 fixed simulation steps.
+    -- @description Stresses high-contact circle-body stepping by filling the world with many small dynamic circles and running several seconds of updates.
     it("circle bodies handle mass collision", function()
         local world = lurek.physics.newWorld(0, 100)
 
@@ -81,7 +93,14 @@ describe("physics stress: collision storm", function()
     end)
 end)
 
+-- @description Covers suite: physics stress: determinism.
 describe("physics stress: determinism", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.getBody
+    -- @stress Runs the same 60-step single-body simulation twice and compares both final positions.
+    -- @description Stresses repeatability by replaying one deterministic setup two times and checking that the world integration lands on the same coordinates.
     it("same initial state produces same result", function()
         local function run_simulation()
             local world = lurek.physics.newWorld(0, 100)

@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Localization + UI
+﻿-- Lurek2D Integration Test: Localization + UI
 -- Tests localized text flowing into UI elements.
 -- @covers lurek.localization.load
 -- @covers lurek.localization.get
@@ -6,7 +6,11 @@
 -- @covers lurek.ui.newLabel
 -- @covers lurek.ui.setText
 
+-- @description Covers suite: integration: localized strings in UI labels.
 describe("integration: localized strings in UI labels", function()
+    -- @covers lurek.localization.get
+    -- @covers lurek.ui.setText
+    -- @description Verifies localized strings can be fetched from the localization module and applied to a UI label.
     it("localization provides string and UI label stores it", function()
         -- Load English locale inline
         lurek.localization.setLocale("en")
@@ -32,9 +36,12 @@ describe("integration: localized strings in UI labels", function()
         end)
     end)
 
+    -- @covers lurek.localization.setLocale
+    -- @covers lurek.ui.setText
+    -- @description Verifies switching the active locale changes the text fed into a UI label.
     it("switching locale updates UI text", function()
         lurek.localization.load("en", { greeting = "Hello" })
-        lurek.localization.load("pl", { greeting = "Cześć" })
+        lurek.localization.load("pl", { greeting = "CzeĹ›Ä‡" })
 
         lurek.localization.setLocale("en")
         local en_text = lurek.localization.get("greeting")
@@ -42,7 +49,7 @@ describe("integration: localized strings in UI labels", function()
 
         lurek.localization.setLocale("pl")
         local pl_text = lurek.localization.get("greeting")
-        expect_equal("Cześć", pl_text, "Polish greeting")
+        expect_equal("CzeĹ›Ä‡", pl_text, "Polish greeting")
 
         local label = lurek.ui.newLabel()
         lurek.ui.setText(label, pl_text)
@@ -51,6 +58,9 @@ describe("integration: localized strings in UI labels", function()
         end)
     end)
 
+    -- @covers lurek.localization.get
+    -- @covers lurek.ui
+    -- @description Verifies missing localization keys fall back to a string value instead of breaking UI text flows.
     it("missing key returns key name as fallback", function()
         lurek.localization.setLocale("en")
         local val = lurek.localization.get("non_existent_key_xyz")

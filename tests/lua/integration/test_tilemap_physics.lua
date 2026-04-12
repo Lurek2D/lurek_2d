@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Tilemap + Physics
+﻿-- Lurek2D Integration Test: Tilemap + Physics
 -- Tests using tilemap solid tiles to create physics collision boundaries
 -- @covers lurek.pathfinding.newNavGrid
 -- @covers lurek.pathfinding.newPathfinder
@@ -10,7 +10,11 @@
 -- @covers lurek.tilemap.newTileSet
 
 
+-- @description Covers suite: integration: tilemap solid tiles as physics boundaries.
 describe("integration: tilemap solid tiles as physics boundaries", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.physics.newBody
+    -- @description Verifies solid tiles from a tilemap can be converted into static physics bodies that stop a falling dynamic body.
     it("creates physics bodies from solid tiles", function()
         -- Create a small tilemap with ground
         local map = lurek.tilemap.newTileMap(32, 32, 16)
@@ -59,7 +63,11 @@ describe("integration: tilemap solid tiles as physics boundaries", function()
     end)
 end)
 
+-- @description Covers suite: integration: tilemap + pathfinding from solid tiles.
 describe("integration: tilemap + pathfinding from solid tiles", function()
+    -- @covers lurek.tilemap.clearTile
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies solid tiles copied into a navgrid leave a traversable path only through the intended gap.
     it("creates navgrid from tilemap solids", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)

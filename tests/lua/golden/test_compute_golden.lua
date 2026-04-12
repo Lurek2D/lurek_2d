@@ -1,10 +1,16 @@
--- Golden test: compute — deterministic text output comparison
+﻿-- Golden test: compute â€” deterministic text output comparison
 -- @golden
 -- @covers lurek.compute.zeros
 -- @covers NdArray:fill
 -- @covers NdArray:sum
 
+-- @description Covers suite: golden: compute NdArray deterministic operations.
 describe("golden: compute NdArray deterministic operations", function()
+    -- @covers lurek.compute.zeros
+    -- @covers NdArray:fill
+    -- @covers NdArray:sum
+    -- @covers expect_evidence_created
+    -- @description Writes compute_golden.txt from a fixed 2x3 zero array after filling it with 1.5 and recording the resulting sum.
     it("produces deterministic text output", function()
 
         local output = {}
@@ -22,6 +28,9 @@ describe("golden: compute NdArray deterministic operations", function()
         expect_evidence_created(path)
     end)
 
+    -- @golden
+    -- @covers expect_golden_text_match
+    -- @description Compares the generated compute_golden.txt evidence file against the committed golden text sample for deterministic NdArray output.
     it("matches golden sample", function()
         local evidence = evidence_output_dir("compute") .. "compute_golden.txt"
         local golden = "tests/lua/golden/samples/compute/compute_golden.txt"

@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Tween + Animation
+﻿-- Lurek2D Integration Test: Tween + Animation
 -- Tests tween easing curves driving animation timeline
 -- @covers lurek.tween.newTween
 -- @covers lurek.animation.newTimeline
 
+-- @description Covers suite: tween + animation integration.
 describe("tween + animation integration", function()
+    -- @covers lurek.tween.Tween.seek
+    -- @covers lurek.animation.Timeline
+    -- @description Verifies a linear tween produces expected position values that could drive animation state over time.
     it("tween linear easing drives position", function()
         local tween = lurek.tween.newTween()
         tween:setDuration(1.0)
@@ -27,6 +31,9 @@ describe("tween + animation integration", function()
         expect_near(100, v100, 1.0, "tween at end is 100")
     end)
 
+    -- @covers lurek.tween.Tween.seek
+    -- @covers lurek.animation.Timeline.seek
+    -- @description Verifies tween progress and animation timeline seeking can be aligned at shared points in time.
     it("tween ease-in-out with animation frame sync", function()
         local tween = lurek.tween.newTween()
         tween:setDuration(2.0)
@@ -46,6 +53,9 @@ describe("tween + animation integration", function()
         expect_near(0, tween_val, 0.1, "tween starts at 0")
     end)
 
+    -- @covers lurek.tween.Tween.onComplete
+    -- @covers lurek.animation.Timeline
+    -- @description Verifies tween completion callbacks can participate in animation timeline event flows.
     it("tween with callback integrates with timeline events", function()
         local tween = lurek.tween.newTween()
         tween:setDuration(1.0)
@@ -65,6 +75,9 @@ describe("tween + animation integration", function()
         expect_type("boolean", completed)
     end)
 
+    -- @covers lurek.tween.Tween.getValue
+    -- @covers lurek.animation.Timeline
+    -- @description Verifies multiple tweens maintain independent progress values while sharing animation-oriented timing logic.
     it("multiple tweens track independently", function()
         local t1 = lurek.tween.newTween()
         t1:setDuration(1.0)

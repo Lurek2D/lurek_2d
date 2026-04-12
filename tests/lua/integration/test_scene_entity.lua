@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Scene + Entity
+﻿-- Lurek2D Integration Test: Scene + Entity
 -- Tests composing entities into scene graph hierarchies.
 -- @covers lurek.entity.newUniverse
 -- @covers lurek.scene.newScene
 
+-- @description Covers suite: integration: scene + entity hierarchy.
 describe("integration: scene + entity hierarchy", function()
+    -- @covers lurek.entity.Universe.set
+    -- @covers lurek.scene
+    -- @description Verifies entities can store parent-child scene hierarchy data through shared universe state.
     it("creates scene and populates with entities", function()
         local universe = lurek.entity.newUniverse()
 
@@ -30,6 +34,9 @@ describe("integration: scene + entity hierarchy", function()
         end
     end)
 
+    -- @covers lurek.entity.Universe.kill
+    -- @covers lurek.scene
+    -- @description Verifies killing a parent entity does not erase the child's stored scene-parent reference.
     it("killing parent entity is tracked", function()
         local universe = lurek.entity.newUniverse()
 
@@ -43,6 +50,9 @@ describe("integration: scene + entity hierarchy", function()
         expect_equal(parent, pid, "orphan child still stores old parent id")
     end)
 
+    -- @covers lurek.entity.Universe.spawn
+    -- @covers lurek.scene
+    -- @description Verifies bulk scene entity creation and teardown complete without crashing.
     it("large entity population in scene does not error", function()
         local universe = lurek.entity.newUniverse()
         local ids = {}

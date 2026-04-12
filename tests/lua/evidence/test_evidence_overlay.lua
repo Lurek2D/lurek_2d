@@ -1,4 +1,4 @@
--- test_evidence_overlay.lua
+﻿-- test_evidence_overlay.lua
 -- Evidence test: lurek.effect overlay API + renders overlay effects to PNG
 -- Produces: overlay_flash.png, overlay_fade.png, overlay_combined.png
 
@@ -23,37 +23,57 @@ local function blend(base_r, base_g, base_b, over_r, over_g, over_b, alpha)
            math.floor(base_b * ia + over_b * a)
 end
 
+-- @description Covers suite: Evidence: lurek.effect overlay API + PNG visualization.
 describe("Evidence: lurek.effect overlay API + PNG visualization", function()
 
+    -- @covers lurek.overlay.newOverlay
+    -- @description Creates an overlay object to prove the constructor accepts output dimensions.
     it("newOverlay creates overlay with correct dimensions", function()
         local ov = lurek.overlay.newOverlay(320, 240)
     end)
 
+    -- @covers lurek.overlay.newOverlay
+    -- @covers Overlay:getDimensions
+    -- @description Reads the overlay dimensions immediately after creation.
     it("getDimensions returns w, h", function()
         local ov = lurek.overlay.newOverlay(200, 100)
         local w, h = ov:getDimensions()
     end)
 
+    -- @covers Overlay:isActive
+    -- @description Queries the active flag on a fresh overlay before any transient effect is triggered.
     it("isActive is false initially", function()
         local ov = lurek.overlay.newOverlay(64, 64)
     end)
 
+    -- @covers Overlay:triggerFlash
+    -- @covers Overlay:isActive
+    -- @description Triggers a flash effect and covers the overlay activation path.
     it("triggerFlash makes overlay active", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerFlash(1.0, 0.0, 0.0, 1.0, 0.5)
     end)
 
+    -- @covers Overlay:triggerFlash
+    -- @covers Overlay:getFlashAlpha
+    -- @description Reads the flash alpha after triggering a flash to document transient overlay intensity.
     it("getFlashAlpha is > 0 after triggerFlash", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerFlash(1.0, 1.0, 1.0, 1.0, 0.5)
         local alpha = ov:getFlashAlpha()
     end)
 
+    -- @covers Overlay:triggerShake
+    -- @description Triggers an overlay shake effect to cover non-visual shake state initialization.
     it("triggerShake sets shake state", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerShake(5.0, 0.5)
     end)
 
+    -- @covers Overlay:triggerShake
+    -- @covers Overlay:update
+    -- @covers Overlay:getShakeOffset
+    -- @description Updates a shaking overlay once and reads back the resulting shake offset.
     it("getShakeOffset returns dx, dy", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerShake(10.0, 0.5)
@@ -61,33 +81,54 @@ describe("Evidence: lurek.effect overlay API + PNG visualization", function()
         local dx, dy = ov:getShakeOffset()
     end)
 
+    -- @covers Overlay:triggerFade
+    -- @covers Overlay:isActive
+    -- @description Triggers a fade effect to cover the fade activation path.
     it("triggerFade sets active", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerFade(0, 0, 0, 1.0, 0.5)
     end)
 
+    -- @covers Overlay:triggerLightning
+    -- @covers Overlay:isActive
+    -- @description Triggers the lightning flash effect to cover that transient activation path.
     it("triggerLightning sets active", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerLightning()
     end)
 
+    -- @covers Overlay:clear
+    -- @covers Overlay:isActive
+    -- @description Clears an active flash to document overlay reset behavior.
     it("clear deactivates overlay", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:triggerFlash(1.0, 0.0, 0.0, 1.0, 0.5)
         ov:clear()
     end)
 
+    -- @covers Overlay:resize
+    -- @covers Overlay:getDimensions
+    -- @description Resizes an overlay and reads its dimensions again to cover resize handling.
     it("resize changes dimensions", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:resize(128, 256)
     end)
 
+    -- @covers Overlay:setAmbientEnabled
+    -- @covers Overlay:isAmbientEnabled
+    -- @description Toggles ambient overlay contribution on and off.
     it("setAmbientEnabled/isAmbientEnabled round-trip", function()
         local ov = lurek.overlay.newOverlay(64, 64)
         ov:setAmbientEnabled(true)
         ov:setAmbientEnabled(false)
     end)
 
+    -- @covers Overlay:triggerFlash
+    -- @covers Overlay:getFlashAlpha
+    -- @covers Overlay:update
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Samples flash alpha decay over several time steps and writes the resulting strip to a PNG.
     it("PNG: flash effect at multiple time steps", function()
         local W, H = 256, 64
         local img = lurek.img.newImageData(W, H)
@@ -113,6 +154,11 @@ describe("Evidence: lurek.effect overlay API + PNG visualization", function()
         lurek.img.savePNG(img, OUT .. "overlay_flash.png")
     end)
 
+    -- @covers Overlay:triggerFade
+    -- @covers Overlay:update
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Samples a fade-to-black effect across several time slices and writes the progression to PNG evidence.
     it("PNG: fade-to-black effect over time", function()
         local W, H = 256, 64
         local img = lurek.img.newImageData(W, H)
@@ -138,7 +184,15 @@ describe("Evidence: lurek.effect overlay API + PNG visualization", function()
         lurek.img.savePNG(img, OUT .. "overlay_fade.png")
     end)
 
-    it("PNG: combined effects — flash + lightning visualization", function()
+    -- @covers Overlay:triggerFlash
+    -- @covers Overlay:clear
+    -- @covers Overlay:triggerLightning
+    -- @covers Overlay:getFlashAlpha
+    -- @covers Overlay:getLightningAlpha
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Combines flash and lightning overlays into one comparison PNG to document multiple transient overlay modes.
+    it("PNG: combined effects â€” flash + lightning visualization", function()
         local W, H = 128, 128
         local img = lurek.img.newImageData(W, H)
         img:fill(20, 20, 40, 255)

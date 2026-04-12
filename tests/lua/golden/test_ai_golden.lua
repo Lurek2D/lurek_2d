@@ -1,8 +1,12 @@
--- Golden test: ai — deterministic text output comparison
+﻿-- Golden test: ai â€” deterministic text output comparison
 -- @golden
 -- @covers lurek.ai.newFSM
 
+-- @description Covers suite: golden: ai AI state machine transitions.
 describe("golden: ai AI state machine transitions", function()
+    -- @covers lurek.ai.newFSM
+    -- @covers expect_evidence_created
+    -- @description Writes ai_golden.txt with the fixed FSM state sequence and default state text, then checks that the evidence artifact was created.
     it("produces deterministic text output", function()
 
         local output = {}
@@ -18,6 +22,9 @@ describe("golden: ai AI state machine transitions", function()
         expect_evidence_created(path)
     end)
 
+    -- @golden
+    -- @covers expect_golden_text_match
+    -- @description Compares the generated ai_golden.txt evidence file against the committed ai golden text sample.
     it("matches golden sample", function()
         local evidence = evidence_output_dir("ai") .. "ai_golden.txt"
         local golden = "tests/lua/golden/samples/ai/ai_golden.txt"

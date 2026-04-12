@@ -1,4 +1,4 @@
-local function evidence_output_dir()
+﻿local function evidence_output_dir()
     local path = lurek.fs.getAppDir() .. "/tests/lua/golden/evidence_output/migrated_20"
     lurek.fs.createDirectory(path)
     return path
@@ -18,7 +18,13 @@ local function save_wav(name, sound)
     return path
 end
 
+-- @description Covers suite: Migrated Evidence Tests 20.
 describe("Migrated Evidence Tests 20", function()
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a minimal 8x8 sprite fixture and writes it to PNG.
     it("generates fixture_sprite_8x8", function()
         local img = lurek.img.newImageData(8, 8)
         img:fill(0, 0, 0, 0)
@@ -32,6 +38,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a 16x16 cross-shaped sprite fixture and writes it to PNG.
     it("generates fixture_sprite_16x16", function()
         local img = lurek.img.newImageData(16, 16)
         for i = 0, 15 do
@@ -44,6 +54,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a radial-alpha 32x32 sprite fixture and writes it to PNG.
     it("generates fixture_sprite_32x32", function()
         local img = lurek.img.newImageData(32, 32)
         for y = 0, 31 do
@@ -59,6 +73,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a checkerboard 64x64 sprite fixture and writes it to PNG.
     it("generates fixture_sprite_64x64", function()
         local img = lurek.img.newImageData(64, 64)
         for y = 0, 63 do
@@ -75,6 +93,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a 128x128 tileset fixture with colored tile cells and writes it to PNG.
     it("generates fixture_tileset_128x128", function()
         local img = lurek.img.newImageData(128, 128)
         for ty = 0, 7 do
@@ -93,6 +115,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a horizontal RGB gradient fixture and writes it to PNG.
     it("generates fixture_gradient_horizontal", function()
         local img = lurek.img.newImageData(256, 32)
         for y = 0, 31 do
@@ -104,6 +130,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Builds a vertical RGB gradient fixture and writes it to PNG.
     it("generates fixture_gradient_vertical", function()
         local img = lurek.img.newImageData(32, 256)
         for y = 0, 255 do
@@ -146,6 +176,10 @@ describe("Migrated Evidence Tests 20", function()
         return bg
     end
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:evaluate
+    -- @evidence file
+    -- @description Draws one Bezier curve fixture and writes the resulting plot to PNG.
     it("generates evidence_math_bezier_curve", function()
         local curves = {
             {
@@ -158,6 +192,10 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:evaluate
+    -- @evidence file
+    -- @description Draws two Bezier curves into one fixture image and writes the result to PNG.
     it("generates evidence_math_bezier_multiple", function()
         local curves = {
             {
@@ -174,6 +212,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes independent left and right stereo tones and writes the stereo WAV output.
     it("generates evidence_audio_stereo", function()
         local sr = 44100
         local ns = sr
@@ -192,6 +235,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes a frequency sweep from 100 Hz to 4000 Hz and writes the WAV artifact.
     it("generates evidence_audio_frequency_sweep", function()
         local sr = 44100
         local ns = sr * 2
@@ -208,6 +256,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes a tone with a hand-authored amplitude envelope and writes the WAV artifact.
     it("generates evidence_audio_amplitude_envelope", function()
         local sr = 44100
         local ns = sr * 2
@@ -227,6 +280,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes a square wave manually and writes the WAV artifact.
     it("generates evidence_audio_square_wave", function()
         local sr = 44100
         local ns = sr
@@ -240,6 +298,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes a sawtooth wave manually and writes the WAV artifact.
     it("generates evidence_audio_sawtooth_wave", function()
         local sr = 44100
         local ns = sr
@@ -254,6 +317,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Synthesizes deterministic white noise manually and writes the WAV artifact.
     it("generates evidence_audio_white_noise", function()
         local sr = 44100
         local ns = sr
@@ -268,6 +336,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Writes a short silence buffer to WAV as a baseline audio artifact.
     it("generates evidence_audio_silence", function()
         local sr = 44100
         local ns = 22050
@@ -279,6 +352,11 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:setSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Writes a reference sine-wave audio file intended for later waveform visualization comparisons.
     it("generates evidence_audio_waveform_visualization", function()
         local sr = 44100
         local ns = sr
@@ -292,6 +370,12 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.math.newNoiseGenerator
+    -- @covers lurek.math.simplexNoise
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:setPixel
+    -- @evidence file
+    -- @description Generates a colored noise-based heightmap and writes the terrain visualization to PNG.
     it("generates evidence_noise_to_heightmap_render", function()
         local ng = lurek.math.newNoiseGenerator(7777)
         local size = 256
@@ -330,6 +414,27 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:brightness
+    -- @covers ImageData:contrast
+    -- @covers ImageData:grayscale
+    -- @covers ImageData:sepia
+    -- @covers ImageData:invert
+    -- @covers ImageData:threshold
+    -- @covers ImageData:posterize
+    -- @covers ImageData:tint
+    -- @covers ImageData:saturation
+    -- @covers ImageData:gamma
+    -- @covers ImageData:noise
+    -- @covers ImageData:flipHorizontal
+    -- @covers ImageData:flipVertical
+    -- @covers ImageData:rotate90Cw
+    -- @covers ImageData:blur
+    -- @covers ImageData:sharpen
+    -- @covers ImageData:crop
+    -- @covers ImageData:resizeNearest
+    -- @evidence file
+    -- @description Builds a grid of many image effects applied to one base tile and writes the resulting comparison sheet.
     it("generates evidence_image_all_effects_grid", function()
         local tile = 64
         local cols = 5
@@ -385,6 +490,13 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:fill
+    -- @covers TileMap:setTile
+    -- @covers TileMap:drawToImage
+    -- @evidence file
+    -- @description Builds a small multi-layer tilemap, draws it to an image, and writes the rendered result.
     it("generates evidence_tilemap_multi_layer", function()
         local tm = lurek.tilemap.newTileMap(16, 16, 8)
         local ground = tm:addLayer("ground", 10, 10)

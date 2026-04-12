@@ -1,4 +1,4 @@
--- test_evidence_canvas.lua
+﻿-- test_evidence_canvas.lua
 -- Evidence test: Canvas creation, dimensions, release + PNG visualization
 -- Produces: canvas_sizes.png, canvas_lifecycle.png
 
@@ -28,33 +28,52 @@ local function draw_border(img, x0, y0, w, h, r, g, b)
     end
 end
 
+-- @description Covers suite: Evidence: Canvas lifecycle + PNG visualization.
 describe("Evidence: Canvas lifecycle + PNG visualization", function()
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:release
+    -- @description Creates a canvas and immediately releases it to prove the allocation lifecycle starts cleanly.
     it("newCanvas creates a Canvas with correct width/height", function()
         local c = lurek.graphic.newCanvas(128, 64)
         c:release()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:getDimensions
+    -- @description Queries width and height from a live canvas to cover the dimension accessors.
     it("getDimensions returns width and height", function()
         local c = lurek.graphic.newCanvas(200, 100)
         local w, h = c:getDimensions()
         c:release()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:release
+    -- @description Exercises the first release call and documents the successful transition to a released canvas.
     it("release returns true on first release", function()
         local c = lurek.graphic.newCanvas(64, 64)
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:release
+    -- @description Calls release twice on the same canvas to cover the engine's double-release protection path.
     it("release returns false on double-release", function()
         local c = lurek.graphic.newCanvas(64, 64)
         c:release()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:typeOf
+    -- @description Reads the canvas type tag to confirm the userdata reports itself as a Canvas.
     it("typeOf returns 'Canvas'", function()
         local c = lurek.graphic.newCanvas(64, 64)
         c:release()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:release
+    -- @description Allocates canvases of different sizes to prove each instance maintains independent state.
     it("multiple canvases are independent", function()
         local c1 = lurek.graphic.newCanvas(100, 100)
         local c2 = lurek.graphic.newCanvas(200, 300)
@@ -62,12 +81,19 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         c2:release()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:getWidth
+    -- @covers Canvas:release
+    -- @description Releases a canvas and then probes a width accessor to document post-release error behavior.
     it("getWidth after release raises an error", function()
         local c = lurek.graphic.newCanvas(64, 64)
         c:release()
         local ok = pcall(function() return c:getWidth() end)
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:release
+    -- @description Creates and releases canvases across a wide range of dimensions to cover size-handling edge cases.
     it("newCanvas round-trips many sizes", function()
         local sizes = {{32,32},{64,64},{128,128},{256,256},{512,512},{320,180},{1920,1080},{4,4}}
         for _, sz in ipairs(sizes) do
@@ -76,6 +102,11 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         end
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:getDimensions
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Creates canvases of several sizes and renders scaled rectangles that visualize the reported dimensions in one PNG.
     it("PNG: canvas sizes visualized as colored rectangles", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -106,6 +137,11 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         lurek.img.savePNG(img, OUT .. "canvas_sizes.png")
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @covers Canvas:getWidth
+    -- @covers Canvas:release
+    -- @evidence file
+    -- @description Draws a simple lifecycle diagram that encodes created, active, and released canvas states into file evidence.
     it("PNG: canvas lifecycle state diagram (created/active/released)", function()
         local img = lurek.img.newImageData(128, 64)
         img:fill(30, 30, 40, 255)
@@ -113,7 +149,7 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         local c = lurek.graphic.newCanvas(64, 64)
         -- Created (green)
         draw_rect(img, 4, 4, 36, 56, 0, 200, 0, 255)
-        -- Active (blue) — we read width to prove it's alive
+        -- Active (blue) â€” we read width to prove it's alive
         local _ = c:getWidth()
         draw_rect(img, 46, 4, 36, 56, 0, 0, 200, 255)
         -- Released (red)

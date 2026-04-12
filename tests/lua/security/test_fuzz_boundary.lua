@@ -1,6 +1,11 @@
--- Lurek2D Fuzz Tests (Sandbox Boundary)
+﻿-- Lurek2D Fuzz Tests (Sandbox Boundary)
 
+-- @description Covers suite: sandbox boundary fuzzing.
 describe("sandbox boundary fuzzing", function()
+    -- @covers lurek.math
+    -- @covers lurek.graphics
+    -- @covers lurek.physics
+    -- @description Iterates over exposed math, graphics, and physics functions with random garbage arguments to detect Rust panics or VM crashes under broad fuzz pressure.
     it("handles random inputs without crashing the engine", function()
         -- Extract a few engine API tables
         local namespaces = {lurek.math, lurek.graphics, lurek.physics}

@@ -912,6 +912,92 @@ test_summary()
 | `ensure_evidence_dir(category)` | Creates the evidence output directory if missing |
 | `expect_evidence_created(path)` | Asserts the file exists and is non-empty |
 
+---
+
+### Evidence Test Contract (MANDATORY)
+
+An evidence test is valid **only if** removing the `lurek.*` module being tested would make the test produce wrong or missing output.
+
+> **Litmus test:** "If I deleted this module's Lua API, would the evidence file look different?"
+> If the answer is **no**, the test is **invalid**. You are only testing `newImageData` and `setPixel`, not the module.
+
+Every valid evidence test follows this four-step structure:
+
+```
+1. CREATE   — instantiate module object via lurek.* API
+              e.g. lurek.particles.newSystem(), lurek.minimap.new()
+2. CONFIGURE — set up the module via its Lua API methods
+              e.g. sys:setRate(50), mm:setFogLevel(x, y, 2)
+3. EXECUTE   — run module logic to advance state
+              e.g. sys:update(dt), mm:step(), grid:findPath()
+4. DUMP      — output what the module produced to a file
+              e.g. sys:drawToImage(w, h) → savePNG, or visualize API-returned data
+```
+
+#### Module categories and how to produce evidence
+
+| Module type | How to produce valid evidence |
+|---|---|
+| Has `drawToImage()` | Call `module:drawToImage(w, h)` and save the result. Do **NOT** draw anything manually on top. |
+| Pure data / computation | Run the algorithm; visualize the **data returned by the API** using basic drawing helpers. The algorithm result must be the source — not hand-crafted geometry. |
+| Audio DSP | Save audio file or export waveform/spectrogram PNG. Samples must come from the DSP module's output. |
+| Config / state snapshot | Serialize module state to text using `lurek.serial` or `tostring`. No manual string construction. |
+
+#### Invalid patterns — must be replaced or deleted
+
+```lua
+-- WRONG: tests nothing — draws shapes manually without touching any module API
+it("polygon gallery", function()
+    local img = lurek.img.newImageData(256, 256)
+    img:fill(20, 20, 30, 255)
+    for _, s in ipairs(shapes) do
+        for i = 0, s.sides - 1 do
+            -- ... manual trig + setPixel loop ...
+        end                              -- no lurek.* domain module called!
+    end
+    lurek.img.savePNG(img, OUT .. "shapes.png")  -- proves nothing about any module
+end)
+
+-- WRONG: only tests newImageData and setPixel — not any domain module
+it("gradient fills the image", function()
+    local img = lurek.img.newImageData(256, 256)
+    for y = 0, 255 do
+        for x = 0, 255 do img:setPixel(x, y, x, y, 128, 255) end
+    end
+    lurek.img.savePNG(img, OUT .. "gradient.png")
+end)
+```
+
+#### Valid patterns
+
+```lua
+-- RIGHT: particle system is the subject; drawToImage proves it works
+it("emitter spawns particles after update", function()
+    local sys = lurek.particles.newSystem()      -- 1. CREATE via API
+    sys:setRate(50)                              -- 2. CONFIGURE via API
+    for _ = 1, 30 do sys:update(1/60) end        -- 3. EXECUTE via API
+    local img = sys:drawToImage(256, 256)        -- 4. DUMP module output
+    lurek.img.savePNG(img, OUT .. "emitter_basic.png")
+    expect_evidence_created(OUT .. "emitter_basic.png")
+end)
+
+-- RIGHT: pathfinding data visualized — data came from the API, not hand-crafted
+it("A-star path from (0,0) to (19,19)", function()
+    local grid = lurek.pathfind.newGrid(20, 20)  -- 1. CREATE
+    grid:setWalkable(10, 5, false)               -- 2. CONFIGURE
+    local path = grid:findPath(0, 0, 19, 19)    -- 3. EXECUTE
+    local img = lurek.img.newImageData(200, 200) -- 4. DUMP: visualize API result
+    img:fill(40, 40, 40, 255)
+    for _, pt in ipairs(path) do
+        img:setPixel(pt.x * 10, pt.y * 10, 0, 255, 0, 255)
+    end
+    lurek.img.savePNG(img, OUT .. "pathfind_astar.png")
+    expect_evidence_created(OUT .. "pathfind_astar.png")
+end)
+```
+
+---
+
 ### Model-Level `draw_to_image()` Evidence (Headless, No GPU)
 
 Some domain modules provide a `draw_to_image()` function that produces a

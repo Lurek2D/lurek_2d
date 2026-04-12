@@ -1,4 +1,4 @@
--- @covers lurek.terminal.newBorder
+﻿-- @covers lurek.terminal.newBorder
 -- @covers lurek.terminal.newButton
 -- @covers lurek.terminal.newLabel
 -- @covers lurek.terminal.newList
@@ -6,7 +6,7 @@
 -- @covers lurek.terminal.newTerminal
 -- @covers lurek.terminal.newTextBox
 
-﻿-- tests/lua/unit/test_terminal.lua
+ď»ż-- tests/lua/unit/test_terminal.lua
 -- BDD tests for the lurek.terminal.* API.
 
 require("tests/lua/init")
@@ -16,7 +16,16 @@ local function click_cell(term, col, row, button)
     term:mousepressed((col - 1) * cell_w + 1, (row - 1) * cell_h + 1, button or 1)
 end
 
+-- @description Covers suite: lurek.terminal module.
 describe("lurek.terminal module", function()
+    -- @covers lurek.terminal.newTerminal
+    -- @covers lurek.terminal.newLabel
+    -- @covers lurek.terminal.newButton
+    -- @covers lurek.terminal.newTextBox
+    -- @covers lurek.terminal.newList
+    -- @covers lurek.terminal.newBorder
+    -- @covers lurek.terminal.newPanel
+    -- @description Verifies the terminal module exposes the expected terminal and widget constructor functions.
     it("exposes terminal constructors", function()
         expect_type("table", lurek.terminal)
         expect_type("function", lurek.terminal.newTerminal)
@@ -29,7 +38,11 @@ describe("lurek.terminal module", function()
     end)
 end)
 
+-- @description Covers suite: terminal handles.
 describe("terminal handles", function()
+    -- @covers lurek.terminal.newTerminal
+    -- @covers Terminal:getDimensions
+    -- @description Verifies newTerminal() returns userdata and its methods accept both colon syntax and explicit self calls.
     it("creates terminal userdata and accepts colon or explicit self syntax", function()
         local term = lurek.terminal.newTerminal(40, 20)
         expect_equal("userdata", type(term))
@@ -42,6 +55,8 @@ describe("terminal handles", function()
         expect_equal(20, rows2)
     end)
 
+    -- @covers Terminal:getCellSize
+    -- @description Verifies getCellSize() reports the default cell size through both colon and explicit self syntax.
     it("reports the default cell size through colon and explicit self syntax", function()
         local term = lurek.terminal.newTerminal(10, 5)
         local cell_w1, cell_h1 = term:getCellSize()
@@ -53,6 +68,9 @@ describe("terminal handles", function()
         expect_near(14.0, cell_h2, 0.001)
     end)
 
+    -- @covers Terminal:set
+    -- @covers Terminal:get
+    -- @description Verifies set() writes a cell's character and foreground color data and get() reads the stored values back.
     it("sets and gets cells with colon syntax", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(2, 3, "A", 1, 0.5, 0, 1)
@@ -65,6 +83,9 @@ describe("terminal handles", function()
         expect_near(1.0, fa, 0.01)
     end)
 
+    -- @covers Terminal:clear
+    -- @covers Terminal:get
+    -- @description Verifies clear() resets previously written cells back to their default blank state.
     it("clears cells back to defaults", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(2, 2, "X", 1, 0, 0, 1)
@@ -74,6 +95,10 @@ describe("terminal handles", function()
         expect_equal(string.byte(" "), ch)
     end)
 
+    -- @covers lurek.terminal.newLabel
+    -- @covers Label:getText
+    -- @covers Label:setText
+    -- @description Verifies widget handles support both colon syntax and explicit self calls for text accessors.
     it("supports explicit self syntax on widget handles", function()
         local label = lurek.terminal.newLabel(1, 1, "Hello")
         expect_equal("Hello", label.getText(label))
@@ -83,7 +108,12 @@ describe("terminal handles", function()
     end)
 end)
 
+-- @description Covers suite: widget attachment and focus.
 describe("widget attachment and focus", function()
+    -- @covers Terminal:addWidget
+    -- @covers Terminal:getWidgetCount
+    -- @covers Label:getPosition
+    -- @description Verifies addWidget() attaches a detached widget to the terminal without changing its position.
     it("attaches detached widgets to a terminal", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local label = lurek.terminal.newLabel(2, 3, "Status")
@@ -97,6 +127,13 @@ describe("widget attachment and focus", function()
         expect_equal(3, row)
     end)
 
+    -- @covers Terminal:removeWidget
+    -- @covers Terminal:setFocus
+    -- @covers Terminal:getFocused
+    -- @covers Terminal:getWidgetCount
+    -- @covers Button:setText
+    -- @covers Button:getText
+    -- @description Verifies removeWidget() detaches the widget, clears focus, and leaves the detached handle usable.
     it("removeWidget detaches the handle and clears focus for the removed widget", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local button = lurek.terminal.newButton(2, 2, 8, 1, "Play")
@@ -112,6 +149,11 @@ describe("widget attachment and focus", function()
         expect_equal("Detached", button:getText())
     end)
 
+    -- @covers Terminal:clearWidgets
+    -- @covers Terminal:setFocus
+    -- @covers Terminal:getFocused
+    -- @covers Terminal:getWidgetCount
+    -- @description Verifies clearWidgets() detaches all widgets, clears focus, and preserves detached widget usability.
     it("clearWidgets detaches all handles and clears focus", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local label = lurek.terminal.newLabel(1, 1, "HUD")
@@ -131,6 +173,11 @@ describe("widget attachment and focus", function()
         expect_equal("after-clear", input:getText())
     end)
 
+    -- @covers Terminal:setFocus
+    -- @covers Terminal:getFocused
+    -- @covers TextBox:setText
+    -- @covers TextBox:getText
+    -- @description Verifies setFocus() and getFocused() round-trip an attached widget handle that remains fully usable.
     it("setFocus and getFocused work with attached widget handles", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local input = lurek.terminal.newTextBox(1, 1, 10)
@@ -145,6 +192,11 @@ describe("widget attachment and focus", function()
         expect_equal("Hero", input:getText())
     end)
 
+    -- @covers Terminal:addWidget
+    -- @covers Panel:addChild
+    -- @covers Panel:getChildCount
+    -- @covers Panel:getChild
+    -- @description Verifies attaching a panel auto-attaches detached child widgets added through addChild().
     it("panel addChild auto-attaches detached children when the panel is attached", function()
         local term = lurek.terminal.newTerminal(30, 12)
         local panel = lurek.terminal.newPanel(1, 1, 20, 8)
@@ -158,6 +210,10 @@ describe("widget attachment and focus", function()
         expect_equal("Child", panel:getChild(1):getText())
     end)
 
+    -- @covers Terminal:mousepressed
+    -- @covers Terminal:setFocus
+    -- @covers Terminal:getFocused
+    -- @description Verifies a mouse press that misses every widget clears the current terminal focus.
     it("mousepressed miss clears focus", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local button = lurek.terminal.newButton(3, 2, 8, 1, "OK")
@@ -170,7 +226,15 @@ describe("widget attachment and focus", function()
     end)
 end)
 
+-- @description Covers suite: widget property helpers.
 describe("widget property helpers", function()
+    -- @covers Label:setVisible
+    -- @covers Label:isVisible
+    -- @covers Label:setEnabled
+    -- @covers Label:isEnabled
+    -- @covers Label:setTag
+    -- @covers Label:getTag
+    -- @description Verifies attached widgets expose visibility, enabled-state, and tag helper methods.
     it("supports visibility, enabled, and tag helpers on attached widgets", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local label = lurek.terminal.newLabel(1, 1, "Status")
@@ -191,6 +255,11 @@ describe("widget property helpers", function()
         expect_equal("hud.status", label:getTag())
     end)
 
+    -- @covers Label:setColor
+    -- @covers Label:getColor
+    -- @covers Border:setColor
+    -- @covers Border:getColor
+    -- @description Verifies labels and borders round-trip RGBA color state through their color helper methods.
     it("supports setColor and getColor on labels and borders", function()
         local label = lurek.terminal.newLabel(1, 1, "Info")
         local border = lurek.terminal.newBorder(1, 2, 12, 4)
@@ -212,6 +281,11 @@ describe("widget property helpers", function()
         expect_near(0.8, ba, 0.001)
     end)
 
+    -- @covers Button:setText
+    -- @covers Button:getText
+    -- @covers TextBox:setText
+    -- @covers TextBox:getText
+    -- @description Verifies buttons and text boxes update and expose their text content through the widget text helpers.
     it("supports setText and getText on buttons and text boxes", function()
         local button = lurek.terminal.newButton(1, 1, 8, 1, "Old")
         local textbox = lurek.terminal.newTextBox(1, 2, 10)
@@ -223,6 +297,11 @@ describe("widget property helpers", function()
         expect_equal("Updated", textbox.getText(textbox))
     end)
 
+    -- @covers TextBox:setMaxLength
+    -- @covers TextBox:getMaxLength
+    -- @covers TextBox:setText
+    -- @covers TextBox:getText
+    -- @description Verifies text box max-length constraints are stored and enforced when text is assigned.
     it("supports setMaxLength and getMaxLength on text boxes", function()
         local textbox = lurek.terminal.newTextBox(1, 1, 10)
 
@@ -233,6 +312,12 @@ describe("widget property helpers", function()
         expect_equal("abcd", textbox:getText())
     end)
 
+    -- @covers List:addItem
+    -- @covers List:getItemCount
+    -- @covers List:getItem
+    -- @covers List:removeItem
+    -- @covers List:clearItems
+    -- @description Verifies list widgets support adding, removing, querying, and clearing items.
     it("supports list item management helpers", function()
         local list = lurek.terminal.newList(1, 1, 20, 5)
         list:addItem("Alpha")
@@ -251,6 +336,12 @@ describe("widget property helpers", function()
         expect_equal("", list:getItem(1))
     end)
 
+    -- @covers Panel:addChild
+    -- @covers Panel:getChildCount
+    -- @covers Panel:getChild
+    -- @covers Panel:removeChild
+    -- @covers Panel:clearChildren
+    -- @description Verifies panels support adding, removing, querying, and clearing child widget handles.
     it("supports panel child management helpers", function()
         local term = lurek.terminal.newTerminal(30, 12)
         local panel = lurek.terminal.newPanel(1, 1, 20, 8)
@@ -274,6 +365,11 @@ describe("widget property helpers", function()
         expect_nil(panel:getChild(1))
     end)
 
+    -- @covers Border:setStyle
+    -- @covers Border:getStyle
+    -- @covers Border:setTitle
+    -- @covers Border:getTitle
+    -- @description Verifies border widgets update and report their style and title metadata.
     it("supports border style and title updates", function()
         local border = lurek.terminal.newBorder(1, 1, 12, 5)
         border:setStyle("double")
@@ -284,7 +380,14 @@ describe("widget property helpers", function()
     end)
 end)
 
+-- @description Covers suite: button callbacks.
 describe("button callbacks", function()
+    -- @covers Button:setOnClick
+    -- @covers Terminal:keypressed
+    -- @covers Terminal:removeWidget
+    -- @covers Terminal:addWidget
+    -- @covers Terminal:mousepressed
+    -- @description Verifies button onClick callbacks still fire after keyboard activation, detachment, and reattachment.
     it("keeps onClick callbacks working after attachment and reattachment", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local button = lurek.terminal.newButton(3, 2, 8, 1, "OK")
@@ -313,7 +416,14 @@ describe("button callbacks", function()
     end)
 end)
 
+-- @description Covers suite: text box callbacks.
 describe("text box callbacks", function()
+    -- @covers TextBox:setOnChange
+    -- @covers TextBox:setText
+    -- @covers TextBox:getText
+    -- @covers Terminal:textinput
+    -- @covers Terminal:keypressed
+    -- @description Verifies text box onChange callbacks fire for direct text assignment and keyboard editing operations.
     it("fires onChange for setText, textinput, backspace, and delete", function()
         local term = lurek.terminal.newTerminal(30, 10)
         local input = lurek.terminal.newTextBox(1, 1, 12)
@@ -344,7 +454,14 @@ describe("text box callbacks", function()
     end)
 end)
 
+-- @description Covers suite: list callbacks.
 describe("list callbacks", function()
+    -- @covers List:setOnSelect
+    -- @covers List:setSelected
+    -- @covers List:getSelected
+    -- @covers Terminal:keypressed
+    -- @covers Terminal:mousepressed
+    -- @description Verifies list selection callbacks fire for direct selection changes, keyboard navigation, and mouse clicks.
     it("fires onSelect for setSelected, keyboard navigation, and mouse presses", function()
         local term = lurek.terminal.newTerminal(30, 12)
         local list = lurek.terminal.newList(1, 1, 12, 4)
@@ -372,7 +489,10 @@ describe("list callbacks", function()
 end)
 
 
+-- @description Covers suite: terminal low-level cell methods (RS parity).
 describe("terminal low-level cell methods (RS parity)", function()
+    -- @covers Terminal:get
+    -- @description Verifies untouched cells start as spaces with an opaque white foreground color.
     it("default cell has space char and opaque white foreground", function()
         local term = lurek.terminal.newTerminal(10, 5)
         local ch, fr, fg, fb, fa = term:get(1, 1)
@@ -383,6 +503,9 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_near(1.0, fa, 0.01)
     end)
 
+    -- @covers lurek.terminal.newTerminal
+    -- @covers Terminal:getDimensions
+    -- @description Verifies terminal dimensions are clamped to a minimum 1x1 grid.
     it("clamped dimensions enforce minimum 1x1", function()
         local term = lurek.terminal.newTerminal(0, -5)
         local cols, rows = term:getDimensions()
@@ -390,6 +513,10 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_true(rows >= 1)
     end)
 
+    -- @covers Terminal:set
+    -- @covers Terminal:setChar
+    -- @covers Terminal:get
+    -- @description Verifies setChar() changes the stored glyph without overwriting the existing foreground colors.
     it("setChar replaces character but preserves colors", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(3, 2, "A", 0.5, 0.1, 0.2, 1.0)
@@ -401,6 +528,10 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_near(0.2, fb, 0.01)
     end)
 
+    -- @covers Terminal:set
+    -- @covers Terminal:setFg
+    -- @covers Terminal:get
+    -- @description Verifies setFg() updates foreground color data while preserving the stored character.
     it("setFg replaces foreground but preserves character", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(2, 2, "B", 1.0, 0.0, 0.0, 1.0)
@@ -409,6 +540,10 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_equal(string.byte("B"), ch)
     end)
 
+    -- @covers Terminal:set
+    -- @covers Terminal:setBg
+    -- @covers Terminal:get
+    -- @description Verifies setBg() accepts a background update without corrupting the stored character.
     it("setBg does not error and preserves character", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(2, 2, "C", 1.0, 0.0, 0.0, 1.0)
@@ -417,6 +552,9 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_equal(string.byte("C"), ch)
     end)
 
+    -- @covers Terminal:print
+    -- @covers Terminal:get
+    -- @description Verifies print() writes text left-to-right and clips output at the terminal boundary.
     it("print writes characters left-to-right and clips at edge", function()
         local term = lurek.terminal.newTerminal(5, 3)
         term:print(1, 1, "Hello World")
@@ -426,6 +564,9 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_equal(string.byte("o"), ch5)
     end)
 
+    -- @covers Terminal:setCursor
+    -- @covers Terminal:getCursor
+    -- @description Verifies setCursor() and getCursor() round-trip the cursor position.
     it("getCursor and setCursor round-trip", function()
         local term = lurek.terminal.newTerminal(20, 10)
         term:setCursor(5, 3)
@@ -434,6 +575,10 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_equal(3, row)
     end)
 
+    -- @covers Terminal:resize
+    -- @covers Terminal:getDimensions
+    -- @covers Terminal:get
+    -- @description Verifies resizing larger preserves existing cell contents within the overlapping region.
     it("resize preserves content in the overlap region", function()
         local term = lurek.terminal.newTerminal(10, 5)
         term:set(2, 2, "R", 1, 0, 0, 1)
@@ -445,6 +590,10 @@ describe("terminal low-level cell methods (RS parity)", function()
         expect_equal(string.byte("R"), ch)
     end)
 
+    -- @covers Terminal:resize
+    -- @covers Terminal:setCursor
+    -- @covers Terminal:getCursor
+    -- @description Verifies resizing smaller clamps the cursor position to the new terminal bounds.
     it("resize to smaller clamps cursor inside new bounds", function()
         local term = lurek.terminal.newTerminal(20, 10)
         term:setCursor(15, 8)
@@ -455,7 +604,10 @@ describe("terminal low-level cell methods (RS parity)", function()
     end)
 end)
 
+-- @description Covers suite: terminal widget lookup helpers (RS parity).
 describe("terminal widget lookup helpers (RS parity)", function()
+    -- @covers Terminal:getWidget
+    -- @description Verifies getWidget() returns an attached widget handle by 1-based index.
     it("getWidget returns widget by 1-based index", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local lbl = lurek.terminal.newLabel(1, 1, "Hi")
@@ -466,6 +618,9 @@ describe("terminal widget lookup helpers (RS parity)", function()
         expect_equal("Changed", lbl:getText())
     end)
 
+    -- @covers Label:setTag
+    -- @covers Terminal:findByTag
+    -- @description Verifies findByTag() resolves tagged widgets and returns nil for unknown tags.
     it("findByTag returns the matching widget or nil", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local lbl = lurek.terminal.newLabel(1, 1, "HealthBar")
@@ -476,6 +631,8 @@ describe("terminal widget lookup helpers (RS parity)", function()
         expect_nil(term:findByTag("nonexistent.tag"))
     end)
 
+    -- @covers Terminal:keypressed
+    -- @description Verifies keypressed() returns false when the terminal has no focused widget.
     it("keypressed returns false when no widget has focus", function()
         local term = lurek.terminal.newTerminal(20, 10)
         local btn = lurek.terminal.newButton(1, 1, 8, 1, "OK")

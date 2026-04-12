@@ -1,11 +1,15 @@
--- Lurek2D Integration Test: Savegame + Tilemap
+﻿-- Lurek2D Integration Test: Savegame + Tilemap
 -- Tests saving and restoring tilemap state via savegame.
 -- @covers lurek.savegame.newSaveManager
 -- @covers lurek.tilemap.newTilemap
 -- @covers lurek.tilemap.setTile
 -- @covers lurek.tilemap.getTile
 
+-- @description Covers suite: integration: savegame collects and restores tilemap state.
 describe("integration: savegame collects and restores tilemap state", function()
+    -- @covers lurek.savegame.SaveManager.register
+    -- @covers lurek.tilemap.Tilemap.getTile
+    -- @description Verifies a savegame handler can collect the non-empty tile state from a tilemap.
     it("registers tilemap handler and collects tile data", function()
         local sm = lurek.savegame.newSaveManager()
         local tm = lurek.tilemap.newTilemap(5, 5, 16, 16)
@@ -45,6 +49,9 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_true(#saved_tiles >= 3, "at least 3 non-zero tiles collected")
     end)
 
+    -- @covers lurek.savegame.SaveManager.setSummary
+    -- @covers lurek.tilemap
+    -- @description Verifies save summaries can retain tilemap metadata such as the map name.
     it("save summary contains tilemap metadata", function()
         local sm = lurek.savegame.newSaveManager()
         sm:setSummary("map_name", "level_01")
@@ -52,6 +59,9 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_equal("level_01", summary, "summary stores map name")
     end)
 
+    -- @covers lurek.savegame.SaveManager.getSchemaVersion
+    -- @covers lurek.tilemap
+    -- @description Verifies the save manager exposes a usable schema version for tilemap save data.
     it("schema version is accessible", function()
         local sm = lurek.savegame.newSaveManager()
         local ver = sm:getSchemaVersion()

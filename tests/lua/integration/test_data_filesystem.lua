@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Data + Filesystem
+﻿-- Lurek2D Integration Test: Data + Filesystem
 -- Tests saving JSON data to a file and reading it back.
 -- @covers lurek.data.encode
 -- @covers lurek.data.decode
@@ -7,9 +7,13 @@
 -- @covers lurek.filesystem.exists
 -- @covers lurek.filesystem.remove
 
+-- @description Covers suite: integration: data serialization with filesystem I/O.
 describe("integration: data serialization with filesystem I/O", function()
     local TMP_PATH = "test_data_fs_tmp.json"
 
+    -- @covers lurek.data.encode
+    -- @covers lurek.filesystem.write
+    -- @description Verifies JSON-encoded table data can be written to the filesystem without raising an I/O error.
     it("encodes table to JSON and writes to file", function()
         local record = {
             name  = "player1",
@@ -27,6 +31,9 @@ describe("integration: data serialization with filesystem I/O", function()
         end)
     end)
 
+    -- @covers lurek.data.decode
+    -- @covers lurek.filesystem.read
+    -- @description Verifies persisted JSON can be read back from disk and decoded into the original table fields.
     it("reads file back and decodes JSON to original table", function()
         local exists = lurek.filesystem.exists(TMP_PATH)
         expect_true(exists, "temp file exists after write")
@@ -40,6 +47,9 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_equal(7,         decoded.level, "level round-tripped")
     end)
 
+    -- @covers lurek.data
+    -- @covers lurek.filesystem.remove
+    -- @description Verifies the temporary artifact created for data round-tripping can be removed cleanly from the filesystem.
     it("cleans up temporary file", function()
         if lurek.filesystem.exists(TMP_PATH) then
             expect_no_error(function()
@@ -49,6 +59,9 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_true(true, "cleanup done")
     end)
 
+    -- @covers lurek.data.decode
+    -- @covers lurek.filesystem
+    -- @description Verifies nested table data survives a serialization cycle that mirrors filesystem persistence.
     it("round-trips nested data correctly", function()
         local nested = {
             meta = { version = 2, engine = "lurek" },

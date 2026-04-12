@@ -1,4 +1,4 @@
--- @covers lurek.signal.newSignal
+﻿-- @covers lurek.signal.newSignal
 
 -- Signal module Lua tests
 -- Tests are headless-safe (no window/GPU/audio needed)
@@ -6,17 +6,24 @@
 -- ============================================================
 -- Signal creation
 -- ============================================================
+-- @description Covers suite: lurek.signal.newSignal.
 describe("lurek.signal.newSignal", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies newSignal constructs a non-nil userdata handle.
     it("should create a Signal userdata", function()
         local sig = lurek.signal.newSignal()
         expect_not_nil(sig, "newSignal should return a value")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies Signal:type reports the userdata class name.
     it("should have type 'Signal'", function()
         local sig = lurek.signal.newSignal()
         expect_equal("Signal", sig:type(), "type should be Signal")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies Signal:typeOf recognizes Signal and Object while rejecting unrelated types.
     it("should support typeOf check", function()
         local sig = lurek.signal.newSignal()
         expect_true(sig:typeOf("Signal"), "typeOf('Signal') should be true")
@@ -28,7 +35,10 @@ end)
 -- ============================================================
 -- register / emit
 -- ============================================================
+-- @description Covers suite: Signal:register and Signal:emit.
 describe("Signal:register and Signal:emit", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies registering a callback returns a positive numeric subscription handle.
     it("should register a callback and return a handle", function()
         local sig = lurek.signal.newSignal()
         local handle = sig:register("test", function() end)
@@ -36,6 +46,8 @@ describe("Signal:register and Signal:emit", function()
         expect_true(handle > 0, "handle should be positive")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies registration handles are monotonically increasing across events.
     it("should return monotonically increasing handles", function()
         local sig = lurek.signal.newSignal()
         local h1 = sig:register("test", function() end)
@@ -45,6 +57,8 @@ describe("Signal:register and Signal:emit", function()
         expect_true(h3 > h2, "h3 > h2")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies emit dispatches to listeners registered for the matching event name.
     it("should emit to registered callbacks", function()
         local sig = lurek.signal.newSignal()
         local called = false
@@ -55,6 +69,8 @@ describe("Signal:register and Signal:emit", function()
         expect_true(called, "callback should have been called")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies emit forwards variadic payload arguments to registered callbacks.
     it("should pass extra arguments to callbacks", function()
         local sig = lurek.signal.newSignal()
         local received_a, received_b
@@ -67,6 +83,8 @@ describe("Signal:register and Signal:emit", function()
         expect_equal("hello", received_b, "second arg")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies listeners fire in registration order for the same event name.
     it("should call multiple callbacks in registration order", function()
         local sig = lurek.signal.newSignal()
         local order = {}
@@ -80,6 +98,8 @@ describe("Signal:register and Signal:emit", function()
         expect_equal("third", order[3])
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies emit does not dispatch listeners registered under other event names.
     it("should not fire callbacks for other event names", function()
         local sig = lurek.signal.newSignal()
         local called = false
@@ -88,6 +108,8 @@ describe("Signal:register and Signal:emit", function()
         expect_false(called, "callback should not fire for different event")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies emitting an event with no listeners is a safe no-op.
     it("should handle emit with no registered listeners", function()
         local sig = lurek.signal.newSignal()
         -- Should not error
@@ -98,7 +120,10 @@ end)
 -- ============================================================
 -- remove
 -- ============================================================
+-- @description Covers suite: Signal:remove.
 describe("Signal:remove", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies remove detaches a callback by handle so later emits do not invoke it.
     it("should remove a callback by handle", function()
         local sig = lurek.signal.newSignal()
         local count = 0
@@ -111,11 +136,15 @@ describe("Signal:remove", function()
         expect_equal(1, count, "callback should not fire after removal")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies remove returns false when the requested handle is unknown.
     it("should return false for nonexistent handle", function()
         local sig = lurek.signal.newSignal()
         expect_false(sig:remove(999), "remove of unknown handle")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies removing one listener leaves other listeners on the same event intact.
     it("should not affect other callbacks", function()
         local sig = lurek.signal.newSignal()
         local a_count, b_count = 0, 0
@@ -131,7 +160,10 @@ end)
 -- ============================================================
 -- clear / clearAll
 -- ============================================================
+-- @description Covers suite: Signal:clear and Signal:clearAll.
 describe("Signal:clear and Signal:clearAll", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies clear removes all listeners for a single event name and reports the removal count.
     it("should clear all callbacks for one event name", function()
         local sig = lurek.signal.newSignal()
         sig:register("click", function() end)
@@ -143,11 +175,15 @@ describe("Signal:clear and Signal:clearAll", function()
         expect_equal(1, sig:getCount("hover"), "hover count unchanged")
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies clear returns zero when asked to remove a missing event bucket.
     it("should return 0 for clearing nonexistent event", function()
         local sig = lurek.signal.newSignal()
         expect_equal(0, sig:clear("nope"))
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies clearAll removes every registered listener across all events.
     it("should clearAll subscriptions", function()
         local sig = lurek.signal.newSignal()
         sig:register("a", function() end)
@@ -162,7 +198,10 @@ end)
 -- ============================================================
 -- getCount / getTotalCount
 -- ============================================================
+-- @description Covers suite: Signal:getCount and Signal:getTotalCount.
 describe("Signal:getCount and Signal:getTotalCount", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies getCount reports per-event listener totals and zero for unknown events.
     it("should return counts per event name", function()
         local sig = lurek.signal.newSignal()
         sig:register("click", function() end)
@@ -173,6 +212,8 @@ describe("Signal:getCount and Signal:getTotalCount", function()
         expect_equal(0, sig:getCount("nonexistent"))
     end)
 
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies getTotalCount reports the aggregate number of registered listeners.
     it("should return total count", function()
         local sig = lurek.signal.newSignal()
         expect_equal(0, sig:getTotalCount())
@@ -185,7 +226,10 @@ end)
 -- ============================================================
 -- Multiple independent signals
 -- ============================================================
+-- @description Covers suite: Multiple Signal instances.
 describe("Multiple Signal instances", function()
+    -- @covers lurek.signal.newSignal
+    -- @description Verifies separate Signal instances keep isolated listener registries.
     it("should be independent", function()
         local sig1 = lurek.signal.newSignal()
         local sig2 = lurek.signal.newSignal()

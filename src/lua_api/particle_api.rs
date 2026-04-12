@@ -1,6 +1,5 @@
 //! `lurek.particles` — Emitter-based 2D particle systems and trail ribbons.
 
-use super::render_api::LuaImageData;
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -950,7 +949,7 @@ impl LuaUserData for LuaParticleSystem {
             let ps = st.particle_systems.get(this.key)
                 .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             let img = ps.draw_to_image(w, h);
-            Ok(LuaImageData { inner: img })
+            Ok(img)
         });
     }
 }
@@ -1077,7 +1076,7 @@ impl LuaUserData for LuaTrail {
         /// @return ImageData
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
             let img = this.inner.draw_to_image(w, h);
-            Ok(LuaImageData { inner: img })
+            Ok(img)
         });
     }
 }

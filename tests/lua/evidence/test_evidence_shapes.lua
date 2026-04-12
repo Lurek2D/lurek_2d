@@ -1,4 +1,4 @@
--- test_evidence_shapes.lua
+﻿-- test_evidence_shapes.lua
 -- Evidence test: 2D shape drawing using lurek.img primitives
 
 local OUT = "tests/lua/evidence/output/shapes/"
@@ -35,8 +35,16 @@ local function draw_spiral(img, cx, cy, turns, r, g, b)
     end
 end
 
+-- @description Covers suite: Evidence: Shapes.
 describe("Evidence: Shapes", function()
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawLine
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws a gallery of polygon outlines and filled circles to provide a compact catalog of shape rasterization.
     it("renders a polygon gallery", function()
         local W, H = 512, 256
         local img = lurek.img.newImageData(W, H)
@@ -65,6 +73,13 @@ describe("Evidence: Shapes", function()
         lurek.img.savePNG(img, OUT .. "polygon_gallery.png")
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws a scene of filled primitive shapes and diagonal lines to show layered primitive composition.
     it("renders filled primitive shapes", function()
         local W, H = 400, 400
         local img = lurek.img.newImageData(W, H)
@@ -89,6 +104,11 @@ describe("Evidence: Shapes", function()
         lurek.img.savePNG(img, OUT .. "filled_primitives.png")
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawLine
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws several spirals with different turn counts and saves the result as PNG evidence.
     it("renders a spiral gallery", function()
         local W, H = 400, 300
         local img = lurek.img.newImageData(W, H)
@@ -101,6 +121,12 @@ describe("Evidence: Shapes", function()
         lurek.img.savePNG(img, OUT .. "spirals.png")
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawCircle
+    -- @covers ImageData:drawLine
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws concentric rings of circles and polygons to provide a second multi-shape rasterization reference image.
     it("renders concentric shape rings", function()
         local W, H = 300, 300
         local img = lurek.img.newImageData(W, H)

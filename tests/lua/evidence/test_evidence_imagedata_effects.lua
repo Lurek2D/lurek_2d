@@ -1,4 +1,4 @@
--- Evidence test: ImageData filter/effect methods produce PNG evidence
+﻿-- Evidence test: ImageData filter/effect methods produce PNG evidence
 -- Produces: effect_grayscale.png, effect_inverted.png, effect_sepia.png,
 --           effect_bright.png, effect_threshold.png, effect_blur.png,
 --           effect_sharpen.png, effect_noise.png, effect_posterize.png, effect_tint.png
@@ -20,6 +20,7 @@ local function solid(w, h, r, g, b, a)
     return img
 end
 
+-- @description Covers suite: evidence: imagedata effect filters.
 describe("evidence: imagedata effect filters", function()
     local OUT
 
@@ -28,6 +29,10 @@ describe("evidence: imagedata effect filters", function()
         OUT = evidence_output_dir("image")
     end)
 
+    -- @covers ImageData:grayscale
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies grayscale to a solid-color image and saves the result as filter evidence.
     it("creates grayscale effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         img:grayscale()
@@ -36,6 +41,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:invert
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies inversion to a solid-color image and writes the transformed output.
     it("creates inverted effect PNG", function()
         local img = solid(32, 32, 100, 150, 200, 255)
         img:invert()
@@ -44,6 +53,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:sepia
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies sepia toning to a neutral image and saves the result.
     it("creates sepia effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:sepia()
@@ -52,6 +65,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:brightness
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Increases brightness on a solid image and saves the brighter variant.
     it("creates brightness effect PNG", function()
         local img = solid(32, 32, 100, 100, 100, 255)
         img:brightness(1.5)
@@ -60,6 +77,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:threshold
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies a binary threshold to a solid image and writes the thresholded result.
     it("creates threshold effect PNG", function()
         local img = solid(32, 32, 179, 134, 89, 255)
         img:threshold(128)
@@ -68,6 +89,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:posterize
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Posterizes a solid image to four levels and saves the reduced-color result.
     it("creates posterize effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:posterize(4)
@@ -76,6 +101,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:tint
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies a semi-transparent red tint to a solid image and saves the tinted output.
     it("creates tint effect PNG", function()
         local img = solid(32, 32, 200, 200, 200, 255)
         img:tint(255, 0, 0, 0.5)
@@ -84,6 +113,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:noise
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Injects random noise into a solid image and saves the noisy result.
     it("creates noise effect PNG", function()
         local img = solid(32, 32, 128, 128, 128, 255)
         img:noise(30)
@@ -92,6 +125,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:blur
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies blur to a solid image and saves the returned blurred image.
     it("creates blur effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local blurred = img:blur(2)
@@ -100,6 +137,10 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 
+    -- @covers ImageData:sharpen
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Applies sharpening to a solid image and saves the returned sharpened image.
     it("creates sharpen effect PNG", function()
         local img = solid(32, 32, 200, 100, 50, 255)
         local sharpened = img:sharpen()

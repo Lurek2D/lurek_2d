@@ -6,34 +6,42 @@ local inventory = require("library.inventory")
 
 -- ─── InvItem ──────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newItem
+-- @description Verifies inventory item defaults plus stat, tag, weight, slot-type, and metadata behaviors on standalone items.
 describe("InvItem", function()
+    -- @description Verifies case: creates item with type.
     it("creates item with type", function()
         local it = inventory.newItem("sword")
         expect_equal(it:getType(), "sword")
     end)
 
+    -- @description Verifies case: default weight is 0.
     it("default weight is 0", function()
         local it = inventory.newItem("sword")
         expect_equal(it:getWeight(), 0.0)
     end)
 
+    -- @description Verifies case: setWeight/getWeight round-trip.
     it("setWeight/getWeight round-trip", function()
         local it = inventory.newItem("sword")
         it:setWeight(3.5)
         expect_near(it:getWeight(), 3.5, 1e-9)
     end)
 
+    -- @description Verifies case: default stack limit is 1.
     it("default stack limit is 1", function()
         local it = inventory.newItem("potion")
         expect_equal(it:getStackLimit(), 1)
     end)
 
+    -- @description Verifies case: setStackLimit clamps to 1 minimum.
     it("setStackLimit clamps to 1 minimum", function()
         local it = inventory.newItem("potion")
         it:setStackLimit(0)
         expect_equal(it:getStackLimit(), 1)
     end)
 
+    -- @description Verifies case: addTag / hasTag.
     it("addTag / hasTag", function()
         local it = inventory.newItem("sword")
         it:addTag("equippable")
@@ -41,6 +49,7 @@ describe("InvItem", function()
         expect_equal(it:hasTag("consumable"), false)
     end)
 
+    -- @description Verifies case: removeTag returns true when present.
     it("removeTag returns true when present", function()
         local it = inventory.newItem("sword")
         it:addTag("cursed")
@@ -48,11 +57,13 @@ describe("InvItem", function()
         expect_equal(it:hasTag("cursed"), false)
     end)
 
+    -- @description Verifies case: removeTag returns false when absent.
     it("removeTag returns false when absent", function()
         local it = inventory.newItem("sword")
         expect_equal(it:removeTag("cursed"), false)
     end)
 
+    -- @description Verifies case: getTags returns sorted array.
     it("getTags returns sorted array", function()
         local it = inventory.newItem("sword")
         it:addTag("z_tag")
@@ -62,12 +73,14 @@ describe("InvItem", function()
         expect_equal(tags[2], "z_tag")
     end)
 
+    -- @description Verifies case: setProperty / getProperty.
     it("setProperty / getProperty", function()
         local it = inventory.newItem("sword")
         it:setProperty("durability", 100)
         expect_equal(it:getProperty("durability"), 100)
     end)
 
+    -- @description Verifies case: clone creates independent copy.
     it("clone creates independent copy", function()
         local it = inventory.newItem("sword")
         it:setWeight(5.0)
@@ -86,7 +99,10 @@ end)
 
 -- ─── ItemStack ────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newItemStack
+-- @description Covers stack quantity math, capacity checks, split or merge flows, and the relationship between an item stack and its underlying item.
 describe("ItemStack", function()
+    -- @description Verifies case: creates stack with quantity.
     it("creates stack with quantity", function()
         local it = inventory.newItem("arrow")
         it:setStackLimit(20)
@@ -95,6 +111,7 @@ describe("ItemStack", function()
         expect_equal(s:getStackLimit(), 20)
     end)
 
+    -- @description Verifies case: isFull when at max.
     it("isFull when at max", function()
         local it = inventory.newItem("coin")
         it:setStackLimit(10)
@@ -102,12 +119,14 @@ describe("ItemStack", function()
         expect_equal(s:isFull(), true)
     end)
 
+    -- @description Verifies case: isEmpty when quantity 0.
     it("isEmpty when quantity 0", function()
         local it = inventory.newItem("coin")
         local s = inventory.newItemStack(it, 0, 10)
         expect_equal(s:isEmpty(), true)
     end)
 
+    -- @description Verifies case: add returns overflow.
     it("add returns overflow", function()
         local it = inventory.newItem("arrow")
         it:setStackLimit(10)
@@ -117,6 +136,7 @@ describe("ItemStack", function()
         expect_equal(s:getQuantity(), 10)
     end)
 
+    -- @description Verifies case: remove returns count removed.
     it("remove returns count removed", function()
         local it = inventory.newItem("arrow")
         local s = inventory.newItemStack(it, 8, 10)
@@ -125,6 +145,7 @@ describe("ItemStack", function()
         expect_equal(s:getQuantity(), 5)
     end)
 
+    -- @description Verifies case: split creates new stack.
     it("split creates new stack", function()
         local it = inventory.newItem("arrow")
         local s = inventory.newItemStack(it, 10, 10)
@@ -133,6 +154,7 @@ describe("ItemStack", function()
         expect_equal(s:getQuantity(), 6)
     end)
 
+    -- @description Verifies case: split returns nil for invalid n.
     it("split returns nil for invalid n", function()
         local it = inventory.newItem("arrow")
         local s = inventory.newItemStack(it, 10, 10)
@@ -140,6 +162,7 @@ describe("ItemStack", function()
         expect_equal(s:split(11), nil)
     end)
 
+    -- @description Verifies case: merge absorbs other stack.
     it("merge absorbs other stack", function()
         local it = inventory.newItem("coin")
         local a = inventory.newItemStack(it, 5, 10)
@@ -150,6 +173,7 @@ describe("ItemStack", function()
         expect_equal(b:getQuantity(), 0)
     end)
 
+    -- @description Verifies case: merge returns leftover when overflow.
     it("merge returns leftover when overflow", function()
         local it = inventory.newItem("coin")
         local a = inventory.newItemStack(it, 8, 10)
@@ -163,24 +187,30 @@ end)
 
 -- ─── Slot ─────────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newSlot
+-- @description Tests equipment and container slots for acceptance rules, set or clear flows, occupancy checks, and slot-level metadata.
 describe("Slot", function()
+    -- @description Verifies case: starts empty.
     it("starts empty", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         expect_equal(sl:isEmpty(), true)
     end)
 
+    -- @description Verifies case: can accept any-typed item.
     it("can accept any-typed item", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
         expect_equal(sl:canAccept(it), true)
     end)
 
+    -- @description Verifies case: type filter rejects non-matching item.
     it("type filter rejects non-matching item", function()
         local sl = inventory.newSlot("weapon", inventory.SlotState.Active)
         local it = inventory.newItem("potion")
         expect_equal(sl:canAccept(it), false)
     end)
 
+    -- @description Verifies case: type filter accepts item with matching tag.
     it("type filter accepts item with matching tag", function()
         local sl = inventory.newSlot("weapon", inventory.SlotState.Active)
         local it = inventory.newItem("special_blade")
@@ -188,6 +218,7 @@ describe("Slot", function()
         expect_equal(sl:canAccept(it), true)
     end)
 
+    -- @description Verifies case: setStack/getStack round-trip.
     it("setStack/getStack round-trip", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
@@ -197,6 +228,7 @@ describe("Slot", function()
         expect_equal(sl:getItem():getType(), "sword")
     end)
 
+    -- @description Verifies case: takeStack empties slot.
     it("takeStack empties slot", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
@@ -206,6 +238,7 @@ describe("Slot", function()
         expect_equal(taken:getItem():getType(), "sword")
     end)
 
+    -- @description Verifies case: clear empties slot.
     it("clear empties slot", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         local it = inventory.newItem("sword")
@@ -217,13 +250,17 @@ end)
 
 -- ─── Container ────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newContainer
+-- @description Exercises fixed-size containers including slot access, add or remove flows, transfers, counting, and structural constraints.
 describe("Container.fixed", function()
+    -- @description Verifies case: creates fixed container with correct slot count.
     it("creates fixed container with correct slot count", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         expect_equal(c:slotCount(), 5)
         expect_equal(c:getMode(), "fixed")
     end)
 
+    -- @description Verifies case: addItem places item in empty slot.
     it("addItem places item in empty slot", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         local it = inventory.newItem("potion")
@@ -232,6 +269,7 @@ describe("Container.fixed", function()
         expect_equal(c:countItem("potion"), 3)
     end)
 
+    -- @description Verifies case: addItem merges into existing stack.
     it("addItem merges into existing stack", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         local it = inventory.newItem("arrow")
@@ -241,6 +279,7 @@ describe("Container.fixed", function()
         expect_equal(c:countItem("arrow"), 15)
     end)
 
+    -- @description Verifies case: hasItem returns true when quantity met.
     it("hasItem returns true when quantity met", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         local it = inventory.newItem("coin")
@@ -250,6 +289,7 @@ describe("Container.fixed", function()
         expect_equal(c:hasItem("coin", 51), false)
     end)
 
+    -- @description Verifies case: removeItem reduces count.
     it("removeItem reduces count", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         local it = inventory.newItem("herb")
@@ -260,6 +300,7 @@ describe("Container.fixed", function()
         expect_equal(c:countItem("herb"), 5)
     end)
 
+    -- @description Verifies case: findByTag returns matching items.
     it("findByTag returns matching items", function()
         local c = inventory.newContainer("bag", "fixed", 10)
         local sword = inventory.newItem("sword")
@@ -272,6 +313,7 @@ describe("Container.fixed", function()
         expect_equal(found[1]:getType(), "sword")
     end)
 
+    -- @description Verifies case: toItemList aggregates types.
     it("toItemList aggregates types", function()
         local c = inventory.newContainer("bag", "fixed", 10)
         local arrow = inventory.newItem("arrow")
@@ -283,6 +325,7 @@ describe("Container.fixed", function()
         expect_equal(list[1].quantity, 5)
     end)
 
+    -- @description Verifies case: isFull when all slots occupied.
     it("isFull when all slots occupied", function()
         local c = inventory.newContainer("bag", "fixed", 2)
         local it = inventory.newItem("coin")
@@ -291,6 +334,7 @@ describe("Container.fixed", function()
         expect_equal(c:isFull(), true)
     end)
 
+    -- @description Verifies case: returns false when addItem into full container.
     it("returns false when addItem into full container", function()
         local c = inventory.newContainer("bag", "fixed", 1)
         local it = inventory.newItem("sword")
@@ -299,7 +343,10 @@ describe("Container.fixed", function()
     end)
 end)
 
+-- @covers library.inventory.newContainer
+-- @description Verifies expandable containers can grow when items are inserted beyond the current slot count.
 describe("Container.expandable", function()
+    -- @description Verifies case: expand adds slots in expandable mode.
     it("expand adds slots in expandable mode", function()
         local c = inventory.newContainer("bag", "expandable", 2)
         expect_equal(c:slotCount(), 2)
@@ -307,13 +354,17 @@ describe("Container.expandable", function()
         expect_equal(c:slotCount(), 5)
     end)
 
+    -- @description Verifies case: expand returns false in fixed mode.
     it("expand returns false in fixed mode", function()
         local c = inventory.newContainer("bag", "fixed", 5)
         expect_equal(c:expand(2), false)
     end)
 end)
 
+-- @covers library.inventory.newContainer
+-- @description Covers unlimited-mode containers that accept arbitrary growth without fixed-slot limits.
 describe("Container.unlimited", function()
+    -- @description Verifies case: auto-grows on addItem.
     it("auto-grows on addItem", function()
         local c = inventory.newContainer("bag", "unlimited", 0)
         for i = 1, 20 do
@@ -323,6 +374,7 @@ describe("Container.unlimited", function()
         expect_equal(c:slotCount(), 20)
     end)
 
+    -- @description Verifies case: weight limit respected.
     it("weight limit respected", function()
         local c = inventory.newContainer("heavy", "unlimited", 0)
         c:setWeightLimit(5.0)
@@ -335,7 +387,10 @@ end)
 
 -- ─── ItemSet ──────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newItemSet
+-- @description Tests item-set requirements, activation checks, and bookkeeping for named equipment collections.
 describe("ItemSet", function()
+    -- @description Verifies case: isSatisfied when all tags equipped.
     it("isSatisfied when all tags equipped", function()
         local iset = inventory.newItemSet("knight_set")
         iset:addRequirement("plate", "")
@@ -353,6 +408,7 @@ describe("ItemSet", function()
         expect_equal(iset:isSatisfied(equip), true)
     end)
 
+    -- @description Verifies case: not satisfied when tag missing.
     it("not satisfied when tag missing", function()
         local iset = inventory.newItemSet("mage_set")
         iset:addRequirement("arcane", "")
@@ -366,6 +422,7 @@ describe("ItemSet", function()
         expect_equal(iset:isSatisfied(equip), false)
     end)
 
+    -- @description Verifies case: getRequirements returns array.
     it("getRequirements returns array", function()
         local iset = inventory.newItemSet("test")
         iset:addRequirement("fire", "ring_slot")
@@ -378,7 +435,10 @@ end)
 
 -- ─── Inventory ────────────────────────────────────────────────────────────────
 
+-- @covers library.inventory.newInventory
+-- @description Validates whole-inventory orchestration across containers, equipment slots, item counts, transfers, stack operations, and subsystem toggles.
 describe("Inventory", function()
+    -- @description Verifies case: addContainer / getContainer round-trip.
     it("addContainer / getContainer round-trip", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "unlimited", 0)
@@ -386,6 +446,7 @@ describe("Inventory", function()
         expect_equal(inv:getContainer("bag"), c)
     end)
 
+    -- @description Verifies case: containerNames returns insertion order.
     it("containerNames returns insertion order", function()
         local inv = inventory.newInventory()
         inv:addContainer("bag", inventory.newContainer("bag", "unlimited", 0))
@@ -395,6 +456,7 @@ describe("Inventory", function()
         expect_equal(names[2], "pouch")
     end)
 
+    -- @description Verifies case: removeContainer returns true.
     it("removeContainer returns true", function()
         local inv = inventory.newInventory()
         inv:addContainer("bag", inventory.newContainer("bag", "unlimited", 0))
@@ -402,6 +464,7 @@ describe("Inventory", function()
         expect_equal(inv:getContainer("bag"), nil)
     end)
 
+    -- @description Verifies case: countItem aggregates across containers.
     it("countItem aggregates across containers", function()
         local inv = inventory.newInventory()
         local c1  = inventory.newContainer("bag1", "unlimited", 0)
@@ -415,6 +478,7 @@ describe("Inventory", function()
         expect_equal(inv:countItem("coin"), 25)
     end)
 
+    -- @description Verifies case: hasItem checks across containers.
     it("hasItem checks across containers", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "unlimited", 0)
@@ -426,6 +490,7 @@ describe("Inventory", function()
         expect_equal(inv:hasItem("gem", 6), false)
     end)
 
+    -- @description Verifies case: removeFromAny removes across containers.
     it("removeFromAny removes across containers", function()
         local inv = inventory.newInventory()
         local c1  = inventory.newContainer("bag1", "unlimited", 0)
@@ -440,6 +505,7 @@ describe("Inventory", function()
         expect_equal(inv:countItem("wood"), 3)
     end)
 
+    -- @description Verifies case: removeFromAny returns false when not enough.
     it("removeFromAny returns false when not enough", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "unlimited", 0)
@@ -450,6 +516,7 @@ describe("Inventory", function()
         expect_equal(inv:removeFromAny("gem", 10), false)
     end)
 
+    -- @description Verifies case: equip/unequip round-trip.
     it("equip/unequip round-trip", function()
         local inv = inventory.newInventory()
         local sl  = inventory.newSlot("any", inventory.SlotState.Active)
@@ -463,12 +530,14 @@ describe("Inventory", function()
         expect_equal(inv:getEquipSlot("main_hand"):isEmpty(), true)
     end)
 
+    -- @description Verifies case: equip returns false for missing slot.
     it("equip returns false for missing slot", function()
         local inv = inventory.newInventory()
         local sword = inventory.newItem("sword")
         expect_equal(inv:equip("missing", inventory.newItemStack(sword, 1, 1)), false)
     end)
 
+    -- @description Verifies case: equipSlotNames insertion order.
     it("equipSlotNames insertion order", function()
         local inv = inventory.newInventory()
         inv:addEquipSlot("head", inventory.newSlot("any", inventory.SlotState.Active))
@@ -478,6 +547,7 @@ describe("Inventory", function()
         expect_equal(names[2], "chest")
     end)
 
+    -- @description Verifies case: subsystem enable/disable/check.
     it("subsystem enable/disable/check", function()
         local inv = inventory.newInventory()
         expect_equal(inv:isSubsystemEnabled("weight"), false)
@@ -487,6 +557,7 @@ describe("Inventory", function()
         expect_equal(inv:isSubsystemEnabled("weight"), false)
     end)
 
+    -- @description Verifies case: addItemSet / getActiveSets.
     it("addItemSet / getActiveSets", function()
         local inv  = inventory.newInventory()
         local iset = inventory.newItemSet("warrior_set")
@@ -504,6 +575,7 @@ describe("Inventory", function()
         expect_equal(active[1]:getName(), "warrior_set")
     end)
 
+    -- @description Verifies case: transfer between container slots.
     it("transfer between container slots", function()
         local inv = inventory.newInventory()
         local c1  = inventory.newContainer("src",  "fixed", 2)
@@ -517,6 +589,7 @@ describe("Inventory", function()
         expect_equal(c2:countItem("gem"), 1)
     end)
 
+    -- @description Verifies case: getItemSets returns all registered sets.
     it("getItemSets returns all registered sets", function()
         local inv  = inventory.newInventory()
         local s1   = inventory.newItemSet("set_a")
@@ -529,6 +602,7 @@ describe("Inventory", function()
         expect_equal(sets[2]:getName(), "set_b")
     end)
 
+    -- @description Verifies case: removeEquipSlot removes and returns true.
     it("removeEquipSlot removes and returns true", function()
         local inv = inventory.newInventory()
         inv:addEquipSlot("ring", inventory.newSlot("any", inventory.SlotState.Active))
@@ -537,6 +611,7 @@ describe("Inventory", function()
         expect_equal(inv:removeEquipSlot("ring"), false)
     end)
 
+    -- @description Verifies case: splitStack splits into next empty slot in same container.
     it("splitStack splits into next empty slot in same container", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -550,6 +625,7 @@ describe("Inventory", function()
         expect_equal(c:getSlot(2):getStack():getQuantity(), 4)
     end)
 
+    -- @description Verifies case: splitStack returns false when not enough items.
     it("splitStack returns false when not enough items", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -561,6 +637,7 @@ describe("Inventory", function()
         expect_equal(c:getSlot(1):getStack():getQuantity(), 2)  -- unchanged
     end)
 
+    -- @description Verifies case: mergeStacks merges two same-type stacks in same container.
     it("mergeStacks merges two same-type stacks in same container", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -575,6 +652,7 @@ describe("Inventory", function()
         expect_equal(c:getSlot(2):isEmpty(), true)
     end)
 
+    -- @description Verifies case: mergeStacks returns false for type mismatch.
     it("mergeStacks returns false for type mismatch", function()
         local inv  = inventory.newInventory()
         local c    = inventory.newContainer("bag", "fixed", 3)
@@ -586,6 +664,7 @@ describe("Inventory", function()
         expect_equal(inv:mergeStacks("bag", 1, 2), false)
     end)
 
+    -- @description Verifies case: swap exchanges items between two container slots.
     it("swap exchanges items between two container slots", function()
         local inv = inventory.newInventory()
         local c1  = inventory.newContainer("bag1", "fixed", 2)
@@ -601,6 +680,7 @@ describe("Inventory", function()
         expect_equal(c2:getSlot(1):getItem():getType(), "sword")
     end)
 
+    -- @description Verifies case: swap within same container.
     it("swap within same container", function()
         local inv = inventory.newInventory()
         local c   = inventory.newContainer("bag", "fixed", 3)
@@ -618,7 +698,10 @@ end)
 
 -- ─── Container.removeSlot ─────────────────────────────────────────────────────
 
+-- @covers library.inventory.newContainer
+-- @description Focuses on removing container slots safely, including index validation and post-removal slot compaction.
 describe("Container.removeSlot", function()
+    -- @description Verifies case: removes a slot by 1-based index and reduces count.
     it("removes a slot by 1-based index and reduces count", function()
         local c = inventory.newContainer("bag", "fixed", 3)
         local it = inventory.newItem("herb")
@@ -630,6 +713,7 @@ describe("Container.removeSlot", function()
         expect_equal(c:getSlot(1):isEmpty(), true)
     end)
 
+    -- @description Verifies case: returns false for out-of-range index.
     it("returns false for out-of-range index", function()
         local c = inventory.newContainer("bag", "fixed", 2)
         expect_equal(c:removeSlot(0),  false)
@@ -639,23 +723,30 @@ end)
 
 -- ─── Slot.setState / getState / getSlotType / SlotState constants ─────────────
 
+-- @covers library.inventory.newSlot
+-- @covers library.inventory.SlotState
+-- @description Confirms slot state getters and setters and the exported slot-state enum string values.
 describe("Slot.state", function()
+    -- @description Verifies case: getState returns initial state.
     it("getState returns initial state", function()
         local sl = inventory.newSlot("weapon", inventory.SlotState.Passive)
         expect_equal(sl:getState(), inventory.SlotState.Passive)
     end)
 
+    -- @description Verifies case: setState changes state.
     it("setState changes state", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
         sl:setState(inventory.SlotState.Idle)
         expect_equal(sl:getState(), inventory.SlotState.Idle)
     end)
 
+    -- @description Verifies case: getSlotType returns the type filter.
     it("getSlotType returns the type filter", function()
         local sl = inventory.newSlot("helmet", inventory.SlotState.Active)
         expect_equal(sl:getSlotType(), "helmet")
     end)
 
+    -- @description Verifies case: SlotState constants are correct strings.
     it("SlotState constants are correct strings", function()
         expect_equal(inventory.SlotState.Active,  "active")
         expect_equal(inventory.SlotState.Passive, "passive")
@@ -665,13 +756,18 @@ end)
 
 -- ─── ContainerMode enum ───────────────────────────────────────────────────────
 
+-- @covers library.inventory.ContainerMode
+-- @covers library.inventory.newContainer
+-- @description Verifies container mode constants and confirms they can be passed directly into container construction.
 describe("ContainerMode", function()
+    -- @description Verifies case: enum has correct string values.
     it("enum has correct string values", function()
         expect_equal(inventory.ContainerMode.fixed,      "fixed")
         expect_equal(inventory.ContainerMode.unlimited,  "unlimited")
         expect_equal(inventory.ContainerMode.expandable, "expandable")
     end)
 
+    -- @description Verifies case: can be used directly with newContainer.
     it("can be used directly with newContainer", function()
         local c = inventory.newContainer("bag", inventory.ContainerMode.fixed, 4)
         expect_equal(c:getMode(), "fixed")

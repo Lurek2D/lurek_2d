@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Compute + DataFrame
+﻿-- Lurek2D Integration Test: Compute + DataFrame
 -- Tests NdArray statistical operations feeding into DataFrame reports
 -- @covers lurek.compute.fromTable
 -- @covers lurek.compute.ones
@@ -12,7 +12,11 @@
 -- @covers lurek.img.newImageData
 
 
+-- @description Covers suite: integration: compute statistics to dataframe.
 describe("integration: compute statistics to dataframe", function()
+    -- @covers lurek.compute.NdArray.sum
+    -- @covers lurek.dataframe.newDataFrame
+    -- @description Verifies statistics computed from multiple arrays can be assembled into dataframe rows without losing count, sum, mean, or min/max values.
     it("compute array stats populate dataframe", function()
         -- Create arrays with known distributions
         local datasets = {
@@ -58,7 +62,11 @@ describe("integration: compute statistics to dataframe", function()
     end)
 end)
 
+-- @description Covers suite: integration: image data to compute array.
 describe("integration: image data to compute array", function()
+    -- @covers lurek.compute.fromTable
+    -- @covers lurek.img.ImageData.getPixel
+    -- @description Verifies pixel data extracted from image storage can be loaded into a compute array and analyzed with aggregate operations.
     it("image pixel data can be analyzed with compute", function()
         -- Create a gradient image
         local width, height = 16, 16
@@ -90,7 +98,11 @@ describe("integration: image data to compute array", function()
     end)
 end)
 
+-- @description Covers suite: integration: data encoding pipeline.
 describe("integration: data encoding pipeline", function()
+    -- @covers lurek.compute
+    -- @covers lurek.data.compress
+    -- @description Verifies the data pipeline preserves the original payload across compression, encoding, decoding, and decompression.
     it("compress -> encode -> decode -> decompress roundtrip", function()
         local original = "Lurek2D integration test: compress then encode then decode then decompress."
 
@@ -110,6 +122,9 @@ describe("integration: data encoding pipeline", function()
         expect_equal(original, result, "full pipeline preserves data")
     end)
 
+    -- @covers lurek.compute
+    -- @covers lurek.data.hash
+    -- @description Verifies hashing the same compressed payload twice produces the same deterministic digest.
     it("hash of compressed data is stable", function()
         local data = "Hash stability test vector"
         local compressed = lurek.data.compress("zlib", data, 6)

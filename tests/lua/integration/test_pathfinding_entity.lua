@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Pathfinding + Entity
+﻿-- Lurek2D Integration Test: Pathfinding + Entity
 -- Tests pathfinding results driving entity positioning
 -- @covers lurek.pathfinding.newGrid
 -- @covers lurek.entity.newUniverse
 
+-- @description Covers suite: pathfinding + entity integration.
 describe("pathfinding + entity integration", function()
+    -- @covers lurek.pathfinding.Grid.findPath
+    -- @covers lurek.entity.Universe.set
+    -- @description Verifies path points produced by pathfinding can be applied directly to an entity's position.
     it("pathfinding result moves entity along path", function()
         local universe = lurek.entity.newUniverse()
         local entity = universe:spawn()
@@ -31,6 +35,9 @@ describe("pathfinding + entity integration", function()
         end
     end)
 
+    -- @covers lurek.pathfinding.Grid.setWalkable
+    -- @covers lurek.entity
+    -- @description Verifies blocked cells force the computed route used by entities to take a longer detour.
     it("blocked cells force path around obstacle", function()
         local grid = lurek.pathfinding.newGrid(10, 10)
 
@@ -49,6 +56,9 @@ describe("pathfinding + entity integration", function()
         end
     end)
 
+    -- @covers lurek.pathfinding.Grid.findPath
+    -- @covers lurek.entity
+    -- @description Verifies an unreachable goal returns no path instead of producing invalid movement data for entities.
     it("no path returns nil for unreachable goal", function()
         local grid = lurek.pathfinding.newGrid(10, 10)
 
@@ -61,6 +71,9 @@ describe("pathfinding + entity integration", function()
         expect_true(path == nil, "no path to unreachable goal")
     end)
 
+    -- @covers lurek.pathfinding.Path.getPoint
+    -- @covers lurek.entity.Universe.set
+    -- @description Verifies an entity can follow every waypoint in a multi-step path and end at the destination.
     it("entity follows multi-step path", function()
         local universe = lurek.entity.newUniverse()
         local entity = universe:spawn()

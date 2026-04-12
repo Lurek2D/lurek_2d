@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Tilemap + Pathfinding
+﻿-- Lurek2D Integration Test: Tilemap + Pathfinding
 -- Tests using a tilemap grid as the navigation surface for A* pathfinding.
 -- @covers lurek.tilemap.newTilemap
 -- @covers lurek.tilemap.setTile
@@ -6,7 +6,11 @@
 -- @covers lurek.pathfinding.newNavGrid
 -- @covers lurek.pathfinding.newPathfinder
 
+-- @description Covers suite: integration: tilemap feeds into pathfinding grid.
 describe("integration: tilemap feeds into pathfinding grid", function()
+    -- @covers lurek.tilemap.Tilemap.setTile
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies tile solidity can be copied into a navgrid so pathfinding detours around blocked tilemap cells.
     it("builds navgrid from tilemap: walkable tiles passable, wall tiles blocked", function()
         local tm   = lurek.tilemap.newTilemap(10, 10, 16, 16)
         local grid = lurek.pathfinding.newNavGrid(10, 10)
@@ -28,6 +32,9 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_true(len > 9, "path detours around wall (longer than direct route)")
     end)
 
+    -- @covers lurek.tilemap.Tilemap.setTile
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies a fully blocked tilemap produces no usable route in the derived navgrid.
     it("completely blocked tilemap yields no path", function()
         local tm   = lurek.tilemap.newTilemap(5, 5, 16, 16)
         local grid = lurek.pathfinding.newNavGrid(5, 5)
@@ -50,6 +57,9 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_equal(0, len, "no path through completely blocked map")
     end)
 
+    -- @covers lurek.tilemap.Tilemap.setTile
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies an open tilemap floor yields a short direct path in the generated navgrid.
     it("open tilemap floor gives short direct path", function()
         local tm   = lurek.tilemap.newTilemap(10, 10, 16, 16)
         local grid = lurek.pathfinding.newNavGrid(10, 10)

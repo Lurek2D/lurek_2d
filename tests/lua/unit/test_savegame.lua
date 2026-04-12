@@ -1,4 +1,4 @@
--- lurek.savegame API unit tests
+﻿-- lurek.savegame API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests SaveManager lifecycle: register/unregister, collect/restore,
 -- save/load/delete slot ops, getSlots/getSlotInfo, schema version,
@@ -24,24 +24,31 @@
 -- @covers lurek.savegame.SaveManager.disableAutoSave
 -- @covers lurek.savegame.SaveManager.update
 
+-- @description Verifies that the savegame namespace is present and exposed as a Lua table.
 describe("lurek.savegame module exists", function()
+    -- @description Asserts that lurek.savegame exists and reports the Lua type "table".
     it("lurek.savegame is a table", function()
         expect_type("table", lurek.savegame)
     end)
 end)
 
+-- @description Verifies that the save manager factory exists and returns a usable object.
 describe("Factory function", function()
+    -- @description Checks that lurek.savegame.newSaveManager is exposed as a Lua function.
     it("newSaveManager is a function", function()
         expect_type("function", lurek.savegame.newSaveManager)
     end)
 
+    -- @description Creates a save manager and asserts that the returned object is not nil.
     it("newSaveManager returns a non-nil object", function()
         local sm = lurek.savegame.newSaveManager()
         expect_true(sm ~= nil, "save manager is not nil")
     end)
 end)
 
+-- @description Exercises registration, unregistering, summary/schema metadata, dirty flags, and empty-slot queries on a new save manager.
 describe("SaveManager registration and metadata", function()
+    -- @description Registers a player system with collect and restore callbacks and treats the lack of an error as success.
     it("register accepts a name + collect/restore callbacks", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("player",
@@ -51,6 +58,7 @@ describe("SaveManager registration and metadata", function()
         expect_true(true, "register did not throw")
     end)
 
+    -- @description Registers temp_sys, unregisters it, and treats the lack of an error as success.
     it("unregister removes a previously registered system", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("temp_sys",
@@ -58,43 +66,62 @@ describe("SaveManager registration and metadata", function()
             function(data) end
         )
         sm:unregister("temp_sys")
-        expect_true(true, "unregister did not throw")
     end)
 
+    -- @covers lurek.savegame.SaveManager.setSummary
+    -- @covers lurek.savegame.SaveManager.getSummary
+    -- @covers lurek.savegame.SaveManager.getSchemaVersion
+    -- @covers lurek.savegame.SaveManager.setSchemaVersion
+    -- @covers lurek.savegame.SaveManager.isDirty
+    -- @covers lurek.savegame.SaveManager.markDirty
+    -- @covers lurek.savegame.SaveManager.collect
+    -- @covers lurek.savegame.SaveManager.restore
+    -- @covers lurek.savegame.SaveManager.save
+    -- @covers lurek.savegame.SaveManager.load
+    -- @covers lurek.savegame.SaveManager.delete
+    -- @covers lurek.savegame.SaveManager.exists
+    -- @covers lurek.savegame.SaveManager.getSlots
+    -- @description Sets the summary to "Level 3" and expects getSummary() to return the same string.
     it("setSummary and getSummary round-trip a string", function()
         local sm = lurek.savegame.newSaveManager()
         sm:setSummary("Level 3")
         expect_equal("Level 3", sm:getSummary())
     end)
 
+    -- @description Reads the schema version from a new manager and asserts that it is numeric.
     it("getSchemaVersion returns a number on new manager", function()
         local sm = lurek.savegame.newSaveManager()
         local v = sm:getSchemaVersion()
         expect_type("number", v)
     end)
 
+    -- @description Sets the schema version to 3 and expects getSchemaVersion() to return 3.
     it("setSchemaVersion updates the version", function()
         local sm = lurek.savegame.newSaveManager()
         sm:setSchemaVersion(3)
         expect_equal(3, sm:getSchemaVersion())
     end)
 
+    -- @description Confirms that a newly created save manager starts with isDirty() equal to false.
     it("isDirty returns false on new manager", function()
         local sm = lurek.savegame.newSaveManager()
         expect_false(sm:isDirty())
     end)
 
+    -- @description Marks the manager dirty and expects isDirty() to become true.
     it("markDirty sets isDirty to true", function()
         local sm = lurek.savegame.newSaveManager()
         sm:markDirty()
         expect_true(sm:isDirty())
     end)
 
+    -- @description Checks that exists() returns false for the missing slot name no_such_slot_xyz.
     it("exists returns false for a nonexistent slot", function()
         local sm = lurek.savegame.newSaveManager()
         expect_false(sm:exists("no_such_slot_xyz"))
     end)
 
+    -- @description Calls getSlots() on a new manager and asserts that the result is a table.
     it("getSlots returns a table", function()
         local sm = lurek.savegame.newSaveManager()
         local slots = sm:getSlots()
@@ -103,7 +130,9 @@ describe("SaveManager registration and metadata", function()
 end)
 
 -- collect and restore
+-- @description Verifies that collect() returns structured snapshot data and that restore() passes collected values back into registered callbacks.
 describe("SaveManager.collect / restore", function()
+    -- @description Registers player data, collects a snapshot, and asserts that collect() returns a table.
     it("collect returns a table", function()
         local sm = lurek.savegame.newSaveManager()
         local restored_hp = nil
@@ -115,6 +144,7 @@ describe("SaveManager.collect / restore", function()
         expect_type("table", snapshot)
     end)
 
+    -- @description Collects hp = 55 from the player system, restores the snapshot, and expects the restore callback to receive 55.
     it("restore calls restore callbacks with collected data", function()
         local sm = lurek.savegame.newSaveManager()
         local restored_hp = nil
@@ -127,6 +157,7 @@ describe("SaveManager.collect / restore", function()
         expect_equal(55, restored_hp)
     end)
 
+    -- @description Collects data from sys_a and sys_b, then asserts the snapshot is a table and that sys_a data is present.
     it("collect captures all registered systems", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("sys_a", function() return { val = 1 } end, function() end)
@@ -139,9 +170,11 @@ describe("SaveManager.collect / restore", function()
 end)
 
 -- save / load / delete / exists / getSlots / getSlotInfo
+-- @description Verifies saving, existence checks, slot listing, slot info lookup, loading, and deletion against a concrete slot name.
 describe("SaveManager slot operations", function()
     local SLOT = "unit_test_slot_001"
 
+    -- @description Saves registered test_data into unit_test_slot_001 and expects save() not to raise an error.
     it("save writes a slot file", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("test_data",
@@ -153,6 +186,7 @@ describe("SaveManager slot operations", function()
         end)
     end)
 
+    -- @description Saves the slot and asserts that exists(unit_test_slot_001) returns true afterward.
     it("exists returns true after save", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("chk",
@@ -163,6 +197,7 @@ describe("SaveManager slot operations", function()
         expect_true(sm:exists(SLOT))
     end)
 
+    -- @description Saves the slot, asserts getSlots() returns a table, and confirms the saved slot exists via exists().
     it("getSlots returns info tables after save", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("slots_test", function() return {} end, function() end)
@@ -178,6 +213,7 @@ describe("SaveManager slot operations", function()
         expect_true(sm:exists(SLOT), "exists() must return true right after save()")
     end)
 
+    -- @description Saves a slot and asserts that getSlotInfo(unit_test_slot_001) returns a table.
     it("getSlotInfo returns a table for an existing slot", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("info_data", function() return {} end, function() end)
@@ -186,6 +222,7 @@ describe("SaveManager slot operations", function()
         expect_type("table", info)
     end)
 
+    -- @description Saves x = 99, loads the same slot, and expects the restore callback to receive 99.
     it("load restores data saved in the slot", function()
         local sm = lurek.savegame.newSaveManager()
         local loaded_x = nil
@@ -198,6 +235,7 @@ describe("SaveManager slot operations", function()
         expect_equal(99, loaded_x)
     end)
 
+    -- @description Saves and then deletes the slot, expecting exists(unit_test_slot_001) to become false.
     it("delete removes the slot", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("del_sys", function() return {} end, function() end)
@@ -208,13 +246,16 @@ describe("SaveManager slot operations", function()
 end)
 
 -- reset
+-- @description Verifies that reset() is callable and clears the dirty flag on a manager that was previously marked dirty.
 describe("SaveManager.reset", function()
+    -- @description Registers a system and expects reset() to complete without error.
     it("reset does not error", function()
         local sm = lurek.savegame.newSaveManager()
         sm:register("r", function() return {} end, function() end)
         expect_no_error(function() sm:reset() end)
     end)
 
+    -- @description Marks the manager dirty, resets it, and expects isDirty() to return false.
     it("isDirty is false after reset", function()
         local sm = lurek.savegame.newSaveManager()
         sm:markDirty()
@@ -224,17 +265,21 @@ describe("SaveManager.reset", function()
 end)
 
 -- AutoSave
+-- @description Verifies that disabling autosave and advancing autosave timers remain error-free for single and repeated updates.
 describe("SaveManager.disableAutoSave / update", function()
+    -- @description Calls disableAutoSave() on a new manager and expects no error.
     it("disableAutoSave does not error", function()
         local sm = lurek.savegame.newSaveManager()
         expect_no_error(function() sm:disableAutoSave() end)
     end)
 
+    -- @description Calls update(0.016) once and expects no error.
     it("update does not error with delta time", function()
         local sm = lurek.savegame.newSaveManager()
         expect_no_error(function() sm:update(0.016) end)
     end)
 
+    -- @description Runs update(0.016) for 100 frames and treats the completed loop as success.
     it("update accumulates time without error over many frames", function()
         local sm = lurek.savegame.newSaveManager()
         for _ = 1, 100 do

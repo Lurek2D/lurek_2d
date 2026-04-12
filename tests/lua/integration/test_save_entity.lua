@@ -1,11 +1,15 @@
--- Lurek2D Integration Test: Save + Entity
+﻿-- Lurek2D Integration Test: Save + Entity
 -- Tests saving and restoring entity state
 -- @covers lurek.data.parseToml
 -- @covers lurek.entity.newUniverse
 -- @covers lurek.savegame.newSaveManager
 
 
+-- @description Covers suite: integration: save entity world state.
 describe("integration: save entity world state", function()
+    -- @covers lurek.entity.Universe.get
+    -- @covers lurek.savegame
+    -- @description Verifies entity state can be collected into a save-friendly data structure without losing key fields.
     it("collects entity data for save", function()
         local universe = lurek.entity.newUniverse()
 
@@ -41,6 +45,9 @@ describe("integration: save entity world state", function()
         expect_equal("Dragon", save_data[3].name, "dragon name preserved")
     end)
 
+    -- @covers lurek.savegame.SaveManager.markDirty
+    -- @covers lurek.entity.Universe.set
+    -- @description Verifies entity mutation can mark the save manager dirty so the world is known to need saving.
     it("save manager tracks entity dirty state", function()
         local mgr = lurek.savegame.newSaveManager()
         local universe = lurek.entity.newUniverse()
@@ -57,7 +64,11 @@ describe("integration: save entity world state", function()
     end)
 end)
 
+-- @description Covers suite: integration: TOML config for entities.
 describe("integration: TOML config for entities", function()
+    -- @covers lurek.data.parseToml
+    -- @covers lurek.entity.Universe.spawn
+    -- @description Verifies entity blueprints defined in TOML can be parsed and instantiated into live entities.
     it("entity blueprints from TOML", function()
         local toml_str = [[
             [player]

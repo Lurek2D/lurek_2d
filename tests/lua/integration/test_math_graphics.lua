@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: Math + Graphics (headless-safe)
+﻿-- Lurek2D Integration Test: Math + Graphics (headless-safe)
 -- Tests math operations used in graphics contexts without requiring GPU
 -- @covers lurek.math.abs
 -- @covers lurek.math.cos
@@ -6,7 +6,11 @@
 -- @covers lurek.math.sin
 
 
+-- @description Covers suite: math for graphics transformations.
 describe("math for graphics transformations", function()
+    -- @covers lurek.math.cos
+    -- @covers lurek.gfx
+    -- @description Verifies trigonometric math produces the expected rotation matrix components used in graphics transforms.
     it("rotation matrix components", function()
         local angle = math.rad(90)
         local cos_a = lurek.math.cos(angle)
@@ -17,6 +21,9 @@ describe("math for graphics transformations", function()
         expect_near(1, sin_a, 0.001, "sin(90)")
     end)
 
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies scale and translate arithmetic produces the expected point used in a graphics transform chain.
     it("scale + translate point", function()
         -- Apply scale then translate
         local x, y = 10, 20
@@ -30,6 +37,9 @@ describe("math for graphics transformations", function()
         expect_near(260, result_y, 0.001, "scaled + translated y")
     end)
 
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies the math used for camera-style screen-to-world conversion yields the expected world coordinates.
     it("screen to world coordinates", function()
         -- Camera at (100, 200), screen point at (400, 300), zoom 2x
         local cam_x, cam_y = 100, 200
@@ -44,6 +54,9 @@ describe("math for graphics transformations", function()
         expect_near(200, world_y, 0.001, "world y at center")
     end)
 
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies the inverse world-to-screen conversion centers the camera target as expected.
     it("world to screen coordinates", function()
         local cam_x, cam_y = 100, 200
         local world_x, world_y = 100, 200
@@ -58,7 +71,11 @@ describe("math for graphics transformations", function()
     end)
 end)
 
+-- @description Covers suite: math color operations.
 describe("math color operations", function()
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies linear interpolation math blends color channels for graphics effects.
     it("lerp between colors", function()
         local r1, g1, b1 = 1.0, 0.0, 0.0  -- red
         local r2, g2, b2 = 0.0, 0.0, 1.0  -- blue
@@ -73,6 +90,9 @@ describe("math color operations", function()
         expect_near(0.5, b, 0.001, "interpolated blue")
     end)
 
+    -- @covers lurek.math.floor
+    -- @covers lurek.gfx
+    -- @description Verifies HSV-to-RGB conversion math yields the expected primary color output for graphics code.
     it("HSV to RGB conversion", function()
         -- Pure red: H=0, S=1, V=1
         local h, s, v = 0, 1, 1
@@ -98,7 +118,11 @@ describe("math color operations", function()
     end)
 end)
 
+-- @description Covers suite: math geometry utilities.
 describe("math geometry utilities", function()
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies point-in-rectangle tests used by graphics hit detection produce correct inside and outside results.
     it("point inside rectangle", function()
         local px, py = 5, 5
         local rx, ry, rw, rh = 0, 0, 10, 10
@@ -111,6 +135,9 @@ describe("math geometry utilities", function()
         expect_false(outside, "point is outside rect")
     end)
 
+    -- @covers lurek.math
+    -- @covers lurek.gfx
+    -- @description Verifies point-in-circle distance math used by graphics geometry checks.
     it("point inside circle", function()
         local px, py = 3, 4
         local cx, cy, cr = 0, 0, 6
@@ -121,6 +148,9 @@ describe("math geometry utilities", function()
         expect_true(inside, "point inside circle (dist=5, radius=6)")
     end)
 
+    -- @covers lurek.math.abs
+    -- @covers lurek.gfx
+    -- @description Verifies line intersection math computes the correct crossing point for graphics geometry.
     it("line segment intersection", function()
         -- Perpendicular lines that cross at (5, 5)
         local x1, y1, x2, y2 = 0, 5, 10, 5  -- horizontal

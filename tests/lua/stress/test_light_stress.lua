@@ -1,10 +1,11 @@
--- Lurek2D Stress Test: Light System Operations
+﻿-- Lurek2D Stress Test: Light System Operations
 -- Measures light create, update, and query throughput.
--- @stress lurek.light.newLight
--- @stress lurek.light.setPosition
--- @stress lurek.light.setIntensity
 
+-- @description Covers suite: stress: light creation throughput.
 describe("stress: light creation throughput", function()
+    -- @covers lurek.light.newLight
+    -- @stress Allocates 1000 point lights in one measured creation loop.
+    -- @description Stresses light-object construction throughput by repeatedly creating point lights and storing them in a Lua array.
     it("create 1000 point lights in <5s", function()
         local COUNT  = 1000
         local lights = {}
@@ -19,8 +20,14 @@ describe("stress: light creation throughput", function()
     end)
 end)
 
+-- @description Covers suite: stress: light position update throughput.
 describe("stress: light position update throughput", function()
-    it("1000 lights × 100 position updates each: <10s", function()
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.setIntensity
+    -- @covers lurek.light.setPosition
+    -- @stress Builds 1000 lights, presets intensity once, then performs 100 position-update passes across the full set.
+    -- @description Stresses bulk positional mutation by iterating over a large light pool and rewriting coordinates with randomized values in nested loops.
+    it("1000 lights Ă— 100 position updates each: <10s", function()
         local N_LIGHTS  = 1000
         local N_UPDATES = 100
         local lights    = {}
@@ -48,7 +55,15 @@ describe("stress: light position update throughput", function()
     end)
 end)
 
+-- @description Covers suite: stress: mixed light operations.
 describe("stress: mixed light operations", function()
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.setPosition
+    -- @covers lurek.light.setRadius
+    -- @covers lurek.light.setColor
+    -- @covers lurek.light.setIntensity
+    -- @stress Runs 1000 full create-and-configure cycles covering position, radius, color, and intensity.
+    -- @description Stresses mixed light setup throughput by constructing a new point light every iteration and mutating all major runtime properties before discarding it.
     it("1000 create + setPosition + setRadius + setColor cycles: <5s", function()
         local COUNT   = 1000
         local elapsed = measure("light full-config cycle x" .. COUNT, COUNT, function()

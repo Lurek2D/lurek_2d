@@ -1,4 +1,4 @@
--- test_evidence_bezier.lua
+﻿-- test_evidence_bezier.lua
 -- Evidence test: BezierCurve creation, evaluation, and visualisation
 
 local OUT = "tests/lua/evidence/output/bezier/"
@@ -20,8 +20,15 @@ local function plot_control_points(img, curve)
     end
 end
 
+-- @description Covers suite: Evidence: Bezier curves.
 describe("Evidence: Bezier curves", function()
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:evaluate
+    -- @covers BezierCurve:getControlPointCount
+    -- @covers BezierCurve:getControlPoint
+    -- @evidence file
+    -- @description Samples a quadratic Bezier and saves a PNG showing both the curve and its control polygon.
     it("quadratic bezier (3 control points)", function()
         local W, H = 400, 300
         local img = lurek.img.newImageData(W, H)
@@ -47,6 +54,12 @@ describe("Evidence: Bezier curves", function()
         lurek.img.savePNG(img, OUT .. "bezier_quadratic.png")
     end)
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:evaluate
+    -- @covers BezierCurve:getControlPointCount
+    -- @covers BezierCurve:getControlPoint
+    -- @evidence file
+    -- @description Samples a cubic Bezier and exports a PNG showing how four control points shape the final curve.
     it("cubic bezier (4 control points)", function()
         local W, H = 400, 300
         local img = lurek.img.newImageData(W, H)
@@ -71,6 +84,12 @@ describe("Evidence: Bezier curves", function()
         lurek.img.savePNG(img, OUT .. "bezier_cubic.png")
     end)
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:evaluate
+    -- @covers BezierCurve:getControlPointCount
+    -- @covers BezierCurve:getControlPoint
+    -- @evidence file
+    -- @description Draws a higher-order Bezier curve with seven control points to prove complex paths evaluate and render correctly.
     it("complex bezier (7 control points)", function()
         local W, H = 500, 400
         local img = lurek.img.newImageData(W, H)
@@ -112,6 +131,11 @@ describe("Evidence: Bezier curves", function()
         lurek.img.savePNG(img, OUT .. "bezier_complex.png")
     end)
 
+    -- @covers lurek.math.newBezierCurve
+    -- @covers BezierCurve:getDerivative
+    -- @covers BezierCurve:evaluate
+    -- @evidence file
+    -- @description Evaluates the derivative curve to render tangent vectors at multiple points along a cubic Bezier.
     it("derivative visualisation (tangent lines)", function()
         local W, H = 400, 300
         local img = lurek.img.newImageData(W, H)

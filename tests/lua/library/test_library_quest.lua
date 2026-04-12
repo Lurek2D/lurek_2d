@@ -1,11 +1,14 @@
--- tests/lua/unit/test_library_quest.lua
--- BDD tests for library.quest — pure-Lua quest system
+﻿-- tests/lua/unit/test_library_quest.lua
+-- BDD tests for library.quest â€” pure-Lua quest system
 
 local quest = require("library.quest")
 
--- ─── Objective ────────────────────────────────────────────────────────────────
+-- â”€â”€â”€ Objective â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newObjective
+-- @description Verifies objective defaults, progress tracking, completion state, tags, visibility, and optional or required objective metadata.
 describe("Objective", function()
+    -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
         expect_equal(obj.id, "kill_wolves")
@@ -17,6 +20,7 @@ describe("Objective", function()
         expect_equal(obj.visible, true)
     end)
 
+    -- @description Verifies case: advance completes when reaching required.
     it("advance completes when reaching required", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
         obj:advance(2)
@@ -27,6 +31,7 @@ describe("Objective", function()
         expect_equal(obj.status, "done")
     end)
 
+    -- @description Verifies case: advance clamps at required.
     it("advance clamps at required", function()
         local obj = quest.newObjective("fetch", "Fetch 5 apples", 5)
         obj:advance(10)
@@ -34,6 +39,7 @@ describe("Objective", function()
         expect_equal(obj.status, "done")
     end)
 
+    -- @description Verifies case: advance does nothing when done.
     it("advance does nothing when done", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:advance(1)
@@ -42,6 +48,7 @@ describe("Objective", function()
         expect_equal(obj.current, 1) -- unchanged
     end)
 
+    -- @description Verifies case: advance does nothing when failed.
     it("advance does nothing when failed", function()
         local obj = quest.newObjective("task", "Task", 3)
         obj.status = "failed"
@@ -49,6 +56,7 @@ describe("Objective", function()
         expect_equal(obj.current, 0)
     end)
 
+    -- @description Verifies case: setProgress sets correct status.
     it("setProgress sets correct status", function()
         local obj = quest.newObjective("task", "Task", 5)
         obj:setProgress(3)
@@ -60,6 +68,7 @@ describe("Objective", function()
         expect_equal(obj.status, "pending")
     end)
 
+    -- @description Verifies case: setProgress clamps to range.
     it("setProgress clamps to range", function()
         local obj = quest.newObjective("task", "Task", 5)
         obj:setProgress(100)
@@ -68,6 +77,7 @@ describe("Objective", function()
         expect_equal(obj.current, 0)
     end)
 
+    -- @description Verifies case: isComplete returns true for done or skipped.
     it("isComplete returns true for done or skipped", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:isComplete(), false)
@@ -79,6 +89,7 @@ describe("Objective", function()
         expect_equal(obj:isComplete(), false)
     end)
 
+    -- @description Verifies case: addTag and hasTag work.
     it("addTag and hasTag work", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:hasTag("kill"), false)
@@ -90,9 +101,12 @@ describe("Objective", function()
     end)
 end)
 
--- ─── QuestStage ───────────────────────────────────────────────────────────────
+-- â”€â”€â”€ QuestStage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newQuestStage
+-- @description Covers quest-stage creation, objective aggregation, completion checks, and stage-level metadata or ordering helpers.
 describe("QuestStage", function()
+    -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(stage.id, "s1")
@@ -100,6 +114,7 @@ describe("QuestStage", function()
         expect_equal(#stage.objectives, 0)
     end)
 
+    -- @description Verifies case: addObjective and getObjective work.
     it("addObjective and getObjective work", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         local obj = quest.newObjective("task1", "Task 1", 1)
@@ -110,6 +125,7 @@ describe("QuestStage", function()
         expect_equal(stage:getObjective("nope"), nil)
     end)
 
+    -- @description Verifies case: hasObjective works.
     it("hasObjective works", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("task1", "Task 1", 1))
@@ -117,6 +133,7 @@ describe("QuestStage", function()
         expect_equal(stage:hasObjective("task2"), false)
     end)
 
+    -- @description Verifies case: clearObjectives removes all.
     it("clearObjectives removes all", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("task1", "Task 1", 1))
@@ -126,6 +143,7 @@ describe("QuestStage", function()
         expect_equal(stage:objectiveCount(), 0)
     end)
 
+    -- @description Verifies case: isComplete checks mandatory objectives.
     it("isComplete checks mandatory objectives", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         local mandatory = quest.newObjective("m1", "Mandatory", 1)
@@ -138,15 +156,19 @@ describe("QuestStage", function()
         expect_equal(stage:isComplete(), true) -- optional doesn't matter
     end)
 
+    -- @description Verifies case: isComplete returns true when empty.
     it("isComplete returns true when empty", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(stage:isComplete(), true)
     end)
 end)
 
--- ─── Quest ────────────────────────────────────────────────────────────────────
+-- â”€â”€â”€ Quest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newQuest
+-- @description Exercises quest defaults, stage progression, status changes, tags, rewards, and stage or objective accessors.
 describe("Quest", function()
+    -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local q = quest.newQuest("tutorial", "Tutorial")
         expect_equal(q.id, "tutorial")
@@ -157,6 +179,7 @@ describe("Quest", function()
         expect_equal(#q.journal, 0)
     end)
 
+    -- @description Verifies case: start/complete/fail transitions.
     it("start/complete/fail transitions", function()
         local q = quest.newQuest("q1", "Quest 1")
         expect_equal(q.status, "available")
@@ -166,6 +189,7 @@ describe("Quest", function()
         expect_equal(q.status, "completed")
     end)
 
+    -- @description Verifies case: start only works from available.
     it("start only works from available", function()
         local q = quest.newQuest("q1", "Quest 1")
         q:start()
@@ -175,6 +199,7 @@ describe("Quest", function()
         expect_equal(q.status, "failed")
     end)
 
+    -- @description Verifies case: stages and nextStage.
     it("stages and nextStage", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -185,6 +210,7 @@ describe("Quest", function()
         expect_equal(q:nextStage(), false) -- already at last
     end)
 
+    -- @description Verifies case: gotoStage works.
     it("gotoStage works", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -195,6 +221,7 @@ describe("Quest", function()
         expect_equal(q:gotoStage("nope"), false)
     end)
 
+    -- @description Verifies case: getCurrentStage returns active stage.
     it("getCurrentStage returns active stage", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -202,6 +229,7 @@ describe("Quest", function()
         expect_equal(cs.id, "s1")
     end)
 
+    -- @description Verifies case: getStage by id.
     it("getStage by id", function()
         local q = quest.newQuest("main", "Main Quest")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
@@ -211,6 +239,7 @@ describe("Quest", function()
         expect_equal(q:getStage("nope"), nil)
     end)
 
+    -- @description Verifies case: advanceObjective works across stages.
     it("advanceObjective works across stages", function()
         local q = quest.newQuest("main", "Main Quest")
         local s1 = quest.newQuestStage("s1", "Stage 1")
@@ -222,6 +251,7 @@ describe("Quest", function()
         expect_equal(q:advanceObjective("nope"), false)
     end)
 
+    -- @description Verifies case: setObjectiveStatus works.
     it("setObjectiveStatus works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "Stage 1")
@@ -232,6 +262,7 @@ describe("Quest", function()
         expect_equal(q:setObjectiveStatus("nope", "done"), false)
     end)
 
+    -- @description Verifies case: journal entries.
     it("journal entries", function()
         local q = quest.newQuest("main", "Main Quest")
         local idx1 = q:addJournalEntry("Found the cave", "discovered")
@@ -244,6 +275,7 @@ describe("Quest", function()
         expect_equal(q.journal[2].text, "Defeated the boss")
     end)
 
+    -- @description Verifies case: metadata set/get.
     it("metadata set/get", function()
         local q = quest.newQuest("main", "Main Quest")
         q:setMeta("giver", "Old Man")
@@ -251,6 +283,7 @@ describe("Quest", function()
         expect_equal(q:getMeta("nope"), nil)
     end)
 
+    -- @description Verifies case: completionPercent works.
     it("completionPercent works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "Stage 1")
@@ -264,12 +297,14 @@ describe("Quest", function()
         expect_near(q:completionPercent(), 100.0, 0.01)
     end)
 
+    -- @description Verifies case: completionPercent with no objectives returns 100.
     it("completionPercent with no objectives returns 100", function()
         local q = quest.newQuest("empty", "Empty")
         q:addStage(quest.newQuestStage("s1", "Stage 1"))
         expect_near(q:completionPercent(), 100.0, 0.01)
     end)
 
+    -- @description Verifies case: activeObjectiveIds works.
     it("activeObjectiveIds works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -284,6 +319,7 @@ describe("Quest", function()
         expect_equal(active[1], "a")
     end)
 
+    -- @description Verifies case: resetObjective works.
     it("resetObjective works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -297,6 +333,7 @@ describe("Quest", function()
         expect_equal(q:resetObjective("nope"), false)
     end)
 
+    -- @description Verifies case: allObjectivesComplete works.
     it("allObjectivesComplete works", function()
         local q = quest.newQuest("main", "Main Quest")
         local s = quest.newQuestStage("s1", "S1")
@@ -308,15 +345,19 @@ describe("Quest", function()
     end)
 end)
 
--- ─── QuestLog ─────────────────────────────────────────────────────────────────
+-- â”€â”€â”€ QuestLog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newQuestLog
+-- @description Validates log-level quest registration, activation, completion, failure, lookup, sorting, and log-wide mutation helpers.
 describe("QuestLog", function()
+    -- @description Verifies case: creates empty.
     it("creates empty", function()
         local log = quest.newQuestLog()
         expect_equal(log:questCount(), 0)
         expect_equal(#log:questIds(), 0)
     end)
 
+    -- @description Verifies case: addQuest and getQuest work.
     it("addQuest and getQuest work", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -325,6 +366,7 @@ describe("QuestLog", function()
         expect_equal(q.title, "Quest 1")
     end)
 
+    -- @description Verifies case: addQuest replaces existing.
     it("addQuest replaces existing", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -333,6 +375,7 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q1").title, "Quest 1 v2")
     end)
 
+    -- @description Verifies case: removeQuest works.
     it("removeQuest works", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -341,6 +384,7 @@ describe("QuestLog", function()
         expect_equal(log:removeQuest("q1"), false)
     end)
 
+    -- @description Verifies case: questIds preserves insertion order.
     it("questIds preserves insertion order", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q2", "Quest 2"))
@@ -350,6 +394,7 @@ describe("QuestLog", function()
         expect_equal(ids[2], "q1")
     end)
 
+    -- @description Verifies case: questsWithStatus filters correctly.
     it("questsWithStatus filters correctly", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -360,6 +405,7 @@ describe("QuestLog", function()
         expect_equal(active[1], "q1")
     end)
 
+    -- @description Verifies case: startQuest transitions available to active.
     it("startQuest transitions available to active", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -367,11 +413,13 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q1").status, "active")
     end)
 
+    -- @description Verifies case: startQuest returns false for unknown id.
     it("startQuest returns false for unknown id", function()
         local log = quest.newQuestLog()
         expect_equal(log:startQuest("nope"), false)
     end)
 
+    -- @description Verifies case: completeQuest and failQuest work.
     it("completeQuest and failQuest work", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -385,6 +433,7 @@ describe("QuestLog", function()
         expect_equal(log:getQuest("q2").status, "failed")
     end)
 
+    -- @description Verifies case: activeIds/completedIds/failedIds convenience.
     it("activeIds/completedIds/failedIds convenience", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Q1"))
@@ -400,6 +449,7 @@ describe("QuestLog", function()
         expect_equal(#log:failedIds(), 1)
     end)
 
+    -- @description Verifies case: advanceObjective through log.
     it("advanceObjective through log", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("q1", "Q1")
@@ -414,9 +464,12 @@ describe("QuestLog", function()
     end)
 end)
 
--- ─── Objective:removeTag ──────────────────────────────────────────────────────
+-- â”€â”€â”€ Objective:removeTag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newObjective
+-- @description Adds focused coverage for removing objective tags and reporting whether a tag was actually present.
 describe("Objective:removeTag", function()
+    -- @description Verifies case: removes an existing tag and returns true.
     it("removes an existing tag and returns true", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:addTag("kill")
@@ -424,11 +477,13 @@ describe("Objective:removeTag", function()
         expect_equal(obj:hasTag("kill"), false)
     end)
 
+    -- @description Verifies case: returns false for a tag that is not present.
     it("returns false for a tag that is not present", function()
         local obj = quest.newObjective("task", "Task", 1)
         expect_equal(obj:removeTag("nope"), false)
     end)
 
+    -- @description Verifies case: removing one tag leaves others intact.
     it("removing one tag leaves others intact", function()
         local obj = quest.newObjective("task", "Task", 1)
         obj:addTag("kill")
@@ -439,9 +494,12 @@ describe("Objective:removeTag", function()
     end)
 end)
 
--- ─── QuestStage:getObjectives ─────────────────────────────────────────────────
+-- â”€â”€â”€ QuestStage:getObjectives â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newQuestStage
+-- @description Verifies stage objective access returns the stored objective list in insertion order.
 describe("QuestStage:getObjectives", function()
+    -- @description Verifies case: returns all objectives in insertion order.
     it("returns all objectives in insertion order", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         stage:addObjective(quest.newObjective("a", "A", 1))
@@ -452,15 +510,19 @@ describe("QuestStage:getObjectives", function()
         expect_equal(objs[2].id, "b")
     end)
 
+    -- @description Verifies case: returns empty table when stage has no objectives.
     it("returns empty table when stage has no objectives", function()
         local stage = quest.newQuestStage("s1", "Stage One")
         expect_equal(#stage:getObjectives(), 0)
     end)
 end)
 
--- ─── QuestLog extended ────────────────────────────────────────────────────────
+-- â”€â”€â”€ QuestLog extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.newQuestLog
+-- @description Covers resetting quests in the log so progress and statuses return to their starting values.
 describe("QuestLog:resetQuest", function()
+    -- @description Verifies case: resets status, stage index, and objective progress.
     it("resets status, stage index, and objective progress", function()
         local log = quest.newQuestLog()
         local q = quest.newQuest("q1", "Quest 1")
@@ -485,13 +547,17 @@ describe("QuestLog:resetQuest", function()
         expect_equal(obj.status, "pending")
     end)
 
+    -- @description Verifies case: returns false for unknown quest id.
     it("returns false for unknown quest id", function()
         local log = quest.newQuestLog()
         expect_equal(log:resetQuest("nope"), false)
     end)
 end)
 
+-- @covers library.quest.newQuestLog
+-- @description Tests explicit quest reward mutation and retrieval, including unknown quests and overwriting prior rewards.
 describe("QuestLog:setQuestReward / getQuestReward", function()
+    -- @description Verifies case: sets and retrieves reward string.
     it("sets and retrieves reward string", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -499,11 +565,13 @@ describe("QuestLog:setQuestReward / getQuestReward", function()
         expect_equal(log:getQuestReward("q1"), "100 gold")
     end)
 
+    -- @description Verifies case: getQuestReward returns nil for unknown quest.
     it("getQuestReward returns nil for unknown quest", function()
         local log = quest.newQuestLog()
         expect_equal(log:getQuestReward("nope"), nil)
     end)
 
+    -- @description Verifies case: setQuestReward overwrites previous value.
     it("setQuestReward overwrites previous value", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Quest 1"))
@@ -513,7 +581,10 @@ describe("QuestLog:setQuestReward / getQuestReward", function()
     end)
 end)
 
+-- @covers library.quest.newQuestLog
+-- @description Verifies aggregate active and completed quest counts for empty and partially progressed logs.
 describe("QuestLog:activeCount / completedCount", function()
+    -- @description Verifies case: counts active and completed quests correctly.
     it("counts active and completed quests correctly", function()
         local log = quest.newQuestLog()
         log:addQuest(quest.newQuest("q1", "Q1"))
@@ -526,6 +597,7 @@ describe("QuestLog:activeCount / completedCount", function()
         expect_equal(log:completedCount(), 1)
     end)
 
+    -- @description Verifies case: both return 0 for empty log.
     it("both return 0 for empty log", function()
         local log = quest.newQuestLog()
         expect_equal(log:activeCount(), 0)
@@ -533,9 +605,12 @@ describe("QuestLog:activeCount / completedCount", function()
     end)
 end)
 
--- ─── Status enum tables ───────────────────────────────────────────────────────
+-- â”€â”€â”€ Status enum tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.quest.QuestStatus
+-- @description Confirms exported quest-status constants match the string values used by quest state transitions.
 describe("M.QuestStatus enum", function()
+    -- @description Verifies case: has expected string constants.
     it("has expected string constants", function()
         expect_equal(quest.QuestStatus.LOCKED,    "locked")
         expect_equal(quest.QuestStatus.ACTIVE,    "active")
@@ -544,7 +619,10 @@ describe("M.QuestStatus enum", function()
     end)
 end)
 
+-- @covers library.quest.ObjectiveStatus
+-- @description Confirms exported objective-status constants match the string values used by objective state transitions.
 describe("M.ObjectiveStatus enum", function()
+    -- @description Verifies case: has expected string constants.
     it("has expected string constants", function()
         expect_equal(quest.ObjectiveStatus.LOCKED,    "locked")
         expect_equal(quest.ObjectiveStatus.ACTIVE,    "active")

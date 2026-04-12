@@ -1,5 +1,5 @@
--- test_evidence_graphic_drawing.lua
--- Evidence test: lurek.graphic drawing API — renders each primitive into PNG
+﻿-- test_evidence_graphic_drawing.lua
+-- Evidence test: lurek.graphic drawing API â€” renders each primitive into PNG
 -- Produces: graphic_primitives.png, graphic_color_grid.png
 
 local OUT = "tests/lua/evidence/output/graphics/"
@@ -64,64 +64,105 @@ local function draw_line(img, x0, y0, x1, y1, r, g, b)
     end
 end
 
+-- @description Covers suite: Evidence: lurek.graphic drawing API + PNG output.
 describe("Evidence: lurek.graphic drawing API + PNG output", function()
 
+    -- @covers lurek.graphic.setColor
+    -- @description Sends a four-component color through the immediate-mode API to document accepted RGBA input.
     it("setColor accepts r/g/b/a and returns nil", function()
         local ok = pcall(function() lurek.graphic.setColor(1.0, 0.5, 0.25, 1.0) end)
     end)
 
+    -- @covers lurek.graphic.setColor
+    -- @description Sends an RGB-only color to cover the opaque shorthand overload.
     it("setColor accepts 3-arg form (opaque)", function()
         local ok = pcall(function() lurek.graphic.setColor(0.1, 0.2, 0.3) end)
     end)
 
+    -- @covers lurek.graphic.setBackgroundColor
+    -- @description Exercises the background-color setter used by frame clear operations.
     it("setBackgroundColor works", function()
         local ok = pcall(function() lurek.graphic.setBackgroundColor(0.2, 0.3, 0.4, 1.0) end)
     end)
 
+    -- @covers lurek.graphic.setColor
+    -- @covers lurek.graphic.getColor
+    -- @description Sets a draw color and reads it back to document renderer state round-tripping.
     it("getColor returns 4 numbers after setColor", function()
         lurek.graphic.setColor(1.0, 0.5, 0.25, 0.75)
         local r, g, b, a = lurek.graphic.getColor()
     end)
 
+    -- @covers lurek.graphic.newCanvas
+    -- @description Allocates and releases a canvas to cover a basic drawing target lifecycle.
     it("newCanvas returns a valid Canvas handle", function()
         local c = lurek.graphic.newCanvas(64, 64)
         c:release()
     end)
 
+    -- @covers lurek.graphic.getWidth
+    -- @covers lurek.graphic.getHeight
+    -- @description Queries the active drawable dimensions to document the global size accessors.
     it("getWidth/getHeight return positive integers", function()
         local w = lurek.graphic.getWidth()
         local h = lurek.graphic.getHeight()
     end)
 
+    -- @covers lurek.graphic.getDimensions
+    -- @covers lurek.graphic.getWidth
+    -- @covers lurek.graphic.getHeight
+    -- @description Compares the tuple-based dimensions query against the dedicated width and height helpers.
     it("getDimensions matches getWidth/getHeight", function()
         local w1, h1 = lurek.graphic.getDimensions()
     end)
 
+    -- @covers lurek.graphic.clear
+    -- @description Exercises the clear command path in the headless render queue.
     it("clear enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.print
+    -- @description Enqueues text rendering to document the print helper on the Lua graphics API.
     it("print enqueues text draw without error", function()
         local ok = pcall(function() lurek.graphic.print("Hello", 10, 10) end)
     end)
 
+    -- @covers lurek.graphic.rectangle
+    -- @description Exercises filled rectangle command submission.
     it("rectangle fill enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.rectangle
+    -- @description Exercises outline rectangle command submission.
     it("rectangle line enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.circle
+    -- @description Exercises filled circle command submission.
     it("circle fill enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.line
+    -- @description Exercises immediate-mode line drawing command submission.
     it("line enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.points
+    -- @description Exercises point-list submission on the graphics API.
     it("points enqueues without error", function()
     end)
 
+    -- @covers lurek.graphic.setLineWidth
+    -- @description Exercises the line-width setter used by stroked primitive rendering.
     it("setLineWidth works", function()
     end)
 
+    -- @covers lurek.graphic.push
+    -- @covers lurek.graphic.translate
+    -- @covers lurek.graphic.rotate
+    -- @covers lurek.graphic.scale
+    -- @covers lurek.graphic.pop
+    -- @description Pushes, transforms, and restores the transform stack to cover nested drawing-state changes.
     it("push/pop transforms without error", function()
         local ok = pcall(function()
             lurek.graphic.push()
@@ -132,6 +173,10 @@ describe("Evidence: lurek.graphic drawing API + PNG output", function()
         end)
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Draws a manual gallery of primitive equivalents so the intended graphic command outputs can be inspected in one PNG.
     it("PNG: all graphic primitives rendered to image", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -168,7 +213,12 @@ describe("Evidence: lurek.graphic drawing API + PNG output", function()
         lurek.img.savePNG(img, OUT .. "graphic_primitives.png")
     end)
 
-    it("PNG: color grid — setColor evidence across hue range", function()
+    -- @covers lurek.graphic.setColor
+    -- @covers lurek.graphic.getColor
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Iterates through a grid of colors, round-trips them through the graphics state, and writes the resulting swatch sheet.
+    it("PNG: color grid â€” setColor evidence across hue range", function()
         local W, H = 128, 128
         local img = lurek.img.newImageData(W, H)
 

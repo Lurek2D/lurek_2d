@@ -1,4 +1,4 @@
--- Entity module Lua tests
+﻿-- Entity module Lua tests
 -- Headless-safe. Each describe block creates a fresh Universe.
 -- @covers lurek.entity.newUniverse
 
@@ -10,7 +10,9 @@
 -- @covers lurek.entity.World.getEntities
 -- @covers lurek.entity.World.getBitmapTagBit
 
+-- @description Verifies sequential spawning, alive state tracking, entity counts after kill, and generational ID recycling on respawn.
 describe("Spawn and lifecycle", function()
+    -- @description Confirms the first two spawns return IDs 1 and 2, killing one entity reduces the live count, and a recycled slot respawns as a distinct live generational ID.
     it("spawns entities with sequential IDs", function()
         local world = lurek.entity.newUniverse()
         local a = world:spawn()
@@ -31,7 +33,9 @@ describe("Spawn and lifecycle", function()
     end)
 end)
 
+-- @description Verifies setting, reading, listing, and removing named component values on a live entity.
 describe("Components", function()
+    -- @description Confirms component writes can be read back, has() reflects presence, getComponents() returns a table, and removed components become absent and nil.
     it("stores and retrieves component values", function()
         local world = lurek.entity.newUniverse()
         local e = world:spawn()
@@ -52,7 +56,9 @@ describe("Components", function()
     end)
 end)
 
+-- @description Verifies component-based queries return the expected entity sets and callback iteration count.
 describe("Query", function()
+    -- @description Confirms query("pos","vel") returns only the entity with both components and query("pos") returns both entities carrying position.
     it("queries entities by components", function()
         local world = lurek.entity.newUniverse()
         local p = world:spawn()
@@ -70,6 +76,7 @@ describe("Query", function()
         expect_equal(2, #all_pos)
     end)
 
+    -- @description Confirms each("pos", ...) invokes the callback once per entity with a pos component, producing a count of two.
     it("iterates matching entities with each()", function()
         local world = lurek.entity.newUniverse()
         local p = world:spawn()
@@ -85,7 +92,9 @@ describe("Query", function()
     end)
 end)
 
+-- @description Verifies string tag assignment, lookup, listing, reverse lookup, and removal across multiple entities.
 describe("String Tags", function()
+    -- @description Confirms tags can be added and queried per entity, getTags returns the assigned tag, getEntitiesByTag finds the tagged entity, and removal clears membership.
     it("adds, queries, and removes string tags", function()
         local world = lurek.entity.newUniverse()
         local p = world:spawn()
@@ -110,7 +119,9 @@ describe("String Tags", function()
     end)
 end)
 
+-- @description Verifies bitmap tag definition, assignment, per-entity checks, and any/all bitmap tag queries.
 describe("Bitmap Tags", function()
+    -- @description Confirms defineTag returns a numeric bit, bitmapTag assigns tags per entity, hasBitmapTag reflects presence, and fast/strong queries return the expected entity sets.
     it("defines and queries bitmap tags", function()
         local world = lurek.entity.newUniverse()
         local p = world:spawn()
@@ -139,7 +150,9 @@ describe("Bitmap Tags", function()
     end)
 end)
 
+-- @description Verifies explicit layer assignment, per-layer lookup, and overall sorted ordering by layer value.
 describe("Layers", function()
+    -- @description Confirms entities retain assigned layer numbers, layer 0 lookup is non-empty, and sorted entities place the layer 0 entity before the layer 2 entity.
     it("assigns layers and returns entities sorted by layer", function()
         local world = lurek.entity.newUniverse()
         local p = world:spawn()
@@ -167,7 +180,9 @@ describe("Layers", function()
     end)
 end)
 
+-- @description Verifies blueprint registration, spawning, override behavior, inheritance, listing, removal, and component table retrieval.
 describe("Blueprints", function()
+    -- @description Confirms a defined blueprint is reported as present and spawns a live entity with the stored hp and speed component values.
     it("defines blueprints and spawns entities from them", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30, speed = 100 })
@@ -179,6 +194,7 @@ describe("Blueprints", function()
         expect_equal(100, world:get(g, "speed"))
     end)
 
+    -- @description Confirms mutating one spawned blueprint instance does not affect later spawns, which still receive the original hp value.
     it("blueprints provide deep-copy isolation", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30, speed = 100 })
@@ -189,6 +205,7 @@ describe("Blueprints", function()
         expect_equal(30, world:get(g2, "hp"))
     end)
 
+    -- @description Confirms an extended blueprint inherits base fields, overrides hp, and adds the boss flag on spawned entities.
     it("extends blueprints with overrides", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30, speed = 100 })
@@ -200,6 +217,7 @@ describe("Blueprints", function()
         expect_equal(true, world:get(bg, "boss"))
     end)
 
+    -- @description Confirms per-spawn overrides replace blueprint hp while leaving unspecified fields such as speed unchanged.
     it("spawnBlueprint accepts per-spawn field overrides", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30, speed = 100 })
@@ -209,6 +227,7 @@ describe("Blueprints", function()
         expect_equal(100, world:get(g, "speed"))
     end)
 
+    -- @description Confirms listBlueprints returns at least the two defined names and removeBlueprint makes the removed blueprint report absent.
     it("lists and removes blueprints", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30 })
@@ -221,6 +240,7 @@ describe("Blueprints", function()
         expect_false(world:hasBlueprint("boss"))
     end)
 
+    -- @description Confirms getBlueprintComponents returns a non-nil table containing the blueprint's stored hp field.
     it("getBlueprintComponents returns component table", function()
         local world = lurek.entity.newUniverse()
         world:defineBlueprint("goblin", { hp = 30 })
@@ -231,7 +251,9 @@ describe("Blueprints", function()
     end)
 end)
 
+-- @description Verifies systems can be registered, counted, updated, drawn, sent custom events, and removed by reference.
 describe("Systems", function()
+    -- @description Confirms addSystem increments the system count, update() calls the system update once, and emit("draw") calls the draw handler once.
     it("dispatches update and draw to registered systems", function()
         local world = lurek.entity.newUniverse()
         local update_count = 0
@@ -251,6 +273,7 @@ describe("Systems", function()
         expect_equal(1, draw_count)
     end)
 
+    -- @description Confirms emit("onHit", 42) dispatches the custom event method and passes the damage payload through unchanged.
     it("emits custom events to systems", function()
         local world = lurek.entity.newUniverse()
         local custom_count = 0
@@ -263,6 +286,7 @@ describe("Systems", function()
         expect_equal(42, custom_count)
     end)
 
+    -- @description Confirms removeSystem deletes the referenced system instance and reduces the registered system count from two to one.
     it("removeSystem removes by reference", function()
         local world = lurek.entity.newUniverse()
 
@@ -280,7 +304,9 @@ describe("Systems", function()
     end)
 end)
 
+-- @description Verifies clearing the world removes live entities without deleting registered blueprints.
 describe("Clear and Release", function()
+    -- @description Confirms clear() resets the live entity count to zero while preserving a previously defined blueprint.
     it("clear() removes entities but preserves blueprints", function()
         local world = lurek.entity.newUniverse()
         world:spawn()
@@ -293,9 +319,11 @@ describe("Clear and Release", function()
     end)
 end)
 
--- ── parent-child hierarchy ────────────────────────────────────────────────────
+-- â”€â”€ parent-child hierarchy â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Verifies parent assignment, missing-parent behavior, child enumeration, empty child lists, and recursive death propagation.
 describe("parent-child hierarchy", function()
+    -- @description Confirms setParent stores the relationship and getParent returns the same parent entity ID.
     it("setParent / getParent round-trip", function()
         local world = lurek.entity.newUniverse()
         local parent = world:spawn()
@@ -304,12 +332,14 @@ describe("parent-child hierarchy", function()
         expect_equal(parent, world:getParent(child))
     end)
 
+    -- @description Confirms getParent returns nil when no parent relationship has been assigned.
     it("getParent returns nil for entity with no parent", function()
         local world = lurek.entity.newUniverse()
         local e = world:spawn()
         expect_nil(world:getParent(e))
     end)
 
+    -- @description Confirms getChildren returns a table and that the attached child ID appears in the returned list.
     it("getChildren returns table containing child", function()
         local world = lurek.entity.newUniverse()
         local parent = world:spawn()
@@ -324,6 +354,7 @@ describe("parent-child hierarchy", function()
         expect_true(found, "child id should appear in getChildren")
     end)
 
+    -- @description Confirms getChildren returns an empty table for an entity that has no attached children.
     it("getChildren returns empty table when no children attached", function()
         local world = lurek.entity.newUniverse()
         local e = world:spawn()
@@ -332,6 +363,7 @@ describe("parent-child hierarchy", function()
         expect_equal(0, #children)
     end)
 
+    -- @description Confirms killRecursive marks the parent and both linked children as no longer alive.
     it("killRecursive kills parent and all children", function()
         local world = lurek.entity.newUniverse()
         local parent = world:spawn()
@@ -346,15 +378,18 @@ describe("parent-child hierarchy", function()
     end)
 end)
 
--- ── getEntities ───────────────────────────────────────────────────────────────
+-- â”€â”€ getEntities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Verifies getEntities returns a table of live entities, includes spawned IDs, and excludes killed ones.
 describe("World.getEntities", function()
+    -- @description Confirms getEntities always returns a table value even before entities are inspected.
     it("getEntities returns a table", function()
         local world = lurek.entity.newUniverse()
         local result = world:getEntities()
         expect_type("table", result)
     end)
 
+    -- @description Confirms both spawned entity IDs appear in the getEntities result set.
     it("getEntities includes spawned entities", function()
         local world = lurek.entity.newUniverse()
         local e1 = world:spawn()
@@ -369,6 +404,7 @@ describe("World.getEntities", function()
         expect_true(found_e2, "e2 in getEntities")
     end)
 
+    -- @description Confirms an entity removed with kill() no longer appears in the getEntities result set.
     it("getEntities does not include killed entities", function()
         local world = lurek.entity.newUniverse()
         local e = world:spawn()
@@ -382,9 +418,11 @@ describe("World.getEntities", function()
     end)
 end)
 
--- ── getBitmapTagBit ───────────────────────────────────────────────────────────
+-- â”€â”€ getBitmapTagBit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @description Verifies a previously defined bitmap tag can be resolved back to its numeric bit value.
 describe("World.getBitmapTagBit", function()
+    -- @description Confirms getBitmapTagBit returns a number after the collidable tag has been defined with an explicit bit.
     it("getBitmapTagBit returns a number for a defined tag", function()
         local world = lurek.entity.newUniverse()
         world:defineTag("collidable", 1)

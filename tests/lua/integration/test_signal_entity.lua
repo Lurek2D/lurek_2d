@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Signal + Entity
+﻿-- Lurek2D Integration Test: Signal + Entity
 -- Tests entities emitting and receiving signals.
 -- @covers lurek.entity.newUniverse
 -- @covers lurek.signal.new
 
+-- @description Covers suite: integration: entity events via signal.
 describe("integration: entity events via signal", function()
+    -- @covers lurek.entity.Universe.spawn
+    -- @covers lurek.signal.Signal.emit
+    -- @description Verifies spawning entities can drive a connected signal callback for each created entity.
     it("entity creation triggers signal", function()
         local universe    = lurek.entity.newUniverse()
         local on_spawn    = lurek.signal.new()
@@ -22,6 +26,9 @@ describe("integration: entity events via signal", function()
         expect_equal(5, spawn_count, "spawn signal emitted 5 times")
     end)
 
+    -- @covers lurek.entity.Universe.kill
+    -- @covers lurek.signal.Signal.emit
+    -- @description Verifies entity destruction events can be mirrored through a signal log.
     it("entity kill triggers destroy signal", function()
         local universe     = lurek.entity.newUniverse()
         local on_destroy   = lurek.signal.new()
@@ -46,6 +53,9 @@ describe("integration: entity events via signal", function()
         expect_equal(3, #destroy_log, "destroy signal emitted for each entity")
     end)
 
+    -- @covers lurek.entity.Universe.get
+    -- @covers lurek.signal.Signal.emit
+    -- @description Verifies signal payloads can carry entity-related data while entity state updates remain in sync.
     it("signal listener receives entity component data", function()
         local universe   = lurek.entity.newUniverse()
         local on_damaged = lurek.signal.new()
@@ -68,6 +78,9 @@ describe("integration: entity events via signal", function()
         expect_equal(55, universe:get(id, "hp"), "entity hp reduced correctly")
     end)
 
+    -- @covers lurek.signal.Connection.disconnect
+    -- @covers lurek.entity
+    -- @description Verifies disconnecting a listener stops further entity-related signal delivery.
     it("disconnected signal listener not called", function()
         local sig   = lurek.signal.new()
         local count = 0

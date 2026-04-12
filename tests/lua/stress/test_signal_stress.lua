@@ -1,9 +1,14 @@
--- Lurek2D Stress Test: Signal Dispatch Throughput
+﻿-- Lurek2D Stress Test: Signal Dispatch Throughput
 -- Measures signal emit performance under high listener counts.
--- @stress lurek.signal.new
 
+-- @description Covers suite: stress: signal emit to many listeners.
 describe("stress: signal emit to many listeners", function()
-    it("1 signal × 1000 listeners × 100 emits: <5s", function()
+    -- @covers lurek.signal.new
+    -- @covers Signal:connect
+    -- @covers Signal:emit
+    -- @stress Connects 100 listeners and emits the same signal 1000 times.
+    -- @description Stresses listener fanout throughput by repeatedly broadcasting one signal to a fixed subscriber set and counting every dispatch.
+    it("1 signal Ă— 1000 listeners Ă— 100 emits: <5s", function()
         local sig      = lurek.signal.new()
         local LISTENERS = 100
         local EMITS     = 1000
@@ -28,6 +33,11 @@ describe("stress: signal emit to many listeners", function()
         expect_equal(dispatches, count, "all listeners fired")
     end)
 
+    -- @covers lurek.signal.new
+    -- @covers Signal:connect
+    -- @covers Connection:disconnect
+    -- @stress Performs 5000 connect-then-disconnect cycles on one signal object.
+    -- @description Stresses connection lifecycle churn by creating and tearing down short-lived listeners in a measured loop.
     it("signal connect/disconnect 5000 times in <5s", function()
         local sig   = lurek.signal.new()
         local COUNT = 5000
@@ -40,7 +50,12 @@ describe("stress: signal emit to many listeners", function()
         expect_true(elapsed < 5.0, "connect/disconnect budget: " .. elapsed .. "s")
     end)
 
-    it("10 signals × 100 listeners × 1000 emits each: <10s", function()
+    -- @covers lurek.signal.new
+    -- @covers Signal:connect
+    -- @covers Signal:emit
+    -- @stress Creates 10 signals, attaches 100 listeners to each, and emits each signal 1000 times.
+    -- @description Stresses multi-signal broadcast throughput by combining many emitter objects with repeated full-fanout dispatches.
+    it("10 signals Ă— 100 listeners Ă— 1000 emits each: <10s", function()
         local N_SIGS    = 10
         local N_LISTEN  = 100
         local N_EMITS   = 1000
@@ -60,7 +75,7 @@ describe("stress: signal emit to many listeners", function()
             for _ = 1, N_EMITS do s:emit() end
         end
         local elapsed = os.clock() - start
-        print(string.format("[STRESS] 10 sigs × 100×1000: elapsed=%.4fs", elapsed))
+        print(string.format("[STRESS] 10 sigs Ă— 100Ă—1000: elapsed=%.4fs", elapsed))
 
         expect_true(elapsed < 10.0, "multi-signal budget: " .. elapsed .. "s")
         expect_equal(N_SIGS * N_LISTEN * N_EMITS, total, "all dispatches fired")

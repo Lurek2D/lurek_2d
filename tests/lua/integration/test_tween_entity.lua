@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Tween + Entity
+﻿-- Lurek2D Integration Test: Tween + Entity
 -- Tests tweening entity position and rotation properties.
 -- @covers lurek.tween.newTween
 -- @covers lurek.entity.newUniverse
 
+-- @description Covers suite: integration: tween drives entity transform.
 describe("integration: tween drives entity transform", function()
+    -- @covers lurek.tween.Tween.update
+    -- @covers lurek.entity.Universe.set
+    -- @description Verifies tween values can drive an entity's x position all the way to its target over simulated frames.
     it("entity x position tweened from 0 to 300", function()
         local universe = lurek.entity.newUniverse()
         local tw       = lurek.tween.newTween()
@@ -28,6 +32,9 @@ describe("integration: tween drives entity transform", function()
         expect_near(300, x, 5.0, "entity x reached target after 1s")
     end)
 
+    -- @covers lurek.tween.Tween.update
+    -- @covers lurek.entity.Universe.set
+    -- @description Verifies multiple entities can each consume independent tween outputs simultaneously.
     it("multiple entities tweened simultaneously", function()
         local universe = lurek.entity.newUniverse()
         local ids, tweens = {}, {}
@@ -59,6 +66,9 @@ describe("integration: tween drives entity transform", function()
         end
     end)
 
+    -- @covers lurek.tween.Tween.seek
+    -- @covers lurek.entity
+    -- @description Verifies an ease-in tween starts more slowly than a linear tween when comparing entity motion curves.
     it("ease-in tween moves slowly at start, fast at end", function()
         local tw_linear  = lurek.tween.newTween()
         local tw_ease_in = lurek.tween.newTween()

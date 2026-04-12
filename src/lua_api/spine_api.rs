@@ -1,6 +1,5 @@
 //! `lurek.spine` — Skeletal animation: bone hierarchies, slots, and world-transform propagation.
 
-use super::render_api::LuaImageData;
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;

@@ -1,10 +1,24 @@
--- test_evidence_charts.lua
+﻿-- test_evidence_charts.lua
 -- Evidence test: Chart rendering (line, bar, scatter, pie, area)
 
 local OUT = "tests/lua/evidence/output/charts/"
 
+-- @covers lurek.ui.newLineChart
+-- @covers lurek.ui.newBarChart
+-- @covers lurek.ui.newScatterPlot
+-- @covers lurek.ui.newPieChart
+-- @covers lurek.ui.newAreaChart
+-- @description Covers suite: Evidence: Charts.
 describe("Evidence: Charts", function()
 
+    -- @covers lurek.ui.newLineChart
+    -- @covers LineChart:setYMax
+    -- @covers LineChart:setXMax
+    -- @covers LineChart:addSeries
+    -- @covers Chart:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Builds a two-series line chart with explicit axis limits, rasterizes it into image data, and saves a PNG so the generated polyline and legend output can be inspected visually.
     it("renders a line chart", function()
         local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Monthly Sales" })
         chart:setYMax(100)
@@ -16,6 +30,13 @@ describe("Evidence: Charts", function()
         lurek.img.savePNG(img, OUT .. "line_chart.png")
     end)
 
+    -- @covers lurek.ui.newBarChart
+    -- @covers BarChart:addSeries
+    -- @covers BarChart:addCategory
+    -- @covers Chart:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Creates a grouped bar chart with two yearly series and four quarter buckets, then exports the rendered chart image to verify bar placement, category spacing, and color assignment.
     it("renders a bar chart", function()
         local chart = lurek.ui.newBarChart({ width = 400, height = 300, title = "Quarterly Revenue" })
         chart:addSeries("2023", 0.22, 0.63, 0.87)
@@ -29,6 +50,14 @@ describe("Evidence: Charts", function()
         lurek.img.savePNG(img, OUT .. "bar_chart.png")
     end)
 
+    -- @covers lurek.ui.newScatterPlot
+    -- @covers ScatterPlot:setXRange
+    -- @covers ScatterPlot:setYRange
+    -- @covers ScatterPlot:addSeries
+    -- @covers Chart:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Populates two synthetic point clusters with different trigonometric distributions, renders them as a scatter plot, and saves the image to confirm point plotting and axis scaling.
     it("renders a scatter plot", function()
         local chart = lurek.ui.newScatterPlot({ width = 400, height = 400, title = "Data Clusters" })
         chart:setXRange(0, 10)
@@ -46,6 +75,12 @@ describe("Evidence: Charts", function()
         lurek.img.savePNG(img, OUT .. "scatter_plot.png")
     end)
 
+    -- @covers lurek.ui.newPieChart
+    -- @covers PieChart:addSegment
+    -- @covers Chart:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Assembles a pie chart from four named market-share slices and exports the render so the slice angles, ordering, and palette can be checked from file evidence.
     it("renders a pie chart", function()
         local chart = lurek.ui.newPieChart({ width = 400, height = 400, title = "Market Share" })
         chart:addSegment("Alpha",   35, 0.22, 0.63, 0.87)
@@ -57,6 +92,13 @@ describe("Evidence: Charts", function()
         lurek.img.savePNG(img, OUT .. "pie_chart.png")
     end)
 
+    -- @covers lurek.ui.newAreaChart
+    -- @covers AreaChart:setYMax
+    -- @covers AreaChart:addLayer
+    -- @covers Chart:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Builds a stacked area chart with three layers over seven samples, renders the composite fill output, and saves the PNG to capture layer accumulation behavior.
     it("renders an area chart", function()
         local chart = lurek.ui.newAreaChart({ width = 400, height = 300, title = "Stacked Area" })
         chart:setYMax(100)

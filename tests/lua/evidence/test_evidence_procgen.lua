@@ -1,10 +1,15 @@
--- test_evidence_procgen.lua
+﻿-- test_evidence_procgen.lua
 -- Evidence test: Procedural generation visualised as images
 
 local OUT = "tests/lua/evidence/output/procgen/"
 
+-- @description Covers suite: Evidence: Procedural generation.
 describe("Evidence: Procedural generation", function()
 
+    -- @covers lurek.procgen.cellularAutomata
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Runs cellular automata cave generation and saves a pixel-art visualization of walls and floors.
     it("visualises cellular automata cave map", function()
         local gw, gh = 64, 64
         local scale = 4
@@ -34,6 +39,10 @@ describe("Evidence: Procedural generation", function()
         lurek.img.savePNG(img, OUT .. "procgen_cellular.png")
     end)
 
+    -- @covers lurek.procgen.poissonDisk
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Generates Poisson-disk points and writes a dot plot showing the resulting distribution.
     it("visualises Poisson disk sampling", function()
         local W, H = 256, 256
         local minDist = 12

@@ -1,11 +1,18 @@
--- Golden test: dataframe — deterministic text output comparison
+﻿-- Golden test: dataframe â€” deterministic text output comparison
 -- @golden
 -- @covers lurek.dataframe.new
 -- @covers DataFrame:addColumn
 -- @covers DataFrame:sum
 -- @covers DataFrame:mean
 
+-- @description Covers suite: golden: dataframe DataFrame deterministic statistics.
 describe("golden: dataframe DataFrame deterministic statistics", function()
+    -- @covers lurek.dataframe.new
+    -- @covers DataFrame:addColumn
+    -- @covers DataFrame:sum
+    -- @covers DataFrame:mean
+    -- @covers expect_evidence_created
+    -- @description Writes dataframe_golden.txt with the fixed row count, sum, and mean for a single values column, then checks that the evidence file exists.
     it("produces deterministic text output", function()
 
         local output = {}
@@ -23,6 +30,9 @@ describe("golden: dataframe DataFrame deterministic statistics", function()
         expect_evidence_created(path)
     end)
 
+    -- @golden
+    -- @covers expect_golden_text_match
+    -- @description Compares the generated dataframe_golden.txt evidence file against the committed golden text sample.
     it("matches golden sample", function()
         local evidence = evidence_output_dir("dataframe") .. "dataframe_golden.txt"
         local golden = "tests/lua/golden/samples/dataframe/dataframe_golden.txt"

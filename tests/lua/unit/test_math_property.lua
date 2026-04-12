@@ -1,4 +1,4 @@
--- Lurek2D Property-Based Test: Math Module
+﻿-- Lurek2D Property-Based Test: Math Module
 -- Tests mathematical invariants that must hold for ALL inputs
 -- @covers lurek.math.sin
 -- @covers lurek.math.cos
@@ -14,7 +14,11 @@ local function test_values(count, min, max)
     return vals
 end
 
+-- @description Covers suite: property: trig identities.
 describe("property: trig identities", function()
+    -- @covers lurek.math.sin
+    -- @covers lurek.math.cos
+    -- @description Generates 100 deterministic angles in [-10, 10] and checks that sin(x)^2 + cos(x)^2 stays within 1e-6 of 1.0 for each sample.
     it("sin^2(x) + cos^2(x) = 1 for 100 values", function()
         local angles = test_values(100, -10, 10)
         for i, x in ipairs(angles) do
@@ -26,6 +30,8 @@ describe("property: trig identities", function()
         end
     end)
 
+    -- @covers lurek.math.sin
+    -- @description Reuses the deterministic angle set in [-10, 10] to verify the odd-function identity sin(-x) = -sin(x) across 100 samples.
     it("sin(-x) = -sin(x) for 100 values (odd function)", function()
         local angles = test_values(100, -10, 10)
         for i, x in ipairs(angles) do
@@ -36,6 +42,8 @@ describe("property: trig identities", function()
         end
     end)
 
+    -- @covers lurek.math.cos
+    -- @description Reuses the deterministic angle set in [-10, 10] to verify the even-function identity cos(-x) = cos(x) across 100 samples.
     it("cos(-x) = cos(x) for 100 values (even function)", function()
         local angles = test_values(100, -10, 10)
         for i, x in ipairs(angles) do
@@ -47,7 +55,10 @@ describe("property: trig identities", function()
     end)
 end)
 
+-- @description Covers suite: property: sqrt invariants.
 describe("property: sqrt invariants", function()
+    -- @covers lurek.math.sqrt
+    -- @description Samples 100 positive values from 0.001 to 10000 and verifies squaring sqrt(x) reconstructs x within a magnitude-scaled tolerance.
     it("sqrt(x)^2 = x for 100 positive values", function()
         local vals = test_values(100, 0.001, 10000)
         for i, x in ipairs(vals) do
@@ -57,6 +68,8 @@ describe("property: sqrt invariants", function()
         end
     end)
 
+    -- @covers lurek.math.sqrt
+    -- @description Splits 100 positive samples into 50 pairs and checks the multiplicative identity sqrt(a*b) = sqrt(a) * sqrt(b) for each pair.
     it("sqrt(a*b) = sqrt(a) * sqrt(b) for 50 pairs", function()
         local vals = test_values(100, 0.01, 100)
         for i = 1, 50 do
@@ -70,7 +83,10 @@ describe("property: sqrt invariants", function()
     end)
 end)
 
+-- @description Covers suite: property: exp/log invariants.
 describe("property: exp/log invariants", function()
+    -- @covers lurek.math.exp
+    -- @description Uses 50 deterministic value pairs in [-3, 3] and verifies exp(a + b) matches exp(a) * exp(b) with scaled floating-point tolerance.
     it("exp(a+b) = exp(a) * exp(b) for 50 pairs", function()
         local vals = test_values(100, -3, 3)
         for i = 1, 50 do
@@ -84,7 +100,10 @@ describe("property: exp/log invariants", function()
     end)
 end)
 
+-- @description Covers suite: property: Vec2 operations.
 describe("property: Vec2 operations", function()
+    -- @covers lurek.math.Vec2
+    -- @description Builds 50 deterministic Vec2 pairs and compares v1 + v2 against v2 + v1 component-wise to validate vector addition commutativity.
     it("vec2 add is commutative for 50 pairs", function()
         local vals = test_values(200, -1000, 1000)
         for i = 1, 50 do
@@ -102,6 +121,9 @@ describe("property: Vec2 operations", function()
         end
     end)
 
+    -- @covers lurek.math.Vec2
+    -- @covers lurek.math.Vec2.length
+    -- @description Creates 100 Vec2 samples from deterministic coordinates and verifies each computed length is non-negative.
     it("vec2 length is non-negative for 100 values", function()
         local vals = test_values(200, -1000, 1000)
         for i = 1, 100 do
@@ -112,6 +134,10 @@ describe("property: Vec2 operations", function()
         end
     end)
 
+    -- @covers lurek.math.Vec2
+    -- @covers lurek.math.Vec2.normalized
+    -- @covers lurek.math.Vec2.length
+    -- @description Filters out near-zero vectors, normalizes the remaining 100 deterministic samples, and checks the resulting vectors stay unit length within 1e-6.
     it("normalized vec2 has length 1 for non-zero vectors", function()
         local vals = test_values(200, -100, 100)
         for i = 1, 100 do
@@ -125,7 +151,10 @@ describe("property: Vec2 operations", function()
     end)
 end)
 
+-- @description Covers suite: property: lerp interpolation.
 describe("property: lerp interpolation", function()
+    -- @covers lurek.math.lerp
+    -- @description Checks 50 deterministic scalar pairs and verifies lerp returns the first endpoint at t=0 and the second endpoint at t=1.
     it("lerp(a, b, 0) = a and lerp(a, b, 1) = b", function()
         local vals = test_values(100, -1000, 1000)
         for i = 1, 50 do
@@ -138,6 +167,8 @@ describe("property: lerp interpolation", function()
         end
     end)
 
+    -- @covers lurek.math.lerp
+    -- @description Steps t from 0.01 to 1.00 for a fixed increasing range from 10 to 100 and verifies each lerp sample is at least as large as the previous one.
     it("lerp is monotonic for t in [0,1]", function()
         local a, b = 10, 100
         local prev = lurek.math.lerp(a, b, 0)

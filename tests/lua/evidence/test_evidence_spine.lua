@@ -1,10 +1,21 @@
--- test_evidence_spine.lua
+﻿-- test_evidence_spine.lua
 -- Evidence test: Spine skeleton creation, bone hierarchy, and rendering
 
 local OUT = "tests/lua/evidence/output/spine/"
 
+-- @description Covers suite: Evidence: Spine skeleton.
 describe("Evidence: Spine skeleton", function()
 
+    -- @covers lurek.spine.newSkeleton
+    -- @covers Skeleton:addBone
+    -- @covers Skeleton:addChildBone
+    -- @covers Skeleton:addSlot
+    -- @covers Skeleton:setPosition
+    -- @covers Skeleton:updateWorldTransforms
+    -- @covers Skeleton:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Builds a simple humanoid skeleton, updates transforms, and writes a stick-figure PNG showing the resulting hierarchy.
     it("renders a stick figure skeleton", function()
         local sk = lurek.spine.newSkeleton("stick_figure")
 
@@ -30,6 +41,16 @@ describe("Evidence: Spine skeleton", function()
         lurek.img.savePNG(img, OUT .. "skeleton_stick_figure.png")
     end)
 
+    -- @covers lurek.spine.newSkeleton
+    -- @covers Skeleton:addBone
+    -- @covers Skeleton:addChildBone
+    -- @covers Skeleton:setPosition
+    -- @covers Skeleton:updateWorldTransforms
+    -- @covers Skeleton:getBoneWorld
+    -- @covers Skeleton:drawToImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Queries a bone's world transform after building a tiny hierarchy and saves a PNG of the resulting skeleton.
     it("demonstrates bone world-transform queries", function()
         local sk = lurek.spine.newSkeleton("query_test")
         local root = sk:addBone("root",  { length = 40 })

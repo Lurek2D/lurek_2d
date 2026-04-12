@@ -1,10 +1,14 @@
--- Lurek2D Integration Test: Data + Compute
+﻿-- Lurek2D Integration Test: Data + Compute
 -- Tests data encoding/decoding with compute processing
 -- @covers lurek.data.encode
 -- @covers lurek.data.decode
 -- @covers lurek.compute.newBuffer
 
+-- @description Covers suite: data + compute integration.
 describe("data + compute integration", function()
+    -- @covers lurek.data.encode
+    -- @covers lurek.compute
+    -- @description Verifies JSON serialization preserves numeric arrays and metadata that compute-oriented code would consume after decoding.
     it("JSON round-trip preserves data for compute", function()
         local original = {
             values = { 1.5, 2.7, 3.14, 4.0 },
@@ -21,6 +25,9 @@ describe("data + compute integration", function()
         expect_near(3.14, decoded.values[3], 0.01, "pi value preserved")
     end)
 
+    -- @covers lurek.data.encode
+    -- @covers lurek.compute
+    -- @description Verifies TOML serialization preserves typed configuration values that would be used to configure compute buffers.
     it("TOML round-trip preserves typed data", function()
         local config = {
             compute = {
@@ -40,6 +47,9 @@ describe("data + compute integration", function()
         expect_equal(true, decoded.compute.enabled, "enabled preserved")
     end)
 
+    -- @covers lurek.data.compress
+    -- @covers lurek.compute
+    -- @description Verifies a compress-decompress cycle returns the exact original payload that compute code would later consume.
     it("compress then decompress preserves data", function()
         local data = string.rep("ABCDEFGH", 100)  -- 800 bytes, compressible
         local compressed = lurek.data.compress(data)
@@ -52,6 +62,9 @@ describe("data + compute integration", function()
         expect_equal(data, decompressed, "round-trip preserved")
     end)
 
+    -- @covers lurek.data.decode
+    -- @covers lurek.compute
+    -- @description Verifies large JSON payloads survive serialization and decoding so compute-adjacent bulk data can be restored intact.
     it("large table serialization stress", function()
         local big = {}
         for i = 1, 1000 do

@@ -1,4 +1,4 @@
--- Lurek2D Integration Test: AI + Physics
+﻿-- Lurek2D Integration Test: AI + Physics
 -- Tests AI agents making decisions that affect physics bodies
 -- @covers lurek.ai.newSteeringManager
 -- @covers lurek.pathfinding.newNavGrid
@@ -10,7 +10,11 @@
 -- @covers lurek.physics.step
 
 
+-- @description Covers suite: integration: AI steering with physics bodies.
 describe("integration: AI steering with physics bodies", function()
+    -- @covers lurek.ai.SteeringManager.calculate
+    -- @covers lurek.physics.step
+    -- @description Verifies steering output from the AI manager can be applied as physics velocity and causes the dynamic body to move in the world.
     it("agent seeks target in physics world", function()
         -- Create physics world (no gravity for top-down)
         local world_id = lurek.physics.newWorld(0, 0)
@@ -23,7 +27,7 @@ describe("integration: AI steering with physics bodies", function()
         local sm = lurek.ai.newSteeringManager()
         sm:addSeek(400, 400, 1.0)
 
-        -- Calculate steering force — calculate returns (fx, fy) as two values
+        -- Calculate steering force â€” calculate returns (fx, fy) as two values
         local fx, fy = sm:calculate(100, 100, 0, 0, 50, 100, 1.0 / 60.0)
 
         -- Verify we got non-zero steering force toward target
@@ -42,13 +46,17 @@ describe("integration: AI steering with physics bodies", function()
         -- Read back position
         local px, py = lurek.physics.getBody(world_id, seeker_body)
 
-        -- Seeker should have moved from (100, 100) — some movement occurred
+        -- Seeker should have moved from (100, 100) â€” some movement occurred
         local moved = math.abs(px - 100) > 0.1 or math.abs(py - 100) > 0.1
         expect_true(moved, "seeker moved from starting position")
     end)
 end)
 
+-- @description Covers suite: integration: AI pathfinding with navgrid.
 describe("integration: AI pathfinding with navgrid", function()
+    -- @covers lurek.ai
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies the pathfinder returns a wall-avoiding route for AI navigation rather than crossing blocked navgrid cells.
     it("agent follows A* path", function()
         local grid = lurek.pathfinding.newNavGrid(50, 50)
 

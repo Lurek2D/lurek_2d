@@ -1,4 +1,4 @@
--- Evidence test: physics simulation — body positions after stepping
+﻿-- Evidence test: physics simulation â€” body positions after stepping
 -- Produces: physics_sim.png showing colored dots at body positions
 -- @evidence file
 -- @covers lurek.physics.newWorld
@@ -8,7 +8,18 @@
 -- @covers World:newBody
 -- @covers World:step
 
+-- @description Covers suite: evidence: physics simulation.
 describe("evidence: physics simulation", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers World:newBody
+    -- @covers lurek.physics.newRectangleShape
+    -- @covers lurek.physics.newCircleShape
+    -- @covers lurek.physics.attachShape
+    -- @covers World:step
+    -- @covers Body:getPosition
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Simulates a small physics scene for one second and saves a PNG showing the final body positions.
     it("simulates bodies and writes position evidence image", function()
         ensure_evidence_dir("physics")
         local path = evidence_output_dir("physics") .. "physics_sim.png"
@@ -20,7 +31,7 @@ describe("evidence: physics simulation", function()
         local rect = lurek.physics.newRectangleShape(200, 20)
         lurek.physics.attachShape(ground, rect)
 
-        -- circle (dynamic — should fall under gravity)
+        -- circle (dynamic â€” should fall under gravity)
         local ball = world:newBody(100, 20, "dynamic")
         local circle = lurek.physics.newCircleShape(10)
         circle:setRestitution(0.5)
@@ -41,7 +52,7 @@ describe("evidence: physics simulation", function()
         local img = lurek.img.newImageData(256, 256)
         img:fill(20, 20, 40, 255)
 
-        -- ground — white bar
+        -- ground â€” white bar
         for px = 28, 228 do
             for py = 190, 210 do
                 img:setPixel(px, py, 200, 200, 200, 255)

@@ -5,7 +5,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use super::render_api::LuaImageData;
 use super::SharedState;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, WidgetKind};
@@ -5255,7 +5254,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "drawToImage",
         lua.create_function(move |_, (w, h): (u32, u32)| {
             let img = c.borrow().draw_to_image(w, h);
-            Ok(LuaImageData { inner: img })
+            Ok(img)
         })?,
     )?;
 

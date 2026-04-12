@@ -1,4 +1,4 @@
--- test_evidence_layers.lua
+﻿-- test_evidence_layers.lua
 -- Evidence test: Image layer compositing and DrawLayer z-order management
 
 local OUT = "tests/lua/evidence/output/layers/"
@@ -8,8 +8,15 @@ local function fill_rect(img, x, y, w, h, r, g, b, a)
     img:drawRect(x, y, w, h, r, g, b, a)
 end
 
+-- @description Covers suite: Evidence: Image layers.
 describe("Evidence: Image layers", function()
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers ImageData:drawCircle
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Builds three conceptual layers and composites them into one image to document manual layer merging.
     it("merges three color layers into one image", function()
         local W, H = 256, 256
 
@@ -32,6 +39,11 @@ describe("Evidence: Image layers", function()
         lurek.img.savePNG(base, OUT .. "basic_merge.png")
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @covers ImageData:drawRect
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Paints a row of alpha-varied strips so opacity layering can be inspected across several levels.
     it("produces distinct opacity levels for a gradient layer stack", function()
         local W, H = 256, 64
 
@@ -48,6 +60,13 @@ describe("Evidence: Image layers", function()
         lurek.img.savePNG(img, OUT .. "opacity.png")
     end)
 
+    -- @covers lurek.graphic.newDrawLayer
+    -- @covers DrawLayer:queue
+    -- @covers DrawLayer:flush
+    -- @covers DrawLayer:clear
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Exercises z-ordered draw-layer queue management and saves a simple stacked-rect image representing the managed layers.
     it("uses DrawLayer to manage z-ordered render queue", function()
         local layer = lurek.graphic.newDrawLayer()
 

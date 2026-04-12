@@ -1,4 +1,4 @@
--- test_evidence_easing.lua
+﻿-- test_evidence_easing.lua
 -- Evidence test: All easing curves plotted as images
 
 local OUT = "tests/lua/evidence/output/easing/"
@@ -24,8 +24,12 @@ local COLORS = {
     {200, 100, 200}, {180, 180, 180},
 }
 
+-- @description Covers suite: Evidence: Easing curves.
 describe("Evidence: Easing curves", function()
 
+    -- @covers lurek.math.applyEasing
+    -- @evidence file
+    -- @description Samples every named easing curve and plots them together so their relative shapes can be compared in one image.
     it("plots all easing curves on combined image", function()
         local W, H = 800, 600
         local margin = 40
@@ -66,6 +70,9 @@ describe("Evidence: Easing curves", function()
         lurek.img.savePNG(img, OUT .. "easing_all_curves.png")
     end)
 
+    -- @covers lurek.math.applyEasing
+    -- @evidence file
+    -- @description Saves one PNG per easing function so each curve can be inspected independently without the combined overlay.
     it("saves individual easing curve images", function()
         local W, H = 256, 128
         local margin = 8

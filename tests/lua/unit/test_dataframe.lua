@@ -1,4 +1,4 @@
--- Lurek2D DataFrame Tests
+﻿-- Lurek2D DataFrame Tests
 -- Tests for lurek.dataframe tabular data API
 
 -- Helper to build a simple test DataFrame
@@ -18,35 +18,44 @@ end
 -- =========================================================================
 -- 1. Module existence
 -- =========================================================================
+-- @description Verifies the dataframe namespace exists as a table and exposes each documented constructor and loader as a function.
 describe("lurek.dataframe module exists", function()
+    -- @description Asserts that lurek.dataframe itself is a Lua table.
     it("lurek.dataframe is a table", function()
         expect_type("table", lurek.dataframe)
     end)
 
+    -- @description Asserts that newDataFrame is exposed as a callable factory function.
     it("has newDataFrame factory", function()
         expect_type("function", lurek.dataframe.newDataFrame)
     end)
 
+    -- @description Asserts that newDatabase is exposed as a callable factory function.
     it("has newDatabase factory", function()
         expect_type("function", lurek.dataframe.newDatabase)
     end)
 
+    -- @description Asserts that fromTable is exposed as a callable factory function.
     it("has fromTable factory", function()
         expect_type("function", lurek.dataframe.fromTable)
     end)
 
+    -- @description Asserts that fromCSV is exposed as a callable factory function.
     it("has fromCSV factory", function()
         expect_type("function", lurek.dataframe.fromCSV)
     end)
 
+    -- @description Asserts that fromJSON is exposed as a callable factory function.
     it("has fromJSON factory", function()
         expect_type("function", lurek.dataframe.fromJSON)
     end)
 
+    -- @description Asserts that fromBinary is exposed as a callable factory function.
     it("has fromBinary factory", function()
         expect_type("function", lurek.dataframe.fromBinary)
     end)
 
+    -- @description Asserts that random is exposed as a callable factory function.
     it("has random factory", function()
         expect_type("function", lurek.dataframe.random)
     end)
@@ -55,19 +64,23 @@ end)
 -- =========================================================================
 -- 2. Construction
 -- =========================================================================
+-- @description Exercises DataFrame construction from empty state, CSV, tables, JSON, and random generation while checking shapes, parsed values, and deterministic seeding.
 describe("construction", function()
+    -- @description Verifies that a new empty DataFrame starts with 0 rows and 0 columns.
     it("newDataFrame creates empty DataFrame", function()
         local df = lurek.dataframe.newDataFrame()
         expect_equal(0, df:nrows())
         expect_equal(0, df:ncols())
     end)
 
+    -- @description Verifies that parsing the helper CSV produces exactly 3 rows and 3 columns.
     it("fromCSV creates DataFrame with correct shape", function()
         local df = make_test_df()
         expect_equal(3, df:nrows())
         expect_equal(3, df:ncols())
     end)
 
+    -- @description Verifies that CSV headers are parsed in order as name, age, and score.
     it("fromCSV parses column names", function()
         local df = make_test_df()
         local cols = df:columns()
@@ -76,18 +89,21 @@ describe("construction", function()
         expect_equal("score", cols[3])
     end)
 
+    -- @description Verifies that numeric CSV fields are auto-detected so the age values 30 and 25 come back as numbers.
     it("fromCSV auto-detects numbers", function()
         local df = make_test_df()
         expect_near(30, df:getValue(1, "age"), 1e-5)
         expect_near(25, df:getValue(2, "age"), 1e-5)
     end)
 
+    -- @description Verifies that text CSV fields preserve the strings Alice and Bob in the name column.
     it("fromCSV parses text values", function()
         local df = make_test_df()
         expect_equal("Alice", df:getValue(1, "name"))
         expect_equal("Bob", df:getValue(2, "name"))
     end)
 
+    -- @description Verifies that fromTable builds a 2x2 DataFrame from two row tables containing x and y fields.
     it("fromTable creates DataFrame from row tables", function()
         local df = lurek.dataframe.fromTable({
             { x = 1, y = 2 },
@@ -97,12 +113,14 @@ describe("construction", function()
         expect_equal(2, df:ncols())
     end)
 
+    -- @description Verifies that a JSON array of two objects produces a DataFrame with 2 rows.
     it("fromJSON creates DataFrame", function()
         local json = '[{"a":1,"b":"hello"},{"a":2,"b":"world"}]'
         local df = lurek.dataframe.fromJSON(json)
         expect_equal(2, df:nrows())
     end)
 
+    -- @description Verifies that random creates a DataFrame with 10 rows and the 2 requested columns.
     it("random creates DataFrame with specified rows", function()
         local defs = { {"x", "float"}, {"y", "float"} }
         local df = lurek.dataframe.random(defs, 10, 42)
@@ -110,6 +128,7 @@ describe("construction", function()
         expect_equal(2, df:ncols())
     end)
 
+    -- @description Verifies that random generation with the same seed yields matching float values for all 5 rows.
     it("random with seed is deterministic", function()
         local defs = { {"val", "float"} }
         local df1 = lurek.dataframe.random(defs, 5, 123)
@@ -119,6 +138,7 @@ describe("construction", function()
         end
     end)
 
+    -- @description Verifies that a CSV containing only the header x,y yields 0 rows while still defining 2 columns.
     it("fromCSV with empty body creates empty DataFrame", function()
         local df = lurek.dataframe.fromCSV("x,y")
         expect_equal(0, df:nrows())
@@ -129,23 +149,28 @@ end)
 -- =========================================================================
 -- 3. Schema
 -- =========================================================================
+-- @description Checks basic schema introspection helpers for row count, column count, ordered column names, and the count alias.
 describe("schema", function()
+    -- @description Verifies that nrows reports the helper DataFrame's 3 rows.
     it("nrows returns row count", function()
         local df = make_test_df()
         expect_equal(3, df:nrows())
     end)
 
+    -- @description Verifies that ncols reports the helper DataFrame's 3 columns.
     it("ncols returns column count", function()
         local df = make_test_df()
         expect_equal(3, df:ncols())
     end)
 
+    -- @description Verifies that columns returns three ordered column names.
     it("columns returns ordered column names", function()
         local df = make_test_df()
         local cols = df:columns()
         expect_equal(3, #cols)
     end)
 
+    -- @description Verifies that count() returns the same value as nrows().
     it("count is alias for nrows", function()
         local df = make_test_df()
         expect_equal(df:nrows(), df:count())
@@ -155,13 +180,16 @@ end)
 -- =========================================================================
 -- 4. Column operations
 -- =========================================================================
+-- @description Covers adding, removing, renaming, and reading columns while checking dimensions, default fill values, and returned column data.
 describe("column operations", function()
+    -- @description Verifies that adding a grade column increases the column count from 3 to 4.
     it("addColumn increases ncols", function()
         local df = make_test_df()
         df:addColumn("grade")
         expect_equal(4, df:ncols())
     end)
 
+    -- @description Verifies that adding a pass column with default true fills every existing row with true.
     it("addColumn with default fills all rows", function()
         local df = make_test_df()
         df:addColumn("pass", true)
@@ -170,18 +198,21 @@ describe("column operations", function()
         end
     end)
 
+    -- @description Verifies that removing the age column by name reduces the column count to 2.
     it("removeColumn by name decreases ncols", function()
         local df = make_test_df()
         df:removeColumn("age")
         expect_equal(2, df:ncols())
     end)
 
+    -- @description Verifies that removing the second column by index also reduces the column count to 2.
     it("removeColumn by index decreases ncols", function()
         local df = make_test_df()
         df:removeColumn(2)
         expect_equal(2, df:ncols())
     end)
 
+    -- @description Verifies that renaming age to years removes age from the schema and adds years.
     it("rename changes column name", function()
         local df = make_test_df()
         df:rename("age", "years")
@@ -197,6 +228,7 @@ describe("column operations", function()
         expect_false(found_age)
     end)
 
+    -- @description Verifies that getColumn("age") returns three values 30, 25, and 35 in row order.
     it("getColumn returns column values", function()
         local df = make_test_df()
         local ages = df:getColumn("age")
@@ -206,6 +238,7 @@ describe("column operations", function()
         expect_near(35, ages[3], 1e-5)
     end)
 
+    -- @description Verifies that getColumn(1) returns the first column and starts with Alice.
     it("getColumn by index works", function()
         local df = make_test_df()
         local names = df:getColumn(1)
@@ -217,19 +250,23 @@ end)
 -- =========================================================================
 -- 5. Row operations
 -- =========================================================================
+-- @description Covers adding, removing, and retrieving rows while checking returned indices, row counts, and row content.
 describe("row operations", function()
+    -- @description Verifies that adding Dave as a fourth row increases the row count to 4.
     it("addRow increases nrows", function()
         local df = make_test_df()
         df:addRow({ name = "Dave", age = 28, score = 88 })
         expect_equal(4, df:nrows())
     end)
 
+    -- @description Verifies that addRow returns the new row's 1-based index 4.
     it("addRow returns 1-based index", function()
         local df = make_test_df()
         local idx = df:addRow({ name = "Dave", age = 28, score = 88 })
         expect_equal(4, idx)
     end)
 
+    -- @description Verifies that calling addRow with no data still appends one row.
     it("addRow with no args adds empty row", function()
         local df = make_test_df()
         local before = df:nrows()
@@ -237,18 +274,21 @@ describe("row operations", function()
         expect_equal(before + 1, df:nrows())
     end)
 
+    -- @description Verifies that removing row 2 reduces the total row count from 3 to 2.
     it("removeRow decreases nrows", function()
         local df = make_test_df()
         df:removeRow(2)
         expect_equal(2, df:nrows())
     end)
 
+    -- @description Verifies that removing the first row shifts Bob into the first position.
     it("removeRow removes correct row", function()
         local df = make_test_df()
         df:removeRow(1) -- Remove Alice
         expect_equal("Bob", df:getValue(1, "name"))
     end)
 
+    -- @description Verifies that getRow(1) returns a table with Alice, age 30, and score 90.
     it("getRow returns row as table", function()
         local df = make_test_df()
         local row = df:getRow(1)
@@ -257,6 +297,7 @@ describe("row operations", function()
         expect_near(90, row.score, 1e-5)
     end)
 
+    -- @description Verifies that getRow(3) returns the last row containing Charlie.
     it("getRow with last row index works", function()
         local df = make_test_df()
         local row = df:getRow(3)
@@ -267,29 +308,35 @@ end)
 -- =========================================================================
 -- 6. Cell access
 -- =========================================================================
+-- @description Checks reading and writing individual cells by column name and index, including clearing a value with nil.
 describe("cell access", function()
+    -- @description Verifies that getValue(1, "name") returns Alice.
     it("getValue by column name", function()
         local df = make_test_df()
         expect_equal("Alice", df:getValue(1, "name"))
     end)
 
+    -- @description Verifies that getValue(1, 1) returns Alice from the first column by index.
     it("getValue by column index", function()
         local df = make_test_df()
         expect_equal("Alice", df:getValue(1, 1))
     end)
 
+    -- @description Verifies that setting row 1 name to Alicia updates the stored cell value.
     it("setValue changes cell value", function()
         local df = make_test_df()
         df:setValue(1, "name", "Alicia")
         expect_equal("Alicia", df:getValue(1, "name"))
     end)
 
+    -- @description Verifies that setting row 2 column 2 to 99 updates the age value to 99.
     it("setValue by column index", function()
         local df = make_test_df()
         df:setValue(2, 2, 99)
         expect_near(99, df:getValue(2, "age"), 1e-5)
     end)
 
+    -- @description Verifies that setting a cell to nil makes getValue return nil for that cell.
     it("setValue to nil clears cell", function()
         local df = make_test_df()
         df:setValue(1, "name", nil)
@@ -300,7 +347,9 @@ end)
 -- =========================================================================
 -- 7. Filter
 -- =========================================================================
+-- @description Verifies row filtering across equality, inequality, numeric comparisons, boundaries, and no-match cases.
 describe("filter", function()
+    -- @description Verifies that filtering name == Alice returns exactly one row and that row's name is Alice.
     it("filter == returns matching rows", function()
         local df = make_test_df()
         local result = df:filter("name", "==", "Alice")
@@ -308,12 +357,14 @@ describe("filter", function()
         expect_equal("Alice", result:getValue(1, "name"))
     end)
 
+    -- @description Verifies that filtering name != Alice excludes Alice and leaves 2 rows.
     it("filter != excludes matching rows", function()
         local df = make_test_df()
         local result = df:filter("name", "!=", "Alice")
         expect_equal(2, result:nrows())
     end)
 
+    -- @description Verifies that filtering age < 30 returns only Bob.
     it("filter < on numeric column", function()
         local df = make_test_df()
         local result = df:filter("age", "<", 30)
@@ -321,6 +372,7 @@ describe("filter", function()
         expect_equal("Bob", result:getValue(1, "name"))
     end)
 
+    -- @description Verifies that filtering age > 30 returns only Charlie.
     it("filter > on numeric column", function()
         local df = make_test_df()
         local result = df:filter("age", ">", 30)
@@ -328,18 +380,21 @@ describe("filter", function()
         expect_equal("Charlie", result:getValue(1, "name"))
     end)
 
+    -- @description Verifies that filtering age <= 30 includes the boundary and returns 2 rows.
     it("filter <= includes boundary", function()
         local df = make_test_df()
         local result = df:filter("age", "<=", 30)
         expect_equal(2, result:nrows())
     end)
 
+    -- @description Verifies that filtering age >= 30 includes the boundary and returns 2 rows.
     it("filter >= includes boundary", function()
         local df = make_test_df()
         local result = df:filter("age", ">=", 30)
         expect_equal(2, result:nrows())
     end)
 
+    -- @description Verifies that filtering age > 100 returns an empty DataFrame with 0 rows.
     it("filter with no matches returns empty DataFrame", function()
         local df = make_test_df()
         local result = df:filter("age", ">", 100)
@@ -350,7 +405,9 @@ end)
 -- =========================================================================
 -- 8. Sort
 -- =========================================================================
+-- @description Verifies ascending and descending sorting, the default sort direction, and row-data preservation after sorting.
 describe("sort", function()
+    -- @description Verifies that sorting age ascending yields ages 25, 30, and 35 in order.
     it("sort ascending by numeric column", function()
         local df = make_test_df()
         local sorted = df:sort("age", true)
@@ -359,6 +416,7 @@ describe("sort", function()
         expect_near(35, sorted:getValue(3, "age"), 1e-5)
     end)
 
+    -- @description Verifies that sorting age descending yields ages 35, 30, and 25 in order.
     it("sort descending by numeric column", function()
         local df = make_test_df()
         local sorted = df:sort("age", false)
@@ -367,12 +425,14 @@ describe("sort", function()
         expect_near(25, sorted:getValue(3, "age"), 1e-5)
     end)
 
+    -- @description Verifies that omitting the direction still sorts age ascending, placing 25 first.
     it("sort defaults to ascending", function()
         local df = make_test_df()
         local sorted = df:sort("age")
         expect_near(25, sorted:getValue(1, "age"), 1e-5)
     end)
 
+    -- @description Verifies that sorting by age keeps row values together so the first sorted row is Bob.
     it("sort preserves row data", function()
         local df = make_test_df()
         local sorted = df:sort("age", true)
@@ -383,13 +443,16 @@ end)
 -- =========================================================================
 -- 9. Head / Tail / Slice
 -- =========================================================================
+-- @description Checks row-window helpers for default and explicit counts and for inclusive 1-based slicing.
 describe("head/tail/slice", function()
+    -- @description Verifies that head() returns all 3 rows when the DataFrame has fewer than the default 5 rows.
     it("head defaults to 5 (returns all if fewer)", function()
         local df = make_test_df()
         local h = df:head()
         expect_equal(3, h:nrows()) -- only 3 rows total
     end)
 
+    -- @description Verifies that head(2) returns the first two rows, Alice then Bob.
     it("head with n returns first n rows", function()
         local df = make_test_df()
         local h = df:head(2)
@@ -398,12 +461,14 @@ describe("head/tail/slice", function()
         expect_equal("Bob", h:getValue(2, "name"))
     end)
 
+    -- @description Verifies that tail() returns all 3 rows when the DataFrame has fewer than the default 5 rows.
     it("tail defaults to 5 (returns all if fewer)", function()
         local df = make_test_df()
         local t = df:tail()
         expect_equal(3, t:nrows())
     end)
 
+    -- @description Verifies that tail(2) returns the last two rows, Bob then Charlie.
     it("tail with n returns last n rows", function()
         local df = make_test_df()
         local t = df:tail(2)
@@ -412,6 +477,7 @@ describe("head/tail/slice", function()
         expect_equal("Charlie", t:getValue(2, "name"))
     end)
 
+    -- @description Verifies that slice(1, 2) uses a 1-based inclusive range and returns Alice then Bob.
     it("slice with 1-based inclusive range", function()
         local df = make_test_df()
         local s = df:slice(1, 2)
@@ -420,6 +486,7 @@ describe("head/tail/slice", function()
         expect_equal("Bob", s:getValue(2, "name"))
     end)
 
+    -- @description Verifies that slice(2, 2) returns a single-row DataFrame containing Bob.
     it("slice single row", function()
         local df = make_test_df()
         local s = df:slice(2, 2)
@@ -431,7 +498,9 @@ end)
 -- =========================================================================
 -- 10. Select
 -- =========================================================================
+-- @description Verifies column projection by name and index, including selecting multiple columns and a single column.
 describe("select", function()
+    -- @description Verifies that selecting name and score yields 2 columns, preserves 3 rows, and keeps Alice in row 1.
     it("select by column name", function()
         local df = make_test_df()
         local s = df:select("name", "score")
@@ -440,12 +509,14 @@ describe("select", function()
         expect_equal("Alice", s:getValue(1, "name"))
     end)
 
+    -- @description Verifies that selecting columns 1 and 3 by index yields exactly 2 columns.
     it("select by column index", function()
         local df = make_test_df()
         local s = df:select(1, 3)
         expect_equal(2, s:ncols())
     end)
 
+    -- @description Verifies that selecting only name yields a single-column DataFrame with all 3 rows.
     it("select single column", function()
         local df = make_test_df()
         local s = df:select("name")
@@ -457,7 +528,9 @@ end)
 -- =========================================================================
 -- 11. Unique
 -- =========================================================================
+-- @description Verifies extraction of distinct values from text and numeric columns.
 describe("unique", function()
+    -- @description Verifies that unique("color") returns three distinct colors from repeated color rows.
     it("unique returns distinct values", function()
         local csv = "color\nred\nblue\nred\ngreen\nblue"
         local df = lurek.dataframe.fromCSV(csv)
@@ -465,6 +538,7 @@ describe("unique", function()
         expect_equal(3, #u)
     end)
 
+    -- @description Verifies that unique("x") returns three distinct numeric values from repeated numbers.
     it("unique on numeric column", function()
         local csv = "x\n1\n2\n1\n3\n2"
         local df = lurek.dataframe.fromCSV(csv)
@@ -476,7 +550,9 @@ end)
 -- =========================================================================
 -- 12. GroupBy
 -- =========================================================================
+-- @description Verifies grouping by a column returns DataFrame subsets with the expected total rows and preserved schema.
 describe("groupBy", function()
+    -- @description Verifies that grouping by dept returns a Lua table of DataFrame subsets.
     it("groupBy returns table of DataFrames", function()
         local csv = "dept,name\nHR,Alice\nIT,Bob\nHR,Charlie\nIT,Dave"
         local df = lurek.dataframe.fromCSV(csv)
@@ -484,6 +560,7 @@ describe("groupBy", function()
         expect_type("table", groups)
     end)
 
+    -- @description Verifies that the grouped subsets together contain all 4 original rows.
     it("groupBy subsets have correct row counts", function()
         local csv = "dept,name\nHR,Alice\nIT,Bob\nHR,Charlie\nIT,Dave"
         local df = lurek.dataframe.fromCSV(csv)
@@ -495,6 +572,7 @@ describe("groupBy", function()
         expect_equal(4, count)
     end)
 
+    -- @description Verifies that each grouped subset keeps the original 2-column schema.
     it("groupBy preserves column structure", function()
         local csv = "dept,name\nHR,Alice\nIT,Bob"
         local df = lurek.dataframe.fromCSV(csv)
@@ -508,7 +586,9 @@ end)
 -- =========================================================================
 -- 13. Join
 -- =========================================================================
+-- @description Verifies inner and left joins on id columns, including the default join type.
 describe("join", function()
+    -- @description Verifies that an inner join on id keeps only the two matching rows with ids 1 and 2.
     it("inner join matches on shared column values", function()
         local csv1 = "id,name\n1,Alice\n2,Bob\n3,Charlie"
         local csv2 = "id,dept\n1,HR\n2,IT\n4,Finance"
@@ -518,6 +598,7 @@ describe("join", function()
         expect_equal(2, result:nrows()) -- only ids 1 and 2 match
     end)
 
+    -- @description Verifies that a left join on id keeps all 3 rows from the left DataFrame.
     it("left join keeps all left rows", function()
         local csv1 = "id,name\n1,Alice\n2,Bob\n3,Charlie"
         local csv2 = "id,dept\n1,HR\n2,IT\n4,Finance"
@@ -527,6 +608,7 @@ describe("join", function()
         expect_equal(3, result:nrows()) -- all 3 left rows
     end)
 
+    -- @description Verifies that omitting the join type defaults to inner and returns only the single matching id 1 row.
     it("join defaults to inner", function()
         local csv1 = "id,name\n1,Alice\n2,Bob"
         local csv2 = "id,dept\n1,HR\n3,Finance"
@@ -540,7 +622,9 @@ end)
 -- =========================================================================
 -- 14. Merge
 -- =========================================================================
+-- @description Verifies that merging appends rows in place and preserves row order and values from both sources.
 describe("merge", function()
+    -- @description Verifies that merging x=[1,2] with x=[3,4] increases the first DataFrame to 4 rows.
     it("merge appends rows in-place", function()
         local df1 = lurek.dataframe.fromCSV("x\n1\n2")
         local df2 = lurek.dataframe.fromCSV("x\n3\n4")
@@ -548,6 +632,7 @@ describe("merge", function()
         expect_equal(4, df1:nrows())
     end)
 
+    -- @description Verifies that merged rows preserve the sequence of x values 1, 2, 3, and 4.
     it("merge preserves original data", function()
         local df1 = lurek.dataframe.fromCSV("x\n1\n2")
         local df2 = lurek.dataframe.fromCSV("x\n3\n4")
@@ -562,7 +647,9 @@ end)
 -- =========================================================================
 -- 15. CountBy
 -- =========================================================================
+-- @description Verifies grouped counting output shape and total counts for repeated values.
 describe("countBy", function()
+    -- @description Verifies that countBy("color") returns 3 result rows and 2 columns for value and count.
     it("countBy returns DataFrame with value and count", function()
         local csv = "color\nred\nblue\nred\ngreen\nblue"
         local df = lurek.dataframe.fromCSV(csv)
@@ -571,6 +658,7 @@ describe("countBy", function()
         expect_equal(2, result:ncols()) -- value + count
     end)
 
+    -- @description Verifies that summing the returned counts from countBy("color") equals the original 5 rows.
     it("countBy counts are correct", function()
         local csv = "color\nred\nblue\nred\nred\nblue"
         local df = lurek.dataframe.fromCSV(csv)
@@ -587,7 +675,9 @@ end)
 -- =========================================================================
 -- 16. DropNil
 -- =========================================================================
+-- @description Verifies dropping rows with nil values in a target column while keeping complete rows intact.
 describe("dropNil", function()
+    -- @description Verifies that dropNil("x") removes the row with nil and leaves 2 rows with non-nil x values.
     it("dropNil removes rows with nil in column", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("x")
@@ -598,6 +688,7 @@ describe("dropNil", function()
         expect_equal(2, result:nrows())
     end)
 
+    -- @description Verifies that dropNil("x") keeps both rows when x is already non-nil in every row.
     it("dropNil preserves non-nil rows", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("x")
@@ -611,13 +702,16 @@ end)
 -- =========================================================================
 -- 17. Sample
 -- =========================================================================
+-- @description Verifies random sampling row counts, seeded determinism, and schema preservation.
 describe("sample", function()
+    -- @description Verifies that sampling 2 rows returns a DataFrame with exactly 2 rows.
     it("sample returns correct number of rows", function()
         local df = make_test_df()
         local s = df:sample(2, 42)
         expect_equal(2, s:nrows())
     end)
 
+    -- @description Verifies that sampling with the same seed returns the same names in both sampled rows.
     it("sample with seed is deterministic", function()
         local df = make_test_df()
         local s1 = df:sample(2, 99)
@@ -626,6 +720,7 @@ describe("sample", function()
         expect_equal(s1:getValue(2, "name"), s2:getValue(2, "name"))
     end)
 
+    -- @description Verifies that sampling preserves the original 3-column schema.
     it("sample preserves schema", function()
         local df = make_test_df()
         local s = df:sample(1, 42)
@@ -636,7 +731,9 @@ end)
 -- =========================================================================
 -- 18. Describe
 -- =========================================================================
+-- @description Verifies that describe() produces a non-empty statistical summary DataFrame.
 describe("describe", function()
+    -- @description Verifies that describe() returns a DataFrame with at least one row and one column.
     it("describe returns a DataFrame", function()
         local df = make_test_df()
         local stats = df:describe()
@@ -644,6 +741,7 @@ describe("describe", function()
         expect_true(stats:ncols() > 0)
     end)
 
+    -- @description Verifies that describe() includes at least one statistics row.
     it("describe has statistic rows", function()
         local df = make_test_df()
         local stats = df:describe()
@@ -655,53 +753,63 @@ end)
 -- =========================================================================
 -- 19. Analytics
 -- =========================================================================
+-- @description Verifies numeric aggregate helpers over the age and score columns, including column-index access and non-negative variance outputs.
 describe("analytics", function()
+    -- @description Verifies that sum("age") returns 90 for ages 30, 25, and 35.
     it("sum computes correct total", function()
         local df = make_test_df()
         -- ages: 30 + 25 + 35 = 90
         expect_near(90, df:sum("age"), 1e-5)
     end)
 
+    -- @description Verifies that mean("age") returns 30 from ages 30, 25, and 35.
     it("mean computes correct average", function()
         local df = make_test_df()
         -- ages: (30 + 25 + 35) / 3 = 30
         expect_near(30, df:mean("age"), 1e-5)
     end)
 
+    -- @description Verifies that min("age") returns the smallest age, 25.
     it("min returns smallest value", function()
         local df = make_test_df()
         expect_near(25, df:min("age"), 1e-5)
     end)
 
+    -- @description Verifies that max("age") returns the largest age, 35.
     it("max returns largest value", function()
         local df = make_test_df()
         expect_near(35, df:max("age"), 1e-5)
     end)
 
+    -- @description Verifies that median("age") returns the middle value, 30.
     it("median returns middle value", function()
         local df = make_test_df()
         expect_near(30, df:median("age"), 1e-5)
     end)
 
+    -- @description Verifies that stddev("age") returns a positive value for ages 25, 30, and 35.
     it("stddev returns standard deviation", function()
         local df = make_test_df()
         local sd = df:stddev("age")
-        -- stddev of [25,30,35]: mean=30, var=(25+0+25)/3=50/3, sd≈4.082
+        -- stddev of [25,30,35]: mean=30, var=(25+0+25)/3=50/3, sdâ‰4.082
         expect_true(sd > 0)
     end)
 
+    -- @description Verifies that variance("age") is never negative.
     it("variance returns non-negative value", function()
         local df = make_test_df()
         local v = df:variance("age")
         expect_true(v >= 0)
     end)
 
+    -- @description Verifies that sum("score") returns 267 for scores 90, 85, and 92.
     it("sum on scores", function()
         local df = make_test_df()
         -- scores: 90 + 85 + 92 = 267
         expect_near(267, df:sum("score"), 1e-5)
     end)
 
+    -- @description Verifies that sum(2) treats column 2 as age and returns 90.
     it("analytics by column index", function()
         local df = make_test_df()
         -- column 2 = age, sum = 90
@@ -712,7 +820,9 @@ end)
 -- =========================================================================
 -- 20. FillNil
 -- =========================================================================
+-- @description Verifies filling nil cells with replacement values without modifying cells that already contain data.
 describe("fillNil", function()
+    -- @description Verifies that fillNil("x", 0) replaces a nil x cell with numeric 0.
     it("fillNil replaces nil values", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("x")
@@ -723,6 +833,7 @@ describe("fillNil", function()
         expect_near(0, df:getValue(2, "x"), 1e-5)
     end)
 
+    -- @description Verifies that fillNil("x", 0) leaves an existing x value of 5 unchanged.
     it("fillNil does not change non-nil values", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("x")
@@ -732,6 +843,7 @@ describe("fillNil", function()
         expect_near(5, df:getValue(1, "x"), 1e-5)
     end)
 
+    -- @description Verifies that fillNil("name", "unknown") replaces a nil text cell with the string unknown.
     it("fillNil with string value", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("name")
@@ -744,7 +856,9 @@ end)
 -- =========================================================================
 -- 21. Apply
 -- =========================================================================
+-- @description Verifies applying Lua callbacks to column values, including numeric transforms, type changes, and identity behavior.
 describe("apply", function()
+    -- @description Verifies that applying v * 2 to column x changes values 1, 2, 3 into 2, 4, 6.
     it("apply transforms column values", function()
         local df = lurek.dataframe.fromCSV("x\n1\n2\n3")
         df:apply("x", function(v) return v * 2 end)
@@ -753,6 +867,7 @@ describe("apply", function()
         expect_near(6, df:getValue(3, "x"), 1e-5)
     end)
 
+    -- @description Verifies that applying tostring-based formatting converts numeric x values into strings.
     it("apply can change type", function()
         local df = lurek.dataframe.fromCSV("x\n1\n2\n3")
         df:apply("x", function(v) return "val_" .. tostring(v) end)
@@ -760,6 +875,7 @@ describe("apply", function()
         expect_type("string", df:getValue(1, "x"))
     end)
 
+    -- @description Verifies that applying the identity function keeps x values at 10 and 20.
     it("apply with identity preserves values", function()
         local df = lurek.dataframe.fromCSV("x\n10\n20")
         df:apply("x", function(v) return v end)
@@ -771,7 +887,9 @@ end)
 -- =========================================================================
 -- 22. Serialization
 -- =========================================================================
+-- @description Verifies CSV, JSON, binary, table, and string serialization paths, including round-trips and data integrity checks.
 describe("serialization", function()
+    -- @description Verifies that toCSV returns a non-empty string.
     it("toCSV produces string", function()
         local df = make_test_df()
         local csv = df:toCSV()
@@ -779,6 +897,7 @@ describe("serialization", function()
         expect_true(#csv > 0)
     end)
 
+    -- @description Verifies that converting to CSV and back preserves row and column counts.
     it("toCSV roundtrip preserves data", function()
         local df = make_test_df()
         local csv = df:toCSV()
@@ -787,6 +906,7 @@ describe("serialization", function()
         expect_equal(df:ncols(), df2:ncols())
     end)
 
+    -- @description Verifies that toJSON returns a non-empty string.
     it("toJSON produces string", function()
         local df = make_test_df()
         local json = df:toJSON()
@@ -794,6 +914,7 @@ describe("serialization", function()
         expect_true(#json > 0)
     end)
 
+    -- @description Verifies that converting to JSON and back preserves the row count.
     it("toJSON roundtrip preserves row count", function()
         local df = make_test_df()
         local json = df:toJSON()
@@ -801,6 +922,7 @@ describe("serialization", function()
         expect_equal(df:nrows(), df2:nrows())
     end)
 
+    -- @description Verifies that binary serialization round-trips rows, columns, names, and numeric age values unchanged.
     it("toBinary/fromBinary roundtrip", function()
         local df = make_test_df()
         local bin = df:toBinary()
@@ -815,6 +937,7 @@ describe("serialization", function()
         end
     end)
 
+    -- @description Verifies that toTable returns three row tables and that the first row keeps name = Alice.
     it("toTable returns array of row-tables", function()
         local df = make_test_df()
         local t = df:toTable()
@@ -822,6 +945,7 @@ describe("serialization", function()
         expect_equal("Alice", t[1].name)
     end)
 
+    -- @description Verifies that toString returns a non-empty string representation.
     it("toString returns non-empty string", function()
         local df = make_test_df()
         local s = df:toString()
@@ -833,13 +957,16 @@ end)
 -- =========================================================================
 -- 23. SQL
 -- =========================================================================
+-- @description Verifies SQL queries against a DataFrame for full selection, filtering, ordering, limits, and column projection.
 describe("SQL on DataFrame", function()
+    -- @description Verifies that SELECT * FROM self returns all 3 rows.
     it("SELECT * FROM self returns all rows", function()
         local df = make_test_df()
         local result = df:query("SELECT * FROM self")
         expect_equal(3, result:nrows())
     end)
 
+    -- @description Verifies that a WHERE age > 28 query returns only rows whose age values are greater than 28.
     it("SELECT with WHERE filters rows", function()
         local df = make_test_df()
         local result = df:query("SELECT * FROM self WHERE age > 28")
@@ -850,18 +977,21 @@ describe("SQL on DataFrame", function()
         end
     end)
 
+    -- @description Verifies that ORDER BY age sorts the result so the first age is 25.
     it("SELECT with ORDER BY sorts", function()
         local df = make_test_df()
         local result = df:query("SELECT * FROM self ORDER BY age")
         expect_near(25, result:getValue(1, "age"), 1e-5)
     end)
 
+    -- @description Verifies that LIMIT 2 restricts the result to exactly 2 rows.
     it("SELECT with LIMIT restricts rows", function()
         local df = make_test_df()
         local result = df:query("SELECT * FROM self LIMIT 2")
         expect_equal(2, result:nrows())
     end)
 
+    -- @description Verifies that selecting name and score returns 2 columns while keeping all 3 rows.
     it("SELECT specific columns", function()
         local df = make_test_df()
         local result = df:query("SELECT name, score FROM self")
@@ -873,7 +1003,9 @@ end)
 -- =========================================================================
 -- 24. Clone
 -- =========================================================================
+-- @description Verifies cloning produces an independent copy with matching dimensions and copied data.
 describe("clone", function()
+    -- @description Verifies that mutating the clone does not alter the original and the clone reflects the new value.
     it("clone returns independent copy", function()
         local df = make_test_df()
         local c = df:clone()
@@ -882,6 +1014,7 @@ describe("clone", function()
         expect_equal("Modified", c:getValue(1, "name"))
     end)
 
+    -- @description Verifies that a clone has the same row and column counts as the source DataFrame.
     it("clone has same dimensions", function()
         local df = make_test_df()
         local c = df:clone()
@@ -889,6 +1022,7 @@ describe("clone", function()
         expect_equal(df:ncols(), c:ncols())
     end)
 
+    -- @description Verifies that the clone copies each row's name value exactly.
     it("clone has same data", function()
         local df = make_test_df()
         local c = df:clone()
@@ -901,17 +1035,21 @@ end)
 -- =========================================================================
 -- 25. Type
 -- =========================================================================
+-- @description Verifies DataFrame runtime type reporting through type() and typeOf().
 describe("type", function()
+    -- @description Verifies that DataFrame:type() returns the string DataFrame.
     it("DataFrame type() returns DataFrame", function()
         local df = make_test_df()
         expect_equal("DataFrame", df:type())
     end)
 
+    -- @description Verifies that DataFrame:typeOf("DataFrame") returns true.
     it("DataFrame typeOf DataFrame is true", function()
         local df = make_test_df()
         expect_true(df:typeOf("DataFrame"))
     end)
 
+    -- @description Verifies that DataFrame:typeOf("Database") returns false.
     it("DataFrame typeOf wrong type is false", function()
         local df = make_test_df()
         expect_false(df:typeOf("Database"))
@@ -921,12 +1059,15 @@ end)
 -- =========================================================================
 -- 26. Database
 -- =========================================================================
+-- @description Verifies database table management, merging, JSON export, and runtime type reporting.
 describe("Database", function()
+    -- @description Verifies that a new database starts with 0 tables.
     it("newDatabase creates empty database", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal(0, db:tableCount())
     end)
 
+    -- @description Verifies that addTable stores a DataFrame under users and getTable retrieves it with 3 rows.
     it("addTable and getTable work", function()
         local db = lurek.dataframe.newDatabase()
         local df = make_test_df()
@@ -936,22 +1077,26 @@ describe("Database", function()
         expect_equal(3, retrieved:nrows())
     end)
 
+    -- @description Verifies that getTable returns nil when the named table does not exist.
     it("getTable returns nil for missing table", function()
         local db = lurek.dataframe.newDatabase()
         expect_nil(db:getTable("nonexistent"))
     end)
 
+    -- @description Verifies that hasTable returns true after adding a table named data.
     it("hasTable returns true for existing table", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("data", make_test_df())
         expect_true(db:hasTable("data"))
     end)
 
+    -- @description Verifies that hasTable returns false for a missing table name.
     it("hasTable returns false for missing table", function()
         local db = lurek.dataframe.newDatabase()
         expect_false(db:hasTable("nope"))
     end)
 
+    -- @description Verifies that removeTable deletes the stored table so hasTable("data") becomes false.
     it("removeTable removes the table", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("data", make_test_df())
@@ -959,6 +1104,7 @@ describe("Database", function()
         expect_false(db:hasTable("data"))
     end)
 
+    -- @description Verifies that listing tables after adding alpha and beta returns two names.
     it("listTables returns table names", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("alpha", make_test_df())
@@ -967,6 +1113,7 @@ describe("Database", function()
         expect_equal(2, #names)
     end)
 
+    -- @description Verifies that tableCount moves from 0 to 1 to 2 as tables t1 and t2 are added.
     it("tableCount reflects additions", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal(0, db:tableCount())
@@ -976,6 +1123,7 @@ describe("Database", function()
         expect_equal(2, db:tableCount())
     end)
 
+    -- @description Verifies that clear removes both previously added tables and resets tableCount to 0.
     it("clear removes all tables", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("t1", make_test_df())
@@ -984,6 +1132,7 @@ describe("Database", function()
         expect_equal(0, db:tableCount())
     end)
 
+    -- @description Verifies that merging another database keeps table a and adds table b.
     it("merge combines databases", function()
         local db1 = lurek.dataframe.newDatabase()
         db1:addTable("a", make_test_df())
@@ -994,6 +1143,7 @@ describe("Database", function()
         expect_true(db1:hasTable("b"))
     end)
 
+    -- @description Verifies that Database:toJSON returns a non-empty string after adding a table.
     it("toJSON returns non-empty string", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("t1", make_test_df())
@@ -1002,16 +1152,19 @@ describe("Database", function()
         expect_true(#json > 0)
     end)
 
+    -- @description Verifies that Database:type() returns the string Database.
     it("Database type() returns Database", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal("Database", db:type())
     end)
 
+    -- @description Verifies that Database:typeOf("Database") returns true.
     it("Database typeOf Database is true", function()
         local db = lurek.dataframe.newDatabase()
         expect_true(db:typeOf("Database"))
     end)
 
+    -- @description Verifies that Database:typeOf("DataFrame") returns false.
     it("Database typeOf wrong type is false", function()
         local db = lurek.dataframe.newDatabase()
         expect_false(db:typeOf("DataFrame"))
@@ -1021,7 +1174,9 @@ end)
 -- =========================================================================
 -- 27. Database SQL
 -- =========================================================================
+-- @description Verifies SQL queries executed against named database tables for selection, filtering, and projection.
 describe("Database SQL", function()
+    -- @description Verifies that querying SELECT * FROM users returns all 3 rows from the stored table.
     it("query on single table", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("users", make_test_df())
@@ -1029,6 +1184,7 @@ describe("Database SQL", function()
         expect_equal(3, result:nrows())
     end)
 
+    -- @description Verifies that a database query with WHERE age > 28 returns at least one matching row.
     it("query with WHERE clause", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("users", make_test_df())
@@ -1036,6 +1192,7 @@ describe("Database SQL", function()
         expect_true(result:nrows() > 0)
     end)
 
+    -- @description Verifies that selecting only name from users returns 1 column across all 3 rows.
     it("query selecting specific columns", function()
         local db = lurek.dataframe.newDatabase()
         db:addTable("users", make_test_df())
@@ -1045,8 +1202,9 @@ describe("Database SQL", function()
     end)
 end)
 
-
+-- @description Verifies nil display behavior and round-tripping of number, text, and bool cell values for RS parity checks.
 describe("CellValue nil and display (RS parity)", function()
+    -- @description Verifies that a nil numeric cell is exposed as nil, "nil", or an empty string.
     it("nil cell displays as empty or 'nil' string", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("x", "number")
@@ -1055,6 +1213,7 @@ describe("CellValue nil and display (RS parity)", function()
         expect_true(v == nil or v == "nil" or v == "")
     end)
 
+    -- @description Verifies that a number cell containing 42 round-trips through getValue within tolerance.
     it("number cell round-trips through get", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("n", "number")
@@ -1062,6 +1221,7 @@ describe("CellValue nil and display (RS parity)", function()
         expect_near(42, df:getValue(1, "n"), 0.001)
     end)
 
+    -- @description Verifies that a text cell containing hello round-trips through getValue unchanged.
     it("text cell round-trips through get", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("s", "text")
@@ -1069,6 +1229,7 @@ describe("CellValue nil and display (RS parity)", function()
         expect_equal("hello", df:getValue(1, "s"))
     end)
 
+    -- @description Verifies that a bool cell containing true round-trips through getValue as truthy.
     it("bool cell round-trips through get", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("b", "bool")
@@ -1077,12 +1238,15 @@ describe("CellValue nil and display (RS parity)", function()
     end)
 end)
 
+-- @description Verifies RS parity behavior for Database userdata creation, table round-tripping, listing, and removal.
 describe("Database (RS parity)", function()
+    -- @description Verifies that newDatabase returns a userdata value.
     it("newDatabase returns userdata", function()
         local db = lurek.dataframe.newDatabase()
         expect_equal("userdata", type(db))
     end)
 
+    -- @description Verifies that adding a users table and retrieving it returns userdata.
     it("addTable and getTable round-trip", function()
         local db = lurek.dataframe.newDatabase()
         local df = lurek.dataframe.newDataFrame()
@@ -1092,6 +1256,7 @@ describe("Database (RS parity)", function()
         expect_equal("userdata", type(t))
     end)
 
+    -- @description Verifies that listTables returns a table containing the added name items.
     it("listTables returns list of added tables", function()
         local db = lurek.dataframe.newDatabase()
         local df = lurek.dataframe.newDataFrame()
@@ -1103,6 +1268,7 @@ describe("Database (RS parity)", function()
         expect_true(found)
     end)
 
+    -- @description Verifies that removing tmp makes it disappear from the listed table names.
     it("removeTable decrements table count", function()
         local db = lurek.dataframe.newDatabase()
         local df = lurek.dataframe.newDataFrame()

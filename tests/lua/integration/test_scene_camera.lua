@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Scene + Camera
+﻿-- Lurek2D Integration Test: Scene + Camera
 -- Tests camera viewport transformations over a scene.
 -- @covers lurek.camera.newCamera
 -- @covers lurek.entity.newUniverse
 
+-- @description Covers suite: integration: scene camera viewport operations.
 describe("integration: scene camera viewport operations", function()
+    -- @covers lurek.camera.Camera2D.setPosition
+    -- @covers lurek.camera.Camera2D.getPosition
+    -- @description Verifies camera position round-trips correctly; this specific test is effectively single-module camera coverage despite the file name.
     it("camera position changes are stored correctly", function()
         local cam = lurek.camera.newCamera()
 
@@ -18,6 +22,9 @@ describe("integration: scene camera viewport operations", function()
         expect_near(240, y1, 0.001, "camera y after move")
     end)
 
+    -- @covers lurek.camera.Camera2D.setZoom
+    -- @covers lurek.camera.Camera2D.getZoom
+    -- @description Verifies camera zoom values are stored and retrievable; this body is also effectively single-module camera coverage.
     it("camera zoom alters the visible scale", function()
         local cam = lurek.camera.newCamera()
 
@@ -31,6 +38,9 @@ describe("integration: scene camera viewport operations", function()
         expect_near(0.5, cam:getZoom(), 0.001, "zoom 0.5x")
     end)
 
+    -- @covers lurek.camera.Camera2D.setPosition
+    -- @covers lurek.entity.Universe.get
+    -- @description Verifies camera follow logic can copy a tracked entity position into the camera.
     it("camera follows tracked entity position", function()
         local universe = lurek.entity.newUniverse()
         local cam = lurek.camera.newCamera()
@@ -49,6 +59,9 @@ describe("integration: scene camera viewport operations", function()
         expect_near(64,  cy, 0.001, "camera follows entity y")
     end)
 
+    -- @covers lurek.camera.Camera2D.setRotation
+    -- @covers lurek.camera.Camera2D.getRotation
+    -- @description Verifies camera rotation is stored and retrievable; this test remains effectively single-module camera coverage.
     it("camera rotation is retrievable", function()
         local cam = lurek.camera.newCamera()
         cam:setRotation(0.5)

@@ -1,10 +1,14 @@
--- Lurek2D Integration Test: AI + Pathfinding
+﻿-- Lurek2D Integration Test: AI + Pathfinding
 -- Tests AI agents requesting and following A* paths.
 -- @covers lurek.ai.newStateMachine
 -- @covers lurek.pathfinding.newNavGrid
 -- @covers lurek.pathfinding.newPathfinder
 
+-- @description Covers suite: integration: AI agent uses pathfinding to navigate.
 describe("integration: AI agent uses pathfinding to navigate", function()
+    -- @covers lurek.ai.newStateMachine
+    -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @description Verifies finding a valid path is enough to move the AI state machine from IDLE into MOVING.
     it("AI state machine requests path and transitions to moving state", function()
         local grid = lurek.pathfinding.newNavGrid(20, 20)
         local pf   = lurek.pathfinding.newPathfinder(grid)
@@ -16,7 +20,7 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         local path_len = path:getLength()
         expect_true(path_len > 0, "path has at least one step")
 
-        -- Simulate AI state machine: IDLE → MOVING
+        -- Simulate AI state machine: IDLE â†’ MOVING
         local sm = lurek.ai.newStateMachine()
         sm:addState("IDLE",   { onUpdate = function() end })
         sm:addState("MOVING", { onUpdate = function() end })
@@ -24,13 +28,16 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         sm:forceState("IDLE")
         expect_equal("IDLE", sm:getCurrentState(), "started in IDLE")
 
-        -- Simulate: found path → transition to MOVING
+        -- Simulate: found path â†’ transition to MOVING
         if path_len > 0 then
             sm:forceState("MOVING")
         end
         expect_equal("MOVING", sm:getCurrentState(), "transitioned to MOVING after path found")
     end)
 
+    -- @covers lurek.ai
+    -- @covers lurek.pathfinding.Path.getPoint
+    -- @description Verifies a pathfinder result can be consumed waypoint by waypoint in traversal order for AI movement.
     it("AI agent follows path waypoints step by step", function()
         local grid = lurek.pathfinding.newNavGrid(10, 10)
         local pf   = lurek.pathfinding.newPathfinder(grid)
@@ -52,6 +59,9 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         end
     end)
 
+    -- @covers lurek.ai
+    -- @covers lurek.pathfinding.NavGrid.setWalkable
+    -- @description Verifies an obstacle wall forces the requested path to detour instead of taking the direct route.
     it("AI requests path around wall, gets detour", function()
         local grid = lurek.pathfinding.newNavGrid(10, 10)
         -- Place vertical wall at column 5 (except top and bottom row)

@@ -1,4 +1,4 @@
--- Lurek2D Validation Test: Invalid API Arguments
+﻿-- Lurek2D Validation Test: Invalid API Arguments
 -- Tests that API functions handle bad inputs without crashing
 -- @security lurek.compute.zeros
 -- @security lurek.dataframe.newDataFrame
@@ -14,13 +14,19 @@
 -- @security lurek.tilemap.newTileSet
 
 
+-- @description Covers suite: validation: physics invalid args.
 describe("validation: physics invalid args", function()
+    -- @covers lurek.physics.step
+    -- @description Verifies stepping physics with a nil world id is rejected as an invalid handle instead of dereferencing a missing world.
     it("rejects nil world ID", function()
         expect_error(function()
             lurek.physics.step(nil, 0.016)
         end, "nil world ID")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.step
+    -- @description Sends a negative timestep through a valid world to ensure the simulation path degrades safely even when the delta is nonsensical.
     it("handles negative dt without crash", function()
         local world_id = lurek.physics.newWorld(0, 100)
         -- Negative dt should not crash
@@ -29,6 +35,9 @@ describe("validation: physics invalid args", function()
         end, "negative dt should not crash")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @description Creates a body with an unknown body type string to probe enum coercion and verify invalid body kinds do not crash the binding.
     it("handles invalid body type string", function()
         local world_id = lurek.physics.newWorld(0, 100)
         -- Engine may accept or coerce invalid types
@@ -37,6 +46,9 @@ describe("validation: physics invalid args", function()
         end, "invalid body type should not crash")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @description Injects NaN coordinates into body creation to ensure the physics bridge rejects or safely contains non-finite transforms.
     it("handles NaN position gracefully", function()
         local world_id = lurek.physics.newWorld(0, 100)
         expect_no_error(function()
@@ -44,6 +56,11 @@ describe("validation: physics invalid args", function()
         end)
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.setBodyVelocity
+    -- @covers lurek.physics.step
+    -- @description Drives a body with extremely large velocities to confirm the solver and handle lookups stay stable under overflow-prone inputs.
     it("handles huge velocity without crash", function()
         local world_id = lurek.physics.newWorld(0, 100)
         local body = lurek.physics.newBody(world_id, 0, 0, "dynamic")
@@ -53,6 +70,10 @@ describe("validation: physics invalid args", function()
         end, "huge velocity should not crash")
     end)
 
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.destroyWorld
+    -- @covers lurek.physics.step
+    -- @description Steps a world handle after destruction to verify stale-handle use is contained rather than crashing the physics registry.
     it("handles destroyed world gracefully", function()
         local world_id = lurek.physics.newWorld(0, 100)
         lurek.physics.destroyWorld(world_id)
@@ -63,25 +84,34 @@ describe("validation: physics invalid args", function()
     end)
 end)
 
+-- @description Covers suite: validation: compute invalid args.
 describe("validation: compute invalid args", function()
+    -- @covers lurek.compute.zeros
+    -- @description Requests a zero-length dimension from the compute allocator to confirm invalid shapes are rejected before allocation.
     it("rejects zero-dimension array", function()
         expect_error(function()
             lurek.compute.zeros({0}, "float32")
         end, "zero dimension should error")
     end)
 
+    -- @covers lurek.compute.zeros
+    -- @description Supplies a negative array dimension to test shape validation against underflow-style input.
     it("rejects negative dimension", function()
         expect_error(function()
             lurek.compute.zeros({-5}, "float32")
         end, "negative dimension should error")
     end)
 
+    -- @covers lurek.compute.zeros
+    -- @description Uses an unsupported dtype string so the compute entrypoint must reject unknown element types explicitly.
     it("rejects invalid dtype string", function()
         expect_error(function()
             lurek.compute.zeros({10}, "invalid_type")
         end, "invalid dtype should error")
     end)
 
+    -- @covers lurek.compute.zeros
+    -- @description Requests a four-dimensional tensor when the API only accepts lower-dimensional shapes, exercising bounds checks on shape rank.
     it("rejects too many dimensions", function()
         expect_error(function()
             lurek.compute.zeros({2, 3, 4, 5}, "float32")
@@ -89,7 +119,10 @@ describe("validation: compute invalid args", function()
     end)
 end)
 
+-- @description Covers suite: validation: dataframe invalid ops.
 describe("validation: dataframe invalid ops", function()
+    -- @covers lurek.dataframe.newDataFrame
+    -- @description Removes a column that was never declared to verify schema mutation guards reject bogus column names.
     it("rejects removing nonexistent column", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("real", 0)
@@ -98,6 +131,8 @@ describe("validation: dataframe invalid ops", function()
         end, "remove nonexistent column should error")
     end)
 
+    -- @covers lurek.dataframe.newDataFrame
+    -- @description Reads far beyond the existing row range to ensure dataframe accessors reject out-of-bounds indices cleanly.
     it("rejects out-of-range row access", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("val", 0)
@@ -107,6 +142,8 @@ describe("validation: dataframe invalid ops", function()
         end, "out of range row should error")
     end)
 
+    -- @covers lurek.dataframe.newDataFrame
+    -- @description Defines the same column twice to check that duplicate schema names are blocked rather than corrupting internal tables.
     it("rejects duplicate column names", function()
         local df = lurek.dataframe.newDataFrame()
         df:addColumn("name", "")
@@ -116,7 +153,10 @@ describe("validation: dataframe invalid ops", function()
     end)
 end)
 
+-- @description Covers suite: validation: graph invalid operations.
 describe("validation: graph invalid operations", function()
+    -- @covers lurek.graph.newGraph
+    -- @description Attempts to connect a valid node to a bogus numeric handle to verify graph edge creation validates both endpoints.
     it("rejects edge with invalid node", function()
         local g = lurek.graph.newGraph()
         local n1 = g:addNode("processor", 100)
@@ -126,6 +166,8 @@ describe("validation: graph invalid operations", function()
         end, "edge to invalid node should error")
     end)
 
+    -- @covers lurek.graph.newGraph
+    -- @description Adds a node with a negative capacity to verify the graph constructor path remains safe even if the value is semantically odd.
     it("accepts negative capacity", function()
         local g = lurek.graph.newGraph()
         expect_no_error(function()
@@ -134,7 +176,10 @@ describe("validation: graph invalid operations", function()
     end)
 end)
 
+-- @description Covers suite: validation: entity invalid operations.
 describe("validation: entity invalid operations", function()
+    -- @covers lurek.entity.newUniverse
+    -- @description Kills an entity id that was never allocated to confirm the ECS ignores invalid deletes without panicking.
     it("handles kill of nonexistent entity", function()
         local universe = lurek.entity.newUniverse()
         expect_no_error(function()
@@ -142,6 +187,8 @@ describe("validation: entity invalid operations", function()
         end, "kill nonexistent should not crash")
     end)
 
+    -- @covers lurek.entity.newUniverse
+    -- @description Reads liveness after destroying an entity to verify dead ids stay invalid and do not resurrect through a getter.
     it("handles get on dead entity", function()
         local universe = lurek.entity.newUniverse()
         local id = universe:spawn()
@@ -149,6 +196,8 @@ describe("validation: entity invalid operations", function()
         expect_false(universe:isAlive(id), "dead entity is not alive")
     end)
 
+    -- @covers lurek.entity.newUniverse
+    -- @description Attempts to mutate components on a dead entity id to verify stale entity handles are rejected.
     it("handles set on dead entity", function()
         local universe = lurek.entity.newUniverse()
         local id = universe:spawn()
@@ -159,7 +208,10 @@ describe("validation: entity invalid operations", function()
     end)
 end)
 
+-- @description Covers suite: validation: image invalid operations.
 describe("validation: image invalid operations", function()
+    -- @covers lurek.img.newImageData
+    -- @description Creates a zero-by-zero image to ensure degenerate dimensions are handled without crashing the image allocator.
     it("handles zero-size image gracefully", function()
         -- Engine may accept zero-size image without error
         expect_no_error(function()
@@ -167,6 +219,8 @@ describe("validation: image invalid operations", function()
         end, "zero size image should not crash")
     end)
 
+    -- @covers lurek.img.newImageData
+    -- @description Loads a missing image path to verify file-based image creation returns a Lua error for absent assets.
     it("rejects loading nonexistent file", function()
         expect_error(function()
             lurek.img.newImageData("nonexistent_file.png")
@@ -174,7 +228,11 @@ describe("validation: image invalid operations", function()
     end)
 end)
 
+-- @description Covers suite: validation: tilemap invalid operations.
 describe("validation: tilemap invalid operations", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @description Reads tiles far outside the layer bounds to ensure map lookups remain safe under oversized coordinates.
     it("handles out-of-bounds tile access", function()
         local map = lurek.tilemap.newTileMap(32, 32, 16)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 0, 0)

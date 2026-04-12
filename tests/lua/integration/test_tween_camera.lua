@@ -1,9 +1,13 @@
--- Lurek2D Integration Test: Tween + Camera
+﻿-- Lurek2D Integration Test: Tween + Camera
 -- Tests smooth camera pan and zoom via tweens.
 -- @covers lurek.tween.newTween
 -- @covers lurek.camera.newCamera
 
+-- @description Covers suite: integration: tween drives camera position and zoom.
 describe("integration: tween drives camera position and zoom", function()
+    -- @covers lurek.tween.Tween.update
+    -- @covers lurek.camera.Camera2D.setPosition
+    -- @description Verifies tween progress can be applied to camera position during simulated frame updates.
     it("tween advances camera from A to B over simulated time", function()
         local cam  = lurek.camera.newCamera()
         local tw   = lurek.tween.newTween()
@@ -30,6 +34,9 @@ describe("integration: tween drives camera position and zoom", function()
         expect_near(250, cx, 5.0, "camera x near 250 at halfway")
     end)
 
+    -- @covers lurek.tween.Tween.update
+    -- @covers lurek.camera
+    -- @description Verifies a tween clamps or saturates at its target value once its duration has elapsed.
     it("tween reaches target at completion", function()
         local tw = lurek.tween.newTween()
         tw:setDuration(0.5)
@@ -43,6 +50,9 @@ describe("integration: tween drives camera position and zoom", function()
         expect_near(200, val, 1.0, "tween reached target value")
     end)
 
+    -- @covers lurek.tween.Tween.seek
+    -- @covers lurek.camera.Camera2D.setZoom
+    -- @description Verifies tween output can drive camera zoom values over time.
     it("tween zoom from 1.0 to 2.0 over time", function()
         local cam = lurek.camera.newCamera()
         local tw  = lurek.tween.newTween()
@@ -60,6 +70,9 @@ describe("integration: tween drives camera position and zoom", function()
         expect_near(1.5, cam:getZoom(), 0.01, "camera zoom updated via tween")
     end)
 
+    -- @covers lurek.tween.Tween.onComplete
+    -- @covers lurek.camera
+    -- @description Verifies tween completion callbacks fire after a full-duration camera tween.
     it("tween onComplete fires after full duration", function()
         local tw       = lurek.tween.newTween()
         local finished = false

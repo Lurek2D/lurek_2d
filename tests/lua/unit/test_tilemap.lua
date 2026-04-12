@@ -1,4 +1,4 @@
--- Lurek2D Tilemap API Tests
+﻿-- Lurek2D Tilemap API Tests
 -- Covers lurek.tilemap module: factory functions, TileSet, TileMap,
 -- coordinate helpers, autotile, chunk map, iso map, map generation, and TMX.
 -- NOTE: This test runs in headless mode (no GPU/window). drawLayer and
@@ -39,11 +39,24 @@
 -- @covers lurek.tilemap.toScreenIso
 
 
+-- @description Covers suite: lurek.tilemap module exists.
 describe("lurek.tilemap module exists", function()
+    -- @covers lurek.tilemap
+    -- @description Confirms the tilemap module table is registered.
     it("lurek.tilemap is a table", function()
         expect_type("table", lurek.tilemap)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Verifies the tilemap factory entrypoints are exported as callable functions.
     it("exposes factory functions", function()
         expect_type("function", lurek.tilemap.newTileSet)
         expect_type("function", lurek.tilemap.newTileMap)
@@ -56,6 +69,23 @@ describe("lurek.tilemap module exists", function()
         expect_type("function", lurek.tilemap.newMapGen)
     end)
 
+    -- @covers lurek.tilemap.toScreenIso
+    -- @covers lurek.tilemap.fromScreenIso
+    -- @covers lurek.tilemap.toScreenHex
+    -- @covers lurek.tilemap.fromScreenHex
+    -- @covers lurek.tilemap.hexNeighbors
+    -- @covers lurek.tilemap.hexDistance
+    -- @covers lurek.tilemap.hexRound
+    -- @covers lurek.tilemap.hexLine
+    -- @covers lurek.tilemap.hexRing
+    -- @covers lurek.tilemap.hexSpiral
+    -- @covers lurek.tilemap.hexArea
+    -- @covers lurek.tilemap.hexRotate
+    -- @covers lurek.tilemap.hexReflect
+    -- @covers lurek.tilemap.isoRotate
+    -- @covers lurek.tilemap.isoDirectionName
+    -- @covers lurek.tilemap.isoDirectionFromAngle
+    -- @description Checks that the isometric and hex helper APIs are registered as functions.
     it("exposes coordinate helper functions", function()
         expect_type("function", lurek.tilemap.toScreenIso)
         expect_type("function", lurek.tilemap.fromScreenIso)
@@ -75,10 +105,17 @@ describe("lurek.tilemap module exists", function()
         expect_type("function", lurek.tilemap.isoDirectionFromAngle)
     end)
 
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Verifies the TMX loader entrypoint is exported as a function.
     it("exposes TMX loader", function()
         expect_type("function", lurek.tilemap.loadTMX)
     end)
 
+    -- @covers lurek.tilemap.FLOOR
+    -- @covers lurek.tilemap.NORTH_WALL
+    -- @covers lurek.tilemap.WEST_WALL
+    -- @covers lurek.tilemap.OBJECT
+    -- @description Confirms the exposed isometric tile-part constants keep their expected numeric values.
     it("exposes IsoMap tile-part constants", function()
         expect_equal(1, lurek.tilemap.FLOOR)
         expect_equal(2, lurek.tilemap.NORTH_WALL)
@@ -91,13 +128,19 @@ end)
 -- Isometric coordinate helpers
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap isometric coordinates.
 describe("lurek.tilemap isometric coordinates", function()
+    -- @covers lurek.tilemap.toScreenIso
+    -- @description Verifies toScreenIso returns numeric screen coordinates for a valid tile coordinate.
     it("toScreenIso converts (1,1) to expected screen position", function()
         local sx, sy = lurek.tilemap.toScreenIso(1, 1, 32, 16)
         expect_type("number", sx)
         expect_type("number", sy)
     end)
 
+    -- @covers lurek.tilemap.toScreenIso
+    -- @covers lurek.tilemap.fromScreenIso
+    -- @description Confirms isometric world conversion round-trips between tile and screen space.
     it("fromScreenIso round-trips with toScreenIso", function()
         local tx, ty = 3, 5
         local sx, sy = lurek.tilemap.toScreenIso(tx, ty, 32, 16)
@@ -106,22 +149,30 @@ describe("lurek.tilemap isometric coordinates", function()
         expect_near(ty, ry, 0.01)
     end)
 
+    -- @covers lurek.tilemap.toScreenIso
+    -- @description Checks that the isometric origin maps to the screen origin.
     it("toScreenIso at origin returns 0,0 for tile (0,0)", function()
         local sx, sy = lurek.tilemap.toScreenIso(0, 0, 32, 16)
         expect_near(0, sx, 0.001)
         expect_near(0, sy, 0.001)
     end)
 
+    -- @covers lurek.tilemap.isoRotate
+    -- @description Verifies rotating isometric direction 1 by one step advances to direction 2.
     it("isoRotate direction 1 by 1 step = direction 2", function()
         local dir = lurek.tilemap.isoRotate(1, 1)
         expect_equal(2, dir)
     end)
 
+    -- @covers lurek.tilemap.isoRotate
+    -- @description Confirms isoRotate wraps direction 4 back to direction 1.
     it("isoRotate wraps at 4 back to 1", function()
         local dir = lurek.tilemap.isoRotate(4, 1)
         expect_equal(1, dir)
     end)
 
+    -- @covers lurek.tilemap.isoRotate
+    -- @description Verifies a full four-step rotation returns each direction to itself.
     it("isoRotate by 4 steps returns same direction", function()
         for d = 1, 4 do
             local rotated = lurek.tilemap.isoRotate(d, 4)
@@ -129,6 +180,8 @@ describe("lurek.tilemap isometric coordinates", function()
         end
     end)
 
+    -- @covers lurek.tilemap.isoDirectionName
+    -- @description Checks the direction-name helper returns the expected compass strings.
     it("isoDirectionName returns expected strings", function()
         expect_equal("south", lurek.tilemap.isoDirectionName(1))
         expect_equal("west",  lurek.tilemap.isoDirectionName(2))
@@ -136,6 +189,8 @@ describe("lurek.tilemap isometric coordinates", function()
         expect_equal("east",  lurek.tilemap.isoDirectionName(4))
     end)
 
+    -- @covers lurek.tilemap.isoDirectionFromAngle
+    -- @description Verifies angle snapping resolves to one of the four valid isometric directions.
     it("isoDirectionFromAngle snaps to nearest direction", function()
         local dir = lurek.tilemap.isoDirectionFromAngle(0)
         expect_in_range(dir, 1, 4)
@@ -146,7 +201,11 @@ end)
 -- Hexagonal coordinate helpers
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap hexagonal coordinates.
 describe("lurek.tilemap hexagonal coordinates", function()
+    -- @covers lurek.tilemap.toScreenHex
+    -- @covers lurek.tilemap.fromScreenHex
+    -- @description Confirms hex grid coordinate conversion round-trips within the expected tolerance.
     it("toScreenHex and fromScreenHex round-trip", function()
         local q, r = 2, 3
         local sx, sy = lurek.tilemap.toScreenHex(q, r, 16)
@@ -155,31 +214,43 @@ describe("lurek.tilemap hexagonal coordinates", function()
         expect_near(r, rr, 0.5)
     end)
 
+    -- @covers lurek.tilemap.hexDistance
+    -- @description Verifies the distance between the same hex cell is zero.
     it("hexDistance between same cell is 0", function()
         expect_equal(0, lurek.tilemap.hexDistance(2, 3, 2, 3))
     end)
 
+    -- @covers lurek.tilemap.hexDistance
+    -- @description Checks that adjacent hex cells report a distance of one.
     it("hexDistance between adjacent cells is 1", function()
         expect_equal(1, lurek.tilemap.hexDistance(0, 0, 1, 0))
     end)
 
+    -- @covers lurek.tilemap.hexDistance
+    -- @description Confirms hexDistance is symmetric regardless of argument order.
     it("hexDistance is symmetric", function()
         local d1 = lurek.tilemap.hexDistance(1, 2, 4, 5)
         local d2 = lurek.tilemap.hexDistance(4, 5, 1, 2)
         expect_equal(d1, d2)
     end)
 
+    -- @covers lurek.tilemap.hexRound
+    -- @description Verifies hexRound snaps fractional coordinates to integer axial coordinates.
     it("hexRound returns integers", function()
         local q, r = lurek.tilemap.hexRound(1.4, 2.7)
         expect_true(math.floor(q) == q, "q should be integer")
         expect_true(math.floor(r) == r, "r should be integer")
     end)
 
+    -- @covers lurek.tilemap.hexNeighbors
+    -- @description Checks that hexNeighbors returns the six adjacent cells.
     it("hexNeighbors returns 6 cells", function()
         local neighbors = lurek.tilemap.hexNeighbors(0, 0)
         expect_equal(6, #neighbors)
     end)
 
+    -- @covers lurek.tilemap.hexNeighbors
+    -- @description Verifies each neighbor entry exposes axial q and r fields.
     it("hexNeighbors each entry has q and r fields", function()
         local neighbors = lurek.tilemap.hexNeighbors(0, 0)
         for _, n in ipairs(neighbors) do
@@ -188,75 +259,103 @@ describe("lurek.tilemap hexagonal coordinates", function()
         end
     end)
 
+    -- @covers lurek.tilemap.hexLine
+    -- @description Confirms a zero-length hex line still returns the origin cell.
     it("hexLine from (0,0) to (0,0) returns 1 cell", function()
         local line = lurek.tilemap.hexLine(0, 0, 0, 0)
         expect_equal(1, #line)
     end)
 
+    -- @covers lurek.tilemap.hexLine
+    -- @description Checks hexLine includes both endpoints when tracing a straight axial segment.
     it("hexLine from (0,0) to (2,0) returns correct length", function()
         local line = lurek.tilemap.hexLine(0, 0, 2, 0)
         expect_equal(3, #line)
     end)
 
+    -- @covers lurek.tilemap.hexRing
+    -- @description Verifies a radius-zero hex ring collapses to the center cell.
     it("hexRing at radius 0 returns 1 cell (the center)", function()
         local ring = lurek.tilemap.hexRing(0, 0, 0)
         expect_equal(1, #ring)
     end)
 
+    -- @covers lurek.tilemap.hexRing
+    -- @description Confirms a radius-one hex ring contains exactly six cells.
     it("hexRing at radius 1 returns 6 cells", function()
         local ring = lurek.tilemap.hexRing(0, 0, 1)
         expect_equal(6, #ring)
     end)
 
+    -- @covers lurek.tilemap.hexRing
+    -- @description Confirms a radius-two hex ring contains twelve cells.
     it("hexRing at radius 2 returns 12 cells", function()
         local ring = lurek.tilemap.hexRing(0, 0, 2)
         expect_equal(12, #ring)
     end)
 
+    -- @covers lurek.tilemap.hexSpiral
+    -- @description Verifies a radius-zero hex spiral contains only the origin.
     it("hexSpiral at radius 0 returns 1 cell", function()
         local spiral = lurek.tilemap.hexSpiral(0, 0, 0)
         expect_equal(1, #spiral)
     end)
 
+    -- @covers lurek.tilemap.hexSpiral
+    -- @description Checks that a radius-one hex spiral includes the center plus the first ring.
     it("hexSpiral at radius 1 returns 7 cells (1 center + 6 ring)", function()
         local spiral = lurek.tilemap.hexSpiral(0, 0, 1)
         expect_equal(7, #spiral)
     end)
 
+    -- @covers lurek.tilemap.hexArea
+    -- @description Verifies a radius-zero hex area contains only the center cell.
     it("hexArea at radius 0 returns 1 cell", function()
         local area = lurek.tilemap.hexArea(0, 0, 0)
         expect_equal(1, #area)
     end)
 
+    -- @covers lurek.tilemap.hexArea
+    -- @description Confirms a radius-one hex area expands to seven cells.
     it("hexArea at radius 1 returns 7 cells", function()
         local area = lurek.tilemap.hexArea(0, 0, 1)
         expect_equal(7, #area)
     end)
 
+    -- @covers lurek.tilemap.hexRotate
+    -- @description Checks that rotating by zero steps leaves axial coordinates unchanged.
     it("hexRotate by 0 steps returns same cell", function()
         local q, r = lurek.tilemap.hexRotate(1, 0, 0, 0, 0)
         expect_equal(1, q)
         expect_equal(0, r)
     end)
 
+    -- @covers lurek.tilemap.hexRotate
+    -- @description Verifies a full six-step hex rotation returns the original cell.
     it("hexRotate by 6 steps (full circle) returns same cell", function()
         local q, r = lurek.tilemap.hexRotate(2, 1, 0, 0, 6)
         expect_near(2, q, 0.01)
         expect_near(1, r, 0.01)
     end)
 
+    -- @covers lurek.tilemap.hexReflect
+    -- @description Confirms q-axis reflection returns numeric axial coordinates.
     it("hexReflect across q axis returns expected result", function()
         local q, r = lurek.tilemap.hexReflect(1, 2, 0, 0, "q")
         expect_type("number", q)
         expect_type("number", r)
     end)
 
+    -- @covers lurek.tilemap.hexReflect
+    -- @description Confirms r-axis reflection returns numeric axial coordinates.
     it("hexReflect across r axis returns expected result", function()
         local q, r = lurek.tilemap.hexReflect(1, 2, 0, 0, "r")
         expect_type("number", q)
         expect_type("number", r)
     end)
 
+    -- @covers lurek.tilemap.hexReflect
+    -- @description Confirms s-axis reflection returns numeric axial coordinates.
     it("hexReflect across s axis returns expected result", function()
         local q, r = lurek.tilemap.hexReflect(1, 2, 0, 0, "s")
         expect_type("number", q)
@@ -268,42 +367,66 @@ end)
 -- TileSet
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newTileSet.
 describe("lurek.tilemap.newTileSet", function()
+    -- @covers lurek.tilemap.newTileSet
+    -- @description Verifies the TileSet factory returns userdata.
     it("creates a TileSet userdata", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_type("userdata", ts)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getFirstGid
+    -- @description Confirms getFirstGid returns the starting GID passed to the TileSet constructor.
     it("getFirstGid returns the first GID passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(1, ts:getFirstGid())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getFirstGid
+    -- @description Verifies getFirstGid preserves non-default first GID values.
     it("getFirstGid non-1 start", function()
         local ts = lurek.tilemap.newTileSet(17, 8, 4, 16, 16)
         expect_equal(17, ts:getFirstGid())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getTileCount
+    -- @description Checks that getTileCount reflects the tile count configured at construction.
     it("getTileCount returns count passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(16, ts:getTileCount())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getColumns
+    -- @description Verifies getColumns returns the configured tileset column count.
     it("getColumns returns columns passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(4, ts:getColumns())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getTileWidth
+    -- @description Confirms getTileWidth returns the configured tile width.
     it("getTileWidth returns width passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(32, ts:getTileWidth())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getTileHeight
+    -- @description Confirms getTileHeight returns the configured tile height.
     it("getTileHeight returns height passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(32, ts:getTileHeight())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getTileDimensions
+    -- @description Verifies getTileDimensions returns both configured tile dimensions.
     it("getTileDimensions returns width and height", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 48)
         local w, h = ts:getTileDimensions()
@@ -311,26 +434,41 @@ describe("lurek.tilemap.newTileSet", function()
         expect_equal(48, h)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getSpacing
+    -- @description Checks that getSpacing defaults to zero when no spacing is provided.
     it("getSpacing defaults to 0 when not provided", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(0, ts:getSpacing())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getSpacing
+    -- @description Verifies getSpacing returns the explicit spacing configured on the tileset.
     it("getSpacing returns spacing passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 2)
         expect_equal(2, ts:getSpacing())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getMargin
+    -- @description Checks that getMargin defaults to zero when no margin is provided.
     it("getMargin defaults to 0 when not provided", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_equal(0, ts:getMargin())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getMargin
+    -- @description Verifies getMargin returns the explicit tileset margin.
     it("getMargin returns margin passed to constructor", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 0, 4)
         expect_equal(4, ts:getMargin())
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getQuad
+    -- @description Confirms getQuad returns a table describing the tile rectangle.
     it("getQuad returns a table with x, y, width, height", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         local q = ts:getQuad(1)
@@ -341,6 +479,9 @@ describe("lurek.tilemap.newTileSet", function()
         expect_not_nil(q.height)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getQuad
+    -- @description Verifies the first tile quad starts at the origin with the configured size.
     it("getQuad tile 1 starts at (0, 0)", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         local q = ts:getQuad(1)
@@ -350,6 +491,9 @@ describe("lurek.tilemap.newTileSet", function()
         expect_near(32, q.height, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getQuad
+    -- @description Checks that the second tile quad shifts by one tile width in the first row.
     it("getQuad tile 2 is offset by one tile width", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         local q = ts:getQuad(2)
@@ -357,6 +501,9 @@ describe("lurek.tilemap.newTileSet", function()
         expect_near(0, q.y, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getQuad
+    -- @description Verifies row wrapping when resolving the quad for the fifth tile.
     it("getQuad tile 5 (second row, first column) has correct y", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         local q = ts:getQuad(5)
@@ -364,11 +511,18 @@ describe("lurek.tilemap.newTileSet", function()
         expect_near(32, q.y, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getQuad
+    -- @description Confirms getQuad rejects invalid tile ID zero.
     it("getQuad rejects tile ID 0", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_error(function() ts:getQuad(0) end)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setSolid
+    -- @covers TileSet:isSolid
+    -- @description Verifies TileSet solidity flags can be toggled and queried per tile.
     it("setSolid and isSolid work for a tile", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_false(ts:isSolid(1))
@@ -378,11 +532,18 @@ describe("lurek.tilemap.newTileSet", function()
         expect_false(ts:isSolid(1))
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:isSolid
+    -- @description Confirms isSolid rejects tile ID zero.
     it("isSolid rejects tile ID 0", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_error(function() ts:isSolid(0) end)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setAnimation
+    -- @covers TileSet:getAnimation
+    -- @description Checks that animation frame data round-trips through TileSet animation accessors.
     it("setAnimation and getAnimation round-trip", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         ts:setAnimation(1, {{tileid=1, duration=100}, {tileid=2, duration=200}})
@@ -395,11 +556,18 @@ describe("lurek.tilemap.newTileSet", function()
         expect_near(200, frames[2].duration, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getAnimation
+    -- @description Verifies getAnimation returns nil when a tile has no animation configured.
     it("getAnimation returns nil for tile with no animation", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_nil(ts:getAnimation(3))
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setAutoTileRule
+    -- @covers TileSet:getAutoTileId
+    -- @description Confirms four-neighbor autotile rules round-trip through the TileSet rule table.
     it("setAutoTileRule and getAutoTileId round-trip", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         -- bitmask: N=1 only, map to tile 3
@@ -408,11 +576,18 @@ describe("lurek.tilemap.newTileSet", function()
         expect_equal(3, tid)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:getAutoTileId
+    -- @description Verifies unknown four-neighbor autotile masks return nil.
     it("getAutoTileId returns nil for unknown bitmask", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         expect_nil(ts:getAutoTileId("grass", 0))
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setAutoTileRule8
+    -- @covers TileSet:getAutoTileId8
+    -- @description Confirms eight-neighbor autotile rules round-trip through the TileSet rule table.
     it("setAutoTileRule8 and getAutoTileId8 round-trip", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         -- 8-bit bitmask: N=1, NE=16 = bitmask 17
@@ -421,6 +596,10 @@ describe("lurek.tilemap.newTileSet", function()
         expect_equal(5, tid)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setAutoTileRule8
+    -- @covers TileSet:getAutoTileId8
+    -- @description Verifies autotile rules are stored independently per terrain type.
     it("setAutoTileRule8 different types do not conflict", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         ts:setAutoTileRule8("grass", 15, 2)
@@ -434,18 +613,28 @@ end)
 -- TileMap
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newTileMap.
 describe("lurek.tilemap.newTileMap", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @description Verifies the TileMap factory returns userdata.
     it("creates a TileMap userdata", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_type("userdata", tm)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getTileWidth
+    -- @covers TileMap:getTileHeight
+    -- @description Confirms TileMap dimension accessors return the constructor values.
     it("getTileWidth and getTileHeight return constructor values", function()
         local tm = lurek.tilemap.newTileMap(32, 16)
         expect_equal(32, tm:getTileWidth())
         expect_equal(16, tm:getTileHeight())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getTileDimensions
+    -- @description Verifies getTileDimensions returns both configured tile dimensions.
     it("getTileDimensions returns width and height", function()
         local tm = lurek.tilemap.newTileMap(24, 24)
         local w, h = tm:getTileDimensions()
@@ -453,23 +642,38 @@ describe("lurek.tilemap.newTileMap", function()
         expect_equal(24, h)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getChunkSize
+    -- @description Checks that TileMap defaults to a chunk size of sixteen tiles.
     it("getChunkSize defaults to 16", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_equal(16, tm:getChunkSize())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getChunkSize
+    -- @description Verifies getChunkSize returns the custom chunk size supplied at construction.
     it("getChunkSize uses custom value", function()
         local tm = lurek.tilemap.newTileMap(32, 32, 8)
         expect_equal(8, tm:getChunkSize())
     end)
 end)
 
+-- @description Covers suite: TileMap tileset management.
 describe("TileMap tileset management", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getTileSetCount
+    -- @description Confirms a new TileMap starts with no attached tilesets.
     it("getTileSetCount starts at 0", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_equal(0, tm:getTileSetCount())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:getTileSetCount
+    -- @description Verifies adding a TileSet increments the TileMap tileset count.
     it("addTileSet increases count", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -477,6 +681,12 @@ describe("TileMap tileset management", function()
         expect_equal(1, tm:getTileSetCount())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:getTileSet
+    -- @covers TileSet:getFirstGid
+    -- @description Checks that TileMap:getTileSet returns the same tileset that was added.
     it("getTileSet returns the added tileset", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -486,29 +696,46 @@ describe("TileMap tileset management", function()
         expect_equal(1, retrieved:getFirstGid())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getTileSet
+    -- @description Verifies requesting an out-of-range tileset index returns nil.
     it("getTileSet returns nil for out-of-range index", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_nil(tm:getTileSet(1))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getTileSet
+    -- @description Confirms TileMap:getTileSet rejects invalid zero indices.
     it("getTileSet rejects index 0", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_error(function() tm:getTileSet(0) end)
     end)
 end)
 
+-- @description Covers suite: TileMap layer management.
 describe("TileMap layer management", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:getLayerCount
+    -- @description Confirms a new TileMap starts with no layers.
     it("getLayerCount starts at 0", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_equal(0, tm:getLayerCount())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @description Verifies addLayer returns a one-based layer index.
     it("addLayer returns 1-based index", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local idx = tm:addLayer("ground", 20, 15)
         expect_equal(1, idx)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:getLayerCount
+    -- @description Checks that each added layer increments the layer count.
     it("addLayer increases count", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("ground", 20, 15)
@@ -517,12 +744,21 @@ describe("TileMap layer management", function()
         expect_equal(2, tm:getLayerCount())
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:getLayerName
+    -- @description Verifies getLayerName returns the name assigned when the layer was created.
     it("getLayerName returns the correct name", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("collision", 10, 10)
         expect_equal("collision", tm:getLayerName(1))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setLayerVisible
+    -- @covers TileMap:getLayerVisible
+    -- @description Confirms layer visibility flags can be toggled and read back.
     it("setLayerVisible and getLayerVisible round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("layer1", 10, 10)
@@ -532,6 +768,11 @@ describe("TileMap layer management", function()
         expect_true(tm:getLayerVisible(1))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setLayerColor
+    -- @covers TileMap:getLayerColor
+    -- @description Verifies per-layer tint colors round-trip through the color accessors.
     it("setLayerColor and getLayerColor round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("coloured", 10, 10)
@@ -543,6 +784,11 @@ describe("TileMap layer management", function()
         expect_near(1.0, a, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setLayerOffset
+    -- @covers TileMap:getLayerOffset
+    -- @description Checks that per-layer screen offsets round-trip correctly.
     it("setLayerOffset and getLayerOffset round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("offset_layer", 10, 10)
@@ -552,6 +798,11 @@ describe("TileMap layer management", function()
         expect_near(34, oy, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setLayerParallax
+    -- @covers TileMap:getLayerParallax
+    -- @description Verifies layer parallax factors round-trip through the TileMap API.
     it("setLayerParallax and getLayerParallax round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("bg", 10, 10)
@@ -562,7 +813,12 @@ describe("TileMap layer management", function()
     end)
 end)
 
+-- @description Covers suite: TileMap tile access.
 describe("TileMap tile access", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:getTile
+    -- @description Confirms unset TileMap cells default to GID zero.
     it("getTile returns 0 for empty tiles", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("ground", 20, 20)
@@ -570,6 +826,11 @@ describe("TileMap tile access", function()
         expect_equal(0, gid)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:getTile
+    -- @description Verifies tile GIDs can be written and read back from a layer.
     it("setTile and getTile round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("ground", 20, 20)
@@ -577,6 +838,12 @@ describe("TileMap tile access", function()
         expect_equal(5, tm:getTile(1, 3, 4))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:clearTile
+    -- @covers TileMap:getTile
+    -- @description Confirms clearTile resets a populated tile back to zero.
     it("clearTile sets GID back to 0", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("ground", 20, 20)
@@ -585,6 +852,11 @@ describe("TileMap tile access", function()
         expect_equal(0, tm:getTile(1, 2, 2))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:fill
+    -- @covers TileMap:getTile
+    -- @description Verifies fill writes the provided GID across the entire layer.
     it("fill sets entire layer to given GID", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("filled", 5, 5)
@@ -593,6 +865,11 @@ describe("TileMap tile access", function()
         expect_equal(3, tm:getTile(1, 5, 5))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:setTileTint
+    -- @description Checks that tinting a populated tile completes without raising an error.
     it("setTileTint does not error", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:addLayer("ground", 10, 10)
@@ -603,7 +880,12 @@ describe("TileMap tile access", function()
     end)
 end)
 
+-- @description Covers suite: TileMap viewport and coordinate conversion.
 describe("TileMap viewport and coordinate conversion", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:setViewport
+    -- @covers TileMap:getViewport
+    -- @description Verifies viewport bounds round-trip through the TileMap viewport accessors.
     it("setViewport and getViewport round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         tm:setViewport(100, 200, 640, 480)
@@ -614,6 +896,9 @@ describe("TileMap viewport and coordinate conversion", function()
         expect_near(480, h, 0.001)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:worldToTile
+    -- @description Confirms worldToTile returns numeric tile coordinates.
     it("worldToTile converts pixel position to tile coords", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local tx, ty = tm:worldToTile(0, 0)
@@ -621,6 +906,10 @@ describe("TileMap viewport and coordinate conversion", function()
         expect_type("number", ty)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:tileToWorld
+    -- @covers TileMap:worldToTile
+    -- @description Verifies TileMap world and tile coordinate conversions round-trip.
     it("worldToTile and tileToWorld round-trip", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local wx, wy = tm:tileToWorld(2, 3)
@@ -629,13 +918,23 @@ describe("TileMap viewport and coordinate conversion", function()
         expect_near(3, ty, 0.01)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:update
+    -- @description Checks that a TileMap update tick accepts a small delta time without error.
     it("update does not error with dt 0.016", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         expect_no_error(function() tm:update(0.016) end)
     end)
 end)
 
+-- @description Covers suite: TileMap collision.
 describe("TileMap collision", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:isSolid
+    -- @description Confirms empty cells with GID zero are treated as non-solid.
     it("isSolid returns false for GID 0", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -644,6 +943,14 @@ describe("TileMap collision", function()
         expect_false(tm:isSolid(1, 1, 1))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setSolid
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:isSolid
+    -- @description Verifies TileMap:isSolid reports true for tiles marked solid in the attached tileset.
     it("isSolid returns true when tile is solid", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -654,6 +961,12 @@ describe("TileMap collision", function()
         expect_true(tm:isSolid(1, 2, 2))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:rectOverlapsSolid
+    -- @description Confirms collision overlap checks return false when no solid tiles are present.
     it("rectOverlapsSolid returns false on empty layer", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -662,6 +975,14 @@ describe("TileMap collision", function()
         expect_false(tm:rectOverlapsSolid(1, 0, 0, 16, 16))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setSolid
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:rectOverlapsSolid
+    -- @description Verifies overlap checks return true when a swept rectangle intersects a solid tile.
     it("rectOverlapsSolid returns true when solid tile overlaps", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -673,6 +994,12 @@ describe("TileMap collision", function()
         expect_true(tm:rectOverlapsSolid(1, 4, 4, 16, 16))
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:sweepRect
+    -- @description Checks that sweepRect returns numeric collision and response values.
     it("sweepRect returns 6 values", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -683,6 +1010,12 @@ describe("TileMap collision", function()
         expect_type("number", oy)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:sweepRect
+    -- @description Verifies sweepRect allows full movement and zero normals when no obstacles are present.
     it("sweepRect with no obstacles passes through", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 4, 2, 32, 32)
@@ -697,7 +1030,14 @@ describe("TileMap collision", function()
     end)
 end)
 
+-- @description Covers suite: TileMap autotile.
 describe("TileMap autotile", function()
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:applyAutoTile
+    -- @description Confirms applying four-neighbor autotiling to an empty layer does not raise an error.
     it("applyAutoTile does not error on empty layer", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -706,6 +1046,13 @@ describe("TileMap autotile", function()
         expect_no_error(function() tm:applyAutoTile(1, "grass") end)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:applyAutoTileAt
+    -- @description Verifies applyAutoTileAt can update a populated cell without error.
     it("applyAutoTileAt does not error", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -715,6 +1062,12 @@ describe("TileMap autotile", function()
         expect_no_error(function() tm:applyAutoTileAt(1, 3, 3, "grass") end)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:applyAutoTile8
+    -- @description Confirms applying eight-neighbor autotiling to an empty layer does not raise an error.
     it("applyAutoTile8 does not error on empty layer", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -723,6 +1076,13 @@ describe("TileMap autotile", function()
         expect_no_error(function() tm:applyAutoTile8(1, "water") end)
     end)
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:setTile
+    -- @covers TileMap:applyAutoTile8At
+    -- @description Verifies applyAutoTile8At can update a populated cell without error.
     it("applyAutoTile8At does not error", function()
         local tm = lurek.tilemap.newTileMap(32, 32)
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
@@ -732,6 +1092,15 @@ describe("TileMap autotile", function()
         expect_no_error(function() tm:applyAutoTile8At(1, 2, 2, "water") end)
     end)
 
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers TileSet:setAutoTileRule
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addTileSet
+    -- @covers TileMap:addLayer
+    -- @covers TileMap:fill
+    -- @covers TileMap:applyAutoTile
+    -- @covers TileMap:getTile
+    -- @description Checks that four-neighbor autotile rules select the expected center tile after application.
     it("autotile rules are applied correctly", function()
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
         -- N=1, E=2, S=4, W=8: all four neighbors = bitmask 15
@@ -742,7 +1111,7 @@ describe("TileMap autotile", function()
         -- Fill the entire layer with GID 1 (the "match" tile)
         tm:fill(1, 1)
         tm:applyAutoTile(1, "grass")
-        -- Tile at center (3,3) has all 4 neighbors → bitmask 15 → tile 5
+        -- Tile at center (3,3) has all 4 neighbors â†’ bitmask 15 â†’ tile 5
         expect_equal(5, tm:getTile(1, 3, 3))
     end)
 end)
@@ -751,64 +1120,98 @@ end)
 -- AutoTileSheet
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newAutoTileSheet.
 describe("lurek.tilemap.newAutoTileSheet", function()
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @description Verifies the AutoTileSheet factory creates userdata for the blob47 layout.
     it("creates AutoTileSheet for blob47 layout", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
         expect_type("userdata", sheet)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @description Verifies the AutoTileSheet factory creates userdata for the composite48 layout.
     it("creates AutoTileSheet for composite48 layout", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "composite48")
         expect_type("userdata", sheet)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @description Verifies the AutoTileSheet factory creates userdata for the minimal16 layout.
     it("creates AutoTileSheet for minimal16 layout", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         expect_type("userdata", sheet)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @description Confirms newAutoTileSheet rejects unknown layout names.
     it("rejects invalid layout name", function()
         expect_error(function()
             lurek.tilemap.newAutoTileSheet(16, 16, "invalid_layout")
         end)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getLayout
+    -- @description Checks that AutoTileSheet:getLayout returns the selected layout name.
     it("getLayout returns the layout name", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         expect_equal("minimal16", sheet:getLayout())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getTileCount
+    -- @description Verifies minimal16 sheets report the expected tile count.
     it("getTileCount returns correct count for minimal16", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         expect_equal(16, sheet:getTileCount())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getTileCount
+    -- @description Verifies blob47 sheets report the expected tile count.
     it("getTileCount returns correct count for blob47", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
         expect_equal(47, sheet:getTileCount())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getTileCount
+    -- @description Verifies composite48 sheets report the expected tile count.
     it("getTileCount returns correct count for composite48", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "composite48")
         expect_equal(48, sheet:getTileCount())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getTileWidth
+    -- @description Confirms AutoTileSheet:getTileWidth returns the configured tile width.
     it("getTileWidth returns value from constructor", function()
         local sheet = lurek.tilemap.newAutoTileSheet(24, 32, "minimal16")
         expect_equal(24, sheet:getTileWidth())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getTileHeight
+    -- @description Confirms AutoTileSheet:getTileHeight returns the configured tile height.
     it("getTileHeight returns value from constructor", function()
         local sheet = lurek.tilemap.newAutoTileSheet(24, 32, "minimal16")
         expect_equal(32, sheet:getTileHeight())
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getBitmaskForTile
+    -- @description Verifies AutoTileSheet:getBitmaskForTile returns a numeric bitmask for a tile index.
     it("getBitmaskForTile returns a number", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         local mask = sheet:getBitmaskForTile(1)
         expect_type("number", mask)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getBitmaskForTile
+    -- @covers AutoTileSheet:getTileForBitmask
+    -- @description Checks that a tile bitmask can be converted back into a tile index.
     it("getTileForBitmask returns a tile index number", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         local mask = sheet:getBitmaskForTile(1)
@@ -816,6 +1219,10 @@ describe("lurek.tilemap.newAutoTileSheet", function()
         expect_type("number", idx)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers AutoTileSheet:getBitmaskForTile
+    -- @covers AutoTileSheet:getTileForBitmask
+    -- @description Verifies bitmask lookup round-trips for every tile in the minimal16 layout.
     it("getBitmaskForTile/getTileForBitmask round-trip", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         for i = 1, 16 do
@@ -825,6 +1232,10 @@ describe("lurek.tilemap.newAutoTileSheet", function()
         end
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers AutoTileSheet:applyToTileSet
+    -- @description Confirms AutoTileSheet rules can be attached to a TileSet without error.
     it("applyToTileSet attaches rules to a TileSet", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16)
@@ -833,6 +1244,11 @@ describe("lurek.tilemap.newAutoTileSheet", function()
         end)
     end)
 
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers AutoTileSheet:applyToTileSet
+    -- @covers TileSet:getAutoTileId
+    -- @description Verifies applyToTileSet populates TileSet autotile rules for the requested terrain type.
     it("applyToTileSet causes TileSet to have autotile rules", function()
         local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
         local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16)
@@ -848,39 +1264,63 @@ end)
 -- ChunkMap
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newChunkMap.
 describe("lurek.tilemap.newChunkMap", function()
+    -- @covers lurek.tilemap.newChunkMap
+    -- @description Verifies the ChunkMap factory returns userdata.
     it("creates a ChunkMap userdata", function()
         local cm = lurek.tilemap.newChunkMap()
         expect_type("userdata", cm)
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:getChunkSize
+    -- @description Confirms ChunkMap defaults to a chunk size of sixteen tiles.
     it("getChunkSize defaults to 16", function()
         local cm = lurek.tilemap.newChunkMap()
         expect_equal(16, cm:getChunkSize())
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:getChunkSize
+    -- @description Verifies getChunkSize returns the explicitly configured chunk size.
     it("getChunkSize uses custom value", function()
         local cm = lurek.tilemap.newChunkMap(8)
         expect_equal(8, cm:getChunkSize())
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:setTile
+    -- @covers ChunkMap:getTile
+    -- @description Checks that ChunkMap tile writes can be read back at the same coordinates.
     it("get/set tile round-trips", function()
         local cm = lurek.tilemap.newChunkMap(16)
         cm:setTile(0, 0, 5)
         expect_equal(5, cm:getTile(0, 0))
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:getTile
+    -- @description Confirms uninitialized chunk cells default to zero.
     it("initial tile value is 0", function()
         local cm = lurek.tilemap.newChunkMap(16)
         expect_equal(0, cm:getTile(3, 7))
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:setTile
+    -- @covers ChunkMap:getTile
+    -- @description Verifies ChunkMap stores tiles correctly at negative coordinates.
     it("supports negative coordinates", function()
         local cm = lurek.tilemap.newChunkMap(16)
         cm:setTile(-5, -3, 9)
         expect_equal(9, cm:getTile(-5, -3))
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:setTile
+    -- @covers ChunkMap:getTile
+    -- @description Checks that ChunkMap stores distinct values independently per coordinate.
     it("setTile and getTile are independent for different positions", function()
         local cm = lurek.tilemap.newChunkMap(16)
         cm:setTile(0, 0, 1)
@@ -891,6 +1331,10 @@ describe("lurek.tilemap.newChunkMap", function()
         expect_equal(3, cm:getTile(0, 1))
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:fillRect
+    -- @covers ChunkMap:getTile
+    -- @description Verifies fillRect writes the requested GID across the target rectangle.
     it("fillRect sets tiles in a rectangular area", function()
         local cm = lurek.tilemap.newChunkMap(16)
         cm:fillRect(0, 0, 4, 4, 7)
@@ -898,6 +1342,11 @@ describe("lurek.tilemap.newChunkMap", function()
         expect_equal(7, cm:getTile(2, 2))
     end)
 
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers ChunkMap:setTile
+    -- @covers ChunkMap:clearTile
+    -- @covers ChunkMap:getTile
+    -- @description Confirms clearTile resets a populated chunk cell back to zero.
     it("clearTile resets to 0", function()
         local cm = lurek.tilemap.newChunkMap(16)
         cm:setTile(2, 3, 42)
@@ -910,29 +1359,49 @@ end)
 -- IsoMap
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newIsoMap.
 describe("lurek.tilemap.newIsoMap", function()
+    -- @covers lurek.tilemap.newIsoMap
+    -- @description Verifies the IsoMap factory returns userdata.
     it("creates an IsoMap userdata", function()
         local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 24)
         expect_type("userdata", iso)
     end)
 
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers IsoMap:getWidth
+    -- @covers IsoMap:getHeight
+    -- @description Confirms IsoMap dimension accessors return the constructor values.
     it("getWidth and getHeight return constructor values", function()
         local iso = lurek.tilemap.newIsoMap(8, 6, 64, 32, 24)
         expect_equal(8, iso:getWidth())
         expect_equal(6, iso:getHeight())
     end)
 
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers IsoMap:getLevelCount
+    -- @description Verifies a new IsoMap starts with zero levels.
     it("getLevelCount starts at 0 (no levels by default)", function()
         local iso = lurek.tilemap.newIsoMap(8, 6, 64, 32, 24)
         expect_equal(0, iso:getLevelCount())
     end)
 
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers IsoMap:addLevel
+    -- @covers IsoMap:getLevelCount
+    -- @description Checks that adding an isometric level increments the level count.
     it("addLevel increases level count", function()
         local iso = lurek.tilemap.newIsoMap(4, 4, 64, 32, 24)
         iso:addLevel()
         expect_equal(1, iso:getLevelCount())
     end)
 
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers lurek.tilemap.FLOOR
+    -- @covers IsoMap:addLevel
+    -- @covers IsoMap:setTilePart
+    -- @covers IsoMap:getTilePart
+    -- @description Verifies IsoMap floor-part tiles round-trip through setTilePart and getTilePart.
     it("setTilePart and getTilePart round-trip for floor part", function()
         local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 24)
         iso:addLevel()
@@ -940,6 +1409,11 @@ describe("lurek.tilemap.newIsoMap", function()
         expect_equal(3, iso:getTilePart(1, 1, 1, lurek.tilemap.FLOOR))
     end)
 
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers lurek.tilemap.FLOOR
+    -- @covers IsoMap:addLevel
+    -- @covers IsoMap:setTilePart
+    -- @description Confirms IsoMap:setTilePart rejects zero as an invalid level index.
     it("setTilePart rejects index 0 for level", function()
         local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 24)
         iso:addLevel()
@@ -953,23 +1427,37 @@ end)
 -- Map Generation
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.newMapBlock.
 describe("lurek.tilemap.newMapBlock", function()
+    -- @covers lurek.tilemap.newMapBlock
+    -- @description Verifies the MapBlock factory returns userdata.
     it("creates a MapBlock userdata", function()
         local block = lurek.tilemap.newMapBlock(10, 10, 1, 4)
         expect_type("userdata", block)
     end)
 
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers MapBlock:getWidth
+    -- @covers MapBlock:getHeight
+    -- @description Confirms MapBlock dimension accessors return the constructor values.
     it("getWidth and getHeight return constructor values", function()
         local block = lurek.tilemap.newMapBlock(12, 8, 2, 4)
         expect_equal(12, block:getWidth())
         expect_equal(8, block:getHeight())
     end)
 
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers MapBlock:getLayerCount
+    -- @description Verifies MapBlock reports the layer count configured at construction.
     it("getLayerCount returns layers from constructor", function()
         local block = lurek.tilemap.newMapBlock(10, 10, 3, 4)
         expect_equal(3, block:getLayerCount())
     end)
 
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers MapBlock:setTile
+    -- @covers MapBlock:getTile
+    -- @description Checks that MapBlock tile writes can be read back from the same layer and coordinates.
     it("setTile and getTile round-trip", function()
         local block = lurek.tilemap.newMapBlock(10, 10, 1, 4)
         block:setTile(1, 2, 3, 7)
@@ -977,17 +1465,28 @@ describe("lurek.tilemap.newMapBlock", function()
     end)
 end)
 
+-- @description Covers suite: lurek.tilemap.newMapGroup.
 describe("lurek.tilemap.newMapGroup", function()
+    -- @covers lurek.tilemap.newMapGroup
+    -- @description Verifies the MapGroup factory returns userdata.
     it("creates a MapGroup userdata", function()
         local group = lurek.tilemap.newMapGroup("desert")
         expect_type("userdata", group)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers MapGroup:getName
+    -- @description Confirms MapGroup:getName returns the constructor name.
     it("getName returns the name from constructor", function()
         local group = lurek.tilemap.newMapGroup("forest")
         expect_equal("forest", group:getName())
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers MapGroup:getBlockCount
+    -- @covers MapGroup:addBlock
+    -- @description Verifies adding a MapBlock increments the group block count.
     it("addBlock increases block count", function()
         local group = lurek.tilemap.newMapGroup("test")
         expect_equal(0, group:getBlockCount())
@@ -996,6 +1495,11 @@ describe("lurek.tilemap.newMapGroup", function()
         expect_equal(1, group:getBlockCount())
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers MapGroup:getScriptCount
+    -- @covers MapGroup:addScript
+    -- @description Verifies adding a MapScript increments the group script count.
     it("addScript increases script count", function()
         local group = lurek.tilemap.newMapGroup("test")
         expect_equal(0, group:getScriptCount())
@@ -1005,23 +1509,36 @@ describe("lurek.tilemap.newMapGroup", function()
     end)
 end)
 
+-- @description Covers suite: lurek.tilemap.newMapScript.
 describe("lurek.tilemap.newMapScript", function()
+    -- @covers lurek.tilemap.newMapScript
+    -- @description Verifies the MapScript factory returns userdata.
     it("creates a MapScript userdata", function()
         local script = lurek.tilemap.newMapScript()
         expect_type("userdata", script)
     end)
 
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers MapScript:getStepCount
+    -- @description Confirms a new MapScript starts with zero steps.
     it("getStepCount starts at 0", function()
         local script = lurek.tilemap.newMapScript()
         expect_equal(0, script:getStepCount())
     end)
 
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers MapScript:addStep
+    -- @covers MapScript:getStepCount
+    -- @description Verifies adding a generation step increments the script step count.
     it("addStep increases step count", function()
         local script = lurek.tilemap.newMapScript()
         script:addStep({type = "fillRandom", gid = 1, chance = 0.5})
         expect_equal(1, script:getStepCount())
     end)
 
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers MapScript:addStep
+    -- @description Checks that placeBlock script steps are accepted without error.
     it("addStep with placeBlock type does not error", function()
         local script = lurek.tilemap.newMapScript()
         expect_no_error(function()
@@ -1029,6 +1546,9 @@ describe("lurek.tilemap.newMapScript", function()
         end)
     end)
 
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers MapScript:addStep
+    -- @description Checks that fillArea script steps are accepted without error.
     it("addStep with fillArea type does not error", function()
         local script = lurek.tilemap.newMapScript()
         expect_no_error(function()
@@ -1037,31 +1557,47 @@ describe("lurek.tilemap.newMapScript", function()
     end)
 end)
 
+-- @description Covers suite: lurek.tilemap.newMapGen.
 describe("lurek.tilemap.newMapGen", function()
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Verifies newMapGen accepts the small preset and returns userdata.
     it("creates a MapGen from small preset", function()
         local group = lurek.tilemap.newMapGroup("world")
         local gen = lurek.tilemap.newMapGen(group, "small", 4)
         expect_type("userdata", gen)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Verifies newMapGen accepts the medium preset and returns userdata.
     it("creates a MapGen from medium preset", function()
         local group = lurek.tilemap.newMapGroup("world")
         local gen = lurek.tilemap.newMapGen(group, "medium", 4)
         expect_type("userdata", gen)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Verifies newMapGen accepts the large preset and returns userdata.
     it("creates a MapGen from large preset", function()
         local group = lurek.tilemap.newMapGroup("world")
         local gen = lurek.tilemap.newMapGen(group, "large", 4)
         expect_type("userdata", gen)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Confirms newMapGen also accepts explicit numeric dimensions.
     it("creates a MapGen from numeric dimensions", function()
         local group = lurek.tilemap.newMapGroup("world")
         local gen = lurek.tilemap.newMapGen(group, 4, 4, 4)
         expect_type("userdata", gen)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapGen
+    -- @description Verifies newMapGen rejects unsupported preset names.
     it("rejects invalid size string", function()
         local group = lurek.tilemap.newMapGroup("world")
         expect_error(function()
@@ -1069,6 +1605,13 @@ describe("lurek.tilemap.newMapGen", function()
         end)
     end)
 
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers MapBlock:setTile
+    -- @covers MapGroup:addBlock
+    -- @covers lurek.tilemap.newMapGen
+    -- @covers MapGen:generate
+    -- @description Checks that MapGen:generate produces a TileMap userdata from the configured group data.
     it("generate returns a TileMap", function()
         local group = lurek.tilemap.newMapGroup("world")
         local block = lurek.tilemap.newMapBlock(4, 4, 1, 4)
@@ -1089,17 +1632,24 @@ end)
 -- TMX Loader
 -- =========================================================================
 
+-- @description Covers suite: lurek.tilemap.loadTMX.
 describe("lurek.tilemap.loadTMX", function()
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Verifies the TMX loader entrypoint remains callable as a function.
     it("loadTMX is a function", function()
         expect_type("function", lurek.tilemap.loadTMX)
     end)
 
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Confirms loadTMX rejects malformed XML input.
     it("loadTMX throws an error for invalid XML", function()
         expect_error(function()
             lurek.tilemap.loadTMX("not xml at all")
         end)
     end)
 
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Verifies loadTMX parses a minimal orthogonal TMX string into a Lua table without an error value.
     it("loadTMX returns a table for a minimal orthogonal TMX", function()
         local minimal_tmx = [[<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.0" orientation="orthogonal"
@@ -1117,6 +1667,8 @@ describe("lurek.tilemap.loadTMX", function()
         expect_type("table", result)
     end)
 
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Checks that parsed TMX metadata fields are exposed with the expected values.
     it("loadTMX result has expected fields", function()
         local minimal_tmx = [[<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.0" orientation="orthogonal"
@@ -1137,6 +1689,8 @@ describe("lurek.tilemap.loadTMX", function()
         expect_equal("orthogonal", result.orientation)
     end)
 
+    -- @covers lurek.tilemap.loadTMX
+    -- @description Verifies loadTMX populates the parsed layer array with tile layer metadata.
     it("loadTMX result has layers array", function()
         local minimal_tmx = [[<?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.0" orientation="orthogonal"

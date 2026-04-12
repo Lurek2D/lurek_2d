@@ -1,4 +1,4 @@
--- test_evidence_combined.lua
+﻿-- test_evidence_combined.lua
 -- Evidence tests: cross-module integration (procgen+pathfinding, noise+minimap,
 --                 terrain+raycaster, tilemap+particles)
 
@@ -9,8 +9,16 @@ local function draw_rect(img, x, y, w, h, r, g, b)
     img:drawRect(x, y, w, h, r, g, b, 255)
 end
 
+-- @description Covers suite: Evidence: combined procgen + pathfinding.
 describe("Evidence: combined procgen + pathfinding", function()
 
+    -- @covers lurek.procgen.cellularAutomata
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @covers NavGrid:setBlocked
+    -- @covers lurek.pathfinding.newPathfinder
+    -- @covers Pathfinder:findPath
+    -- @evidence file
+    -- @description Generates a cave map, mirrors it into a navigation grid, and writes a PNG showing the resulting path overlay.
     it("generates a cave map then finds a path through it", function()
         local GW, GH = 32, 32
         local SCALE  = 6
@@ -63,8 +71,15 @@ describe("Evidence: combined procgen + pathfinding", function()
 
 end)
 
+-- @description Covers suite: Evidence: combined noise + minimap.
 describe("Evidence: combined noise + minimap", function()
 
+    -- @covers lurek.math.newNoiseGenerator
+    -- @covers NoiseGenerator:fbm
+    -- @covers lurek.minimap.newMinimap
+    -- @covers Minimap:setTerrain
+    -- @evidence file
+    -- @description Uses FBM noise to classify terrain, feeds that terrain into a minimap, and writes the resulting height-colored overview PNG.
     it("generates terrain heights from FBM noise and renders as a minimap", function()
         local GRID = 24
         local CELL = 8
@@ -81,7 +96,7 @@ describe("Evidence: combined noise + minimap", function()
                 local nx = gx / GRID * 3
                 local ny = gy / GRID * 3
                 local h_val = ng:fbm(nx, ny, 4, 0.5, 2.0)
-                -- -1..1 → 0..255
+                -- -1..1 â†’ 0..255
                 local v = math.floor((h_val + 1) * 0.5 * 255)
                 local terrain = h_val > 0.1 and 1 or 0
                 mm:setTerrain(gx, gy, terrain)
@@ -106,8 +121,16 @@ describe("Evidence: combined noise + minimap", function()
 
 end)
 
+-- @description Covers suite: Evidence: combined terrain + raycaster.
 describe("Evidence: combined terrain + raycaster", function()
 
+    -- @covers lurek.math.newNoiseGenerator
+    -- @covers NoiseGenerator:fbm
+    -- @covers lurek.raycaster.new
+    -- @covers Raycaster:setCell
+    -- @covers Raycaster:castRays
+    -- @evidence file
+    -- @description Converts noise into a wall layout, casts a ray fan through it, and saves a depth-style render of the generated space.
     it("generates a walled maze via noise then renders a raycaster depth view", function()
         local GW, GH = 16, 16
         local ng = lurek.math.newNoiseGenerator(99)
@@ -153,8 +176,18 @@ describe("Evidence: combined terrain + raycaster", function()
 
 end)
 
+-- @description Covers suite: Evidence: combined tilemap + particles.
 describe("Evidence: combined tilemap + particles", function()
 
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers TileMap:addLayer
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:setPosition
+    -- @covers ParticleSystem:start
+    -- @covers ParticleSystem:emit
+    -- @covers ParticleSystem:update
+    -- @evidence file
+    -- @description Builds a simple tile scene, overlays a particle burst, and writes a PNG that proves both systems can contribute to one composite artifact.
     it("renders a tilemap scene with a particle burst overlay", function()
         local TILE  = 8
         local MAP_W = 20

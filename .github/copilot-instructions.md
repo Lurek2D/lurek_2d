@@ -138,7 +138,11 @@ Lurek2D has a two-layer test system. Both layers run **headless** — no window,
 
 **Lua BDD tests** (`tests/lua/`): `tests/lua/harness.rs` dispatches one `#[test]` function per `.lua` file. `tests/lua/init.lua` provides `describe`/`it`/`expect_equal`/`expect_near`/`expect_error` etc. Every Lua test file must end with `test_summary()`. New `.lua` file → add corresponding `#[test] fn lua_test_<category>_<name>()` entry to `tests/lua/harness.rs`.
 
-**Lua test categories**: `unit/` (one per engine module), `content/library/` (one per `content/library/` Lunasome module), `integration/` (tests between ≥2 modules — both namespaces must appear), `stress/` (throughput/allocation from Lua), `security/` (sandbox, nil spam, path traversal), `golden/` (deterministic output), `config/` (config loading), `content/demos/` (one per demo in `content/demos/`).
+**Lua test categories**: `unit/` (one per engine module), `content/library/` (one per `content/library/` Lunasome module), `integration/` (tests between ≥2 modules — both namespaces must appear), `stress/` (throughput/allocation from Lua), `security/` (sandbox, nil spam, path traversal), `evidence/` (PNG/audio/text output proving a module API works), `golden/` (comparison-only: compares evidence output against committed reference samples), `config/` (config loading), `content/demos/` (one per demo in `content/demos/`).
+
+**Evidence test contract**: Evidence tests (`tests/lua/evidence/`) prove a `lurek.*` module works by (1) creating a module object via `lurek.*` API, (2) configuring it, (3) running it, (4) dumping its output to a PNG/audio/text file. An evidence test that manually draws shapes without calling the domain module's API is **invalid** — it proves nothing. The litmus test: "If this module's code was deleted, would the output file look different?" If NO, rewrite the test. See `docs/architecture/test-framework.md` § Evidence Test Contract.
+
+**Golden test contract**: Golden tests (`tests/lua/golden/`) are comparison-only harnesses. They MUST NOT call `lurek.*` APIs to produce content — that is the evidence test's job. A golden test loads an evidence output file and compares it against a committed reference sample in `tests/lua/golden/samples/<module>/`. If a golden test contains content-creation logic, move it to the evidence test immediately.
 
 **Examples vs Demos**: `content/examples/` are documentation — no tests required. `content/demos/` are functional showcases — every demo must have a test in `tests/lua/content/demos/test_demo_<name>.lua`.
 

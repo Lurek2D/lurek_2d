@@ -1,26 +1,38 @@
---- BDD tests for library.crafting
+﻿--- BDD tests for library.crafting
 --- Matches coverage of src/crafting/ Rust tests.
 
 require("tests.lua.init")
 local C = require("library.crafting")
 
--- ── Quality ───────────────────────────────────────────────────────────────
+-- â”€â”€ Quality â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.Quality
+-- @covers library.crafting.qualityFromStr
+-- @description Checks quality tier constants and string parsing for valid and invalid quality names.
 describe("Quality", function()
+    -- @covers library.crafting.Quality
+    -- @description Checks the exported quality enum includes the expected lowest and highest tier constants.
     it("has six tiers", function()
         expect_equal(C.Quality.Normal, "normal")
         expect_equal(C.Quality.Legendary, "legendary")
     end)
 
+    -- @covers library.crafting.qualityFromStr
+    -- @description Verifies quality strings round-trip for valid inputs and return nil for unknown names.
     it("fromStr round-trips", function()
         expect_equal(C.qualityFromStr("fine"), "fine")
         expect_equal(C.qualityFromStr("nope"), nil)
     end)
 end)
 
--- ── Ingredient ────────────────────────────────────────────────────────────
+-- â”€â”€ Ingredient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newIngredient
+-- @covers library.crafting.newIngredientTag
+-- @description Verifies direct item ingredients and tag-based ingredients preserve quantity, consumed flags, and tag detection semantics.
 describe("Ingredient", function()
+    -- @covers library.crafting.newIngredient
+    -- @description Confirms item-based ingredients keep the supplied item type, quantity, consumed flag, and non-tag classification.
     it("by item type", function()
         local ing = C.newIngredient("wood", 3)
         expect_equal(ing.item_type, "wood")
@@ -29,6 +41,8 @@ describe("Ingredient", function()
         expect_equal(ing:isTag(), false)
     end)
 
+    -- @covers library.crafting.newIngredientTag
+    -- @description Confirms tag-based ingredients store the tag name and report themselves as tag selectors.
     it("by tag", function()
         local ing = C.newIngredientTag("metal", 2)
         expect_equal(ing.tag, "metal")
@@ -36,9 +50,14 @@ describe("Ingredient", function()
     end)
 end)
 
--- ── RecipeOutput ──────────────────────────────────────────────────────────
+-- â”€â”€ RecipeOutput â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeOutput
+-- @covers library.crafting.newRecipeOutputWithChance
+-- @description Covers crafted output defaults, optional chance-based outputs, and chance clamping for overlarge probabilities.
 describe("RecipeOutput", function()
+    -- @covers library.crafting.newRecipeOutput
+    -- @description Checks default recipe outputs seed type, quantity, normal quality, full chance, and non-byproduct state.
     it("default output", function()
         local o = C.newRecipeOutput("sword", 1)
         expect_equal(o.item_type, "sword")
@@ -48,20 +67,28 @@ describe("RecipeOutput", function()
         expect_equal(o.is_byproduct, false)
     end)
 
+    -- @covers library.crafting.newRecipeOutputWithChance
+    -- @description Verifies chance-based outputs preserve an in-range probability value when one is provided explicitly.
     it("with chance", function()
         local o = C.newRecipeOutputWithChance("gem", 1, 0.5)
         expect_near(o.chance, 0.5, 0.01)
     end)
 
+    -- @covers library.crafting.newRecipeOutputWithChance
+    -- @description Ensures chance-based outputs clamp oversized probabilities back to the supported 0 to 1 range.
     it("clamps chance to 0..1", function()
         local o = C.newRecipeOutputWithChance("gem", 1, 2.5)
         expect_near(o.chance, 1.0, 0.01)
     end)
 end)
 
--- ── Recipe ────────────────────────────────────────────────────────────────
+-- â”€â”€ Recipe â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipe
+-- @description Tests recipe construction, ingredient and output mutation, tags, grid slots, byproducts, and condition attachment helpers.
 describe("Recipe", function()
+    -- @covers library.crafting.newRecipe
+    -- @description Verifies newly created recipes expose the expected identifiers, enabled flags, hand-crafting setting, and default craft time.
     it("creates with defaults", function()
         local r = C.newRecipe("iron_sword")
         expect_equal(r.id, "iron_sword")
@@ -71,6 +98,8 @@ describe("Recipe", function()
         expect_near(r.time, 1.0, 0.01)
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Checks recipes can accumulate multiple ingredients and then clear the ingredient list completely.
     it("add/clear ingredients", function()
         local r = C.newRecipe("blade")
         r:addIngredient(C.newIngredient("iron", 2))
@@ -80,6 +109,8 @@ describe("Recipe", function()
         expect_equal(#r.ingredients, 0)
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Confirms recipes can add outputs and later remove all outputs through the clear helper.
     it("add/clear outputs", function()
         local r = C.newRecipe("blade")
         r:addOutput(C.newRecipeOutput("sword", 1))
@@ -88,6 +119,8 @@ describe("Recipe", function()
         expect_equal(#r.outputs, 0)
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Verifies recipe tag membership checks and tag enumeration return the expected stored values.
     it("tags", function()
         local r = C.newRecipe("blade")
         r.tags = { "weapon", "melee" }
@@ -96,6 +129,8 @@ describe("Recipe", function()
         expect_equal(#r:getTags(), 2)
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Confirms shaped recipes can assign item types into specific grid slots.
     it("grid slots", function()
         local r = C.newRecipe("shaped")
         r.grid_width = 3
@@ -104,6 +139,8 @@ describe("Recipe", function()
         expect_equal(r.grid_slots[1], "iron")
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Checks recipes can append byproducts with byproduct flags and custom drop chances.
     it("add byproduct", function()
         local r = C.newRecipe("smelt")
         r:addByproduct("slag", 1, 0.3)
@@ -112,6 +149,8 @@ describe("Recipe", function()
         expect_near(r.outputs[1].chance, 0.3, 0.01)
     end)
 
+    -- @covers library.crafting.newRecipe
+    -- @description Verifies recipes can store structured crafting conditions and return them through getConditions.
     it("conditions", function()
         local r = C.newRecipe("enchant")
         r:addCondition("time_of_day", "night")
@@ -122,8 +161,10 @@ describe("Recipe", function()
     end)
 end)
 
--- ── RecipeRegistry ────────────────────────────────────────────────────────
+-- â”€â”€ RecipeRegistry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeRegistry
+-- @description Validates recipe registry search paths including outputs, ingredients, tags, stations, categories, skills, and hand-craftable filters.
 describe("RecipeRegistry", function()
     local function make_registry()
         local reg = C.newRecipeRegistry()
@@ -150,12 +191,16 @@ describe("RecipeRegistry", function()
         return reg
     end
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Verifies the recipe registry tracks inserted recipes, total counts, and direct lookup by id.
     it("add/get/count", function()
         local reg = make_registry()
         expect_equal(reg:count(), 2)
         expect_equal(reg:get("sword").id, "sword")
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Confirms registry removal succeeds once, updates counts, and reports false for repeated removals.
     it("remove", function()
         local reg = make_registry()
         expect_equal(reg:remove("sword"), true)
@@ -163,12 +208,16 @@ describe("RecipeRegistry", function()
         expect_equal(reg:remove("sword"), false)
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Checks the registry returns the full set of stored recipe ids.
     it("ids", function()
         local reg = make_registry()
         local ids = reg:ids()
         expect_equal(#ids, 2)
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Verifies registry searches can find recipes that produce a requested output item.
     it("findByOutput", function()
         local reg = make_registry()
         local found = reg:findByOutput("iron_sword")
@@ -176,6 +225,8 @@ describe("RecipeRegistry", function()
         expect_equal(found[1].id, "sword")
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Verifies registry searches can find recipes that consume a requested ingredient item.
     it("findByIngredient", function()
         local reg = make_registry()
         local found = reg:findByIngredient("iron")
@@ -183,12 +234,16 @@ describe("RecipeRegistry", function()
         expect_equal(found[1].id, "sword")
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Confirms tag-based registry filtering returns only recipes carrying the requested recipe tag.
     it("findByTag", function()
         local reg = make_registry()
         local found = reg:findByTag("melee")
         expect_equal(#found, 1)
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Checks station filtering returns only recipes assigned to the requested crafting station.
     it("forStation", function()
         local reg = make_registry()
         local found = reg:forStation("forge")
@@ -196,6 +251,8 @@ describe("RecipeRegistry", function()
         expect_equal(found[1].id, "sword")
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Verifies category filtering returns only recipes in the requested category.
     it("findByCategory", function()
         local reg = make_registry()
         local found = reg:findByCategory("consumables")
@@ -203,18 +260,24 @@ describe("RecipeRegistry", function()
         expect_equal(found[1].id, "potion")
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Confirms skill-based registry filtering returns recipes gated by the requested skill.
     it("findBySkill", function()
         local reg = make_registry()
         local found = reg:findBySkill("smithing")
         expect_equal(#found, 1)
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Ensures skill filtering respects an optional maximum skill-level cutoff.
     it("findBySkill with max_level filter", function()
         local reg = make_registry()
         local found = reg:findBySkill("alchemy", 2)
         expect_equal(#found, 0) -- potion needs level 3
     end)
 
+    -- @covers library.crafting.newRecipeRegistry
+    -- @description Verifies hand-craftable filtering excludes recipes that explicitly require a crafting station.
     it("findHandCraftable", function()
         local reg = make_registry()
         local found = reg:findHandCraftable()
@@ -223,9 +286,13 @@ describe("RecipeRegistry", function()
     end)
 end)
 
--- ── CraftJob ──────────────────────────────────────────────────────────────
+-- â”€â”€ CraftJob â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newCraftJob
+-- @description Exercises craft job progress tracking, completion thresholds, percentage reporting, and paused-job behavior.
 describe("CraftJob", function()
+    -- @covers library.crafting.newCraftJob
+    -- @description Checks craft jobs track progress, completion state, and percentage updates as work advances past completion.
     it("create and advance", function()
         local job = C.newCraftJob(1, "sword", 5, 1)
         expect_equal(job.completed, false)
@@ -241,6 +308,8 @@ describe("CraftJob", function()
         expect_near(job:percent(), 1.0, 0.01)
     end)
 
+    -- @covers library.crafting.newCraftJob
+    -- @description Verifies paused craft jobs ignore further progress updates until unpaused.
     it("paused job does not advance", function()
         local job = C.newCraftJob(1, "sword", 5, 1)
         job.paused = true
@@ -249,9 +318,13 @@ describe("CraftJob", function()
     end)
 end)
 
--- ── CraftQueue ────────────────────────────────────────────────────────────
+-- â”€â”€ CraftQueue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newCraftQueue
+-- @description Covers queue capacity, concurrent processing limits, cancellation, lookup, completion collection, and max-job reporting.
 describe("CraftQueue", function()
+    -- @covers library.crafting.newCraftQueue
+    -- @description Verifies queues can enqueue jobs, update them over time, and report completed job ids.
     it("enqueue and update", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("sword", 3, 1)
@@ -263,6 +336,8 @@ describe("CraftQueue", function()
         expect_equal(completed[1], id)
     end)
 
+    -- @covers library.crafting.newCraftQueue
+    -- @description Confirms queue capacity limits reject new jobs once the configured maximum job count is reached.
     it("respects max_jobs", function()
         local q = C.newCraftQueue(2)
         q:enqueue("a", 1, 1)
@@ -272,6 +347,8 @@ describe("CraftQueue", function()
         expect_equal(q:isFull(), true)
     end)
 
+    -- @covers library.crafting.newCraftQueue
+    -- @description Ensures the queue honors its max-concurrent setting by completing jobs in batches instead of all at once.
     it("max_concurrent limits parallel jobs", function()
         local q = C.newCraftQueue(10)
         q:setMaxConcurrent(1)
@@ -287,6 +364,8 @@ describe("CraftQueue", function()
         expect_equal(#done, 1)
     end)
 
+    -- @covers library.crafting.newCraftQueue
+    -- @description Verifies job cancellation removes active jobs and reports false when the id no longer exists.
     it("cancel job", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("x", 10, 1)
@@ -295,6 +374,8 @@ describe("CraftQueue", function()
         expect_equal(q:cancel(id), false)
     end)
 
+    -- @covers library.crafting.newCraftQueue
+    -- @description Confirms queued jobs can be retrieved later by their generated job id.
     it("getJob", function()
         local q = C.newCraftQueue(5)
         local id = q:enqueue("y", 5, 1)
@@ -302,6 +383,7 @@ describe("CraftQueue", function()
         expect_equal(job.recipe_id, "y")
     end)
 
+    -- @description Verifies case: clear.
     it("clear", function()
         local q = C.newCraftQueue(5)
         q:enqueue("a", 1, 1)
@@ -310,15 +392,19 @@ describe("CraftQueue", function()
         expect_equal(q:count(), 0)
     end)
 
+    -- @description Verifies case: maxJobs accessor.
     it("maxJobs accessor", function()
         local q = C.newCraftQueue(7)
         expect_equal(q:maxJobs(), 7)
     end)
 end)
 
--- ── Station ───────────────────────────────────────────────────────────────
+-- â”€â”€ Station â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newStation
+-- @description Verifies station defaults, fuel flow, modules, attachments, stat storage, level upgrades, and efficiency clamping.
 describe("Station", function()
+    -- @description Verifies case: create with defaults.
     it("create with defaults", function()
         local s = C.newStation("Anvil", "forge")
         expect_equal(s.name, "Anvil")
@@ -327,6 +413,7 @@ describe("Station", function()
         expect_equal(s.max_level, 10)
     end)
 
+    -- @description Verifies case: fuel management.
     it("fuel management", function()
         local s = C.newStation("Oven", "furnace")
         s:addFuel(50)
@@ -338,12 +425,14 @@ describe("Station", function()
         expect_near(s:fuelPercent(), 0.2, 0.01)
     end)
 
+    -- @description Verifies case: fuel clamped to max.
     it("fuel clamped to max", function()
         local s = C.newStation("Oven", "furnace")
         s:addFuel(200)
         expect_equal(s.fuel, 100)
     end)
 
+    -- @description Verifies case: modules.
     it("modules", function()
         local s = C.newStation("Bench", "workbench")
         expect_equal(s:addModule("speed_pulley"), true)
@@ -353,6 +442,7 @@ describe("Station", function()
         expect_equal(s:hasModule("speed_pulley"), false)
     end)
 
+    -- @description Verifies case: module limit.
     it("module limit", function()
         local s = C.newStation("Bench", "workbench")
         s.module_limit = 2
@@ -361,6 +451,7 @@ describe("Station", function()
         expect_equal(s:addModule("c"), false)
     end)
 
+    -- @description Verifies case: attachments.
     it("attachments", function()
         local s = C.newStation("Bench", "workbench")
         expect_equal(s:addAttachment("lamp"), true)
@@ -368,6 +459,7 @@ describe("Station", function()
         expect_equal(s:removeAttachment("lamp"), true)
     end)
 
+    -- @description Verifies case: stats.
     it("stats", function()
         local s = C.newStation("Forge", "forge")
         s:setStat("heat", 500)
@@ -375,6 +467,7 @@ describe("Station", function()
         expect_equal(s:getStat("cold"), 0)
     end)
 
+    -- @description Verifies case: upgrade.
     it("upgrade", function()
         local s = C.newStation("Forge", "forge")
         s.max_level = 3
@@ -386,6 +479,7 @@ describe("Station", function()
         expect_equal(s:upgrade(), false)
     end)
 
+    -- @description Verifies case: efficiency.
     it("efficiency", function()
         local s = C.newStation("Forge", "forge")
         s:setEfficiency(1.5)
@@ -395,23 +489,28 @@ describe("Station", function()
     end)
 end)
 
--- ── CraftSkill ────────────────────────────────────────────────────────────
+-- â”€â”€ CraftSkill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newCraftSkill
+-- @description Exercises skill leveling, perk spending, specialization choices, recipe difficulty colour, and aggregate bonuses from unlocked perks.
 describe("CraftSkill", function()
+    -- @description Verifies case: create and getLevel.
     it("create and getLevel", function()
         local sk = C.newCraftSkill("smithing")
         expect_equal(sk:getLevel(), 1)
         expect_equal(sk:getXP(), 0)
     end)
 
+    -- @description Verifies case: addXP gains levels.
     it("addXP gains levels", function()
         local sk = C.newCraftSkill("smithing")
         -- Level 1 requires 100 XP (linear: level * 100)
         local gained = sk:addXP(250)
-        expect_equal(gained, 1)  -- 100 xp for level 1→2, 150 remaining < 200
+        expect_equal(gained, 1)  -- 100 xp for level 1â†’2, 150 remaining < 200
         expect_equal(sk:getLevel(), 2)
     end)
 
+    -- @description Verifies case: perk points.
     it("perk points", function()
         local sk = C.newCraftSkill("smithing")
         sk:grantPerkPoint()
@@ -421,11 +520,13 @@ describe("CraftSkill", function()
         expect_equal(sk.perk_points, 0)
     end)
 
+    -- @description Verifies case: cannot spend without points.
     it("cannot spend without points", function()
         local sk = C.newCraftSkill("smithing")
         expect_equal(sk:spendPerkPoint("x"), false)
     end)
 
+    -- @description Verifies case: perk tree integration.
     it("perk tree integration", function()
         local sk = C.newCraftSkill("smithing")
         local node = C.newPerkNode("sharp_edge")
@@ -441,9 +542,12 @@ describe("CraftSkill", function()
     end)
 end)
 
--- ── PerkNode ──────────────────────────────────────────────────────────────
+-- â”€â”€ PerkNode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newPerkNode
+-- @description Tests perk node defaults, prerequisite and level gating, and unlock state transitions.
 describe("PerkNode", function()
+    -- @description Verifies case: create with defaults.
     it("create with defaults", function()
         local p = C.newPerkNode("forge_mastery")
         expect_equal(p.name, "forge_mastery")
@@ -451,6 +555,7 @@ describe("PerkNode", function()
         expect_equal(p.required_level, 0)
     end)
 
+    -- @description Verifies case: canUnlock checks prerequisites.
     it("canUnlock checks prerequisites", function()
         local p = C.newPerkNode("advanced")
         p.prerequisites = { "basic" }
@@ -458,6 +563,7 @@ describe("PerkNode", function()
         expect_equal(p:canUnlock(10, { "basic" }), true)
     end)
 
+    -- @description Verifies case: canUnlock checks level.
     it("canUnlock checks level", function()
         local p = C.newPerkNode("elite")
         p.required_level = 10
@@ -465,6 +571,7 @@ describe("PerkNode", function()
         expect_equal(p:canUnlock(10, {}), true)
     end)
 
+    -- @description Verifies case: unlock sets flag.
     it("unlock sets flag", function()
         local p = C.newPerkNode("x")
         p:unlock()
@@ -473,9 +580,12 @@ describe("PerkNode", function()
     end)
 end)
 
--- ── UpgradeTree ───────────────────────────────────────────────────────────
+-- â”€â”€ UpgradeTree â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newUpgradeTree
+-- @description Covers upgrade tree node storage, availability filtering, and full-node enumeration order.
 describe("UpgradeTree", function()
+    -- @description Verifies case: add and get nodes.
     it("add and get nodes", function()
         local tree = C.newUpgradeTree("root")
         local n1 = C.newUpgradeNode("root")
@@ -487,6 +597,7 @@ describe("UpgradeTree", function()
         expect_equal(tree:getNode("branch_a").id, "branch_a")
     end)
 
+    -- @description Verifies case: availableUpgrades filters by level and unlocked.
     it("availableUpgrades filters by level and unlocked", function()
         local tree = C.newUpgradeTree("root")
         tree:addNode(C.newUpgradeNode("a"))
@@ -504,14 +615,18 @@ describe("UpgradeTree", function()
     end)
 end)
 
--- ── ModifierPool ──────────────────────────────────────────────────────────
+-- â”€â”€ ModifierPool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newModifierPool
+-- @description Validates modifier pool rolling, draw alias behavior, weight aggregation, removal, naming, and modifier listing.
 describe("ModifierPool", function()
+    -- @description Verifies case: empty pool rolls nil.
     it("empty pool rolls nil", function()
         local pool = C.newModifierPool()
         expect_equal(pool:roll(), nil)
     end)
 
+    -- @description Verifies case: single entry always rolls.
     it("single entry always rolls", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("sharp", 1))
@@ -520,9 +635,12 @@ describe("ModifierPool", function()
     end)
 end)
 
--- ── RecipeKnowledge ───────────────────────────────────────────────────────
+-- â”€â”€ RecipeKnowledge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeKnowledge
+-- @description Exercises recipe discovery state, grouping, progress tracking, forgetting, auto-discovery toggles, and clearing known recipes.
 describe("RecipeKnowledge", function()
+    -- @description Verifies case: discover and isKnown.
     it("discover and isKnown", function()
         local rk = C.newRecipeKnowledge()
         expect_equal(rk:isKnown("sword"), false)
@@ -531,6 +649,7 @@ describe("RecipeKnowledge", function()
         expect_equal(rk:discover("sword"), false) -- already known
     end)
 
+    -- @description Verifies case: knownCount and knownIds.
     it("knownCount and knownIds", function()
         local rk = C.newRecipeKnowledge()
         rk:discover("a")
@@ -541,6 +660,7 @@ describe("RecipeKnowledge", function()
         expect_equal(#ids, 3)
     end)
 
+    -- @description Verifies case: groups and progress.
     it("groups and progress", function()
         local rk = C.newRecipeKnowledge()
         rk:addGroup("swords", { "iron_sword", "steel_sword", "mithril_sword" })
@@ -551,6 +671,7 @@ describe("RecipeKnowledge", function()
         expect_equal(total, 3)
     end)
 
+    -- @description Verifies case: getGroup.
     it("getGroup", function()
         local rk = C.newRecipeKnowledge()
         rk:addGroup("bows", { "longbow", "shortbow" })
@@ -560,9 +681,12 @@ describe("RecipeKnowledge", function()
     end)
 end)
 
--- ── RecipeGroup ───────────────────────────────────────────────────────────
+-- â”€â”€ RecipeGroup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeGroup
+-- @description Verifies recipe group construction plus add, remove, contains, icon, order, and count helpers.
 describe("RecipeGroup", function()
+    -- @description Verifies case: create.
     it("create", function()
         local rg = C.newRecipeGroup("potions", { "heal", "mana", "speed" })
         expect_equal(rg.name, "potions")
@@ -570,9 +694,12 @@ describe("RecipeGroup", function()
     end)
 end)
 
--- ── CraftSkill (extended coverage) ───────────────────────────────────────
+-- â”€â”€ CraftSkill (extended coverage) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newCraftSkill
+-- @description Focuses on specialization selection, level forcing, and derived bonus getters for crafted speed, quality, and yield.
 describe("CraftSkill specializations", function()
+    -- @description Verifies case: register and choose a specialization.
     it("register and choose a specialization", function()
         local sk = C.newCraftSkill("smithing")
         sk:addSpecialization("armorsmith")
@@ -581,6 +708,7 @@ describe("CraftSkill specializations", function()
         expect_equal("armorsmith", sk:getSpecialization())
     end)
 
+    -- @description Verifies case: second chooseSpecialization returns false.
     it("second chooseSpecialization returns false", function()
         local sk = C.newCraftSkill("smithing")
         sk:addSpecialization("armorsmith")
@@ -588,6 +716,7 @@ describe("CraftSkill specializations", function()
         expect_equal(false, sk:chooseSpecialization("armorsmith"))
     end)
 
+    -- @description Verifies case: setLevel force-sets level and resets XP to 0.
     it("setLevel force-sets level and resets XP to 0", function()
         local sk = C.newCraftSkill("smithing")
         sk:addXP(150)  -- gains at least 1 level
@@ -596,6 +725,7 @@ describe("CraftSkill specializations", function()
         expect_equal(0, sk:getXP())
     end)
 
+    -- @description Verifies case: getSpeedBonus, getQualityBonus, getYieldBonus from unlocked perks.
     it("getSpeedBonus, getQualityBonus, getYieldBonus from unlocked perks", function()
         local sk = C.newCraftSkill("smithing")
         local node = C.newPerkNode("mastery")
@@ -610,6 +740,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.02, sk:getYieldBonus(),   0.001)
     end)
 
+    -- @description Verifies case: recipeColor returns grey for recipe with no thresholds.
     it("recipeColor returns grey for recipe with no thresholds", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -618,6 +749,7 @@ describe("CraftSkill specializations", function()
         expect_near(0.0, sk:skillUpChance(recipe), 0.001)
     end)
 
+    -- @description Verifies case: recipeColor returns orange and skillUpChance is 1.0 for hard recipe.
     it("recipeColor returns orange and skillUpChance is 1.0 for hard recipe", function()
         local sk = C.newCraftSkill("smithing")
         sk:setLevel(1)
@@ -627,9 +759,12 @@ describe("CraftSkill specializations", function()
     end)
 end)
 
--- ── RecipeKnowledge mutations ─────────────────────────────────────────────
+-- â”€â”€ RecipeKnowledge mutations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeKnowledge
+-- @description Covers mutation-oriented recipe knowledge operations including forgetting, auto-discover flags, and full resets.
 describe("RecipeKnowledge mutations", function()
+    -- @description Verifies case: forget removes a known recipe.
     it("forget removes a known recipe", function()
         local rk = C.newRecipeKnowledge()
         rk:discover("sword")
@@ -639,6 +774,7 @@ describe("RecipeKnowledge mutations", function()
         expect_equal(false, rk:forget("sword"))  -- already unknown
     end)
 
+    -- @description Verifies case: setAutoDiscover and isAutoDiscover.
     it("setAutoDiscover and isAutoDiscover", function()
         local rk = C.newRecipeKnowledge()
         expect_equal(false, rk:isAutoDiscover())
@@ -648,6 +784,7 @@ describe("RecipeKnowledge mutations", function()
         expect_equal(false, rk:isAutoDiscover())
     end)
 
+    -- @description Verifies case: clear wipes all known recipes.
     it("clear wipes all known recipes", function()
         local rk = C.newRecipeKnowledge()
         rk:discover("a")
@@ -659,9 +796,12 @@ describe("RecipeKnowledge mutations", function()
     end)
 end)
 
--- ── RecipeGroup operations ────────────────────────────────────────────────
+-- â”€â”€ RecipeGroup operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeGroup
+-- @description Exercises the mutating recipe-group helpers for managing recipe ids and display metadata.
 describe("RecipeGroup operations", function()
+    -- @description Verifies case: addRecipe, removeRecipe, contains, count.
     it("addRecipe, removeRecipe, contains, count", function()
         local rg = C.newRecipeGroup("weapons", {})
         rg:addRecipe("sword")
@@ -675,6 +815,7 @@ describe("RecipeGroup operations", function()
         expect_equal(1, rg:count())
     end)
 
+    -- @description Verifies case: setIcon/getIcon and setOrder/getOrder.
     it("setIcon/getIcon and setOrder/getOrder", function()
         local rg = C.newRecipeGroup("shields", {})
         rg:setIcon("shield.png")
@@ -684,9 +825,12 @@ describe("RecipeGroup operations", function()
     end)
 end)
 
--- ── ModifierPool operations ───────────────────────────────────────────────
+-- â”€â”€ ModifierPool operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newModifierPool
+-- @description Adds extended coverage for modifier pool counts, total weight, enumerated modifiers, removal, and naming helpers.
 describe("ModifierPool operations", function()
+    -- @description Verifies case: count and getTotalWeight after adding entries.
     it("count and getTotalWeight after adding entries", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("heavy", 2))
@@ -695,6 +839,7 @@ describe("ModifierPool operations", function()
         expect_near(3.0, pool:getTotalWeight(), 0.001)
     end)
 
+    -- @description Verifies case: getModifiers returns all entries with names.
     it("getModifiers returns all entries with names", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("sturdy", 1))
@@ -705,6 +850,7 @@ describe("ModifierPool operations", function()
         expect_equal("keen", mods[2].name)
     end)
 
+    -- @description Verifies case: remove modifier returns true then false.
     it("remove modifier returns true then false", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("heavy", 2))
@@ -714,6 +860,7 @@ describe("ModifierPool operations", function()
         expect_equal(false, pool:remove("heavy"))
     end)
 
+    -- @description Verifies case: getName and setName.
     it("getName and setName", function()
         local pool = C.newModifierPool()
         pool:setName("rare_affixes")
@@ -721,9 +868,12 @@ describe("ModifierPool operations", function()
     end)
 end)
 
--- ── UpgradeTree getAllNodes ────────────────────────────────────────────────
+-- â”€â”€ UpgradeTree getAllNodes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newUpgradeTree
+-- @description Verifies getAllNodes returns upgrade nodes in insertion order for deterministic UI or progression rendering.
 describe("UpgradeTree getAllNodes", function()
+    -- @description Verifies case: returns all nodes in insertion order.
     it("returns all nodes in insertion order", function()
         local tree = C.newUpgradeTree("weapons")
         tree:addNode(C.newUpgradeNode("basic"))
@@ -737,9 +887,12 @@ describe("UpgradeTree getAllNodes", function()
     end)
 end)
 
--- ── Station proximity ─────────────────────────────────────────────────────
+-- â”€â”€ Station proximity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newStation
+-- @description Tests station proximity checks to ensure range calculations distinguish nearby and distant work positions.
 describe("Station isInRange", function()
+    -- @description Verifies case: returns true when within proximity_radius and false when outside.
     it("returns true when within proximity_radius and false when outside", function()
         local s = C.newStation("Anvil", "forge")
         s.x = 50
@@ -750,14 +903,18 @@ describe("Station isInRange", function()
     end)
 end)
 
--- ── Station new fields (active / requires_cover / has_cover) ─────────────
+-- â”€â”€ Station new fields (active / requires_cover / has_cover) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newStation
+-- @description Covers activation state and cover-requirement flags that gate whether a station may process a given recipe.
 describe("Station active and cover flags", function()
+    -- @description Verifies case: station is active by default.
     it("station is active by default", function()
         local s = C.newStation("Forge", "forge")
         expect_equal(s.active, true)
     end)
 
+    -- @description Verifies case: inactive station cannot process any recipe.
     it("inactive station cannot process any recipe", function()
         local s = C.newStation("Forge", "forge")
         s.active = false
@@ -766,6 +923,7 @@ describe("Station active and cover flags", function()
         expect_equal(false, s:canProcess(r))
     end)
 
+    -- @description Verifies case: requires_cover defaults to false, has_cover defaults to false.
     it("requires_cover defaults to false, has_cover defaults to false", function()
         local s = C.newStation("Cauldron", "alchemy")
         expect_equal(s.requires_cover, false)
@@ -777,19 +935,24 @@ describe("Station active and cover flags", function()
     end)
 end)
 
--- ── UpgradeNode new fields (required_level / description / prerequisites) ─
+-- â”€â”€ UpgradeNode new fields (required_level / description / prerequisites) â”€
 
+-- @covers library.crafting.newUpgradeNode
+-- @description Confirms newly created upgrade nodes expose the expected default requirement, description, and prerequisite fields.
 describe("UpgradeNode fields", function()
+    -- @description Verifies case: required_level defaults to 0.
     it("required_level defaults to 0", function()
         local n = C.newUpgradeNode("basic")
         expect_equal(n.required_level, 0)
     end)
 
+    -- @description Verifies case: description defaults to empty string.
     it("description defaults to empty string", function()
         local n = C.newUpgradeNode("basic")
         expect_equal(n.description, "")
     end)
 
+    -- @description Verifies case: prerequisites defaults to empty table.
     it("prerequisites defaults to empty table", function()
         local n = C.newUpgradeNode("advanced")
         expect_equal(type(n.prerequisites), "table")
@@ -797,9 +960,12 @@ describe("UpgradeNode fields", function()
     end)
 end)
 
--- ── CraftSkillRarity enum ─────────────────────────────────────────────────
+-- â”€â”€ CraftSkillRarity enum â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.CraftSkillRarity
+-- @description Validates exported craft skill rarity constants for the four named rarity tiers.
 describe("CraftSkillRarity", function()
+    -- @description Verifies case: has four tiers with correct string values.
     it("has four tiers with correct string values", function()
         expect_equal(C.CraftSkillRarity.COMMON,   "common")
         expect_equal(C.CraftSkillRarity.UNCOMMON, "uncommon")
@@ -808,9 +974,12 @@ describe("CraftSkillRarity", function()
     end)
 end)
 
--- ── ModifierPool:draw() alias ─────────────────────────────────────────────
+-- â”€â”€ ModifierPool:draw() alias â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newModifierPool
+-- @description Verifies the draw alias mirrors roll behavior for populated pools and returns nil for empty ones.
 describe("ModifierPool draw", function()
+    -- @description Verifies case: draw is equivalent to roll.
     it("draw is equivalent to roll", function()
         local pool = C.newModifierPool()
         pool:add(C.newModifierEntry("brutal", 1))
@@ -821,15 +990,19 @@ describe("ModifierPool draw", function()
         end
     end)
 
+    -- @description Verifies case: draw returns nil for empty pool.
     it("draw returns nil for empty pool", function()
         local pool = C.newModifierPool()
         expect_equal(pool:draw(), nil)
     end)
 end)
 
--- ── RecipeKnowledge auto-discover integration ─────────────────────────────
+-- â”€â”€ RecipeKnowledge auto-discover integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+-- @covers library.crafting.newRecipeKnowledge
+-- @description Tests how auto-discovery changes the isKnown query so unknown recipes appear known only while the flag is enabled.
 describe("RecipeKnowledge auto-discover isKnown", function()
+    -- @description Verifies case: isKnown returns true for any id when auto-discover is on.
     it("isKnown returns true for any id when auto-discover is on", function()
         local rk = C.newRecipeKnowledge()
         rk:setAutoDiscover(true)
@@ -837,6 +1010,7 @@ describe("RecipeKnowledge auto-discover isKnown", function()
         expect_equal(true, rk:isKnown("unknown_recipe"))
     end)
 
+    -- @description Verifies case: isKnown obeys auto-discover toggle.
     it("isKnown obeys auto-discover toggle", function()
         local rk = C.newRecipeKnowledge()
         rk:setAutoDiscover(true)

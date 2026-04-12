@@ -1,4 +1,4 @@
--- test_evidence_audio_bus.lua
+﻿-- test_evidence_audio_bus.lua
 -- Evidence test: lurek.audio Bus API + saves bus-processed audio as WAV
 -- Produces: audio_bus_volume.wav, audio_bus_pitch.wav
 
@@ -16,22 +16,37 @@ local function make_sine(freq, duration, rate)
     return sd
 end
 
+-- @description Covers suite: Evidence: lurek.audio Bus API + WAV output.
 describe("Evidence: lurek.audio Bus API + WAV output", function()
 
+    -- @covers lurek.audio.newBus
+    -- @description Creates a named audio bus to prove the constructor accepts user-facing routing labels.
     it("newBus creates a bus with a name", function()
         local bus = lurek.audio.newBus("sfx")
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setVolume
+    -- @covers AudioBus:getVolume
+    -- @description Adjusts bus volume and reads it back so per-bus gain control is documented.
     it("setVolume/getVolume round-trip", function()
         local bus = lurek.audio.newBus("music")
         bus:setVolume(0.6)
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setPitch
+    -- @covers AudioBus:getPitch
+    -- @description Adjusts bus pitch and reads it back to cover pitch-scaling state on the bus wrapper.
     it("setPitch/getPitch round-trip", function()
         local bus = lurek.audio.newBus("effects")
         bus:setPitch(1.5)
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setVolume
+    -- @covers AudioBus:getVolume
+    -- @description Creates two buses and assigns different volumes so routing state remains independent per instance.
     it("multiple buses are independent", function()
         local b1 = lurek.audio.newBus("bus_a")
         local b2 = lurek.audio.newBus("bus_b")
@@ -39,15 +54,28 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
         b2:setVolume(0.9)
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:getPitch
+    -- @description Verifies the default pitch on a new bus before any explicit configuration.
     it("default pitch is 1.0", function()
         local bus = lurek.audio.newBus("def")
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:getVolume
+    -- @description Verifies the default gain on a newly created bus.
     it("default volume is 1.0", function()
         local bus = lurek.audio.newBus("defvol")
     end)
 
-    it("WAV: volume-scaled sine — simulates bus volume", function()
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setVolume
+    -- @covers AudioBus:getVolume
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Applies a bus volume value to a synthesized sine wave and writes the scaled result as bus-volume evidence.
+    it("WAV: volume-scaled sine â€” simulates bus volume", function()
         -- Generate a 440 Hz sine at full amplitude, then create a
         -- half-volume version to demonstrate bus volume effect
         local RATE = 44100
@@ -73,7 +101,14 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
         lurek.audio.saveWAV(sd, OUT .. "audio_bus_volume.wav")
     end)
 
-    it("WAV: pitch-shifted sine — simulates bus pitch", function()
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setPitch
+    -- @covers AudioBus:getPitch
+    -- @covers lurek.audio.newSoundData
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Multiplies the source tone frequency by the bus pitch value and saves the shifted result as file evidence.
+    it("WAV: pitch-shifted sine â€” simulates bus pitch", function()
         -- Generate a sine where frequency is multiplied by bus pitch
         local RATE = 44100
         local DURATION = 1.0
@@ -96,6 +131,13 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
         lurek.audio.saveWAV(sd, OUT .. "audio_bus_pitch.wav")
     end)
 
+    -- @covers lurek.audio.newBus
+    -- @covers AudioBus:setVolume
+    -- @covers lurek.audio.newSoundData
+    -- @covers SoundData:getSample
+    -- @covers lurek.audio.saveWAV
+    -- @evidence file
+    -- @description Ramps bus volume down over time to simulate a fade-out envelope and exports the resulting buffer.
     it("WAV: fade-out envelope simulating bus volume ramp", function()
         local RATE = 44100
         local DURATION = 2.0

@@ -1,11 +1,12 @@
--- Lurek2D Stress Test: Image Operations
+﻿-- Lurek2D Stress Test: Image Operations
 -- Measures image creation and pixel operation throughput.
--- @stress lurek.image.newImage
--- @stress lurek.image.getPixel
--- @stress lurek.image.setPixel
 
+-- @description Covers suite: stress: image creation throughput.
 describe("stress: image creation throughput", function()
-    it("create 100 images (64×64) without error: <10s", function()
+    -- @covers lurek.image.newImage
+    -- @stress Allocates 100 separate 64x64 image objects in a measured loop.
+    -- @description Stresses image-object construction throughput by repeatedly creating small image buffers and retaining them in Lua memory.
+    it("create 100 images (64Ă—64) without error: <10s", function()
         local COUNT  = 100
         local images = {}
 
@@ -18,6 +19,10 @@ describe("stress: image creation throughput", function()
         expect_equal(COUNT, #images, "all images created")
     end)
 
+    -- @covers lurek.image.newImage
+    -- @covers Image:getPixel
+    -- @stress Performs 10000 random pixel reads against one 64x64 image.
+    -- @description Stresses read throughput by repeatedly sampling random coordinates from the same small image buffer.
     it("pixel read 10000 times on single image: <5s", function()
         local img   = lurek.image.newImage(64, 64)
         local COUNT = 10000
@@ -29,6 +34,10 @@ describe("stress: image creation throughput", function()
         expect_true(elapsed < 5.0, "pixel read budget: " .. elapsed .. "s")
     end)
 
+    -- @covers lurek.image.newImage
+    -- @covers Image:setPixel
+    -- @stress Performs 10000 random pixel writes against one 64x64 image.
+    -- @description Stresses write throughput by mutating random pixels with changing RGBA values in a tight measured loop.
     it("pixel write 10000 times on single image: <5s", function()
         local img   = lurek.image.newImage(64, 64)
         local COUNT = 10000
