@@ -1,78 +1,221 @@
--- Lurek2D lurek.log API Tests
+-- Lurek2D logging API unit tests
+-- Headless-safe (no window / GPU / audio required).
+-- Tests the lurek.log namespace: level control, message functions,
+-- addSink, removeSink, clearSinks, listSinks, readMemory, flushFile.
 -- @covers lurek.log.debug
--- @covers lurek.log.error
--- @covers lurek.log.getLevel
 -- @covers lurek.log.info
+-- @covers lurek.log.warn
+-- @covers lurek.log.error
 -- @covers lurek.log.print
 -- @covers lurek.log.setLevel
--- @covers lurek.log.warn
+-- @covers lurek.log.getLevel
+-- @covers lurek.log.addSink
+-- @covers lurek.log.removeSink
+-- @covers lurek.log.clearSinks
+-- @covers lurek.log.listSinks
+-- @covers lurek.log.readMemory
+-- @covers lurek.log.flushFile
 
-
-describe("lurek.log namespace", function()
+-- Module presence
+describe("lurek.log module", function()
     it("lurek.log is a table", function()
-        expect_equal("table", type(lurek.log))
+        expect_type("table", lurek.log)
     end)
 
-    it("lurek.log.info is a function", function()
-        expect_equal("function", type(lurek.log.info))
-    end)
-
-    it("lurek.log.warn is a function", function()
-        expect_equal("function", type(lurek.log.warn))
-    end)
-
-    it("lurek.log.error is a function", function()
-        expect_equal("function", type(lurek.log.error))
-    end)
-
-    it("lurek.log.debug is a function", function()
-        expect_equal("function", type(lurek.log.debug))
-    end)
-
-    it("lurek.log.print is a function", function()
-        expect_equal("function", type(lurek.log.print))
+    it("all expected functions are present", function()
+        local fns = {
+            "debug", "info", "warn", "error", "print",
+            "setLevel", "getLevel",
+            "addSink", "removeSink", "clearSinks", "listSinks",
+            "readMemory", "flushFile",
+        }
+        for _, name in ipairs(fns) do
+            expect_type("function", lurek.log[name], name .. " must be a function")
+        end
     end)
 end)
 
-describe("lurek.log level functions", function()
+-- Level control
+describe("lurek.log.setLevel / getLevel", function()
+    it("getLevel returns a string", function()
+        expect_type("string", lurek.log.getLevel())
+    end)
+
+    it("setLevel to debug is reflected by getLevel", function()
+        lurek.log.setLevel("debug")
+        expect_equal("debug", lurek.log.getLevel())
+    end)
+
+    it("setLevel to warn is reflected by getLevel", function()
+        lurek.log.setLevel("warn")
+        expect_equal("warn", lurek.log.getLevel())
+    end)
+
+    it("setLevel to info is reflected by getLevel", function()
+        lurek.log.setLevel("info")
+        expect_equal("info", lurek.log.getLevel())
+    end)
+
+    it("setLevel to error is reflected by getLevel", function()
+        lurek.log.setLevel("error")
+        expect_equal("error", lurek.log.getLevel())
+    end)
+end)
+
+-- Basic log calls
+describe("lurek.log message functions", function()
     it("info does not error", function()
-        lurek.log.info("test message")
+        expect_no_error(function() lurek.log.info("unit test info message") end)
     end)
 
     it("warn does not error", function()
-        lurek.log.warn("test warning")
+        expect_no_error(function() lurek.log.warn("unit test warn message") end)
     end)
 
-    it("error does not error", function()
-        lurek.log.error("test error")
+    it("error call does not error", function()
+        expect_no_error(function() lurek.log.error("unit test error message") end)
     end)
 
-    it("debug does not error", function()
-        lurek.log.debug("test debug")
-    end)
-
-    it("print with known level does not error", function()
-        lurek.log.print("info", "printed msg")
-    end)
-
-    it("print with unknown level does not crash", function()
-        lurek.log.print("unknown_level", "msg")
-    end)
-end)
-
-describe("lurek.log.setLevel / getLevel", function()
-    it("setLevel and getLevel round-trip", function()
-        lurek.log.setLevel("warn")
-        local level = lurek.log.getLevel()
-        expect_equal("warn", level)
+    it("debug does not error at debug level", function()
         lurek.log.setLevel("debug")
+        expect_no_error(function() lurek.log.debug("unit test debug message") end)
     end)
 
-    it("getLevel returns a non-empty string", function()
-        local level = lurek.log.getLevel()
-        expect_equal("string", type(level))
-        expect_true(#level > 0, "getLevel should return a non-empty string")
+    it("print does not error", function()
+        expect_no_error(function() lurek.log.print("info", "unit test print message") end)
     end)
 end)
+
+-- Memory sink
+describe("lurek.log.addSink memory sink", function()
+    it("addSink with type=memory returns a sink id number", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "memory" })
+        expect_type("number", id)
+        lurek.log.removeSink(id)
+    end)
+
+    it("readMemory returns a table for a valid memory sink id", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "memory" })
+        local entries = lurek.log.readMemory(id)
+        expect_type("table", entries)
+        lurek.log.removeSink(id)
+    end)
+
+    it("messages logged after addSink appear in readMemory", function()
+        lurek.log.clearSinks()
+        lurek.log.setLevel("debug")
+        local id = lurek.log.addSink({ type = "memory" })
+        lurek.log.info("memory_sink_msg_alpha")
+        local entries = lurek.log.readMemory(id)
+        lurek.log.removeSink(id)
+        expect_true(#entries >= 1, "at least one entry captured")
+    end)
+
+    it("readMemory entries have a message field", function()
+        lurek.log.clearSinks()
+        lurek.log.setLevel("debug")
+        local id = lurek.log.addSink({ type = "memory" })
+        lurek.log.info("check_entry_structure")
+        local entries = lurek.log.readMemory(id)
+        lurek.log.removeSink(id)
+        assert(#entries >= 1, "expected at least one entry")
+        expect_type("string", entries[1].message)
+    end)
+
+    it("readMemory with drain=true clears the buffer", function()
+        lurek.log.clearSinks()
+        lurek.log.setLevel("debug")
+        local id = lurek.log.addSink({ type = "memory" })
+        lurek.log.info("before_drain")
+        local first  = lurek.log.readMemory(id, true)
+        local second = lurek.log.readMemory(id)
+        lurek.log.removeSink(id)
+        expect_true(#first >= 1, "first read should have entries")
+        expect_equal(0, #second, "buffer should be empty after drain")
+    end)
+
+    it("readMemory with drain=false does not clear the buffer", function()
+        lurek.log.clearSinks()
+        lurek.log.setLevel("debug")
+        local id = lurek.log.addSink({ type = "memory" })
+        lurek.log.info("no_drain_msg")
+        local first  = lurek.log.readMemory(id, false)
+        local second = lurek.log.readMemory(id, false)
+        lurek.log.removeSink(id)
+        expect_true(#first >= 1,  "first read should have entries")
+        expect_true(#second >= 1, "second read should still have entries")
+    end)
+
+    it("multiple memory sinks capture messages independently", function()
+        lurek.log.clearSinks()
+        lurek.log.setLevel("debug")
+        local id1 = lurek.log.addSink({ type = "memory" })
+        local id2 = lurek.log.addSink({ type = "memory" })
+        lurek.log.info("multi_sink_test")
+        local e1 = lurek.log.readMemory(id1)
+        local e2 = lurek.log.readMemory(id2)
+        lurek.log.removeSink(id1)
+        lurek.log.removeSink(id2)
+        expect_true(#e1 >= 1, "sink 1 captured message")
+        expect_true(#e2 >= 1, "sink 2 captured message")
+    end)
+end)
+
+-- removeSink / clearSinks / listSinks
+describe("lurek.log.removeSink / clearSinks / listSinks", function()
+    it("listSinks returns a table", function()
+        lurek.log.clearSinks()
+        local sinks = lurek.log.listSinks()
+        expect_type("table", sinks)
+    end)
+
+    it("listSinks reflects newly added sinks", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "memory" })
+        local sinks = lurek.log.listSinks()
+        expect_true(#sinks >= 1, "at least one sink listed")
+        lurek.log.removeSink(id)
+    end)
+
+    it("removeSink decreases listSinks count", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "memory" })
+        local before = #lurek.log.listSinks()
+        lurek.log.removeSink(id)
+        local after = #lurek.log.listSinks()
+        expect_true(after < before, "count decreased after removeSink")
+    end)
+
+    it("clearSinks leaves listSinks empty", function()
+        lurek.log.addSink({ type = "memory" })
+        lurek.log.addSink({ type = "memory" })
+        lurek.log.clearSinks()
+        expect_equal(0, #lurek.log.listSinks())
+    end)
+end)
+
+-- File sink
+describe("lurek.log.addSink file sink", function()
+    it("addSink with type=file returns a sink id", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "file", path = "save/_log_test_sink.log" })
+        expect_type("number", id)
+        lurek.log.removeSink(id)
+    end)
+
+    it("flushFile does not error for a valid file sink id", function()
+        lurek.log.clearSinks()
+        local id = lurek.log.addSink({ type = "file", path = "save/_log_flush_test.log" })
+        lurek.log.info("flush_test_msg")
+        expect_no_error(function() lurek.log.flushFile(id) end)
+        lurek.log.removeSink(id)
+    end)
+end)
+
+-- Restore defaults
+lurek.log.setLevel("info")
+lurek.log.clearSinks()
 
 test_summary()

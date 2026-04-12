@@ -40,6 +40,18 @@
 -- @covers lurek.touch.getTouches
 
 
+-- @covers lurek.mouse.setVisible
+-- @covers lurek.mouse.isVisible
+-- @covers lurek.mouse.setGrabbed
+-- @covers lurek.mouse.isGrabbed
+-- @covers lurek.mouse.setRelativeMode
+-- @covers lurek.mouse.getRelativeMode
+-- @covers lurek.mouse.setPosition
+-- @covers lurek.mouse.getWheelDelta
+-- @covers lurek.mouse.newCursor
+-- @covers lurek.input.Cursor.release
+-- @covers lurek.input.Cursor.getType
+
 describe("lurek.keyboard module exists", function()
     it("lurek.keyboard is a table", function()
         expect_type("table", lurek.keyboard)
@@ -286,6 +298,84 @@ describe("lurek.gamepad mapping persistence", function()
         expect_error(function()
             lurek.gamepad.loadGamepadMappings("__nonexistent_mappings_file_.txt")
         end)
+    end)
+end)
+
+-- ── mouse visibility / grab / relative ───────────────────────────────────────
+
+describe("mouse.setVisible / isVisible", function()
+    it("setVisible true / isVisible round-trip", function()
+        lurek.mouse.setVisible(true)
+        expect_true(lurek.mouse.isVisible())
+    end)
+
+    it("setVisible false / isVisible round-trip", function()
+        lurek.mouse.setVisible(false)
+        expect_false(lurek.mouse.isVisible())
+        lurek.mouse.setVisible(true) -- restore
+    end)
+end)
+
+describe("mouse.setGrabbed / isGrabbed", function()
+    it("setGrabbed / isGrabbed round-trip false", function()
+        lurek.mouse.setGrabbed(false)
+        expect_false(lurek.mouse.isGrabbed())
+    end)
+
+    it("isGrabbed returns a boolean", function()
+        expect_type("boolean", lurek.mouse.isGrabbed())
+    end)
+end)
+
+describe("mouse.setRelativeMode / getRelativeMode", function()
+    it("setRelativeMode false / getRelativeMode round-trip", function()
+        lurek.mouse.setRelativeMode(false)
+        expect_false(lurek.mouse.getRelativeMode())
+    end)
+
+    it("getRelativeMode returns a boolean", function()
+        expect_type("boolean", lurek.mouse.getRelativeMode())
+    end)
+end)
+
+describe("mouse.getWheelDelta", function()
+    it("getWheelDelta returns two numbers", function()
+        local dx, dy = lurek.mouse.getWheelDelta()
+        expect_type("number", dx)
+        expect_type("number", dy)
+    end)
+
+    it("getWheelDelta is 0,0 when no scroll occurred", function()
+        local dx, dy = lurek.mouse.getWheelDelta()
+        expect_equal(0, dx)
+        expect_equal(0, dy)
+    end)
+end)
+
+describe("mouse.setPosition", function()
+    it("setPosition does not error in headless mode", function()
+        expect_no_error(function()
+            lurek.mouse.setPosition(0, 0)
+        end)
+    end)
+end)
+
+-- ── Cursor extended methods ───────────────────────────────────────────────────
+
+describe("Cursor.getType / Cursor.release", function()
+    it("getSystemCursor returns a Cursor object", function()
+        local cursor = lurek.mouse.getSystemCursor("default")
+        expect_true(cursor ~= nil, "system cursor is not nil")
+    end)
+
+    it("Cursor:getType returns a string", function()
+        local cursor = lurek.mouse.getSystemCursor("default")
+        expect_type("string", cursor:getType())
+    end)
+
+    it("Cursor:release does not error", function()
+        local cursor = lurek.mouse.getSystemCursor("arrow")
+        expect_no_error(function() cursor:release() end)
     end)
 end)
 

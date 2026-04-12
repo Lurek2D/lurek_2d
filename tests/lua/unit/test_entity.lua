@@ -3,6 +3,13 @@
 -- @covers lurek.entity.newUniverse
 
 
+-- @covers lurek.entity.World.setParent
+-- @covers lurek.entity.World.getParent
+-- @covers lurek.entity.World.getChildren
+-- @covers lurek.entity.World.killRecursive
+-- @covers lurek.entity.World.getEntities
+-- @covers lurek.entity.World.getBitmapTagBit
+
 describe("Spawn and lifecycle", function()
     it("spawns entities with sequential IDs", function()
         local world = lurek.entity.newUniverse()
@@ -240,7 +247,7 @@ describe("Systems", function()
         world:update(0.016)
         expect_equal(1, update_count)
 
-        world:draw()
+        world:emit("draw")
         expect_equal(1, draw_count)
     end)
 
@@ -283,6 +290,106 @@ describe("Clear and Release", function()
         world:clear()
         expect_equal(0, world:getEntityCount())
         expect_true(world:hasBlueprint("preserved"))
+    end)
+end)
+
+-- ── parent-child hierarchy ────────────────────────────────────────────────────
+
+describe("parent-child hierarchy", function()
+    it("setParent / getParent round-trip", function()
+        local world = lurek.entity.newUniverse()
+        local parent = world:spawn()
+        local child  = world:spawn()
+        world:setParent(child, parent)
+        expect_equal(parent, world:getParent(child))
+    end)
+
+    it("getParent returns nil for entity with no parent", function()
+        local world = lurek.entity.newUniverse()
+        local e = world:spawn()
+        expect_nil(world:getParent(e))
+    end)
+
+    it("getChildren returns table containing child", function()
+        local world = lurek.entity.newUniverse()
+        local parent = world:spawn()
+        local child  = world:spawn()
+        world:setParent(child, parent)
+        local children = world:getChildren(parent)
+        expect_type("table", children)
+        local found = false
+        for _, id in ipairs(children) do
+            if id == child then found = true end
+        end
+        expect_true(found, "child id should appear in getChildren")
+    end)
+
+    it("getChildren returns empty table when no children attached", function()
+        local world = lurek.entity.newUniverse()
+        local e = world:spawn()
+        local children = world:getChildren(e)
+        expect_type("table", children)
+        expect_equal(0, #children)
+    end)
+
+    it("killRecursive kills parent and all children", function()
+        local world = lurek.entity.newUniverse()
+        local parent = world:spawn()
+        local child1 = world:spawn()
+        local child2 = world:spawn()
+        world:setParent(child1, parent)
+        world:setParent(child2, parent)
+        world:killRecursive(parent)
+        expect_false(world:isAlive(parent))
+        expect_false(world:isAlive(child1))
+        expect_false(world:isAlive(child2))
+    end)
+end)
+
+-- ── getEntities ───────────────────────────────────────────────────────────────
+
+describe("World.getEntities", function()
+    it("getEntities returns a table", function()
+        local world = lurek.entity.newUniverse()
+        local result = world:getEntities()
+        expect_type("table", result)
+    end)
+
+    it("getEntities includes spawned entities", function()
+        local world = lurek.entity.newUniverse()
+        local e1 = world:spawn()
+        local e2 = world:spawn()
+        local all = world:getEntities()
+        local found_e1, found_e2 = false, false
+        for _, id in ipairs(all) do
+            if id == e1 then found_e1 = true end
+            if id == e2 then found_e2 = true end
+        end
+        expect_true(found_e1, "e1 in getEntities")
+        expect_true(found_e2, "e2 in getEntities")
+    end)
+
+    it("getEntities does not include killed entities", function()
+        local world = lurek.entity.newUniverse()
+        local e = world:spawn()
+        world:kill(e)
+        local all = world:getEntities()
+        local found = false
+        for _, id in ipairs(all) do
+            if id == e then found = true end
+        end
+        expect_false(found, "killed entity should not appear in getEntities")
+    end)
+end)
+
+-- ── getBitmapTagBit ───────────────────────────────────────────────────────────
+
+describe("World.getBitmapTagBit", function()
+    it("getBitmapTagBit returns a number for a defined tag", function()
+        local world = lurek.entity.newUniverse()
+        world:defineTag("collidable", 1)
+        local bit = world:getBitmapTagBit("collidable")
+        expect_type("number", bit)
     end)
 end)
 

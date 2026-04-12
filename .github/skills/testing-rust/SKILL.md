@@ -718,39 +718,55 @@ Private methods, `pub(crate)` helpers, and internal algorithms that have no `lur
 - Use standard Rust `assert!` / `assert_eq!` patterns
 - Float rule: `assert!((actual - expected).abs() < 1e-5)`
 
-### Evidence Tests — Content Only
+### Evidence Tests — File Output Required
 
-Evidence test files (`tests/lua/evidence/`) prove that side-effect-producing APIs actually produce output. Rules:
+Evidence test files (`tests/lua/evidence/`) prove that side-effect-producing APIs produce real, inspectable output on disk. Rules:
 
-- **Create content only** — call the API, produce the side effect (file, screenshot, audio output)
-- **Never add assertions** about the content itself — that is the golden test's job
-- Think of evidence tests as "does it run without error and produce something?"
+- **MUST save a file** — every evidence test MUST produce at least one actual file (PNG, audio, text, .obj, .json). An evidence test that does not write a file is **invalid**.
+- The `it()` block passes if the file was created at the expected path without errors; fails if the write threw an error.
+- **Never add value assertions** about the content — no `expect_equal`, no pixel checks, no format inspection. That is the golden test's job.
+- Evidence tests are for human-in-the-loop review (open the PNGs, listen to the audio) and as source material for golden tests.
+- Each evidence test writes to `tests/lua/evidence/output/<module>/` and the directory must exist before the test runs (create it at the top of the file or in a setup block).
 
 ```lua
--- CORRECT: evidence test creates content
-it("drawCircle produces a canvas with non-zero pixels", function()
-    local canvas = lurek.gfx.newCanvas(64, 64)
-    canvas:renderTo(function()
-        lurek.gfx.circle("fill", 32, 32, 16)
-    end)
-    -- evidence: canvas was created and renderTo ran without error
+-- CORRECT: evidence test creates a real file
+local OUT = "tests/lua/evidence/output/particle/"
+
+it("emitter generates particles and saves PNG evidence", function()
+    local em = lurek.particle.newEmitter({ rate = 10, lifetime = 1.0 })
+    for _ = 1, 60 do em:update(1/60) end
+    local img = em:toImageData(256, 256)
+    lurek.image.savePNG(img, OUT .. "emitter_basic.png")
+    -- Pass: file was saved without error
+end)
+
+-- WRONG: no file written → invalid evidence test
+it("emitter runs without crashing", function()
+    local em = lurek.particle.newEmitter({ rate = 10, lifetime = 1.0 })
+    em:update(0.016)
+    -- No file saved → this is NOT an evidence test, it is a unit test
 end)
 ```
 
 ### Golden Tests — Compare Only
 
-Golden test files (`tests/lua/golden/`) verify that deterministic output matches an expected baseline. Rules:
+Golden test files (`tests/lua/golden/`) verify that deterministic output matches a saved reference baseline. Rules:
 
-- **Compare content only** — read or receive the output and compare against expected
-- **Never create or produce** the content in the golden test itself — that is the evidence test's job
-- Golden tests assert that output hasn't regressed, not that output can be produced
+- **Compare content only** — read a file, re-run a deterministic algorithm, then compare the output against the expected value stored in `tests/lua/golden/samples/<module>/`.
+- **Never create or produce new files** in a golden test — evidence tests do the creation; golden tests only check regression.
+- Golden tests fail if output has changed from the baseline, not if output can't be produced.
 
 ```lua
--- CORRECT: golden test compares already-produced content
-it("JSON encoding matches baseline", function()
-    local data = { name = "test", value = 42 }
-    local json = lurek.data.encode(data, "json")
-    expect_equal('{"name":"test","value":42}', json)
+-- CORRECT: golden test re-runs algorithm and compares against baseline
+it("perlin noise value is stable across engine versions", function()
+    local v = lurek.procgen.perlinNoise(0.5, 0.5, 8.0, 8.0)
+    expect_near(0.0, v, 0.5)   -- value within expected range
+    -- For regression: compare v against a stored snapshot value
+end)
+
+-- WRONG: golden test writes a file → should be in evidence test
+it("golden generates PNG", function()
+    lurek.image.savePNG(img, "tests/lua/golden/samples/particle/emitter.png")  -- WRONG
 end)
 ```
 
