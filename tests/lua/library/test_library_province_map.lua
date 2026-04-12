@@ -1,4 +1,4 @@
-﻿--- BDD tests for library.province_map
+--- BDD tests for library.province_map
 --- Covers: Province, AdjacencyEdge, ProvinceDefinition, BorderSegment,
 ---         BorderStyle, ProvinceMap, EventBus, MapMode, free functions.
 
@@ -10,9 +10,9 @@ dofile("tests/lua/init.lua")
 
 -- â”€â”€ Province â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvince
 -- @description Verifies province defaults, ids, colours, terrain metadata, and basic province-level getters or setters.
 describe("Province", function()
+    -- @covers library.province_map.newProvince
     -- @description Verifies case: new with defaults.
     it("new with defaults", function()
         local p = pm.newProvince(1, {255, 0, 0})
@@ -36,9 +36,9 @@ end)
 
 -- â”€â”€ AdjacencyEdge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newAdjacencyEdge
 -- @description Covers adjacency edge creation, border metadata, and tag storage for province-to-province connections.
 describe("AdjacencyEdge", function()
+    -- @covers library.province_map.newAdjacencyEdge
     -- @description Verifies case: new with default fields.
     it("new with default fields", function()
         local e = pm.newAdjacencyEdge(1, 2)
@@ -58,9 +58,9 @@ end)
 
 -- â”€â”€ ProvinceDefinition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvinceDefinition
 -- @description Tests province-definition helpers that capture import-ready province metadata before map insertion.
 describe("ProvinceDefinition", function()
+    -- @covers library.province_map.newProvinceDefinition
     -- @description Verifies case: new with defaults.
     it("new with defaults", function()
         local d = pm.newProvinceDefinition(1, {10, 20, 30}, {x = 5, y = 10})
@@ -73,9 +73,9 @@ end)
 
 -- â”€â”€ BorderSegment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newBorderSegment
 -- @description Verifies border-segment construction used for extracted and rendered province boundaries.
 describe("BorderSegment", function()
+    -- @covers library.province_map.newBorderSegment
     -- @description Verifies case: new with defaults.
     it("new with defaults", function()
         local b = pm.newBorderSegment(1, 2)
@@ -87,9 +87,9 @@ end)
 
 -- â”€â”€ BorderStyle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.BorderStyle
 -- @description Confirms the border-style enum exposes the expected symbolic styles for map rendering and export.
 describe("BorderStyle", function()
+    -- @covers library.province_map.BorderStyle
     -- @description Verifies case: new with defaults.
     it("new with defaults", function()
         local s = pm.newBorderStyle()
@@ -101,9 +101,9 @@ end)
 
 -- â”€â”€ MapMode & ColorFn â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newMapMode
 -- @description Covers map-mode creation and the color-function wrappers that drive per-province visualisation.
 describe("MapMode", function()
+    -- @covers library.province_map.newMapMode
     -- @description Verifies case: new with source color.
     it("new with source color", function()
         local mode = pm.newMapMode("political")
@@ -135,9 +135,9 @@ end)
 
 -- â”€â”€ ProvinceMap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvinceMap
 -- @description Exercises core province-map storage including provinces, adjacency, pixels, counts, and direct lookup helpers.
 describe("ProvinceMap", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: new with dimensions.
     it("new with dimensions", function()
         local map = pm.newProvinceMap(100, 200)
@@ -214,9 +214,9 @@ end)
 
 -- â”€â”€ EventBus â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newEventBus
 -- @description Tests the province-map event bus for subscriptions, publications, and listener removal flow.
 describe("EventBus", function()
+    -- @covers library.province_map.newEventBus
     -- @description Verifies case: new starts empty.
     it("new starts empty", function()
         local bus = pm.newEventBus()
@@ -270,10 +270,10 @@ end)
 
 -- â”€â”€ Free Functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.detectAdjacency
--- @covers library.province_map.extractBorders
 -- @description Covers free-function helpers that derive adjacency and border data from province-map structures.
 describe("Free Functions", function()
+    -- @covers library.province_map.detectAdjacency
+    -- @covers library.province_map.extractBorders
     -- @description Verifies case: colorToId encodes RGB.
     it("colorToId encodes RGB", function()
         expect_equal(pm.colorToId(255, 0, 0), 16711680)
@@ -362,9 +362,9 @@ end)
 
 -- â”€â”€ Province extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvince
 -- @description Verifies province faction, defense, building, and resource helpers that extend province state beyond its base identity.
 describe("Province.faction", function()
+    -- @covers library.province_map.newProvince
     -- @description Verifies case: setFaction / getFaction.
     it("setFaction / getFaction", function()
         local p = pm.newProvince(1, {0,0,0})
@@ -406,7 +406,6 @@ end)
 
 -- â”€â”€ ProvinceMap extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests route finding across direct, chained, blocked, and unreachable province graphs, including passable-edge predicates.
 describe("ProvinceMap.findRoute", function()
     local function make_chain(n)
@@ -465,9 +464,9 @@ describe("ProvinceMap.findRoute", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Covers faction-centric queries such as province listing, per-faction resource totals, and uncontrolled province discovery.
 describe("ProvinceMap.faction_queries", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: getProvincesByFaction returns matching IDs.
     it("getProvincesByFaction returns matching IDs", function()
         local map = pm.newProvinceMap(10, 10)
@@ -504,9 +503,9 @@ describe("ProvinceMap.faction_queries", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Verifies adjacency creation and in-place edge tag updates through the setAdjacent convenience helper.
 describe("ProvinceMap.setAdjacent", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: creates new edge.
     it("creates new edge", function()
         local map = pm.newProvinceMap(10, 10)
@@ -529,9 +528,9 @@ describe("ProvinceMap.setAdjacent", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests graph-analysis helpers that find isolated provinces and connected components from adjacency data.
 describe("ProvinceMap.graph_analysis", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: findIsolatedProvinces returns unconnected ids.
     it("findIsolatedProvinces returns unconnected ids", function()
         local map = pm.newProvinceMap(10, 10)
@@ -555,10 +554,10 @@ describe("ProvinceMap.graph_analysis", function()
     end)
 end)
 
--- @covers library.province_map.applyGradientColor
--- @covers library.province_map.applyCategoryColor
 -- @description Covers direct application of gradient and category colour functions to province ids.
 describe("ColorFn_apply", function()
+    -- @covers library.province_map.applyGradientColor
+    -- @covers library.province_map.applyCategoryColor
     -- @description Verifies case: applyGradientColor interpolates.
     it("applyGradientColor interpolates", function()
         local fn = pm.newGradientColorFn({[1]=0}, {0,0,0}, {255,255,255}, 0, 100)
@@ -580,9 +579,9 @@ describe("ColorFn_apply", function()
     end)
 end)
 
--- @covers library.province_map.allFactions
 -- @description Verifies faction enumeration returns unique faction names in sorted order.
 describe("allFactions", function()
+    -- @covers library.province_map.allFactions
     -- @description Verifies case: returns sorted faction list.
     it("returns sorted faction list", function()
         local map = pm.newProvinceMap(10, 10)
@@ -600,9 +599,9 @@ end)
 
 -- â”€â”€ Province extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvince
 -- @description Verifies province faction, defense, building, and resource helpers that extend province state beyond its base identity.
 describe("Province.faction", function()
+    -- @covers library.province_map.newProvince
     -- @description Verifies case: setFaction / getFaction.
     it("setFaction / getFaction", function()
         local p = pm.newProvince(1, {0,0,0})
@@ -644,7 +643,6 @@ end)
 
 -- â”€â”€ ProvinceMap extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests route finding across direct, chained, blocked, and unreachable province graphs, including passable-edge predicates.
 describe("ProvinceMap.findRoute", function()
     local function make_chain(n)
@@ -703,9 +701,9 @@ describe("ProvinceMap.findRoute", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Covers faction-centric queries such as province listing, per-faction resource totals, and uncontrolled province discovery.
 describe("ProvinceMap.faction_queries", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: getProvincesByFaction returns matching IDs.
     it("getProvincesByFaction returns matching IDs", function()
         local map = pm.newProvinceMap(10, 10)
@@ -742,9 +740,9 @@ describe("ProvinceMap.faction_queries", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Verifies adjacency creation and in-place edge tag updates through the setAdjacent convenience helper.
 describe("ProvinceMap.setAdjacent", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: creates new edge.
     it("creates new edge", function()
         local map = pm.newProvinceMap(10, 10)
@@ -767,9 +765,9 @@ describe("ProvinceMap.setAdjacent", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests graph-analysis helpers that find isolated provinces and connected components from adjacency data.
 describe("ProvinceMap.graph_analysis", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: findIsolatedProvinces returns unconnected ids.
     it("findIsolatedProvinces returns unconnected ids", function()
         local map = pm.newProvinceMap(10, 10)
@@ -793,10 +791,10 @@ describe("ProvinceMap.graph_analysis", function()
     end)
 end)
 
--- @covers library.province_map.applyGradientColor
--- @covers library.province_map.applyCategoryColor
 -- @description Covers direct application of gradient and category colour functions to province ids.
 describe("ColorFn_apply", function()
+    -- @covers library.province_map.applyGradientColor
+    -- @covers library.province_map.applyCategoryColor
     -- @description Verifies case: applyGradientColor interpolates.
     it("applyGradientColor interpolates", function()
         local fn = pm.newGradientColorFn({[1]=0}, {0,0,0}, {255,255,255}, 0, 100)
@@ -818,9 +816,9 @@ describe("ColorFn_apply", function()
     end)
 end)
 
--- @covers library.province_map.allFactions
 -- @description Verifies faction enumeration returns unique faction names in sorted order.
 describe("allFactions", function()
+    -- @covers library.province_map.allFactions
     -- @description Verifies case: returns sorted faction list.
     it("returns sorted faction list", function()
         local map = pm.newProvinceMap(10, 10)
@@ -838,9 +836,9 @@ end)
 
 -- â”€â”€ Gap coverage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests province removal for both existing and missing province ids.
 describe("ProvinceMap.removeProvince", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: removes an existing province and returns true.
     it("removes an existing province and returns true", function()
         local map = pm.newProvinceMap(10, 10)
@@ -858,9 +856,9 @@ describe("ProvinceMap.removeProvince", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Covers adjacency removal, including symmetric edge ids and missing-edge behavior.
 describe("ProvinceMap.removeAdjacency", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: removes an existing edge and returns true.
     it("removes an existing edge and returns true", function()
         local map = pm.newProvinceMap(10, 10)
@@ -885,9 +883,9 @@ describe("ProvinceMap.removeAdjacency", function()
     end)
 end)
 
--- @covers library.province_map.totalEdgeCount
 -- @description Verifies the totalEdgeCount helper mirrors the map's adjacency count.
 describe("totalEdgeCount", function()
+    -- @covers library.province_map.totalEdgeCount
     -- @description Verifies case: mirrors adjacencyCount.
     it("mirrors adjacencyCount", function()
         local map = pm.newProvinceMap(10, 10)
@@ -898,9 +896,9 @@ describe("totalEdgeCount", function()
     end)
 end)
 
--- @covers library.province_map.newProvinceMap
 -- @description Tests direct access to the internal pixel lookup table after province ids are written into map pixels.
 describe("ProvinceMap.pixelLookup", function()
+    -- @covers library.province_map.newProvinceMap
     -- @description Verifies case: returns the internal lookup table.
     it("returns the internal lookup table", function()
         local map = pm.newProvinceMap(2, 2)
@@ -914,9 +912,9 @@ describe("ProvinceMap.pixelLookup", function()
     end)
 end)
 
--- @covers library.province_map.extractBordersByProperty
 -- @description Verifies border extraction filtered by province properties only returns segments where the derived property differs across the edge.
 describe("extractBordersByProperty", function()
+    -- @covers library.province_map.extractBordersByProperty
     -- @description Verifies case: returns segments where property differs.
     it("returns segments where property differs", function()
         local map = pm.newProvinceMap(10, 10)
@@ -947,9 +945,9 @@ describe("extractBordersByProperty", function()
     end)
 end)
 
--- @covers library.province_map.detectAdjacencyWithTags
 -- @description Covers adjacency detection that also maps special tag pixels into edge tags such as rivers.
 describe("detectAdjacencyWithTags", function()
+    -- @covers library.province_map.detectAdjacencyWithTags
     -- @description Verifies case: detects normal adjacency and tags edges via tag pixels.
     it("detects normal adjacency and tags edges via tag pixels", function()
         -- 3x1 pixel strip: [prov1][tag_pixel][prov2]
@@ -980,9 +978,9 @@ describe("detectAdjacencyWithTags", function()
     end)
 end)
 
--- @covers library.province_map.adjacencyToGraph
 -- @description Tests graph conversion from map adjacency data, including sorted nodes and empty-map behavior.
 describe("adjacencyToGraph", function()
+    -- @covers library.province_map.adjacencyToGraph
     -- @description Verifies case: produces nodes and edges from the adjacency table.
     it("produces nodes and edges from the adjacency table", function()
         local map = pm.newProvinceMap(10, 10)
@@ -1013,9 +1011,9 @@ describe("adjacencyToGraph", function()
     end)
 end)
 
--- @covers library.province_map.resolveProvinceColors
 -- @description Verifies province color resolution for source, fixed, gradient, and category-based map modes.
 describe("resolveProvinceColors", function()
+    -- @covers library.province_map.resolveProvinceColors
     -- @description Verifies case: source color mode returns normalised rgb.
     it("source color mode returns normalised rgb", function()
         local map = pm.newProvinceMap(10, 10)
@@ -1063,5 +1061,4 @@ describe("resolveProvinceColors", function()
         expect_near(colors[1][2], 0.0, 0.001)
     end)
 end)
-
 test_summary()

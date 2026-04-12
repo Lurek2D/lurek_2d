@@ -12,24 +12,25 @@
 3. [Directory Layout](#directory-layout)
 4. [Rust Test Suites](#rust-test-suites)
 5. [Lua BDD Test Framework](#lua-bdd-test-framework)
-6. [Golden Tests](#golden-tests)
-7. [VM Helpers](#vm-helpers)
-8. [Naming Conventions](#naming-conventions)
-9. [Float Comparison Rules](#float-comparison-rules)
-10. [Test Constraints](#test-constraints)
-11. [Adding a New Rust Test](#adding-a-new-rust-test)
-12. [Adding a New Lua Test](#adding-a-new-lua-test)
-13. [Running Tests](#running-tests)
-14. [Quality Gates](#quality-gates)
-15. [Test Coverage Tooling](#test-coverage-tooling)
-16. [Test-Driven Development Workflow](#test-driven-development-workflow)
-17. [Marker Annotations for API Coverage](#marker-annotations-for-api-coverage)
-18. [Evidence-Based Testing](#evidence-based-testing)
-19. [Stress Test Standardization](#stress-test-standardization)
-20. [Integration Tests](#integration-tests)
-21. [Describe-Block Coverage Tracking](#describe-block-coverage-tracking)
-22. [Advanced Analytics](#advanced-analytics)
-23. [Problem Areas and Known Issues](#problem-areas-and-known-issues)
+6. [Lua Test Documentation Standard](#lua-test-documentation-standard)
+7. [Golden Tests](#golden-tests)
+8. [VM Helpers](#vm-helpers)
+9. [Naming Conventions](#naming-conventions)
+10. [Float Comparison Rules](#float-comparison-rules)
+11. [Test Constraints](#test-constraints)
+12. [Adding a New Rust Test](#adding-a-new-rust-test)
+13. [Adding a New Lua Test](#adding-a-new-lua-test)
+14. [Running Tests](#running-tests)
+15. [Quality Gates](#quality-gates)
+16. [Test Coverage Tooling](#test-coverage-tooling)
+17. [Test-Driven Development Workflow](#test-driven-development-workflow)
+18. [Marker Annotations for API Coverage](#marker-annotations-for-api-coverage)
+19. [Evidence-Based Testing](#evidence-based-testing)
+20. [Stress Test Standardization](#stress-test-standardization)
+21. [Integration Tests](#integration-tests)
+22. [Describe-Block Coverage Tracking](#describe-block-coverage-tracking)
+23. [Advanced Analytics](#advanced-analytics)
+24. [Problem Areas and Known Issues](#problem-areas-and-known-issues)
 
 ---
 
@@ -367,19 +368,78 @@ All Lua tests use a custom BDD framework defined in `tests/lua/init.lua`. This f
 | `expect_canvas_pixel(canvas, x, y, r, g, b, a, tol, msg)` | Verify Canvas pixel RGBA within tolerance |
 | `test_summary()` | **MANDATORY** — must be the last call in every file |
 
+### Lua Test Documentation Standard
+
+Lua test files use three distinct comment layers. Do not mix them.
+
+1. **File header** — plain human-written prose comments at the top of the file. This header explains what the file covers and any headless constraints or evidence outputs. **Do not use `@description` for the file header.**
+2. **Suite description** — every `describe()` block must have exactly one `-- @description ...` line immediately above the block's contiguous comment group.
+3. **Case description** — every `it()` block must have exactly one `-- @description ...` line immediately above the block's contiguous comment group.
+
+#### Required rules
+
+- File header comments are plain `-- ...` prose only. No `-- @description` and no `-- @category` in the file header.
+- Keep the file header short and human-readable. It is prose, not a metadata/docstring block.
+- Use the exact syntax `-- @description <text>` without a colon.
+- `-- @category: ...` markers are forbidden.
+- Every `describe()` block may carry only one metadata line: `-- @description ...`.
+- Marker ownership belongs to `it()` blocks. Put `@covers`, `@evidence`, `@golden`, and similar markers on the specific case that proves or compares the behavior.
+- `test_summary()` is mandatory in every Lua test file and must be the **last non-empty line** in the file.
+- `return test_summary()` is forbidden. Use a bare `test_summary()` call.
+- `describe()` may be nested inside `describe()` when the nesting reflects a real API grouping. Keep nesting shallow; **two levels is the preferred maximum**.
+- Every nested `describe()` still requires its own `-- @description ...` line.
+
+#### Standard example
+
+```lua
+-- tests/lua/unit/test_modulename.lua
+-- Exercises lurek.modulename constructors, error handling, and edge cases.
+-- Headless-safe: no window, GPU, or audio required.
+
+-- @description Groups namespace-level constructor and surface checks for lurek.modulename.
+describe("lurek.modulename", function()
+    -- @description Covers constructor behavior and default object state.
+    describe("new()", function()
+        -- @covers lurek.modulename.new
+        -- @description Verifies new() returns a userdata object with the expected type.
+        it("returns a userdata object", function()
+            local value = lurek.modulename.new()
+            expect_not_nil(value)
+        end)
+    end)
+end)
+
+test_summary()
+```
+
+#### Audit tool
+
+Use the dedicated structure audit to check these rules:
+
+```powershell
+python tools/audit/lua_test_structure_audit.py
+python tools/audit/lua_test_structure_audit.py --fix
+python tools/audit/lua_test_structure_audit.py --allow-legacy-describe-markers
+```
+
 ### Lua Test File Template
 
 ```lua
 -- tests/lua/unit/test_modulename.lua
--- Tests for lurek.modulename API
+-- Tests for lurek.modulename API.
+-- Covers namespace surface, constructor behavior, and boundary handling.
 
+-- @description Groups top-level API checks for lurek.modulename.
 describe("lurek.modulename", function()
+    -- @description Covers someFunction behavior and edge cases.
     describe("someFunction", function()
+        -- @description Verifies someFunction doubles a valid numeric input.
         it("should return expected result", function()
             local result = lurek.modulename.someFunction(42)
             expect_equal(84, result)
         end)
 
+        -- @description Verifies someFunction rejects nil input with a Lua error.
         it("should handle edge cases", function()
             expect_error(function()
                 lurek.modulename.someFunction(nil)
@@ -387,7 +447,9 @@ describe("lurek.modulename", function()
         end)
     end)
 
+    -- @description Covers anotherFunction default-parameter behavior.
     describe("anotherFunction", function()
+        -- @description Verifies anotherFunction can be called without arguments and still returns a number.
         it("should accept default params", function()
             local val = lurek.modulename.anotherFunction()
             expect_not_nil(val)
@@ -409,8 +471,11 @@ Library tests live in `tests/lua/content/library/` and use `require()` to load f
 
 local combat = require("content/library/combat")
 
+-- @description Groups combat-library attack resolution cases.
 describe("combat library", function()
+    -- @description Covers resolve_attack result-shape and numeric damage expectations.
     describe("resolve_attack", function()
+        -- @description Verifies resolve_attack returns positive damage that does not exceed the base attack value.
         it("should deal damage within expected range", function()
             local result = combat.resolve_attack({ damage = 10 }, { defense = 2 })
             expect_gt(result.damage_dealt, 0)
@@ -464,9 +529,9 @@ test_summary()
 
 ### Harness Dispatch
 
-The Lua harness (	ests/lua/harness.rs) is auto-generated by uild.rs. All .lua files in 	ests/lua/ are automatically discovered and executed.
+The Lua harness (`tests/lua/harness.rs`) is maintained manually. Every new Lua test file must get a matching `#[test]` entry that calls `run_lua_test("...")`.
 
-You DO NOT need to manually register .lua files in harness.rs.
+If the `.lua` file exists but is not registered in `tests/lua/harness.rs`, Cargo will never execute it.
 
 ---
 
@@ -479,8 +544,11 @@ Golden tests compare evidence output against committed baseline samples. **Golde
 1. **Golden tests ONLY compare.** They read an evidence file and a golden sample, then assert they match. No content creation.
 2. **Evidence tests must run first.** If the evidence file doesn't exist, the golden test fails with a clear message.
 3. **Golden samples live in `tests/lua/golden/samples/<module>/`** — committed to git, reviewed by humans before acceptance.
-4. **Every golden test uses BDD structure** and the `-- @golden` marker.
-5. **Use `expect_golden_file_match()` for binary comparison** (PNG, WAV) or `expect_golden_text_match()` for text (normalizes whitespace/line endings).
+4. **Migrated Rust text/binary baselines now live under `tests/lua/golden/samples/migrated_rust/`** when the compare contract belongs to the Lua golden layer.
+5. **Golden tests must not call `lurek.*` APIs, `savePNG`, `saveWAV`, or write files.** Any content creation belongs in the evidence layer.
+6. **Use `tools/audit/lua_evidence_golden_contract_audit.py`** to detect mixed evidence suites and golden files that still generate content.
+7. **Every golden test uses BDD structure** and the `-- @golden` marker.
+8. **Use `expect_golden_file_match()` for binary comparison** (PNG, WAV) or `expect_golden_text_match()` for text (normalizes whitespace/line endings).
 
 ### Directory Structure
 
@@ -536,14 +604,14 @@ test_summary()
 
 When evidence output intentionally changes (e.g., algorithm improvement, font update):
 
-1. Run the evidence test: `cargo test lua_test_evidence_<module>`
-2. Review the new output in `tests/lua/evidence/output/<module>/`
-3. Copy to golden samples: `cp tests/lua/evidence/output/<module>/<file> tests/lua/golden/samples/<module>/<file>`
+1. Run the evidence test: `cargo test --test lua_tests <evidence_test_name> -- --nocapture`
+2. Review the new output in the evidence path used by that suite.
+3. Copy the reviewed artifact into `tests/lua/golden/samples/<module>/`.
 4. Commit the updated golden sample with a clear commit message
 
 ### Rust Golden Tests
 
-The Rust golden harness (`tests/rust/golden/harness.rs`) covers byte-level comparison for graphics, audio, and text processing at the Rust level. These test internal renderer output, not the Lua API surface.
+The Rust golden harness (`tests/rust/golden/harness.rs`) now focuses on engine-internal image/raycaster style baselines. Lua-facing text snapshots, TOML round-trips, encode/hash baselines, and migrated compare-only contracts belong under `tests/lua/golden/`.
 
 ```
 tests/rust/golden/
@@ -552,10 +620,7 @@ tests/rust/golden/
 │   ├── image/                 Expected PNG snapshots
 │   ├── audio/                 Expected waveform data
 │   ├── text/                  Expected rendered text
-│   ├── hash/                  Expected hash digests
-│   ├── encode/                Expected encoded strings
-│   ├── compress/              Expected compressed bytes
-│   └── data/                  Expected binary data
+│   └── ...                    Renderer- or engine-internal baselines only
 └── actual/                    Generated during test run (git-ignored)
 ```
 
@@ -827,6 +892,7 @@ end)
 ### Placement Rules
 
 - Place `-- @covers` lines **before** the `describe` or `it` block that tests the function
+- Prefer the closest block that actually owns the assertion. Do not use unrelated file-global `@covers` lists.
 - One function per `-- @covers` line
 - Module-level functions: `-- @covers lurek.<module>.<function>`
 - UserData methods: `-- @covers <ClassName>:<method>`
@@ -876,8 +942,11 @@ Evidence tests create output artifacts (PNG, WAV, OBJ, text files) that prove an
 1. **Evidence tests ONLY create files.** No `expect_equal`, `expect_near`, or any value comparison. The only assertion is `expect_evidence_created(path)` which checks the file exists and is non-empty.
 2. **Every evidence test uses BDD structure** (`describe`/`it`) — never a plain script.
 3. **Evidence output goes to `tests/lua/evidence/output/<module>/`** via `evidence_output_dir(category)`.
-4. **Evidence tests use `-- @evidence file` marker** in the header comment.
+4. **Evidence tests use `-- @evidence file` marker** on every `it()` block that writes an artifact.
 5. **Evidence tests end with `test_summary()`** like all other tests.
+6. **Evidence file headers remain plain prose comments**. The root `describe()` block still requires its own `-- @description ...` line.
+7. **Do not mix unit-style API sanity checks into evidence files.** Constructor/return-type assertions belong in `tests/lua/unit/`; evidence suites should contain artifact-producing cases only.
+8. **Run `python tools/audit/lua_evidence_golden_contract_audit.py` after evidence/golden edits** to catch mixed suites and compare-only violations.
 
 ### Evidence Test Template
 

@@ -1,23 +1,23 @@
-﻿-- tests/lua/unit/test_data.lua
+-- tests/lua/unit/test_data.lua
 -- BDD tests for the lurek.data module
--- @covers lurek.data.pack
--- @covers lurek.data.unpack
--- @covers lurek.data.getPackedSize
--- @covers lurek.data.newDataView
--- @covers lurek.data.compress
--- @covers lurek.data.decompress
--- @covers lurek.data.encode
--- @covers lurek.data.decode
--- @covers lurek.data.hash
--- @covers lurek.data.newByteData
--- @covers lurek.data.parseToml
--- @covers lurek.data.encodeToml
--- @covers lurek.data.write
--- @covers lurek.data.read
--- @covers lurek.data.size
 
 -- @description Verifies binary packing and unpacking across floats, signed and unsigned integers, strings, endianness, padding, and offset-based reads.
 describe("data.pack + data.unpack", function()
+  -- @covers lurek.data.pack
+  -- @covers lurek.data.unpack
+  -- @covers lurek.data.getPackedSize
+  -- @covers lurek.data.newDataView
+  -- @covers lurek.data.compress
+  -- @covers lurek.data.decompress
+  -- @covers lurek.data.encode
+  -- @covers lurek.data.decode
+  -- @covers lurek.data.hash
+  -- @covers lurek.data.newByteData
+  -- @covers lurek.data.parseToml
+  -- @covers lurek.data.encodeToml
+  -- @covers lurek.data.write
+  -- @covers lurek.data.read
+  -- @covers lurek.data.size
   -- @description Packs 3.14 as a little-endian f32, unpacks it, and accepts the expected 0.01 floating-point tolerance.
   it("round-trips f32", function()
     local b = lurek.data.pack("<f", 3.14)
@@ -232,11 +232,11 @@ describe("data.newDataView", function()
 end)
 
 -- â”€â”€ compress / decompress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.compress
--- @covers lurek.data.decompress
 
 -- @description Verifies lossless compression and decompression for deflate, gzip, and lz4, including empty input and a size reduction check for repetitive deflate data.
 describe("data.compress + data.decompress", function()
+  -- @covers lurek.data.compress
+  -- @covers lurek.data.decompress
   -- @description Compresses and decompresses a deflate payload and confirms the restored string matches the original exactly.
   it("round-trips deflate", function()
     local original = "Hello, Lurek2D! Deflate compression test."
@@ -277,11 +277,11 @@ describe("data.compress + data.decompress", function()
 end)
 
 -- â”€â”€ encode / decode â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.encode
--- @covers lurek.data.decode
 
 -- @description Verifies deterministic base64 and hex encodings, correct decode round-trips, and edge cases for empty and single-byte inputs.
 describe("data.encode + data.decode", function()
+  -- @covers lurek.data.encode
+  -- @covers lurek.data.decode
   -- @description Confirms that base64 encoding "Hello, Lurek2D!" produces the exact expected literal and decodes back to the original string.
   it("round-trips base64", function()
     local original = "Hello, Lurek2D!"
@@ -314,10 +314,10 @@ describe("data.encode + data.decode", function()
 end)
 
 -- â”€â”€ hash â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.hash
 
 -- @description Verifies known digests for md5, sha1, sha256, and sha512, plus determinism for identical input and divergence for different input.
 describe("data.hash", function()
+  -- @covers lurek.data.hash
   -- @description Confirms that hashing "hello" with md5 matches the known digest 5d41402abc4b2a76b9719d911017c592.
   it("md5 produces known digest", function()
     expect_equal(lurek.data.hash("md5", "hello"), "5d41402abc4b2a76b9719d911017c592")
@@ -356,10 +356,10 @@ describe("data.hash", function()
 end)
 
 -- â”€â”€ newByteData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.newByteData
 
 -- @description Verifies ByteData creation from sizes and strings, byte mutation and retrieval, and cloning behavior.
 describe("data.newByteData", function()
+  -- @covers lurek.data.newByteData
   -- @description Creates a 10-byte buffer and confirms its size is 10 and its first byte is zero-initialized.
   it("creates zeroed buffer from size", function()
     local bd = lurek.data.newByteData(10)
@@ -393,11 +393,11 @@ describe("data.newByteData", function()
 end)
 
 -- â”€â”€ parseToml / encodeToml â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.parseToml
--- @covers lurek.data.encodeToml
 
 -- @description Verifies TOML parsing for scalar values, nested tables, and arrays, TOML encoding of Lua tables, round-trip behavior, and invalid-input errors.
 describe("data.parseToml + data.encodeToml", function()
+  -- @covers lurek.data.parseToml
+  -- @covers lurek.data.encodeToml
   -- @description Parses TOML containing a string, integer, and boolean and confirms the resulting table fields are "hello", 42, and true.
   it("parses basic types", function()
     local t = lurek.data.parseToml('name = "hello"\ncount = 42\nactive = true')
@@ -448,12 +448,12 @@ describe("data.parseToml + data.encodeToml", function()
 end)
 
 -- â”€â”€ write / read (Binary Pack Format) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.data.write
--- @covers lurek.data.read
--- @covers lurek.data.size
 
 -- @description Verifies binary write/read helpers for numeric, string, boolean, and endian-sensitive formats, plus exact size calculations for composite schemas.
 describe("data.write + data.read (Binary Pack Format)", function()
+  -- @covers lurek.data.write
+  -- @covers lurek.data.read
+  -- @covers lurek.data.size
   -- @description Writes a u32 and f32, reads them back, and confirms the integer is exactly 42 while the float remains within 0.01 of 3.14.
   it("round-trips u32 and f32", function()
     local b = lurek.data.write("u32 f32", 42, 3.14)
@@ -504,5 +504,4 @@ describe("data.write + data.read (Binary Pack Format)", function()
     expect_equal(string.byte(b, 2), 0x01)
   end)
 end)
-
 test_summary()

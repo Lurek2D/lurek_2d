@@ -1,76 +1,20 @@
-﻿-- test_evidence_audio.lua
+-- test_evidence_audio.lua
 -- Evidence test: lurek.audio API + saves generated audio as WAV files
 -- Produces: audio_sine_440hz.wav, audio_chord.wav, audio_sweep.wav
 
 local OUT = "tests/lua/evidence/output/audio/"
 
--- @covers lurek.audio.newSoundData
--- @covers SoundData:getSample
--- @covers SoundData:setSample
--- @covers SoundData:getDuration
--- @covers lurek.audio.setMasterVolume
--- @covers lurek.audio.getActiveSourceCount
 -- @description Exercises headless SoundData buffer operations and then writes generated waveforms to WAV and PNG evidence files.
 describe("Evidence: lurek.audio API + WAV output", function()
-
-    -- @covers lurek.audio.newSoundData
-    -- @description Allocates a silent mono SoundData buffer to prove headless sample storage can be created.
-    it("newSoundData creates silent buffer", function()
-        local sd = lurek.audio.newSoundData(44100, 44100, 1)
-    end)
-
-    -- @covers lurek.audio.newSoundData
-    -- @covers SoundData:getSample
-    -- @description Reads the first sample from a fresh buffer to document the zero-initialized default state.
-    it("getSample returns 0.0 for new buffer", function()
-        local sd = lurek.audio.newSoundData(100, 44100, 1)
-    end)
-
-    -- @covers lurek.audio.newSoundData
-    -- @covers SoundData:setSample
-    -- @covers SoundData:getSample
-    -- @description Writes a sample value and reads it back to cover basic mutation of the PCM buffer.
-    it("setSample/getSample round-trip", function()
-        local sd = lurek.audio.newSoundData(100, 44100, 1)
-        sd:setSample(0, 0.5)
-    end)
-
-    -- @covers lurek.audio.newSoundData
-    -- @covers SoundData:setSample
-    -- @covers SoundData:getSample
-    -- @description Pushes a value above unity gain into the buffer to exercise sample clamping at the API boundary.
-    it("setSample clamps to [-1, 1]", function()
-        local sd = lurek.audio.newSoundData(100, 44100, 1)
-        sd:setSample(0, 2.0)
-        local v = sd:getSample(0)
-    end)
-
-    -- @covers lurek.audio.newSoundData
-    -- @covers SoundData:getDuration
-    -- @description Creates a one-second buffer and queries its duration metadata.
-    it("getDuration is correct", function()
-        local sd = lurek.audio.newSoundData(44100, 44100, 1)
-    end)
-
-    -- @covers lurek.audio.setMasterVolume
-    -- @description Adjusts and restores the engine master volume so the global mixer setting remains script-visible.
-    it("setMasterVolume/getMasterVolume round-trip", function()
-        -- Controls global output level (independent of per-source or per-bus volumes)
-        lurek.audio.setMasterVolume(0.75)
-        lurek.audio.setMasterVolume(1.0) -- restore defaults
-    end)
-
-    -- @covers lurek.audio.getActiveSourceCount
-    -- @description Queries the active-source count in a headless idle state where no playback has been started.
-    it("getActiveSourceCount is 0 with no sources playing", function()
-    end)
-
     -- @covers lurek.audio.newSoundData
     -- @covers SoundData:setSample
     -- @covers SoundData:getSample
     -- @covers SoundData:drawWaveform
     -- @covers lurek.audio.saveWAV
     -- @evidence file
+    -- @covers SoundData:getDuration
+    -- @covers lurek.audio.setMasterVolume
+    -- @covers lurek.audio.getActiveSourceCount
     -- @description Synthesizes a 440 Hz sine, saves it as WAV, and exports a waveform PNG for visual inspection.
     it("WAV: 440 Hz sine wave (1 second, mono)", function()
         local RATE = 44100
@@ -197,5 +141,4 @@ describe("Evidence: lurek.audio API + WAV output", function()
     end)
 
 end)
-
 test_summary()

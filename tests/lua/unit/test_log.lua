@@ -1,24 +1,24 @@
-﻿-- Lurek2D logging API unit tests
+-- Lurek2D logging API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests the lurek.log namespace: level control, message functions,
 -- addSink, removeSink, clearSinks, listSinks, readMemory, flushFile.
--- @covers lurek.log.debug
--- @covers lurek.log.info
--- @covers lurek.log.warn
--- @covers lurek.log.error
--- @covers lurek.log.print
--- @covers lurek.log.setLevel
--- @covers lurek.log.getLevel
--- @covers lurek.log.addSink
--- @covers lurek.log.removeSink
--- @covers lurek.log.clearSinks
--- @covers lurek.log.listSinks
--- @covers lurek.log.readMemory
--- @covers lurek.log.flushFile
 
 -- Module presence
 -- @description Verifies that the lurek.log namespace exists and exposes each documented logging and sink-management function.
 describe("lurek.log module", function()
+    -- @covers lurek.log.debug
+    -- @covers lurek.log.info
+    -- @covers lurek.log.warn
+    -- @covers lurek.log.error
+    -- @covers lurek.log.print
+    -- @covers lurek.log.setLevel
+    -- @covers lurek.log.getLevel
+    -- @covers lurek.log.addSink
+    -- @covers lurek.log.removeSink
+    -- @covers lurek.log.clearSinks
+    -- @covers lurek.log.listSinks
+    -- @covers lurek.log.readMemory
+    -- @covers lurek.log.flushFile
     -- @description Confirms the global lurek.log value is a table before any function access is attempted.
     it("lurek.log is a table", function()
         expect_type("table", lurek.log)
@@ -300,5 +300,4 @@ end)
 -- Restore defaults
 lurek.log.setLevel("info")
 lurek.log.clearSinks()
-
 test_summary()

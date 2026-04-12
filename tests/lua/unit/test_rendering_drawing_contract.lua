@@ -1,4 +1,4 @@
-﻿-- Target rendering/drawing contract acceptance tests.
+-- Target rendering/drawing contract acceptance tests.
 -- These assertions pin the intended public API from
 -- work/rendering-drawing-current-state/reports/target-rendering-drawing-state.md.
 -- Canonical constructors are asserted directly; legacy constructors are used only
@@ -408,5 +408,4 @@ describe("target rendering/drawing contract: entity", function()
         expect_equal(0, draw_count)
     end)
 end)
-
 test_summary()

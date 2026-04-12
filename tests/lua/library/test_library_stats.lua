@@ -1,4 +1,4 @@
-﻿--- BDD tests for library.stats
+--- BDD tests for library.stats
 --- Matches coverage of src/stats/ Rust tests.
 
 require("tests.lua.init")
@@ -6,7 +6,6 @@ local Stats = require("library.stats")
 
 -- â”€â”€ Attribute â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newAttribute
 -- @description Verifies attribute defaults and optional base-value initialization for simple numeric stats.
 describe("Attribute", function()
     -- @covers library.stats.newAttribute
@@ -28,7 +27,6 @@ end)
 
 -- â”€â”€ Buff â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newBuff
 -- @description Covers buff defaults, source metadata, and expiration behavior for timed and permanent modifiers.
 describe("Buff", function()
     -- @covers library.stats.newBuff
@@ -63,7 +61,6 @@ end)
 
 -- â”€â”€ Skill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSkill
 -- @description Tests skill defaults and option-based overrides for max level, resource costs, and cooldown metadata.
 describe("Skill", function()
     -- @covers library.stats.newSkill
@@ -90,7 +87,6 @@ end)
 
 -- â”€â”€ Perk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newPerk
 -- @description Verifies perk defaults and option-driven requirement or trait metadata.
 describe("Perk", function()
     -- @covers library.stats.newPerk
@@ -113,7 +109,6 @@ end)
 
 -- â”€â”€ ActionPoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newActionPoints
 -- @description Confirms action-point objects start at their configured maximum value.
 describe("ActionPoints", function()
     -- @covers library.stats.newActionPoints
@@ -127,7 +122,6 @@ end)
 
 -- â”€â”€ Morale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newMorale
 -- @description Verifies morale defaults including current, max, and threshold values for panic and berserk states.
 describe("Morale", function()
     -- @covers library.stats.newMorale
@@ -143,11 +137,10 @@ end)
 
 -- â”€â”€ LevelThresholds â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newTableThresholds
--- @covers library.stats.newLinearThresholds
 -- @description Exercises table-based and linear level-threshold calculators across known and out-of-range levels.
 describe("LevelThresholds", function()
     -- @covers library.stats.newTableThresholds
+    -- @covers library.stats.newLinearThresholds
     -- @description Checks table-based thresholds return exact configured values and infinity for out-of-range levels.
     it("table thresholds", function()
         local t = Stats.newTableThresholds({ 100, 200, 400 })
@@ -169,7 +162,6 @@ end)
 
 -- â”€â”€ Sheet basics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Covers core sheet behavior for defining stats, clamping base values, and querying min, max, regen, and sorted stat names.
 describe("Sheet basics", function()
     -- @covers library.stats.newSheet
@@ -246,7 +238,6 @@ end)
 
 -- â”€â”€ Buffs on Sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Validates sheet-level buff application, multiplicative modifiers, removal, filtering, and aggregate buff counting.
 describe("Sheet buffs", function()
     -- @covers library.stats.newSheet
@@ -328,8 +319,6 @@ end)
 
 -- â”€â”€ Traits â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.defineTrait
--- @covers library.stats.newSheet
 -- @description Tests trait registration and application so trait buffs alter sheet values and can be added or removed cleanly.
 describe("Traits", function()
     -- @covers library.stats.defineTrait
@@ -364,7 +353,6 @@ end)
 
 -- â”€â”€ Skills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Exercises sheet-managed skills for learning, leveling, resource costs, cooldowns, and ready-state checks.
 describe("Skills", function()
     -- @covers library.stats.newSheet
@@ -427,7 +415,6 @@ end)
 
 -- â”€â”€ Perks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Covers perk acquisition rules, trait side effects, and level-gated unlock behavior on stat sheets.
 describe("Perks", function()
     -- @covers library.stats.newSheet
@@ -472,7 +459,6 @@ end)
 
 -- â”€â”€ Flags â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Verifies generic boolean flag storage for adding, clearing, and testing named status flags.
 describe("Flags", function()
     -- @covers library.stats.newSheet
@@ -499,7 +485,6 @@ end)
 
 -- â”€â”€ XP / Level â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Tests XP accumulation, level thresholds, multi-level gains, and threshold assignment on character sheets.
 describe("XP and Levelling", function()
     -- @covers library.stats.newSheet
@@ -541,7 +526,6 @@ end)
 
 -- â”€â”€ Use tracking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Covers usage counters and derived proficiency or tracking helpers tied to repeated action use.
 describe("Use tracking", function()
     -- @covers library.stats.newSheet
@@ -572,7 +556,6 @@ end)
 
 -- â”€â”€ Action Points â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Exercises action-point mutation, spending, refreshing, and clamp behavior on the sheet wrapper.
 describe("Action Points", function()
     -- @covers library.stats.newSheet
@@ -621,7 +604,6 @@ end)
 
 -- â”€â”€ Morale â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Validates morale changes, threshold overrides, and panic or berserk state detection with flag side effects.
 describe("Morale system", function()
     -- @covers library.stats.newSheet
@@ -672,7 +654,6 @@ end)
 
 -- â”€â”€ Resistances â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Covers resistance assignment and typed damage application, including fallback behavior when no damage type is supplied.
 describe("Resistances", function()
     -- @covers library.stats.newSheet
@@ -709,7 +690,6 @@ end)
 
 -- â”€â”€ Encumbrance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Verifies encumbrance tracking and the threshold check that marks a sheet as encumbered.
 describe("Encumbrance", function()
     -- @covers library.stats.newSheet
@@ -734,7 +714,6 @@ end)
 
 -- â”€â”€ Initiative â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Confirms initiative has a default value and supports direct set or get mutation.
 describe("Initiative", function()
     -- @covers library.stats.newSheet
@@ -749,7 +728,6 @@ end)
 
 -- â”€â”€ Update (tick) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Exercises periodic update logic for timed buff expiry, cooldown ticking, and regeneration clamped by stat maxima.
 describe("Update tick", function()
     -- @covers library.stats.newSheet
@@ -797,7 +775,6 @@ end)
 
 -- â”€â”€ Snapshot/Restore â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.newSheet
 -- @description Tests serializing a sheet snapshot and restoring it after mutations to recover stats, flags, resistances, and XP.
 describe("Snapshot and Restore", function()
     -- @covers library.stats.newSheet
@@ -831,12 +808,12 @@ end)
 
 -- â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.stats.defineRace
--- @covers library.stats.defineClass
--- @covers library.stats.applyArchetypes
 -- @description Validates registry helpers for traits, races, and classes together with archetype application and sorted name lookups.
 describe("StatsRegistry", function()
     -- @covers library.stats.defineTrait
+    -- @covers library.stats.defineRace
+    -- @covers library.stats.defineClass
+    -- @covers library.stats.applyArchetypes
     -- @description Verifies defining a trait makes its name visible through the exported trait registry lookup.
     it("defineTrait and getTraitNames", function()
         Stats.defineTrait("brawler", { buffs = { { stat = "str", add = 3, mul = 1 } } })
@@ -916,5 +893,4 @@ describe("StatsRegistry", function()
         expect_equal(mage_pos < rogue_pos, true)
     end)
 end)
-
 test_summary()

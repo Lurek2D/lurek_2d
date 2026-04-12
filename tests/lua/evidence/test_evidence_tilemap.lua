@@ -1,4 +1,4 @@
-﻿-- test_evidence_tilemap.lua
+-- test_evidence_tilemap.lua
 -- Evidence test: lurek.tilemap API + renders tile grid to PNG
 -- Produces: tilemap_grid.png, tilemap_checkerboard.png
 
@@ -33,76 +33,6 @@ end
 
 -- @description Covers suite: Evidence: lurek.tilemap API + PNG visualization.
 describe("Evidence: lurek.tilemap API + PNG visualization", function()
-
-    -- @covers lurek.tilemap.newTileSet
-    -- @description Creates a tileset object and documents the constructor parameter surface.
-    it("newTileSet creates a tileset with correct properties", function()
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32)
-    end)
-
-    -- @covers lurek.tilemap.newTileMap
-    -- @description Creates a tilemap object to prove the base map constructor succeeds.
-    it("newTileMap creates a tilemap", function()
-        local tm = lurek.tilemap.newTileMap(32, 32)
-    end)
-
-    -- @covers TileMap:addLayer
-    -- @covers TileMap:getLayerCount
-    -- @description Adds multiple layers to one map to cover layer creation bookkeeping.
-    it("addLayer increases layer count", function()
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("ground", 10, 10)
-        tm:addLayer("objects", 10, 10)
-    end)
-
-    -- @covers TileMap:addLayer
-    -- @covers TileMap:getLayerName
-    -- @description Adds one layer and reads its name back to cover layer metadata lookup.
-    it("getLayerName returns correct name", function()
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("terrain", 10, 10)
-    end)
-
-    -- @covers TileMap:addLayer
-    -- @covers TileMap:fill
-    -- @description Fills a tile layer with one GID to cover bulk tile assignment.
-    it("fill sets all tiles in a layer", function()
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("ground", 4, 4)
-        tm:fill(1, 5) -- fill layer 1 with GID 5
-    end)
-
-    -- @covers TileMap:fill
-    -- @covers TileMap:clearTile
-    -- @covers TileMap:getTile
-    -- @description Fills a layer and clears one tile to cover tile-level mutation after a bulk fill.
-    it("getTile/clearTile round-trip", function()
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        tm:addLayer("test", 8, 8)
-        tm:fill(1, 3)
-        tm:clearTile(1, 2, 2)
-    end)
-
-    -- @covers lurek.tilemap.newTileSet
-    -- @covers TileMap:addTileSet
-    -- @description Adds two tilesets to one map to cover tileset registration.
-    it("addTileSet increases tileset count", function()
-        local tm = lurek.tilemap.newTileMap(16, 16)
-        local ts1 = lurek.tilemap.newTileSet(1, 8, 4, 16, 16)
-        local ts2 = lurek.tilemap.newTileSet(9, 8, 4, 16, 16)
-        tm:addTileSet(ts1)
-        tm:addTileSet(ts2)
-    end)
-
-    -- @covers lurek.tilemap.newTileSet
-    -- @covers TileSet:getFirstGid
-    -- @covers TileSet:getSpacing
-    -- @covers TileSet:getMargin
-    -- @description Reads key tileset metadata back from the Lua wrapper to document constructor persistence.
-    it("getFirstGid/getSpacing/getMargin match constructor", function()
-        local ts = lurek.tilemap.newTileSet(1, 16, 4, 32, 32, 2, 1)
-    end)
-
     -- @covers lurek.tilemap.newTileMap
     -- @covers TileMap:addLayer
     -- @covers TileMap:fill
@@ -186,5 +116,4 @@ describe("Evidence: lurek.tilemap API + PNG visualization", function()
     end)
 
 end)
-
 test_summary()

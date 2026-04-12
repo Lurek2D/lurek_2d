@@ -1,15 +1,13 @@
-﻿-- Lurek2D Integration Test: Physics + Timer
+-- Lurek2D Integration Test: Physics + Timer
 -- Tests physics simulation stepping with time management
--- @covers lurek.physics.destroyWorld
--- @covers lurek.physics.newBody
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.step
-
 
 -- @description Covers suite: physics + timer integration.
 describe("physics + timer integration", function()
     -- @covers lurek.physics.step
     -- @covers lurek.timer
+    -- @covers lurek.physics.destroyWorld
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.newWorld
     -- @description Verifies a fixed timestep value can be passed into the physics world and moves a dynamic body.
     it("physics world step with timer delta", function()
         local world_id = lurek.physics.newWorld(0, 100)
@@ -108,3 +106,4 @@ describe("physics multi-body + math", function()
         lurek.physics.destroyWorld(world_id)
     end)
 end)
+test_summary()

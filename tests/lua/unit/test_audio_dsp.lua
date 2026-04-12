@@ -1,23 +1,21 @@
-﻿-- Tests for Real-Time Audio DSP & Buses API
+-- Tests for Real-Time Audio DSP & Buses API
 -- Implementing tests for the new flat handles and parameter sweeping logic per audio DSP design
--- @covers lurek.audio.add_effect
--- @covers lurek.audio.create_bus
--- @covers lurek.audio.newSource
--- @covers lurek.audio.play
--- @covers lurek.audio.remove_effect
--- @covers lurek.audio.set_bus_volume
--- @covers lurek.audio.set_effect_param
-
 
 -- @description Covers suite: lurek.audio.create_bus.
 describe("lurek.audio.create_bus", function()
     -- @covers lurek.audio.create_bus
+    -- @covers lurek.audio.add_effect
+    -- @covers lurek.audio.newSource
+    -- @covers lurek.audio.play
+    -- @covers lurek.audio.remove_effect
+    -- @covers lurek.audio.set_bus_volume
+    -- @covers lurek.audio.set_effect_param
     -- @description Verifies bus creation is side-effect only and returns no handle.
     it("creates a bus without returning an object", function()
         local result = lurek.audio.create_bus("sfx")
         expect_equal(nil, result)
     end)
-    
+
     -- @covers lurek.audio.create_bus
     -- @description Verifies create_bus rejects empty bus names.
     it("errors if empty string is provided", function()
@@ -157,7 +155,7 @@ describe("lurek.audio.remove_effect", function()
         lurek.audio.create_bus("sfx5")
         local efx = lurek.audio.add_effect("sfx5", "bandpass")
         lurek.audio.remove_effect("sfx5", efx)
-        
+
         -- Further operations on it should error
         expect_error(function()
             lurek.audio.set_effect_param("sfx5", efx, "center", 1000.0)
@@ -173,5 +171,4 @@ describe("lurek.audio.remove_effect", function()
         end, "effect not found")
     end)
 end)
-
 test_summary()

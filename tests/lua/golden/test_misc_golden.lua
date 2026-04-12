@@ -1,4 +1,7 @@
-﻿-- @description Covers suite: Golden misc.
+-- Placeholder golden suite for migrated image-effect fixtures.
+-- Documents the compare-only golden slots that still need real evidence artifacts and committed samples.
+
+-- @description Covers suite: Golden misc.
 describe('Golden misc', function()
     -- @description Placeholder stub: this test body is empty and currently does not compare the brightness effect evidence artifact against a golden sample.
     it('matches evidence_effect_brightness', function() end)
@@ -11,3 +14,4 @@ describe('Golden misc', function()
     -- @description Placeholder stub: this test body is empty and currently does not compare the invert effect evidence artifact against a golden sample.
     it('matches evidence_effect_invert', function() end)
 end)
+test_summary()

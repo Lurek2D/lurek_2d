@@ -1,4 +1,4 @@
-﻿-- test_evidence_image_drawing.lua
+-- test_evidence_image_drawing.lua
 -- Evidence test: ImageData drawing methods (drawRect, drawLine, drawCircle)
 
 local OUT = "tests/lua/evidence/output/image/"
@@ -159,5 +159,4 @@ describe("Evidence: ImageData drawing methods", function()
     end)
 
 end)
-
 test_summary()

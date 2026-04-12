@@ -1,27 +1,6 @@
-﻿-- Lurek2D system / platform API tests
+-- Lurek2D system / platform API tests
 -- Tests lurek.platform.* namespace (registered via system_api.rs)
 -- Headless-safe: no GPU, no audio, no window.
--- @covers lurek.platform.getOS
--- @covers lurek.platform.getVersion
--- @covers lurek.platform.getArch
--- @covers lurek.platform.getProcessorCount
--- @covers lurek.platform.getMemorySize
--- @covers lurek.platform.getInfo
--- @covers lurek.platform.getClipboardText
--- @covers lurek.platform.setClipboardText
--- @covers lurek.platform.setDebugOverlay
--- @covers lurek.platform.getDebugOverlay
--- @covers lurek.platform.setLogLevel
--- @covers lurek.platform.getLogLevel
--- @covers lurek.platform.log
--- @covers lurek.platform.getLastError
--- @covers lurek.platform.getEnv
--- @covers lurek.platform.getArgs
--- @covers lurek.platform.parseArgs
--- @covers lurek.platform.getPowerInfo
--- @covers lurek.platform.getPreferredLocales
--- @covers lurek.platform.openURL
--- @covers lurek.signal.quit
 
 -- ============================================================
 -- Module surface
@@ -29,6 +8,30 @@
 -- @description Covers suite: lurek.platform module.
 describe("lurek.platform module", function()
     -- @covers lurek.platform
+    -- @covers lurek.platform.getOS
+    -- @covers lurek.platform.getVersion
+    -- @covers lurek.platform.getArch
+    -- @covers lurek.platform.getProcessorCount
+    -- @covers lurek.platform.getMemorySize
+    -- @covers lurek.platform.getInfo
+    -- @covers lurek.platform.getClipboardText
+    -- @covers lurek.platform.setClipboardText
+    -- @covers lurek.platform.setDebugOverlay
+    -- @covers lurek.platform.getDebugOverlay
+    -- @covers lurek.platform.setLogLevel
+    -- @covers lurek.platform.getLogLevel
+    -- @covers lurek.platform.log
+    -- @covers lurek.platform.getLastError
+    -- @covers lurek.platform.getEnv
+    -- @covers lurek.platform.getArgs
+    -- @covers lurek.platform.parseArgs
+    -- @covers lurek.platform.getPowerInfo
+    -- @covers lurek.platform.getPreferredLocales
+    -- @covers lurek.platform.openURL
+    -- @covers lurek.platform.getMessage
+    -- @covers lurek.platform.hasMessage
+    -- @covers lurek.platform.getMessageCount
+    -- @covers lurek.signal.quit
     -- @description Verifies the platform namespace is available as a Lua table.
     it("is a table", function()
         expect_type("table", lurek.platform)
@@ -430,6 +433,67 @@ describe("lurek.platform.parseArgs", function()
 end)
 
 -- ============================================================
+-- Message catalog
+-- ============================================================
+-- @description Covers suite: lurek.platform runtime message catalog lookup.
+describe("lurek.platform message catalog", function()
+    -- @covers lurek.platform.getMessage
+    -- @description Verifies the stable message lookup helper is exposed.
+    it("getMessage is a function", function()
+        expect_type("function", lurek.platform.getMessage)
+    end)
+
+    -- @covers lurek.platform.hasMessage
+    -- @description Verifies the catalog membership helper is exposed.
+    it("hasMessage is a function", function()
+        expect_type("function", lurek.platform.hasMessage)
+    end)
+
+    -- @covers lurek.platform.getMessageCount
+    -- @description Verifies the catalog size helper is exposed.
+    it("getMessageCount is a function", function()
+        expect_type("function", lurek.platform.getMessageCount)
+    end)
+
+    -- @covers lurek.platform.getMessageCount
+    -- @description Verifies the embedded runtime message catalog loads at least the baseline message set.
+    it("getMessageCount returns at least 30 entries", function()
+        expect_true(lurek.platform.getMessageCount() >= 30)
+    end)
+
+    -- @covers lurek.platform.getMessage
+    -- @description Verifies L001 resolves to the expected startup text from the embedded message catalog.
+    it("L001 resolves to startup text", function()
+        expect_equal("Lurek2D Engine starting", lurek.platform.getMessage("L001"))
+    end)
+
+    -- @covers lurek.platform.getMessage
+    -- @description Verifies L003 resolves to the expected game-loaded text from the embedded message catalog.
+    it("L003 resolves to game loaded", function()
+        expect_equal("Game loaded", lurek.platform.getMessage("L003"))
+    end)
+
+    -- @covers lurek.platform.getMessage
+    -- @description Verifies L010 resolves to the expected render-error text from the embedded message catalog.
+    it("L010 resolves to render error", function()
+        expect_equal("Render error", lurek.platform.getMessage("L010"))
+    end)
+
+    -- @covers lurek.platform.getMessage
+    -- @description Verifies unknown message IDs fall back to the raw ID string instead of crashing or returning nil.
+    it("unknown IDs fall back to the raw id", function()
+        expect_equal("ZZUNKNOWN", lurek.platform.getMessage("ZZUNKNOWN"))
+    end)
+
+    -- @covers lurek.platform.hasMessage
+    -- @description Verifies known and unknown message IDs are reported correctly by the catalog membership helper.
+    it("hasMessage distinguishes known and unknown ids", function()
+        expect_equal(true, lurek.platform.hasMessage("L001"))
+        expect_equal(false, lurek.platform.hasMessage("ZZUNKNOWN"))
+    end)
+end)
+
+-- ============================================================
 -- Power info
 -- ============================================================
 -- @description Covers suite: lurek.platform.getPowerInfo.
@@ -496,5 +560,4 @@ describe("lurek.signal.quit", function()
         expect_type("function", lurek.signal.quit)
     end)
 end)
-
 test_summary()

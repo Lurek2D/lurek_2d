@@ -1,13 +1,8 @@
-﻿-- test_evidence_charts.lua
+-- test_evidence_charts.lua
 -- Evidence test: Chart rendering (line, bar, scatter, pie, area)
 
 local OUT = "tests/lua/evidence/output/charts/"
 
--- @covers lurek.ui.newLineChart
--- @covers lurek.ui.newBarChart
--- @covers lurek.ui.newScatterPlot
--- @covers lurek.ui.newPieChart
--- @covers lurek.ui.newAreaChart
 -- @description Covers suite: Evidence: Charts.
 describe("Evidence: Charts", function()
 
@@ -18,6 +13,10 @@ describe("Evidence: Charts", function()
     -- @covers Chart:drawToImage
     -- @covers lurek.img.savePNG
     -- @evidence file
+    -- @covers lurek.ui.newBarChart
+    -- @covers lurek.ui.newScatterPlot
+    -- @covers lurek.ui.newPieChart
+    -- @covers lurek.ui.newAreaChart
     -- @description Builds a two-series line chart with explicit axis limits, rasterizes it into image data, and saves a PNG so the generated polyline and legend output can be inspected visually.
     it("renders a line chart", function()
         local chart = lurek.ui.newLineChart({ width = 400, height = 300, title = "Monthly Sales" })
@@ -111,5 +110,4 @@ describe("Evidence: Charts", function()
     end)
 
 end)
-
 test_summary()

@@ -1,23 +1,4 @@
-﻿-- Lua BDD tests for lurek.crafting.*
--- @covers lurek.crafting.CraftQueue
--- @covers lurek.crafting.CraftSkill
--- @covers lurek.crafting.ModifierPool
--- @covers lurek.crafting.Recipe
--- @covers lurek.crafting.RecipeGroup
--- @covers lurek.crafting.RecipeKnowledge
--- @covers lurek.crafting.RecipeRegistry
--- @covers lurek.crafting.Station
--- @covers lurek.crafting.UpgradeTree
--- @covers lurek.crafting.newCraftQueue
--- @covers lurek.crafting.newCraftSkill
--- @covers lurek.crafting.newModifierPool
--- @covers lurek.crafting.newRecipe
--- @covers lurek.crafting.newRecipeGroup
--- @covers lurek.crafting.newRecipeKnowledge
--- @covers lurek.crafting.newRegistry
--- @covers lurek.crafting.newStation
--- @covers lurek.crafting.newUpgradeTree
-
+-- Lua BDD tests for lurek.crafting.*
 
 -- @description Covers suite: lurek.crafting.Recipe.
 describe("lurek.crafting.Recipe", function()
@@ -25,6 +6,23 @@ describe("lurek.crafting.Recipe", function()
     -- @covers lurek.crafting.Recipe.getId
     -- @covers lurek.crafting.Recipe.getType
     -- @covers lurek.crafting.Recipe.type
+    -- @covers lurek.crafting.CraftQueue
+    -- @covers lurek.crafting.CraftSkill
+    -- @covers lurek.crafting.ModifierPool
+    -- @covers lurek.crafting.Recipe
+    -- @covers lurek.crafting.RecipeGroup
+    -- @covers lurek.crafting.RecipeKnowledge
+    -- @covers lurek.crafting.RecipeRegistry
+    -- @covers lurek.crafting.Station
+    -- @covers lurek.crafting.UpgradeTree
+    -- @covers lurek.crafting.newCraftQueue
+    -- @covers lurek.crafting.newCraftSkill
+    -- @covers lurek.crafting.newModifierPool
+    -- @covers lurek.crafting.newRecipeGroup
+    -- @covers lurek.crafting.newRecipeKnowledge
+    -- @covers lurek.crafting.newRegistry
+    -- @covers lurek.crafting.newStation
+    -- @covers lurek.crafting.newUpgradeTree
     -- @description Verifies newRecipe() initializes recipe identity, recipe type, and userdata type metadata.
     it("creates a recipe with id and type", function()
         local r = lurek.crafting.newRecipe("sword", "shaped")
@@ -614,5 +612,4 @@ describe("lurek.crafting.ModifierPool", function()
         expect_equal(1, pool:count())
     end)
 end)
-
 test_summary()

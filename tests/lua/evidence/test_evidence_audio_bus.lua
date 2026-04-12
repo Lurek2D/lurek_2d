@@ -1,4 +1,4 @@
-﻿-- test_evidence_audio_bus.lua
+-- test_evidence_audio_bus.lua
 -- Evidence test: lurek.audio Bus API + saves bus-processed audio as WAV
 -- Produces: audio_bus_volume.wav, audio_bus_pitch.wav
 
@@ -18,56 +18,6 @@ end
 
 -- @description Covers suite: Evidence: lurek.audio Bus API + WAV output.
 describe("Evidence: lurek.audio Bus API + WAV output", function()
-
-    -- @covers lurek.audio.newBus
-    -- @description Creates a named audio bus to prove the constructor accepts user-facing routing labels.
-    it("newBus creates a bus with a name", function()
-        local bus = lurek.audio.newBus("sfx")
-    end)
-
-    -- @covers lurek.audio.newBus
-    -- @covers AudioBus:setVolume
-    -- @covers AudioBus:getVolume
-    -- @description Adjusts bus volume and reads it back so per-bus gain control is documented.
-    it("setVolume/getVolume round-trip", function()
-        local bus = lurek.audio.newBus("music")
-        bus:setVolume(0.6)
-    end)
-
-    -- @covers lurek.audio.newBus
-    -- @covers AudioBus:setPitch
-    -- @covers AudioBus:getPitch
-    -- @description Adjusts bus pitch and reads it back to cover pitch-scaling state on the bus wrapper.
-    it("setPitch/getPitch round-trip", function()
-        local bus = lurek.audio.newBus("effects")
-        bus:setPitch(1.5)
-    end)
-
-    -- @covers lurek.audio.newBus
-    -- @covers AudioBus:setVolume
-    -- @covers AudioBus:getVolume
-    -- @description Creates two buses and assigns different volumes so routing state remains independent per instance.
-    it("multiple buses are independent", function()
-        local b1 = lurek.audio.newBus("bus_a")
-        local b2 = lurek.audio.newBus("bus_b")
-        b1:setVolume(0.3)
-        b2:setVolume(0.9)
-    end)
-
-    -- @covers lurek.audio.newBus
-    -- @covers AudioBus:getPitch
-    -- @description Verifies the default pitch on a new bus before any explicit configuration.
-    it("default pitch is 1.0", function()
-        local bus = lurek.audio.newBus("def")
-    end)
-
-    -- @covers lurek.audio.newBus
-    -- @covers AudioBus:getVolume
-    -- @description Verifies the default gain on a newly created bus.
-    it("default volume is 1.0", function()
-        local bus = lurek.audio.newBus("defvol")
-    end)
-
     -- @covers lurek.audio.newBus
     -- @covers AudioBus:setVolume
     -- @covers AudioBus:getVolume
@@ -169,5 +119,4 @@ describe("Evidence: lurek.audio Bus API + WAV output", function()
     end)
 
 end)
-
 test_summary()

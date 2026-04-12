@@ -1,13 +1,13 @@
-﻿-- tests/lua/library/test_library_doll.lua
+-- tests/lua/library/test_library_doll.lua
 -- BDD tests for the doll (socket-based visual composition) module
 
 local doll = require("library.doll")
 
 -- â”€â”€ Part â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.doll.newPart
 -- @description Verifies part defaults plus texture, transform, colour, flip, attribute, fixture, origin, and rotation-following helpers.
 describe("Part", function()
+    -- @covers library.doll.newPart
     -- @description Verifies case: creates with default values.
     it("creates with default values", function()
         local p = doll.newPart()
@@ -145,9 +145,9 @@ end)
 
 -- â”€â”€ DollTemplate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.doll.newTemplate
 -- @description Covers template naming, socket registration, duplicate rejection, removal, lookup, ordering, and default socket field values.
 describe("DollTemplate", function()
+    -- @covers library.doll.newTemplate
     -- @description Verifies case: creates with name.
     it("creates with name", function()
         local t = doll.newTemplate("player")
@@ -245,7 +245,6 @@ end)
 
 -- â”€â”€ Doll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.doll.newDoll
 -- @description Exercises doll transforms, attachment rules, detach flows, socket occupancy queries, and body or userdata references.
 describe("Doll", function()
     local function make_template()
@@ -390,9 +389,9 @@ end)
 
 -- â”€â”€ getDrawList â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.doll.newDoll
 -- @description Validates draw-list generation for empty and populated dolls, combined ordering, world transforms, visibility, and scale effects.
 describe("Doll:getDrawList", function()
+    -- @covers library.doll.newDoll
     -- @description Verifies case: empty doll returns empty list.
     it("empty doll returns empty list", function()
         local t = doll.newTemplate("empty")
@@ -576,9 +575,9 @@ end)
 
 -- â”€â”€ Hot-swap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.doll.newDoll
 -- @description Tests replacing attached parts at runtime so hot-swapping preserves socket routing and updated draw output.
 describe("Doll hot-swap", function()
+    -- @covers library.doll.newDoll
     -- @description Verifies case: replaces part at socket.
     it("replaces part at socket", function()
         local t = doll.newTemplate("swap")
@@ -596,5 +595,4 @@ describe("Doll hot-swap", function()
         expect_equal(bow, d:getPartAt("weapon"))
     end)
 end)
-
 test_summary()

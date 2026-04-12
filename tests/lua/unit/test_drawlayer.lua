@@ -1,7 +1,6 @@
-﻿-- tests/lua/unit/test_drawlayer.lua
+-- tests/lua/unit/test_drawlayer.lua
 -- Lurek2D BDD tests for lurek.graphic.newDrawLayer() â€” z-ordered draw-call queue.
 -- Headless-safe (no GPU/window needed).
--- @covers lurek.graphic.newDrawLayer
 
 -- @description Covers suite: DrawLayer creation.
 describe("DrawLayer creation", function()
@@ -260,5 +259,4 @@ describe("DrawLayer large queue", function()
         expect_equal(0, layer:getCount())
     end)
 end)
-
 test_summary()

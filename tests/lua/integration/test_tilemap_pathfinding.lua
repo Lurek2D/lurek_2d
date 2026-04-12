@@ -1,15 +1,15 @@
-﻿-- Lurek2D Integration Test: Tilemap + Pathfinding
+-- Lurek2D Integration Test: Tilemap + Pathfinding
 -- Tests using a tilemap grid as the navigation surface for A* pathfinding.
--- @covers lurek.tilemap.newTilemap
--- @covers lurek.tilemap.setTile
--- @covers lurek.tilemap.getTile
--- @covers lurek.pathfinding.newNavGrid
--- @covers lurek.pathfinding.newPathfinder
 
 -- @description Covers suite: integration: tilemap feeds into pathfinding grid.
 describe("integration: tilemap feeds into pathfinding grid", function()
     -- @covers lurek.tilemap.Tilemap.setTile
     -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @covers lurek.tilemap.newTilemap
+    -- @covers lurek.tilemap.setTile
+    -- @covers lurek.tilemap.getTile
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @covers lurek.pathfinding.newPathfinder
     -- @description Verifies tile solidity can be copied into a navgrid so pathfinding detours around blocked tilemap cells.
     it("builds navgrid from tilemap: walkable tiles passable, wall tiles blocked", function()
         local tm   = lurek.tilemap.newTilemap(10, 10, 16, 16)
@@ -80,5 +80,4 @@ describe("integration: tilemap feeds into pathfinding grid", function()
         expect_true(len <= 8, "path length reasonable (not excessive)")
     end)
 end)
-
 test_summary()

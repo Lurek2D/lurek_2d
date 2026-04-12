@@ -1,4 +1,4 @@
-﻿-- Lurek2D Parallax API Unit Tests (headless)
+-- Lurek2D Parallax API Unit Tests (headless)
 -- Tests: module existence, layer creation, scroll math, autoscroll, repeat,
 --        opacity, tint, blend mode, z-ordering in sets, resetAutoscroll.
 --
@@ -704,5 +704,4 @@ describe("Scene-transition: resetAutoscroll pattern", function()
         expect_no_error(function() s:draw(0, 0) end)
     end)
 end)
-
 test_summary()

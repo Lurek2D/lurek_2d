@@ -1,4 +1,4 @@
-﻿-- test_evidence_bezier.lua
+-- test_evidence_bezier.lua
 -- Evidence test: BezierCurve creation, evaluation, and visualisation
 
 local OUT = "tests/lua/evidence/output/bezier/"
@@ -180,5 +180,4 @@ describe("Evidence: Bezier curves", function()
     end)
 
 end)
-
 test_summary()

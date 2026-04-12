@@ -123,20 +123,26 @@ cargo test --test <module>_tests
 ```lua
 -- tests/lua/unit/test_<module>.lua
 -- Lurek2D <Module> API Tests
+-- Covers namespace surface, constructors, and representative edge cases.
 
+-- @description Groups module-level surface checks for lurek.<module>.
 describe("lurek.<module> module exists", function()
+    -- @description Verifies the module namespace is present as a Lua table.
     it("is a table", function()
         expect_type("table", lurek.<module>)
     end)
 end)
 
+-- @description Covers one concrete function family in the module.
 describe("lurek.<module>.<function>", function()
+    -- @description Verifies the function returns a non-nil numeric result for valid input.
     it("returns expected type", function()
         local result = lurek.<module>.<function>(...)
         expect_not_nil(result)
         expect_type("number", result)
     end)
 
+    -- @description Verifies the numeric result matches the expected value within tolerance.
     it("numeric results match within tolerance", function()
         expect_near(3.14159, lurek.<module>.pi, 0.0001)
     end)
@@ -184,11 +190,17 @@ end)
 test_summary()
 ```
 
-### 3.2 Auto-Registration
+### 3.2 Harness Registration
 
-All Lua testing files (	est_*.lua) placed in 	ests/lua/ or its subdirectories are **automatically discovered and registered by uild.rs**.
+Lua test files are **not** auto-discovered in this repository. After creating a new `.lua` file, add the matching `#[test]` entry to `tests/lua/harness.rs`.
 
-You DO NOT need to edit 	ests/lua/harness.rs. Creating the .lua file is sufficient.
+Required pattern:
+```rust
+#[test]
+fn lua_test_<name>() {
+    run_lua_test("unit/test_<name>.lua");
+}
+```
 
 ---
 
@@ -198,7 +210,12 @@ The framework is provided by `tests/lua/init.lua` and loaded automatically. Do n
 
 ### Test structure
 ```lua
+-- Plain file header prose lives here. Do not use @description for file headers.
+
+-- @description Suite summary for the describe block below.
 describe("suite name", function()
+    -- @covers lurek.modulename.someFunction
+    -- @description Exact behavior asserted by the test case below.
     it("description of one behaviour", function()
         -- assertions here
     end)
@@ -209,6 +226,21 @@ test_summary()
 - `describe(name, fn)` — defines a test suite; errors in setup are caught and reported
 - `it(name, fn)` — defines one test case; failure is recorded but execution continues
 - `test_summary()` — prints pass/fail totals; must be the last call in every test file
+
+### Lua test documentation standard
+
+- Top-of-file comments are plain prose only. They explain what the file tests and any headless or evidence constraints.
+- Do **not** use `-- @description` as a file-level banner.
+- Keep the file header short. It is plain prose, not a docstring block.
+- Every `describe()` block requires exactly one `-- @description <text>` line immediately above it.
+- The `describe()` comment block owns only that `@description` line. Do not attach `@covers`, `@evidence`, `@golden`, or other markers to `describe()`.
+- Every `it()` block requires exactly one `-- @description <text>` line immediately above it.
+- Place ownership markers such as `@covers`, `@evidence`, `@golden`, and similar metadata on the `it()` block that actually asserts or produces the behavior.
+- Use `-- @description <text>` without a colon. `-- @description:` is legacy and should be normalized.
+- `-- @category: ...` markers are not part of the standard and must not be added.
+- Nested `describe()` blocks are allowed when they express a real API grouping. Keep nesting shallow; prefer at most two levels.
+- `test_summary()` must be the last non-empty line in the file. Never write `return test_summary()`.
+- Audit and normalize with `python tools/audit/lua_test_structure_audit.py` and `python tools/audit/lua_test_structure_audit.py --fix`. The default audit now enforces the marker-ownership rule; use `--allow-legacy-describe-markers` only as a temporary escape hatch while repairing older files.
 
 ### Assertions
 
@@ -330,12 +362,12 @@ python tools/docs/collect_docs.py --suggest         # starter /// lines for undo
 
 ### Rust golden tests (byte-level)
 
-Golden tests compare deterministic binary/text output against a committed baseline file.
+Rust golden tests compare deterministic engine-internal output against a committed baseline file.
 
 **Baseline files:** `tests/rust/golden/expected/<category>/<name>.<ext>`
 **Runtime output:** `tests/rust/golden/actual/<category>/` (git-ignored)
 
-Categories: `encoding/`, `hashes/`, `compression/`, `images/`, `config/`, `sound/`
+Categories now focus on renderer/internal artifacts, for example `image/` and `raycaster/`.
 
 **To add a new Rust golden test:**
 1. Add expected file to `tests/rust/golden/expected/<category>/`
@@ -348,19 +380,20 @@ cargo test --test golden_tests -- --nocapture
 # copy tests/rust/golden/actual/<file> to tests/rust/golden/expected/<file>
 ```
 
-### Lua golden tests (inline expected string)
+### Lua golden tests (compare-only files)
 
-Lua golden tests use the `expect_golden(name, data, expected)` helper from `init.lua`. The expected value is an **inline string** — no external file dependency, no git-ignored output directory.
+Lua golden tests compare an evidence file against a committed sample under `tests/lua/golden/samples/`. They do **not** create content inline.
 
 ```lua
--- tests/lua/golden/test_pathfinding_golden.lua
--- Golden tests for lurek.pathfinding — seeded results must be deterministic
+-- tests/lua/golden/test_data_golden.lua
+-- Golden tests compare pre-generated evidence only.
 
-describe("pathfinding golden", function()
-    it("A* on fixed 5x5 grid produces exact path", function()
-        local grid = lurek.pathfinding.newGrid(5, 5)
-        local path = lurek.pathfinding.findPath(grid, 0, 0, 4, 4)
-        expect_golden("astar_5x5", path, "[(0,0),(1,1),(2,2),(3,3),(4,4)]")
+describe("data TOML round-trip golden", function()
+    it("matches the committed TOML sample", function()
+        expect_golden_text_match(
+            "save/golden_text/migrated_rust/data/toml_roundtrip.toml",
+            "tests/lua/golden/samples/migrated_rust/data/toml_roundtrip.toml"
+        )
     end)
 end)
 
@@ -368,11 +401,11 @@ test_summary()
 ```
 
 **Rules for Lua golden tests:**
-- The expected string must be deterministic — use seeded RNG, fixed input, or pure math
-- Format values with fixed precision: `string.format("%.4f", val)` not `tostring(val)`
-- Use LuaJIT-safe formatting — avoid `%g` which may differ between Lua versions
-- If output is a table, format it with a canonical serializer, not `tostring(tbl)`
-- All Lua golden test files live in `tests/lua/golden/test_<module>_golden.lua`
+- Golden files compare only; they must not call `lurek.*`, `savePNG`, `saveWAV`, or write files.
+- The evidence artifact must already exist from an evidence test.
+- Samples live in `tests/lua/golden/samples/<module>/` or `tests/lua/golden/samples/migrated_rust/`.
+- All Lua golden test files live in `tests/lua/golden/test_<module>_golden.lua`.
+- Use `expect_golden_text_match()` or `expect_golden_file_match()` from `tests/lua/init.lua`.
 
 ---
 
@@ -538,6 +571,7 @@ end)
 ### Rules
 
 - One `-- @covers` per line, placed **before** the `describe` or `it` block
+- Prefer the closest block that actually owns the assertion rather than a broad file-global list.
 - Module functions: `-- @covers lurek.<module>.<function>`
 - UserData methods: `-- @covers <ClassName>:<method>`
 - The scanner regex: `^--\s*@covers\s+((?:lurek\.\w+\.\w+)|(?:\w+:\w+))\s*$`
@@ -619,9 +653,10 @@ test_summary()
 
 - Use fixed seeds for any random/procedural operations
 - Use `string.format("%.6f", val)` for float formatting
-- Compare inline expected data (not external files) for Lua golden tests
-- For binary golden tests, use the Rust golden harness in `tests/rust/golden/`
-- The two-track golden approach: (a) Lua headless state golden (draw-list contents, bone positions, config snapshots) and (b) Rust pixel golden (PNG byte comparison in `tests/rust/golden/expected/image/`)
+- Compare against committed sample files, not inline literals.
+- If a Lua-facing contract can be expressed as an artifact, prefer Lua evidence + Lua golden.
+- Keep Rust golden tests for engine-internal renderer/output checks that are not Lua API contracts.
+- Run `python tools/audit/lua_evidence_golden_contract_audit.py` after evidence/golden edits.
 
 ### Stress Test Output Format
 

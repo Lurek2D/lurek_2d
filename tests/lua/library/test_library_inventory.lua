@@ -1,14 +1,13 @@
-﻿--- BDD tests for library.inventory
+--- BDD tests for library.inventory
 -- @module tests.lua.library.test_library_inventory
-
 
 local inventory = require("library.inventory")
 
 -- ─── InvItem ──────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newItem
 -- @description Verifies inventory item defaults plus stat, tag, weight, slot-type, and metadata behaviors on standalone items.
 describe("InvItem", function()
+    -- @covers library.inventory.newItem
     -- @description Verifies case: creates item with type.
     it("creates item with type", function()
         local it = inventory.newItem("sword")
@@ -99,9 +98,9 @@ end)
 
 -- ─── ItemStack ────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newItemStack
 -- @description Covers stack quantity math, capacity checks, split or merge flows, and the relationship between an item stack and its underlying item.
 describe("ItemStack", function()
+    -- @covers library.inventory.newItemStack
     -- @description Verifies case: creates stack with quantity.
     it("creates stack with quantity", function()
         local it = inventory.newItem("arrow")
@@ -187,9 +186,9 @@ end)
 
 -- ─── Slot ─────────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newSlot
 -- @description Tests equipment and container slots for acceptance rules, set or clear flows, occupancy checks, and slot-level metadata.
 describe("Slot", function()
+    -- @covers library.inventory.newSlot
     -- @description Verifies case: starts empty.
     it("starts empty", function()
         local sl = inventory.newSlot("any", inventory.SlotState.Active)
@@ -250,9 +249,9 @@ end)
 
 -- ─── Container ────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newContainer
 -- @description Exercises fixed-size containers including slot access, add or remove flows, transfers, counting, and structural constraints.
 describe("Container.fixed", function()
+    -- @covers library.inventory.newContainer
     -- @description Verifies case: creates fixed container with correct slot count.
     it("creates fixed container with correct slot count", function()
         local c = inventory.newContainer("bag", "fixed", 5)
@@ -343,9 +342,9 @@ describe("Container.fixed", function()
     end)
 end)
 
--- @covers library.inventory.newContainer
 -- @description Verifies expandable containers can grow when items are inserted beyond the current slot count.
 describe("Container.expandable", function()
+    -- @covers library.inventory.newContainer
     -- @description Verifies case: expand adds slots in expandable mode.
     it("expand adds slots in expandable mode", function()
         local c = inventory.newContainer("bag", "expandable", 2)
@@ -361,9 +360,9 @@ describe("Container.expandable", function()
     end)
 end)
 
--- @covers library.inventory.newContainer
 -- @description Covers unlimited-mode containers that accept arbitrary growth without fixed-slot limits.
 describe("Container.unlimited", function()
+    -- @covers library.inventory.newContainer
     -- @description Verifies case: auto-grows on addItem.
     it("auto-grows on addItem", function()
         local c = inventory.newContainer("bag", "unlimited", 0)
@@ -387,9 +386,9 @@ end)
 
 -- ─── ItemSet ──────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newItemSet
 -- @description Tests item-set requirements, activation checks, and bookkeeping for named equipment collections.
 describe("ItemSet", function()
+    -- @covers library.inventory.newItemSet
     -- @description Verifies case: isSatisfied when all tags equipped.
     it("isSatisfied when all tags equipped", function()
         local iset = inventory.newItemSet("knight_set")
@@ -435,9 +434,9 @@ end)
 
 -- ─── Inventory ────────────────────────────────────────────────────────────────
 
--- @covers library.inventory.newInventory
 -- @description Validates whole-inventory orchestration across containers, equipment slots, item counts, transfers, stack operations, and subsystem toggles.
 describe("Inventory", function()
+    -- @covers library.inventory.newInventory
     -- @description Verifies case: addContainer / getContainer round-trip.
     it("addContainer / getContainer round-trip", function()
         local inv = inventory.newInventory()
@@ -698,9 +697,9 @@ end)
 
 -- ─── Container.removeSlot ─────────────────────────────────────────────────────
 
--- @covers library.inventory.newContainer
 -- @description Focuses on removing container slots safely, including index validation and post-removal slot compaction.
 describe("Container.removeSlot", function()
+    -- @covers library.inventory.newContainer
     -- @description Verifies case: removes a slot by 1-based index and reduces count.
     it("removes a slot by 1-based index and reduces count", function()
         local c = inventory.newContainer("bag", "fixed", 3)
@@ -723,10 +722,10 @@ end)
 
 -- ─── Slot.setState / getState / getSlotType / SlotState constants ─────────────
 
--- @covers library.inventory.newSlot
--- @covers library.inventory.SlotState
 -- @description Confirms slot state getters and setters and the exported slot-state enum string values.
 describe("Slot.state", function()
+    -- @covers library.inventory.newSlot
+    -- @covers library.inventory.SlotState
     -- @description Verifies case: getState returns initial state.
     it("getState returns initial state", function()
         local sl = inventory.newSlot("weapon", inventory.SlotState.Passive)
@@ -756,10 +755,10 @@ end)
 
 -- ─── ContainerMode enum ───────────────────────────────────────────────────────
 
--- @covers library.inventory.ContainerMode
--- @covers library.inventory.newContainer
 -- @description Verifies container mode constants and confirms they can be passed directly into container construction.
 describe("ContainerMode", function()
+    -- @covers library.inventory.ContainerMode
+    -- @covers library.inventory.newContainer
     -- @description Verifies case: enum has correct string values.
     it("enum has correct string values", function()
         expect_equal(inventory.ContainerMode.fixed,      "fixed")
@@ -774,5 +773,4 @@ describe("ContainerMode", function()
         expect_equal(c:slotCount(), 4)
     end)
 end)
-
 test_summary()

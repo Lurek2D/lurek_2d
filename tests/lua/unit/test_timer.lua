@@ -1,19 +1,19 @@
-﻿-- @covers lurek.time.getAverageDelta
--- @covers lurek.time.getDelta
--- @covers lurek.time.getFrameCount
--- @covers lurek.time.getFPS
--- @covers lurek.time.getMicroTime
--- @covers lurek.time.getPhysicsDelta
--- @covers lurek.time.getTime
--- @covers lurek.time.setPhysicsDelta
--- @covers lurek.time.sleep
--- @covers lurek.time.step
--- @covers lurek.time.newScheduler
-
--- Lurek2D Timer API Tests
+-- Lurek2D timer API tests.
+-- Covers frame-timing accessors, sleep/step helpers, scheduler behavior, and timing-state queries exposed through lurek.time.
 
 -- @description Verifies the timer namespace is exposed on lurek as a Lua table.
 describe("lurek.time module exists", function()
+    -- @covers lurek.time.getAverageDelta
+    -- @covers lurek.time.getDelta
+    -- @covers lurek.time.getFrameCount
+    -- @covers lurek.time.getFPS
+    -- @covers lurek.time.getMicroTime
+    -- @covers lurek.time.getPhysicsDelta
+    -- @covers lurek.time.getTime
+    -- @covers lurek.time.setPhysicsDelta
+    -- @covers lurek.time.sleep
+    -- @covers lurek.time.step
+    -- @covers lurek.time.newScheduler
     -- @description Asserts that lurek.time has Lua type table.
     it("lurek.time is a table", function()
         expect_type("table", lurek.time)
@@ -365,5 +365,4 @@ describe("lurek.time.getFrameCount", function()
         expect_true(count == math.floor(count), "frame count must be an integer")
     end)
 end)
-
 test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D localization (i18n) API unit tests
+-- Lurek2D localization (i18n) API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests the lurek.localization namespace: loadTable, unloadTable,
 -- setLanguage, getLanguages, fallbacks, t(), hasKey, getKeys, setKey,
@@ -425,5 +425,4 @@ describe("localization format helpers (RS parity)", function()
         expect_equal("table", type(langs))
     end)
 end)
-
 test_summary()

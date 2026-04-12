@@ -1,7 +1,6 @@
-﻿-- tests/lua/test_drawlayer.lua
+-- tests/lua/test_drawlayer.lua
 -- Integration tests for lurek.gfx.newDrawLayer()
 -- @covers lurek.gfx.newDrawLayer
-
 
 local total, passed, failed = 0, 0, 0
 local current_describe = ""
@@ -294,3 +293,4 @@ end)
 
 print(string.format("DrawLayer tests: %d/%d passed, %d failed", passed, total, failed))
 _test_results = { total = total, passed = passed, failed = failed }
+test_summary()

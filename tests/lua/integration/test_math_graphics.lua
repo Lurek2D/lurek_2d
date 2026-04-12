@@ -1,15 +1,13 @@
-﻿-- Lurek2D Integration Test: Math + Graphics (headless-safe)
+-- Lurek2D Integration Test: Math + Graphics (headless-safe)
 -- Tests math operations used in graphics contexts without requiring GPU
--- @covers lurek.math.abs
--- @covers lurek.math.cos
--- @covers lurek.math.floor
--- @covers lurek.math.sin
-
 
 -- @description Covers suite: math for graphics transformations.
 describe("math for graphics transformations", function()
     -- @covers lurek.math.cos
     -- @covers lurek.gfx
+    -- @covers lurek.math.abs
+    -- @covers lurek.math.floor
+    -- @covers lurek.math.sin
     -- @description Verifies trigonometric math produces the expected rotation matrix components used in graphics transforms.
     it("rotation matrix components", function()
         local angle = math.rad(90)
@@ -167,3 +165,4 @@ describe("math geometry utilities", function()
         expect_near(5, iy, 0.001, "intersection y")
     end)
 end)
+test_summary()

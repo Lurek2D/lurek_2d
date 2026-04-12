@@ -1,4 +1,4 @@
-﻿-- Lurek2D Property-Based Test: Math Module
+-- Lurek2D Property-Based Test: Math Module
 -- Tests mathematical invariants that must hold for ALL inputs
 -- @covers lurek.math.sin
 -- @covers lurek.math.cos
@@ -179,5 +179,4 @@ describe("property: lerp interpolation", function()
         end
     end)
 end)
-
 test_summary()

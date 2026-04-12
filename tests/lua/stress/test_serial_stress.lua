@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Serial Module
+-- Lurek2D Stress Test: Serial Module
 -- Tests encode/decode throughput under high volume
 
 -- @description Covers suite: serial stress: base64 throughput.
@@ -60,5 +60,4 @@ describe("serial stress: data encode throughput", function()
         expect_true(true, "100 compress cycles completed")
     end)
 end)
-
 test_summary()

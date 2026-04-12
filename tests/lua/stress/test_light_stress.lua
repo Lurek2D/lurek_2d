@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Light System Operations
+-- Lurek2D Stress Test: Light System Operations
 -- Measures light create, update, and query throughput.
 
 -- @description Covers suite: stress: light creation throughput.
@@ -77,5 +77,4 @@ describe("stress: mixed light operations", function()
         expect_true(elapsed < 5.0, "light full-config budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

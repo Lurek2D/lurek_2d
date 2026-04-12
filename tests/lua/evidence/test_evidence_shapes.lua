@@ -1,4 +1,4 @@
-﻿-- test_evidence_shapes.lua
+-- test_evidence_shapes.lua
 -- Evidence test: 2D shape drawing using lurek.img primitives
 
 local OUT = "tests/lua/evidence/output/shapes/"
@@ -148,5 +148,4 @@ describe("Evidence: Shapes", function()
     end)
 
 end)
-
 test_summary()

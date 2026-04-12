@@ -1,4 +1,4 @@
-﻿-- Lurek2D Graph API Tests
+-- Lurek2D Graph API Tests
 
 -- Helper: build a simple 2-node graph with one edge
 -- @covers lurek.graph.newGraph
@@ -1547,5 +1547,4 @@ describe("graph edge validity errors (RS parity)", function()
         expect_equal(g:getNodeCount(), #nodes)
     end)
 end)
-
 test_summary()

@@ -1,13 +1,13 @@
-﻿-- tests/lua/unit/test_network_constants.lua
+-- tests/lua/unit/test_network_constants.lua
 -- BDD tests for lurek.network constants. Headless-safe (no ENet required).
--- @covers lurek.network.MAX_PEERS
--- @covers lurek.network.DEFAULT_PEERS
--- @covers lurek.network.MAX_CHANNELS
--- @covers lurek.network.DEFAULT_CHANNELS
 
 -- @description Covers suite: lurek.network constants.
 describe("lurek.network constants", function()
   -- @covers lurek.network
+  -- @covers lurek.network.MAX_PEERS
+  -- @covers lurek.network.DEFAULT_PEERS
+  -- @covers lurek.network.MAX_CHANNELS
+  -- @covers lurek.network.DEFAULT_CHANNELS
   -- @description Verifies the network namespace is registered as a Lua table before constant lookups run.
   it("lurek.network is a table", function()
     expect_equal(type(lurek.network), "table")
@@ -73,5 +73,4 @@ describe("lurek.network constants", function()
     expect_true(lurek.network.DEFAULT_CHANNELS <= lurek.network.MAX_CHANNELS)
   end)
 end)
-
 test_summary()

@@ -1,13 +1,12 @@
-﻿-- Lurek2D Integration Test: Thread + Data
+-- Lurek2D Integration Test: Thread + Data
 -- Tests passing data between threads via Channel.
--- @covers lurek.thread.newChannel
--- @covers lurek.data.encode
--- @covers lurek.data.decode
 
 -- @description Covers suite: integration: thread channel with serialized data.
 describe("integration: thread channel with serialized data", function()
     -- @covers lurek.thread.newChannel
     -- @covers lurek.data
+    -- @covers lurek.data.encode
+    -- @covers lurek.data.decode
     -- @description Verifies a plain scalar value can pass through a thread channel unchanged.
     it("pushes and pops plain value via channel", function()
         local ch = lurek.thread.newChannel()
@@ -78,5 +77,4 @@ describe("integration: thread channel with serialized data", function()
         expect_equal(2000, decoded[1000], "last element correct")
     end)
 end)
-
 test_summary()

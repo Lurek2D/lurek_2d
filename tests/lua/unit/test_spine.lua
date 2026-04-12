@@ -1,7 +1,5 @@
-﻿-- Lurek2D Lua BDD tests for lurek.spine
+-- Lurek2D Lua BDD tests for lurek.spine
 -- Headless: no GPU, no audio, no window.
--- @covers lurek.spine.newSkeleton
-
 
 -- @description Covers suite: lurek.spine.
 describe("lurek.spine", function()
@@ -212,5 +210,4 @@ describe("lurek.spine", function()
         end)
     end)
 end)
-
 test_summary()

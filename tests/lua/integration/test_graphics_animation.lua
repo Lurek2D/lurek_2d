@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Graphics + Animation
+-- Lurek2D Integration Test: Graphics + Animation
 -- Tests drawing primitives with animation frame progression
--- @covers lurek.gfx.rectangle
--- @covers lurek.animation.newTimeline
 
 -- @description Covers suite: graphics + animation integration.
 describe("graphics + animation integration", function()
     -- @covers lurek.animation.Timeline.getCurrentFrame
     -- @covers lurek.gfx
+    -- @covers lurek.gfx.rectangle
+    -- @covers lurek.animation.newTimeline
     -- @description Verifies timeline seeking exposes frame data that graphics code can use to choose the active animation frame.
     it("animation timeline controls frame index", function()
         local tl = lurek.animation.newTimeline()
@@ -74,5 +74,4 @@ describe("graphics + animation integration", function()
         expect_near(before, after, 0.001, "paused timeline does not advance")
     end)
 end)
-
 test_summary()

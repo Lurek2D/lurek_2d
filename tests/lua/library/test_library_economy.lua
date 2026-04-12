@@ -1,11 +1,10 @@
-﻿--- BDD tests for library.economy
+--- BDD tests for library.economy
 local eco = require("library.economy")
 
 ---------------------------------------------------------------------------
 -- Resource
 ---------------------------------------------------------------------------
 
--- @covers library.economy.newResource
 -- @description Verifies resource defaults, value clamps, flow and reserve math, visibility or locking flags, and per-resource economic state helpers.
 describe("Resource", function()
     -- @covers library.economy.newResource
@@ -201,7 +200,6 @@ end)
 -- Modifier
 ---------------------------------------------------------------------------
 
--- @covers library.economy.newModifier
 -- @description Covers modifier creation, duration and expiration behavior, source tagging, and mutable modifier values.
 describe("Modifier", function()
     -- @covers library.economy.newModifier
@@ -248,7 +246,6 @@ end)
 -- ConversionRule
 ---------------------------------------------------------------------------
 
--- @covers library.economy.newConversionRule
 -- @description Tests conversion rule rates, cooldown timers, reset semantics, and the derived effective-rate path.
 describe("ConversionRule", function()
     -- @covers library.economy.newConversionRule
@@ -332,7 +329,6 @@ end)
 -- ResourceManager
 ---------------------------------------------------------------------------
 
--- @covers library.economy.newManager
 -- @description Exercises manager-level resource creation, transfers, batch spending, exchange, delegation to resource properties, and reset behavior.
 describe("ResourceManager", function()
     -- @covers library.economy.newManager
@@ -587,12 +583,10 @@ describe("ResourceManager", function()
     end)
 end)
 
-
 ---------------------------------------------------------------------------
 -- Additional coverage tests
 ---------------------------------------------------------------------------
 
--- @covers library.economy.newModifier
 -- @description Adds focused coverage for modifier source metadata and direct value mutation helpers.
 describe("Modifier (extra coverage)", function()
     -- @covers library.economy.newModifier
@@ -611,7 +605,6 @@ describe("Modifier (extra coverage)", function()
     end)
 end)
 
--- @covers library.economy.newConversionRule
 -- @description Extends conversion rule coverage around cooldown getters, explicit rate updates, and cooldown reset.
 describe("ConversionRule (extra coverage)", function()
     -- @covers library.economy.newConversionRule
@@ -643,7 +636,6 @@ describe("ConversionRule (extra coverage)", function()
     end)
 end)
 
--- @covers library.economy.newManager
 -- @description Adds manager coverage for turn updates, net-rate access, visibility, affordability, and delegated percentage or capacity setters.
 describe("ResourceManager (extra coverage)", function()
     -- @covers library.economy.newManager
@@ -750,11 +742,10 @@ describe("ResourceManager (extra coverage)", function()
     end)
 end)
 
--- @covers library.economy.OverflowPolicy
--- @covers library.economy.ModifierType
 -- @description Confirms exported overflow and modifier enums expose the expected string constants used by resource logic.
 describe("Enum constants", function()
     -- @covers library.economy.OverflowPolicy
+    -- @covers library.economy.ModifierType
     -- @description Verifies the exported overflow-policy enum matches the string values used by resource overflow handling.
     it("OverflowPolicy values are correct strings", function()
         expect_equal(eco.OverflowPolicy.CLAMP, "clamp")
@@ -770,5 +761,4 @@ describe("Enum constants", function()
         expect_equal(eco.ModifierType.SET,      "set")
     end)
 end)
-
 test_summary()

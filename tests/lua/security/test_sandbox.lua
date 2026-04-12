@@ -1,11 +1,11 @@
-﻿-- Lurek2D Security Test: Lua Sandbox Isolation
+-- Lurek2D Security Test: Lua Sandbox Isolation
 -- Verifies that dangerous Lua globals and standard libraries are blocked
 -- in the engine sandbox. Mirrors tests from tests/rust/security/security_tests.rs.
--- @security sandbox
--- @security isolation
 
 -- @description Covers suite: sandbox: blocked globals.
 describe("sandbox: blocked globals", function()
+    -- @security sandbox
+    -- @security isolation
     -- @description Verifies the Lua sandbox does not expose `os.execute`, preventing command execution from script code.
     it("os.execute is not accessible", function()
         local result = (os == nil) or (os.execute == nil)
@@ -83,5 +83,4 @@ describe("sandbox: runtime safety", function()
         expect_equal(n, 1000)
     end)
 end)
-
 test_summary()

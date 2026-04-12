@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Animation Timelines
+-- Lurek2D Stress Test: Animation Timelines
 -- Tests mass creation and updating of animation timelines
 
 -- @description Covers suite: animation stress: mass timeline creation.
@@ -69,5 +69,4 @@ describe("animation stress: many keyframes", function()
         expect_true(tl:getCurrentFrame() ~= nil, "frame near end")
     end)
 end)
-
 test_summary()

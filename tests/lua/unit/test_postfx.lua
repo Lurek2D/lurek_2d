@@ -1,13 +1,12 @@
-﻿-- Lurek2D PostFX API Tests â€” covers lurek.effect post-processing effects (headless)
--- @covers lurek.effect.getEffectTypes
--- @covers lurek.effect.newEffect
--- @covers lurek.effect.newPass
--- @covers lurek.effect.newStack
-
+-- Lurek2D PostFX API Tests â€” covers lurek.effect post-processing effects (headless)
 
 -- @description Covers suite: lurek.effect module exists.
 describe("lurek.effect module exists", function()
     -- @covers lurek.effect
+    -- @covers lurek.effect.getEffectTypes
+    -- @covers lurek.effect.newEffect
+    -- @covers lurek.effect.newPass
+    -- @covers lurek.effect.newStack
     -- @description Verifies the effect namespace is available as a Lua table.
     it("lurek.effect is a table", function()
         expect_type("table", lurek.effect)
@@ -497,5 +496,4 @@ describe("New effect types â€” construction and defaults", function()
         expect_equal(all_found, true)
     end)
 end)
-
 test_summary()

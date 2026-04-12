@@ -1,15 +1,14 @@
-﻿--- BDD tests for library.item
+--- BDD tests for library.item
 -- @module tests.lua.library.test_library_item
-
 
 local item = require("library.item")
 
 -- ─── Type registry ────────────────────────────────────────────────────────────
 
--- @covers library.item.defineType
--- @covers library.item.getType
 -- @description Covers item type registry definition, lookup, name enumeration, and clearing of registered item archetypes.
 describe("TypeRegistry", function()
+    -- @covers library.item.defineType
+    -- @covers library.item.getType
     -- @description Verifies case: clearTypes resets registry.
     it("clearTypes resets registry", function()
         item.clearTypes()
@@ -42,9 +41,9 @@ end)
 
 -- ─── Item object ──────────────────────────────────────────────────────────────
 
--- @covers library.item.newItem
 -- @description Verifies item defaults and mutation helpers for stats, tags, counters, cloning, naming, slot assignment, and registry-seeded fields.
 describe("Item", function()
+    -- @covers library.item.newItem
     -- @description Verifies case: stats from base_stats.
     it("stats from base_stats", function()
         item.clearTypes()
@@ -168,9 +167,9 @@ end)
 
 -- ─── Stack ────────────────────────────────────────────────────────────────────
 
--- @covers library.item.newStack
 -- @description Exercises generic item stacks for push or pop flow, indexing, filtering, sorting, snapshots, and capacity-aware behaviors.
 describe("Stack", function()
+    -- @covers library.item.newStack
     -- @description Verifies case: push / size / peek round-trip.
     it("push / size / peek round-trip", function()
         local s = item.newStack("test")
@@ -281,9 +280,9 @@ end)
 
 -- ─── ItemPool ─────────────────────────────────────────────────────────────────
 
--- @covers library.item.newItemPool
 -- @description Tests weighted item pools for type management, random draws, weight mutation, emptiness checks, and total-weight bookkeeping.
 describe("ItemPool", function()
+    -- @covers library.item.newItemPool
     -- @description Verifies case: draw returns item from pool.
     it("draw returns item from pool", function()
         item.clearTypes()
@@ -365,9 +364,9 @@ end)
 
 -- ─── StackHistory ─────────────────────────────────────────────────────────────
 
--- @covers library.item.newStackHistory
 -- @description Covers history recording, pruning, source filtering, emptiness checks, and access to the latest recorded stack event.
 describe("StackHistory", function()
+    -- @covers library.item.newStackHistory
     -- @description Verifies case: recordPush creates entry.
     it("recordPush creates entry", function()
         local h = item.newStackHistory(10)
@@ -430,9 +429,9 @@ end)
 
 -- ─── StackManager ─────────────────────────────────────────────────────────────
 
--- @covers library.item.newStackManager
 -- @description Verifies stack-manager orchestration for named stacks, movement between stacks, aggregate counting, and existence checks.
 describe("StackManager", function()
+    -- @covers library.item.newStackManager
     -- @description Verifies case: addStack / getStack round-trip.
     it("addStack / getStack round-trip", function()
         local mgr = item.newStackManager()
@@ -461,9 +460,9 @@ end)
 
 -- ─── Analysis ─────────────────────────────────────────────────────────────────
 
--- @covers library.item.findNOfStat
 -- @description Tests selecting the top-N item indices by stat value while preserving the module's documented 0-based result convention.
 describe("findNOfStat", function()
+    -- @covers library.item.findNOfStat
     -- @description Verifies case: returns top n indices (0-based).
     it("returns top n indices (0-based)", function()
         item.clearTypes()
@@ -483,9 +482,9 @@ describe("findNOfStat", function()
     end)
 end)
 
--- @covers library.item.groupByStat
 -- @description Verifies grouping items by stat value yields buckets keyed by each distinct stat.
 describe("groupByStat", function()
+    -- @covers library.item.groupByStat
     -- @description Verifies case: groups items by stat value.
     it("groups items by stat value", function()
         item.clearTypes()
@@ -502,9 +501,9 @@ describe("groupByStat", function()
     end)
 end)
 
--- @covers library.item.groupByTagPrefix
 -- @description Covers grouping items according to tags that share a specific prefix.
 describe("groupByTagPrefix", function()
+    -- @covers library.item.groupByTagPrefix
     -- @description Verifies case: groups items by tag prefix.
     it("groups items by tag prefix", function()
         item.clearTypes()
@@ -520,9 +519,9 @@ describe("groupByTagPrefix", function()
     end)
 end)
 
--- @covers library.item.findSequences
 -- @description Exercises sequence detection for consecutive equal stat runs and the empty result case when no runs exist.
 describe("findSequences", function()
+    -- @covers library.item.findSequences
     -- @description Verifies case: finds consecutive runs of same stat value.
     it("finds consecutive runs of same stat value", function()
         item.clearTypes()
@@ -551,9 +550,9 @@ describe("findSequences", function()
     end)
 end)
 
--- @covers library.item.newStackBuilder
 -- @description Validates stack builder recipes, overrides, shuffle-on-build behavior, validation helpers, and named stack creation.
 describe("StackBuilder", function()
+    -- @covers library.item.newStackBuilder
     -- @description Verifies case: build creates stack from recipe.
     it("build creates stack from recipe", function()
         item.clearTypes()
@@ -637,9 +636,9 @@ end)
 
 -- ─── Item counters ────────────────────────────────────────────────────────────
 
--- @covers library.item.newItem
 -- @description Adds focused counter coverage for unset defaults, mutation, deletion, shallow copies, and clone independence.
 describe("Item counters", function()
+    -- @covers library.item.newItem
     -- @description Verifies case: getCounter returns 0 for unset key.
     it("getCounter returns 0 for unset key", function()
         item.clearTypes()
@@ -710,9 +709,9 @@ end)
 
 -- ─── Item name / slot ─────────────────────────────────────────────────────────
 
--- @covers library.item.newItem
 -- @description Covers item display names and slot metadata, including registry defaults and clone preservation.
 describe("Item name and slot", function()
+    -- @covers library.item.newItem
     -- @description Verifies case: getName seeds from type def name.
     it("getName seeds from type def name", function()
         item.clearTypes()
@@ -768,9 +767,9 @@ end)
 
 -- ─── Stack.peekBottom ─────────────────────────────────────────────────────────
 
--- @covers library.item.newStack
 -- @description Verifies bottom-peek behavior returns the first pushed item without mutating stack contents.
 describe("Stack peekBottom", function()
+    -- @covers library.item.newStack
     -- @description Verifies case: returns first item without removing it.
     it("returns first item without removing it", function()
         local s = item.newStack("test")
@@ -791,9 +790,9 @@ end)
 
 -- ─── ItemPool extras ──────────────────────────────────────────────────────────
 
--- @covers library.item.newItemPool
 -- @description Extends item-pool coverage for empty-state checks and total-weight updates after mutation.
 describe("ItemPool isEmpty and totalWeight", function()
+    -- @covers library.item.newItemPool
     -- @description Verifies case: isEmpty returns true when empty.
     it("isEmpty returns true when empty", function()
         local pool = item.newItemPool()
@@ -835,9 +834,9 @@ end)
 
 -- ─── StackHistory extras ──────────────────────────────────────────────────────
 
--- @covers library.item.newStackHistory
 -- @description Adds history coverage for emptiness, most-recent lookup, and source-based filtering of recorded actions.
 describe("StackHistory extras", function()
+    -- @covers library.item.newStackHistory
     -- @description Verifies case: isEmpty is true on fresh history.
     it("isEmpty is true on fresh history", function()
         local h = item.newStackHistory(10)
@@ -881,9 +880,9 @@ end)
 
 -- ─── StackManager extras ──────────────────────────────────────────────────────
 
--- @covers library.item.newStackManager
 -- @description Extends stack-manager coverage for creation helpers, top moves, typed moves, total counting, and error paths on missing stacks.
 describe("StackManager extras", function()
+    -- @covers library.item.newStackManager
     -- @description Verifies case: hasStack returns false when missing.
     it("hasStack returns false when missing", function()
         local mgr = item.newStackManager()
@@ -994,9 +993,9 @@ end)
 
 -- ─── Slot ─────────────────────────────────────────────────────────────────────
 
--- @covers library.item.newSlot
 -- @description Tests slot containers for bounded capacity, indexed removal, peeking, clearing, and tag or type presence checks.
 describe("Slot", function()
+    -- @covers library.item.newSlot
     -- @description Verifies case: push / size / peek round-trip.
     it("push / size / peek round-trip", function()
         local s = item.newSlot("weapon_slot")
@@ -1117,9 +1116,9 @@ end)
 
 -- ─── sortedIndicesByStat descending ──────────────────────────────────────────
 
--- @covers library.item.sortedIndicesByStat
 -- @description Verifies stat-based index sorting for ascending, descending, and default-order calls.
 describe("sortedIndicesByStat descending", function()
+    -- @covers library.item.sortedIndicesByStat
     -- @description Verifies case: ascending=false returns highest-first indices.
     it("ascending=false returns highest-first indices", function()
         item.clearTypes()
@@ -1162,5 +1161,4 @@ describe("sortedIndicesByStat descending", function()
         expect_equal(idx[1], 2)  -- 3 first
     end)
 end)
-
 test_summary()

@@ -1,11 +1,11 @@
-﻿-- Lurek2D Security Test: API Fuzz / Nil Spam
+-- Lurek2D Security Test: API Fuzz / Nil Spam
 -- Tests that core APIs handle nil, wrong types, and edge cases gracefully
--- @security nil-spam
--- @security type-confusion
 
 -- @description Covers suite: fuzz: nil arguments to core APIs.
 describe("fuzz: nil arguments to core APIs", function()
     -- @covers lurek.gfx.setColor
+    -- @security nil-spam
+    -- @security type-confusion
     -- @description Sends all-nil color channels to the renderer color setter to verify nil-spam is rejected with a Lua error instead of crashing native code.
     it("lurek.gfx.setColor handles nil gracefully", function()
         expect_error(function()
@@ -267,5 +267,4 @@ describe("fuzz: edge case numbers", function()
         end)
     end)
 end)
-
 test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D Tilemap API Tests
+-- Lurek2D Tilemap API Tests
 -- Covers lurek.tilemap module: factory functions, TileSet, TileMap,
 -- coordinate helpers, autotile, chunk map, iso map, map generation, and TMX.
 -- NOTE: This test runs in headless mode (no GPU/window). drawLayer and
@@ -7,41 +7,40 @@
 -- =========================================================================
 -- Module existence
 -- =========================================================================
--- @covers lurek.tilemap.FLOOR
--- @covers lurek.tilemap.NORTH_WALL
--- @covers lurek.tilemap.OBJECT
--- @covers lurek.tilemap.WEST_WALL
--- @covers lurek.tilemap.fromScreenHex
--- @covers lurek.tilemap.fromScreenIso
--- @covers lurek.tilemap.hexArea
--- @covers lurek.tilemap.hexDistance
--- @covers lurek.tilemap.hexLine
--- @covers lurek.tilemap.hexNeighbors
--- @covers lurek.tilemap.hexReflect
--- @covers lurek.tilemap.hexRing
--- @covers lurek.tilemap.hexRotate
--- @covers lurek.tilemap.hexRound
--- @covers lurek.tilemap.hexSpiral
--- @covers lurek.tilemap.isoDirectionFromAngle
--- @covers lurek.tilemap.isoDirectionName
--- @covers lurek.tilemap.isoRotate
--- @covers lurek.tilemap.loadTMX
--- @covers lurek.tilemap.newAutoTileSheet
--- @covers lurek.tilemap.newChunkMap
--- @covers lurek.tilemap.newIsoMap
--- @covers lurek.tilemap.newMapBlock
--- @covers lurek.tilemap.newMapGen
--- @covers lurek.tilemap.newMapGroup
--- @covers lurek.tilemap.newMapScript
--- @covers lurek.tilemap.newTileMap
--- @covers lurek.tilemap.newTileSet
--- @covers lurek.tilemap.toScreenHex
--- @covers lurek.tilemap.toScreenIso
-
 
 -- @description Covers suite: lurek.tilemap module exists.
 describe("lurek.tilemap module exists", function()
     -- @covers lurek.tilemap
+    -- @covers lurek.tilemap.FLOOR
+    -- @covers lurek.tilemap.NORTH_WALL
+    -- @covers lurek.tilemap.OBJECT
+    -- @covers lurek.tilemap.WEST_WALL
+    -- @covers lurek.tilemap.fromScreenHex
+    -- @covers lurek.tilemap.fromScreenIso
+    -- @covers lurek.tilemap.hexArea
+    -- @covers lurek.tilemap.hexDistance
+    -- @covers lurek.tilemap.hexLine
+    -- @covers lurek.tilemap.hexNeighbors
+    -- @covers lurek.tilemap.hexReflect
+    -- @covers lurek.tilemap.hexRing
+    -- @covers lurek.tilemap.hexRotate
+    -- @covers lurek.tilemap.hexRound
+    -- @covers lurek.tilemap.hexSpiral
+    -- @covers lurek.tilemap.isoDirectionFromAngle
+    -- @covers lurek.tilemap.isoDirectionName
+    -- @covers lurek.tilemap.isoRotate
+    -- @covers lurek.tilemap.loadTMX
+    -- @covers lurek.tilemap.newAutoTileSheet
+    -- @covers lurek.tilemap.newChunkMap
+    -- @covers lurek.tilemap.newIsoMap
+    -- @covers lurek.tilemap.newMapBlock
+    -- @covers lurek.tilemap.newMapGen
+    -- @covers lurek.tilemap.newMapGroup
+    -- @covers lurek.tilemap.newMapScript
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.tilemap.newTileSet
+    -- @covers lurek.tilemap.toScreenHex
+    -- @covers lurek.tilemap.toScreenIso
     -- @description Confirms the tilemap module table is registered.
     it("lurek.tilemap is a table", function()
         expect_type("table", lurek.tilemap)
@@ -1714,5 +1713,4 @@ end)
 -- =========================================================================
 -- End
 -- =========================================================================
-
 test_summary()

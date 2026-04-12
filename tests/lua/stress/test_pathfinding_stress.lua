@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Pathfinding on Large Grids
+-- Lurek2D Stress Test: Pathfinding on Large Grids
 -- Tests A* and flow field computation at scale
-
 
 -- @description Covers suite: pathfinding stress: large grid A*.
 describe("pathfinding stress: large grid A*", function()
@@ -134,3 +133,4 @@ describe("pathfinding stress: flow field", function()
         expect_type("number", dy)
     end)
 end)
+test_summary()

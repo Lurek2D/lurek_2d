@@ -130,6 +130,45 @@ pub fn get_message(id: &'static str) -> &'static str {
         .unwrap_or(id)
 }
 
+/// Resolve an arbitrary message ID to its human-readable text.
+///
+/// Unlike [`get_message`], this accepts a non-static `&str` and returns an
+/// owned `String` suitable for Lua and other dynamic callers.
+///
+/// # Parameters
+/// - `id` — `&str`.
+///
+/// # Returns
+/// `String`.
+pub fn resolve_message(id: &str) -> String {
+    init();
+    catalog()
+        .and_then(|c| c.get(id))
+        .map(ToOwned::to_owned)
+        .unwrap_or_else(|| id.to_string())
+}
+
+/// Returns `true` if the global message catalog contains the given ID.
+///
+/// # Parameters
+/// - `id` — `&str`.
+///
+/// # Returns
+/// `bool`.
+pub fn has_message(id: &str) -> bool {
+    init();
+    catalog().map(|c| c.get(id).is_some()).unwrap_or(false)
+}
+
+/// Number of entries currently registered in the global message catalog.
+///
+/// # Returns
+/// `usize`.
+pub fn message_count() -> usize {
+    init();
+    catalog().map(MessageCatalog::len).unwrap_or(0)
+}
+
 /// Returns a reference to the global [`MessageCatalog`], or `None` if
 /// [`init`] has not been called yet.
 ///

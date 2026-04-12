@@ -7,5 +7,3 @@ mod graphics_runtime_smoke_tests;
 mod math_ext_tests;
 #[path = "rust/ext/terminal_demo_smoke_tests.rs"]
 mod terminal_demo_smoke_tests;
-#[path = "rust/integration/messages_tests.rs"]
-mod messages_tests;

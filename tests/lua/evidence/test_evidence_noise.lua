@@ -1,4 +1,4 @@
-﻿-- test_evidence_noise.lua
+-- test_evidence_noise.lua
 -- Evidence test: Noise functions visualised as grayscale images
 
 local OUT = "tests/lua/evidence/output/noise/"
@@ -133,5 +133,4 @@ describe("Evidence: Noise generation", function()
     end)
 
 end)
-
 test_summary()

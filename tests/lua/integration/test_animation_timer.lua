@@ -1,13 +1,12 @@
-﻿-- Lurek2D Integration Test: Animation + Timer
+-- Lurek2D Integration Test: Animation + Timer
 -- Tests timer-driven animation playback pacing.
--- @covers lurek.animation.newTimeline
--- @covers lurek.timer.getTime
--- @covers lurek.timer.getDelta
 
 -- @description Covers suite: integration: animation driven by timer delta.
 describe("integration: animation driven by timer delta", function()
     -- @covers lurek.animation.Timeline.update
     -- @covers lurek.timer.getDelta
+    -- @covers lurek.animation.newTimeline
+    -- @covers lurek.timer.getTime
     -- @description Verifies repeated timer-sized deltas advance a looping timeline without producing negative or runaway elapsed time.
     it("timeline advances by injected delta", function()
         local tl = lurek.animation.newTimeline()
@@ -81,5 +80,4 @@ describe("integration: animation driven by timer delta", function()
         expect_equal("paused", state, "timeline paused")
     end)
 end)
-
 test_summary()

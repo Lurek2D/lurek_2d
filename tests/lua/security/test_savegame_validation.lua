@@ -1,11 +1,10 @@
-﻿-- Lurek2D Validation Test: SaveManager Edge Cases
+-- Lurek2D Validation Test: SaveManager Edge Cases
 -- Tests save/load with corrupted data, missing fields, and edge cases
--- @security lurek.savegame.newSaveManager
-
 
 -- @description Covers suite: validation: savegame edge cases.
 describe("validation: savegame edge cases", function()
     -- @covers lurek.savegame.newSaveManager
+    -- @security lurek.savegame.newSaveManager
     -- @description Creates a save manager to verify the savegame subsystem can be instantiated safely before any collectors or autosave state exist.
     it("creates save manager without crash", function()
         expect_no_error(function()
@@ -99,3 +98,4 @@ describe("validation: savegame migration", function()
         expect_true(true, "migrations added")
     end)
 end)
+test_summary()

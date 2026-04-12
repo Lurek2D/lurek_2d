@@ -1,22 +1,21 @@
-﻿-- Lurek2D Validation Test: Invalid API Arguments
+-- Lurek2D Validation Test: Invalid API Arguments
 -- Tests that API functions handle bad inputs without crashing
--- @security lurek.compute.zeros
--- @security lurek.dataframe.newDataFrame
--- @security lurek.entity.newUniverse
--- @security lurek.graph.newGraph
--- @security lurek.img.newImageData
--- @security lurek.physics.destroyWorld
--- @security lurek.physics.newBody
--- @security lurek.physics.newWorld
--- @security lurek.physics.setBodyVelocity
--- @security lurek.physics.step
--- @security lurek.tilemap.newTileMap
--- @security lurek.tilemap.newTileSet
-
 
 -- @description Covers suite: validation: physics invalid args.
 describe("validation: physics invalid args", function()
     -- @covers lurek.physics.step
+    -- @security lurek.compute.zeros
+    -- @security lurek.dataframe.newDataFrame
+    -- @security lurek.entity.newUniverse
+    -- @security lurek.graph.newGraph
+    -- @security lurek.img.newImageData
+    -- @security lurek.physics.destroyWorld
+    -- @security lurek.physics.newBody
+    -- @security lurek.physics.newWorld
+    -- @security lurek.physics.setBodyVelocity
+    -- @security lurek.physics.step
+    -- @security lurek.tilemap.newTileMap
+    -- @security lurek.tilemap.newTileSet
     -- @description Verifies stepping physics with a nil world id is rejected as an invalid handle instead of dereferencing a missing world.
     it("rejects nil world ID", function()
         expect_error(function()
@@ -244,3 +243,4 @@ describe("validation: tilemap invalid operations", function()
         end, "out of bounds tile access should not crash")
     end)
 end)
+test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: AI Agent Processing
+-- Lurek2D Stress Test: AI Agent Processing
 -- Measures FSM and behavior tree throughput under heavy load.
 
 -- @description Covers suite: stress: AI FSM evaluation throughput.
@@ -54,5 +54,4 @@ describe("stress: AI FSM evaluation throughput", function()
         expect_true(elapsed < 10.0, "multi-agent FSM budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

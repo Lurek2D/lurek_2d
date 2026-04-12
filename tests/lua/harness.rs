@@ -911,6 +911,11 @@ fn lua_golden_entity() {
     run_lua_test("golden/test_entity_golden.lua");
 }
 
+#[test]
+fn lua_golden_migrated_rust() {
+    run_lua_test("golden/test_migrated_rust_golden.lua");
+}
+
 // ─── Phase 3 Stress Tests ─────────────────────────────────────────────────────
 
 #[test]
@@ -1138,6 +1143,11 @@ fn lua_evidence_math() {
 #[test]
 fn lua_evidence_pathfind() {
     run_lua_test("evidence/test_evidence_pathfind.lua");
+}
+
+#[test]
+fn lua_evidence_golden_text_outputs() {
+    run_lua_test("evidence/test_evidence_golden_text_outputs.lua");
 }
 
 #[test]

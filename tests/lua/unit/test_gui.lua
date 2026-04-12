@@ -1,55 +1,5 @@
-﻿-- @covers lurek.ui.addToast
--- @covers lurek.ui.clearFocus
--- @covers lurek.ui.draw
--- @covers lurek.ui.focusNext
--- @covers lurek.ui.focusPrev
--- @covers lurek.ui.getFocus
--- @covers lurek.ui.getRoot
--- @covers lurek.ui.getTheme
--- @covers lurek.ui.getToastCount
--- @covers lurek.ui.getWidgetCount
--- @covers lurek.ui.keypressed
--- @covers lurek.ui.mousemoved
--- @covers lurek.ui.mousepressed
--- @covers lurek.ui.mousereleased
--- @covers lurek.ui.newAccordion
--- @covers lurek.ui.newButton
--- @covers lurek.ui.newCheckbox
--- @covers lurek.ui.newColorPicker
--- @covers lurek.ui.newComboBox
--- @covers lurek.ui.newDialog
--- @covers lurek.ui.newDockPanel
--- @covers lurek.ui.newImageWidget
--- @covers lurek.ui.newLabel
--- @covers lurek.ui.newLayout
--- @covers lurek.ui.newList
--- @covers lurek.ui.newMenuBar
--- @covers lurek.ui.newMenuItem
--- @covers lurek.ui.newNinePatch
--- @covers lurek.ui.newPanel
--- @covers lurek.ui.newProgressBar
--- @covers lurek.ui.newRadioButton
--- @covers lurek.ui.newScrollBar
--- @covers lurek.ui.newScrollPanel
--- @covers lurek.ui.newSeparator
--- @covers lurek.ui.newSlider
--- @covers lurek.ui.newSpacer
--- @covers lurek.ui.newSplitPanel
--- @covers lurek.ui.newStatusBar
--- @covers lurek.ui.newTabBar
--- @covers lurek.ui.newTable
--- @covers lurek.ui.newTextInput
--- @covers lurek.ui.newTheme
--- @covers lurek.ui.newToast
--- @covers lurek.ui.newToolbar
--- @covers lurek.ui.newTooltipPanel
--- @covers lurek.ui.newTreeView
--- @covers lurek.ui.newWindow
--- @covers lurek.ui.setFocus
--- @covers lurek.ui.setTheme
--- @covers lurek.ui.textinput
--- @covers lurek.ui.update
--- @covers lurek.ui.wheelmoved
+-- Lurek2D UI widget API tests.
+-- Covers widget construction, focus and input routing, theme access, toast helpers, and headless-safe UI tree management through lurek.ui.
 
 -- Lurek2D GUI API Tests
 
@@ -58,6 +8,58 @@
 -- =========================================================================
 -- @description Verifies that the lurek.ui namespace exists and exposes every tested factory, focus helper, root accessor, theme helper, routing entry point, toast helper, update hook, and draw hook.
 describe("lurek.ui module exists", function()
+    -- @covers lurek.ui.addToast
+    -- @covers lurek.ui.clearFocus
+    -- @covers lurek.ui.draw
+    -- @covers lurek.ui.focusNext
+    -- @covers lurek.ui.focusPrev
+    -- @covers lurek.ui.getFocus
+    -- @covers lurek.ui.getRoot
+    -- @covers lurek.ui.getTheme
+    -- @covers lurek.ui.getToastCount
+    -- @covers lurek.ui.getWidgetCount
+    -- @covers lurek.ui.keypressed
+    -- @covers lurek.ui.mousemoved
+    -- @covers lurek.ui.mousepressed
+    -- @covers lurek.ui.mousereleased
+    -- @covers lurek.ui.newAccordion
+    -- @covers lurek.ui.newButton
+    -- @covers lurek.ui.newCheckbox
+    -- @covers lurek.ui.newColorPicker
+    -- @covers lurek.ui.newComboBox
+    -- @covers lurek.ui.newDialog
+    -- @covers lurek.ui.newDockPanel
+    -- @covers lurek.ui.newImageWidget
+    -- @covers lurek.ui.newLabel
+    -- @covers lurek.ui.newLayout
+    -- @covers lurek.ui.newList
+    -- @covers lurek.ui.newMenuBar
+    -- @covers lurek.ui.newMenuItem
+    -- @covers lurek.ui.newNinePatch
+    -- @covers lurek.ui.newPanel
+    -- @covers lurek.ui.newProgressBar
+    -- @covers lurek.ui.newRadioButton
+    -- @covers lurek.ui.newScrollBar
+    -- @covers lurek.ui.newScrollPanel
+    -- @covers lurek.ui.newSeparator
+    -- @covers lurek.ui.newSlider
+    -- @covers lurek.ui.newSpacer
+    -- @covers lurek.ui.newSplitPanel
+    -- @covers lurek.ui.newStatusBar
+    -- @covers lurek.ui.newTabBar
+    -- @covers lurek.ui.newTable
+    -- @covers lurek.ui.newTextInput
+    -- @covers lurek.ui.newTheme
+    -- @covers lurek.ui.newToast
+    -- @covers lurek.ui.newToolbar
+    -- @covers lurek.ui.newTooltipPanel
+    -- @covers lurek.ui.newTreeView
+    -- @covers lurek.ui.newWindow
+    -- @covers lurek.ui.setFocus
+    -- @covers lurek.ui.setTheme
+    -- @covers lurek.ui.textinput
+    -- @covers lurek.ui.update
+    -- @covers lurek.ui.wheelmoved
     -- @description Confirms the top-level lurek.ui namespace is a Lua table.
     it("lurek.ui is a table", function()
         expect_type("table", lurek.ui)
@@ -1930,6 +1932,4 @@ describe("lurek.ui.parseWidgetState", function()
         expect_equal(lurek.ui.parseWidgetState("Normal"), nil)
     end)
 end)
-
-
 test_summary()

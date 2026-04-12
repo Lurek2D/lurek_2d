@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Tween + Entity
+-- Lurek2D Integration Test: Tween + Entity
 -- Tests tweening entity position and rotation properties.
--- @covers lurek.tween.newTween
--- @covers lurek.entity.newUniverse
 
 -- @description Covers suite: integration: tween drives entity transform.
 describe("integration: tween drives entity transform", function()
     -- @covers lurek.tween.Tween.update
     -- @covers lurek.entity.Universe.set
+    -- @covers lurek.tween.newTween
+    -- @covers lurek.entity.newUniverse
     -- @description Verifies tween values can drive an entity's x position all the way to its target over simulated frames.
     it("entity x position tweened from 0 to 300", function()
         local universe = lurek.entity.newUniverse()
@@ -92,5 +92,4 @@ describe("integration: tween drives entity transform", function()
         expect_true(v_ease_in < v_linear, "ease-in slower than linear at 10%")
     end)
 end)
-
 test_summary()

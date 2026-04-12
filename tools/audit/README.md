@@ -26,6 +26,8 @@ coverage — producing reports that tell you what still needs work.
 |---|---|---|
 | `test_coverage.py` | Cross-reference `pub` items vs test files | `docs/logs/test_coverage.json` |
 | `lua_api_test_coverage.py` | Lua API test coverage (via `@covers` markers) | `docs/logs/lua_api_test_coverage.json` |
+| `lua_test_structure_audit.py` | Lua test structure audit: `@description` placement, legacy markers, and `test_summary()` ending | stdout / JSON |
+| `lua_evidence_golden_contract_audit.py` | Evidence/golden contract audit: mixed prechecks, missing `@evidence`, and golden generation logic | stdout / JSON |
 | `unit_test_api_coverage.py` | Unit test API coverage metrics | stdout |
 | `example_coverage.py` | Cross-reference `content/examples/` vs Lua API | stdout |
 | `integration_coverage.py` | Integration test module-pair heat map | stdout / JSON |
@@ -52,6 +54,8 @@ coverage — producing reports that tell you what still needs work.
 | Script | Purpose |
 |---|---|
 | `annotate_tests.py` | Add annotation metadata to test files |
+| `lua_test_structure_audit.py` | Audit/fix Lua BDD comment and `test_summary()` structure |
+| `lua_evidence_golden_contract_audit.py` | Audit/fix Lua evidence and golden contract markers |
 | `parse_test_log.py` | Parse Rust test execution logs |
 
 ## Common usage
@@ -70,6 +74,10 @@ python tools/audit/docstring_audit.py            # per-file Lua API quality
 python tools/audit/test_coverage.py              # Rust test coverage
 python tools/audit/test_coverage.py --suggest    # suggest new tests
 python tools/audit/lua_api_test_coverage.py --report  # Lua test coverage
+python tools/audit/lua_test_structure_audit.py   # Lua test structure audit
+python tools/audit/lua_test_structure_audit.py --fix  # normalize legacy syntax + test_summary placement
+python tools/audit/lua_evidence_golden_contract_audit.py        # evidence/golden contract audit
+python tools/audit/lua_evidence_golden_contract_audit.py --fix  # add obvious missing @evidence markers
 python tools/audit/example_coverage.py           # content/examples/ coverage
 python tools/audit/integration_coverage.py       # integration test heatmap
 

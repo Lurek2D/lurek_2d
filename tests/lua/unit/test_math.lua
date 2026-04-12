@@ -1,43 +1,42 @@
-﻿-- Lurek2D Math API Tests
--- @covers lurek.math.abs
--- @covers lurek.math.atan2
--- @covers lurek.math.ceil
--- @covers lurek.math.clamp
--- @covers lurek.math.cos
--- @covers lurek.math.distance
--- @covers lurek.math.floor
--- @covers lurek.math.max
--- @covers lurek.math.min
--- @covers lurek.math.pi
--- @covers lurek.math.random
--- @covers lurek.math.simplexNoise
--- @covers lurek.math.sin
--- @covers lurek.math.sqrt
--- @covers lurek.math.tan
--- @covers lurek.math.newRandomGenerator
--- @covers lurek.math.newTransform
--- @covers lurek.math.newBezierCurve
--- @covers lurek.math.newNoiseGenerator
--- @covers lurek.math.newSpatialHash
--- @covers lurek.math.applyEasing
--- @covers lurek.math.triangulate
--- @covers lurek.math.isConvex
--- @covers lurek.math.gammaToLinear
--- @covers lurek.math.linearToGamma
--- @covers lurek.math.lerp
--- @covers lurek.math.sign
--- @covers lurek.math.round
--- @covers lurek.math.distanceSq
--- @covers lurek.math.angleBetween
--- @covers lurek.math.tau
--- @covers lurek.math.huge
--- @covers lurek.math.randomInt
--- @covers lurek.math.rad
--- @covers lurek.math.deg
-
+-- Lurek2D Math API Tests
 
 -- @description Verifies the math namespace exposes the pi constant and that its numeric value matches the expected approximation.
 describe("lurek.math constants", function()
+    -- @covers lurek.math.abs
+    -- @covers lurek.math.atan2
+    -- @covers lurek.math.ceil
+    -- @covers lurek.math.clamp
+    -- @covers lurek.math.cos
+    -- @covers lurek.math.distance
+    -- @covers lurek.math.floor
+    -- @covers lurek.math.max
+    -- @covers lurek.math.min
+    -- @covers lurek.math.pi
+    -- @covers lurek.math.random
+    -- @covers lurek.math.simplexNoise
+    -- @covers lurek.math.sin
+    -- @covers lurek.math.sqrt
+    -- @covers lurek.math.tan
+    -- @covers lurek.math.newRandomGenerator
+    -- @covers lurek.math.newTransform
+    -- @covers lurek.math.newBezierCurve
+    -- @covers lurek.math.newNoiseGenerator
+    -- @covers lurek.math.newSpatialHash
+    -- @covers lurek.math.applyEasing
+    -- @covers lurek.math.triangulate
+    -- @covers lurek.math.isConvex
+    -- @covers lurek.math.gammaToLinear
+    -- @covers lurek.math.linearToGamma
+    -- @covers lurek.math.lerp
+    -- @covers lurek.math.sign
+    -- @covers lurek.math.round
+    -- @covers lurek.math.distanceSq
+    -- @covers lurek.math.angleBetween
+    -- @covers lurek.math.tau
+    -- @covers lurek.math.huge
+    -- @covers lurek.math.randomInt
+    -- @covers lurek.math.rad
+    -- @covers lurek.math.deg
     -- @description Confirms pi is present and is within 0.0001 of 3.14159265358979.
     it("has pi", function()
         expect_not_nil(lurek.math.pi, "pi exists")
@@ -873,5 +872,4 @@ describe("lurek.math.vec2", function()
         expect_equal(a == b, false)
     end)
 end)
-
 test_summary()

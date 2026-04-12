@@ -1,12 +1,11 @@
-﻿-- Lurek2D Integration Test: Graphics + Camera
+-- Lurek2D Integration Test: Graphics + Camera
 -- Tests graphics rendering commands with camera transforms
--- @covers lurek.gfx.rectangle
--- @covers lurek.camera.newCamera
 
 -- @description Covers suite: graphics + camera integration.
 describe("graphics + camera integration", function()
     -- @covers lurek.camera.Camera2D.setPosition
     -- @covers lurek.gfx.rectangle
+    -- @covers lurek.camera.newCamera
     -- @description Verifies camera position state can coexist with graphics draw commands without preventing rendering calls.
     it("camera transforms affect draw command coordinates", function()
         local cam = lurek.camera.newCamera()
@@ -75,5 +74,4 @@ describe("graphics + camera integration", function()
         end
     end)
 end)
-
 test_summary()

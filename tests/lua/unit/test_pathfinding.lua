@@ -1,40 +1,38 @@
-﻿-- Pathfinding module Lua tests
+-- Pathfinding module Lua tests
 -- All tests are headless-safe (BDD framework)
 
 -- ============================================================
 -- NavGrid creation and basic ops
 -- ============================================================
--- @covers lurek.pathfinding.getThreadCount
--- @covers lurek.pathfinding.newFlowField
--- @covers lurek.pathfinding.newNavGrid
--- @covers lurek.pathfinding.newNavGridFromTileMap
--- @covers lurek.pathfinding.newPathfinder
--- @covers lurek.tilemap.newTileMap
-
--- @covers lurek.pathfinding.NavGrid.getDimensions
--- @covers lurek.pathfinding.NavGrid.fill
--- @covers lurek.pathfinding.NavGrid.saveToString
--- @covers lurek.pathfinding.NavGrid.loadFromString
--- @covers lurek.pathfinding.NavGrid.setChunkSize
--- @covers lurek.pathfinding.NavGrid.getChunkSize
--- @covers lurek.pathfinding.NavGrid.type
--- @covers lurek.pathfinding.NavGrid.typeOf
--- @covers lurek.pathfinding.UnitPathfinder.findPathSmooth
--- @covers lurek.pathfinding.UnitPathfinder.getPathLength
--- @covers lurek.pathfinding.UnitPathfinder.getPathCost
--- @covers lurek.pathfinding.UnitPathfinder.findPartialPath
--- @covers lurek.pathfinding.UnitPathfinder.findNearestWalkable
--- @covers lurek.pathfinding.UnitPathfinder.isReachable
--- @covers lurek.pathfinding.UnitPathfinder.lineOfSight
--- @covers lurek.pathfinding.UnitPathfinder.setCacheEnabled
--- @covers lurek.pathfinding.UnitPathfinder.isCacheEnabled
--- @covers lurek.pathfinding.UnitPathfinder.clearCache
--- @covers lurek.pathfinding.UnitPathfinder.getCacheSize
--- @covers lurek.pathfinding.UnitPathfinder.setCacheMaxSize
 
 -- @description Covers suite: NavGrid creation.
 describe("NavGrid creation", function()
     -- @covers lurek.pathfinding.newNavGrid
+    -- @covers lurek.pathfinding.getThreadCount
+    -- @covers lurek.pathfinding.newFlowField
+    -- @covers lurek.pathfinding.newNavGridFromTileMap
+    -- @covers lurek.pathfinding.newPathfinder
+    -- @covers lurek.tilemap.newTileMap
+    -- @covers lurek.pathfinding.NavGrid.getDimensions
+    -- @covers lurek.pathfinding.NavGrid.fill
+    -- @covers lurek.pathfinding.NavGrid.saveToString
+    -- @covers lurek.pathfinding.NavGrid.loadFromString
+    -- @covers lurek.pathfinding.NavGrid.setChunkSize
+    -- @covers lurek.pathfinding.NavGrid.getChunkSize
+    -- @covers lurek.pathfinding.NavGrid.type
+    -- @covers lurek.pathfinding.NavGrid.typeOf
+    -- @covers lurek.pathfinding.UnitPathfinder.findPathSmooth
+    -- @covers lurek.pathfinding.UnitPathfinder.getPathLength
+    -- @covers lurek.pathfinding.UnitPathfinder.getPathCost
+    -- @covers lurek.pathfinding.UnitPathfinder.findPartialPath
+    -- @covers lurek.pathfinding.UnitPathfinder.findNearestWalkable
+    -- @covers lurek.pathfinding.UnitPathfinder.isReachable
+    -- @covers lurek.pathfinding.UnitPathfinder.lineOfSight
+    -- @covers lurek.pathfinding.UnitPathfinder.setCacheEnabled
+    -- @covers lurek.pathfinding.UnitPathfinder.isCacheEnabled
+    -- @covers lurek.pathfinding.UnitPathfinder.clearCache
+    -- @covers lurek.pathfinding.UnitPathfinder.getCacheSize
+    -- @covers lurek.pathfinding.UnitPathfinder.setCacheMaxSize
     -- @description Verifies newNavGrid returns NavGrid userdata for valid dimensions.
     it("newNavGrid returns an object", function()
         local grid = lurek.pathfinding.newNavGrid(20, 20)
@@ -682,7 +680,6 @@ describe("UnitPathfinder cache control", function()
     end)
 end)
 
-
 -- @description Covers suite: flow field (RS parity).
 describe("flow field (RS parity)", function()
     -- @covers lurek.pathfinding.newNavGrid
@@ -818,5 +815,4 @@ describe("pathfinder line of sight and diagonal mode (RS parity)", function()
         expect_equal("always", g:getDiagonalMode())
     end)
 end)
-
 test_summary()

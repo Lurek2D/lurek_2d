@@ -1,4 +1,4 @@
-﻿-- test_evidence_combined.lua
+-- test_evidence_combined.lua
 -- Evidence tests: cross-module integration (procgen+pathfinding, noise+minimap,
 --                 terrain+raycaster, tilemap+particles)
 
@@ -241,5 +241,4 @@ describe("Evidence: combined tilemap + particles", function()
     end)
 
 end)
-
 test_summary()

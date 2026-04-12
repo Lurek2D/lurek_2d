@@ -1,12 +1,10 @@
-﻿-- tests/lua/test_joystick_ext.lua
+-- tests/lua/test_joystick_ext.lua
 -- BDD-style integration tests for lurek.gamepad background events extension
--- @covers lurek.gamepad.getBackgroundEvents
--- @covers lurek.gamepad.setBackgroundEvents
-
 
 -- @description Covers suite: lurek.gamepad.getBackgroundEvents.
 describe("lurek.gamepad.getBackgroundEvents", function()
     -- @covers lurek.gamepad.getBackgroundEvents
+    -- @covers lurek.gamepad.setBackgroundEvents
     -- @description Verifies background joystick events are disabled by default.
     it("defaults to false", function()
         expect_equal(false, lurek.gamepad.getBackgroundEvents())
@@ -32,5 +30,4 @@ describe("lurek.gamepad.setBackgroundEvents", function()
         expect_equal(false, lurek.gamepad.getBackgroundEvents())
     end)
 end)
-
 test_summary()

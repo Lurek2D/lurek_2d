@@ -1,32 +1,32 @@
-﻿-- Lurek2D AI API Tests
+-- Lurek2D AI API Tests
 
 -- =========================================================================
 -- 1. lurek.ai module exists
 -- =========================================================================
--- @covers lurek.ai.newAction
--- @covers lurek.ai.newBehaviorTree
--- @covers lurek.ai.newBlackboard
--- @covers lurek.ai.newCommandQueue
--- @covers lurek.ai.newCondition
--- @covers lurek.ai.newGOAPPlanner
--- @covers lurek.ai.newInfluenceMap
--- @covers lurek.ai.newInverter
--- @covers lurek.ai.newParallel
--- @covers lurek.ai.newQLearner
--- @covers lurek.ai.newRepeater
--- @covers lurek.ai.newSelector
--- @covers lurek.ai.newSequence
--- @covers lurek.ai.newSquad
--- @covers lurek.ai.newStateMachine
--- @covers lurek.ai.newSteeringManager
--- @covers lurek.ai.newSucceeder
--- @covers lurek.ai.newUtilityAI
--- @covers lurek.ai.newWorld
--- @covers lurek.pathfinding.newPathFlowField
--- @covers lurek.pathfinding.newPathGrid
 
 -- @description Verifies the AI namespace exposes every documented world, planner, decision-model, behavior-tree, and pathfinding factory needed by the Lua API.
 describe("lurek.ai module exists", function()
+    -- @covers lurek.ai.newAction
+    -- @covers lurek.ai.newBehaviorTree
+    -- @covers lurek.ai.newBlackboard
+    -- @covers lurek.ai.newCommandQueue
+    -- @covers lurek.ai.newCondition
+    -- @covers lurek.ai.newGOAPPlanner
+    -- @covers lurek.ai.newInfluenceMap
+    -- @covers lurek.ai.newInverter
+    -- @covers lurek.ai.newParallel
+    -- @covers lurek.ai.newQLearner
+    -- @covers lurek.ai.newRepeater
+    -- @covers lurek.ai.newSelector
+    -- @covers lurek.ai.newSequence
+    -- @covers lurek.ai.newSquad
+    -- @covers lurek.ai.newStateMachine
+    -- @covers lurek.ai.newSteeringManager
+    -- @covers lurek.ai.newSucceeder
+    -- @covers lurek.ai.newUtilityAI
+    -- @covers lurek.ai.newWorld
+    -- @covers lurek.pathfinding.newPathFlowField
+    -- @covers lurek.pathfinding.newPathGrid
     -- @description Checks that the AI namespace itself is registered as a Lua table.
     it("lurek.ai is a table", function()
         expect_type("table", lurek.ai)

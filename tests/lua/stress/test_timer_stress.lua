@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Timer Operations
+-- Lurek2D Stress Test: Timer Operations
 -- Measures timer query throughput under heavy polling.
 
 -- @description Covers suite: stress: timer query throughput.
@@ -60,5 +60,4 @@ describe("stress: timer query throughput", function()
         expect_true(elapsed < 10.0, "mixed timer budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

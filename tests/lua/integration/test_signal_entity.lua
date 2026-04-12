@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Signal + Entity
+-- Lurek2D Integration Test: Signal + Entity
 -- Tests entities emitting and receiving signals.
--- @covers lurek.entity.newUniverse
--- @covers lurek.signal.new
 
 -- @description Covers suite: integration: entity events via signal.
 describe("integration: entity events via signal", function()
     -- @covers lurek.entity.Universe.spawn
     -- @covers lurek.signal.Signal.emit
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.signal.new
     -- @description Verifies spawning entities can drive a connected signal callback for each created entity.
     it("entity creation triggers signal", function()
         local universe    = lurek.entity.newUniverse()
@@ -97,5 +97,4 @@ describe("integration: entity events via signal", function()
         expect_equal(1, count, "listener not called after disconnect")
     end)
 end)
-
 test_summary()

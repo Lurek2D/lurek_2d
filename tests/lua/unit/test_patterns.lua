@@ -1,21 +1,20 @@
-﻿-- tests/lua/test_patterns.lua
+-- tests/lua/test_patterns.lua
 -- BDD-style integration tests for lurek.patterns module
 
 -- ===================================================================
 -- EventBus
 -- ===================================================================
--- @covers lurek.patterns.newCommandStack
--- @covers lurek.patterns.newEventBus
--- @covers lurek.patterns.newFactory
--- @covers lurek.patterns.newObjectPool
--- @covers lurek.patterns.newServiceLocator
--- @covers lurek.patterns.newSimpleState
 
 -- @description Covers suite: lurek.patterns.newEventBus.
 describe("lurek.patterns.newEventBus", function()
     -- @covers lurek.patterns.newEventBus
     -- @covers lurek.patterns.EventBus.type
     -- @covers lurek.patterns.EventBus.typeOf
+    -- @covers lurek.patterns.newCommandStack
+    -- @covers lurek.patterns.newFactory
+    -- @covers lurek.patterns.newObjectPool
+    -- @covers lurek.patterns.newServiceLocator
+    -- @covers lurek.patterns.newSimpleState
     -- @description Verifies newEventBus returns EventBus userdata with working type checks.
     it("creates an EventBus with type/typeOf", function()
         local bus = lurek.patterns.newEventBus()
@@ -600,7 +599,6 @@ describe("lurek.patterns.newSimpleState", function()
     end)
 end)
 
-
 -- @description Covers suite: SimpleState extended coverage (RS parity).
 describe("SimpleState extended coverage (RS parity)", function()
     -- @covers lurek.patterns.newSimpleState
@@ -672,5 +670,4 @@ describe("CommandStack undo/redo (RS parity)", function()
         expect_equal(1, cs:getHistorySize())
     end)
 end)
-
-return test_summary()
+test_summary()

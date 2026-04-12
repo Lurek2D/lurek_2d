@@ -1,4 +1,4 @@
-﻿-- Lurek2D DataFrame Tests
+-- Lurek2D DataFrame Tests
 -- Tests for lurek.dataframe tabular data API
 
 -- Helper to build a simple test DataFrame
@@ -1280,5 +1280,4 @@ describe("Database (RS parity)", function()
         expect_false(found)
     end)
 end)
-
 test_summary()

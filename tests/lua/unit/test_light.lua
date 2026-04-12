@@ -1,25 +1,25 @@
-﻿-- Lurek2D lurek.light.* API Tests
+-- Lurek2D lurek.light.* API Tests
 
 -- â”€â”€ Module-level functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
--- @covers lurek.light.advanceFlickers
--- @covers lurek.light.clear
--- @covers lurek.light.getAmbient
--- @covers lurek.light.getGroupCount
--- @covers lurek.light.getLightCount
--- @covers lurek.light.getMaxLights
--- @covers lurek.light.getOccluderCount
--- @covers lurek.light.isEnabled
--- @covers lurek.light.newLight
--- @covers lurek.light.newOccluder
--- @covers lurek.light.setAmbient
--- @covers lurek.light.setEnabled
--- @covers lurek.light.setGroupColor
--- @covers lurek.light.setGroupEnabled
--- @covers lurek.light.setGroupIntensity
--- @covers lurek.light.setMaxLights
 
 -- @description Verifies the module table, constructors, counters, ambient state, enable state, and max-light controls all round-trip through the public API.
 describe("lurek.light module functions", function()
+    -- @covers lurek.light.advanceFlickers
+    -- @covers lurek.light.clear
+    -- @covers lurek.light.getAmbient
+    -- @covers lurek.light.getGroupCount
+    -- @covers lurek.light.getLightCount
+    -- @covers lurek.light.getMaxLights
+    -- @covers lurek.light.getOccluderCount
+    -- @covers lurek.light.isEnabled
+    -- @covers lurek.light.newLight
+    -- @covers lurek.light.newOccluder
+    -- @covers lurek.light.setAmbient
+    -- @covers lurek.light.setEnabled
+    -- @covers lurek.light.setGroupColor
+    -- @covers lurek.light.setGroupEnabled
+    -- @covers lurek.light.setGroupIntensity
+    -- @covers lurek.light.setMaxLights
     -- @description Asserts that lurek.light is exposed to Lua as a table.
     it("lurek.light is a table", function()
         expect_type("table", lurek.light)
@@ -1260,5 +1260,4 @@ describe("newLight opts with new effects", function()
         l:remove()
     end)
 end)
-
 test_summary()

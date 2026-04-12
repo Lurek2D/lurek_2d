@@ -1,11 +1,10 @@
-﻿--- BDD tests for library.battle
+--- BDD tests for library.battle
 local battle = require("library.battle")
 
 ---------------------------------------------------------------------------
 -- StatusEffect
 ---------------------------------------------------------------------------
 
--- @covers library.battle.newStatusEffect
 -- @description Covers status effect creation, permanent-duration handling, and turn ticking that transitions temporary effects into the expired state.
 describe("StatusEffect", function()
     -- @covers library.battle.newStatusEffect
@@ -44,7 +43,6 @@ end)
 -- CombatAction
 ---------------------------------------------------------------------------
 
--- @covers library.battle.newAction
 -- @description Exercises combat action defaults, cooldown state changes after use, and accuracy clamping for out-of-range values.
 describe("CombatAction", function()
     -- @covers library.battle.newAction
@@ -87,7 +85,6 @@ end)
 -- Combatant
 ---------------------------------------------------------------------------
 
--- @covers library.battle.newCombatant
 -- @description Verifies combatant stat defaults, damage and healing rules, stacked statuses, action registration, and metadata or stat access helpers.
 describe("Combatant", function()
     -- @covers library.battle.newCombatant
@@ -228,7 +225,6 @@ end)
 -- CombatBattle
 ---------------------------------------------------------------------------
 
--- @covers library.battle.newBattle
 -- @description Validates battle roster management, initiative ordering, turn advancement, combat resolution, win detection, logs, and whole-party ticking helpers.
 describe("CombatBattle", function()
     -- @covers library.battle.newBattle
@@ -484,7 +480,6 @@ end)
 -- DamageType enum
 ---------------------------------------------------------------------------
 
--- @covers library.battle.DamageType
 -- @description Confirms the exported damage type enum exposes the expected named constants used by attack resolution and resistance lookups.
 describe("DamageType", function()
     -- @covers library.battle.DamageType
@@ -585,5 +580,4 @@ describe("Combatant setLevel", function()
         expect_equal(c:getLevel(), 10)
     end)
 end)
-
 test_summary()

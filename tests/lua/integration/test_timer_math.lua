@@ -1,14 +1,12 @@
-﻿-- @covers lurek.math.pi
--- @covers lurek.math.sin
--- @covers lurek.time.getDelta
-
-ď»ż-- Lurek2D Integration Test: Timer + Math
--- Tests that timer and math functions work together for game-loop scenarios
+-- Lurek2D Integration Test: Timer + Math.
+-- Covers game-loop style scenarios where timer deltas and math helpers are consumed together from the Lua runtime.
 
 -- @description Covers suite: timer + math integration.
 describe("timer + math integration", function()
     -- @covers lurek.time.getDelta
     -- @covers lurek.math
+    -- @covers lurek.math.pi
+    -- @covers lurek.math.sin
     -- @description Verifies the referenced timer delta API returns a numeric value; this file is miscategorized and largely tests timer/math helpers rather than a real integration flow.
     it("getDelta returns a number", function()
         local dt = lurek.time.getDelta()
@@ -101,3 +99,4 @@ describe("timer + math easing", function()
         expect_near(0.5, eased, 0.001, "ease-in-out at midpoint")
     end)
 end)
+test_summary()

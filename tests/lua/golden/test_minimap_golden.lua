@@ -1,5 +1,4 @@
-﻿-- Golden test: minimap
--- @golden
+-- Golden test: minimap
 
 -- @description Covers suite: golden: minimap evidence comparison.
 describe("golden: minimap evidence comparison", function()
@@ -16,5 +15,4 @@ describe("golden: minimap evidence comparison", function()
         expect_golden_file_match(evidence_output_dir("minimap") .. "political_mode.png", "tests/lua/golden/samples/minimap/political_mode.png")
 end)
 end)
-
 test_summary()

@@ -1,5 +1,4 @@
-﻿-- Golden test: procgen â€” compare evidence output against golden samples
--- @golden
+-- Golden test: procgen â€” compare evidence output against golden samples
 
 -- @description Covers suite: golden: procgen evidence comparison.
 describe("golden: procgen evidence comparison", function()
@@ -18,5 +17,4 @@ describe("golden: procgen evidence comparison", function()
         expect_golden_file_match(evidence_output_dir("procgen") .. "poisson_dense.png", "tests/lua/golden/samples/procgen/poisson_dense.png")
 end)
 end)
-
 test_summary()

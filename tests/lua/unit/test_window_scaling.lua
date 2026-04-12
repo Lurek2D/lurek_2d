@@ -1,15 +1,13 @@
-﻿-- Lurek2D Window Scaling API Tests
+-- Lurek2D Window Scaling API Tests
 -- Tests for lurek.window scale mode, game dimensions, and viewport info.
--- @covers lurek.window.getGameHeight
--- @covers lurek.window.getGameWidth
--- @covers lurek.window.getScaleInfo
--- @covers lurek.window.getScaleMode
--- @covers lurek.window.setScaleMode
-
 
 -- @description Covers suite: lurek.window scaling API exists.
 describe("lurek.window scaling API exists", function()
     -- @covers lurek.window.setScaleMode
+    -- @covers lurek.window.getGameHeight
+    -- @covers lurek.window.getGameWidth
+    -- @covers lurek.window.getScaleInfo
+    -- @covers lurek.window.getScaleMode
     -- @description Verifies the scale-mode setter is exposed.
     it("setScaleMode is a function", function()
         expect_type("function", lurek.window.setScaleMode)
@@ -267,5 +265,4 @@ describe("lurek.window.getScaleInfo", function()
         end
     end)
 end)
-
 test_summary()

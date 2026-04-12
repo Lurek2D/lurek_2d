@@ -1,17 +1,15 @@
-﻿-- Lurek2D Integration Test: Light + Graphics
+-- Lurek2D Integration Test: Light + Graphics
 -- Tests light API alongside graphics draw commands.
--- @covers lurek.light.newLight
--- @covers lurek.light.setPosition
--- @covers lurek.light.setRadius
--- @covers lurek.light.setColor
--- @covers lurek.light.setIntensity
--- @covers lurek.gfx.setColor
--- @covers lurek.gfx.rectangle
 
 -- @description Covers suite: integration: light placement alongside scene geometry.
 describe("integration: light placement alongside scene geometry", function()
     -- @covers lurek.light.newLight
     -- @covers lurek.gfx.rectangle
+    -- @covers lurek.light.setPosition
+    -- @covers lurek.light.setRadius
+    -- @covers lurek.light.setColor
+    -- @covers lurek.light.setIntensity
+    -- @covers lurek.gfx.setColor
     -- @description Verifies light setup and scene geometry draw commands can be issued together without error.
     it("creates lights and draws geometry to same scene", function()
         expect_no_error(function()
@@ -74,5 +72,4 @@ describe("integration: light placement alongside scene geometry", function()
         end)
     end)
 end)
-
 test_summary()

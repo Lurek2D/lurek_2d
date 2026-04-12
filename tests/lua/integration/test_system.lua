@@ -1,17 +1,16 @@
-﻿-- @covers lurek.platform.clipboard
--- @covers lurek.platform.getClipboardText
--- @covers lurek.platform.getInfo
--- @covers lurek.platform.getOS
--- @covers lurek.platform.getVersion
--- @covers lurek.platform.setClipboardText
--- @covers lurek.signal.quit
-
-ď»ż-- Lurek2D System API Tests
+-- Lurek2D Integration Test: System API.
+-- Exercises platform-facing system helpers from Lua, including namespace availability, clipboard stubs, and quit-signal surface wiring.
 
 -- @description Covers suite: lurek.platform module exists.
 describe("lurek.platform module exists", function()
     -- @covers lurek.platform
     -- @covers lurek.platform.getOS
+    -- @covers lurek.platform.clipboard
+    -- @covers lurek.platform.getClipboardText
+    -- @covers lurek.platform.getInfo
+    -- @covers lurek.platform.getVersion
+    -- @covers lurek.platform.setClipboardText
+    -- @covers lurek.signal.quit
     -- @description Verifies the platform namespace exists; this file is stored under integration but this test is effectively single-module platform coverage.
     it("lurek.platform is a table", function()
         expect_type("table", lurek.platform)
@@ -166,5 +165,4 @@ describe("lurek.platform.clipboard stubs", function()
         expect_type("string", text)
     end)
 end)
-
 test_summary()

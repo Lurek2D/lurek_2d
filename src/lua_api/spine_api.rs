@@ -11,11 +11,21 @@ use crate::spine::{BoneParams, Skeleton};
 fn parse_bone_opts(opts: &Option<LuaTable>) -> LuaResult<(f32, f32, f32, f32, f32)> {
     let (mut x, mut y, mut rot, mut sx, mut sy) = (0.0, 0.0, 0.0, 1.0, 1.0);
     if let Some(tbl) = opts {
-        if let Ok(v) = tbl.get::<_, f32>("x") { x = v; }
-        if let Ok(v) = tbl.get::<_, f32>("y") { y = v; }
-        if let Ok(v) = tbl.get::<_, f32>("rotation") { rot = v; }
-        if let Ok(v) = tbl.get::<_, f32>("scale_x") { sx = v; }
-        if let Ok(v) = tbl.get::<_, f32>("scale_y") { sy = v; }
+        if let Ok(v) = tbl.get::<_, f32>("x") {
+            x = v;
+        }
+        if let Ok(v) = tbl.get::<_, f32>("y") {
+            y = v;
+        }
+        if let Ok(v) = tbl.get::<_, f32>("rotation") {
+            rot = v;
+        }
+        if let Ok(v) = tbl.get::<_, f32>("scale_x") {
+            sx = v;
+        }
+        if let Ok(v) = tbl.get::<_, f32>("scale_y") {
+            sy = v;
+        }
     }
     Ok((x, y, rot, sx, sy))
 }
@@ -31,18 +41,26 @@ pub struct LuaSkeleton {
 
 impl LuaUserData for LuaSkeleton {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- addBone --
         /// Adds a root bone with optional local transform and returns its index.
         /// @param name : string
         /// @param opts : table?
         /// @return integer
-        methods.add_method_mut("addBone", |_, this, (name, opts): (String, Option<LuaTable>)| {
-            let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
-            Ok(this.inner.add_bone_full(BoneParams {
-                name, parent_index: None, x, y, rotation: rot, scale_x: sx, scale_y: sy,
-            }))
-        });
+        methods.add_method_mut(
+            "addBone",
+            |_, this, (name, opts): (String, Option<LuaTable>)| {
+                let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
+                Ok(this.inner.add_bone_full(BoneParams {
+                    name,
+                    parent_index: None,
+                    x,
+                    y,
+                    rotation: rot,
+                    scale_x: sx,
+                    scale_y: sy,
+                }))
+            },
+        );
 
         // -- addChildBone --
         /// Adds a child bone attached to a parent and returns its index.
@@ -55,7 +73,13 @@ impl LuaUserData for LuaSkeleton {
             |_, this, (name, parent_idx, opts): (String, usize, Option<LuaTable>)| {
                 let (x, y, rot, sx, sy) = parse_bone_opts(&opts)?;
                 Ok(this.inner.add_bone_full(BoneParams {
-                    name, parent_index: Some(parent_idx), x, y, rotation: rot, scale_x: sx, scale_y: sy,
+                    name,
+                    parent_index: Some(parent_idx),
+                    x,
+                    y,
+                    rotation: rot,
+                    scale_x: sx,
+                    scale_y: sy,
                 }))
             },
         );
@@ -129,16 +153,12 @@ impl LuaUserData for LuaSkeleton {
         // -- boneCount --
         /// Returns the total number of bones.
         /// @return integer
-        methods.add_method("boneCount", |_, this, ()| {
-            Ok(this.inner.bone_count())
-        });
+        methods.add_method("boneCount", |_, this, ()| Ok(this.inner.bone_count()));
 
         // -- slotCount --
         /// Returns the total number of slots.
         /// @return integer
-        methods.add_method("slotCount", |_, this, ()| {
-            Ok(this.inner.slot_count())
-        });
+        methods.add_method("slotCount", |_, this, ()| Ok(this.inner.slot_count()));
 
         // -- drawToImage --
         /// Renders the skeleton as a stick-figure debug view into a new ImageData.
@@ -149,7 +169,6 @@ impl LuaUserData for LuaSkeleton {
             let img = this.inner.draw_to_image(w, h);
             lua.create_userdata(img)
         });
-
     }
 }
 

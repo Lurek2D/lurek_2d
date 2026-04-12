@@ -1,4 +1,4 @@
-﻿--- BDD tests for library.combat
+--- BDD tests for library.combat
 --- Covers: CollisionGroupSet, MountSlot, Chassis, Turret, Weapon,
 ---         Projectile, ProjectilePool, CombatWorld.
 
@@ -10,7 +10,6 @@ dofile("tests/lua/init.lua")
 
 -- â”€â”€ CollisionGroupSet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newCollisionGroupSet
 -- @description Tests collision group registration, symmetric collision masks, group enumeration, reset behavior, and mask computation for enabled interactions.
 describe("CollisionGroupSet", function()
     -- @covers library.combat.newCollisionGroupSet
@@ -91,7 +90,6 @@ end)
 
 -- â”€â”€ MountSlot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newMountSlot
 -- @description Verifies mount slot construction, default size class selection, and default full-circle firing arc values.
 describe("MountSlot", function()
     -- @covers library.combat.newMountSlot
@@ -116,7 +114,6 @@ end)
 
 -- â”€â”€ Chassis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newChassis
 -- @description Covers chassis durability, armor, slot registration, lethal damage, healing clamps, and per-zone armor lookup helpers.
 describe("Chassis", function()
     -- @covers library.combat.newChassis
@@ -181,7 +178,6 @@ end)
 
 -- â”€â”€ Turret â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newTurret
 -- @description Exercises turret targeting, arc clamping, aiming detection, angular update output, and the full getter or setter surface for turret state.
 describe("Turret", function()
     -- @covers library.combat.newTurret
@@ -283,7 +279,6 @@ end)
 
 -- â”€â”€ Weapon â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newWeapon
 -- @description Validates weapon defaults, firing and cooldown flow, reload logic, burst-fire state, ammo exhaustion checks, and weapon property accessors.
 describe("Weapon", function()
     -- @covers library.combat.newWeapon
@@ -433,7 +428,6 @@ end)
 
 -- â”€â”€ Projectile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newProjectilePool
 -- @description Focuses on pooled projectile instances to verify reset behavior and active-update bookkeeping for lifetime and traveled distance.
 describe("Projectile", function()
     -- @covers library.combat.newProjectilePool
@@ -477,7 +471,6 @@ end)
 
 -- â”€â”€ ProjectilePool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newProjectilePool
 -- @description Tests projectile pool allocation, exhaustion, release safety, pooled lookup, pool-size clamping, and active-slot bookkeeping.
 describe("ProjectilePool", function()
     -- @covers library.combat.newProjectilePool
@@ -564,7 +557,6 @@ end)
 
 -- â”€â”€ CombatWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.newCombatWorld
 -- @description Verifies combat world aggregation of chassis, turrets, weapons, and pools together with updates, cleanup, counters, and reset behavior.
 describe("CombatWorld", function()
     -- @covers library.combat.newCombatWorld
@@ -682,11 +674,10 @@ end)
 
 -- â”€â”€ Enums â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.combat.ProjectileType
--- @covers library.combat.ArmorZone
 -- @description Confirms the combat module exports the expected projectile and armor-zone enum string constants.
 describe("Enums", function()
     -- @covers library.combat.ProjectileType
+    -- @covers library.combat.ArmorZone
     -- @description Confirms the projectile-type enum exports each supported projectile behavior string.
     it("ProjectileType has all variants", function()
         expect_equal(combat.ProjectileType.Ballistic, "ballistic")
@@ -704,5 +695,4 @@ describe("Enums", function()
         expect_equal(combat.ArmorZone.Side, "side")
     end)
 end)
-
 test_summary()

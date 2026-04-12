@@ -1,13 +1,12 @@
-﻿-- Lurek2D Integration Test: AI + Pathfinding
+-- Lurek2D Integration Test: AI + Pathfinding
 -- Tests AI agents requesting and following A* paths.
--- @covers lurek.ai.newStateMachine
--- @covers lurek.pathfinding.newNavGrid
--- @covers lurek.pathfinding.newPathfinder
 
 -- @description Covers suite: integration: AI agent uses pathfinding to navigate.
 describe("integration: AI agent uses pathfinding to navigate", function()
     -- @covers lurek.ai.newStateMachine
     -- @covers lurek.pathfinding.Pathfinder.findPath
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @covers lurek.pathfinding.newPathfinder
     -- @description Verifies finding a valid path is enough to move the AI state machine from IDLE into MOVING.
     it("AI state machine requests path and transitions to moving state", function()
         local grid = lurek.pathfinding.newNavGrid(20, 20)
@@ -76,5 +75,4 @@ describe("integration: AI agent uses pathfinding to navigate", function()
         expect_true(len > 9, "detour path is longer than straight line (10)")
     end)
 end)
-
 test_summary()

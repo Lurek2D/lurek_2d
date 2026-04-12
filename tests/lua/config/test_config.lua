@@ -1,13 +1,13 @@
-﻿-- @covers lurek.platform.getOS
+-- tests/lua/config/test_config.lua
+-- BDD tests for the lurek.conf(t) configuration API, focused on runtime reads and merged configuration visibility after boot.
+
+-- @covers lurek.platform.getOS
 -- @covers lurek.platform.getVersion
 -- @covers lurek.window.getHeight
 -- @covers lurek.window.getTitle
 -- @covers lurek.window.getWidth
 -- @covers lurek.window.isFullscreen
 -- @covers lurek.window.isResizable
-
-ď»ż-- tests/lua/config/test_config.lua
--- BDD tests for the lurek.conf(t) configuration API.
 -- These tests verify that the conf table is readable at runtime, that
 -- lurek.conf() merges overrides correctly, and that conf keys are
 -- accessible after the engine boots.
@@ -113,7 +113,6 @@ describe("lurek.conf merge semantics", function()
         local w = lurek.window.getWidth()
         expect_equal(w >= 1, true)  -- just confirm it's set
     end)
-
     -- @covers lurek.window.getHeight
     -- @description Confirms only that the default boot height has been populated into the runtime window state, not that it equals an exact fixture value.
     it("default window height matches conf default of 600", function()
@@ -163,5 +162,4 @@ describe("lurek.conf call-time safety", function()
         expect_equal(true, true)
     end)
 end)
-
 test_summary()

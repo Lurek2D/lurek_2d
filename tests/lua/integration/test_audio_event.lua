@@ -1,12 +1,11 @@
-﻿-- Lurek2D Integration Test: Audio + Event System
+-- Lurek2D Integration Test: Audio + Event System
 -- Tests audio playback triggered by event dispatching
--- @covers lurek.audio.setMasterVolume
--- @covers lurek.event.newDispatcher
 
 -- @description Covers suite: audio + event integration.
 describe("audio + event integration", function()
     -- @covers lurek.audio.setMasterVolume
     -- @covers lurek.event.Dispatcher.emit
+    -- @covers lurek.event.newDispatcher
     -- @description Verifies emitting a mute event invokes the registered handler and drives the audio master volume to zero.
     it("event triggers volume change", function()
         local dispatcher = lurek.event.newDispatcher()
@@ -77,5 +76,4 @@ describe("audio + event integration", function()
         expect_equal(2, call_count, "both listeners called")
     end)
 end)
-
 test_summary()

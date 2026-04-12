@@ -1,7 +1,5 @@
-﻿-- Lurek2D Integration Test: Particle + Timer
+-- Lurek2D Integration Test: Particle + Timer
 -- Tests time-based particle emission control.
--- @covers lurek.particle.newEmitter
--- @covers lurek.timer.getTime
 
 -- @description Covers suite: integration: particle emitter driven by timer.
 describe("integration: particle emitter driven by timer", function()
@@ -75,5 +73,4 @@ describe("integration: particle emitter driven by timer", function()
         expect_equal(100.0, last.y, "last trail y = 100")
     end)
 end)
-
 test_summary()

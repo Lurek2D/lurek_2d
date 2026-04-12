@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Large Tilemap Operations
+-- Lurek2D Stress Test: Large Tilemap Operations
 -- Tests creating and manipulating large tilemaps at scale
-
 
 -- @description Covers suite: tilemap stress: large map creation.
 describe("tilemap stress: large map creation", function()
@@ -146,3 +145,4 @@ describe("tilemap stress: fill operations", function()
         expect_equal(42, cm:getTile(5, 5), "chunk tile preserved")
     end)
 end)
+test_summary()

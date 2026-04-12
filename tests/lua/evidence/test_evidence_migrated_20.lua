@@ -1,4 +1,7 @@
-﻿local function evidence_output_dir()
+-- Migrated evidence suite 20.
+-- Produces the migrated_20 evidence artifacts that feed the paired compare-only golden checks for legacy Rust baselines.
+
+local function evidence_output_dir()
     local path = lurek.fs.getAppDir() .. "/tests/lua/golden/evidence_output/migrated_20"
     lurek.fs.createDirectory(path)
     return path
@@ -24,7 +27,7 @@ describe("Migrated Evidence Tests 20", function()
     -- @covers ImageData:fill
     -- @covers ImageData:setPixel
     -- @evidence file
-    -- @description Builds a minimal 8x8 sprite fixture and writes it to PNG.
+    -- @description Builds a minimal 8x8 sprite fixture with a stable pixel pattern, writes the PNG artifact, and preserves an evidence source for the migrated_20 fixture golden comparison.
     it("generates fixture_sprite_8x8", function()
         local img = lurek.img.newImageData(8, 8)
         img:fill(0, 0, 0, 0)
@@ -510,5 +513,4 @@ describe("Migrated Evidence Tests 20", function()
         expect_evidence_created(p)
     end)
 end)
-
 test_summary()

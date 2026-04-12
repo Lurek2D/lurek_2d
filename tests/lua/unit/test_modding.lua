@@ -1,43 +1,43 @@
-﻿-- Lurek2D modding API unit tests
+-- Lurek2D modding API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests Mod lifecycle, hooks, config, and ModManager operations including
 -- validateDependencies, circular detection, load order control, reload queue,
 -- and scanFolder.
--- @covers lurek.modding.newMod
--- @covers lurek.modding.newModManager
--- @covers lurek.modding.Mod.getId
--- @covers lurek.modding.Mod.getName
--- @covers lurek.modding.Mod.getVersion
--- @covers lurek.modding.Mod.getAuthor
--- @covers lurek.modding.Mod.getDescription
--- @covers lurek.modding.Mod.getDependencies
--- @covers lurek.modding.Mod.getPriority
--- @covers lurek.modding.Mod.isEnabled
--- @covers lurek.modding.Mod.setEnabled
--- @covers lurek.modding.Mod.isLoaded
--- @covers lurek.modding.Mod.setHook
--- @covers lurek.modding.Mod.getHook
--- @covers lurek.modding.Mod.hasHook
--- @covers lurek.modding.Mod.getHookNames
--- @covers lurek.modding.Mod.setConfig
--- @covers lurek.modding.Mod.getConfig
--- @covers lurek.modding.ModManager.registerMod
--- @covers lurek.modding.ModManager.unregisterMod
--- @covers lurek.modding.ModManager.hasMod
--- @covers lurek.modding.ModManager.getModCount
--- @covers lurek.modding.ModManager.getAllMods
--- @covers lurek.modding.ModManager.getLoadOrder
--- @covers lurek.modding.ModManager.validateDependencies
--- @covers lurek.modding.ModManager.hasCircularDependencies
--- @covers lurek.modding.ModManager.setLoadOrder
--- @covers lurek.modding.ModManager.clearLoadOrder
--- @covers lurek.modding.ModManager.markForReload
--- @covers lurek.modding.ModManager.getReloadQueue
--- @covers lurek.modding.ModManager.clearReloadQueue
 
 -- @description Covers suite: lurek.modding module exists.
 describe("lurek.modding module exists", function()
     -- @covers lurek.modding
+    -- @covers lurek.modding.newMod
+    -- @covers lurek.modding.newModManager
+    -- @covers lurek.modding.Mod.getId
+    -- @covers lurek.modding.Mod.getName
+    -- @covers lurek.modding.Mod.getVersion
+    -- @covers lurek.modding.Mod.getAuthor
+    -- @covers lurek.modding.Mod.getDescription
+    -- @covers lurek.modding.Mod.getDependencies
+    -- @covers lurek.modding.Mod.getPriority
+    -- @covers lurek.modding.Mod.isEnabled
+    -- @covers lurek.modding.Mod.setEnabled
+    -- @covers lurek.modding.Mod.isLoaded
+    -- @covers lurek.modding.Mod.setHook
+    -- @covers lurek.modding.Mod.getHook
+    -- @covers lurek.modding.Mod.hasHook
+    -- @covers lurek.modding.Mod.getHookNames
+    -- @covers lurek.modding.Mod.setConfig
+    -- @covers lurek.modding.Mod.getConfig
+    -- @covers lurek.modding.ModManager.registerMod
+    -- @covers lurek.modding.ModManager.unregisterMod
+    -- @covers lurek.modding.ModManager.hasMod
+    -- @covers lurek.modding.ModManager.getModCount
+    -- @covers lurek.modding.ModManager.getAllMods
+    -- @covers lurek.modding.ModManager.getLoadOrder
+    -- @covers lurek.modding.ModManager.validateDependencies
+    -- @covers lurek.modding.ModManager.hasCircularDependencies
+    -- @covers lurek.modding.ModManager.setLoadOrder
+    -- @covers lurek.modding.ModManager.clearLoadOrder
+    -- @covers lurek.modding.ModManager.markForReload
+    -- @covers lurek.modding.ModManager.getReloadQueue
+    -- @covers lurek.modding.ModManager.clearReloadQueue
     -- @description Verifies the modding namespace is available as a Lua table.
     it("lurek.modding is a table", function()
         expect_type("table", lurek.modding)
@@ -498,5 +498,4 @@ describe("ModManager reload queue", function()
         expect_equal(0, #mm:getReloadQueue())
     end)
 end)
-
 test_summary()

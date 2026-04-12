@@ -1,21 +1,19 @@
-﻿-- Lurek2D Integration Test: Compute + DataFrame
+-- Lurek2D Integration Test: Compute + DataFrame
 -- Tests NdArray statistical operations feeding into DataFrame reports
--- @covers lurek.compute.fromTable
--- @covers lurek.compute.ones
--- @covers lurek.compute.range
--- @covers lurek.data.compress
--- @covers lurek.data.decode
--- @covers lurek.data.decompress
--- @covers lurek.data.encode
--- @covers lurek.data.hash
--- @covers lurek.dataframe.newDataFrame
--- @covers lurek.img.newImageData
-
 
 -- @description Covers suite: integration: compute statistics to dataframe.
 describe("integration: compute statistics to dataframe", function()
     -- @covers lurek.compute.NdArray.sum
     -- @covers lurek.dataframe.newDataFrame
+    -- @covers lurek.compute.fromTable
+    -- @covers lurek.compute.ones
+    -- @covers lurek.compute.range
+    -- @covers lurek.data.compress
+    -- @covers lurek.data.decode
+    -- @covers lurek.data.decompress
+    -- @covers lurek.data.encode
+    -- @covers lurek.data.hash
+    -- @covers lurek.img.newImageData
     -- @description Verifies statistics computed from multiple arrays can be assembled into dataframe rows without losing count, sum, mean, or min/max values.
     it("compute array stats populate dataframe", function()
         -- Create arrays with known distributions
@@ -136,3 +134,4 @@ describe("integration: data encoding pipeline", function()
         expect_equal(64, #hash1, "SHA-256 produces 64 hex chars")
     end)
 end)
+test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Particle System Burst Emission
+-- Lurek2D Stress Test: Particle System Burst Emission
 -- Tests large particle counts and extended lifecycle simulation
 
 -- @description Covers suite: particle stress: burst emission.
@@ -79,3 +79,4 @@ describe("particle stress: burst emission", function()
         expect_equal(0, sys:getCount(), "all particles cleared after reset")
     end)
 end)
+test_summary()

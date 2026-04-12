@@ -1,26 +1,25 @@
-﻿-- lurek.thread API unit tests
+-- lurek.thread API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests the factory functions and Channel primitives; does not launch background VMs.
--- @covers lurek.thread.getChannel
--- @covers lurek.thread.newChannel
--- @covers lurek.thread.newThread
--- @covers lurek.thread.Channel.push
--- @covers lurek.thread.Channel.pop
--- @covers lurek.thread.Channel.peek
--- @covers lurek.thread.Channel.demand
--- @covers lurek.thread.Channel.getCount
--- @covers lurek.thread.Channel.clear
--- @covers lurek.thread.Channel.supply
--- @covers lurek.thread.Channel.type
--- @covers lurek.thread.Channel.typeOf
--- @covers lurek.thread.Thread.isRunning
--- @covers lurek.thread.Thread.getError
--- @covers lurek.thread.Thread.type
--- @covers lurek.thread.Thread.typeOf
-
 
 -- @description Covers suite: lurek.thread module exists.
 describe("lurek.thread module exists", function()
+    -- @covers lurek.thread.getChannel
+    -- @covers lurek.thread.newChannel
+    -- @covers lurek.thread.newThread
+    -- @covers lurek.thread.Channel.push
+    -- @covers lurek.thread.Channel.pop
+    -- @covers lurek.thread.Channel.peek
+    -- @covers lurek.thread.Channel.demand
+    -- @covers lurek.thread.Channel.getCount
+    -- @covers lurek.thread.Channel.clear
+    -- @covers lurek.thread.Channel.supply
+    -- @covers lurek.thread.Channel.type
+    -- @covers lurek.thread.Channel.typeOf
+    -- @covers lurek.thread.Thread.isRunning
+    -- @covers lurek.thread.Thread.getError
+    -- @covers lurek.thread.Thread.type
+    -- @covers lurek.thread.Thread.typeOf
     -- @description Verifies case: lurek.thread is a table.
     it("lurek.thread is a table", function()
         expect_type("table", lurek.thread)
@@ -294,5 +293,4 @@ describe("Channel value types", function()
         expect_equal(3, ch:pop())
     end)
 end)
-
 test_summary()

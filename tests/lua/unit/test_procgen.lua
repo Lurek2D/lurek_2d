@@ -1,17 +1,15 @@
-﻿-- Lurek2D Lua BDD tests for lurek.procgen
+-- Lurek2D Lua BDD tests for lurek.procgen
 -- Headless: no GPU, no audio, no window.
--- @covers lurek.procgen.cellularAutomata
--- @covers lurek.procgen.floodFill
--- @covers lurek.procgen.perlinNoise
--- @covers lurek.procgen.poissonDisk
--- @covers lurek.procgen.voronoi
-
 
 -- @description Covers suite: lurek.procgen.
 describe("lurek.procgen", function()
     -- @description Covers suite: module interface.
     describe("module interface", function()
         -- @covers lurek.procgen.cellularAutomata
+        -- @covers lurek.procgen.floodFill
+        -- @covers lurek.procgen.perlinNoise
+        -- @covers lurek.procgen.poissonDisk
+        -- @covers lurek.procgen.voronoi
         -- @description Verifies cellularAutomata is exposed.
         it("exposes cellularAutomata", function()
             expect_type("function", lurek.procgen.cellularAutomata)
@@ -250,5 +248,4 @@ describe("procgen edge cases", function()
         end
     end)
 end)
-
 test_summary()

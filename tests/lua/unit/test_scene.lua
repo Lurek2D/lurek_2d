@@ -1,36 +1,6 @@
-﻿-- Scene module Lua tests
+-- Scene module Lua tests
 -- Headless-safe (no window/GPU/audio needed).
 -- lurek.scene is a module-level singleton; each describe calls lurek.scene.clear() first.
--- @covers lurek.scene.clear
--- @covers lurek.scene.draw
--- @covers lurek.scene.getCurrent
--- @covers lurek.scene.getData
--- @covers lurek.scene.getRegistered
--- @covers lurek.scene.getRegisteredNames
--- @covers lurek.scene.getStackSize
--- @covers lurek.scene.getTransitionProgress
--- @covers lurek.scene.hasData
--- @covers lurek.scene.hasRegistered
--- @covers lurek.scene.isEmpty
--- @covers lurek.scene.isTransitioning
--- @covers lurek.scene.newDepthSorter
--- @covers lurek.scene.pop
--- @covers lurek.scene.process
--- @covers lurek.scene.processLate
--- @covers lurek.scene.processPhysics
--- @covers lurek.scene.push
--- @covers lurek.scene.registerScene
--- @covers lurek.scene.removeData
--- @covers lurek.scene.render
--- @covers lurek.scene.renderUi
--- @covers lurek.scene.setData
--- @covers lurek.scene.switchTo
--- @covers lurek.scene.unregisterScene
--- @covers lurek.scene.update
--- @covers lurek.scene.popTo
--- @covers lurek.scene.new
--- @covers lurek.scene.define
-
 
 -- @description Covers suite: Stack operations.
 describe("Stack operations", function()
@@ -41,6 +11,28 @@ describe("Stack operations", function()
     -- @covers lurek.scene.push
     -- @covers lurek.scene.pop
     -- @covers lurek.scene.switchTo
+    -- @covers lurek.scene.draw
+    -- @covers lurek.scene.getData
+    -- @covers lurek.scene.getRegistered
+    -- @covers lurek.scene.getRegisteredNames
+    -- @covers lurek.scene.getTransitionProgress
+    -- @covers lurek.scene.hasData
+    -- @covers lurek.scene.hasRegistered
+    -- @covers lurek.scene.isTransitioning
+    -- @covers lurek.scene.newDepthSorter
+    -- @covers lurek.scene.process
+    -- @covers lurek.scene.processLate
+    -- @covers lurek.scene.processPhysics
+    -- @covers lurek.scene.registerScene
+    -- @covers lurek.scene.removeData
+    -- @covers lurek.scene.render
+    -- @covers lurek.scene.renderUi
+    -- @covers lurek.scene.setData
+    -- @covers lurek.scene.unregisterScene
+    -- @covers lurek.scene.update
+    -- @covers lurek.scene.popTo
+    -- @covers lurek.scene.new
+    -- @covers lurek.scene.define
     -- @description Verifies the scene stack starts empty and updates size and current-scene state across push, pop, switchTo, and clear operations.
     it("starts empty and tracks push/pop/switchTo/clear correctly", function()
         lurek.scene.clear()
@@ -771,7 +763,6 @@ describe("Transition params", function()
     end)
 end)
 
-
 -- @description Covers suite: DepthSorter (RS parity).
 describe("DepthSorter (RS parity)", function()
     -- @covers lurek.scene.newDepthSorter
@@ -844,5 +835,4 @@ describe("scene popTo (RS parity)", function()
         lurek.scene.clear()
     end)
 end)
-
 test_summary()

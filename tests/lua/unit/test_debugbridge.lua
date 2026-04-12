@@ -1,27 +1,26 @@
-﻿-- DebugBridge Lua Tests
+-- DebugBridge Lua Tests
 -- Tests the lurek.debugbridge TCP debug server API
 
 -- ===== Lifecycle =====
--- @covers lurek.debugbridge.broadcast
--- @covers lurek.debugbridge.capturePrint
--- @covers lurek.debugbridge.clearPrintHistory
--- @covers lurek.debugbridge.getClientCount
--- @covers lurek.debugbridge.getPerformance
--- @covers lurek.debugbridge.getPort
--- @covers lurek.debugbridge.getPrintHistory
--- @covers lurek.debugbridge.isRunning
--- @covers lurek.debugbridge.isScreenshotRequested
--- @covers lurek.debugbridge.poll
--- @covers lurek.debugbridge.requestScreenshot
--- @covers lurek.debugbridge.setMaxPrintHistory
--- @covers lurek.debugbridge.start
--- @covers lurek.debugbridge.stop
-
 
 -- @description Covers suite: lurek.debugbridge lifecycle.
 describe("lurek.debugbridge lifecycle", function()
 
     -- @covers lurek.debugbridge
+    -- @covers lurek.debugbridge.broadcast
+    -- @covers lurek.debugbridge.capturePrint
+    -- @covers lurek.debugbridge.clearPrintHistory
+    -- @covers lurek.debugbridge.getClientCount
+    -- @covers lurek.debugbridge.getPerformance
+    -- @covers lurek.debugbridge.getPort
+    -- @covers lurek.debugbridge.getPrintHistory
+    -- @covers lurek.debugbridge.isRunning
+    -- @covers lurek.debugbridge.isScreenshotRequested
+    -- @covers lurek.debugbridge.poll
+    -- @covers lurek.debugbridge.requestScreenshot
+    -- @covers lurek.debugbridge.setMaxPrintHistory
+    -- @covers lurek.debugbridge.start
+    -- @covers lurek.debugbridge.stop
     -- @description Verifies the debugbridge namespace is present in Lua.
     it("namespace exists", function()
         expect_not_nil(lurek.debugbridge)
@@ -224,5 +223,4 @@ describe("lurek.debugbridge poll", function()
     end)
 
 end)
-
 test_summary()

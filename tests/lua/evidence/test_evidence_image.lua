@@ -1,4 +1,7 @@
-﻿local test_summary = require("tests.lua.init")
+-- Placeholder evidence suite for migrated image-adjacent artifacts.
+-- Keeps pending image, minimap, and raycaster evidence ports visible until each migrated Rust case is translated into real Lua artifact generation.
+
+local test_summary = require("tests.lua.init")
 
 -- @description Placeholder suite for migrated image-adjacent evidence cases that still need a concrete Lua translation.
 describe("Evidence: image", function()
@@ -103,5 +106,4 @@ describe("Evidence: image", function()
     end)
 
 end)
-
 test_summary()

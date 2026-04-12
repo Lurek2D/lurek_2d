@@ -1,12 +1,11 @@
-﻿-- Lurek2D Integration Test: Procgen + Tilemap
+-- Lurek2D Integration Test: Procgen + Tilemap
 -- Tests procedural generation feeding tilemap placement
--- @covers lurek.procgen.noise2d
--- @covers lurek.tilemap.newTilemap
 
 -- @description Covers suite: procgen + tilemap integration.
 describe("procgen + tilemap integration", function()
     -- @covers lurek.procgen.noise2d
     -- @covers lurek.tilemap.Tilemap.setTile
+    -- @covers lurek.tilemap.newTilemap
     -- @description Verifies procedural noise can be thresholded into tile IDs and written into a tilemap.
     it("noise2d generates tile terrain", function()
         local map = lurek.tilemap.newTilemap(16, 16, 32, 32)
@@ -89,5 +88,4 @@ describe("procgen + tilemap integration", function()
         expect_true(any_different, "different offsets produce different noise")
     end)
 end)
-
 test_summary()

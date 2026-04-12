@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Entity Mass Spawn
+-- Lurek2D Stress Test: Entity Mass Spawn
 -- Tests entity creation, tag assignment, and component operations at scale
-
 
 -- @description Covers suite: entity stress: mass spawn.
 describe("entity stress: mass spawn", function()
@@ -107,3 +106,4 @@ describe("entity stress: mass spawn", function()
         expect_equal(2000, universe:getEntityCount(), "2000 tagged entities")
     end)
 end)
+test_summary()

@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Heavy Compute Operations
+-- Lurek2D Stress Test: Heavy Compute Operations
 -- Tests NdArray at scale: large matrix ops, reductions, broadcasting
-
 
 -- @description Covers suite: compute stress: large array creation.
 describe("compute stress: large array creation", function()
@@ -118,3 +117,4 @@ describe("compute stress: reductions", function()
         expect_near(1.0, mean, 0.001, "mean of ones")
     end)
 end)
+test_summary()

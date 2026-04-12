@@ -1,18 +1,18 @@
-﻿-- tests/lua/unit/test_fx.lua
+-- tests/lua/unit/test_fx.lua
 -- Post-processing effect API tests (lurek.postfx / lurek.overlay).
 -- Complements test_postfx.lua; focuses on the API surface check.
 -- Headless-safe: no GPU, no window needed for API introspection.
--- @covers lurek.postfx.getEffectTypes
--- @covers lurek.postfx.newEffect
--- @covers lurek.postfx.newStack
--- @covers lurek.postfx.newPass
--- @covers lurek.postfx.newCustomEffect
 
 -- ============================================================
 -- Namespace surface
 -- ============================================================
 -- @description Verifies the postfx namespace tables and public constructor/helper functions are exposed with the expected Lua types.
 describe("lurek.postfx module", function()
+    -- @covers lurek.postfx.getEffectTypes
+    -- @covers lurek.postfx.newEffect
+    -- @covers lurek.postfx.newStack
+    -- @covers lurek.postfx.newPass
+    -- @covers lurek.postfx.newCustomEffect
     -- @description Asserts that lurek.postfx exists and is exposed as a Lua table.
     it("is a table", function()
         expect_type("table", lurek.postfx)
@@ -246,5 +246,4 @@ describe("lurek.postfx.newStack", function()
         expect_not_nil(retrieved)
     end)
 end)
-
 test_summary()

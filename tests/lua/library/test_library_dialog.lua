@@ -1,16 +1,15 @@
-﻿-- tests/lua/unit/test_library_dialog.lua
+-- tests/lua/unit/test_library_dialog.lua
 -- BDD tests for library/dialog/init.lua (pure-Lua dialog sequencer).
 
 local dialog = require("library.dialog")
 
--- @covers library.dialog
 -- @description Exercises the dialog sequencer core state machine across say, choice, wait, call, event, jump, and completion flows.
 describe("library.dialog", function()
 
-    -- @covers library.dialog.newSequencer
     -- @description Verifies a new sequencer starts idle, inactive, and configured with the documented default typewriter speed.
     describe("newSequencer", function()
         -- @covers library.dialog.newSequencer
+        -- @covers library.dialog
         -- @description Confirms a freshly created sequencer starts in the idle state and reports itself as inactive.
         it("creates a sequencer in idle state", function()
             local seq = dialog.newSequencer()
@@ -26,7 +25,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Covers say-node behavior including entering typing state, revealing text over time, advancing to later nodes, and skipping to full text.
     describe("say node", function()
         -- @covers library.dialog.newSequencer
@@ -88,7 +86,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Tests choice-node entry, label enumeration, waiting-for-choice state, and branch execution after a selection.
     describe("choice node", function()
         -- @covers library.dialog.newSequencer
@@ -129,7 +126,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Verifies wait nodes hold the sequencer in a paused state until the configured duration expires, then continue into the next node.
     describe("wait node", function()
         -- @covers library.dialog.newSequencer
@@ -150,7 +146,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Confirms call nodes execute embedded Lua callbacks immediately and then continue sequencing without blocking.
     describe("call node", function()
         -- @covers library.dialog.newSequencer
@@ -169,7 +164,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Validates emitted line, finished, choice, and handler-removal events so the sequencer notifies listeners at the correct transitions.
     describe("events", function()
         -- @covers library.dialog.newSequencer
@@ -239,7 +233,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Exercises empty-script completion and partial text reveal edge cases at nonzero and low update intervals.
     describe("edge cases", function()
         -- @covers library.dialog.newSequencer
@@ -269,7 +262,6 @@ describe("library.dialog", function()
         end)
     end)
 
-    -- @covers library.dialog.newSequencer
     -- @description Runs a small multi-line sequence end to end to verify the sequencer reaches the done state after successive advances.
     describe("full sequence", function()
         -- @covers library.dialog.newSequencer
@@ -294,15 +286,14 @@ end)
 
 -- â”€â”€â”€ Node constructor helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.say
--- @covers library.dialog.choice
--- @covers library.dialog.wait
--- @covers library.dialog.event
--- @covers library.dialog.call
--- @covers library.dialog.jump
 -- @description Verifies the dialog helper constructors and exported node or state enums build the expected node tables and constant values.
 describe("node constructors", function()
     -- @covers library.dialog.say
+    -- @covers library.dialog.choice
+    -- @covers library.dialog.wait
+    -- @covers library.dialog.event
+    -- @covers library.dialog.call
+    -- @covers library.dialog.jump
     -- @description Confirms the say constructor builds a say-node table with the supplied speaker and text.
     it("M.say creates a say node", function()
         local node = dialog.say("Alice", "Hello")
@@ -403,8 +394,6 @@ end)
 
 -- â”€â”€â”€ event node â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.newSequencer
--- @covers library.dialog.event
 -- @description Tests event nodes and constructor-built event nodes to ensure event callbacks receive name and payload before sequencing continues.
 describe("event node", function()
     -- @covers library.dialog.newSequencer
@@ -444,8 +433,6 @@ end)
 
 -- â”€â”€â”€ jump node â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.newSequencer
--- @covers library.dialog.jump
 -- @description Exercises jump nodes for successful label targeting, constructor parity, and unknown-label fallthrough behavior.
 describe("jump node", function()
     -- @covers library.dialog.newSequencer
@@ -495,7 +482,6 @@ end)
 
 -- â”€â”€â”€ cond predicate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.newSequencer
 -- @description Verifies conditional predicates can skip one or multiple nodes while still allowing true predicates to keep nodes active.
 describe("cond predicate", function()
     -- @covers library.dialog.newSequencer
@@ -542,7 +528,6 @@ end)
 
 -- â”€â”€â”€ typewrite per-char event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.newSequencer
 -- @description Covers per-character typewrite events during reveal and confirms no typewrite events fire when speed is zero.
 describe("typewrite event", function()
     -- @covers library.dialog.newSequencer
@@ -582,7 +567,6 @@ end)
 
 -- â”€â”€â”€ done event alias â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.dialog.newSequencer
 -- @description Validates the done alias event both for normal sequence completion and for empty scripts that finish immediately on start.
 describe("done event", function()
     -- @covers library.dialog.newSequencer
@@ -612,5 +596,4 @@ describe("done event", function()
         expect_equal(fired, true)
     end)
 end)
-
 test_summary()

@@ -1,12 +1,11 @@
-﻿-- Lurek2D Integration Test: Input + Camera
+-- Lurek2D Integration Test: Input + Camera
 -- Tests screen-to-world coordinate transforms via camera.
--- @covers lurek.camera.newCamera
--- @covers lurek.input.getMousePosition
 
 -- @description Covers suite: integration: input coordinates mapped through camera.
 describe("integration: input coordinates mapped through camera", function()
     -- @covers lurek.camera.Camera2D.setPosition
     -- @covers lurek.input.getMousePosition
+    -- @covers lurek.camera.newCamera
     -- @description Verifies origin camera settings leave screen and world coordinates aligned under the test's mapping formula.
     it("camera at origin: screen coords equal world coords", function()
         local cam = lurek.camera.newCamera()
@@ -75,5 +74,4 @@ describe("integration: input coordinates mapped through camera", function()
         end)
     end)
 end)
-
 test_summary()

@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Physics Collision Storm
+-- Lurek2D Stress Test: Physics Collision Storm
 -- Tests mass body creation, extended simulation, and collision detection
-
 
 -- @description Covers suite: physics stress: collision storm.
 describe("physics stress: collision storm", function()
@@ -121,3 +120,4 @@ describe("physics stress: determinism", function()
         expect_near(y1, y2, 0.001, "y position deterministic")
     end)
 end)
+test_summary()

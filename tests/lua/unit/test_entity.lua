@@ -1,17 +1,15 @@
-﻿-- Entity module Lua tests
+-- Entity module Lua tests
 -- Headless-safe. Each describe block creates a fresh Universe.
--- @covers lurek.entity.newUniverse
-
-
--- @covers lurek.entity.World.setParent
--- @covers lurek.entity.World.getParent
--- @covers lurek.entity.World.getChildren
--- @covers lurek.entity.World.killRecursive
--- @covers lurek.entity.World.getEntities
--- @covers lurek.entity.World.getBitmapTagBit
 
 -- @description Verifies sequential spawning, alive state tracking, entity counts after kill, and generational ID recycling on respawn.
 describe("Spawn and lifecycle", function()
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.entity.World.setParent
+    -- @covers lurek.entity.World.getParent
+    -- @covers lurek.entity.World.getChildren
+    -- @covers lurek.entity.World.killRecursive
+    -- @covers lurek.entity.World.getEntities
+    -- @covers lurek.entity.World.getBitmapTagBit
     -- @description Confirms the first two spawns return IDs 1 and 2, killing one entity reduces the live count, and a recycled slot respawns as a distinct live generational ID.
     it("spawns entities with sequential IDs", function()
         local world = lurek.entity.newUniverse()
@@ -430,5 +428,4 @@ describe("World.getBitmapTagBit", function()
         expect_type("number", bit)
     end)
 end)
-
 test_summary()

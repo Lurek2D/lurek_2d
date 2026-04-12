@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Graphics Draw Commands
+-- Lurek2D Stress Test: Graphics Draw Commands
 -- Tests throughput of draw command generation (headless, no GPU)
 
 -- @description Covers suite: graphics stress: shape throughput.
@@ -67,5 +67,4 @@ describe("graphics stress: mixed draw commands", function()
         expect_true(true, "5000 mixed draw commands")
     end)
 end)
-
 test_summary()

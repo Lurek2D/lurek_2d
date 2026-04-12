@@ -1,31 +1,31 @@
-﻿-- lurek.savegame API unit tests
+-- lurek.savegame API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests SaveManager lifecycle: register/unregister, collect/restore,
 -- save/load/delete slot ops, getSlots/getSlotInfo, schema version,
 -- dirty flag, summary, autoSave/disableAutoSave/update, reset.
--- @covers lurek.savegame.newSaveManager
--- @covers lurek.savegame.SaveManager.register
--- @covers lurek.savegame.SaveManager.unregister
--- @covers lurek.savegame.SaveManager.setSummary
--- @covers lurek.savegame.SaveManager.getSummary
--- @covers lurek.savegame.SaveManager.getSchemaVersion
--- @covers lurek.savegame.SaveManager.setSchemaVersion
--- @covers lurek.savegame.SaveManager.isDirty
--- @covers lurek.savegame.SaveManager.markDirty
--- @covers lurek.savegame.SaveManager.collect
--- @covers lurek.savegame.SaveManager.restore
--- @covers lurek.savegame.SaveManager.save
--- @covers lurek.savegame.SaveManager.load
--- @covers lurek.savegame.SaveManager.delete
--- @covers lurek.savegame.SaveManager.exists
--- @covers lurek.savegame.SaveManager.getSlots
--- @covers lurek.savegame.SaveManager.getSlotInfo
--- @covers lurek.savegame.SaveManager.reset
--- @covers lurek.savegame.SaveManager.disableAutoSave
--- @covers lurek.savegame.SaveManager.update
 
 -- @description Verifies that the savegame namespace is present and exposed as a Lua table.
 describe("lurek.savegame module exists", function()
+    -- @covers lurek.savegame.newSaveManager
+    -- @covers lurek.savegame.SaveManager.register
+    -- @covers lurek.savegame.SaveManager.unregister
+    -- @covers lurek.savegame.SaveManager.setSummary
+    -- @covers lurek.savegame.SaveManager.getSummary
+    -- @covers lurek.savegame.SaveManager.getSchemaVersion
+    -- @covers lurek.savegame.SaveManager.setSchemaVersion
+    -- @covers lurek.savegame.SaveManager.isDirty
+    -- @covers lurek.savegame.SaveManager.markDirty
+    -- @covers lurek.savegame.SaveManager.collect
+    -- @covers lurek.savegame.SaveManager.restore
+    -- @covers lurek.savegame.SaveManager.save
+    -- @covers lurek.savegame.SaveManager.load
+    -- @covers lurek.savegame.SaveManager.delete
+    -- @covers lurek.savegame.SaveManager.exists
+    -- @covers lurek.savegame.SaveManager.getSlots
+    -- @covers lurek.savegame.SaveManager.getSlotInfo
+    -- @covers lurek.savegame.SaveManager.reset
+    -- @covers lurek.savegame.SaveManager.disableAutoSave
+    -- @covers lurek.savegame.SaveManager.update
     -- @description Asserts that lurek.savegame exists and reports the Lua type "table".
     it("lurek.savegame is a table", function()
         expect_type("table", lurek.savegame)
@@ -288,5 +288,4 @@ describe("SaveManager.disableAutoSave / update", function()
         expect_true(true, "update loop completed without error")
     end)
 end)
-
 test_summary()

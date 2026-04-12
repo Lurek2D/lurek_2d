@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Savegame Collect/Restore Cycles
+-- Lurek2D Stress Test: Savegame Collect/Restore Cycles
 -- Measures serialization throughput for large game state.
 
 -- @description Covers suite: stress: savegame collect cycles.
@@ -56,5 +56,4 @@ describe("stress: savegame collect cycles", function()
         expect_true(elapsed < 5.0, "summary r/w budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

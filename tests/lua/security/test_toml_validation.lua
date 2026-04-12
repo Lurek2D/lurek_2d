@@ -1,12 +1,11 @@
-﻿-- Lurek2D Validation Test: Corrupted and Malformed TOML
+-- Lurek2D Validation Test: Corrupted and Malformed TOML
 -- Tests that the TOML parser handles invalid input gracefully
--- @security lurek.data.encodeToml
--- @security lurek.data.parseToml
-
 
 -- @description Covers suite: validation: corrupted TOML.
 describe("validation: corrupted TOML", function()
     -- @covers lurek.data.parseToml
+    -- @security lurek.data.encodeToml
+    -- @security lurek.data.parseToml
     -- @description Parses an empty TOML document to verify the parser treats empty input as benign instead of erroring or crashing.
     it("rejects empty string", function()
         -- Empty TOML should parse as empty table, not crash
@@ -127,3 +126,4 @@ describe("validation: TOML edge cases", function()
         end, "string input should error")
     end)
 end)
+test_summary()

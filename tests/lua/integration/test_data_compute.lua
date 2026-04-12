@@ -1,13 +1,12 @@
-﻿-- Lurek2D Integration Test: Data + Compute
+-- Lurek2D Integration Test: Data + Compute
 -- Tests data encoding/decoding with compute processing
--- @covers lurek.data.encode
--- @covers lurek.data.decode
--- @covers lurek.compute.newBuffer
 
 -- @description Covers suite: data + compute integration.
 describe("data + compute integration", function()
     -- @covers lurek.data.encode
     -- @covers lurek.compute
+    -- @covers lurek.data.decode
+    -- @covers lurek.compute.newBuffer
     -- @description Verifies JSON serialization preserves numeric arrays and metadata that compute-oriented code would consume after decoding.
     it("JSON round-trip preserves data for compute", function()
         local original = {
@@ -79,5 +78,4 @@ describe("data + compute integration", function()
         expect_near(100.0, decoded[1000].x, 0.01, "last item x correct")
     end)
 end)
-
 test_summary()

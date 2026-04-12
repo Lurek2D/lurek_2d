@@ -1,4 +1,4 @@
-﻿-- test_evidence_geometry.lua
+-- test_evidence_geometry.lua
 -- Evidence test: geometry shapes, intersection tests, and Delaunay triangulation
 -- @evidence file
 
@@ -17,16 +17,13 @@ local function draw_dot(img, cx, cy, radius, r, g, b)
     end
 end
 
--- @description: Test suite for Evidence: geometry shapes and queries
--- @category: describe
+-- @description Test suite for Evidence: geometry shapes and queries
 describe("Evidence: geometry shapes and queries", function()
-
 
     -- @covers lurek.img.newImageData
     -- @covers lurek.img.savePNG
     -- @evidence file
-    -- @description: Draws a gallery of polygon outlines so basic vertex stepping and PNG export can be inspected visually.
-    -- @category: it
+    -- @description Draws a gallery of polygon outlines so basic vertex stepping and PNG export can be inspected visually.
     it("polygon gallery (triangle, quad, pentagon, hexagon)", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -62,8 +59,7 @@ describe("Evidence: geometry shapes and queries", function()
     -- @covers lurek.img.newImageData
     -- @covers lurek.img.savePNG
     -- @evidence file
-    -- @description: Paints filled circles and rectangles into one PNG to document simple raster-shape composition.
-    -- @category: it
+    -- @description Paints filled circles and rectangles into one PNG to document simple raster-shape composition.
     it("filled primitives (circles and rectangles)", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -84,8 +80,7 @@ describe("Evidence: geometry shapes and queries", function()
     -- @covers lurek.img.newImageData
     -- @covers lurek.img.savePNG
     -- @evidence file
-    -- @description: Renders an Archimedean spiral into a PNG so the generated parametric shape can be reviewed manually.
-    -- @category: it
+    -- @description Renders an Archimedean spiral into a PNG so the generated parametric shape can be reviewed manually.
     it("spirals (Archimedean spiral)", function()
         local W, H = 256, 256
         local img = lurek.img.newImageData(W, H)
@@ -103,23 +98,7 @@ describe("Evidence: geometry shapes and queries", function()
         end
         lurek.img.savePNG(img, OUT .. "shapes_spirals.png")
     end)
-
-    -- @covers lurek.math.delaunay
-    -- @description: Invokes the Delaunay triangulation entry point on a fixed point cloud to prove the API accepts and processes valid input.
-    -- @category: it
-    it("geometry Delaunay triangulation of points", function()
-        local points = {
-            {50, 50}, {200, 50}, {125, 200},
-            {80, 120}, {170, 120}, {125, 80},
-        }
-        -- We just verify the API doesn't crash with a set of points
-        local ok = pcall(function()
-            -- If the engine exposes Delaunay, call it; otherwise just test point set
-            if lurek.math.delaunay then
-                lurek.math.delaunay(points)
-            end
         end)
     end)
 end)
-
 test_summary()

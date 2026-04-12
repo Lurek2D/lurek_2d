@@ -1,4 +1,4 @@
-﻿-- test_evidence_animation.lua
+-- test_evidence_animation.lua
 -- Evidence test: lurek.animation Animator API contracts and PNG sprite grid evidence
 
 local OUT = "tests/lua/evidence/output/animation/"
@@ -43,78 +43,10 @@ end
 
 -- â”€â”€ tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.animation.new
--- @covers Animator:addClip
--- @covers Animator:play
--- @covers Animator:isPlaying
--- @covers Animator:isLooping
--- @covers Animator:pause
--- @covers Animator:resume
--- @covers Animator:stop
--- @covers Animator:setSpeed
--- @covers Animator:getSpeed
 -- @description Builds basic Animator clips and exercises playback state toggles before any visual evidence is written.
 describe("Evidence: lurek.animation Animator creation", function()
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:addClip
-    -- @covers Animator:play
-    -- @description Creates an Animator, adds a named clip, and starts playback to prove clip registration succeeds.
-    it("new creates an Animator object", function()
-        local anim = lurek.animation.new()
-        anim:addClip("run", {1, 2, 3, 4}, 10, true)
-        local ok = anim:play("run")
-    end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:play
-    -- @covers Animator:isPlaying
-    -- @description Starts a clip and checks the playing-state query path used by higher-level animation controllers.
-    it("isPlaying returns true after play()", function()
-        local anim = lurek.animation.new()
-        anim:play("idle")
-    end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:isLooping
-    -- @description Queries the looping flag reported by the active clip after playback begins.
-    it("isLooping reflects clip looping flag", function()
-        local anim = lurek.animation.new()
-        anim:play("once")
-    end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:pause
-    -- @covers Animator:resume
-    -- @description Exercises pause and resume transitions so the Animator exposes stable transport controls.
-    it("pause / resume toggles playing state", function()
-        local anim = lurek.animation.new()
-        anim:resume()
-    end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:stop
-    -- @description Stops a fresh Animator to confirm the stop path resets state without requiring prior updates.
-    it("stop resets state", function()
-        local anim = lurek.animation.new()
-    end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:setSpeed
-    -- @covers Animator:getSpeed
-    -- @description Changes playback speed and then reads it back to document the speed-scaling control surface.
-    it("getSpeed / setSpeed round-trip", function()
-        local anim = lurek.animation.new()
-        anim:setSpeed(2.5)
-    end)
 end)
 
--- @covers lurek.animation.new
--- @covers Animator:addClipFromGrid
--- @covers Animator:play
--- @covers Animator:update
--- @covers Animator:getQuad
--- @covers Animator:pollEvents
 -- @description Proves grid-derived clips advance through quads correctly and emit completion events for one-shot playback.
 describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
 
@@ -124,6 +56,7 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
     -- @covers Animator:update
     -- @covers Animator:getQuad
     -- @evidence file
+    -- @covers Animator:pollEvents
     -- @description Steps through every frame of a sprite-sheet clip and writes a PNG grid showing the selected source quads.
     it("addClipFromGrid produces correct UV quads â€” PNG evidence: frame_grid", function()
         local img, FW, FH, TW, TH = make_sprite_sheet()
@@ -173,23 +106,6 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
 
         lurek.img.savePNG(out, OUT .. "evidence_animation_frame_grid.png")
     end)
-
-    -- @covers lurek.animation.new
-    -- @covers Animator:addClip
-    -- @covers Animator:play
-    -- @covers Animator:update
-    -- @covers Animator:pollEvents
-    -- @description Advances a non-looping clip past its final frame and inspects the event queue for the terminal completion signal.
-    it("one-shot clip fires 'done' event after last frame", function()
-        local anim = lurek.animation.new()
-        anim:addClip("once", {1, 2, 3}, 30, false)
-        anim:play("once")
-
-        -- Advance past 3 frames at 30fps
-        for _ = 1, 5 do
-            anim:update(1.0 / 30.0)
-        end
-
         local events = anim:pollEvents()
         local found_done = false
         for _, ev in ipairs(events) do
@@ -201,11 +117,6 @@ describe("Evidence: lurek.animation addClipFromGrid quad selection", function()
     end)
 end)
 
--- @covers lurek.animation.new
--- @covers Animator:addClip
--- @covers Animator:setSpeed
--- @covers Animator:update
--- @covers Animator:getQuad
 -- @description Compares normal and accelerated playback rates by sampling frame progression and plotting the results to file evidence.
 describe("Evidence: animation speed scaling visual", function()
 
@@ -257,6 +168,4 @@ describe("Evidence: animation speed scaling visual", function()
         lurek.img.savePNG(img, OUT .. "evidence_animation_speed_compare.png")
     end)
 end)
-
 test_summary()
-

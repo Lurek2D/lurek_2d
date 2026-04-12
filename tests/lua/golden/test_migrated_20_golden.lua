@@ -1,5 +1,8 @@
-﻿local function evidence_output_dir()
-    return lurek.fs.getAppDir() .. "/tests/lua/golden/evidence_output/migrated_20"
+-- Compare-only golden suite for migrated_20 artifacts.
+-- Validates migrated image and audio fixtures against committed migrated_20 samples without generating new content in the golden layer.
+
+local function evidence_output_dir()
+    return "tests/lua/golden/evidence_output/migrated_20"
 end
 
 local function sample_dir()
@@ -101,5 +104,4 @@ describe("Migrated Golden Tests 20", function()
     -- @description Compares the generated multi_layer PNG evidence image against the migrated_20 tilemap golden sample.
     it("matches evidence_tilemap_multi_layer", function() check_png("multi_layer") end)
 end)
-
 test_summary()

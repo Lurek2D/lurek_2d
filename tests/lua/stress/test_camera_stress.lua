@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Camera Transform Throughput
+-- Lurek2D Stress Test: Camera Transform Throughput
 -- Measures camera position, zoom, and rotation update performance.
 
 -- @description Covers suite: stress: camera position updates.
@@ -61,5 +61,4 @@ describe("stress: camera position updates", function()
         expect_true(elapsed < 5.0, "multi-camera budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

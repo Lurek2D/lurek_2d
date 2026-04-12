@@ -1,4 +1,4 @@
-﻿-- test_evidence_image_effects.lua
+-- test_evidence_image_effects.lua
 -- Evidence test: ImageData filters and effects with before/after PNG output
 
 local OUT = "tests/lua/evidence/output/image/"
@@ -196,5 +196,4 @@ describe("Evidence: ImageData effects", function()
     end)
 
 end)
-
 test_summary()

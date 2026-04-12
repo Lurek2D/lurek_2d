@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Image Operations
+-- Lurek2D Stress Test: Image Operations
 -- Measures image creation and pixel operation throughput.
 
 -- @description Covers suite: stress: image creation throughput.
@@ -50,5 +50,4 @@ describe("stress: image creation throughput", function()
         expect_true(elapsed < 5.0, "pixel write budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

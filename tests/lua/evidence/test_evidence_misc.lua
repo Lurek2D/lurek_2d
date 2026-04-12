@@ -1,4 +1,7 @@
-﻿-- @description Placeholder suite for migrated image-effect evidence cases that still need a Lua implementation.
+-- Placeholder evidence suite for migrated image-effect artifacts.
+-- Tracks evidence cases that still need a concrete Lua translation before the placeholder tests can become real artifact producers.
+
+-- @description Placeholder suite for migrated image-effect evidence cases that still need a Lua implementation.
 describe('Evidence misc', function()
     -- @description Placeholder for migrated brightness evidence; this test currently documents the pending Lua port only.
     it('evidence_effect_brightness', function()
@@ -21,3 +24,4 @@ describe('Evidence misc', function()
         -- TODO: Translate evidence_effect_invert to Lua
     end)
 end)
+test_summary()

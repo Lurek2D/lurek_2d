@@ -1,10 +1,10 @@
-﻿-- @security lurek.fs.mount
-
-ď»ż-- Validate that mount() rejects path traversal attempts
+-- Lurek2D Security Test: Mount traversal rejection.
+-- Verifies that lurek.fs.mount refuses sandbox-escape paths and rejects traversal attempts before they can bind hostile sources.
 
 -- @description Covers suite: filesystem security: mount traversal.
 describe("filesystem security: mount traversal", function()
     -- @covers lurek.fs.mount
+    -- @security lurek.fs.mount
     -- @description Attempts to mount an absolute traversal path that climbs out of the sandbox to verify the filesystem mount API blocks directory escape attacks.
     it("rejects ../../../etc as mount source", function()
         local ok, err = pcall(function()
@@ -24,5 +24,4 @@ describe("filesystem security: mount traversal", function()
         expect_true(err ~= nil)
     end)
 end)
-
 test_summary()

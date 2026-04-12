@@ -1,13 +1,13 @@
-﻿-- tests/lua/unit/test_library_quest.lua
+-- tests/lua/unit/test_library_quest.lua
 -- BDD tests for library.quest â€” pure-Lua quest system
 
 local quest = require("library.quest")
 
 -- â”€â”€â”€ Objective â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newObjective
 -- @description Verifies objective defaults, progress tracking, completion state, tags, visibility, and optional or required objective metadata.
 describe("Objective", function()
+    -- @covers library.quest.newObjective
     -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local obj = quest.newObjective("kill_wolves", "Kill 3 wolves", 3)
@@ -103,9 +103,9 @@ end)
 
 -- â”€â”€â”€ QuestStage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newQuestStage
 -- @description Covers quest-stage creation, objective aggregation, completion checks, and stage-level metadata or ordering helpers.
 describe("QuestStage", function()
+    -- @covers library.quest.newQuestStage
     -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local stage = quest.newQuestStage("s1", "Stage One")
@@ -165,9 +165,9 @@ end)
 
 -- â”€â”€â”€ Quest â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newQuest
 -- @description Exercises quest defaults, stage progression, status changes, tags, rewards, and stage or objective accessors.
 describe("Quest", function()
+    -- @covers library.quest.newQuest
     -- @description Verifies case: creates with correct defaults.
     it("creates with correct defaults", function()
         local q = quest.newQuest("tutorial", "Tutorial")
@@ -347,9 +347,9 @@ end)
 
 -- â”€â”€â”€ QuestLog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newQuestLog
 -- @description Validates log-level quest registration, activation, completion, failure, lookup, sorting, and log-wide mutation helpers.
 describe("QuestLog", function()
+    -- @covers library.quest.newQuestLog
     -- @description Verifies case: creates empty.
     it("creates empty", function()
         local log = quest.newQuestLog()
@@ -466,9 +466,9 @@ end)
 
 -- â”€â”€â”€ Objective:removeTag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newObjective
 -- @description Adds focused coverage for removing objective tags and reporting whether a tag was actually present.
 describe("Objective:removeTag", function()
+    -- @covers library.quest.newObjective
     -- @description Verifies case: removes an existing tag and returns true.
     it("removes an existing tag and returns true", function()
         local obj = quest.newObjective("task", "Task", 1)
@@ -496,9 +496,9 @@ end)
 
 -- â”€â”€â”€ QuestStage:getObjectives â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newQuestStage
 -- @description Verifies stage objective access returns the stored objective list in insertion order.
 describe("QuestStage:getObjectives", function()
+    -- @covers library.quest.newQuestStage
     -- @description Verifies case: returns all objectives in insertion order.
     it("returns all objectives in insertion order", function()
         local stage = quest.newQuestStage("s1", "Stage One")
@@ -519,9 +519,9 @@ end)
 
 -- â”€â”€â”€ QuestLog extended â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.newQuestLog
 -- @description Covers resetting quests in the log so progress and statuses return to their starting values.
 describe("QuestLog:resetQuest", function()
+    -- @covers library.quest.newQuestLog
     -- @description Verifies case: resets status, stage index, and objective progress.
     it("resets status, stage index, and objective progress", function()
         local log = quest.newQuestLog()
@@ -554,9 +554,9 @@ describe("QuestLog:resetQuest", function()
     end)
 end)
 
--- @covers library.quest.newQuestLog
 -- @description Tests explicit quest reward mutation and retrieval, including unknown quests and overwriting prior rewards.
 describe("QuestLog:setQuestReward / getQuestReward", function()
+    -- @covers library.quest.newQuestLog
     -- @description Verifies case: sets and retrieves reward string.
     it("sets and retrieves reward string", function()
         local log = quest.newQuestLog()
@@ -581,9 +581,9 @@ describe("QuestLog:setQuestReward / getQuestReward", function()
     end)
 end)
 
--- @covers library.quest.newQuestLog
 -- @description Verifies aggregate active and completed quest counts for empty and partially progressed logs.
 describe("QuestLog:activeCount / completedCount", function()
+    -- @covers library.quest.newQuestLog
     -- @description Verifies case: counts active and completed quests correctly.
     it("counts active and completed quests correctly", function()
         local log = quest.newQuestLog()
@@ -607,9 +607,9 @@ end)
 
 -- â”€â”€â”€ Status enum tables â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.quest.QuestStatus
 -- @description Confirms exported quest-status constants match the string values used by quest state transitions.
 describe("M.QuestStatus enum", function()
+    -- @covers library.quest.QuestStatus
     -- @description Verifies case: has expected string constants.
     it("has expected string constants", function()
         expect_equal(quest.QuestStatus.LOCKED,    "locked")
@@ -619,9 +619,9 @@ describe("M.QuestStatus enum", function()
     end)
 end)
 
--- @covers library.quest.ObjectiveStatus
 -- @description Confirms exported objective-status constants match the string values used by objective state transitions.
 describe("M.ObjectiveStatus enum", function()
+    -- @covers library.quest.ObjectiveStatus
     -- @description Verifies case: has expected string constants.
     it("has expected string constants", function()
         expect_equal(quest.ObjectiveStatus.LOCKED,    "locked")
@@ -630,5 +630,4 @@ describe("M.ObjectiveStatus enum", function()
         expect_equal(quest.ObjectiveStatus.FAILED,    "failed")
     end)
 end)
-
 test_summary()

@@ -1,31 +1,5 @@
-﻿-- tests/lua/test_docs.lua
+-- tests/lua/test_docs.lua
 -- BDD tests for lurek.docs.* documentation management API
--- @covers lurek.docs.coverage
--- @covers lurek.docs.coverageModule
--- @covers lurek.docs.describe
--- @covers lurek.docs.getCatalog
--- @covers lurek.docs.quality
--- @covers lurek.docs.resetCatalog
--- @covers lurek.docs.scan
--- @covers lurek.docs.scanModule
--- @covers lurek.docs.setParamInfo
--- @covers lurek.docs.setReturnInfo
--- @covers lurek.docs.validate
--- @covers lurek.docs.validateModule
--- @covers lurek.test.bar
--- @covers lurek.test.foo
--- @covers lurek.test.func
--- @covers lurek.test.func2
--- @covers lurek.test.g1
--- @covers lurek.test.json
--- @covers lurek.test.ms
--- @covers lurek.test.q1
--- @covers lurek.test.scored
--- @covers lurek.test.sum
--- @covers lurek.test.tt
--- @covers lurek.test.w1
--- @covers lurek.test.w2
-
 
 -- @description Covers suite: lurek.docs.
 describe("lurek.docs", function()
@@ -34,6 +8,29 @@ describe("lurek.docs", function()
 
     -- @covers lurek.docs.scan
     -- @covers lurek.docs.getCatalog
+    -- @covers lurek.docs.coverage
+    -- @covers lurek.docs.coverageModule
+    -- @covers lurek.docs.describe
+    -- @covers lurek.docs.quality
+    -- @covers lurek.docs.resetCatalog
+    -- @covers lurek.docs.scanModule
+    -- @covers lurek.docs.setParamInfo
+    -- @covers lurek.docs.setReturnInfo
+    -- @covers lurek.docs.validate
+    -- @covers lurek.docs.validateModule
+    -- @covers lurek.test.bar
+    -- @covers lurek.test.foo
+    -- @covers lurek.test.func
+    -- @covers lurek.test.func2
+    -- @covers lurek.test.g1
+    -- @covers lurek.test.json
+    -- @covers lurek.test.ms
+    -- @covers lurek.test.q1
+    -- @covers lurek.test.scored
+    -- @covers lurek.test.sum
+    -- @covers lurek.test.tt
+    -- @covers lurek.test.w1
+    -- @covers lurek.test.w2
     -- @description Verifies the docs module can scan the lurek namespace and return an API catalog; despite the folder placement this is a single-module docs test.
     it("should scan the luna namespace", function()
         local catalog = lurek.docs.scan()
@@ -72,7 +69,6 @@ describe("lurek.docs", function()
         local count = catalog:entryCount()
         expect_true(count > 0, "graphics module should have entries")
     end)
-
     -- ============= describe / getCatalog / resetCatalog =============
 
     -- @covers lurek.docs.describe
@@ -87,7 +83,6 @@ describe("lurek.docs", function()
         expect_equal("A test function", entry:getDescription())
         lurek.docs.resetCatalog()
     end)
-
     -- @covers lurek.docs.resetCatalog
     -- @covers lurek.docs.getCatalog
     -- @description Verifies resetting the docs catalog removes previously registered entries.
@@ -120,7 +115,6 @@ describe("lurek.docs", function()
         expect_equal(true, params[2].optional)
         lurek.docs.resetCatalog()
     end)
-
     -- @covers lurek.docs.setReturnInfo
     -- @covers lurek.docs.DocEntry.getReturns
     -- @description Verifies return metadata can be attached to and retrieved from a docs entry.
@@ -158,7 +152,6 @@ describe("lurek.docs", function()
         expect_true(not entry:hasExample())
         lurek.docs.resetCatalog()
     end)
-
     -- ============= ApiCatalog methods =============
 
     -- @covers lurek.docs.ApiCatalog.entryCount
@@ -169,7 +162,6 @@ describe("lurek.docs", function()
         local count = catalog:entryCount()
         expect_true(count >= 0, "entryCount should return a number")
     end)
-
     -- @covers lurek.docs.ApiCatalog.search
     -- @covers lurek.docs.scan
     -- @description Verifies docs catalogs support searching entries by name text.
@@ -248,7 +240,6 @@ describe("lurek.docs", function()
         expect_true(report:missingCount() > 0, "should have missing entries with empty catalog")
         expect_true(not report:isValid(), "should not be valid with empty catalog")
     end)
-
     -- @covers lurek.docs.validateModule
     -- @covers lurek.docs.ValidationReport.getSummary
     -- @description Verifies module-scoped docs validation returns a report object with a summary.
@@ -304,7 +295,6 @@ describe("lurek.docs", function()
         expect_equal("C", grade)
         lurek.docs.resetCatalog()
     end)
-
     -- @covers lurek.docs.QualityReport.getModuleScores
     -- @covers lurek.docs.quality
     -- @description Verifies docs quality reports expose module-level score breakdowns.
@@ -373,7 +363,6 @@ describe("lurek.docs", function()
         expect_true(total > 0, "total should be > 0")
         expect_equal(0, documented, "documented should be 0 with no catalog")
     end)
-
     -- @covers lurek.docs.coverage
     -- @covers lurek.docs.scan
     -- @description Verifies coverage computed from a full scan reports all discovered entries as documented.
@@ -396,5 +385,4 @@ describe("lurek.docs", function()
     end)
 
 end)
-
 test_summary()

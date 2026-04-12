@@ -1,7 +1,6 @@
-﻿-- tests/lua/unit/test_overlay.lua
+-- tests/lua/unit/test_overlay.lua
 -- BDD tests for the lurek.effect.* screen-effect overlay API.
 -- @covers lurek.effect.newOverlay
-
 
 require("tests/lua/init")
 
@@ -805,5 +804,4 @@ describe("overlay combined", function()
         expect_equal(ov:isShaking(), false)
     end)
 end)
-
 test_summary()

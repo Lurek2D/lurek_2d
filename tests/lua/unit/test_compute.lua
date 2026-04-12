@@ -1,17 +1,17 @@
-﻿-- Lurek2D Compute Array Tests
+-- Lurek2D Compute Array Tests
 -- Tests for lurek.compute dense N-dimensional array API
 
 -- =========================================================================
 -- 1. Module exists
 -- =========================================================================
--- @covers lurek.compute.fromTable
--- @covers lurek.compute.newArray
--- @covers lurek.compute.ones
--- @covers lurek.compute.range
--- @covers lurek.compute.zeros
 
 -- @description Verifies that lurek.compute is present as a table and exposes the documented array factory functions.
 describe("lurek.compute module exists", function()
+    -- @covers lurek.compute.fromTable
+    -- @covers lurek.compute.newArray
+    -- @covers lurek.compute.ones
+    -- @covers lurek.compute.range
+    -- @covers lurek.compute.zeros
     -- @description Confirms the module root is a Lua table before any factories are used.
     it("lurek.compute is a table", function()
         expect_type("table", lurek.compute)
@@ -1078,5 +1078,4 @@ describe("compute array strides and error paths (RS parity)", function()
         expect_equal(3, shape[2])
     end)
 end)
-
 test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D Parallax + Camera Integration Tests
+-- Lurek2D Parallax + Camera Integration Tests
 -- Verifies that parallax layers respond correctly to camera positions and
 -- that Camera2D position can drive parallax draw calls from Lua scripts.
 --
@@ -315,5 +315,4 @@ describe("Physics-driven camera analogue", function()
         end
     end)
 end)
-
 test_summary()

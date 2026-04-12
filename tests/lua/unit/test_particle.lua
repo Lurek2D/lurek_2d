@@ -1,4 +1,7 @@
-﻿-- @covers lurek.particles.clone
+-- Lurek2D particle system API tests.
+-- Covers particle-system creation, emission controls, configuration getters/setters, render-state helpers, and lifecycle behavior exposed through lurek.particles.
+
+-- @covers lurek.particles.clone
 -- @covers lurek.particles.emit
 -- @covers lurek.particles.getBufferSize
 -- @covers lurek.particles.getColors
@@ -620,5 +623,4 @@ describe("particle gravity", function()
         lurek.particles.release(ps)
     end)
 end)
-
 test_summary()

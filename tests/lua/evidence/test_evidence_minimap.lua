@@ -1,4 +1,4 @@
-﻿-- test_evidence_minimap.lua
+-- test_evidence_minimap.lua
 -- Evidence test: lurek.minimap API + renders minimap grid to PNG
 -- Produces: minimap_terrain.png, minimap_fog.png
 
@@ -16,82 +16,6 @@ end
 
 -- @description Covers suite: Evidence: lurek.minimap API + PNG visualization.
 describe("Evidence: lurek.minimap API + PNG visualization", function()
-
-    -- @covers lurek.minimap.newMinimap
-    -- @description Creates a minimap instance to prove the constructor accepts grid and display dimensions.
-    it("newMinimap creates a minimap", function()
-        local mm = lurek.minimap.newMinimap(16, 16, 128, 128)
-    end)
-
-    -- @covers lurek.minimap.newMinimap
-    -- @covers Minimap:getDisplaySize
-    -- @description Reads the display size reported by a new minimap.
-    it("getDisplaySize returns correct display dimensions", function()
-        local mm = lurek.minimap.newMinimap(10, 10, 200, 150)
-        local dw, dh = mm:getDisplaySize()
-    end)
-
-    -- @covers Minimap:setTerrain
-    -- @covers Minimap:getTerrain
-    -- @description Writes one terrain ID into the map and reads it back to cover basic cell mutation.
-    it("setTerrain/getTerrain round-trip (1-based)", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-        mm:setTerrain(3, 4, 5)
-    end)
-
-    -- @covers Minimap:getTerrain
-    -- @description Reads an untouched terrain cell to document the default terrain value.
-    it("getTerrain defaults to 0", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-    end)
-
-    -- @covers Minimap:setTerrainColor
-    -- @covers Minimap:getTerrainColor
-    -- @description Sets and reads a terrain-color palette entry to cover minimap palette configuration.
-    it("setTerrainColor/getTerrainColor round-trip", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-        mm:setTerrainColor(1, 0.5, 0.7, 0.2, 1.0)
-        local r, g, b, a = mm:getTerrainColor(1)
-    end)
-
-    -- @covers Minimap:setFogEnabled
-    -- @covers Minimap:isFogEnabled
-    -- @description Toggles fog-of-war support on and off to cover the minimap fog switch.
-    it("setFogEnabled/isFogEnabled round-trip", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-        mm:setFogEnabled(true)
-        mm:setFogEnabled(false)
-    end)
-
-    -- @covers Minimap:setFogLevel
-    -- @covers Minimap:getFogLevel
-    -- @description Writes and reads one fog level to cover per-cell fog state.
-    it("setFogLevel/getFogLevel round-trip (1-based)", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-        mm:setFogLevel(2, 3, 2)
-    end)
-
-    -- @covers Minimap:getGridSize
-    -- @description Reads the minimap grid dimensions exposed by the Lua wrapper.
-    it("getGridSize returns w, h", function()
-        local mm = lurek.minimap.newMinimap(12, 8, 100, 100)
-        local gw, gh = mm:getGridSize()
-    end)
-
-    -- @covers Minimap:getObjectCount
-    -- @description Queries the object count on a fresh minimap to document the empty initial state.
-    it("getObjectCount is 0 initially", function()
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-    end)
-
-    -- @covers Minimap:setTerrain
-    -- @description Calls setTerrain with an out-of-range coordinate to document the minimap's 1-based bounds checking.
-    it("setTerrain out-of-range coordinate (0-based) is rejected", function()
-        -- Coordinates of 0 are invalid (1-based API) and should raise a Lua error
-        local mm = lurek.minimap.newMinimap(8, 8, 64, 64)
-        local ok = pcall(function() mm:setTerrain(0, 1, 1) end)
-    end)
-
     -- @covers lurek.minimap.newMinimap
     -- @covers Minimap:setTerrainColor
     -- @covers Minimap:setTerrain
@@ -194,5 +118,4 @@ describe("Evidence: lurek.minimap API + PNG visualization", function()
     end)
 
 end)
-
 test_summary()

@@ -1,4 +1,4 @@
-﻿-- BDD tests for lurek.pipeline DAG pipeline orchestrator
+-- BDD tests for lurek.pipeline DAG pipeline orchestrator
 
 -- =========================================================================
 -- Helper: table contains value
@@ -547,5 +547,4 @@ describe("Pipeline serialization", function()
         expect_true(table_contains(r.completed, "only"))
     end)
 end)
-
 test_summary()

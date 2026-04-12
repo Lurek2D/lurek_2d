@@ -1,6 +1,6 @@
-﻿-- @covers lurek.signal.newSignal
+-- Signal module Lua tests.
+-- Covers signal construction, listener management, dispatch behavior, and headless-safe event helper usage.
 
--- Signal module Lua tests
 -- Tests are headless-safe (no window/GPU/audio needed)
 
 -- ============================================================
@@ -241,5 +241,4 @@ describe("Multiple Signal instances", function()
         expect_equal(0, count2, "sig2 callback not fired by sig1 emit")
     end)
 end)
-
 test_summary()

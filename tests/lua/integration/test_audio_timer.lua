@@ -1,12 +1,11 @@
-﻿-- Lurek2D Integration Test: Audio + Timer
+-- Lurek2D Integration Test: Audio + Timer
 -- Tests audio volume timing with timer delta
--- @covers lurek.audio.setMasterVolume
--- @covers lurek.timer.getTime
 
 -- @description Covers suite: audio + timer integration.
 describe("audio + timer integration", function()
     -- @covers lurek.audio.setMasterVolume
     -- @covers lurek.timer.getDelta
+    -- @covers lurek.timer.getTime
     -- @description Verifies a dt-driven fade-in calculation can be applied back to the audio API and reflected in the engine's master volume.
     it("audio volume can be ramped over time", function()
         -- Start at zero
@@ -76,5 +75,4 @@ describe("audio + timer integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 end)
-
 test_summary()

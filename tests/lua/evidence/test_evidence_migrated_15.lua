@@ -1,4 +1,4 @@
-﻿-- Migrated 15 tests from Rust evidence
+-- Migrated 15 tests from Rust evidence
 local OUT = "tests/lua/evidence/output/migrated_15/"
 
 -- @description Covers suite: evidence: migrated 15.
@@ -299,5 +299,4 @@ describe("evidence: migrated 15", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

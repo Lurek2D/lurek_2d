@@ -1,4 +1,4 @@
-﻿-- Dialog API integration tests
+-- Dialog API integration tests
 -- @covers lurek.dialog.newSequencer
 
 local total, passed, failed = 0, 0, 0
@@ -407,3 +407,4 @@ describe("full workflow", function()
 end)
 
 _test_results = { total = total, passed = passed, failed = failed }
+test_summary()

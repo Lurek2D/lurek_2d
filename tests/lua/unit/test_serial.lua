@@ -1,16 +1,17 @@
-﻿-- @covers lurek.codec.fromCsv
--- @covers lurek.codec.fromJson
--- @covers lurek.codec.fromToml
--- @covers lurek.codec.toCsv
--- @covers lurek.codec.toJson
--- @covers lurek.codec.toToml
+-- lurek.codec API unit tests.
+-- Covers JSON, TOML, and CSV encode/decode helpers, error paths, and headless-safe data-format round-trips.
 
--- lurek.codec API unit tests
 -- Headless-safe (no window / GPU / audio required).
 
 -- @description Covers suite: lurek.codec module exists.
 describe("lurek.codec module exists", function()
     -- @covers lurek.codec
+    -- @covers lurek.codec.fromCsv
+    -- @covers lurek.codec.fromJson
+    -- @covers lurek.codec.fromToml
+    -- @covers lurek.codec.toCsv
+    -- @covers lurek.codec.toJson
+    -- @covers lurek.codec.toToml
     -- @description Verifies the codec namespace is available before format helpers are exercised.
     it("lurek.codec is a table", function()
         expect_type("table", lurek.codec)
@@ -253,5 +254,4 @@ describe("codec error handling", function()
 end)
 
 -- YAML removed: design-assumption B-05 (TOML is the human-authored config format; serde_yml dependency dropped)
-
 test_summary()

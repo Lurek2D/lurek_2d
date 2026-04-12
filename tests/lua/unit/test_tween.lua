@@ -1,15 +1,6 @@
-﻿-- @covers lurek.tween.cancelAll
--- @covers lurek.tween.delay
--- @covers lurek.tween.getActiveCount
--- @covers lurek.tween.getEasingNames
--- @covers lurek.tween.parallel
--- @covers lurek.tween.newState
--- @covers lurek.tween.registerEasing
--- @covers lurek.tween.sequence
--- @covers lurek.tween.tween
--- @covers lurek.tween.update
+-- Lurek2D Lua BDD tests for lurek.tween.
+-- Covers property tweening, composed sequences and parallels, delay helpers, callbacks, and easing/state surfaces in the headless Lua VM.
 
--- Lurek2D Lua BDD tests for lurek.tween
 -- Headless: no GPU, no audio, no window.
 -- Tests property tweening: table field animation, sequences, parallels, callbacks.
 
@@ -18,6 +9,15 @@ describe("lurek.tween", function()
     -- @description Covers suite: module interface.
     describe("module interface", function()
         -- @covers lurek.tween.tween
+        -- @covers lurek.tween.cancelAll
+        -- @covers lurek.tween.delay
+        -- @covers lurek.tween.getActiveCount
+        -- @covers lurek.tween.getEasingNames
+        -- @covers lurek.tween.parallel
+        -- @covers lurek.tween.newState
+        -- @covers lurek.tween.registerEasing
+        -- @covers lurek.tween.sequence
+        -- @covers lurek.tween.update
         -- @description Verifies the tween factory function is exposed on the lurek.tween module.
         it("exposes tween factory", function()
             expect_type("function", lurek.tween.tween)
@@ -314,8 +314,8 @@ describe("lurek.tween", function()
                 "onUpdate t out of expected range: " .. tostring(last_t))
         end)
 
-            -- @covers Tween:onComplete
-            -- @description Verifies onComplete() returns the tween handle so callback registration can be chained.
+        -- @covers Tween:onComplete
+        -- @description Verifies onComplete() returns the tween handle so callback registration can be chained.
         it("onComplete returns tween for chaining", function()
             local obj = { x = 0 }
             local t = lurek.tween.tween(1.0, obj, { x = 100 })
@@ -666,7 +666,6 @@ describe("tween edge cases", function()
     end)
 end)
 
-
 -- @description Covers suite: easing resolution (RS parity).
 describe("easing resolution (RS parity)", function()
     -- @covers lurek.tween.getEasingNames
@@ -724,5 +723,4 @@ describe("easing resolution (RS parity)", function()
         lurek.tween.cancelAll()
     end)
 end)
-
 test_summary()

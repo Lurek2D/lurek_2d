@@ -1,12 +1,5 @@
-﻿-- Evidence test: physics simulation â€” body positions after stepping
+-- Evidence test: physics simulation â€” body positions after stepping
 -- Produces: physics_sim.png showing colored dots at body positions
--- @evidence file
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.newRectangleShape
--- @covers lurek.physics.newCircleShape
--- @covers lurek.physics.attachShape
--- @covers World:newBody
--- @covers World:step
 
 -- @description Covers suite: evidence: physics simulation.
 describe("evidence: physics simulation", function()
@@ -87,5 +80,4 @@ describe("evidence: physics simulation", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

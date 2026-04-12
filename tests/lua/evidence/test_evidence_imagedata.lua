@@ -1,17 +1,7 @@
-﻿-- Evidence test: ImageData pixel creation, manipulation, and PNG save
+-- Evidence test: ImageData pixel creation, manipulation, and PNG save
 -- Produces: imagedata_basic.png, imagedata_fill.png, imagedata_mapped.png,
 --           imagedata_cropped.png, imagedata_resized.png, imagedata_flipped.png,
 --           imagedata_rotated.png
--- @evidence file
--- @covers lurek.img.newImageData
--- @covers lurek.img.savePNG
--- @covers ImageData:setPixel
--- @covers ImageData:fill
--- @covers ImageData:mapPixel
--- @covers ImageData:crop
--- @covers ImageData:resizeNearest
--- @covers ImageData:flipHorizontal
--- @covers ImageData:rotate90cw
 
 -- @description Covers suite: evidence: imagedata creation and manipulation.
 describe("evidence: imagedata creation and manipulation", function()
@@ -133,5 +123,4 @@ describe("evidence: imagedata creation and manipulation", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

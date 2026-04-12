@@ -1,19 +1,16 @@
-﻿-- @covers lurek.data.decode
--- @covers lurek.data.encode
--- @covers lurek.data.encodeToml
--- @covers lurek.data.hash
--- @covers lurek.data.parseToml
--- @covers lurek.platform.getClipboardText
--- @covers lurek.platform.getOS
--- @covers lurek.platform.setClipboardText
-
-ď»ż-- Lurek2D Integration Test: Data + Filesystem
--- Tests data encoding/compression with filesystem I/O
+-- Lurek2D Integration Test: Data + System.
+-- Exercises data encoding, hashing, and TOML helpers alongside platform-facing system queries exposed to Lua.
 
 -- @description Covers suite: data + filesystem integration.
 describe("data + filesystem integration", function()
     -- @covers lurek.data.encode
     -- @covers lurek.data.decode
+    -- @covers lurek.data.encodeToml
+    -- @covers lurek.data.hash
+    -- @covers lurek.data.parseToml
+    -- @covers lurek.platform.getClipboardText
+    -- @covers lurek.platform.getOS
+    -- @covers lurek.platform.setClipboardText
     -- @description Verifies the data module alone can round-trip base64 text; this file is stored under integration but this test is effectively a single-module data check.
     it("can encode and decode data", function()
         -- Test basic data operations
@@ -110,3 +107,4 @@ describe("system info integration", function()
         end
     end)
 end)
+test_summary()

@@ -1,4 +1,4 @@
-﻿-- Lurek2D filesystem API unit tests
+-- Lurek2D filesystem API unit tests
 -- Headless-safe (no window / GPU / audio required).
 -- Tests the lurek.fs namespace: read, write, append, exists, remove,
 -- openFile (FileHandle), newFileData (FileData), directory ops,
@@ -502,5 +502,4 @@ describe("lurek.fs.mount / unmount / load", function()
         lurek.fs.remove(TMP .. "bad_chunk.lua")
     end)
 end)
-
 test_summary()

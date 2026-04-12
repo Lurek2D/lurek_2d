@@ -19,22 +19,17 @@ pub struct LuaMinimap {
 
 impl LuaUserData for LuaMinimap {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // ── Grid queries ──
 
         // -- getGridWidth --
         /// Returns the grid width in cells.
         /// @return integer
-        methods.add_method("getGridWidth", |_, this, ()| {
-            Ok(this.inner.grid_width())
-        });
+        methods.add_method("getGridWidth", |_, this, ()| Ok(this.inner.grid_width()));
 
         // -- getGridHeight --
         /// Returns the grid height in cells.
         /// @return integer
-        methods.add_method("getGridHeight", |_, this, ()| {
-            Ok(this.inner.grid_height())
-        });
+        methods.add_method("getGridHeight", |_, this, ()| Ok(this.inner.grid_height()));
 
         // -- getGridSize --
         /// Returns the grid width and height as two values.
@@ -172,7 +167,10 @@ impl LuaUserData for LuaMinimap {
         /// @param type_id : integer
         /// @return string?
         methods.add_method("getTileDescription", |_, this, type_id: u32| {
-            Ok(this.inner.get_tile_description(type_id).map(|s| s.to_string()))
+            Ok(this
+                .inner
+                .get_tile_description(type_id)
+                .map(|s| s.to_string()))
         });
 
         // ── Fog of war ──
@@ -189,9 +187,7 @@ impl LuaUserData for LuaMinimap {
         // -- isFogEnabled --
         /// Returns whether fog of war is enabled.
         /// @return boolean
-        methods.add_method("isFogEnabled", |_, this, ()| {
-            Ok(this.inner.fog_enabled())
-        });
+        methods.add_method("isFogEnabled", |_, this, ()| Ok(this.inner.fog_enabled()));
 
         // -- setFogLevel --
         /// Sets the fog level at a 1-based grid position (0=hidden, 1=explored, 2=visible).
@@ -205,7 +201,8 @@ impl LuaUserData for LuaMinimap {
                     "lurek.minimap: setFogLevel coordinates are 1-based".into(),
                 ));
             }
-            this.inner.set_fog_level(x - 1, y - 1, FogLevel::from_u8(level));
+            this.inner
+                .set_fog_level(x - 1, y - 1, FogLevel::from_u8(level));
             Ok(())
         });
 
@@ -274,7 +271,9 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "addObjectType",
             |_, this, (name, r, g, b, a): (String, f32, f32, f32, Option<f32>)| {
-                let idx = this.inner.add_object_type(name, [r, g, b, a.unwrap_or(1.0)]);
+                let idx = this
+                    .inner
+                    .add_object_type(name, [r, g, b, a.unwrap_or(1.0)]);
                 Ok(idx + 1)
             },
         );
@@ -377,7 +376,8 @@ impl LuaUserData for LuaMinimap {
         methods.add_method_mut(
             "setOwnerColor",
             |_, this, (owner, r, g, b, a): (u32, f32, f32, f32, Option<f32>)| {
-                this.inner.set_owner_color(owner, [r, g, b, a.unwrap_or(1.0)]);
+                this.inner
+                    .set_owner_color(owner, [r, g, b, a.unwrap_or(1.0)]);
                 Ok(())
             },
         );
@@ -429,9 +429,7 @@ impl LuaUserData for LuaMinimap {
         // -- getZoom --
         /// Returns the current zoom level.
         /// @return number
-        methods.add_method("getZoom", |_, this, ()| {
-            Ok(this.inner.zoom())
-        });
+        methods.add_method("getZoom", |_, this, ()| Ok(this.inner.zoom()));
 
         // -- setCenter --
         /// Sets the center of the minimap view in grid coordinates.
@@ -453,16 +451,12 @@ impl LuaUserData for LuaMinimap {
         // -- getCenterX --
         /// Returns the center X coordinate.
         /// @return number
-        methods.add_method("getCenterX", |_, this, ()| {
-            Ok(this.inner.center_x())
-        });
+        methods.add_method("getCenterX", |_, this, ()| Ok(this.inner.center_x()));
 
         // -- getCenterY --
         /// Returns the center Y coordinate.
         /// @return number
-        methods.add_method("getCenterY", |_, this, ()| {
-            Ok(this.inner.center_y())
-        });
+        methods.add_method("getCenterY", |_, this, ()| Ok(this.inner.center_y()));
 
         // ── Viewport rectangle ──
 
@@ -553,7 +547,17 @@ impl LuaUserData for LuaMinimap {
         #[allow(clippy::type_complexity)]
         methods.add_method_mut(
             "addPing",
-            |_, this, (x, y, duration, r, g, b, a): (f32, f32, f32, Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
+            |_,
+             this,
+             (x, y, duration, r, g, b, a): (
+                f32,
+                f32,
+                f32,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
                 let color = [
                     r.unwrap_or(1.0),
                     g.unwrap_or(1.0),
@@ -568,9 +572,7 @@ impl LuaUserData for LuaMinimap {
         // -- getPingCount --
         /// Returns the number of active pings.
         /// @return integer
-        methods.add_method("getPingCount", |_, this, ()| {
-            Ok(this.inner.ping_count())
-        });
+        methods.add_method("getPingCount", |_, this, ()| Ok(this.inner.ping_count()));
 
         // ── Markers ──
 
@@ -587,7 +589,17 @@ impl LuaUserData for LuaMinimap {
         #[allow(clippy::type_complexity)]
         methods.add_method_mut(
             "addMarker",
-            |_, this, (x, y, desc, r, g, b, a): (f32, f32, Option<String>, Option<f32>, Option<f32>, Option<f32>, Option<f32>)| {
+            |_,
+             this,
+             (x, y, desc, r, g, b, a): (
+                f32,
+                f32,
+                Option<String>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+                Option<f32>,
+            )| {
                 let color = [
                     r.unwrap_or(1.0),
                     g.unwrap_or(0.0),
@@ -644,9 +656,7 @@ impl LuaUserData for LuaMinimap {
         // -- isAntiAlias --
         /// Returns whether anti-aliasing is enabled.
         /// @return boolean
-        methods.add_method("isAntiAlias", |_, this, ()| {
-            Ok(this.inner.anti_alias())
-        });
+        methods.add_method("isAntiAlias", |_, this, ()| Ok(this.inner.anti_alias()));
 
         // -- setClickable --
         /// Sets whether this minimap responds to click hit-testing.
@@ -660,9 +670,7 @@ impl LuaUserData for LuaMinimap {
         // -- isClickable --
         /// Returns whether this minimap responds to click hit-testing.
         /// @return boolean
-        methods.add_method("isClickable", |_, this, ()| {
-            Ok(this.inner.is_clickable())
-        });
+        methods.add_method("isClickable", |_, this, ()| Ok(this.inner.is_clickable()));
 
         // ── Hover info ──
 
@@ -676,7 +684,10 @@ impl LuaUserData for LuaMinimap {
         methods.add_method(
             "getHoverInfo",
             |_, this, (sx, sy, mx, my): (f32, f32, f32, f32)| {
-                Ok(this.inner.get_hover_info(sx, sy, mx, my).map(|s| s.to_string()))
+                Ok(this
+                    .inner
+                    .get_hover_info(sx, sy, mx, my)
+                    .map(|s| s.to_string()))
             },
         );
 
@@ -730,7 +741,9 @@ impl LuaUserData for LuaMinimap {
         /// Returns true if this object is of the given type.
         /// @param name : string
         /// @return boolean
-        methods.add_method("typeOf", |_, _, name: String| Ok(name == "Minimap" || name == "Object"));
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "Minimap" || name == "Object")
+        });
 
         // ── Rendering ──
 
@@ -755,7 +768,6 @@ impl LuaUserData for LuaMinimap {
             let img = this.inner.draw_to_image(pixel_size);
             Ok(img)
         });
-
     }
 }
 

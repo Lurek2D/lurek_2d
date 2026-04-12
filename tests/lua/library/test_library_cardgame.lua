@@ -1,4 +1,4 @@
-﻿--- BDD tests for library.cardgame
+--- BDD tests for library.cardgame
 --- Covers: CardTypeDef, Card, Stack, Slot, CardPool, StackManager,
 ---         DeckBuilder, StackHistory, CardGroup, and the module registry.
 
@@ -10,9 +10,9 @@ dofile("tests/lua/init.lua")
 
 -- â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.defineCardType
 -- @description Exercises registry lifecycle operations including define, lookup, sorted name enumeration, and full reset of registered card types.
 describe("Registry", function()
+    -- @covers library.cardgame.defineCardType
     -- @description Verifies case: defineCardType and getCardType round-trip.
     it("defineCardType and getCardType round-trip", function()
         cg.clearCardTypes()
@@ -49,9 +49,9 @@ end)
 
 -- â”€â”€ Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newCard
 -- @description Verifies cards inherit registry defaults and support stat, tag, counter, metadata, reset, identity, and default presentation fields.
 describe("Card", function()
+    -- @covers library.cardgame.newCard
     -- @description Verifies case: seeds fields from registry.
     it("seeds fields from registry", function()
         cg.clearCardTypes()
@@ -142,9 +142,9 @@ end)
 
 -- â”€â”€ Stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newStack
 -- @description Covers ordered stack behavior including push and pop variants, capacity, search and counting helpers, sorting, shuffling, snapshots, and zone flags.
 describe("Stack", function()
+    -- @covers library.cardgame.newStack
     -- @description Verifies case: push and pop from top.
     it("push and pop from top", function()
         cg.clearCardTypes()
@@ -394,9 +394,9 @@ end)
 
 -- â”€â”€ Slot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newSlot
 -- @description Tests slot-style containers for push and pop flow, capacity checks, tag or type predicates, and full clearing semantics.
 describe("Slot", function()
+    -- @covers library.cardgame.newSlot
     -- @description Verifies case: push and pop.
     it("push and pop", function()
         cg.clearCardTypes()
@@ -444,9 +444,9 @@ end)
 
 -- â”€â”€ CardPool â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newCardPool
 -- @description Validates weighted card pools for repeated draws, unique draws, card instantiation, weight updates, name listing, and rarity-filtered pulls.
 describe("CardPool", function()
+    -- @covers library.cardgame.newCardPool
     -- @description Verifies case: add and draw types.
     it("add and draw types", function()
         cg.clearCardTypes()
@@ -531,9 +531,9 @@ end)
 
 -- â”€â”€ StackManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newStackManager
 -- @description Exercises stack manager orchestration for creating stacks, moving top cards or typed cards, counting totals, and removing named stacks.
 describe("StackManager", function()
+    -- @covers library.cardgame.newStackManager
     -- @description Verifies case: create and manage stacks.
     it("create and manage stacks", function()
         cg.clearCardTypes()
@@ -598,9 +598,9 @@ end)
 
 -- â”€â”€ DeckBuilder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers library.cardgame.newDeckBuilder
 -- @description Covers deck builder recipes that add entries, expand quantities, and produce stacks populated with the expected card types.
 describe("DeckBuilder", function()
+    -- @covers library.cardgame.newDeckBuilder
     -- @description Verifies case: build creates stack with entries.
     it("build creates stack with entries", function()
         cg.clearCardTypes()
@@ -762,7 +762,6 @@ describe("CardGroup", function()
     end)
 end)
 
-
 -- â”€â”€ Analysis helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 -- @description Covers suite: Analysis helpers.
@@ -873,5 +872,4 @@ describe("Analysis helpers", function()
         expect_equal(#seqs, 0)
     end)
 end)
-
 test_summary()

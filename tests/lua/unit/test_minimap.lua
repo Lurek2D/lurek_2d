@@ -1,4 +1,5 @@
-﻿-- @covers lurek.minimap.newMinimap
+-- Lurek2D minimap API tests.
+-- Covers minimap construction, terrain/object/fog state, view controls, and helper queries exposed through lurek.minimap.
 
 -- @description Covers suite: lurek.minimap.newMinimap.
 describe("lurek.minimap.newMinimap", function()
@@ -848,5 +849,4 @@ describe("center individual getters", function()
         expect_near(cy, m:getCenterY())
     end)
 end)
-
 test_summary()

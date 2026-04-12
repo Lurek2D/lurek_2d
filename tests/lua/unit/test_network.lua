@@ -1,22 +1,21 @@
-﻿-- tests/lua/unit/test_network.lua
+-- tests/lua/unit/test_network.lua
 -- BDD tests for lurek.network (high-level UDP API via ENet).
 -- lurek.net and _G.enet tests are guarded â€” they only run if those namespaces exist.
 -- Headless-safe (no GPU/window needed).
--- @covers lurek.network.newHost
--- @covers lurek.network.Host.service
--- @covers lurek.network.Host.getAddress
--- @covers lurek.network.Host.getPeerCount
--- @covers lurek.network.Host.flush
--- @covers lurek.network.Host.destroy
--- @covers lurek.network.Host.setBandwidthLimit
--- @covers lurek.network.Host.getPeers
--- @covers lurek.network.Host.connect
--- @covers lurek.network.Host.broadcast
-
 
 -- @description Covers suite: lurek.network.
 describe("lurek.network", function()
   -- @covers lurek.network
+  -- @covers lurek.network.newHost
+  -- @covers lurek.network.Host.service
+  -- @covers lurek.network.Host.getAddress
+  -- @covers lurek.network.Host.getPeerCount
+  -- @covers lurek.network.Host.flush
+  -- @covers lurek.network.Host.destroy
+  -- @covers lurek.network.Host.setBandwidthLimit
+  -- @covers lurek.network.Host.getPeers
+  -- @covers lurek.network.Host.connect
+  -- @covers lurek.network.Host.broadcast
   -- @description Verifies the high-level network namespace is available as a table.
   it("is a table", function()
     expect_equal(type(lurek.network), "table")
@@ -466,5 +465,4 @@ describe("lurek.network constants", function()
     expect_true(lurek.network.DEFAULT_CHANNELS <= lurek.network.MAX_CHANNELS)
   end)
 end)
-
 test_summary()

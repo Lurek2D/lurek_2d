@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Math Operations
+-- Lurek2D Stress Test: Math Operations
 -- Performs thousands of math operations to test throughput
-
 
 -- @description Covers suite: math stress: trigonometry throughput.
 describe("math stress: trigonometry throughput", function()
@@ -109,3 +108,4 @@ describe("math stress: vector operations", function()
         expect_equal(10000, count, "all vectors normalized correctly")
     end)
 end)
+test_summary()

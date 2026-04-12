@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Patterns Module Operations
+-- Lurek2D Stress Test: Patterns Module Operations
 -- Measures observer, state machine, and command queue throughput.
 
 -- @description Covers suite: stress: patterns observer throughput.
@@ -81,5 +81,4 @@ describe("stress: patterns state machine throughput", function()
         expect_true(elapsed < 10.0, "SM transition budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

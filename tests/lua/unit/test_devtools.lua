@@ -1,45 +1,45 @@
-﻿-- tests/lua/test_devtools.lua
+-- tests/lua/test_devtools.lua
 -- BDD-style integration tests for lurek.devtools module
 
 -- ===================================================================
 -- Logger
 -- ===================================================================
--- @covers lurek.devtools.clearLog
--- @covers lurek.devtools.clearWatches
--- @covers lurek.devtools.eval
--- @covers lurek.devtools.getCallStack
--- @covers lurek.devtools.getFrameHistory
--- @covers lurek.devtools.getFrameHistorySize
--- @covers lurek.devtools.getFrameStats
--- @covers lurek.devtools.getLogConsole
--- @covers lurek.devtools.getLogFile
--- @covers lurek.devtools.getLogHistory
--- @covers lurek.devtools.getLogLevel
--- @covers lurek.devtools.getProfileData
--- @covers lurek.devtools.getProfileFrameCount
--- @covers lurek.devtools.getWatchInterval
--- @covers lurek.devtools.getWatchedPaths
--- @covers lurek.devtools.info
--- @covers lurek.devtools.isConsoleOpen
--- @covers lurek.devtools.isProfilingEnabled
--- @covers lurek.devtools.openConsole
--- @covers lurek.devtools.profileFrame
--- @covers lurek.devtools.profilePop
--- @covers lurek.devtools.profilePush
--- @covers lurek.devtools.recordFrameTime
--- @covers lurek.devtools.resetProfile
--- @covers lurek.devtools.setFrameHistorySize
--- @covers lurek.devtools.setLogConsole
--- @covers lurek.devtools.setLogFile
--- @covers lurek.devtools.setLogLevel
--- @covers lurek.devtools.setProfilingEnabled
--- @covers lurek.devtools.setWatchInterval
--- @covers lurek.devtools.unwatch
--- @covers lurek.devtools.watch
 
 -- @description Covers suite: lurek.devtools logger.
 describe("lurek.devtools logger", function()
     -- @covers lurek.devtools
+    -- @covers lurek.devtools.clearLog
+    -- @covers lurek.devtools.clearWatches
+    -- @covers lurek.devtools.eval
+    -- @covers lurek.devtools.getCallStack
+    -- @covers lurek.devtools.getFrameHistory
+    -- @covers lurek.devtools.getFrameHistorySize
+    -- @covers lurek.devtools.getFrameStats
+    -- @covers lurek.devtools.getLogConsole
+    -- @covers lurek.devtools.getLogFile
+    -- @covers lurek.devtools.getLogHistory
+    -- @covers lurek.devtools.getLogLevel
+    -- @covers lurek.devtools.getProfileData
+    -- @covers lurek.devtools.getProfileFrameCount
+    -- @covers lurek.devtools.getWatchInterval
+    -- @covers lurek.devtools.getWatchedPaths
+    -- @covers lurek.devtools.info
+    -- @covers lurek.devtools.isConsoleOpen
+    -- @covers lurek.devtools.isProfilingEnabled
+    -- @covers lurek.devtools.openConsole
+    -- @covers lurek.devtools.profileFrame
+    -- @covers lurek.devtools.profilePop
+    -- @covers lurek.devtools.profilePush
+    -- @covers lurek.devtools.recordFrameTime
+    -- @covers lurek.devtools.resetProfile
+    -- @covers lurek.devtools.setFrameHistorySize
+    -- @covers lurek.devtools.setLogConsole
+    -- @covers lurek.devtools.setLogFile
+    -- @covers lurek.devtools.setLogLevel
+    -- @covers lurek.devtools.setProfilingEnabled
+    -- @covers lurek.devtools.setWatchInterval
+    -- @covers lurek.devtools.unwatch
+    -- @covers lurek.devtools.watch
     -- @description Verifies the devtools namespace is registered.
     it("exists as a table", function()
         expect_not_nil(lurek.devtools)
@@ -357,5 +357,4 @@ describe("lurek.devtools console", function()
         expect_equal(true, lurek.devtools.isConsoleOpen())
     end)
 end)
-
 test_summary()

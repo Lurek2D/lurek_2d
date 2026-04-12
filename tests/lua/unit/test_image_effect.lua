@@ -1,13 +1,13 @@
-﻿-- Lurek2D ImageEffect API Tests (headless - no window, GPU, or audio)
+-- Lurek2D ImageEffect API Tests (headless - no window, GPU, or audio)
 
 -- =============================================================================
 -- Construction â€” empty
 -- =============================================================================
--- @covers lurek.postfx.loadImageEffect
--- @covers lurek.postfx.newImageEffect
 
 -- @description Verifies that constructing an empty image effect chain exposes all expected chain-management methods and starts with zero effects.
 describe("lurek.postfx.newImageEffect construction (empty)", function()
+    -- @covers lurek.postfx.loadImageEffect
+    -- @covers lurek.postfx.newImageEffect
     -- @description Confirms the constructor is exported as a callable function on lurek.postfx.
     it("newImageEffect is a function", function()
         expect_type("function", lurek.postfx.newImageEffect)
@@ -515,5 +515,4 @@ describe("lurek.postfx.loadImageEffect", function()
         expect_type("function", lurek.postfx.loadImageEffect)
     end)
 end)
-
 test_summary()

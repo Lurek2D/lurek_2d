@@ -1,4 +1,4 @@
-﻿-- test_evidence_easing.lua
+-- test_evidence_easing.lua
 -- Evidence test: All easing curves plotted as images
 
 local OUT = "tests/lua/evidence/output/easing/"
@@ -109,5 +109,4 @@ describe("Evidence: Easing curves", function()
     end)
 
 end)
-
 test_summary()

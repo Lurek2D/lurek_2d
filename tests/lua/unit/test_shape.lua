@@ -1,7 +1,6 @@
-﻿-- tests/lua/unit/test_shape.lua
+-- tests/lua/unit/test_shape.lua
 -- Lurek2D BDD tests for lurek.graphic.newShape() â€” CompoundShape builder
 -- @covers lurek.graphic.newShape
-
 
 local function run_tests()
 

@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Scene Graph / Entity Hierarchy
+-- Lurek2D Stress Test: Scene Graph / Entity Hierarchy
 -- Measures entity create/destroy and component access throughput.
 
 -- @description Covers suite: stress: massive entity spawn and kill.
@@ -59,5 +59,4 @@ describe("stress: massive entity spawn and kill", function()
         expect_equal(100 * COUNT, sum, "all HPs are 100")
     end)
 end)
-
 test_summary()

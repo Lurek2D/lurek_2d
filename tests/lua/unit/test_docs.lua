@@ -1,37 +1,36 @@
-﻿-- tests/lua/test_docs.lua
+-- tests/lua/test_docs.lua
 -- BDD tests for lurek.docs.* documentation management API
--- @covers lurek.docs.coverage
--- @covers lurek.docs.coverageModule
--- @covers lurek.docs.describe
--- @covers lurek.docs.getCatalog
--- @covers lurek.docs.quality
--- @covers lurek.docs.resetCatalog
--- @covers lurek.docs.scan
--- @covers lurek.docs.scanModule
--- @covers lurek.docs.setParamInfo
--- @covers lurek.docs.setReturnInfo
--- @covers lurek.docs.validate
--- @covers lurek.docs.validateModule
--- @covers lurek.test.bar
--- @covers lurek.test.foo
--- @covers lurek.test.func
--- @covers lurek.test.func2
--- @covers lurek.test.g1
--- @covers lurek.test.json
--- @covers lurek.test.ms
--- @covers lurek.test.q1
--- @covers lurek.test.scored
--- @covers lurek.test.sum
--- @covers lurek.test.tt
--- @covers lurek.test.w1
--- @covers lurek.test.w2
-
 
 -- @description Verifies that the docs API can scan namespaces, mutate its internal catalog, expose catalog and entry helpers, and report validation, quality, and coverage metrics.
 describe("lurek.docs", function()
 
     -- ============= scan =============
 
+    -- @covers lurek.docs.coverage
+    -- @covers lurek.docs.coverageModule
+    -- @covers lurek.docs.describe
+    -- @covers lurek.docs.getCatalog
+    -- @covers lurek.docs.quality
+    -- @covers lurek.docs.resetCatalog
+    -- @covers lurek.docs.scan
+    -- @covers lurek.docs.scanModule
+    -- @covers lurek.docs.setParamInfo
+    -- @covers lurek.docs.setReturnInfo
+    -- @covers lurek.docs.validate
+    -- @covers lurek.docs.validateModule
+    -- @covers lurek.test.bar
+    -- @covers lurek.test.foo
+    -- @covers lurek.test.func
+    -- @covers lurek.test.func2
+    -- @covers lurek.test.g1
+    -- @covers lurek.test.json
+    -- @covers lurek.test.ms
+    -- @covers lurek.test.q1
+    -- @covers lurek.test.scored
+    -- @covers lurek.test.sum
+    -- @covers lurek.test.tt
+    -- @covers lurek.test.w1
+    -- @covers lurek.test.w2
     -- @description Confirms scan() returns a non-nil ApiCatalog object for the full lurek namespace.
     it("should scan the luna namespace", function()
         local catalog = lurek.docs.scan()
@@ -64,7 +63,6 @@ describe("lurek.docs", function()
         local count = catalog:entryCount()
         expect_true(count > 0, "graphics module should have entries")
     end)
-
     -- ============= describe / getCatalog / resetCatalog =============
 
     -- @description Confirms describe() creates an entry that getCatalog() can retrieve with the exact stored description text.
@@ -77,7 +75,6 @@ describe("lurek.docs", function()
         expect_equal("A test function", entry:getDescription())
         lurek.docs.resetCatalog()
     end)
-
     -- @description Ensures resetCatalog() clears previously described entries so the internal catalog count returns to zero.
     it("should reset the internal catalog", function()
         lurek.docs.describe("lurek.test.bar", "Another test")
@@ -106,7 +103,6 @@ describe("lurek.docs", function()
         expect_equal(true, params[2].optional)
         lurek.docs.resetCatalog()
     end)
-
     -- @description Confirms setReturnInfo() records a single return value whose type is exposed as number on the entry.
     it("should set return info", function()
         lurek.docs.resetCatalog()
@@ -140,7 +136,6 @@ describe("lurek.docs", function()
         expect_true(not entry:hasExample())
         lurek.docs.resetCatalog()
     end)
-
     -- ============= ApiCatalog methods =============
 
     -- @description Verifies entryCount() returns a numeric count for a scanned module catalog.
@@ -149,7 +144,6 @@ describe("lurek.docs", function()
         local count = catalog:entryCount()
         expect_true(count >= 0, "entryCount should return a number")
     end)
-
     -- @description Ensures catalog:search("graphics") returns a non-empty result list when scanning the full namespace.
     it("catalog should support search", function()
         local catalog = lurek.docs.scan()
@@ -216,7 +210,6 @@ describe("lurek.docs", function()
         expect_true(report:missingCount() > 0, "should have missing entries with empty catalog")
         expect_true(not report:isValid(), "should not be valid with empty catalog")
     end)
-
     -- @description Confirms validateModule("math") returns a report whose summary string can be retrieved.
     it("should validate a single module", function()
         local report = lurek.docs.validateModule("math")
@@ -264,7 +257,6 @@ describe("lurek.docs", function()
         expect_equal("B", grade)
         lurek.docs.resetCatalog()
     end)
-
     -- @description Verifies getModuleScores() returns a table for a catalog containing a described test entry.
     it("quality should support getModuleScores", function()
         lurek.docs.resetCatalog()
@@ -323,7 +315,6 @@ describe("lurek.docs", function()
         expect_true(total > 0, "total should be > 0")
         expect_equal(0, documented, "documented should be 0 with no catalog")
     end)
-
     -- @description Verifies coverage(catalog) reports the full scan as completely documented by matching documented and total counts.
     it("should compute coverage with catalog", function()
         local catalog = lurek.docs.scan()
@@ -342,5 +333,4 @@ describe("lurek.docs", function()
     end)
 
 end)
-
 test_summary()

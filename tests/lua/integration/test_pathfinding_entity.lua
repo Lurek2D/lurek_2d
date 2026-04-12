@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Pathfinding + Entity
+-- Lurek2D Integration Test: Pathfinding + Entity
 -- Tests pathfinding results driving entity positioning
--- @covers lurek.pathfinding.newGrid
--- @covers lurek.entity.newUniverse
 
 -- @description Covers suite: pathfinding + entity integration.
 describe("pathfinding + entity integration", function()
     -- @covers lurek.pathfinding.Grid.findPath
     -- @covers lurek.entity.Universe.set
+    -- @covers lurek.pathfinding.newGrid
+    -- @covers lurek.entity.newUniverse
     -- @description Verifies path points produced by pathfinding can be applied directly to an entity's position.
     it("pathfinding result moves entity along path", function()
         local universe = lurek.entity.newUniverse()
@@ -101,5 +101,4 @@ describe("pathfinding + entity integration", function()
         expect_true(universe:isAlive(entity), "entity survived path walk")
     end)
 end)
-
 test_summary()

@@ -1,19 +1,17 @@
-﻿-- Lurek2D Integration Test: AI + Physics
+-- Lurek2D Integration Test: AI + Physics
 -- Tests AI agents making decisions that affect physics bodies
--- @covers lurek.ai.newSteeringManager
--- @covers lurek.pathfinding.newNavGrid
--- @covers lurek.pathfinding.newPathfinder
--- @covers lurek.physics.getBody
--- @covers lurek.physics.newBody
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.setBodyVelocity
--- @covers lurek.physics.step
-
 
 -- @description Covers suite: integration: AI steering with physics bodies.
 describe("integration: AI steering with physics bodies", function()
     -- @covers lurek.ai.SteeringManager.calculate
     -- @covers lurek.physics.step
+    -- @covers lurek.ai.newSteeringManager
+    -- @covers lurek.pathfinding.newNavGrid
+    -- @covers lurek.pathfinding.newPathfinder
+    -- @covers lurek.physics.getBody
+    -- @covers lurek.physics.newBody
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.setBodyVelocity
     -- @description Verifies steering output from the AI manager can be applied as physics velocity and causes the dynamic body to move in the world.
     it("agent seeks target in physics world", function()
         -- Create physics world (no gravity for top-down)
@@ -80,3 +78,4 @@ describe("integration: AI pathfinding with navgrid", function()
         expect_false(crosses_wall, "path avoids wall")
     end)
 end)
+test_summary()

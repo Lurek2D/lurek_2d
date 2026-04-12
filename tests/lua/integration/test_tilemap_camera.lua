@@ -1,14 +1,14 @@
-﻿-- Lurek2D Integration Test: Tilemap + Camera
+-- Lurek2D Integration Test: Tilemap + Camera
 -- Tests camera position affecting which tiles are in view.
--- @covers lurek.tilemap.newTilemap
--- @covers lurek.tilemap.setTile
--- @covers lurek.tilemap.getTile
--- @covers lurek.camera.newCamera
 
 -- @description Covers suite: integration: tilemap visibility through camera.
 describe("integration: tilemap visibility through camera", function()
     -- @covers lurek.tilemap.Tilemap.setTile
     -- @covers lurek.camera
+    -- @covers lurek.tilemap.newTilemap
+    -- @covers lurek.tilemap.setTile
+    -- @covers lurek.tilemap.getTile
+    -- @covers lurek.camera.newCamera
     -- @description Verifies a tilemap can be filled and queried before applying any camera-based visibility math.
     it("creates tilemap and fills tiles", function()
         local tm = lurek.tilemap.newTilemap(20, 20, 16, 16)
@@ -69,5 +69,4 @@ describe("integration: tilemap visibility through camera", function()
         end)
     end)
 end)
-
 test_summary()

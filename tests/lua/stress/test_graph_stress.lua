@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Graph Flow Simulation
+-- Lurek2D Stress Test: Graph Flow Simulation
 -- Tests large graph creation, edge traversal, and simulation ticks
-
 
 -- @description Covers suite: graph stress: large graph creation.
 describe("graph stress: large graph creation", function()
@@ -101,3 +100,4 @@ describe("graph stress: simulation ticks", function()
         expect_true(true, "100 ticks completed without error")
     end)
 end)
+test_summary()

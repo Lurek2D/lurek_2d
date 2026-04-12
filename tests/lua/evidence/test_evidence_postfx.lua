@@ -1,4 +1,4 @@
-﻿-- test_evidence_postfx.lua
+-- test_evidence_postfx.lua
 -- Evidence test: ImageData post-processing effects + Effect/Stack API
 -- Produces: postfx_grayscale.png, postfx_invert.png, postfx_blur.png,
 --           postfx_sepia.png, postfx_effects_strip.png
@@ -30,50 +30,6 @@ end
 
 -- @description Covers suite: Evidence: PostFx + ImageData effects â†’ PNG output.
 describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
-
-    -- @covers lurek.postfx.newEffect
-    -- @description Creates a named post-processing effect to prove effect construction succeeds from Lua.
-    it("newEffect creates an effect without error", function()
-        local fx = lurek.postfx.newEffect("bloom")
-    end)
-
-    -- @covers lurek.postfx.newStack
-    -- @description Creates an effect stack with explicit dimensions to cover stack construction.
-    it("newStack creates a stack with correct dimensions", function()
-        local stack = lurek.postfx.newStack(320, 240)
-    end)
-
-    -- @covers lurek.postfx.newImageEffect
-    -- @description Creates an image-space effect wrapper to cover the image-effect constructor.
-    it("newImageEffect creates an effect", function()
-        local fx = lurek.postfx.newImageEffect("grayscale")
-    end)
-
-    -- @covers PostFxStack:isEmpty
-    -- @description Reads the empty-state query on a new post-processing stack.
-    it("stack isEmpty initially", function()
-        local stack = lurek.postfx.newStack(64, 64)
-    end)
-
-    -- @covers PostFxStack:len
-    -- @description Reads the element count on a new post-processing stack.
-    it("stack len is 0 initially", function()
-        local stack = lurek.postfx.newStack(64, 64)
-    end)
-
-    -- @covers PostFxEffect:isEnabled
-    -- @description Reads the enabled flag on a newly created post-processing effect.
-    it("effect isEnabled by default", function()
-        local fx = lurek.postfx.newEffect("bloom")
-    end)
-
-    -- @covers PostFxEffect:getTypeName
-    -- @description Reads the type name reported by a created effect instance.
-    it("effect getTypeName returns the type string", function()
-        local fx = lurek.postfx.newEffect("bloom")
-        local name = fx:getTypeName()
-    end)
-
     -- @covers ImageData:grayscale
     -- @covers ImageData:getPixel
     -- @covers lurek.img.savePNG
@@ -193,5 +149,4 @@ describe("Evidence: PostFx + ImageData effects â†’ PNG output", function()
     end)
 
 end)
-
 test_summary()

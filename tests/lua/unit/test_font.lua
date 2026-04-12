@@ -1,14 +1,12 @@
-﻿-- Lurek2D font tests for lurek.graphic font functions.
--- @covers lurek.graphic.getFont
--- @covers lurek.graphic.getFontHeight
--- @covers lurek.graphic.getFontWidth
--- @covers lurek.graphic.newFont
--- @covers lurek.graphic.setFont
-
+-- Lurek2D font tests for lurek.graphic font functions.
 
 -- @description Covers suite: lurek.graphic font functions.
 describe("lurek.graphic font functions", function()
   -- @covers lurek.graphic.newFont
+  -- @covers lurek.graphic.getFont
+  -- @covers lurek.graphic.getFontHeight
+  -- @covers lurek.graphic.getFontWidth
+  -- @covers lurek.graphic.setFont
   -- @description Verifies the font constructor is exposed on the graphics namespace.
   it("newFont is a function", function()
     expect_type("function", lurek.graphic.newFont)
@@ -74,5 +72,4 @@ describe("lurek.graphic font functions", function()
     end)
   end)
 end)
-
 test_summary()

@@ -1,13 +1,13 @@
-﻿-- @covers lurek.terminal.newBorder
+-- tests/lua/unit/test_terminal.lua
+-- BDD tests for the lurek.terminal.* API, covering terminal widgets, layout helpers, input-driven interactions, and headless terminal state updates.
+
+-- @covers lurek.terminal.newBorder
 -- @covers lurek.terminal.newButton
 -- @covers lurek.terminal.newLabel
 -- @covers lurek.terminal.newList
 -- @covers lurek.terminal.newPanel
 -- @covers lurek.terminal.newTerminal
 -- @covers lurek.terminal.newTextBox
-
-ď»ż-- tests/lua/unit/test_terminal.lua
--- BDD tests for the lurek.terminal.* API.
 
 require("tests/lua/init")
 
@@ -488,7 +488,6 @@ describe("list callbacks", function()
     end)
 end)
 
-
 -- @description Covers suite: terminal low-level cell methods (RS parity).
 describe("terminal low-level cell methods (RS parity)", function()
     -- @covers Terminal:get
@@ -641,5 +640,4 @@ describe("terminal widget lookup helpers (RS parity)", function()
         expect_false(r)
     end)
 end)
-
 test_summary()

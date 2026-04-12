@@ -1,5 +1,4 @@
-﻿-- Golden test: graph â€” compare evidence output against golden samples
--- @golden
+-- Golden test: graph â€” compare evidence output against golden samples
 
 -- @description Covers suite: golden: graph evidence comparison.
 describe("golden: graph evidence comparison", function()
@@ -12,5 +11,4 @@ describe("golden: graph evidence comparison", function()
         expect_golden_file_match(evidence, golden)
     end)
 end)
-
 test_summary()

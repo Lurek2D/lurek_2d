@@ -1,14 +1,13 @@
-﻿-- Lurek2D Integration Test: Save + Entity
+-- Lurek2D Integration Test: Save + Entity
 -- Tests saving and restoring entity state
--- @covers lurek.data.parseToml
--- @covers lurek.entity.newUniverse
--- @covers lurek.savegame.newSaveManager
-
 
 -- @description Covers suite: integration: save entity world state.
 describe("integration: save entity world state", function()
     -- @covers lurek.entity.Universe.get
     -- @covers lurek.savegame
+    -- @covers lurek.data.parseToml
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.savegame.newSaveManager
     -- @description Verifies entity state can be collected into a save-friendly data structure without losing key fields.
     it("collects entity data for save", function()
         local universe = lurek.entity.newUniverse()
@@ -114,3 +113,4 @@ describe("integration: TOML config for entities", function()
         end
     end)
 end)
+test_summary()

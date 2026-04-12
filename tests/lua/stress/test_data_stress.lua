@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Data Structure Operations
+-- Lurek2D Stress Test: Data Structure Operations
 -- Tests large tables, string operations, and data encoding at scale
-
 
 -- @description Covers suite: data stress: large tables.
 describe("data stress: large tables", function()
@@ -111,3 +110,4 @@ describe("data stress: nested structures", function()
         expect_equal(10, max_depth, "reached depth 10")
     end)
 end)
+test_summary()

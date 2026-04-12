@@ -1,15 +1,13 @@
-﻿-- Lurek2D Integration Test: Localization + UI
+-- Lurek2D Integration Test: Localization + UI
 -- Tests localized text flowing into UI elements.
--- @covers lurek.localization.load
--- @covers lurek.localization.get
--- @covers lurek.localization.setLocale
--- @covers lurek.ui.newLabel
--- @covers lurek.ui.setText
 
 -- @description Covers suite: integration: localized strings in UI labels.
 describe("integration: localized strings in UI labels", function()
     -- @covers lurek.localization.get
     -- @covers lurek.ui.setText
+    -- @covers lurek.localization.load
+    -- @covers lurek.localization.setLocale
+    -- @covers lurek.ui.newLabel
     -- @description Verifies localized strings can be fetched from the localization module and applied to a UI label.
     it("localization provides string and UI label stores it", function()
         -- Load English locale inline
@@ -68,5 +66,4 @@ describe("integration: localized strings in UI labels", function()
         expect_type("string", val, "missing key returns a string fallback")
     end)
 end)
-
 test_summary()

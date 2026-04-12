@@ -1,13 +1,12 @@
-﻿-- Lurek2D Integration Test: Entity + Graphics
+-- Lurek2D Integration Test: Entity + Graphics
 -- Tests entity position syncing to draw commands.
--- @covers lurek.entity.newUniverse
--- @covers lurek.gfx.setColor
--- @covers lurek.gfx.rectangle
 
 -- @description Covers suite: integration: entity position drives draw coordinates.
 describe("integration: entity position drives draw coordinates", function()
     -- @covers lurek.entity.Universe.get
     -- @covers lurek.gfx.rectangle
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.gfx.setColor
     -- @description Verifies stored entity position and size fields can be read back and used as rectangle draw coordinates.
     it("entity position stored and usable for rectangle draw", function()
         local universe = lurek.entity.newUniverse()
@@ -81,5 +80,4 @@ describe("integration: entity position drives draw coordinates", function()
         end)
     end)
 end)
-
 test_summary()

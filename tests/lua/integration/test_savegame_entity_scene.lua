@@ -1,13 +1,13 @@
-﻿-- Lurek2D Integration Test: SaveGame + Entity + Scene (3-way)
+-- Lurek2D Integration Test: SaveGame + Entity + Scene (3-way)
 -- Tests save/load cycle preserving entity state across scene boundaries
--- @covers lurek.savegame.newSaveManager
--- @covers lurek.entity.newUniverse
--- @covers lurek.scene.newScene
 
 -- @description Covers suite: savegame + entity + scene integration.
 describe("savegame + entity + scene integration", function()
     -- @covers lurek.savegame.SaveManager.register
     -- @covers lurek.entity.Universe.get
+    -- @covers lurek.savegame.newSaveManager
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.scene.newScene
     -- @description Verifies a save manager can register an entity collector and capture entity state into a snapshot.
     it("save manager collects entity state", function()
         local universe = lurek.entity.newUniverse()
@@ -92,5 +92,4 @@ describe("savegame + entity + scene integration", function()
         expect_true(v >= 0, "schema version is non-negative")
     end)
 end)
-
 test_summary()

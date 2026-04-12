@@ -1,12 +1,11 @@
-﻿-- Lurek2D battle API tests
--- @covers lurek.turnbattle.newAction
--- @covers lurek.turnbattle.newBattle
--- @covers lurek.turnbattle.newCombatant
-
+-- Lurek2D battle API tests
 
 -- @description Covers suite: lurek.turnbattle module exists.
 describe("lurek.turnbattle module exists", function()
     -- @covers lurek.turnbattle
+    -- @covers lurek.turnbattle.newAction
+    -- @covers lurek.turnbattle.newBattle
+    -- @covers lurek.turnbattle.newCombatant
     -- @description Verifies the turnbattle namespace is registered as a Lua table.
     it("is a table", function()
         expect_type("table", lurek.turnbattle)
@@ -68,5 +67,4 @@ describe("lurek.turnbattle.newBattle", function()
         expect_equal(25, result.damage)
     end)
 end)
-
 test_summary()

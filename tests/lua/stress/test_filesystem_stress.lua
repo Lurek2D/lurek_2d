@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Filesystem I/O Operations
+-- Lurek2D Stress Test: Filesystem I/O Operations
 -- Measures file write/read throughput in the sandboxed filesystem.
 
 -- @description Covers suite: stress: filesystem write/read throughput.
@@ -59,5 +59,4 @@ describe("stress: filesystem write/read throughput", function()
         expect_true(elapsed < 5.0, "exists check budget: " .. elapsed .. "s")
     end)
 end)
-
 test_summary()

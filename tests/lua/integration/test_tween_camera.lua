@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Tween + Camera
+-- Lurek2D Integration Test: Tween + Camera
 -- Tests smooth camera pan and zoom via tweens.
--- @covers lurek.tween.newTween
--- @covers lurek.camera.newCamera
 
 -- @description Covers suite: integration: tween drives camera position and zoom.
 describe("integration: tween drives camera position and zoom", function()
     -- @covers lurek.tween.Tween.update
     -- @covers lurek.camera.Camera2D.setPosition
+    -- @covers lurek.tween.newTween
+    -- @covers lurek.camera.newCamera
     -- @description Verifies tween progress can be applied to camera position during simulated frame updates.
     it("tween advances camera from A to B over simulated time", function()
         local cam  = lurek.camera.newCamera()
@@ -87,5 +87,4 @@ describe("integration: tween drives camera position and zoom", function()
         expect_true(finished, "onComplete fired after tween ended")
     end)
 end)
-
 test_summary()

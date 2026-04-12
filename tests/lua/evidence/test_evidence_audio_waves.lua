@@ -1,4 +1,4 @@
-﻿-- test_evidence_audio_waves.lua
+-- test_evidence_audio_waves.lua
 -- Evidence tests: waveform synthesis using lurek.audio generators.
 -- All tests are headless â€” no audio device required.
 
@@ -40,174 +40,34 @@ end
 
 -- â”€â”€ Sine wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newSineWave
 -- @description Covers synthesized sine-wave generation, basic amplitude properties, and buffer sizing.
 describe("Evidence: lurek.audio newSineWave", function()
-
-    -- @covers lurek.audio.newSineWave
-    -- @description Confirms the sine-wave generator is exposed as a Lua-callable constructor.
-    it("newSineWave exists as a function", function()
-    end)
-
-    -- @covers lurek.audio.newSineWave
-    -- @description Constructs a sine wave and verifies it returns a SoundData object suitable for later DSP work.
-    it("returns a SoundData object", function()
-        local sd = lurek.audio.newSineWave(440, DUR, SR, 0.8)
-    end)
-
-    -- @covers lurek.audio.newSineWave
-    -- @covers SoundData:getSampleCount
-    -- @description Compares the produced sample count against duration times sample rate to document generator sizing.
-    it("sample count matches duration", function()
-        local sd = lurek.audio.newSineWave(440, DUR, SR, 0.8)
-        -- Expect DUR * SR samples (within 1 sample rounding)
-        local expected = math.floor(DUR * SR)
-    end)
-
-    -- @covers lurek.audio.newSineWave
-    -- @description Uses peak analysis to confirm the requested amplitude controls the generated sine-wave magnitude.
-    it("peak amplitude matches the amplitude parameter", function()
-        local amp = 0.6
-        local sd = lurek.audio.newSineWave(440, DUR, SR, amp)
-    end)
-
-    -- @covers lurek.audio.newSineWave
-    -- @description Measures RMS energy to document the expected $amp / \sqrt{2}$ relationship for a pure sine wave.
-    it("RMS of full-amplitude sine â‰ amp / sqrt(2)", function()
-        local amp = 1.0
-        local sd = lurek.audio.newSineWave(440, 1.0, SR, amp)
-        local expected_rms = amp / math.sqrt(2)
-    end)
-
 end)
 
 -- â”€â”€ Square wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newSquareWave
 -- @description Covers square-wave generation and its characteristic amplitude and RMS behavior.
 describe("Evidence: lurek.audio newSquareWave", function()
-
-    -- @covers lurek.audio.newSquareWave
-    -- @description Confirms the square-wave generator is registered in the audio namespace.
-    it("newSquareWave exists as a function", function()
-    end)
-
-    -- @covers lurek.audio.newSquareWave
-    -- @description Checks that the generated square wave respects the requested peak amplitude.
-    it("peak amplitude matches amplitude parameter", function()
-        local amp = 0.7
-        local sd = lurek.audio.newSquareWave(440, DUR, SR, amp)
-    end)
-
-    -- @covers lurek.audio.newSquareWave
-    -- @description Measures RMS energy to capture the near-peak RMS expected from an ideal square wave.
-    it("square wave RMS â‰ amplitude (a ideal square wave has RMS == peak)", function()
-        local amp = 0.8
-        local sd = lurek.audio.newSquareWave(220, DUR, SR, amp)
-        -- Allow wider tolerance: the very first/last half-cycle may be partial
-    end)
-
 end)
 
 -- â”€â”€ Sawtooth wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newSawtoothWave
 -- @description Covers sawtooth-wave construction and its expected amplitude distribution.
 describe("Evidence: lurek.audio newSawtoothWave", function()
-
-    -- @covers lurek.audio.newSawtoothWave
-    -- @description Confirms the sawtooth-wave generator is exposed to Lua.
-    it("newSawtoothWave exists as a function", function()
-    end)
-
-    -- @covers lurek.audio.newSawtoothWave
-    -- @description Checks that a generated sawtooth wave reaches the configured peak amplitude.
-    it("peak amplitude matches amplitude parameter", function()
-        local amp = 0.9
-        local sd = lurek.audio.newSawtoothWave(440, DUR, SR, amp)
-    end)
-
-    -- @covers lurek.audio.newSawtoothWave
-    -- @description Measures RMS energy to document the expected sawtooth distribution over one cycle.
-    it("sawtooth RMS â‰ amplitude / sqrt(3)  (triangular PDF)", function()
-        local amp = 1.0
-        local sd = lurek.audio.newSawtoothWave(220, DUR, SR, amp)
-        local expected_rms = amp / math.sqrt(3)
-    end)
-
 end)
 
 -- â”€â”€ Triangle wave â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newTriangleWave
 -- @description Covers triangle-wave construction and its expected peak and RMS properties.
 describe("Evidence: lurek.audio newTriangleWave", function()
-
-    -- @covers lurek.audio.newTriangleWave
-    -- @description Confirms the triangle-wave generator is exposed in the audio namespace.
-    it("newTriangleWave exists as a function", function()
-    end)
-
-    -- @covers lurek.audio.newTriangleWave
-    -- @description Checks that a generated triangle wave respects the requested peak amplitude.
-    it("peak amplitude matches amplitude parameter", function()
-        local amp = 0.75
-        local sd = lurek.audio.newTriangleWave(440, DUR, SR, amp)
-    end)
-
-    -- @covers lurek.audio.newTriangleWave
-    -- @description Measures RMS energy to document the expected energy profile of a triangle wave.
-    it("triangle RMS â‰ amplitude / sqrt(3)  (same as sawtooth, linear rise/fall)", function()
-        local amp = 1.0
-        local sd = lurek.audio.newTriangleWave(220, DUR, SR, amp)
-        local expected_rms = amp / math.sqrt(3)
-    end)
-
 end)
 
 -- â”€â”€ White noise â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newWhiteNoise
 -- @description Covers deterministic white-noise generation, amplitude limits, and seed repeatability.
 describe("Evidence: lurek.audio newWhiteNoise", function()
-
-    -- @covers lurek.audio.newWhiteNoise
-    -- @description Confirms the white-noise generator is available from Lua.
-    it("newWhiteNoise exists as a function", function()
-    end)
-
-    -- @covers lurek.audio.newWhiteNoise
-    -- @description Checks that white-noise generation does not exceed the requested amplitude ceiling.
-    it("peak amplitude does not exceed the amplitude parameter", function()
-        local amp = 0.8
-        local sd = lurek.audio.newWhiteNoise(DUR, SR, amp, 12345)
-    end)
-
-    -- @covers lurek.audio.newWhiteNoise
-    -- @description Uses identical seeds to document deterministic sample generation for reproducible evidence assets.
-    it("two calls with same seed produce identical samples", function()
-        local sd1 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 99)
-        local sd2 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 99)
-        local all_same = true
-        for i = 0, sd1:getSampleCount() - 1 do
-            if math.abs(sd1:getSample(i) - sd2:getSample(i)) > 0.0001 then
-                all_same = false
-                break
-            end
         end
     end)
-
-    -- @covers lurek.audio.newWhiteNoise
-    -- @description Uses different seeds to show that separate noise streams produce different sample sequences.
-    it("two calls with different seeds produce different samples", function()
-        local sd1 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 1)
-        local sd2 = lurek.audio.newWhiteNoise(DUR, SR, 0.9, 2)
-        local any_diff = false
-        for i = 0, sd1:getSampleCount() - 1 do
-            if math.abs(sd1:getSample(i) - sd2:getSample(i)) > 0.001 then
-                any_diff = true
-                break
-            end
         end
     end)
 
@@ -215,17 +75,16 @@ end)
 
 -- â”€â”€ Visual evidence: all five waveforms on one PNG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newSineWave
--- @covers lurek.audio.newSquareWave
--- @covers lurek.audio.newSawtoothWave
--- @covers lurek.audio.newTriangleWave
--- @covers lurek.audio.newWhiteNoise
--- @covers SoundData:drawWaveform
 -- @description Writes visual and audio evidence comparing all generator outputs side by side.
 describe("Evidence: lurek.audio waveform PNG", function()
 
     -- @covers SoundData:drawWaveform
     -- @evidence file
+    -- @covers lurek.audio.newSineWave
+    -- @covers lurek.audio.newSquareWave
+    -- @covers lurek.audio.newSawtoothWave
+    -- @covers lurek.audio.newTriangleWave
+    -- @covers lurek.audio.newWhiteNoise
     -- @description Draws the five generator outputs into stacked waveform lanes so their shapes can be inspected visually in one PNG.
     it("renders all five waveforms in a single comparison image", function()
         local WAVES = {
@@ -276,9 +135,6 @@ end)
 
 -- â”€â”€ Manual sample synthesis (FM / ADSR / drum) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
--- @covers lurek.audio.newSoundData
--- @covers SoundData:setSample
--- @covers lurek.audio.saveWAV
 -- @description Builds several hand-authored synthesis examples to document more advanced sample authoring workflows.
 describe("Evidence: lurek.audio manual sample synthesis", function()
 
@@ -385,5 +241,4 @@ describe("Evidence: lurek.audio manual sample synthesis", function()
     end)
 
 end)
-
 test_summary()

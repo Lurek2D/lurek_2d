@@ -1,17 +1,15 @@
-﻿-- Audio Bus and MidiPlayer integration tests (headless-safe)
--- @covers lurek.audio.getListener2D
--- @covers lurek.audio.getMaxSources
--- @covers lurek.audio.getMeter
--- @covers lurek.audio.newBus
--- @covers lurek.audio.newMidiPlayer
--- @covers lurek.audio.setListener2D
--- @covers lurek.audio.setMeter
-
+-- Audio Bus and MidiPlayer integration tests (headless-safe)
 
 -- @description Covers suite: lurek.audio.newBus.
 describe("lurek.audio.newBus", function()
     -- @covers lurek.audio.newBus
     -- @covers Bus.getName
+    -- @covers lurek.audio.getListener2D
+    -- @covers lurek.audio.getMaxSources
+    -- @covers lurek.audio.getMeter
+    -- @covers lurek.audio.newMidiPlayer
+    -- @covers lurek.audio.setListener2D
+    -- @covers lurek.audio.setMeter
     -- @description Verifies bus construction preserves the provided bus name.
     it("creates a bus with the given name", function()
         local bus = lurek.audio.newBus("music")
@@ -397,5 +395,4 @@ describe("MidiPlayer getDuration", function()
         expect_near(midi:getDuration(), 0.0, 1e-5)
     end)
 end)
-
 test_summary()

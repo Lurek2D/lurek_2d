@@ -1,5 +1,4 @@
-﻿-- Golden test: tilemap â€” compare evidence output against golden samples
--- @golden
+-- Golden test: tilemap â€” compare evidence output against golden samples
 
 -- @description Covers suite: golden: tilemap evidence comparison.
 describe("golden: tilemap evidence comparison", function()
@@ -13,5 +12,4 @@ describe("golden: tilemap evidence comparison", function()
         expect_golden_file_match(evidence_output_dir("tilemap") .. "world_to_tile.png", "tests/lua/golden/samples/tilemap/world_to_tile.png")
 end)
 end)
-
 test_summary()

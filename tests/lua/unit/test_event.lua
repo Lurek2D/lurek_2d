@@ -1,18 +1,17 @@
-﻿-- tests/lua/unit/test_event.lua
+-- tests/lua/unit/test_event.lua
 -- BDD tests for the lurek.signal event subsystem.
 -- Headless-safe (no GPU/window needed).
--- @covers lurek.signal.clear
--- @covers lurek.signal.pump
--- @covers lurek.signal.push
--- @covers lurek.signal.restart
--- @covers lurek.signal.wait
--- @covers lurek.signal.newSignal
--- @covers lurek.signal.poll
--- @covers lurek.signal.quit
 
 -- @description Covers suite: lurek.signal.pump.
 describe("lurek.signal.pump", function()
   -- @covers lurek.signal.pump
+  -- @covers lurek.signal.clear
+  -- @covers lurek.signal.push
+  -- @covers lurek.signal.restart
+  -- @covers lurek.signal.wait
+  -- @covers lurek.signal.newSignal
+  -- @covers lurek.signal.poll
+  -- @covers lurek.signal.quit
   -- @description Checks that the lurek.signal namespace exports pump as a callable function before queue behavior is exercised.
   it("exists as a function", function()
     expect_equal(type(lurek.signal.pump), "function")
@@ -286,5 +285,4 @@ describe("lurek.signal.poll", function()
     expect_equal(count, 0)
   end)
 end)
-
 test_summary()

@@ -1,4 +1,4 @@
-﻿-- test_evidence_spine.lua
+-- test_evidence_spine.lua
 -- Evidence test: Spine skeleton creation, bone hierarchy, and rendering
 
 local OUT = "tests/lua/evidence/output/spine/"
@@ -68,5 +68,4 @@ describe("Evidence: Spine skeleton", function()
     end)
 
 end)
-
 test_summary()

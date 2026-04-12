@@ -5,13 +5,15 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::particle::{
+    AreaDistribution, EmissionShape, InsertMode, ParticleConfig, ParticleShape, ParticleSystem,
+    RelativeMode, Trail,
+};
 use crate::runtime::resource_keys::ParticleKey;
-use crate::particle::{AreaDistribution, EmissionShape, InsertMode, ParticleConfig, ParticleSystem, Trail, RelativeMode, ParticleShape};
 
 // -------------------------------------------------------------------------------
 // Config table → ParticleConfig marshalling
 // -------------------------------------------------------------------------------
-
 
 // -------------------------------------------------------------------------------
 // LuaParticleSystem UserData
@@ -202,9 +204,14 @@ impl LuaUserData for LuaParticleSystem {
             let st = this.state.borrow();
             let key = this.key;
             if !st.particle_systems.contains_key(key) {
-                return Err(LuaError::runtime("ParticleSystem handle is invalid (released)"));
+                return Err(LuaError::runtime(
+                    "ParticleSystem handle is invalid (released)",
+                ));
             }
-            Ok(st.particle_systems.get(key).map_or(0, |ps| ps.count() as i64))
+            Ok(st
+                .particle_systems
+                .get(key)
+                .map_or(0, |ps| ps.count() as i64))
         });
 
         // -- type --
@@ -239,7 +246,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getPosition", |_, this, ()| {
             let st = this.state.borrow();
-            let (x, y) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.emitter_x, ps.emitter_y));
+            let (x, y) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| (ps.emitter_x, ps.emitter_y));
             Ok((x, y))
         });
 
@@ -260,7 +270,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getEmissionRate", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(0.0_f32, |ps| ps.config.emission_rate))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(0.0_f32, |ps| ps.config.emission_rate))
         });
 
         // -- setParticleLifetime --
@@ -282,7 +295,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getParticleLifetime", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((1.0_f32, 2.0_f32), |ps| (ps.config.lifetime_min, ps.config.lifetime_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((1.0_f32, 2.0_f32), |ps| {
+                    (ps.config.lifetime_min, ps.config.lifetime_max)
+                });
             Ok((mn, mx))
         });
 
@@ -303,7 +321,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getEmitterLifetime", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(-1.0_f32, |ps| ps.config.emitter_lifetime))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(-1.0_f32, |ps| ps.config.emitter_lifetime))
         });
 
         // -- setSpeed --
@@ -325,7 +346,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getSpeed", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((50.0_f32, 100.0_f32), |ps| (ps.config.speed_min, ps.config.speed_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((50.0_f32, 100.0_f32), |ps| {
+                    (ps.config.speed_min, ps.config.speed_max)
+                });
             Ok((mn, mx))
         });
 
@@ -346,7 +372,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getDirection", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(0.0_f32, |ps| ps.config.direction))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(0.0_f32, |ps| ps.config.direction))
         });
 
         // -- setSpread --
@@ -366,7 +395,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getSpread", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(0.0_f32, |ps| ps.config.spread))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(0.0_f32, |ps| ps.config.spread))
         });
 
         // -- setLinearAcceleration --
@@ -376,23 +408,36 @@ impl LuaUserData for LuaParticleSystem {
         /// @param xmax : number
         /// @param ymax : number
         /// @return nil
-        methods.add_method("setLinearAcceleration", |_, this, (xmin, ymin, xmax, ymax): (f32, f32, f32, f32)| {
-            let mut st = this.state.borrow_mut();
-            if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.linear_accel_x_min = xmin;
-                ps.config.linear_accel_y_min = ymin;
-                ps.config.linear_accel_x_max = xmax;
-                ps.config.linear_accel_y_max = ymax;
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setLinearAcceleration",
+            |_, this, (xmin, ymin, xmax, ymax): (f32, f32, f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                if let Some(ps) = st.particle_systems.get_mut(this.key) {
+                    ps.config.linear_accel_x_min = xmin;
+                    ps.config.linear_accel_y_min = ymin;
+                    ps.config.linear_accel_x_max = xmax;
+                    ps.config.linear_accel_y_max = ymax;
+                }
+                Ok(())
+            },
+        );
 
         // -- getLinearAcceleration --
         /// Returns linear acceleration range.
         /// @return number, number, number, number
         methods.add_method("getLinearAcceleration", |_, this, ()| {
             let st = this.state.borrow();
-            let (xmin, ymin, xmax, ymax) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32, 0.0_f32, 0.0_f32), |ps| (ps.config.linear_accel_x_min, ps.config.linear_accel_y_min, ps.config.linear_accel_x_max, ps.config.linear_accel_y_max));
+            let (xmin, ymin, xmax, ymax) = st.particle_systems.get(this.key).map_or(
+                (0.0_f32, 0.0_f32, 0.0_f32, 0.0_f32),
+                |ps| {
+                    (
+                        ps.config.linear_accel_x_min,
+                        ps.config.linear_accel_y_min,
+                        ps.config.linear_accel_x_max,
+                        ps.config.linear_accel_y_max,
+                    )
+                },
+            );
             Ok((xmin, ymin, xmax, ymax))
         });
 
@@ -401,21 +446,29 @@ impl LuaUserData for LuaParticleSystem {
         /// @param min : number
         /// @param max : number
         /// @return nil
-        methods.add_method("setRadialAcceleration", |_, this, (min, max): (f32, f32)| {
-            let mut st = this.state.borrow_mut();
-            if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.radial_accel_min = min;
-                ps.config.radial_accel_max = max;
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setRadialAcceleration",
+            |_, this, (min, max): (f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                if let Some(ps) = st.particle_systems.get_mut(this.key) {
+                    ps.config.radial_accel_min = min;
+                    ps.config.radial_accel_max = max;
+                }
+                Ok(())
+            },
+        );
 
         // -- getRadialAcceleration --
         /// Returns radial acceleration range.
         /// @return number, number
         methods.add_method("getRadialAcceleration", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.radial_accel_min, ps.config.radial_accel_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.radial_accel_min, ps.config.radial_accel_max)
+                });
             Ok((mn, mx))
         });
 
@@ -424,21 +477,32 @@ impl LuaUserData for LuaParticleSystem {
         /// @param min : number
         /// @param max : number
         /// @return nil
-        methods.add_method("setTangentialAcceleration", |_, this, (min, max): (f32, f32)| {
-            let mut st = this.state.borrow_mut();
-            if let Some(ps) = st.particle_systems.get_mut(this.key) {
-                ps.config.tangential_accel_min = min;
-                ps.config.tangential_accel_max = max;
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setTangentialAcceleration",
+            |_, this, (min, max): (f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                if let Some(ps) = st.particle_systems.get_mut(this.key) {
+                    ps.config.tangential_accel_min = min;
+                    ps.config.tangential_accel_max = max;
+                }
+                Ok(())
+            },
+        );
 
         // -- getTangentialAcceleration --
         /// Returns tangential acceleration range.
         /// @return number, number
         methods.add_method("getTangentialAcceleration", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.tangential_accel_min, ps.config.tangential_accel_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (
+                        ps.config.tangential_accel_min,
+                        ps.config.tangential_accel_max,
+                    )
+                });
             Ok((mn, mx))
         });
 
@@ -461,7 +525,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getLinearDamping", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.linear_damping_min, ps.config.linear_damping_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.linear_damping_min, ps.config.linear_damping_max)
+                });
             Ok((mn, mx))
         });
 
@@ -490,7 +559,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return table
         methods.add_method("getSizes", |lua, this, ()| {
             let st = this.state.borrow();
-            let sizes = st.particle_systems.get(this.key).map_or(vec![4.0_f32, 1.0_f32], |ps| ps.config.sizes.clone());
+            let sizes = st
+                .particle_systems
+                .get(this.key)
+                .map_or(vec![4.0_f32, 1.0_f32], |ps| ps.config.sizes.clone());
             let tbl = lua.create_table()?;
             for (i, s) in sizes.iter().enumerate() {
                 tbl.set(i + 1, *s)?;
@@ -515,7 +587,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getSizeVariation", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(0.0_f32, |ps| ps.config.size_variation))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(0.0_f32, |ps| ps.config.size_variation))
         });
 
         // -- setRotation --
@@ -537,7 +612,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getRotation", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.rotation_min, ps.config.rotation_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.rotation_min, ps.config.rotation_max)
+                });
             Ok((mn, mx))
         });
 
@@ -560,7 +640,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getSpin", |_, this, ()| {
             let st = this.state.borrow();
-            let (mn, mx) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.spin_min, ps.config.spin_max));
+            let (mn, mx) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.spin_min, ps.config.spin_max)
+                });
             Ok((mn, mx))
         });
 
@@ -581,7 +666,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number
         methods.add_method("getSpinVariation", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(0.0_f32, |ps| ps.config.spin_variation))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(0.0_f32, |ps| ps.config.spin_variation))
         });
 
         // -- setRelativeRotation --
@@ -601,7 +689,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return boolean
         methods.add_method("hasRelativeRotation", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).is_some_and(|ps| ps.config.relative_rotation))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .is_some_and(|ps| ps.config.relative_rotation))
         });
 
         // -- setColors --
@@ -633,7 +724,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return table
         methods.add_method("getColors", |lua, this, ()| {
             let st = this.state.borrow();
-            let colors = st.particle_systems.get(this.key).map_or(vec![], |ps| ps.config.colors.clone());
+            let colors = st
+                .particle_systems
+                .get(this.key)
+                .map_or(vec![], |ps| ps.config.colors.clone());
             let tbl = lua.create_table()?;
             for (i, c) in colors.iter().enumerate() {
                 let ct = lua.create_table()?;
@@ -665,7 +759,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getOffset", |_, this, ()| {
             let st = this.state.borrow();
-            let (ox, oy) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.offset_x, ps.config.offset_y));
+            let (ox, oy) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.offset_x, ps.config.offset_y)
+                });
             Ok((ox, oy))
         });
 
@@ -693,11 +792,14 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method("getInsertMode", |_, this, ()| {
             use crate::particle::InsertMode;
             let st = this.state.borrow();
-            let mode = st.particle_systems.get(this.key).map_or("top", |ps| match ps.config.insert_mode {
-                InsertMode::Bottom => "bottom",
-                InsertMode::Random => "random",
-                _ => "top",
-            });
+            let mode =
+                st.particle_systems
+                    .get(this.key)
+                    .map_or("top", |ps| match ps.config.insert_mode {
+                        InsertMode::Bottom => "bottom",
+                        InsertMode::Random => "random",
+                        _ => "top",
+                    });
             Ok(mode.to_string())
         });
 
@@ -719,7 +821,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return integer
         methods.add_method("getBufferSize", |_, this, ()| {
             let st = this.state.borrow();
-            Ok(st.particle_systems.get(this.key).map_or(256_u32, |ps| ps.config.max_particles))
+            Ok(st
+                .particle_systems
+                .get(this.key)
+                .map_or(256_u32, |ps| ps.config.max_particles))
         });
 
         // -- setEmissionArea --
@@ -757,17 +862,20 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method("getEmissionArea", |_, this, ()| {
             use crate::particle::AreaDistribution;
             let st = this.state.borrow();
-            let (dist_str, w, h) = st.particle_systems.get(this.key).map_or(("none".to_string(), 0.0_f32, 0.0_f32), |ps| {
-                let d = match ps.config.area_distribution {
-                    AreaDistribution::Uniform => "uniform",
-                    AreaDistribution::Normal => "normal",
-                    AreaDistribution::Ellipse => "ellipse",
-                    AreaDistribution::BorderEllipse => "borderellipse",
-                    AreaDistribution::BorderRectangle => "borderrectangle",
-                    _ => "none",
-                };
-                (d.to_string(), ps.config.area_width, ps.config.area_height)
-            });
+            let (dist_str, w, h) = st.particle_systems.get(this.key).map_or(
+                ("none".to_string(), 0.0_f32, 0.0_f32),
+                |ps| {
+                    let d = match ps.config.area_distribution {
+                        AreaDistribution::Uniform => "uniform",
+                        AreaDistribution::Normal => "normal",
+                        AreaDistribution::Ellipse => "ellipse",
+                        AreaDistribution::BorderEllipse => "borderellipse",
+                        AreaDistribution::BorderRectangle => "borderrectangle",
+                        _ => "none",
+                    };
+                    (d.to_string(), ps.config.area_width, ps.config.area_height)
+                },
+            );
             Ok((dist_str, w, h))
         });
 
@@ -783,7 +891,11 @@ impl LuaUserData for LuaParticleSystem {
                 "spark" => ParticleShape::Spark,
                 "diamond" => ParticleShape::Diamond,
                 "square" => ParticleShape::Square,
-                other => return Err(LuaError::runtime(format!("unknown particle shape: {other}"))),
+                other => {
+                    return Err(LuaError::runtime(format!(
+                        "unknown particle shape: {other}"
+                    )))
+                }
             };
             let mut st = this.state.borrow_mut();
             if let Some(ps) = st.particle_systems.get_mut(this.key) {
@@ -798,13 +910,16 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method("getShape", |_, this, ()| {
             use crate::particle::ParticleShape;
             let st = this.state.borrow();
-            let shape = st.particle_systems.get(this.key).map_or("square", |ps| match ps.config.shape {
-                ParticleShape::Circle => "circle",
-                ParticleShape::Triangle => "triangle",
-                ParticleShape::Spark => "spark",
-                ParticleShape::Diamond => "diamond",
-                _ => "square",
-            });
+            let shape =
+                st.particle_systems
+                    .get(this.key)
+                    .map_or("square", |ps| match ps.config.shape {
+                        ParticleShape::Circle => "circle",
+                        ParticleShape::Triangle => "triangle",
+                        ParticleShape::Spark => "spark",
+                        ParticleShape::Diamond => "diamond",
+                        _ => "square",
+                    });
             Ok(shape.to_string())
         });
 
@@ -813,7 +928,12 @@ impl LuaUserData for LuaParticleSystem {
         /// @return number, number
         methods.add_method("getGravity", |_, this, ()| {
             let st = this.state.borrow();
-            let (gx, gy) = st.particle_systems.get(this.key).map_or((0.0_f32, 0.0_f32), |ps| (ps.config.gravity_x, ps.config.gravity_y));
+            let (gx, gy) = st
+                .particle_systems
+                .get(this.key)
+                .map_or((0.0_f32, 0.0_f32), |ps| {
+                    (ps.config.gravity_x, ps.config.gravity_y)
+                });
             Ok((gx, gy))
         });
 
@@ -830,7 +950,6 @@ impl LuaUserData for LuaParticleSystem {
             }
             Ok(())
         });
-
 
         // -- render --
         /// Renders all live particles to the GPU command queue.
@@ -865,45 +984,65 @@ impl LuaUserData for LuaParticleSystem {
                                 let scale = if qw > 0.0 { p.size / qw } else { 1.0 };
                                 st.render_commands.push(RenderCommand::DrawQuad {
                                     texture_key: tex_key,
-                                    quad_x: qx, quad_y: qy, quad_w: qw, quad_h: qh,
-                                    tex_w, tex_h,
-                                    x: p.x, y: p.y, rotation: p.rotation,
-                                    sx: scale, sy: scale,
-                                    ox: p.size * 0.5, oy: p.size * 0.5,
+                                    quad_x: qx,
+                                    quad_y: qy,
+                                    quad_w: qw,
+                                    quad_h: qh,
+                                    tex_w,
+                                    tex_h,
+                                    x: p.x,
+                                    y: p.y,
+                                    rotation: p.rotation,
+                                    sx: scale,
+                                    sy: scale,
+                                    ox: p.size * 0.5,
+                                    oy: p.size * 0.5,
                                     effect: None,
                                 });
                             } else {
                                 st.render_commands.push(RenderCommand::DrawImageEx {
                                     texture_key: tex_key,
-                                    x: p.x, y: p.y, rotation: p.rotation,
-                                    sx: 1.0, sy: 1.0,
-                                    ox: p.size * 0.5, oy: p.size * 0.5,
+                                    x: p.x,
+                                    y: p.y,
+                                    rotation: p.rotation,
+                                    sx: 1.0,
+                                    sy: 1.0,
+                                    ox: p.size * 0.5,
+                                    oy: p.size * 0.5,
                                     effect: None,
                                 });
                             }
                         } else {
-                            st.render_commands.push(RenderCommand::SetColor(p.r, p.g, p.b, p.a));
+                            st.render_commands
+                                .push(RenderCommand::SetColor(p.r, p.g, p.b, p.a));
                             let half = p.size * 0.5;
                             match p.shape {
                                 ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
                                     st.render_commands.push(RenderCommand::Rectangle {
                                         mode: DrawMode::Fill,
-                                        x: p.x - half, y: p.y - half,
-                                        w: p.size, h: p.size,
+                                        x: p.x - half,
+                                        y: p.y - half,
+                                        w: p.size,
+                                        h: p.size,
                                     });
                                 }
                                 ParticleRenderShape::Circle => {
                                     st.render_commands.push(RenderCommand::Circle {
                                         mode: DrawMode::Fill,
-                                        x: p.x, y: p.y, r: half,
+                                        x: p.x,
+                                        y: p.y,
+                                        r: half,
                                     });
                                 }
                                 ParticleRenderShape::Triangle => {
                                     st.render_commands.push(RenderCommand::Triangle {
                                         mode: DrawMode::Fill,
-                                        x1: p.x, y1: p.y - half,
-                                        x2: p.x - half, y2: p.y + half,
-                                        x3: p.x + half, y3: p.y + half,
+                                        x1: p.x,
+                                        y1: p.y - half,
+                                        x2: p.x - half,
+                                        y2: p.y + half,
+                                        x3: p.x + half,
+                                        y3: p.y + half,
                                     });
                                 }
                                 ParticleRenderShape::Spark => {
@@ -911,8 +1050,10 @@ impl LuaUserData for LuaParticleSystem {
                                     let dx = p.rotation.cos() * len;
                                     let dy = p.rotation.sin() * len;
                                     st.render_commands.push(RenderCommand::Line {
-                                        x1: p.x - dx, y1: p.y - dy,
-                                        x2: p.x + dx, y2: p.y + dy,
+                                        x1: p.x - dx,
+                                        y1: p.y - dy,
+                                        x2: p.x + dx,
+                                        y2: p.y + dy,
                                     });
                                 }
                             }
@@ -931,8 +1072,9 @@ impl LuaUserData for LuaParticleSystem {
         methods.add_method("clone", |lua, this, ()| {
             let (state, new_ps) = {
                 let st = this.state.borrow();
-                let ps = st.particle_systems.get(this.key)
-                    .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+                let ps = st.particle_systems.get(this.key).ok_or_else(|| {
+                    LuaError::runtime("ParticleSystem handle is invalid (released)")
+                })?;
                 (this.state.clone(), ps.clone_config())
             };
             let key = state.borrow_mut().particle_systems.insert(new_ps);
@@ -946,7 +1088,9 @@ impl LuaUserData for LuaParticleSystem {
         /// @return ImageData
         methods.add_method("drawToImage", |_, this, (w, h): (u32, u32)| {
             let st = this.state.borrow();
-            let ps = st.particle_systems.get(this.key)
+            let ps = st
+                .particle_systems
+                .get(this.key)
                 .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             let img = ps.draw_to_image(w, h);
             Ok(img)
@@ -1138,33 +1282,93 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // These forward the flat `lurek.particles.X(ps, ...)` style to the OOP UserData methods.
     // They accept (LuaAnyUserData, LuaMultiValue) and call the method via the registry.
     let flat_methods: &[&str] = &[
-        "update", "emit", "start", "stop", "pause", "resume", "reset", "moveTo",
-        "isActive", "isPaused", "isStopped", "isEmpty", "isFull", "release", "getCount",
-        "setPosition", "getPosition", "setEmissionRate", "getEmissionRate",
-        "setParticleLifetime", "getParticleLifetime", "setEmitterLifetime", "getEmitterLifetime",
-        "setSpeed", "getSpeed", "setDirection", "getDirection", "setSpread", "getSpread",
-        "setLinearAcceleration", "getLinearAcceleration", "setRadialAcceleration", "getRadialAcceleration",
-        "setTangentialAcceleration", "getTangentialAcceleration", "setLinearDamping", "getLinearDamping",
-        "setSizes", "getSizes", "setSizeVariation", "getSizeVariation", "setRotation", "getRotation",
-        "setSpin", "getSpin", "setSpinVariation", "getSpinVariation",
-        "setRelativeRotation", "hasRelativeRotation", "setColors", "getColors",
-        "setOffset", "getOffset", "setInsertMode", "getInsertMode",
-        "setBufferSize", "getBufferSize", "setEmissionArea", "getEmissionArea",
-        "setShape", "getShape", "getGravity", "setGravity", "type", "typeOf", "clone",
+        "update",
+        "emit",
+        "start",
+        "stop",
+        "pause",
+        "resume",
+        "reset",
+        "moveTo",
+        "isActive",
+        "isPaused",
+        "isStopped",
+        "isEmpty",
+        "isFull",
+        "release",
+        "getCount",
+        "setPosition",
+        "getPosition",
+        "setEmissionRate",
+        "getEmissionRate",
+        "setParticleLifetime",
+        "getParticleLifetime",
+        "setEmitterLifetime",
+        "getEmitterLifetime",
+        "setSpeed",
+        "getSpeed",
+        "setDirection",
+        "getDirection",
+        "setSpread",
+        "getSpread",
+        "setLinearAcceleration",
+        "getLinearAcceleration",
+        "setRadialAcceleration",
+        "getRadialAcceleration",
+        "setTangentialAcceleration",
+        "getTangentialAcceleration",
+        "setLinearDamping",
+        "getLinearDamping",
+        "setSizes",
+        "getSizes",
+        "setSizeVariation",
+        "getSizeVariation",
+        "setRotation",
+        "getRotation",
+        "setSpin",
+        "getSpin",
+        "setSpinVariation",
+        "getSpinVariation",
+        "setRelativeRotation",
+        "hasRelativeRotation",
+        "setColors",
+        "getColors",
+        "setOffset",
+        "getOffset",
+        "setInsertMode",
+        "getInsertMode",
+        "setBufferSize",
+        "getBufferSize",
+        "setEmissionArea",
+        "getEmissionArea",
+        "setShape",
+        "getShape",
+        "getGravity",
+        "setGravity",
+        "type",
+        "typeOf",
+        "clone",
     ];
     for &method_name in flat_methods {
         let mn = method_name.to_string();
-        tbl.set(method_name, lua.create_function(move |_, args: LuaMultiValue| {
-            let mut iter = args.iter();
-            let ps_ud = match iter.next() {
-                Some(LuaValue::UserData(ud)) => ud.clone(),
-                _ => return Err(LuaError::runtime("expected ParticleSystem as first argument")),
-            };
-            let rest: LuaMultiValue = iter.cloned().collect();
-            let method: LuaFunction = ps_ud.get(mn.as_str())?;
-            let result: LuaMultiValue = method.call((ps_ud, rest))?;
-            Ok(result)
-        })?)?;
+        tbl.set(
+            method_name,
+            lua.create_function(move |_, args: LuaMultiValue| {
+                let mut iter = args.iter();
+                let ps_ud = match iter.next() {
+                    Some(LuaValue::UserData(ud)) => ud.clone(),
+                    _ => {
+                        return Err(LuaError::runtime(
+                            "expected ParticleSystem as first argument",
+                        ))
+                    }
+                };
+                let rest: LuaMultiValue = iter.cloned().collect();
+                let method: LuaFunction = ps_ud.get(mn.as_str())?;
+                let result: LuaMultiValue = method.call((ps_ud, rest))?;
+                Ok(result)
+            })?,
+        )?;
     }
 
     luna.set("particles", tbl)?;
@@ -1172,14 +1376,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 }
 
 impl ParticleConfig {
-/// from_lua_opts.
-///
-/// # Parameters
-/// - `t` — `&LuaTable`.
-///
-/// # Returns
-/// `LuaResult<Self>`.
-pub fn from_lua_opts(t: &LuaTable) -> LuaResult<Self> {
+    /// from_lua_opts.
+    ///
+    /// # Parameters
+    /// - `t` — `&LuaTable`.
+    ///
+    /// # Returns
+    /// `LuaResult<Self>`.
+    pub fn from_lua_opts(t: &LuaTable) -> LuaResult<Self> {
         let mut c = ParticleConfig::default();
         if let Ok(v) = t.get::<_, u32>("maxParticles") {
             c.max_particles = v;

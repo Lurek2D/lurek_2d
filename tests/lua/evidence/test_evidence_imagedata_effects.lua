@@ -1,4 +1,4 @@
-﻿-- Evidence test: ImageData filter/effect methods produce PNG evidence
+-- Evidence test: ImageData filter/effect methods produce PNG evidence
 -- Produces: effect_grayscale.png, effect_inverted.png, effect_sepia.png,
 --           effect_bright.png, effect_threshold.png, effect_blur.png,
 --           effect_sharpen.png, effect_noise.png, effect_posterize.png, effect_tint.png
@@ -149,5 +149,4 @@ describe("evidence: imagedata effect filters", function()
         expect_evidence_created(path)
     end)
 end)
-
 test_summary()

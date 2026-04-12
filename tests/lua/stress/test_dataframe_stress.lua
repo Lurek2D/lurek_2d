@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: DataFrame Bulk Operations
+-- Lurek2D Stress Test: DataFrame Bulk Operations
 -- Tests large DataFrames with many rows and columns
-
 
 -- @description Covers suite: dataframe stress: bulk row insertion.
 describe("dataframe stress: bulk row insertion", function()
@@ -108,3 +107,4 @@ describe("dataframe stress: column operations", function()
         expect_equal(1, df:ncols(), "only base column remains")
     end)
 end)
+test_summary()

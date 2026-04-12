@@ -59,6 +59,8 @@ This orchestrates all doc generators under `tools/docs/`. Always run this before
 | `tools/audit/docstring_audit.py` | Per-file Lua API docstring quality | `docs/logs/docstring_audit.json` |
 | `tools/audit/test_coverage.py` | API-to-test cross-reference | `docs/logs/test_coverage.json` |
 | `tools/audit/lua_api_test_coverage.py` | Lua test `@covers` marker coverage | `docs/logs/lua_api_test_coverage.json` |
+| `tools/audit/lua_test_structure_audit.py` | Lua test structure rules (`@description`, legacy markers, `test_summary()`) | stdout / JSON |
+| `tools/audit/lua_evidence_golden_contract_audit.py` | Lua evidence/golden contract rules (`@evidence`, mixed prechecks, compare-only goldens) | stdout / JSON |
 | `tools/audit/example_coverage.py` | Content/examples vs Lua API coverage | stdout |
 | `tools/audit/integration_coverage.py` | Integration test module-pair matrix | stdout |
 | `tools/audit/audit_module.py` | 12-phase per-module quality audit | `docs/quality/<module>.md` |
@@ -91,6 +93,8 @@ When a tool reports an issue, use this table to determine the remediation path:
 | AGENT.md structural error | `validate_agent_md.py` | — | `Developer` (load `agent-md` skill) |
 | Missing `docs/specs/*.md` | `validate_module_coverage.py` | — | `Doc-Writer` |
 | Missing test coverage | `test_coverage.py`, `lua_api_test_coverage.py` | — | `Tester` |
+| Lua test structure violation | `lua_test_structure_audit.py` | `lua_test_structure_audit.py --fix` for safe cases | `Tester` |
+| Evidence/golden contract violation | `lua_evidence_golden_contract_audit.py` | `lua_evidence_golden_contract_audit.py --fix` for missing markers | `Tester` |
 | Missing `@covers` markers | `lua_api_test_coverage.py` | `add_test_markers.py` | `Tester` |
 | Missing example script | `example_coverage.py` | — | `Doc-Writer` (load `examples-management` skill) |
 | Thin example | `example_coverage.py` | `expand_examples.py` | `Doc-Writer` |

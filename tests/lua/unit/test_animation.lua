@@ -1,33 +1,31 @@
-﻿-- Lurek2D Lua BDD tests for lurek.animation
+-- Lurek2D Lua BDD tests for lurek.animation
 -- Headless: no GPU, no audio, no window.
--- @covers lurek.animation.new
--- @covers lurek.animation.addFrame
--- @covers lurek.animation.addFramesFromGrid
--- @covers lurek.animation.addClip
--- @covers lurek.animation.addClipFromGrid
--- @covers lurek.animation.play
--- @covers lurek.animation.stop
--- @covers lurek.animation.pause
--- @covers lurek.animation.resume
--- @covers lurek.animation.update
--- @covers lurek.animation.getQuad
--- @covers lurek.animation.pollEvents
--- @covers lurek.animation.isPlaying
--- @covers lurek.animation.isLooping
--- @covers lurek.animation.getClip
--- @covers lurek.animation.getSpeed
--- @covers lurek.animation.setSpeed
--- @covers lurek.animation.getFrameCount
--- @covers lurek.animation.getClipCount
--- @covers lurek.animation.getCurrentFrame
--- @covers lurek.animation.setFrame
-
 
 -- @description Covers suite: lurek.animation.
 describe("lurek.animation", function()
     -- @description Covers suite: module interface.
     describe("module interface", function()
         -- @covers lurek.animation.new
+        -- @covers lurek.animation.addFrame
+        -- @covers lurek.animation.addFramesFromGrid
+        -- @covers lurek.animation.addClip
+        -- @covers lurek.animation.addClipFromGrid
+        -- @covers lurek.animation.play
+        -- @covers lurek.animation.stop
+        -- @covers lurek.animation.pause
+        -- @covers lurek.animation.resume
+        -- @covers lurek.animation.update
+        -- @covers lurek.animation.getQuad
+        -- @covers lurek.animation.pollEvents
+        -- @covers lurek.animation.isPlaying
+        -- @covers lurek.animation.isLooping
+        -- @covers lurek.animation.getClip
+        -- @covers lurek.animation.getSpeed
+        -- @covers lurek.animation.setSpeed
+        -- @covers lurek.animation.getFrameCount
+        -- @covers lurek.animation.getClipCount
+        -- @covers lurek.animation.getCurrentFrame
+        -- @covers lurek.animation.setFrame
         -- @description Verifies the animation module exposes the new() factory used to create animation userdata.
         it("exposes new factory", function()
             expect_type("function", lurek.animation.new)
@@ -544,5 +542,4 @@ describe("lurek.animation", function()
         end)
     end)
 end)
-
 test_summary()

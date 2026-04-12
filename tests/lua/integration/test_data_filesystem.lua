@@ -1,11 +1,5 @@
-﻿-- Lurek2D Integration Test: Data + Filesystem
+-- Lurek2D Integration Test: Data + Filesystem
 -- Tests saving JSON data to a file and reading it back.
--- @covers lurek.data.encode
--- @covers lurek.data.decode
--- @covers lurek.filesystem.write
--- @covers lurek.filesystem.read
--- @covers lurek.filesystem.exists
--- @covers lurek.filesystem.remove
 
 -- @description Covers suite: integration: data serialization with filesystem I/O.
 describe("integration: data serialization with filesystem I/O", function()
@@ -13,6 +7,10 @@ describe("integration: data serialization with filesystem I/O", function()
 
     -- @covers lurek.data.encode
     -- @covers lurek.filesystem.write
+    -- @covers lurek.data.decode
+    -- @covers lurek.filesystem.read
+    -- @covers lurek.filesystem.exists
+    -- @covers lurek.filesystem.remove
     -- @description Verifies JSON-encoded table data can be written to the filesystem without raising an I/O error.
     it("encodes table to JSON and writes to file", function()
         local record = {
@@ -75,5 +73,4 @@ describe("integration: data serialization with filesystem I/O", function()
         expect_equal("lurek", decoded.meta.engine, "nested engine")
     end)
 end)
-
 test_summary()

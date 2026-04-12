@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Thread/Channel Communication
+-- Lurek2D Stress Test: Thread/Channel Communication
 -- Tests thread channel message throughput
 
 -- @description Covers suite: thread stress: channel creation.
@@ -103,5 +103,4 @@ describe("thread stress: multi-channel fanout", function()
         end
     end)
 end)
-
 test_summary()

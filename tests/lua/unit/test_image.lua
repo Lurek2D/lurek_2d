@@ -1,14 +1,6 @@
-﻿-- @covers lurek.img.isCompressed
--- @covers lurek.img.loadImage
--- @covers lurek.img.loadLayered
--- @covers lurek.img.newCompressedData
--- @covers lurek.img.newImageData
--- @covers lurek.img.newLayeredImage
--- @covers lurek.img.saveImage
--- @covers lurek.img.saveLayered
-
 -- tests/lua/unit/test_image.lua
--- BDD tests for lurek.img ImageData API including all 20 effect methods.
+-- BDD tests for lurek.img ImageData APIs, including image construction, layered images, save/load helpers, and effect-method coverage in the headless VM.
+
 -- The headless VM has no filesystem, GPU, audio, or window APIs.
 -- All tests use lurek.img.newImageData(w, h) for image construction.
 
@@ -18,6 +10,14 @@
 
 -- @description Verifies that the compressed-image namespace exposes its helper functions and treats a nonexistent DDS path as an error for loading and as uncompressed for probing.
 describe("lurek.img compressed API", function()
+    -- @covers lurek.img.isCompressed
+    -- @covers lurek.img.loadImage
+    -- @covers lurek.img.loadLayered
+    -- @covers lurek.img.newCompressedData
+    -- @covers lurek.img.newImageData
+    -- @covers lurek.img.newLayeredImage
+    -- @covers lurek.img.saveImage
+    -- @covers lurek.img.saveLayered
     -- @description Confirms the image namespace is available on lurek.img as a table.
     it("lurek.img is a table", function()
         expect_type("table", lurek.img)
@@ -1231,5 +1231,4 @@ describe("LayeredImage:save", function()
         expect_equal(type(stack.save), "function")
     end)
 end)
-
 test_summary()

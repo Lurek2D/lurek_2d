@@ -1,4 +1,4 @@
-﻿-- test_evidence_layers.lua
+-- test_evidence_layers.lua
 -- Evidence test: Image layer compositing and DrawLayer z-order management
 
 local OUT = "tests/lua/evidence/output/layers/"
@@ -101,5 +101,4 @@ describe("Evidence: Image layers", function()
     end)
 
 end)
-
 test_summary()

@@ -1,16 +1,15 @@
-﻿-- Lurek2D Integration Test: Entity + Physics
+-- Lurek2D Integration Test: Entity + Physics
 -- Tests physics bodies attached to entities and position sync.
--- @covers lurek.entity.newUniverse
--- @covers lurek.physics.newWorld
--- @covers lurek.physics.newBody
--- @covers lurek.physics.step
--- @covers lurek.physics.getBody
--- @covers lurek.physics.destroyWorld
 
 -- @description Covers suite: integration: entity + physics body lifecycle.
 describe("integration: entity + physics body lifecycle", function()
     -- @covers lurek.entity.Universe.set
     -- @covers lurek.physics.newBody
+    -- @covers lurek.entity.newUniverse
+    -- @covers lurek.physics.newWorld
+    -- @covers lurek.physics.step
+    -- @covers lurek.physics.getBody
+    -- @covers lurek.physics.destroyWorld
     -- @description Verifies an entity can store the identifier of a physics body created in the same world.
     it("creates entity and attaches physics body in same world", function()
         local universe = lurek.entity.newUniverse()
@@ -70,5 +69,4 @@ describe("integration: entity + physics body lifecycle", function()
         expect_true(true, "kill + destroy did not crash")
     end)
 end)
-
 test_summary()

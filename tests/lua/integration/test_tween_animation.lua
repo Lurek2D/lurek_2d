@@ -1,12 +1,12 @@
-﻿-- Lurek2D Integration Test: Tween + Animation
+-- Lurek2D Integration Test: Tween + Animation
 -- Tests tween easing curves driving animation timeline
--- @covers lurek.tween.newTween
--- @covers lurek.animation.newTimeline
 
 -- @description Covers suite: tween + animation integration.
 describe("tween + animation integration", function()
     -- @covers lurek.tween.Tween.seek
     -- @covers lurek.animation.Timeline
+    -- @covers lurek.tween.newTween
+    -- @covers lurek.animation.newTimeline
     -- @description Verifies a linear tween produces expected position values that could drive animation state over time.
     it("tween linear easing drives position", function()
         local tween = lurek.tween.newTween()
@@ -101,5 +101,4 @@ describe("tween + animation integration", function()
         expect_near(150, v2, 2.0, "tween2 at midpoint ~150")
     end)
 end)
-
 test_summary()

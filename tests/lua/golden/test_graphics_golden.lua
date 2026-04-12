@@ -1,4 +1,7 @@
-﻿-- @description Covers suite: Golden graphics.
+-- Placeholder golden suite for migrated graphics fixtures.
+-- Keeps the graphics golden registration in place until each migrated evidence artifact has a real compare-only assertion.
+
+-- @description Covers suite: Golden graphics.
 describe('Golden graphics', function()
     -- @description Placeholder stub: this test body is empty and currently does not compare fixture_sprite_8x8 against any golden artifact.
     it('matches fixture_sprite_8x8', function() end)
@@ -31,3 +34,4 @@ describe('Golden graphics', function()
     -- @description Placeholder stub: this test body is empty and currently does not compare evidence_image_paste_composite against any golden artifact.
     it('matches evidence_image_paste_composite', function() end)
 end)
+test_summary()

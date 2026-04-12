@@ -429,6 +429,13 @@ end
 --- @param path : string
 --- @return string|nil
 local function _read_file_bytes(path)
+    if not io.open and lurek and lurek.fs and lurek.fs.read then
+        local ok, content = pcall(function() return lurek.fs.read(path) end)
+        if ok then
+            return content
+        end
+        return nil
+    end
     local f = io.open(path, "rb")
     if not f then return nil end
     local content = f:read("*a")

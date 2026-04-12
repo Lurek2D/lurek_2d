@@ -1,5 +1,4 @@
-﻿-- Golden test: pathfinding â€” compare evidence output against golden samples
--- @golden
+-- Golden test: pathfinding â€” compare evidence output against golden samples
 
 -- @description Covers suite: golden: pathfinding evidence comparison.
 describe("golden: pathfinding evidence comparison", function()
@@ -12,5 +11,4 @@ describe("golden: pathfinding evidence comparison", function()
         expect_golden_file_match(evidence, golden)
     end)
 end)
-
 test_summary()

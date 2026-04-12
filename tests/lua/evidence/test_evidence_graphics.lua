@@ -1,4 +1,7 @@
-﻿-- @description Placeholder evidence suite for migrated graphics/image fixtures that have not been translated to Lua yet.
+-- Placeholder evidence suite for migrated graphics/image fixtures.
+-- Keeps pending graphics/image artifact ports visible until each migrated evidence case is translated to real Lua output generation.
+
+-- @description Placeholder evidence suite for migrated graphics/image fixtures that have not been translated to Lua yet.
 describe('Evidence graphics', function()
     -- @description Placeholder for the migrated 8x8 sprite fixture evidence; this test currently documents the pending Lua port only.
     it('fixture_sprite_8x8', function()
@@ -61,3 +64,4 @@ describe('Evidence graphics', function()
         -- TODO: Translate evidence_image_paste_composite to Lua
     end)
 end)
+test_summary()

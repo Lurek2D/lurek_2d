@@ -1,5 +1,4 @@
-﻿-- Golden test: migrated 15
--- @golden
+-- Golden test: migrated 15
 
 -- @description Covers suite: golden: migrated 15 evidence comparison.
 describe("golden: migrated 15 evidence comparison", function()
@@ -27,5 +26,4 @@ describe("golden: migrated 15 evidence comparison", function()
         expect_golden_file_match(OUT .. "generate_map.png", SAMP .. "generate_map.png")
     end)
 end)
-
 test_summary()

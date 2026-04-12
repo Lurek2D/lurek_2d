@@ -1,6 +1,5 @@
-﻿-- Lurek2D Stress Test: Data Compression, Hash, and Encoding Throughput
+-- Lurek2D Stress Test: Data Compression, Hash, and Encoding Throughput
 -- Tests compression output, hashing, and encode/decode at scale
-
 
 -- @description Covers suite: data stress: compression creates output.
 describe("data stress: compression creates output", function()
@@ -114,3 +113,4 @@ describe("data stress: encoding throughput", function()
         expect_equal(#data, #decoded, "hex roundtrip preserves length")
     end)
 end)
+test_summary()

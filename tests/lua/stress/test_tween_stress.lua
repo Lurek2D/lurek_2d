@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Tween Update Throughput
+-- Lurek2D Stress Test: Tween Update Throughput
 -- Measures active tween update rate under heavy load.
 
 -- @description Covers suite: stress: many active tweens updated simultaneously.
@@ -87,5 +87,4 @@ describe("stress: many active tweens updated simultaneously", function()
         expect_equal(TWEENS, finished, "all onComplete callbacks fired")
     end)
 end)
-
 test_summary()

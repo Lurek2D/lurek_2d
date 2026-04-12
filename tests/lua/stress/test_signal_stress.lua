@@ -1,4 +1,4 @@
-﻿-- Lurek2D Stress Test: Signal Dispatch Throughput
+-- Lurek2D Stress Test: Signal Dispatch Throughput
 -- Measures signal emit performance under high listener counts.
 
 -- @description Covers suite: stress: signal emit to many listeners.
@@ -81,5 +81,4 @@ describe("stress: signal emit to many listeners", function()
         expect_equal(N_SIGS * N_LISTEN * N_EMITS, total, "all dispatches fired")
     end)
 end)
-
 test_summary()

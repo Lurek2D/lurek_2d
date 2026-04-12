@@ -13,8 +13,12 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::SharedState;
-use crate::runtime::log_messages::{self, LA03_OPEN_URL_REJECTED, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL, LA06_CLIPBOARD_READ_FAIL};
 use crate::log_msg;
+use crate::runtime::log_messages::{
+    self, LA03_OPEN_URL_REJECTED, LA04_CLIPBOARD_WRITE_FAIL, LA05_CLIPBOARD_UNAVAIL,
+    LA06_CLIPBOARD_READ_FAIL,
+};
+use crate::runtime::messages;
 
 /// Returns the number of logical processors available.
 ///
@@ -252,6 +256,32 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             info.set("memory", get_memory_size())?;
             Ok(info)
         })?,
+    )?;
+
+    // lurek.platform.getMessage(id) -> string
+    /// Resolves a stable runtime message ID such as 'L001' to its human-readable text.
+    /// @param id : string
+    /// @return string
+    system.set(
+        "getMessage",
+        lua.create_function(|_, id: String| Ok(messages::resolve_message(&id)))?,
+    )?;
+
+    // lurek.platform.hasMessage(id) -> boolean
+    /// Returns true when the runtime message catalog contains the given stable message ID.
+    /// @param id : string
+    /// @return boolean
+    system.set(
+        "hasMessage",
+        lua.create_function(|_, id: String| Ok(messages::has_message(&id)))?,
+    )?;
+
+    // lurek.platform.getMessageCount() -> integer
+    /// Returns the total number of message entries loaded into the runtime message catalog.
+    /// @return integer
+    system.set(
+        "getMessageCount",
+        lua.create_function(|_, ()| Ok(messages::message_count()))?,
     )?;
 
     // lurek.platform.setClipboardText(text) ÔÇö writes text to the system clipboard.

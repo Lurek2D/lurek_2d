@@ -1,59 +1,57 @@
-﻿-- Lurek2D Input API Tests
--- @covers lurek.gamepad.getAxis
--- @covers lurek.gamepad.getAxisCount
--- @covers lurek.gamepad.getButtonCount
--- @covers lurek.gamepad.getCount
--- @covers lurek.gamepad.getGUID
--- @covers lurek.gamepad.getGamepadMappingString
--- @covers lurek.gamepad.getHat
--- @covers lurek.gamepad.getJoystickCount
--- @covers lurek.gamepad.getJoysticks
--- @covers lurek.gamepad.getName
--- @covers lurek.gamepad.isConnected
--- @covers lurek.gamepad.isDown
--- @covers lurek.gamepad.isGamepad
--- @covers lurek.gamepad.isVibrationSupported
--- @covers lurek.gamepad.loadGamepadMappings
--- @covers lurek.gamepad.saveGamepadMappings
--- @covers lurek.gamepad.setGamepadMapping
--- @covers lurek.gamepad.setVibration
--- @covers lurek.keyboard.getKeyFromScancode
--- @covers lurek.keyboard.getScancodeFromKey
--- @covers lurek.keyboard.hasKeyRepeat
--- @covers lurek.keyboard.hasTextInput
--- @covers lurek.keyboard.isDown
--- @covers lurek.keyboard.isModifierActive
--- @covers lurek.keyboard.isScancodeDown
--- @covers lurek.keyboard.setKeyRepeat
--- @covers lurek.keyboard.setTextInput
--- @covers lurek.mouse.getCursor
--- @covers lurek.mouse.getPosition
--- @covers lurek.mouse.getSystemCursor
--- @covers lurek.mouse.getX
--- @covers lurek.mouse.getY
--- @covers lurek.mouse.isCursorSupported
--- @covers lurek.mouse.isDown
--- @covers lurek.mouse.setCursor
--- @covers lurek.touch.getPosition
--- @covers lurek.touch.getPressure
--- @covers lurek.touch.getTouchCount
--- @covers lurek.touch.getTouches
-
-
--- @covers lurek.mouse.setVisible
--- @covers lurek.mouse.isVisible
--- @covers lurek.mouse.setGrabbed
--- @covers lurek.mouse.isGrabbed
--- @covers lurek.mouse.setRelativeMode
--- @covers lurek.mouse.getRelativeMode
--- @covers lurek.mouse.setPosition
--- @covers lurek.mouse.getWheelDelta
--- @covers lurek.mouse.newCursor
--- @covers lurek.input.Cursor.release
--- @covers lurek.input.Cursor.getType
+-- Lurek2D Input API Tests
 
 -- @description Verifies that the keyboard namespace is exposed on lurek as a table.
 describe("lurek.keyboard module exists", function()
+    -- @covers lurek.gamepad.getAxis
+    -- @covers lurek.gamepad.getAxisCount
+    -- @covers lurek.gamepad.getButtonCount
+    -- @covers lurek.gamepad.getCount
+    -- @covers lurek.gamepad.getGUID
+    -- @covers lurek.gamepad.getGamepadMappingString
+    -- @covers lurek.gamepad.getHat
+    -- @covers lurek.gamepad.getJoystickCount
+    -- @covers lurek.gamepad.getJoysticks
+    -- @covers lurek.gamepad.getName
+    -- @covers lurek.gamepad.isConnected
+    -- @covers lurek.gamepad.isDown
+    -- @covers lurek.gamepad.isGamepad
+    -- @covers lurek.gamepad.isVibrationSupported
+    -- @covers lurek.gamepad.loadGamepadMappings
+    -- @covers lurek.gamepad.saveGamepadMappings
+    -- @covers lurek.gamepad.setGamepadMapping
+    -- @covers lurek.gamepad.setVibration
+    -- @covers lurek.keyboard.getKeyFromScancode
+    -- @covers lurek.keyboard.getScancodeFromKey
+    -- @covers lurek.keyboard.hasKeyRepeat
+    -- @covers lurek.keyboard.hasTextInput
+    -- @covers lurek.keyboard.isDown
+    -- @covers lurek.keyboard.isModifierActive
+    -- @covers lurek.keyboard.isScancodeDown
+    -- @covers lurek.keyboard.setKeyRepeat
+    -- @covers lurek.keyboard.setTextInput
+    -- @covers lurek.mouse.getCursor
+    -- @covers lurek.mouse.getPosition
+    -- @covers lurek.mouse.getSystemCursor
+    -- @covers lurek.mouse.getX
+    -- @covers lurek.mouse.getY
+    -- @covers lurek.mouse.isCursorSupported
+    -- @covers lurek.mouse.isDown
+    -- @covers lurek.mouse.setCursor
+    -- @covers lurek.touch.getPosition
+    -- @covers lurek.touch.getPressure
+    -- @covers lurek.touch.getTouchCount
+    -- @covers lurek.touch.getTouches
+    -- @covers lurek.mouse.setVisible
+    -- @covers lurek.mouse.isVisible
+    -- @covers lurek.mouse.setGrabbed
+    -- @covers lurek.mouse.isGrabbed
+    -- @covers lurek.mouse.setRelativeMode
+    -- @covers lurek.mouse.getRelativeMode
+    -- @covers lurek.mouse.setPosition
+    -- @covers lurek.mouse.getWheelDelta
+    -- @covers lurek.mouse.newCursor
+    -- @covers lurek.input.Cursor.release
+    -- @covers lurek.input.Cursor.getType
     -- @description Confirms lurek.keyboard is present and typed as a table.
     it("lurek.keyboard is a table", function()
         expect_type("table", lurek.keyboard)
@@ -448,5 +446,4 @@ describe("Cursor.getType / Cursor.release", function()
         expect_no_error(function() cursor:release() end)
     end)
 end)
-
 test_summary()

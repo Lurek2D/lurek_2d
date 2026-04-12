@@ -1,35 +1,34 @@
-﻿-- Lurek2D Graphics API Tests (headless â€” tests lurek.graphic API existence and behaviour)
--- @covers lurek.graphic.captureScreenshot
--- @covers lurek.graphic.circle
--- @covers lurek.graphic.clearStencil
--- @covers lurek.graphic.draw
--- @covers lurek.graphic.drawNineSlice
--- @covers lurek.graphic.ellipse
--- @covers lurek.graphic.getDepthMode
--- @covers lurek.graphic.getDimensions
--- @covers lurek.graphic.getFontAscent
--- @covers lurek.graphic.getFontDescent
--- @covers lurek.graphic.getFontLineHeight
--- @covers lurek.graphic.getLineWidth
--- @covers lurek.graphic.getStencilMode
--- @covers lurek.graphic.line
--- @covers lurek.graphic.newImage
--- @covers lurek.graphic.newNineSlice
--- @covers lurek.graphic.polygon
--- @covers lurek.graphic.print
--- @covers lurek.graphic.rectangle
--- @covers lurek.graphic.saveScreenshot
--- @covers lurek.graphic.setBackgroundColor
--- @covers lurek.graphic.setColor
--- @covers lurek.graphic.setDepthMode
--- @covers lurek.graphic.setFontLineHeight
--- @covers lurek.graphic.setLineWidth
--- @covers lurek.graphic.setStencilMode
--- @covers lurek.graphic.triangle
-
+-- Lurek2D Graphics API Tests (headless â€” tests lurek.graphic API existence and behaviour)
 
 -- @description Verifies the graphics namespace is exposed on lurek as a table.
 describe("lurek.graphic module exists", function()
+    -- @covers lurek.graphic.captureScreenshot
+    -- @covers lurek.graphic.circle
+    -- @covers lurek.graphic.clearStencil
+    -- @covers lurek.graphic.draw
+    -- @covers lurek.graphic.drawNineSlice
+    -- @covers lurek.graphic.ellipse
+    -- @covers lurek.graphic.getDepthMode
+    -- @covers lurek.graphic.getDimensions
+    -- @covers lurek.graphic.getFontAscent
+    -- @covers lurek.graphic.getFontDescent
+    -- @covers lurek.graphic.getFontLineHeight
+    -- @covers lurek.graphic.getLineWidth
+    -- @covers lurek.graphic.getStencilMode
+    -- @covers lurek.graphic.line
+    -- @covers lurek.graphic.newImage
+    -- @covers lurek.graphic.newNineSlice
+    -- @covers lurek.graphic.polygon
+    -- @covers lurek.graphic.print
+    -- @covers lurek.graphic.rectangle
+    -- @covers lurek.graphic.saveScreenshot
+    -- @covers lurek.graphic.setBackgroundColor
+    -- @covers lurek.graphic.setColor
+    -- @covers lurek.graphic.setDepthMode
+    -- @covers lurek.graphic.setFontLineHeight
+    -- @covers lurek.graphic.setLineWidth
+    -- @covers lurek.graphic.setStencilMode
+    -- @covers lurek.graphic.triangle
     -- @description Asserts that lurek.graphic has Lua type "table".
     it("lurek.graphic is a table", function()
         expect_type("table", lurek.graphic)
@@ -460,5 +459,4 @@ describe("lurek.graphic depth mode", function()
     expect_type("function", lurek.graphic.getDepthMode)
   end)
 end)
-
 test_summary()

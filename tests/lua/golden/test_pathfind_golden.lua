@@ -1,5 +1,4 @@
-﻿-- Golden test: pathfind
--- @golden
+-- Golden test: pathfind
 
 -- @description Covers suite: golden: pathfind evidence comparison.
 describe("golden: pathfind evidence comparison", function()
@@ -16,5 +15,4 @@ describe("golden: pathfind evidence comparison", function()
         expect_golden_file_match(evidence_output_dir("pathfind") .. "influence_map.png", "tests/lua/golden/samples/pathfind/influence_map.png")
 end)
 end)
-
 test_summary()
