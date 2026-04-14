@@ -623,4 +623,152 @@ describe("particle gravity", function()
         lurek.particles.release(ps)
     end)
 end)
+
+-- @description Verifies the five new particle shapes round-trip through setShape/getShape.
+describe("new particle shapes", function()
+    local new_shapes = { "shrapnel", "ray", "puff", "ring", "capsule" }
+
+    for _, shape_name in ipairs(new_shapes) do
+        -- @description Sets shape via newSystem config and reads it back via getShape.
+        it("shape '" .. shape_name .. "' round-trips via newSystem config", function()
+            local ps = lurek.particles.newSystem({ maxParticles = 1, shape = shape_name })
+            expect_equal(ps:getShape(), shape_name)
+            lurek.particles.release(ps)
+        end)
+
+        -- @description Sets shape via setShape method and reads it back via getShape.
+        it("setShape('" .. shape_name .. "') persists across getShape", function()
+            local ps = lurek.particles.newSystem()
+            ps:setShape(shape_name)
+            expect_equal(ps:getShape(), shape_name)
+            lurek.particles.release(ps)
+        end)
+    end
+
+    -- @description Verifies shrapnelEdges config key is accepted without error.
+    it("shrapnelEdges config accepted", function()
+        local ps = lurek.particles.newSystem({ shape = "shrapnel", shrapnelEdges = 8 })
+        expect_equal(ps:getShape(), "shrapnel")
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Verifies rayAspect config key is accepted without error.
+    it("rayAspect config accepted", function()
+        local ps = lurek.particles.newSystem({ shape = "ray", rayAspect = 6.0 })
+        expect_equal(ps:getShape(), "ray")
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Verifies ringThickness config key is accepted without error.
+    it("ringThickness config accepted", function()
+        local ps = lurek.particles.newSystem({ shape = "ring", ringThickness = 0.3 })
+        expect_equal(ps:getShape(), "ring")
+        lurek.particles.release(ps)
+    end)
+end)
+
+-- @description Verifies the warmUp method pre-populates the system and is clamped at 30 s.
+describe("particle warm_up", function()
+    -- @description Creates a continuous emitter, calls warmUp(1.0), and asserts count > 0.
+    it("warmUp(1.0) produces particles", function()
+        local ps = lurek.particles.newSystem({
+            maxParticles = 200,
+            emissionRate = 100,
+            lifetimeMin = 5,
+            lifetimeMax = 5,
+        })
+        ps:warmUp(1.0)
+        expect_true(ps:count() > 0, "warmUp should produce particles")
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Calls warmUp with a value above 30 and asserts no crash.
+    it("warmUp(100) is clamped and does not crash", function()
+        local ps = lurek.particles.newSystem({
+            maxParticles = 50,
+            emissionRate = 10,
+            lifetimeMin = 2,
+            lifetimeMax = 2,
+        })
+        local ok = pcall(function() ps:warmUp(100) end)
+        expect_true(ok, "warmUp with large value should not crash")
+        lurek.particles.release(ps)
+    end)
+end)
+
+-- @description Verifies addAttractor, clearAttractors, and getAttractorCount.
+describe("particle attractors", function()
+    -- @description Adds three attractors and asserts getAttractorCount returns 3.
+    it("addAttractor increases getAttractorCount", function()
+        local ps = lurek.particles.newSystem()
+        ps:addAttractor(0, 0, 100, 200)
+        ps:addAttractor(50, 50, 80, 100)
+        ps:addAttractor(-30, 20, 60, 150)
+        expect_equal(ps:getAttractorCount(), 3)
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Clears attractors and asserts count returns to zero.
+    it("clearAttractors resets count to zero", function()
+        local ps = lurek.particles.newSystem()
+        ps:addAttractor(10, 10, 50, 80)
+        ps:addAttractor(20, 20, 50, 80)
+        ps:clearAttractors()
+        expect_equal(ps:getAttractorCount(), 0)
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Emits particles with an attractor and asserts update does not crash.
+    it("update with attractor does not crash", function()
+        local ps = lurek.particles.newSystem({
+            maxParticles = 20,
+            emissionRate = 50,
+            lifetimeMin = 5,
+            lifetimeMax = 5,
+        })
+        ps:addAttractor(100, 100, 200, 300)
+        ps:start()
+        ps:update(0.1)
+        expect_true(ps:count() > 0, "particles survive update with attractor")
+        lurek.particles.release(ps)
+    end)
+end)
+
+-- @description Verifies setBounds / clearBounds methods.
+describe("particle bounce bounds", function()
+    -- @description Calls setBounds with valid values and asserts no crash.
+    it("setBounds does not crash", function()
+        local ps = lurek.particles.newSystem()
+        local ok = pcall(function() ps:setBounds(-100, 100, -100, 100, 0.8) end)
+        expect_true(ok, "setBounds should not crash")
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Calls clearBounds after setBounds and asserts no crash.
+    it("clearBounds does not crash", function()
+        local ps = lurek.particles.newSystem()
+        ps:setBounds(-50, 50, -50, 50, 1.0)
+        local ok = pcall(function() ps:clearBounds() end)
+        expect_true(ok, "clearBounds should not crash")
+        lurek.particles.release(ps)
+    end)
+
+    -- @description Emits particles within bounds and asserts they remain alive.
+    it("update with bounds does not crash", function()
+        local ps = lurek.particles.newSystem({
+            maxParticles = 30,
+            emissionRate = 0,
+            speedMin = 50,
+            speedMax = 50,
+            lifetimeMin = 10,
+            lifetimeMax = 10,
+        })
+        ps:setBounds(-30, 30, -30, 30, 0.9)
+        lurek.particles.emit(ps, 10)
+        ps:update(0.5)
+        expect_true(ps:count() > 0, "particles survive update within bounds")
+        lurek.particles.release(ps)
+    end)
+end)
+
 test_summary()

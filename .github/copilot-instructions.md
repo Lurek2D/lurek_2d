@@ -150,6 +150,8 @@ Lurek2D has a two-layer test system. Both layers run **headless** — no window,
 
 **Constraints**: Lua tests must not call GPU, audio, or window APIs. New `lurek.*` functions require at least one Lua test before merge. Bug fixes require a regression test first.
 
+**Lua-first testing rule** — If behaviour can be observed through the `lurek.*` Lua API, it **must** be tested in Lua (`tests/lua/`), never in a Rust unit test. Rust unit tests (`tests/rust/unit/`) are reserved **exclusively** for private internals that are not reachable from Lua: internal `struct` field defaults, non-public helper functions, pure-Rust algorithms with no Lua binding, and invariants that cannot survive the Lua call boundary (e.g. zero-copy buffer layout). Duplicating a Lua-testable assertion in a Rust unit test is a blocking defect — delete the Rust test and keep the Lua one.
+
 ### Docstrings
 
 Every `pub` Rust item needs `///`. Every module (`mod.rs`, `lib.rs`) needs `//!`. Format: one-sentence summary, optional detail paragraph. Verify: `python tools/docs/collect_docs.py --report-missing` (exits 1 if any missing).

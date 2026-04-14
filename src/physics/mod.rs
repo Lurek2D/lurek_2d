@@ -11,18 +11,27 @@
 
 /// Body types, shapes, and the `Body` struct used by the physics world.
 pub mod body;
+/// Falling-sand cellular automaton independent of rapier.
+pub mod cellular;
 /// Collision event structs returned by `World::get_collision_events`.
 pub mod collision;
 /// Debug render commands and image export for the physics world.
 pub mod render;
 /// Extended shape types: Polygon, Edge, and Chain colliders.
 pub mod shape;
+/// Destructible terrain: bitgrid with chunked static physics colliders.
+pub mod terrain;
 /// The `World` struct and all simulation management: bodies, joints, raycasting, contacts.
 pub mod world;
+/// Gravity and damping zones applied before each rapier pipeline step.
+pub mod zone;
 
 pub use body::{Body, BodyShape, BodyType};
+pub use cellular::{default_palette, CellType, CellularWorld};
 pub use collision::CollisionInfo;
 pub use shape::{Shape, StandaloneShape};
+pub use terrain::TerrainMap;
 // Re-export BodyContact as CollisionEvent to preserve the existing public API.
 pub use world::BodyContact as CollisionEvent;
 pub use world::{ContactInfo, PhysicsShapeSnapshot, RaycastHit, World};
+pub use zone::{PhysicsZone, ZoneBoundary, ZoneEvent, ZoneEventKind, ZoneGravityMode};

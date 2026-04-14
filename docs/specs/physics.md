@@ -246,6 +246,55 @@ Its core boundary is the `World` sync layer: scripts mutate `Body` records, `Wor
 - `World:getBodyContacts`: Returns contacts involving a specific body.
 - `World:setBodyType`: Changes the body type.
 - `World:getBodyType`: Returns the body type as a string.
+- `World:addZone(x, y, w, h)`: Creates a rectangular gravity/damping zone and returns a `LuaZone` handle.
+- `World:getZoneEvents()`: Returns zone enter/leave events from the last step as `{zone_id, body_id, kind}` tables.
+- `World:stepFixed(accum, step_dt, max_steps)`: Fixed-timestep accumulator; returns unconsumed remainder.
+
+### `Zone` Methods (`lurek.physics.addZone`)
+- `Zone:getId()`: Returns the zone's integer ID.
+- `Zone:setEnabled(bool)`: Enables or disables the zone.
+- `Zone:setPriority(int)`: Sets priority (higher wins when zones overlap).
+- `Zone:setLayerMask(int)`: Sets the layer bitmask; only bodies whose `layer & mask != 0` are affected.
+- `Zone:setCircle(cx, cy, radius)`: Replaces the zone boundary with a circle.
+- `Zone:setGravityDirectional(gx, gy)`: Sets directional gravity.
+- `Zone:setGravityPoint(cx, cy, strength)`: Sets point-attractor gravity (F = k / r²).
+- `Zone:setGravityRepulsor(cx, cy, strength)`: Sets point-repulsor gravity.
+- `Zone:setGravityZero()`: Suppresses all gravity inside the zone.
+- `Zone:setLinearDampingOverride(value|nil)`: Per-zone linear damping; pass `nil` to clear.
+- `Zone:setAngularDampingOverride(value|nil)`: Per-zone angular damping; pass `nil` to clear.
+- `Zone:destroy()`: Removes the zone from the world.
+
+### Terrain API (`lurek.physics.newTerrain`)
+- `lurek.physics.newTerrain(width, height, cell_size, world)`: Creates a destructible terrain grid.
+- `Terrain:setCell(cx, cy, solid)`: Sets a single cell to solid or empty.
+- `Terrain:getCell(cx, cy)`: Returns whether a cell is solid.
+- `Terrain:fillCircle(wx, wy, radius, solid)`: Fills a circle of cells.
+- `Terrain:fillRect(wx, wy, w, h, solid)`: Fills a rectangular region of cells.
+- `Terrain:fillAll(solid)`: Sets every cell.
+- `Terrain:flush()`: Rebuilds physics bodies for all dirty chunks.
+- `Terrain:isDirty()`: Returns true when any chunk needs flushing.
+- `Terrain:collapseColumns()`: Removes unsupported cells; returns count.
+- `Terrain:solidPositions()`: Returns `{x, y}` world-space centres of all solid cells.
+- `Terrain:spawnDebris(positions, mass, restitution)`: Spawns dynamic debris bodies; returns body ID array.
+- `Terrain:toImageData(sr, sg, sb, er, eg, eb)`: Returns RGBA pixel bytes.
+- `Terrain:toBytes()`: Serialises the grid.
+- `Terrain:loadFromBytes(data)`: Loads grid from bytes (returns bool).
+
+### Cellular API (`lurek.physics.newCellular`)
+- `lurek.physics.newCellular(width, height)`: Creates a falling-sand cellular automaton.
+- Constants: `CELL_AIR=0`, `CELL_SAND=1`, `CELL_WATER=2`, `CELL_ROCK=3`, `CELL_FIRE=4`, `CELL_GAS=5`.
+- `Cellular:setCell(cx, cy, cell_type)`: Sets a cell's material.
+- `Cellular:getCell(cx, cy)`: Returns the material integer at a cell.
+- `Cellular:fillRect(cx0, cy0, cw, ch, cell_type)`: Fills a rectangular region.
+- `Cellular:fillCircle(cx_c, cy_c, r_cells, cell_type)`: Fills a circle of cells.
+- `Cellular:step()`: Advances the simulation by one tick.
+- `Cellular:stepN(n)`: Advances the simulation by n ticks.
+- `Cellular:toImageData()`: Returns full RGBA pixel bytes using the default palette.
+- `Cellular:toImageDataRegion(cx0, cy0, cw, ch)`: Returns a sub-region as RGBA bytes.
+- `Cellular:countCells(cell_type)`: Counts cells of the given material.
+- `Cellular:findCells(cell_type)`: Returns `{x, y}` positions of all matching cells.
+- `Cellular:toBytes()`: Serialises the grid.
+- `Cellular:loadFromBytes(data)`: Loads grid from bytes (returns bool).
 
 ## References
 
@@ -260,15 +309,15 @@ Its core boundary is the `World` sync layer: scripts mutate `Body` records, `Wor
 
 Geometry-only snapshot of a single physics body. Does not depend on `crate::render`.
 
-| Field | Type | Description |
-|---|---|---|
-| `x`, `y` | `f32` | Body centre in world space. |
-| `half_w`, `half_h` | `f32` | Half-extents (or radius for circles). |
-| `angle` | `f32` | Rotation in radians. |
-| `is_static` | `bool` | True for Static / Kinematic bodies. |
-| `is_sensor` | `bool` | True for Sensor bodies. |
-| `is_circle` | `bool` | True when shape is a circle. |
-| `hull_verts` | `Vec<[f32; 2]>` | Local-space polygon vertices; empty for box / circle. |
+| Field              | Type            | Description                                           |
+| ------------------ | --------------- | ----------------------------------------------------- |
+| `x`, `y`           | `f32`           | Body centre in world space.                           |
+| `half_w`, `half_h` | `f32`           | Half-extents (or radius for circles).                 |
+| `angle`            | `f32`           | Rotation in radians.                                  |
+| `is_static`        | `bool`          | True for Static / Kinematic bodies.                   |
+| `is_sensor`        | `bool`          | True for Sensor bodies.                               |
+| `is_circle`        | `bool`          | True when shape is a circle.                          |
+| `hull_verts`       | `Vec<[f32; 2]>` | Local-space polygon vertices; empty for box / circle. |
 
 `World::extract_shape_snapshots()` returns `Vec<PhysicsShapeSnapshot>` for all bodies.
 
@@ -279,13 +328,13 @@ Call from `lurek.render` or `lurek.render_ui`.
 
 **Config table fields** (all optional):
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| `bodyColor` | `{f32,f32,f32,f32}` | `{0,1,0,1}` | Dynamic body outline. |
-| `staticColor` | `{f32,f32,f32,f32}` | `{0.5,0.5,0.5,1}` | Static/kinematic outline. |
-| `sleepColor` | `{f32,f32,f32,f32}` | `{0,0.4,0,1}` | Sleeping body outline. |
-| `sensorColor` | `{f32,f32,f32,f32}` | `{0,1,1,0.7}` | Sensor (trigger) outline. |
-| `lineWidth` | `number` | `1.0` | Outline thickness in pixels. |
+| Key           | Type                | Default           | Description                  |
+| ------------- | ------------------- | ----------------- | ---------------------------- |
+| `bodyColor`   | `{f32,f32,f32,f32}` | `{0,1,0,1}`       | Dynamic body outline.        |
+| `staticColor` | `{f32,f32,f32,f32}` | `{0.5,0.5,0.5,1}` | Static/kinematic outline.    |
+| `sleepColor`  | `{f32,f32,f32,f32}` | `{0,0.4,0,1}`     | Sleeping body outline.       |
+| `sensorColor` | `{f32,f32,f32,f32}` | `{0,1,1,0.7}`     | Sensor (trigger) outline.    |
+| `lineWidth`   | `number`            | `1.0`             | Outline thickness in pixels. |
 
 ## Notes
 

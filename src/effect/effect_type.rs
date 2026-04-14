@@ -64,6 +64,22 @@ pub enum PostFxEffectType {
     Noise,
     /// Custom shader pass (created via `newPass()`).
     Custom,
+    /// Radial blur simulating a camera depth-of-field effect.
+    DepthOfField,
+    /// Accumulative directional motion blur.
+    MotionBlur,
+    /// Palette-based colour remapping using a lookup texture.
+    PaletteSwap,
+    /// 3D LUT-based colour grading for cinematic tones.
+    ColorLut,
+    /// UV-distortion wave simulating water or heat shimmer.
+    WaterDistort,
+    /// Unsharp-mask sharpening pass.
+    Sharpen,
+    /// Ordered Bayer-matrix dithering for retro palette reduction.
+    Dither,
+    /// Sobel-edge outline tinted with a configurable colour.
+    Outline,
 }
 
 impl PostFxEffectType {
@@ -91,6 +107,14 @@ impl PostFxEffectType {
             "edgedetect" => Some(Self::EdgeDetect),
             "hueshift" => Some(Self::HueShift),
             "noise" => Some(Self::Noise),
+            "depthoffield" => Some(Self::DepthOfField),
+            "motionblur" => Some(Self::MotionBlur),
+            "paletteswap" => Some(Self::PaletteSwap),
+            "colorlut" => Some(Self::ColorLut),
+            "waterdistort" => Some(Self::WaterDistort),
+            "sharpen" => Some(Self::Sharpen),
+            "dither" => Some(Self::Dither),
+            "outline" => Some(Self::Outline),
             _ => None,
         }
     }
@@ -117,6 +141,14 @@ impl PostFxEffectType {
             Self::HueShift => "hueshift",
             Self::Noise => "noise",
             Self::Custom => "custom",
+            Self::DepthOfField => "depthoffield",
+            Self::MotionBlur => "motionblur",
+            Self::PaletteSwap => "paletteswap",
+            Self::ColorLut => "colorlut",
+            Self::WaterDistort => "waterdistort",
+            Self::Sharpen => "sharpen",
+            Self::Dither => "dither",
+            Self::Outline => "outline",
         }
     }
 
@@ -186,6 +218,40 @@ impl PostFxEffectType {
                 m.insert("strength".into(), 0.1);
             }
             Self::Custom => {}
+            Self::DepthOfField => {
+                m.insert("focus_x".into(), 0.5);
+                m.insert("focus_y".into(), 0.5);
+                m.insert("strength".into(), 0.8);
+                m.insert("radius".into(), 8.0);
+            }
+            Self::MotionBlur => {
+                m.insert("strength".into(), 0.4);
+                m.insert("samples".into(), 8.0);
+            }
+            Self::PaletteSwap => {
+                m.insert("mix".into(), 1.0);
+            }
+            Self::ColorLut => {
+                m.insert("strength".into(), 1.0);
+            }
+            Self::WaterDistort => {
+                m.insert("amplitude".into(), 0.005);
+                m.insert("frequency".into(), 15.0);
+                m.insert("speed".into(), 2.0);
+            }
+            Self::Sharpen => {
+                m.insert("strength".into(), 0.5);
+            }
+            Self::Dither => {
+                m.insert("palette_size".into(), 8.0);
+                m.insert("matrix_size".into(), 4.0);
+            }
+            Self::Outline => {
+                m.insert("color_r".into(), 0.0);
+                m.insert("color_g".into(), 0.0);
+                m.insert("color_b".into(), 0.0);
+                m.insert("thickness".into(), 1.0);
+            }
         }
         m
     }

@@ -18,7 +18,7 @@ use lurek2d::tilemap::tile_walker::{Facing, TileWalker};
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_noise_generator_deterministic() {
+fn noise_generator_deterministic() {
     let ng1 = NoiseGenerator::new(42);
     let ng2 = NoiseGenerator::new(42);
     for i in 0..20 {
@@ -33,7 +33,7 @@ fn test_noise_generator_deterministic() {
 }
 
 #[test]
-fn test_noise_generator_different_seeds() {
+fn noise_generator_different_seeds() {
     let ng1 = NoiseGenerator::new(1);
     let ng2 = NoiseGenerator::new(999);
     let mut differ = false;
@@ -48,7 +48,7 @@ fn test_noise_generator_different_seeds() {
 }
 
 #[test]
-fn test_noise_generator_perlin_range() {
+fn noise_generator_perlin_range() {
     let ng = NoiseGenerator::new(7);
     for i in 0..200 {
         let x = (i as f64 - 100.0) * 0.13;
@@ -62,7 +62,7 @@ fn test_noise_generator_perlin_range() {
 }
 
 #[test]
-fn test_noise_generator_perlin_dimensions() {
+fn noise_generator_perlin_dimensions() {
     let ng = NoiseGenerator::new(13);
     let v1d = ng.perlin_1d(3.14);
     let v2d = ng.perlin_2d(3.14, 2.71);
@@ -79,7 +79,7 @@ fn test_noise_generator_perlin_dimensions() {
 }
 
 #[test]
-fn test_noise_generator_simplex_range() {
+fn noise_generator_simplex_range() {
     let ng = NoiseGenerator::new(99);
     for i in 0..200 {
         let x = (i as f64 - 100.0) * 0.15;
@@ -93,7 +93,7 @@ fn test_noise_generator_simplex_range() {
 }
 
 #[test]
-fn test_noise_generator_simplex_dimensions() {
+fn noise_generator_simplex_dimensions() {
     let ng = NoiseGenerator::new(55);
     let v1d = ng.simplex_1d(5.5);
     let v2d = ng.simplex_2d(5.5, 3.3);
@@ -104,7 +104,7 @@ fn test_noise_generator_simplex_dimensions() {
 }
 
 #[test]
-fn test_noise_generator_worley_euclidean() {
+fn noise_generator_worley_euclidean() {
     let ng = NoiseGenerator::new(77);
     let v = ng.worley_2d(3.0, 4.0, DistType::Euclidean, false);
     assert!(v.is_finite(), "worley euclidean not finite");
@@ -112,7 +112,7 @@ fn test_noise_generator_worley_euclidean() {
 }
 
 #[test]
-fn test_noise_generator_worley_manhattan() {
+fn noise_generator_worley_manhattan() {
     let ng = NoiseGenerator::new(77);
     let v_man = ng.worley_2d(3.0, 4.0, DistType::Manhattan, false);
     let v_euc = ng.worley_2d(3.0, 4.0, DistType::Euclidean, false);
@@ -126,7 +126,7 @@ fn test_noise_generator_worley_manhattan() {
 }
 
 #[test]
-fn test_noise_generator_fbm() {
+fn noise_generator_fbm() {
     let ng = NoiseGenerator::new(42);
     let v = ng.fbm(2.5, 3.5, 4, 2.0, 0.5, NoiseKind::Perlin);
     assert!(v.is_finite(), "fbm not finite: {v}");
@@ -135,7 +135,7 @@ fn test_noise_generator_fbm() {
 }
 
 #[test]
-fn test_noise_generator_ridged() {
+fn noise_generator_ridged() {
     let ng = NoiseGenerator::new(42);
     let v = ng.ridged(2.5, 3.5, 4, 2.0, 0.5, NoiseKind::Perlin);
     assert!(v.is_finite(), "ridged not finite: {v}");
@@ -149,7 +149,7 @@ fn test_noise_generator_ridged() {
 }
 
 #[test]
-fn test_noise_generator_turbulence() {
+fn noise_generator_turbulence() {
     let ng = NoiseGenerator::new(42);
     let v = ng.turbulence(2.5, 3.5, 4, 2.0, 0.5, NoiseKind::Perlin);
     assert!(v.is_finite(), "turbulence not finite: {v}");
@@ -161,7 +161,7 @@ fn test_noise_generator_turbulence() {
 }
 
 #[test]
-fn test_noise_generator_generate_map() {
+fn noise_generator_generate_map() {
     let ng = NoiseGenerator::new(100);
     let opts = MapGenOptions {
         scale_x: 0.1,
@@ -190,7 +190,7 @@ fn test_noise_generator_generate_map() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_grid_new_all_walkable() {
+fn grid_new_all_walkable() {
     let g = Grid::new(10, 10, 1.0);
     assert_eq!(g.width(), 10);
     assert_eq!(g.height(), 10);
@@ -202,7 +202,7 @@ fn test_grid_new_all_walkable() {
 }
 
 #[test]
-fn test_grid_set_walkable() {
+fn grid_set_walkable() {
     let mut g = Grid::new(5, 5, 1.0);
     assert!(g.is_walkable(2, 3));
     g.set_walkable(2, 3, false);
@@ -212,7 +212,7 @@ fn test_grid_set_walkable() {
 }
 
 #[test]
-fn test_grid_costs() {
+fn grid_costs() {
     let mut g = Grid::new(5, 5, 1.0);
     assert!((g.get_cost(1, 1) - 1.0).abs() < 1e-4);
     g.set_cost(1, 1, 5.0);
@@ -220,7 +220,7 @@ fn test_grid_costs() {
 }
 
 #[test]
-fn test_grid_astar_simple() {
+fn grid_astar_simple() {
     let g = Grid::new(10, 10, 1.0);
     let path = g.find_path_astar(0, 0, 9, 0, false);
     assert!(path.is_some(), "A* should find path on open grid");
@@ -232,7 +232,7 @@ fn test_grid_astar_simple() {
 }
 
 #[test]
-fn test_grid_astar_blocked() {
+fn grid_astar_blocked() {
     let mut g = Grid::new(5, 1, 1.0);
     // Block the only row except start and end
     g.set_walkable(1, 0, false);
@@ -243,7 +243,7 @@ fn test_grid_astar_blocked() {
 }
 
 #[test]
-fn test_grid_astar_around_wall() {
+fn grid_astar_around_wall() {
     let mut g = Grid::new(5, 5, 1.0);
     // Build a vertical wall at x=2, except leave y=4 open
     for y in 0..4 {
@@ -263,7 +263,7 @@ fn test_grid_astar_around_wall() {
 }
 
 #[test]
-fn test_grid_dijkstra() {
+fn grid_dijkstra() {
     let g = Grid::new(8, 8, 1.0);
     let path = g.find_path_dijkstra(0, 0, 7, 7, false);
     assert!(path.is_some(), "Dijkstra should find path");
@@ -273,7 +273,7 @@ fn test_grid_dijkstra() {
 }
 
 #[test]
-fn test_grid_bfs() {
+fn grid_bfs() {
     let g = Grid::new(6, 6, 1.0);
     let path = g.find_path_bfs(0, 0, 5, 5, false);
     assert!(path.is_some(), "BFS should find path");
@@ -285,7 +285,7 @@ fn test_grid_bfs() {
 }
 
 #[test]
-fn test_grid_diagonal() {
+fn grid_diagonal() {
     let g = Grid::new(5, 5, 1.0);
     let path = g.find_path_astar(0, 0, 4, 4, true);
     assert!(path.is_some());
@@ -295,7 +295,7 @@ fn test_grid_diagonal() {
 }
 
 #[test]
-fn test_grid_flow_field() {
+fn grid_flow_field() {
     let g = Grid::new(5, 5, 1.0);
     let field = g.build_flow_field(4, 4);
     assert_eq!(
@@ -323,7 +323,7 @@ fn test_grid_flow_field() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_spatial_hash_insert_query() {
+fn spatial_hash_insert_query() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("a".into(), 10.0, 10.0, 20.0, 20.0);
     let results = sh.query_rect(5.0, 5.0, 30.0, 30.0);
@@ -331,7 +331,7 @@ fn test_spatial_hash_insert_query() {
 }
 
 #[test]
-fn test_spatial_hash_no_overlap() {
+fn spatial_hash_no_overlap() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("a".into(), 0.0, 0.0, 10.0, 10.0);
     let results = sh.query_rect(100.0, 100.0, 10.0, 10.0);
@@ -339,7 +339,7 @@ fn test_spatial_hash_no_overlap() {
 }
 
 #[test]
-fn test_spatial_hash_remove() {
+fn spatial_hash_remove() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("b".into(), 5.0, 5.0, 10.0, 10.0);
     assert_eq!(sh.item_count(), 1);
@@ -350,7 +350,7 @@ fn test_spatial_hash_remove() {
 }
 
 #[test]
-fn test_spatial_hash_update() {
+fn spatial_hash_update() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("c".into(), 0.0, 0.0, 10.0, 10.0);
     // Move item far away
@@ -367,7 +367,7 @@ fn test_spatial_hash_update() {
 }
 
 #[test]
-fn test_spatial_hash_query_circle() {
+fn spatial_hash_query_circle() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("d".into(), 10.0, 10.0, 5.0, 5.0);
     sh.insert("far".into(), 200.0, 200.0, 5.0, 5.0);
@@ -377,7 +377,7 @@ fn test_spatial_hash_query_circle() {
 }
 
 #[test]
-fn test_spatial_hash_query_segment() {
+fn spatial_hash_query_segment() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("on_line".into(), 50.0, 0.0, 10.0, 10.0);
     sh.insert("off_line".into(), 50.0, 200.0, 10.0, 10.0);
@@ -388,7 +388,7 @@ fn test_spatial_hash_query_segment() {
 }
 
 #[test]
-fn test_spatial_hash_multiple_items() {
+fn spatial_hash_multiple_items() {
     let mut sh = SpatialHash::new(32.0);
     sh.insert("x1".into(), 10.0, 10.0, 10.0, 10.0);
     sh.insert("x2".into(), 15.0, 15.0, 10.0, 10.0);
@@ -398,7 +398,7 @@ fn test_spatial_hash_multiple_items() {
 }
 
 #[test]
-fn test_spatial_hash_clear() {
+fn spatial_hash_clear() {
     let mut sh = SpatialHash::new(16.0);
     sh.insert("a".into(), 0.0, 0.0, 10.0, 10.0);
     sh.insert("b".into(), 50.0, 50.0, 10.0, 10.0);
@@ -414,7 +414,7 @@ fn test_spatial_hash_clear() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_raycaster_new_empty() {
+fn raycaster_new_empty() {
     let rc = Raycaster2D::new(8, 8);
     for y in 0..8 {
         for x in 0..8 {
@@ -424,7 +424,7 @@ fn test_raycaster_new_empty() {
 }
 
 #[test]
-fn test_raycaster_set_get_cell() {
+fn raycaster_set_get_cell() {
     let mut rc = Raycaster2D::new(8, 8);
     rc.set_cell(3, 4, 5);
     assert_eq!(rc.get_cell(3, 4), 5);
@@ -432,7 +432,7 @@ fn test_raycaster_set_get_cell() {
 }
 
 #[test]
-fn test_raycaster_cast_ray_empty() {
+fn raycaster_cast_ray_empty() {
     let rc = Raycaster2D::new(8, 8);
     let hit = rc.cast_ray(1.5, 1.5, 0.0, 20.0);
     // Empty grid → ray should either return None or a non-hit
@@ -443,7 +443,7 @@ fn test_raycaster_cast_ray_empty() {
 }
 
 #[test]
-fn test_raycaster_cast_ray_wall() {
+fn raycaster_cast_ray_wall() {
     let mut rc = Raycaster2D::new(8, 8);
     // Place a wall at (4, 1)
     rc.set_cell(4, 1, 1);
@@ -461,7 +461,7 @@ fn test_raycaster_cast_ray_wall() {
 }
 
 #[test]
-fn test_raycaster_cast_rays() {
+fn raycaster_cast_rays() {
     let mut rc = Raycaster2D::new(16, 16);
     // Surround player with walls at distance 3
     for i in 0..16 {
@@ -478,14 +478,14 @@ fn test_raycaster_cast_rays() {
 }
 
 #[test]
-fn test_raycaster_line_of_sight() {
+fn raycaster_line_of_sight() {
     let rc = Raycaster2D::new(8, 8);
     // Empty grid: LOS should be clear
     assert!(rc.line_of_sight(1.5, 1.5, 6.5, 6.5));
 }
 
 #[test]
-fn test_raycaster_line_of_sight_blocked() {
+fn raycaster_line_of_sight_blocked() {
     let mut rc = Raycaster2D::new(8, 8);
     rc.set_cell(4, 4, 1); // wall in the middle
     let los = rc.line_of_sight(1.5, 1.5, 6.5, 6.5);
@@ -493,7 +493,7 @@ fn test_raycaster_line_of_sight_blocked() {
 }
 
 #[test]
-fn test_raycaster_project_sprite() {
+fn raycaster_project_sprite() {
     let rc = Raycaster2D::new(8, 8);
     // angle=0 means facing +Y in this raycaster's coordinate system
     let proj = rc.project_sprite(
@@ -519,7 +519,7 @@ fn test_raycaster_project_sprite() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_tile_walker_new() {
+fn tile_walker_new() {
     let tw = TileWalker::new(3, 5, Facing::North);
     assert_eq!(tw.x(), 3);
     assert_eq!(tw.y(), 5);
@@ -527,7 +527,7 @@ fn test_tile_walker_new() {
 }
 
 #[test]
-fn test_tile_walker_move_forward() {
+fn tile_walker_move_forward() {
     let mut tw = TileWalker::new(5, 5, Facing::East);
     // No raycaster set, so no collision → should move freely
     let moved = tw.move_forward();
@@ -540,7 +540,7 @@ fn test_tile_walker_move_forward() {
 }
 
 #[test]
-fn test_tile_walker_turn() {
+fn tile_walker_turn() {
     let mut tw = TileWalker::new(0, 0, Facing::North);
     tw.turn_right();
     assert!(matches!(tw.facing(), Facing::East));
@@ -553,7 +553,7 @@ fn test_tile_walker_turn() {
 }
 
 #[test]
-fn test_tile_walker_strafe() {
+fn tile_walker_strafe() {
     let mut tw = TileWalker::new(5, 5, Facing::North);
     tw.strafe_right(); // North-facing, strafe right → move East
     assert_eq!(tw.x(), 6);
@@ -566,7 +566,7 @@ fn test_tile_walker_strafe() {
 }
 
 #[test]
-fn test_tile_walker_facing_direction() {
+fn tile_walker_facing_direction() {
     assert_eq!(Facing::North.dx(), 0);
     assert_eq!(Facing::North.dy(), -1);
     assert_eq!(Facing::East.dx(), 1);
@@ -578,7 +578,7 @@ fn test_tile_walker_facing_direction() {
 }
 
 #[test]
-fn test_tile_walker_interpolation() {
+fn tile_walker_interpolation() {
     let mut tw = TileWalker::new(3, 3, Facing::East);
     tw.begin_move();
     // At t=0, should be at start position
@@ -592,7 +592,7 @@ fn test_tile_walker_interpolation() {
 }
 
 #[test]
-fn test_tile_walker_relative_facing() {
+fn tile_walker_relative_facing() {
     let tw = TileWalker::new(5, 5, Facing::North);
     let rel = tw.get_relative_facing(5, 4); // target is north
     assert_eq!(rel, "front");
@@ -605,7 +605,7 @@ fn test_tile_walker_relative_facing() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_tween_linear() {
+fn tween_linear() {
     let mut tw = Tween::new(1.0, "linear");
     let idx = tw.add_value(0.0, 100.0);
     tw.set_time(0.5);
@@ -617,7 +617,7 @@ fn test_tween_linear() {
 }
 
 #[test]
-fn test_tween_complete() {
+fn tween_complete() {
     let mut tw = Tween::new(1.0, "linear");
     tw.add_value(0.0, 10.0);
     assert!(!tw.is_complete());
@@ -626,7 +626,7 @@ fn test_tween_complete() {
 }
 
 #[test]
-fn test_tween_reset() {
+fn tween_reset() {
     let mut tw = Tween::new(1.0, "linear");
     let idx = tw.add_value(0.0, 100.0);
     tw.update(1.0);
@@ -641,7 +641,7 @@ fn test_tween_reset() {
 }
 
 #[test]
-fn test_tween_multiple_values() {
+fn tween_multiple_values() {
     let mut tw = Tween::new(2.0, "linear");
     let i0 = tw.add_value(0.0, 100.0);
     let i1 = tw.add_value(50.0, 150.0);
@@ -660,7 +660,7 @@ fn test_tween_multiple_values() {
 }
 
 #[test]
-fn test_tween_easing() {
+fn tween_easing() {
     let mut tw = Tween::new(1.0, "inQuad");
     let idx = tw.add_value(0.0, 100.0);
     tw.set_time(0.5);
@@ -673,7 +673,7 @@ fn test_tween_easing() {
 }
 
 #[test]
-fn test_tween_set_time() {
+fn tween_set_time() {
     let mut tw = Tween::new(4.0, "linear");
     let idx = tw.add_value(0.0, 200.0);
     tw.set_time(2.0);
@@ -686,7 +686,7 @@ fn test_tween_set_time() {
 }
 
 #[test]
-fn test_tween_update_returns_complete() {
+fn tween_update_returns_complete() {
     let mut tw = Tween::new(1.0, "linear");
     tw.add_value(0.0, 1.0);
     let done1 = tw.update(0.5);
@@ -696,7 +696,7 @@ fn test_tween_update_returns_complete() {
 }
 
 #[test]
-fn test_tween_clamp() {
+fn tween_clamp() {
     let mut tw = Tween::new(1.0, "linear");
     let idx = tw.add_value(10.0, 20.0);
     tw.update(5.0); // way past end
@@ -712,7 +712,7 @@ fn test_tween_clamp() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_angle_between() {
+fn angle_between() {
     let a = geometry::angle_between(0.0, 0.0, 1.0, 0.0);
     assert!(
         a.abs() < 1e-4,
@@ -727,7 +727,7 @@ fn test_angle_between() {
 }
 
 #[test]
-fn test_circle_contains_point() {
+fn circle_contains_point() {
     assert!(geometry::circle_contains_point(5.0, 5.0, 3.0, 6.0, 6.0));
     assert!(!geometry::circle_contains_point(5.0, 5.0, 1.0, 10.0, 10.0));
     // Boundary: point exactly at radius
@@ -735,7 +735,7 @@ fn test_circle_contains_point() {
 }
 
 #[test]
-fn test_circle_intersects_circle() {
+fn circle_intersects_circle() {
     // Overlapping circles
     assert!(geometry::circle_intersects_circle(
         0.0, 0.0, 5.0, 3.0, 0.0, 5.0
@@ -751,7 +751,7 @@ fn test_circle_intersects_circle() {
 }
 
 #[test]
-fn test_circle_intersects_line() {
+fn circle_intersects_line() {
     // Line through center of circle
     let (hit, p1, p2) = geometry::circle_intersects_line(0.0, 0.0, 5.0, -10.0, 0.0, 10.0, 0.0);
     assert!(hit, "Line through center should intersect");
@@ -764,7 +764,7 @@ fn test_circle_intersects_line() {
 }
 
 #[test]
-fn test_circle_intersects_segment() {
+fn circle_intersects_segment() {
     // Segment that crosses the circle boundary (enters and exits)
     let (hit, p1, p2) = geometry::circle_intersects_segment(0.0, 0.0, 5.0, -10.0, 0.0, 10.0, 0.0);
     assert!(hit, "Segment crossing circle should intersect");
@@ -777,7 +777,7 @@ fn test_circle_intersects_segment() {
 }
 
 #[test]
-fn test_polygon_area_triangle() {
+fn polygon_area_triangle() {
     // Triangle: (0,0), (4,0), (0,3) → area = 6
     let verts = [0.0f32, 0.0, 4.0, 0.0, 0.0, 3.0];
     let area = geometry::polygon_area(&verts);
@@ -788,7 +788,7 @@ fn test_polygon_area_triangle() {
 }
 
 #[test]
-fn test_polygon_area_square() {
+fn polygon_area_square() {
     // Square (0,0), (2,0), (2,2), (0,2) → area = 4
     let verts = [0.0f32, 0.0, 2.0, 0.0, 2.0, 2.0, 0.0, 2.0];
     let area = geometry::polygon_area(&verts);
@@ -799,7 +799,7 @@ fn test_polygon_area_square() {
 }
 
 #[test]
-fn test_polygon_centroid() {
+fn polygon_centroid() {
     // Square (0,0), (4,0), (4,4), (0,4) → centroid (2,2)
     let verts = [0.0f32, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
     let (cx, cy) = geometry::polygon_centroid(&verts);
@@ -808,7 +808,7 @@ fn test_polygon_centroid() {
 }
 
 #[test]
-fn test_segment_intersects_segment() {
+fn segment_intersects_segment() {
     // Crossing segments: (0,0)-(4,4) and (4,0)-(0,4)
     let (hit, pt) = geometry::segment_intersects_segment(0.0, 0.0, 4.0, 4.0, 4.0, 0.0, 0.0, 4.0);
     assert!(hit, "Crossing segments should intersect");
@@ -824,14 +824,14 @@ fn test_segment_intersects_segment() {
 }
 
 #[test]
-fn test_segment_no_intersection() {
+fn segment_no_intersection() {
     // Parallel segments: (0,0)-(4,0) and (0,2)-(4,2)
     let (hit, _) = geometry::segment_intersects_segment(0.0, 0.0, 4.0, 0.0, 0.0, 2.0, 4.0, 2.0);
     assert!(!hit, "Parallel segments should not intersect");
 }
 
 #[test]
-fn test_closest_point_on_segment() {
+fn closest_point_on_segment() {
     // Point above midpoint of horizontal segment
     let (px, py) = geometry::closest_point_on_segment(2.0, 5.0, 0.0, 0.0, 4.0, 0.0);
     assert!((px - 2.0).abs() < 1e-4, "Closest x should be 2, got {px}");
@@ -847,7 +847,7 @@ fn test_closest_point_on_segment() {
 }
 
 #[test]
-fn test_point_in_polygon() {
+fn point_in_polygon() {
     // Square polygon (0,0), (4,0), (4,4), (0,4)
     let verts = [0.0f32, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
     assert!(
@@ -861,7 +861,7 @@ fn test_point_in_polygon() {
 }
 
 #[test]
-fn test_line_intersect() {
+fn line_intersect() {
     // Two infinite lines crossing at (2,2)
     let pt = geometry::line_intersect(0.0, 0.0, 4.0, 4.0, 4.0, 0.0, 0.0, 4.0);
     assert!(pt.is_some(), "Lines should intersect");
@@ -875,7 +875,7 @@ fn test_line_intersect() {
 }
 
 #[test]
-fn test_bresenham() {
+fn bresenham() {
     let points = geometry::bresenham(0, 0, 4, 0);
     assert_eq!(points.len(), 5, "Horizontal line 0..4 should be 5 points");
     assert_eq!(points[0], (0, 0));
@@ -888,7 +888,7 @@ fn test_bresenham() {
 }
 
 #[test]
-fn test_convex_hull() {
+fn convex_hull() {
     // Square + interior point → hull should be the 4 corners
     let points = [
         0.0f32, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0, 2.0, 2.0, // interior
@@ -908,7 +908,7 @@ fn test_convex_hull() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_cast_ray_2d() {
+fn cast_ray_2d() {
     let segments = vec![
         Segment {
             x1: 5.0,
@@ -927,7 +927,7 @@ fn test_cast_ray_2d() {
 }
 
 #[test]
-fn test_field_of_view() {
+fn field_of_view() {
     // Simple box room
     let segments = vec![
         Segment {
@@ -970,7 +970,7 @@ fn test_field_of_view() {
 }
 
 #[test]
-fn test_project_column() {
+fn project_column() {
     let (height, top, bottom) = project_column(5.0, std::f32::consts::FRAC_PI_3, 480.0);
     assert!(height > 0.0, "Column height should be positive");
     assert!(top < bottom, "Top should be above bottom");
@@ -982,7 +982,7 @@ fn test_project_column() {
 }
 
 #[test]
-fn test_distance_shade() {
+fn distance_shade() {
     let shade_near = distance_shade(1.0, 20.0);
     let shade_far = distance_shade(18.0, 20.0);
     assert!(shade_near > shade_far, "Near objects should be brighter");
@@ -1007,7 +1007,7 @@ fn test_distance_shade() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_cellular_automata() {
+fn cellular_automata() {
     let opts = CellularOpts {
         fill: 0.45,
         iterations: 5,
@@ -1023,7 +1023,7 @@ fn test_cellular_automata() {
 }
 
 #[test]
-fn test_voronoi_diagram() {
+fn voronoi_diagram() {
     let points = vec![(5.0f32, 5.0), (15.0, 5.0), (10.0, 15.0)];
     let opts = VoronoiOpts::default();
     let (regions, distances, _colors) = procgen::voronoi_diagram(20, 20, &points, &opts);
@@ -1040,7 +1040,7 @@ fn test_voronoi_diagram() {
 }
 
 #[test]
-fn test_flood_fill() {
+fn flood_fill() {
     // Create a 5x5 grid with a border of 1s and interior 0s
     let mut data = vec![0u8; 25];
     for x in 0..5u32 {
@@ -1059,7 +1059,7 @@ fn test_flood_fill() {
 }
 
 #[test]
-fn test_poisson_disk() {
+fn poisson_disk() {
     let points = procgen::poisson_disk(100.0, 100.0, 10.0, 30, 42);
     assert!(!points.is_empty(), "Should generate at least one point");
     // Verify minimum distance between all pairs
@@ -1084,7 +1084,7 @@ fn test_poisson_disk() {
 }
 
 #[test]
-fn test_perlin_noise_periodic() {
+fn perlin_noise_periodic() {
     let period = 4.0;
     // Values at x and x+period should match (periodic tiling)
     let v1 = procgen::perlin_noise_periodic(1.5, 2.3, period, period);

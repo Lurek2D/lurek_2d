@@ -71,6 +71,13 @@ pub struct Overlay {
     pub film_grain: FilmGrainState,
     /// Lightning flash.
     pub lightning: LightningState,
+    /// Water surface overlay state driving UV-distortion and depth-tint shader parameters.
+    pub water: crate::effect::water_overlay::WaterOverlayState,
+    /// Optional name of a custom shader pass applied after all other overlays.
+    ///
+    /// When `Some`, the GPU layer looks up this shader by name in its registry and
+    /// dispatches a full-screen pass. `None` (the default) skips the custom pass.
+    pub custom_shader: Option<String>,
 }
 
 impl Overlay {
@@ -104,6 +111,8 @@ impl Overlay {
             vignette: VignetteState::default(),
             film_grain: FilmGrainState::default(),
             lightning: LightningState::default(),
+            water: crate::effect::water_overlay::WaterOverlayState::default(),
+            custom_shader: None,
         }
     }
 
@@ -188,6 +197,9 @@ impl Overlay {
                 self.lightning.elapsed = 0.0;
             }
         }
+
+        // Advance water overlay animation clock
+        self.water.update(dt);
     }
 
     /// Updates weather particles: spawning, movement, and recycling.
@@ -217,10 +229,16 @@ impl Overlay {
             p.y += (p.vy + wind_y) * dt;
         }
 
-        // Remove off-screen particles
-        self.weather
-            .particles
-            .retain(|p| p.x > -50.0 && p.x < w + 50.0 && p.y > -50.0 && p.y < h + 50.0);
+        // Remove off-screen particles using swap_remove for O(1) deletion cost
+        let mut i = 0;
+        while i < self.weather.particles.len() {
+            let p = &self.weather.particles[i];
+            if p.x > -50.0 && p.x < w + 50.0 && p.y > -50.0 && p.y < h + 50.0 {
+                i += 1;
+            } else {
+                self.weather.particles.swap_remove(i);
+            }
+        }
     }
 
     /// Spawns a single weather particle at a random position along the top edge.
@@ -374,6 +392,7 @@ impl Overlay {
             || self.vignette.enabled
             || self.film_grain.enabled
             || self.lightning.active
+            || self.water.enabled
     }
 
     /// Resets all effects to their inactive defaults.
@@ -396,6 +415,8 @@ impl Overlay {
         self.vignette = VignetteState::default();
         self.film_grain = FilmGrainState::default();
         self.lightning = LightningState::default();
+        self.water = crate::effect::water_overlay::WaterOverlayState::default();
+        self.custom_shader = None;
     }
 
     /// Resizes the overlay canvas dimensions.

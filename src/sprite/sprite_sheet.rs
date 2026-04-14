@@ -298,4 +298,118 @@ impl SpriteSheet {
             }
         }
     }
+
+    // ── Rendering ────────────────────────────────────────────────────────
+
+    /// Renders the sprite-sheet grid into a new `ImageData` as a colour-coded debug view.
+    ///
+    /// Every frame cell is outlined in red. The first frame of each named group is
+    /// tinted green. Background is white.
+    ///
+    /// # Parameters
+    /// - `width` — `u32`. Output image width in pixels.
+    /// - `height` — `u32`. Output image height in pixels.
+    ///
+    /// # Returns
+    /// `crate::image::ImageData`.
+    pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
+        let mut img = crate::image::ImageData::new(width, height);
+        // White background.
+        for y in 0..height {
+            for x in 0..width {
+                img.set_pixel(x, y, 255, 255, 255, 255);
+            }
+        }
+
+        // Collect first frames of each group for green highlight.
+        let mut group_starts: std::collections::HashSet<usize> = std::collections::HashSet::new();
+        for group in self.groups.values() {
+            group_starts.insert(group.start_frame);
+        }
+
+        let scale_x = width as f32 / self.texture_width as f32;
+        let scale_y = height as f32 / self.texture_height as f32;
+
+        for i in 0..self.get_frame_count() {
+            if let Some(rect) = self.get_frame(i) {
+                let rx = (rect.x * scale_x) as i32;
+                let ry = (rect.y * scale_y) as i32;
+                let rw = ((rect.width * scale_x) as u32).max(1);
+                let rh = ((rect.height * scale_y) as u32).max(1);
+                let (r, g, b) = if group_starts.contains(&i) {
+                    (0, 200, 0)
+                } else {
+                    (200, 0, 0)
+                };
+                // Top and bottom edges.
+                img.draw_rect(rx, ry, rw, 1, r, g, b, 255);
+                img.draw_rect(rx, ry + rh as i32 - 1, rw, 1, r, g, b, 255);
+                // Left and right edges.
+                img.draw_rect(rx, ry, 1, rh, r, g, b, 255);
+                img.draw_rect(rx + rw as i32 - 1, ry, 1, rh, r, g, b, 255);
+            }
+        }
+        img
+    }
+
+    // ── Constructors ─────────────────────────────────────────────────────
+
+    /// Builds an RPGMaker VX/Ace-style 3-column × 4-row character sprite sheet.
+    ///
+    /// Groups are registered as `"down"` (row 0), `"left"` (row 1), `"right"` (row 2),
+    /// `"up"` (row 3). Each row contains 3 frames.
+    ///
+    /// # Parameters
+    /// - `texture_width` — `u32`. Full texture width in pixels.
+    /// - `texture_height` — `u32`. Full texture height in pixels.
+    ///
+    /// # Returns
+    /// `SpriteSheet`.
+    pub fn from_rpgmaker(texture_width: u32, texture_height: u32) -> Self {
+        let mut sheet = Self::new(texture_width, texture_height, texture_width / 3, texture_height / 4);
+        sheet.name_group("down", 0, 3);
+        sheet.name_group("left", 3, 3);
+        sheet.name_group("right", 6, 3);
+        sheet.name_group("up", 9, 3);
+        sheet
+    }
+
+    /// Builds a sprite sheet whose frame quads are sourced from named entries in a [`SpriteAtlas`].
+    ///
+    /// Frames are appended in the atlas's insertion order.  The resulting sheet has no
+    /// uniform grid — all frames are laid out as a single row from the atlas rectangles.
+    ///
+    /// # Parameters
+    /// - `atlas` — `&super::atlas::SpriteAtlas`. Source atlas.
+    /// - `sheet_width` — `u32`. Full texture width (used for UV normalisation).
+    /// - `sheet_height` — `u32`. Full texture height.
+    ///
+    /// # Returns
+    /// `SpriteSheet`.
+    pub fn from_atlas(
+        atlas: &super::atlas::SpriteAtlas,
+        sheet_width: u32,
+        sheet_height: u32,
+    ) -> Self {
+        // Build a 1×N grid sheet as a container and then replace the frames.
+        let count = atlas.entry_count().max(1);
+        let w = if count > 0 { sheet_width / count as u32 } else { sheet_width };
+        let mut sheet = Self::new(sheet_width, sheet_height, w.max(1), sheet_height);
+        // Clear auto-generated frames and replace with atlas entries.
+        sheet.frames.clear();
+        for i in 0..atlas.entry_count() {
+            if let Some(entry) = atlas.get_by_index(i) {
+                sheet.frames.push(Rect::new(
+                    entry.x as f32,
+                    entry.y as f32,
+                    entry.w as f32,
+                    entry.h as f32,
+                ));
+                // Also register each entry as its own named group.
+                let start = sheet.frames.len() - 1;
+                sheet.name_group(&entry.name, start, 1);
+            }
+        }
+        sheet
+    }
 }

@@ -22,7 +22,7 @@ use lurek2d::ui::data_graph_renderer::GraphRenderer;
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_light2d_new_defaults() {
+fn light2d_new_defaults() {
     let l = Light2D::new(100.0, 200.0, 50.0);
     assert!((l.x - 100.0).abs() < 1e-5);
     assert!((l.y - 200.0).abs() < 1e-5);
@@ -33,7 +33,7 @@ fn test_light2d_new_defaults() {
 }
 
 #[test]
-fn test_light2d_set_position() {
+fn light2d_set_position() {
     let mut l = Light2D::new(0.0, 0.0, 10.0);
     l.set_position(42.0, 99.0);
     let (px, py) = l.get_position();
@@ -42,28 +42,28 @@ fn test_light2d_set_position() {
 }
 
 #[test]
-fn test_light2d_set_radius() {
+fn light2d_set_radius() {
     let mut l = Light2D::new(0.0, 0.0, 10.0);
     l.set_radius(200.0);
     assert!((l.get_radius() - 200.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_light2d_set_color() {
+fn light2d_set_color() {
     let mut l = Light2D::new(0.0, 0.0, 10.0);
     l.set_color(Color::RED);
     assert_eq!(l.get_color(), Color::RED);
 }
 
 #[test]
-fn test_light2d_set_intensity() {
+fn light2d_set_intensity() {
     let mut l = Light2D::new(0.0, 0.0, 10.0);
     l.set_intensity(0.5);
     assert!((l.get_intensity() - 0.5).abs() < 1e-5);
 }
 
 #[test]
-fn test_light2d_set_enabled() {
+fn light2d_set_enabled() {
     let mut l = Light2D::new(0.0, 0.0, 10.0);
     assert!(l.is_enabled());
     l.set_enabled(false);
@@ -77,14 +77,14 @@ fn test_light2d_set_enabled() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_texture_atlas_new_empty() {
+fn texture_atlas_new_empty() {
     let atlas = TextureAtlas::new(256, 256, 1);
     assert_eq!(atlas.get_region_count(), 0);
     assert_eq!(atlas.get_dimensions(), (256, 256));
 }
 
 #[test]
-fn test_texture_atlas_pack_single() {
+fn texture_atlas_pack_single() {
     let mut atlas = TextureAtlas::new(256, 256, 1);
     assert!(atlas.pack("tile1", 32, 32));
     assert_eq!(atlas.get_region_count(), 1);
@@ -96,7 +96,7 @@ fn test_texture_atlas_pack_single() {
 }
 
 #[test]
-fn test_texture_atlas_pack_multiple() {
+fn texture_atlas_pack_multiple() {
     let mut atlas = TextureAtlas::new(256, 256, 1);
     assert!(atlas.pack("a", 32, 32));
     assert!(atlas.pack("b", 32, 32));
@@ -107,7 +107,7 @@ fn test_texture_atlas_pack_multiple() {
 }
 
 #[test]
-fn test_texture_atlas_pack_overflow() {
+fn texture_atlas_pack_overflow() {
     let mut atlas = TextureAtlas::new(64, 64, 0);
     // 64x64 atlas, 64x64 tile -> fits exactly once
     assert!(atlas.pack("big", 64, 64));
@@ -116,13 +116,13 @@ fn test_texture_atlas_pack_overflow() {
 }
 
 #[test]
-fn test_texture_atlas_get_nonexistent_region() {
+fn texture_atlas_get_nonexistent_region() {
     let atlas = TextureAtlas::new(256, 256, 0);
     assert!(atlas.get_region("nope").is_none());
 }
 
 #[test]
-fn test_texture_atlas_clear() {
+fn texture_atlas_clear() {
     let mut atlas = TextureAtlas::new(256, 256, 0);
     atlas.pack("a", 32, 32);
     atlas.pack("b", 32, 32);
@@ -137,13 +137,13 @@ fn test_texture_atlas_clear() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_draw_layer_new_empty() {
+fn draw_layer_new_empty() {
     let layer = DrawLayer::new();
     assert_eq!(layer.get_count(), 0);
 }
 
 #[test]
-fn test_draw_layer_queue_entries() {
+fn draw_layer_queue_entries() {
     let mut layer = DrawLayer::new();
     let id0 = layer.queue(1.0);
     let id1 = layer.queue(0.5);
@@ -152,7 +152,7 @@ fn test_draw_layer_queue_entries() {
 }
 
 #[test]
-fn test_draw_layer_flush_returns_sorted() {
+fn draw_layer_flush_returns_sorted() {
     let mut layer = DrawLayer::new();
     layer.queue(3.0);
     layer.queue(1.0);
@@ -166,7 +166,7 @@ fn test_draw_layer_flush_returns_sorted() {
 }
 
 #[test]
-fn test_draw_layer_clear() {
+fn draw_layer_clear() {
     let mut layer = DrawLayer::new();
     layer.queue(1.0);
     layer.queue(2.0);
@@ -175,7 +175,7 @@ fn test_draw_layer_clear() {
 }
 
 #[test]
-fn test_draw_layer_unique_ids() {
+fn draw_layer_unique_ids() {
     let mut layer = DrawLayer::new();
     let ids: Vec<usize> = (0..10).map(|i| layer.queue(i as f64)).collect();
     // All IDs must be unique
@@ -191,7 +191,7 @@ fn test_draw_layer_unique_ids() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_viewport_new_identity() {
+fn viewport_new_identity() {
     let vp = Viewport::new(800.0, 600.0, ScaleMode::Letterbox);
     let (gw, gh) = vp.get_game_dimensions();
     assert!((gw - 800.0).abs() < 1e-5);
@@ -205,7 +205,7 @@ fn test_viewport_new_identity() {
 }
 
 #[test]
-fn test_viewport_letterbox_resize() {
+fn viewport_letterbox_resize() {
     let mut vp = Viewport::new(800.0, 600.0, ScaleMode::Letterbox);
     vp.resize(1600.0, 900.0);
     let (sx, sy) = vp.get_scale();
@@ -218,7 +218,7 @@ fn test_viewport_letterbox_resize() {
 }
 
 #[test]
-fn test_viewport_stretch_resize() {
+fn viewport_stretch_resize() {
     let mut vp = Viewport::new(800.0, 600.0, ScaleMode::Stretch);
     vp.resize(1600.0, 1200.0);
     let (sx, sy) = vp.get_scale();
@@ -230,7 +230,7 @@ fn test_viewport_stretch_resize() {
 }
 
 #[test]
-fn test_viewport_pixel_perfect_resize() {
+fn viewport_pixel_perfect_resize() {
     let mut vp = Viewport::new(320.0, 240.0, ScaleMode::PixelPerfect);
     vp.resize(700.0, 500.0);
     let (sx, sy) = vp.get_scale();
@@ -240,7 +240,7 @@ fn test_viewport_pixel_perfect_resize() {
 }
 
 #[test]
-fn test_viewport_to_game_to_screen_roundtrip() {
+fn viewport_to_game_to_screen_roundtrip() {
     let mut vp = Viewport::new(800.0, 600.0, ScaleMode::Letterbox);
     vp.resize(1600.0, 1200.0);
     let game_x = 100.0;
@@ -252,7 +252,7 @@ fn test_viewport_to_game_to_screen_roundtrip() {
 }
 
 #[test]
-fn test_viewport_set_scale_mode() {
+fn viewport_set_scale_mode() {
     let mut vp = Viewport::new(800.0, 600.0, ScaleMode::Letterbox);
     assert_eq!(*vp.get_scale_mode(), ScaleMode::Letterbox);
     vp.set_scale_mode(ScaleMode::Stretch);
@@ -264,7 +264,7 @@ fn test_viewport_set_scale_mode() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_viewport_scale_new_identity() {
+fn viewport_scale_new_identity() {
     let vps = ViewportScale::new(800.0, 600.0, ScaleMode::Letterbox);
     let (gw, gh) = vps.get_game_dimensions();
     assert!((gw - 800.0).abs() < 1e-5);
@@ -275,7 +275,7 @@ fn test_viewport_scale_new_identity() {
 }
 
 #[test]
-fn test_viewport_scale_resize_letterbox() {
+fn viewport_scale_resize_letterbox() {
     let mut vps = ViewportScale::new(800.0, 600.0, ScaleMode::Letterbox);
     vps.resize(1600.0, 900.0);
     let (sx, sy) = vps.get_scale();
@@ -287,7 +287,7 @@ fn test_viewport_scale_resize_letterbox() {
 }
 
 #[test]
-fn test_viewport_scale_to_game_to_screen_roundtrip() {
+fn viewport_scale_to_game_to_screen_roundtrip() {
     let mut vps = ViewportScale::new(800.0, 600.0, ScaleMode::Letterbox);
     vps.resize(1600.0, 1200.0);
     let game_x = 150.0;
@@ -299,13 +299,13 @@ fn test_viewport_scale_to_game_to_screen_roundtrip() {
 }
 
 #[test]
-fn test_viewport_scale_get_mode() {
+fn viewport_scale_get_mode() {
     let vps = ViewportScale::new(800.0, 600.0, ScaleMode::Stretch);
     assert_eq!(*vps.get_mode(), ScaleMode::Stretch);
 }
 
 #[test]
-fn test_viewport_scale_offset_stretch() {
+fn viewport_scale_offset_stretch() {
     let mut vps = ViewportScale::new(400.0, 300.0, ScaleMode::Stretch);
     vps.resize(800.0, 600.0);
     let (ox, oy) = vps.get_offset();
@@ -318,19 +318,19 @@ fn test_viewport_scale_offset_stretch() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_sprite_sheet_frame_count() {
+fn sprite_sheet_frame_count() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     assert_eq!(ss.get_frame_count(), 64);
 }
 
 #[test]
-fn test_sprite_sheet_grid_size() {
+fn sprite_sheet_grid_size() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     assert_eq!(ss.get_grid_size(), (8, 8));
 }
 
 #[test]
-fn test_sprite_sheet_get_frame_first() {
+fn sprite_sheet_get_frame_first() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     let f = ss.get_frame(0).unwrap();
     assert!((f.x).abs() < 1e-5);
@@ -340,7 +340,7 @@ fn test_sprite_sheet_get_frame_first() {
 }
 
 #[test]
-fn test_sprite_sheet_get_frame_second() {
+fn sprite_sheet_get_frame_second() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     let f = ss.get_frame(1).unwrap();
     assert!((f.x - 32.0).abs() < 1e-5);
@@ -348,14 +348,14 @@ fn test_sprite_sheet_get_frame_second() {
 }
 
 #[test]
-fn test_sprite_sheet_get_frame_out_of_bounds() {
+fn sprite_sheet_get_frame_out_of_bounds() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     assert!(ss.get_frame(64).is_none());
     assert!(ss.get_frame(100).is_none());
 }
 
 #[test]
-fn test_sprite_sheet_get_row() {
+fn sprite_sheet_get_row() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     let row0 = ss.get_row(0);
     assert_eq!(row0.len(), 8);
@@ -364,7 +364,7 @@ fn test_sprite_sheet_get_row() {
 }
 
 #[test]
-fn test_sprite_sheet_get_column() {
+fn sprite_sheet_get_column() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     let col0 = ss.get_column(0);
     assert_eq!(col0.len(), 8);
@@ -373,14 +373,14 @@ fn test_sprite_sheet_get_column() {
 }
 
 #[test]
-fn test_sprite_sheet_get_range() {
+fn sprite_sheet_get_range() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     let range = ss.get_range(0, 4);
     assert_eq!(range.len(), 4);
 }
 
 #[test]
-fn test_sprite_sheet_named_groups() {
+fn sprite_sheet_named_groups() {
     let mut ss = SpriteSheet::new(256, 256, 32, 32);
     ss.name_group("walk", 0, 4);
     let group = ss.get_group("walk");
@@ -390,13 +390,13 @@ fn test_sprite_sheet_named_groups() {
 }
 
 #[test]
-fn test_sprite_sheet_get_group_nonexistent() {
+fn sprite_sheet_get_group_nonexistent() {
     let ss = SpriteSheet::new(256, 256, 32, 32);
     assert!(ss.get_group("nope").is_none());
 }
 
 #[test]
-fn test_sprite_sheet_directions_rows() {
+fn sprite_sheet_directions_rows() {
     let mut ss = SpriteSheet::new(256, 256, 32, 32);
     ss.set_directions(4, DirectionLayout::Rows);
     let dir0 = ss.get_direction_frames(0);
@@ -407,7 +407,7 @@ fn test_sprite_sheet_directions_rows() {
 }
 
 #[test]
-fn test_sprite_sheet_directions_columns() {
+fn sprite_sheet_directions_columns() {
     let mut ss = SpriteSheet::new(256, 256, 32, 32);
     ss.set_directions(4, DirectionLayout::Columns);
     let dir0 = ss.get_direction_frames(0);
@@ -416,7 +416,7 @@ fn test_sprite_sheet_directions_columns() {
 }
 
 #[test]
-fn test_sprite_sheet_frame_size() {
+fn sprite_sheet_frame_size() {
     let ss = SpriteSheet::new(128, 64, 16, 32);
     assert_eq!(ss.get_frame_size(), (16, 32));
     assert_eq!(ss.get_frame_count(), 16); // (128/16)*(64/32)=8*2=16
@@ -427,14 +427,14 @@ fn test_sprite_sheet_frame_size() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_polygon_map_new_empty() {
+fn polygon_map_new_empty() {
     let pm = PolygonMap::new();
     assert!(pm.get_region_names().is_empty());
     assert!(pm.get_bounding_box().is_none());
 }
 
 #[test]
-fn test_polygon_map_add_region_and_query() {
+fn polygon_map_add_region_and_query() {
     let mut pm = PolygonMap::new();
     pm.add_region(
         "zone1",
@@ -450,7 +450,7 @@ fn test_polygon_map_add_region_and_query() {
 }
 
 #[test]
-fn test_polygon_map_region_names() {
+fn polygon_map_region_names() {
     let mut pm = PolygonMap::new();
     pm.add_region("a", vec![0.0, 0.0, 10.0, 0.0, 10.0, 10.0], Color::WHITE);
     pm.add_region("b", vec![20.0, 0.0, 30.0, 0.0, 30.0, 10.0], Color::WHITE);
@@ -461,7 +461,7 @@ fn test_polygon_map_region_names() {
 }
 
 #[test]
-fn test_polygon_map_region_vertices() {
+fn polygon_map_region_vertices() {
     let mut pm = PolygonMap::new();
     let verts = vec![0.0, 0.0, 100.0, 0.0, 100.0, 100.0, 0.0, 100.0];
     pm.add_region("zone1", verts.clone(), Color::WHITE);
@@ -470,7 +470,7 @@ fn test_polygon_map_region_vertices() {
 }
 
 #[test]
-fn test_polygon_map_region_center() {
+fn polygon_map_region_center() {
     let mut pm = PolygonMap::new();
     pm.add_region(
         "square",
@@ -483,7 +483,7 @@ fn test_polygon_map_region_center() {
 }
 
 #[test]
-fn test_polygon_map_bounding_box() {
+fn polygon_map_bounding_box() {
     let mut pm = PolygonMap::new();
     pm.add_region(
         "r1",
@@ -498,7 +498,7 @@ fn test_polygon_map_bounding_box() {
 }
 
 #[test]
-fn test_polygon_map_remove_region() {
+fn polygon_map_remove_region() {
     let mut pm = PolygonMap::new();
     pm.add_region("zone1", vec![0.0, 0.0, 10.0, 0.0, 10.0, 10.0], Color::WHITE);
     assert!(pm.remove_region("zone1"));
@@ -507,7 +507,7 @@ fn test_polygon_map_remove_region() {
 }
 
 #[test]
-fn test_polygon_map_set_region_color() {
+fn polygon_map_set_region_color() {
     let mut pm = PolygonMap::new();
     pm.add_region("z", vec![0.0, 0.0, 10.0, 0.0, 10.0, 10.0], Color::WHITE);
     assert!(pm.set_region_color("z", Color::BLUE));
@@ -516,7 +516,7 @@ fn test_polygon_map_set_region_color() {
 }
 
 #[test]
-fn test_polygon_map_highlight() {
+fn polygon_map_highlight() {
     let mut pm = PolygonMap::new();
     pm.add_region("z", vec![0.0, 0.0, 10.0, 0.0, 10.0, 10.0], Color::WHITE);
     pm.highlight("z");
@@ -526,7 +526,7 @@ fn test_polygon_map_highlight() {
 }
 
 #[test]
-fn test_polygon_map_clear() {
+fn polygon_map_clear() {
     let mut pm = PolygonMap::new();
     pm.add_region("a", vec![0.0, 0.0, 10.0, 0.0, 10.0, 10.0], Color::WHITE);
     pm.add_region("b", vec![20.0, 0.0, 30.0, 0.0, 30.0, 10.0], Color::WHITE);
@@ -541,7 +541,7 @@ fn test_polygon_map_clear() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_graph_renderer_new_defaults() {
+fn graph_renderer_new_defaults() {
     let gr = GraphRenderer::new();
     assert_eq!(gr.get_series_names().len(), 0);
     assert!(gr.show_grid);
@@ -549,7 +549,7 @@ fn test_graph_renderer_new_defaults() {
 }
 
 #[test]
-fn test_graph_renderer_set_viewport() {
+fn graph_renderer_set_viewport() {
     let mut gr = GraphRenderer::new();
     gr.set_viewport(10.0, 20.0, 400.0, 300.0);
     let (x, y, w, h) = gr.get_viewport();
@@ -560,7 +560,7 @@ fn test_graph_renderer_set_viewport() {
 }
 
 #[test]
-fn test_graph_renderer_add_line_series() {
+fn graph_renderer_add_line_series() {
     let mut gr = GraphRenderer::new();
     gr.add_line_series("s1", vec![(0.0, 0.0), (1.0, 1.0)], Color::RED);
     assert_eq!(gr.get_series_names().len(), 1);
@@ -568,21 +568,21 @@ fn test_graph_renderer_add_line_series() {
 }
 
 #[test]
-fn test_graph_renderer_add_scatter_series() {
+fn graph_renderer_add_scatter_series() {
     let mut gr = GraphRenderer::new();
     gr.add_scatter_series("dots", vec![(1.0, 2.0), (3.0, 4.0)], Color::GREEN, 5.0);
     assert_eq!(gr.get_series_names().len(), 1);
 }
 
 #[test]
-fn test_graph_renderer_add_bar_series() {
+fn graph_renderer_add_bar_series() {
     let mut gr = GraphRenderer::new();
     gr.add_bar_series("bars", vec![10.0, 20.0, 30.0], Color::BLUE);
     assert_eq!(gr.get_series_names().len(), 1);
 }
 
 #[test]
-fn test_graph_renderer_remove_series() {
+fn graph_renderer_remove_series() {
     let mut gr = GraphRenderer::new();
     gr.add_line_series("s1", vec![(0.0, 0.0)], Color::WHITE);
     assert!(gr.remove_series("s1"));
@@ -591,7 +591,7 @@ fn test_graph_renderer_remove_series() {
 }
 
 #[test]
-fn test_graph_renderer_clear_series() {
+fn graph_renderer_clear_series() {
     let mut gr = GraphRenderer::new();
     gr.add_line_series("a", vec![(0.0, 0.0)], Color::WHITE);
     gr.add_line_series("b", vec![(1.0, 1.0)], Color::RED);
@@ -600,7 +600,7 @@ fn test_graph_renderer_clear_series() {
 }
 
 #[test]
-fn test_graph_renderer_auto_range() {
+fn graph_renderer_auto_range() {
     let mut gr = GraphRenderer::new();
     gr.add_line_series("s1", vec![(0.0, 0.0), (10.0, 20.0)], Color::WHITE);
     gr.auto_range();
@@ -613,7 +613,7 @@ fn test_graph_renderer_auto_range() {
 }
 
 #[test]
-fn test_graph_renderer_show_grid_axes() {
+fn graph_renderer_show_grid_axes() {
     let mut gr = GraphRenderer::new();
     gr.set_show_grid(false);
     assert!(!gr.show_grid);
@@ -622,7 +622,7 @@ fn test_graph_renderer_show_grid_axes() {
 }
 
 #[test]
-fn test_graph_renderer_set_range() {
+fn graph_renderer_set_range() {
     let mut gr = GraphRenderer::new();
     gr.set_range(0.0, 100.0, -50.0, 50.0);
     let (x_min, x_max, y_min, y_max) = gr.get_range();
@@ -633,7 +633,7 @@ fn test_graph_renderer_set_range() {
 }
 
 #[test]
-fn test_graph_renderer_world_to_screen() {
+fn graph_renderer_world_to_screen() {
     let mut gr = GraphRenderer::new();
     gr.set_viewport(0.0, 0.0, 400.0, 300.0);
     gr.set_range(0.0, 100.0, 0.0, 100.0);
@@ -649,13 +649,13 @@ fn test_graph_renderer_world_to_screen() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_large_map_renderer_new_empty() {
+fn large_map_renderer_new_empty() {
     let lmr = LargeMapRenderer::new(32, 32);
     assert_eq!(lmr.get_map_size(), (0, 0));
 }
 
 #[test]
-fn test_large_map_renderer_set_map_data() {
+fn large_map_renderer_set_map_data() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_map_data(vec![1; 100], 10, 10);
     assert_eq!(lmr.get_map_size(), (10, 10));
@@ -664,7 +664,7 @@ fn test_large_map_renderer_set_map_data() {
 }
 
 #[test]
-fn test_large_map_renderer_set_tile() {
+fn large_map_renderer_set_tile() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_map_data(vec![0; 100], 10, 10);
     lmr.set_tile(0, 0, 5);
@@ -674,7 +674,7 @@ fn test_large_map_renderer_set_tile() {
 }
 
 #[test]
-fn test_large_map_renderer_get_tile_out_of_bounds() {
+fn large_map_renderer_get_tile_out_of_bounds() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_map_data(vec![1; 25], 5, 5);
     assert!(lmr.get_tile(5, 0).is_none());
@@ -683,7 +683,7 @@ fn test_large_map_renderer_get_tile_out_of_bounds() {
 }
 
 #[test]
-fn test_large_map_renderer_chunks_created() {
+fn large_map_renderer_chunks_created() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_chunk_size(5);
     lmr.set_map_data(vec![0; 100], 10, 10);
@@ -692,7 +692,7 @@ fn test_large_map_renderer_chunks_created() {
 }
 
 #[test]
-fn test_large_map_renderer_set_tile_out_of_bounds_noop() {
+fn large_map_renderer_set_tile_out_of_bounds_noop() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_map_data(vec![0; 4], 2, 2);
     lmr.set_tile(10, 10, 99); // out of bounds - should do nothing
@@ -700,7 +700,7 @@ fn test_large_map_renderer_set_tile_out_of_bounds_noop() {
 }
 
 #[test]
-fn test_large_map_renderer_camera_and_viewport() {
+fn large_map_renderer_camera_and_viewport() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     lmr.set_camera(100.0, 200.0, 2.0);
     assert!((lmr.camera_x - 100.0).abs() < 1e-5);
@@ -712,7 +712,7 @@ fn test_large_map_renderer_camera_and_viewport() {
 }
 
 #[test]
-fn test_large_map_renderer_lod() {
+fn large_map_renderer_lod() {
     let mut lmr = LargeMapRenderer::new(32, 32);
     assert!(!lmr.is_lod_enabled());
     lmr.set_lod_enabled(true);
@@ -724,7 +724,7 @@ fn test_large_map_renderer_lod() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_column_batch_new() {
+fn column_batch_new() {
     let cb = ColumnBatch::new(320, 320.0, 200.0);
     assert_eq!(cb.get_column_count(), 320);
     assert!((cb.get_screen_width() - 320.0).abs() < 1e-5);
@@ -732,7 +732,7 @@ fn test_column_batch_new() {
 }
 
 #[test]
-fn test_column_batch_set_column() {
+fn column_batch_set_column() {
     let mut cb = ColumnBatch::new(320, 320.0, 200.0);
     cb.set_column(0, 0.5, 50.0, 150.0, 1.0, 3);
     let col = cb.get_column(0).unwrap();
@@ -744,7 +744,7 @@ fn test_column_batch_set_column() {
 }
 
 #[test]
-fn test_column_batch_get_depth_at() {
+fn column_batch_get_depth_at() {
     let cb = ColumnBatch::new(10, 100.0, 100.0);
     // Default depth = 0
     let d = cb.get_depth_at(0).unwrap();
@@ -752,7 +752,7 @@ fn test_column_batch_get_depth_at() {
 }
 
 #[test]
-fn test_column_batch_depth_buffer() {
+fn column_batch_depth_buffer() {
     let cb = ColumnBatch::new(5, 100.0, 100.0);
     let buf = cb.get_depth_buffer();
     assert_eq!(buf.len(), 5);
@@ -762,7 +762,7 @@ fn test_column_batch_depth_buffer() {
 }
 
 #[test]
-fn test_column_batch_set_floor_ceiling_colors() {
+fn column_batch_set_floor_ceiling_colors() {
     let mut cb = ColumnBatch::new(10, 100.0, 100.0);
     cb.set_floor_color(Color::RED);
     cb.set_ceiling_color(Color::BLUE);
@@ -771,7 +771,7 @@ fn test_column_batch_set_floor_ceiling_colors() {
 }
 
 #[test]
-fn test_column_batch_update_from_ray_data() {
+fn column_batch_update_from_ray_data() {
     let mut cb = ColumnBatch::new(2, 100.0, 200.0);
     // 5 floats per ray: distance, cellValue, side, texU, hit
     let rays = vec![
@@ -791,7 +791,7 @@ fn test_column_batch_update_from_ray_data() {
 }
 
 #[test]
-fn test_column_batch_get_column_out_of_bounds() {
+fn column_batch_get_column_out_of_bounds() {
     let cb = ColumnBatch::new(5, 100.0, 100.0);
     assert!(cb.get_column(5).is_none());
     assert!(cb.get_depth_at(10).is_none());
@@ -802,7 +802,7 @@ fn test_column_batch_get_column_out_of_bounds() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_camera2d_new_defaults() {
+fn camera2d_new_defaults() {
     let cam = Camera2D::new(800.0, 600.0);
     let (px, py) = cam.get_position();
     assert!((px).abs() < 1e-5);
@@ -812,7 +812,7 @@ fn test_camera2d_new_defaults() {
 }
 
 #[test]
-fn test_camera2d_set_position() {
+fn camera2d_set_position() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_position(100.0, 200.0);
     let (px, py) = cam.get_position();
@@ -821,14 +821,14 @@ fn test_camera2d_set_position() {
 }
 
 #[test]
-fn test_camera2d_set_zoom() {
+fn camera2d_set_zoom() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_zoom(2.0);
     assert!((cam.get_zoom() - 2.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_camera2d_move_by() {
+fn camera2d_move_by() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_position(10.0, 20.0);
     cam.move_by(5.0, -3.0);
@@ -838,7 +838,7 @@ fn test_camera2d_move_by() {
 }
 
 #[test]
-fn test_camera2d_look_at() {
+fn camera2d_look_at() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.look_at(500.0, 300.0);
     let (px, py) = cam.get_position();
@@ -847,7 +847,7 @@ fn test_camera2d_look_at() {
 }
 
 #[test]
-fn test_camera2d_to_world_to_screen_roundtrip() {
+fn camera2d_to_world_to_screen_roundtrip() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_position(100.0, 200.0);
     cam.set_zoom(1.5);
@@ -860,7 +860,7 @@ fn test_camera2d_to_world_to_screen_roundtrip() {
 }
 
 #[test]
-fn test_camera2d_bounds_clamping() {
+fn camera2d_bounds_clamping() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_bounds(0.0, 0.0, 1000.0, 800.0);
     assert!(cam.has_bounds());
@@ -874,7 +874,7 @@ fn test_camera2d_bounds_clamping() {
 }
 
 #[test]
-fn test_camera2d_remove_bounds() {
+fn camera2d_remove_bounds() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_bounds(0.0, 0.0, 1000.0, 800.0);
     assert!(cam.has_bounds());
@@ -883,7 +883,7 @@ fn test_camera2d_remove_bounds() {
 }
 
 #[test]
-fn test_camera2d_dead_zone() {
+fn camera2d_dead_zone() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_dead_zone(100.0, 100.0);
     let dz = cam.get_dead_zone().unwrap();
@@ -892,7 +892,7 @@ fn test_camera2d_dead_zone() {
 }
 
 #[test]
-fn test_camera2d_follow_target() {
+fn camera2d_follow_target() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_target(200.0, 300.0);
     let t = cam.get_target().unwrap();
@@ -906,7 +906,7 @@ fn test_camera2d_follow_target() {
 }
 
 #[test]
-fn test_camera2d_shake() {
+fn camera2d_shake() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.shake(10.0, 1.0);
     cam.update(0.5);
@@ -920,7 +920,7 @@ fn test_camera2d_shake() {
 }
 
 #[test]
-fn test_camera2d_visible_area() {
+fn camera2d_visible_area() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_position(400.0, 300.0);
     cam.set_zoom(1.0);
@@ -932,7 +932,7 @@ fn test_camera2d_visible_area() {
 }
 
 #[test]
-fn test_camera2d_viewport() {
+fn camera2d_viewport() {
     let mut cam = Camera2D::new(800.0, 600.0);
     cam.set_viewport(10.0, 20.0, 640.0, 480.0);
     let (x, y, w, h) = cam.get_viewport();
@@ -947,7 +947,7 @@ fn test_camera2d_viewport() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_animation_new_empty() {
+fn animation_new_empty() {
     let anim = Animation::new();
     assert_eq!(anim.get_frame_count(), 0);
     assert_eq!(anim.get_clip_count(), 0);
@@ -955,7 +955,7 @@ fn test_animation_new_empty() {
 }
 
 #[test]
-fn test_animation_add_frame() {
+fn animation_add_frame() {
     let mut anim = Animation::new();
     let idx = anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     assert_eq!(idx, 0);
@@ -965,7 +965,7 @@ fn test_animation_add_frame() {
 }
 
 #[test]
-fn test_animation_add_clip_and_play() {
+fn animation_add_clip_and_play() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -977,14 +977,14 @@ fn test_animation_add_clip_and_play() {
 }
 
 #[test]
-fn test_animation_play_nonexistent_clip() {
+fn animation_play_nonexistent_clip() {
     let mut anim = Animation::new();
     assert!(!anim.play("nope"));
     assert!(!anim.is_playing());
 }
 
 #[test]
-fn test_animation_update_advances_frame() {
+fn animation_update_advances_frame() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -997,7 +997,7 @@ fn test_animation_update_advances_frame() {
 }
 
 #[test]
-fn test_animation_looping_emits_event() {
+fn animation_looping_emits_event() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -1010,7 +1010,7 @@ fn test_animation_looping_emits_event() {
 }
 
 #[test]
-fn test_animation_non_looping_finishes() {
+fn animation_non_looping_finishes() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -1023,7 +1023,7 @@ fn test_animation_non_looping_finishes() {
 }
 
 #[test]
-fn test_animation_pause_resume() {
+fn animation_pause_resume() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_clip("a", vec![0], 10.0, true);
@@ -1036,7 +1036,7 @@ fn test_animation_pause_resume() {
 }
 
 #[test]
-fn test_animation_stop_resets() {
+fn animation_stop_resets() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -1049,7 +1049,7 @@ fn test_animation_stop_resets() {
 }
 
 #[test]
-fn test_animation_set_speed() {
+fn animation_set_speed() {
     let mut anim = Animation::new();
     anim.set_speed(2.0);
     assert!((anim.get_speed() - 2.0).abs() < 1e-5);
@@ -1058,7 +1058,7 @@ fn test_animation_set_speed() {
 }
 
 #[test]
-fn test_animation_current_quad() {
+fn animation_current_quad() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_frame(Rect::new(32.0, 0.0, 32.0, 32.0));
@@ -1070,13 +1070,13 @@ fn test_animation_current_quad() {
 }
 
 #[test]
-fn test_animation_current_quad_none_when_not_playing() {
+fn animation_current_quad_none_when_not_playing() {
     let anim = Animation::new();
     assert!(anim.current_quad().is_none());
 }
 
 #[test]
-fn test_animation_add_frames_from_grid() {
+fn animation_add_frames_from_grid() {
     let mut anim = Animation::new();
     let added = anim.add_frames_from_grid(128, 64, 32, 32, 0, 8);
     assert_eq!(added, 8);
@@ -1084,7 +1084,7 @@ fn test_animation_add_frames_from_grid() {
 }
 
 #[test]
-fn test_animation_is_looping() {
+fn animation_is_looping() {
     let mut anim = Animation::new();
     anim.add_frame(Rect::new(0.0, 0.0, 32.0, 32.0));
     anim.add_clip("loop", vec![0], 10.0, true);
@@ -1100,14 +1100,14 @@ fn test_animation_is_looping() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_trail_new_empty() {
+fn trail_new_empty() {
     let trail = Trail::new(5.0, 10.0);
     assert_eq!(trail.get_point_count(), 0);
     assert!((trail.get_lifetime() - 5.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_trail_push_points() {
+fn trail_push_points() {
     let mut trail = Trail::new(5.0, 10.0);
     trail.set_min_distance(0.0); // allow any distance
     trail.push_point(50.0, 100.0);
@@ -1116,7 +1116,7 @@ fn test_trail_push_points() {
 }
 
 #[test]
-fn test_trail_push_point_respects_min_distance() {
+fn trail_push_point_respects_min_distance() {
     let mut trail = Trail::new(5.0, 10.0);
     // Default min_distance = 1.0
     trail.push_point(50.0, 100.0);
@@ -1125,7 +1125,7 @@ fn test_trail_push_point_respects_min_distance() {
 }
 
 #[test]
-fn test_trail_clear() {
+fn trail_clear() {
     let mut trail = Trail::new(5.0, 10.0);
     trail.set_min_distance(0.0);
     trail.push_point(1.0, 2.0);
@@ -1136,7 +1136,7 @@ fn test_trail_clear() {
 }
 
 #[test]
-fn test_trail_update_removes_expired() {
+fn trail_update_removes_expired() {
     let mut trail = Trail::new(1.0, 10.0);
     trail.set_min_distance(0.0);
     trail.push_point(0.0, 0.0);
@@ -1146,7 +1146,7 @@ fn test_trail_update_removes_expired() {
 }
 
 #[test]
-fn test_trail_update_keeps_young_points() {
+fn trail_update_keeps_young_points() {
     let mut trail = Trail::new(2.0, 10.0);
     trail.set_min_distance(0.0);
     trail.push_point(0.0, 0.0);
@@ -1156,7 +1156,7 @@ fn test_trail_update_keeps_young_points() {
 }
 
 #[test]
-fn test_trail_set_width() {
+fn trail_set_width() {
     let mut trail = Trail::new(5.0, 10.0);
     trail.set_width(20.0, Some(5.0));
     let (sw, ew) = trail.get_width();
@@ -1165,14 +1165,14 @@ fn test_trail_set_width() {
 }
 
 #[test]
-fn test_trail_set_lifetime() {
+fn trail_set_lifetime() {
     let mut trail = Trail::new(5.0, 10.0);
     trail.set_lifetime(10.0);
     assert!((trail.get_lifetime() - 10.0).abs() < 1e-5);
 }
 
 #[test]
-fn test_trail_set_colors() {
+fn trail_set_colors() {
     let mut trail = Trail::new(5.0, 10.0);
     trail.set_head_color(Color::RED);
     trail.set_tail_color(Color::BLUE);
@@ -1185,20 +1185,20 @@ fn test_trail_set_colors() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_decal_surface_new() {
+fn decal_surface_new() {
     let ds = DecalSurface::new(800, 600);
     assert_eq!(ds.get_width(), 800);
     assert_eq!(ds.get_height(), 600);
 }
 
 #[test]
-fn test_decal_surface_dimensions() {
+fn decal_surface_dimensions() {
     let ds = DecalSurface::new(1920, 1080);
     assert_eq!(ds.get_dimensions(), (1920, 1080));
 }
 
 #[test]
-fn test_decal_surface_zero_size() {
+fn decal_surface_zero_size() {
     let ds = DecalSurface::new(0, 0);
     assert_eq!(ds.get_width(), 0);
     assert_eq!(ds.get_height(), 0);
@@ -1209,13 +1209,13 @@ fn test_decal_surface_zero_size() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn test_palette_lut_new_empty() {
+fn palette_lut_new_empty() {
     let lut = PaletteLUT::new();
     assert_eq!(lut.get_color_count(), 0);
 }
 
 #[test]
-fn test_palette_lut_set_color() {
+fn palette_lut_set_color() {
     let mut lut = PaletteLUT::new();
     lut.set_color(0, Color::RED, Color::BLUE);
     assert_eq!(lut.get_color_count(), 1);
@@ -1224,7 +1224,7 @@ fn test_palette_lut_set_color() {
 }
 
 #[test]
-fn test_palette_lut_set_color_sparse() {
+fn palette_lut_set_color_sparse() {
     let mut lut = PaletteLUT::new();
     // Setting index 3 should fill indices 0-2 with WHITE
     lut.set_color(3, Color::GREEN, Color::BLACK);
@@ -1235,7 +1235,7 @@ fn test_palette_lut_set_color_sparse() {
 }
 
 #[test]
-fn test_palette_lut_clear() {
+fn palette_lut_clear() {
     let mut lut = PaletteLUT::new();
     lut.set_color(0, Color::RED, Color::BLUE);
     lut.set_color(1, Color::GREEN, Color::BLACK);
@@ -1246,14 +1246,14 @@ fn test_palette_lut_clear() {
 }
 
 #[test]
-fn test_palette_lut_get_nonexistent() {
+fn palette_lut_get_nonexistent() {
     let lut = PaletteLUT::new();
     assert!(lut.get_from_color(0).is_none());
     assert!(lut.get_to_color(5).is_none());
 }
 
 #[test]
-fn test_palette_lut_overwrite() {
+fn palette_lut_overwrite() {
     let mut lut = PaletteLUT::new();
     lut.set_color(0, Color::RED, Color::BLUE);
     lut.set_color(0, Color::GREEN, Color::BLACK);

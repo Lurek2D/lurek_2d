@@ -47,6 +47,108 @@ impl LuaUserData for LuaImageData {
         /// Returns the type name "ImageData".
         /// @return string
         methods.add_method("type", |_, _, ()| Ok("ImageData"));
+        /// Returns the type name "ImageData".
+        /// @return string
+        methods.add_method("typeOf", |_, _, ()| Ok("ImageData"));
+    }
+}
+
+        // -- resize --
+        /// Returns a new ImageData scaled to the given dimensions using bilinear interpolation.
+        ///
+        /// Returns nil if either dimension is zero or the image has no pixels.
+        ///
+        /// @param width : integer
+        /// @param height : integer
+        /// @return ImageData?
+        methods.add_method("resize", |lua, this, (w, h): (u32, u32)| {
+            match this.inner.resize(w, h) {
+                Some(img) => Ok(LuaValue::UserData(lua.create_userdata(LuaImageData {
+                    inner: img,
+                })?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+
+        // -- blit --
+        /// Blits the source ImageData onto this image at (dst_x, dst_y) using Porter-Duff `over`.
+        ///
+        /// Pixels outside the bounds of this image are silently clipped.
+        ///
+        /// @param src : ImageData
+        /// @param dst_x : integer
+        /// @param dst_y : integer
+        /// @return nil
+        methods.add_method_mut(
+            "blit",
+            |_, this, (src_ud, dst_x, dst_y): (LuaAnyUserData, i32, i32)| {
+                let src_ref = src_ud.borrow::<LuaImageData>()?;
+                this.inner.blit(&src_ref.inner, dst_x, dst_y);
+                Ok(())
+            },
+        );
+
+        // -- getRegion --
+        /// Returns a copy of the rectangular sub-region as a new ImageData.
+        ///
+        /// Returns nil if the region is entirely outside the image or zero-sized.
+        ///
+        /// @param x : integer
+        /// @param y : integer
+        /// @param width : integer
+        /// @param height : integer
+        /// @return ImageData?
+        methods.add_method(
+            "getRegion",
+            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| {
+                match this.inner.get_region(x, y, w, h) {
+                    Some(img) => Ok(LuaValue::UserData(lua.create_userdata(LuaImageData {
+                        inner: img,
+                    })?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        // -- diff --
+        /// Returns the sum of absolute per-channel differences between this image and `other`.
+        ///
+        /// Returns 0 when both images are identical. Returns the maximum possible sum when the
+        /// images have different dimensions (they are treated as completely different).
+        ///
+        /// @param other : ImageData
+        /// @return integer
+        methods.add_method("diff", |_, this, other_ud: LuaAnyUserData| {
+            let other_ref = other_ud.borrow::<LuaImageData>()?;
+            Ok(this.inner.diff(&other_ref.inner))
+        });
+
+        // -- mapPixels --
+        /// Applies a Lua function to every pixel in-place.
+        ///
+        /// The callback receives `(x, y, r, g, b, a)` (integers 0-255) and must return
+        /// `r, g, b, a`. Pixels are visited in row-major order.
+        ///
+        /// @param fn : function
+        /// @return nil
+        methods.add_method_mut("mapPixels", |_lua, this, callback: LuaFunction| {
+            let w = this.inner.width();
+            let h = this.inner.height();
+            for py in 0..h {
+                for px in 0..w {
+                    if let Some((r, g, b, a)) = this.inner.get_pixel(px, py) {
+                        let result: (u8, u8, u8, u8) =
+                            callback.call((px, py, r, g, b, a))?;
+                        this.inner.set_pixel(px, py, result.0, result.1, result.2, result.3);
+                    }
+                }
+            }
+            Ok(())
+        });
+
+        /// Returns the type name "ImageData".
+        /// @return string
+        methods.add_method("type", |_, _, ()| Ok("ImageData"));
         /// Returns true when the given name matches "ImageData" or a parent type.
         /// @param name : string
         /// @return boolean
@@ -3351,6 +3453,972 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             Ok(LuaDrawLayer {
                 entries: Vec::new(),
             })
+        })?,
+    )?;
+
+    // ── Bézier Curves ───────────────────────────────────────────────────────────
+
+    // -- drawQuadBezier --
+    /// Queues a quadratic Bézier curve from (x1,y1) to (x2,y2) with one control point.
+    /// Must be called inside lurek.render or lurek.render_ui.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param cx : number
+    /// @param cy : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @param segments : integer?
+    let s = state.clone();
+    graphics.set(
+        "drawQuadBezier",
+        lua.create_function(
+            move |_,
+                  (x1, y1, cx, cy, x2, y2, segs): (
+                f32, f32, f32, f32, f32, f32, Option<u32>,
+            )| {
+                use crate::math::Vec2;
+                s.borrow_mut().render_commands.push(RenderCommand::DrawQuadBezier {
+                    start: Vec2::new(x1, y1),
+                    control: Vec2::new(cx, cy),
+                    end: Vec2::new(x2, y2),
+                    segments: segs.unwrap_or(16),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- drawCubicBezier --
+    /// Queues a cubic Bézier curve from (x1,y1) to (x2,y2) with two control points.
+    /// Must be called inside lurek.render or lurek.render_ui.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param cx1 : number
+    /// @param cy1 : number
+    /// @param cx2 : number
+    /// @param cy2 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @param segments : integer?
+    let s = state.clone();
+    graphics.set(
+        "drawCubicBezier",
+        lua.create_function(
+            move |_,
+                  (x1, y1, cx1, cy1, cx2, cy2, x2, y2, segs): (
+                f32, f32, f32, f32, f32, f32, f32, f32, Option<u32>,
+            )| {
+                use crate::math::Vec2;
+                s.borrow_mut().render_commands.push(RenderCommand::DrawCubicBezier {
+                    start: Vec2::new(x1, y1),
+                    c1: Vec2::new(cx1, cy1),
+                    c2: Vec2::new(cx2, cy2),
+                    end: Vec2::new(x2, y2),
+                    segments: segs.unwrap_or(16),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Path Drawing ─────────────────────────────────────────────────────────────
+
+    // -- drawPath --
+    /// Queues a multi-segment vector path.
+    /// Each entry is a table: {type="moveTo"|"lineTo"|"quadTo"|"cubicTo", x, y, cx, cy, cx1, cy1, cx2, cy2}.
+    /// @param path : table
+    /// @param mode : string?
+    /// @param close : boolean?
+    let s = state.clone();
+    graphics.set(
+        "drawPath",
+        lua.create_function(
+            move |_, (path, mode, close): (LuaTable, Option<String>, Option<bool>)| {
+                let draw_mode = match mode.as_deref().unwrap_or("line") {
+                    "fill" => DrawMode::Fill,
+                    "line" => DrawMode::Line,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawPath: unknown mode '{other}'"
+                        )))
+                    }
+                };
+                let mut segs: Vec<PathSegment> = Vec::new();
+                for i in 1..=path.raw_len() {
+                    let entry: LuaTable = path.get(i)?;
+                    let seg_type: String = entry.get("type")?;
+                    let seg = match seg_type.as_str() {
+                        "moveTo" => PathSegment::MoveTo {
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "lineTo" => PathSegment::LineTo {
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "quadTo" => PathSegment::QuadTo {
+                            cx: entry.get("cx")?,
+                            cy: entry.get("cy")?,
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "cubicTo" => PathSegment::CubicTo {
+                            cx1: entry.get("cx1")?,
+                            cy1: entry.get("cy1")?,
+                            cx2: entry.get("cx2")?,
+                            cy2: entry.get("cy2")?,
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "drawPath: unknown segment type '{other}'"
+                            )))
+                        }
+                    };
+                    segs.push(seg);
+                }
+                s.borrow_mut().render_commands.push(RenderCommand::DrawPath {
+                    segments: segs,
+                    mode: draw_mode,
+                    close: close.unwrap_or(false),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Gradient Rectangles ──────────────────────────────────────────────────────
+
+    // -- drawGradientRect --
+    /// Queues a gradient-filled rectangle. color1/color2 are {r,g,b,a} tables.
+    /// @param x : number
+    /// @param y : number
+    /// @param w : number
+    /// @param h : number
+    /// @param color1 : table
+    /// @param color2 : table
+    /// @param direction : string?
+    let s = state.clone();
+    graphics.set(
+        "drawGradientRect",
+        lua.create_function(
+            move |_,
+                  (x, y, w, h, c1, c2, dir): (
+                f32, f32, f32, f32, LuaTable, LuaTable, Option<String>,
+            )| {
+                if w <= 0.0 || h <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawGradientRect: w and h must be positive".into(),
+                    ));
+                }
+                let color1 = [
+                    c1.get::<_, f32>(1).unwrap_or(0.0),
+                    c1.get::<_, f32>(2).unwrap_or(0.0),
+                    c1.get::<_, f32>(3).unwrap_or(0.0),
+                    c1.get::<_, f32>(4).unwrap_or(1.0),
+                ];
+                let color2 = [
+                    c2.get::<_, f32>(1).unwrap_or(0.0),
+                    c2.get::<_, f32>(2).unwrap_or(0.0),
+                    c2.get::<_, f32>(3).unwrap_or(0.0),
+                    c2.get::<_, f32>(4).unwrap_or(1.0),
+                ];
+                let direction = match dir.as_deref().unwrap_or("vertical") {
+                    "horizontal" => GradientDirection::Horizontal,
+                    "vertical"   => GradientDirection::Vertical,
+                    "diagDown"   => GradientDirection::DiagDown,
+                    "diagUp"     => GradientDirection::DiagUp,
+                    "radial"     => GradientDirection::Radial,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawGradientRect: unknown direction '{other}'"
+                        )))
+                    }
+                };
+                s.borrow_mut().render_commands.push(RenderCommand::DrawGradientRect {
+                    x, y, w, h, color1, color2, direction,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Colored Polygons ─────────────────────────────────────────────────────────
+
+    // -- drawColoredPolygon --
+    /// Queues a convex polygon with per-vertex colours.
+    /// vertices is a flat table {x1,y1, x2,y2, ...}; colors is a table of {r,g,b,a} per vertex.
+    /// @param vertices : table
+    /// @param colors : table
+    /// @param mode : string?
+    let s = state.clone();
+    graphics.set(
+        "drawColoredPolygon",
+        lua.create_function(
+            move |_, (vertices, colors, mode): (LuaTable, LuaTable, Option<String>)| {
+                let draw_mode = match mode.as_deref().unwrap_or("fill") {
+                    "fill" => DrawMode::Fill,
+                    "line" => DrawMode::Line,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawColoredPolygon: unknown mode '{other}'"
+                        )))
+                    }
+                };
+                let n = vertices.raw_len();
+                if n < 4 || n % 2 != 0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawColoredPolygon: vertices must be a flat [x,y,...] table with at least 2 pairs".into(),
+                    ));
+                }
+                let mut verts: Vec<f32> = Vec::with_capacity(n);
+                for i in 1..=n {
+                    verts.push(vertices.get::<_, f32>(i)?);
+                }
+                let vert_count = n / 2;
+                let col_count = colors.raw_len();
+                let mut cols: Vec<[f32; 4]> = Vec::with_capacity(vert_count);
+                for i in 1..=vert_count {
+                    if i <= col_count {
+                        let c: LuaTable = colors.get(i)?;
+                        cols.push([
+                            c.get::<_, f32>(1).unwrap_or(1.0),
+                            c.get::<_, f32>(2).unwrap_or(1.0),
+                            c.get::<_, f32>(3).unwrap_or(1.0),
+                            c.get::<_, f32>(4).unwrap_or(1.0),
+                        ]);
+                    } else {
+                        cols.push([1.0, 1.0, 1.0, 1.0]);
+                    }
+                }
+                s.borrow_mut().render_commands.push(RenderCommand::DrawColoredPolygon {
+                    vertices: verts,
+                    colors: cols,
+                    mode: draw_mode,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Isometric Cube ───────────────────────────────────────────────────────────
+
+    // -- drawIsoCubeTile --
+    /// Queues a three-face isometric cube tile at screen position (sx, sy).
+    /// opts table fields: depth, topColor, topTexture, leftColor, leftTexture, rightColor, rightTexture.
+    /// @param sx : number
+    /// @param sy : number
+    /// @param halfW : number
+    /// @param halfH : number
+    /// @param opts : table?
+    let s = state.clone();
+    graphics.set(
+        "drawIsoCubeTile",
+        lua.create_function(
+            move |_,
+                  (sx, sy, half_w, half_h, opts): (
+                f32, f32, f32, f32, Option<LuaTable>,
+            )| {
+                let parse_color = |tbl: Option<LuaTable>| -> [f32; 4] {
+                    tbl.map(|t| {
+                        [
+                            t.get::<_, f32>(1).unwrap_or(1.0),
+                            t.get::<_, f32>(2).unwrap_or(1.0),
+                            t.get::<_, f32>(3).unwrap_or(1.0),
+                            t.get::<_, f32>(4).unwrap_or(1.0),
+                        ]
+                    })
+                    .unwrap_or([1.0, 1.0, 1.0, 1.0])
+                };
+                let (depth, top_color, top_tex_key, left_color, left_tex_key, right_color, right_tex_key) =
+                    if let Some(ref o) = opts {
+                        let depth = o.get::<_, f32>("depth").unwrap_or(0.0);
+                        let top_color = parse_color(o.get::<_, Option<LuaTable>>("topColor").ok().flatten());
+                        let left_color = parse_color(o.get::<_, Option<LuaTable>>("leftColor").ok().flatten());
+                        let right_color = parse_color(o.get::<_, Option<LuaTable>>("rightColor").ok().flatten());
+                        let top_tex = o
+                            .get::<_, Option<LuaAnyUserData>>("topTexture")
+                            .ok()
+                            .flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        let left_tex = o
+                            .get::<_, Option<LuaAnyUserData>>("leftTexture")
+                            .ok()
+                            .flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        let right_tex = o
+                            .get::<_, Option<LuaAnyUserData>>("rightTexture")
+                            .ok()
+                            .flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        (depth, top_color, top_tex, left_color, left_tex, right_color, right_tex)
+                    } else {
+                        (0.0, [1.0; 4], None, [0.7, 0.7, 0.7, 1.0], None, [0.5, 0.5, 0.5, 1.0], None)
+                    };
+                s.borrow_mut().render_commands.push(RenderCommand::DrawIsoCubeTile {
+                    screen_x: sx,
+                    screen_y: sy,
+                    half_w,
+                    half_h,
+                    depth,
+                    top_color,
+                    top_texture: top_tex_key,
+                    left_color,
+                    left_texture: left_tex_key,
+                    right_color,
+                    right_texture: right_tex_key,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Hex Tiles ────────────────────────────────────────────────────────────────
+
+    // -- drawHexTile --
+    /// Queues a hexagonal tile at centre (cx, cy) with given circumradius.
+    /// @param cx : number
+    /// @param cy : number
+    /// @param size : number
+    /// @param orientation : string?
+    /// @param mode : string?
+    let s = state.clone();
+    graphics.set(
+        "drawHexTile",
+        lua.create_function(
+            move |_,
+                  (cx, cy, size, orientation, mode): (
+                f32, f32, f32, Option<String>, Option<String>,
+            )| {
+                if size <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawHexTile: size must be positive".into(),
+                    ));
+                }
+                let orientation = match orientation.as_deref().unwrap_or("pointyTop") {
+                    "pointyTop" | "pointy" => HexOrientation::PointyTop,
+                    "flatTop" | "flat"     => HexOrientation::FlatTop,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawHexTile: unknown orientation '{other}'"
+                        )))
+                    }
+                };
+                let draw_mode = match mode.as_deref().unwrap_or("line") {
+                    "fill" => DrawMode::Fill,
+                    "line" => DrawMode::Line,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawHexTile: unknown mode '{other}'"
+                        )))
+                    }
+                };
+                s.borrow_mut().render_commands.push(RenderCommand::DrawHexTile {
+                    cx,
+                    cy,
+                    size,
+                    orientation,
+                    mode: draw_mode,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Depth Sort Groups ────────────────────────────────────────────────────────
+
+    // -- beginSortGroup --
+    /// Begins a Y/Z depth sort group. Draw commands until flushSortGroup are depth-sortable.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "beginSortGroup",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut()
+                .render_commands
+                .push(RenderCommand::BeginSortGroup { group_id: id });
+            Ok(())
+        })?,
+    )?;
+
+    // -- pushSortKey --
+    /// Associates the previous draw command with a depth value within the active sort group.
+    /// @param depth : number
+    let s = state.clone();
+    graphics.set(
+        "pushSortKey",
+        lua.create_function(move |_, depth: f32| {
+            s.borrow_mut()
+                .render_commands
+                .push(RenderCommand::PushSortKey(depth));
+            Ok(())
+        })?,
+    )?;
+
+    // -- flushSortGroup --
+    /// Sorts and flushes all draw commands in the sort group.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "flushSortGroup",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut()
+                .render_commands
+                .push(RenderCommand::FlushSortGroup { group_id: id });
+            Ok(())
+        })?,
+    )?;
+
+    // ── Bevel Rectangles ─────────────────────────────────────────────────────────
+
+    // -- drawBevelRect --
+    /// Queues a beveled border rectangle with inner fill.
+    /// opts table fields: highlight {r,g,b,a}, shadow {r,g,b,a}, fillColor {r,g,b,a}.
+    /// @param x : number
+    /// @param y : number
+    /// @param w : number
+    /// @param h : number
+    /// @param bevelW : number?
+    /// @param style : string?
+    /// @param opts : table?
+    let s = state.clone();
+    graphics.set(
+        "drawBevelRect",
+        lua.create_function(
+            move |_,
+                  (x, y, w, h, bevel_w, style, opts): (
+                f32, f32, f32, f32, Option<f32>, Option<String>, Option<LuaTable>,
+            )| {
+                if w <= 0.0 || h <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawBevelRect: w and h must be positive".into(),
+                    ));
+                }
+                let bevel_w = bevel_w.unwrap_or(2.0).max(0.0);
+                let bevel_style = match style.as_deref().unwrap_or("raised") {
+                    "raised"  => BevelStyle::Raised,
+                    "sunken"  => BevelStyle::Sunken,
+                    "ridge"   => BevelStyle::Ridge,
+                    "groove"  => BevelStyle::Groove,
+                    "flat"    => BevelStyle::Flat,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawBevelRect: unknown style '{other}'"
+                        )))
+                    }
+                };
+                let parse_color_tbl = |key: &str, def: [f32; 4]| -> [f32; 4] {
+                    opts.as_ref()
+                        .and_then(|t| t.get::<_, LuaTable>(key).ok())
+                        .map(|c| {
+                            [
+                                c.get::<_, f32>(1).unwrap_or(def[0]),
+                                c.get::<_, f32>(2).unwrap_or(def[1]),
+                                c.get::<_, f32>(3).unwrap_or(def[2]),
+                                c.get::<_, f32>(4).unwrap_or(def[3]),
+                            ]
+                        })
+                        .unwrap_or(def)
+                };
+                let highlight  = parse_color_tbl("highlight",  [1.0, 1.0, 1.0, 1.0]);
+                let shadow     = parse_color_tbl("shadow",     [0.2, 0.2, 0.2, 1.0]);
+                let fill_color = parse_color_tbl("fillColor",  [0.5, 0.5, 0.5, 1.0]);
+                s.borrow_mut().render_commands.push(RenderCommand::DrawBevelRect {
+                    x, y, w, h,
+                    bevel_w,
+                    style: bevel_style,
+                    highlight,
+                    shadow,
+                    fill_color,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Compositing Layers ───────────────────────────────────────────────────────
+
+    // -- pushLayer --
+    /// Begins a named compositing layer with optional alpha and blend mode.
+    /// @param id : integer
+    /// @param alpha : number?
+    /// @param blendMode : string?
+    let s = state.clone();
+    graphics.set(
+        "pushLayer",
+        lua.create_function(
+            move |_, (id, alpha, blend_mode): (u64, Option<f32>, Option<String>)| {
+                let alpha = alpha.unwrap_or(1.0).clamp(0.0, 1.0);
+                let blend = match blend_mode.as_deref().unwrap_or("alpha") {
+                    "alpha"    => BlendMode::Alpha,
+                    "add" | "additive" => BlendMode::Additive,
+                    "multiply" => BlendMode::Multiply,
+                    "replace" | "none" => BlendMode::Replace,
+                    "screen"   => BlendMode::Screen,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "pushLayer: unknown blend mode '{other}'"
+                        )))
+                    }
+                };
+                s.borrow_mut().render_commands.push(RenderCommand::PushLayer { id, alpha, blend });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- popLayer --
+    /// Ends and composites the named layer back to its parent.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "popLayer",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut()
+                .render_commands
+                .push(RenderCommand::PopLayer { id });
+            Ok(())
+        })?,
+    )?;
+    /// Must be called inside lurek.render or lurek.render_ui.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param cx : number
+    /// @param cy : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @param segments : integer?
+    let s = state.clone();
+    graphics.set(
+        "drawQuadBezier",
+        lua.create_function(
+            move |_, (x1, y1, cx, cy, x2, y2, segments): (f32, f32, f32, f32, f32, f32, Option<u32>)| {
+                s.borrow_mut().render_commands.push(RenderCommand::DrawQuadBezier {
+                    start: crate::math::Vec2::new(x1, y1),
+                    control: crate::math::Vec2::new(cx, cy),
+                    end: crate::math::Vec2::new(x2, y2),
+                    segments: segments.unwrap_or(16),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- drawCubicBezier --
+    /// Queues a cubic Bézier curve from (x1,y1) to (x2,y2) with two control points.
+    /// Must be called inside lurek.render or lurek.render_ui.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param cx1 : number
+    /// @param cy1 : number
+    /// @param cx2 : number
+    /// @param cy2 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @param segments : integer?
+    let s = state.clone();
+    graphics.set(
+        "drawCubicBezier",
+        lua.create_function(
+            move |_, (x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments): (f32, f32, f32, f32, f32, f32, f32, f32, Option<u32>)| {
+                s.borrow_mut().render_commands.push(RenderCommand::DrawCubicBezier {
+                    start: crate::math::Vec2::new(x1, y1),
+                    c1: crate::math::Vec2::new(cx1, cy1),
+                    c2: crate::math::Vec2::new(cx2, cy2),
+                    end: crate::math::Vec2::new(x2, y2),
+                    segments: segments.unwrap_or(16),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Path Drawing ─────────────────────────────────────────────────────────────
+
+    // -- drawPath --
+    /// Queues a multi-segment vector path.
+    /// Each segment entry is a table: {type="moveTo"|"lineTo"|"quadTo"|"cubicTo", x, y, cx, cy, cx1, cy1, cx2, cy2}.
+    /// @param path : table
+    /// @param mode : string?
+    /// @param close : boolean?
+    let s = state.clone();
+    graphics.set(
+        "drawPath",
+        lua.create_function(
+            move |_, (path, mode, close): (LuaTable, Option<String>, Option<bool>)| {
+                let draw_mode = parse_draw_mode(mode.as_deref().unwrap_or("line"))?;
+                let mut segs: Vec<PathSegment> = Vec::new();
+                for i in 1..=path.raw_len() {
+                    let entry: LuaTable = path.get(i)?;
+                    let seg_type: String = entry.get("type")?;
+                    let seg = match seg_type.as_str() {
+                        "moveTo" => PathSegment::MoveTo {
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "lineTo" => PathSegment::LineTo {
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "quadTo" => PathSegment::QuadTo {
+                            cx: entry.get("cx")?,
+                            cy: entry.get("cy")?,
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        "cubicTo" => PathSegment::CubicTo {
+                            cx1: entry.get("cx1")?,
+                            cy1: entry.get("cy1")?,
+                            cx2: entry.get("cx2")?,
+                            cy2: entry.get("cy2")?,
+                            x: entry.get("x")?,
+                            y: entry.get("y")?,
+                        },
+                        other => {
+                            return Err(LuaError::RuntimeError(format!(
+                                "drawPath: unknown segment type '{other}'"
+                            )))
+                        }
+                    };
+                    segs.push(seg);
+                }
+                s.borrow_mut().render_commands.push(RenderCommand::DrawPath {
+                    segments: segs,
+                    mode: draw_mode,
+                    close: close.unwrap_or(false),
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Gradient Rectangles ──────────────────────────────────────────────────────
+
+    // -- drawGradientRect --
+    /// Queues a gradient-filled rectangle. Both colors are RGBA tables {r,g,b,a} or positional {[1]=r,[2]=g,[3]=b,[4]=a}.
+    /// @param x : number
+    /// @param y : number
+    /// @param w : number
+    /// @param h : number
+    /// @param color1 : table
+    /// @param color2 : table
+    /// @param direction : string?
+    let s = state.clone();
+    graphics.set(
+        "drawGradientRect",
+        lua.create_function(
+            move |_, (x, y, w, h, c1, c2, dir): (f32, f32, f32, f32, LuaTable, LuaTable, Option<String>)| {
+                if w <= 0.0 || h <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawGradientRect: w and h must be positive".into(),
+                    ));
+                }
+                let color1 = [
+                    c1.get::<_, f32>(1).unwrap_or(0.0),
+                    c1.get::<_, f32>(2).unwrap_or(0.0),
+                    c1.get::<_, f32>(3).unwrap_or(0.0),
+                    c1.get::<_, f32>(4).unwrap_or(1.0),
+                ];
+                let color2 = [
+                    c2.get::<_, f32>(1).unwrap_or(0.0),
+                    c2.get::<_, f32>(2).unwrap_or(0.0),
+                    c2.get::<_, f32>(3).unwrap_or(0.0),
+                    c2.get::<_, f32>(4).unwrap_or(1.0),
+                ];
+                let direction = match dir.as_deref().unwrap_or("vertical") {
+                    "horizontal" => GradientDirection::Horizontal,
+                    "vertical"   => GradientDirection::Vertical,
+                    "diagDown"   => GradientDirection::DiagDown,
+                    "diagUp"     => GradientDirection::DiagUp,
+                    "radial"     => GradientDirection::Radial,
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "drawGradientRect: unknown direction '{other}'"
+                        )))
+                    }
+                };
+                s.borrow_mut().render_commands.push(RenderCommand::DrawGradientRect {
+                    x, y, w, h, color1, color2, direction,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Colored Polygons ─────────────────────────────────────────────────────────
+
+    // -- drawColoredPolygon --
+    /// Queues a convex polygon with per-vertex colours.
+    /// vertices: flat table {x1,y1, x2,y2, ...}
+    /// colors: table of {r,g,b,a} per vertex
+    /// @param vertices : table
+    /// @param colors : table
+    /// @param mode : string?
+    let s = state.clone();
+    graphics.set(
+        "drawColoredPolygon",
+        lua.create_function(
+            move |_, (vertices, colors, mode): (LuaTable, LuaTable, Option<String>)| {
+                let draw_mode = parse_draw_mode(mode.as_deref().unwrap_or("fill"))?;
+                let n = vertices.raw_len();
+                if n < 4 || n % 2 != 0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawColoredPolygon: vertices must be a flat [x,y,...] table with at least 2 pairs".into(),
+                    ));
+                }
+                let mut verts: Vec<f32> = Vec::with_capacity(n);
+                for i in 1..=n {
+                    verts.push(vertices.get::<_, f32>(i)?);
+                }
+                let vert_count = n / 2;
+                let col_count = colors.raw_len();
+                let mut cols: Vec<[f32; 4]> = Vec::with_capacity(vert_count);
+                for i in 1..=vert_count {
+                    if i <= col_count {
+                        let c: LuaTable = colors.get(i)?;
+                        cols.push([
+                            c.get::<_, f32>(1).unwrap_or(1.0),
+                            c.get::<_, f32>(2).unwrap_or(1.0),
+                            c.get::<_, f32>(3).unwrap_or(1.0),
+                            c.get::<_, f32>(4).unwrap_or(1.0),
+                        ]);
+                    } else {
+                        cols.push([1.0, 1.0, 1.0, 1.0]);
+                    }
+                }
+                s.borrow_mut().render_commands.push(RenderCommand::DrawColoredPolygon {
+                    vertices: verts,
+                    colors: cols,
+                    mode: draw_mode,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Isometric Cube ───────────────────────────────────────────────────────────
+
+    // -- drawIsoCubeTile --
+    /// Queues a three-face isometric cube tile at screen position (sx, sy).
+    /// opts table fields: depth, topColor, topTexture, leftColor, leftTexture, rightColor, rightTexture.
+    /// All color fields are {r,g,b,a} tables; texture fields are Image userdata.
+    /// @param sx : number
+    /// @param sy : number
+    /// @param halfW : number
+    /// @param halfH : number
+    /// @param opts : table?
+    let s = state.clone();
+    graphics.set(
+        "drawIsoCubeTile",
+        lua.create_function(
+            move |_, (sx, sy, half_w, half_h, opts): (f32, f32, f32, f32, Option<LuaTable>)| {
+                let parse_color = |tbl: Option<LuaTable>| -> [f32; 4] {
+                    tbl.map(|t| [
+                        t.get::<_, f32>(1).unwrap_or(1.0),
+                        t.get::<_, f32>(2).unwrap_or(1.0),
+                        t.get::<_, f32>(3).unwrap_or(1.0),
+                        t.get::<_, f32>(4).unwrap_or(1.0),
+                    ]).unwrap_or([1.0, 1.0, 1.0, 1.0])
+                };
+                let (depth, top_color, top_tex_key, left_color, left_tex_key, right_color, right_tex_key) =
+                    if let Some(ref o) = opts {
+                        let depth = o.get::<_, f32>("depth").unwrap_or(0.0);
+                        let top_color = parse_color(o.get::<_, Option<LuaTable>>("topColor").ok().flatten());
+                        let left_color = parse_color(o.get::<_, Option<LuaTable>>("leftColor").ok().flatten());
+                        let right_color = parse_color(o.get::<_, Option<LuaTable>>("rightColor").ok().flatten());
+                        let top_tex = o.get::<_, Option<LuaAnyUserData>>("topTexture").ok().flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        let left_tex = o.get::<_, Option<LuaAnyUserData>>("leftTexture").ok().flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        let right_tex = o.get::<_, Option<LuaAnyUserData>>("rightTexture").ok().flatten()
+                            .and_then(|ud| ud.borrow::<LuaImage>().ok().map(|img| img.key));
+                        (depth, top_color, top_tex, left_color, left_tex, right_color, right_tex)
+                    } else {
+                        (0.0, [1.0; 4], None, [0.7, 0.7, 0.7, 1.0], None, [0.5, 0.5, 0.5, 1.0], None)
+                    };
+                s.borrow_mut().render_commands.push(RenderCommand::DrawIsoCubeTile {
+                    screen_x: sx,
+                    screen_y: sy,
+                    half_w,
+                    half_h,
+                    depth,
+                    top_color,
+                    top_texture: top_tex_key,
+                    left_color,
+                    left_texture: left_tex_key,
+                    right_color,
+                    right_texture: right_tex_key,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Hex Tiles ────────────────────────────────────────────────────────────────
+
+    // -- drawHexTile --
+    /// Queues a hexagonal tile at centre (cx, cy) with given circumradius.
+    /// @param cx : number
+    /// @param cy : number
+    /// @param size : number
+    /// @param orientation : string?
+    /// @param mode : string?
+    let s = state.clone();
+    graphics.set(
+        "drawHexTile",
+        lua.create_function(
+            move |_, (cx, cy, size, orientation, mode): (f32, f32, f32, Option<String>, Option<String>)| {
+                if size <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawHexTile: size must be positive".into(),
+                    ));
+                }
+                let orientation = match orientation.as_deref().unwrap_or("pointyTop") {
+                    "pointyTop" | "pointy" => HexOrientation::PointyTop,
+                    "flatTop" | "flat"     => HexOrientation::FlatTop,
+                    other => return Err(LuaError::RuntimeError(format!(
+                        "drawHexTile: unknown orientation '{other}'"
+                    ))),
+                };
+                let draw_mode = parse_draw_mode(mode.as_deref().unwrap_or("line"))?;
+                s.borrow_mut().render_commands.push(RenderCommand::DrawHexTile {
+                    cx, cy, size, orientation, mode: draw_mode,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Depth Sort Groups ────────────────────────────────────────────────────────
+
+    // -- beginSortGroup --
+    /// Begins a Y/Z depth sort group identified by id.
+    /// All draw commands until flushSortGroup are depth-sortable.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "beginSortGroup",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut().render_commands.push(RenderCommand::BeginSortGroup { group_id: id });
+            Ok(())
+        })?,
+    )?;
+
+    // -- pushSortKey --
+    /// Associates the previous draw command with a depth value within the active sort group.
+    /// @param depth : number
+    let s = state.clone();
+    graphics.set(
+        "pushSortKey",
+        lua.create_function(move |_, depth: f32| {
+            s.borrow_mut().render_commands.push(RenderCommand::PushSortKey(depth));
+            Ok(())
+        })?,
+    )?;
+
+    // -- flushSortGroup --
+    /// Sorts and flushes all draw commands in the sort group.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "flushSortGroup",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut().render_commands.push(RenderCommand::FlushSortGroup { group_id: id });
+            Ok(())
+        })?,
+    )?;
+
+    // ── Bevel Rectangles ─────────────────────────────────────────────────────────
+
+    // -- drawBevelRect --
+    /// Queues a beveled border rectangle.
+    /// @param x : number
+    /// @param y : number
+    /// @param w : number
+    /// @param h : number
+    /// @param bevelW : number?
+    /// @param style : string?
+    /// @param opts : table?
+    #[allow(clippy::type_complexity)]
+    let s = state.clone();
+    graphics.set(
+        "drawBevelRect",
+        lua.create_function(
+            move |_, (x, y, w, h, bevel_w, style, opts): (f32, f32, f32, f32, Option<f32>, Option<String>, Option<LuaTable>)| {
+                if w <= 0.0 || h <= 0.0 {
+                    return Err(LuaError::RuntimeError(
+                        "drawBevelRect: w and h must be positive".into(),
+                    ));
+                }
+                let bevel_w = bevel_w.unwrap_or(2.0).max(0.0);
+                let bevel_style = match style.as_deref().unwrap_or("raised") {
+                    "raised"  => BevelStyle::Raised,
+                    "sunken"  => BevelStyle::Sunken,
+                    "ridge"   => BevelStyle::Ridge,
+                    "groove"  => BevelStyle::Groove,
+                    "flat"    => BevelStyle::Flat,
+                    other => return Err(LuaError::RuntimeError(format!(
+                        "drawBevelRect: unknown style '{other}'"
+                    ))),
+                };
+                let parse_color_tbl = |key: &str, def: [f32; 4]| -> [f32; 4] {
+                    opts.as_ref()
+                        .and_then(|t| t.get::<_, LuaTable>(key).ok())
+                        .map(|c| [
+                            c.get::<_, f32>(1).unwrap_or(def[0]),
+                            c.get::<_, f32>(2).unwrap_or(def[1]),
+                            c.get::<_, f32>(3).unwrap_or(def[2]),
+                            c.get::<_, f32>(4).unwrap_or(def[3]),
+                        ])
+                        .unwrap_or(def)
+                };
+                let highlight  = parse_color_tbl("highlight",  [1.0, 1.0, 1.0, 1.0]);
+                let shadow     = parse_color_tbl("shadow",     [0.2, 0.2, 0.2, 1.0]);
+                let fill_color = parse_color_tbl("fillColor",  [0.5, 0.5, 0.5, 1.0]);
+                s.borrow_mut().render_commands.push(RenderCommand::DrawBevelRect {
+                    x, y, w, h, bevel_w,
+                    style: bevel_style,
+                    highlight, shadow, fill_color,
+                });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // ── Compositing Layers ───────────────────────────────────────────────────────
+
+    // -- pushLayer --
+    /// Begins a named compositing layer. Provides alpha and blend mode for composite.
+    /// @param id : integer
+    /// @param alpha : number?
+    /// @param blendMode : string?
+    let s = state.clone();
+    graphics.set(
+        "pushLayer",
+        lua.create_function(
+            move |_, (id, alpha, blend_mode): (u64, Option<f32>, Option<String>)| {
+                let alpha = alpha.unwrap_or(1.0).clamp(0.0, 1.0);
+                let blend = blend_mode
+                    .as_deref()
+                    .map(parse_blend_mode)
+                    .transpose()?
+                    .unwrap_or(BlendMode::Alpha);
+                s.borrow_mut().render_commands.push(RenderCommand::PushLayer { id, alpha, blend });
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- popLayer --
+    /// Ends and composites the named layer.
+    /// @param id : integer
+    let s = state.clone();
+    graphics.set(
+        "popLayer",
+        lua.create_function(move |_, id: u64| {
+            s.borrow_mut().render_commands.push(RenderCommand::PopLayer { id });
+            Ok(())
         })?,
     )?;
 

@@ -881,7 +881,7 @@ impl LuaUserData for LuaParticleSystem {
 
         // -- setShape --
         /// Sets the particle draw shape.
-        /// @param shape : string  "square"|"circle"|"triangle"|"spark"|"diamond"
+        /// @param shape : string  "square"|"circle"|"triangle"|"spark"|"diamond"|"shrapnel"|"ray"|"puff"|"ring"|"capsule"
         /// @return nil
         methods.add_method("setShape", |_, this, shape: String| {
             use crate::particle::ParticleShape;
@@ -891,6 +891,11 @@ impl LuaUserData for LuaParticleSystem {
                 "spark" => ParticleShape::Spark,
                 "diamond" => ParticleShape::Diamond,
                 "square" => ParticleShape::Square,
+                "shrapnel" => ParticleShape::Shrapnel { edges: 6 },
+                "ray" => ParticleShape::Ray { aspect: 4.0 },
+                "puff" => ParticleShape::Puff,
+                "ring" => ParticleShape::Ring { thickness: 0.2 },
+                "capsule" => ParticleShape::Capsule,
                 other => {
                     return Err(LuaError::runtime(format!(
                         "unknown particle shape: {other}"
@@ -918,6 +923,11 @@ impl LuaUserData for LuaParticleSystem {
                         ParticleShape::Triangle => "triangle",
                         ParticleShape::Spark => "spark",
                         ParticleShape::Diamond => "diamond",
+                        ParticleShape::Shrapnel { .. } => "shrapnel",
+                        ParticleShape::Ray { .. } => "ray",
+                        ParticleShape::Puff => "puff",
+                        ParticleShape::Ring { .. } => "ring",
+                        ParticleShape::Capsule => "capsule",
                         _ => "square",
                     });
             Ok(shape.to_string())
@@ -954,15 +964,17 @@ impl LuaUserData for LuaParticleSystem {
         // -- render --
         /// Renders all live particles to the GPU command queue.
         ///
-        /// Calls `build_render_commands` on the particle system and expands the resulting
-        /// `DrawParticleSystem` snapshot into per-particle `RenderCommand` primitives
-        /// (geometry or textured sprites). Must be called inside `lurek.render`.
+        /// Calls `build_render_commands` on the particle system, expands textured
+        /// particles into per-sprite `RenderCommand` variants (DrawQuad / DrawImageEx),
+        /// and forwards untextured particles as a single `DrawParticleSystem` batch
+        /// command that the GPU renderer tessellates in one draw call.
+        /// Must be called inside `lurek.render`.
         ///
         /// @param ox : number?  World X offset added to every particle (default 0).
         /// @param oy : number?  World Y offset added to every particle (default 0).
         /// @return nil
         methods.add_method("render", |_, this, (ox, oy): (Option<f32>, Option<f32>)| {
-            use crate::render::renderer::{DrawMode, ParticleRenderShape, RenderCommand};
+            use crate::render::renderer::RenderCommand;
             let ox = ox.unwrap_or(0.0);
             let oy = oy.unwrap_or(0.0);
             // Snapshot particles while borrowing immutably; drop borrow before borrow_mut.
@@ -973,10 +985,13 @@ impl LuaUserData for LuaParticleSystem {
                     None => return Ok(()),
                 }
             };
-            // Expand DrawParticleSystem into per-particle primitives.
+            // Textured particles expand to DrawQuad / DrawImageEx.
+            // Untextured particles are forwarded as a single DrawParticleSystem batch
+            // so the GPU renderer can tessellate all shapes in one colour draw call.
             let mut st = this.state.borrow_mut();
             for cmd in cmds {
                 if let RenderCommand::DrawParticleSystem { particles } = cmd {
+                    let mut untextured = Vec::new();
                     for p in &particles {
                         if let Some(tex_key) = p.texture_key {
                             if let Some([qx, qy, qw, qh]) = p.quad {
@@ -1013,51 +1028,13 @@ impl LuaUserData for LuaParticleSystem {
                                 });
                             }
                         } else {
-                            st.render_commands
-                                .push(RenderCommand::SetColor(p.r, p.g, p.b, p.a));
-                            let half = p.size * 0.5;
-                            match p.shape {
-                                ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
-                                    st.render_commands.push(RenderCommand::Rectangle {
-                                        mode: DrawMode::Fill,
-                                        x: p.x - half,
-                                        y: p.y - half,
-                                        w: p.size,
-                                        h: p.size,
-                                    });
-                                }
-                                ParticleRenderShape::Circle => {
-                                    st.render_commands.push(RenderCommand::Circle {
-                                        mode: DrawMode::Fill,
-                                        x: p.x,
-                                        y: p.y,
-                                        r: half,
-                                    });
-                                }
-                                ParticleRenderShape::Triangle => {
-                                    st.render_commands.push(RenderCommand::Triangle {
-                                        mode: DrawMode::Fill,
-                                        x1: p.x,
-                                        y1: p.y - half,
-                                        x2: p.x - half,
-                                        y2: p.y + half,
-                                        x3: p.x + half,
-                                        y3: p.y + half,
-                                    });
-                                }
-                                ParticleRenderShape::Spark => {
-                                    let len = p.size * 1.5;
-                                    let dx = p.rotation.cos() * len;
-                                    let dy = p.rotation.sin() * len;
-                                    st.render_commands.push(RenderCommand::Line {
-                                        x1: p.x - dx,
-                                        y1: p.y - dy,
-                                        x2: p.x + dx,
-                                        y2: p.y + dy,
-                                    });
-                                }
-                            }
+                            untextured.push(p.clone());
                         }
+                    }
+                    if !untextured.is_empty() {
+                        st.render_commands.push(RenderCommand::DrawParticleSystem {
+                            particles: untextured,
+                        });
                     }
                 } else {
                     st.render_commands.push(cmd);
@@ -1094,6 +1071,113 @@ impl LuaUserData for LuaParticleSystem {
                 .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             let img = ps.draw_to_image(w, h);
             Ok(img)
+        });
+
+        // -- toImage --
+        /// Alias for `drawToImage`. Renders all live particles to a CPU ImageData.
+        /// @param width : integer
+        /// @param height : integer
+        /// @return ImageData
+        methods.add_method("toImage", |_, this, (w, h): (u32, u32)| {
+            let st = this.state.borrow();
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
+            let img = ps.draw_to_image(w, h);
+            Ok(img)
+        });
+
+        // -- warmUp --
+        /// Pre-simulates the particle system for `seconds` so it appears fully
+        /// populated on first render. Clamped to 30 seconds to avoid runaway
+        /// simulation cost.
+        /// @param seconds : number
+        /// @return nil
+        methods.add_method_mut("warmUp", |_, this, seconds: f32| {
+            let mut st = this.state.borrow_mut();
+            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            ps.warm_up(seconds);
+            Ok(())
+        });
+
+        // -- addAttractor --
+        /// Adds a gravity well that pulls (positive strength) or repels
+        /// (negative strength) all live particles within `radius` pixels.
+        /// @param x : number
+        /// @param y : number
+        /// @param strength : number
+        /// @param radius : number
+        /// @return nil
+        methods.add_method_mut(
+            "addAttractor",
+            |_, this, (x, y, strength, radius): (f32, f32, f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                    LuaError::runtime("ParticleSystem handle is invalid (released)")
+                })?;
+                ps.add_attractor(x, y, strength, radius);
+                Ok(())
+            },
+        );
+
+        // -- clearAttractors --
+        /// Removes all attractors from this particle system.
+        /// @return nil
+        methods.add_method_mut("clearAttractors", |_, this, ()| {
+            let mut st = this.state.borrow_mut();
+            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            ps.clear_attractors();
+            Ok(())
+        });
+
+        // -- getAttractorCount --
+        /// Returns the number of attractors currently registered on this system.
+        /// @return integer
+        methods.add_method("getAttractorCount", |_, this, ()| {
+            let st = this.state.borrow();
+            let ps = st.particle_systems.get(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            Ok(ps.attractor_count() as u32)
+        });
+
+        // -- setBounds --
+        /// Constrains all particles to an axis-aligned bounding rectangle.
+        /// Particles that cross a wall have their velocity component along that
+        /// axis reversed and scaled by `restitution` (0 = stick, 1 = elastic).
+        /// @param xmin : number
+        /// @param xmax : number
+        /// @param ymin : number
+        /// @param ymax : number
+        /// @param restitution : number
+        /// @return nil
+        methods.add_method_mut(
+            "setBounds",
+            |_, this, (xmin, xmax, ymin, ymax, restitution): (f32, f32, f32, f32, f32)| {
+                let mut st = this.state.borrow_mut();
+                let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                    LuaError::runtime("ParticleSystem handle is invalid (released)")
+                })?;
+                ps.set_bounds(xmin, xmax, ymin, ymax, restitution);
+                Ok(())
+            },
+        );
+
+        // -- clearBounds --
+        /// Removes the bounding rectangle so particles can move freely.
+        /// @return nil
+        methods.add_method_mut("clearBounds", |_, this, ()| {
+            let mut st = this.state.borrow_mut();
+            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            ps.clear_bounds();
+            Ok(())
         });
     }
 }
@@ -1636,8 +1720,37 @@ impl ParticleConfig {
                 "triangle" => ParticleShape::Triangle,
                 "spark" => ParticleShape::Spark,
                 "diamond" => ParticleShape::Diamond,
+                "puff" => ParticleShape::Puff,
+                "capsule" => ParticleShape::Capsule,
+                "shrapnel" => {
+                    let edges = t.get::<_, u8>("shrapnelEdges").unwrap_or(c.shrapnel_edges);
+                    ParticleShape::Shrapnel { edges }
+                }
+                "ray" => {
+                    let aspect = t.get::<_, f32>("rayAspect").unwrap_or(c.ray_aspect);
+                    ParticleShape::Ray { aspect }
+                }
+                "ring" => {
+                    let thickness =
+                        t.get::<_, f32>("ringThickness").unwrap_or(c.ring_thickness);
+                    ParticleShape::Ring { thickness }
+                }
                 _ => ParticleShape::Square,
             };
+        }
+
+        // shape-specific config overrides
+        if let Ok(v) = t.get::<_, u8>("shrapnelEdges") {
+            c.shrapnel_edges = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("rayAspect") {
+            c.ray_aspect = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("ringThickness") {
+            c.ring_thickness = v;
+        }
+        if let Ok(v) = t.get::<_, u32>("deathBurstCount") {
+            c.death_burst_count = v;
         }
 
         Ok(c)

@@ -196,7 +196,7 @@ describe("Decoder userdata methods", function()
     local d = lurek.audio.newDecoder("tests/fixtures/sine_mono_44100.wav")
     local rate = d:getSampleRate()
     expect_type("number", rate)
-    assert(rate > 0, "sample rate must be positive")
+    expect_greater(rate, 0, "sample rate must be positive")
   end)
 
   -- @description Checks the decoder reports a positive numeric bit depth for the fixture audio.
@@ -204,7 +204,7 @@ describe("Decoder userdata methods", function()
     local d = lurek.audio.newDecoder("tests/fixtures/sine_mono_44100.wav")
     local depth = d:getBitDepth()
     expect_type("number", depth)
-    assert(depth > 0, "bit depth must be positive")
+    expect_greater(depth, 0, "bit depth must be positive")
   end)
 
   -- @description Checks the decoder reports a positive duration for the fixture audio stream.
@@ -212,7 +212,7 @@ describe("Decoder userdata methods", function()
     local d = lurek.audio.newDecoder("tests/fixtures/sine_mono_44100.wav")
     local dur = d:getDuration()
     expect_type("number", dur)
-    assert(dur > 0, "duration must be positive")
+    expect_greater(dur, 0, "duration must be positive")
   end)
 
   -- @description Verifies the WAV decoder reports itself as seekable.
@@ -240,10 +240,10 @@ describe("Decoder userdata methods", function()
     local d = lurek.audio.newDecoder("tests/fixtures/sine_mono_44100.wav", 1000000)
     local chunk = d:decode()
     -- chunk may be userdata (SoundData) or nil depending on file size
-    assert(chunk ~= nil or chunk == nil, "decode must return userdata or nil")
+    expect_true(chunk == nil or type(chunk) == "userdata", "decode must return userdata or nil")
     local eof = d:decode()
     -- second call after exhaustion must be nil
-    assert(eof == nil, "decode at EOF must return nil")
+    expect_nil(eof, "decode at EOF must return nil")
   end)
 
   -- @description Consumes decoded data, rewinds the decoder, and verifies playback position resets to zero.
@@ -292,7 +292,7 @@ describe("audio.newQueueableSource", function()
     lurek.audio.queueSource(q, sd)
     -- after queuing, free count drops
     local after_queue = lurek.audio.getFreeBufferCount(q)
-    assert(after_queue < 4, "free count must decrease after queueSource")
+    expect_less(after_queue, 4, "free count must decrease after queueSource")
     -- stop resets it
     lurek.audio.stopQueueable(q)
     expect_equal(lurek.audio.getFreeBufferCount(q), 4)
@@ -311,7 +311,7 @@ describe("audio device selection", function()
   -- @description Verifies at least one playback device is visible to the runtime.
   it("getPlaybackDevices has at least one entry", function()
     local devs = lurek.audio.getPlaybackDevices()
-    assert(#devs >= 1, "must have at least one device")
+    expect_true(#devs >= 1, "must have at least one device")
   end)
 
   -- @description Verifies the active playback-device query returns a string name.

@@ -1,0 +1,535 @@
+//! Statistical analytics, signal processing, and normalisation for NdArray.
+//!
+//! All functions operate on flat element order (row-major). They are
+//! **Foundations-tier** — no imports from Core Runtime or higher.
+//!
+//! Key functions: `cumsum`, `diff`, `histogram`, `percentile`, `covariance`,
+//! `pearson_corr`, `normalize_range`, `zscore`, `convolve1d`, `correlate1d`.
+
+use crate::compute::array::{DataType, NdArray};
+
+// ---------------------------------------------------------------------------
+// Cumulative operations
+// ---------------------------------------------------------------------------
+
+/// Cumulative sum along a 1D array (or flattened elements if axis is None).
+///
+/// Returns a new array of the same shape where each element `i` is the sum
+/// of elements `0..=i`.
+///
+/// # Parameters
+/// - `a` — `&NdArray`.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn cumsum(a: &NdArray) -> Result<NdArray, String> {
+    let n = a.size();
+    let mut out = NdArray::zeros(&[n], a.dtype())?;
+    let mut acc = 0.0_f64;
+    for i in 0..n {
+        acc += a.get_f64(i);
+        out.set_f64(i, acc);
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// Differences
+// ---------------------------------------------------------------------------
+
+/// Discrete difference: `out[i] = a[i+1] - a[i]` (order `n = 1`, 1D or flat).
+///
+/// Applies `order` times, so `diff(a, 2)` gives the second-order difference.
+/// The output length is `a.size() - order`.
+///
+/// # Parameters
+/// - `a`     — `&NdArray`.
+/// - `order` — `usize` number of times to apply the difference.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn diff(a: &NdArray, order: usize) -> Result<NdArray, String> {
+    if order == 0 {
+        return Ok(a.clone());
+    }
+    let n = a.size();
+    if order >= n {
+        return Err(format!(
+            "diff order {} >= array size {}; result would be empty",
+            order, n
+        ));
+    }
+    // Collect floats, apply diff `order` times
+    let mut vals: Vec<f64> = (0..n).map(|i| a.get_f64(i)).collect();
+    for _ in 0..order {
+        vals = vals.windows(2).map(|w| w[1] - w[0]).collect();
+    }
+    let shape = [vals.len()];
+    let mut out = NdArray::zeros(&shape, a.dtype())?;
+    for (i, v) in vals.into_iter().enumerate() {
+        out.set_f64(i, v);
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// Histogram
+// ---------------------------------------------------------------------------
+
+/// Compute a histogram with `bins` equal-width bins.
+///
+/// Returns a `Vec<(lo, hi, count)>` tuple per bin.
+/// By default `min` and `max` are the observed minimum and maximum values;
+/// pass explicit bounds to fix them.
+///
+/// # Parameters
+/// - `a`        — `&NdArray`.
+/// - `bins`     — `usize` number of bins (must be ≥ 1).
+/// - `range_lo` — `Option<f64>`.
+/// - `range_hi` — `Option<f64>`.
+///
+/// # Returns
+/// `Result<Vec<(f64, f64, u64)>, String>`.
+pub fn histogram(
+    a: &NdArray,
+    bins: usize,
+    range_lo: Option<f64>,
+    range_hi: Option<f64>,
+) -> Result<Vec<(f64, f64, u64)>, String> {
+    if bins == 0 {
+        return Err("histogram: bins must be ≥ 1".to_string());
+    }
+    let n = a.size();
+    if n == 0 {
+        return Err("histogram: empty array".to_string());
+    }
+
+    let lo = range_lo.unwrap_or_else(|| {
+        let mut m = a.get_f64(0);
+        for i in 1..n {
+            let v = a.get_f64(i);
+            if v < m {
+                m = v;
+            }
+        }
+        m
+    });
+    let hi = range_hi.unwrap_or_else(|| {
+        let mut m = a.get_f64(0);
+        for i in 1..n {
+            let v = a.get_f64(i);
+            if v > m {
+                m = v;
+            }
+        }
+        m
+    });
+
+    if hi <= lo {
+        return Err(format!(
+            "histogram: range_hi ({hi}) must be > range_lo ({lo})"
+        ));
+    }
+
+    let width = (hi - lo) / bins as f64;
+    let mut counts = vec![0u64; bins];
+    for i in 0..n {
+        let v = a.get_f64(i);
+        if v < lo || v > hi {
+            continue;
+        }
+        let mut bin = ((v - lo) / width) as usize;
+        if bin >= bins {
+            bin = bins - 1; // clamp the upper edge into the last bin
+        }
+        counts[bin] += 1;
+    }
+
+    let result = (0..bins)
+        .map(|b| {
+            let bin_lo = lo + b as f64 * width;
+            let bin_hi = lo + (b + 1) as f64 * width;
+            (bin_lo, bin_hi, counts[b])
+        })
+        .collect();
+    Ok(result)
+}
+
+// ---------------------------------------------------------------------------
+// Percentile / quantile
+// ---------------------------------------------------------------------------
+
+/// Compute the `p`-th percentile (0–100) of all elements.
+///
+/// Uses linear interpolation between adjacent sorted values.
+///
+/// # Parameters
+/// - `a` — `&NdArray`.
+/// - `p` — `f64` in the range [0, 100].
+///
+/// # Returns
+/// `Result<f64, String>`.
+pub fn percentile(a: &NdArray, p: f64) -> Result<f64, String> {
+    if !(0.0..=100.0).contains(&p) {
+        return Err(format!("percentile p must be in [0, 100], got {p}"));
+    }
+    let n = a.size();
+    if n == 0 {
+        return Err("percentile: empty array".to_string());
+    }
+    let mut vals: Vec<f64> = (0..n).map(|i| a.get_f64(i)).collect();
+    vals.sort_by(|x, y| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal));
+
+    let idx = (p / 100.0) * (n - 1) as f64;
+    let lo = idx.floor() as usize;
+    let hi = idx.ceil() as usize;
+    if lo == hi {
+        return Ok(vals[lo]);
+    }
+    let frac = idx - lo as f64;
+    Ok(vals[lo] * (1.0 - frac) + vals[hi] * frac)
+}
+
+// ---------------------------------------------------------------------------
+// Covariance and correlation
+// ---------------------------------------------------------------------------
+
+/// Population covariance of two 1D (or flat) arrays of equal size.
+///
+/// # Parameters
+/// - `a` — `&NdArray`.
+/// - `b` — `&NdArray`.
+///
+/// # Returns
+/// `Result<f64, String>`.
+pub fn covariance(a: &NdArray, b: &NdArray) -> Result<f64, String> {
+    let n = a.size();
+    if n != b.size() {
+        return Err(format!(
+            "covariance: size mismatch {} vs {}",
+            n,
+            b.size()
+        ));
+    }
+    if n == 0 {
+        return Err("covariance: empty arrays".to_string());
+    }
+    let mean_a: f64 = (0..n).map(|i| a.get_f64(i)).sum::<f64>() / n as f64;
+    let mean_b: f64 = (0..n).map(|i| b.get_f64(i)).sum::<f64>() / n as f64;
+    let cov: f64 = (0..n)
+        .map(|i| (a.get_f64(i) - mean_a) * (b.get_f64(i) - mean_b))
+        .sum::<f64>()
+        / n as f64;
+    Ok(cov)
+}
+
+/// Pearson correlation coefficient of two 1D (or flat) arrays.
+///
+/// Returns a value in [-1, 1]. Returns `Err` if either array has zero variance.
+///
+/// # Parameters
+/// - `a` — `&NdArray`.
+/// - `b` — `&NdArray`.
+///
+/// # Returns
+/// `Result<f64, String>`.
+pub fn pearson_corr(a: &NdArray, b: &NdArray) -> Result<f64, String> {
+    let n = a.size();
+    if n != b.size() {
+        return Err(format!(
+            "pearson_corr: size mismatch {} vs {}",
+            n,
+            b.size()
+        ));
+    }
+    if n < 2 {
+        return Err("pearson_corr: need at least 2 elements".to_string());
+    }
+    let mean_a: f64 = (0..n).map(|i| a.get_f64(i)).sum::<f64>() / n as f64;
+    let mean_b: f64 = (0..n).map(|i| b.get_f64(i)).sum::<f64>() / n as f64;
+
+    let mut num = 0.0_f64;
+    let mut ss_a = 0.0_f64;
+    let mut ss_b = 0.0_f64;
+    for i in 0..n {
+        let da = a.get_f64(i) - mean_a;
+        let db = b.get_f64(i) - mean_b;
+        num += da * db;
+        ss_a += da * da;
+        ss_b += db * db;
+    }
+    let denom = (ss_a * ss_b).sqrt();
+    if denom == 0.0 {
+        return Err("pearson_corr: zero variance in one or both arrays".to_string());
+    }
+    Ok(num / denom)
+}
+
+// ---------------------------------------------------------------------------
+// Normalisation
+// ---------------------------------------------------------------------------
+
+/// Linearly rescale all elements to [out_min, out_max].
+///
+/// All output values are clamped to the target range.
+///
+/// # Parameters
+/// - `a`       — `&NdArray`.
+/// - `out_min` — `f64` lower bound of output range.
+/// - `out_max` — `f64` upper bound of output range.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn normalize_range(a: &NdArray, out_min: f64, out_max: f64) -> Result<NdArray, String> {
+    if out_max <= out_min {
+        return Err(format!(
+            "normalize_range: out_max ({out_max}) must be > out_min ({out_min})"
+        ));
+    }
+    let n = a.size();
+    let mut lo = a.get_f64(0);
+    let mut hi = a.get_f64(0);
+    for i in 1..n {
+        let v = a.get_f64(i);
+        if v < lo {
+            lo = v;
+        }
+        if v > hi {
+            hi = v;
+        }
+    }
+    let span = hi - lo;
+    let out_span = out_max - out_min;
+    let mut out = NdArray::zeros(&[n], a.dtype())?;
+    for i in 0..n {
+        let norm = if span == 0.0 {
+            0.5
+        } else {
+            (a.get_f64(i) - lo) / span
+        };
+        out.set_f64(i, out_min + norm * out_span);
+    }
+    Ok(out)
+}
+
+/// Standardise all elements to zero mean and unit variance (z-score).
+///
+/// Returns `Err` if the standard deviation is zero.
+///
+/// # Parameters
+/// - `a` — `&NdArray`.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn zscore(a: &NdArray) -> Result<NdArray, String> {
+    let n = a.size();
+    if n == 0 {
+        return Err("zscore: empty array".to_string());
+    }
+    let mean: f64 = (0..n).map(|i| a.get_f64(i)).sum::<f64>() / n as f64;
+    let var: f64 = (0..n).map(|i| (a.get_f64(i) - mean).powi(2)).sum::<f64>() / n as f64;
+    let std = var.sqrt();
+    if std == 0.0 {
+        return Err("zscore: zero standard deviation".to_string());
+    }
+    let mut out = NdArray::zeros(&[n], a.dtype())?;
+    for i in 0..n {
+        out.set_f64(i, (a.get_f64(i) - mean) / std);
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// Signal processing — 1D convolution and correlation
+// ---------------------------------------------------------------------------
+
+/// 1D convolution of `signal` with `kernel` (full output length).
+///
+/// Output length: `signal.size() + kernel.size() - 1`.
+/// Padding is zero-based.
+///
+/// # Parameters
+/// - `signal` — `&NdArray` 1D input.
+/// - `kernel` — `&NdArray` 1D filter.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn convolve1d(signal: &NdArray, kernel: &NdArray) -> Result<NdArray, String> {
+    if signal.ndim() != 1 {
+        return Err(format!(
+            "convolve1d: signal must be 1D, got {}D",
+            signal.ndim()
+        ));
+    }
+    if kernel.ndim() != 1 {
+        return Err(format!(
+            "convolve1d: kernel must be 1D, got {}D",
+            kernel.ndim()
+        ));
+    }
+    let sn = signal.size();
+    let kn = kernel.size();
+    let out_len = sn + kn - 1;
+    let mut out = NdArray::zeros(&[out_len], signal.dtype())?;
+
+    // Flip the kernel (convolution definition)
+    let kflip: Vec<f64> = (0..kn).rev().map(|i| kernel.get_f64(i)).collect();
+
+    for o in 0..out_len {
+        let mut acc = 0.0_f64;
+        for k in 0..kn {
+            let s_idx = o as isize - k as isize;
+            if s_idx >= 0 && (s_idx as usize) < sn {
+                acc += signal.get_f64(s_idx as usize) * kflip[k];
+            }
+        }
+        out.set_f64(o, acc);
+    }
+    Ok(out)
+}
+
+/// 1D cross-correlation: slide `template` over `signal` (valid output).
+///
+/// Output length: `signal.size() - template.size() + 1`.
+/// Each output element is the dot product of the template with the
+/// corresponding window of the signal.
+///
+/// # Parameters
+/// - `signal`   — `&NdArray` 1D input (length ≥ template length).
+/// - `template` — `&NdArray` 1D pattern to search for.
+///
+/// # Returns
+/// `Result<NdArray, String>`.
+pub fn correlate1d(signal: &NdArray, template: &NdArray) -> Result<NdArray, String> {
+    if signal.ndim() != 1 {
+        return Err(format!(
+            "correlate1d: signal must be 1D, got {}D",
+            signal.ndim()
+        ));
+    }
+    if template.ndim() != 1 {
+        return Err(format!(
+            "correlate1d: template must be 1D, got {}D",
+            template.ndim()
+        ));
+    }
+    let sn = signal.size();
+    let tn = template.size();
+    if tn > sn {
+        return Err(format!(
+            "correlate1d: template length {tn} > signal length {sn}"
+        ));
+    }
+    let out_len = sn - tn + 1;
+    let mut out = NdArray::zeros(&[out_len], signal.dtype())?;
+    for o in 0..out_len {
+        let mut acc = 0.0_f64;
+        for k in 0..tn {
+            acc += signal.get_f64(o + k) * template.get_f64(k);
+        }
+        out.set_f64(o, acc);
+    }
+    Ok(out)
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn arr(vals: &[f64]) -> NdArray {
+        NdArray::from_slice(vals, &[vals.len()], DataType::Float32).unwrap()
+    }
+
+    #[test]
+    fn cumsum_basic() {
+        let a = arr(&[1.0, 2.0, 3.0, 4.0]);
+        let c = cumsum(&a).unwrap();
+        assert!((c.get_f64(0) - 1.0).abs() < 1e-5);
+        assert!((c.get_f64(3) - 10.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn diff_order1_and_2() {
+        let a = arr(&[1.0, 4.0, 9.0, 16.0]);
+        let d1 = diff(&a, 1).unwrap();
+        assert_eq!(d1.size(), 3);
+        assert!((d1.get_f64(0) - 3.0).abs() < 1e-5);
+        let d2 = diff(&a, 2).unwrap();
+        assert_eq!(d2.size(), 2);
+        assert!((d2.get_f64(0) - 2.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn histogram_basic() {
+        let a = arr(&[0.5, 1.5, 2.5, 3.5]);
+        let h = histogram(&a, 2, Some(0.0), Some(4.0)).unwrap();
+        assert_eq!(h.len(), 2);
+        assert_eq!(h[0].2, 2);
+        assert_eq!(h[1].2, 2);
+    }
+
+    #[test]
+    fn percentile_median() {
+        let a = arr(&[1.0, 2.0, 3.0, 4.0, 5.0]);
+        let p50 = percentile(&a, 50.0).unwrap();
+        assert!((p50 - 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn covariance_identical() {
+        let a = arr(&[1.0, 2.0, 3.0]);
+        let cov = covariance(&a, &a).unwrap();
+        // population variance of [1,2,3] = 2/3
+        assert!((cov - 2.0 / 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn pearson_perfect_positive() {
+        let a = arr(&[1.0, 2.0, 3.0]);
+        let b = arr(&[2.0, 4.0, 6.0]);
+        let r = pearson_corr(&a, &b).unwrap();
+        assert!((r - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn normalize_range_basic() {
+        let a = arr(&[0.0, 5.0, 10.0]);
+        let n = normalize_range(&a, 0.0, 1.0).unwrap();
+        assert!((n.get_f64(0) - 0.0).abs() < 1e-5);
+        assert!((n.get_f64(1) - 0.5).abs() < 1e-5);
+        assert!((n.get_f64(2) - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn zscore_basic() {
+        let a = arr(&[2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]);
+        let z = zscore(&a).unwrap();
+        // Mean should be ~5, std ~2
+        let z_mean: f64 = (0..z.size()).map(|i| z.get_f64(i)).sum::<f64>() / z.size() as f64;
+        assert!(z_mean.abs() < 1e-5);
+    }
+
+    #[test]
+    fn convolve1d_identity_kernel() {
+        let signal = arr(&[1.0, 2.0, 3.0]);
+        let kernel = arr(&[1.0]);
+        let out = convolve1d(&signal, &kernel).unwrap();
+        assert_eq!(out.size(), 3);
+        assert!((out.get_f64(0) - 1.0).abs() < 1e-5);
+        assert!((out.get_f64(2) - 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn correlate1d_template_match() {
+        let signal = arr(&[0.0, 1.0, 2.0, 1.0, 0.0]);
+        let template = arr(&[1.0, 2.0, 1.0]);
+        let out = correlate1d(&signal, &template).unwrap();
+        // At position 1 (window [1,2,1]): 1*1 + 2*2 + 1*1 = 6
+        assert_eq!(out.size(), 3);
+        assert!((out.get_f64(1) - 6.0).abs() < 1e-5);
+    }
+}

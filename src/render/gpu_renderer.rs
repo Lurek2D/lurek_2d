@@ -509,6 +509,11 @@ pub struct GpuRenderer {
 
     /// Lazily-created GPU resources for the 2D lighting pass.
     light_gpu: Option<LightGpuState>,
+
+    /// Lazily-created post-FX pipeline — `None` until the first `BeginPostFx` command.
+    postfx_pipeline: Option<crate::render::postfx_pipeline::PostFxPipeline>,
+    /// Per-stack off-screen capture textures keyed by stack_id.
+    postfx_capture: HashMap<u64, crate::render::postfx_pipeline::PostFxTexture>,
 }
 
 /// Computes a 1D radial shadow map for a single light.
@@ -760,6 +765,8 @@ impl GpuRenderer {
             height,
             render_stats: RenderStats::default(),
             light_gpu: None,
+            postfx_pipeline: None,
+            postfx_capture: HashMap::new(),
         }
     }
 
@@ -1358,6 +1365,10 @@ impl GpuRenderer {
         let mut stencil_mode = StencilMode::Disabled;
         let mut stencil_reference = 0u8;
         let mut active_shader: Option<ShaderKey> = None;
+        // Deferred post-FX work: (stack_id, passes, width, height). Processed after all draw
+        // calls are flushed so that the final composited frame image is readable.
+        let mut pending_postfx: Vec<(u64, Vec<crate::render::renderer::PostFxPass>, u32, u32)> =
+            Vec::new();
 
         for cmd in commands {
             match cmd {
@@ -3543,11 +3554,34 @@ impl GpuRenderer {
                 RenderCommand::PushLayer { .. } => {}
                 RenderCommand::PopLayer { .. } => {}
 
-                // Post-FX capture/apply are managed by the PostFxStack at a higher level;
-                // the GPU renderer acknowledges these commands but does not process them here.
-                RenderCommand::BeginPostFx { .. } => {}
+                // Post-FX capture and apply.
+                RenderCommand::BeginPostFx { stack_id } => {
+                    if self.postfx_pipeline.is_none() {
+                        self.postfx_pipeline = Some(
+                            crate::render::postfx_pipeline::PostFxPipeline::new(
+                                &self.device,
+                                self.surface_format,
+                            ),
+                        );
+                    }
+                    let (w, h) = (self.width, self.height);
+                    let fmt = self.surface_format;
+                    let dev = &self.device;
+                    self.postfx_capture.entry(*stack_id).or_insert_with(|| {
+                        crate::render::postfx_pipeline::PostFxTexture::new(
+                            dev, w, h, "postfx_capture", fmt,
+                        )
+                    });
+                }
                 RenderCommand::EndPostFx { .. } => {}
-                RenderCommand::ApplyPostFx { .. } => {}
+                RenderCommand::ApplyPostFx {
+                    stack_id,
+                    passes,
+                    width,
+                    height,
+                } => {
+                    pending_postfx.push((*stack_id, passes.clone(), *width, *height));
+                }
             }
         }
 
@@ -4035,6 +4069,25 @@ impl GpuRenderer {
         } else {
             None
         };
+
+        // ── Post-processing passes ───────────────────────────────────────────
+        // Apply all deferred PostFxStack passes now that the full scene is composited.
+        for (stack_id, passes, w, h) in &pending_postfx {
+            if let (Some(pipeline), Some(capture)) =
+                (&self.postfx_pipeline, self.postfx_capture.get(stack_id))
+            {
+                pipeline.apply(
+                    &self.device,
+                    &self.queue,
+                    &mut encoder,
+                    &capture.view,
+                    &view,
+                    passes,
+                    *w,
+                    *h,
+                );
+            }
+        }
 
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();

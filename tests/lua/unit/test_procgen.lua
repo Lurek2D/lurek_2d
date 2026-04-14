@@ -55,7 +55,7 @@ describe("lurek.procgen", function()
         it("all values are 0 or 1", function()
             local data = lurek.procgen.cellularAutomata(10, 10)
             for _, v in ipairs(data) do
-                assert(v == 0 or v == 1, "unexpected value: " .. tostring(v))
+                expect_true(v == 0 or v == 1, "unexpected value: " .. tostring(v))
             end
         end)
 
@@ -89,7 +89,7 @@ describe("lurek.procgen", function()
             for _, v in ipairs(result) do
                 if v > 0 then filled = filled + 1 end
             end
-            assert(filled > 0, "expected at least one filled cell")
+            expect_true(filled > 0, "expected at least one filled cell")
         end)
     end)
 
@@ -106,7 +106,7 @@ describe("lurek.procgen", function()
         -- @description Verifies perlinNoise output stays within [-1, 1].
         it("value is in [-1, 1]", function()
             local v = lurek.procgen.perlinNoise(1.0, 2.0, 10.0, 10.0)
-            assert(v >= -1.0 and v <= 1.0, "out of range: " .. tostring(v))
+            expect_in_range(v, -1.0, 1.0, "out of range: " .. tostring(v))
         end)
 
         -- @covers lurek.procgen.perlinNoise
@@ -116,7 +116,7 @@ describe("lurek.procgen", function()
             local v1 = lurek.procgen.perlinNoise(0.0, 3.0, px, py)
             local v2 = lurek.procgen.perlinNoise(px, 3.0, px, py)
             local diff = math.abs(v1 - v2)
-            assert(diff < 0.001, "does not wrap: diff=" .. tostring(diff))
+            expect_less(diff, 0.001, "does not wrap: diff=" .. tostring(diff))
         end)
     end)
 
@@ -133,7 +133,7 @@ describe("lurek.procgen", function()
         -- @description Verifies each sampled point exposes numeric x and y fields.
         it("each point has x and y fields", function()
             local pts = lurek.procgen.poissonDisk(80, 80, 10, 30, 42)
-            assert(#pts > 0, "expected at least one point")
+            expect_true(#pts > 0, "expected at least one point")
             for _, p in ipairs(pts) do
                 expect_type("number", p.x)
                 expect_type("number", p.y)
@@ -146,8 +146,8 @@ describe("lurek.procgen", function()
             local w, h = 100, 60
             local pts = lurek.procgen.poissonDisk(w, h, 8, 30, 7)
             for _, p in ipairs(pts) do
-                assert(p.x >= 0 and p.x < w, "point x=" .. p.x .. " out of bounds")
-                assert(p.y >= 0 and p.y < h, "point y=" .. p.y .. " out of bounds")
+                expect_true(p.x >= 0 and p.x < w, "point x=" .. p.x .. " out of bounds")
+                expect_true(p.y >= 0 and p.y < h, "point y=" .. p.y .. " out of bounds")
             end
         end)
     end)
@@ -179,7 +179,7 @@ describe("lurek.procgen", function()
             local n = #pts
             local regions, _, _ = lurek.procgen.voronoi(20, 20, pts)
             for _, r in ipairs(regions) do
-                assert(r >= 1 and r <= n, "invalid region index: " .. tostring(r))
+                expect_true(r >= 1 and r <= n, "invalid region index: " .. tostring(r))
             end
         end)
     end)
@@ -248,4 +248,202 @@ describe("procgen edge cases", function()
         end
     end)
 end)
+
+-- ─────────────────────────────────────────────
+-- BSP Dungeon
+-- ─────────────────────────────────────────────
+describe("procgen.bspDungeon", function()
+    it("returns rooms and corridors", function()
+        local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 1 })
+        expect_type("table", d.rooms)
+        expect_type("table", d.corridors)
+        expect_true(#d.rooms > 0, "expected at least one room")
+    end)
+
+    it("rooms have x,y,w,h fields", function()
+        local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 2 })
+        local r = d.rooms[1]
+        expect_type("number", r.x)
+        expect_type("number", r.y)
+        expect_type("number", r.w)
+        expect_type("number", r.h)
+        expect_true(r.w > 0, "room width must be positive")
+    end)
+
+    it("same seed is deterministic", function()
+        local d1 = lurek.procgen.bspDungeon({ width = 50, height = 40, seed = 99 })
+        local d2 = lurek.procgen.bspDungeon({ width = 50, height = 40, seed = 99 })
+        expect_equal(#d1.rooms, #d2.rooms)
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- Rooms Dungeon
+-- ─────────────────────────────────────────────
+describe("procgen.roomsDungeon", function()
+    it("grid length equals width * height", function()
+        local d = lurek.procgen.roomsDungeon({ width = 20, height = 15, seed = 7 })
+        expect_equal(20 * 15, #d.grid)
+        expect_equal(20, d.width)
+        expect_equal(15, d.height)
+    end)
+
+    it("rooms have x,y,w,h fields", function()
+        local d = lurek.procgen.roomsDungeon({ width = 30, height = 20, max_rooms = 5, seed = 5 })
+        if #d.rooms > 0 then
+            local r = d.rooms[1]
+            expect_type("number", r.x)
+            expect_type("number", r.w)
+        end
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- Heightmap
+-- ─────────────────────────────────────────────
+describe("procgen.heightmap", function()
+    it("returns correct cell count", function()
+        local hm = lurek.procgen.heightmap({ width = 16, height = 16, seed = 1 })
+        expect_equal(16 * 16, #hm.cells)
+        expect_equal(16, hm.width)
+        expect_equal(16, hm.height)
+    end)
+
+    it("cells are in [0, 1]", function()
+        local hm = lurek.procgen.heightmap({ width = 8, height = 8, seed = 5 })
+        for _, v in ipairs(hm.cells) do
+            expect_true(v >= 0.0 and v <= 1.0, "cell out of [0,1]: " .. tostring(v))
+        end
+    end)
+
+    it("same seed produces same output", function()
+        local a = lurek.procgen.heightmap({ width = 8, height = 8, seed = 42 })
+        local b = lurek.procgen.heightmap({ width = 8, height = 8, seed = 42 })
+        expect_near(a.cells[1], b.cells[1], 1e-5)
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- L-System
+-- ─────────────────────────────────────────────
+describe("procgen.lsystem", function()
+    it("F doubled each iteration", function()
+        local s = lurek.procgen.lsystem({ axiom = "F", rules = { F = "FF" }, iterations = 3 })
+        expect_equal(8, #s)  -- 2^3 = 8
+    end)
+
+    it("zero iterations returns axiom unchanged", function()
+        local s = lurek.procgen.lsystem({ axiom = "AB", rules = { A = "B", B = "A" }, iterations = 0 })
+        expect_equal("AB", s)
+    end)
+
+    it("lsystemSegments returns table of {x1,y1,x2,y2}", function()
+        local segs = lurek.procgen.lsystemSegments(
+            { axiom = "F+F+F+F", rules = {}, iterations = 0 }, 90, 1.0)
+        expect_type("table", segs)
+        if #segs > 0 then
+            local s = segs[1]
+            expect_type("number", s.x1)
+            expect_type("number", s.y1)
+            expect_type("number", s.x2)
+            expect_type("number", s.y2)
+        end
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- Name Generator
+-- ─────────────────────────────────────────────
+describe("procgen.generateName", function()
+    local training = { "Aria", "Lyra", "Mira", "Elara", "Kira", "Tara", "Nara", "Zara", "Vera", "Lara" }
+
+    it("returns a string", function()
+        local name = lurek.procgen.generateName(training, 3, 8, 1)
+        expect_type("string", name)
+    end)
+
+    it("length within min/max", function()
+        for seed = 1, 5 do
+            local name = lurek.procgen.generateName(training, 3, 8, seed)
+            expect_true(#name >= 3 and #name <= 8, "name length out of range: " .. #name)
+        end
+    end)
+
+    it("generateNames returns N names", function()
+        local names = lurek.procgen.generateNames(training, 5, 3, 8, 42)
+        expect_equal(5, #names)
+        for _, n in ipairs(names) do
+            expect_type("string", n)
+        end
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- World Graph
+-- ─────────────────────────────────────────────
+describe("procgen.worldGraph", function()
+    it("returns correct region count", function()
+        local wg = lurek.procgen.worldGraph(200, 150, 8, 1)
+        expect_equal(8, #wg.regions)
+    end)
+
+    it("regions have id, name, x, y, tags", function()
+        local wg = lurek.procgen.worldGraph(200, 150, 4, 2)
+        local r = wg.regions[1]
+        expect_type("number", r.id)
+        expect_type("string", r.name)
+        expect_type("number", r.x)
+        expect_type("number", r.y)
+        expect_type("table", r.tags)
+    end)
+
+    it("edges have from, to, cost, bidirectional", function()
+        local wg = lurek.procgen.worldGraph(200, 150, 4, 3)
+        if #wg.edges > 0 then
+            local e = wg.edges[1]
+            expect_type("number", e.from)
+            expect_type("number", e.to)
+            expect_type("number", e.cost)
+            expect_type("boolean", e.bidirectional)
+        end
+    end)
+
+    it("same seed is deterministic", function()
+        local a = lurek.procgen.worldGraph(200, 150, 5, 7)
+        local b = lurek.procgen.worldGraph(200, 150, 5, 7)
+        expect_equal(#a.regions, #b.regions)
+    end)
+end)
+
+-- ─────────────────────────────────────────────
+-- Noise Map & Parallel
+-- ─────────────────────────────────────────────
+describe("procgen.noiseMap / noiseMapParallel", function()
+    it("noiseMap returns correct count", function()
+        local m = lurek.procgen.noiseMap(16, 16)
+        expect_equal(256, #m)
+    end)
+
+    it("noiseMap values are numbers", function()
+        local m = lurek.procgen.noiseMap(4, 4)
+        for _, v in ipairs(m) do expect_type("number", v) end
+    end)
+
+    it("noiseMap same seed is deterministic", function()
+        local a = lurek.procgen.noiseMap(8, 8, { seed = 42, scale_x = 0.1, scale_y = 0.1 })
+        local b = lurek.procgen.noiseMap(8, 8, { seed = 42, scale_x = 0.1, scale_y = 0.1 })
+        expect_near(a[1], b[1], 1e-5)
+    end)
+
+    it("noiseMapParallel returns correct size", function()
+        local m = lurek.procgen.noiseMapParallel(16, 16)
+        expect_equal(256, #m)
+    end)
+
+    it("noiseMapParallel values are numbers", function()
+        local m = lurek.procgen.noiseMapParallel(4, 4, { octaves = 2 })
+        for _, v in ipairs(m) do expect_type("number", v) end
+    end)
+end)
+
 test_summary()

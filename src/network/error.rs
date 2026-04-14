@@ -14,6 +14,16 @@ use thiserror::Error;
 /// - `HostDestroyed` — The host has already been destroyed; further calls are invalid.
 /// - `InvalidPeer` — The addressed peer index is out of range.
 /// - `InvalidAddress` — Failed to parse a bind address string.
+/// - `Http` — An HTTP request failed.
+/// - `WebSocket` — A WebSocket operation failed.
+/// - `Tcp` — A TCP socket operation failed.
+/// - `Serialization` — Message pack/unpack failed.
+/// - `Thread` — The network I/O thread encountered an error.
+/// - `Http` — An HTTP request failed.
+/// - `WebSocket` — A WebSocket operation failed.
+/// - `Tcp` — A TCP socket operation failed.
+/// - `Serialization` — Message pack/unpack failed.
+/// - `Thread` — The network I/O thread encountered an error.
 #[derive(Debug, Error)]
 pub enum NetworkError {
     /// The requested peer count exceeds [`super::constants::MAX_PEERS`].
@@ -39,9 +49,49 @@ pub enum NetworkError {
 
     /// The addressed peer index is out of range.
     #[error("invalid peer index {0}")]
+
+    /// An HTTP request failed.
+    #[error("HTTP error: {0}")]
+    Http(String),
+
+    /// A WebSocket operation failed.
+    #[error("WebSocket error: {0}")]
+    WebSocket(String),
+
+    /// A TCP socket operation failed.
+    #[error("TCP error: {0}")]
+    Tcp(String),
+
+    /// Message serialization or deserialization failed.
+    #[error("serialization error: {0}")]
+    Serialization(String),
+
+    /// The network I/O thread encountered an error.
+    #[error("network thread error: {0}")]
+    Thread(String),
     InvalidPeer(usize),
 
     /// Failed to parse a bind address string (expected `"*:port"` or `"host:port"`).
     #[error("invalid bind address: {0}")]
     InvalidAddress(String),
+
+    /// An HTTP request failed.
+    #[error("HTTP error: {0}")]
+    Http(String),
+
+    /// A WebSocket operation failed.
+    #[error("WebSocket error: {0}")]
+    WebSocket(String),
+
+    /// A TCP socket operation failed.
+    #[error("TCP error: {0}")]
+    Tcp(String),
+
+    /// Message serialization or deserialization failed.
+    #[error("serialization error: {0}")]
+    Serialization(String),
+
+    /// The network I/O thread encountered an error.
+    #[error("network thread error: {0}")]
+    Thread(String),
 }

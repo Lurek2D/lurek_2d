@@ -117,5 +117,90 @@ describe("Evidence: lurek.particles API + PNG visualization", function()
         lurek.img.savePNG(img, OUT .. "particle_emitter_burst.png")
     end)
 
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:setShape
+    -- @covers ParticleSystem:warmUp
+    -- @covers ParticleSystem:toImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Creates one system per new shape (shrapnel, ray, puff, ring, capsule),
+    -- warms each up, renders via toImage(), and writes the composite as a PNG.
+    -- If any shape's tessellation code was deleted, its column of the output PNG would differ.
+    it("PNG: new shapes rendered via toImage", function()
+        local W, H = 256, 64
+        local img = lurek.img.newImageData(W, H)
+        img:fill(10, 10, 20, 255)
+
+        local shapes = { "shrapnel", "ray", "puff", "ring", "capsule" }
+        local cols = { 0, 50, 102, 154, 205 }
+        local tile_w = 50
+        local tile_h = 64
+
+        for i, shape_name in ipairs(shapes) do
+            local ps = lurek.particles.newSystem({
+                maxParticles = 80,
+                emissionRate = 100,
+                shape = shape_name,
+                lifetimeMin = 3,
+                lifetimeMax = 3,
+                sizeMin = 8,
+                sizeMax = 12,
+            })
+            ps:setPosition(tile_w * 0.5, tile_h * 0.5)
+            ps:start()
+            ps:warmUp(0.5)
+            local tile = ps:toImage(tile_w, tile_h)
+            -- Blit tile into the composite image
+            local ox = cols[i]
+            for ty = 0, tile_h - 1 do
+                for tx = 0, tile_w - 1 do
+                    local r, g, b, a = tile:getPixel(tx, ty)
+                    if a > 0 then
+                        img:setPixel(ox + tx, ty, r, g, b, a)
+                    end
+                end
+            end
+            lurek.particles.release(ps)
+        end
+
+        lurek.img.savePNG(img, OUT .. "particle_new_shapes.png")
+    end)
+
+    -- @covers lurek.particles.newSystem
+    -- @covers ParticleSystem:addAttractor
+    -- @covers ParticleSystem:start
+    -- @covers ParticleSystem:update
+    -- @covers ParticleSystem:toImage
+    -- @covers lurek.img.savePNG
+    -- @evidence file
+    -- @description Emits circle particles, adds a central attractor pulling all particles
+    -- inward, simulates 1 second, and saves the result via toImage().
+    -- If the attractor force-computation was removed, the particle distribution
+    -- in the output PNG would be more spread-out.
+    it("PNG: attractor pulls particles to center", function()
+        local W, H = 128, 128
+        local ps = lurek.particles.newSystem({
+            maxParticles = 150,
+            emissionRate = 200,
+            shape = "circle",
+            lifetimeMin = 4,
+            lifetimeMax = 4,
+            sizeMin = 3,
+            sizeMax = 5,
+            speedMin = 40,
+            speedMax = 80,
+        })
+        ps:setPosition(64, 64)
+        ps:addAttractor(64, 64, 500, 200)
+        ps:start()
+        -- Pre-simulate so attractor has had time to pull particles inward
+        for _ = 1, 10 do
+            ps:update(0.05)
+        end
+        local img = ps:toImage(W, H)
+        lurek.img.savePNG(img, OUT .. "particle_attractor.png")
+        lurek.particles.release(ps)
+    end)
+
 end)
 test_summary()

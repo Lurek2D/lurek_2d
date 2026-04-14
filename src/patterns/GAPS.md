@@ -1,22 +1,20 @@
-# Gap Analysis: `src/patterns`
+# Gap Status: `src/patterns`
 
-## 1. Architecture & Compliance (PASS)
-- **Dependency Direction**: The `patterns` module accurately adheres to its `Foundations` tier requirements. It does not import from higher modules (`runtime`, `render`, `audio`, etc.).
-- **Cycle Rules**: No cycles detected. Pure structures isolated.
+- Reviewed: 2026-04-14
+- Baseline: current workspace state on branch `refactor/src-migration-v2`      
+- Current status: obsolete/stale
+- Canonical module reference: `docs/specs/patterns.md`
 
-## 2. AGENT.md Structure (BLOCKER / ERROR)
-The `AGENT.md` file in `src/patterns/` does **not** adhere to the canonical short format required by the CAG rules (A-02).
-- **Missing / Incorrect Metadata Table**: Uses a bulleted `## Module Info` list instead of the required markdown table format (with `**Tier**`, `**Status**`, etc.).
-- **Wrong Headings**: Uses `## Module Purpose` instead of `## Purpose`, and `## Files` instead of `## Source Files`.
-- **Forbidden Sections**: Contains a `## Key Types` section. According to the `module-audit` skill, this belongs *only* in `docs/specs/patterns.md` and strictly does not belong in `AGENT.md`.
-- **Missing Required Link**: Lacks the `## Full Specification` section linking to `docs/specs/patterns.md`.
+This refresh treats the current workspace state as the source of truth; older gap-analysis text is historical only.
 
-## 3. Code Documentation (PASS)
-- Public items are documented.
-- No placeholder stub text like `"Consult the module-level documentation..."` was detected.
+## Open items
+- None for the current baseline. Revalidate against `docs/specs/patterns.md` before treating any legacy gap note as active work.
 
-## 4. Thin Wrapper Rule (PASS)
-- No `mlua` imports were found in the domain module.
+## Resolved or stale legacy items
+- Stale: AGENT-era rewrite and template-compliance asks are obsolete because per-module `src/**/AGENT.md` guidance has been retired in favor of `docs/specs/<module>.md`.
+- Stale: migration and architecture warnings captured in the legacy file predate the current dirty workspace baseline on `refactor/src-migration-v2`.
+- Superseded: this file is now a status marker, not an implementation backlog. 
 
-## Remediation Steps
-1. **Rewrite `src/patterns/AGENT.md`**: Convert to the exact short template format required by `.github/skills/module-audit/SKILL.md`. Move the detailed `Key Types` list to `docs/specs/patterns.md`.
+## Evidence
+- `docs/specs/patterns.md`
+- `docs/specs/README.md`

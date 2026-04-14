@@ -147,6 +147,51 @@ pub enum RelativeMode {
     Attached,
 }
 
+/// A point attractor that pulls (or repels) nearby particles toward a world-space location.
+///
+/// Added to a `ParticleSystem` instance via `ParticleSystem::add_attractor`.
+/// Multiple attractors are independently accumulated each physics step.
+///
+/// # Fields
+/// - `x` — World-space X coordinate of the attractor.
+/// - `y` — World-space Y coordinate of the attractor.
+/// - `strength` — Force magnitude in pixels/s². Positive attracts; negative repels.
+/// - `radius` — Influence radius in pixels. Particles outside this range are unaffected.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Attractor {
+    /// World-space X coordinate of the attractor.
+    pub x: f32,
+    /// World-space Y coordinate of the attractor.
+    pub y: f32,
+    /// Force magnitude (pixels/s²). Positive = attraction, negative = repulsion.
+    pub strength: f32,
+    /// Influence radius in pixels. Particles beyond this distance are unaffected.
+    pub radius: f32,
+}
+
+/// Axis-aligned rectangular boundaries for particle bounce / containment.
+///
+/// When set on a `ParticleSystem`, particles that leave the bounds have their
+/// velocity component on the crossing axis negated and scaled by `restitution`.
+///
+/// # Fields
+/// - `x_min` / `x_max` — Horizontal bounds in world space (pixels).
+/// - `y_min` / `y_max` — Vertical bounds in world space (pixels).
+/// - `restitution` — Velocity retention factor on bounce (0 = inelastic, 1 = perfectly elastic).
+#[derive(Clone, Debug, PartialEq)]
+pub struct BounceBounds {
+    /// Left boundary (world-space pixels).
+    pub x_min: f32,
+    /// Right boundary (world-space pixels).
+    pub x_max: f32,
+    /// Top boundary (world-space pixels, Y increases downward).
+    pub y_min: f32,
+    /// Bottom boundary (world-space pixels).
+    pub y_max: f32,
+    /// Coefficient of restitution on bounce (0 = stops, 1 = no energy loss). Clamped to 0–1.
+    pub restitution: f32,
+}
+
 /// Configuration for a particle emitter. Controls emission rate, lifetime,
 /// physics, rendering, and the full set of per-particle randomisation ranges.
 ///
@@ -280,6 +325,22 @@ pub struct ParticleConfig {
     /// Ignored when `texture_id` is `Some(_)`.
     /// Defaults to `ParticleShape::Square` for backward compatibility.
     pub shape: ParticleShape,
+    /// Optional `ParticleConfig` for a child emitter that bursts at each dead particle's position.
+    /// When `Some`, `death_burst_count` particles are spawned using this config whenever a particle dies.
+    pub death_emitter: Option<Box<ParticleConfig>>,
+    /// Number of particles to burst from the death position when `death_emitter` is set.
+    /// Ignored when `death_emitter` is `None`. Default is 0.
+    pub death_burst_count: u32,
+    /// Optional shrapnel edge count override, stored separately so the main `shape` field
+    /// can remain `Shrapnel { edges }` without needing pattern-match to extract.
+    /// Used for config-builder ergonomics in the Lua API only; mirrors `shape`'s `edges` value.
+    pub shrapnel_edges: u8,
+    /// Optional ray aspect ratio (length-to-width), mirroring `shape`'s `aspect` value.
+    /// Used for config-builder ergonomics in the Lua API only.
+    pub ray_aspect: f32,
+    /// Optional ring thickness as a fraction of particle size (0–1), mirroring `shape`'s `thickness`.
+    /// Used for config-builder ergonomics in the Lua API only.
+    pub ring_thickness: f32,
 }
 
 impl Default for ParticleConfig {
@@ -337,6 +398,11 @@ impl Default for ParticleConfig {
             speed_color_min: 0.0,
             speed_color_max: 200.0,
             shape: ParticleShape::default(),
+            death_emitter: None,
+            death_burst_count: 0,
+            shrapnel_edges: 6,
+            ray_aspect: 4.0,
+            ring_thickness: 0.2,
         }
     }
 }

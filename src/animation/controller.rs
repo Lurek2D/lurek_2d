@@ -30,6 +30,7 @@ use crate::log_msg;
 /// - `playing` — `bool`.
 /// - `speed` — `f32`.
 /// - `pending_events` — `Vec<AnimEvent>`.
+#[derive(Clone)]
 pub struct Animation {
     /// All frames available to this animation.
     frames: Vec<AnimFrame>,
@@ -47,6 +48,12 @@ pub struct Animation {
     speed: f32,
     /// Events generated during the last [`update`](Self::update) call.
     pending_events: Vec<AnimEvent>,
+    /// Source quad saved at the start of a crossfade (from-clip frame).
+    crossfade_from_quad: Option<Rect>,
+    /// Elapsed time since the crossfade started (seconds).
+    crossfade_timer: f32,
+    /// Total crossfade duration in seconds; 0.0 means no crossfade active.
+    crossfade_duration: f32,
 }
 
 impl Animation {
@@ -65,6 +72,9 @@ impl Animation {
             playing: false,
             speed: 1.0,
             pending_events: Vec::new(),
+            crossfade_from_quad: None,
+            crossfade_timer: 0.0,
+            crossfade_duration: 0.0,
         }
     }
 
@@ -247,6 +257,11 @@ impl Animation {
     pub fn update(&mut self, dt: f32) {
         self.pending_events.clear();
 
+        // Advance crossfade timer — clamp at duration.
+        if self.crossfade_duration > 0.0 {
+            self.crossfade_timer = (self.crossfade_timer + dt).min(self.crossfade_duration);
+        }
+
         if !self.playing || dt <= 0.0 {
             return;
         }
@@ -418,6 +433,169 @@ impl Animation {
                 }
             }
         }
+    }
+
+    // ── Crossfade ────────────────────────────────────────────────────────
+
+    /// Starts a crossfade to another clip over the given duration in seconds.
+    ///
+    /// Saves the current frame's quad as the blend source, then begins playing
+    /// the target clip. Returns `false` if the clip does not exist.
+    ///
+    /// # Parameters
+    /// - `clip_name` — `&str`. Target clip name.
+    /// - `duration` — `f32`. Crossfade duration in seconds.
+    ///
+    /// # Returns
+    /// `bool`.
+    pub fn crossfade(&mut self, clip_name: &str, duration: f32) -> bool {
+        if !self.clips.contains_key(clip_name) {
+            return false;
+        }
+        self.crossfade_from_quad = self.current_quad();
+        self.crossfade_timer = 0.0;
+        self.crossfade_duration = duration.max(0.0);
+        self.play(clip_name)
+    }
+
+    /// Returns the current crossfade state as `(from_quad, to_quad, blend_weight)`.
+    ///
+    /// `blend_weight` increases linearly from `0.0` (start) to `1.0` (end).
+    /// Returns `None` when no crossfade is active.
+    ///
+    /// # Returns
+    /// `Option<(Rect, Rect, f32)>`.
+    pub fn get_blend_state(&self) -> Option<(Rect, Rect, f32)> {
+        if self.crossfade_duration <= 0.0 || self.crossfade_timer >= self.crossfade_duration {
+            return None;
+        }
+        let q1 = self.crossfade_from_quad?;
+        let q2 = self.current_quad()?;
+        let blend = self.crossfade_timer / self.crossfade_duration;
+        Some((q1, q2, blend))
+    }
+
+    // ── Debug rendering ──────────────────────────────────────────────────
+
+    /// Renders the current animation frame as a debug image.
+    ///
+    /// Background is white. The active frame rectangle is drawn in blue.
+    /// Useful for evidence tests where no GPU is available.
+    ///
+    /// # Parameters
+    /// - `width` — `u32`. Image width in pixels.
+    /// - `height` — `u32`. Image height in pixels.
+    ///
+    /// # Returns
+    /// `ImageData`.
+    pub fn draw_to_image(&self, width: u32, height: u32) -> crate::image::ImageData {
+        let mut img = crate::image::ImageData::new(width, height);
+        img.fill(255, 255, 255, 255);
+        if let Some(q) = self.current_quad() {
+            // Draw the frame rect in blue
+            img.draw_rect(
+                q.x as i32,
+                q.y as i32,
+                q.width as u32,
+                q.height as u32,
+                80,
+                120,
+                220,
+                200,
+            );
+            // Draw outline
+            img.draw_line(
+                q.x as i32,
+                q.y as i32,
+                (q.x + q.width) as i32,
+                q.y as i32,
+                40,
+                80,
+                180,
+                255,
+            );
+            img.draw_line(
+                (q.x + q.width) as i32,
+                q.y as i32,
+                (q.x + q.width) as i32,
+                (q.y + q.height) as i32,
+                40,
+                80,
+                180,
+                255,
+            );
+            img.draw_line(
+                (q.x + q.width) as i32,
+                (q.y + q.height) as i32,
+                q.x as i32,
+                (q.y + q.height) as i32,
+                40,
+                80,
+                180,
+                255,
+            );
+            img.draw_line(
+                q.x as i32,
+                (q.y + q.height) as i32,
+                q.x as i32,
+                q.y as i32,
+                40,
+                80,
+                180,
+                255,
+            );
+        }
+        img
+    }
+
+    // ── Aseprite import ──────────────────────────────────────────────────
+
+    /// Creates an [`Animation`] from an [`AsepriteParsed`] result.
+    ///
+    /// Adds one frame per parsed frame and creates clips from frame tags.
+    /// Per-frame duration from the Aseprite export is used when set.
+    ///
+    /// # Parameters
+    /// - `parsed` — `&AsepriteParsed`. Parsed Aseprite JSON data.
+    ///
+    /// # Returns
+    /// `Animation`.
+    pub fn load_from_aseprite(parsed: &crate::animation::aseprite::AsepriteParsed) -> Animation {
+        use crate::animation::aseprite::AsepriteDirection;
+        use crate::animation::frame::AnimFrame;
+
+        let mut anim = Animation::new();
+
+        // Add one frame per parsed frame entry.
+        for f in &parsed.frames {
+            let quad = Rect::new(f.x as f32, f.y as f32, f.w as f32, f.h as f32);
+            let duration = f.duration_ms as f32 / 1000.0;
+            anim.frames.push(AnimFrame { quad, duration });
+        }
+
+        // Create clips from frame tags.
+        for tag in &parsed.tags {
+            if tag.from > tag.to || tag.to >= anim.frames.len() {
+                continue;
+            }
+
+            let indices: Vec<usize> = match tag.direction {
+                AsepriteDirection::Forward | AsepriteDirection::PingPong => {
+                    (tag.from..=tag.to).collect()
+                }
+                AsepriteDirection::Reverse => (tag.from..=tag.to).rev().collect(),
+            };
+
+            // Calculate FPS from the first frame's duration.
+            let fps = {
+                let dur_ms = parsed.frames[tag.from].duration_ms;
+                if dur_ms > 0 { 1000.0 / dur_ms as f32 } else { 10.0 }
+            };
+
+            anim.add_clip(&tag.name, indices, fps, true);
+        }
+
+        anim
     }
 }
 

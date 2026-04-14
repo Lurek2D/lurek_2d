@@ -140,7 +140,7 @@ describe("lurek.log.addSink memory sink", function()
         lurek.log.info("check_entry_structure")
         local entries = lurek.log.readMemory(id)
         lurek.log.removeSink(id)
-        assert(#entries >= 1, "expected at least one entry")
+        expect_true(#entries >= 1, "expected at least one entry")
         expect_type("string", entries[1].message)
     end)
 

@@ -109,6 +109,9 @@ impl WidgetState {
 /// - `ColorPicker` — Color picker.
 /// - `GUITable` — Data table.
 /// - `ImageWidget` — Image display widget.
+/// - `SpinBox` — Numeric spin box with increment/decrement buttons.
+/// - `Switch` — Toggle on/off pill switch.
+/// - `Badge` — Notification badge with count or label.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WidgetType {
     /// Clickable button.
@@ -175,6 +178,12 @@ pub enum WidgetType {
     GUITable,
     /// Image display widget.
     ImageWidget,
+    /// Numeric spin box (text field with increment/decrement buttons).
+    SpinBox,
+    /// Toggle switch (on/off pill control).
+    Switch,
+    /// Notification badge with a count or label.
+    Badge,
 }
 
 impl WidgetType {
@@ -216,6 +225,104 @@ impl WidgetType {
             Self::ColorPicker => "colorpicker",
             Self::GUITable => "guitable",
             Self::ImageWidget => "imagewidget",
+            Self::SpinBox => "spinbox",
+            Self::Switch => "switch",
+            Self::Badge => "badge",
+        }
+    }
+
+    /// Parse a lowercase widget-type name into a [`WidgetType`].
+    ///
+    /// # Parameters
+    /// - `s` — `&str`.  Accepted values match [`WidgetType::as_str`] output.
+    ///
+    /// # Returns
+    /// `Option<WidgetType>`.
+    pub fn parse_str(s: &str) -> Option<Self> {
+        match s {
+            "button" => Some(Self::Button),
+            "label" => Some(Self::Label),
+            "textinput" => Some(Self::TextInput),
+            "checkbox" => Some(Self::CheckBox),
+            "slider" => Some(Self::Slider),
+            "progressbar" => Some(Self::ProgressBar),
+            "combobox" => Some(Self::ComboBox),
+            "listbox" => Some(Self::ListBox),
+            "panel" => Some(Self::Panel),
+            "layout" => Some(Self::Layout),
+            "scrollpanel" => Some(Self::ScrollPanel),
+            "ninepatch" => Some(Self::NinePatch),
+            "tabbar" => Some(Self::TabBar),
+            "toast" => Some(Self::Toast),
+            "separator" => Some(Self::Separator),
+            "spacer" => Some(Self::Spacer),
+            "treeview" => Some(Self::TreeView),
+            "radiobutton" => Some(Self::RadioButton),
+            "scrollbar" => Some(Self::ScrollBar),
+            "guiwindow" => Some(Self::GUIWindow),
+            "splitpanel" => Some(Self::SplitPanel),
+            "dockpanel" => Some(Self::DockPanel),
+            "toolbar" => Some(Self::Toolbar),
+            "menubar" => Some(Self::MenuBar),
+            "menuitem" => Some(Self::MenuItem),
+            "dialog" => Some(Self::Dialog),
+            "statusbar" => Some(Self::StatusBar),
+            "accordion" => Some(Self::Accordion),
+            "tooltippanel" => Some(Self::TooltipPanel),
+            "colorpicker" => Some(Self::ColorPicker),
+            "guitable" => Some(Self::GUITable),
+            "imagewidget" => Some(Self::ImageWidget),
+            "spinbox" => Some(Self::SpinBox),
+            "switch" => Some(Self::Switch),
+            "badge" => Some(Self::Badge),
+            _ => None,
+        }
+    }
+
+    /// Return the default size `(width, height)` for this widget type on a 16 px grid.
+    ///
+    /// These values are used by [`WidgetBase::new`] so that initial widget
+    /// dimensions feel sensible without requiring the caller to specify them.
+    ///
+    /// # Returns
+    /// `(f32, f32)` — `(width, height)` in pixels.
+    pub fn default_size(self) -> (f32, f32) {
+        match self {
+            Self::Button => (128.0, 32.0),
+            Self::Label => (128.0, 16.0),
+            Self::TextInput => (192.0, 32.0),
+            Self::CheckBox => (128.0, 16.0),
+            Self::Slider => (192.0, 16.0),
+            Self::ProgressBar => (192.0, 16.0),
+            Self::ComboBox => (192.0, 32.0),
+            Self::ListBox => (192.0, 128.0),
+            Self::Panel => (256.0, 192.0),
+            Self::Layout => (256.0, 192.0),
+            Self::ScrollPanel => (256.0, 192.0),
+            Self::NinePatch => (256.0, 192.0),
+            Self::TabBar => (256.0, 32.0),
+            Self::Toast => (240.0, 48.0),
+            Self::Separator => (256.0, 2.0),
+            Self::Spacer => (16.0, 16.0),
+            Self::TreeView => (192.0, 192.0),
+            Self::RadioButton => (128.0, 16.0),
+            Self::ScrollBar => (16.0, 128.0),
+            Self::GUIWindow => (320.0, 240.0),
+            Self::SplitPanel => (320.0, 240.0),
+            Self::DockPanel => (320.0, 240.0),
+            Self::Toolbar => (256.0, 32.0),
+            Self::MenuBar => (256.0, 32.0),
+            Self::MenuItem => (128.0, 32.0),
+            Self::Dialog => (320.0, 240.0),
+            Self::StatusBar => (320.0, 16.0),
+            Self::Accordion => (256.0, 128.0),
+            Self::TooltipPanel => (192.0, 64.0),
+            Self::ColorPicker => (256.0, 256.0),
+            Self::GUITable => (320.0, 256.0),
+            Self::ImageWidget => (128.0, 128.0),
+            Self::SpinBox => (128.0, 32.0),
+            Self::Switch => (64.0, 32.0),
+            Self::Badge => (32.0, 16.0),
         }
     }
 }
@@ -327,13 +434,14 @@ impl WidgetBase {
     /// # Returns
     /// `WidgetBase`.
     pub fn new(widget_type: WidgetType) -> Self {
+        let (width, height) = widget_type.default_size();
         Self {
             id: String::new(),
             widget_type,
             x: 0.0,
             y: 0.0,
-            width: 100.0,
-            height: 30.0,
+            width,
+            height,
             visible: true,
             enabled: true,
             state: WidgetState::Normal,

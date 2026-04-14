@@ -16,6 +16,27 @@ use super::error::NetworkError;
 use crate::runtime::log_messages::{NW01_HOST_BIND, NW04_NET_ERROR};
 use crate::log_msg;
 
+/// The role of a network host in a multiplayer game.
+///
+/// Determines the host's behavior in the multiplayer model:
+/// - `Server` peers accept incoming connections and act as the authority.
+/// - `Client` peers connect to a server and receive state updates.
+/// - `Host` is the generic role for hosts that do both.
+///
+/// # Variants
+/// - `Server` — Accepts incoming connections, authoritative game state.
+/// - `Client` — Connects to a remote server.
+/// - `Host` — Generic host (both server and client capabilities).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HostRole {
+    /// Server: binds to a port and accepts incoming connections.
+    Server,
+    /// Client: connects to a remote server.
+    Client,
+    /// Generic host: can both accept and initiate connections.
+    Host,
+}
+
 /// Wraps a `rusty_enet::Host<UdpSocket>` with Lurek2D-specific defaults and
 /// limit enforcement.
 ///
@@ -25,11 +46,14 @@ use crate::log_msg;
 /// # Fields
 /// - `inner` — `Option<Host<UdpSocket>>`. The underlying ENet host; `None` after `destroy`.
 /// - `local_addr` — `SocketAddr`. The local address the socket is bound to.
+/// - `role` — `HostRole`. The multiplayer role of this host.
 pub struct NetworkHost {
     /// The underlying ENet host. `None` after [`destroy`](Self::destroy).
     inner: Option<Host<UdpSocket>>,
     /// The local address the socket is bound to.
     local_addr: SocketAddr,
+    /// The multiplayer role of this host (server, client, or generic).
+    role: HostRole,
 }
 
 /// Result of a single [`NetworkHost::service`] call.
@@ -117,6 +141,7 @@ impl NetworkHost {
         Ok(Self {
             inner: Some(host),
             local_addr,
+            role: HostRole::Host,
         })
     }
 
@@ -508,6 +533,76 @@ impl NetworkHost {
     pub fn connected_peer_ids(&mut self) -> Result<Vec<PeerID>, NetworkError> {
         let host = self.host_mut()?;
         Ok(host.connected_peers().map(|p| p.id()).collect())
+    }
+
+    /// Create a server host that binds to a port and accepts connections.
+    ///
+    /// Server hosts always have `role == HostRole::Server` and peer ID 1
+    /// by convention (matching Godot's server-is-always-1 pattern).
+    ///
+    /// # Parameters
+    /// - `port` — `u16`: port to bind on all interfaces.
+    /// - `max_peers` — `Option<usize>`: max peers (default [`DEFAULT_PEERS`]).
+    /// - `channels` — `Option<usize>`: max channels (default [`DEFAULT_CHANNELS`]).
+    ///
+    /// # Returns
+    /// `Result<Self, NetworkError>`.
+    pub fn create_server(
+        port: u16,
+        max_peers: Option<usize>,
+        channels: Option<usize>,
+    ) -> Result<Self, NetworkError> {
+        let addr_str = format!("0.0.0.0:{}", port);
+        let addr: SocketAddr = addr_str
+            .parse()
+            .map_err(|e: std::net::AddrParseError| NetworkError::InvalidAddress(e.to_string()))?;
+        let mut host = Self::new(addr, max_peers.or(Some(DEFAULT_PEERS)), channels, None, None)?;
+        host.role = HostRole::Server;
+        Ok(host)
+    }
+
+    /// Create a client host that connects to a remote server.
+    ///
+    /// Binds to an ephemeral local port and initiates a connection to the
+    /// given server address. The host's `role` is set to `HostRole::Client`.
+    ///
+    /// # Parameters
+    /// - `address` — `SocketAddr`: remote server address.
+    /// - `channels` — `Option<usize>`: channel count (default [`DEFAULT_CHANNELS`]).
+    /// - `data` — `Option<u32>`: connect-data sent to the server.
+    ///
+    /// # Returns
+    /// `Result<Self, NetworkError>`.
+    pub fn create_client(
+        address: SocketAddr,
+        channels: Option<usize>,
+        data: Option<u32>,
+    ) -> Result<Self, NetworkError> {
+        let bind_addr: SocketAddr = "0.0.0.0:0".parse().unwrap();
+        let mut host = Self::new(bind_addr, Some(1), channels, None, None)?;
+        host.role = HostRole::Client;
+        let _ = host.connect(
+            address,
+            channels.unwrap_or(DEFAULT_CHANNELS),
+            data.unwrap_or(0),
+        )?;
+        Ok(host)
+    }
+
+    /// Get the multiplayer role of this host.
+    ///
+    /// # Returns
+    /// `HostRole`.
+    pub fn role(&self) -> HostRole {
+        self.role
+    }
+
+    /// Set the multiplayer role of this host.
+    ///
+    /// # Parameters
+    /// - `role` — `HostRole`: the new role.
+    pub fn set_role(&mut self, role: HostRole) {
+        self.role = role;
     }
 
     /// Get per-peer statistics.

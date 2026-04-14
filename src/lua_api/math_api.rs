@@ -18,6 +18,9 @@ use crate::math::SpatialHash;
 use crate::math::Transform;
 use crate::math::Tween;
 use crate::math::Vec2;
+use crate::math::Vec3;
+use crate::math::{CatmullRomSpline, HermiteSpline};
+use crate::math::{lerp, remap};
 use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 
 // -------------------------------------------------------------------------------
@@ -162,6 +165,173 @@ impl LuaUserData for LuaVec2 {
         });
         methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
             Ok(format!("Vec2({}, {})", this.inner.x, this.inner.y))
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaVec3 UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Vec3`] value type.
+pub struct LuaVec3 {
+    pub inner: Vec3,
+}
+
+impl LuaUserData for LuaVec3 {
+    fn add_fields<'lua, F: LuaUserDataFields<'lua, Self>>(fields: &mut F) {
+        // -- x --
+        /// The X component of the vector.
+        fields.add_field_method_get("x", |_, this| Ok(this.inner.x));
+        fields.add_field_method_set("x", |_, this, v: f32| { this.inner.x = v; Ok(()) });
+        // -- y --
+        /// The Y component of the vector.
+        fields.add_field_method_get("y", |_, this| Ok(this.inner.y));
+        fields.add_field_method_set("y", |_, this, v: f32| { this.inner.y = v; Ok(()) });
+        // -- z --
+        /// The Z component of the vector.
+        fields.add_field_method_get("z", |_, this| Ok(this.inner.z));
+        fields.add_field_method_set("z", |_, this, v: f32| { this.inner.z = v; Ok(()) });
+    }
+
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- length --
+        /// Returns the Euclidean length of the vector.
+        /// @return number
+        methods.add_method("length", |_, this, ()| Ok(this.inner.length()));
+
+        // -- lengthSquared --
+        /// Returns the squared Euclidean length (avoids sqrt).
+        /// @return number
+        methods.add_method("lengthSquared", |_, this, ()| Ok(this.inner.length_squared()));
+
+        // -- normalize --
+        /// Returns a unit-length version of this vector.
+        /// @return Vec3
+        methods.add_method("normalize", |lua, this, ()| {
+            lua.create_userdata(LuaVec3 { inner: this.inner.normalize() })
+        });
+
+        // -- dot --
+        /// Dot product with another Vec3.
+        /// @param other : Vec3
+        /// @return number
+        methods.add_method("dot", |_, this, other: LuaAnyUserData| {
+            let v = other.borrow::<LuaVec3>()?;
+            Ok(this.inner.dot(v.inner))
+        });
+
+        // -- cross --
+        /// Cross product with another Vec3.
+        /// @param other : Vec3
+        /// @return Vec3
+        methods.add_method("cross", |lua, this, other: LuaAnyUserData| {
+            let v = other.borrow::<LuaVec3>()?;
+            lua.create_userdata(LuaVec3 { inner: this.inner.cross(v.inner) })
+        });
+
+        // -- lerp --
+        /// Linear interpolation towards another Vec3.
+        /// @param other : Vec3
+        /// @param t : number
+        /// @return Vec3
+        methods.add_method("lerp", |lua, this, (other, t): (LuaAnyUserData, f32)| {
+            let v = other.borrow::<LuaVec3>()?;
+            lua.create_userdata(LuaVec3 { inner: this.inner.lerp(v.inner, t) })
+        });
+
+        // -- distance --
+        /// Euclidean distance to another Vec3.
+        /// @param other : Vec3
+        /// @return number
+        methods.add_method("distance", |_, this, other: LuaAnyUserData| {
+            let v = other.borrow::<LuaVec3>()?;
+            Ok(this.inner.distance(v.inner))
+        });
+
+        // -- add --
+        /// Add another Vec3 and return the result.
+        /// @param other : Vec3
+        /// @return Vec3
+        methods.add_method("add", |lua, this, other: LuaAnyUserData| {
+            let v = other.borrow::<LuaVec3>()?;
+            lua.create_userdata(LuaVec3 { inner: this.inner + v.inner })
+        });
+
+        // -- sub --
+        /// Subtract another Vec3 and return the result.
+        /// @param other : Vec3
+        /// @return Vec3
+        methods.add_method("sub", |lua, this, other: LuaAnyUserData| {
+            let v = other.borrow::<LuaVec3>()?;
+            lua.create_userdata(LuaVec3 { inner: this.inner - v.inner })
+        });
+
+        // -- scale --
+        /// Scale this vector by a scalar and return the result.
+        /// @param s : number
+        /// @return Vec3
+        methods.add_method("scale", |lua, this, s: f32| {
+            lua.create_userdata(LuaVec3 { inner: this.inner * s })
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaCatmullRom UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`CatmullRomSpline`].
+pub struct LuaCatmullRom {
+    inner: CatmullRomSpline,
+}
+
+impl LuaUserData for LuaCatmullRom {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- sample --
+        /// Sample the spline at global t in [0, 1].
+        /// @param t : number
+        /// @return number, number
+        methods.add_method("sample", |_, this, t: f32| {
+            let (x, y) = this.inner.sample(t);
+            Ok((x, y))
+        });
+
+        // -- sampleSegment --
+        /// Sample a specific segment at local t in [0, 1].
+        /// @param seg : integer
+        /// @param t : number
+        /// @return number, number
+        methods.add_method("sampleSegment", |_, this, (seg, t): (usize, f32)| {
+            let (x, y) = this.inner.sample_segment(seg, t);
+            Ok((x, y))
+        });
+
+        // -- len --
+        /// Number of control points.
+        /// @return integer
+        methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaHermite UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`HermiteSpline`].
+pub struct LuaHermite {
+    inner: HermiteSpline,
+}
+
+impl LuaUserData for LuaHermite {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- sample --
+        /// Evaluate the spline at parameter t in [0, 1].
+        /// @param t : number
+        /// @return number, number
+        methods.add_method("sample", |_, this, t: f32| {
+            let (x, y) = this.inner.sample(t);
+            Ok((x, y))
         });
     }
 }
@@ -2220,6 +2390,96 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "Vec2",
         lua.create_function(|lua, (x, y): (f64, f64)| {
             lua.create_userdata(LuaVec2 { inner: Vec2::new(x as f32, y as f32) })
+        })?,
+    )?;
+
+    // -- vec3 --
+    /// Creates a 3D vector.
+    /// @param x : number
+    /// @param y : number
+    /// @param z : number
+    /// @return Vec3
+    tbl.set(
+        "vec3",
+        lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
+            lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+        })?,
+    )?;
+
+    // -- Vec3 --
+    /// Compatibility alias for `vec3`.
+    /// @param x : number
+    /// @param y : number
+    /// @param z : number
+    /// @return Vec3
+    tbl.set(
+        "Vec3",
+        lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
+            lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+        })?,
+    )?;
+
+    // -- catmullRom --
+    /// Creates a Catmull-Rom spline through the given control points.
+    /// Points are {x, y} tables or a flat sequence of numbers.
+    /// @param points : table
+    /// @return CatmullRomSpline
+    tbl.set(
+        "catmullRom",
+        lua.create_function(|lua, points: LuaTable| {
+            let mut pts: Vec<(f32, f32)> = Vec::new();
+            for v in points.sequence_values::<LuaTable>() {
+                let t = v?;
+                let x: f32 = t.get("x").or_else(|_| t.get(1)).unwrap_or(0.0);
+                let y: f32 = t.get("y").or_else(|_| t.get(2)).unwrap_or(0.0);
+                pts.push((x, y));
+            }
+            lua.create_userdata(LuaCatmullRom { inner: CatmullRomSpline::new(pts) })
+        })?,
+    )?;
+
+    // -- hermite --
+    /// Creates a Hermite spline defined by two endpoints and tangents.
+    /// @param p0x : number
+    /// @param p0y : number
+    /// @param p1x : number
+    /// @param p1y : number
+    /// @param m0x : number
+    /// @param m0y : number
+    /// @param m1x : number
+    /// @param m1y : number
+    /// @return HermiteSpline
+    tbl.set(
+        "hermite",
+        lua.create_function(|lua, (p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y): (f32, f32, f32, f32, f32, f32, f32, f32)| {
+            let hs = HermiteSpline::new((p0x, p0y), (p1x, p1y), (m0x, m0y), (m1x, m1y));
+            lua.create_userdata(LuaHermite { inner: hs })
+        })?,
+    )?;
+
+    // -- lerp --
+    /// Linear interpolation between two numbers: a + (b - a) * t.
+    /// @param a : number
+    /// @param b : number
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "lerp",
+        lua.create_function(|_, (a, b, t): (f32, f32, f32)| Ok(lerp(a, b, t)))?,
+    )?;
+
+    // -- remap --
+    /// Remaps `v` from [in_min, in_max] to [out_min, out_max].
+    /// @param v : number
+    /// @param in_min : number
+    /// @param in_max : number
+    /// @param out_min : number
+    /// @param out_max : number
+    /// @return number
+    tbl.set(
+        "remap",
+        lua.create_function(|_, (v, in_min, in_max, out_min, out_max): (f32, f32, f32, f32, f32)| {
+            Ok(remap(v, in_min, in_max, out_min, out_max))
         })?,
     )?;
 

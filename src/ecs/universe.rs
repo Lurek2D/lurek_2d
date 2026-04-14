@@ -54,6 +54,12 @@ pub struct Universe {
     component_store: Option<RegistryKey>,
     blueprint_store: Option<RegistryKey>,
     system_store: Option<RegistryKey>,
+    /// Priority values parallel to the system_store table (1-based indices).
+    system_priorities: Vec<i32>,
+    /// Pending component-added events for observer dispatch.
+    add_events: Vec<(u32, String)>,
+    /// Pending component-removed events for observer dispatch.
+    remove_events: Vec<(u32, String)>,
 }
 
 impl Universe {
@@ -78,6 +84,9 @@ impl Universe {
             component_store: None,
             blueprint_store: None,
             system_store: None,
+            system_priorities: Vec::new(),
+            add_events: Vec::new(),
+            remove_events: Vec::new(),
         }
     }
 
@@ -402,7 +411,8 @@ impl Universe {
                 t
             }
         };
-        entity_table.set(name, value)?;
+        entity_table.set(name, value.clone())?;
+        self.add_events.push((id, name.to_string()));
         Ok(())
     }
 
@@ -467,12 +477,16 @@ impl Universe {
     ///
     /// # Returns
     /// `LuaResult<()>`.
-    pub fn remove_component(&self, lua: &Lua, id: u32, name: &str) -> LuaResult<()> {
+    pub fn remove_component(&mut self, lua: &Lua, id: u32, name: &str) -> LuaResult<()> {
         let slot = Self::unpack_slot(id);
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
             if let Ok(entity_table) = store.get::<_, Table>(slot) {
-                entity_table.set(name, LuaValue::Nil)?;
+                let had: LuaValue = entity_table.get(name)?;
+                if !had.is_nil() {
+                    entity_table.set(name, LuaValue::Nil)?;
+                    self.remove_events.push((id, name.to_string()));
+                }
             }
         }
         Ok(())
@@ -1057,20 +1071,33 @@ impl Universe {
 
     // === Systems ===
 
-    /// Adds a system (Lua table) to the system list.
+    /// Adds a system (Lua table) to the system list at the given priority (lower = first).
     ///
     /// # Parameters
     /// - `lua` — `&Lua`.
     /// - `system` — `Table`.
+    /// - `priority` — `i32`.
     ///
     /// # Returns
     /// `LuaResult<()>`.
-    pub fn add_system(&mut self, lua: &Lua, system: Table) -> LuaResult<()> {
+    pub fn add_system(&mut self, lua: &Lua, system: Table, priority: i32) -> LuaResult<()> {
         self.ensure_stores(lua)?;
         let store = self.get_system_store(lua)?;
         let len = store.raw_len();
         store.set(len + 1, system)?;
+        self.system_priorities.push(priority);
         Ok(())
+    }
+
+    /// Returns 1-based system store indices sorted by ascending priority.
+    ///
+    /// # Returns
+    /// `Vec<usize>`.
+    pub fn get_sorted_system_indices(&self) -> Vec<usize> {
+        let count = self.system_priorities.len();
+        let mut order: Vec<usize> = (1..=count).collect();
+        order.sort_by_key(|&i| self.system_priorities[i - 1]);
+        order
     }
 
     /// Removes a system by pointer identity from the system list.
@@ -1095,6 +1122,10 @@ impl Universe {
                     store.set(j, next)?;
                 }
                 store.set(len, LuaValue::Nil)?;
+                // Remove the parallel priority entry (i is 1-based, vec is 0-based)
+                if i <= self.system_priorities.len() {
+                    self.system_priorities.remove(i - 1);
+                }
                 return Ok(());
             }
         }
@@ -1137,6 +1168,9 @@ impl Universe {
         self.layers.clear();
         self.parents.clear();
         self.children.clear();
+        self.system_priorities.clear();
+        self.add_events.clear();
+        self.remove_events.clear();
         // Clear component store
         if let Some(ref key) = self.component_store {
             let store: Table = lua.registry_value(key)?;
@@ -1158,6 +1192,303 @@ impl Universe {
             }
         }
         // NOTE: blueprints are preserved
+        Ok(())
+    }
+}
+
+    // === Observer Events ===
+
+    /// Takes and clears all pending component-add and component-remove events.
+    ///
+    /// # Returns
+    /// `(Vec<(u32, String)>, Vec<(u32, String)>)` — (add_events, remove_events).
+    pub fn take_component_events(&mut self) -> (Vec<(u32, String)>, Vec<(u32, String)>) {
+        let adds = std::mem::take(&mut self.add_events);
+        let removes = std::mem::take(&mut self.remove_events);
+        (adds, removes)
+    }
+
+    // === Query Extensions ===
+
+    /// Returns alive entities that have ALL `with` components and NONE of the `without` components.
+    ///
+    /// # Parameters
+    /// - `lua` — `&Lua`.
+    /// - `with_names` — `&[String]`.
+    /// - `without_names` — `&[String]`.
+    ///
+    /// # Returns
+    /// `LuaResult<Vec<u32>>`.
+    pub fn query_not(
+        &self,
+        lua: &Lua,
+        with_names: &[String],
+        without_names: &[String],
+    ) -> LuaResult<Vec<u32>> {
+        let mut result = Vec::new();
+        if let Some(ref key) = self.component_store {
+            let store: Table = lua.registry_value(key)?;
+            for &slot in &self.alive {
+                if let Ok(entity_table) = store.get::<_, Table>(slot) {
+                    let mut has_all = true;
+                    for name in with_names {
+                        let val: LuaValue = entity_table.get(name.as_str())?;
+                        if val.is_nil() {
+                            has_all = false;
+                            break;
+                        }
+                    }
+                    if !has_all {
+                        continue;
+                    }
+                    let mut has_excluded = false;
+                    for name in without_names {
+                        let val: LuaValue = entity_table.get(name.as_str())?;
+                        if !val.is_nil() {
+                            has_excluded = true;
+                            break;
+                        }
+                    }
+                    if !has_excluded {
+                        result.push(Self::pack_id(slot, self.current_gen(slot)));
+                    }
+                } else if with_names.is_empty() {
+                    // Entity with no components passes if no `with` filter
+                    result.push(Self::pack_id(slot, self.current_gen(slot)));
+                }
+            }
+        } else if with_names.is_empty() {
+            // No component store initialised — return all entities if no `with` filter
+            result = self.get_entities();
+        }
+        result.sort();
+        Ok(result)
+    }
+
+    // === Bulk Spawning ===
+
+    /// Spawns `count` entities from a blueprint, applying the same optional overrides to each.
+    ///
+    /// # Parameters
+    /// - `lua` — `&Lua`.
+    /// - `name` — `&str`.
+    /// - `count` — `usize`.
+    /// - `overrides` — `Option<Table>`.
+    ///
+    /// # Returns
+    /// `LuaResult<Vec<u32>>`.
+    pub fn spawn_bulk(
+        &mut self,
+        lua: &Lua,
+        name: &str,
+        count: usize,
+        overrides: Option<Table>,
+    ) -> LuaResult<Vec<u32>> {
+        let mut ids = Vec::with_capacity(count);
+        for _ in 0..count {
+            let ov_copy = if let Some(ref ov) = overrides {
+                Some(deep_copy_table(lua, ov)?)
+            } else {
+                None
+            };
+            ids.push(self.spawn_blueprint(lua, name, ov_copy)?);
+        }
+        Ok(ids)
+    }
+
+    // === Serialization ===
+
+    /// Serializes all alive entities to a Lua table snapshot.
+    ///
+    /// Snapshot layout: `{ entities = [{id, slot, gen, components, tags, bitmap, layer, parent?}...], bitmap_tags = ["name"...] }`
+    ///
+    /// # Parameters
+    /// - `lua` — `&'lua Lua`.
+    ///
+    /// # Returns
+    /// `LuaResult<Table<'lua>>`.
+    pub fn serialize_to_table<'lua>(&self, lua: &'lua Lua) -> LuaResult<Table<'lua>> {
+        let snapshot = lua.create_table()?;
+
+        let entities_arr = lua.create_table()?;
+        let mut sorted_slots: Vec<u32> = self.alive.iter().copied().collect();
+        sorted_slots.sort();
+
+        for (i, slot) in sorted_slots.iter().enumerate() {
+            let slot = *slot;
+            let gen = self.current_gen(slot);
+            let id = Self::pack_id(slot, gen);
+            let entry = lua.create_table()?;
+            entry.set("id", id)?;
+            entry.set("slot", slot)?;
+            entry.set("gen", gen)?;
+
+            // Components
+            let components = lua.create_table()?;
+            if let Some(ref key) = self.component_store {
+                let store: Table = lua.registry_value(key)?;
+                if let Ok(comp_row) = store.get::<_, Table>(slot) {
+                    for pair in comp_row.clone().pairs::<String, LuaValue>() {
+                        let (k, v) = pair?;
+                        let v_copy = match v {
+                            LuaValue::Table(ref t) => LuaValue::Table(deep_copy_table(lua, t)?),
+                            other => other,
+                        };
+                        components.set(k, v_copy)?;
+                    }
+                }
+            }
+            entry.set("components", components)?;
+
+            // String tags
+            let tags = lua.create_table()?;
+            if let Some(tag_list) = self.string_tags.get(&slot) {
+                for (j, t) in tag_list.iter().enumerate() {
+                    tags.set(j + 1, t.as_str())?;
+                }
+            }
+            entry.set("tags", tags)?;
+
+            // Layer
+            entry.set("layer", self.layers.get(&slot).copied().unwrap_or(0))?;
+
+            // Bitmap mask
+            entry.set("bitmap", self.bitmap_masks.get(&slot).copied().unwrap_or(0u64) as i64)?;
+
+            // Parent (pack as valid ID)
+            if let Some(&parent_slot) = self.parents.get(&slot) {
+                if self.alive.contains(&parent_slot) {
+                    entry.set("parent", Self::pack_id(parent_slot, self.current_gen(parent_slot)))?;
+                }
+            }
+
+            entities_arr.set(i + 1, entry)?;
+        }
+        snapshot.set("entities", entities_arr)?;
+
+        // Bitmap tag names
+        let btnames = lua.create_table()?;
+        for (j, name) in self.bitmap_tag_names.iter().enumerate() {
+            btnames.set(j + 1, name.as_str())?;
+        }
+        snapshot.set("bitmap_tags", btnames)?;
+
+        Ok(snapshot)
+    }
+
+    /// Restores entity state from a snapshot produced by `serialize_to_table`.
+    ///
+    /// Clears all entities; blueprints and systems are preserved.
+    ///
+    /// # Parameters
+    /// - `lua` — `&Lua`.
+    /// - `snapshot` — `Table`.
+    ///
+    /// # Returns
+    /// `LuaResult<()>`.
+    pub fn deserialize_from_table(&mut self, lua: &Lua, snapshot: Table) -> LuaResult<()> {
+        // Clear entities only; preserve blueprints + systems
+        self.alive.clear();
+        self.free_list.clear();
+        self.next_id = 1;
+        self.string_tags.clear();
+        self.tag_index.clear();
+        self.generations.clear();
+        self.bitmap_masks.clear();
+        self.layers.clear();
+        self.parents.clear();
+        self.children.clear();
+        self.add_events.clear();
+        self.remove_events.clear();
+        if let Some(ref key) = self.component_store {
+            let store: Table = lua.registry_value(key)?;
+            let ks: Vec<u32> = store
+                .clone()
+                .pairs::<u32, LuaValue>()
+                .filter_map(|p| p.ok().map(|(k, _)| k))
+                .collect();
+            for k in ks {
+                store.set(k, LuaValue::Nil)?;
+            }
+        }
+        self.ensure_stores(lua)?;
+        let comp_store = self.get_component_store(lua)?;
+
+        // Restore bitmap tag names
+        if let Ok(btnames) = snapshot.get::<_, Table>("bitmap_tags") {
+            for name in btnames.clone().sequence_values::<String>() {
+                let name = name?;
+                if !self.bitmap_tag_names.contains(&name) {
+                    self.bitmap_tag_names.push(name);
+                }
+            }
+        }
+
+        // First pass: restore entities
+        let entities: Table = snapshot.get("entities")?;
+        let mut parent_data: Vec<(u32, u32)> = Vec::new(); // (child_slot, parent_id)
+        for entry_val in entities.clone().sequence_values::<Table>() {
+            let entry = entry_val?;
+            let id: u32 = entry.get("id")?;
+            let slot = Self::unpack_slot(id);
+            let gen: u8 = entry.get("gen").unwrap_or(0);
+
+            self.alive.insert(slot);
+            *self.generations.entry(slot).or_insert(0) = gen;
+            if slot >= self.next_id {
+                self.next_id = slot + 1;
+            }
+
+            // Components
+            let comp_row = lua.create_table()?;
+            if let Ok(components) = entry.get::<_, Table>("components") {
+                for pair in components.clone().pairs::<LuaValue, LuaValue>() {
+                    let (k, v) = pair?;
+                    comp_row.set(k, v)?;
+                }
+            }
+            comp_store.set(slot, comp_row)?;
+
+            // String tags
+            if let Ok(tags) = entry.get::<_, Table>("tags") {
+                let mut tag_list = Vec::new();
+                for t in tags.sequence_values::<String>() {
+                    let t = t?;
+                    self.tag_index.entry(t.clone()).or_default().push(id);
+                    tag_list.push(t);
+                }
+                if !tag_list.is_empty() {
+                    self.string_tags.insert(slot, tag_list);
+                }
+            }
+
+            // Layer
+            let layer: i32 = entry.get("layer").unwrap_or(0);
+            if layer != 0 {
+                self.layers.insert(slot, layer);
+            }
+
+            // Bitmap mask
+            let bitmap: i64 = entry.get("bitmap").unwrap_or(0);
+            if bitmap != 0 {
+                self.bitmap_masks.insert(slot, bitmap as u64);
+            }
+
+            // Queue parent for second pass
+            if let Ok(parent_id) = entry.get::<_, u32>("parent") {
+                parent_data.push((slot, parent_id));
+            }
+        }
+
+        // Second pass: restore hierarchy
+        for (child_slot, parent_id) in parent_data {
+            let parent_slot = Self::unpack_slot(parent_id);
+            if self.alive.contains(&parent_slot) {
+                self.parents.insert(child_slot, parent_slot);
+                self.children.entry(parent_slot).or_default().push(child_slot);
+            }
+        }
+
         Ok(())
     }
 }

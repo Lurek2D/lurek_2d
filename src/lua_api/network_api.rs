@@ -1,4 +1,7 @@
-//! `lurek.network` - UDP networking via ENet for multiplayer games.
+//! `lurek.network` — Full networking toolkit for multiplayer games.
+//!
+//! Provides ENet UDP, HTTP, TCP, WebSocket, and MessagePack serialization
+//! through the `lurek.network` Lua namespace.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -7,7 +10,9 @@ use std::net::SocketAddr;
 use std::rc::Rc;
 
 use crate::network::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_CHANNELS, MAX_PEERS};
-use crate::network::host::{NetworkEvent, NetworkHost, PeerStats};
+use crate::network::host::{HostRole, NetworkEvent, NetworkHost, PeerStats};
+use crate::network::message::NetValue;
+use crate::network::net_thread::NetworkRuntime;
 use rusty_enet::PeerID;
 
 // -------------------------------------------------------------------------------
@@ -61,6 +66,84 @@ fn stats_to_table(lua: &Lua, stats: PeerStats) -> LuaResult<LuaTable<'_>> {
     t.set("incoming_data_total", stats.incoming_data_total)?;
     t.set("outgoing_data_total", stats.outgoing_data_total)?;
     Ok(t)
+}
+
+/// Converts a Lua value to a [`NetValue`] for MessagePack serialization.
+fn lua_to_netvalue(val: &LuaValue) -> LuaResult<NetValue> {
+    match val {
+        LuaValue::Nil => Ok(NetValue::Nil),
+        LuaValue::Boolean(b) => Ok(NetValue::Bool(*b)),
+        LuaValue::Integer(i) => Ok(NetValue::Integer(*i)),
+        LuaValue::Number(n) => Ok(NetValue::Float(*n)),
+        LuaValue::String(s) => Ok(NetValue::String(s.to_str()?.to_string())),
+        LuaValue::Table(t) => {
+            // Detect array vs map: check if key 1 exists
+            if t.raw_get::<_, LuaValue>(1i64).is_ok()
+                && !matches!(t.raw_get::<_, LuaValue>(1i64)?, LuaValue::Nil)
+            {
+                let mut arr = Vec::new();
+                for pair in t.clone().sequence_values::<LuaValue>() {
+                    arr.push(lua_to_netvalue(&pair?)?);
+                }
+                Ok(NetValue::Array(arr))
+            } else {
+                let mut map = Vec::new();
+                for pair in t.clone().pairs::<LuaValue, LuaValue>() {
+                    let (k, v) = pair?;
+                    let key_str = match &k {
+                        LuaValue::String(s) => s.to_str()?.to_string(),
+                        LuaValue::Integer(i) => i.to_string(),
+                        LuaValue::Number(n) => n.to_string(),
+                        _ => {
+                            return Err(LuaError::RuntimeError(
+                                "pack: map keys must be strings or numbers".into(),
+                            ))
+                        }
+                    };
+                    map.push((key_str, lua_to_netvalue(&v)?));
+                }
+                Ok(NetValue::Map(map))
+            }
+        }
+        _ => Err(LuaError::RuntimeError(format!(
+            "pack: unsupported type: {}",
+            val.type_name()
+        ))),
+    }
+}
+
+/// Converts a [`NetValue`] back to a Lua value.
+fn netvalue_to_lua<'lua>(lua: &'lua Lua, val: &NetValue) -> LuaResult<LuaValue<'lua>> {
+    match val {
+        NetValue::Nil => Ok(LuaValue::Nil),
+        NetValue::Bool(b) => Ok(LuaValue::Boolean(*b)),
+        NetValue::Integer(i) => Ok(LuaValue::Integer(*i)),
+        NetValue::Float(f) => Ok(LuaValue::Number(*f)),
+        NetValue::String(s) => Ok(LuaValue::String(lua.create_string(s)?)),
+        NetValue::Array(arr) => {
+            let t = lua.create_table()?;
+            for (i, v) in arr.iter().enumerate() {
+                t.set(i + 1, netvalue_to_lua(lua, v)?)?;
+            }
+            Ok(LuaValue::Table(t))
+        }
+        NetValue::Map(map) => {
+            let t = lua.create_table()?;
+            for (k, v) in map {
+                t.set(k.as_str(), netvalue_to_lua(lua, v)?)?;
+            }
+            Ok(LuaValue::Table(t))
+        }
+    }
+}
+
+/// Converts a [`HostRole`] to a Lua-friendly string.
+fn role_to_string(role: HostRole) -> &'static str {
+    match role {
+        HostRole::Server => "server",
+        HostRole::Client => "client",
+        HostRole::Host => "host",
+    }
 }
 
 // -------------------------------------------------------------------------------
@@ -348,6 +431,27 @@ impl LuaUserData for LuaNetworkHost {
             Ok(this.inner.borrow().is_destroyed())
         });
 
+        // -- getRole --
+        /// Returns the multiplayer role of this host ("server", "client", or "host").
+        /// @return string
+        methods.add_method("getRole", |_, this, ()| {
+            Ok(role_to_string(this.inner.borrow().role()))
+        });
+
+        // -- isServer --
+        /// Returns true if this host was created as a server.
+        /// @return boolean
+        methods.add_method("isServer", |_, this, ()| {
+            Ok(this.inner.borrow().role() == HostRole::Server)
+        });
+
+        // -- isClient --
+        /// Returns true if this host was created as a client.
+        /// @return boolean
+        methods.add_method("isClient", |_, this, ()| {
+            Ok(this.inner.borrow().role() == HostRole::Client)
+        });
+
         // -- __tostring --
         /// Returns a human-readable string for debugging.
         /// @return string
@@ -355,6 +459,264 @@ impl LuaUserData for LuaNetworkHost {
             Ok(format!("NetworkHost({})", this.inner.borrow().local_address()))
         });
 
+    }
+}
+
+/// Lua-side wrapper around [`NetworkRuntime`] for async HTTP/TCP/WebSocket.
+pub struct LuaNetworkRuntime {
+    inner: RefCell<NetworkRuntime>,
+}
+
+impl LuaUserData for LuaNetworkRuntime {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- httpRequest --
+        /// Sends an HTTP request asynchronously. Poll with `poll()` for the response.
+        /// @param opts : table — { method, url, headers?, body?, timeout? }
+        /// @return integer — request ID
+        methods.add_method("httpRequest", |_, this, opts: LuaTable| {
+            let method: String = opts.get("method").unwrap_or_else(|_| "GET".into());
+            let url: String = opts.get("url").map_err(|_| {
+                LuaError::RuntimeError("httpRequest: 'url' field is required".into())
+            })?;
+            let headers: Option<Vec<(String, String)>> = opts
+                .get::<_, LuaTable>("headers")
+                .ok()
+                .map(|t| {
+                    let mut h = Vec::new();
+                    if let Ok(pairs) = t.pairs::<String, String>().collect::<Result<Vec<_>, _>>() {
+                        h = pairs;
+                    }
+                    h
+                });
+            let body: Option<String> = opts.get("body").ok();
+            let timeout: Option<u64> = opts.get("timeout").ok();
+
+            let id = this
+                .inner
+                .borrow_mut()
+                .http_request(&method, &url, headers.as_deref(), body.as_deref(), timeout)
+                .map_err(LuaError::external)?;
+            Ok(id)
+        });
+
+        // -- httpGet --
+        /// Convenience: sends an HTTP GET request.
+        /// @param url : string
+        /// @param headers : table?
+        /// @return integer — request ID
+        methods.add_method(
+            "httpGet",
+            |_, this, (url, headers): (String, Option<LuaTable>)| {
+                let h: Option<Vec<(String, String)>> = headers.map(|t| {
+                    t.pairs::<String, String>()
+                        .collect::<Result<Vec<_>, _>>()
+                        .unwrap_or_default()
+                });
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .http_request("GET", &url, h.as_deref(), None, None)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+
+        // -- httpPost --
+        /// Convenience: sends an HTTP POST request.
+        /// @param url : string
+        /// @param body : string
+        /// @param headers : table?
+        /// @return integer — request ID
+        methods.add_method(
+            "httpPost",
+            |_, this, (url, body, headers): (String, String, Option<LuaTable>)| {
+                let h: Option<Vec<(String, String)>> = headers.map(|t| {
+                    t.pairs::<String, String>()
+                        .collect::<Result<Vec<_>, _>>()
+                        .unwrap_or_default()
+                });
+                let id = this
+                    .inner
+                    .borrow_mut()
+                    .http_request("POST", &url, h.as_deref(), Some(&body), None)
+                    .map_err(LuaError::external)?;
+                Ok(id)
+            },
+        );
+
+        // -- tcpConnect --
+        /// Opens a TCP connection to a remote address.
+        /// @param addr : string — "host:port"
+        /// @return integer — connection ID
+        methods.add_method("tcpConnect", |_, this, addr: String| {
+            let id = this
+                .inner
+                .borrow_mut()
+                .tcp_connect(&addr)
+                .map_err(LuaError::external)?;
+            Ok(id)
+        });
+
+        // -- tcpSend --
+        /// Sends data over a TCP connection.
+        /// @param id : integer — connection ID
+        /// @param data : string
+        /// @return nil
+        methods.add_method("tcpSend", |_, this, (id, data): (u64, LuaString)| {
+            this.inner
+                .borrow_mut()
+                .tcp_send(id, data.as_bytes())
+                .map_err(LuaError::external)
+        });
+
+        // -- tcpClose --
+        /// Closes a TCP connection.
+        /// @param id : integer — connection ID
+        /// @return nil
+        methods.add_method("tcpClose", |_, this, id: u64| {
+            this.inner
+                .borrow_mut()
+                .tcp_close(id)
+                .map_err(LuaError::external)
+        });
+
+        // -- wsConnect --
+        /// Opens a WebSocket connection.
+        /// @param url : string — "ws://host:port/path" or "wss://..."
+        /// @return integer — connection ID
+        methods.add_method("wsConnect", |_, this, url: String| {
+            let id = this
+                .inner
+                .borrow_mut()
+                .ws_connect(&url)
+                .map_err(LuaError::external)?;
+            Ok(id)
+        });
+
+        // -- wsSend --
+        /// Sends a text message over a WebSocket connection.
+        /// @param id : integer — connection ID
+        /// @param data : string
+        /// @return nil
+        methods.add_method("wsSend", |_, this, (id, data): (u64, String)| {
+            this.inner
+                .borrow_mut()
+                .ws_send(id, &data)
+                .map_err(LuaError::external)
+        });
+
+        // -- wsClose --
+        /// Closes a WebSocket connection.
+        /// @param id : integer — connection ID
+        /// @return nil
+        methods.add_method("wsClose", |_, this, id: u64| {
+            this.inner
+                .borrow_mut()
+                .ws_close(id)
+                .map_err(LuaError::external)
+        });
+
+        // -- poll --
+        /// Polls for completed async responses (HTTP, TCP events, WebSocket events).
+        /// Returns a table array of response/event tables, or empty table if none.
+        /// @return table
+        methods.add_method("poll", |lua, this, ()| {
+            let responses = this.inner.borrow_mut().poll();
+            let results = lua.create_table()?;
+            for (i, resp) in responses.iter().enumerate() {
+                let t = lua.create_table()?;
+                match resp {
+                    crate::network::net_thread::NetworkResponse::HttpResponse {
+                        id,
+                        status,
+                        body,
+                        headers,
+                        error,
+                    } => {
+                        t.set("type", "http")?;
+                        t.set("request_id", *id)?;
+                        t.set("status", *status)?;
+                        t.set("body", lua.create_string(body)?)?;
+                        if let Some(ref err) = error {
+                            t.set("error", err.as_str())?;
+                        }
+                        let headers_table = lua.create_table()?;
+                        for (k, v) in headers {
+                            headers_table.set(k.as_str(), v.as_str())?;
+                        }
+                        t.set("headers", headers_table)?;
+                    }
+                    crate::network::net_thread::NetworkResponse::TcpEvent { id, event } => {
+                        t.set("type", "tcp")?;
+                        t.set("id", *id)?;
+                        match event {
+                            crate::network::net_thread::TcpEvent::Connected => {
+                                t.set("event", "connected")?;
+                            }
+                            crate::network::net_thread::TcpEvent::Data(data) => {
+                                t.set("event", "data")?;
+                                t.set("data", lua.create_string(data)?)?;
+                            }
+                            crate::network::net_thread::TcpEvent::Disconnected(reason) => {
+                                t.set("event", "disconnected")?;
+                                if !reason.is_empty() {
+                                    t.set("reason", reason.as_str())?;
+                                }
+                            }
+                            crate::network::net_thread::TcpEvent::Error(err) => {
+                                t.set("event", "error")?;
+                                t.set("error", err.as_str())?;
+                            }
+                        }
+                    }
+                    crate::network::net_thread::NetworkResponse::WebSocketEvent { id, event } => {
+                        t.set("type", "websocket")?;
+                        t.set("id", *id)?;
+                        match event {
+                            crate::network::net_thread::WsEvent::Open => {
+                                t.set("event", "open")?;
+                            }
+                            crate::network::net_thread::WsEvent::Text(data) => {
+                                t.set("event", "text")?;
+                                t.set("data", data.as_str())?;
+                            }
+                            crate::network::net_thread::WsEvent::Binary(data) => {
+                                t.set("event", "binary")?;
+                                t.set("data", lua.create_string(data)?)?;
+                            }
+                            crate::network::net_thread::WsEvent::Close { code, reason } => {
+                                t.set("event", "close")?;
+                                t.set("code", *code)?;
+                                if !reason.is_empty() {
+                                    t.set("reason", reason.as_str())?;
+                                }
+                            }
+                            crate::network::net_thread::WsEvent::Error(err) => {
+                                t.set("event", "error")?;
+                                t.set("error", err.as_str())?;
+                            }
+                        }
+                    }
+                }
+                results.set(i + 1, t)?;
+            }
+            Ok(results)
+        });
+
+        // -- shutdown --
+        /// Shuts down the background network thread.
+        /// @return nil
+        methods.add_method("shutdown", |_, this, ()| {
+            this.inner.borrow_mut().shutdown();
+            Ok(())
+        });
+
+        // -- __tostring --
+        /// Returns a human-readable string for debugging.
+        /// @return string
+        methods.add_meta_method(LuaMetaMethod::ToString, |_, _this, ()| {
+            Ok("NetworkRuntime".to_string())
+        });
     }
 }
 
@@ -405,6 +767,87 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(LuaNetworkHost {
                 inner: RefCell::new(host),
             })
+        })?,
+    )?;
+
+    // -- newServer --
+    /// Creates a server host that binds to a port and accepts connections.
+    /// @param opts : table — { port, peers?, channels? }
+    /// @return NetworkHost
+    tbl.set(
+        "newServer",
+        lua.create_function(|_, opts: LuaTable| {
+            let port: u16 = opts.get("port").map_err(|_| {
+                LuaError::RuntimeError("newServer: 'port' field is required".into())
+            })?;
+            let host = NetworkHost::create_server(
+                port,
+                opts.get("peers").ok(),
+                opts.get("channels").ok(),
+            )
+            .map_err(LuaError::external)?;
+            Ok(LuaNetworkHost {
+                inner: RefCell::new(host),
+            })
+        })?,
+    )?;
+
+    // -- newClient --
+    /// Creates a client host that connects to a remote server.
+    /// @param opts : table — { addr, channels?, data? }
+    /// @return NetworkHost
+    tbl.set(
+        "newClient",
+        lua.create_function(|_, opts: LuaTable| {
+            let addr_str: String = opts.get("addr").map_err(|_| {
+                LuaError::RuntimeError("newClient: 'addr' field is required".into())
+            })?;
+            let addr = parse_addr(&addr_str)?;
+            let host =
+                NetworkHost::create_client(addr, opts.get("channels").ok(), opts.get("data").ok())
+                    .map_err(LuaError::external)?;
+            Ok(LuaNetworkHost {
+                inner: RefCell::new(host),
+            })
+        })?,
+    )?;
+
+    // -- newRuntime --
+    /// Creates a background network runtime for async HTTP, TCP, and WebSocket.
+    /// @return NetworkRuntime
+    tbl.set(
+        "newRuntime",
+        lua.create_function(|_, ()| {
+            let rt = NetworkRuntime::new().map_err(LuaError::external)?;
+            Ok(LuaNetworkRuntime {
+                inner: RefCell::new(rt),
+            })
+        })?,
+    )?;
+
+    // -- pack --
+    /// Serializes a Lua value to a binary MessagePack string.
+    /// @param value : any
+    /// @return string
+    tbl.set(
+        "pack",
+        lua.create_function(|lua, value: LuaValue| {
+            let net_val = lua_to_netvalue(&value)?;
+            let bytes = crate::network::message::pack(&net_val).map_err(LuaError::external)?;
+            lua.create_string(&bytes)
+        })?,
+    )?;
+
+    // -- unpack --
+    /// Deserializes a MessagePack binary string back to a Lua value.
+    /// @param data : string
+    /// @return any
+    tbl.set(
+        "unpack",
+        lua.create_function(|lua, data: LuaString| {
+            let net_val = crate::network::message::unpack(data.as_bytes())
+                .map_err(LuaError::external)?;
+            netvalue_to_lua(lua, &net_val)
         })?,
     )?;
 

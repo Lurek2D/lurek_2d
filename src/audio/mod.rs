@@ -56,6 +56,17 @@ pub use midi::MidiState;
 pub mod dsp;
 pub use dsp::{AtomicParam, DynamicEffectSource, EffectParams, EffectType};
 
+/// Polyphonic sound pool for round-robin voice allocation.
+pub mod pool;
+pub use pool::SoundPool;
+
+/// Offline DSP processing — decode, transform, and re-encode audio files.
+pub mod offline;
+pub use offline::OfflineEffect;
+
+/// Waveform and spectrogram visualisation to PNG images.
+pub mod visualizer;
+
 /// Returns the names of all available audio output devices.
 ///
 /// On most systems this returns at least `"Default"`. Uses `cpal` enumeration

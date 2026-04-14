@@ -17,7 +17,7 @@ use crate::ui::widget::{WidgetState, WidgetType};
 /// Visual style record applied to a specific widget type in a specific state.
 ///
 /// All colour values are RGBA in `[0.0, 1.0]`.  Font size is in pixels.
-/// Border width and corner radius are in pixels.
+/// Border width, corner radius, and shadow offset are in pixels.
 ///
 /// # Fields
 /// - `bg_color` — `[f32; 4]`. Background fill colour (RGBA).
@@ -26,6 +26,11 @@ use crate::ui::widget::{WidgetState, WidgetType};
 /// - `border_width` — `f32`. Border stroke width in pixels.
 /// - `corner_radius` — `f32`. Rounded corner radius in pixels.
 /// - `font_size` — `f32`. Text size in pixels.
+/// - `shadow_color` — `[f32; 4]`. Drop-shadow colour (alpha 0 = no shadow).
+/// - `shadow_offset` — `[f32; 2]`. Drop-shadow pixel offset `[dx, dy]`.
+/// - `highlight_alpha` — `f32`. Inner top-edge highlight brightness `[0.0, 1.0]`.
+/// - `gradient_end` — `Option<[f32; 4]>`. Bottom gradient colour; `None` = solid fill.
+/// - `text_align` — `String`. Horizontal text alignment: `"left"`, `"center"`, `"right"`.
 #[derive(Debug, Clone)]
 pub struct WidgetStyle {
     /// Background fill colour (RGBA).
@@ -40,6 +45,16 @@ pub struct WidgetStyle {
     pub corner_radius: f32,
     /// Text size in pixels.
     pub font_size: f32,
+    /// Drop-shadow colour.  Alpha 0 means no shadow is drawn.
+    pub shadow_color: [f32; 4],
+    /// Drop-shadow pixel offset `[dx, dy]`.
+    pub shadow_offset: [f32; 2],
+    /// Inner top-edge highlight strip brightness in `[0.0, 1.0]`.  0 = hidden.
+    pub highlight_alpha: f32,
+    /// Optional bottom gradient colour for the background fill.  `None` = solid.
+    pub gradient_end: Option<[f32; 4]>,
+    /// Horizontal text alignment: `"left"`, `"center"`, or `"right"`.
+    pub text_align: String,
 }
 
 impl Default for WidgetStyle {
@@ -51,6 +66,11 @@ impl Default for WidgetStyle {
             border_width: 1.0,
             corner_radius: 0.0,
             font_size: 14.0,
+            shadow_color: [0.0, 0.0, 0.0, 0.0],
+            shadow_offset: [0.0, 0.0],
+            highlight_alpha: 0.0,
+            gradient_end: None,
+            text_align: "center".to_string(),
         }
     }
 }
@@ -195,5 +215,187 @@ impl Theme {
 impl Default for Theme {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl Theme {
+    /// Create a dark theme pre-loaded with styled entries for all standard widget types.
+    ///
+    /// Provides sane dark-UI defaults:
+    /// - Buttons: steel-blue with rounded 4 px corners and a drop shadow.
+    /// - Labels: transparent background with light text.
+    /// - TextInput: deep charcoal background with a blue focus border.
+    /// - CheckBox / RadioButton: transparent with a 2 px border.
+    /// - Slider / ProgressBar: dark track with a blue fill indicator.
+    /// - ComboBox / ListBox: dark background with right-arrow indicator.
+    /// - TabBar: dark tabs, active tab uses accent colour.
+    /// - Panel: semi-transparent dark background.
+    /// - SpinBox: same as Slider.
+    /// - Switch: matches CheckBox.
+    /// - Badge: accent red with white text.
+    ///
+    /// # Returns
+    /// `Theme`.
+    pub fn default_dark() -> Self {
+        let mut t = Self::new();
+
+        // ── helpers ──────────────────────────────────────────────────────────
+        let mk = |bg: [f32; 4],
+                  fg: [f32; 4],
+                  border: [f32; 4],
+                  bw: f32,
+                  cr: f32,
+                  fs: f32,
+                  shadow: [f32; 4],
+                  offset: [f32; 2],
+                  hi: f32,
+                  grad: Option<[f32; 4]>,
+                  align: &str| {
+            WidgetStyle {
+                bg_color: bg,
+                fg_color: fg,
+                border_color: border,
+                border_width: bw,
+                corner_radius: cr,
+                font_size: fs,
+                shadow_color: shadow,
+                shadow_offset: offset,
+                highlight_alpha: hi,
+                gradient_end: grad,
+                text_align: align.to_string(),
+            }
+        };
+        let none_shadow = [0.0f32, 0.0, 0.0, 0.0];
+        let drop_shadow = [0.0f32, 0.0, 0.0, 0.5];
+
+        // ── Button ───────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Button, WidgetState::Normal,
+            mk([0.24, 0.47, 0.78, 1.0], [0.92, 0.95, 1.0, 1.0],
+               [0.16, 0.35, 0.65, 1.0], 1.0, 4.0, 14.0,
+               drop_shadow, [2.0, 2.0], 0.15,
+               Some([0.18, 0.38, 0.68, 1.0]), "center"));
+        t.set_style(WidgetType::Button, WidgetState::Hovered,
+            mk([0.32, 0.58, 0.90, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.22, 0.46, 0.78, 1.0], 1.0, 4.0, 14.0,
+               drop_shadow, [2.0, 2.0], 0.22,
+               Some([0.26, 0.50, 0.82, 1.0]), "center"));
+        t.set_style(WidgetType::Button, WidgetState::Pressed,
+            mk([0.16, 0.33, 0.62, 1.0], [0.78, 0.84, 0.96, 1.0],
+               [0.10, 0.24, 0.50, 1.0], 1.0, 4.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "center"));
+        t.set_style(WidgetType::Button, WidgetState::Disabled,
+            mk([0.30, 0.30, 0.35, 1.0], [0.50, 0.50, 0.55, 1.0],
+               [0.22, 0.22, 0.27, 1.0], 1.0, 4.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "center"));
+
+        // ── Label ────────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Label, WidgetState::Normal,
+            mk([0.0, 0.0, 0.0, 0.0], [0.88, 0.90, 0.94, 1.0],
+               [0.0, 0.0, 0.0, 0.0], 0.0, 0.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+        t.set_style(WidgetType::Label, WidgetState::Disabled,
+            mk([0.0, 0.0, 0.0, 0.0], [0.50, 0.50, 0.52, 1.0],
+               [0.0, 0.0, 0.0, 0.0], 0.0, 0.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── TextInput ────────────────────────────────────────────────────────
+        t.set_style(WidgetType::TextInput, WidgetState::Normal,
+            mk([0.14, 0.14, 0.18, 1.0], [0.90, 0.92, 0.96, 1.0],
+               [0.35, 0.35, 0.42, 1.0], 1.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+        t.set_style(WidgetType::TextInput, WidgetState::Focused,
+            mk([0.12, 0.12, 0.16, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.24, 0.47, 0.78, 1.0], 2.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+        t.set_style(WidgetType::TextInput, WidgetState::Disabled,
+            mk([0.18, 0.18, 0.22, 1.0], [0.45, 0.45, 0.50, 1.0],
+               [0.28, 0.28, 0.33, 1.0], 1.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── CheckBox ─────────────────────────────────────────────────────────
+        t.set_style(WidgetType::CheckBox, WidgetState::Normal,
+            mk([0.0, 0.0, 0.0, 0.0], [0.88, 0.90, 0.94, 1.0],
+               [0.50, 0.52, 0.58, 1.0], 2.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+        t.set_style(WidgetType::CheckBox, WidgetState::Hovered,
+            mk([0.22, 0.22, 0.28, 0.5], [1.0, 1.0, 1.0, 1.0],
+               [0.24, 0.47, 0.78, 1.0], 2.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── RadioButton ──────────────────────────────────────────────────────
+        t.set_style(WidgetType::RadioButton, WidgetState::Normal,
+            mk([0.0, 0.0, 0.0, 0.0], [0.88, 0.90, 0.94, 1.0],
+               [0.50, 0.52, 0.58, 1.0], 2.0, 0.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── Slider ───────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Slider, WidgetState::Normal,
+            mk([0.20, 0.20, 0.26, 1.0], [0.92, 0.95, 1.0, 1.0],
+               [0.35, 0.35, 0.42, 1.0], 1.0, 2.0, 12.0,
+               none_shadow, [0.0, 0.0], 0.0,
+               Some([0.24, 0.47, 0.78, 1.0]), "center"));
+
+        // ── ProgressBar ──────────────────────────────────────────────────────
+        t.set_style(WidgetType::ProgressBar, WidgetState::Normal,
+            mk([0.16, 0.16, 0.20, 1.0], [0.92, 0.95, 1.0, 1.0],
+               [0.30, 0.30, 0.36, 1.0], 1.0, 2.0, 12.0,
+               none_shadow, [0.0, 0.0], 0.0,
+               Some([0.20, 0.55, 0.30, 1.0]), "center"));
+
+        // ── ComboBox ─────────────────────────────────────────────────────────
+        t.set_style(WidgetType::ComboBox, WidgetState::Normal,
+            mk([0.16, 0.16, 0.20, 1.0], [0.88, 0.90, 0.94, 1.0],
+               [0.35, 0.35, 0.42, 1.0], 1.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── ListBox ──────────────────────────────────────────────────────────
+        t.set_style(WidgetType::ListBox, WidgetState::Normal,
+            mk([0.13, 0.13, 0.17, 1.0], [0.86, 0.88, 0.92, 1.0],
+               [0.32, 0.32, 0.38, 1.0], 1.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── TabBar ───────────────────────────────────────────────────────────
+        t.set_style(WidgetType::TabBar, WidgetState::Normal,
+            mk([0.18, 0.18, 0.24, 1.0], [0.72, 0.74, 0.80, 1.0],
+               [0.30, 0.30, 0.38, 1.0], 1.0, 3.0, 13.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "center"));
+        t.set_style(WidgetType::TabBar, WidgetState::Focused,
+            mk([0.14, 0.14, 0.20, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.24, 0.47, 0.78, 1.0], 2.0, 3.0, 13.0,
+               none_shadow, [0.0, 0.0], 0.12, None, "center"));
+
+        // ── Panel ────────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Panel, WidgetState::Normal,
+            mk([0.15, 0.15, 0.20, 0.92], [0.88, 0.90, 0.94, 1.0],
+               [0.28, 0.28, 0.35, 1.0], 1.0, 0.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── SpinBox ──────────────────────────────────────────────────────────
+        t.set_style(WidgetType::SpinBox, WidgetState::Normal,
+            mk([0.14, 0.14, 0.18, 1.0], [0.90, 0.92, 0.96, 1.0],
+               [0.35, 0.35, 0.42, 1.0], 1.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "center"));
+        t.set_style(WidgetType::SpinBox, WidgetState::Focused,
+            mk([0.12, 0.12, 0.16, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.24, 0.47, 0.78, 1.0], 2.0, 2.0, 14.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "center"));
+
+        // ── Switch ───────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Switch, WidgetState::Normal,
+            mk([0.28, 0.28, 0.34, 1.0], [0.88, 0.90, 0.94, 1.0],
+               [0.40, 0.40, 0.48, 1.0], 1.0, 12.0, 12.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+        t.set_style(WidgetType::Switch, WidgetState::Pressed,
+            mk([0.20, 0.55, 0.30, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.14, 0.42, 0.22, 1.0], 1.0, 12.0, 12.0,
+               none_shadow, [0.0, 0.0], 0.0, None, "left"));
+
+        // ── Badge ────────────────────────────────────────────────────────────
+        t.set_style(WidgetType::Badge, WidgetState::Normal,
+            mk([0.82, 0.18, 0.18, 1.0], [1.0, 1.0, 1.0, 1.0],
+               [0.60, 0.10, 0.10, 1.0], 0.0, 8.0, 11.0,
+               drop_shadow, [1.0, 1.0], 0.0, None, "center"));
+
+        t
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "lurek2d"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
 description = "Lurek2D — A cross-platform 2D game engine powered by Rust and Lua"
 license = "MIT"
@@ -61,13 +61,27 @@ thiserror = "1"
 fastrand = "2"
 
 # 2D rigid-body physics engine
-rapier2d = "0.32"
+rapier2d = { version = "0.32", features = ["parallel"] }
+
+# Data parallelism — used in DepthSorter::sort_parallel for >10k depth entries.
+# rapier2d already brings rayon transitively via its "parallel" feature, but
+# we declare it explicitly so the crate can use rayon::prelude directly.
+rayon = "1"
 
 # Gamepad hardware input (cross-platform, includes bundled SDL_GameControllerDB)
 gilrs = "0.11"
 
 # Pure Rust ENet networking (reliable UDP, channels, sequencing)
 rusty_enet = "0.4"
+
+# HTTP client (pure Rust, minimal deps, uses rustls for TLS)
+ureq = "3"
+
+# WebSocket client (RFC 6455 compliant, pure Rust)
+tungstenite = "0.26"
+
+# MessagePack binary serialization for compact network messages
+rmp-serde = "1"
 
 # Generational ID-based resource pools
 slotmap = "1"
@@ -194,7 +208,14 @@ name = "golden_tests"
 path = "tests/rust/golden/harness.rs"
 
 [[test]]
+name = "gui_tests"
+path = "tests/rust/unit/gui_tests.rs"
+
+[[test]]
 name = "lua_tests"
 path = "tests/lua/harness.rs"
 
+[[test]]
+name = "scene_tests"
+path = "tests/rust/unit/scene_tests.rs"
 

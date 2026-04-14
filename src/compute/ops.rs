@@ -8,6 +8,10 @@
 //! and the `lurek.*` Lua API for the scripting interface.
 
 use crate::compute::array::{DataType, NdArray};
+use rayon::prelude::*;
+
+/// Element count above which element-wise and reduction ops use Rayon thread pool.
+const PAR_THRESHOLD: usize = 10_000;
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -40,8 +44,18 @@ fn elementwise_binary(
 ) -> Result<NdArray, String> {
     check_same_shape_dtype(a, b)?;
     let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-    for i in 0..a.size() {
-        out.set_f64(i, op(a.get_f64(i), b.get_f64(i)));
+    if a.size() > PAR_THRESHOLD {
+        let vals: Vec<f64> = (0..a.size())
+            .into_par_iter()
+            .map(|i| op(a.get_f64(i), b.get_f64(i)))
+            .collect();
+        for (i, v) in vals.into_iter().enumerate() {
+            out.set_f64(i, v);
+        }
+    } else {
+        for i in 0..a.size() {
+            out.set_f64(i, op(a.get_f64(i), b.get_f64(i)));
+        }
     }
     Ok(out)
 }
@@ -49,8 +63,18 @@ fn elementwise_binary(
 /// Apply an element-wise unary op → new array.
 fn elementwise_unary(a: &NdArray, op: fn(f64) -> f64) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-    for i in 0..a.size() {
-        out.set_f64(i, op(a.get_f64(i)));
+    if a.size() > PAR_THRESHOLD {
+        let vals: Vec<f64> = (0..a.size())
+            .into_par_iter()
+            .map(|i| op(a.get_f64(i)))
+            .collect();
+        for (i, v) in vals.into_iter().enumerate() {
+            out.set_f64(i, v);
+        }
+    } else {
+        for i in 0..a.size() {
+            out.set_f64(i, op(a.get_f64(i)));
+        }
     }
     Ok(out)
 }
@@ -58,8 +82,18 @@ fn elementwise_unary(a: &NdArray, op: fn(f64) -> f64) -> Result<NdArray, String>
 /// Apply an element-wise (element, scalar) op → new array.
 fn elementwise_scalar(a: &NdArray, s: f64, op: fn(f64, f64) -> f64) -> Result<NdArray, String> {
     let mut out = NdArray::zeros(a.shape(), a.dtype())?;
-    for i in 0..a.size() {
-        out.set_f64(i, op(a.get_f64(i), s));
+    if a.size() > PAR_THRESHOLD {
+        let vals: Vec<f64> = (0..a.size())
+            .into_par_iter()
+            .map(|i| op(a.get_f64(i), s))
+            .collect();
+        for (i, v) in vals.into_iter().enumerate() {
+            out.set_f64(i, v);
+        }
+    } else {
+        for i in 0..a.size() {
+            out.set_f64(i, op(a.get_f64(i), s));
+        }
     }
     Ok(out)
 }
@@ -660,11 +694,15 @@ pub fn all(a: &NdArray) -> bool {
 /// # Returns
 /// `f64`.
 pub fn sum(a: &NdArray) -> f64 {
-    let mut s = 0.0;
-    for i in 0..a.size() {
-        s += a.get_f64(i);
+    if a.size() > PAR_THRESHOLD {
+        (0..a.size()).into_par_iter().map(|i| a.get_f64(i)).sum()
+    } else {
+        let mut s = 0.0;
+        for i in 0..a.size() {
+            s += a.get_f64(i);
+        }
+        s
     }
-    s
 }
 
 /// Mean of all elements.
@@ -686,14 +724,22 @@ pub fn mean(a: &NdArray) -> f64 {
 /// # Returns
 /// `f64`.
 pub fn min_val(a: &NdArray) -> f64 {
-    let mut m = a.get_f64(0);
-    for i in 1..a.size() {
-        let v = a.get_f64(i);
-        if v < m {
-            m = v;
+    if a.size() > PAR_THRESHOLD {
+        (0..a.size())
+            .into_par_iter()
+            .map(|i| a.get_f64(i))
+            .reduce_with(f64::min)
+            .unwrap_or(f64::NAN)
+    } else {
+        let mut m = a.get_f64(0);
+        for i in 1..a.size() {
+            let v = a.get_f64(i);
+            if v < m {
+                m = v;
+            }
         }
+        m
     }
-    m
 }
 
 /// Maximum value across all elements.
@@ -704,14 +750,22 @@ pub fn min_val(a: &NdArray) -> f64 {
 /// # Returns
 /// `f64`.
 pub fn max_val(a: &NdArray) -> f64 {
-    let mut m = a.get_f64(0);
-    for i in 1..a.size() {
-        let v = a.get_f64(i);
-        if v > m {
-            m = v;
+    if a.size() > PAR_THRESHOLD {
+        (0..a.size())
+            .into_par_iter()
+            .map(|i| a.get_f64(i))
+            .reduce_with(f64::max)
+            .unwrap_or(f64::NAN)
+    } else {
+        let mut m = a.get_f64(0);
+        for i in 1..a.size() {
+            let v = a.get_f64(i);
+            if v > m {
+                m = v;
+            }
         }
+        m
     }
-    m
 }
 
 // ---------------------------------------------------------------------------

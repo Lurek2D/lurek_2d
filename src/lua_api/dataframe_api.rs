@@ -5,7 +5,7 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::dataframe::frame::{CellValue, ColRef, DataFrame, Database};
+use crate::dataframe::frame::{AggFn, CellValue, ColRef, DataFrame, Database};
 use crate::dataframe::serial;
 use crate::dataframe::sql;
 
@@ -619,6 +619,328 @@ impl LuaUserData for LuaDataFrame {
         /// @return DataFrame
         methods.add_method("clone", |_, this, ()| {
             Ok(LuaDataFrame::new(this.inner.borrow().clone_df()))
+        });
+
+        // ── Analytics ──────────────────────────────────────────────────
+
+        // -- withRollingMean --
+        /// Add a rolling mean column. Rows with insufficient history get nil.
+        /// @param col : string|integer
+        /// @param window : integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withRollingMean",
+            |_, this, (col, window, name): (LuaValue, usize, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_rolling_mean(col_ref, window, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withRollingSum --
+        /// Add a rolling sum column.
+        /// @param col : string|integer
+        /// @param window : integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withRollingSum",
+            |_, this, (col, window, name): (LuaValue, usize, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_rolling_sum(col_ref, window, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withRollingMin --
+        /// Add a rolling minimum column.
+        /// @param col : string|integer
+        /// @param window : integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withRollingMin",
+            |_, this, (col, window, name): (LuaValue, usize, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_rolling_min(col_ref, window, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withRollingMax --
+        /// Add a rolling maximum column.
+        /// @param col : string|integer
+        /// @param window : integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withRollingMax",
+            |_, this, (col, window, name): (LuaValue, usize, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_rolling_max(col_ref, window, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withRank --
+        /// Add a rank column (1-based, ties averaged).
+        /// @param col : string|integer
+        /// @param ascending : boolean?
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withRank",
+            |_, this, (col, asc, name): (LuaValue, Option<bool>, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_rank(col_ref, asc.unwrap_or(true), &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withPctChange --
+        /// Add a percent-change-from-previous-row column.
+        /// @param col : string|integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withPctChange",
+            |_, this, (col, name): (LuaValue, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_pct_change(col_ref, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- withCumsum --
+        /// Add a cumulative-sum column.
+        /// @param col : string|integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "withCumsum",
+            |_, this, (col, name): (LuaValue, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .with_cumsum(col_ref, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- groupAgg --
+        /// Aggregate agg_col grouped by group_col using the named function.
+        /// fn_name: "mean"|"sum"|"min"|"max"|"count"|"first"|"last"
+        /// @param group_col : string|integer
+        /// @param agg_col : string|integer
+        /// @param fn_name : string
+        /// @return DataFrame
+        methods.add_method(
+            "groupAgg",
+            |_, this, (group_col, agg_col, fn_name): (LuaValue, LuaValue, String)| {
+                let gc = lua_to_col_ref(group_col)?;
+                let ac = lua_to_col_ref(agg_col)?;
+                let agg_fn = AggFn::parse(&fn_name).map_err(LuaError::RuntimeError)?;
+                let result = this
+                    .inner
+                    .borrow()
+                    .group_agg(gc, ac, agg_fn)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- pivot --
+        /// Create a pivot table.
+        /// @param row_col : string|integer
+        /// @param col_col : string|integer
+        /// @param val_col : string|integer
+        /// @return DataFrame
+        methods.add_method(
+            "pivot",
+            |_, this, (row_col, col_col, val_col): (LuaValue, LuaValue, LuaValue)| {
+                let rc = lua_to_col_ref(row_col)?;
+                let cc = lua_to_col_ref(col_col)?;
+                let vc = lua_to_col_ref(val_col)?;
+                let result = this
+                    .inner
+                    .borrow()
+                    .pivot(rc, cc, vc)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- corr --
+        /// Pearson correlation coefficient between two numeric columns.
+        /// @param col_a : string|integer
+        /// @param col_b : string|integer
+        /// @return number
+        methods.add_method(
+            "corr",
+            |_, this, (col_a, col_b): (LuaValue, LuaValue)| {
+                let ca = lua_to_col_ref(col_a)?;
+                let cb = lua_to_col_ref(col_b)?;
+                this.inner
+                    .borrow()
+                    .corr(ca, cb)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- correlationMatrix --
+        /// Compute a correlation matrix for all numeric columns.
+        /// @return DataFrame
+        methods.add_method("correlationMatrix", |_, this, ()| {
+            let result = this.inner.borrow().correlation_matrix();
+            Ok(LuaDataFrame::new(result))
+        });
+
+        // -- zscoreCol --
+        /// Add a z-score column for the given numeric column.
+        /// @param col : string|integer
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "zscoreCol",
+            |_, this, (col, name): (LuaValue, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .zscore_col(col_ref, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- normalizeCol --
+        /// Add a min-max normalized column scaled to [out_min, out_max].
+        /// @param col : string|integer
+        /// @param out_min : number
+        /// @param out_max : number
+        /// @param name : string
+        /// @return nil
+        methods.add_method_mut(
+            "normalizeCol",
+            |_, this, (col, out_min, out_max, name): (LuaValue, f64, f64, String)| {
+                let col_ref = lua_to_col_ref(col)?;
+                this.inner
+                    .borrow_mut()
+                    .normalize_col(col_ref, out_min, out_max, &name)
+                    .map_err(LuaError::RuntimeError)
+            },
+        );
+
+        // -- outliers --
+        /// Return a new DataFrame with only outlier rows (|z-score| > threshold).
+        /// @param col : string|integer
+        /// @param threshold : number?
+        /// @return DataFrame
+        methods.add_method(
+            "outliers",
+            |_, this, (col, threshold): (LuaValue, Option<f64>)| {
+                let col_ref = lua_to_col_ref(col)?;
+                let result = this
+                    .inner
+                    .borrow()
+                    .outliers(col_ref, threshold.unwrap_or(2.0))
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(LuaDataFrame::new(result))
+            },
+        );
+
+        // -- modeVal --
+        /// Return the most frequent value in a column (nil if empty).
+        /// @param col : string|integer
+        /// @return any
+        methods.add_method("modeVal", |lua, this, col: LuaValue| {
+            let col_ref = lua_to_col_ref(col)?;
+            let val = this
+                .inner
+                .borrow()
+                .mode_val(col_ref)
+                .map_err(LuaError::RuntimeError)?;
+            cell_to_lua(lua, &val)
+        });
+
+        // -- entropy --
+        /// Shannon entropy (bits) of the value distribution in a column.
+        /// @param col : string|integer
+        /// @return number
+        methods.add_method("entropy", |_, this, col: LuaValue| {
+            let col_ref = lua_to_col_ref(col)?;
+            this.inner
+                .borrow()
+                .entropy(col_ref)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- addRowBatch --
+        /// Add multiple rows at once from a table of row tables.
+        /// @param rows : table
+        /// @return nil
+        methods.add_method_mut("addRowBatch", |_, this, rows: LuaTable| {
+            let nc = this.inner.borrow().ncols();
+            let mut batch: Vec<Vec<CellValue>> = Vec::new();
+            for pair in rows.sequence_values::<LuaTable>() {
+                let row_tbl = pair?;
+                let mut row: Vec<CellValue> = Vec::with_capacity(nc);
+                for i in 1..=nc {
+                    let v: LuaValue = row_tbl.get(i)?;
+                    row.push(lua_to_cell(v));
+                }
+                batch.push(row);
+            }
+            this.inner
+                .borrow_mut()
+                .add_row_batch(batch)
+                .map_err(LuaError::RuntimeError)
+        });
+
+        // -- getColumnAsF64 --
+        /// Return a numeric column as a Lua array of numbers (nils → 0/nan).
+        /// @param col : string|integer
+        /// @return table
+        methods.add_method("getColumnAsF64", |lua, this, col: LuaValue| {
+            let col_ref = lua_to_col_ref(col)?;
+            let vals = this
+                .inner
+                .borrow()
+                .get_column_as_f64(col_ref)
+                .map_err(LuaError::RuntimeError)?;
+            let t = lua.create_table_with_capacity(vals.len(), 0)?;
+            for (i, v) in vals.iter().enumerate() {
+                t.set(i + 1, *v)?;
+            }
+            Ok(t)
+        });
+
+        // -- setColumnFromF64 --
+        /// Set a numeric column from a Lua array of numbers.
+        /// @param col : string|integer
+        /// @param values : table
+        /// @return nil
+        methods.add_method_mut("setColumnFromF64", |_, this, (col, values): (LuaValue, LuaTable)| {
+            let col_ref = lua_to_col_ref(col)?;
+            let mut vals: Vec<f64> = Vec::new();
+            for pair in values.sequence_values::<f64>() {
+                vals.push(pair?);
+            }
+            this.inner
+                .borrow_mut()
+                .set_column_from_f64(col_ref, vals)
+                .map_err(LuaError::RuntimeError)
         });
 
         // -- type --

@@ -64,12 +64,20 @@ pub mod simple_state;
 pub mod state_machine;
 /// Rate-limiter (throttle) and trailing-edge delay (debounce) for callbacks.
 pub mod throttle;
+/// Named-channel message broker for decoupled communication.
+pub mod mediator;
+/// Registry of named, swappable behaviours with a single active selection.
+pub mod strategy;
+/// Fundamental ordered-collection and set ADTs (Stack, Queue metadata).
+pub mod collections;
 
 pub use blackboard::{Blackboard, BlackboardValue};
+pub use collections::{QueueMeta, StackMeta};
 pub use command_stack::{CommandEntry, CommandStack};
 pub use event_bus::{EventBus, Subscription};
 pub use factory::Factory;
 pub use funnel::{Funnel, FunnelEntry};
+pub use mediator::Mediator;
 pub use object_pool::ObjectPool;
 pub use observer::{Observer, ObserverEntry};
 pub use priority_queue::{PriorityItem, PriorityQueue};
@@ -77,4 +85,5 @@ pub use ring::{Ring, RingEntry};
 pub use service_locator::ServiceLocator;
 pub use simple_state::SimpleState;
 pub use state_machine::{StateMachine, TransitionRule};
+pub use strategy::Strategy;
 pub use throttle::{Debounce, Throttle};

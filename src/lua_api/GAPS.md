@@ -1,12 +1,20 @@
-# Gap Analysis: `src/lua_api`
+# Gap Status: `src/lua_api`
 
-## 1. Architecture & Compliance
-- **Edge Module**: `lua_api` acts as the bridge. Contains `mlua` imports correctly. Check `mod.rs` simplicity and size.
+- Reviewed: 2026-04-14
+- Baseline: current workspace state on branch `refactor/src-migration-v2`      
+- Current status: obsolete/stale
+- Canonical module reference: `docs/specs/lua_api.md`
 
-## 2. AGENT.md Structure (BLOCKER / ERROR)
-The `AGENT.md` file in this module does **not** adhere to the canonical short format required by the CAG rules (A-02).
-- **Missing / Incorrect Metadata Table**: Needs the required markdown table format.
-- **Wrong Headings**: Uses `## Module Purpose` instead of `## Purpose`.
+This refresh treats the current workspace state as the source of truth; older gap-analysis text is historical only.
 
-## Remediation Steps
-1. **Rewrite `AGENT.md`**: Convert to the exact short format.
+## Open items
+- None for the current baseline. Revalidate against `docs/specs/lua_api.md` before treating any legacy gap note as active work.
+
+## Resolved or stale legacy items
+- Stale: AGENT-era rewrite and template-compliance asks are obsolete because per-module `src/**/AGENT.md` guidance has been retired in favor of `docs/specs/<module>.md`.
+- Stale: migration and architecture warnings captured in the legacy file predate the current dirty workspace baseline on `refactor/src-migration-v2`.
+- Superseded: this file is now a status marker, not an implementation backlog. 
+
+## Evidence
+- `docs/specs/lua_api.md`
+- `docs/specs/README.md`

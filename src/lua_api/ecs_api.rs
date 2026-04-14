@@ -6,6 +6,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::ecs::Universe;
+use std::collections::HashMap;
 
 // -------------------------------------------------------------------------------
 // LuaUniverse UserData
@@ -15,6 +16,10 @@ use crate::ecs::Universe;
 #[derive(Clone)]
 pub struct LuaUniverse {
     inner: Rc<RefCell<Universe>>,
+    /// Component-added observer callbacks keyed by component name.
+    add_observers: Rc<RefCell<HashMap<String, Vec<LuaRegistryKey>>>>,
+    /// Component-removed observer callbacks keyed by component name.
+    remove_observers: Rc<RefCell<HashMap<String, Vec<LuaRegistryKey>>>>,
 }
 
 impl LuaUserData for LuaUniverse {
@@ -77,7 +82,7 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @return nil
         methods.add_method("remove", |lua, this, (id, name): (u32, String)| {
-            this.inner.borrow().remove_component(lua, id, &name)
+            this.inner.borrow_mut().remove_component(lua, id, &name)
         });
 
         // -- getComponents --
@@ -127,11 +132,15 @@ impl LuaUserData for LuaUniverse {
         });
 
         // -- addSystem --
-        /// Adds a system table to the universe.
+        /// Adds a system table to the universe with an optional priority (lower = earlier).
         /// @param system : table
+        /// @param opts : table? — {priority: integer}
         /// @return nil
-        methods.add_method("addSystem", |lua, this, system: LuaTable| {
-            this.inner.borrow_mut().add_system(lua, system)
+        methods.add_method("addSystem", |lua, this, (system, opts): (LuaTable, Option<LuaTable>)| {
+            let priority = opts
+                .and_then(|o| o.get::<_, i32>("priority").ok())
+                .unwrap_or(0);
+            this.inner.borrow_mut().add_system(lua, system, priority)
         });
 
         // -- removeSystem --
@@ -143,7 +152,7 @@ impl LuaUserData for LuaUniverse {
         });
 
         // -- update --
-        /// Calls update(system, world, dt) on each registered system.
+        /// Calls update(system, world, dt) on each registered system in priority order.
         /// @param dt : number
         /// @return nil
         methods.add_method("update", |lua, this, dt: f64| {
@@ -151,9 +160,10 @@ impl LuaUserData for LuaUniverse {
             if count == 0 {
                 return Ok(());
             }
+            let order = this.inner.borrow().get_sorted_system_indices();
             let store = this.inner.borrow().get_system_store(lua)?;
             let world = this.clone();
-            for i in 1..=count {
+            for i in order {
                 let system: LuaTable = store.get(i)?;
                 if let Ok(func) = system.get::<_, LuaFunction>("update") {
                     func.call::<_, ()>((system.clone(), world.clone(), dt))?;
@@ -163,7 +173,7 @@ impl LuaUserData for LuaUniverse {
         });
 
         // -- render --
-        /// Calls render(system, world) on each registered system.
+        /// Calls render(system, world) on each registered system in priority order.
         /// Falls back to draw(system, world) for backward compatibility.
         /// @return nil
         methods.add_method("render", |lua, this, ()| {
@@ -171,9 +181,10 @@ impl LuaUserData for LuaUniverse {
             if count == 0 {
                 return Ok(());
             }
+            let order = this.inner.borrow().get_sorted_system_indices();
             let store = this.inner.borrow().get_system_store(lua)?;
             let world = this.clone();
-            for i in 1..=count {
+            for i in order {
                 let system: LuaTable = store.get(i)?;
                 let func = system.get::<_, LuaFunction>("render")
                     .or_else(|_| system.get::<_, LuaFunction>("draw"));
@@ -185,7 +196,7 @@ impl LuaUserData for LuaUniverse {
         });
 
         // -- emit --
-        /// Emits a named event to all systems that implement the handler.
+        /// Emits a named event to all systems that implement the handler, in priority order.
         /// @param event : string
         /// @return nil
         methods.add_method("emit", |lua, this, args: LuaMultiValue| {
@@ -203,9 +214,10 @@ impl LuaUserData for LuaUniverse {
             if count == 0 {
                 return Ok(());
             }
+            let order = this.inner.borrow().get_sorted_system_indices();
             let store = this.inner.borrow().get_system_store(lua)?;
             let world = this.clone();
-            for i in 1..=count {
+            for i in order {
                 let system: LuaTable = store.get(i)?;
                 if let Ok(func) = system.get::<_, LuaFunction>(event.as_str()) {
                     let mut call_args = Vec::with_capacity(2 + extra_args.len());
@@ -502,6 +514,110 @@ impl LuaUserData for LuaUniverse {
             this.inner.borrow_mut().kill_recursive(id, lua)
         });
 
+        // -- queryNot --
+        /// Returns entity IDs that have all `with` components and none of the `without` components.
+        /// @param with_table : table
+        /// @param without_table : table
+        /// @return table
+        methods.add_method("queryNot", |lua, this, (with_tbl, without_tbl): (LuaTable, LuaTable)| {
+            let with_names: Vec<String> = with_tbl.sequence_values::<String>().collect::<LuaResult<_>>()?;
+            let without_names: Vec<String> = without_tbl.sequence_values::<String>().collect::<LuaResult<_>>()?;
+            this.inner.borrow().query_not(lua, &with_names, &without_names)
+        });
+
+        // -- serialize --
+        /// Serializes all alive entities to a Lua table snapshot.
+        /// @return table
+        methods.add_method("serialize", |lua, this, ()| {
+            this.inner.borrow().serialize_to_table(lua)
+        });
+
+        // -- deserialize --
+        /// Restores entity state from a snapshot produced by serialize().
+        /// Clears all entities; blueprints and systems are preserved.
+        /// @param snapshot : table
+        /// @return nil
+        methods.add_method("deserialize", |lua, this, snapshot: LuaTable| {
+            this.inner.borrow_mut().deserialize_from_table(lua, snapshot)
+        });
+
+        // -- onComponentAdded --
+        /// Registers a callback to fire when a component is added to any entity.
+        /// The callback receives (entity_id, component_name). Call flushObservers() to dispatch.
+        /// @param name : string
+        /// @param callback : function
+        /// @return nil
+        methods.add_method("onComponentAdded", |lua, this, (name, cb): (String, LuaFunction)| {
+            let key = lua.create_registry_value(cb)?;
+            this.add_observers.borrow_mut()
+                .entry(name)
+                .or_default()
+                .push(key);
+            Ok(())
+        });
+
+        // -- onComponentRemoved --
+        /// Registers a callback to fire when a component is removed from any entity.
+        /// The callback receives (entity_id, component_name). Call flushObservers() to dispatch.
+        /// @param name : string
+        /// @param callback : function
+        /// @return nil
+        methods.add_method("onComponentRemoved", |lua, this, (name, cb): (String, LuaFunction)| {
+            let key = lua.create_registry_value(cb)?;
+            this.remove_observers.borrow_mut()
+                .entry(name)
+                .or_default()
+                .push(key);
+            Ok(())
+        });
+
+        // -- flushObservers --
+        /// Dispatches all pending component-add and component-remove events to registered callbacks.
+        /// @return nil
+        methods.add_method("flushObservers", |lua, this, ()| {
+            let (add_evs, remove_evs) = this.inner.borrow_mut().take_component_events();
+            for (id, name) in &add_evs {
+                if let Some(keys) = this.add_observers.borrow().get(name.as_str()).map(|v| v.len()) {
+                    let _ = keys; // avoid lint
+                }
+                let keys_opt: Option<Vec<LuaFunction>> = {
+                    let obs = this.add_observers.borrow();
+                    obs.get(name.as_str()).map(|keys| {
+                        keys.iter().filter_map(|k| lua.registry_value::<LuaFunction>(k).ok()).collect()
+                    })
+                };
+                if let Some(fns) = keys_opt {
+                    for f in fns {
+                        f.call::<_, ()>((*id, name.as_str()))?;
+                    }
+                }
+            }
+            for (id, name) in &remove_evs {
+                let keys_opt: Option<Vec<LuaFunction>> = {
+                    let obs = this.remove_observers.borrow();
+                    obs.get(name.as_str()).map(|keys| {
+                        keys.iter().filter_map(|k| lua.registry_value::<LuaFunction>(k).ok()).collect()
+                    })
+                };
+                if let Some(fns) = keys_opt {
+                    for f in fns {
+                        f.call::<_, ()>((*id, name.as_str()))?;
+                    }
+                }
+            }
+            Ok(())
+        });
+
+        // -- spawnBulk --
+        /// Spawns `count` entities from a blueprint, returns an array of entity IDs.
+        /// @param name : string
+        /// @param count : integer
+        /// @param overrides : table?
+        /// @return table
+        methods.add_method("spawnBulk", |lua, this, (name, count, overrides): (String, usize, Option<LuaTable>)| {
+            this.inner.borrow_mut().spawn_bulk(lua, &name, count, overrides)
+        });
+
     }
 }
 
@@ -522,6 +638,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, ()| {
             Ok(LuaUniverse {
                 inner: Rc::new(RefCell::new(Universe::new())),
+                add_observers: Rc::new(RefCell::new(HashMap::new())),
+                remove_observers: Rc::new(RefCell::new(HashMap::new())),
             })
         })?,
     )?;

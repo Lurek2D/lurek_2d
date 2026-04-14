@@ -8,8 +8,6 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::DF01;
-use crate::log_msg;
 use std::cmp::Ordering;
 use std::collections::HashMap;
 
@@ -204,7 +202,7 @@ impl DataFrame {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
-        log_msg!(debug, DF01);
+        log::debug!("dataframe: new empty DataFrame created");
         Self {
             column_names: Vec::new(),
             data: Vec::new(),
@@ -717,5 +715,65 @@ impl Database {
 impl Default for Database {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Aggregation function type
+// ---------------------------------------------------------------------------
+
+/// Aggregation function variants for group-by and pivot operations.
+///
+/// # Variants
+/// - `Mean`  — Arithmetic mean of numeric values.
+/// - `Sum`   — Sum of numeric values.
+/// - `Min`   — Minimum numeric value.
+/// - `Max`   — Maximum numeric value.
+/// - `Count` — Count of non-nil values.
+/// - `First` — First encountered value.
+/// - `Last`  — Last encountered value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AggFn {
+    /// Arithmetic mean of numeric values in the group.
+    Mean,
+    /// Sum of numeric values in the group.
+    Sum,
+    /// Minimum numeric value in the group.
+    Min,
+    /// Maximum numeric value in the group.
+    Max,
+    /// Count of non-nil values in the group.
+    Count,
+    /// First value encountered in the group (preserves order).
+    First,
+    /// Last value encountered in the group (preserves order).
+    Last,
+}
+
+impl AggFn {
+    /// Parse a string into an `AggFn`.
+    ///
+    /// Accepted values (case-insensitive): `"mean"`, `"sum"`, `"min"`, `"max"`,
+    /// `"count"`, `"first"`, `"last"`.
+    ///
+    /// # Parameters
+    /// - `s` — `&str`.
+    ///
+    /// # Returns
+    /// `Result<Self, String>`.
+    pub fn parse(s: &str) -> Result<Self, String> {
+        match s.to_lowercase().as_str() {
+            "mean" => Ok(Self::Mean),
+            "sum" => Ok(Self::Sum),
+            "min" => Ok(Self::Min),
+            "max" => Ok(Self::Max),
+            "count" => Ok(Self::Count),
+            "first" => Ok(Self::First),
+            "last" => Ok(Self::Last),
+            other => Err(format!(
+                "unknown aggregation function '{}'; expected mean|sum|min|max|count|first|last",
+                other
+            )),
+        }
     }
 }

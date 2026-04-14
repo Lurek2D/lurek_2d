@@ -107,7 +107,7 @@ describe("lurek.raycaster", function()
             rc:setCell(8, 4, 1)          -- wall at x=8, row 4
             -- cast from (1.5, 4.5) pointing east (angle=0)
             local hit = rc:castRay(1.5, 4.5, 0.0, 20.0)
-            assert(hit ~= nil, "expected a hit")
+            expect_not_nil(hit, "expected a hit")
             expect_equal(true, hit.hit)
             expect_equal(1, hit.cell_value)
         end)

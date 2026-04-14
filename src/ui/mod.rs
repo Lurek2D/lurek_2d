@@ -20,8 +20,8 @@
 //! | `widget` | [`WidgetBase`], [`WidgetState`], [`WidgetType`] | Shared base fields, state enum, type tag |
 //! | `theme` | [`Theme`], [`WidgetStyle`] | Per-widget-type per-state styling |
 //! | `containers` | [`Panel`], [`Layout`], [`ScrollPanel`], [`NinePatch`] | Layout containers and nine-patch slicer |
-//! | `controls` | [`Button`], [`Label`], [`TextInput`], [`CheckBox`], [`Slider`], [`ProgressBar`], [`ComboBox`], [`ListBox`], [`TabBar`] | Interactive and display controls |
-//! | `extras` | [`Toast`], [`Separator`], [`Spacer`], [`TreeNode`], [`TreeView`] | Utility widgets: notifications, separators, tree views |
+//! | `controls` | [`Button`], [`Label`], [`TextInput`], [`CheckBox`], [`Slider`], [`ProgressBar`], [`ComboBox`], [`ListBox`], [`TabBar`], [`SpinBox`], [`Switch`] | Interactive and display controls |
+//! | `extras` | [`Toast`], [`Separator`], [`Spacer`], [`TreeNode`], [`TreeView`], [`Badge`] | Utility widgets: notifications, separators, tree views, badges |
 //! | `context` | [`GuiContext`] | Root widget tree, focus tracking, toast queue, input routing |
 //!
 //! ## Tier
@@ -51,12 +51,12 @@ pub use containers::{
 pub use context::{GuiContext, GuiEvent};
 pub use controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
-    TabBar, TextInput,
+    SpinBox, Switch, TabBar, TextInput,
 };
 pub use extras::{
-    Accordion, AccordionSection, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem,
-    Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, TooltipPanel,
-    TreeNode, TreeView,
+    Accordion, AccordionSection, Badge, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar,
+    MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton,
+    TooltipPanel, TreeNode, TreeView,
 };
 pub use theme::{Theme, WidgetStyle};
 pub use widget::{WidgetBase, WidgetState, WidgetType};

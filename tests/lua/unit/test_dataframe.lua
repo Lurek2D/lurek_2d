@@ -1280,4 +1280,404 @@ describe("Database (RS parity)", function()
         expect_false(found)
     end)
 end)
+
+-- ---------------------------------------------------------------------------
+-- Analytics methods
+-- ---------------------------------------------------------------------------
+describe("lurek.dataframe.DataFrame analytics", function()
+
+    -- @description withRollingMean adds a column with the rolling mean, first rows are nil.
+    it("withRollingMean adds column with nil for insufficient history", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("val", 0)
+        df:addRow({val = 1})
+        df:addRow({val = 3})
+        df:addRow({val = 5})
+        df:withRollingMean("val", 2, "rm")
+        local row1 = df:getRow(1)
+        local row2 = df:getRow(2)
+        expect_equal(nil, row1.rm)
+        expect_near(2.0, row2.rm, 0.001)
+    end)
+
+    -- @description withRollingSum adds a window sum column.
+    it("withRollingSum computes window sums", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("val", 0)
+        df:addRow({val = 2})
+        df:addRow({val = 4})
+        df:addRow({val = 6})
+        df:withRollingSum("val", 2, "rs")
+        local row3 = df:getRow(3)
+        expect_near(10.0, row3.rs, 0.001)
+    end)
+
+    -- @description withRank produces 1-based ranks in ascending order.
+    it("withRank ascending assigns lowest value rank 1", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("score", 0)
+        df:addRow({score = 10})
+        df:addRow({score = 30})
+        df:addRow({score = 20})
+        df:withRank("score", true, "rank")
+        local r1 = df:getRow(1)
+        local r2 = df:getRow(2)
+        local r3 = df:getRow(3)
+        expect_near(1.0, r1.rank, 0.001)
+        expect_near(3.0, r2.rank, 0.001)
+        expect_near(2.0, r3.rank, 0.001)
+    end)
+
+    -- @description withPctChange produces nil for the first row and correct ratio for subsequent rows.
+    it("withPctChange first row is nil, rest are ratios", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", 0)
+        df:addRow({x = 100})
+        df:addRow({x = 110})
+        df:addRow({x = 121})
+        df:withPctChange("x", "pct")
+        local row1 = df:getRow(1)
+        local row2 = df:getRow(2)
+        expect_equal(nil, row1.pct)
+        expect_near(0.1, row2.pct, 0.001)
+    end)
+
+    -- @description withCumsum produces cumulative sum.
+    it("withCumsum accumulates correctly", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 1}) df:addRow({v = 2}) df:addRow({v = 3})
+        df:withCumsum("v", "cs")
+        local row3 = df:getRow(3)
+        expect_near(6.0, row3.cs, 0.001)
+    end)
+
+    -- @description groupAgg sums a numeric column by category.
+    it("groupAgg with sum aggregates correctly", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("cat", "")
+        df:addColumn("val", 0)
+        df:addRow({cat = "A", val = 10})
+        df:addRow({cat = "B", val = 5})
+        df:addRow({cat = "A", val = 20})
+        local agg = df:groupAgg("cat", "val", "sum")
+        expect_equal(2, agg:rowCount())
+    end)
+
+    -- @description corr returns 1 for a column correlated with itself.
+    it("corr of column with itself is 1", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", 0)
+        df:addRow({x = 1}) df:addRow({x = 2}) df:addRow({x = 3})
+        expect_near(1.0, df:corr("x", "x"), 0.001)
+    end)
+
+    -- @description correlationMatrix returns a DataFrame with "column" header row.
+    it("correlationMatrix includes column header", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("a", 0)
+        df:addColumn("b", 0)
+        df:addRow({a = 1, b = 2})
+        df:addRow({a = 2, b = 4})
+        local mat = df:correlationMatrix()
+        expect_equal("DataFrame", mat:type())
+        local cols = mat:columnNames()
+        expect_equal("column", cols[1])
+    end)
+
+    -- @description zscoreCol adds a column with zero mean.
+    it("zscoreCol produces zero-mean column", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        for i = 1, 8 do df:addRow({v = i * 2}) end
+        df:zscoreCol("v", "z")
+        local total = 0
+        for i = 1, 8 do total = total + df:getRow(i).z end
+        expect_near(0.0, total / 8, 0.001)
+    end)
+
+    -- @description normalizeCol scales to [0,1].
+    it("normalizeCol scales values to output range", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 0}) df:addRow({v = 50}) df:addRow({v = 100})
+        df:normalizeCol("v", 0, 1, "n")
+        expect_near(0.0, df:getRow(1).n, 0.001)
+        expect_near(0.5, df:getRow(2).n, 0.001)
+        expect_near(1.0, df:getRow(3).n, 0.001)
+    end)
+
+    -- @description outliers returns only rows where z-score exceeds threshold.
+    it("outliers filters to extreme rows", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        -- Most values near 0, one outlier
+        for i = 1, 9 do df:addRow({v = 0}) end
+        df:addRow({v = 1000})
+        local out = df:outliers("v", 2.0)
+        expect_equal(1, out:rowCount())
+    end)
+
+    -- @description modeVal returns the most frequent value.
+    it("modeVal returns most frequent value", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", "")
+        df:addRow({x = "a"}) df:addRow({x = "b"})
+        df:addRow({x = "a"}) df:addRow({x = "c"})
+        expect_equal("a", df:modeVal("x"))
+    end)
+
+    -- @description entropy of a uniform distribution is log2(n).
+    it("entropy of uniform 4-value column is 2 bits", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", "")
+        df:addRow({x = "a"}) df:addRow({x = "b"})
+        df:addRow({x = "c"}) df:addRow({x = "d"})
+        expect_near(2.0, df:entropy("x"), 0.001)
+    end)
+
+    -- @description addRowBatch adds multiple rows atomically.
+    it("addRowBatch adds all rows", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRowBatch({{1}, {2}, {3}})
+        expect_equal(3, df:rowCount())
+    end)
+
+    -- @description getColumnAsF64 returns a Lua array of floats.
+    it("getColumnAsF64 returns numeric array", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 10}) df:addRow({v = 20})
+        local arr = df:getColumnAsF64("v")
+        expect_equal(2, #arr)
+        expect_near(10.0, arr[1], 0.001)
+        expect_near(20.0, arr[2], 0.001)
+    end)
+
+    -- @description setColumnFromF64 overwrites column values.
+    it("setColumnFromF64 overwrites column with new values", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 0}) df:addRow({v = 0})
+        df:setColumnFromF64("v", {7, 14})
+        expect_near(7.0, df:getRow(1).v, 0.001)
+        expect_near(14.0, df:getRow(2).v, 0.001)
+    end)
+
+    -- @description pivot creates a wide-format table with correct column labels.
+    it("pivot creates wide-format DataFrame", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("row", "")
+        df:addColumn("col", "")
+        df:addColumn("val", 0)
+        df:addRow({row = "R1", col = "C1", val = 1})
+        df:addRow({row = "R1", col = "C2", val = 2})
+        df:addRow({row = "R2", col = "C1", val = 3})
+        local p = df:pivot("row", "col", "val")
+        -- Should have 3 columns: row, C1, C2
+        expect_equal(3, #p:columnNames())
+    end)
+
+end)
+
+-- ---------------------------------------------------------------------------
+-- Analytics methods
+-- ---------------------------------------------------------------------------
+describe("lurek.dataframe.DataFrame analytics", function()
+
+    -- @description withRollingMean adds a column with the rolling mean, first rows are nil.
+    it("withRollingMean adds column with nil for insufficient history", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("val", 0)
+        df:addRow({val = 1})
+        df:addRow({val = 3})
+        df:addRow({val = 5})
+        df:withRollingMean("val", 2, "rm")
+        local row1 = df:getRow(1)
+        local row2 = df:getRow(2)
+        expect_equal(nil, row1.rm)
+        expect_near(2.0, row2.rm, 0.001)
+    end)
+
+    -- @description withRollingSum adds a window sum column.
+    it("withRollingSum computes window sums", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("val", 0)
+        df:addRow({val = 2})
+        df:addRow({val = 4})
+        df:addRow({val = 6})
+        df:withRollingSum("val", 2, "rs")
+        local row3 = df:getRow(3)
+        expect_near(10.0, row3.rs, 0.001)
+    end)
+
+    -- @description withRank produces 1-based ranks in ascending order.
+    it("withRank ascending assigns lowest value rank 1", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("score", 0)
+        df:addRow({score = 10})
+        df:addRow({score = 30})
+        df:addRow({score = 20})
+        df:withRank("score", true, "rank")
+        local r1 = df:getRow(1)
+        local r2 = df:getRow(2)
+        local r3 = df:getRow(3)
+        expect_near(1.0, r1.rank, 0.001)
+        expect_near(3.0, r2.rank, 0.001)
+        expect_near(2.0, r3.rank, 0.001)
+    end)
+
+    -- @description withPctChange produces nil for the first row and correct ratio for subsequent rows.
+    it("withPctChange first row is nil, rest are ratios", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", 0)
+        df:addRow({x = 100})
+        df:addRow({x = 110})
+        df:addRow({x = 121})
+        df:withPctChange("x", "pct")
+        local row1 = df:getRow(1)
+        local row2 = df:getRow(2)
+        expect_equal(nil, row1.pct)
+        expect_near(0.1, row2.pct, 0.001)
+    end)
+
+    -- @description withCumsum produces cumulative sum.
+    it("withCumsum accumulates correctly", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 1}) df:addRow({v = 2}) df:addRow({v = 3})
+        df:withCumsum("v", "cs")
+        local row3 = df:getRow(3)
+        expect_near(6.0, row3.cs, 0.001)
+    end)
+
+    -- @description groupAgg sums a numeric column by category.
+    it("groupAgg with sum aggregates correctly", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("cat", "")
+        df:addColumn("val", 0)
+        df:addRow({cat = "A", val = 10})
+        df:addRow({cat = "B", val = 5})
+        df:addRow({cat = "A", val = 20})
+        local agg = df:groupAgg("cat", "val", "sum")
+        expect_equal(2, agg:rowCount())
+    end)
+
+    -- @description corr returns 1 for a column correlated with itself.
+    it("corr of column with itself is 1", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", 0)
+        df:addRow({x = 1}) df:addRow({x = 2}) df:addRow({x = 3})
+        expect_near(1.0, df:corr("x", "x"), 0.001)
+    end)
+
+    -- @description correlationMatrix returns a DataFrame with "column" header row.
+    it("correlationMatrix includes column header", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("a", 0)
+        df:addColumn("b", 0)
+        df:addRow({a = 1, b = 2})
+        df:addRow({a = 2, b = 4})
+        local mat = df:correlationMatrix()
+        expect_equal("DataFrame", mat:type())
+        local cols = mat:columnNames()
+        expect_equal("column", cols[1])
+    end)
+
+    -- @description zscoreCol adds a column with zero mean.
+    it("zscoreCol produces zero-mean column", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        for i = 1, 8 do df:addRow({v = i * 2}) end
+        df:zscoreCol("v", "z")
+        local total = 0
+        for i = 1, 8 do total = total + df:getRow(i).z end
+        expect_near(0.0, total / 8, 0.001)
+    end)
+
+    -- @description normalizeCol scales to [0,1].
+    it("normalizeCol scales values to output range", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 0}) df:addRow({v = 50}) df:addRow({v = 100})
+        df:normalizeCol("v", 0, 1, "n")
+        expect_near(0.0, df:getRow(1).n, 0.001)
+        expect_near(0.5, df:getRow(2).n, 0.001)
+        expect_near(1.0, df:getRow(3).n, 0.001)
+    end)
+
+    -- @description outliers returns only rows where z-score exceeds threshold.
+    it("outliers filters to extreme rows", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        -- Most values near 0, one outlier
+        for i = 1, 9 do df:addRow({v = 0}) end
+        df:addRow({v = 1000})
+        local out = df:outliers("v", 2.0)
+        expect_equal(1, out:rowCount())
+    end)
+
+    -- @description modeVal returns the most frequent value.
+    it("modeVal returns most frequent value", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", "")
+        df:addRow({x = "a"}) df:addRow({x = "b"})
+        df:addRow({x = "a"}) df:addRow({x = "c"})
+        expect_equal("a", df:modeVal("x"))
+    end)
+
+    -- @description entropy of a uniform distribution is log2(n).
+    it("entropy of uniform 4-value column is 2 bits", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("x", "")
+        df:addRow({x = "a"}) df:addRow({x = "b"})
+        df:addRow({x = "c"}) df:addRow({x = "d"})
+        expect_near(2.0, df:entropy("x"), 0.001)
+    end)
+
+    -- @description addRowBatch adds multiple rows atomically.
+    it("addRowBatch adds all rows", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRowBatch({{1}, {2}, {3}})
+        expect_equal(3, df:rowCount())
+    end)
+
+    -- @description getColumnAsF64 returns a Lua array of floats.
+    it("getColumnAsF64 returns numeric array", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 10}) df:addRow({v = 20})
+        local arr = df:getColumnAsF64("v")
+        expect_equal(2, #arr)
+        expect_near(10.0, arr[1], 0.001)
+        expect_near(20.0, arr[2], 0.001)
+    end)
+
+    -- @description setColumnFromF64 overwrites column values.
+    it("setColumnFromF64 overwrites column with new values", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("v", 0)
+        df:addRow({v = 0}) df:addRow({v = 0})
+        df:setColumnFromF64("v", {7, 14})
+        expect_near(7.0, df:getRow(1).v, 0.001)
+        expect_near(14.0, df:getRow(2).v, 0.001)
+    end)
+
+    -- @description pivot creates a wide-format table with correct column labels.
+    it("pivot creates wide-format DataFrame", function()
+        local df = lurek.dataframe.newDataFrame()
+        df:addColumn("row", "")
+        df:addColumn("col", "")
+        df:addColumn("val", 0)
+        df:addRow({row = "R1", col = "C1", val = 1})
+        df:addRow({row = "R1", col = "C2", val = 2})
+        df:addRow({row = "R2", col = "C1", val = 3})
+        local p = df:pivot("row", "col", "val")
+        -- Should have 3 columns: row, C1, C2
+        expect_equal(3, #p:columnNames())
+    end)
+
+end)
 test_summary()

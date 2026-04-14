@@ -14,5 +14,5 @@ pub mod stack;
 pub mod transition;
 
 pub use depth_sorter::DepthSorter;
-pub use stack::SceneStack;
-pub use transition::{ActiveTransition, TransitionType};
+pub use stack::{SceneId, SceneStack};
+pub use transition::{ActiveTransition, EasingType, TransitionType};

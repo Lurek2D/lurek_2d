@@ -6,6 +6,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::compute::array::{DataType, NdArray};
+use crate::compute::analytics;
+use crate::compute::linalg;
 use crate::compute::ops;
 use crate::compute::spatial;
 
@@ -636,6 +638,179 @@ impl LuaUserData for LuaArray {
             Ok(this.inner.display_string())
         });
 
+        // ── Analytics ──────────────────────────────────────────────────
+
+        // -- cumsum --
+        /// Cumulative sum of all elements (flattened).
+        /// @return Array
+        methods.add_method("cumsum", |lua, this, ()| {
+            let r = analytics::cumsum(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- diff --
+        /// Discrete difference applied `order` times.
+        /// @param order : integer?
+        /// @return Array
+        methods.add_method("diff", |lua, this, order: Option<usize>| {
+            let r = analytics::diff(&this.inner, order.unwrap_or(1))
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- histogram --
+        /// Compute a histogram. Returns a table of {lo, hi, count} tables.
+        /// @param bins : integer
+        /// @param lo : number?
+        /// @param hi : number?
+        /// @return table
+        methods.add_method(
+            "histogram",
+            |lua, this, (bins, lo, hi): (usize, Option<f64>, Option<f64>)| {
+                let bins_data = analytics::histogram(&this.inner, bins, lo, hi)
+                    .map_err(LuaError::RuntimeError)?;
+                let out = lua.create_table()?;
+                for (i, (bin_lo, bin_hi, count)) in bins_data.iter().enumerate() {
+                    let entry = lua.create_table()?;
+                    entry.set("lo", *bin_lo)?;
+                    entry.set("hi", *bin_hi)?;
+                    entry.set("count", *count)?;
+                    out.set(i + 1, entry)?;
+                }
+                Ok(out)
+            },
+        );
+
+        // -- percentile --
+        /// Compute the p-th percentile (0–100).
+        /// @param p : number
+        /// @return number
+        methods.add_method("percentile", |_, this, p: f64| {
+            analytics::percentile(&this.inner, p).map_err(LuaError::RuntimeError)
+        });
+
+        // -- covariance --
+        /// Population covariance with another 1D array.
+        /// @param other : Array
+        /// @return number
+        methods.add_method("covariance", |_, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaArray>()?;
+            analytics::covariance(&this.inner, &other.inner).map_err(LuaError::RuntimeError)
+        });
+
+        // -- pearsonCorr --
+        /// Pearson correlation coefficient with another 1D array.
+        /// @param other : Array
+        /// @return number
+        methods.add_method("pearsonCorr", |_, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaArray>()?;
+            analytics::pearson_corr(&this.inner, &other.inner).map_err(LuaError::RuntimeError)
+        });
+
+        // -- normalizeRange --
+        /// Linearly rescale values to [out_min, out_max].
+        /// @param out_min : number
+        /// @param out_max : number
+        /// @return Array
+        methods.add_method("normalizeRange", |lua, this, (lo, hi): (f64, f64)| {
+            let r =
+                analytics::normalize_range(&this.inner, lo, hi).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- zscore --
+        /// Standardise values to zero mean and unit variance.
+        /// @return Array
+        methods.add_method("zscore", |lua, this, ()| {
+            let r = analytics::zscore(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- convolve1d --
+        /// 1D convolution with a kernel array (full output).
+        /// @param kernel : Array
+        /// @return Array
+        methods.add_method("convolve1d", |lua, this, kernel: LuaAnyUserData| {
+            let kernel = kernel.borrow::<LuaArray>()?;
+            let r = analytics::convolve1d(&this.inner, &kernel.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- correlate1d --
+        /// 1D cross-correlation with a template array (valid output).
+        /// @param template : Array
+        /// @return Array
+        methods.add_method("correlate1d", |lua, this, template: LuaAnyUserData| {
+            let template = template.borrow::<LuaArray>()?;
+            let r = analytics::correlate1d(&this.inner, &template.inner)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // ── Linear algebra ──────────────────────────────────────────────
+
+        // -- normalizeVec --
+        /// L2-normalise a 1D vector.
+        /// @return Array
+        methods.add_method("normalizeVec", |lua, this, ()| {
+            let r = linalg::normalize_vec(&this.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- outer --
+        /// Outer product of two 1D vectors → 2D array [m, n].
+        /// @param other : Array
+        /// @return Array
+        methods.add_method("outer", |lua, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaArray>()?;
+            let r = linalg::outer(&this.inner, &other.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- cross2d --
+        /// Signed 2D cross product with another length-2 array.
+        /// @param other : Array
+        /// @return number
+        methods.add_method("cross2d", |_, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaArray>()?;
+            linalg::cross2d(&this.inner, &other.inner).map_err(LuaError::RuntimeError)
+        });
+
+        // -- transformPoints --
+        /// Apply this 2×2 or 3×3 matrix to an [N,2] points array.
+        /// @param points : Array
+        /// @return Array
+        methods.add_method("transformPoints", |lua, this, pts: LuaAnyUserData| {
+            let pts = pts.borrow::<LuaArray>()?;
+            let r =
+                linalg::transform_points(&this.inner, &pts.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // -- sobel --
+        /// Apply Sobel edge detection to a 2D array. Returns {gx=Array, gy=Array}.
+        /// @return table
+        methods.add_method("sobel", |lua, this, ()| {
+            let (gx, gy) = linalg::sobel(&this.inner).map_err(LuaError::RuntimeError)?;
+            let t = lua.create_table()?;
+            t.set("gx", lua.create_userdata(LuaArray { inner: gx })?)?;
+            t.set("gy", lua.create_userdata(LuaArray { inner: gy })?)?;
+            Ok(t)
+        });
+
+        // -- linsolve --
+        /// Solve A·x = b where this array is A (square [n,n]) and b is a 1D vector.
+        /// @param b : Array
+        /// @return Array
+        methods.add_method("linsolve", |lua, this, b: LuaAnyUserData| {
+            let b = b.borrow::<LuaArray>()?;
+            let r = linalg::linsolve(&this.inner, &b.inner).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: r })
+        });
+
+        // ── Identity ─────────────────────────────────────────────────────
+
         // -- type --
         /// Returns the type name "Array".
         /// @return string
@@ -747,6 +922,47 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 lua.create_userdata(LuaArray { inner: arr })
             },
         )?,
+    )?;
+
+    // -- gaussianKernel --
+    /// Creates a size×size Gaussian kernel array.
+    /// @param size : integer
+    /// @param sigma : number
+    /// @return Array
+    tbl.set(
+        "gaussianKernel",
+        lua.create_function(|lua, (size, sigma): (usize, f64)| {
+            let k = linalg::gaussian_kernel(size, sigma).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: k })
+        })?,
+    )?;
+
+    // -- rotate2dMatrix --
+    /// Creates a 2×2 rotation matrix for the given angle in radians.
+    /// @param angle_rad : number
+    /// @return Array
+    tbl.set(
+        "rotate2dMatrix",
+        lua.create_function(|lua, angle_rad: f64| {
+            let m = linalg::rotate2d_matrix(angle_rad).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: m })
+        })?,
+    )?;
+
+    // -- affine2d --
+    /// Creates a 3×3 homogeneous affine matrix.
+    /// @param tx : number
+    /// @param ty : number
+    /// @param angle_rad : number
+    /// @param sx : number
+    /// @param sy : number
+    /// @return Array
+    tbl.set(
+        "affine2d",
+        lua.create_function(|lua, (tx, ty, angle_rad, sx, sy): (f64, f64, f64, f64, f64)| {
+            let m = linalg::affine2d(tx, ty, angle_rad, sx, sy).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaArray { inner: m })
+        })?,
     )?;
 
     luna.set("compute", tbl)?;

@@ -9,8 +9,6 @@
 //! and the `lurek.*` Lua API for the scripting interface.
 
 /// Maximum number of elements allowed in a single NdArray.
-use crate::runtime::log_messages::{CP01_NDARRAY_ALLOC, CP02_NDARRAY_LARGE};
-use crate::log_msg;
 const MAX_ELEMENTS: usize = 268_435_456;
 
 /// Element data type for an NdArray.
@@ -115,7 +113,7 @@ impl NdArray {
     pub fn zeros(shape: &[usize], dtype: DataType) -> Result<Self, String> {
         Self::validate_shape(shape)?;
         let total = Self::element_count(shape);
-        log_msg!(debug, CP01_NDARRAY_ALLOC, "{} elements", total);
+        log::debug!("ndarray: allocating {} elements", total);
         let strides = Self::compute_strides(shape);
         let data = vec![0u8; total * dtype.byte_size()];
         Ok(NdArray {
@@ -391,7 +389,7 @@ impl NdArray {
         }
         let total = Self::element_count(shape);
         if total > MAX_ELEMENTS {
-            log_msg!(warn, CP02_NDARRAY_LARGE, "{} > {}", total, MAX_ELEMENTS);
+            log::warn!("ndarray: element count {} exceeds safety limit {}", total, MAX_ELEMENTS);
             return Err(format!(
                 "element count {total} exceeds maximum {MAX_ELEMENTS}"
             ));

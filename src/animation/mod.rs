@@ -17,9 +17,15 @@ pub mod event;
 pub mod frame;
 /// Render-command generation for sprite animations.
 pub mod render;
+/// Aseprite JSON export parser.
+pub mod aseprite;
+/// Finite-state machine for parameter-driven animation control.
+pub mod state_machine;
 
 pub use clip::AnimClip;
 pub use controller::Animation;
 pub use event::AnimEvent;
 pub use frame::{AnimFrame, AnimationFrame};
 pub use render::AnimRenderParams;
+pub use aseprite::{load_aseprite_json, AsepriteParsed, AsepriteFrameData, AsepriteTagData, AsepriteDirection};
+pub use state_machine::{AnimStateMachine, AnimStateConfig, AnimTransition, AnimParamValue, TransitionCondition, ConditionOp, ConditionValue};

@@ -1,7 +1,11 @@
 //! Skeleton container holding bones, slots, and Atlas data.
 
+use std::collections::HashMap;
+
 use super::bone::Bone;
 use super::slot::Slot;
+use super::ik::IKConstraint;
+use super::timeline::SkeletonAnimation;
 use crate::runtime::log_messages::SP01_SKEL_LOADED;
 use crate::log_msg;
 
@@ -34,12 +38,18 @@ pub struct BoneParams {
 ///
 /// # Fields
 /// - `name` — `String`. Skeleton name.
-/// - `bones` — `Vec<Bone>`. Bone array (parent indices index into this vec).
+/// - `bones` — `Vec<Bone>`. Bone array.
 /// - `slots` — `Vec<Slot>`. Render slots bound to bones.
-/// - `x` — `f32`. World-space root X position.
-/// - `y` — `f32`. World-space root Y position.
-/// - `scale_x` — `f32`. Root X scale.
-/// - `scale_y` — `f32`. Root Y scale.
+/// - `x`, `y` — `f32`. World-space root position.
+/// - `scale_x`, `scale_y` — `f32`. Root scale.
+/// - `animations` — `Vec<SkeletonAnimation>`. Registered animation clips.
+/// - `ik_constraints` — `Vec<IKConstraint>`. Active IK constraints.
+/// - `skins` — `HashMap<String, HashMap<String, String>>`. Skin slot-attachment overrides.
+/// - `active_skin` — `Option<String>`. Currently active skin name.
+/// - `current_animation` — `Option<String>`. Currently active animation name.
+/// - `anim_time` — `f32`. Current playback time in seconds.
+/// - `anim_playing` — `bool`. Whether the animation is playing.
+/// - `anim_loop` — `bool`. Whether the current animation loops.
 #[derive(Debug, Clone)]
 pub struct Skeleton {
     pub name: String,
@@ -49,6 +59,22 @@ pub struct Skeleton {
     pub y: f32,
     pub scale_x: f32,
     pub scale_y: f32,
+    /// Registered skeleton animation clips.
+    pub animations: Vec<SkeletonAnimation>,
+    /// Active IK constraints.
+    pub ik_constraints: Vec<IKConstraint>,
+    /// Skin slot-to-attachment override maps.
+    pub skins: HashMap<String, HashMap<String, String>>,
+    /// Currently active skin name, if any.
+    pub active_skin: Option<String>,
+    /// Currently active animation name, if any.
+    pub current_animation: Option<String>,
+    /// Current playback time of the active animation in seconds.
+    pub anim_time: f32,
+    /// Whether the animation is currently playing.
+    pub anim_playing: bool,
+    /// Whether the current animation should loop.
+    pub anim_loop: bool,
 }
 
 impl Skeleton {
@@ -69,6 +95,14 @@ impl Skeleton {
             y: 0.0,
             scale_x: 1.0,
             scale_y: 1.0,
+            animations: Vec::new(),
+            ik_constraints: Vec::new(),
+            skins: HashMap::new(),
+            active_skin: None,
+            current_animation: None,
+            anim_time: 0.0,
+            anim_playing: false,
+            anim_loop: true,
         }
     }
 
@@ -194,6 +228,208 @@ impl Skeleton {
     /// `usize`.
     pub fn bone_count(&self) -> usize {
         self.bones.len()
+    }
+
+    // ── Skeleton animations ──────────────────────────────────────────────
+
+    /// Adds a [`SkeletonAnimation`] to this skeleton's animation library.
+    ///
+    /// # Parameters
+    /// - `anim` — [`SkeletonAnimation`].
+    pub fn add_animation(&mut self, anim: SkeletonAnimation) {
+        self.animations.push(anim);
+    }
+
+    /// Returns the index of the animation with the given name.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    ///
+    /// # Returns
+    /// `Option<usize>`.
+    pub fn find_animation(&self, name: &str) -> Option<usize> {
+        self.animations.iter().position(|a| a.name == name)
+    }
+
+    /// Starts playing the named animation.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. Animation name.
+    /// - `looping` — `bool`. Whether to loop.
+    ///
+    /// # Returns
+    /// `bool` — `true` if the animation was found.
+    pub fn play_animation(&mut self, name: &str, looping: bool) -> bool {
+        if self.find_animation(name).is_some() {
+            self.current_animation = Some(name.to_string());
+            self.anim_time = 0.0;
+            self.anim_playing = true;
+            self.anim_loop = looping;
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Stops playback of the current animation.
+    pub fn stop_animation(&mut self) {
+        self.anim_playing = false;
+    }
+
+    /// Advances the active animation by `dt` seconds, applies keyframes, and wraps or stops at the end.
+    ///
+    /// # Parameters
+    /// - `dt` — `f32`. Delta time in seconds.
+    pub fn update_animation(&mut self, dt: f32) {
+        if !self.anim_playing {
+            return;
+        }
+        let anim_idx = match &self.current_animation {
+            Some(n) => match self.animations.iter().position(|a| a.name == *n) {
+                Some(i) => i,
+                None => return,
+            },
+            None => return,
+        };
+
+        self.anim_time += dt;
+
+        let (duration, looping) = {
+            let anim = &self.animations[anim_idx];
+            (anim.duration, self.anim_loop)
+        };
+
+        if looping && duration > 0.0 {
+            self.anim_time %= duration;
+        } else if self.anim_time >= duration {
+            self.anim_time = duration;
+            self.anim_playing = false;
+        }
+
+        let anim = self.animations[anim_idx].clone();
+        let time = self.anim_time;
+        anim.apply_to_skeleton(self, time);
+    }
+
+    /// Returns the current playback time in seconds.
+    ///
+    /// # Returns
+    /// `f32`.
+    pub fn get_animation_time(&self) -> f32 {
+        self.anim_time
+    }
+
+    // ── IK constraints ───────────────────────────────────────────────────
+
+    /// Adds an IK constraint and returns its index.
+    ///
+    /// # Parameters
+    /// - `constraint` — [`IKConstraint`].
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn add_ik_constraint(&mut self, constraint: IKConstraint) -> usize {
+        let idx = self.ik_constraints.len();
+        self.ik_constraints.push(constraint);
+        idx
+    }
+
+    /// Sets the target position for the named IK constraint.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. Constraint name.
+    /// - `x` — `f32`. Target X.
+    /// - `y` — `f32`. Target Y.
+    ///
+    /// # Returns
+    /// `bool` — `true` if the constraint was found.
+    pub fn set_ik_target(&mut self, name: &str, x: f32, y: f32) -> bool {
+        if let Some(c) = self.ik_constraints.iter_mut().find(|c| c.name == name) {
+            c.set_target(x, y);
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Evaluates all IK constraints and writes resulting rotations into the bone array.
+    ///
+    /// Call after `update_animation` and before `update_world_transforms` for best results.
+    pub fn apply_ik_constraints(&mut self) {
+        for i in 0..self.ik_constraints.len() {
+            let constraint = self.ik_constraints[i].clone();
+            constraint.solve(&mut self.bones);
+        }
+    }
+
+    // ── Skins ────────────────────────────────────────────────────────────
+
+    /// Registers a new empty skin by name.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. Skin name.
+    pub fn add_skin(&mut self, name: &str) {
+        self.skins.entry(name.to_string()).or_default();
+    }
+
+    /// Sets the active skin, changing slot attachment lookups.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`. Skin name.
+    ///
+    /// # Returns
+    /// `bool` — `true` if the skin exists.
+    pub fn set_skin(&mut self, name: &str) -> bool {
+        if self.skins.contains_key(name) {
+            self.active_skin = Some(name.to_string());
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Returns the name of the currently active skin.
+    ///
+    /// # Returns
+    /// `Option<&str>`.
+    pub fn get_skin(&self) -> Option<&str> {
+        self.active_skin.as_deref()
+    }
+
+    /// Registers a slot-to-attachment mapping within a named skin.
+    ///
+    /// # Parameters
+    /// - `skin` — `&str`. Skin name (created automatically if not yet registered).
+    /// - `slot` — `&str`. Slot name.
+    /// - `attachment` — `&str`. Attachment resource name.
+    pub fn set_skin_mapping(&mut self, skin: &str, slot: &str, attachment: &str) {
+        self.skins
+            .entry(skin.to_string())
+            .or_default()
+            .insert(slot.to_string(), attachment.to_string());
+    }
+
+    /// Returns the effective attachment name for a slot, consulting the active skin first.
+    ///
+    /// Falls back to the slot's own `attachment_name` field when no skin override exists.
+    ///
+    /// # Parameters
+    /// - `slot_idx` — `usize`. Slot index.
+    ///
+    /// # Returns
+    /// `Option<&str>`.
+    pub fn get_slot_attachment(&self, slot_idx: usize) -> Option<&str> {
+        let slot = self.slots.get(slot_idx)?;
+        // Check active skin first.
+        if let Some(skin_name) = &self.active_skin {
+            if let Some(skin_map) = self.skins.get(skin_name) {
+                if let Some(att) = skin_map.get(&slot.name) {
+                    return Some(att.as_str());
+                }
+            }
+        }
+        slot.attachment_name.as_deref()
+    }
     }
 
     /// Returns the number of slots in this skeleton.

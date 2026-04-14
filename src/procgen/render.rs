@@ -1,12 +1,208 @@
-//! Procedural generation visualization helpers.
+//! Periodic-Perlin `NoiseGrid` — a plain data buffer, no render deps.
 //!
-//! Provides `NoiseGrid` — a precomputed 2-D noise buffer that can be visualised
-//! as both a sequence of `RenderCommand`s (for screen overlay) and as a CPU
-//! `ImageData` (for headless testing or export).
+//! Visualization is the responsibility of the caller. Use the `cells` field
+//! directly or call `lurek.render.*` from Lua to draw the grid on screen.
 
-use crate::image::ImageData;
 use crate::procgen::noise_ext::perlin_noise_periodic;
-use crate::render::renderer::{DrawMode, RenderCommand};
+
+/// A precomputed 2-D noise grid sampled from periodic Perlin noise.
+///
+/// Values are normalised to `[0.0, 1.0]` before storage. This is a plain data
+/// struct — no render commands, no image allocation. Visualization is the
+/// responsibility of the caller.
+///
+/// # Fields
+/// - `width` — `u32`. Number of columns.
+/// - `height` — `u32`. Number of rows.
+/// - `cells` — `Vec<f32>`. Row-major noise values, each in `[0.0, 1.0]`.
+pub struct NoiseGrid {
+    /// Number of columns.
+    pub width: u32,
+    /// Number of rows.
+    pub height: u32,
+    /// Row-major noise values normalised to `[0.0, 1.0]`.
+    pub cells: Vec<f32>,
+}
+
+impl NoiseGrid {
+    /// Sample periodic Perlin noise onto a grid and return a plain data buffer.
+    ///
+    /// `scale` controls zoom: larger values stretch the pattern, smaller values
+    /// compress it. The noise period equals `width * scale` × `height * scale`.
+    ///
+    /// # Parameters
+    /// - `width` — `u32`. Grid width in cells.
+    /// - `height` — `u32`. Grid height in cells.
+    /// - `scale` — `f64`. Noise frequency scale (e.g. `0.1` = fine grain, `1.0` = coarse).
+    ///
+    /// # Returns
+    /// `Self`.
+    pub fn from_perlin(width: u32, height: u32, scale: f64) -> Self {
+        let scale = scale.max(1e-6);
+        let px = width as f64 * scale;
+        let py = height as f64 * scale;
+        let size = (width * height) as usize;
+        let mut cells = Vec::with_capacity(size);
+
+        for y in 0..height {
+            for x in 0..width {
+                let nx = x as f64 * scale;
+                let ny = y as f64 * scale;
+                let v = (perlin_noise_periodic(nx, ny, px, py) * 0.5 + 0.5).clamp(0.0, 1.0) as f32;
+                cells.push(v);
+            }
+        }
+
+        Self { width, height, cells }
+    }
+
+    /// Return a greyscale RGBA byte buffer (4 bytes per pixel, `width * height * 4` total).
+    ///
+    /// Each cell maps to one pixel. This can be fed directly to `lurek.image` or
+    /// written to disk without pulling in any render-module types.
+    ///
+    /// # Returns
+    /// `Vec<u8>` in RGBA order.
+    pub fn to_rgba_bytes(&self) -> Vec<u8> {
+        let mut buf = Vec::with_capacity(self.cells.len() * 4);
+        for &v in &self.cells {
+            let g = (v * 255.0) as u8;
+            buf.extend_from_slice(&[g, g, g, 255]);
+        }
+        buf
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_perlin_correct_dimensions() {
+        let grid = NoiseGrid::from_perlin(8, 6, 0.1);
+        assert_eq!(grid.width, 8);
+        assert_eq!(grid.height, 6);
+        assert_eq!(grid.cells.len(), 48);
+    }
+
+    #[test]
+    fn from_perlin_values_in_range() {
+        let grid = NoiseGrid::from_perlin(16, 16, 0.2);
+        for &v in &grid.cells {
+            assert!(v >= 0.0 && v <= 1.0, "value out of [0,1]: {v}");
+        }
+    }
+
+    #[test]
+    fn to_rgba_bytes_length() {
+        let grid = NoiseGrid::from_perlin(4, 4, 0.1);
+        assert_eq!(grid.to_rgba_bytes().len(), 4 * 4 * 4);
+    }
+
+    #[test]
+    fn empty_grid_to_rgba_empty() {
+        let grid = NoiseGrid { width: 0, height: 0, cells: Vec::new() };
+        assert!(grid.to_rgba_bytes().is_empty());
+    }
+}
+/// Values are normalised to `[0.0, 1.0]` before storage. This is a plain data
+/// struct — no render commands, no image allocation. Visualization is the
+/// responsibility of the caller.
+///
+/// # Fields
+/// - `width` — `u32`. Number of columns.
+/// - `height` — `u32`. Number of rows.
+/// - `cells` — `Vec<f32>`. Row-major noise values, each in `[0.0, 1.0]`.
+pub struct NoiseGrid {
+    /// Number of columns.
+    pub width: u32,
+    /// Number of rows.
+    pub height: u32,
+    /// Row-major noise values normalised to `[0.0, 1.0]`.
+    pub cells: Vec<f32>,
+}
+
+impl NoiseGrid {
+    /// Sample periodic Perlin noise onto a grid and return a plain data buffer.
+    ///
+    /// `scale` controls zoom: larger values stretch the pattern, smaller values
+    /// compress it. The noise period equals `width * scale` × `height * scale`.
+    ///
+    /// # Parameters
+    /// - `width` — `u32`. Grid width in cells.
+    /// - `height` — `u32`. Grid height in cells.
+    /// - `scale` — `f64`. Noise frequency scale (e.g. `0.1` = fine grain, `1.0` = coarse).
+    ///
+    /// # Returns
+    /// `Self`.
+    pub fn from_perlin(width: u32, height: u32, scale: f64) -> Self {
+        let scale = scale.max(1e-6);
+        let px = width as f64 * scale;
+        let py = height as f64 * scale;
+        let size = (width * height) as usize;
+        let mut cells = Vec::with_capacity(size);
+
+        for y in 0..height {
+            for x in 0..width {
+                let nx = x as f64 * scale;
+                let ny = y as f64 * scale;
+                let v = (perlin_noise_periodic(nx, ny, px, py) * 0.5 + 0.5).clamp(0.0, 1.0) as f32;
+                cells.push(v);
+            }
+        }
+
+        Self { width, height, cells }
+    }
+
+    /// Return a greyscale RGBA byte buffer (4 bytes per pixel, `width * height * 4` total).
+    ///
+    /// Each cell maps to one pixel. This can be fed directly to `lurek.image` or
+    /// written to disk without pulling in any render-module types.
+    ///
+    /// # Returns
+    /// `Vec<u8>` in RGBA order.
+    pub fn to_rgba_bytes(&self) -> Vec<u8> {
+        let mut buf = Vec::with_capacity(self.cells.len() * 4);
+        for &v in &self.cells {
+            let g = (v * 255.0) as u8;
+            buf.extend_from_slice(&[g, g, g, 255]);
+        }
+        buf
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn from_perlin_correct_dimensions() {
+        let grid = NoiseGrid::from_perlin(8, 6, 0.1);
+        assert_eq!(grid.width, 8);
+        assert_eq!(grid.height, 6);
+        assert_eq!(grid.cells.len(), 48);
+    }
+
+    #[test]
+    fn from_perlin_values_in_range() {
+        let grid = NoiseGrid::from_perlin(16, 16, 0.2);
+        for &v in &grid.cells {
+            assert!(v >= 0.0 && v <= 1.0, "value out of [0,1]: {v}");
+        }
+    }
+
+    #[test]
+    fn to_rgba_bytes_length() {
+        let grid = NoiseGrid::from_perlin(4, 4, 0.1);
+        assert_eq!(grid.to_rgba_bytes().len(), 4 * 4 * 4);
+    }
+
+    #[test]
+    fn empty_grid_to_rgba_empty() {
+        let grid = NoiseGrid { width: 0, height: 0, cells: Vec::new() };
+        assert!(grid.to_rgba_bytes().is_empty());
+    }
+}
 
 /// A precomputed 2-D noise grid sampled from periodic Perlin noise.
 ///

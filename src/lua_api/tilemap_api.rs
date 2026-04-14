@@ -14,6 +14,8 @@ use crate::tilemap::isomap::IsoMap;
 use crate::tilemap::mapgen::{
     Edge, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, ScriptStep, StepType,
 };
+use crate::tilemap::ldtk::load_ldtk;
+use crate::tilemap::ldtk::load_ldtk;
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 
@@ -280,6 +282,7 @@ impl LuaUserData for LuaTileSet {
 pub struct LuaTileMap {
     pub(super) inner: Rc<RefCell<TileMap>>,
     state: Rc<RefCell<SharedState>>,
+    tile_callbacks: Rc<RefCell<Vec<(u32, LuaRegistryKey)>>>,
 }
 
 impl LuaUserData for LuaTileMap {
@@ -754,6 +757,77 @@ impl LuaUserData for LuaTileMap {
             let img = this.inner.borrow().draw_to_image(tile_size);
             Ok(LuaImageData { inner: img })
         });
+
+        // -- toNavGrid --
+        /// Converts the given layer into a 2D navigation grid.
+        /// Returns a table of row tables where true means walkable. Cells with GID 0 are walkable.
+        /// @param layer : integer
+        /// @param walkable_gids : table
+        /// @return table
+        methods.add_method("toNavGrid", |lua, this, (layer, gids_tbl): (usize, LuaTable)| {
+            let mut gids: Vec<u32> = Vec::new();
+            for v in gids_tbl.sequence_values::<u32>() {
+                gids.push(v?);
+            }
+            let grid = this.inner.borrow().to_nav_grid(layer, &gids);
+            let outer = lua.create_table()?;
+            for (row_idx, row) in grid.iter().enumerate() {
+                let inner_tbl = lua.create_table()?;
+                for (col_idx, &walkable) in row.iter().enumerate() {
+                    inner_tbl.set(col_idx + 1, walkable)?;
+                }
+                outer.set(row_idx + 1, inner_tbl)?;
+            }
+            Ok(outer)
+        });
+
+        // -- onTileEnter --
+        /// Registers a callback fired when any entity's tile GID matches `gid`.
+        /// The callback receives (world_x, world_y, tile_x, tile_y).
+        /// Callbacks are stored; call checkEntities() each frame to fire them.
+        /// @param gid : integer
+        /// @param func : function
+        /// @return nil
+        methods.add_method_mut(
+            "onTileEnter",
+            |lua, this, (gid, func): (u32, LuaFunction)| {
+                let key = lua.create_registry_value(func)?;
+                this.tile_callbacks.borrow_mut().push((gid, key));
+                Ok(())
+            },
+        );
+
+        // -- checkEntities --
+        /// Checks a list of entity positions against registered tile callbacks and fires matches.
+        /// `entities` must be a sequential table of `{x, y}` world-position tables.
+        /// @param layer : integer
+        /// @param entities : table
+        /// @return nil
+        methods.add_method(
+            "checkEntities",
+            |lua, this, (layer, entities): (usize, LuaTable)| {
+                let callbacks = this.tile_callbacks.borrow();
+                if callbacks.is_empty() {
+                    return Ok(());
+                }
+                for entity_val in entities.sequence_values::<LuaTable>() {
+                    let entity = entity_val?;
+                    let wx: f32 = entity.get("x").or_else(|_| entity.get(1)).unwrap_or(0.0);
+                    let wy: f32 = entity.get("y").or_else(|_| entity.get(2)).unwrap_or(0.0);
+                    let map = this.inner.borrow();
+                    let (tx, ty) = map.world_to_tile(wx, wy);
+                    let gid = map.get_tile(layer, tx, ty);
+                    drop(map);
+                    for (cb_gid, key) in callbacks.iter() {
+                        if *cb_gid == gid {
+                            let func: LuaFunction = lua.registry_value(key)?;
+                            func.call::<_, ()>((wx, wy, tx, ty))?;
+                        }
+                    }
+                }
+                Ok(())
+            },
+        );
     }
 }
 
@@ -1466,6 +1540,7 @@ impl LuaUserData for LuaMapGen {
                 Ok(LuaTileMap {
                     inner: inner_rc,
                     state: this.state.clone(),
+                    tile_callbacks: Rc::new(RefCell::new(Vec::new())),
                 })
             },
         );
@@ -1542,6 +1617,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 lua.create_userdata(LuaTileMap {
                     inner: inner_rc,
                     state: s.clone(),
+                    tile_callbacks: Rc::new(RefCell::new(Vec::new())),
                 })
             },
         )?,
@@ -2102,6 +2178,58 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             // @return table — full TMX result with layers list
             result.set("layers", layers_tbl)?;
             Ok(result)
+        })?,
+    )?;
+
+    // ── fromLDtk ──────────────────────────────────────────────────────────────
+    /// Parses an LDtk JSON export string and returns a TileMap.
+    /// Pass an optional `level_name` to select a specific level; defaults to the first.
+    /// @param json_str : string
+    /// @param level_name : string?
+    /// @return TileMap
+    tbl.set(
+        "fromLDtk",
+        lua.create_function({
+            let state = state.clone();
+            move |lua, (json_str, level_name): (String, Option<String>)| {
+                match load_ldtk(&json_str, level_name.as_deref()) {
+                    Ok(map) => {
+                        let ud = lua.create_userdata(LuaTileMap {
+                            inner: Rc::new(RefCell::new(map)),
+                            state: state.clone(),
+                            tile_callbacks: Rc::new(RefCell::new(Vec::new())),
+                        })?;
+                        Ok(LuaValue::UserData(ud))
+                    }
+                    Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
+                }
+            }
+        })?,
+    )?;
+
+    // ── fromLDtk ──────────────────────────────────────────────────────────────
+    /// Parses an LDtk JSON export string and returns a TileMap.
+    /// Pass an optional `level_name` to select a specific level; defaults to the first.
+    /// @param json_str : string
+    /// @param level_name : string?
+    /// @return TileMap
+    tbl.set(
+        "fromLDtk",
+        lua.create_function({
+            let state = state.clone();
+            move |lua, (json_str, level_name): (String, Option<String>)| {
+                match load_ldtk(&json_str, level_name.as_deref()) {
+                    Ok(map) => {
+                        let ud = lua.create_userdata(LuaTileMap {
+                            inner: Rc::new(RefCell::new(map)),
+                            state: state.clone(),
+                            tile_callbacks: Rc::new(RefCell::new(Vec::new())),
+                        })?;
+                        Ok(LuaValue::UserData(ud))
+                    }
+                    Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
+                }
+            }
         })?,
     )?;
 

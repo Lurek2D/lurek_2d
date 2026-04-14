@@ -34,6 +34,9 @@ pub use mapgen::{
     Edge, LayerMode, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, MapZone,
     ScriptStep, StepType,
 };
+/// LDtk level-editor map format importer.
+pub mod ldtk;
+pub use ldtk::load_ldtk;
 pub use tilemap::{SweepResult, TileLayer, TileMap};
 pub use tileset::{TileAnimFrame, TileSet};
 pub use tmx::{

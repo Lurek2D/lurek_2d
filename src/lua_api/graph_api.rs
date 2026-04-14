@@ -1554,6 +1554,41 @@ impl LuaUserData for LuaGraph {
 
         // ── Supply / Demand ─────────────────────────────────────────
 
+        // -- mst --
+        /// Returns edge IDs forming a minimum spanning tree (Kruskal, undirected view).
+        /// @return table
+        methods.add_method("mst", |lua, this, ()| {
+            let edge_ids = this.inner.borrow().mst_kruskal();
+            let t = lua.create_table()?;
+            for (i, eid) in edge_ids.iter().enumerate() {
+                t.set(i + 1, *eid)?;
+            }
+            Ok(t)
+        });
+
+        // -- astar --
+        /// Finds the shortest path between two nodes using A*.
+        /// @param from_node : Node
+        /// @param to_node : Node
+        /// @return table?
+        methods.add_method("astar", |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {
+            let from_id = from_node.borrow::<LuaNode>()?.id;
+            let to_id = to_node.borrow::<LuaNode>()?.id;
+            let positions = HashMap::new();
+            match this.inner.borrow().astar_graph(from_id, to_id, &positions) {
+                None => Ok(LuaValue::Nil),
+                Some(path) => {
+                    let t = lua.create_table()?;
+                    for (i, &nid) in path.iter().enumerate() {
+                        t.set(i + 1, lua.create_userdata(LuaNode { graph: this.inner.clone(), id: nid })?)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
+            }
+        });
+
+        // ── Supply / Demand ─────────────────────────────────────────
+
         // -- processDemand --
         /// Processes all supply/demand declarations and fires event callbacks.
         /// @return nil

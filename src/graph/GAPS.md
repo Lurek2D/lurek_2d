@@ -1,26 +1,23 @@
-# Gap Analysis: `src/graph`
+# Gap Status: `src/graph`
 
-## 1. Architecture & Compliance (BLOCKER)
-- **Dependency Violation**: The `graph` module is assigned to the `Foundations` tier. Per the architecture rules (`docs/architecture/engine-architecture.md`), `Foundations` modules are leaf modules and must not import from higher groups.
-  - `src/graph/core.rs` and `src/graph/simulation.rs` import `crate::runtime::log_messages` (`Core Runtime`).
-  - **Severe Violation**: `src/graph/render.rs` imports `crate::render::renderer::{DrawMode, RenderCommand}` (`Platform Services`). The pure math structure must not depend on the GPU interface, especially `Platform Services`. Rendering routines belong either in `Platform Services` (`render`) or `Feature Systems`. Pure Logic stays pure (Zen Rule 9).
+- Reviewed: 2026-04-14
+- Baseline: current workspace state on branch `refactor/src-migration-v2`      
+- Current status: partially implemented
+- Canonical module reference: `docs/specs/graph.md`
 
-## 2. AGENT.md Structure (BLOCKER / ERROR)
-The `AGENT.md` file in `src/graph/` does **not** adhere to the canonical short format required by the CAG rules (A-02).
-- **Missing / Incorrect Metadata Table**: Uses a bulleted `## Module Info` list instead of the required markdown table format (with `**Tier**`, `**Status**`, etc.).
-- **Wrong Headings**: Uses `## Module Purpose` instead of `## Purpose`, and `## Files` instead of `## Source Files`.
-- **Forbidden Sections**: Contains a `## Key Types` section. According to the `module-audit` skill, this belongs *only* in `docs/specs/graph.md` and strictly does not belong in `AGENT.md`.
-- **Missing Required Link**: Lacks the `## Full Specification` section linking to `docs/specs/graph.md`.
+This refresh treats the current workspace state as the source of truth; older gap-analysis text is historical only.
 
-## 3. Code Documentation (PASS)
-- Public items are documented.
-- No placeholder stub text like `"Consult the module-level documentation..."` was detected.
+## Open items
+- `src/graph/render.rs` still represents render/runtime coupling that keeps the module short of fully clean foundations-tier separation.
+- Legacy dependency-direction findings should be re-evaluated from current source, but the module still warrants partial status rather than fully implemented. 
 
-## 4. Thin Wrapper Rule (PASS)
-- No `mlua` imports were found in the domain module.
+## Resolved or stale legacy items
+- Stale: AGENT-era rewrite asks are obsolete because canonical module guidance now lives in `docs/specs/graph.md`.
+- Resolved: the old file's broad blocker framing is too strong for the current workspace state.
+- Superseded: this file now records status only; deeper follow-up belongs in `docs/specs/graph.md` or a new issue.
 
-## Remediation Steps
-1. **Fix Architectural Violations**:
-   - Remove the dependency on `crate::runtime::log_messages`.
-   - Re-evaluate `src/graph/render.rs`. Either abstract the render interface or move `render.rs` responsibilities into a visualization system located in `Feature Systems` or `Platform Services` (`render` / `lurek.debug`).
-2. **Rewrite `src/graph/AGENT.md`**: Convert to the exact short template format required by `.github/skills/module-audit/SKILL.md`.
+## Evidence
+- `docs/specs/graph.md`
+- `src/graph/render.rs`
+- `src/graph/core.rs`
+- `src/lua_api/graph_api.rs`

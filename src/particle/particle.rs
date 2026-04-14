@@ -17,6 +17,7 @@
 /// - `size_variation` — `f32`.
 /// - `origin_x` — `f32`.
 /// - `origin_y` — `f32`.
+/// - `shape_seed` — `u32`. Per-particle random seed for deterministic shape generation.
 #[derive(Clone, Debug)]
 pub struct Particle {
     /// X position relative to emitter origin.
@@ -47,4 +48,8 @@ pub struct Particle {
     pub origin_x: f32,
     /// Birth Y offset (for radial direction reference).
     pub origin_y: f32,
+    /// Per-particle random seed for deterministic shape generation (e.g. `Shrapnel` polygon).
+    /// Set once at spawn and never mutated; ensures each particle has a stable polygon across frames.
+    pub shape_seed: u32,
 }
+

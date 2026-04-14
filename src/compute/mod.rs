@@ -9,5 +9,9 @@ pub mod array;
 pub mod ops;
 /// Spatial operations: convolution, pooling, distance transforms.
 pub mod spatial;
+/// Statistical analytics, signal processing, and normalisation.
+pub mod analytics;
+/// Linear algebra: solvers, kernels, transforms, Sobel, outer products.
+pub mod linalg;
 
 pub use array::{DataType, NdArray};

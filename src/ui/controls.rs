@@ -658,3 +658,144 @@ impl ScrollBar {
         }
     }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SpinBox
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// A numeric spin box: a text field with increment and decrement buttons.
+///
+/// The displayed value is clamped to `[min, max]` and snapped to multiples
+/// of `step`.
+///
+/// # Fields
+/// - `base` — `WidgetBase`. Shared widget properties.
+/// - `value` — `f64`. Current numeric value.
+/// - `min` — `f64`. Minimum allowed value.
+/// - `max` — `f64`. Maximum allowed value.
+/// - `step` — `f64`. Snap/increment step.
+#[derive(Debug, Clone)]
+pub struct SpinBox {
+    /// Shared widget properties.
+    pub base: WidgetBase,
+    /// Current numeric value.
+    pub value: f64,
+    /// Minimum allowed value.
+    pub min: f64,
+    /// Maximum allowed value.
+    pub max: f64,
+    /// Snap/increment step.
+    pub step: f64,
+}
+
+impl SpinBox {
+    /// Create a new spin box with the given range.
+    ///
+    /// The initial value is clamped to `[min, max]`.  Default step is `1.0`.
+    ///
+    /// # Parameters
+    /// - `min` — `f64`. Minimum value.
+    /// - `max` — `f64`. Maximum value.
+    ///
+    /// # Returns
+    /// `SpinBox`.
+    pub fn new(min: f64, max: f64) -> Self {
+        let clamped_min = min.min(max);
+        Self {
+            base: WidgetBase::new(WidgetType::SpinBox),
+            value: clamped_min,
+            min: clamped_min,
+            max: min.max(max),
+            step: 1.0,
+        }
+    }
+
+    /// Set the value, clamping to `[min, max]` and snapping to `step`.
+    ///
+    /// # Parameters
+    /// - `v` — `f64`. Desired value.
+    pub fn set_value(&mut self, v: f64) {
+        let snapped = if self.step > 0.0 {
+            (v / self.step).round() * self.step
+        } else {
+            v
+        };
+        self.value = snapped.clamp(self.min, self.max);
+    }
+
+    /// Increment the value by one step (clamped).
+    pub fn increment(&mut self) {
+        self.set_value(self.value + self.step);
+    }
+
+    /// Decrement the value by one step (clamped).
+    pub fn decrement(&mut self) {
+        self.set_value(self.value - self.step);
+    }
+
+    /// Update the range, re-clamping the current value.
+    ///
+    /// # Parameters
+    /// - `min` — `f64`. New minimum.
+    /// - `max` — `f64`. New maximum.
+    pub fn set_range(&mut self, min: f64, max: f64) {
+        self.min = min.min(max);
+        self.max = min.max(max);
+        self.value = self.value.clamp(self.min, self.max);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Switch
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// A binary toggle switch rendered as a pill with a sliding thumb.
+///
+/// `thumb_t` drives the thumb position for smooth animated transitions:
+/// `0.0` = fully off, `1.0` = fully on.
+///
+/// # Fields
+/// - `base` — `WidgetBase`. Shared widget properties.
+/// - `on` — `bool`. Logical on/off state.
+/// - `thumb_t` — `f32`. Thumb animation position `[0.0, 1.0]`.
+#[derive(Debug, Clone)]
+pub struct Switch {
+    /// Shared widget properties.
+    pub base: WidgetBase,
+    /// Logical on/off state.
+    pub on: bool,
+    /// Thumb animation position `[0.0, 1.0]`.  `0.0` = off, `1.0` = on.
+    pub thumb_t: f32,
+}
+
+impl Switch {
+    /// Create a new switch.
+    ///
+    /// # Parameters
+    /// - `on` — `bool`. Initial state.
+    ///
+    /// # Returns
+    /// `Switch`.
+    pub fn new(on: bool) -> Self {
+        Self {
+            base: WidgetBase::new(WidgetType::Switch),
+            on,
+            thumb_t: if on { 1.0 } else { 0.0 },
+        }
+    }
+
+    /// Toggle the switch state.
+    pub fn toggle(&mut self) {
+        self.on = !self.on;
+        self.thumb_t = if self.on { 1.0 } else { 0.0 };
+    }
+
+    /// Set the switch state explicitly.
+    ///
+    /// # Parameters
+    /// - `on` — `bool`.
+    pub fn set_on(&mut self, on: bool) {
+        self.on = on;
+        self.thumb_t = if on { 1.0 } else { 0.0 };
+    }
+}

@@ -123,6 +123,9 @@ pub mod ui_api;
 /// Registers the `lurek.tilemap.*` tile-based map authoring and coordinate helpers API.
 pub mod tilemap_api;
 
+/// Registers the `lurek.sprite.*` sprite-sheet UV layout, atlas parsing, and RPGMaker helpers.
+pub mod sprite_api;
+
 /// Registers the `lurek.math.*` math utilities API.
 pub mod math_api;
 
@@ -215,6 +218,9 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
     if modules.animation {
         animation_api::register(&lua, &luna, state.clone())?;
     }
+
+    // sprite: lurek.sprite (pure math/UV — always registered, no config flag)
+    sprite_api::register(&lua, &luna, state.clone())?;
 
     // tween: lurek.tween
     if modules.tween {

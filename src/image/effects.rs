@@ -458,4 +458,179 @@ impl ImageData {
         }
         out
     }
+
+    /// Scale the image to new dimensions using bilinear interpolation.
+    ///
+    /// Both `new_w` and `new_h` must be ≥ 1; passing zero returns `None`. Uses
+    /// bi-linear interpolation so edges stay crisp without nearest-neighbour
+    /// block artefacts. Alpha is interpolated independently using the same
+    /// weight map.
+    ///
+    /// # Parameters
+    /// - `new_w` — New width in pixels.
+    /// - `new_h` — New height in pixels.
+    ///
+    /// # Returns
+    /// `Option<ImageData>` — `None` if `new_w == 0 || new_h == 0`.
+    pub fn resize(&self, new_w: u32, new_h: u32) -> Option<ImageData> {
+        if new_w == 0 || new_h == 0 {
+            return None;
+        }
+        let src_w = self.width as f32;
+        let src_h = self.height as f32;
+        let mut out = ImageData::new(new_w, new_h);
+        for dy in 0..new_h {
+            for dx in 0..new_w {
+                // Map destination pixel centre to source space
+                let sx = (dx as f32 + 0.5) * src_w / new_w as f32 - 0.5;
+                let sy = (dy as f32 + 0.5) * src_h / new_h as f32 - 0.5;
+                let x0 = sx.floor() as i32;
+                let y0 = sy.floor() as i32;
+                let x1 = x0 + 1;
+                let y1 = y0 + 1;
+                let tx = sx - sx.floor();
+                let ty = sy - sy.floor();
+
+                let clamp_x = |x: i32| x.clamp(0, self.width as i32 - 1) as u32;
+                let clamp_y = |y: i32| y.clamp(0, self.height as i32 - 1) as u32;
+
+                let get = |px: u32, py: u32, c: usize| -> f32 {
+                    self.pixels[((py * self.width + px) * 4) as usize + c] as f32
+                };
+
+                let cx0 = clamp_x(x0);
+                let cx1 = clamp_x(x1);
+                let cy0 = clamp_y(y0);
+                let cy1 = clamp_y(y1);
+
+                let dst_idx = ((dy * new_w + dx) * 4) as usize;
+                for c in 0..4usize {
+                    let top = get(cx0, cy0, c) * (1.0 - tx) + get(cx1, cy0, c) * tx;
+                    let bot = get(cx0, cy1, c) * (1.0 - tx) + get(cx1, cy1, c) * tx;
+                    out.pixels[dst_idx + c] = (top * (1.0 - ty) + bot * ty).round() as u8;
+                }
+            }
+        }
+        Some(out)
+    }
+
+    /// Blit (composite) `src` onto this image at `(dst_x, dst_y)` using Porter-Duff *over*.
+    ///
+    /// Pixels that fall outside the image boundaries are silently clipped. If
+    /// `src` is fully opaque the result is identical to a plain paste. The
+    /// destination image is modified in-place.
+    ///
+    /// # Parameters
+    /// - `src` — Source image to draw on top.
+    /// - `dst_x` — Horizontal offset in destination pixels (may be negative for partial blit).
+    /// - `dst_y` — Vertical offset in destination pixels (may be negative for partial blit).
+    pub fn blit(&mut self, src: &ImageData, dst_x: i32, dst_y: i32) {
+        let dw = self.width as i32;
+        let dh = self.height as i32;
+        let sw = src.width as i32;
+        let sh = src.height as i32;
+
+        for sy in 0..sh {
+            let dy = dst_y + sy;
+            if dy < 0 || dy >= dh {
+                continue;
+            }
+            for sx in 0..sw {
+                let dx = dst_x + sx;
+                if dx < 0 || dx >= dw {
+                    continue;
+                }
+                let si = ((sy * sw + sx) * 4) as usize;
+                let di = ((dy * dw + dx) * 4) as usize;
+                let sa = src.pixels[si + 3] as f32 / 255.0;
+                if sa <= 0.0 {
+                    continue;
+                }
+                let da = self.pixels[di + 3] as f32 / 255.0;
+                let out_a = sa + da * (1.0 - sa);
+                if out_a <= 0.0 {
+                    continue;
+                }
+                for c in 0..3usize {
+                    let s = src.pixels[si + c] as f32 / 255.0;
+                    let d = self.pixels[di + c] as f32 / 255.0;
+                    let out_c = (s * sa + d * da * (1.0 - sa)) / out_a;
+                    self.pixels[di + c] = (out_c * 255.0).round().clamp(0.0, 255.0) as u8;
+                }
+                self.pixels[di + 3] = (out_a * 255.0).round().clamp(0.0, 255.0) as u8;
+            }
+        }
+    }
+
+    /// Extract a rectangular sub-region and return it as a new `ImageData`.
+    ///
+    /// Returns `None` if the rectangle is empty or extends beyond the image
+    /// bounds. The returned image has dimensions `(w, h)`.
+    ///
+    /// # Parameters
+    /// - `x` — Left edge in source pixels.
+    /// - `y` — Top edge in source pixels.
+    /// - `w` — Region width in pixels.
+    /// - `h` — Region height in pixels.
+    ///
+    /// # Returns
+    /// `Option<ImageData>` — `None` if out-of-bounds or zero-size.
+    pub fn get_region(&self, x: u32, y: u32, w: u32, h: u32) -> Option<ImageData> {
+        if w == 0 || h == 0 || x + w > self.width || y + h > self.height {
+            return None;
+        }
+        let mut out = ImageData::new(w, h);
+        for row in 0..h {
+            let src_off = ((y + row) * self.width + x) as usize * 4;
+            let dst_off = (row * w) as usize * 4;
+            let len = w as usize * 4;
+            out.pixels[dst_off..dst_off + len].copy_from_slice(&self.pixels[src_off..src_off + len]);
+        }
+        Some(out)
+    }
+
+    /// Compute the total absolute per-channel difference between two images.
+    ///
+    /// Sum of `|self[i] - other[i]|` over every byte in the pixel buffer.
+    /// Images must have the same dimensions; if they differ, the comparison
+    /// range is clipped to the smaller of the two and the unmatched region
+    /// counts as a full difference (255 per byte).
+    ///
+    /// Useful for golden-image regression tests to obtain a numeric distance
+    /// rather than a binary pass/fail.
+    ///
+    /// # Parameters
+    /// - `other` — Image to compare against.
+    ///
+    /// # Returns
+    /// `u32` — Total channel-wise absolute difference. `0` means pixel-perfect match.
+    pub fn diff(&self, other: &ImageData) -> u32 {
+        let same_dims = self.width == other.width && self.height == other.height;
+        if same_dims {
+            self.pixels
+                .iter()
+                .zip(other.pixels.iter())
+                .map(|(&a, &b)| (a as i32 - b as i32).unsigned_abs())
+                .sum()
+        } else {
+            // Different sizes: compare the overlapping rectangle, penalise the rest
+            let shared_w = self.width.min(other.width);
+            let shared_h = self.height.min(other.height);
+            let mut total = 0u32;
+            for row in 0..shared_h {
+                for col in 0..shared_w {
+                    let ai = ((row * self.width + col) * 4) as usize;
+                    let bi = ((row * other.width + col) * 4) as usize;
+                    for c in 0..4usize {
+                        total += (self.pixels[ai + c] as i32 - other.pixels[bi + c] as i32)
+                            .unsigned_abs();
+                    }
+                }
+            }
+            // Unmatched rows / columns: count as maximum difference
+            let extra_self = (self.width * self.height - shared_w * shared_h) as u32 * 4 * 255;
+            let extra_other = (other.width * other.height - shared_w * shared_h) as u32 * 4 * 255;
+            total + extra_self + extra_other
+        }
+    }
 }

@@ -601,6 +601,69 @@ impl Graph {
         }
         img
     }
+
+    // ------------------------------------------------------------------
+    // Serialization
+    // ------------------------------------------------------------------
+
+    /// Serialize the graph to a JSON-compatible `serde_json::Value` map.
+    ///
+    /// Schema: `{"nodes": [{id, node_type, capacity}], "edges": [{id, from, to, weight, edge_type, bidirectional}]}`
+    pub fn serialize(&self) -> HashMap<String, serde_json::Value> {
+        use serde_json::{json, Value};
+
+        let mut nodes_arr: Vec<Value> = self.nodes.values().map(|n| {
+            json!({ "id": n.id, "node_type": n.node_type, "capacity": n.capacity })
+        }).collect();
+        nodes_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
+
+        let mut edges_arr: Vec<Value> = self.edges.values().map(|e| {
+            json!({ "id": e.id, "from": e.from_node, "to": e.to_node,
+                    "weight": e.weight, "edge_type": e.edge_type,
+                    "bidirectional": e.bidirectional })
+        }).collect();
+        edges_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
+
+        let mut map = HashMap::new();
+        map.insert("nodes".to_string(), Value::Array(nodes_arr));
+        map.insert("edges".to_string(), Value::Array(edges_arr));
+        map
+    }
+
+    /// Deserialize a graph from a map produced by [`Graph::serialize`].
+    ///
+    /// Returns an error string if the data is malformed. Items are not restored.
+    pub fn deserialize(data: &HashMap<String, serde_json::Value>) -> Result<Self, String> {
+        let mut g = Self::new();
+
+        if let Some(nodes_val) = data.get("nodes") {
+            let arr = nodes_val.as_array().ok_or("nodes must be an array")?;
+            for n in arr {
+                let node_type = n["node_type"].as_str().unwrap_or("default");
+                let capacity = n["capacity"].as_i64().unwrap_or(-1) as i32;
+                g.add_node(node_type, capacity);
+            }
+        }
+
+        if let Some(edges_val) = data.get("edges") {
+            let arr = edges_val.as_array().ok_or("edges must be an array")?;
+            for e in arr {
+                let from = e["from"].as_u64().ok_or("edge missing 'from'")? ;
+                let to = e["to"].as_u64().ok_or("edge missing 'to'")?;
+                let edge_type = e["edge_type"].as_str();
+                let weight = e["weight"].as_f64().unwrap_or(1.0);
+                let bidirectional = e["bidirectional"].as_bool().unwrap_or(false);
+                let eid = g.add_edge(from, to, edge_type)
+                    .map_err(|e| format!("add_edge error: {e}"))?;
+                if let Some(edge) = g.edges.get_mut(&eid) {
+                    edge.weight = weight;
+                    edge.bidirectional = bidirectional;
+                }
+            }
+        }
+
+        Ok(g)
+    }
 }
 
 #[cfg(test)]

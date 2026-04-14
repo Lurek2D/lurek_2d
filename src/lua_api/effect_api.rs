@@ -5,9 +5,15 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::effect::{
-    ImageEffect, Overlay, PostFxEffect, PostFxEffectType, PostFxStack, WeatherType,
+use crate::effect::{    presets::build_preset, ImageEffect, Overlay, PostFxEffect, PostFxEffectType, PostFxStack,
+    WeatherType,
 };
+use crate::render::renderer::{PostFxPass, RenderCommand};
+use std::collections::HashMap;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+/// Monotonic counter used to generate unique stack IDs for per-stack GPU capture textures.
+static NEXT_STACK_ID: AtomicU64 = AtomicU64::new(1);
 
 // -------------------------------------------------------------------------------
 // LuaPostFxEffect UserData
@@ -206,6 +212,10 @@ pub struct LuaPostFxStack {
     inner: PostFxStack,
     /// Parallel effect storage matching `inner.effects` indices.
     effects: Vec<Rc<RefCell<PostFxEffect>>>,
+    /// Unique identifier used to key GPU capture textures in the renderer.
+    stack_id: u64,
+    /// Shared engine state for pushing render commands.
+    state: Rc<RefCell<SharedState>>,
 }
 
 impl LuaUserData for LuaPostFxStack {
@@ -372,6 +382,80 @@ impl LuaUserData for LuaPostFxStack {
         /// Returns whether the stack is currently capturing the scene.
         /// @return boolean
         methods.add_method("isCapturing", |_, this, ()| Ok(this.inner.capturing));
+
+        // -- beginCapture --
+        /// Begins capturing the scene for post-processing.
+        ///
+        /// Pushes a `BeginPostFx` render command that instructs the GPU renderer to
+        /// redirect subsequent draw calls into the capture texture associated with this
+        /// stack. Call `endCapture()` when the scene geometry is complete, then
+        /// `apply()` to composite the processed result back to screen.
+        ///
+        /// @return nil
+        methods.add_method_mut("beginCapture", |_, this, ()| {
+            this.inner.capturing = true;
+            this.state
+                .borrow_mut()
+                .render_commands
+                .push(RenderCommand::BeginPostFx {
+                    stack_id: this.stack_id,
+                });
+            Ok(())
+        });
+
+        // -- endCapture --
+        /// Ends scene capture for post-processing.
+        ///
+        /// Pushes an `EndPostFx` render command so the GPU renderer resumes drawing to
+        /// the previous render target. Must be called after `beginCapture()` and before
+        /// `apply()`.
+        ///
+        /// @return nil
+        methods.add_method_mut("endCapture", |_, this, ()| {
+            this.inner.capturing = false;
+            this.state
+                .borrow_mut()
+                .render_commands
+                .push(RenderCommand::EndPostFx {
+                    stack_id: this.stack_id,
+                });
+            Ok(())
+        });
+
+        // -- apply --
+        /// Applies all enabled effects in the stack and composites the result to screen.
+        ///
+        /// Builds a `PostFxPass` list from the enabled effects in this stack and pushes
+        /// an `ApplyPostFx` render command. The GPU renderer executes the passes in order
+        /// using ping-pong rendering then copies the final result to the surface.
+        ///
+        /// @return nil
+        methods.add_method("apply", |_, this, ()| {
+            let passes: Vec<PostFxPass> = this
+                .effects
+                .iter()
+                .zip(this.inner.enabled.iter())
+                .filter(|(_, &enabled)| enabled)
+                .map(|(effect_rc, _)| {
+                    let e = effect_rc.borrow();
+                    PostFxPass {
+                        effect_name: e.get_type_name().to_string(),
+                        params: e.params.clone(),
+                        shader_id: e.shader_id,
+                    }
+                })
+                .collect();
+            this.state
+                .borrow_mut()
+                .render_commands
+                .push(RenderCommand::ApplyPostFx {
+                    stack_id: this.stack_id,
+                    passes,
+                    width: this.inner.width,
+                    height: this.inner.height,
+                });
+            Ok(())
+        });
 
         // -- type --
         /// Returns the type name "PostFxStack".
@@ -1141,6 +1225,79 @@ impl LuaUserData for LuaOverlay {
             Ok(img)
         });
 
+        // -- setWater --
+        /// Enables the water UV-distortion overlay and sets its wave parameters.
+        ///
+        /// @param amplitude : number  — Wave displacement intensity (default 0.02).
+        /// @param frequency : number  — Wave spatial frequency in cycles/unit (default 3.0).
+        /// @param speed : number      — Wave animation speed in cycles/second (default 1.0).
+        /// @return nil
+        methods.add_method_mut(
+            "setWater",
+            |_, this, (amplitude, frequency, speed): (f32, f32, f32)| {
+                this.inner.water.amplitude = amplitude;
+                this.inner.water.frequency = frequency;
+                this.inner.water.speed = speed;
+                this.inner.water.enabled = true;
+                Ok(())
+            },
+        );
+
+        // -- setWaterTint --
+        /// Sets the water tint colour and blend strength.
+        ///
+        /// @param r : number       — Red channel [0.0, 1.0].
+        /// @param g : number       — Green channel [0.0, 1.0].
+        /// @param b : number       — Blue channel [0.0, 1.0].
+        /// @param strength : number — Tint blend factor [0.0, 1.0].
+        /// @return nil
+        methods.add_method_mut(
+            "setWaterTint",
+            |_, this, (r, g, b, strength): (f32, f32, f32, f32)| {
+                this.inner.water.tint_r = r;
+                this.inner.water.tint_g = g;
+                this.inner.water.tint_b = b;
+                this.inner.water.tint_strength = strength;
+                Ok(())
+            },
+        );
+
+        // -- setCustomShader --
+        /// Assigns a custom shader name to the overlay, or clears it when `nil` is passed.
+        ///
+        /// @param name : string?  — Shader name registered via `lurek.render`, or nil to clear.
+        /// @return nil
+        methods.add_method_mut("setCustomShader", |_, this, name: Option<String>| {
+            this.inner.custom_shader = name;
+            Ok(())
+        });
+
+        // -- getWater --
+        /// Returns a table describing the current water overlay state.
+        ///
+        /// Fields: `enabled`, `amplitude`, `frequency`, `speed`, `tint_r`, `tint_g`,
+        /// `tint_b`, `tint_strength`, `depth_r`, `depth_g`, `depth_b`, `depth_strength`, `time`.
+        ///
+        /// @return table
+        methods.add_method("getWater", |lua, this, ()| {
+            let w = &this.inner.water;
+            let t = lua.create_table()?;
+            t.set("enabled", w.enabled)?;
+            t.set("amplitude", w.amplitude)?;
+            t.set("frequency", w.frequency)?;
+            t.set("speed", w.speed)?;
+            t.set("tint_r", w.tint_r)?;
+            t.set("tint_g", w.tint_g)?;
+            t.set("tint_b", w.tint_b)?;
+            t.set("tint_strength", w.tint_strength)?;
+            t.set("depth_r", w.depth_r)?;
+            t.set("depth_g", w.depth_g)?;
+            t.set("depth_b", w.depth_b)?;
+            t.set("depth_strength", w.depth_strength)?;
+            t.set("time", w.time)?;
+            Ok(t)
+        });
+
         // -- type --
         /// Returns the type name of this object ("Overlay").
         /// @return string
@@ -1211,6 +1368,45 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             lua.create_userdata(LuaPostFxStack {
                 inner: PostFxStack::new(w, h),
                 effects: Vec::new(),
+                stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
+                state: Rc::clone(&s),
+            })
+        })?,
+    )?;
+
+    // -- newPresetStack --
+    /// Creates a pre-configured effect stack from a named preset.
+    ///
+    /// Available presets: `"retro_tv"`, `"horror"`, `"dream"`, `"neon"`, `"sepia_age"`.
+    /// Width and height default to window dimensions when omitted.
+    ///
+    /// @param name : string
+    /// @param width : integer?
+    /// @param height : integer?
+    /// @return PostFxStack
+    let s = state.clone();
+    tbl.set(
+        "newPresetStack",
+        lua.create_function(move |lua, (name, w, h): (String, Option<u32>, Option<u32>)| {
+            let (default_w, default_h) = {
+                let borrow = s.borrow();
+                (borrow.window_width, borrow.window_height)
+            };
+            let w = w.unwrap_or(default_w);
+            let h = h.unwrap_or(default_h);
+            let preset = build_preset(&name, w, h).ok_or_else(|| {
+                LuaError::RuntimeError(format!("unknown preset '{}'", name))
+            })?;
+            let effects: Vec<Rc<RefCell<PostFxEffect>>> = preset
+                .effects
+                .into_iter()
+                .map(|e| Rc::new(RefCell::new(e)))
+                .collect();
+            lua.create_userdata(LuaPostFxStack {
+                inner: preset.stack,
+                effects,
+                stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
+                state: Rc::clone(&s),
             })
         })?,
     )?;
@@ -1250,6 +1446,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 "edgedetect",
                 "hueshift",
                 "noise",
+                "depthoffield",
+                "motionblur",
+                "paletteswap",
+                "colorlut",
+                "waterdistort",
+                "sharpen",
+                "dither",
+                "outline",
             ])
         })?,
     )?;

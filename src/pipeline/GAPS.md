@@ -1,10 +1,20 @@
-# Gap Analysis: `src/pipeline`
+# Gap Status: `src/pipeline`
 
-## 1. Architecture & Compliance
-- Ensure module structure adheres to conventions without mlua if not required.
+- Reviewed: 2026-04-14
+- Baseline: current workspace state on branch `refactor/src-migration-v2`      
+- Current status: obsolete/stale
+- Canonical module reference: `docs/specs/pipeline.md`
 
-## 2. AGENT.md Structure (BLOCKER / ERROR)
-The `AGENT.md` file in this module does **not** adhere to the canonical short format required by the CAG rules (A-02). Fix required.
+This refresh treats the current workspace state as the source of truth; older gap-analysis text is historical only.
 
-## Remediation Steps
-1. **Rewrite `AGENT.md`**: Convert to the exact short format.
+## Open items
+- None for the current baseline. Revalidate against `docs/specs/pipeline.md` before treating any legacy gap note as active work.
+
+## Resolved or stale legacy items
+- Stale: AGENT-era rewrite and template-compliance asks are obsolete because per-module `src/**/AGENT.md` guidance has been retired in favor of `docs/specs/<module>.md`.
+- Stale: migration and architecture warnings captured in the legacy file predate the current dirty workspace baseline on `refactor/src-migration-v2`.
+- Superseded: this file is now a status marker, not an implementation backlog. 
+
+## Evidence
+- `docs/specs/pipeline.md`
+- `docs/specs/README.md`

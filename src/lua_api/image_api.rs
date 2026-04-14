@@ -731,5 +731,97 @@ impl mlua::UserData for ImageData {
                 Ok(())
             },
         );
+
+        // -- resize --
+        /// Returns a bilinear-interpolated copy of the image at the given dimensions.
+        ///
+        /// Returns nil if either dimension is zero or the source image is empty.
+        ///
+        /// @param width : integer
+        /// @param height : integer
+        /// @return ImageData?
+        methods.add_method("resize", |lua, this, (w, h): (u32, u32)| {
+            match this.resize(w, h) {
+                Some(img) => Ok(LuaValue::UserData(lua.create_userdata(img)?)),
+                None => Ok(LuaValue::Nil),
+            }
+        });
+
+        // -- blit --
+        /// Blits the source ImageData onto this image at (dst_x, dst_y) using Porter-Duff over.
+        ///
+        /// Out-of-bounds pixels are silently clipped.
+        ///
+        /// @param src : ImageData
+        /// @param dst_x : integer
+        /// @param dst_y : integer
+        /// @return nil
+        methods.add_method_mut(
+            "blit",
+            |_, this, (src_ud, dst_x, dst_y): (LuaAnyUserData, i32, i32)| {
+                let src_ref = src_ud.borrow::<ImageData>()?;
+                this.blit(&src_ref, dst_x, dst_y);
+                Ok(())
+            },
+        );
+
+        // -- getRegion --
+        /// Returns a copy of the rectangular sub-region as a new ImageData.
+        ///
+        /// Returns nil if the region is empty or entirely outside the image.
+        ///
+        /// @param x : integer
+        /// @param y : integer
+        /// @param width : integer
+        /// @param height : integer
+        /// @return ImageData?
+        methods.add_method(
+            "getRegion",
+            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| {
+                match this.get_region(x, y, w, h) {
+                    Some(img) => Ok(LuaValue::UserData(lua.create_userdata(img)?)),
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        // -- diff --
+        /// Returns the sum of absolute per-channel pixel differences with another ImageData.
+        ///
+        /// Returns `u32::MAX` when the two images have different dimensions.
+        ///
+        /// @param other : ImageData
+        /// @return integer
+        methods.add_method("diff", |_, this, other_ud: LuaAnyUserData| {
+            let other_ref = other_ud.borrow::<ImageData>()?;
+            Ok(this.diff(&other_ref))
+        });
+
+        // -- mapPixels --
+        /// Applies a function to every pixel in-place.
+        ///
+        /// The callback receives `(x, y, r, g, b, a)` (integers 0-255) and must return
+        /// `r, g, b, a`. Pixels are visited in row-major order.
+        ///
+        /// @param fn : function
+        /// @return nil
+        methods.add_method_mut("mapPixels", |_, this, func: LuaFunction| {
+            let w = this.width();
+            let h = this.height();
+            for y in 0..h {
+                for x in 0..w {
+                    if let Some((r, g, b, a)) = this.get_pixel(x, y) {
+                        let result: (u8, u8, u8, u8) = func.call((x, y, r, g, b, a))?;
+                        this.set_pixel(x, y, result.0, result.1, result.2, result.3);
+                    }
+                }
+            }
+            Ok(())
+        });
+    }
+}
+                Ok(())
+            },
+        );
     }
 }

@@ -121,7 +121,9 @@ impl Bus {
     /// or remove the effect later.
     ///
     /// # Parameters
-    /// - `effect_type_str` — `&str`. Effect type: `"lowpass"`, `"highpass"`, `"bandpass"`, `"reverb"`, `"chorus"`.
+    /// - `effect_type_str` — `&str`. Effect type: `"lowpass"`, `"highpass"`, `"bandpass"`,
+    ///   `"reverb"`, `"chorus"`, `"notch"`, `"lowshelf"`, `"highshelf"`, `"bell_eq"`,
+    ///   `"reverb2"`, `"flanger"`, `"phaser"`, `"distortion"`, `"limiter"`, `"compressor"`.
     /// - `p1_val` — `f32`. Initial primary parameter value (cutoff frequency in Hz for filters; room size for reverb/chorus).
     ///
     /// # Returns
@@ -133,6 +135,16 @@ impl Bus {
             "bandpass" => EffectType::Bandpass,
             "reverb" => EffectType::Reverb,
             "chorus" => EffectType::Chorus,
+            "notch" => EffectType::Notch,
+            "lowshelf" => EffectType::LowShelf,
+            "highshelf" => EffectType::HighShelf,
+            "bell_eq" => EffectType::BellEq,
+            "reverb2" => EffectType::Reverb2,
+            "flanger" => EffectType::Flanger,
+            "phaser" => EffectType::Phaser,
+            "distortion" => EffectType::Distortion,
+            "limiter" => EffectType::Limiter,
+            "compressor" => EffectType::Compressor,
             other => return Err(format!("invalid effect type: {}", other)),
         };
         let mut fx_list = self.effects.write().unwrap();

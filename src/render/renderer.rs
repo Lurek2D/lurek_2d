@@ -7,6 +7,7 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
+use std::collections::HashMap;
 use crate::math::Vec2;
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
@@ -221,6 +222,27 @@ pub enum BlendMode {
 /// - `EndPostFx` — Stop capturing; resume rendering to the previous target.
 /// - `ApplyPostFx` — Apply the registered post-processing effects from the named stack and composite the result onto the current target.
 /// - `DrawTexturedQuad` — Draws an arbitrary textured quad specified by four explicit screen-space corners and four UV coordinates.
+
+/// A single shader pass in a post-FX pipeline.
+///
+/// Produced by the Lua PostFx stack at `apply()` time and stored inside
+/// [`RenderCommand::ApplyPostFx`]. The GPU renderer iterates the list and
+/// dispatches the appropriate WGSL shader for each pass in order.
+///
+/// # Fields
+/// - `effect_name` — Name that maps to a WGSL shader file (e.g. `"bloom"`, `"vignette"`).
+/// - `params` — Shader uniform values keyed by name.
+/// - `shader_id` — For `Custom` passes only; index into the GPU shader registry.
+#[derive(Debug, Clone)]
+pub struct PostFxPass {
+    /// Effect name mapping to a built-in WGSL shader (e.g. `"bloom"`, `"crt"`, `"vignette"`).
+    pub effect_name: String,
+    /// Uniform values forwarded to the WGSL shader for this pass.
+    pub params: HashMap<String, f32>,
+    /// For custom shader passes: index into the GPU shader registry. `None` for built-ins.
+    pub shader_id: Option<usize>,
+}
+
 #[derive(Debug, Clone)]
 pub enum RenderCommand {
     SetColor(f32, f32, f32, f32),
@@ -535,9 +557,18 @@ pub enum RenderCommand {
         stack_id: u64,
     },
     /// Apply the post-processing effects in the named stack and composite onto the current target.
+    ///
+    /// `passes` lists the enabled shader passes in order. `width` and `height` are the
+    /// dimensions of the capture texture used for ping-pong rendering.
     ApplyPostFx {
         /// Identifier for the post-FX stack whose effects will be applied.
         stack_id: u64,
+        /// Ordered list of enabled shader passes to execute.
+        passes: Vec<PostFxPass>,
+        /// Capture texture width in pixels.
+        width: u32,
+        /// Capture texture height in pixels.
+        height: u32,
     },
     /// Draw an arbitrary textured quad with perspective-correct UVs.
     ///

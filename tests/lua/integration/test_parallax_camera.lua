@@ -293,7 +293,7 @@ describe("Physics-driven camera analogue", function()
                 layer:draw(body_x, 0)
             end)
         end
-        assert(body_x > 90.0, "simulated body should have moved forward")
+        expect_true(body_x > 90.0, "simulated body should have moved forward")
     end)
 
     -- @covers lurek.camera.Camera2D.setPosition

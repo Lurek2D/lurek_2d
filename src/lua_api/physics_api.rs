@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 use super::SharedState;
 use crate::math::Vec2;
-use crate::physics::{Body, BodyType, RaycastHit, Shape, World};
+use crate::physics::{Body, BodyType, CellType, CellularWorld, PhysicsZone, RaycastHit, Shape, TerrainMap, World, ZoneGravityMode};
 
 // -------------------------------------------------------------------------------
 // Helper: parse BodyType from string
@@ -1079,12 +1079,574 @@ impl LuaUserData for LuaWorld {
             let ids = this.world.borrow_mut().add_bodies(pairs);
             Ok(ids)
         });
+
+        // -- stepFixed --
+        /// Steps the world using a fixed sub-step size to consume accumulated time.
+        ///
+        /// Hold the returned remainder and pass it back as `accum` next frame.
+        ///
+        /// @param accum : number  -- accumulated time (seconds)
+        /// @param step_dt : number  -- fixed sub-step size (e.g. 1/60)
+        /// @param max_steps : integer  -- safety cap on sub-steps per call
+        /// @return number  -- unconsumed remainder (pass back next frame)
+        methods.add_method_mut("stepFixed", |_, this, (accum, step_dt, max_steps): (f32, f32, u32)| {
+            let (_, remainder) = this.world.borrow_mut().step_fixed(accum, step_dt, max_steps);
+            Ok(remainder)
+        });
+
+        // -- addZone --
+        /// Creates a rectangular gravity/damping zone and returns a LuaZone handle.
+        ///
+        /// The default zone has zero-gravity mode, affects all layers, and is enabled.
+        ///
+        /// @param x : number  -- left edge (world pixels)
+        /// @param y : number  -- top edge (world pixels)
+        /// @param width : number  -- width (world pixels)
+        /// @param height : number  -- height (world pixels)
+        /// @return LuaZone
+        methods.add_method_mut("addZone", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+            let zone = PhysicsZone::new_rect(0, x, y, w, h);
+            let id = this.world.borrow_mut().add_zone(zone);
+            Ok(LuaZone {
+                zone_id: id,
+                world: this.world.clone(),
+            })
+        });
+
+        // -- getZoneEvents --
+        /// Returns zone enter/leave events produced by the most recent step.
+        ///
+        /// Each event is a table `{zone_id: int, body_id: int, kind: "enter"|"leave"}`.
+        ///
+        /// @return table  -- array of event tables
+        methods.add_method("getZoneEvents", |lua, this, ()| {
+            let w = this.world.borrow();
+            let events = w.get_zone_events();
+            let tbl = lua.create_table()?;
+            for (i, evt) in events.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("zone_id", evt.zone_id)?;
+                row.set("body_id", evt.body_id)?;
+                row.set("kind", match evt.kind {
+                    crate::physics::ZoneEventKind::Enter => "enter",
+                    crate::physics::ZoneEventKind::Leave => "leave",
+                })?;
+                tbl.set(i + 1, row)?;
+            }
+            Ok(tbl)
+        });
     }
 }
 
-// -------------------------------------------------------------------------------
-// LuaBody UserData
-// -------------------------------------------------------------------------------
+// ───────────────────────────────────────────────────────────────────────────────
+// LuaZone UserData
+// ───────────────────────────────────────────────────────────────────────────────
+
+/// Lua-side handle to a [`PhysicsZone`] living inside a [`World`].
+#[derive(Clone)]
+pub struct LuaZone {
+    zone_id: usize,
+    world: Rc<RefCell<World>>,
+}
+
+impl LuaUserData for LuaZone {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- getId --
+        /// Returns the zone's integer ID.
+        /// @return integer
+        methods.add_method("getId", |_, this, ()| Ok(this.zone_id));
+
+        // -- setEnabled --
+        /// Enables or disables the zone.
+        ///
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method("setEnabled", |_, this, enabled: bool| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.enabled = enabled;
+            }
+            Ok(())
+        });
+
+        // -- setPriority --
+        /// Sets the zone priority; higher values win over lower when zones overlap.
+        ///
+        /// @param priority : integer
+        /// @return nil
+        methods.add_method("setPriority", |_, this, priority: i32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.priority = priority;
+            }
+            Ok(())
+        });
+
+        // -- setLayerMask --
+        /// Sets the layer bitmask; only bodies whose `layer & mask != 0` are affected.
+        ///
+        /// @param mask : integer
+        /// @return nil
+        methods.add_method("setLayerMask", |_, this, mask: u32| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.layer_mask = mask;
+            }
+            Ok(())
+        });
+
+        // -- setCircle --
+        /// Replaces the zone boundary with a circle.
+        ///
+        /// @param cx : number  -- centre X (world pixels)
+        /// @param cy : number  -- centre Y (world pixels)
+        /// @param radius : number  -- radius (world pixels)
+        /// @return nil
+        methods.add_method("setCircle", |_, this, (cx, cy, radius): (f32, f32, f32)| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_circle(cx, cy, radius);
+            }
+            Ok(())
+        });
+
+        // -- setGravityDirectional --
+        /// Sets directional gravity inside the zone.
+        ///
+        /// @param gx : number  -- horizontal gravity component
+        /// @param gy : number  -- vertical gravity component (positive = downward)
+        /// @return nil
+        methods.add_method("setGravityDirectional", |_, this, (gx, gy): (f32, f32)| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_gravity_directional(gx, gy);
+            }
+            Ok(())
+        });
+
+        // -- setGravityPoint --
+        /// Sets point-attractor gravity inside the zone.
+        ///
+        /// @param cx : number  -- attractor centre X
+        /// @param cy : number  -- attractor centre Y
+        /// @param strength : number  -- force constant k (F = k / r²)
+        /// @return nil
+        methods.add_method("setGravityPoint", |_, this, (cx, cy, strength): (f32, f32, f32)| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_gravity_point(cx, cy, strength);
+            }
+            Ok(())
+        });
+
+        // -- setGravityRepulsor --
+        /// Sets point-repulsor gravity inside the zone.
+        ///
+        /// @param cx : number  -- repulsor centre X
+        /// @param cy : number  -- repulsor centre Y
+        /// @param strength : number  -- force constant k (F = k / r²)
+        /// @return nil
+        methods.add_method("setGravityRepulsor", |_, this, (cx, cy, strength): (f32, f32, f32)| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_gravity_repulsor(cx, cy, strength);
+            }
+            Ok(())
+        });
+
+        // -- setGravityZero --
+        /// Suppresses gravity inside the zone (zero-g pocket).
+        ///
+        /// @return nil
+        methods.add_method("setGravityZero", |_, this, ()| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.set_gravity_zero();
+            }
+            Ok(())
+        });
+
+        // -- setLinearDampingOverride --
+        /// Sets an optional linear damping override for bodies inside the zone.
+        ///
+        /// Pass `nil` to clear the override.
+        ///
+        /// @param value : number | nil
+        /// @return nil
+        methods.add_method("setLinearDampingOverride", |_, this, value: Option<f32>| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.linear_damping_override = value;
+            }
+            Ok(())
+        });
+
+        // -- setAngularDampingOverride --
+        /// Sets an optional angular damping override for bodies inside the zone.
+        ///
+        /// Pass `nil` to clear the override.
+        ///
+        /// @param value : number | nil
+        /// @return nil
+        methods.add_method("setAngularDampingOverride", |_, this, value: Option<f32>| {
+            let mut w = this.world.borrow_mut();
+            if let Some(z) = w.zone_mut(this.zone_id) {
+                z.angular_damping_override = value;
+            }
+            Ok(())
+        });
+
+        // -- destroy --
+        /// Removes the zone from the world.
+        ///
+        /// @return nil
+        methods.add_method("destroy", |_, this, ()| {
+            this.world.borrow_mut().remove_zone(this.zone_id);
+            Ok(())
+        });
+    }
+}
+
+// ───────────────────────────────────────────────────────────────────────────────
+// LuaTerrain UserData
+// ───────────────────────────────────────────────────────────────────────────────
+
+/// Lua-side handle to a destructible [`TerrainMap`].
+#[derive(Clone)]
+pub struct LuaTerrain {
+    terrain: Rc<RefCell<TerrainMap>>,
+    world: Rc<RefCell<World>>,
+}
+
+impl LuaUserData for LuaTerrain {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setCell --
+        /// Sets a single terrain cell to solid or empty.
+        ///
+        /// @param cx : integer  -- cell column
+        /// @param cy : integer  -- cell row
+        /// @param solid : boolean
+        /// @return nil
+        methods.add_method_mut("setCell", |_, this, (cx, cy, solid): (u32, u32, bool)| {
+            this.terrain.borrow_mut().set_cell(cx, cy, solid);
+            Ok(())
+        });
+
+        // -- getCell --
+        /// Returns whether a cell is solid.
+        ///
+        /// @param cx : integer
+        /// @param cy : integer
+        /// @return boolean
+        methods.add_method("getCell", |_, this, (cx, cy): (u32, u32)| {
+            Ok(this.terrain.borrow().get_cell(cx, cy))
+        });
+
+        // -- fillCircle --
+        /// Fills a circle of cells centred at world position `(wx, wy)`.
+        ///
+        /// @param wx : number  -- world X centre
+        /// @param wy : number  -- world Y centre
+        /// @param radius : number  -- world-space radius
+        /// @param solid : boolean  -- true = fill, false = dig
+        /// @return nil
+        methods.add_method_mut("fillCircle", |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
+            this.terrain.borrow_mut().fill_circle(wx, wy, radius, solid);
+            Ok(())
+        });
+
+        // -- fillRect --
+        /// Fills a rectangular region of cells.
+        ///
+        /// @param wx : number  -- left edge (world pixels)
+        /// @param wy : number  -- top edge (world pixels)
+        /// @param w : number  -- width (world pixels)
+        /// @param h : number  -- height (world pixels)
+        /// @param solid : boolean
+        /// @return nil
+        methods.add_method_mut("fillRect", |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
+            this.terrain.borrow_mut().fill_rect(wx, wy, w, h, solid);
+            Ok(())
+        });
+
+        // -- fillAll --
+        /// Sets every cell in the grid to `solid`.
+        ///
+        /// @param solid : boolean
+        /// @return nil
+        methods.add_method_mut("fillAll", |_, this, solid: bool| {
+            this.terrain.borrow_mut().fill_all(solid);
+            Ok(())
+        });
+
+        // -- flush --
+        /// Rebuilds physics bodies for all dirty chunks.
+        ///
+        /// Call once per frame before `world:step`.
+        ///
+        /// @return nil
+        methods.add_method_mut("flush", |_, this, ()| {
+            this.terrain.borrow_mut().flush(&mut this.world.borrow_mut());
+            Ok(())
+        });
+
+        // -- isDirty --
+        /// Returns `true` when at least one chunk needs flushing.
+        ///
+        /// @return boolean
+        methods.add_method("isDirty", |_, this, ()| {
+            Ok(this.terrain.borrow().is_dirty())
+        });
+
+        // -- collapseColumns --
+        /// Removes unsupported cells, returning the number of cells that fell.
+        ///
+        /// Call `flush` afterwards to push the change to physics.
+        ///
+        /// @return integer  -- number of cells removed
+        methods.add_method_mut("collapseColumns", |_, this, ()| {
+            Ok(this.terrain.borrow_mut().collapse_columns())
+        });
+
+        // -- solidPositions --
+        /// Returns the world-space centres of all solid cells as an array of `{x, y}` tables.
+        ///
+        /// @return table
+        methods.add_method("solidPositions", |lua, this, ()| {
+            let positions = this.terrain.borrow().solid_cell_positions();
+            let tbl = lua.create_table()?;
+            for (i, (x, y)) in positions.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("x", *x)?;
+                row.set("y", *y)?;
+                tbl.set(i + 1, row)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- spawnDebris --
+        /// Spawns dynamic debris bodies at the given positions.
+        ///
+        /// `positions` is an array of `{x, y}` tables (e.g. from `solidPositions`).
+        ///
+        /// @param positions : table  -- array of {x : number, y : number}
+        /// @param mass : number
+        /// @param restitution : number
+        /// @return table  -- array of body IDs (integers)
+        methods.add_method_mut("spawnDebris", |lua, this, (positions, mass, restitution): (LuaTable, f32, f32)| {
+            let mut pts: Vec<(f32, f32)> = Vec::new();
+            for i in 1..=positions.raw_len() {
+                let row: LuaTable = positions.raw_get(i)?;
+                let x: f32 = row.get("x")?;
+                let y: f32 = row.get("y")?;
+                pts.push((x, y));
+            }
+            let ids = this.terrain.borrow().spawn_debris_at(
+                &mut this.world.borrow_mut(),
+                &pts,
+                mass,
+                restitution,
+            );
+            let tbl = lua.create_table()?;
+            for (i, id) in ids.iter().enumerate() {
+                tbl.set(i + 1, *id)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- toImageData --
+        /// Returns the terrain as an RGBA byte string.
+        ///
+        /// Solid cells are coloured `(sr, sg, sb, 255)`, empty cells `(er, eg, eb, 255)`.
+        ///
+        /// @param sr : integer  -- solid R
+        /// @param sg : integer  -- solid G
+        /// @param sb : integer  -- solid B
+        /// @param er : integer  -- empty R
+        /// @param eg : integer  -- empty G
+        /// @param eb : integer  -- empty B
+        /// @return string  -- RGBA bytes (width × height × 4)
+        methods.add_method("toImageData", |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
+            let buf = this.terrain.borrow().to_image_data(
+                [sr, sg, sb, 255],
+                [er, eg, eb, 255],
+            );
+            lua.create_string(&buf)
+        });
+
+        // -- toBytes --
+        /// Serialises the terrain grid to a byte string for save/load.
+        ///
+        /// @return string
+        methods.add_method("toBytes", |lua, this, ()| {
+            lua.create_string(&this.terrain.borrow().to_bytes())
+        });
+
+        // -- loadFromBytes --
+        /// Loads terrain cell data from bytes produced by `toBytes`.
+        ///
+        /// Marks all chunks dirty; call `flush` to re-sync physics.
+        ///
+        /// @param data : string
+        /// @return boolean  -- true on success
+        methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
+            Ok(this.terrain.borrow_mut().load_from_bytes(data.as_bytes()))
+        });
+    }
+}
+
+// ───────────────────────────────────────────────────────────────────────────────
+// LuaCellular UserData
+// ───────────────────────────────────────────────────────────────────────────────
+
+/// Lua-side handle to a falling-sand [`CellularWorld`].
+#[derive(Clone)]
+pub struct LuaCellular {
+    sim: Rc<RefCell<CellularWorld>>,
+}
+
+impl LuaUserData for LuaCellular {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setCell --
+        /// Sets the material of a cell.
+        ///
+        /// @param cx : integer  -- column
+        /// @param cy : integer  -- row
+        /// @param cell_type : integer  -- lurek.physics.CELL_AIR … CELL_GAS
+        /// @return nil
+        methods.add_method_mut("setCell", |_, this, (cx, cy, t): (u32, u32, u8)| {
+            this.sim.borrow_mut().set_cell(cx, cy, CellType::from_u8(t));
+            Ok(())
+        });
+
+        // -- getCell --
+        /// Returns the material at `(cx, cy)` as an integer constant.
+        ///
+        /// @param cx : integer
+        /// @param cy : integer
+        /// @return integer
+        methods.add_method("getCell", |_, this, (cx, cy): (u32, u32)| {
+            Ok(this.sim.borrow().get_cell(cx, cy) as u8)
+        });
+
+        // -- fillRect --
+        /// Fills a rectangular region of cells with the given material.
+        ///
+        /// @param cx0 : integer  -- left column
+        /// @param cy0 : integer  -- top row
+        /// @param cw : integer  -- width in cells
+        /// @param ch : integer  -- height in cells
+        /// @param cell_type : integer
+        /// @return nil
+        methods.add_method_mut("fillRect", |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
+            this.sim.borrow_mut().fill_rect(cx0, cy0, cw, ch, CellType::from_u8(t));
+            Ok(())
+        });
+
+        // -- fillCircle --
+        /// Fills a circle of cells with the given material.
+        ///
+        /// @param cx_c : integer  -- centre column
+        /// @param cy_c : integer  -- centre row
+        /// @param r_cells : integer  -- radius in cells
+        /// @param cell_type : integer
+        /// @return nil
+        methods.add_method_mut("fillCircle", |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
+            this.sim.borrow_mut().fill_circle(cx, cy, r, CellType::from_u8(t));
+            Ok(())
+        });
+
+        // -- step --
+        /// Advances the simulation by one tick.
+        ///
+        /// @return nil
+        methods.add_method_mut("step", |_, this, ()| {
+            this.sim.borrow_mut().step();
+            Ok(())
+        });
+
+        // -- stepN --
+        /// Advances the simulation by `n` ticks.
+        ///
+        /// @param n : integer
+        /// @return nil
+        methods.add_method_mut("stepN", |_, this, n: u32| {
+            this.sim.borrow_mut().step_n(n);
+            Ok(())
+        });
+
+        // -- toImageData --
+        /// Returns the full grid as an RGBA byte string using the default colour palette.
+        ///
+        /// @return string  -- RGBA bytes (width × height × 4)
+        methods.add_method("toImageData", |lua, this, ()| {
+            let buf = this.sim.borrow().to_image_data(crate::physics::default_palette);
+            lua.create_string(&buf)
+        });
+
+        // -- toImageDataRegion --
+        /// Returns a sub-region as an RGBA byte string.
+        ///
+        /// @param cx0 : integer  -- left column
+        /// @param cy0 : integer  -- top row
+        /// @param cw : integer  -- region width
+        /// @param ch : integer  -- region height
+        /// @return string  -- RGBA bytes (cw × ch × 4)
+        methods.add_method("toImageDataRegion", |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
+            let buf = this.sim.borrow().to_image_data_region(cx0, cy0, cw, ch, crate::physics::default_palette);
+            lua.create_string(&buf)
+        });
+
+        // -- countCells --
+        /// Counts cells of the given material type.
+        ///
+        /// @param cell_type : integer
+        /// @return integer
+        methods.add_method("countCells", |_, this, t: u8| {
+            Ok(this.sim.borrow().count_cells(CellType::from_u8(t)))
+        });
+
+        // -- findCells --
+        /// Returns positions of all cells of the given material as an array of `{x, y}` tables.
+        ///
+        /// @param cell_type : integer
+        /// @return table
+        methods.add_method("findCells", |lua, this, t: u8| {
+            let positions = this.sim.borrow().find_cells(CellType::from_u8(t));
+            let tbl = lua.create_table()?;
+            for (i, (cx, cy)) in positions.iter().enumerate() {
+                let row = lua.create_table()?;
+                row.set("x", *cx)?;
+                row.set("y", *cy)?;
+                tbl.set(i + 1, row)?;
+            }
+            Ok(tbl)
+        });
+
+        // -- toBytes --
+        /// Serialises the grid to a byte string.
+        ///
+        /// @return string
+        methods.add_method("toBytes", |lua, this, ()| {
+            lua.create_string(&this.sim.borrow().to_bytes())
+        });
+
+        // -- loadFromBytes --
+        /// Loads grid data from bytes produced by `toBytes`.
+        ///
+        /// @param data : string
+        /// @return boolean  -- true on success
+        methods.add_method_mut("loadFromBytes", |_, this, data: LuaString| {
+            match CellularWorld::from_bytes(data.as_bytes()) {
+                Some(loaded) => {
+                    *this.sim.borrow_mut() = loaded;
+                    Ok(true)
+                }
+                None => Ok(false),
+            }
+        });
+    }
+}
 
 /// Lua-side handle to a physics body accessed through its world.
 #[derive(Clone)]
@@ -1654,6 +2216,29 @@ impl LuaUserData for LuaPhysicsShape {
 // Registration
 // -------------------------------------------------------------------------------
 
+// ── Type adapter ─────────────────────────────────────────────────────────────
+// `PhysicsShapeSnapshot` (physics domain) and `PhysicsDebugShape` (render
+// domain) cannot know about each other without creating a circular dependency.
+// The lua_api boundary layer is the correct home for this conversion.
+impl From<crate::physics::PhysicsShapeSnapshot>
+    for crate::render::renderer::PhysicsDebugShape
+{
+    fn from(s: crate::physics::PhysicsShapeSnapshot) -> Self {
+        Self {
+            x: s.x,
+            y: s.y,
+            half_w: s.half_w,
+            half_h: s.half_h,
+            angle: s.angle,
+            is_static: s.is_static,
+            is_sleeping: s.is_sleeping,
+            is_sensor: s.is_sensor,
+            is_circle: s.is_circle,
+            hull_verts: s.hull_verts,
+        }
+    }
+}
+
 /// Registers the `lurek.physics` API namespace.
 ///
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
@@ -1962,21 +2547,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "drawDebugGpu",
         lua.create_function(move |_, (world_ud, config_val): (LuaAnyUserData, LuaValue)| {
             let world_ref = world_ud.borrow::<LuaWorld>()?;
-            let raw = world_ref.world.borrow().extract_shape_snapshots();
-            let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = raw
+            let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world_ref
+                .world
+                .borrow()
+                .extract_shape_snapshots()
                 .into_iter()
-                .map(|s| crate::render::renderer::PhysicsDebugShape {
-                    x: s.x,
-                    y: s.y,
-                    half_w: s.half_w,
-                    half_h: s.half_h,
-                    angle: s.angle,
-                    is_static: s.is_static,
-                    is_sleeping: false,
-                    is_sensor: s.is_sensor,
-                    is_circle: s.is_circle,
-                    hull_verts: s.hull_verts,
-                })
+                .map(Into::into)
                 .collect();
 
             let mut cfg = crate::render::renderer::PhysicsDebugConfig::default();
@@ -2027,6 +2603,52 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             Ok(())
         })?,
     )?;
+
+    // ── Terrain factory ──────────────────────────────────────────────────────
+
+    /// Creates a destructible terrain grid.
+    ///
+    /// @param width : integer  -- grid width in cells
+    /// @param height : integer  -- grid height in cells
+    /// @param cell_size : number  -- world units per cell (e.g. 8.0)
+    /// @param world_handle : LuaWorld  -- the physics world to push colliders into
+    /// @return LuaTerrain
+    tbl.set(
+        "newTerrain",
+        lua.create_function({
+            move |_, (width, height, cell_size, world_handle): (u32, u32, f32, LuaWorld)| {
+                let terrain = TerrainMap::new(width, height, cell_size);
+                Ok(LuaTerrain {
+                    terrain: Rc::new(RefCell::new(terrain)),
+                    world: world_handle.world.clone(),
+                })
+            }
+        })?,
+    )?;
+
+    // ── Cellular factory ─────────────────────────────────────────────────────
+
+    /// Creates a falling-sand cellular automaton grid.
+    ///
+    /// @param width : integer  -- grid width in cells
+    /// @param height : integer  -- grid height in cells
+    /// @return LuaCellular
+    tbl.set(
+        "newCellular",
+        lua.create_function(move |_, (width, height): (u32, u32)| {
+            Ok(LuaCellular {
+                sim: Rc::new(RefCell::new(CellularWorld::new(width, height))),
+            })
+        })?,
+    )?;
+
+    // ── Cell-type constants ───────────────────────────────────────────────────
+    tbl.set("CELL_AIR",   CellType::Air   as u8)?;
+    tbl.set("CELL_SAND",  CellType::Sand  as u8)?;
+    tbl.set("CELL_WATER", CellType::Water as u8)?;
+    tbl.set("CELL_ROCK",  CellType::Rock  as u8)?;
+    tbl.set("CELL_FIRE",  CellType::Fire  as u8)?;
+    tbl.set("CELL_GAS",   CellType::Gas   as u8)?;
 
     luna.set("physics", tbl)?;
     Ok(())

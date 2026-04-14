@@ -1,4 +1,4 @@
--- Lurek2D UI widget API tests.
+﻿-- Lurek2D UI widget API tests.
 -- Covers widget construction, focus and input routing, theme access, toast helpers, and headless-safe UI tree management through lurek.ui.
 
 -- Lurek2D GUI API Tests
@@ -1930,6 +1930,178 @@ describe("lurek.ui.parseWidgetState", function()
     -- @description Verifies parsing is case-sensitive by returning nil for "Normal".
     it("is case-sensitive â€” 'Normal' returns nil", function()
         expect_equal(lurek.ui.parseWidgetState("Normal"), nil)
+    end)
+end)
+
+-- =========================================================================
+-- New factories: SpinBox, Switch, Badge
+-- =========================================================================
+
+describe("lurek.ui.newSpinBox factory", function()
+    -- @covers lurek.ui.newSpinBox
+    -- @description Verifies newSpinBox is exposed on the lurek.ui table.
+    it("is callable", function()
+        expect_equal(type(lurek.ui.newSpinBox), "function")
+    end)
+
+    -- @covers lurek.ui.newSpinBox
+    -- @description newSpinBox returns a table with the expected methods.
+    it("returns a table", function()
+        local sb = lurek.ui.newSpinBox(0, 100)
+        expect_equal(type(sb), "table")
+    end)
+
+    -- @covers lurek.ui.newSpinBox
+    -- @description getValue returns min after creation.
+    it("getValue returns min after creation", function()
+        local sb = lurek.ui.newSpinBox(10, 50)
+        expect_equal(sb.getValue(), 10)
+    end)
+
+    -- @covers lurek.ui.newSpinBox
+    -- @description increment advances value.
+    it("increment changes value", function()
+        local sb = lurek.ui.newSpinBox(0, 100)
+        sb.increment()
+        expect_equal(sb.getValue() > 0, true)
+    end)
+
+    -- @covers lurek.ui.newSpinBox
+    -- @description decrement at min stays at min.
+    it("decrement at min stays at min", function()
+        local sb = lurek.ui.newSpinBox(5, 20)
+        sb.decrement()
+        expect_equal(sb.getValue(), 5)
+    end)
+
+    -- @covers lurek.ui.newSpinBox
+    -- @description setRange is callable without error.
+    it("setRange is callable without error", function()
+        local sb = lurek.ui.newSpinBox(0, 10)
+        sb.setRange(1, 99)
+        expect_equal(true, true)
+    end)
+end)
+
+describe("lurek.ui.newSwitch factory", function()
+    -- @covers lurek.ui.newSwitch
+    -- @description Verifies newSwitch is exposed on the lurek.ui table.
+    it("is callable", function()
+        expect_equal(type(lurek.ui.newSwitch), "function")
+    end)
+
+    -- @covers lurek.ui.newSwitch
+    -- @description newSwitch returns a table.
+    it("returns a table", function()
+        local sw = lurek.ui.newSwitch(false)
+        expect_equal(type(sw), "table")
+    end)
+
+    -- @covers lurek.ui.newSwitch
+    -- @description isOn returns false when created off.
+    it("isOn returns false when created off", function()
+        local sw = lurek.ui.newSwitch(false)
+        expect_equal(sw.isOn(), false)
+    end)
+
+    -- @covers lurek.ui.newSwitch
+    -- @description setOn(true) flips state.
+    it("setOn(true) flips state", function()
+        local sw = lurek.ui.newSwitch(false)
+        sw.setOn(true)
+        expect_equal(sw.isOn(), true)
+    end)
+
+    -- @covers lurek.ui.newSwitch
+    -- @description toggle flips on -> off -> on.
+    it("toggle flips state back and forth", function()
+        local sw = lurek.ui.newSwitch(true)
+        sw.toggle()
+        expect_equal(sw.isOn(), false)
+        sw.toggle()
+        expect_equal(sw.isOn(), true)
+    end)
+end)
+
+describe("lurek.ui.newBadge factory", function()
+    -- @covers lurek.ui.newBadge
+    -- @description Verifies newBadge is exposed on the lurek.ui table.
+    it("is callable", function()
+        expect_equal(type(lurek.ui.newBadge), "function")
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @description newBadge returns a table.
+    it("returns a table", function()
+        local b = lurek.ui.newBadge(3)
+        expect_equal(type(b), "table")
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @description getCount returns the initial count.
+    it("getCount returns initial count", function()
+        local b = lurek.ui.newBadge(7)
+        expect_equal(b.getCount(), 7)
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @description getDisplayText returns count string below cap.
+    it("getDisplayText returns count string below cap", function()
+        local b = lurek.ui.newBadge(5)
+        expect_equal(b.getDisplayText(), "5")
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @description getDisplayText shows plus notation when over cap.
+    it("getDisplayText shows plus notation when over cap", function()
+        local b = lurek.ui.newBadge(200)
+        expect_equal(b.getDisplayText(), "99+")
+    end)
+
+    -- @covers lurek.ui.newBadge
+    -- @description setCount updates count.
+    it("setCount updates count", function()
+        local b = lurek.ui.newBadge(0)
+        b.setCount(42)
+        expect_equal(b.getCount(), 42)
+    end)
+end)
+
+-- =========================================================================
+-- Module helpers: setDefaultTheme, setViewport, flushCache
+-- =========================================================================
+
+describe("lurek.ui default theme and viewport helpers", function()
+    -- @covers lurek.ui.setDefaultTheme
+    -- @description setDefaultTheme is callable without error.
+    it("setDefaultTheme is callable", function()
+        expect_equal(type(lurek.ui.setDefaultTheme), "function")
+        lurek.ui.setDefaultTheme()
+        expect_equal(true, true)
+    end)
+
+    -- @covers lurek.ui.setViewport
+    -- @description setViewport is callable without error.
+    it("setViewport is callable", function()
+        expect_equal(type(lurek.ui.setViewport), "function")
+        lurek.ui.setViewport(1280, 720)
+        expect_equal(true, true)
+    end)
+
+    -- @covers lurek.ui.flushCache
+    -- @description flushCache returns a boolean.
+    it("flushCache returns boolean", function()
+        expect_equal(type(lurek.ui.flushCache), "function")
+        local result = lurek.ui.flushCache()
+        expect_equal(type(result), "boolean")
+    end)
+
+    -- @covers lurek.ui.flushCache
+    -- @description flushCache returns false on second consecutive call.
+    it("flushCache returns false on second consecutive call", function()
+        lurek.ui.flushCache()
+        local clean = lurek.ui.flushCache()
+        expect_equal(clean, false)
     end)
 end)
 test_summary()

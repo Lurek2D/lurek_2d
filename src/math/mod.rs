@@ -21,10 +21,10 @@ pub mod geometry;
 
 /// 3x3 column-major matrix for 2D transforms (translate, rotate, scale).
 pub mod mat3;
-/// Standalone noise functions: `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, `simplex_noise_2d`, `simplex_noise_3d`, `fbm`.
-pub mod noise_functions;
-/// Configurable noise generator: `NoiseGenerator`, `NoiseKind`, `FractalType`, `DistType`, `MapGenOptions`.
-pub mod noise_generator;
+/// 3D floating-point vector with arithmetic operators and common helpers.
+pub mod vec3;
+/// Interpolating and approximating splines: Catmull-Rom and Hermite.
+pub mod spline;
 /// Polygon utilities: ear-clipping triangulation and convexity testing.
 pub mod polygon;
 
@@ -45,13 +45,22 @@ pub use bezier::BezierCurve;
 pub use color::{gamma_to_linear, linear_to_gamma, Color};
 pub use geometry::*;
 pub use mat3::Mat3;
-pub use noise_functions::{
-    fbm, perlin2d, perlin3d, perlin4d, simplex2d, simplex_noise_2d, simplex_noise_3d,
-};
-pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
+pub use vec3::Vec3;
+pub use spline::{CatmullRomSpline, HermiteSpline};
 pub use random::RandomGenerator;
 pub use rect::Rect;
 pub use spatial_hash::SpatialHash;
 pub use transform::Transform;
 pub use tween::{Tween, TweenValue};
 pub use vec2::Vec2;
+
+/// Linear interpolation between `a` and `b` by factor `t` in [0, 1].
+pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
+    a + t * (b - a)
+}
+
+/// Remap `v` from `[in_min, in_max]` to `[out_min, out_max]`.
+pub fn remap(v: f32, in_min: f32, in_max: f32, out_min: f32, out_max: f32) -> f32 {
+    let t = if (in_max - in_min).abs() < 1e-7 { 0.0 } else { (v - in_min) / (in_max - in_min) };
+    out_min + t * (out_max - out_min)
+}

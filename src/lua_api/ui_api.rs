@@ -8,7 +8,7 @@ use std::rc::Rc;
 use super::SharedState;
 use crate::ui::containers::LayoutDirection;
 use crate::ui::context::{GuiContext, GuiEvent, WidgetKind};
-use crate::ui::extras::{AccordionSection, TableColumn, Toast};
+use crate::ui::extras::{AccordionSection, Badge, TableColumn, Toast};
 use crate::ui::theme::{Theme, WidgetStyle};
 use crate::ui::widget::{WidgetState, WidgetType};
 
@@ -1547,6 +1547,198 @@ fn add_tab_bar_methods(
             Ok(match g.widgets.get(idx) {
                 Some(WidgetKind::TabBar(tb)) => tb.active_tab + 1,
                 _ => 0,
+            })
+        })?,
+    )?;
+    Ok(())
+}
+
+/// Adds SpinBox-specific methods to a widget table.
+fn add_spin_box_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// Sets the value for this SpinBox widget.
+    /// @param v : number
+    /// @return nil
+    t.set(
+        "setValue",
+        lua.create_function(move |_, v: f64| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.set_value(v);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Returns the current value of this SpinBox widget.
+    /// @return number
+    t.set(
+        "getValue",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::SpinBox(sb)) => sb.value,
+                _ => 0.0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Increments the value by one step.
+    /// @return nil
+    t.set(
+        "increment",
+        lua.create_function(move |_, ()| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.increment();
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Decrements the value by one step.
+    /// @return nil
+    t.set(
+        "decrement",
+        lua.create_function(move |_, ()| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.decrement();
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Sets the valid range for this SpinBox widget.
+    /// @param min : number
+    /// @param max : number
+    /// @return nil
+    t.set(
+        "setRange",
+        lua.create_function(move |_, (min, max): (f64, f64)| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.set_range(min, max);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Sets the increment step for this SpinBox widget.
+    /// @param step : number
+    /// @return nil
+    t.set(
+        "setStep",
+        lua.create_function(move |_, step: f64| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::SpinBox(sb)) = g.widgets.get_mut(idx) {
+                sb.step = step.max(1e-9);
+            }
+            Ok(())
+        })?,
+    )?;
+    Ok(())
+}
+
+/// Adds Switch-specific methods to a widget table.
+fn add_switch_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// Sets the on/off state of this Switch widget.
+    /// @param on : boolean
+    /// @return nil
+    t.set(
+        "setOn",
+        lua.create_function(move |_, on: bool| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Switch(sw)) = g.widgets.get_mut(idx) {
+                sw.set_on(on);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Returns the on/off state of this Switch widget.
+    /// @return boolean
+    t.set(
+        "isOn",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Switch(sw)) => sw.on,
+                _ => false,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Toggles the on/off state of this Switch widget.
+    /// @return nil
+    t.set(
+        "toggle",
+        lua.create_function(move |_, ()| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Switch(sw)) = g.widgets.get_mut(idx) {
+                sw.toggle();
+            }
+            Ok(())
+        })?,
+    )?;
+    Ok(())
+}
+
+/// Adds Badge-specific methods to a widget table.
+fn add_badge_methods(
+    lua: &Lua,
+    t: &LuaTable,
+    ctx: &Rc<RefCell<GuiContext>>,
+    idx: usize,
+) -> LuaResult<()> {
+    let c = ctx.clone();
+    /// Sets the count displayed on this Badge widget.
+    /// @param count : integer
+    /// @return nil
+    t.set(
+        "setCount",
+        lua.create_function(move |_, count: u32| {
+            let mut g = c.borrow_mut();
+            if let Some(WidgetKind::Badge(b)) = g.widgets.get_mut(idx) {
+                b.set_count(count);
+            }
+            Ok(())
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Returns the raw count of this Badge widget.
+    /// @return integer
+    t.set(
+        "getCount",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Badge(b)) => b.count,
+                _ => 0,
+            })
+        })?,
+    )?;
+    let c = ctx.clone();
+    /// Returns the display text of this Badge widget, e.g. "99+" when over the max.
+    /// @return string
+    t.set(
+        "getDisplayText",
+        lua.create_function(move |_, ()| {
+            let g = c.borrow();
+            Ok(match g.widgets.get(idx) {
+                Some(WidgetKind::Badge(b)) => b.display_text(),
+                _ => String::new(),
             })
         })?,
     )?;
@@ -5488,6 +5680,96 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|_, state: String| {
             Ok(WidgetState::parse_str(&state).map(|ws| ws.as_str().to_string()))
         })?,
+    )?;
+
+    // -- newSpinBox --
+    /// Creates a numeric spin box widget with increment and decrement buttons.
+    /// @param min : number
+    /// @param max : number
+    /// @return table
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    tbl.set(
+        "newSpinBox",
+        lua.create_function(move |lua, (min, max): (Option<f64>, Option<f64>)| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_spin_box(min.unwrap_or(0.0), max.unwrap_or(100.0));
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs)?;
+            add_spin_box_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+
+    // -- newSwitch --
+    /// Creates a toggle switch widget.
+    /// @param on : boolean
+    /// @return table
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    tbl.set(
+        "newSwitch",
+        lua.create_function(move |lua, on: Option<bool>| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_switch(on.unwrap_or(false));
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs)?;
+            add_switch_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+
+    // -- newBadge --
+    /// Creates a badge widget displaying a numeric count.
+    /// @param count : integer
+    /// @return table
+    let c = ctx.clone();
+    let cbs = callbacks.clone();
+    tbl.set(
+        "newBadge",
+        lua.create_function(move |lua, count: Option<u32>| {
+            let mut g = c.borrow_mut();
+            let idx = g.add_badge(count.unwrap_or(0));
+            drop(g);
+            let t = create_widget_table(lua, &c, idx, &cbs)?;
+            add_badge_methods(lua, &t, &c, idx)?;
+            Ok(t)
+        })?,
+    )?;
+
+    // -- setDefaultTheme --
+    /// Installs the built-in dark theme as the active GUI theme.
+    /// @return nil
+    let c = ctx.clone();
+    tbl.set(
+        "setDefaultTheme",
+        lua.create_function(move |_, ()| {
+            c.borrow_mut().set_default_theme();
+            Ok(())
+        })?,
+    )?;
+
+    // -- setViewport --
+    /// Sets the viewport dimensions used for anchor constraints and layout.
+    /// @param w : number
+    /// @param h : number
+    /// @return nil
+    let c = ctx.clone();
+    tbl.set(
+        "setViewport",
+        lua.create_function(move |_, (w, h): (f32, f32)| {
+            c.borrow_mut().set_viewport(w, h);
+            Ok(())
+        })?,
+    )?;
+
+    // -- flushCache --
+    /// Returns true if the widget tree changed since the last call, then resets the flag.
+    /// @return boolean
+    let c = ctx.clone();
+    tbl.set(
+        "flushCache",
+        lua.create_function(move |_, ()| Ok(c.borrow_mut().flush_cache()))?,
     )?;
 
     luna.set("ui", tbl)?;

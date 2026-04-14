@@ -163,37 +163,37 @@ Three new factory functions and `UserData` types added to `lurek.raycaster` in v
 
 `lurek.raycaster.newDoorManager()` → `DoorManager` userdata.
 
-| Method | Signature | Description |
-|---|---|---|
-| `addDoor` | `(x, y, dir, speed) → integer` | Register a door. `dir` = `"horizontal"` or `"vertical"`. Returns an index. |
-| `openDoor` | `(index)` | Begin opening door at index. |
-| `closeDoor` | `(index)` | Begin closing door at index. |
-| `update` | `(dt)` | Advance all door animations by `dt` seconds. |
-| `getDoor` | `(index) → table\|nil` | Returns `{x, y, openAmount, state}` or nil if out of range. |
-| `count` | `() → integer` | Number of registered doors. |
+| Method      | Signature                      | Description                                                                |
+| ----------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `addDoor`   | `(x, y, dir, speed) → integer` | Register a door. `dir` = `"horizontal"` or `"vertical"`. Returns an index. |
+| `openDoor`  | `(index)`                      | Begin opening door at index.                                               |
+| `closeDoor` | `(index)`                      | Begin closing door at index.                                               |
+| `update`    | `(dt)`                         | Advance all door animations by `dt` seconds.                               |
+| `getDoor`   | `(index) → table\|nil`         | Returns `{x, y, openAmount, state}` or nil if out of range.                |
+| `count`     | `() → integer`                 | Number of registered doors.                                                |
 
 ### HeightMap
 
 `lurek.raycaster.newHeightMap(width, height)` → `HeightMap` userdata.
 
-| Method | Signature | Description |
-|---|---|---|
-| `setFloor` | `(x, y, h)` | Set floor height at grid cell (x, y). |
-| `setCeiling` | `(x, y, h)` | Set ceiling height at grid cell (x, y). |
-| `floorAt` | `(x, y) → number` | Read floor height. Returns 0.0 for out-of-bounds. |
-| `ceilingAt` | `(x, y) → number` | Read ceiling height. Returns 1.0 for out-of-bounds. |
+| Method       | Signature         | Description                                         |
+| ------------ | ----------------- | --------------------------------------------------- |
+| `setFloor`   | `(x, y, h)`       | Set floor height at grid cell (x, y).               |
+| `setCeiling` | `(x, y, h)`       | Set ceiling height at grid cell (x, y).             |
+| `floorAt`    | `(x, y) → number` | Read floor height. Returns 0.0 for out-of-bounds.   |
+| `ceilingAt`  | `(x, y) → number` | Read ceiling height. Returns 1.0 for out-of-bounds. |
 
 ### PointLight
 
 `lurek.raycaster.newPointLight(x, y, r, g, b, radius, intensity)` → `PointLight` userdata.
 
-| Method | Description |
-|---|---|
-| `x()`, `y()` | World-space position. |
-| `radius()` | Maximum illumination radius. |
-| `intensity()` | Brightness multiplier. |
-| `color()` | Returns `r, g, b` (three values). |
-| `set(x, y, r, g, b, radius, intensity)` | Update all fields at once. |
+| Method                                  | Description                       |
+| --------------------------------------- | --------------------------------- |
+| `x()`, `y()`                            | World-space position.             |
+| `radius()`                              | Maximum illumination radius.      |
+| `intensity()`                           | Brightness multiplier.            |
+| `color()`                               | Returns `r, g, b` (three values). |
+| `set(x, y, r, g, b, radius, intensity)` | Update all fields at once.        |
 
 ## Notes
 

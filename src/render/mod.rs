@@ -27,6 +27,8 @@ pub mod renderer;
 pub mod shader;
 /// Compound shape builder that accumulates vector primitives for batched drawing.
 pub mod shape;
+/// GPU pipeline for post-processing effects: capture, ping-pong shader passes, and compositing.
+pub mod postfx_pipeline;
 /// Sprite struct combining a texture, transform, and tint color.
 /// Sprite batching for efficient rendering of many sprites sharing one texture.
 /// Grid-based sprite sheet with directional support and named groups.
@@ -45,3 +47,4 @@ pub use renderer::{
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};
+pub use postfx_pipeline::PostFxPipeline;

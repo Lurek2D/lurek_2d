@@ -4,12 +4,6 @@
 //! The grid partitions space into fixed-size cells for O(1) bucket lookup.
 
 use std::collections::{HashMap, HashSet};
-
-use crate::runtime::log_messages::{HX01, HX02};
-use crate::log_msg;
-
-/// Entry in the spatial hash. Consult the module-level documentation for the broader usage context and preconditions.
-///
 /// # Fields
 /// - `id` — `String`.
 /// - `x` — `f32`.
@@ -56,7 +50,6 @@ impl SpatialHash {
     /// - `cell_size` — Side length of each grid cell. Larger values mean fewer
     ///   cells but more items per cell.
     pub fn new(cell_size: f32) -> Self {
-        log_msg!(debug, HX01, "{}", cell_size);
         Self {
             cell_size,
             items: HashMap::new(),
@@ -158,10 +151,8 @@ impl SpatialHash {
 
     /// Removes all items and clears all buckets.
     pub fn clear(&mut self) {
-        let count = self.items.len();
         self.items.clear();
         self.buckets.clear();
-        log_msg!(debug, HX02, "{}", count);
     }
 
     /// Returns the IDs of all items whose AABBs overlap the query rectangle.

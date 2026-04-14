@@ -466,7 +466,7 @@ describe("UnitPathfinder.findPathSmooth", function()
         local g = lurek.pathfinding.newNavGrid(10, 10)
         local pf = lurek.pathfinding.newPathfinder(g)
         local path = pf:findPathSmooth(1, 1, 10, 10)
-        assert(path == nil or type(path) == "table", "findPathSmooth must return table or nil")
+        expect_true(path == nil or type(path) == "table", "findPathSmooth must return table or nil")
     end)
 
     -- @covers lurek.pathfinding.newNavGrid
@@ -530,7 +530,7 @@ describe("UnitPathfinder.findPartialPath", function()
         local g = lurek.pathfinding.newNavGrid(10, 10)
         local pf = lurek.pathfinding.newPathfinder(g)
         local path, complete = pf:findPartialPath(1, 1, 10, 10, 100)
-        assert(path == nil or type(path) == "table")
+        expect_true(path == nil or type(path) == "table", "findPartialPath must return table or nil")
         expect_type("boolean", complete)
     end)
 

@@ -1179,6 +1179,35 @@ impl TileMap {
         img.draw_label("TILEMAP LAYERS OK", 80, (height - 20) as i32, 100, 255, 100);
         img
     }
+
+    /// Converts the given layer into a 2-D navigation grid.
+    ///
+    /// Returns a row-major `Vec<Vec<bool>>` where `true` means the cell is
+    /// walkable (its GID is in `walkable_gids`) and `false` means blocked.
+    /// Cells with GID 0 are treated as walkable (empty / passable background).
+    ///
+    /// # Parameters
+    /// - `layer` — `usize`. Layer index.
+    /// - `walkable_gids` — `&[u32]`. GIDs that the pathfinder may traverse.
+    ///
+    /// # Returns
+    /// `Vec<Vec<bool>>`.
+    pub fn to_nav_grid(&self, layer: usize, walkable_gids: &[u32]) -> Vec<Vec<bool>> {
+        let (width, height) = self
+            .get_layer_dimensions(layer)
+            .unwrap_or((0, 0));
+        let mut grid: Vec<Vec<bool>> = Vec::with_capacity(height as usize);
+        for y in 0..height {
+            let mut row: Vec<bool> = Vec::with_capacity(width as usize);
+            for x in 0..width {
+                let gid = self.get_tile(layer, x, y);
+                let walkable = gid == 0 || walkable_gids.contains(&gid);
+                row.push(walkable);
+            }
+            grid.push(row);
+        }
+        grid
+    }
 }
 
 // ---------------------------------------------------------------------------

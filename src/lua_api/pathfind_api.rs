@@ -12,6 +12,7 @@ use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfind::hpa::{build_abstract, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
 use crate::pathfind::{DiagonalMode, FlowField, NavGrid, UnitPathfinder, Waypoint};
+use crate::pathfind::{HexGrid, HexLayout, JpsGrid, RangeMap};
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -877,6 +878,184 @@ impl LuaUserData for LuaAiFlowField {
 }
 
 // -------------------------------------------------------------------------------
+// LuaHexGrid UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`HexGrid`].
+pub struct LuaHexGrid {
+    inner: Rc<RefCell<HexGrid>>,
+}
+
+impl LuaUserData for LuaHexGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setBlocked --
+        /// Mark/unmark a cell as blocked (1-based coordinates).
+        /// @param col : integer
+        /// @param row : integer
+        /// @param blocked : boolean
+        methods.add_method_mut("setBlocked", |_, this, (col, row, blocked): (u32, u32, bool)| {
+            this.inner.borrow_mut().set_blocked(col - 1, row - 1, blocked);
+            Ok(())
+        });
+
+        // -- setCost --
+        /// Set movement cost for a cell (1-based coordinates).
+        /// @param col : integer
+        /// @param row : integer
+        /// @param cost : number
+        methods.add_method_mut("setCost", |_, this, (col, row, cost): (u32, u32, f32)| {
+            this.inner.borrow_mut().set_cost(col - 1, row - 1, cost);
+            Ok(())
+        });
+
+        // -- isBlocked --
+        /// Returns true if a cell is blocked (1-based coordinates).
+        /// @param col : integer
+        /// @param row : integer
+        /// @return boolean
+        methods.add_method("isBlocked", |_, this, (col, row): (u32, u32)| {
+            Ok(this.inner.borrow().is_blocked(col - 1, row - 1))
+        });
+
+        // -- findPath --
+        /// Find A* path between two cells (1-based coordinates).
+        /// @param from_col : integer
+        /// @param from_row : integer
+        /// @param to_col : integer
+        /// @param to_row : integer
+        /// @return table?
+        methods.add_method("findPath", |lua, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
+            match this.inner.borrow().find_path((fc - 1, fr - 1), (tc - 1, tr - 1)) {
+                None => Ok(LuaValue::Nil),
+                Some(path) => {
+                    let t = lua.create_table()?;
+                    for (i, (c, r)) in path.iter().enumerate() {
+                        let cell = lua.create_table()?;
+                        cell.set("col", c + 1)?;
+                        cell.set("row", r + 1)?;
+                        t.set(i + 1, cell)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
+            }
+        });
+
+        // -- lineOfSight --
+        /// Returns true if there is an unobstructed line between two cells (1-based).
+        /// @param from_col : integer
+        /// @param from_row : integer
+        /// @param to_col : integer
+        /// @param to_row : integer
+        /// @return boolean
+        methods.add_method("lineOfSight", |_, this, (fc, fr, tc, tr): (u32, u32, u32, u32)| {
+            Ok(this.inner.borrow().line_of_sight((fc - 1, fr - 1), (tc - 1, tr - 1)))
+        });
+
+        // -- fieldOfView --
+        /// Returns all cells visible from origin within max_range (1-based coordinates).
+        /// @param col : integer
+        /// @param row : integer
+        /// @param max_range : integer
+        /// @return table
+        methods.add_method("fieldOfView", |lua, this, (col, row, max_range): (u32, u32, u32)| {
+            let cells = this.inner.borrow().field_of_view((col - 1, row - 1), max_range);
+            let t = lua.create_table()?;
+            for (i, (c, r)) in cells.iter().enumerate() {
+                let cell = lua.create_table()?;
+                cell.set("col", c + 1)?;
+                cell.set("row", r + 1)?;
+                t.set(i + 1, cell)?;
+            }
+            Ok(t)
+        });
+
+        // -- rangeOfMovement --
+        /// Returns all cells reachable from origin within movement budget (1-based).
+        /// @param col : integer
+        /// @param row : integer
+        /// @param budget : number
+        /// @return table
+        methods.add_method("rangeOfMovement", |lua, this, (col, row, budget): (u32, u32, f32)| {
+            let cells = this.inner.borrow().range_of_movement((col - 1, row - 1), budget);
+            let t = lua.create_table()?;
+            for (i, (c, r)) in cells.iter().enumerate() {
+                let cell = lua.create_table()?;
+                cell.set("col", c + 1)?;
+                cell.set("row", r + 1)?;
+                t.set(i + 1, cell)?;
+            }
+            Ok(t)
+        });
+
+        // -- distance --
+        /// Hex-distance between two cells.
+        /// @param col1 : integer
+        /// @param row1 : integer
+        /// @param col2 : integer
+        /// @param row2 : integer
+        /// @return integer
+        methods.add_method("distance", |_, this, (c1, r1, c2, r2): (u32, u32, u32, u32)| {
+            Ok(this.inner.borrow().distance((c1 - 1, r1 - 1), (c2 - 1, r2 - 1)))
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaJpsGrid UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`JpsGrid`].
+pub struct LuaJpsGrid {
+    inner: Rc<RefCell<JpsGrid>>,
+}
+
+impl LuaUserData for LuaJpsGrid {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setBlocked --
+        /// Mark/unmark a cell as blocked (1-based coordinates).
+        /// @param x : integer
+        /// @param y : integer
+        /// @param blocked : boolean
+        methods.add_method_mut("setBlocked", |_, this, (x, y, blocked): (u32, u32, bool)| {
+            this.inner.borrow_mut().set_blocked(x - 1, y - 1, blocked);
+            Ok(())
+        });
+
+        // -- isBlocked --
+        /// Returns true if the cell is blocked (1-based coordinates).
+        /// @param x : integer
+        /// @param y : integer
+        /// @return boolean
+        methods.add_method("isBlocked", |_, this, (x, y): (u32, u32)| {
+            Ok(this.inner.borrow().is_blocked(x - 1, y - 1))
+        });
+
+        // -- findPath --
+        /// Find a JPS path between two cells (1-based coordinates).
+        /// @param from_x : integer
+        /// @param from_y : integer
+        /// @param to_x : integer
+        /// @param to_y : integer
+        /// @return table?
+        methods.add_method("findPath", |lua, this, (fx, fy, tx, ty): (u32, u32, u32, u32)| {
+            match this.inner.borrow().find_path((fx - 1, fy - 1), (tx - 1, ty - 1)) {
+                None => Ok(LuaValue::Nil),
+                Some(path) => {
+                    let t = lua.create_table()?;
+                    for (i, (x, y)) in path.iter().enumerate() {
+                        let cell = lua.create_table()?;
+                        cell.set("x", x + 1)?;
+                        cell.set("y", y + 1)?;
+                        t.set(i + 1, cell)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
+            }
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
 // Register
 // -------------------------------------------------------------------------------
 
@@ -1026,6 +1205,80 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 })
             },
         )?,
+    )?;
+
+    // -- newHexGrid --
+    /// Creates a hex grid for pathfinding, LOS, FOV, and range queries.
+    /// @param width : integer
+    /// @param height : integer
+    /// @param layout : string?  "flat" | "pointy"  (default "flat")
+    /// @return HexGrid
+    tbl.set(
+        "newHexGrid",
+        lua.create_function(|_, (width, height, layout_str): (u32, u32, Option<String>)| {
+            let layout = match layout_str.as_deref().unwrap_or("flat") {
+                "pointy" => HexLayout::PointyTop,
+                _ => HexLayout::FlatTop,
+            };
+            Ok(LuaHexGrid { inner: Rc::new(RefCell::new(HexGrid::new(width, height, layout))) })
+        })?,
+    )?;
+
+    // -- newJpsGrid --
+    /// Creates a uniform-cost grid optimised for Jump Point Search (orthogonal + diagonal).
+    /// @param width : integer
+    /// @param height : integer
+    /// @return JpsGrid
+    tbl.set(
+        "newJpsGrid",
+        lua.create_function(|_, (width, height): (u32, u32)| {
+            Ok(LuaJpsGrid { inner: Rc::new(RefCell::new(JpsGrid::new(width, height))) })
+        })?,
+    )?;
+
+    // -- rangeMap --
+    /// Computes a Dijkstra range-of-movement map from an origin within a movement budget.
+    /// @param opts : table  {width, height, costs, blocked, origin_x, origin_y, budget, diagonal?}
+    /// @return table  {cells = [{x, y, cost},...], width, height}
+    tbl.set(
+        "rangeMap",
+        lua.create_function(|lua, opts: LuaTable| {
+            let width: u32 = opts.get("width")?;
+            let height: u32 = opts.get("height")?;
+            let ox: u32 = opts.get("origin_x")?;
+            let oy: u32 = opts.get("origin_y")?;
+            let budget: f32 = opts.get("budget")?;
+            let diagonal: bool = opts.get("diagonal").unwrap_or(false);
+            let cost_n = (width * height) as usize;
+            let mut costs_v = vec![1.0f32; cost_n];
+            let mut blocked_v = vec![false; cost_n];
+            if let Ok(ct) = opts.get::<_, LuaTable>("costs") {
+                for (i, v) in ct.sequence_values::<f32>().enumerate() {
+                    if i < cost_n { costs_v[i] = v?; }
+                }
+            }
+            if let Ok(bt) = opts.get::<_, LuaTable>("blocked") {
+                for (i, v) in bt.sequence_values::<bool>().enumerate() {
+                    if i < cost_n { blocked_v[i] = v?; }
+                }
+            }
+            let rm = RangeMap::from_grid(width, height, &costs_v, &blocked_v, ox - 1, oy - 1, budget, diagonal);
+            let cells_tbl = lua.create_table()?;
+            let mut count = 0;
+            for (x, y, cost) in rm.reachable_cells_with_cost() {
+                let ct = lua.create_table()?;
+                ct.set("x", x + 1)?;
+                ct.set("y", y + 1)?;
+                ct.set("cost", cost)?;
+                count += 1;
+                cells_tbl.set(count, ct)?;
+            }
+            let out = lua.create_table()?;
+            out.set("cells", cells_tbl)?;
+            out.set("width", width)?;
+            out.set("height", height)?;
+            Ok(out)
+        })?,
     )?;
 
     luna.set("pathfinding", tbl)?;

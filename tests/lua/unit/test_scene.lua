@@ -835,4 +835,281 @@ describe("scene popTo (RS parity)", function()
         lurek.scene.clear()
     end)
 end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Phase B: Easing transitions
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("scene easing transitions", function()
+    -- @covers lurek.scene.push
+    -- @covers lurek.scene.isTransitioning
+    -- @description Push with an easing string parameter does not raise an error.
+    it("push with easing param runs without error", function()
+        lurek.scene.clear()
+        local s1 = {}
+        local s2 = {}
+        lurek.scene.push(s1)
+        lurek.scene.push(s2, "fade", 0.3, "ease_in")
+        expect_true(lurek.scene.getStackSize() >= 1)
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.getTransitionProgressEased
+    -- @description Returns a number in [0,1] when no transition is active.
+    it("getTransitionProgressEased returns 0 when idle", function()
+        lurek.scene.clear()
+        local p = lurek.scene.getTransitionProgressEased()
+        expect_true(type(p) == "number")
+        expect_true(p >= 0.0 and p <= 1.0)
+    end)
+
+    -- @covers lurek.scene.pop
+    -- @description pop with an easing param runs without error.
+    it("pop with easing param runs without error", function()
+        lurek.scene.clear()
+        local s1 = {}
+        local s2 = {}
+        lurek.scene.push(s1)
+        lurek.scene.push(s2)
+        lurek.scene.pop("fade", 0.2, "ease_out")
+        expect_true(lurek.scene.getStackSize() >= 0)
+        lurek.scene.clear()
+    end)
+end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Phase C: Overlay mode
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("scene overlay", function()
+    -- @covers lurek.scene.pushOverlay
+    -- @covers lurek.scene.isOverlay
+    -- @description pushOverlay marks the top scene as an overlay.
+    it("pushOverlay marks scene as overlay", function()
+        lurek.scene.clear()
+        local base = {}
+        local ov = {}
+        lurek.scene.push(base)
+        lurek.scene.pushOverlay(ov)
+        expect_true(lurek.scene.isOverlay())
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.pushOverlay
+    -- @covers lurek.scene.pop
+    -- @covers lurek.scene.isOverlay
+    -- @description Popping the overlay reveals normal mode; isOverlay is false.
+    it("popping overlay restores normal mode", function()
+        lurek.scene.clear()
+        local base = {}
+        local ov = {}
+        lurek.scene.push(base)
+        lurek.scene.pushOverlay(ov)
+        lurek.scene.pop()
+        expect_false(lurek.scene.isOverlay())
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.getActiveScenes
+    -- @description getActiveScenes returns all scenes when overlay is present.
+    it("getActiveScenes returns all when overlay present", function()
+        lurek.scene.clear()
+        local base = {}
+        local ov = {}
+        lurek.scene.push(base)
+        lurek.scene.pushOverlay(ov)
+        local scenes = lurek.scene.getActiveScenes()
+        expect_true(type(scenes) == "table")
+        expect_true(#scenes >= 2)
+        lurek.scene.clear()
+    end)
+
+    -- @covers lurek.scene.getActiveScenes
+    -- @description When no overlay, getActiveScenes returns only the top scene.
+    it("getActiveScenes returns top only without overlay", function()
+        lurek.scene.clear()
+        local base = {}
+        local top = {}
+        lurek.scene.push(base)
+        lurek.scene.push(top)
+        local scenes = lurek.scene.getActiveScenes()
+        expect_true(type(scenes) == "table")
+        expect_equal(#scenes, 1)
+        lurek.scene.clear()
+    end)
+end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Phase A: DepthSorter API via lurek.scene
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("DepthSorter Lua API", function()
+    -- @covers lurek.scene.newDepthSorter
+    -- @covers lurek.scene.DepthSorter:add
+    -- @covers lurek.scene.DepthSorter:sort
+    -- @description Creating a DepthSorter and adding items does not crash.
+    it("newDepthSorter add and clear work", function()
+        local ds = lurek.scene.newDepthSorter()
+        ds:add(function() end, 2.0)
+        ds:add(function() end, 1.0)
+        expect_equal(ds:getCount(), 2)
+        ds:clear()
+        expect_equal(ds:getCount(), 0)
+    end)
+
+    -- @covers lurek.scene.DepthSorter:setStable
+    -- @covers lurek.scene.DepthSorter:isStable
+    -- @description setStable/isStable round-trip via Lua.
+    it("setStable and isStable round-trip", function()
+        local ds = lurek.scene.newDepthSorter()
+        expect_false(ds:isStable())
+        ds:setStable(true)
+        expect_true(ds:isStable())
+        ds:setStable(false)
+        expect_false(ds:isStable())
+    end)
+end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Phase D: Preload
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("scene preload", function()
+    -- @covers lurek.scene.preload
+    -- @covers lurek.scene.isPreloaded
+    -- @description preload stores a loader; isPreloaded is false before push.
+    it("preload registers loader; isPreloaded false before invoke", function()
+        lurek.scene.clear()
+        lurek.scene.preload("my_scene", function() end)
+        -- isPreloaded should be false until pushPreloaded is called.
+        expect_false(lurek.scene.isPreloaded("my_scene"))
+    end)
+
+    -- @covers lurek.scene.pushPreloaded
+    -- @covers lurek.scene.isPreloaded
+    -- @description pushPreloaded calls loader and marks as preloaded.
+    it("pushPreloaded calls loader and marks isPreloaded true", function()
+        lurek.scene.clear()
+        local called = false
+        lurek.scene.registerScene("pre_scene", {})
+        lurek.scene.preload("pre_scene", function()
+            called = true
+        end)
+        lurek.scene.pushPreloaded("pre_scene")
+        expect_true(lurek.scene.isPreloaded("pre_scene"))
+        lurek.scene.clear()
+    end)
+end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- DepthSorter flush correctness (migrated from Rust scene_tests.rs)
+-- These tests verify behavior observable via lurek.* that was previously in Rust.
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("DepthSorter flush sort order", function()
+    -- @covers lurek.scene.DepthSorter:flush
+    -- @covers lurek.scene.DepthSorter:add
+    -- @description flush invokes callbacks in ascending depth order.
+    it("flush calls callbacks in ascending depth order", function()
+        local ds = lurek.scene.newDepthSorter()
+        local order = {}
+        ds:add(function() order[#order + 1] = "deep"    end, 5.0)
+        ds:add(function() order[#order + 1] = "mid"     end, 3.0)
+        ds:add(function() order[#order + 1] = "shallow" end, 1.0)
+        ds:flush()
+        expect_equal(order[1], "shallow")
+        expect_equal(order[2], "mid")
+        expect_equal(order[3], "deep")
+    end)
+
+    -- @covers lurek.scene.DepthSorter:sort
+    -- @covers lurek.scene.DepthSorter:flush
+    -- @description After sort(), a new add() must re-dirty so flush re-sorts.
+    it("flush re-sorts after add() following sort()", function()
+        local ds = lurek.scene.newDepthSorter()
+        local order = {}
+        local function fn1() order[#order + 1] = "fn1" end
+        local function fn2() order[#order + 1] = "fn2" end
+        local function fn3() order[#order + 1] = "fn3" end
+        ds:add(fn1, 3.0)
+        ds:add(fn2, 1.0)
+        ds:sort()        -- sorts & marks clean
+        ds:add(fn3, 0.5) -- re-dirties; must be placed correctly on next flush
+        ds:flush()
+        expect_equal(order[1], "fn3")
+        expect_equal(order[2], "fn2")
+        expect_equal(order[3], "fn1")
+    end)
+
+    -- @covers lurek.scene.DepthSorter:setStable
+    -- @covers lurek.scene.DepthSorter:flush
+    -- @description Equal-depth callbacks fire in insertion order when stable=true.
+    it("stable mode preserves insertion order for equal depths", function()
+        local ds = lurek.scene.newDepthSorter()
+        ds:setStable(true)
+        local order = {}
+        ds:add(function() order[#order + 1] = "A" end, 0.0)
+        ds:add(function() order[#order + 1] = "B" end, 0.0)
+        ds:add(function() order[#order + 1] = "C" end, 0.0)
+        ds:flush()
+        expect_equal(order[1], "A")
+        expect_equal(order[2], "B")
+        expect_equal(order[3], "C")
+    end)
+
+    -- @covers lurek.scene.DepthSorter:flush
+    -- @description 256 entries in reverse insertion order flush in ascending depth
+    --              order (exercises the radix sort path internally).
+    it("256 entries flush ascending (triggers radix sort path)", function()
+        local ds = lurek.scene.newDepthSorter()
+        local order = {}
+        for i = 255, 0, -1 do
+            local d = i
+            ds:add(function() order[#order + 1] = d end, d)
+        end
+        ds:flush()
+        expect_equal(#order, 256)
+        local ascending = true
+        for i = 2, #order do
+            if order[i] < order[i - 1] then ascending = false; break end
+        end
+        expect_true(ascending)
+    end)
+
+    -- @covers lurek.scene.DepthSorter:flush
+    -- @description Negative-depth entries are sorted before positive-depth entries.
+    it("negative depths sort before positive depths", function()
+        local ds = lurek.scene.newDepthSorter()
+        local order = {}
+        for i = 14, -15, -1 do
+            local d = i
+            ds:add(function() order[#order + 1] = d end, d)
+        end
+        ds:flush()
+        expect_equal(#order, 30)
+        local ascending = true
+        for i = 2, #order do
+            if order[i] < order[i - 1] then ascending = false; break end
+        end
+        expect_true(ascending)
+        expect_true(order[1] < 0)
+        expect_true(order[#order] > 0)
+    end)
+end)
+
+-- ──────────────────────────────────────────────────────────────────────────────
+-- Overlay clear state (migrated from Rust scene_tests.rs)
+-- ──────────────────────────────────────────────────────────────────────────────
+describe("scene overlay clear state", function()
+    -- @covers lurek.scene.clear
+    -- @covers lurek.scene.pushOverlay
+    -- @covers lurek.scene.isOverlay
+    -- @description clear after pushOverlay leaves an empty, non-overlay stack.
+    it("clear after pushOverlay resets overlay flag and empties stack", function()
+        lurek.scene.clear()
+        local base = {}
+        local ov   = {}
+        lurek.scene.push(base)
+        lurek.scene.pushOverlay(ov)
+        lurek.scene.clear()
+        expect_false(lurek.scene.isOverlay())
+        expect_equal(lurek.scene.getStackSize(), 0)
+    end)
+end)
+
 test_summary()

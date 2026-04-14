@@ -15,6 +15,7 @@ use std::collections::HashMap;
 
 use super::body::{Body, BodyShape, BodyType};
 use super::shape::Shape;
+use super::zone::{PhysicsZone, ZoneEvent, ZoneGravityMode, ZoneTracker};
 
 use crate::runtime::log_messages::{P001_PULLEY_JOINT_FALLBACK, P002_GEAR_JOINT_FALLBACK};
 #[allow(unused_imports)]
@@ -149,6 +150,8 @@ pub struct PhysicsShapeSnapshot {
     pub angle: f32,
     /// True for static or kinematic bodies.
     pub is_static: bool,
+    /// True when the rapier rigid body is currently sleeping.
+    pub is_sleeping: bool,
     /// True for sensor (trigger volume) bodies.
     pub is_sensor: bool,
     /// True when the shape is a circle (use `half_w` as radius).
@@ -252,6 +255,16 @@ pub struct World {
     /// When `Some((nx, ny))`, the body only blocks movement coming from the
     /// direction *opposite* to the normal vector.
     one_way_normals: Vec<Option<(f32, f32)>>,
+
+    // ── Zone system ───────────────────────────────────────────────────────────
+    /// All registered gravity/damping zones.
+    zones: Vec<PhysicsZone>,
+    /// Monotonically-increasing counter used to assign stable `ZoneId`s.
+    zone_id_counter: usize,
+    /// Tracks which zones each body is currently inside (for enter/leave events).
+    zone_tracker: ZoneTracker,
+    /// Zone enter/leave events produced by the most recent `step`.
+    zone_events: Vec<ZoneEvent>,
 }
 
 impl World {
@@ -350,7 +363,13 @@ impl World {
     /// A `Vec<PhysicsShapeSnapshot>` with one entry per body.
     pub fn extract_shape_snapshots(&self) -> Vec<PhysicsShapeSnapshot> {
         let mut out = Vec::with_capacity(self.bodies.len());
-        for body in &self.bodies {
+        for (idx, body) in self.bodies.iter().enumerate() {
+            let is_sleeping = self
+                .body_handles
+                .get(idx)
+                .and_then(|h| self.rbodies.get(*h))
+                .map(|rb| rb.is_sleeping())
+                .unwrap_or(false);
             let is_static = matches!(
                 body.body_type,
                 crate::physics::body::BodyType::Static | crate::physics::body::BodyType::Kinematic
@@ -407,6 +426,7 @@ impl World {
                 half_h,
                 angle,
                 is_static,
+                is_sleeping,
                 is_sensor,
                 is_circle,
                 hull_verts,
@@ -456,6 +476,10 @@ impl World {
             pixels_per_meter: 1.0,
             joint_break_forces: HashMap::new(),
             one_way_normals: Vec::new(),
+            zones: Vec::new(),
+            zone_id_counter: 0,
+            zone_tracker: ZoneTracker::new(),
+            zone_events: Vec::new(),
         }
     }
 
@@ -936,6 +960,9 @@ impl World {
             }
         }
 
+        // ② ½  Apply zone gravity/damping forces before the rapier step.
+        self.apply_zone_forces(dt);
+
         // ③ Step rapier.
         let event_col = LocalEventCollector::new();
         self.pipeline.step(
@@ -1118,6 +1145,213 @@ impl World {
     /// A slice of `(body_a, body_b)` pairs.
     pub fn get_end_contact_events(&self) -> &[(usize, usize)] {
         &self.end_contact_events
+    }
+
+    // ── Zone management ───────────────────────────────────────────────────────
+
+    /// Registers a new gravity/damping zone and returns its stable `ZoneId`.
+    ///
+    /// The zone is immediately active; its ID is stable for the lifetime of the
+    /// world (monotonically increasing, never reused).
+    ///
+    /// # Parameters
+    /// - `zone` — A fully-configured [`PhysicsZone`]; its `id` field will be
+    ///   overwritten with the assigned ID.
+    ///
+    /// # Returns
+    /// The assigned `ZoneId`.
+    pub fn add_zone(&mut self, mut zone: PhysicsZone) -> usize {
+        let id = self.zone_id_counter;
+        self.zone_id_counter += 1;
+        zone.id = id;
+        self.zones.push(zone);
+        id
+    }
+
+    /// Removes a zone by ID.  Bodies inside the zone at the time of removal will
+    /// receive a `Leave` event on the next `step`.
+    ///
+    /// # Parameters
+    /// - `id` — The `ZoneId` returned by `add_zone`.
+    pub fn remove_zone(&mut self, id: usize) {
+        self.zones.retain(|z| z.id != id);
+    }
+
+    /// Returns a mutable reference to the zone with the given ID, if it exists.
+    ///
+    /// # Parameters
+    /// - `id` — Zone ID.
+    ///
+    /// # Returns
+    /// `Some(&mut PhysicsZone)` if found, `None` otherwise.
+    pub fn zone_mut(&mut self, id: usize) -> Option<&mut PhysicsZone> {
+        self.zones.iter_mut().find(|z| z.id == id)
+    }
+
+    /// Returns all zone enter/leave events from the most recent `step`.
+    ///
+    /// Events are cleared at the start of each `step`.
+    ///
+    /// # Returns
+    /// A slice of [`ZoneEvent`]s.
+    pub fn get_zone_events(&self) -> &[ZoneEvent] {
+        &self.zone_events
+    }
+
+    /// Applies zone gravity and damping overrides to all dynamic bodies.
+    ///
+    /// This is called automatically inside `step()` between the position-sync
+    /// phase and the rapier pipeline step.  It should not normally be called
+    /// manually.
+    ///
+    /// # Parameters
+    /// - `dt` — The simulation time step in seconds.
+    pub fn apply_zone_forces(&mut self, dt: f32) {
+        if self.zones.is_empty() {
+            return;
+        }
+        self.zone_events.clear();
+
+        // Sort zones descending by priority so highest-priority zone is found first.
+        // We sort a local index list to avoid moving the Vec.
+        let mut sorted_indices: Vec<usize> = (0..self.zones.len()).collect();
+        sorted_indices.sort_by(|&a, &b| {
+            self.zones[b]
+                .priority
+                .cmp(&self.zones[a].priority)
+        });
+
+        let n = self.bodies.len();
+        for body_id in 0..n {
+            let body = &self.bodies[body_id];
+            if body.body_type != BodyType::Dynamic {
+                continue;
+            }
+            let px = body.position.x;
+            let py = body.position.y;
+            let layer = body.layer;
+
+            // Track which zones this body occupies this tick.
+            let mut current_zones = std::collections::HashSet::new();
+
+            let mut gravity_applied = false;
+            for &zi in &sorted_indices {
+                let zone = &self.zones[zi];
+                if !zone.enabled {
+                    continue;
+                }
+                if zone.layer_mask & layer == 0 {
+                    continue;
+                }
+                if !zone.boundary.contains(px, py) {
+                    continue;
+                }
+                current_zones.insert(zone.id);
+
+                // Apply gravity override (highest-priority zone wins).
+                if !gravity_applied {
+                    gravity_applied = true;
+                    let handle = self.body_handles[body_id];
+                    if let Some(rb) = self.rbodies.get_mut(handle) {
+                        match zone.gravity_mode {
+                            ZoneGravityMode::Zero => {
+                                // Cancel out the world gravity force this tick.
+                                let gx = -self.gravity.x * dt;
+                                let gy = -self.gravity.y * dt;
+                                rb.set_gravity_scale(0.0, true);
+                                let _ = (gx, gy); // counteracted via gravity_scale
+                            }
+                            ZoneGravityMode::Directional { gx, gy } => {
+                                rb.set_gravity_scale(0.0, true);
+                                rb.add_force(Vector::new(rb.mass() * gx, rb.mass() * gy), true);
+                            }
+                            ZoneGravityMode::Point { cx, cy, strength } => {
+                                let dx = cx - px;
+                                let dy = cy - py;
+                                let dist2 = (dx * dx + dy * dy).max(1.0);
+                                let dist = dist2.sqrt();
+                                let force = strength / dist2;
+                                rb.set_gravity_scale(0.0, true);
+                                rb.add_force(
+                                    Vector::new(rb.mass() * force * dx / dist, rb.mass() * force * dy / dist),
+                                    true,
+                                );
+                            }
+                            ZoneGravityMode::Repulsor { cx, cy, strength } => {
+                                let dx = px - cx;
+                                let dy = py - cy;
+                                let dist2 = (dx * dx + dy * dy).max(1.0);
+                                let dist = dist2.sqrt();
+                                let force = strength / dist2;
+                                rb.set_gravity_scale(0.0, true);
+                                rb.add_force(
+                                    Vector::new(rb.mass() * force * dx / dist, rb.mass() * force * dy / dist),
+                                    true,
+                                );
+                            }
+                        }
+                    }
+                }
+
+                // Apply damping overrides (all matching zones contribute).
+                let handle = self.body_handles[body_id];
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    if let Some(ld) = zone.linear_damping_override {
+                        rb.set_linear_damping(ld);
+                    }
+                    if let Some(ad) = zone.angular_damping_override {
+                        rb.set_angular_damping(ad);
+                    }
+                }
+            }
+
+            // Restore gravity scale for bodies not inside any gravity-override zone.
+            if !gravity_applied {
+                let handle = self.body_handles[body_id];
+                if let Some(rb) = self.rbodies.get_mut(handle) {
+                    if (rb.gravity_scale() - 1.0).abs() > 1e-4 {
+                        rb.set_gravity_scale(1.0, true);
+                    }
+                }
+            }
+
+            // Detect enter/leave transitions.
+            let events = self.zone_tracker.update(body_id, current_zones);
+            self.zone_events.extend(events);
+        }
+    }
+
+    /// Steps the simulation a variable number of fixed sub-steps to consume an
+    /// accumulated time delta without accumulating spiral-of-death lag.
+    ///
+    /// The caller maintains an external accumulator that grows each frame by the
+    /// real elapsed time.  This method consumes as many fixed `step_dt` ticks
+    /// as will fit inside `accumulated_dt`, up to `max_steps`.  The unused
+    /// remainder should be carried over to the next frame.
+    ///
+    /// # Parameters
+    /// - `accumulated_dt` — Total accumulated time to consume (seconds).
+    /// - `step_dt` — Fixed sub-step duration (seconds; e.g. `1.0 / 60.0`).
+    /// - `max_steps` — Safety cap: the maximum number of sub-steps per call.
+    ///
+    /// # Returns
+    /// The number of sub-steps actually executed.
+    ///
+    /// # Example (Lua-side)
+    /// ```lua
+    /// accum = accum + dt
+    /// accum = lurek.physics.stepFixed(world, accum, 1/60, 3)
+    /// ```
+    pub fn step_fixed(&mut self, accumulated_dt: f32, step_dt: f32, max_steps: u32) -> (u32, f32) {
+        if step_dt <= 0.0 {
+            return (0, accumulated_dt);
+        }
+        let steps = ((accumulated_dt / step_dt) as u32).min(max_steps);
+        for _ in 0..steps {
+            self.step(step_dt);
+        }
+        let remainder = accumulated_dt - steps as f32 * step_dt;
+        (steps, remainder.max(0.0))
     }
 
     // ── Extended body properties ──────────────────────────────────────────────

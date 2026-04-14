@@ -20,11 +20,11 @@ use crate::ui::containers::{
 };
 use crate::ui::controls::{
     Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
-    TabBar, TextInput,
+    SpinBox, Switch, TabBar, TextInput,
 };
 use crate::ui::extras::{
-    Accordion, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator, Spacer,
-    StatusBar, Toast, Toolbar, TooltipPanel, TreeView,
+    Accordion, Badge, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator,
+    Spacer, StatusBar, Toast, Toolbar, TooltipPanel, TreeView,
 };
 use crate::ui::theme::Theme;
 use crate::ui::widget::{WidgetBase, WidgetState};
@@ -90,6 +90,9 @@ pub enum GuiEvent {
 /// - `ColorPicker` — Wraps a [`ColorPicker`].
 /// - `GUITable` — Wraps a [`GUITable`].
 /// - `ImageWidget` — Wraps an [`ImageWidget`].
+/// - `SpinBox` — Wraps a [`SpinBox`].
+/// - `Switch` — Wraps a [`Switch`].
+/// - `Badge` — Wraps a [`Badge`].
 #[derive(Debug, Clone)]
 pub enum WidgetKind {
     /// Wraps a [`Button`].
@@ -156,6 +159,12 @@ pub enum WidgetKind {
     GUITable(GUITable),
     /// Wraps an [`ImageWidget`].
     ImageWidget(ImageWidget),
+    /// Wraps a [`SpinBox`].
+    SpinBox(SpinBox),
+    /// Wraps a [`Switch`].
+    Switch(Switch),
+    /// Wraps a [`Badge`].
+    Badge(Badge),
 }
 
 impl WidgetKind {
@@ -197,6 +206,9 @@ impl WidgetKind {
             Self::ColorPicker(w) => &w.base,
             Self::GUITable(w) => &w.base,
             Self::ImageWidget(w) => &w.base,
+            Self::SpinBox(w) => &w.base,
+            Self::Switch(w) => &w.base,
+            Self::Badge(w) => &w.base,
         }
     }
 
@@ -238,6 +250,9 @@ impl WidgetKind {
             Self::ColorPicker(w) => &mut w.base,
             Self::GUITable(w) => &mut w.base,
             Self::ImageWidget(w) => &mut w.base,
+            Self::SpinBox(w) => &mut w.base,
+            Self::Switch(w) => &mut w.base,
+            Self::Badge(w) => &mut w.base,
         }
     }
 
@@ -287,6 +302,9 @@ impl WidgetKind {
 /// - `toasts` — `Vec<Toast>`. Active toast notifications.
 /// - `theme` — `Option<Theme>`. Active theme.
 /// - `pending_events` — `Vec<GuiEvent>`. Interaction events queued since the last drain.
+/// - `dirty` — `bool`. Set to `true` on any structural change; cleared by `flush_cache()`.
+/// - `viewport_w` — `f32`. Viewport width (set via `set_viewport`).
+/// - `viewport_h` — `f32`. Viewport height (set via `set_viewport`).
 #[derive(Debug, Clone)]
 pub struct GuiContext {
     /// Flat pool of all widgets.
@@ -299,6 +317,12 @@ pub struct GuiContext {
     pub theme: Option<Theme>,
     /// Interaction events queued since the last drain.
     pub pending_events: Vec<GuiEvent>,
+    /// Set to `true` on any structural change; cleared by `flush_cache()`.
+    pub dirty: bool,
+    /// Viewport width in pixels.
+    pub viewport_w: f32,
+    /// Viewport height in pixels.
+    pub viewport_h: f32,
 }
 
 impl GuiContext {
@@ -315,6 +339,9 @@ impl GuiContext {
             toasts: Vec::new(),
             theme: None,
             pending_events: Vec::new(),
+            dirty: true,
+            viewport_w: 0.0,
+            viewport_h: 0.0,
         }
     }
 
@@ -761,7 +788,82 @@ impl GuiContext {
         let idx = self.widgets.len();
         self.widgets
             .push(WidgetKind::ImageWidget(ImageWidget::new()));
+        self.dirty = true;
         idx
+    }
+
+    /// Add a spin box and return its pool index.
+    ///
+    /// # Parameters
+    /// - `min` — `f64`. Minimum value.
+    /// - `max` — `f64`. Maximum value.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn add_spin_box(&mut self, min: f64, max: f64) -> usize {
+        let idx = self.widgets.len();
+        self.widgets
+            .push(WidgetKind::SpinBox(SpinBox::new(min, max)));
+        self.dirty = true;
+        idx
+    }
+
+    /// Add a toggle switch and return its pool index.
+    ///
+    /// # Parameters
+    /// - `on` — `bool`. Initial state.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn add_switch(&mut self, on: bool) -> usize {
+        let idx = self.widgets.len();
+        self.widgets.push(WidgetKind::Switch(Switch::new(on)));
+        self.dirty = true;
+        idx
+    }
+
+    /// Add a badge and return its pool index.
+    ///
+    /// # Parameters
+    /// - `count` — `u32`. Initial badge count.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn add_badge(&mut self, count: u32) -> usize {
+        let idx = self.widgets.len();
+        self.widgets.push(WidgetKind::Badge(Badge::new(count)));
+        self.dirty = true;
+        idx
+    }
+
+    /// Install the built-in dark theme as the active theme.
+    pub fn set_default_theme(&mut self) {
+        self.theme = Some(crate::ui::theme::Theme::default_dark());
+        self.dirty = true;
+    }
+
+    /// Set the logical viewport size (used for anchoring and relative layout).
+    ///
+    /// # Parameters
+    /// - `width` — `f32`. Viewport width in pixels.
+    /// - `height` — `f32`. Viewport height in pixels.
+    pub fn set_viewport(&mut self, width: f32, height: f32) {
+        self.viewport_w = width;
+        self.viewport_h = height;
+        self.dirty = true;
+    }
+
+    /// Mark the render cache as clean and return `true` if the context was dirty.
+    ///
+    /// Call this after rebuilding the GPU command list so that the renderer
+    /// can skip an expensive rebuild on frames where nothing changed.
+    ///
+    /// # Returns
+    /// `bool` — `true` if the cache was dirty before this call.
+    pub fn flush_cache(&mut self) -> bool {
+        let was_dirty = self.dirty;
+        self.dirty = false;
+        was_dirty
     }
 
     // ── Child management ──────────────────────────────────────────────
@@ -985,6 +1087,13 @@ impl GuiContext {
             if let WidgetKind::CheckBox(cb) = &mut self.widgets[idx] {
                 cb.checked = !cb.checked;
                 self.pending_events.push(GuiEvent::Change(idx));
+            }
+
+            // Toggle switch and emit Change event
+            if let WidgetKind::Switch(sw) = &mut self.widgets[idx] {
+                sw.toggle();
+                self.pending_events.push(GuiEvent::Change(idx));
+                self.dirty = true;
             }
 
             true

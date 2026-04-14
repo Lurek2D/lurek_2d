@@ -1,6 +1,6 @@
 //! Particle emitter struct and update/draw logic.
 
-use super::config::{EmissionShape, EmitterState, InsertMode, ParticleConfig};
+use super::config::{Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig};
 use super::emission::{emission_offset, emission_shape_offset};
 use super::math::{
     interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range,
@@ -23,6 +23,9 @@ use crate::runtime::log_messages::{PE01, PE02, PE03, PE04};
 /// - `emitter_age` — `f32`.
 /// - `prev_emitter_x` — `f32`.
 /// - `prev_emitter_y` — `f32`.
+/// - `attractors` — `Vec<Attractor>`. Point forces applied to particles each frame.
+/// - `bounce_bounds` — `Option<BounceBounds>`. Axis-aligned containment box with restitution.
+/// - `sub_systems` — `Vec<ParticleSystem>`. Child emitters whose `update` is called from this system's `update`.
 ///
 /// Call `update(dt)` each frame to advance physics and spawn new particles,
 /// then `build_render_commands(ox, oy)` to obtain the `RenderCommand` list for rendering.
@@ -46,6 +49,12 @@ pub struct ParticleSystem {
     pub prev_emitter_x: f32,
     /// Previous frame emitter Y position (for move interpolation).
     pub prev_emitter_y: f32,
+    /// Point attractors (or repellers) that apply radial force to live particles each step.
+    pub attractors: Vec<Attractor>,
+    /// Optional axis-aligned bounce boundaries with restitution coefficient.
+    pub bounce_bounds: Option<BounceBounds>,
+    /// Child emitter systems updated each frame alongside this system.
+    pub sub_systems: Vec<ParticleSystem>,
 }
 
 impl ParticleSystem {
@@ -68,6 +77,9 @@ impl ParticleSystem {
             emitter_age: 0.0,
             prev_emitter_x: 0.0,
             prev_emitter_y: 0.0,
+            attractors: Vec::new(),
+            bounce_bounds: None,
+            sub_systems: Vec::new(),
         }
     }
 
@@ -148,6 +160,23 @@ impl ParticleSystem {
                 p.vy += rand_normal() * self.config.turbulence * dt;
             }
 
+            // Attractor forces — sum radial impulses from all point attractors
+            let wx = p.x + self.emitter_x;
+            let wy = p.y + self.emitter_y;
+            for attr in &self.attractors {
+                let adx = attr.x - wx;
+                let ady = attr.y - wy;
+                let dist2 = adx * adx + ady * ady;
+                let r2 = attr.radius * attr.radius;
+                if dist2 < r2 && dist2 > f32::EPSILON {
+                    let dist = dist2.sqrt();
+                    // Inverse-distance falloff: force proportional to 1 - dist/radius
+                    let factor = attr.strength * (1.0 - dist / attr.radius) * dt;
+                    p.vx += (adx / dist) * factor;
+                    p.vy += (ady / dist) * factor;
+                }
+            }
+
             // Position
             p.x += p.vx * dt;
             p.y += p.vy * dt;
@@ -159,11 +188,62 @@ impl ParticleSystem {
                 p.rotation += p.spin * dt;
             }
 
+            // Bounce bounds — reflect velocity when particle crosses boundary
+            if let Some(ref bb) = self.bounce_bounds {
+                let wx = p.x + self.emitter_x;
+                let wy = p.y + self.emitter_y;
+                let r = bb.restitution.clamp(0.0, 1.0);
+                if wx < bb.x_min {
+                    p.x = bb.x_min - self.emitter_x;
+                    p.vx = p.vx.abs() * r;
+                } else if wx > bb.x_max {
+                    p.x = bb.x_max - self.emitter_x;
+                    p.vx = -p.vx.abs() * r;
+                }
+                if wy < bb.y_min {
+                    p.y = bb.y_min - self.emitter_y;
+                    p.vy = p.vy.abs() * r;
+                } else if wy > bb.y_max {
+                    p.y = bb.y_max - self.emitter_y;
+                    p.vy = -p.vy.abs() * r;
+                }
+            }
+
             p.life -= dt;
         }
 
-        // Remove dead particles
-        self.particles.retain(|p| p.life > 0.0);
+        // Remove dead particles; optionally spawn death sub-bursts
+        if self.config.death_emitter.is_some() && self.config.death_burst_count > 0 {
+            let death_cfg = self.config.death_emitter.as_ref().unwrap().as_ref().clone();
+            let burst = self.config.death_burst_count;
+            let ex = self.emitter_x;
+            let ey = self.emitter_y;
+            let mut death_positions: Vec<(f32, f32)> = Vec::new();
+            self.particles.retain(|p| {
+                if p.life <= 0.0 {
+                    death_positions.push((ex + p.x, ey + p.y));
+                    false
+                } else {
+                    true
+                }
+            });
+            for (dx, dy) in death_positions {
+                let mut sub = ParticleSystem::new(death_cfg.clone());
+                sub.emitter_x = dx;
+                sub.emitter_y = dy;
+                sub.emit(burst);
+                sub.stop(); // burst only — no continuous emission
+                self.sub_systems.push(sub);
+            }
+        } else {
+            self.particles.retain(|p| p.life > 0.0);
+        }
+
+        // Update child sub-systems (death bursts)
+        self.sub_systems.retain_mut(|sub| {
+            sub.update(dt);
+            !sub.is_empty() || sub.is_active()
+        });
 
         // Emit new particles only when active
         if self.state == EmitterState::Active {
@@ -225,6 +305,7 @@ impl ParticleSystem {
             size_variation,
             origin_x: offset_x,
             origin_y: offset_y,
+            shape_seed: fastrand::u32(..),
         };
 
         match self.config.insert_mode {
@@ -398,12 +479,21 @@ impl ParticleSystem {
             let px = ox + self.emitter_x + p.x;
             let py = oy + self.emitter_y + p.y;
 
-            let render_shape = match self.config.shape {
+            let render_shape = match &self.config.shape {
                 ParticleShape::Square => ParticleRenderShape::Square,
                 ParticleShape::Circle => ParticleRenderShape::Circle,
                 ParticleShape::Triangle => ParticleRenderShape::Triangle,
                 ParticleShape::Spark => ParticleRenderShape::Spark,
                 ParticleShape::Diamond => ParticleRenderShape::Diamond,
+                ParticleShape::Shrapnel { edges } => {
+                    ParticleRenderShape::Shrapnel { edges: *edges, seed: p.shape_seed }
+                }
+                ParticleShape::Ray { aspect } => ParticleRenderShape::Ray { aspect: *aspect },
+                ParticleShape::Puff => ParticleRenderShape::Puff,
+                ParticleShape::Ring { thickness } => {
+                    ParticleRenderShape::Ring { thickness: *thickness }
+                }
+                ParticleShape::Capsule => ParticleRenderShape::Capsule,
             };
 
             let (texture_key, quad, quad_tex_dims) = if let Some(tex_key) = self.config.texture_id {
@@ -441,16 +531,87 @@ impl ParticleSystem {
             });
         }
 
-        vec![RenderCommand::DrawParticleSystem {
-            particles: instances,
-        }]
+        let mut all_cmds = vec![RenderCommand::DrawParticleSystem { particles: instances }];
+        for sub in &self.sub_systems {
+            all_cmds.extend(sub.build_render_commands(ox, oy));
+        }
+        all_cmds
+    }
+
+    // ------------------------------------------------------------------
+    // Warm-up and force controls
+    // ------------------------------------------------------------------
+
+    /// Runs the particle system forward by `seconds` in fixed 0.05 s steps to pre-populate particles.
+    ///
+    /// Useful for pre-filling a freshly created emitter so it appears already active when first rendered.
+    /// Duration is clamped to 30 s to prevent accidental hangs.
+    ///
+    /// # Parameters
+    /// - `seconds` — `f32`. Pre-simulation duration in seconds.
+    pub fn warm_up(&mut self, seconds: f32) {
+        const STEP: f32 = 0.05;
+        let clamped = seconds.clamp(0.0, 30.0);
+        let mut remaining = clamped;
+        while remaining > 0.0 {
+            let dt = remaining.min(STEP);
+            self.update(dt);
+            remaining -= dt;
+        }
+    }
+
+    /// Adds a point attractor (or repeller) to this system.
+    ///
+    /// # Parameters
+    /// - `x` — `f32`. World-space X coordinate of the attractor.
+    /// - `y` — `f32`. World-space Y coordinate of the attractor.
+    /// - `strength` — `f32`. Force magnitude in pixels/s². Positive = attraction, negative = repulsion.
+    /// - `radius` — `f32`. Influence radius in pixels. Particles beyond this distance are unaffected.
+    pub fn add_attractor(&mut self, x: f32, y: f32, strength: f32, radius: f32) {
+        self.attractors.push(Attractor { x, y, strength, radius });
+    }
+
+    /// Removes all attractors from this system.
+    pub fn clear_attractors(&mut self) {
+        self.attractors.clear();
+    }
+
+    /// Returns the number of attractors currently attached to this system.
+    ///
+    /// # Returns
+    /// `usize`.
+    pub fn attractor_count(&self) -> usize {
+        self.attractors.len()
+    }
+
+    /// Sets axis-aligned bounce boundaries with a restitution coefficient.
+    ///
+    /// Particles that cross a boundary have their crossing-axis velocity component
+    /// negated and scaled by `restitution`.
+    ///
+    /// # Parameters
+    /// - `x_min` — `f32`. Left boundary in world space.
+    /// - `x_max` — `f32`. Right boundary in world space.
+    /// - `y_min` — `f32`. Top boundary in world space.
+    /// - `y_max` — `f32`. Bottom boundary in world space.
+    /// - `restitution` — `f32`. Velocity retention on bounce (0 = stops, 1 = perfectly elastic).
+    pub fn set_bounds(&mut self, x_min: f32, x_max: f32, y_min: f32, y_max: f32, restitution: f32) {
+        self.bounce_bounds = Some(BounceBounds {
+            x_min,
+            x_max,
+            y_min,
+            y_max,
+            restitution: restitution.clamp(0.0, 1.0),
+        });
+    }
+
+    /// Removes the bounce boundaries from this system. Particles will no longer be contained.
+    pub fn clear_bounds(&mut self) {
+        self.bounce_bounds = None;
     }
 
     // ------------------------------------------------------------------
     // Visualization
-    // ------------------------------------------------------------------
-
-    /// Render all live particles to an image as colored circles.
     ///
     /// Each particle is drawn with its color interpolated from age. The emitter
     /// position is marked with a white dot.
@@ -474,10 +635,17 @@ impl ParticleSystem {
                     continue;
                 }
                 let t = 1.0 - (p.life / p.max_life);
-                let r = (255.0 * (1.0 - t * 0.5)) as u8;
-                let g = (128.0 * (1.0 - t)) as u8;
-                let b = 0u8;
-                let size = (4.0f32 * (1.0 - t)).max(1.0) as i32;
+                let [cr, cg, cb, ca] = interpolate_colors(&self.config.colors, t);
+                let alpha = if !self.config.alpha_keyframes.is_empty() {
+                    interpolate_alphas(&self.config.alpha_keyframes, t)
+                } else {
+                    ca
+                };
+                let size = interpolate_sizes(&self.config.sizes, t, p.size_variation).max(1.0) as i32;
+                let ri = (cr * 255.0) as u8;
+                let gi = (cg * 255.0) as u8;
+                let bi = (cb * 255.0) as u8;
+                let ai = (alpha * 255.0) as u8;
                 // Safe circle draw
                 let y0 = (py - size).max(0);
                 let y1 = (py + size + 1).min(h);
@@ -489,7 +657,7 @@ impl ParticleSystem {
                     for sx in x0..x1 {
                         let dx = (sx - px) as i64;
                         if dx * dx + dy * dy <= r2 {
-                            img.set_pixel(sx as u32, sy as u32, r, g, b, 200);
+                            img.set_pixel(sx as u32, sy as u32, ri, gi, bi, ai);
                         }
                     }
                 }
@@ -1042,5 +1210,100 @@ mod tests {
         let cmds = sys.build_render_commands(0.0, 0.0);
         // Should have commands; alpha should be driven by alpha_keyframes
         assert!(!cmds.is_empty());
+    }
+
+    #[test]
+    fn test_warm_up_fills_particles() {
+        let mut cfg = ParticleConfig::default();
+        cfg.emission_rate = 100.0;
+        cfg.lifetime_min = 5.0;
+        cfg.lifetime_max = 5.0;
+        let mut sys = ParticleSystem::new(cfg);
+        sys.warm_up(1.0);
+        assert!(sys.count() > 0, "warm_up should have emitted particles");
+    }
+
+    #[test]
+    fn test_warm_up_clamped_to_30s() {
+        let mut cfg = ParticleConfig::default();
+        cfg.max_particles = 5;
+        cfg.emission_rate = 1.0;
+        cfg.lifetime_min = 0.1;
+        cfg.lifetime_max = 0.1;
+        let mut sys = ParticleSystem::new(cfg);
+        // 999 seconds should be clamped to 30 — must not hang
+        sys.warm_up(999.0);
+        // Just verify it returns without hanging
+    }
+
+    #[test]
+    fn test_attractor_add_and_count() {
+        let mut sys = ParticleSystem::new(ParticleConfig::default());
+        assert_eq!(sys.attractor_count(), 0);
+        sys.add_attractor(100.0, 200.0, 50.0, 300.0);
+        sys.add_attractor(-50.0, 0.0, -30.0, 100.0);
+        assert_eq!(sys.attractor_count(), 2);
+    }
+
+    #[test]
+    fn test_attractor_clear() {
+        let mut sys = ParticleSystem::new(ParticleConfig::default());
+        sys.add_attractor(0.0, 0.0, 1.0, 10.0);
+        sys.clear_attractors();
+        assert_eq!(sys.attractor_count(), 0);
+    }
+
+    #[test]
+    fn test_set_and_clear_bounds() {
+        let mut sys = ParticleSystem::new(ParticleConfig::default());
+        assert!(sys.bounce_bounds.is_none());
+        sys.set_bounds(0.0, 800.0, 0.0, 600.0, 0.8);
+        assert!(sys.bounce_bounds.is_some());
+        let bb = sys.bounce_bounds.as_ref().unwrap();
+        assert!((bb.restitution - 0.8).abs() < 1e-5);
+        sys.clear_bounds();
+        assert!(sys.bounce_bounds.is_none());
+    }
+
+    #[test]
+    fn test_shape_seed_is_assigned() {
+        let mut cfg = ParticleConfig::default();
+        cfg.emission_rate = 100.0;
+        cfg.lifetime_min = 5.0;
+        cfg.lifetime_max = 5.0;
+        let mut sys = ParticleSystem::new(cfg);
+        sys.update(0.1);
+        // All particles must have a shape_seed field (compile check is sufficient;
+        // values may collide by random chance but the field must exist)
+        for p in &sys.particles {
+            let _seed: u32 = p.shape_seed; // type check
+        }
+        assert!(sys.count() > 0);
+    }
+
+    #[test]
+    fn test_bounce_reverse_velocity() {
+        let mut cfg = ParticleConfig::default();
+        cfg.speed_min = 100.0;
+        cfg.speed_max = 100.0;
+        cfg.direction = 0.0; // rightward
+        cfg.spread = 0.0;
+        cfg.emission_rate = 1000.0;
+        cfg.lifetime_min = 5.0;
+        cfg.lifetime_max = 5.0;
+        cfg.gravity_x = 0.0;
+        cfg.gravity_y = 0.0;
+        let mut sys = ParticleSystem::new(cfg);
+        sys.set_bounds(-50.0, 50.0, -50.0, 50.0, 1.0);
+        sys.update(0.01);
+        // Run for a while — with right wall at 50 and speed=100, should bounce back
+        for _ in 0..100 {
+            sys.update(0.01);
+        }
+        // Particles should still be within (or very near) bounds
+        for p in &sys.particles {
+            let wx = p.x + sys.emitter_x;
+            assert!(wx <= 55.0 && wx >= -55.0, "particle x {wx} should stay near bounds");
+        }
     }
 }

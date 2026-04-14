@@ -463,5 +463,47 @@ impl ImageData {
     pub fn get_string(&self) -> Vec<u8> {
         self.pixels.clone()
     }
+
+    /// Apply a per-pixel transform in parallel for large images.
+    ///
+    /// Behaves identically to [`map_pixel`] but uses Rayon to spread work across
+    /// CPU cores when the image has more than 65 536 pixels. For smaller images
+    /// the single-threaded path is taken automatically to avoid thread-spawn
+    /// overhead. Because Rayon chunks rows independently, the closure must be
+    /// `Send + Sync`.
+    ///
+    /// The closure receives `(x, y, r, g, b, a)` and returns `(r, g, b, a)`.
+    ///
+    /// # Parameters
+    /// - `f` — `F` — Pixel mapping closure.
+    pub fn map_pixel_par<F>(&mut self, f: F)
+    where
+        F: Fn(u32, u32, u8, u8, u8, u8) -> (u8, u8, u8, u8) + Send + Sync,
+    {
+        const PAR_THRESHOLD: u32 = 65_536;
+        if self.width * self.height <= PAR_THRESHOLD {
+            return self.map_pixel(f);
+        }
+        use rayon::prelude::*;
+        let w = self.width;
+        // Each row is `w * 4` bytes; process rows in parallel.
+        self.pixels
+            .par_chunks_mut((w * 4) as usize)
+            .enumerate()
+            .for_each(|(y, row)| {
+                for x in 0..w {
+                    let idx = (x * 4) as usize;
+                    let r = row[idx];
+                    let g = row[idx + 1];
+                    let b = row[idx + 2];
+                    let a = row[idx + 3];
+                    let (nr, ng, nb, na) = f(x, y as u32, r, g, b, a);
+                    row[idx] = nr;
+                    row[idx + 1] = ng;
+                    row[idx + 2] = nb;
+                    row[idx + 3] = na;
+                }
+            });
+    }
 }
 

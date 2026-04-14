@@ -8,7 +8,7 @@ use std::rc::Rc;
 
 use crate::scene::depth_sorter::DepthSorter;
 use crate::scene::stack::{SceneId, SceneStack};
-use crate::scene::transition::TransitionType;
+use crate::scene::transition::{EasingType, TransitionType};
 
 // -------------------------------------------------------------------------------
 // SceneState
@@ -24,6 +24,10 @@ struct SceneState {
     data_refs: HashMap<String, LuaRegistryKey>,
     /// Scenes whose `ready` callback has not yet fired (fires on first process tick).
     scene_ready_pending: HashSet<SceneId>,
+    /// Pending preload listeners: scene name → loader function registry key.
+    preload_callbacks: HashMap<String, LuaRegistryKey>,
+    /// Names of scenes that have been successfully preloaded.
+    preloaded_names: HashSet<String>,
 }
 
 // -------------------------------------------------------------------------------
@@ -126,6 +130,22 @@ impl LuaUserData for LuaDepthSorter {
             Ok(())
         });
 
+        // -- setStable --
+        /// Sets whether equal-depth entries preserve insertion order.
+        /// @param stable : boolean
+        /// @return nil
+        methods.add_method("setStable", |_, this, stable: bool| {
+            this.inner.borrow_mut().set_stable(stable);
+            Ok(())
+        });
+
+        // -- isStable --
+        /// Returns true if stable sort mode is enabled.
+        /// @return boolean
+        methods.add_method("isStable", |_, this, ()| {
+            Ok(this.inner.borrow().is_stable())
+        });
+
         // -- clear --
         /// Removes all registered callbacks without calling them.
         /// @return nil
@@ -158,15 +178,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         scene_refs: HashMap::new(),
         data_refs: HashMap::new(),
         scene_ready_pending: HashSet::new(),
+        preload_callbacks: HashMap::new(),
+        preloaded_names: HashSet::new(),
     }));
 
     // ── Stack operations ─────────────────────────────────────────────────
 
     // -- push --
-    /// Pushes a scene table onto the stack with an optional transition.
+    /// Pushes a scene table onto the stack with an optional transition and easing.
     /// @param scene : table
     /// @param transition : string?
     /// @param duration : number?
+    /// @param easing : string?
     /// @param params : table?
     /// @return nil
     let st = state.clone();
@@ -174,10 +197,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "push",
         lua.create_function(
             move |lua,
-                  (scene, transition, duration, params): (
+                  (scene, transition, duration, easing, params): (
                 LuaTable,
                 Option<String>,
                 Option<f32>,
+                Option<String>,
                 Option<LuaValue>,
             )| {
                 let trans = transition
@@ -185,12 +209,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
+                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
 
                 let mut s = st.borrow_mut();
                 let scene_id = s.stack.next_scene_id();
                 let key = lua.create_registry_value(scene)?;
 
-                let prev_id = s.stack.push(scene_id, trans, dur);
+                let prev_id = s.stack.push(scene_id, trans, dur, eas);
                 if let Some(pid) = prev_id {
                     if let Some(prev_key) = s.scene_refs.get(&pid) {
                         let _ = call_scene_method(lua, prev_key, "pause", ());
@@ -208,48 +233,55 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Ok(())
             },
         )?,
-    )?;
+    )?;;
 
     // -- pop --
-    /// Pops the top scene from the stack with an optional transition.
+    /// Pops the top scene from the stack with an optional transition and easing.
     /// @param transition : string?
     /// @param duration : number?
+    /// @param easing : string?
     /// @return nil
     let st = state.clone();
     tbl.set(
         "pop",
         lua.create_function(
-            move |lua, (transition, duration): (Option<String>, Option<f32>)| {
+            move |lua, (transition, duration, easing): (Option<String>, Option<f32>, Option<String>)| {
                 let trans = transition
                     .as_deref()
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
+                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
 
                 let mut s = st.borrow_mut();
+                let was_overlay = s.stack.get_current().map(|id| s.stack.is_overlay(id)).unwrap_or(false);
                 let (popped_id, revealed_id) =
-                    s.stack.pop(trans, dur).map_err(LuaError::RuntimeError)?;
+                    s.stack.pop(trans, dur, eas).map_err(LuaError::RuntimeError)?;
 
                 if let Some(popped_key) = s.scene_refs.remove(&popped_id) {
                     let _ = call_scene_method(lua, &popped_key, "leave", ());
                 }
 
-                if let Some(rid) = revealed_id {
-                    if let Some(revealed_key) = s.scene_refs.get(&rid) {
-                        let _ = call_scene_method(lua, revealed_key, "resume", ());
+                // Only resume the revealed scene when the popped one was NOT an overlay.
+                if !was_overlay {
+                    if let Some(rid) = revealed_id {
+                        if let Some(revealed_key) = s.scene_refs.get(&rid) {
+                            let _ = call_scene_method(lua, revealed_key, "resume", ());
+                        }
                     }
                 }
 
                 Ok(())
             },
         )?,
-    )?;
+    )?;;
 
     // -- switchTo --
     /// Replaces the top scene with a new one, calling leave and enter callbacks.
     /// @param scene : table
     /// @param transition : string?
     /// @param duration : number?
+    /// @param easing : string?
     /// @param params : table?
     /// @return nil
     let st = state.clone();
@@ -257,10 +289,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "switchTo",
         lua.create_function(
             move |lua,
-                  (scene, transition, duration, params): (
+                  (scene, transition, duration, easing, params): (
                 LuaTable,
                 Option<String>,
                 Option<f32>,
+                Option<String>,
                 Option<LuaValue>,
             )| {
                 let trans = transition
@@ -268,12 +301,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
+                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
 
                 let mut s = st.borrow_mut();
                 let scene_id = s.stack.next_scene_id();
                 let key = lua.create_registry_value(scene)?;
 
-                let old_id = s.stack.switch_to(scene_id, trans, dur);
+                let old_id = s.stack.switch_to(scene_id, trans, dur, eas);
                 if let Some(oid) = old_id {
                     if let Some(old_key) = s.scene_refs.remove(&oid) {
                         let _ = call_scene_method(lua, &old_key, "leave", ());
@@ -291,7 +325,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Ok(())
             },
         )?,
-    )?;
+    )?;;
 
     // -- clear --
     /// Clears all scenes from the stack, calling leave on each.
@@ -366,8 +400,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- process --
-    /// Calls `scene:ready(self)` on the top scene if not yet fired, then `scene:process(dt)`.
-    /// Preferred over `update` — matches the engine's main-loop naming.
+    /// Calls `scene:ready(self)` once per scene on the first tick after enter,
+    /// then `scene:process(dt)` on all active scenes (top-only unless overlays are present).
     /// @param dt : number
     /// @return nil
     let st = state.clone();
@@ -375,23 +409,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "process",
         lua.create_function(move |lua, dt: f64| {
             let mut s = st.borrow_mut();
-            if let Some(top_id) = s.stack.get_current() {
-                // Fire ready once, on the first process tick after enter.
-                if s.scene_ready_pending.remove(&top_id) {
-                    if let Some(top_key) = s.scene_refs.get(&top_id) {
-                        let _ = call_scene_method(lua, top_key, "ready", ());
+            let active_ids: Vec<SceneId> = s.stack.get_active_ids().to_vec();
+            for id in &active_ids {
+                if s.scene_ready_pending.remove(id) {
+                    if let Some(key) = s.scene_refs.get(id) {
+                        let _ = call_scene_method(lua, key, "ready", ());
                     }
                 }
-                if let Some(top_key) = s.scene_refs.get(&top_id) {
-                    let _ = call_scene_method(lua, top_key, "process", dt);
+                if let Some(key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, key, "process", dt);
                 }
             }
             Ok(())
         })?,
-    )?;
+    )?;;
 
     // -- processPhysics --
-    /// Calls `scene:process_physics(dt)` on the topmost scene (fixed timestep).
+    /// Calls `scene:process_physics(dt)` on all active scenes (fixed timestep).
+    /// When overlays are present, all scenes in the stack receive the callback.
     /// @param dt : number
     /// @return nil
     let st = state.clone();
@@ -399,17 +434,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "processPhysics",
         lua.create_function(move |lua, dt: f64| {
             let s = st.borrow();
-            if let Some(top_id) = s.stack.get_current() {
-                if let Some(top_key) = s.scene_refs.get(&top_id) {
-                    let _ = call_scene_method(lua, top_key, "process_physics", dt);
+            let active_ids: Vec<SceneId> = s.stack.get_active_ids().to_vec();
+            for id in &active_ids {
+                if let Some(key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, key, "process_physics", dt);
                 }
             }
             Ok(())
         })?,
-    )?;
+    )?;;
 
     // -- processLate --
-    /// Calls `scene:process_late(dt)` on the topmost scene (after process, before render).
+    /// Calls `scene:process_late(dt)` on all active scenes (after process, before render).
+    /// When overlays are present, all scenes in the stack receive the callback.
     /// @param dt : number
     /// @return nil
     let st = state.clone();
@@ -417,9 +454,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "processLate",
         lua.create_function(move |lua, dt: f64| {
             let s = st.borrow();
-            if let Some(top_id) = s.stack.get_current() {
-                if let Some(top_key) = s.scene_refs.get(&top_id) {
-                    let _ = call_scene_method(lua, top_key, "process_late", dt);
+            let active_ids: Vec<SceneId> = s.stack.get_active_ids().to_vec();
+            for id in &active_ids {
+                if let Some(key) = s.scene_refs.get(id) {
+                    let _ = call_scene_method(lua, key, "process_late", dt);
                 }
             }
             Ok(())
@@ -736,7 +774,278 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         Ok(ctor)
     })?)?;
 
+    // ── Transition (eased) ───────────────────────────────────────────────
+
+    // -- getTransitionProgressEased --
+    /// Returns the easing-adjusted transition progress from 0.0 to 1.0.
+    /// @return number
+    let st = state.clone();
+    tbl.set(
+        "getTransitionProgressEased",
+        lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress_eased()))?,
+    )?;
+
+    // ── Overlay ──────────────────────────────────────────────────────────
+
+    // -- pushOverlay --
+    /// Pushes a scene as a non-pausing overlay over the current top scene.
+    /// The background scene continues to receive process and render calls.
+    /// @param scene : table
+    /// @param transition : string?
+    /// @param duration : number?
+    /// @param easing : string?
+    /// @param params : table?
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "pushOverlay",
+        lua.create_function(
+            move |lua,
+                  (scene, transition, duration, easing, params): (
+                LuaTable,
+                Option<String>,
+                Option<f32>,
+                Option<String>,
+                Option<LuaValue>,
+            )| {
+                let trans = transition
+                    .as_deref()
+                    .map(TransitionType::from_lua_str)
+                    .unwrap_or(TransitionType::None);
+                let dur = duration.unwrap_or(0.0);
+                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+
+                let mut s = st.borrow_mut();
+                let scene_id = s.stack.next_scene_id();
+                let key = lua.create_registry_value(scene)?;
+
+                // push_overlay does NOT pause the background scene.
+                let _prev = s.stack.push_overlay(scene_id, trans, dur, eas);
+
+                s.scene_refs.insert(scene_id, key);
+                s.scene_ready_pending.insert(scene_id);
+
+                let params_arg = params.unwrap_or(LuaValue::Nil);
+                if let Some(new_key) = s.scene_refs.get(&scene_id) {
+                    let _ = call_scene_method(lua, new_key, "enter", params_arg);
+                }
+
+                Ok(())
+            },
+        )?,
+    )?;
+
+    // -- isOverlay --
+    /// Returns true if the current top scene was pushed as an overlay.
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "isOverlay",
+        lua.create_function(move |_, ()| {
+            let s = st.borrow();
+            let is_ov = s.stack.get_current().map(|id| s.stack.is_overlay(id)).unwrap_or(false);
+            Ok(is_ov)
+        })?,
+    )?;
+
+    // -- getActiveScenes --
+    /// Returns a table array of all active scene tables.
+    /// When overlays are present, all scenes in the stack are included.
+    /// @return table
+    let st = state.clone();
+    tbl.set(
+        "getActiveScenes",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let active_ids: Vec<SceneId> = s.stack.get_active_ids().to_vec();
+            let result = lua.create_table()?;
+            for (i, id) in active_ids.iter().enumerate() {
+                if let Some(key) = s.scene_refs.get(id) {
+                    let table: LuaTable = lua.registry_value(key)?;
+                    result.raw_set(i + 1, table)?;
+                }
+            }
+            Ok(result)
+        })?,
+    )?;
+
+    // ── Preload ──────────────────────────────────────────────────────────
+
+    // -- preload --
+    /// Registers a loader function for a named scene. The loader is called
+    /// once when `pushPreloaded` is first invoked for that name, allowing
+    /// assets to be loaded before the scene is pushed.
+    /// @param name : string
+    /// @param loader : function
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "preload",
+        lua.create_function(move |lua, (name, loader): (String, LuaFunction)| {
+            let mut s = st.borrow_mut();
+            let key = lua.create_registry_value(loader)?;
+            s.preload_callbacks.insert(name, key);
+            Ok(())
+        })?,
+    )?;
+
+    // -- isPreloaded --
+    /// Returns true if the named scene has been preloaded.
+    /// @param name : string
+    /// @return boolean
+    let st = state.clone();
+    tbl.set(
+        "isPreloaded",
+        lua.create_function(move |_, name: String| {
+            Ok(st.borrow().preloaded_names.contains(&name))
+        })?,
+    )?;
+
+    // -- pushPreloaded --
+    /// Pushes a registered scene by name, running its loader if not yet preloaded.
+    /// @param name : string
+    /// @param transition : string?
+    /// @param duration : number?
+    /// @param easing : string?
+    /// @param params : table?
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "pushPreloaded",
+        lua.create_function(
+            move |lua,
+                  (name, transition, duration, easing, params): (
+                String,
+                Option<String>,
+                Option<f32>,
+                Option<String>,
+                Option<LuaValue>,
+            )| {
+                let trans = transition
+                    .as_deref()
+                    .map(TransitionType::from_lua_str)
+                    .unwrap_or(TransitionType::None);
+                let dur = duration.unwrap_or(0.0);
+                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+                let params_val = params.unwrap_or(LuaValue::Nil);
+
+                let mut s = st.borrow_mut();
+
+                // If not yet preloaded, call the registered loader now.
+                if !s.preloaded_names.contains(&name) {
+                    if let Some(loader_key) = s.preload_callbacks.get(&name) {
+                        if let Ok(loader) = lua.registry_value::<LuaFunction>(loader_key) {
+                            s.preloaded_names.insert(name.clone());
+                            let _ = loader.call::<_, ()>(());
+                        }
+                    }
+                }
+
+                // Push from the named registry.
+                if let Some(scene_id) = s.stack.get_registered(&name) {
+                    let prev_id = s.stack.push(scene_id, trans, dur, eas);
+                    if let Some(pid) = prev_id {
+                        if let Some(prev_key) = s.scene_refs.get(&pid) {
+                            let _ = call_scene_method(lua, prev_key, "pause", ());
+                        }
+                    }
+                    s.scene_ready_pending.insert(scene_id);
+                    if let Some(key) = s.scene_refs.get(&scene_id) {
+                        let _ = call_scene_method(lua, key, "enter", params_val);
+                    }
+                }
+
+                Ok(())
+            },
+        )?,
+    )?;
+
     luna.set("scene", tbl.clone())?;
+
+    // -- getTransitionTypes --
+    /// Returns a table listing all supported transition type strings.
+    /// @return table
+    tbl.set(
+        "getTransitionTypes",
+        lua.create_function(|lua, ()| {
+            let tbl = lua.create_table()?;
+            let types = [
+                "none", "fade", "left", "right", "up", "down",
+                "wipe", "iris", "zoom", "crossfade",
+            ];
+            for (i, t) in types.iter().enumerate() {
+                tbl.set(i + 1, *t)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+
+    // -- serialize --
+    /// Returns a snapshot of the scene stack as a Lua table: { stack=[name...], data={key=val} }.
+    /// @return table
+    let st = state.clone();
+    tbl.set(
+        "serializeScene",
+        lua.create_function(move |lua, ()| {
+            let s = st.borrow();
+            let snap = lua.create_table()?;
+
+            // Scene name stack — build id→name reverse map from registry
+            let stack_names = lua.create_table()?;
+            let mut id_to_name: std::collections::HashMap<crate::scene::stack::SceneId, String> =
+                std::collections::HashMap::new();
+            for name in s.stack.get_registered_names() {
+                if let Some(id) = s.stack.get_registered(&name) {
+                    id_to_name.insert(id, name);
+                }
+            }
+            for (i, &id) in s.stack.get_all().iter().enumerate() {
+                if let Some(name) = id_to_name.get(&id) {
+                    stack_names.set(i + 1, name.as_str())?;
+                }
+            }
+            snap.set("stack", stack_names)?;
+
+            // Data refs (scene user data)
+            let data_snap = lua.create_table()?;
+            for (key, reg_key) in &s.data_refs {
+                if let Ok(val) = lua.registry_value::<LuaValue>(reg_key) {
+                    data_snap.set(key.as_str(), val)?;
+                }
+            }
+            snap.set("data", data_snap)?;
+
+            Ok(snap)
+        })?,
+    )?;
+
+    // -- deserializeScene --
+    /// Restores scene data_refs from a snapshot produced by serializeScene().
+    /// Only data keys are restored; the scene stack itself is not manipulated.
+    /// @param snapshot : table
+    /// @return nil
+    let st = state.clone();
+    tbl.set(
+        "deserializeScene",
+        lua.create_function(move |lua, snapshot: LuaTable| {
+            let mut s = st.borrow_mut();
+
+            // Restore data_refs entries
+            if let Ok(data) = snapshot.get::<_, LuaTable>("data") {
+                for pair in data.pairs::<String, LuaValue>() {
+                    let (k, v) = pair?;
+                    let reg_key = lua.create_registry_value(v)?;
+                    // Remove old entry if present
+                    if let Some(old) = s.data_refs.remove(&k) {
+                        lua.remove_registry_value(old)?;
+                    }
+                    s.data_refs.insert(k, reg_key);
+                }
+            }
+
+            Ok(())
+        })?,
+    )?;
 
     Ok(())
 }

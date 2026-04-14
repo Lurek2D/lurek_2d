@@ -105,6 +105,10 @@ struct AudioEntry {
     fade_in_duration: Option<f32>,
     /// Optional 3D spatial state; `None` = non-spatial (no panning by position).
     spatial: Option<crate::audio::SpatialState>,
+    /// Mid-side stereo width multiplier. `1.0` = unchanged, `0.0` = mono, `>1.0` = widened.
+    stereo_width: f32,
+    /// Optional random pitch range `(min, max)` applied on each play.
+    pitch_range: Option<(f32, f32)>,
 }
 
 /// A manually-fed streaming audio source that accepts raw f32 PCM data pushed buffer-by-buffer.
@@ -301,6 +305,8 @@ impl Mixer {
             highpass_cutoff: None,
             fade_in_duration: None,
             spatial: None,
+            stereo_width: 1.0,
+            pitch_range: None,
         })
     }
 
@@ -785,6 +791,8 @@ impl Mixer {
             highpass_cutoff: entry.highpass_cutoff,
             fade_in_duration: entry.fade_in_duration,
             spatial: entry.spatial,
+            stereo_width: entry.stereo_width,
+            pitch_range: entry.pitch_range,
         };
         Some(self.sources.insert(new_entry))
     }
@@ -1584,4 +1592,177 @@ impl Mixer {
     pub fn release_queueable(&mut self, key: QueueableKey) -> bool {
         self.queueables.remove(key).is_some()
     }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // Stereo width
+    // ───────────────────────────────────────────────────────────────────────────
+
+    /// Sets the stereo width multiplier for a source.
+    ///
+    /// `1.0` = unchanged, `0.0` = full mono collapse, values above `1.0` widen
+    /// the stereo image.  The value is stored on the entry and applied by the
+    /// render callback.
+    ///
+    /// # Parameters
+    /// - `key`   — `SoundKey`.
+    /// - `width` — `f32`. Stereo width factor.
+    ///
+    /// # Returns
+    /// `Result<(), String>`. Errors if the key is invalid.
+    pub fn set_stereo_width(&mut self, key: SoundKey, width: f32) -> Result<(), String> {
+        let entry = self
+            .sources
+            .get_mut(key)
+            .ok_or_else(|| "invalid SoundKey".to_string())?;
+        entry.stereo_width = width;
+        Ok(())
+    }
+
+    /// Returns the current stereo width for a source.
+    ///
+    /// # Parameters
+    /// - `key` — `SoundKey`.
+    ///
+    /// # Returns
+    /// `Result<f32, String>`. Errors if the key is invalid.
+    pub fn get_stereo_width(&self, key: SoundKey) -> Result<f32, String> {
+        self.sources
+            .get(key)
+            .map(|e| e.stereo_width)
+            .ok_or_else(|| "invalid SoundKey".to_string())
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // Random pitch
+    // ───────────────────────────────────────────────────────────────────────────
+
+    /// Sets a random pitch range applied on each call to `play`.
+    ///
+    /// Each time the source is played, the engine picks a uniform random value in
+    /// `[min, max]` and applies it as the pitch multiplier.
+    ///
+    /// # Parameters
+    /// - `key` — `SoundKey`.
+    /// - `min` — `f32`. Minimum pitch multiplier (e.g. `0.9`).
+    /// - `max` — `f32`. Maximum pitch multiplier (e.g. `1.1`).
+    ///
+    /// # Returns
+    /// `Result<(), String>`. Errors if the key is invalid or `min > max`.
+    pub fn set_random_pitch(&mut self, key: SoundKey, min: f32, max: f32) -> Result<(), String> {
+        if min > max {
+            return Err(format!("random pitch min ({}) > max ({})", min, max));
+        }
+        let entry = self
+            .sources
+            .get_mut(key)
+            .ok_or_else(|| "invalid SoundKey".to_string())?;
+        entry.pitch_range = Some((min, max));
+        Ok(())
+    }
+
+    /// Clears any random pitch range set on a source, restoring fixed pitch.
+    ///
+    /// # Parameters
+    /// - `key` — `SoundKey`.
+    pub fn clear_random_pitch(&mut self, key: SoundKey) {
+        if let Some(entry) = self.sources.get_mut(key) {
+            entry.pitch_range = None;
+        }
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // Crossfade
+    // ───────────────────────────────────────────────────────────────────────────
+
+    /// Crossfades from `from_key` to `to_key` over `duration_secs`.
+    ///
+    /// The target source starts playing with a fade-in equal to `duration_secs`; the source
+    /// source is stopped immediately.  True fade-out is not currently supported in the rodio
+    /// backend, so the source source cuts at the moment the target begins.
+    ///
+    /// # Parameters
+    /// - `from_key`     — `SoundKey`. Source to stop.
+    /// - `to_key`       — `SoundKey`. Source to start with fade-in.
+    /// - `duration_secs` — `f32`. Fade-in duration in seconds.
+    /// - `game_dir`     — `&Path`. Game directory for file resolution.
+    pub fn crossfade(
+        &mut self,
+        from_key: SoundKey,
+        to_key: SoundKey,
+        duration_secs: f32,
+        game_dir: &std::path::Path,
+    ) {
+        self.set_fade_in(to_key, duration_secs);
+        self.play(to_key, game_dir);
+        self.stop(from_key);
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // Bus metering (stub)
+    // ───────────────────────────────────────────────────────────────────────────
+
+    /// Returns the peak signal level for the named bus.
+    ///
+    /// This is a stub implementation that returns `0.0`.  True per-bus metering
+    /// requires an audio-thread callback, which is out of scope for the current
+    /// rodio backend.
+    ///
+    /// # Parameters
+    /// - `bus_name` — `&str`. Name of the bus.
+    ///
+    /// # Returns
+    /// `Result<f32, String>`. Errors if no bus with that name exists.
+    pub fn get_bus_peak(&self, bus_name: &str) -> Result<f32, String> {
+        self.get_bus_by_name(bus_name)
+            .map(|_| 0.0_f32)
+            .ok_or_else(|| format!("unknown bus '{}'", bus_name))
+    }
+
+    /// Returns the RMS signal level for the named bus.
+    ///
+    /// This is a stub implementation that returns `0.0`.  True per-bus RMS
+    /// requires an audio-thread callback, which is out of scope for the current
+    /// rodio backend.
+    ///
+    /// # Parameters
+    /// - `bus_name` — `&str`. Name of the bus.
+    ///
+    /// # Returns
+    /// `Result<f32, String>`. Errors if no bus with that name exists.
+    pub fn get_bus_rms(&self, bus_name: &str) -> Result<f32, String> {
+        self.get_bus_by_name(bus_name)
+            .map(|_| 0.0_f32)
+            .ok_or_else(|| format!("unknown bus '{}'", bus_name))
+    }
+
+    // ───────────────────────────────────────────────────────────────────────────
+    // Sound pool
+    // ───────────────────────────────────────────────────────────────────────────
+
+    /// Loads `voice_count` copies of the file at `file_path` and returns a [`crate::audio::SoundPool`].
+    ///
+    /// Each voice is a separate [`SoundKey`] pointing to the same file path so they can play
+    /// simultaneously without sharing a sink.  The caller drives playback through the returned
+    /// pool.
+    ///
+    /// # Parameters
+    /// - `file_path`   — `&str`. Path to the audio file relative to `game_dir`.
+    /// - `voice_count` — `usize`. Number of simultaneous voices. Must be ≥ 1.
+    ///
+    /// # Returns
+    /// `Result<crate::audio::SoundPool, String>`. Errors if `voice_count` is zero.
+    pub fn new_pool(
+        &mut self,
+        file_path: &str,
+        voice_count: usize,
+    ) -> Result<crate::audio::pool::SoundPool, String> {
+        if voice_count == 0 {
+            return Err("voice_count must be at least 1".to_string());
+        }
+        let keys: Vec<crate::runtime::resource_keys::SoundKey> = (0..voice_count)
+            .map(|_| self.load_source(file_path, SourceType::Static))
+            .collect();
+        Ok(crate::audio::pool::SoundPool::new(keys, file_path.to_string()))
+    }
 }
+

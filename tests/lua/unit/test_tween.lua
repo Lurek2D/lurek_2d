@@ -310,7 +310,7 @@ describe("lurek.tween", function()
             local t = lurek.tween.tween(1.0, obj, { x = 100 })
             t:onUpdate(function(t_val) last_t = t_val end)
             lurek.tween.update(0.5)
-            assert(last_t >= 0.0 and last_t <= 1.5,
+            expect_in_range(last_t, 0.0, 1.5,
                 "onUpdate t out of expected range: " .. tostring(last_t))
         end)
 
@@ -380,7 +380,7 @@ describe("lurek.tween", function()
             local obj = { x = 0 }
             lurek.tween.tween(5.0, obj, { x = 100 })
             local count = lurek.tween.getActiveCount()
-            assert(count >= 1, "expected count >= 1, got " .. count)
+            expect_true(count >= 1, "expected count >= 1, got " .. count)
         end)
     end)
 
@@ -572,7 +572,7 @@ describe("lurek.tween", function()
         it("returns a table with entries", function()
             local names = lurek.tween.getEasingNames()
             expect_type("table", names)
-            assert(#names > 0, "easing names should not be empty")
+            expect_true(#names > 0, "easing names should not be empty")
         end)
 
         -- @covers lurek.tween.getEasingNames

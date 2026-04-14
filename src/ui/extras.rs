@@ -1109,3 +1109,64 @@ impl Default for ImageWidget {
         Self::new()
     }
 }
+
+// ── Badge ─────────────────────────────────────────────────────────────
+
+/// A notification badge displaying a numeric count or short label.
+///
+/// When `count > max_display`, [`Badge::display_text`] returns the clamped
+/// string (e.g., `"99+"` when `max_display = 99`).
+///
+/// # Fields
+/// - `base` — `WidgetBase`. Shared widget properties.
+/// - `count` — `u32`. Numeric badge count.
+/// - `max_display` — `u32`. Highest value shown literally; larger values show `"N+"`.
+#[derive(Debug, Clone)]
+pub struct Badge {
+    /// Shared widget properties.
+    pub base: WidgetBase,
+    /// Numeric badge count.
+    pub count: u32,
+    /// Highest count shown literally; larger counts show `"N+"`.
+    pub max_display: u32,
+}
+
+impl Badge {
+    /// Create a new badge.
+    ///
+    /// # Parameters
+    /// - `count` — `u32`. Initial count.
+    ///
+    /// # Returns
+    /// `Badge`.
+    pub fn new(count: u32) -> Self {
+        Self {
+            base: WidgetBase::new(WidgetType::Badge),
+            count,
+            max_display: 99,
+        }
+    }
+
+    /// Return the text that should be rendered inside the badge.
+    ///
+    /// Returns `"N+"` when `count > max_display`, otherwise the count as a
+    /// decimal string.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn display_text(&self) -> String {
+        if self.count > self.max_display {
+            format!("{}+", self.max_display)
+        } else {
+            self.count.to_string()
+        }
+    }
+
+    /// Set the count.
+    ///
+    /// # Parameters
+    /// - `count` — `u32`.
+    pub fn set_count(&mut self, count: u32) {
+        self.count = count;
+    }
+}

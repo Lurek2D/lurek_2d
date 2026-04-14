@@ -21,6 +21,8 @@
 //! | `screen_effects` | `FlashState`, `ShakeState`, `FadeState` — one-shot screen effects |
 //! | `overlay` | `Overlay` — main struct combining all screen subsystems |
 //! | `weather` | `WeatherState`, `WeatherParticle`, `WeatherType` — weather simulation |
+//! | `presets` | `EffectPreset`, `build_preset`, `preset_names` — named effect stack factories |
+//! | `water_overlay` | `WaterOverlayState` — water surface UV-distortion state |
 //!
 //! ## Tier
 //!
@@ -54,6 +56,10 @@ pub mod overlay;
 pub mod screen_effects;
 /// Weather simulation: rain, snow, hail, dust, leaves, ash, pollen particles.
 pub mod weather;
+/// Factory functions that build pre-configured [`PostFxStack`] + effect lists for common visual styles.
+pub mod presets;
+/// Full-screen water surface overlay state driven by UV-distortion shader parameters.
+pub mod water_overlay;
 
 // ── Re-exports ───────────────────────────────────────────────────────────────
 
@@ -69,3 +75,5 @@ pub use atmosphere::{
 pub use overlay::Overlay;
 pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use weather::{WeatherParticle, WeatherState, WeatherType};
+pub use presets::{EffectPreset, build_preset, preset_names};
+pub use water_overlay::WaterOverlayState;

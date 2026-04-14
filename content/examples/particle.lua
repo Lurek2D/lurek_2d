@@ -269,7 +269,7 @@ particlesystem:setPosition(1.0, 1.0)  -- Sets the emitter world position
 particlesystem:setRadialAcceleration(1.0, 1.0)  -- Sets radial acceleration range
 particlesystem:setRelativeRotation(false)  -- Sets whether particle rotation follows velocity direction
 particlesystem:setRotation(1.0, 1.0)  -- Sets initial rotation range in radians
-particlesystem:setShape("circle")  -- "circle", "square", "triangle", "star"
+particlesystem:setShape("circle")  -- "circle", "square", "triangle", "spark", "diamond", "shrapnel", "ray", "puff", "ring", "capsule"
 particlesystem:setSizeVariation(1.0)  -- Sets size variation (0–1)
 particlesystem:setSizes(8, 16, 8)  -- Size keyframes: start=8, mid=16, end=8rame)
 particlesystem:setSpeed(1.0, 1.0)  -- Sets min/max initial speed

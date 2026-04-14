@@ -41,3 +41,15 @@ pub use influence_map::InfluenceMap;
 pub use nav_grid::{DiagonalMode, NavGrid};
 pub use pathgrid::{Cell, PathGrid};
 pub use unit_pathfinder::{UnitPathfinder, Waypoint};
+
+pub mod graph_nav;
+pub mod hex_grid;
+pub mod iso_grid;
+pub mod jps;
+pub mod range_map;
+
+pub use graph_nav::{graph_astar, graph_range};
+pub use hex_grid::{HexGrid, HexLayout};
+pub use iso_grid::IsoGrid;
+pub use jps::JpsGrid;
+pub use range_map::RangeMap;

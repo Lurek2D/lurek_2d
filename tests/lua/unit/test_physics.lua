@@ -2,38 +2,8 @@
 
 -- @description Covers suite: lurek.physics module exists.
 describe("lurek.physics module exists", function()
-    -- @covers lurek.physics
-    -- @covers lurek.physics.attachShape
-    -- @covers lurek.physics.getBody
-    -- @covers lurek.physics.isSleepingAllowed
-    -- @covers lurek.physics.newBody
-    -- @covers lurek.physics.newChainShape
-    -- @covers lurek.physics.newCircleShape
-    -- @covers lurek.physics.newEdgeShape
-    -- @covers lurek.physics.newPolygonShape
-    -- @covers lurek.physics.newRectangleShape
-    -- @covers lurek.physics.newWorld
-    -- @covers lurek.physics.setBodyVelocity
-    -- @covers lurek.physics.setSleepingAllowed
-    -- @covers lurek.physics.step
-    -- @covers lurek.physics.newCircleBody
-    -- @covers lurek.physics.newPolygonBody
-    -- @covers lurek.physics.newEdgeBody
-    -- @covers lurek.physics.newChainBody
-    -- @covers lurek.physics.addFixture
-    -- @covers lurek.physics.fixtureCount
-    -- @covers lurek.physics.setFixtureFriction
-    -- @covers lurek.physics.setFixtureRestitution
-    -- @covers lurek.physics.setFixtureSensor
-    -- @covers lurek.physics.addRevoluteJoint
-    -- @covers lurek.physics.addDistanceJoint
-    -- @covers lurek.physics.addWeldJoint
-    -- @covers lurek.physics.jointCount
-    -- @covers lurek.physics.getJointIds
-    -- @covers lurek.physics.destroyJoint
-    -- @covers lurek.physics.getJointType
-    -- @covers lurek.physics.destroyWorld
     -- @description Verifies the physics namespace is exposed as a Lua table.
+    -- @covers lurek.physics
     it("lurek.physics is a table", function()
         expect_type("table", lurek.physics)
     end)
