@@ -144,8 +144,48 @@ fn lua_test_physics_ext() {
 }
 
 #[test]
+fn lua_test_physics_zone() {
+    run_lua_test("unit/test_physics_zone.lua");
+}
+
+#[test]
+fn lua_test_physics_terrain() {
+    run_lua_test("unit/test_physics_terrain.lua");
+}
+
+#[test]
+fn lua_test_physics_terrain_collapse() {
+    run_lua_test("unit/test_physics_terrain_collapse.lua");
+}
+
+#[test]
+fn lua_test_physics_cellular() {
+    run_lua_test("unit/test_physics_cellular.lua");
+}
+
+#[test]
+fn lua_test_physics_step_fixed() {
+    run_lua_test("unit/test_physics_step_fixed.lua");
+}
+
+#[test]
 fn lua_evidence_physics_ext() {
     run_lua_test("evidence/test_evidence_physics_ext.lua");
+}
+
+#[test]
+fn lua_evidence_terrain_render() {
+    run_lua_test("evidence/test_evidence_terrain_render.lua");
+}
+
+#[test]
+fn lua_evidence_cellular_sand() {
+    run_lua_test("evidence/test_evidence_cellular_sand.lua");
+}
+
+#[test]
+fn lua_evidence_physics_zone_debug() {
+    run_lua_test("evidence/test_evidence_physics_zone_debug.lua");
 }
 
 #[test]
@@ -154,8 +194,103 @@ fn lua_integration_physics_platformer() {
 }
 
 #[test]
+fn lua_integration_physics_worms() {
+    run_lua_test("integration/test_physics_worms.lua");
+}
+
+#[test]
+fn lua_integration_physics_tanks() {
+    run_lua_test("integration/test_physics_tanks.lua");
+}
+
+#[test]
+fn lua_integration_physics_space() {
+    run_lua_test("integration/test_physics_space.lua");
+}
+
+#[test]
+fn lua_integration_physics_world_sim() {
+    run_lua_test("integration/test_physics_world_sim.lua");
+}
+
+#[test]
+fn lua_stress_physics_zones() {
+    run_lua_test("stress/test_stress_physics_zones.lua");
+}
+
+#[test]
+fn lua_stress_physics_terrain() {
+    run_lua_test("stress/test_stress_physics_terrain.lua");
+}
+
+#[test]
+fn lua_stress_physics_cellular() {
+    run_lua_test("stress/test_stress_physics_cellular.lua");
+}
+
+#[test]
 fn lua_test_ai() {
     run_lua_test("unit/test_ai.lua");
+}
+
+#[test]
+fn lua_test_ai_traits() {
+    run_lua_test("unit/test_ai_traits.lua");
+}
+
+#[test]
+fn lua_test_ai_perception() {
+    run_lua_test("unit/test_ai_perception.lua");
+}
+
+#[test]
+fn lua_test_ai_context_steering() {
+    run_lua_test("unit/test_ai_context_steering.lua");
+}
+
+#[test]
+fn lua_test_ai_needs() {
+    run_lua_test("unit/test_ai_needs.lua");
+}
+
+#[test]
+fn lua_test_ai_director() {
+    run_lua_test("unit/test_ai_director.lua");
+}
+
+#[test]
+fn lua_test_ai_htn() {
+    run_lua_test("unit/test_ai_htn.lua");
+}
+
+#[test]
+fn lua_test_ai_mcts() {
+    run_lua_test("unit/test_ai_mcts.lua");
+}
+
+#[test]
+fn lua_test_ai_emotion() {
+    run_lua_test("unit/test_ai_emotion.lua");
+}
+
+#[test]
+fn lua_test_ai_orca() {
+    run_lua_test("unit/test_ai_orca.lua");
+}
+
+#[test]
+fn lua_test_ai_ml() {
+    run_lua_test("unit/test_ai_ml.lua");
+}
+
+#[test]
+fn lua_test_ai_strategy() {
+    run_lua_test("unit/test_ai_strategy.lua");
+}
+
+#[test]
+fn lua_test_ai_lod() {
+    run_lua_test("unit/test_ai_lod.lua");
 }
 
 #[test]
@@ -171,6 +306,26 @@ fn lua_test_audio_bus() {
 #[test]
 fn lua_test_audio_dsp() {
     run_lua_test("unit/test_audio_dsp.lua");
+}
+
+#[test]
+fn lua_test_audio_effects() {
+    run_lua_test("unit/test_audio_effects.lua");
+}
+
+#[test]
+fn lua_test_audio_pool() {
+    run_lua_test("unit/test_audio_pool.lua");
+}
+
+#[test]
+fn lua_test_audio_stereo() {
+    run_lua_test("unit/test_audio_stereo.lua");
+}
+
+#[test]
+fn lua_test_audio_offline() {
+    run_lua_test("unit/test_audio_offline.lua");
 }
 
 #[test]
@@ -330,6 +485,26 @@ fn lua_test_savegame() {
 #[test]
 fn lua_test_modding() {
     run_lua_test("unit/test_modding.lua");
+}
+
+#[test]
+fn lua_test_unit_effect_overlay_water() {
+    run_lua_test("unit/test_effect_overlay_water.lua");
+}
+
+#[test]
+fn lua_test_unit_postfx_stack_extended() {
+    run_lua_test("unit/test_postfx_stack_extended.lua");
+}
+
+#[test]
+fn lua_test_unit_image_extended() {
+    run_lua_test("unit/test_image_extended.lua");
+}
+
+#[test]
+fn lua_test_evidence_postfx_types() {
+    run_lua_test("evidence/test_evidence_postfx_types.lua");
 }
 
 // === Validation Tests ===
@@ -561,6 +736,27 @@ fn lua_test_network_host() {
 fn lua_test_network_constants() {
     run_lua_test("unit/test_network_constants.lua");
 }
+
+#[test]
+fn lua_test_network_pack_unpack() {
+    run_lua_test("unit/test_network_pack_unpack.lua");
+}
+
+#[test]
+fn lua_test_network_roles() {
+    run_lua_test("unit/test_network_roles.lua");
+}
+
+#[test]
+fn lua_test_network_runtime() {
+    run_lua_test("unit/test_network_runtime.lua");
+}
+
+#[test]
+fn lua_test_security_network() {
+    run_lua_test("security/test_network_security.lua");
+}
+
 #[test]
 fn lua_test_procgen() {
     run_lua_test("unit/test_procgen.lua");
@@ -572,6 +768,26 @@ fn lua_test_raycaster() {
 #[test]
 fn lua_test_spine() {
     run_lua_test("unit/test_spine.lua");
+}
+
+#[test]
+fn lua_test_sprite() {
+    run_lua_test("unit/test_sprite.lua");
+}
+
+#[test]
+fn lua_test_animation_ext() {
+    run_lua_test("unit/test_animation_ext.lua");
+}
+
+#[test]
+fn lua_test_spine_ext() {
+    run_lua_test("unit/test_spine_ext.lua");
+}
+
+#[test]
+fn lua_test_tilemap_ext() {
+    run_lua_test("unit/test_tilemap_ext.lua");
 }
 
 #[test]
@@ -1126,6 +1342,16 @@ fn lua_evidence_audio_waves() {
 }
 
 #[test]
+fn lua_evidence_audio_offline() {
+    run_lua_test("evidence/test_evidence_audio_offline.lua");
+}
+
+#[test]
+fn lua_evidence_audio_visualizer() {
+    run_lua_test("evidence/test_evidence_audio_visualizer.lua");
+}
+
+#[test]
 fn lua_evidence_charts() {
     run_lua_test("evidence/test_evidence_charts.lua");
 }
@@ -1264,4 +1490,107 @@ fn lua_evidence_physics_debug_gpu() {
 #[test]
 fn lua_evidence_graphic_draw_cmds() {
     run_lua_test("evidence/test_evidence_graphic_draw_cmds.lua");
+}
+
+// ─── Phase 4: Math / Pathfinding / Procgen / Graph expansion ─────────────────
+
+#[test]
+fn lua_integration_pathfind_hexmap() {
+    run_lua_test("integration/test_pathfind_hexmap.lua");
+}
+
+#[test]
+fn lua_integration_pathfind_graph() {
+    run_lua_test("integration/test_pathfind_graph.lua");
+}
+
+#[test]
+fn lua_integration_math_pathfind() {
+    run_lua_test("integration/test_math_pathfind.lua");
+}
+
+#[test]
+fn lua_integration_procgen_ai() {
+    run_lua_test("integration/test_procgen_ai.lua");
+}
+
+#[test]
+fn lua_integration_pathfind_ai() {
+    run_lua_test("integration/test_pathfind_ai.lua");
+}
+
+#[test]
+fn lua_integration_graph_pathfind() {
+    run_lua_test("integration/test_graph_pathfind.lua");
+}
+
+#[test]
+fn lua_stress_procgen() {
+    run_lua_test("stress/test_procgen_stress.lua");
+}
+
+// ── ECS extensions ──────────────────────────────────────────────────────────
+
+#[test]
+fn lua_test_unit_entity_query_not() {
+    run_lua_test("unit/test_entity_query_not.lua");
+}
+
+#[test]
+fn lua_test_unit_entity_serialization() {
+    run_lua_test("unit/test_entity_serialization.lua");
+}
+
+#[test]
+fn lua_test_unit_entity_observers() {
+    run_lua_test("unit/test_entity_observers.lua");
+}
+
+#[test]
+fn lua_test_unit_entity_system_priority() {
+    run_lua_test("unit/test_entity_system_priority.lua");
+}
+
+#[test]
+fn lua_test_unit_entity_relationships() {
+    run_lua_test("unit/test_entity_relationships.lua");
+}
+
+#[test]
+fn lua_stress_entity_bulk_spawn() {
+    run_lua_test("stress/test_entity_bulk_spawn.lua");
+}
+
+// ── Patterns extensions ──────────────────────────────────────────────────────
+
+#[test]
+fn lua_test_unit_patterns_mediator() {
+    run_lua_test("unit/test_patterns_mediator.lua");
+}
+
+#[test]
+fn lua_test_unit_patterns_strategy() {
+    run_lua_test("unit/test_patterns_strategy.lua");
+}
+
+#[test]
+fn lua_test_unit_patterns_collections() {
+    run_lua_test("unit/test_patterns_collections.lua");
+}
+
+// ── Scene extensions ─────────────────────────────────────────────────────────
+
+#[test]
+fn lua_test_unit_scene_transitions_extended() {
+    run_lua_test("unit/test_scene_transitions_extended.lua");
+}
+
+#[test]
+fn lua_test_unit_scene_serialization() {
+    run_lua_test("unit/test_scene_serialization.lua");
+}
+
+#[test]
+fn lua_stress_scene_depth_sort() {
+    run_lua_test("stress/test_scene_depth_sort.lua");
 }

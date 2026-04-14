@@ -10,6 +10,22 @@ use crate::ai::{
     AIWorld, BTNode, BehaviorTree, Blackboard, CommandQueue, DecisionModel, FormationType,
     GOAPAction, GOAPGoal, GOAPPlanner, ParallelPolicy, QLearner, Squad,
     SteeringManager, UAAction, UtilityAI,
+    // New subsystems
+    TraitProfile,
+    StimulusWorld,
+    ContextSteering,
+    Need, NeedSystem,
+    AIDirector,
+    HTNDomain, HTNMethod, HTNPlanner, WorldState,
+    MCTSConfig, MCTSEngine,
+    Emotion, EmotionModel,
+    ORCAAgent, ORCASolver,
+    Activation, NeuralNet,
+    GeneticAlgorithm,
+    Bandit, BanditStrategy,
+    Neuroevolution,
+    StrategyAI,
+    AILod,
 };
 use crate::pathfind::InfluenceMap;
 
@@ -1914,6 +1930,842 @@ impl LuaUserData for LuaCommandQueue {
 
 // -------------------------------------------------------------------------------
 // Register
+// ── TraitProfile ────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::traits::TraitProfile`].
+#[derive(Clone)]
+struct LuaTraitProfile {
+    inner: Rc<RefCell<TraitProfile>>,
+}
+
+impl LuaUserData for LuaTraitProfile {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param name : string
+        /// @param value : number
+        methods.add_method_mut("set", |_, this, (name, value): (String, f32)| {
+            this.inner.borrow_mut().set(&name, value);
+            Ok(())
+        });
+
+        /// @param name : string
+        /// @return number
+        methods.add_method("get", |_, this, name: String| {
+            Ok(this.inner.borrow().get(&name))
+        });
+
+        /// @param name : string
+        /// @return number
+        methods.add_method("getBase", |_, this, name: String| {
+            Ok(this.inner.borrow().get_base(&name))
+        });
+
+        /// @param trait_name : string
+        /// @param delta : number
+        /// @param duration : number|nil
+        /// @param source : string
+        methods.add_method_mut("addModifier", |_, this, (trait_name, delta, duration, source): (String, f32, Option<f32>, String)| {
+            this.inner.borrow_mut().add_modifier(&trait_name, delta, duration, &source);
+            Ok(())
+        });
+
+        /// @param source : string
+        methods.add_method_mut("removeModifiers", |_, this, source: String| {
+            this.inner.borrow_mut().remove_modifiers_by_source(&source);
+            Ok(())
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        /// @param name : string
+        /// @return boolean
+        methods.add_method("has", |_, this, name: String| {
+            Ok(this.inner.borrow().has(&name))
+        });
+
+        /// @return number
+        methods.add_method("traitCount", |_, this, ()| {
+            Ok(this.inner.borrow().trait_count() as i64)
+        });
+
+        /// @return string|nil
+        methods.add_method("archetype", |_, this, ()| {
+            Ok(this.inner.borrow().archetype().map(|s| s.to_string()))
+        });
+    }
+}
+
+// ── StimulusWorld ────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::perception::StimulusWorld`].
+#[derive(Clone)]
+struct LuaStimulusWorld {
+    inner: Rc<RefCell<StimulusWorld>>,
+}
+
+impl LuaUserData for LuaStimulusWorld {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param x : number
+        /// @param y : number
+        /// @param intensity : number
+        /// @param radius : number
+        /// @param tag : string|nil
+        /// @return integer
+        methods.add_method_mut("addVisual", |_, this, (x, y, intensity, radius, tag): (f32, f32, f32, f32, Option<String>)| {
+            Ok(this.inner.borrow_mut().add_visual(x, y, intensity, radius, tag) as i64)
+        });
+
+        /// @param x : number
+        /// @param y : number
+        /// @param intensity : number
+        /// @param radius : number
+        /// @param decay_rate : number
+        /// @param tag : string|nil
+        /// @return integer
+        methods.add_method_mut("addAuditory", |_, this, (x, y, intensity, radius, decay_rate, tag): (f32, f32, f32, f32, f32, Option<String>)| {
+            Ok(this.inner.borrow_mut().add_auditory(x, y, intensity, radius, decay_rate, tag) as i64)
+        });
+
+        /// @param id : integer
+        /// @return boolean
+        methods.add_method_mut("remove", |_, this, id: u64| {
+            Ok(this.inner.borrow_mut().remove(id))
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        /// @return integer
+        methods.add_method("count", |_, this, ()| {
+            Ok(this.inner.borrow().count() as i64)
+        });
+
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.borrow_mut().clear();
+            Ok(())
+        });
+    }
+}
+
+// ── ContextSteering ──────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::context_steering::ContextSteering`].
+#[derive(Clone)]
+struct LuaContextSteering {
+    inner: Rc<RefCell<ContextSteering>>,
+}
+
+impl LuaUserData for LuaContextSteering {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param tx : number
+        /// @param ty : number
+        /// @param weight : number
+        methods.add_method_mut("addSeekTarget", |_, this, (tx, ty, weight): (f32, f32, f32)| {
+            this.inner.borrow_mut().add_seek_target(tx, ty, weight);
+            Ok(())
+        });
+
+        /// @param jitter : number
+        /// @param weight : number
+        methods.add_method_mut("addWander", |_, this, (jitter, weight): (f32, f32)| {
+            this.inner.borrow_mut().add_wander(jitter, weight);
+            Ok(())
+        });
+
+        /// @param x : number
+        /// @param y : number
+        /// @param radius : number
+        /// @param weight : number
+        methods.add_method_mut("addAvoidPoint", |_, this, (x, y, radius, weight): (f32, f32, f32, f32)| {
+            this.inner.borrow_mut().add_avoid_point(x, y, radius, weight);
+            Ok(())
+        });
+
+        /// @param min_x : number
+        /// @param min_y : number
+        /// @param max_x : number
+        /// @param max_y : number
+        /// @param margin : number
+        /// @param weight : number
+        methods.add_method_mut("addAvoidBounds", |_, this, (min_x, min_y, max_x, max_y, margin, weight): (f32, f32, f32, f32, f32, f32)| {
+            this.inner.borrow_mut().add_avoid_bounds(min_x, min_y, max_x, max_y, margin, weight);
+            Ok(())
+        });
+
+        methods.add_method_mut("clearBehaviors", |_, this, ()| {
+            this.inner.borrow_mut().clear_behaviors();
+            Ok(())
+        });
+
+        /// @param ax : number
+        /// @param ay : number
+        /// @param vx : number
+        /// @param vy : number
+        /// @return number, number
+        methods.add_method_mut("evaluate", |_, this, (ax, ay, vx, vy): (f32, f32, f32, f32)| {
+            let (dx, dy) = this.inner.borrow_mut().evaluate(ax, ay, vx, vy);
+            Ok((dx, dy))
+        });
+
+        /// @return number
+        methods.add_method("chosenMagnitude", |_, this, ()| {
+            Ok(this.inner.borrow().chosen_magnitude())
+        });
+
+        /// @return integer
+        methods.add_method("slotCount", |_, this, ()| {
+            Ok(this.inner.borrow().slot_count() as i64)
+        });
+    }
+}
+
+// ── NeedSystem ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::needs::NeedSystem`].
+#[derive(Clone)]
+struct LuaNeedSystem {
+    inner: Rc<RefCell<NeedSystem>>,
+}
+
+impl LuaUserData for LuaNeedSystem {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param name : string
+        /// @param decay_rate : number
+        /// @param urgency_threshold : number
+        /// @param urgency_factor : number
+        methods.add_method_mut("addNeed", |_, this, (name, decay_rate, urgency_threshold, urgency_factor): (String, f32, f32, f32)| {
+            this.inner.borrow_mut().add_need(Need::new(&name, decay_rate, urgency_threshold, urgency_factor));
+            Ok(())
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        /// @return string|nil
+        methods.add_method("mostUrgent", |_, this, ()| {
+            Ok(this.inner.borrow().most_urgent().map(|s| s.to_string()))
+        });
+
+        /// @param name : string
+        /// @param amount : number
+        methods.add_method_mut("satisfy", |_, this, (name, amount): (String, f32)| {
+            this.inner.borrow_mut().satisfy(&name, amount);
+            Ok(())
+        });
+
+        /// @param name : string
+        /// @return number
+        methods.add_method("valueOf", |_, this, name: String| {
+            Ok(this.inner.borrow().value_of(&name))
+        });
+    }
+}
+
+// ── AIDirector ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::director::AIDirector`].
+#[derive(Clone)]
+struct LuaAIDirector {
+    inner: Rc<RefCell<AIDirector>>,
+}
+
+impl LuaUserData for LuaAIDirector {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param intensity : number
+        methods.add_method_mut("pushEvent", |_, this, intensity: f32| {
+            this.inner.borrow_mut().push_event(intensity);
+            Ok(())
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        /// @return number
+        methods.add_method("tension", |_, this, ()| {
+            Ok(this.inner.borrow().tension())
+        });
+
+        /// @return string
+        methods.add_method("phase", |_, this, ()| {
+            Ok(this.inner.borrow().phase_str().to_string())
+        });
+
+        /// @return number
+        methods.add_method("spawnRateFactor", |_, this, ()| {
+            Ok(this.inner.borrow().spawn_rate_factor())
+        });
+
+        /// @return number
+        methods.add_method("lootFactor", |_, this, ()| {
+            Ok(this.inner.borrow().loot_factor())
+        });
+
+        /// @return number
+        methods.add_method("ambientIntensity", |_, this, ()| {
+            Ok(this.inner.borrow().ambient_intensity())
+        });
+
+        /// @param value : number
+        methods.add_method_mut("setTension", |_, this, value: f32| {
+            this.inner.borrow_mut().set_tension(value);
+            Ok(())
+        });
+
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+    }
+}
+
+// ── HTNDomain ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::htn::HTNDomain`].
+#[derive(Clone)]
+struct LuaHTNDomain {
+    inner: Rc<RefCell<HTNDomain>>,
+}
+
+impl LuaUserData for LuaHTNDomain {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param name : string
+        /// @param preconditions : table
+        /// @param effects : table
+        /// @param effects_clear : table
+        methods.add_method_mut("addPrimitive", |_, this, (name, preconds, effects, clears): (String, Vec<String>, Vec<String>, Vec<String>)| {
+            let p: Vec<&str> = preconds.iter().map(|s| s.as_str()).collect();
+            let e: Vec<&str> = effects.iter().map(|s| s.as_str()).collect();
+            let c: Vec<&str> = clears.iter().map(|s| s.as_str()).collect();
+            this.inner.borrow_mut().add_primitive(&name, p, e, c);
+            Ok(())
+        });
+
+        /// @param compound_name : string
+        /// @param methods : table  -- array of {preconditions=[], sub_tasks=[]}
+        methods.add_method_mut("addCompound", |lua, this, (comp_name, methods_table): (String, LuaTable)| {
+            let mut htn_methods: Vec<HTNMethod> = Vec::new();
+            for i in 1..=methods_table.raw_len() {
+                let m: LuaTable = methods_table.raw_get(i)?;
+                let preconds: Vec<String> = m.raw_get::<_, Vec<String>>("preconditions").unwrap_or_default();
+                let sub_tasks: Vec<String> = m.raw_get::<_, Vec<String>>("sub_tasks").unwrap_or_default();
+                let mname: String = m.raw_get::<_, String>("name").unwrap_or_else(|_| format!("method_{i}"));
+                let p: Vec<&str> = preconds.iter().map(|s| s.as_str()).collect();
+                let s: Vec<&str> = sub_tasks.iter().map(|s| s.as_str()).collect();
+                htn_methods.push(HTNMethod::with_preconditions(&mname, p, s));
+            }
+            this.inner.borrow_mut().add_compound(&comp_name, htn_methods);
+            let _ = lua; // suppress warning
+            Ok(())
+        });
+
+        /// @param root_task : string
+        /// @param state : table
+        /// @return table|nil
+        methods.add_method("plan", |lua, this, (root_task, state_table): (String, LuaTable)| {
+            let mut state: WorldState = std::collections::HashMap::new();
+            for pair in state_table.pairs::<String, f32>() {
+                let (k, v) = pair?;
+                state.insert(k, v);
+            }
+            let result = HTNPlanner::plan(&this.inner.borrow(), &root_task, &state);
+            match result {
+                None => Ok(LuaValue::Nil),
+                Some(plan) => {
+                    let t = lua.create_table()?;
+                    for (i, step) in plan.into_iter().enumerate() {
+                        t.raw_set(i + 1, step)?;
+                    }
+                    Ok(LuaValue::Table(t))
+                }
+            }
+        });
+
+        /// @return integer
+        methods.add_method("taskCount", |_, this, ()| {
+            Ok(this.inner.borrow().task_count() as i64)
+        });
+    }
+}
+
+// ── MCTSEngine ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::mcts::MCTSEngine`].
+#[derive(Clone)]
+struct LuaMCTSEngine {
+    inner: Rc<RefCell<MCTSEngine>>,
+}
+
+impl LuaUserData for LuaMCTSEngine {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Uses Lua closures for game logic. All closures receive/return integer states.
+        /// @param root_state : integer
+        /// @param get_actions : function(state) -> table
+        /// @param apply_action : function(state, action) -> integer
+        /// @param evaluate : function(state) -> number
+        /// @return integer|nil
+        methods.add_method_mut(
+            "search",
+            |_, this, (root_state, get_actions_fn, apply_fn, eval_fn): (i64, LuaFunction, LuaFunction, LuaFunction)| {
+                let mut engine = this.inner.borrow_mut();
+                let mut get_actions = |s: &i64| -> Vec<i32> {
+                    get_actions_fn.call::<_, Vec<i32>>(*s).unwrap_or_default()
+                };
+                let mut apply_action = |s: &i64, action: i32| -> i64 {
+                    apply_fn.call::<_, i64>((*s, action)).unwrap_or(*s)
+                };
+                let mut evaluate = |s: &i64| -> f32 {
+                    eval_fn.call::<_, f32>(*s).unwrap_or(0.0)
+                };
+                let result = engine.search(root_state, &mut get_actions, &mut apply_action, &mut evaluate);
+                Ok(result.map(|a| a as i64))
+            },
+        );
+    }
+}
+
+// ── EmotionModel ─────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::emotion::EmotionModel`].
+#[derive(Clone)]
+struct LuaEmotionModel {
+    inner: Rc<RefCell<EmotionModel>>,
+}
+
+impl LuaUserData for LuaEmotionModel {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param name : string
+        /// @param resting_level : number
+        /// @param decay_rate : number
+        /// @param min_visible : number
+        methods.add_method_mut("add", |_, this, (name, rest, decay, min_vis): (String, f32, f32, f32)| {
+            this.inner.borrow_mut().add(Emotion::new(&name, rest, decay, min_vis));
+            Ok(())
+        });
+
+        /// @param name : string
+        /// @param amount : number
+        methods.add_method_mut("trigger", |_, this, (name, amount): (String, f32)| {
+            this.inner.borrow_mut().trigger(&name, amount);
+            Ok(())
+        });
+
+        /// @param name : string
+        /// @return number
+        methods.add_method("get", |_, this, name: String| {
+            Ok(this.inner.borrow().get(&name))
+        });
+
+        /// @return string|nil
+        methods.add_method("dominant", |_, this, ()| {
+            Ok(this.inner.borrow().dominant().map(|s| s.to_string()))
+        });
+
+        /// @param name : string
+        /// @return boolean
+        methods.add_method("isActive", |_, this, name: String| {
+            Ok(this.inner.borrow().is_active(&name))
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("update", |_, this, dt: f32| {
+            this.inner.borrow_mut().update(dt);
+            Ok(())
+        });
+
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+    }
+}
+
+// ── ORCASolver ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::orca::ORCASolver`].
+#[derive(Clone)]
+struct LuaORCASolver {
+    inner: Rc<RefCell<ORCASolver>>,
+}
+
+impl LuaUserData for LuaORCASolver {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param x : number
+        /// @param y : number
+        /// @param radius : number
+        /// @param max_speed : number
+        /// @return integer
+        methods.add_method_mut("addAgent", |_, this, (x, y, radius, max_speed): (f32, f32, f32, f32)| {
+            Ok(this.inner.borrow_mut().add_agent(ORCAAgent::new(x, y, radius, max_speed)) as i64)
+        });
+
+        /// @param index : integer
+        /// @param pvx : number
+        /// @param pvy : number
+        methods.add_method_mut("setPreferredVelocity", |_, this, (idx, pvx, pvy): (usize, f32, f32)| {
+            if let Some(a) = this.inner.borrow_mut().agents.get_mut(idx) {
+                a.preferred_velocity = (pvx, pvy);
+            }
+            Ok(())
+        });
+
+        /// @param index : integer
+        /// @param x : number
+        /// @param y : number
+        methods.add_method_mut("setPosition", |_, this, (idx, x, y): (usize, f32, f32)| {
+            if let Some(a) = this.inner.borrow_mut().agents.get_mut(idx) {
+                a.position = (x, y);
+            }
+            Ok(())
+        });
+
+        /// @param dt : number
+        methods.add_method_mut("compute", |_, this, dt: f32| {
+            this.inner.borrow_mut().compute(dt);
+            Ok(())
+        });
+
+        /// @param index : integer
+        /// @return number, number
+        methods.add_method("getSafeVelocity", |_, this, idx: usize| {
+            let solver = this.inner.borrow();
+            let v = solver.agents.get(idx)
+                .map(|a| a.safe_velocity)
+                .unwrap_or((0.0, 0.0));
+            Ok((v.0, v.1))
+        });
+
+        /// @return integer
+        methods.add_method("agentCount", |_, this, ()| {
+            Ok(this.inner.borrow().agent_count() as i64)
+        });
+    }
+}
+
+// ── NeuralNet ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::neural_net::NeuralNet`].
+#[derive(Clone)]
+struct LuaNeuralNet {
+    inner: Rc<RefCell<NeuralNet>>,
+}
+
+impl LuaUserData for LuaNeuralNet {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param inputs : integer
+        /// @param outputs : integer
+        /// @param activation : string
+        methods.add_method_mut("addLayer", |_, this, (inputs, outputs, activation): (usize, usize, String)| {
+            let act = Activation::from_str(&activation);
+            this.inner.borrow_mut().add_layer(inputs, outputs, act);
+            Ok(())
+        });
+
+        /// @param input : table
+        /// @return table
+        methods.add_method("forward", |lua, this, input: Vec<f32>| {
+            let out = this.inner.borrow().forward(&input);
+            let t = lua.create_table()?;
+            for (i, v) in out.into_iter().enumerate() {
+                t.raw_set(i + 1, v)?;
+            }
+            Ok(t)
+        });
+
+        /// @param weights : table
+        /// @return boolean
+        methods.add_method_mut("setWeights", |_, this, weights: Vec<f32>| {
+            Ok(this.inner.borrow_mut().set_weights(&weights))
+        });
+
+        /// @return table
+        methods.add_method("getWeights", |lua, this, ()| {
+            let w = this.inner.borrow().get_weights();
+            let t = lua.create_table()?;
+            for (i, v) in w.into_iter().enumerate() {
+                t.raw_set(i + 1, v)?;
+            }
+            Ok(t)
+        });
+
+        /// @return integer
+        methods.add_method("paramCount", |_, this, ()| {
+            Ok(this.inner.borrow().param_count() as i64)
+        });
+
+        /// @return integer
+        methods.add_method("layerCount", |_, this, ()| {
+            Ok(this.inner.borrow().layer_count() as i64)
+        });
+    }
+}
+
+// ── GeneticAlgorithm ─────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::genetic::GeneticAlgorithm`].
+#[derive(Clone)]
+struct LuaGeneticAlgorithm {
+    inner: Rc<RefCell<GeneticAlgorithm>>,
+}
+
+impl LuaUserData for LuaGeneticAlgorithm {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_method_mut("evolve", |_, this, ()| {
+            this.inner.borrow_mut().evolve();
+            Ok(())
+        });
+
+        /// @return integer
+        methods.add_method("generation", |_, this, ()| {
+            Ok(this.inner.borrow().generation as i64)
+        });
+
+        /// @return integer
+        methods.add_method("popSize", |_, this, ()| {
+            Ok(this.inner.borrow().pop_size() as i64)
+        });
+
+        /// @param index : integer
+        /// @param fitness : number
+        methods.add_method_mut("setFitness", |_, this, (idx, fitness): (usize, f32)| {
+            if let Some(c) = this.inner.borrow_mut().population.get_mut(idx) {
+                c.fitness = fitness;
+            }
+            Ok(())
+        });
+
+        /// @param index : integer
+        /// @return table
+        methods.add_method("getGenes", |lua, this, idx: usize| {
+            let ga = this.inner.borrow();
+            let t = lua.create_table()?;
+            if let Some(c) = ga.population.get(idx) {
+                for (i, &g) in c.genes.iter().enumerate() {
+                    t.raw_set(i + 1, g)?;
+                }
+            }
+            Ok(t)
+        });
+
+        /// @return table
+        methods.add_method("bestGenes", |lua, this, ()| {
+            let ga = this.inner.borrow();
+            let t = lua.create_table()?;
+            if let Some(best) = ga.best() {
+                for (i, &g) in best.genes.iter().enumerate() {
+                    t.raw_set(i + 1, g)?;
+                }
+            }
+            Ok(t)
+        });
+    }
+}
+
+// ── Bandit ────────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::bandit::Bandit`].
+#[derive(Clone)]
+struct LuaBandit {
+    inner: Rc<RefCell<Bandit>>,
+}
+
+impl LuaUserData for LuaBandit {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @return integer
+        methods.add_method_mut("select", |_, this, ()| {
+            Ok(this.inner.borrow_mut().select() as i64)
+        });
+
+        /// @param index : integer
+        /// @param reward : number
+        methods.add_method_mut("update", |_, this, (idx, reward): (usize, f64)| {
+            this.inner.borrow_mut().update(idx, reward);
+            Ok(())
+        });
+
+        /// @return integer
+        methods.add_method("bestArm", |_, this, ()| {
+            Ok(this.inner.borrow().best_arm() as i64)
+        });
+
+        methods.add_method_mut("reset", |_, this, ()| {
+            this.inner.borrow_mut().reset();
+            Ok(())
+        });
+
+        /// @return integer
+        methods.add_method("armCount", |_, this, ()| {
+            Ok(this.inner.borrow().arm_count() as i64)
+        });
+
+        /// @return integer
+        methods.add_method("totalPulls", |_, this, ()| {
+            Ok(this.inner.borrow().total_pulls as i64)
+        });
+    }
+}
+
+// ── Neuroevolution ───────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::neuroevolution::Neuroevolution`].
+#[derive(Clone)]
+struct LuaNeuroevolution {
+    inner: Rc<RefCell<Neuroevolution>>,
+}
+
+impl LuaUserData for LuaNeuroevolution {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        methods.add_method_mut("evolve", |_, this, ()| {
+            this.inner.borrow_mut().evolve();
+            Ok(())
+        });
+
+        /// @param index : integer
+        /// @param fitness : number
+        methods.add_method_mut("setFitness", |_, this, (idx, fitness): (usize, f32)| {
+            this.inner.borrow_mut().set_fitness(idx, fitness);
+            Ok(())
+        });
+
+        /// @param index : integer
+        /// @return LuaNeuralNet|nil
+        methods.add_method("chromosomeToNet", |_, this, idx: usize| {
+            let net = this.inner.borrow().chromosome_to_net(idx);
+            Ok(net.map(|n| LuaNeuralNet { inner: Rc::new(RefCell::new(n)) }))
+        });
+
+        /// @return LuaNeuralNet|nil
+        methods.add_method("bestNetwork", |_, this, ()| {
+            let net = this.inner.borrow().best_network();
+            Ok(net.map(|n| LuaNeuralNet { inner: Rc::new(RefCell::new(n)) }))
+        });
+
+        /// @return number
+        methods.add_method("bestFitness", |_, this, ()| {
+            Ok(this.inner.borrow().best_fitness())
+        });
+
+        /// @return integer
+        methods.add_method("popSize", |_, this, ()| {
+            Ok(this.inner.borrow().pop_size() as i64)
+        });
+
+        /// @return integer
+        methods.add_method("generation", |_, this, ()| {
+            Ok(this.inner.borrow().generation as i64)
+        });
+    }
+}
+
+// ── StrategyAI ────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::strategy::StrategyAI`].
+#[derive(Clone)]
+struct LuaStrategyAI {
+    inner: Rc<RefCell<StrategyAI>>,
+}
+
+impl LuaUserData for LuaStrategyAI {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param name : string
+        methods.add_method_mut("addGoal", |_, this, name: String| {
+            this.inner.borrow_mut().add_goal_named(&name);
+            Ok(())
+        });
+
+        /// @param tag : string
+        methods.add_method_mut("addTag", |_, this, tag: String| {
+            this.inner.borrow_mut().add_tag(&tag);
+            Ok(())
+        });
+
+        /// @param tag : string
+        methods.add_method_mut("removeTag", |_, this, tag: String| {
+            this.inner.borrow_mut().remove_tag(&tag);
+            Ok(())
+        });
+
+        /// @param dt : number
+        /// @param scorer : function(goal_name) -> number
+        methods.add_method_mut("update", |_, this, (dt, scorer_fn): (f32, LuaFunction)| {
+            let mut scorer = |goal: &str| -> f32 {
+                scorer_fn.call::<_, f32>(goal.to_string()).unwrap_or(0.0)
+            };
+            this.inner.borrow_mut().update(dt, &mut scorer);
+            Ok(())
+        });
+
+        /// @param scorer : function(goal_name) -> number
+        methods.add_method_mut("forceEvaluate", |_, this, scorer_fn: LuaFunction| {
+            let mut scorer = |goal: &str| -> f32 {
+                scorer_fn.call::<_, f32>(goal.to_string()).unwrap_or(0.0)
+            };
+            this.inner.borrow_mut().force_evaluate(&mut scorer);
+            Ok(())
+        });
+
+        /// @return string|nil
+        methods.add_method("activeGoal", |_, this, ()| {
+            Ok(this.inner.borrow().active_goal().map(|s| s.to_string()))
+        });
+
+        /// @return number
+        methods.add_method("timeUntilNext", |_, this, ()| {
+            Ok(this.inner.borrow().time_until_next())
+        });
+    }
+}
+
+// ── AILod ─────────────────────────────────────────────────────────────────────
+
+/// Lua wrapper for [`crate::ai::lod::AILod`].
+#[derive(Clone)]
+struct LuaAILod {
+    inner: Rc<RefCell<AILod>>,
+}
+
+impl LuaUserData for LuaAILod {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// @param agent_x : number
+        /// @param agent_y : number
+        /// @param ref_x : number
+        /// @param ref_y : number
+        /// @return integer
+        methods.add_method("tierFor", |_, this, (ax, ay, rx, ry): (f32, f32, f32, f32)| {
+            Ok(this.inner.borrow().tier_for((ax, ay), (rx, ry)) as i64)
+        });
+
+        /// @param tier : integer
+        /// @param frame_number : integer
+        /// @return boolean
+        methods.add_method("shouldUpdate", |_, this, (tier, frame): (usize, u64)| {
+            Ok(this.inner.borrow().should_update(tier, frame))
+        });
+
+        /// @return integer
+        methods.add_method("tierCount", |_, this, ()| {
+            Ok(this.inner.borrow().tier_count() as i64)
+        });
+
+        /// @param tier : integer
+        /// @return string
+        methods.add_method("tierName", |_, this, tier: usize| {
+            Ok(this.inner.borrow().tier(tier).map(|t| t.name.clone()))
+        });
+    }
+}
+
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.ai` API table with the Lua VM.
@@ -2190,6 +3042,196 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             Ok(LuaCommandQueue {
                 inner: Rc::new(RefCell::new(CommandQueue::new())),
             })
+        })?,
+    )?;
+
+    // ── newTraitProfile ──────────────────────────────────────────────────────
+    /// Creates a new personality trait profile.
+    /// @return TraitProfile
+    tbl.set(
+        "newTraitProfile",
+        lua.create_function(|_, ()| {
+            Ok(LuaTraitProfile { inner: Rc::new(RefCell::new(TraitProfile::new())) })
+        })?,
+    )?;
+
+    // ── newStimulusWorld ─────────────────────────────────────────────────────
+    /// Creates a new stimulus perception world.
+    /// @return StimulusWorld
+    tbl.set(
+        "newStimulusWorld",
+        lua.create_function(|_, ()| {
+            Ok(LuaStimulusWorld { inner: Rc::new(RefCell::new(StimulusWorld::new())) })
+        })?,
+    )?;
+
+    // ── newContextSteering ───────────────────────────────────────────────────
+    /// Creates a new context steering controller.
+    /// @param slots : integer
+    /// @return ContextSteering
+    tbl.set(
+        "newContextSteering",
+        lua.create_function(|_, slots: usize| {
+            let slots = if slots == 0 { 16 } else { slots };
+            Ok(LuaContextSteering { inner: Rc::new(RefCell::new(ContextSteering::new(slots))) })
+        })?,
+    )?;
+
+    // ── newNeedSystem ────────────────────────────────────────────────────────
+    /// Creates a new motivational need system.
+    /// @return NeedSystem
+    tbl.set(
+        "newNeedSystem",
+        lua.create_function(|_, ()| {
+            Ok(LuaNeedSystem { inner: Rc::new(RefCell::new(NeedSystem::new())) })
+        })?,
+    )?;
+
+    // ── newAIDirector ────────────────────────────────────────────────────────
+    /// Creates a new AI pacing director with default config.
+    /// @return AIDirector
+    tbl.set(
+        "newAIDirector",
+        lua.create_function(|_, ()| {
+            Ok(LuaAIDirector { inner: Rc::new(RefCell::new(AIDirector::new())) })
+        })?,
+    )?;
+
+    // ── newHTNDomain ─────────────────────────────────────────────────────────
+    /// Creates a new Hierarchical Task Network domain.
+    /// @return HTNDomain
+    tbl.set(
+        "newHTNDomain",
+        lua.create_function(|_, ()| {
+            Ok(LuaHTNDomain { inner: Rc::new(RefCell::new(HTNDomain::new())) })
+        })?,
+    )?;
+
+    // ── newMCTSEngine ────────────────────────────────────────────────────────
+    /// Creates a new Monte Carlo Tree Search engine.
+    /// @param iterations : integer
+    /// @param uct_c : number
+    /// @param rollout_depth : integer
+    /// @param seed : integer
+    /// @return MCTSEngine
+    tbl.set(
+        "newMCTSEngine",
+        lua.create_function(|_, (iters, uct_c, depth, seed): (u32, f32, usize, u64)| {
+            let cfg = MCTSConfig { iterations: iters, uct_c, rollout_depth: depth, seed };
+            Ok(LuaMCTSEngine { inner: Rc::new(RefCell::new(MCTSEngine::new(cfg))) })
+        })?,
+    )?;
+
+    // ── newEmotionModel ──────────────────────────────────────────────────────
+    /// Creates a new affective emotion model.
+    /// @return EmotionModel
+    tbl.set(
+        "newEmotionModel",
+        lua.create_function(|_, ()| {
+            Ok(LuaEmotionModel { inner: Rc::new(RefCell::new(EmotionModel::new())) })
+        })?,
+    )?;
+
+    // ── newORCASolver ────────────────────────────────────────────────────────
+    /// Creates a new ORCA crowd avoidance solver.
+    /// @param time_horizon : number
+    /// @return ORCASolver
+    tbl.set(
+        "newORCASolver",
+        lua.create_function(|_, time_horizon: f32| {
+            Ok(LuaORCASolver { inner: Rc::new(RefCell::new(ORCASolver::new(time_horizon))) })
+        })?,
+    )?;
+
+    // ── newNeuralNet ─────────────────────────────────────────────────────────
+    /// Creates a new feedforward neural network (inference only).
+    /// @return NeuralNet
+    tbl.set(
+        "newNeuralNet",
+        lua.create_function(|_, ()| {
+            Ok(LuaNeuralNet { inner: Rc::new(RefCell::new(NeuralNet::new())) })
+        })?,
+    )?;
+
+    // ── newGeneticAlgorithm ──────────────────────────────────────────────────
+    /// Creates a new genetic algorithm.
+    /// @param pop_size : integer
+    /// @param gene_count : integer
+    /// @param seed : integer
+    /// @return GeneticAlgorithm
+    tbl.set(
+        "newGeneticAlgorithm",
+        lua.create_function(|_, (pop_size, gene_count, seed): (usize, usize, u64)| {
+            Ok(LuaGeneticAlgorithm { inner: Rc::new(RefCell::new(GeneticAlgorithm::new(pop_size, gene_count, seed))) })
+        })?,
+    )?;
+
+    // ── newBandit ────────────────────────────────────────────────────────────
+    /// Creates a new multi-armed bandit.
+    /// @param arm_count : integer
+    /// @param strategy : string  -- "epsilon_greedy", "ucb1", or "thompson"
+    /// @param epsilon : number   -- only used for epsilon_greedy
+    /// @param seed : integer
+    /// @return Bandit
+    tbl.set(
+        "newBandit",
+        lua.create_function(|_, (arm_count, strategy, epsilon, seed): (usize, String, f32, u64)| {
+            let strat = match strategy.as_str() {
+                "ucb1" => BanditStrategy::UCB1,
+                "thompson" | "thompson_sampling" => BanditStrategy::ThompsonSampling,
+                _ => BanditStrategy::EpsilonGreedy { epsilon: epsilon.clamp(0.0, 1.0) },
+            };
+            Ok(LuaBandit { inner: Rc::new(RefCell::new(Bandit::new(arm_count, strat, seed))) })
+        })?,
+    )?;
+
+    // ── newNeuroevolution ────────────────────────────────────────────────────
+    /// Creates a neuroevolution trainer (GA for neural network weights).
+    /// @param layer_spec : table  -- array of {inputs, outputs, activation}
+    /// @param pop_size : integer
+    /// @param seed : integer
+    /// @return Neuroevolution
+    tbl.set(
+        "newNeuroevolution",
+        lua.create_function(|_, (layer_spec, pop_size, seed): (LuaTable, usize, u64)| {
+            let mut spec: Vec<(usize, usize, &'static str)> = Vec::new();
+            for i in 1..=layer_spec.raw_len() {
+                let entry: LuaTable = layer_spec.raw_get(i)?;
+                let in_size: usize = entry.raw_get("inputs").unwrap_or(1);
+                let out_size: usize = entry.raw_get("outputs").unwrap_or(1);
+                let act_str: String = entry.raw_get("activation").unwrap_or_else(|_| "relu".into());
+                // Map to &'static str
+                let act: &'static str = match act_str.as_str() {
+                    "sigmoid" => "sigmoid",
+                    "tanh" => "tanh",
+                    "linear" => "linear",
+                    "softmax" => "softmax",
+                    _ => "relu",
+                };
+                spec.push((in_size, out_size, act));
+            }
+            Ok(LuaNeuroevolution { inner: Rc::new(RefCell::new(Neuroevolution::new(spec, pop_size, seed))) })
+        })?,
+    )?;
+
+    // ── newStrategyAI ────────────────────────────────────────────────────────
+    /// Creates a new throttled strategy AI.
+    /// @param update_interval : number  -- seconds between re-evaluations
+    /// @return StrategyAI
+    tbl.set(
+        "newStrategyAI",
+        lua.create_function(|_, update_interval: f32| {
+            Ok(LuaStrategyAI { inner: Rc::new(RefCell::new(StrategyAI::new(update_interval))) })
+        })?,
+    )?;
+
+    // ── newAILod ─────────────────────────────────────────────────────────────
+    /// Creates a new AI LOD controller with default 3-tier config.
+    /// @return AILod
+    tbl.set(
+        "newAILod",
+        lua.create_function(|_, ()| {
+            Ok(LuaAILod { inner: Rc::new(RefCell::new(AILod::default())) })
         })?,
     )?;
 

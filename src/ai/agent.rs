@@ -31,6 +31,10 @@
 use std::collections::HashSet;
 
 use crate::ai::blackboard::Blackboard;
+use crate::ai::emotion::EmotionModel;
+use crate::ai::needs::NeedSystem;
+use crate::ai::perception::Sensor;
+use crate::ai::traits::TraitProfile;
 
 /// Controls which AI subsystems are ticked for an agent during `AIWorld::update`.
 ///
@@ -139,6 +143,11 @@ impl DecisionModel {
 /// - `fsm_index` — `Option<usize>`.
 /// - `bt_index` — `Option<usize>`.
 /// - `steering_index` — `Option<usize>`.
+/// - `trait_profile` — `Option<TraitProfile>`.
+/// - `sensor` — `Option<Sensor>`.
+/// - `emotion_model` — `Option<EmotionModel>`.
+/// - `need_system` — `Option<NeedSystem>`.
+/// - `lod_tier` — `usize`.
 pub struct Agent {
     /// Unique name within the owning AIWorld. Used for lookup and Lua API references.
     pub name: String,
@@ -172,6 +181,21 @@ pub struct Agent {
     /// Index into the AIWorld's SteeringManager storage, if this agent has
     /// an attached SteeringManager. `None` means no steering is attached.
     pub steering_index: Option<usize>,
+    /// Optional personality trait profile (aggression, caution, loyalty, …).
+    /// `None` means the agent uses no trait-based modulation.
+    pub trait_profile: Option<TraitProfile>,
+    /// Optional sensor for simulated perception (sight, hearing, custom senses).
+    /// `None` means the agent uses omniscient/direct blackboard querying.
+    pub sensor: Option<Sensor>,
+    /// Optional emotion model for affective state (anger, fear, joy …).
+    /// `None` means no emotion-driven animation or dialogue.
+    pub emotion_model: Option<EmotionModel>,
+    /// Optional need system (hunger, safety, rest, …).
+    /// `None` means the agent has no motivational drives.
+    pub need_system: Option<NeedSystem>,
+    /// LOD tier index assigned by [`crate::ai::lod::AILod`]. Tier 0 = full
+    /// every-frame AI; higher tiers mean less frequent updates.
+    pub lod_tier: usize,
 }
 
 impl Agent {
@@ -204,6 +228,11 @@ impl Agent {
             fsm_index: None,
             bt_index: None,
             steering_index: None,
+            trait_profile: None,
+            sensor: None,
+            emotion_model: None,
+            need_system: None,
+            lod_tier: 0,
         }
     }
 }

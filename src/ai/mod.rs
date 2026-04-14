@@ -83,6 +83,53 @@ pub mod world;
 /// Debug render commands and image export for AI subsystems.
 pub mod render;
 
+// ── New subsystems ────────────────────────────────────────────────────────
+/// Named float personality trait profiles with timed additive modifiers and
+/// archetype-based instantiation.
+pub mod traits;
+/// Perception and sensing: sight cones, hearing radii, stimuli events, and
+/// per-agent awareness levels that rise/decay based on detected stimuli.
+pub mod perception;
+/// Context steering: radial interest/danger ring evaluation producing smooth,
+/// obstacle-aware movement directions without force oscillation.
+pub mod context_steering;
+/// Sims-style needs/drives: named satisfaction values that decay over time,
+/// urgency scoring, and need advertisement for satisfier selection.
+pub mod needs;
+/// AI Director: tension-driven dynamic pacing controller with phase state
+/// machine (BuildUp/Peak/Sustain/Relief) and spawn/loot factor outputs.
+pub mod director;
+/// Hierarchical Task Network (HTN) planner: compound task decomposition via
+/// ordered methods into primitive action sequences.
+pub mod htn;
+/// Monte Carlo Tree Search (MCTS): UCT-based game-tree search with
+/// configurable closures for actions, apply, and evaluation.
+pub mod mcts;
+/// Emotion model: named affective dimensions (anger, fear, joy) that rise on
+/// triggers and decay toward resting levels over time.
+pub mod emotion;
+/// ORCA: Optimal Reciprocal Collision Avoidance for smooth crowd navigation
+/// using per-agent velocity-space half-plane linear programming.
+pub mod orca;
+/// Feedforward neural network for AI inference (forward pass only; train
+/// offline using `genetic` or `neuroevolution`).
+pub mod neural_net;
+/// Genetic algorithm: tournament selection, uniform crossover, Gaussian
+/// mutation for offline optimisation of neural network weights or parameters.
+pub mod genetic;
+/// Multi-armed bandit: epsilon-greedy, UCB1, and Thompson sampling for online
+/// exploration/exploitation decisions.
+pub mod bandit;
+/// Neuroevolution: genetic algorithm wrapper specialised for evolving neural
+/// network weight vectors.
+pub mod neuroevolution;
+/// Strategic AI: throttled high-level goal evaluator that re-runs every N
+/// seconds via a scorer closure, with precondition tag filtering.
+pub mod strategy;
+/// AI Level-of-Detail: distance-based tier assignment and frame skip gating
+/// for budget-aware AI update throttling.
+pub mod lod;
+
 pub use agent::{Agent, DecisionModel};
 pub use behavior_tree::{BTNode, BTStatus, BehaviorTree, ParallelPolicy};
 pub use blackboard::{Blackboard, BlackboardValue};
@@ -94,3 +141,19 @@ pub use squad::{FormationType, Squad};
 pub use steering::*;
 pub use utility_ai::{Consideration, ResponseCurve, UAAction, UtilityAI};
 pub use world::AIWorld;
+
+pub use traits::{TraitProfile, TraitModifier, TraitArchetypes};
+pub use perception::{Stimulus, StimulusType, StimulusWorld, Sensor, DetectedStimulus};
+pub use context_steering::{ContextSteering, ContextBehavior, ContextBehaviorKind};
+pub use needs::{Need, NeedSystem, NeedAdvertisement};
+pub use director::{AIDirector, DirectorPhase, DirectorConfig};
+pub use htn::{HTNTask, HTNMethod, HTNDomain, HTNPlanner, WorldState};
+pub use mcts::{MCTSConfig, MCTSEngine};
+pub use emotion::{Emotion, EmotionModel};
+pub use orca::{ORCAAgent, ORCASolver};
+pub use neural_net::{Activation, NeuralLayer, NeuralNet};
+pub use genetic::{Chromosome, GeneticAlgorithm};
+pub use bandit::{Bandit, BanditArm, BanditStrategy};
+pub use neuroevolution::Neuroevolution;
+pub use strategy::{StrategicGoal, StrategyAI};
+pub use lod::{LodTier, AILod};

@@ -2,6 +2,134 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.9.1] — 2026-06-12
+### Added
+- **AI: TraitProfile** — `src/ai/traits.rs`; `lurek.ai.newTraitProfile()`. Named float personality traits with timed additive modifiers and source-keyed removal.
+- **AI: StimulusWorld / perception** — `src/ai/perception.rs`; `lurek.ai.newStimulusWorld()`. Simulated sight/hearing stimulus bus with decay and per-stimulus IDs.
+- **AI: ContextSteering** — `src/ai/context_steering.rs`; `lurek.ai.newContextSteering(slots)`. Radial interest/danger ring evaluation producing smooth, obstacle-aware movement vectors.
+- **AI: NeedSystem** — `src/ai/needs.rs`; `lurek.ai.newNeedSystem()`. Sims-style motivational drive system with decay, urgency threshold, and advertisement scoring.
+- **AI: AIDirector** — `src/ai/director.rs`; `lurek.ai.newAIDirector()`. L4D-style pacing controller with BuildUp/Peak/Sustain/Relief phase state machine and tension API.
+- **AI: HTN Planner** — `src/ai/htn.rs`; `lurek.ai.newHTNDomain()`. Hierarchical Task Network domain with addPrimitive/addCompound, precondition-based decomposition, and plan() method.
+- **AI: MCTSEngine** — `src/ai/mcts.rs`; `lurek.ai.newMCTSEngine(iterations, uct_c, depth, seed)`. Monte Carlo Tree Search driven by injected Lua closures for get_actions/apply_action/evaluate.
+- **AI: EmotionModel** — `src/ai/emotion.rs`; `lurek.ai.newEmotionModel()`. Named affective dimensions with trigger/decay, dominant query, and isActive test.
+- **AI: ORCASolver** — `src/ai/orca.rs`; `lurek.ai.newORCASolver(time_horizon)`. ORCA velocity-obstacle crowd avoidance with per-frame compute() producing collision-free safe velocities.
+- **AI: NeuralNet** — `src/ai/neural_net.rs`; `lurek.ai.newNeuralNet()`. Inference-only feedforward net with ReLU/Sigmoid/Tanh/Linear/Softmax activations, flat weight get/set.
+- **AI: GeneticAlgorithm** — `src/ai/genetic.rs`; `lurek.ai.newGeneticAlgorithm(pop, genes, seed)`. Tournament-selection GA with uniform crossover and Gaussian mutation.
+- **AI: Bandit** — `src/ai/bandit.rs`; `lurek.ai.newBandit(arms, strategy, epsilon, seed)`. Multi-armed bandit with ε-greedy, UCB1, and Thompson Sampling strategies.
+- **AI: Neuroevolution** — `src/ai/neuroevolution.rs`; `lurek.ai.newNeuroevolution(layer_spec, pop, seed)`. GA-driven neural network weight evolution; chromosome_to_net / best_network accessors.
+- **AI: StrategyAI** — `src/ai/strategy.rs`; `lurek.ai.newStrategyAI(interval)`. Throttled strategic goal evaluator with tag-based context filtering and scorer-closure API.
+- **AI: AILod** — `src/ai/lod.rs`; `lurek.ai.newAILod()`. Distance-based LOD tier controller with should_update(tier, frame) striding and configurable update intervals.
+- **AI: Agent extensions** — `src/ai/agent.rs` gains five new optional fields: `trait_profile`, `sensor`, `emotion_model`, `need_system`, `lod_tier`.
+- **Tests** — 12 new Lua BDD test files in `tests/lua/unit/`: `test_ai_traits`, `test_ai_perception`, `test_ai_context_steering`, `test_ai_needs`, `test_ai_director`, `test_ai_htn`, `test_ai_mcts`, `test_ai_emotion`, `test_ai_orca`, `test_ai_ml`, `test_ai_strategy`, `test_ai_lod`. All registered in `tests/lua/harness.rs`.
+
+
+### Added
+- **Network: Full Networking Toolkit** — Major expansion of `src/network/` from ENet-only to a 3-layer architecture (Transport → Game Protocol → Lunasome Libraries).
+- **Network: HTTP client** — `lurek.network.newRuntime()` creates a background I/O thread. `rt:httpGet(url)`, `rt:httpPost(url, body)`, `rt:httpRequest({method, url, headers, body, timeout})` for async HTTP via `ureq`.
+- **Network: TCP client** — `rt:tcpConnect(addr)`, `rt:tcpSend(id, data)`, `rt:tcpClose(id)` for non-blocking TCP connections.
+- **Network: WebSocket client** — `rt:wsConnect(url)`, `rt:wsSend(id, data)`, `rt:wsClose(id)` for WebSocket via `tungstenite`.
+- **Network: MessagePack serialization** — `lurek.network.pack(value)` and `lurek.network.unpack(data)` for compact binary serialization of Lua values (40–70% smaller than JSON).
+- **Network: Server/Client roles** — `lurek.network.newServer({port})`, `lurek.network.newClient({addr})` convenience constructors with `host:getRole()`, `host:isServer()`, `host:isClient()`.
+- **Network: Background I/O thread** — `NetworkRuntime` runs HTTP, TCP, and WebSocket on a dedicated `std::thread` with `mpsc` bridge. `rt:poll()` returns events each frame without blocking the Lua VM.
+- **Network: Increased peer limits** — `MAX_PEERS` raised from 8 to 4096 for dedicated server scenarios. `DEFAULT_PEERS` from 4 to 16.
+- **Lunasome: `rpc` library** — Pure-Lua RPC (`content/library/rpc/`) with `register`, `call`, `notify`, `broadcast`, request/response, and error handling.
+- **Lunasome: `lobby` library** — Pure-Lua lobby/room management (`content/library/lobby/`) with room creation, join/leave, player tracking, and ready-check coordination.
+- **Lunasome: `netstate` library** — Pure-Lua state synchronization (`content/library/netstate/`) with authority-based replication, change callbacks, delta sync, and turn-based game support.
+- **Dependencies** — Added `ureq = "3"`, `tungstenite = "0.26"`, `rmp-serde = "1"` to Cargo.toml.
+- **Tests** — 4 new Lua test files: `test_network_pack_unpack.lua`, `test_network_roles.lua`, `test_network_runtime.lua`, `test_network_security.lua`.
+
+### Changed
+- **Network: `DEFAULT_CHANNELS`** — Changed from 1 to 2 (reliable + unreliable by default).
+- **Network: error variants** — Added `Http`, `WebSocket`, `Tcp`, `Serialization`, `Thread` to `NetworkError`.
+
+## [0.8.3] — 2026-05-30
+### Added
+- **Physics: `PhysicsZone`** — New `src/physics/zone.rs` domain module with `PhysicsZone`, `ZoneBoundary` (Rect/Circle), `ZoneGravityMode` (Directional/Point/Repulsor/Zero), `ZoneEvent`, `ZoneEventKind`, and `ZoneTracker`. Zones apply per-body gravity and damping overrides before each rapier step.
+- **Physics: `TerrainMap`** — New `src/physics/terrain.rs` domain module. Destructible bitgrid-backed collision mesh for Worms/Tanks-style terrain. Chunked static rapier body management via `flush(&mut World)`. Methods: `fill_circle`, `fill_rect`, `fill_all`, `collapse_columns`, `solid_cell_positions`, `spawn_debris_at`, `to_image_data`, `to_bytes`/`load_from_bytes`.
+- **Physics: `CellularWorld`** — New `src/physics/cellular.rs` domain module. 64-rule falling-sand automaton with `CellType` (Air/Sand/Water/Rock/Fire/Gas), deterministic checkerboard stepping, `default_palette`, and PNG-export helpers.
+- **Physics Lua API — `lurek.physics`** — Three new userdata types with full bindings:
+  - `lurek.physics.newTerrain(w, h, cell_size, world)` → `LuaTerrain` — full destructible terrain API.
+  - `lurek.physics.newCellular(w, h)` → `LuaCellular` — falling-sand simulation, `step`, `stepN`, `toImageData`, `findCells`, `countCells`, serialisation.
+  - `world:addZone(x, y, w, h)` → `LuaZone` with `setGravityDirectional/Point/Repulsor/Zero`, `setCircle`, `setPriority`, `setLayerMask`, `setEnabled`, `setLinearDampingOverride`, `setAngularDampingOverride`, `destroy`.
+  - `world:stepFixed(accum, step_dt, max_steps)` → `remainder` — fixed sub-step accumulator.
+  - `world:getZoneEvents()` → `[{zone_id, body_id, kind}]` — zone enter/leave events from the last step.
+  - Cell-type constants: `CELL_AIR`, `CELL_SAND`, `CELL_WATER`, `CELL_ROCK`, `CELL_FIRE`, `CELL_GAS`.
+- **Lua tests (15)** — `unit/test_physics_zone.lua`, `unit/test_physics_terrain.lua`, `unit/test_physics_terrain_collapse.lua`, `unit/test_physics_cellular.lua`, `unit/test_physics_step_fixed.lua`, `integration/test_physics_worms.lua`, `integration/test_physics_tanks.lua`, `integration/test_physics_space.lua`, `integration/test_physics_world_sim.lua`, `evidence/test_evidence_terrain_render.lua`, `evidence/test_evidence_cellular_sand.lua`, `evidence/test_evidence_physics_zone_debug.lua`, `stress/test_stress_physics_zones.lua`, `stress/test_stress_physics_terrain.lua`, `stress/test_stress_physics_cellular.lua`. All registered in `tests/lua/harness.rs`.
+
+### Added
+- **ECS: `queryNot(with, without)`** — New `Universe::query_not` domain method and `lurek.entity:queryNot(with_tbl, without_tbl)` Lua binding. Returns entities that have all components in `with` and none of the components in `without`.
+- **ECS: system priority dispatch** — `addSystem(system, {priority=N})` accepts an optional opts table. Systems are now dispatched in ascending priority order during `update`, `render`, and `emit`. Zero is the default priority. Domain: `system_priorities: Vec<i32>` + `get_sorted_system_indices()` in `src/ecs/universe.rs`.
+- **ECS: component observers** — `onComponentAdded(name, fn)` and `onComponentRemoved(name, fn)` register observer callbacks. `flushObservers()` dispatches accumulated add/remove events collected from `set_component` and `remove_component`. Domain: `add_events`/`remove_events` event queues + `take_component_events()` in `src/ecs/universe.rs`; observer maps live in `src/lua_api/ecs_api.rs`.
+- **ECS: serialization round-trip** — `lurek.entity:serialize()` snapshots the world to a Lua table (entities, components, tags, layers, blueprint registry, bitmap_tags). `lurek.entity:deserialize(snapshot)` restores it. Domain: `serialize_to_table` / `deserialize_from_table` in `src/ecs/universe.rs`.
+- **ECS: `spawnBulk(name, count, overrides?)`** — Spawns multiple entities from a blueprint in one call. Returns a table of entity IDs. Domain: `Universe::spawn_bulk` in `src/ecs/universe.rs`.
+- **Patterns: `RelationshipManager`** — Moved out of ECS-exclusive API; exposed as `lurek.patterns.newRelationshipManager()`. `LuaRelationshipManager` UserData with `defineType / removeType / typeNames / setValue / getValue / adjustValue / setLevel / getLevel / removePair / pairCount` methods. Domain struct stays in `src/ecs/relationships.rs`.
+- **Patterns: `Mediator`** — New `src/patterns/mediator.rs` domain type. `lurek.patterns.newMediator()` returns a `LuaMediator` with `on / off / send / broadcast / handlerCount / channels / removeChannel / clear` methods.
+- **Patterns: `Strategy`** — New `src/patterns/strategy.rs` domain type. `lurek.patterns.newStrategy()` returns a `LuaStrategy` with `register / set / execute / getCurrent / has / remove / names / clear` methods.
+- **Patterns: `Stack / Queue / List / Set`** — Four general-purpose collection userdatas added to `lurek.patterns`. `newStack(cap?) / newQueue(cap?) / newList() / newSet()`. All Lua-value containers. `LuaSet` is string-keyed with `union / intersection` methods.
+- **Scene: `getTransitionTypes()`** — Returns a table of all 10 transition type strings: `none, fade, left, right, up, down, wipe, iris, zoom, crossfade`.
+- **Scene: `serializeScene() / deserializeScene(snapshot)`** — Snapshot the active scene stack and all `setData` key/value pairs into a plain Lua table; restore them from the same table.
+- **`content/library/patterns/init.lua`** — New pure-Lua Lunasome module. `patterns.newScheduler()` provides a cooperative coroutine task runner with `add(fn) / remove(id) / pause(id) / resume(id) / update(dt) / getCount() / clear()`.
+- **Lua tests** — 12 new test files: `tests/lua/unit/test_entity_query_not.lua`, `test_entity_serialization.lua`, `test_entity_observers.lua`, `test_entity_system_priority.lua`, `test_entity_relationships.lua`, `test_patterns_mediator.lua`, `test_patterns_strategy.lua`, `test_patterns_collections.lua`, `test_scene_transitions_extended.lua`, `test_scene_serialization.lua`; `tests/lua/stress/test_entity_bulk_spawn.lua`, `test_scene_depth_sort.lua`. All registered in `tests/lua/harness.rs`.
+
+## [0.8.1] — 2026-05-28
+### Added
+- **`lurek.sprite` namespace** — New `src/lua_api/sprite_api.rs` with `LuaSpriteSheet` and `LuaSpriteAtlas` UserData. Factories: `newSheet(tw,th,fw,fh)`, `newRPGMakerSheet(tw,th)`, `parseAtlas(json_str)`, `newAtlasSheet(atlas, sw, sh)`. Sheet methods: `getFrame`, `getFrameCount`, `getRow`, `getColumn`, `getGroupFrames`, `getGroupNames`, `nameGroup`, `getFrameSize`, `getGridSize`, `drawToImage`. Atlas methods: `getEntry`, `getByIndex`, `entryCount`, `entryNames`.
+- **`src/sprite/atlas.rs`** — `AtlasEntry`, `SpriteAtlas`, `parse_texturepacker_json()` supporting both hash and array TexturePacker formats.
+- **`SpriteSheet` domain additions** — `draw_to_image(w,h)`, `from_rpgmaker(tw,th)`, `from_atlas(atlas, sw, sh)` in `src/sprite/sprite_sheet.rs`.
+- **`lurek.animation` extended API** — New methods on `Animation` userdata: `crossfade(clip, duration)`, `getBlendState()`, `drawToImage(w, h)`. New `LuaAnimStateMachine` UserData via factory `newStateMachine(anim, initial_state)` with methods: `update(dt)`, `getState()`, `forceState(name)`, `addState(name, clip, looping)`, `addTransition(from, to, condition)`, `setParam(name, value)`, `getQuad()`. New factory `fromAseprite(json_str)` importing Aseprite JSON animation exports.
+- **`lurek.spine` extended API** — New skeleton methods: `playAnimation(name, looping?)`, `stopAnimation()`, `updateAnimation(dt)`, `getAnimationTime()`, `addAnimation(anim_ud)`, `addIKConstraint(name, bone_chain, bend_positive?)`, `setIKTarget(name, x, y)`, `addSkin(name)`, `setSkin(name)`, `getSkin()`, `setSkinMapping(skin, slot, attachment)`. New `LuaSkeletonAnimation` UserData via factory `newSkeletonAnimation(name, duration)` with methods: `addKeyframe(bone_idx, property, time, value, easing?)`, `getDuration()`, `getTimelineCount()`. Fixed `drawToImage` to correctly wrap `ImageData` in `LuaImageData`.
+- **`src/spine/timeline.rs` + `src/spine/ik.rs`** — Public re-exports: `IKConstraint`, `BoneProperty`, `BoneTimeline`, `EasingType`, `Keyframe`, `SkeletonAnimation` from `src/spine/mod.rs`.
+- **`lurek.tilemap` extended API** — New methods: `toNavGrid(layer, walkable_gids)`, `onTileEnter(gid, callback)`, `checkEntities(layer, entities)`. New factory `fromLDtk(json_str, level_name?)`.
+- **`src/tilemap/ldtk.rs`** — `load_ldtk(json_str, level_name?)` parsing LDtk JSON exports (Tiles and AutoLayer types).
+- **`TileMap::to_nav_grid`** — `to_nav_grid(layer, walkable_gids)` returning `Vec<Vec<bool>>` walkable grid in `src/tilemap/tilemap.rs`.
+- **Lua tests** — 4 new unit test files: `tests/lua/unit/test_sprite.lua`, `tests/lua/unit/test_animation_ext.lua`, `tests/lua/unit/test_spine_ext.lua`, `tests/lua/unit/test_tilemap_ext.lua`. All registered in `tests/lua/harness.rs`.
+
+## [0.8.0] — 2026-05-27
+### Added
+- **`lurek.procgen` expanded API** — 11 new Lua bindings: `bspDungeon(opts)`, `roomsDungeon(opts)`, `heightmap(opts)`, `wfcGenerate(opts)`, `lsystem(opts)`, `lsystemSegments(opts, angle, step)`, `generateName(samples, min, max, seed)`, `generateNames(samples, n, min, max, seed)`, `worldGraph(w, h, count, seed)`, `noiseMap(w, h, opts)`, `noiseMapParallel(w, h, opts)`.
+- **`lurek.math` expanded API** — `vec3(x,y,z)` / `Vec3(x,y,z)` constructors with `LuaVec3` UserData (fields: x/y/z; methods: length, lengthSquared, normalize, dot, cross, lerp, distance, add, sub, scale); `catmullRom(points)` → `LuaCatmullRom` with sample/sampleSegment/len; `hermite(p0x,p0y,p1x,p1y,m0x,m0y,m1x,m1y)` → `LuaHermite` with sample; free functions `lerp(a,b,t)` and `remap(v,in_min,in_max,out_min,out_max)`.
+- **`lurek.pathfinding` expanded API** — `newHexGrid(w, h, layout?)` → `LuaHexGrid` UserData with methods: setBlocked, setCost, isBlocked, findPath, lineOfSight, fieldOfView, rangeOfMovement, distance; `newJpsGrid(w, h)` → `LuaJpsGrid` UserData with setBlocked, isBlocked, findPath; `rangeMap(opts)` → table with cells/width/height for Dijkstra budget queries.
+- **`lurek.graph` expanded API** — `mst()` method on Graph UserData (returns table of edge IDs via Kruskal); `astar(from_node, to_node)` method on Graph UserData (returns path table or nil).
+- **Internal** — `LSystem::new_from_pairs(axiom, rules, iterations)` constructor for owned-string rules; `RangeMap::reachable_cells_with_cost()` returning `Vec<(x, y, cost)>` triples.
+- **Lua tests** — 6 new integration test files: `test_pathfind_hexmap.lua`, `test_pathfind_graph.lua`, `test_math_pathfind.lua`, `test_procgen_ai.lua`, `test_pathfind_ai.lua`, `test_graph_pathfind.lua`; 1 new stress test: `test_procgen_stress.lua`. All registered in `tests/lua/harness.rs`.
+
+## [0.7.29] — 2026-05-26
+### Added
+- **`src/compute/analytics.rs`** — New Foundations-tier module with 10 analytics functions: `cumsum`, `diff` (arbitrary order), `histogram` (equal-width bins with lo/hi bounds), `percentile` (linear interpolation), `covariance`, `pearson_corr`, `normalize_range`, `zscore`, `convolve1d` (full output), `correlate1d` (valid output). Exposed as Array userdata methods in `src/lua_api/compute_api.rs`.
+- **`src/compute/linalg.rs`** — New Foundations-tier module with 9 linear algebra helpers: `normalize_vec`, `cross2d`, `outer`, `rotate2d_matrix`, `affine2d`, `transform_points`, `gaussian_kernel`, `sobel` (returns Gx/Gy arrays), `linsolve` (Gaussian elimination with partial pivoting). Exposed as Array methods plus `lurek.compute.gaussianKernel`, `lurek.compute.rotate2dMatrix`, `lurek.compute.affine2d`.
+- **Rayon parallel ops in `src/compute/ops.rs`** — `elementwise_binary`, `elementwise_unary`, `elementwise_scalar`, `sum`, `min_val`, `max_val` now use Rayon thread pool when element count exceeds `PAR_THRESHOLD = 10_000`.
+- **`AggFn` enum in `src/dataframe/frame.rs`** — `Mean`, `Sum`, `Min`, `Max`, `Count`, `First`, `Last` with `AggFn::parse(s)` for Lua string conversion.
+- **19 new DataFrame methods in `src/dataframe/query.rs`** — `with_rolling_mean`, `with_rolling_sum`, `with_rolling_min`, `with_rolling_max`, `with_rank` (1-based, averaged ties), `with_pct_change`, `with_cumsum`, `group_agg`, `pivot`, `corr`, `correlation_matrix`, `zscore_col`, `normalize_col`, `outliers`, `mode_val`, `entropy`, `add_row_batch`, `get_column_as_f64`, `set_column_from_f64`. Exposed via `src/lua_api/dataframe_api.rs`.
+- **Lua tests** — ~25 new `it()` blocks appended to `tests/lua/unit/test_compute.lua`; ~20 new `it()` blocks appended to `tests/lua/unit/test_dataframe.lua`.
+
+### Fixed
+- **DAG violations** — `src/compute/array.rs` and `src/dataframe/frame.rs` / `src/dataframe/query.rs` imported `crate::runtime::log_messages` (Core Runtime tier), violating the Foundations DAG constraint. Replaced all `log_msg!` calls with `log::debug!` / `log::warn!` from the `log` crate facade.
+
+## [0.7.28] — 2026-05-25
+### Added
+- **GPU PostFx pipeline** — New `src/render/postfx_pipeline.rs` with `PostFxPipeline` struct and 21 built-in WGSL fragment shaders: `bloom`, `blur_h`, `blur_v`, `vignette`, `noise`, `grayscale`, `sepia`, `invert`, `crt`, `chromatic`, `scanlines`, `pixelate`, `hueshift`, `edgedetect`, `godrays`, `waterdistort`, `sharpen`, `dither`, `outline`, `depthoffield`, `motionblur`, `__copy`. Ping-pong rendering with `PostFxTexture` intermediate buffers. Custom shaders can be registered via `register_custom()`.
+- **`GpuRenderer` PostFx integration** — `GpuRenderer` gains `postfx_pipeline` and `postfx_capture` fields. `BeginPostFx` lazily creates pipeline and capture texture; `EndPostFx` is a no-op frame marker; `ApplyPostFx` defers to `pending_postfx` and is processed after the light composite pass, before `encoder.finish()`.
+- **`PostFxPass` + expanded `ApplyPostFx`** — `renderer.rs` gains `PostFxPass { effect_name, params, shader_id }` struct; `ApplyPostFx` variant expanded to `{ stack_id, passes: Vec<PostFxPass>, width, height }`.
+- **8 new `PostFxEffectType` variants** — `DepthOfField`, `MotionBlur`, `PaletteSwap`, `ColorLut`, `WaterDistort`, `Sharpen`, `Dither`, `Outline` added to `src/effect/effect_type.rs`. All match arms updated.
+- **Effect presets** — New `src/effect/presets.rs` with `EffectPreset`, `build_preset(name, w, h)`, `preset_names()`, and 5 named presets: `retro_tv`, `horror`, `dream`, `neon`, `sepia_age`.
+- **Water UV-distortion overlay** — New `src/effect/water_overlay.rs` with `WaterOverlayState { enabled, amplitude, frequency, speed, tint_r/g/b/strength, depth_r/g/b/strength, time }` and `update(dt)` / `reset()` methods. Integrated into `Overlay` struct in `src/effect/overlay.rs`.
+- **4 new image operations** — `ImageData::resize(w, h)` (bilinear), `blit(src, dx, dy)` (Porter-Duff over), `get_region(x, y, w, h)`, `diff(other) -> u32` added to `src/image/effects.rs`; `map_pixel_par<F>()` (rayon parallel, 65,536 px threshold) added to `src/image/image_data.rs`.
+- **`lurek.postfx` extended API** — `beginCapture()`, `endCapture()`, `apply()` on `LuaPostFxStack`; `newPresetStack(name, w?, h?)`; `getEffectTypes()` now returns 23 types. Registered in `src/lua_api/effect_api.rs`.
+- **`lurek.overlay` water API** — `setWater(amplitude, frequency, speed)`, `setWaterTint(r,g,b,strength)`, `setCustomShader(name?)`, `getWater() -> table` on `LuaOverlay`.
+- **`lurek.img` ImageData API** — `resize(w, h)`, `blit(src, dx, dy)`, `getRegion(x, y, w, h)`, `diff(other)`, `mapPixels(fn)` added to `impl mlua::UserData for ImageData` in `src/lua_api/image_api.rs`.
+- **Lua tests** — 4 new test files registered in `tests/lua/harness.rs`: `test_effect_overlay_water.lua`, `test_postfx_stack_extended.lua`, `test_image_extended.lua`, `test_evidence_postfx_types.lua`.
+
+## [0.7.27] — 2026-05-24
+### Added
+- **10 new DSP effect types** — `Notch`, `LowShelf`, `HighShelf`, `BellEq`, `Reverb2`, `Flanger`, `Phaser`, `Distortion`, `Limiter`, `Compressor` added to `src/audio/dsp.rs` `EffectType` enum with full biquad/shelf/comb/LFO/waveshaper/dynamics DSP implementations. `ActiveEffect` gains `compressor_env` and `lfo_phase` fields; `set_param()` extended to 15 match arms.
+- **`src/audio/offline.rs`** — New module: `process_offline(input, output, effects)` decodes a WAV, threads samples through an `ActiveEffect` chain, and writes a 16-bit PCM WAV without external deps; `normalize_file(input, output, target)` scales peak amplitude. Exposed as `lurek.audio.processOffline` and `lurek.audio.normalizeFile`.
+- **`src/audio/visualizer.rs`** — New module: `waveform_to_png` draws amplitude envelope; `spectrogram_to_png` renders a time–frequency heat-map (simple DFT, 512-sample windows). Uses `image` crate. Exposed as `lurek.audio.waveformToPng` and `lurek.audio.spectrogramToPng`.
+- **`src/audio/pool.rs`** — New `SoundPool` struct for polyphonic round-robin voice management; `Mixer::new_pool(file_path, voice_count)` pre-loads N voices and returns the pool. Exposed as `lurek.audio.newPool` → `SoundPool` UserData with `play`, `stopAll`, `setVolume`, `setBus`, `release`, `getVoiceCount`.
+- **Stereo width & random pitch APIs** — `Mixer::set_stereo_width`, `get_stereo_width`, `set_random_pitch`, `clear_random_pitch`; `AudioEntry` gains `stereo_width` and `pitch_range` fields. Lua: `lurek.audio.setStereoWidth`, `getStereoWidth`, `setRandomPitch`, `clearRandomPitch`.
+- **Crossfade & bus metering** — `Mixer::crossfade(from, to, duration, game_dir)` starts the target with fade-in and stops the source; `get_bus_peak` / `get_bus_rms` stubs for future metering. Lua: `lurek.audio.crossfade`, `getBusPeak`, `getBusRms`.
+- **`Bus::add_effect` extended** — Accepts 10 new type strings (`"notch"`, `"lowshelf"`, `"highshelf"`, `"bell_eq"`, `"reverb2"`, `"flanger"`, `"phaser"`, `"distortion"`, `"limiter"`, `"compressor"`).
+- **Lua unit tests** — 4 new test files: `tests/lua/unit/test_audio_effects.lua`, `test_audio_pool.lua`, `test_audio_stereo.lua`, `test_audio_offline.lua`; 2 evidence files: `test_evidence_audio_offline.lua`, `test_evidence_audio_visualizer.lua`. All registered in `tests/lua/harness.rs`.
+
 ## [0.7.26] — 2026-05-23
 ### Added
 - **15 new `RenderCommand` variants** — `DrawQuadBezier`, `DrawCubicBezier`, `DrawPath`, `DrawGradientRect`, `DrawColoredPolygon`, `DrawIsoCubeTile`, `DrawHexTile`, `BeginSortGroup`, `PushSortKey`, `FlushSortGroup`, `DrawPhysicsDebug`, `DrawSpineSkeleton`, `DrawBevelRect`, `PushLayer`, `PopLayer` added to `src/render/renderer.rs` with 7 new support types: `PathSegment`, `GradientDirection`, `HexOrientation`, `BevelStyle`, `PhysicsDebugShape`, `PhysicsDebugConfig`, `SpineSlotDraw`.
@@ -223,6 +351,9 @@ Always update this file **in the same commit** as the change. Use the commit typ
 - `src/lua_api/image_api.rs` — Removed duplicate `use crate::image::image_data::ImageData` import (E0252).
 
 ## [0.7.9] — 2026-04-14
+### Changed
+- Refreshed all legacy `src/**/GAPS.md` files into status snapshots against the current dirty `refactor/src-migration-v2` workspace baseline and marked AGENT-era rewrite items as stale in favor of `docs/specs/<module>.md`.
+
 ### Added
 - **Phase 2A — Debug overlay render commands**: Added `generate_render_commands()` and (where absent) `draw_to_image()` to five engine modules, all pure-CPU with no wgpu/winit/mlua imports.
   - `src/physics/render.rs` — `World::generate_render_commands()` (body outlines coloured by type; velocity arrows for dynamic bodies) and `World::draw_to_image()`.
