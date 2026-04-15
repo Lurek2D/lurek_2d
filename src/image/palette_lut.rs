@@ -94,6 +94,45 @@ impl PaletteLUT {
         self.from_colors.clear();
         self.to_colors.clear();
     }
+
+    /// Applies this palette lookup table to an image in place.
+    ///
+    /// For every pixel in `img` whose RGBA byte values (0–255) match a `from_colors[i]`
+    /// entry (exact comparison after converting from `f32 * 255.0`), the pixel is
+    /// replaced with the corresponding `to_colors[i]` value.
+    ///
+    /// The first matching mapping is applied and the rest are skipped for that pixel.
+    ///
+    /// # Parameters
+    /// - `img` — `&mut ImageData` — image modified in place.
+    pub fn apply(&self, img: &mut crate::image::image_data::ImageData) {
+        let w = img.width();
+        let h = img.height();
+        for y in 0..h {
+            for x in 0..w {
+                if let Some((r, g, b, a)) = img.get_pixel(x, y) {
+                    for (i, from) in self.from_colors.iter().enumerate() {
+                        let fr = (from.r * 255.0).round() as u8;
+                        let fg = (from.g * 255.0).round() as u8;
+                        let fb = (from.b * 255.0).round() as u8;
+                        let fa = (from.a * 255.0).round() as u8;
+                        if r == fr && g == fg && b == fb && a == fa {
+                            let to = &self.to_colors[i];
+                            img.set_pixel(
+                                x,
+                                y,
+                                (to.r * 255.0).round() as u8,
+                                (to.g * 255.0).round() as u8,
+                                (to.b * 255.0).round() as u8,
+                                (to.a * 255.0).round() as u8,
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 impl Default for PaletteLUT {

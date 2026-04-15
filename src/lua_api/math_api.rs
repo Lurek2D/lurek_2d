@@ -2494,6 +2494,42 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- polygonClip --
+    /// Clips a polygon against a single half-plane using the Sutherland-Hodgman algorithm.
+    ///
+    /// The inside half-plane is where `nx * x + ny * y >= d`.
+    /// The polygon is supplied as a flat `{x1, y1, x2, y2, ...}` table.
+    ///
+    /// @param polygon : table
+    /// @param nx : number
+    /// @param ny : number
+    /// @param d : number
+    /// @return table  flat {x1, y1, ...} of clipped vertices, or empty table if fully clipped
+    tbl.set(
+        "polygonClip",
+        lua.create_function(|lua, (pts, nx, ny, d): (LuaTable, f32, f32, f32)| {
+            let len = pts.len()? as usize;
+            if len % 2 != 0 {
+                return Err(LuaError::RuntimeError(
+                    "polygonClip: polygon table must contain an even number of values (x,y pairs)".into(),
+                ));
+            }
+            let mut verts: Vec<(f32, f32)> = Vec::with_capacity(len / 2);
+            for i in (0..len).step_by(2) {
+                let x: f32 = pts.get(i + 1)?;
+                let y: f32 = pts.get(i + 2)?;
+                verts.push((x, y));
+            }
+            let clipped = polygon::polygon_clip(&verts, nx, ny, d);
+            let result = lua.create_table()?;
+            for (i, (x, y)) in clipped.iter().enumerate() {
+                result.set(i * 2 + 1, *x)?;
+                result.set(i * 2 + 2, *y)?;
+            }
+            Ok(result)
+        })?,
+    )?;
+
     luna.set("math", tbl)?;
     Ok(())
 }

@@ -24,6 +24,8 @@ use crate::log_msg;
 /// - `volume` — `f32`.
 /// - `pitch` — `f32`.
 /// - `paused` — `bool`.
+/// - `duck_target` — `Option<(String, f32)>`.  When set, the named target bus
+///   is ducked to the specified volume when this bus has active playback.
 #[derive(Debug, Clone)]
 pub struct Bus {
     pub effects:
@@ -32,6 +34,11 @@ pub struct Bus {
     volume: f32,
     pitch: f32,
     paused: bool,
+    /// Ducking target `(target_bus_name, duck_volume)`.
+    ///
+    /// When this bus has active sources playing, the `Mixer` should reduce the
+    /// named target bus to `duck_volume` (0.0 – 1.0).  `None` = no ducking.
+    pub duck_target: Option<(String, f32)>,
 }
 
 impl Bus {
@@ -51,6 +58,7 @@ impl Bus {
             pitch: 1.0,
             paused: false,
             effects: std::sync::Arc::new(std::sync::RwLock::new(Vec::new())),
+            duck_target: None,
         }
     }
 
@@ -178,5 +186,24 @@ impl Bus {
         } else {
             Ok(())
         }
+    }
+
+    /// Sets the ducking target for this bus.
+    ///
+    /// When this bus has active playback, the `Mixer` should reduce the volume of
+    /// the bus named `target_bus_name` to `duck_volume` (clamped to \[0.0, 1.0\]).
+    ///
+    /// # Parameters
+    /// - `target_bus_name` — `impl Into<String>`.
+    /// - `duck_volume` — `f32`.  Target volume for the ducked bus (0.0 = silent).
+    pub fn set_duck_target(&mut self, target_bus_name: impl Into<String>, duck_volume: f32) {
+        log_msg!(debug, BU02, "{}", duck_volume);
+        self.duck_target = Some((target_bus_name.into(), duck_volume.clamp(0.0, 1.0)));
+    }
+
+    /// Clears the ducking target, disabling ducking for this bus.
+    pub fn clear_duck_target(&mut self) {
+        log_msg!(debug, BU03, "duck target cleared");
+        self.duck_target = None;
     }
 }

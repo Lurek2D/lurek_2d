@@ -728,4 +728,142 @@ impl GameFS {
         let mode = FileMode::parse_mode(mode_str)?;
         FileHandle::open(self, path, mode)
     }
+
+    /// Copies a file within the sandbox.
+    ///
+    /// Both source and destination must resolve inside the game root.
+    /// The destination must be inside the `save/` directory.
+    ///
+    /// # Parameters
+    /// - `src` — Relative source path (readable).
+    /// - `dst` — Relative destination path (must be inside `save/`).
+    ///
+    /// # Returns
+    /// `EngineResult<()>` — Number of bytes copied on success (discarded), or an error.
+    pub fn copy_file(&self, src: &str, dst: &str) -> EngineResult<()> {
+        let src_path = self.resolve_read_path(src)?;
+        let dst_path = self.resolve_save_path(dst)?;
+        if let Some(parent) = dst_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e)))?;
+        }
+        std::fs::copy(&src_path, &dst_path)
+            .map_err(|e| EngineError::FileSystemError(format!("copy_file '{}' → '{}': {}", src, dst, e)))?;
+        Ok(())
+    }
+
+    /// Moves (renames) a file within the `save/` directory.
+    ///
+    /// Both source and destination must be inside `save/`.
+    ///
+    /// # Parameters
+    /// - `src` — Relative source path (inside `save/`).
+    /// - `dst` — Relative destination path (inside `save/`).
+    ///
+    /// # Returns
+    /// `EngineResult<()>`.
+    pub fn move_file(&self, src: &str, dst: &str) -> EngineResult<()> {
+        let src_path = self.resolve_save_path(src)?;
+        let dst_path = self.resolve_save_path(dst)?;
+        if let Some(parent) = dst_path.parent() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e)))?;
+        }
+        std::fs::rename(&src_path, &dst_path)
+            .map_err(|e| EngineError::FileSystemError(format!("move_file '{}' → '{}': {}", src, dst, e)))
+    }
+
+    /// Recursively removes a directory and all its contents within the `save/` directory.
+    ///
+    /// This is a destructive operation. The target must be inside `save/`.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path to the directory (inside `save/`).
+    ///
+    /// # Returns
+    /// `EngineResult<()>`.
+    pub fn remove_dir(&self, path: &str) -> EngineResult<()> {
+        let dir_path = self.resolve_save_path(path)?;
+        if !dir_path.is_dir() {
+            return Err(EngineError::FileSystemError(format!(
+                "remove_dir: '{}' is not a directory",
+                path
+            )));
+        }
+        std::fs::remove_dir_all(&dir_path)
+            .map_err(|e| EngineError::FileSystemError(format!("remove_dir '{}': {}", path, e)))
+    }
+
+    /// Returns a list of paths inside the game root that match a simple glob pattern.
+    ///
+    /// Supported wildcards:
+    /// - `*` — any sequence of characters within a single path component.
+    /// - `?` — any single character within a path component.
+    ///
+    /// The pattern is relative to the game root (same namespace as all other paths).
+    /// Returned paths are relative to the game root and use forward slashes.
+    ///
+    /// **Note**: does not recurse into subdirectories — only the depth implied by the
+    /// pattern's `/`-separated segments is searched.
+    ///
+    /// # Parameters
+    /// - `pattern` — Relative path pattern, e.g. `"save/*.json"` or `"maps/level_?.tmx"`.
+    ///
+    /// # Returns
+    /// `EngineResult<Vec<String>>` — Sorted list of matching relative paths.
+    pub fn glob(&self, pattern: &str) -> EngineResult<Vec<String>> {
+        // Split into directory part and filename part
+        let (dir_part, file_pattern) = match pattern.rfind('/') {
+            Some(idx) => (&pattern[..idx], &pattern[idx + 1..]),
+            None => (".", pattern),
+        };
+        let search_dir = if dir_part == "." {
+            self.base_dir.clone()
+        } else {
+            let resolved = self.resolve_read_path(dir_part)?;
+            resolved
+        };
+        if !search_dir.is_dir() {
+            return Ok(Vec::new());
+        }
+        let mut matches: Vec<String> = Vec::new();
+        let entries = std::fs::read_dir(&search_dir)
+            .map_err(|e| EngineError::FileSystemError(format!("glob read_dir: {}", e)))?;
+        for entry in entries.flatten() {
+            let name = entry.file_name();
+            let name_str = name.to_string_lossy();
+            if glob_match(file_pattern, &name_str) {
+                let rel = if dir_part == "." {
+                    name_str.into_owned()
+                } else {
+                    format!("{}/{}", dir_part, name_str)
+                };
+                matches.push(rel);
+            }
+        }
+        matches.sort();
+        Ok(matches)
+    }
+}
+
+/// Minimal glob matching: `*` matches any run of non-separator characters,
+/// `?` matches exactly one non-separator character.
+fn glob_match(pattern: &str, name: &str) -> bool {
+    let pat: Vec<char> = pattern.chars().collect();
+    let txt: Vec<char> = name.chars().collect();
+    glob_match_inner(&pat, &txt)
+}
+
+fn glob_match_inner(pat: &[char], txt: &[char]) -> bool {
+    match (pat.first(), txt.first()) {
+        (None, None) => true,
+        (Some('*'), _) => {
+            // '*' can match zero characters or advance one txt character
+            glob_match_inner(&pat[1..], txt)
+                || (!txt.is_empty() && glob_match_inner(pat, &txt[1..]))
+        }
+        (Some('?'), Some(_)) => glob_match_inner(&pat[1..], &txt[1..]),
+        (Some(p), Some(t)) if p == t => glob_match_inner(&pat[1..], &txt[1..]),
+        _ => false,
+    }
 }

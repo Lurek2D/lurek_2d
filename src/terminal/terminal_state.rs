@@ -109,6 +109,11 @@ fn write_render_text(
 /// - `cursor_row` — `usize`. Cursor row (0-based internal).
 /// - `widgets` — `Vec<Widget>`. Attached widget list.
 /// - `focused` — `Option<usize>`. Index of the focused widget.
+/// - `scrollback` — `Vec<String>`. Line history buffer (oldest first).
+/// - `scrollback_cap` — `usize`. Maximum number of lines stored (default 500).
+/// - `scrollback_offset` — `usize`. Viewport offset from the bottom (0 = show latest).
+/// - `cmd_history` — `Vec<String>`. Previously entered commands (oldest first).
+/// - `cmd_cursor` — `usize`. Browse position in `cmd_history` (0 = live input).
 #[derive(Debug, Clone)]
 pub struct Terminal {
     cols: usize,
@@ -118,6 +123,16 @@ pub struct Terminal {
     cursor_row: usize,
     widgets: Vec<Widget>,
     focused: Option<usize>,
+    /// Stored output lines, oldest first.  Pruned to `scrollback_cap`.
+    scrollback: Vec<String>,
+    /// Maximum number of lines kept in `scrollback`.
+    scrollback_cap: usize,
+    /// Current view offset from the bottom (0 = show latest).
+    scrollback_offset: usize,
+    /// Previously entered commands, oldest first.
+    cmd_history: Vec<String>,
+    /// Current browse position in history (0 = live input; 1 = last cmd).
+    cmd_cursor: usize,
 }
 
 impl Terminal {
@@ -140,6 +155,11 @@ impl Terminal {
             cursor_row: 0,
             widgets: Vec::new(),
             focused: None,
+            scrollback: Vec::new(),
+            scrollback_cap: 500,
+            scrollback_offset: 0,
+            cmd_history: Vec::new(),
+            cmd_cursor: 0,
         }
     }
 
@@ -1122,6 +1142,188 @@ impl Terminal {
         }
 
         commands
+    }
+
+    /// Sets the foreground and background colours of every cell in the grid
+    /// to the supplied values.
+    ///
+    /// Typically called from a theme-application helper to recolour the whole
+    /// terminal at once.
+    ///
+    /// # Parameters
+    /// - `fg` — `[f32; 4]`  RGBA foreground in \[0, 1\].
+    /// - `bg` — `[f32; 4]`  RGBA background in \[0, 1\].
+    pub fn set_default_colors(&mut self, fg: [f32; 4], bg: [f32; 4]) {
+        for cell in &mut self.grid {
+            cell.fg = fg;
+            cell.bg = bg;
+        }
+    }
+
+    /// Prints `text` at the given 1-based `(col, row)` position applying explicit
+    /// foreground and background colours to each printed cell.
+    ///
+    /// # Parameters
+    /// - `col` — `usize`.  1-based column.
+    /// - `row` — `usize`.  1-based row.
+    /// - `text` — `&str`.  Text to write.
+    /// - `fg` — `[f32; 4]`  RGBA foreground.
+    /// - `bg` — `Option<[f32; 4]>`  Optional RGBA background.
+    pub fn print_colored(
+        &mut self,
+        col: usize,
+        row: usize,
+        text: &str,
+        fg: [f32; 4],
+        bg: Option<[f32; 4]>,
+    ) {
+        for (offset, ch) in text.chars().enumerate() {
+            let c = col + offset;
+            if let Some(idx) = self.index_1based(c, row) {
+                self.grid[idx].ch = ch as u32;
+                self.grid[idx].fg = fg;
+                if let Some(b) = bg {
+                    self.grid[idx].bg = b;
+                }
+            }
+        }
+    }
+
+    // ── Scrollback ─────────────────────────────────────────────────────────────
+
+    /// Sets the maximum number of lines retained in the scrollback buffer.
+    ///
+    /// Immediately prunes existing lines if the current count exceeds `cap`.
+    /// Minimum value is 1.
+    ///
+    /// # Parameters
+    /// - `cap` — `usize`. Maximum line count.
+    pub fn set_scrollback_cap(&mut self, cap: usize) {
+        self.scrollback_cap = cap.max(1);
+        if self.scrollback.len() > self.scrollback_cap {
+            let excess = self.scrollback.len() - self.scrollback_cap;
+            self.scrollback.drain(0..excess);
+        }
+    }
+
+    /// Returns the current scrollback capacity.
+    pub fn scrollback_cap(&self) -> usize {
+        self.scrollback_cap
+    }
+
+    /// Appends a line to the scrollback buffer.
+    ///
+    /// If the buffer exceeds `scrollback_cap`, the oldest line is evicted.
+    ///
+    /// # Parameters
+    /// - `line` — `&str`. The line to store.
+    pub fn push_scrollback(&mut self, line: &str) {
+        if self.scrollback.len() >= self.scrollback_cap {
+            self.scrollback.remove(0);
+        }
+        self.scrollback.push(line.to_owned());
+        // Reset view to bottom when new content arrives
+        self.scrollback_offset = 0;
+    }
+
+    /// Returns up to `count` lines from the scrollback buffer, counting from
+    /// the bottom minus `offset`.
+    ///
+    /// `offset = 0` returns the most recent lines; `offset = N` scrolls back N
+    /// lines from the bottom.
+    ///
+    /// # Parameters
+    /// - `offset` — `usize`. Number of lines to scroll back from the bottom.
+    /// - `count` — `usize`. Maximum number of lines to return.
+    ///
+    /// # Returns
+    /// `Vec<&str>` — lines in chronological order (oldest first).
+    pub fn get_scrollback(&self, offset: usize, count: usize) -> Vec<&str> {
+        let len = self.scrollback.len();
+        if len == 0 || count == 0 {
+            return Vec::new();
+        }
+        let end = len.saturating_sub(offset);
+        let start = end.saturating_sub(count);
+        self.scrollback[start..end]
+            .iter()
+            .map(|s| s.as_str())
+            .collect()
+    }
+
+    /// Returns the current view offset from the bottom of the scrollback.
+    pub fn scrollback_offset(&self) -> usize {
+        self.scrollback_offset
+    }
+
+    /// Sets the scrollback view offset.
+    ///
+    /// Clamped to `[0, scrollback_len]`.
+    pub fn set_scrollback_offset(&mut self, offset: usize) {
+        self.scrollback_offset = offset.min(self.scrollback.len());
+    }
+
+    /// Returns the total number of lines currently in the scrollback buffer.
+    pub fn scrollback_len(&self) -> usize {
+        self.scrollback.len()
+    }
+
+    // ── Command history ────────────────────────────────────────────────────────
+
+    /// Appends a command string to the command history.
+    ///
+    /// Empty strings are ignored. Resets `cmd_cursor` to 0 (live input).
+    ///
+    /// # Parameters
+    /// - `cmd` — `&str`. The command that was just executed.
+    pub fn push_cmd_history(&mut self, cmd: &str) {
+        if cmd.trim().is_empty() {
+            return;
+        }
+        self.cmd_history.push(cmd.to_owned());
+        self.cmd_cursor = 0;
+    }
+
+    /// Navigates one step backward in command history (toward older commands).
+    ///
+    /// Returns the recalled command string, or `None` if already at the oldest entry.
+    pub fn prev_cmd(&mut self) -> Option<&str> {
+        let len = self.cmd_history.len();
+        if len == 0 {
+            return None;
+        }
+        if self.cmd_cursor < len {
+            self.cmd_cursor += 1;
+        }
+        let idx = len - self.cmd_cursor;
+        Some(&self.cmd_history[idx])
+    }
+
+    /// Navigates one step forward in command history (toward newer commands).
+    ///
+    /// Returns the recalled command string, or `None` if already at the live-input position.
+    pub fn next_cmd(&mut self) -> Option<&str> {
+        if self.cmd_cursor == 0 {
+            return None;
+        }
+        self.cmd_cursor -= 1;
+        if self.cmd_cursor == 0 {
+            return None;
+        }
+        let len = self.cmd_history.len();
+        let idx = len - self.cmd_cursor;
+        Some(&self.cmd_history[idx])
+    }
+
+    /// Returns the total number of entries in the command history.
+    pub fn cmd_history_len(&self) -> usize {
+        self.cmd_history.len()
+    }
+
+    /// Clears all command history and resets the browse cursor.
+    pub fn clear_cmd_history(&mut self) {
+        self.cmd_history.clear();
+        self.cmd_cursor = 0;
     }
 }
 

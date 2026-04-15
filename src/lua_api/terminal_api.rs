@@ -1385,6 +1385,306 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
+    // ── Scrollback ────────────────────────────────────────────────────────────
+
+    // -- pushScrollback --
+    /// Appends a line to this terminal's scrollback buffer.
+    ///
+    /// The oldest line is evicted once the buffer exceeds `scrollbackCap` (default 500).
+    /// Also resets the view offset to the bottom.
+    ///
+    /// @param terminal : Terminal
+    /// @param line : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "pushScrollback",
+        lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            let _ = s.borrow();
+            term_ref.inner.push_scrollback(&line);
+            Ok(())
+        })?,
+    )?;
+
+    // -- getScrollback --
+    /// Returns a table of lines from the scrollback buffer.
+    ///
+    /// `offset = 0` returns the most recent lines; increasing offset scrolls back.
+    /// Lines are returned oldest-first.
+    ///
+    /// @param terminal : Terminal
+    /// @param offset : integer   0 = bottom (most recent)
+    /// @param count : integer    maximum number of lines to return
+    /// @return table  array of strings
+    let s = state.clone();
+    tbl.set(
+        "getScrollback",
+        lua.create_function(
+            move |lua, (term_ud, offset, count): (LuaAnyUserData, usize, usize)| {
+                let term_ref = term_ud.borrow::<LuaTerminal>()?;
+                let _ = s.borrow();
+                let lines = term_ref.inner.get_scrollback(offset, count);
+                let result = lua.create_table()?;
+                for (i, l) in lines.iter().enumerate() {
+                    result.set(i + 1, l.to_string())?;
+                }
+                Ok(result)
+            },
+        )?,
+    )?;
+
+    // -- scrollbackLen --
+    /// Returns the number of lines currently in this terminal's scrollback buffer.
+    ///
+    /// @param terminal : Terminal
+    /// @return integer
+    tbl.set(
+        "scrollbackLen",
+        lua.create_function(|_, term_ud: LuaAnyUserData| {
+            let term_ref = term_ud.borrow::<LuaTerminal>()?;
+            Ok(term_ref.inner.scrollback_len())
+        })?,
+    )?;
+
+    // -- setScrollbackCap --
+    /// Sets the maximum number of lines retained in the scrollback buffer.
+    ///
+    /// Any excess lines are pruned immediately.  Minimum is 1.
+    ///
+    /// @param terminal : Terminal
+    /// @param cap : integer
+    /// @return nil
+    tbl.set(
+        "setScrollbackCap",
+        lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            term_ref.inner.set_scrollback_cap(cap);
+            Ok(())
+        })?,
+    )?;
+
+    // ── Command history ───────────────────────────────────────────────────────
+
+    // -- pushCmdHistory --
+    /// Appends a command string to this terminal's history.
+    ///
+    /// Empty or whitespace-only strings are ignored.
+    /// Resets the browse cursor to the live-input position.
+    ///
+    /// @param terminal : Terminal
+    /// @param cmd : string
+    /// @return nil
+    tbl.set(
+        "pushCmdHistory",
+        lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            term_ref.inner.push_cmd_history(&cmd);
+            Ok(())
+        })?,
+    )?;
+
+    // -- prevCmd --
+    /// Steps one entry back in command history (toward older commands).
+    ///
+    /// Returns the recalled command, or `nil` if already at the oldest entry.
+    ///
+    /// @param terminal : Terminal
+    /// @return string|nil
+    tbl.set(
+        "prevCmd",
+        lua.create_function(|_, term_ud: LuaAnyUserData| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            Ok(term_ref.inner.prev_cmd().map(|s| s.to_owned()))
+        })?,
+    )?;
+
+    // -- nextCmd --
+    /// Steps one entry forward in command history (toward newer commands).
+    ///
+    /// Returns the recalled command, or `nil` when back at live input.
+    ///
+    /// @param terminal : Terminal
+    /// @return string|nil
+    tbl.set(
+        "nextCmd",
+        lua.create_function(|_, term_ud: LuaAnyUserData| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            Ok(term_ref.inner.next_cmd().map(|s| s.to_owned()))
+        })?,
+    )?;
+
+    // -- cmdHistoryLen --
+    /// Returns the total number of entries in this terminal's command history.
+    ///
+    /// @param terminal : Terminal
+    /// @return integer
+    tbl.set(
+        "cmdHistoryLen",
+        lua.create_function(|_, term_ud: LuaAnyUserData| {
+            let term_ref = term_ud.borrow::<LuaTerminal>()?;
+            Ok(term_ref.inner.cmd_history_len())
+        })?,
+    )?;
+
+    // -- clearCmdHistory --
+    /// Clears all entries from this terminal's command history.
+    ///
+    /// @param terminal : Terminal
+    /// @return nil
+    tbl.set(
+        "clearCmdHistory",
+        lua.create_function(|_, term_ud: LuaAnyUserData| {
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            term_ref.inner.clear_cmd_history();
+            Ok(())
+        })?,
+    )?;
+
+    // ── Colour themes ─────────────────────────────────────────────────────────
+
+    // -- applyTheme --
+    /// Applies a named colour theme to a terminal, recolouring all existing cells.
+    ///
+    /// Built-in themes: `"solarized_dark"`, `"solarized_light"`, `"monokai"`,
+    /// `"dracula"`, `"nord"`.
+    ///
+    /// @param terminal : Terminal
+    /// @param theme : string
+    /// @return nil
+    tbl.set(
+        "applyTheme",
+        lua.create_function(|_, (term_ud, theme): (LuaAnyUserData, String)| {
+            // (fg_r, fg_g, fg_b, bg_r, bg_g, bg_b) in 0-255
+            let (fr, fg_c, fb, br, bg_c, bb): (u8, u8, u8, u8, u8, u8) = match theme.as_str() {
+                "solarized_dark" => (131, 148, 150, 0, 43, 54),
+                "solarized_light" => (101, 123, 131, 253, 246, 227),
+                "monokai" => (248, 248, 242, 39, 40, 34),
+                "dracula" => (248, 248, 242, 40, 42, 54),
+                "nord" => (236, 239, 244, 46, 52, 64),
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                        "unknown theme '{other}' — available: solarized_dark, solarized_light, monokai, dracula, nord"
+                    )));
+                }
+            };
+            let fg = [fr as f32 / 255.0, fg_c as f32 / 255.0, fb as f32 / 255.0, 1.0];
+            let bg = [br as f32 / 255.0, bg_c as f32 / 255.0, bb as f32 / 255.0, 1.0];
+            let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+            term_ref.inner.set_default_colors(fg, bg);
+            Ok(())
+        })?,
+    )?;
+
+    // -- printHighlighted --
+    /// Prints text at 1-based `(col, row)` with per-keyword colour highlighting.
+    ///
+    /// `rules` is an array of tables, each with:
+    /// - `pattern` — `string` — plain substring to match (case-sensitive).
+    /// - `fg`      — `{r, g, b}` table with 0-255 integer values.
+    /// - `bg`      — `{r, g, b}` (optional) background colour.
+    ///
+    /// Rules are checked left-to-right; the first match wins per token.
+    /// Unmatched text is printed with white (1,1,1,1) foreground and unchanged background.
+    ///
+    /// @param terminal : Terminal
+    /// @param col : integer
+    /// @param row : integer
+    /// @param text : string
+    /// @param rules : table
+    /// @return nil
+    tbl.set(
+        "printHighlighted",
+        lua.create_function(
+            |_,
+             (term_ud, col, row, text, rules_t): (
+                LuaAnyUserData,
+                usize,
+                usize,
+                String,
+                LuaTable,
+            )| {
+                struct Rule {
+                    pattern: String,
+                    fg: [f32; 4],
+                    bg: Option<[f32; 4]>,
+                }
+                let mut rules: Vec<Rule> = Vec::new();
+                for pair in rules_t.sequence_values::<LuaTable>() {
+                    let rt = pair?;
+                    let pattern: String = rt.get("pattern")?;
+                    let fg_t: LuaTable = rt.get("fg")?;
+                    let fr: u8 = fg_t.get(1)?;
+                    let fg_c: u8 = fg_t.get(2)?;
+                    let fb: u8 = fg_t.get(3)?;
+                    let bg_opt: Option<LuaTable> = rt.get("bg").ok();
+                    let bg = bg_opt.and_then(|bt| {
+                        let br: u8 = bt.get(1).ok()?;
+                        let bg_c: u8 = bt.get(2).ok()?;
+                        let bb: u8 = bt.get(3).ok()?;
+                        Some([br as f32 / 255.0, bg_c as f32 / 255.0, bb as f32 / 255.0, 1.0])
+                    });
+                    rules.push(Rule {
+                        pattern,
+                        fg: [fr as f32 / 255.0, fg_c as f32 / 255.0, fb as f32 / 255.0, 1.0],
+                        bg,
+                    });
+                }
+                let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
+                let default_fg = [1.0f32, 1.0, 1.0, 1.0];
+                let mut remaining = text.as_str();
+                let mut cur_col = col;
+                while !remaining.is_empty() {
+                    let best = rules
+                        .iter()
+                        .filter_map(|r| {
+                            remaining
+                                .find(r.pattern.as_str())
+                                .map(|pos| (pos, r))
+                        })
+                        .min_by_key(|(pos, _)| *pos);
+                    match best {
+                        None => {
+                            term_ref.inner.print_colored(
+                                cur_col,
+                                row,
+                                remaining,
+                                default_fg,
+                                None,
+                            );
+                            break;
+                        }
+                        Some((pos, rule)) => {
+                            if pos > 0 {
+                                let prefix = &remaining[..pos];
+                                term_ref.inner.print_colored(
+                                    cur_col,
+                                    row,
+                                    prefix,
+                                    default_fg,
+                                    None,
+                                );
+                                cur_col += prefix.chars().count();
+                            }
+                            let end = pos + rule.pattern.len();
+                            let token = &remaining[pos..end];
+                            term_ref.inner.print_colored(
+                                cur_col,
+                                row,
+                                token,
+                                rule.fg,
+                                rule.bg,
+                            );
+                            cur_col += token.chars().count();
+                            remaining = &remaining[end..];
+                        }
+                    }
+                }
+                Ok(())
+            },
+        )?,
+    )?;
+
     luna.set("terminal", tbl)?;
     Ok(())
 }

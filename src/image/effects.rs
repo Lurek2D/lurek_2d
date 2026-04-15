@@ -633,4 +633,66 @@ impl ImageData {
             total + extra_self + extra_other
         }
     }
+
+    /// Apply an arbitrary NxN convolution kernel to the RGB channels and return a new `ImageData`.
+    ///
+    /// `kernel` is a flat slice of N*N weights in row-major order.
+    /// `ksize` must equal `sqrt(kernel.len())` and must be odd.
+    /// Alpha is copied unchanged from the source pixel.
+    /// RGB output is clamped to \[0, 255\] after applying the kernel.
+    /// Edge pixels use edge-clamping (nearest in-bounds pixel is repeated).
+    ///
+    /// # Parameters
+    /// - `kernel` — flat slice of `N*N` weights.
+    /// - `ksize` — side length of the square kernel (must be odd and `>= 1`).
+    ///
+    /// # Returns
+    /// `Result<ImageData, String>` — error if `ksize == 0`, `ksize` is even,
+    /// or `kernel.len() != ksize * ksize`.
+    pub fn convolve(&self, kernel: &[f64], ksize: usize) -> Result<ImageData, String> {
+        if ksize == 0 {
+            return Err("ksize must be >= 1".into());
+        }
+        if ksize % 2 == 0 {
+            return Err(format!("ksize must be odd, got {}", ksize));
+        }
+        if kernel.len() != ksize * ksize {
+            return Err(format!(
+                "kernel length {} does not match ksize*ksize ({})",
+                kernel.len(),
+                ksize * ksize
+            ));
+        }
+        let w = self.width as i32;
+        let h = self.height as i32;
+        let half = (ksize / 2) as i32;
+        let mut out = ImageData::new(self.width, self.height);
+        let clamp_x = |x: i32| x.clamp(0, w - 1) as u32;
+        let clamp_y = |y: i32| y.clamp(0, h - 1) as u32;
+        let get = |px: u32, py: u32, c: usize| -> f64 {
+            self.pixels[((py * self.width + px) * 4) as usize + c] as f64
+        };
+        for py in 0..h {
+            for px in 0..w {
+                let src_a = get(clamp_x(px), clamp_y(py), 3) as u8;
+                let mut acc = [0.0f64; 3];
+                for ky in 0..ksize {
+                    for kx in 0..ksize {
+                        let sx = px + kx as i32 - half;
+                        let sy = py + ky as i32 - half;
+                        let w_val = kernel[ky * ksize + kx];
+                        for c in 0..3usize {
+                            acc[c] += get(clamp_x(sx), clamp_y(sy), c) * w_val;
+                        }
+                    }
+                }
+                let idx = ((py * w as i32) as usize + px as usize) * 4;
+                for c in 0..3usize {
+                    out.pixels[idx + c] = acc[c].clamp(0.0, 255.0).round() as u8;
+                }
+                out.pixels[idx + 3] = src_a;
+            }
+        }
+        Ok(out)
+    }
 }

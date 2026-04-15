@@ -513,6 +513,52 @@ impl LuaUserData for LuaBus {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "Bus" || name == "Object")
         });
+
+        // -- setDuckTarget --
+        /// Configures this bus to duck (lower the volume of) another bus when
+        /// it has active playing sources.
+        ///
+        /// The `Mixer` will reduce the target bus to `duckVolume` while this bus
+        /// is active.  Call `clearDuck` to stop ducking.
+        ///
+        /// @param targetBusName : string   name of the bus to duck
+        /// @param duckVolume : number      target volume in \[0, 1\] (e.g. 0.2)
+        /// @return nil
+        methods.add_method(
+            "setDuckTarget",
+            |_, this, (target_name, duck_vol): (String, f32)| {
+                let mut st = this.state.borrow_mut();
+                if let Some(bus) = st.mixer.get_bus_mut(this.key) {
+                    bus.set_duck_target(&target_name, duck_vol);
+                }
+                Ok(())
+            },
+        );
+
+        // -- clearDuck --
+        /// Removes the ducking target from this bus, restoring the target bus
+        /// to its normal volume on next mixer update.
+        ///
+        /// @return nil
+        methods.add_method("clearDuck", |_, this, ()| {
+            let mut st = this.state.borrow_mut();
+            if let Some(bus) = st.mixer.get_bus_mut(this.key) {
+                bus.clear_duck_target();
+            }
+            Ok(())
+        });
+
+        // -- getPeak --
+        /// Returns the average peak amplitude of all sources currently on this bus.
+        ///
+        /// Peak values are stored per-source via `AudioSource:setMeter()` and
+        /// averaged across all sources assigned to this bus.
+        ///
+        /// @return number   value in \[0, 1\]
+        methods.add_method("getPeak", |_, this, ()| {
+            let st = this.state.borrow();
+            Ok(st.mixer.bus_peak(this.key))
+        });
     }
 }
 
@@ -2014,26 +2060,29 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // ── setMeter ──────────────────────────────────────────────────────────────
-    /// Sets the metering scale (stub).
-    /// @param scale : number
+    /// Sets the master peak meter level (0.0–1.0).
+    ///
+    /// Game scripts call this to report the current amplitude of their audio
+    /// output.  The stored value is retrievable via `getMeter`.
+    ///
+    /// @param level : number   peak level in [0, 1]
     /// @return nil
+    let s = state.clone();
     tbl.set(
         "setMeter",
-        lua.create_function(|_, _scale: f32| {
-            log_msg!(debug, LA01_API_STUB, "lurek.audio.setMeter");
+        lua.create_function(move |_, level: f32| {
+            s.borrow_mut().mixer.master_peak = level.clamp(0.0, 1.0);
             Ok(())
         })?,
     )?;
 
     // ── getMeter ──────────────────────────────────────────────────────────────
-    /// Returns the current peak level (stub).
-    /// @return number
+    /// Returns the stored master peak meter level.
+    /// @return number   value in [0, 1] set by the last `setMeter` call
+    let s = state.clone();
     tbl.set(
         "getMeter",
-        lua.create_function(|_, ()| {
-            log_msg!(debug, LA01_API_STUB, "lurek.audio.getMeter");
-            Ok(1.0_f32)
-        })?,
+        lua.create_function(move |_, ()| Ok(s.borrow().mixer.master_peak))?,
     )?;
 
     // ── newMidiPlayer ─────────────────────────────────────────────────────────

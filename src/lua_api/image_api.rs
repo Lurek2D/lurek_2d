@@ -432,6 +432,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // -- newPaletteLut --
+    /// Creates a new empty `PaletteLUT` used to remap colours in an image.
+    ///
+    /// @return PaletteLUT
+    tbl.set(
+        "newPaletteLut",
+        lua.create_function(|lua, ()| {
+            lua.create_userdata(LuaPaletteLUT {
+                inner: crate::image::palette_lut::PaletteLUT::new(),
+            })
+        })?,
+    )?;
+
     luna.set("img", tbl)?;
     Ok(())
 }
@@ -823,10 +836,106 @@ impl mlua::UserData for ImageData {
             }
             Ok(())
         });
+
+        // -- convolve --
+        /// Applies a custom NxN convolution kernel to the image and returns a new ImageData.
+        ///
+        /// `kernel` is a flat table of N*N weights in row-major order.
+        /// `ksize` must be odd and satisfy `ksize * ksize == #kernel`.
+        /// RGB channels are convolved; alpha is copied unchanged.
+        /// Output values are clamped to [0, 255].
+        ///
+        /// @param kernel : table
+        /// @param ksize : integer
+        /// @return ImageData
+        methods.add_method(
+            "convolve",
+            |lua, this, (kernel_t, ksize): (LuaTable, usize)| {
+                let len = kernel_t.len()? as usize;
+                let mut kernel: Vec<f64> = Vec::with_capacity(len);
+                for i in 1..=len {
+                    kernel.push(kernel_t.get::<_, f64>(i)?);
+                }
+                let result = this.convolve(&kernel, ksize).map_err(LuaError::external)?;
+                lua.create_userdata(result)
+            },
+        );
+
+        // -- applyPaletteLut --
+        /// Applies a `PaletteLUT` to the image in place, replacing exact colour matches.
+        ///
+        /// @param lut : PaletteLUT
+        /// @return nil
+        methods.add_method_mut("applyPaletteLut", |_, this, lut_ud: LuaAnyUserData| {
+            let lut = lut_ud.borrow::<LuaPaletteLUT>()?;
+            lut.inner.apply(this);
+            Ok(())
+        });
     }
 }
+
+// -------------------------------------------------------------------------------
+// LuaPaletteLUT UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around [`PaletteLUT`].
+pub struct LuaPaletteLUT {
+    inner: crate::image::palette_lut::PaletteLUT,
+}
+
+impl LuaUserData for LuaPaletteLUT {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        /// Appends a colour mapping entry to the palette: when a pixel exactly matching
+        /// `from_r, from_g, from_b, from_a` (0–255) is encountered it is replaced by
+        /// `to_r, to_g, to_b, to_a`.
+        ///
+        /// @param from_r : integer   0-255
+        /// @param from_g : integer   0-255
+        /// @param from_b : integer   0-255
+        /// @param from_a : integer   0-255  (255 = fully opaque)
+        /// @param to_r : integer     0-255
+        /// @param to_g : integer     0-255
+        /// @param to_b : integer     0-255
+        /// @param to_a : integer     0-255
+        /// @return nil
+        methods.add_method_mut(
+            "setColor",
+            |_,
+             this,
+             (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
+                use crate::math::color::Color;
+                let from = Color {
+                    r: fr as f32 / 255.0,
+                    g: fg as f32 / 255.0,
+                    b: fb as f32 / 255.0,
+                    a: fa as f32 / 255.0,
+                };
+                let to = Color {
+                    r: tr as f32 / 255.0,
+                    g: tg as f32 / 255.0,
+                    b: tb as f32 / 255.0,
+                    a: ta as f32 / 255.0,
+                };
+                let next_idx = this.inner.get_color_count();
+                this.inner.set_color(next_idx, from, to);
                 Ok(())
             },
         );
+
+        /// Returns the number of colour mapping entries.
+        ///
+        /// @return integer
+        methods.add_method("getColorCount", |_, this, ()| {
+            Ok(this.inner.get_color_count())
+        });
+
+        /// Removes all colour mapping entries.
+        ///
+        /// @return nil
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.clear();
+            Ok(())
+        });
     }
 }
+

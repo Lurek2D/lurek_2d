@@ -157,6 +157,53 @@ fn cross_sign(p1: Vec2, p2: Vec2, p3: Vec2) -> f32 {
     (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)
 }
 
+/// Clip a polygon against a single half-plane using the Sutherland-Hodgman algorithm.
+///
+/// The "inside" half-plane is where `nx * x + ny * y >= d`.
+/// If the polygon is fully outside the plane, an empty slice is returned.
+///
+/// # Parameters
+/// - `polygon` — `&[(f32, f32)]` — input vertices in order (open or closed, do not repeat the first vertex).
+/// - `nx` — `f32` — plane normal X component (need not be unit length).
+/// - `ny` — `f32` — plane normal Y component.
+/// - `d` — `f32` — plane offset: inside is where the dot-product with `(nx, ny)` is `>= d`.
+///
+/// # Returns
+/// `Vec<(f32, f32)>` — clipped vertices in the same winding as the input (empty if fully clipped).
+pub fn polygon_clip(polygon: &[(f32, f32)], nx: f32, ny: f32, d: f32) -> Vec<(f32, f32)> {
+    if polygon.is_empty() {
+        return Vec::new();
+    }
+    let inside = |(x, y): (f32, f32)| nx * x + ny * y >= d;
+    let intersect = |(ax, ay): (f32, f32), (bx, by): (f32, f32)| {
+        let da = nx * ax + ny * ay;
+        let db = nx * bx + ny * by;
+        let denom = db - da;
+        if denom.abs() < f32::EPSILON {
+            return (ax, ay);
+        }
+        let t = (d - da) / denom;
+        (ax + t * (bx - ax), ay + t * (by - ay))
+    };
+    let n = polygon.len();
+    let mut out = Vec::with_capacity(n);
+    for i in 0..n {
+        let curr = polygon[i];
+        let next = polygon[(i + 1) % n];
+        let curr_inside = inside(curr);
+        let next_inside = inside(next);
+        if curr_inside {
+            out.push(curr);
+            if !next_inside {
+                out.push(intersect(curr, next));
+            }
+        } else if next_inside {
+            out.push(intersect(curr, next));
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -220,5 +267,40 @@ mod tests {
     fn is_convex_less_than_three_false() {
         let pts = vec![Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0)];
         assert!(!is_convex(&pts));
+    }
+
+    // ── polygon_clip (Sutherland-Hodgman) ────────────────────────────────────
+
+    #[test]
+    fn polygon_clip_square_full_inside_unchanged() {
+        // Unit square, clip plane y >= -1 (plane below everything)
+        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
+        let clipped = polygon_clip(&sq, 0.0, 1.0, -1.0);
+        assert_eq!(clipped.len(), 4);
+    }
+
+    #[test]
+    fn polygon_clip_square_fully_outside_empty() {
+        // Unit square in [0,1]×[0,1], clip plane y >= 2.0 (no vertex qualifies)
+        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
+        let clipped = polygon_clip(&sq, 0.0, 1.0, 2.0);
+        assert!(clipped.is_empty());
+    }
+
+    #[test]
+    fn polygon_clip_square_half_produces_correct_vertex_count() {
+        // Unit square, clip plane y >= 0.5 — result is a rectangle with 4 vertices
+        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
+        let clipped = polygon_clip(&sq, 0.0, 1.0, 0.5);
+        assert_eq!(clipped.len(), 4);
+        for (_, y) in &clipped {
+            assert!(*y >= 0.5 - 1e-5, "y={y} should be >= 0.5");
+        }
+    }
+
+    #[test]
+    fn polygon_clip_empty_input_returns_empty() {
+        let clipped = polygon_clip(&[], 1.0, 0.0, 0.0);
+        assert!(clipped.is_empty());
     }
 }

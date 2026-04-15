@@ -2,7 +2,40 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.10.0] — 2026-04-15
+## [0.10.1] — 2026-04-16
+### Added
+- `lurek.math.polygonClip(polygon, nx, ny, d)` — Sutherland-Hodgman single half-plane polygon clip. Input and output are flat `{x1,y1,...}` tables.
+- `lurek.img.newPaletteLut()` — creates a `PaletteLUT` userdata; `lut:setColor(fr,fg,fb,fa, tr,tg,tb,ta)`, `lut:getColorCount()`, `lut:clear()`.
+- `image:applyPaletteLut(lut)` — applies a `PaletteLUT` to every pixel of an `ImageData`.
+- `image:convolve(kernel_table, ksize)` — applies an arbitrary N×N convolution kernel to `ImageData` (ksize must be odd; edges clamped; alpha preserved).
+- `lurek.animation.newCurve()` — creates an `AnimCurve` with `addKeyframe(t,v)`, `eval(t)`, `setEasing(name)`, `keyframeCount()`, `clear()`. Easings: `step`, `linear`, `ease_in`, `ease_out`, `ease_in_out`.
+- `lurek.animation.newSyncGroup()` — creates an `AnimSyncGroup` with `add(key)`, `remove(key)`, `clear()`, `memberCount()`.
+- `lurek.fs.glob(pattern)` — lists files matching a `*`/`?` glob pattern within the game sandbox.
+- `lurek.fs.copy(src, dst)` — copies a file from the read sandbox into `save/`.
+- `lurek.fs.move(src, dst)` — moves a file within the `save/` sandbox.
+- `lurek.fs.removeDir(path)` — recursively removes a directory within the `save/` sandbox.
+- `lurek.terminal.pushScrollback(t, line)` / `getScrollback(t, offset, count)` / `scrollbackLen(t)` / `setScrollbackCap(t, cap)` — scrollback buffer for terminal output (default cap: 500).
+- `lurek.terminal.pushCmdHistory(t, cmd)` / `prevCmd(t)` / `nextCmd(t)` / `cmdHistoryLen(t)` / `clearCmdHistory(t)` — command history with cursor navigation.
+- `lurek.terminal.applyTheme(t, name)` — applies a named colour theme (`solarized_dark`, `solarized_light`, `monokai`, `dracula`, `nord`) by recolouring all grid cells.
+- `lurek.terminal.printHighlighted(t, col, row, text, rules)` — prints text with plain-substring keyword highlighting; rules are `{pattern, fg={r,g,b}, bg={r,g,b}?}` arrays.
+- `lurek.audio.setMeter(level)` / `getMeter()` — stores/retrieves the master peak amplitude level (0-1) on the `Mixer`.
+- `LuaBus:setDuckTarget(targetBusName, duckVolume)` / `clearDuck()` — configures automatic bus-volume ducking.
+- `LuaBus:getPeak()` — returns the average peak amplitude across all sources on the bus.
+### Fixed
+- `lurek.audio.getBusPeak(busName)` was always 0.0 (stub); now returns the mean `peak` of all sources assigned to that bus.
+- `lurek.audio.setMeter` / `getMeter` were no-op stubs; now correctly read/write `Mixer.master_peak`.
+### Internal
+- `src/math/polygon.rs` — added `polygon_clip()` (Sutherland-Hodgman) and 4 unit tests.
+- `src/image/palette_lut.rs` — added `PaletteLUT::apply(&mut ImageData)`.
+- `src/image/effects.rs` — added `ImageData::convolve(&[f64], ksize)`.
+- `src/animation/curve.rs` (new) — `AnimCurve` + `EasingKind`.
+- `src/animation/sync_group.rs` (new) — `AnimSyncGroup`.
+- `src/filesystem/vfs.rs` — added `copy_file`, `move_file`, `remove_dir`, `glob` + `glob_match` helpers.
+- `src/terminal/terminal_state.rs` — added scrollback + cmd_history fields and methods; `set_default_colors()`, `print_colored()`.
+- `src/audio/mixer.rs` — `AudioEntry.peak: f32`; `Mixer.master_peak: f32`; `set_peak`, `get_peak`, `bus_peak`.
+- `src/audio/bus.rs` — `Bus.duck_target: Option<(String, f32)>`; `set_duck_target`, `clear_duck_target`.
+
+
 ### Added
 - `lurek.modding.checkApiVersion(mod, host_version)` — returns `(bool, msg?)` for MAJOR/MINOR compatibility gating.
 - `ModInfo.api_version` — optional `"MAJOR.MINOR"` string; via `mod:getApiVersion()` / `mod:setApiVersion()`.

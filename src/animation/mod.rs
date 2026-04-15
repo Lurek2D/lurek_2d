@@ -21,6 +21,10 @@ pub mod render;
 pub mod aseprite;
 /// Finite-state machine for parameter-driven animation control.
 pub mod state_machine;
+/// Keyframe-based animation curves with per-segment easing.
+pub mod curve;
+/// Named animation synchronisation groups.
+pub mod sync_group;
 
 pub use clip::AnimClip;
 pub use controller::Animation;

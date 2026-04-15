@@ -453,6 +453,74 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // -- copy --
+    /// Copies a file within the sandbox.
+    ///
+    /// The source is resolved inside the game root; the destination must be inside `save/`.
+    ///
+    /// @param src : string
+    /// @param dst : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "copy",
+        lua.create_function(move |_, (src, dst): (String, String)| {
+            s.borrow().fs.copy_file(&src, &dst).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- move --
+    /// Moves (renames) a file within the `save/` directory.
+    ///
+    /// Both source and destination must be inside `save/`.
+    ///
+    /// @param src : string
+    /// @param dst : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "move",
+        lua.create_function(move |_, (src, dst): (String, String)| {
+            s.borrow().fs.move_file(&src, &dst).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- removeDir --
+    /// Recursively deletes a directory and all its contents within `save/`.
+    ///
+    /// @param path : string
+    /// @return nil
+    let s = state.clone();
+    tbl.set(
+        "removeDir",
+        lua.create_function(move |_, path: String| {
+            s.borrow().fs.remove_dir(&path).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // -- glob --
+    /// Returns a sorted list of paths matching a simple wildcard pattern.
+    ///
+    /// `*` matches any run of characters within a single path component;
+    /// `?` matches exactly one character.  Patterns are relative to the game root.
+    ///
+    /// Example: `lurek.fs.glob("save/*.json")`
+    ///
+    /// @param pattern : string
+    /// @return table  array of matching relative paths
+    let s = state.clone();
+    tbl.set(
+        "glob",
+        lua.create_function(move |lua, pattern: String| {
+            let paths = s.borrow().fs.glob(&pattern).map_err(LuaError::external)?;
+            let tbl = lua.create_table()?;
+            for (i, p) in paths.iter().enumerate() {
+                tbl.set(i + 1, p.clone())?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+
     luna.set("fs", tbl)?;
     Ok(())
 }

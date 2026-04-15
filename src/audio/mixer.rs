@@ -109,6 +109,9 @@ struct AudioEntry {
     stereo_width: f32,
     /// Optional random pitch range `(min, max)` applied on each play.
     pitch_range: Option<(f32, f32)>,
+    /// Peak amplitude in \[0, 1\] reported by the game via `setMeter` or updated
+    /// automatically during playback analysis.  Defaults to `0.0`.
+    pub peak: f32,
 }
 
 /// A manually-fed streaming audio source that accepts raw f32 PCM data pushed buffer-by-buffer.
@@ -227,6 +230,8 @@ pub struct Mixer {
     distance_model: String,
     /// Manually-fed queueable audio sources.
     queueables: SlotMap<QueueableKey, QueueableSource>,
+    /// Master peak level in \[0.0, 1.0\].  Set by Lua via `setMeter`; read by `getMeter`.
+    pub master_peak: f32,
 }
 
 impl Default for Mixer {
@@ -263,6 +268,7 @@ impl Mixer {
             doppler_scale: 1.0,
             distance_model: "inverse_clamped".to_string(),
             queueables: SlotMap::with_key(),
+            master_peak: 0.0,
         }
     }
 
@@ -307,6 +313,7 @@ impl Mixer {
             spatial: None,
             stereo_width: 1.0,
             pitch_range: None,
+            peak: 0.0,
         })
     }
 
@@ -793,6 +800,7 @@ impl Mixer {
             spatial: entry.spatial,
             stereo_width: entry.stereo_width,
             pitch_range: entry.pitch_range,
+            peak: entry.peak,
         };
         Some(self.sources.insert(new_entry))
     }
@@ -815,6 +823,54 @@ impl Mixer {
         } else {
             false
         }
+    }
+
+    /// Sets the peak amplitude for a source (0.0–1.0).
+    ///
+    /// Used by Lua scripts (and, in future, by automated analysis) to record the
+    /// current signal level of a source.  Clamped to \[0.0, 1.0\].
+    ///
+    /// # Parameters
+    /// - `key` — `SoundKey`.
+    /// - `peak` — `f32`.
+    pub fn set_peak(&mut self, key: SoundKey, peak: f32) {
+        if let Some(entry) = self.sources.get_mut(key) {
+            entry.peak = peak.clamp(0.0, 1.0);
+        }
+    }
+
+    /// Returns the stored peak amplitude for a source, or `0.0` if the source
+    /// does not exist.
+    ///
+    /// # Parameters
+    /// - `key` — `SoundKey`.
+    ///
+    /// # Returns
+    /// `f32`.
+    pub fn get_peak(&self, key: SoundKey) -> f32 {
+        self.sources.get(key).map_or(0.0, |e| e.peak)
+    }
+
+    /// Returns the average peak amplitude of all sources currently assigned to
+    /// the given bus.
+    ///
+    /// Returns `0.0` if the bus has no assigned sources.
+    ///
+    /// # Parameters
+    /// - `bus_key` — `BusKey`.
+    ///
+    /// # Returns
+    /// `f32`.
+    pub fn bus_peak(&self, bus_key: BusKey) -> f32 {
+        let mut total = 0.0f32;
+        let mut count = 0usize;
+        for (_, entry) in &self.sources {
+            if entry.bus_key == Some(bus_key) {
+                total += entry.peak;
+                count += 1;
+            }
+        }
+        if count == 0 { 0.0 } else { total / count as f32 }
     }
 
     /// Creates a new named bus and returns its key.
@@ -1714,7 +1770,7 @@ impl Mixer {
     /// `Result<f32, String>`. Errors if no bus with that name exists.
     pub fn get_bus_peak(&self, bus_name: &str) -> Result<f32, String> {
         self.get_bus_by_name(bus_name)
-            .map(|_| 0.0_f32)
+            .map(|key| self.bus_peak(key))
             .ok_or_else(|| format!("unknown bus '{}'", bus_name))
     }
 
