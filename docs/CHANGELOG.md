@@ -2,6 +2,28 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.10.2] — 2026-04-17
+### Added
+- **graph**: `graph:colorGraph()` — greedy graph coloring; returns `{node_id → color_int}` table using minimum colors.
+- **graph**: `graph:isBipartite()` — BFS two-coloring check; returns `true` if the graph has no odd cycles.
+- **i18n**: `lurek.localization.formatNumber(n, opts?)` — locale-aware number formatting with thousands grouping and decimal separator. `opts.decimals` (default 2).
+- **i18n**: `lurek.localization.formatDate(timestamp, fmt?)` — locale-aware date formatting from day-offset timestamp. Formats: `"short"` (default), `"long"`, `"iso"`.
+- **i18n**: `lurek.localization.tGender(key, gender, vars?)` — gender-sensitive translation via `.masculine`/`.feminine`/`.neutral` key suffixes with fallback to base key.
+- **i18n**: `lurek.localization.getLoadedLocales()` — returns array of all loaded locale codes.
+- **camera**: `cam:followPath(points, duration)` — animates camera along a table of `{x,y}` waypoints; `cam:updatePath(dt)` advances it; `cam:stopPath()` cancels; `cam:pathProgress()` returns `[0,1]`.
+- **camera**: `cam:zoomTo(target_zoom, duration)` — smooth linear zoom tween; `cam:updateZoom(dt)` advances it; `cam:stopZoom()` cancels.
+- **camera**: `cam:setParallaxFactor(layer, factor)` / `cam:getParallaxFactor(layer)` / `cam:clearParallaxFactors()` — per-layer parallax scroll multipliers.
+- **light**: `light:addFlicker(min, max, hz)` — convenience flicker setter using intensity-multiplier range and Hz frequency; converts to `FlickerConfig.speed`/`strength`.
+- **light**: `light:transitionTo(target, duration)` — smooth linear transition of color, intensity, and radius; `light:updateTransition(dt)` advances it; `light:stopTransition()` cancels; `light:transitionProgress()` returns `[0,1]`.
+- **light**: `light:setCookie(path)` / `light:getCookie()` / `light:clearCookie()` — light cookie (gobo) texture path for projection masking.
+- **render**: `lurek.graphic.newLayer(name, z_order?)` — registers a named render layer with z-ordering.
+- **render**: `lurek.graphic.setLayer(name)` / `lurek.graphic.currentLayer()` — set and query the active named layer.
+- **render**: `lurek.graphic.setLayerVisible(name, bool)` / `lurek.graphic.isLayerVisible(name)` — toggle layer visibility.
+- **render**: `lurek.graphic.getLayerZOrder(name)` / `lurek.graphic.setLayerZOrder(name, z)` — read and update layer draw order.
+- **effect**: `stack:setFeedback(factor)` / `stack:getFeedback()` / `stack:clearFeedback()` — feedback loop intensity `[0,1]` for motion-trail / phosphor-persistence effects.
+- **effect**: `lurek.postfx.newTransition(kind, duration, color?)` — creates a `ScreenTransition` userdata. Kinds: `"fade"`, `"wipe"`, `"iris"`, `"dissolve"`. Methods: `play()`, `reverse()`, `update(dt)`, `progress()`, `isActive()`, `isDone()`, `kind()`, `color()`, `setColor(t)`.
+- New source files: `src/camera/path.rs` (`CameraPath`, `ZoomTween`), `src/light/transition.rs` (`LightTransition`), `src/effect/transition.rs` (`ScreenTransition`, `TransitionKind`).
+
 ## [0.10.1] — 2026-04-16
 ### Added
 - `lurek.math.polygonClip(polygon, nx, ny, d)` — Sutherland-Hodgman single half-plane polygon clip. Input and output are flat `{x1,y1,...}` tables.

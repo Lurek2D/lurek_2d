@@ -33,6 +33,8 @@ pub mod light_world;
 pub mod occluder;
 /// Edge quality for shadow boundaries.
 pub mod shadow;
+/// Smooth linear transition for light color, intensity, and radius.
+pub mod transition;
 
 pub use attenuation::Attenuation;
 pub use blend_mode::LightBlendMode;

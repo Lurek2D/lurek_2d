@@ -77,3 +77,6 @@ pub use screen_effects::{FadeState, FlashState, ShakeState};
 pub use weather::{WeatherParticle, WeatherState, WeatherType};
 pub use presets::{EffectPreset, build_preset, preset_names};
 pub use water_overlay::WaterOverlayState;
+/// Screen-transition data model for `LuaScreenTransition`.
+pub mod transition;
+pub use transition::{ScreenTransition, TransitionKind};

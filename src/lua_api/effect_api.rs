@@ -216,6 +216,10 @@ pub struct LuaPostFxStack {
     stack_id: u64,
     /// Shared engine state for pushing render commands.
     state: Rc<RefCell<SharedState>>,
+    /// Feedback loop intensity `[0, 1]` — blends the previous frame into the
+    /// current frame before post-processing, creating motion-trail effects.
+    /// `0.0` = no feedback (default), `1.0` = full persistence.
+    feedback_factor: f32,
 }
 
 impl LuaUserData for LuaPostFxStack {
@@ -468,6 +472,32 @@ impl LuaUserData for LuaPostFxStack {
         methods.add_method("typeOf", |_, _, name: String| {
             Ok(name == "PostFxStack" || name == "Object")
         });
+
+        // -- setFeedback --
+        /// Sets the feedback loop intensity. At `0.0` (default) there is no
+        /// feedback; at `1.0` the previous frame is fully preserved before
+        /// post-processing, creating motion-trail / phosphor-persistence effects.
+        /// Clamped to `[0.0, 1.0]`.
+        /// @param factor : number
+        /// @return nil
+        methods.add_method_mut("setFeedback", |_, this, factor: f32| {
+            this.feedback_factor = factor.clamp(0.0, 1.0);
+            Ok(())
+        });
+
+        // -- getFeedback --
+        /// Returns the current feedback loop intensity `[0.0, 1.0]`.
+        /// @return number
+        methods.add_method("getFeedback", |_, this, ()| Ok(this.feedback_factor));
+
+        // -- clearFeedback --
+        /// Resets the feedback intensity to `0.0` (disables feedback).
+        /// @return nil
+        methods.add_method_mut("clearFeedback", |_, this, ()| {
+            this.feedback_factor = 0.0;
+            Ok(())
+        });
+
     }
 }
 
@@ -1324,6 +1354,92 @@ impl LuaUserData for LuaOverlay {
 /// - `luna` — `&LuaTable`.
 /// - `state` — `Rc<RefCell<SharedState>>`.
 ///
+
+// ── LuaScreenTransition ─────────────────────────────────────────────────────
+
+/// Lua-side wrapper around a [`crate::effect::ScreenTransition`].
+///
+/// Obtained via `lurek.postfx.newTransition(kind, duration, color?)`.
+pub struct LuaScreenTransition {
+    inner: crate::effect::ScreenTransition,
+}
+
+impl mlua::UserData for LuaScreenTransition {
+    fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- play --
+        /// Starts the transition playing forward (scene fades/wipes out).
+        /// @return nil
+        methods.add_method_mut("play", |_, this, ()| {
+            this.inner.play();
+            Ok(())
+        });
+
+        // -- reverse --
+        /// Starts the transition in reverse (scene fades/wipes in).
+        /// @return nil
+        methods.add_method_mut("reverse", |_, this, ()| {
+            this.inner.reverse();
+            Ok(())
+        });
+
+        // -- update --
+        /// Advances the transition by `dt` seconds. Returns `true` while
+        /// still running.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method_mut("update", |_, this, dt: f32| Ok(this.inner.update(dt)));
+
+        // -- progress --
+        /// Returns the fractional progress `[0, 1]` of the transition, taking
+        /// `reversed` into account.
+        /// @return number
+        methods.add_method("progress", |_, this, ()| Ok(this.inner.progress()));
+
+        // -- isActive --
+        /// Returns `true` while the transition is running.
+        /// @return boolean
+        methods.add_method("isActive", |_, this, ()| Ok(this.inner.is_active()));
+
+        // -- isDone --
+        /// Returns `true` after the transition has completed.
+        /// @return boolean
+        methods.add_method("isDone", |_, this, ()| Ok(this.inner.is_done()));
+
+        // -- kind --
+        /// Returns the transition kind name (`"fade"`, `"wipe"`, `"iris_wipe"`,
+        /// `"dissolve"`).
+        /// @return string
+        methods.add_method("kind", |_, this, ()| Ok(this.inner.kind.name()));
+
+        // -- color --
+        /// Returns the fill color as four numbers: `r, g, b, a`.
+        /// @return number, number, number, number
+        methods.add_method("color", |_, this, ()| {
+            let c = this.inner.color;
+            Ok((c[0], c[1], c[2], c[3]))
+        });
+
+        // -- setColor --
+        /// Updates the fill color from `{r, g, b, a?}`.
+        /// @param color : table
+        /// @return nil
+        methods.add_method_mut("setColor", |_, this, ct: mlua::Table| {
+            this.inner.color = [
+                ct.get::<_, f32>(1).unwrap_or(0.0),
+                ct.get::<_, f32>(2).unwrap_or(0.0),
+                ct.get::<_, f32>(3).unwrap_or(0.0),
+                ct.get::<_, f32>(4).unwrap_or(1.0),
+            ];
+            Ok(())
+        });
+
+        methods.add_method("type", |_, _, ()| Ok("ScreenTransition"));
+        methods.add_method("typeOf", |_, _, name: String| {
+            Ok(name == "ScreenTransition" || name == "Object")
+        });
+    }
+}
+
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
@@ -1375,6 +1491,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 effects: Vec::new(),
                 stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
                 state: Rc::clone(&s),
+                feedback_factor: 0.0,
             })
         })?,
     )?;
@@ -1412,6 +1529,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 effects,
                 stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
                 state: Rc::clone(&s),
+                feedback_factor: 0.0,
             })
         })?,
     )?;
@@ -1537,6 +1655,40 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             lua.create_userdata(LuaOverlay {
                 inner: Overlay::new(width, height),
                 state: s.clone(),
+            })
+        })?,
+    )?;
+
+    // ── ScreenTransition API ─────────────────────────────────────────────────
+
+    // -- newTransition --
+    /// Creates a new screen-transition controller. `kind` is one of:
+    /// `"fade"` (default), `"wipe"`, `"iris"`, `"dissolve"`. `duration` is
+    /// in seconds. Optional `color` table `{r, g, b, a?}` sets the fill color
+    /// (default black).
+    /// @param kind     : string?
+    /// @param duration : number?
+    /// @param color    : table?  — `{r, g, b, a?}` in 0..1
+    /// @return ScreenTransition
+    tbl.set(
+        "newTransition",
+        lua.create_function(move |lua, (kind, duration, color_tbl): (Option<String>, Option<f32>, Option<LuaTable>)| {
+            let k = crate::effect::TransitionKind::from_str(
+                kind.as_deref().unwrap_or("fade"),
+            );
+            let dur = duration.unwrap_or(1.0);
+            let color = if let Some(ct) = color_tbl {
+                [
+                    ct.get::<_, f32>(1).unwrap_or(0.0),
+                    ct.get::<_, f32>(2).unwrap_or(0.0),
+                    ct.get::<_, f32>(3).unwrap_or(0.0),
+                    ct.get::<_, f32>(4).unwrap_or(1.0),
+                ]
+            } else {
+                [0.0, 0.0, 0.0, 1.0]
+            };
+            lua.create_userdata(LuaScreenTransition {
+                inner: crate::effect::ScreenTransition::new(k, dur, color),
             })
         })?,
     )?;

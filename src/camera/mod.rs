@@ -25,7 +25,10 @@ pub mod viewport;
 pub mod viewport_scale;
 /// Render-command generation for camera transforms.
 pub mod render;
+/// Camera path follower and smooth-zoom tween helpers for `LuaCamera2D`.
+pub mod path;
 
 pub use types::{Camera, Camera2D};
+pub use path::{CameraPath, ZoomTween};
 pub use viewport::{ScaleMode, Viewport};
 pub use viewport_scale::ViewportScale;

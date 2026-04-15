@@ -216,6 +216,84 @@ impl Graph {
         result
     }
 
+    /// Greedy graph colouring (node-colouring, not edge-colouring).
+    ///
+    /// # Returns
+    /// `HashMap<u64, usize>`.
+    ///
+    /// Assigns each node the smallest non-negative integer colour that is not already used
+    /// by any adjacent node.  Treats all edges as undirected.  Returns an empty map when
+    /// the graph has no nodes.
+    pub fn color_graph(&self) -> HashMap<u64, usize> {
+        // Build undirected adjacency list.
+        let mut adj: HashMap<u64, Vec<u64>> = HashMap::new();
+        for id in self.nodes.keys() {
+            adj.entry(*id).or_default();
+        }
+        for edge in self.edges.values() {
+            adj.entry(edge.from_node).or_default().push(edge.to_node);
+            adj.entry(edge.to_node).or_default().push(edge.from_node);
+        }
+
+        let mut colors: HashMap<u64, usize> = HashMap::new();
+        // Sort node IDs for deterministic output.
+        let mut node_ids: Vec<u64> = self.nodes.keys().copied().collect();
+        node_ids.sort_unstable();
+        for id in node_ids {
+            let used: HashSet<usize> = adj
+                .get(&id)
+                .map(|nbrs| nbrs.iter().filter_map(|n| colors.get(n)).copied().collect())
+                .unwrap_or_default();
+            let color = (0..).find(|c| !used.contains(c)).unwrap_or(0);
+            colors.insert(id, color);
+        }
+        colors
+    }
+
+    /// Bipartite check via 2-colouring BFS.
+    ///
+    /// # Returns
+    /// `bool`.
+    ///
+    /// Returns `true` when the graph is bipartite (all edges cross between the two sets).
+    /// Treats all edges as undirected.  A graph with no edges is trivially bipartite.
+    pub fn is_bipartite(&self) -> bool {
+        let mut color: HashMap<u64, u8> = HashMap::new();
+        let mut adj: HashMap<u64, Vec<u64>> = HashMap::new();
+        for id in self.nodes.keys() {
+            adj.entry(*id).or_default();
+        }
+        for edge in self.edges.values() {
+            adj.entry(edge.from_node).or_default().push(edge.to_node);
+            adj.entry(edge.to_node).or_default().push(edge.from_node);
+        }
+
+        for &start in self.nodes.keys() {
+            if color.contains_key(&start) {
+                continue;
+            }
+            let mut queue = VecDeque::new();
+            queue.push_back(start);
+            color.insert(start, 0);
+            while let Some(node) = queue.pop_front() {
+                let node_color = color[&node];
+                if let Some(neighbors) = adj.get(&node) {
+                    for &nbr in neighbors {
+                        if let Some(&c) = color.get(&nbr) {
+                            if c == node_color {
+                                return false;
+                            }
+                        } else {
+                            color.insert(nbr, 1 - node_color);
+                            queue.push_back(nbr);
+                        }
+                    }
+                }
+            }
+        }
+        true
+    }
+
     /// A* search from `from` to `to` using optional spatial positions for the heuristic.
     ///
     /// # Parameters

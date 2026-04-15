@@ -5,7 +5,8 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::camera::Camera2D;
+use crate::camera::{Camera2D, CameraPath, ZoomTween};
+use std::collections::HashMap;
 
 // -------------------------------------------------------------------------------
 // LuaCamera2D UserData
@@ -14,6 +15,12 @@ use crate::camera::Camera2D;
 /// Lua-side wrapper around a [`Camera2D`] instance.
 pub struct LuaCamera2D {
     inner: Rc<RefCell<Camera2D>>,
+    /// Active waypoint path follower, if any.
+    path: RefCell<Option<CameraPath>>,
+    /// Active smooth-zoom tween, if any.
+    zoom_tween: RefCell<Option<ZoomTween>>,
+    /// Per-layer parallax scale factors (`layer_name → factor`).
+    parallax: RefCell<HashMap<String, f32>>,
 }
 
 impl LuaUserData for LuaCamera2D {
@@ -217,6 +224,122 @@ impl LuaUserData for LuaCamera2D {
             Ok(())
         });
 
+        // -- followPath --
+        /// Animates the camera along a sequence of world-space waypoints over
+        /// the given duration (seconds). The table must be a flat array of
+        /// {x, y} pairs: `{{10,20},{50,80},{100,30}}`. Call `cam:updatePath(dt)`
+        /// every frame to advance the animation.
+        /// @param points : table
+        /// @param duration : number
+        /// @return nil
+        methods.add_method("followPath", |_, this, (points, duration): (LuaTable, f32)| {
+            let mut waypoints: Vec<[f32; 2]> = Vec::new();
+            for pair in points.sequence_values::<LuaTable>() {
+                let pair = pair?;
+                let x: f32 = pair.get(1).unwrap_or(0.0);
+                let y: f32 = pair.get(2).unwrap_or(0.0);
+                waypoints.push([x, y]);
+            }
+            *this.path.borrow_mut() = Some(CameraPath::new(waypoints, duration));
+            Ok(())
+        });
+
+        // -- stopPath --
+        /// Cancels the active camera path animation.
+        /// @return nil
+        methods.add_method("stopPath", |_, this, ()| {
+            this.path.borrow_mut().take();
+            Ok(())
+        });
+
+        // -- updatePath --
+        /// Advances the path animation by `dt` seconds and applies the
+        /// resulting position to the camera. Returns `true` while the path is
+        /// still active, `false` once it has finished.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method("updatePath", |_, this, dt: f32| {
+            let pos = this.path.borrow_mut().as_mut().and_then(|p| p.update(dt));
+            if let Some((x, y)) = pos {
+                this.inner.borrow_mut().set_position(x, y);
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+
+        // -- pathProgress --
+        /// Returns the fractional progress `[0, 1]` of the active path, or
+        /// `1` if no path is running.
+        /// @return number
+        methods.add_method("pathProgress", |_, this, ()| {
+            Ok(this.path.borrow().as_ref().map(|p| p.progress()).unwrap_or(1.0))
+        });
+
+        // -- zoomTo --
+        /// Smoothly tweens the camera zoom from its current level to
+        /// `target_zoom` over `duration` seconds. Call `cam:updateZoom(dt)`
+        /// every frame.
+        /// @param target_zoom : number
+        /// @param duration : number
+        /// @return nil
+        methods.add_method("zoomTo", |_, this, (target_zoom, duration): (f32, f32)| {
+            let current = this.inner.borrow().get_zoom();
+            *this.zoom_tween.borrow_mut() = Some(ZoomTween::new(current, target_zoom, duration));
+            Ok(())
+        });
+
+        // -- stopZoom --
+        /// Cancels the active zoom tween.
+        /// @return nil
+        methods.add_method("stopZoom", |_, this, ()| {
+            this.zoom_tween.borrow_mut().take();
+            Ok(())
+        });
+
+        // -- updateZoom --
+        /// Advances the zoom tween by `dt` seconds and applies the resulting
+        /// zoom level to the camera. Returns `true` while still tweening.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method("updateZoom", |_, this, dt: f32| {
+            let zoom = this.zoom_tween.borrow_mut().as_mut().and_then(|z| z.update(dt));
+            if let Some(z) = zoom {
+                this.inner.borrow_mut().set_zoom(z);
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+
+        // -- setParallaxFactor --
+        /// Sets the parallax scroll factor for the named render layer.
+        /// A factor of `1.0` (default) moves with the camera; lower values
+        /// create a depth illusion.
+        /// @param layer : string
+        /// @param factor : number
+        /// @return nil
+        methods.add_method("setParallaxFactor", |_, this, (layer, factor): (String, f32)| {
+            this.parallax.borrow_mut().insert(layer, factor);
+            Ok(())
+        });
+
+        // -- getParallaxFactor --
+        /// Returns the parallax factor for the named layer, or `1.0` if unset.
+        /// @param layer : string
+        /// @return number
+        methods.add_method("getParallaxFactor", |_, this, layer: String| {
+            Ok(*this.parallax.borrow().get(&layer).unwrap_or(&1.0))
+        });
+
+        // -- clearParallaxFactors --
+        /// Removes all parallax factor overrides.
+        /// @return nil
+        methods.add_method("clearParallaxFactors", |_, this, ()| {
+            this.parallax.borrow_mut().clear();
+            Ok(())
+        });
+
     }
 }
 
@@ -244,6 +367,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, (vw, vh): (f32, f32)| {
             lua.create_userdata(LuaCamera2D {
                 inner: Rc::new(RefCell::new(Camera2D::new(vw, vh))),
+                path: RefCell::new(None),
+                zoom_tween: RefCell::new(None),
+                parallax: RefCell::new(HashMap::new()),
             })
         })?,
     )?;

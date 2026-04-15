@@ -4457,6 +4457,117 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // ── Named Layer Registry ────────────────────────────────────────────────
+    // A lightweight metadata registry for named render layers.  Stores
+    // z-ordering and visibility without touching SharedState or GPU resources.
+
+    let layer_zorders: Rc<RefCell<std::collections::HashMap<String, i32>>> =
+        Rc::new(RefCell::new(std::collections::HashMap::new()));
+    let layer_visible: Rc<RefCell<std::collections::HashMap<String, bool>>> =
+        Rc::new(RefCell::new(std::collections::HashMap::new()));
+    let current_layer: Rc<RefCell<String>> =
+        Rc::new(RefCell::new("default".to_string()));
+
+    // -- newLayer --
+    /// Registers a named render layer with an optional z-order (default 0).
+    /// Layers with lower z-orders are drawn first. Registering an existing
+    /// name is idempotent for visibility but updates the z-order.
+    /// @param name    : string
+    /// @param z_order : integer?
+    /// @return nil
+    let lz = layer_zorders.clone();
+    let lv = layer_visible.clone();
+    graphics.set(
+        "newLayer",
+        lua.create_function(move |_, (name, z_order): (String, Option<i32>)| {
+            lz.borrow_mut().insert(name.clone(), z_order.unwrap_or(0));
+            lv.borrow_mut().entry(name).or_insert(true);
+            Ok(())
+        })?,
+    )?;
+
+    // -- setLayer --
+    /// Sets the active named layer. Draw calls made after this will be
+    /// associated with the named layer. Auto-creates the layer with z-order 0
+    /// if it has not been registered yet.
+    /// @param name : string
+    /// @return nil
+    let cl = current_layer.clone();
+    let lz2 = layer_zorders.clone();
+    let lv2 = layer_visible.clone();
+    graphics.set(
+        "setLayer",
+        lua.create_function(move |_, name: String| {
+            lz2.borrow_mut().entry(name.clone()).or_insert(0);
+            lv2.borrow_mut().entry(name.clone()).or_insert(true);
+            *cl.borrow_mut() = name;
+            Ok(())
+        })?,
+    )?;
+
+    // -- currentLayer --
+    /// Returns the name of the currently active named layer.
+    /// @return string
+    let cl2 = current_layer.clone();
+    graphics.set(
+        "currentLayer",
+        lua.create_function(move |_, ()| Ok(cl2.borrow().clone()))?,
+    )?;
+
+    // -- setLayerVisible --
+    /// Shows or hides the named layer. Hidden layers are excluded from
+    /// rendering.
+    /// @param name    : string
+    /// @param visible : boolean
+    /// @return nil
+    let lv3 = layer_visible.clone();
+    graphics.set(
+        "setLayerVisible",
+        lua.create_function(move |_, (name, visible): (String, bool)| {
+            lv3.borrow_mut().insert(name, visible);
+            Ok(())
+        })?,
+    )?;
+
+    // -- isLayerVisible --
+    /// Returns `true` if the named layer is visible (default: `true`).
+    /// @param name : string
+    /// @return boolean
+    let lv4 = layer_visible.clone();
+    graphics.set(
+        "isLayerVisible",
+        lua.create_function(move |_, name: String| {
+            Ok(*lv4.borrow().get(&name).unwrap_or(&true))
+        })?,
+    )?;
+
+    // -- getLayerZOrder --
+    /// Returns the z-order of the named layer, or `0` if unregistered.
+    /// @param name : string
+    /// @return integer
+    let lz3 = layer_zorders.clone();
+    graphics.set(
+        "getLayerZOrder",
+        lua.create_function(move |_, name: String| {
+            Ok(*lz3.borrow().get(&name).unwrap_or(&0))
+        })?,
+    )?;
+
+    // -- setLayerZOrder --
+    /// Updates the z-order of the named layer. Auto-creates the layer if
+    /// needed.
+    /// @param name    : string
+    /// @param z_order : integer
+    /// @return nil
+    let lz4 = layer_zorders.clone();
+    graphics.set(
+        "setLayerZOrder",
+        lua.create_function(move |_, (name, z): (String, i32)| {
+            lz4.borrow_mut().insert(name, z);
+            Ok(())
+        })?,
+    )?;
+
     luna.set("graphic", graphics)?;
     Ok(())
 }

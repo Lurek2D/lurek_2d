@@ -1566,6 +1566,26 @@ impl LuaUserData for LuaGraph {
             Ok(t)
         });
 
+        // -- colorGraph --
+        /// Assigns each node the smallest non-negative integer colour not shared with any
+        /// adjacent node (greedy graph colouring).
+        /// @return table
+        methods.add_method("colorGraph", |lua, this, ()| {
+            let colors = this.inner.borrow().color_graph();
+            let t = lua.create_table()?;
+            for (node_id, color) in &colors {
+                t.set(*node_id, *color as u64)?;
+            }
+            Ok(t)
+        });
+
+        // -- isBipartite --
+        /// Returns `true` when the graph can be 2-coloured (bipartite check via BFS).
+        /// @return boolean
+        methods.add_method("isBipartite", |_lua, this, ()| {
+            Ok(this.inner.borrow().is_bipartite())
+        });
+
         // -- astar --
         /// Finds the shortest path between two nodes using A*.
         /// @param from_node : Node
