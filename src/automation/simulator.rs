@@ -114,6 +114,17 @@ pub struct Simulator {
     /// Controls whether [`Simulator::update`] advances elapsed time and
     /// dispatches steps. See [`PlaybackState`] for the full transition model.
     state: PlaybackState,
+    /// Named macro store — scripts saved for later replay with [`Simulator::play_macro`].
+    ///
+    /// Macros are stored separately from the main script registry so that calling
+    /// [`Simulator::play_macro`] does not permanently pollute the script list beyond
+    /// the macro's own entry.
+    macros: HashMap<String, Script>,
+    /// Playback speed multiplier applied to `dt` on every [`Simulator::update`] call.
+    ///
+    /// Default is `1.0`. Values below `1.0` slow playback; values above `1.0` speed
+    /// it up. Clamped to `[0.0, ∞)` by [`Simulator::set_playback_speed`].
+    playback_speed: f32,
 }
 
 impl Simulator {
@@ -132,6 +143,8 @@ impl Simulator {
             elapsed: 0.0,
             next_step_idx: 0,
             state: PlaybackState::Idle,
+            macros: HashMap::new(),
+            playback_speed: 1.0,
         }
     }
 
@@ -331,6 +344,95 @@ impl Simulator {
         self.elapsed
     }
 
+    /// Return a clone of the named script from the registry, if it is loaded.
+    ///
+    /// Used by [`Simulator::save_macro`] to snapshot an already-loaded script.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    ///
+    /// # Returns
+    /// `Option<Script>`.
+    pub fn get_script(&self, name: &str) -> Option<Script> {
+        self.scripts.get(name).cloned()
+    }
+
+    /// Save a [`Script`] under a named macro key for later replay.
+    ///
+    /// The macro is stored separately from the main script registry. Calling
+    /// [`Simulator::play_macro`] will clone the saved script into the registry and
+    /// start playback.
+    ///
+    /// # Parameters
+    /// - `name` — `String`. The macro identifier.
+    /// - `script` — `Script`. The script to save.
+    pub fn save_macro(&mut self, name: String, script: Script) {
+        self.macros.insert(name, script);
+    }
+
+    /// Play a saved macro by loading it into the script registry and starting playback.
+    ///
+    /// Returns `Err` if no macro with `name` exists.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    ///
+    /// # Returns
+    /// `Result<(), String>`.
+    pub fn play_macro(&mut self, name: &str) -> Result<(), String> {
+        let macro_script = self
+            .macros
+            .get(name)
+            .ok_or_else(|| format!("simulator.playMacro: macro '{}' not found", name))?
+            .clone();
+        let script_name = macro_script.name.clone();
+        self.load(macro_script);
+        self.start(&script_name)
+    }
+
+    /// Return `true` if a macro with the given name has been saved.
+    ///
+    /// # Parameters
+    /// - `name` — `&str`.
+    ///
+    /// # Returns
+    /// `bool`.
+    pub fn has_macro(&self, name: &str) -> bool {
+        self.macros.contains_key(name)
+    }
+
+    /// Return the names of all saved macros.
+    ///
+    /// Returns an unordered snapshot of macro names. Returns an empty `Vec` when
+    /// no macros have been saved.
+    ///
+    /// # Returns
+    /// `Vec<String>`.
+    pub fn list_macros(&self) -> Vec<String> {
+        self.macros.keys().cloned().collect()
+    }
+
+    /// Set the playback speed multiplier applied to `dt` on each [`Simulator::update`].
+    ///
+    /// Values below `1.0` slow playback; values above `1.0` speed it up.
+    /// Clamped to `[0.0, ∞)` — negative values are treated as `0.0` (frozen).
+    ///
+    /// # Parameters
+    /// - `factor` — `f32`.
+    pub fn set_playback_speed(&mut self, factor: f32) {
+        self.playback_speed = factor.max(0.0);
+    }
+
+    /// Return the current playback speed multiplier.
+    ///
+    /// Default is `1.0`.
+    ///
+    /// # Returns
+    /// `f32`.
+    pub fn get_playback_speed(&self) -> f32 {
+        self.playback_speed
+    }
+
     /// Advance the playback clock by `dt` seconds and dispatch all due steps.
     ///
     /// Adds `dt` to `elapsed` and dispatches every step whose `time <=
@@ -349,7 +451,7 @@ impl Simulator {
             return;
         }
 
-        self.elapsed += dt;
+        self.elapsed += dt * self.playback_speed;
 
         let script_name = match &self.active_script {
             Some(name) => name.clone(),

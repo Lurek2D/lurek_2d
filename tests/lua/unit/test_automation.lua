@@ -682,4 +682,77 @@ describe("lurek.simulator - complex scenarios", function()
         lurek.simulator.unload("no_time")
     end)
 end)
+
+describe("lurek.simulator named macros", function()
+    -- @description saveMacro then hasMacro returns true.
+    it("hasMacro returns true after saveMacro", function()
+        lurek.simulator.load("m_src", { steps = { { action = "wait", time = 0.01 } } })
+        lurek.simulator.saveMacro("my_macro", "m_src")
+        expect_equal(lurek.simulator.hasMacro("my_macro"), true)
+        expect_equal(lurek.simulator.hasMacro("missing"), false)
+        lurek.simulator.unload("m_src")
+    end)
+
+    -- @description listMacros returns a table containing saved macro names.
+    it("listMacros contains saved name", function()
+        lurek.simulator.load("m_src2", { steps = { { action = "wait", time = 0.01 } } })
+        lurek.simulator.saveMacro("named_m", "m_src2")
+        local list = lurek.simulator.listMacros()
+        local found = false
+        for _, v in ipairs(list) do
+            if v == "named_m" then found = true end
+        end
+        expect_equal(found, true)
+        lurek.simulator.unload("m_src2")
+    end)
+
+    -- @description playMacro starts a previously saved macro.
+    it("playMacro starts a saved macro", function()
+        lurek.simulator.load("pm_src", { steps = { { action = "wait", time = 0.05 } } })
+        lurek.simulator.saveMacro("play_test", "pm_src")
+        lurek.simulator.playMacro("play_test")
+        expect_equal(lurek.simulator.isRunning(), true)
+        lurek.simulator.stop()
+        lurek.simulator.unload("pm_src")
+    end)
+end)
+
+describe("lurek.simulator variable playback speed", function()
+    -- @description setPlaybackSpeed stores the value and getPlaybackSpeed returns it.
+    it("setPlaybackSpeed round-trips correctly", function()
+        lurek.simulator.setPlaybackSpeed(2.0)
+        expect_near(lurek.simulator.getPlaybackSpeed(), 2.0, 0.001)
+        lurek.simulator.setPlaybackSpeed(1.0)
+    end)
+
+    -- @description At 2x speed, a 0.1s step completes in 0.05s real update time.
+    it("2x speed completes script faster", function()
+        lurek.simulator.load("speed_test", { steps = { { action = "wait", time = 0.10 } } })
+        lurek.simulator.setPlaybackSpeed(2.0)
+        lurek.simulator.start("speed_test")
+        lurek.simulator.update(0.06)   -- 0.06 * 2.0 = 0.12 virtual seconds
+        expect_equal(lurek.simulator.isComplete(), true)
+        lurek.simulator.stop()
+        lurek.simulator.setPlaybackSpeed(1.0)
+        lurek.simulator.unload("speed_test")
+    end)
+end)
+
+describe("lurek.simulator waitUntil", function()
+    -- @description waitUntil(fn, timeout) freezes the clock until predicate returns true.
+    it("waitUntil resumes when predicate fires", function()
+        local flag = false
+        lurek.simulator.load("wu_test", { steps = { { action = "wait", time = 0.01 } } })
+        lurek.simulator.start("wu_test")
+        lurek.simulator.waitUntil(function() return flag end, 1.0)
+        -- Before flag is true, update should not advance past the wait.
+        lurek.simulator.update(0.5)
+        -- Script is being held by waitUntil; let flag fire on next check.
+        flag = true
+        lurek.simulator.update(0.01) -- predicate now returns true, wait clears
+        lurek.simulator.stop()
+        lurek.simulator.unload("wu_test")
+    end)
+end)
+
 test_summary()

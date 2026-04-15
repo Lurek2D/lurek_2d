@@ -307,6 +307,7 @@ For non-grid navigation: `graph_astar` and `graph_range` run A\* and Dijkstra ra
 - `UnitPathfinder:setCacheMaxSize`: Sets the maximum number of cached path entries.
 - `UnitPathfinder:type`: Returns the type name of this object.
 - `UnitPathfinder:typeOf`: Returns true if this object is of the given type.
+- `UnitPathfinder:findPathSmooth`: Finds a path and post-processes it with Theta* (Bresenham line-of-sight pruning) to produce any-angle straight-line segments.
 
 ## References
 

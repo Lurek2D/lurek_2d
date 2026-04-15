@@ -547,4 +547,70 @@ describe("Pipeline serialization", function()
         expect_true(table_contains(r.completed, "only"))
     end)
 end)
+
+describe("lurek.pipeline addConditional", function()
+    -- @covers lurek.pipeline.Pipeline.addConditional
+    -- @description addConditional runs the step when the condition returns true.
+    it("addConditional executes step when condition is true", function()
+        local ran = false
+        local p = lurek.pipeline.newPipeline("cond_test")
+        p:addConditional("guarded", {}, function(ctx) ran = true end, function() return true end)
+        local r = p:run()
+        expect_true(ran, "step body must run when condition is true")
+        expect_true(table_contains(r.completed, "guarded"))
+    end)
+
+    -- @covers lurek.pipeline.Pipeline.addConditional
+    -- @description addConditional skips the step when the condition returns false.
+    it("addConditional skips step when condition is false", function()
+        local ran = false
+        local p = lurek.pipeline.newPipeline("skip_test")
+        p:addConditional("skipped", {}, function(ctx) ran = true end, function() return false end)
+        p:run()
+        expect_equal(ran, false, "step body must NOT run when condition is false")
+    end)
+end)
+
+describe("lurek.pipeline onProgress", function()
+    -- @covers lurek.pipeline.Pipeline.onProgress
+    -- @description onProgress callback receives step_name and a status string after every step.
+    it("onProgress is called for every step", function()
+        local events = {}
+        local p = lurek.pipeline.newPipeline("progress_test")
+        p:addStep("alpha", function(ctx) end)
+        p:addStep("beta",  function(ctx) end)
+        p:onProgress(function(name, status)
+            table.insert(events, { name = name, status = status })
+        end)
+        p:run()
+        expect_equal(#events, 2, "expected 2 progress events")
+        -- Both completions should have status "completed"
+        for _, ev in ipairs(events) do
+            expect_equal(ev.status, "completed")
+        end
+    end)
+end)
+
+describe("lurek.pipeline toAscii", function()
+    -- @covers lurek.pipeline.Pipeline.toAscii
+    -- @description toAscii returns a non-empty string describing the DAG.
+    it("toAscii returns a non-empty string", function()
+        local p = lurek.pipeline.newPipeline("ascii_test")
+        p:addStep("s1", function() end)
+        p:addStep("s2", function() end)
+        local diagram = p:toAscii()
+        expect_equal(type(diagram), "string")
+        expect_true(#diagram > 0, "toAscii must return a non-empty string")
+    end)
+
+    -- @covers lurek.pipeline.Pipeline.toAscii
+    -- @description toAscii output contains step names.
+    it("toAscii output contains step names", function()
+        local p = lurek.pipeline.newPipeline("ascii_names")
+        p:addStep("init_step", function() end)
+        local diagram = p:toAscii()
+        expect_true(diagram:find("init_step") ~= nil, "diagram must mention step name 'init_step'")
+    end)
+end)
+
 test_summary()

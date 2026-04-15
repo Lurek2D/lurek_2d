@@ -97,6 +97,42 @@ local elapsed = lurek.simulator.getElapsedTime()
 print(("Step %d / %d  [%s]  elapsed: %.2fs")
     :format(step_idx, total, active or "none", elapsed))
 
+-- ─── Named Macros ─────────────────────────────────────────────────────────────
+-- saveMacro(name, script_name)   — bookmark a loaded script under a macro name
+-- playMacro(name)                — reload and start the macro by name
+-- hasMacro(name) → bool         — check existence without starting
+-- listMacros()   → table        — array of all registered macro names
+
+lurek.simulator.saveMacro("jump_combo", "jump_attack")   -- save loaded script
+local has = lurek.simulator.hasMacro("jump_combo")       -- true
+
+local macros = lurek.simulator.listMacros()
+for _, name in ipairs(macros) do
+    print("macro:", name)
+end
+
+lurek.simulator.playMacro("jump_combo")                  -- load + start
+
+-- ─── Variable Speed Playback ──────────────────────────────────────────────────
+-- setPlaybackSpeed(factor)      — 0.5 = half speed, 2.0 = double, 1.0 = normal
+-- getPlaybackSpeed() → number
+
+lurek.simulator.setPlaybackSpeed(0.5)     -- slow-motion replay for debugging
+local speed = lurek.simulator.getPlaybackSpeed()   -- 0.5
+lurek.simulator.setPlaybackSpeed(1.0)              -- restore normal speed
+
+-- ─── Wait-for-Condition ───────────────────────────────────────────────────────
+-- waitUntil(predicate, timeout?) — freezes the clock until predicate() == true
+--   predicate : function → bool
+--   timeout   : number?  (seconds; 0 or nil = unlimited)
+--
+-- Useful when you need to wait for a game condition rather than a fixed frame count:
+
+local player_x = 0  -- would be a real game value in practice
+lurek.simulator.waitUntil(function()
+    return player_x >= 200   -- wait until player has moved far enough
+end, 5.0)  -- give up after 5 seconds
+
 -- ── Typical Usage Inside lurek.process ─────────────────────────────────────────
 
 --[[

@@ -187,6 +187,9 @@ The `particle` module implements emitter-based 2D particle systems. A `ParticleS
 - `ParticleSystem:clearAttractors`: Removes all attractors from this particle system.
 - `ParticleSystem:getAttractorCount`: Returns the number of attractors currently registered on this system.
 - `ParticleSystem:clearBounds`: Removes the bounding rectangle so particles can move freely.
+- `ParticleSystem:addSubEmitter`: Attaches a sub-emitter that bursts when a particle dies; accepts a config table and optional burst count.
+- `ParticleSystem:setFlipbook`: Configures sprite-sheet flipbook animation by dividing the texture into a cols×rows grid at the given FPS.
+- `ParticleSystem:getFlipbook`: Returns the current flipbook configuration as `(cols, rows, fps)`, or `(nil, nil, nil)` if not set.
 
 ### `Trail` Methods
 - `Trail:pushPoint`: Appends a new point to the trail head.

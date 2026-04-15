@@ -771,4 +771,63 @@ describe("particle bounce bounds", function()
     end)
 end)
 
+describe("lurek.particles addSubEmitter", function()
+    -- @covers lurek.particles.ParticleSystem.addSubEmitter
+    -- @description addSubEmitter sets a death-emitter config without error.
+    it("addSubEmitter attaches sub-config", function()
+        local ps = lurek.particles.newSystem({ emissionRate = 0 })
+        ps:addSubEmitter({
+            emissionRate = 0,
+            lifetimeMin = 0.5,
+            lifetimeMax = 0.5,
+            speedMin = 10,
+            speedMax = 20,
+        }, 3)
+        lurek.particles.release(ps)
+    end)
+
+    -- @covers lurek.particles.ParticleSystem.addSubEmitter
+    -- @description addSubEmitter with default burst_count of 1 does not error.
+    it("addSubEmitter defaults burst_count to 1", function()
+        local ps = lurek.particles.newSystem({ emissionRate = 0 })
+        ps:addSubEmitter({ emissionRate = 0 })  -- no burst_count; should default to 1
+        lurek.particles.release(ps)
+    end)
+end)
+
+describe("lurek.particles setFlipbook / getFlipbook", function()
+    -- @covers lurek.particles.ParticleSystem.setFlipbook
+    -- @covers lurek.particles.ParticleSystem.getFlipbook
+    -- @description setFlipbook stores cols/rows/fps and getFlipbook round-trips them.
+    it("setFlipbook round-trips via getFlipbook", function()
+        local ps = lurek.particles.newSystem({ emissionRate = 0 })
+        ps:setFlipbook(4, 2, 12)
+        local c, r, fps = ps:getFlipbook()
+        expect_equal(c, 4)
+        expect_equal(r, 2)
+        expect_near(fps, 12.0, 0.001)
+        lurek.particles.release(ps)
+    end)
+
+    -- @covers lurek.particles.ParticleSystem.getFlipbook
+    -- @description getFlipbook returns nil when no flipbook has been set.
+    it("getFlipbook returns nil when not set", function()
+        local ps = lurek.particles.newSystem({ emissionRate = 0 })
+        local c, r, fps = ps:getFlipbook()
+        expect_equal(c, nil, "cols must be nil when flipbook not set")
+        expect_equal(r, nil)
+        expect_equal(fps, nil)
+        lurek.particles.release(ps)
+    end)
+
+    -- @covers lurek.particles.ParticleSystem.setFlipbook
+    -- @description setFlipbook with invalid cols/rows raises an error.
+    it("setFlipbook rejects zero cols", function()
+        local ps = lurek.particles.newSystem({ emissionRate = 0 })
+        local ok = pcall(function() ps:setFlipbook(0, 2, 12) end)
+        expect_equal(ok, false, "setFlipbook(0, ...) must raise an error")
+        lurek.particles.release(ps)
+    end)
+end)
+
 test_summary()

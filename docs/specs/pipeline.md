@@ -109,6 +109,9 @@ Step execution logic is provided by Lua callbacks; the pipeline module manages o
 - `Pipeline:getName`: Returns the pipeline's name.
 - `Pipeline:setName`: Sets the pipeline's name.
 - `Pipeline:toTable`: Serialises the pipeline definition to a Lua table (no callbacks).
+- `Pipeline:addConditional`: Adds a step with a runtime condition guard in one call; skipped when the condition function returns false.
+- `Pipeline:onProgress`: Registers a callback invoked after every step with `(step_name, status_string)`.
+- `Pipeline:toAscii`: Returns a multi-line ASCII string visualising the pipeline DAG (parallel levels and dependencies).
 - `Pipeline:type`: Returns the type name of this object.
 - `Pipeline:typeOf`: Returns true if this object is of the given type.
 

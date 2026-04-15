@@ -279,3 +279,34 @@ particlesystem:setSpread(1.0)  -- Sets emission spread (half-angle cone) in radi
 particlesystem:setTangentialAcceleration(1.0, 1.0)  -- Sets tangential acceleration range
 local particlesystem_type = particlesystem:type()  -- "ParticleSystem"
 local particlesystem_is_type = particlesystem:typeOf("ParticleSystem")  -- Returns true if this matches the given type name
+
+-- --- Sub-Emitters -------------------------------------------------------------
+-- addSubEmitter(config_tbl, burst_count?) — burst secondary particles on death
+--   config_tbl  : same keys as lurek.particles.new(opts)
+--   burst_count : number? (default 1)
+--
+-- The spawned sub-particles use the config table for all properties.
+
+local fire = lurek.particles.new({
+    rate = 40, lifetime = { 0.4, 0.6 }, speed = { 80, 120 },
+    colors = { {1,0.4,0,1}, {1,0.2,0,0} }
+})
+
+-- Each fire particle bursts 3 smoke particles when it dies:
+fire:addSubEmitter({
+    rate = 0, lifetime = { 0.8, 1.2 }, speed = { 20, 40 },
+    colors = { {0.4,0.4,0.4,0.5}, {0.2,0.2,0.2,0} }
+}, 3)
+
+-- --- Flipbook Texture Animation -----------------------------------------------
+-- setFlipbook(cols, rows, fps)  — auto-computes cols×rows UV quads from a texture
+-- getFlipbook() ? cols, rows, fps  (or nil, nil, nil when not set)
+
+local sparks = lurek.particles.new({ rate = 20, lifetime = { 0.3, 0.5 } })
+
+-- A 4-column × 2-row sprite sheet animating at 12 FPS:
+sparks:setFlipbook(4, 2, 12)
+
+local cols, rows, fps = sparks:getFlipbook()
+print(("flipbook: %d cols × %d rows @ %.0f FPS"):format(cols, rows, fps))
+-- flipbook: 4 cols × 2 rows @ 12 FPS

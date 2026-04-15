@@ -422,6 +422,49 @@ impl Pipeline {
         result
     }
 
+    /// Returns a multi-line ASCII string that visualises the pipeline DAG.
+    ///
+    /// Each parallel group is printed on its own level. Steps are shown as
+    /// `[name]` with upstream dependencies listed inline: `[name <-- dep1,dep2]`.
+    /// Steps in the same group are separated by `" || "`.
+    ///
+    /// If the graph contains a cycle the string contains a single error line
+    /// describing the detected cycle rather than a level listing.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn to_ascii_diagram(&self) -> String {
+        let mut lines = Vec::new();
+        lines.push(format!("Pipeline: \"{}\"", self.name));
+        match self.get_parallel_groups() {
+            Ok(groups) => {
+                for (level, group) in groups.iter().enumerate() {
+                    let slots: Vec<String> = group
+                        .iter()
+                        .map(|n| {
+                            let deps = self
+                                .steps
+                                .get(n)
+                                .map(|s| s.deps.join(","))
+                                .unwrap_or_default();
+                            if deps.is_empty() {
+                                format!("[{}]", n)
+                            } else {
+                                format!("[{} <-- {}]", n, deps)
+                            }
+                        })
+                        .collect();
+                    lines.push(format!("  L{}: {}", level, slots.join(" || ")));
+                }
+                if groups.is_empty() {
+                    lines.push("  (empty pipeline)".to_string());
+                }
+            }
+            Err(e) => lines.push(format!("  (cycle detected: {})", e)),
+        }
+        lines.join("\n")
+    }
+
     // ---------------------------------------------------------------------------
     // Internal helpers
     // ---------------------------------------------------------------------------

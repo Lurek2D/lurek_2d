@@ -288,3 +288,36 @@ local world_map  = lurek.tilemap.load("assets/levels/world.lua")
 local solid_gids = { 12, 13, 14, 47 }    -- GIDs of wall / water / lava tiles in the atlas
 local nav_map    = lurek.pathfinding.newNavGridFromTileMap(world_map, 1, solid_gids)
 local map_pf     = lurek.pathfinding.newPathfinder(nav_map)  -- ready to use immediately
+
+-- --- Any-Angle / Theta* Paths (findPathSmooth) --------------------------------
+-- findPathSmooth(x1, y1, x2, y2) ? table  — Theta*-post-processed path
+--   Returns a path table like findPath but with grid-corner waypoints pruned via
+--   Bresenham line-of-sight, resulting in straight-line any-angle segments.
+
+local smooth_path = pf:findPathSmooth(0, 0, 10, 8)
+-- smooth_path may have fewer waypoints than findPath; each segment is a direct
+-- line-of-sight line through open space.
+if smooth_path then
+    print("smooth waypoints:", #smooth_path)
+    for i, p in ipairs(smooth_path) do
+        print(("  [%d] (%.1f, %.1f)"):format(i, p.x, p.y))
+    end
+end
+
+-- --- AI Module Bridge pattern -------------------------------------------------
+-- There is no Rust-level steeringAgent:followPath() bridge.
+-- The canonical pattern is to request a path once, then update the agent target
+-- each frame from the path array:
+--
+--   local path_idx = 1
+--   local path = pf:findPathSmooth(agent.x, agent.y, goal.x, goal.y)
+--
+--   function lurek.process(dt)
+--       if path and path_idx <= #path then
+--           local wp = path[path_idx]
+--           agent:setTarget(wp.x, wp.y)     -- lurek.ai steeringAgent
+--           if distance(agent, wp) < 4 then
+--               path_idx = path_idx + 1       -- advance to next waypoint
+--           end
+--       end
+--   end

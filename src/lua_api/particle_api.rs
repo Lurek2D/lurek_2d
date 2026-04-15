@@ -1179,6 +1179,75 @@ impl LuaUserData for LuaParticleSystem {
             ps.clear_bounds();
             Ok(())
         });
+
+        // -- addSubEmitter --
+        /// Attaches a sub-emitter that bursts when a particle dies.
+        ///
+        /// `config_tbl` uses the same keys as `lurek.particles.new(opts)`.
+        /// `burst_count` defaults to 1.
+        /// @param config_tbl : table
+        /// @param burst_count : number?
+        /// @return nil
+        methods.add_method_mut("addSubEmitter", |_, this, (config_tbl, burst_count): (LuaTable, Option<u32>)| {
+            let mut st = this.state.borrow_mut();
+            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            let sub_cfg = ParticleConfig::from_lua_opts(&config_tbl)?;
+            ps.config.death_emitter = Some(Box::new(sub_cfg));
+            ps.config.death_burst_count = burst_count.unwrap_or(1);
+            Ok(())
+        });
+
+        // -- setFlipbook --
+        /// Configures sprite-sheet flipbook animation by dividing the texture into a grid.
+        ///
+        /// Automatically computes `cols * rows` UV quads and sets `animated_frames` / `frame_rate`.
+        /// @param cols : number -- columns in the sprite sheet
+        /// @param rows : number -- rows in the sprite sheet
+        /// @param fps : number -- animation speed in frames per second
+        /// @return nil
+        methods.add_method_mut("setFlipbook", |_, this, (cols, rows, fps): (u32, u32, f32)| {
+            if cols == 0 || rows == 0 {
+                return Err(LuaError::runtime("setFlipbook: cols and rows must be > 0"));
+            }
+            let mut st = this.state.borrow_mut();
+            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            let cell_w = 1.0_f32 / cols as f32;
+            let cell_h = 1.0_f32 / rows as f32;
+            let total = (cols * rows) as usize;
+            let mut quads = Vec::with_capacity(total);
+            for row in 0..rows {
+                for col in 0..cols {
+                    quads.push([col as f32 * cell_w, row as f32 * cell_h, cell_w, cell_h]);
+                }
+            }
+            ps.config.quads = quads;
+            ps.config.animated_frames = (cols * rows) as u32;
+            ps.config.frame_rate = fps;
+            Ok(())
+        });
+
+        // -- getFlipbook --
+        /// Returns the current flipbook configuration as `(cols, rows, fps)`, or `nil` if not set.
+        /// @return number?, number?, number?
+        methods.add_method("getFlipbook", |_, this, ()| {
+            let st = this.state.borrow();
+            let ps = st.particle_systems.get(this.key).ok_or_else(|| {
+                LuaError::runtime("ParticleSystem handle is invalid (released)")
+            })?;
+            let total = ps.config.animated_frames as usize;
+            if total == 0 || ps.config.quads.is_empty() {
+                return Ok((None::<i64>, None::<i64>, None::<f64>));
+            }
+            let cell_w = ps.config.quads[0][2];
+            let cols = (1.0_f32 / cell_w).round() as u32;
+            let rows = if cols > 0 { (total as u32 + cols - 1) / cols } else { 1 };
+            let fps = ps.config.frame_rate;
+            Ok((Some(cols as i64), Some(rows as i64), Some(fps as f64)))
+        });
     }
 }
 
@@ -1751,6 +1820,11 @@ impl ParticleConfig {
         }
         if let Ok(v) = t.get::<_, u32>("deathBurstCount") {
             c.death_burst_count = v;
+        }
+
+        // deathEmitter: table → sub-emitter config (recursive)
+        if let Ok(sub_tbl) = t.get::<_, LuaTable>("deathEmitter") {
+            c.death_emitter = Some(Box::new(ParticleConfig::from_lua_opts(&sub_tbl)?));
         }
 
         Ok(c)

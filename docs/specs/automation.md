@@ -86,6 +86,13 @@ Scripts can be loaded programmatically from Lua tables or from serialized TOML f
 - `lurek.automation.getCurrentScript`: Returns the name of the active script, or nil if idle.
 - `lurek.automation.getElapsedTime`: Returns seconds elapsed since playback started.
 - `lurek.automation.loadFromToml`: Parses a TOML string and registers it as a named script.
+- `lurek.automation.saveMacro`: Stores the current (or named) script under a macro name for later replay.
+- `lurek.automation.playMacro`: Loads and starts playback of a previously saved macro by name.
+- `lurek.automation.hasMacro`: Returns true if a macro with the given name exists.
+- `lurek.automation.listMacros`: Returns an array-table of all registered macro names.
+- `lurek.automation.setPlaybackSpeed`: Sets the playback speed multiplier (e.g. 0.5 = half, 2.0 = double).
+- `lurek.automation.getPlaybackSpeed`: Returns the current playback speed multiplier.
+- `lurek.automation.waitUntil`: Suspends the automation clock until a predicate function returns true, with optional timeout.
 
 ## References
 

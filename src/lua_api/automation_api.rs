@@ -22,6 +22,10 @@ use crate::automation::{Action, Script, Simulator, Step};
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let simulator = Rc::new(RefCell::new(Simulator::new()));
+    // wait_state holds an optional (predicate_key, timeout, elapsed) triple
+    // used by `waitUntil` to gate playback advancement.
+    let wait_state: Rc<RefCell<Option<(LuaRegistryKey, f32, f32)>>> =
+        Rc::new(RefCell::new(None));
 
     // ── load ─────────────────────────────────────────────────────────────────
     /// Loads a named script from a Lua data table containing a steps array.
@@ -126,14 +130,40 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // ── update ───────────────────────────────────────────────────────────────
-    /// Advances the playback clock by dt seconds, dispatching due steps.
+    /// Advances the playback clock by `dt` seconds, dispatching due steps.
+    /// If `waitUntil` is active the predicate is polled before forwarding `dt`;
+    /// until the predicate returns `true` or the timeout expires the simulator
+    /// clock is frozen.
     /// @param dt : number
     /// @return nil
     let sim = simulator.clone();
     let s = state.clone();
+    let ws = wait_state.clone();
     tbl.set(
         "update",
-        lua.create_function(move |_, dt: f32| {
+        lua.create_function(move |lua, dt: f32| {
+            // Handle waitUntil gate — poll predicate before advancing.
+            if ws.borrow().is_some() {
+                let (resolved, timed_out) = {
+                    let state_opt = ws.borrow();
+                    if let Some((ref key, timeout, elapsed)) = *state_opt {
+                        let new_elapsed = elapsed + dt;
+                        let predicate: LuaFunction = lua.registry_value(key)?;
+                        let done: bool = predicate.call(())?;
+                        (done, new_elapsed >= timeout)
+                    } else {
+                        (false, false)
+                    }
+                };
+                if resolved || timed_out {
+                    *ws.borrow_mut() = None;
+                } else {
+                    if let Some(ref mut triple) = ws.borrow_mut().as_mut() {
+                        triple.2 += dt;
+                    }
+                    return Ok(());
+                }
+            }
             sim.borrow_mut()
                 .update(dt, &mut s.borrow_mut().event_queue);
             Ok(())
@@ -217,6 +247,95 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let script = Script::from_toml(&name, &toml_str)
                 .map_err(|e| LuaError::external(format!("loadFromToml: {e}")))?;
             sim.borrow_mut().load(script);
+            Ok(())
+        })?,
+    )?;
+
+    // ── saveMacro ─────────────────────────────────────────────────────────────────────────
+    /// Saves a currently-loaded script under a macro name for fast replay.
+    /// The script must already be loaded via `load` or `loadFromToml`.
+    /// @param macro_name : string
+    /// @param script_name : string
+    /// @return nil
+    let sim = simulator.clone();
+    tbl.set(
+        "saveMacro",
+        lua.create_function(move |_, (macro_name, script_name): (String, String)| {
+            let script = sim.borrow().get_script(&script_name).ok_or_else(|| {
+                LuaError::external(format!("saveMacro: script '{}' not found", script_name))
+            })?;
+            sim.borrow_mut().save_macro(macro_name, script);
+            Ok(())
+        })?,
+    )?;
+
+    // ── playMacro ─────────────────────────────────────────────────────────────────────────
+    /// Loads and starts playback of a previously saved macro.
+    /// Errors if the macro name has not been saved.
+    /// @param name : string
+    /// @return nil
+    let sim = simulator.clone();
+    tbl.set(
+        "playMacro",
+        lua.create_function(move |_, name: String| {
+            sim.borrow_mut().play_macro(&name).map_err(LuaError::external)
+        })?,
+    )?;
+
+    // ── hasMacro ──────────────────────────────────────────────────────────────────────────
+    /// Returns true if a macro with the given name has been saved.
+    /// @param name : string
+    /// @return boolean
+    let sim = simulator.clone();
+    tbl.set(
+        "hasMacro",
+        lua.create_function(move |_, name: String| Ok(sim.borrow().has_macro(&name)))?,
+    )?;
+
+    // ── listMacros ───────────────────────────────────────────────────────────────────────
+    /// Returns an array of all saved macro names.
+    /// @return table
+    let sim = simulator.clone();
+    tbl.set(
+        "listMacros",
+        lua.create_function(move |_, ()| Ok(sim.borrow().list_macros()))?,
+    )?;
+
+    // ── setPlaybackSpeed ───────────────────────────────────────────────────────────────
+    /// Sets the dt multiplier for script playback (0.5 = half speed, 2.0 = double).
+    /// Negative values are clamped to 0 (frozen clock).
+    /// @param factor : number
+    /// @return nil
+    let sim = simulator.clone();
+    tbl.set(
+        "setPlaybackSpeed",
+        lua.create_function(move |_, factor: f32| {
+            sim.borrow_mut().set_playback_speed(factor);
+            Ok(())
+        })?,
+    )?;
+
+    // ── getPlaybackSpeed ───────────────────────────────────────────────────────────────
+    /// Returns the current playback speed multiplier (default 1.0).
+    /// @return number
+    let sim = simulator.clone();
+    tbl.set(
+        "getPlaybackSpeed",
+        lua.create_function(move |_, ()| Ok(sim.borrow().get_playback_speed()))?,
+    )?;
+
+    // ── waitUntil ───────────────────────────────────────────────────────────────────────
+    /// Pauses playback advancement until predicate() returns true or timeout seconds elapse.
+    /// While waiting, `update` does not forward elapsed time to the simulator.
+    /// @param predicate : function -- must return boolean
+    /// @param timeout : number -- maximum seconds to wait before auto-resuming
+    /// @return nil
+    let ws = wait_state.clone();
+    tbl.set(
+        "waitUntil",
+        lua.create_function(move |lua, (predicate, timeout): (LuaFunction, f32)| {
+            let key = lua.create_registry_value(predicate)?;
+            *ws.borrow_mut() = Some((key, timeout.max(0.0), 0.0));
             Ok(())
         })?,
     )?;

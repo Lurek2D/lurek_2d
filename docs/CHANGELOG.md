@@ -2,6 +2,24 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.10.0] — 2026-04-16
+### Added
+- `lurek.simulator.saveMacro(name, script_name)` / `playMacro(name)` / `hasMacro(name)` / `listMacros()` — named reusable input-playback macros stored in `Simulator`.
+- `lurek.simulator.setPlaybackSpeed(factor)` / `getPlaybackSpeed()` — scales the automation clock for slow-motion (0.5×) or fast-forward (2×) replay.
+- `lurek.simulator.waitUntil(predicate, timeout)` — suspends the automation clock until a predicate function returns true, with an optional timeout in seconds.
+- `Pipeline:addConditional(name, deps, fn, when_fn)` — adds a pipeline step with a runtime condition guard; the step is skipped when `when_fn()` returns false.
+- `Pipeline:onProgress(fn)` — registers a callback invoked after every step with `(step_name, status_string)`.
+- `Pipeline:toAscii()` — returns a multi-line ASCII string visualising the pipeline DAG (parallel levels and dependencies).
+- `Pipeline:to_ascii_diagram()` (Rust) — the underlying DAG method in `src/pipeline/dag.rs`.
+- `ParticleSystem:addSubEmitter(config_tbl, burst_count?)` — attaches a sub-emitter that bursts secondary particles when a particle dies.
+- `ParticleSystem:setFlipbook(cols, rows, fps)` — configures sprite-sheet flipbook animation by auto-computing UV quads from a cols×rows grid.
+- `ParticleSystem:getFlipbook()` — returns `(cols, rows, fps)` for the current flipbook, or `(nil, nil, nil)` when not set.
+- `ParticleConfig::from_lua_opts` now recognises the `deathEmitter` key to configure sub-emitters directly from the constructor table.
+### Docs
+- All four IDEA.md files updated: marked completed features as `✅ DONE` with implementation notes.
+- `docs/specs/automation.md`, `docs/specs/pipeline.md`, `docs/specs/particle.md`, `docs/specs/pathfind.md` updated with new Lua API entries.
+- `content/examples/automation.lua`, `content/examples/pipeline.lua`, `content/examples/particle.lua`, `content/examples/pathfinding.lua` updated with idiomatic usage examples.
+
 ## [0.9.5] — 2026-04-15
 ### Added
 - `lurek.thread.newPool(n, code)` — creates a thread pool of `n` pre-spawned worker VMs that share a common input/output channel pair. `ThreadPool` userdata exposes `submit`, `collect`, `join`, `size`, `getInputChannel`, `getOutputChannel`.

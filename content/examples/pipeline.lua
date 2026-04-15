@@ -228,3 +228,45 @@ step:typeOf("myName")
 
 -- ─── lurek.pipeline ─────────────────────────────────────────────────────────────
 local from_table = lurek.pipeline.fromTable({})  -- Deserialises a pipeline from a definition table
+-- ─── Conditional Stages ───────────────────────────────────────────────────────
+-- addConditional(name, deps, fn, when_fn) → Pipeline
+--   Adds a step that is skipped at runtime when when_fn() returns false.
+--   Equivalent to addStep + :setCondition chained, but in one call.
+
+local debug_mode = true
+local p = lurek.pipeline.newPipeline("game_init")
+p:addStep("load_assets", function(ctx)
+    print("assets loaded")
+end)
+p:addConditional("debug_overlay", {"load_assets"},
+    function(ctx) print("debug overlay enabled") end,
+    function()    return debug_mode end   -- skipped when debug_mode == false
+)
+
+-- ─── Progress Callbacks ───────────────────────────────────────────────────────
+-- onProgress(fn)  — registers fn(step_name, status) called after every step
+--   status is a lowercase string: "completed", "failed", or "skipped"
+
+p:onProgress(function(step_name, status)
+    print(("  [%s] → %s"):format(step_name, status))
+end)
+
+p:run()   -- fires progress callback for each step
+
+-- ─── ASCII DAG Visualization ──────────────────────────────────────────────────
+-- toAscii() → string  — multi-line diagram of the pipeline dependency graph
+
+local p2 = lurek.pipeline.newPipeline("example")
+p2:addStep("init")
+p2:addStep("load",     function() end)
+p2:addStep("validate", function() end)
+p2:addStep("start",    function() end)
+
+local s  = p2:getStep("load")     ; if s then s:dependsOn("init")     end
+local s2 = p2:getStep("validate") ; if s2 then s2:dependsOn("init")   end
+local s3 = p2:getStep("start")    ; if s3 then s3:dependsOn("load") ; s3:dependsOn("validate") end
+
+print(p2:toAscii())
+-- L0: [init]
+-- L1: [load <-- init] || [validate <-- init]
+-- L2: [start <-- load,validate]

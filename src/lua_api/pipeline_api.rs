@@ -392,6 +392,8 @@ pub struct LuaPipeline {
     pub(crate) on_step_error_key: Rc<RefCell<Option<LuaRegistryKey>>>,
     pub(crate) context_key: Rc<RefCell<Option<LuaRegistryKey>>>,
     pub(crate) is_async: Rc<RefCell<bool>>,
+    /// Registry key for the optional progress callback `fn(step_name, status)`.
+    pub(crate) on_progress_key: Rc<RefCell<Option<LuaRegistryKey>>>,
 }
 
 impl LuaPipeline {
@@ -412,6 +414,7 @@ impl LuaPipeline {
             on_step_error_key: Rc::new(RefCell::new(None)),
             context_key: Rc::new(RefCell::new(None)),
             is_async: Rc::new(RefCell::new(false)),
+            on_progress_key: Rc::new(RefCell::new(None)),
         }
     }
 
@@ -436,6 +439,7 @@ impl LuaPipeline {
             on_step_error_key: Rc::new(RefCell::new(None)),
             context_key: Rc::new(RefCell::new(None)),
             is_async: Rc::new(RefCell::new(false)),
+            on_progress_key: Rc::new(RefCell::new(None)),
         }
     }
 }
@@ -533,6 +537,14 @@ pub(crate) fn fire_step_callbacks<'lua>(
             if let Err(e) = f.call::<_, LuaValue<'_>>((step_name.to_string(), err)) {
                 log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_step_error: {e}");
             }
+        }
+    }
+    // Always fire the on_progress callback regardless of step outcome.
+    if let Some(key) = this.on_progress_key.borrow().as_ref() {
+        let status_str = format!("{:?}", step_status).to_lowercase();
+        let f: LuaFunction = lua.registry_value(key)?;
+        if let Err(e) = f.call::<_, LuaValue<'_>>((step_name.to_string(), status_str)) {
+            log_msg!(warn, LA02_PIPELINE_CALLBACK_FAIL, "on_progress: {e}");
         }
     }
     Ok(())
@@ -1032,8 +1044,50 @@ impl LuaUserData for LuaPipeline {
         /// @return string
         methods.add_method("type", |_, _, ()| Ok("Pipeline"));
 
+        // -- addConditional --
+        /// Adds a step with a runtime condition guard: the step is skipped when `when_fn()` returns false.
+        ///
+        /// This is a convenience wrapper equivalent to `addStep` + `:setCondition` chained.
+        /// @param name : string
+        /// @param deps : table -- array of dependency step names
+        /// @param fn : function -- step body
+        /// @param when_fn : function -- returns bool; false skips the step
+        /// @return Pipeline
+        methods.add_method("addConditional", |lua, this, (name, deps_tbl, cb, cond): (String, LuaTable, LuaFunction, LuaFunction)| {
+            let dep_names: Vec<String> = deps_tbl
+                .sequence_values::<String>()
+                .collect::<LuaResult<Vec<_>>>()?;
+            let mut step = PipelineStep::new(name.clone());
+            step.deps = dep_names;
+            let wrapper = LuaStep::new(step.clone());
+            *wrapper.callback_key.borrow_mut() = Some(lua.create_registry_value(cb)?);
+            *wrapper.condition_key.borrow_mut() = Some(lua.create_registry_value(cond)?);
+            this.inner.borrow_mut().add_step(step).map_err(LuaError::runtime)?;
+            this.step_wrappers.borrow_mut().insert(name, wrapper);
+            Ok(this.clone())
+        });
+
+        // -- onProgress --
+        /// Registers a callback invoked after every step with `(step_name, status)`.
+        ///
+        /// `status` is a lowercase string: `"completed"`, `"failed"`, or `"skipped"`.
+        /// @param fn : function
+        /// @return nil
+        methods.add_method("onProgress", |lua, this, cb: LuaFunction| {
+            *this.on_progress_key.borrow_mut() = Some(lua.create_registry_value(cb)?);
+            Ok(())
+        });
+
+        // -- toAscii --
+        /// Returns a multi-line ASCII string visualising the pipeline DAG.
+        ///
+        /// Each level shows steps that can run in parallel, with their dependencies.
+        /// @return string
+        methods.add_method("toAscii", |_, this, ()| {
+            Ok(this.inner.borrow().to_ascii_diagram())
+        });
+
         // -- typeOf --
-        /// Returns true if this object is of the given type.
         /// @param name : string
         /// @return boolean
         methods.add_method("typeOf", |_, _, name: String| Ok(name == "Pipeline" || name == "Object"));
