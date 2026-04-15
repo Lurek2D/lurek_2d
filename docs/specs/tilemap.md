@@ -369,7 +369,7 @@ External format parsers: `load_tmx(path)` parses Tiled `.tmx` XML exports with o
 - `lurek.tilemap.newMapGen`: Creates a MapGen from a MapGroup, a preset name or dimensions, and a segment size.
 - `lurek.tilemap.loadTMX`: Parses a TMX XML string and returns a table with map metadata and layers.
 - `lurek.tilemap.fromLDtk`: Parses an LDtk JSON export string and returns a TileMap.
-- `lurek.tilemap.fromLDtk`: Parses an LDtk JSON export string and returns a TileMap.
+- `lurek.tilemap.newLargeMapRenderer`: Creates a new LargeMapRenderer for chunk-level occlusion culling on large tilemaps.
 
 ### `AutoTileSheet` Methods
 - `AutoTileSheet:getLayout`: Returns the layout variant as a string.
@@ -474,6 +474,25 @@ External format parsers: `load_tmx(path)` parses Tiled `.tmx` XML exports with o
 - `TileSet:getAnimation`: Returns the animation frames for a 1-based local tile ID as a table of {tileid, duration}, or nil.
 - `TileSet:setSolid`: Sets whether a 1-based local tile ID is solid for collision purposes.
 - `TileSet:isSolid`: Returns whether a 1-based local tile ID is solid.
+
+### `LargeMapRenderer` Methods
+- `LargeMapRenderer:setMapData`: Loads a flat row-major tile-ID array covering width × height tiles.
+- `LargeMapRenderer:setTile`: Sets a single tile ID at 0-based (x, y).
+- `LargeMapRenderer:getTile`: Returns the tile ID at 0-based (x, y), or nil if out of bounds.
+- `LargeMapRenderer:getMapSize`: Returns the map dimensions as (width, height) in tiles.
+- `LargeMapRenderer:setChunkSize`: Sets the culling chunk size in tiles (default 16).
+- `LargeMapRenderer:getChunkSize`: Returns the current chunk size.
+- `LargeMapRenderer:invalidateChunk`: Marks a single chunk at chunk-grid (cx, cy) as dirty.
+- `LargeMapRenderer:invalidateAll`: Marks all chunks dirty.
+- `LargeMapRenderer:getVisibleChunks`: Returns the number of chunks within the camera viewport.
+- `LargeMapRenderer:getTotalChunks`: Returns the total number of chunks that cover the map.
+- `LargeMapRenderer:setCamera`: Updates the camera position and zoom used for visibility culling.
+- `LargeMapRenderer:setViewport`: Sets the viewport dimensions in pixels.
+- `LargeMapRenderer:setLodEnabled`: Enables or disables LOD rendering for distant chunks.
+- `LargeMapRenderer:isLodEnabled`: Returns whether LOD is currently enabled.
+- `LargeMapRenderer:setLodThresholds`: Sets the distance thresholds at which LOD levels activate.
+- `LargeMapRenderer:setTilesetColumns`: Sets the number of atlas columns for UV calculation.
+- `LargeMapRenderer:getTilesetColumns`: Returns the current tileset atlas column count.
 
 ## References
 

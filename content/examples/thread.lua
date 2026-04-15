@@ -144,3 +144,89 @@ end
 
 local threadhandle_type = threadhandle:type()  -- "ThreadHandle"
 local threadhandle_is_type = threadhandle:typeOf("ThreadHandle")  -- Returns whether this object is of the given type
+
+-- ── Table Serialization Through Channels ─────────────────────────────────────
+
+-- pushTable(t) — serialise a Lua table (including nested tables) into the channel.
+-- popTable() → table? — deserialise and remove from the channel (nil if empty).
+
+local tbl_ch = lurek.thread.newChannel()
+
+-- Push a structured record
+tbl_ch:pushTable({ x = 10, y = 20, tags = {"player", "active"} })
+
+-- Pop it back out on any thread that has access to this channel
+local record = tbl_ch:popTable()
+-- record.x == 10, record.y == 20
+
+-- ── Byte Blobs Through Channels ───────────────────────────────────────────────
+
+-- pushBytes(str) — push a raw byte string as a Bytes channel value.
+-- popBytes() → string? — pop and return the byte string (nil if empty).
+
+local bytes_ch = lurek.thread.newChannel()
+local payload = "PNG\0\255\255\0"       -- arbitrary binary content
+bytes_ch:pushBytes(payload)
+local received = bytes_ch:popBytes()     -- received == payload
+
+-- ── Thread Pool ───────────────────────────────────────────────────────────────
+
+-- newPool(n, workerCode) → ThreadPool
+-- Creates n pre-spawned worker VMs all executing workerCode.
+-- Workers read from the pool's shared input channel and write results to the
+-- output channel.
+
+local pool = lurek.thread.newPool(4, [[
+    local input  = lurek.thread.getChannel("__pool_input")
+    local output = lurek.thread.getChannel("__pool_output")
+    while true do
+        local v = input:demand()
+        if v == nil then break end
+        -- square each number
+        output:push(v * v)
+    end
+]])
+
+pool:submit(3)       -- push 3 onto input channel
+pool:submit(5)
+pool:join()          -- wait for workers to process all submitted values
+
+local r1 = pool:collect()  -- 9
+local r2 = pool:collect()  -- 25
+
+-- size() → integer — number of workers
+local worker_count = pool:size()
+
+-- getInputChannel() / getOutputChannel() → Channel
+local in_ch  = pool:getInputChannel()
+local out_ch = pool:getOutputChannel()
+
+-- ── Promise / Future ──────────────────────────────────────────────────────────
+
+-- async(code, ...args) → Promise
+-- Runs code in a background thread; arguments become varargs ("...") in the code.
+
+local promise = lurek.thread.async([[
+    local a, b = ...
+    -- simulate work
+    local result = 0
+    for i = 1, 100000 do result = result + lurek.math.sqrt(i) end
+    return result + a + b
+]], 10, 20)
+
+-- isDone() → boolean  — check without blocking
+-- result() → value?   — returns the value if done, nil otherwise
+-- getError() → string? — error message if the worker crashed
+
+function lurek.process(dt)
+    if promise:isDone() then
+        local v = promise:result()
+        if v then
+            -- use result
+        end
+        local err = promise:getError()
+        if err then
+            -- handle error
+        end
+    end
+end

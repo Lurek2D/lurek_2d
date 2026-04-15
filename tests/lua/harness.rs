@@ -478,6 +478,11 @@ fn lua_test_thread() {
 }
 
 #[test]
+fn lua_test_thread_new_features() {
+    run_lua_test("unit/test_thread_new_features.lua");
+}
+
+#[test]
 fn lua_test_savegame() {
     run_lua_test("unit/test_savegame.lua");
 }
@@ -788,6 +793,11 @@ fn lua_test_spine_ext() {
 #[test]
 fn lua_test_tilemap_ext() {
     run_lua_test("unit/test_tilemap_ext.lua");
+}
+
+#[test]
+fn lua_test_tilemap_large_map() {
+    run_lua_test("unit/test_tilemap_large_map.lua");
 }
 
 #[test]

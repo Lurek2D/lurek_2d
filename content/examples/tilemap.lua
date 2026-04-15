@@ -264,6 +264,54 @@ local block = lurek.tilemap.newMapBlock(8, 8, 2, 4)
 block:setTile(1, 1, 1, 100)
 local bg = block:getTile(1, 1, 1)  -- 100
 
+-- ── LargeMapRenderer (chunk-level occlusion culling) ──────────────────────────
+
+-- newLargeMapRenderer(tileW, tileH) → LargeMapRenderer
+-- For maps > 200×200 tiles where per-tile frustum culling is insufficient.
+-- tileW/tileH are the pixel dimensions of a single tile.
+local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+
+-- Load flat (row-major) tile ID array covering width × height tiles.
+-- 0 = empty tile.
+local map_data = {}
+for i = 1, 256 * 256 do map_data[i] = (i % 8) + 1 end
+lmr:setMapData(map_data, 256, 256)
+
+-- getMapSize() → width, height
+local mw, mh = lmr:getMapSize()  -- 256, 256
+
+-- setTile / getTile — modify individual tiles after load
+lmr:setTile(10, 20, 5)       -- set tile at (10,20) to ID 5
+local tid = lmr:getTile(10, 20)  -- 5
+
+-- setCamera(x, y, zoom) — camera position for culling calculation
+lmr:setCamera(0, 0, 1.0)
+
+-- setViewport(w, h) — screen dimensions in pixels
+lmr:setViewport(1280, 720)
+
+-- getVisibleChunks() — number of chunks in view (use for stats/debugging)
+local visible = lmr:getVisibleChunks()
+
+-- getTotalChunks() — total chunks covering the map
+local total = lmr:getTotalChunks()
+
+-- setChunkSize(n) / getChunkSize() — chunk size in tiles (default 16)
+lmr:setChunkSize(16)
+local cs = lmr:getChunkSize()
+
+-- setTilesetColumns(n) — columns in the tileset atlas (for UV generation)
+lmr:setTilesetColumns(8)
+
+-- LOD (level-of-detail) for distant chunks
+lmr:setLodEnabled(true)
+lmr:setLodThresholds({ 100.0, 200.0, 400.0 })  -- switch at these tile-unit distances
+local lod_on = lmr:isLodEnabled()
+
+-- Dirty-marking: force chunk re-evaluation
+lmr:invalidateChunk(3, 4)  -- mark chunk at chunk-grid (3,4) dirty
+lmr:invalidateAll()         -- mark every chunk dirty
+
 -- Dimension/meta helpers
 local bw, bh = block:getDimensions()   -- 8, 8
 local bl = block:getLayerCount()       -- 2

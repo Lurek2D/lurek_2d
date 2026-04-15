@@ -15,7 +15,7 @@ use crate::tilemap::mapgen::{
     Edge, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, ScriptStep, StepType,
 };
 use crate::tilemap::ldtk::load_ldtk;
-use crate::tilemap::ldtk::load_ldtk;
+use crate::tilemap::large_map_renderer::LargeMapRenderer;
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 
@@ -1072,6 +1072,185 @@ impl LuaUserData for LuaChunkMap {
         methods.add_method("chunkTileRange", |_, this, (cx, cy): (i32, i32)| {
             let (x0, y0, x1, y1) = this.inner.borrow().chunk_tile_range(cx, cy);
             Ok((x0, y0, x1, y1))
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaLargeMapRenderer UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`LargeMapRenderer`] for chunk-level occlusion culling on large worlds.
+///
+/// # Fields
+/// - `inner` — `Rc<RefCell<LargeMapRenderer>>`.
+#[derive(Clone)]
+pub struct LuaLargeMapRenderer {
+    inner: Rc<RefCell<LargeMapRenderer>>,
+}
+
+impl LuaUserData for LuaLargeMapRenderer {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- setMapData --
+        /// Loads a flat array of tile IDs (row-major) covering width × height tiles.
+        /// Use 0 for empty tiles.
+        /// @param data : table
+        /// @param width : integer
+        /// @param height : integer
+        /// @return nil
+        methods.add_method_mut(
+            "setMapData",
+            |_, this, (data, width, height): (LuaTable, u32, u32)| {
+                let mut ids: Vec<u32> = Vec::new();
+                for v in data.sequence_values::<u32>() {
+                    ids.push(v?);
+                }
+                this.inner.borrow_mut().set_map_data(ids, width, height);
+                Ok(())
+            },
+        );
+
+        // -- setTile --
+        /// Sets a single tile ID at (x, y).  Coordinates are 0-based.
+        /// @param x : integer
+        /// @param y : integer
+        /// @param tileId : integer
+        /// @return nil
+        methods.add_method_mut("setTile", |_, this, (x, y, tile_id): (u32, u32, u32)| {
+            this.inner.borrow_mut().set_tile(x, y, tile_id);
+            Ok(())
+        });
+
+        // -- getTile --
+        /// Returns the tile ID at (x, y), or nil if out of bounds.
+        /// @param x : integer
+        /// @param y : integer
+        /// @return integer?
+        methods.add_method("getTile", |_, this, (x, y): (u32, u32)| {
+            Ok(this.inner.borrow().get_tile(x, y))
+        });
+
+        // -- getMapSize --
+        /// Returns the map dimensions as (width, height) in tiles.
+        /// @return integer, integer
+        methods.add_method("getMapSize", |_, this, ()| {
+            let (w, h) = this.inner.borrow().get_map_size();
+            Ok((w, h))
+        });
+
+        // -- setChunkSize --
+        /// Sets the chunk size used for culling (default 16).
+        /// @param size : integer
+        /// @return nil
+        methods.add_method_mut("setChunkSize", |_, this, size: u32| {
+            this.inner.borrow_mut().set_chunk_size(size);
+            Ok(())
+        });
+
+        // -- getChunkSize --
+        /// Returns the current chunk size.
+        /// @return integer
+        methods.add_method("getChunkSize", |_, this, ()| {
+            Ok(this.inner.borrow().get_chunk_size())
+        });
+
+        // -- invalidateChunk --
+        /// Marks a chunk at chunk-grid coordinates (cx, cy) as dirty,
+        /// forcing re-evaluation on the next render pass.
+        /// @param cx : integer
+        /// @param cy : integer
+        /// @return nil
+        methods.add_method_mut("invalidateChunk", |_, this, (cx, cy): (i32, i32)| {
+            this.inner.borrow_mut().invalidate_chunk(cx, cy);
+            Ok(())
+        });
+
+        // -- invalidateAll --
+        /// Marks every chunk as dirty.
+        /// @return nil
+        methods.add_method_mut("invalidateAll", |_, this, ()| {
+            this.inner.borrow_mut().invalidate_all();
+            Ok(())
+        });
+
+        // -- getVisibleChunks --
+        /// Returns the number of chunks currently within the camera viewport.
+        /// @return integer
+        methods.add_method("getVisibleChunks", |_, this, ()| {
+            Ok(this.inner.borrow().get_visible_chunks())
+        });
+
+        // -- getTotalChunks --
+        /// Returns the total number of chunks that cover the loaded map.
+        /// @return integer
+        methods.add_method("getTotalChunks", |_, this, ()| {
+            Ok(this.inner.borrow().get_total_chunks())
+        });
+
+        // -- setCamera --
+        /// Updates the camera position and zoom used for visibility culling.
+        /// @param x : number
+        /// @param y : number
+        /// @param zoom : number
+        /// @return nil
+        methods.add_method_mut("setCamera", |_, this, (x, y, zoom): (f32, f32, f32)| {
+            this.inner.borrow_mut().set_camera(x, y, zoom);
+            Ok(())
+        });
+
+        // -- setViewport --
+        /// Sets the viewport dimensions in pixels used for visibility culling.
+        /// @param width : number
+        /// @param height : number
+        /// @return nil
+        methods.add_method_mut("setViewport", |_, this, (w, h): (f32, f32)| {
+            this.inner.borrow_mut().set_viewport(w, h);
+            Ok(())
+        });
+
+        // -- setLodEnabled --
+        /// Enables or disables level-of-detail rendering for distant chunks.
+        /// @param enabled : boolean
+        /// @return nil
+        methods.add_method_mut("setLodEnabled", |_, this, enabled: bool| {
+            this.inner.borrow_mut().set_lod_enabled(enabled);
+            Ok(())
+        });
+
+        // -- isLodEnabled --
+        /// Returns whether LOD rendering is currently enabled.
+        /// @return boolean
+        methods.add_method("isLodEnabled", |_, this, ()| {
+            Ok(this.inner.borrow().is_lod_enabled())
+        });
+
+        // -- setLodThresholds --
+        /// Sets the distance thresholds (in tile units) at which each LOD level activates.
+        /// @param levels : table
+        /// @return nil
+        methods.add_method_mut("setLodThresholds", |_, this, levels: LuaTable| {
+            let mut thresholds: Vec<f32> = Vec::new();
+            for v in levels.sequence_values::<f32>() {
+                thresholds.push(v?);
+            }
+            this.inner.borrow_mut().set_lod_thresholds(thresholds);
+            Ok(())
+        });
+
+        // -- setTilesetColumns --
+        /// Sets the number of tile columns in the atlas texture used for UV calculation.
+        /// @param cols : integer
+        /// @return nil
+        methods.add_method_mut("setTilesetColumns", |_, this, cols: u32| {
+            this.inner.borrow_mut().set_tileset_columns(cols);
+            Ok(())
+        });
+
+        // -- getTilesetColumns --
+        /// Returns the number of tileset atlas columns.
+        /// @return integer
+        methods.add_method("getTilesetColumns", |_, this, ()| {
+            Ok(this.inner.borrow().get_tileset_columns())
         });
     }
 }
@@ -2215,29 +2394,25 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── fromLDtk ──────────────────────────────────────────────────────────────
-    /// Parses an LDtk JSON export string and returns a TileMap.
-    /// Pass an optional `level_name` to select a specific level; defaults to the first.
-    /// @param json_str : string
-    /// @param level_name : string?
-    /// @return TileMap
+    // ── newLargeMapRenderer ───────────────────────────────────────────────────
+    /// Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200×200 tiles.
+    /// `tileW` and `tileH` specify the pixel dimensions of a single tile.
+    /// @param tileW : integer
+    /// @param tileH : integer
+    /// @return LargeMapRenderer
     tbl.set(
-        "fromLDtk",
-        lua.create_function({
-            let state = state.clone();
-            move |lua, (json_str, level_name): (String, Option<String>)| {
-                match load_ldtk(&json_str, level_name.as_deref()) {
-                    Ok(map) => {
-                        let ud = lua.create_userdata(LuaTileMap {
-                            inner: Rc::new(RefCell::new(map)),
-                            state: state.clone(),
-                            tile_callbacks: Rc::new(RefCell::new(Vec::new())),
-                        })?;
-                        Ok(LuaValue::UserData(ud))
-                    }
-                    Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
-                }
+        "newLargeMapRenderer",
+        lua.create_function(|lua, (tile_w, tile_h): (u32, u32)| {
+            if tile_w == 0 || tile_h == 0 {
+                return Err(LuaError::RuntimeError(
+                    "newLargeMapRenderer: tileW and tileH must be > 0".to_string(),
+                ));
             }
+            let renderer = LargeMapRenderer::new(tile_w, tile_h);
+            let ud = lua.create_userdata(LuaLargeMapRenderer {
+                inner: Rc::new(RefCell::new(renderer)),
+            })?;
+            Ok(LuaValue::UserData(ud))
         })?,
     )?;
 

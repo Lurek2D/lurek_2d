@@ -2,7 +2,27 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.9.4] — 2026-04-14
+## [0.9.5] — 2026-04-15
+### Added
+- `lurek.thread.newPool(n, code)` — creates a thread pool of `n` pre-spawned worker VMs that share a common input/output channel pair. `ThreadPool` userdata exposes `submit`, `collect`, `join`, `size`, `getInputChannel`, `getOutputChannel`.
+- `lurek.thread.async(code, ...)` — runs Lua code in a background thread and returns a `Promise` handle. `Promise` provides `isDone()`, `result()`, and `getError()`.
+- `Channel:pushTable(t)` / `Channel:popTable()` — serialise / deserialise Lua tables (including nested tables) through a thread channel using `ChannelValue::Table`.
+- `Channel:pushBytes(s)` / `Channel:popBytes()` — send and receive raw binary strings through a thread channel using `ChannelValue::Bytes`.
+- `lurek.thread` worker VMs now support `require()` via `package.path = "./?.lua;./?/init.lua"` set during worker init.
+- `lurek.thread` workers have read-only filesystem access via `lurek.fs.read(path)` with path-traversal guard.
+- `lurek.tilemap.newLargeMapRenderer(tileW, tileH)` — creates a `LargeMapRenderer` for chunk-level occlusion culling on large tilemaps. `LargeMapRenderer` exposes `setMapData`, `setTile`, `getTile`, `getMapSize`, `setChunkSize`, `getChunkSize`, `setCamera`, `setViewport`, `getVisibleChunks`, `getTotalChunks`, `setLodEnabled`, `isLodEnabled`, `setLodThresholds`, `setTilesetColumns`, `getTilesetColumns`, `invalidateChunk`, `invalidateAll`.
+### Fixed
+- `src/lua_api/tilemap_api.rs` — removed duplicate `use crate::tilemap::ldtk::load_ldtk;` import.
+- `src/lua_api/tilemap_api.rs` — removed second `tbl.set("fromLDtk", ...)` registration block (same factory was registered twice; last-write silently overwrote first with identical code).
+### Changed
+- `src/thread/IDEA.md` — all 6 TODO features marked done (already implemented in codebase).
+- `src/tilemap/IDEA.md` — all 6 TODO / 1 FIXME items resolved; cellular FIXME closed with no-code-change note.
+- `docs/specs/thread.md` — documented `newPool`, `async`, `ThreadPool` methods, `Promise` methods, `Channel:pushTable/popTable/pushBytes/popBytes`.
+- `docs/specs/tilemap.md` — added `newLargeMapRenderer`, `LargeMapRenderer` methods section; removed duplicate `fromLDtk` spec entry.
+- `content/examples/thread.lua` — added pushTable/popTable, pushBytes/popBytes, newPool, and async usage examples.
+- `content/examples/tilemap.lua` — added newLargeMapRenderer usage example.
+
+
 ### Changed
 - `docs/specs/*.md` — all 50 module spec files now have complete, source-derived `## Summary` sections (1000–1500 chars each) covering module purpose, core types, algorithms and subsystems, and scope boundary tier. Previously all 50 had empty or placeholder summary bodies.
 - `docs/specs/graph.md` — corrected summary to describe the flow-simulation graph system (typed items, decay, conversion rules, supply/demand, push/pull flow) rather than a generic data-structure graph.

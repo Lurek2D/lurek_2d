@@ -64,6 +64,8 @@ The `thread_pool` submodule provides a managed pool of workers for the common ca
 - `lurek.thread.newThread`: Creates a new background thread from a Lua code string.
 - `lurek.thread.newChannel`: Creates an unnamed thread-safe channel for inter-thread communication.
 - `lurek.thread.getChannel`: Gets or creates a named global channel shared across threads.
+- `lurek.thread.newPool`: Creates a pool of `n` pre-spawned worker VMs all running the same Lua code string.
+- `lurek.thread.async`: Runs a Lua code string in a background thread and returns a `Promise` handle.
 
 ### `Channel` Methods
 - `Channel:type`: Returns the type of the object.
@@ -75,8 +77,23 @@ The `thread_pool` submodule provides a managed pool of workers for the common ca
 - `Channel:getCount`: Returns the number of items in the channel.
 - `Channel:clear`: Clears all items from the channel.
 - `Channel:supply`: Blocks until the channel has space, then adds the value.
+- `Channel:pushTable`: Serialises a Lua table (supports nested tables) and pushes it to the channel.
+- `Channel:popTable`: Pops and deserialises a table value from the channel, returning a Lua table.
+- `Channel:pushBytes`: Pushes a raw byte string to the channel as a `Bytes` value.
+- `Channel:popBytes`: Pops a `Bytes` value from the channel, returning it as a Lua string.
 
-### `ThreadHandle` Methods
+### `ThreadPool` Methods
+- `ThreadPool:submit`: Pushes a value to the pool's input channel for a worker to process.
+- `ThreadPool:collect`: Pops one result from the pool's output channel, or returns nil if none ready.
+- `ThreadPool:join`: Waits for all submitted tasks to complete.
+- `ThreadPool:size`: Returns the number of worker threads in the pool.
+- `ThreadPool:getInputChannel`: Returns the pool's shared input `Channel`.
+- `ThreadPool:getOutputChannel`: Returns the pool's shared output `Channel`.
+
+### `Promise` Methods
+- `Promise:isDone`: Returns true if the background computation has finished (success or error).
+- `Promise:result`: Returns the result value when done, or nil if still running.
+- `Promise:getError`: Returns the error message if the computation failed, or nil.
 - `ThreadHandle:type`: Returns the type name of this object.
 - `ThreadHandle:typeOf`: Returns whether this object is of the given type.
 - `ThreadHandle:start`: Launches the background thread, passing optional arguments via varargs.
