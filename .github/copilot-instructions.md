@@ -209,7 +209,7 @@ All permanent tools live in `tools/` organised by category. See `tools/README.md
 | Subfolder | Contains |
 |---|---|
 | `tools/docs/` | Documentation generators (`collect_docs.py`, `gen_docs_lua.py`, `gen_docs_rust.py`, `gen_luadoc.py` …) |
-| `tools/audit/` | Quality auditing & coverage analytics (`audit_module.py`, `doc_coverage.py`, `test_coverage.py` …) |
+| `tools/audit/` | Quality auditing & coverage analytics (`audit_module.py`, `doc_coverage.py`, `test_coverage.py`, `example_coverage.py`, `example_add_missing.py` …) |
 | `tools/fix/` | Code fixers & docstring improvers (`add_lua_docstrings.py`, `fix_docstrings.py` …) |
 | `tools/validate/` | Schema & structure validators (`cag_validate.py`, `validate_lua_api.py` …) |
 | `tools/assets/` | Artwork source files — edit directly; all assets are maintained manually |
@@ -223,6 +223,7 @@ Key invocations:
 - **CAG**: `python tools/validate/cag_validate.py [--type agent|skill|prompt] [--file <path>]`
 - **Docs**: `python tools/gen_all_docs.py` · `python tools/docs/collect_docs.py [--report-missing|--suggest]`
 - **Coverage**: `python tools/audit/doc_coverage.py` · `python tools/audit/test_coverage.py [--suggest]`
+- **Example coverage**: `python tools/audit/example_coverage.py [--missing|--module <name>|--report]` · `python tools/audit/example_add_missing.py [--module <name>|--dry-run]`
 - **Audit**: `python tools/audit/audit_module.py <name>` · `python tools/audit/quality_report.py`
 - **Lua API**: `python tools/docs/gen_lua_api_skeleton.py [--all|--module <name>|--list]`
 - **API refs**: `docs/API/lua-api.md` (Lua) · `docs/API/rust-api.md` (Rust) · run `gen_all_docs.py` to regenerate
@@ -288,7 +289,7 @@ Every time you add a feature, fix a bug, or change the API, you **must** update 
 |---|---|-api.md` (run `python tools/gen_all_docs
 | Rust source `src/<module>/*.rs` | `docs/specs/<module>.md` |
 | Lua binding `src/lua_api/<module>_api.rs` | `docs/specs/<module>.md` · `docs/API/lua-api.md` (run `python tools/gen_all_docs.py`) |
-| `lurek.*` API added/renamed/removed | `content/examples/<module>.lua` · any `content/demos/` that use the API · `content/library/` modules that depend on it |
+| `lurek.*` API added/renamed/removed | `content/examples/<module>.lua` · any `content/demos/` that use the API · `content/library/` modules that depend on it · run `python tools/audit/example_coverage.py --module <module>` to verify; run `python tools/audit/example_add_missing.py --module <module>` to append stubs for new items |
 | New module created | New `docs/specs/<module>.md` · entry in `docs/specs/README.md` |
 
 This list is the canonical sync requirement. Never commit a code change without checking every row.

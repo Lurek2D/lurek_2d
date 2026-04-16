@@ -29,7 +29,8 @@ coverage — producing reports that tell you what still needs work.
 | `lua_test_structure_audit.py` | Lua test structure audit: `@description` placement, legacy markers, and `test_summary()` ending | stdout / JSON |
 | `lua_evidence_golden_contract_audit.py` | Evidence/golden contract audit: mixed prechecks, missing `@evidence`, and golden generation logic | stdout / JSON |
 | `unit_test_api_coverage.py` | Unit test API coverage metrics | stdout |
-| `example_coverage.py` | Cross-reference `content/examples/` vs Lua API | stdout |
+| `example_coverage.py` | Cross-reference `content/examples/` vs Lua API; exits 1 if any gaps (`--report` for CI) | stdout / JSON |
+| `example_add_missing.py` | Append stub blocks for uncovered API items to example files; use with `flesh-out-example.prompt.md` | patches `.lua` files |
 | `integration_coverage.py` | Integration test module-pair heat map | stdout / JSON |
 
 ### Module quality — end-to-end module audits

@@ -110,7 +110,8 @@ and `tools/audit/` in the correct dependency order. Produces:
 | `test_coverage.py` | Cross-reference `pub` items vs test files | `docs/logs/test_coverage.json` | `--json`, `--suggest`, `--module`, `--threshold` |
 | `lua_api_test_coverage.py` | Lua API test coverage (via `@covers` markers) | `docs/logs/lua_api_test_coverage.json` | `--strict`, `--json`, `--module`, `--suggest`, `--report`, `--orphans` |
 | `unit_test_api_coverage.py` | Unit test API coverage metrics | stdout | — |
-| `example_coverage.py` | Cross-reference `content/examples/` vs Lua API | stdout | — |
+| `example_coverage.py` | Cross-reference `content/examples/` vs Lua API; exits 1 on gaps | stdout / JSON | `--module`, `--missing`, `--json`, `--report` |
+| `example_add_missing.py` | Append stub blocks for every uncovered API item to example files | patches `.lua` | `--module`, `--dry-run`, `--report`, `--verbose` |
 | `integration_coverage.py` | Integration test module-pair heat map | stdout / `docs/logs/integration_coverage.json` | `--json`, `--output` |
 
 **Module quality** — end-to-end module audits:

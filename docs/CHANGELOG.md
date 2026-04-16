@@ -2,6 +2,32 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.18.2] — 2026-04-16
+### Added
+- **tools/audit/example_add_missing.py**: New tool that appends commented stub blocks to
+  `content/examples/<module>.lua` for every API function/method not yet demonstrated.
+  Supports `--module`, `--dry-run`, `--report`, `--verbose`. Creates the example file if it
+  does not exist yet (e.g. `sprite.lua`, `system.lua`).
+- **.github/prompts/flesh-out-example.prompt.md**: New prompt for expanding generated stubs
+  into real, idiomatic Lua code.  Includes quality gates (every call must be a real expression,
+  return values captured, no placeholder `nil`/`TODO` args).
+- **tools/audit/example_coverage.py**: Significantly enhanced — fixed `MODULE_TO_EXAMPLE` map
+  to use JSON module keys (`ecs`, `effect`, `i18n`, `mods`, `pathfind`, `render`, `save`, `ui`
+  instead of old display names); added `NAMESPACE_MAP` for `lurek.*` prefix display; fixed
+  encoding bug (now uses `errors='replace'`); fixed regex to use `\b<name>\s*(` instead of
+  the literal `luna.` prefix (was always 0% for all modules); groups results by module not
+  by class; adds `--report` CI gate flag; displays namespace column in summary.
+### Changed
+- **.github/skills/examples-management/SKILL.md**: Added "Example Coverage Workflow" section
+  documenting the three-step process (check → add stubs → flesh out) and the canonical
+  module-to-example-file mapping table.
+- **tools/audit/README.md**: Added `example_add_missing.py` row; updated `example_coverage.py`
+  description to reflect new `--report` flag.
+- **tools/README.md**: Updated audit table with new tool and corrected coverage tool args.
+- **.github/copilot-instructions.md**: Added `example_coverage` and `example_add_missing`
+  quick invocations to CLI Tools / Key invocations; updated Cross-Artifact Sync Contract row
+  for `lurek.*` API changes.
+
 ## [0.18.1] — 2026-05-15
 ### Fixed
 - **lua_api (all 49 files)**: Fixed all `validate_lua_api.py` compliance errors — converted forbidden `/// # Parameters` / `/// # Returns` rustdoc headers to `@param`/`@return` inline annotations; fixed `@param`/`@return` ordering violations (param must precede return); injected missing `@return nil` on `add_method_mut` setters; replaced all vague `@return any` annotations with specific Lua types (`table`, `table|nil`, `string|nil`, `boolean, string`, `integer, integer, table`, etc.). All 49 files now report 0 errors.

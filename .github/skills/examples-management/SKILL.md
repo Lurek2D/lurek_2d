@@ -242,3 +242,103 @@ world:newBody(x, y, true)   -- boolean
 | `require()` | ❌ No — must be single-file, self-contained | ✅ May use `require("library.*")` for shipped Lunasome modules |
 | `os.*` / `io.*` system calls | ❌ Never — use `lurek.fs.*` for file access | ❌ Never |
 | `conf.toml` | ✅ Required for each demo folder | ❌ Not applicable (single-file) |
+
+## Example Coverage Workflow — 100% API Coverage Required
+
+Every `content/examples/<module>.lua` must demonstrate **every** `lurek.*` API function and method
+that the corresponding `src/lua_api/<module>_api.rs` registers.  The three-tool workflow to achieve
+this:
+
+### Step 1 — Check gaps
+
+```powershell
+# Full summary of all modules
+python tools/audit/example_coverage.py
+
+# Missing items only
+python tools/audit/example_coverage.py --missing
+
+# Single module
+python tools/audit/example_coverage.py --module timer
+
+# CI gate: exit 1 if any gaps
+python tools/audit/example_coverage.py --report
+```
+
+**Exit codes**: 0 = full coverage; 1 = gaps exist.  The `--report` flag is used in CI.
+
+### Step 2 — Append stubs for missing API
+
+```powershell
+# Dry-run first to preview what will be appended
+python tools/audit/example_add_missing.py --module timer --dry-run
+
+# Write stubs for one module
+python tools/audit/example_add_missing.py --module timer
+
+# Write stubs for all modules with gaps
+python tools/audit/example_add_missing.py
+```
+
+This appends commented stub blocks at the bottom of the example file.  Each stub is a
+`-- ── lurek.ns.name ──` ruler + description + placeholder call.  The example file remains
+valid Lua — stubs are pure comments until the next step replaces them.
+
+### Step 3 — Flesh out stubs with real code
+
+Open the example file and run the prompt:
+
+```
+@workspace /file:content/examples/timer.lua
+Use the flesh-out-example.prompt.md prompt to expand all stubs into real examples.
+```
+
+Or invoke via VS Code Copilot with:
+```
+#file:content/examples/timer.lua  #file:docs/specs/timer.md
+Expand every -- ── stub section into working Lua code following the rules in
+.github/prompts/flesh-out-example.prompt.md
+```
+
+### Coverage Rules
+
+- One `.lua` file per `src/lua_api/<module>_api.rs` — exact 1:1 mapping
+- Every registered function *and* every method on every userdata type must appear as a **real call**, not a comment
+- Return values must be assigned or logged — `local x = lurek.time.getDelta()` not just `lurek.time.getDelta()`
+- The stub header `-- STUBS: N` must be removed after all stubs in that file are filled
+- `python tools/audit/example_coverage.py --report` must exit 0 before merge
+
+### Module-to-Example File Mapping (canonical)
+
+| JSON module key | `lurek.*` namespace | Example file |
+|---|---|---|
+| `ai` | `lurek.ai` | `content/examples/ai.lua` |
+| `animation` | `lurek.animation` | `content/examples/animation.lua` |
+| `audio` | `lurek.audio` | `content/examples/audio.lua` |
+| `ecs` | `lurek.entity` | `content/examples/entity.lua` |
+| `effect` | `lurek.overlay` | `content/examples/fx.lua` |
+| `filesystem` | `lurek.fs` | `content/examples/filesystem.lua` |
+| `i18n` | `lurek.localization` | `content/examples/localization.lua` |
+| `image` | `lurek.img` | `content/examples/image.lua` |
+| `input` | `lurek.keyboard` | `content/examples/input.lua` |
+| `mods` | `lurek.modding` | `content/examples/modding.lua` |
+| `pathfind` | `lurek.pathfinding` | `content/examples/pathfinding.lua` |
+| `render` | `lurek.graphic` | `content/examples/graphics.lua` |
+| `save` | `lurek.savegame` | `content/examples/savegame.lua` |
+| `serial` | `lurek.codec` | `content/examples/serial.lua` |
+| `system` | `lurek.platform` | `content/examples/system.lua` |
+| `timer` | `lurek.time` | `content/examples/timer.lua` |
+| `ui` | `lurek.ui` | `content/examples/gui.lua` |
+| All others | `lurek.<module>` | `content/examples/<module>.lua` |
+
+Full mapping is the `MODULE_TO_EXAMPLE` and `NAMESPACE_MAP` dicts in
+`tools/audit/example_coverage.py` — that is the single source of truth.
+
+### Cross-Artifact Sync
+
+When adding a new `lurek.*` function:
+1. Add the Rust binding in `src/lua_api/<module>_api.rs`
+2. Run `python tools/audit/example_coverage.py --module <module>` → will show the new function as missing
+3. Run `python tools/audit/example_add_missing.py --module <module>` → stub appended
+4. Use the flesh-out prompt to fill in the stub
+5. Commit `src/lua_api/<module>_api.rs` + `content/examples/<module>.lua` + `docs/CHANGELOG.md` together
