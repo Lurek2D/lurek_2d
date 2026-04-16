@@ -448,3 +448,11 @@ All types are plain-old data with `#[derive(Debug, Clone, Copy)]`; none hold hea
 
 - Keep this module reference synchronized with `src/math/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### New in 0.14.1
+
+- `src/math/voronoi.rs` — Bowyer–Watson Delaunay triangulation and Voronoi dual.
+  - `VoronoiCell { site: (f32, f32), vertices: Vec<(f32, f32)> }` — one cell per site.
+  - `voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell>` — near-duplicate deduplication, CCW vertex ordering.
+  - Lua: `lurek.math.voronoi({{x,y},…})` → `{{site={x,y}, vertices={{x,y},…}},…}`.
+  - Re-exported as `crate::math::VoronoiCell` and `crate::math::voronoi_from_points`.

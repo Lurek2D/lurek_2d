@@ -1245,6 +1245,62 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // -- syncAmbient --
+    /// Returns the current ambient light colour as (r, g, b, a).
+    ///
+    /// Equivalent to `getAmbient` but reads through `ambient_color_hint()`,
+    /// making the intent explicit: this is a read-only snapshot suitable for
+    /// passing to shaders and effect passes.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local r, g, b, a = lurek.light.syncAmbient()
+    /// ```
+    /// @return number, number, number, number
+    let s = state.clone();
+    tbl.set(
+        "syncAmbient",
+        lua.create_function(move |_, ()| {
+            let hint = s.borrow().light_world.ambient_color_hint();
+            Ok((hint[0], hint[1], hint[2], hint[3]))
+        })?,
+    )?;
+
+    // -- getGodRayHints --
+    /// Returns a list of directional light hints for god-ray rendering.
+    ///
+    /// Each element in the returned array is a table `{x, y, angle}` where
+    /// `x` and `y` are world-space positions and `angle` is the light's
+    /// direction in radians.  Only enabled directional lights are included.
+    ///
+    /// Designed for use with post-processing shaders that produce volumetric
+    /// light streaks from screen-space light positions.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local hints = lurek.light.getGodRayHints()
+    /// for _, h in ipairs(hints) do
+    ///     -- h.x, h.y, h.angle
+    /// end
+    /// ```
+    /// @return table
+    let s = state.clone();
+    tbl.set(
+        "getGodRayHints",
+        lua.create_function(move |lua, ()| {
+            let hints = s.borrow().light_world.directional_light_hints();
+            let tbl = lua.create_table()?;
+            for (i, (x, y, angle)) in hints.iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("x", *x)?;
+                t.set("y", *y)?;
+                t.set("angle", *angle)?;
+                tbl.set(i + 1, t)?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
+
     luna.set("light", tbl)?;
     Ok(())
 }

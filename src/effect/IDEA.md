@@ -72,6 +72,10 @@ Shader compilation errors in custom PostFx pass silently break the effect. A dev
 fallback (render a magenta/error quad with the WGSL error text) would speed up shader
 authoring significantly.
 
+> **Partial**: `lurek.postfx.setShaderErrorDisplay(true/false)` and `getShaderErrorDisplay()`
+> are implemented (2026-04-16). The Lua-side toggle exists; GPU-side render path hookup is
+> tracked in `docs/specs/effect.md`.
+
 ---
 
 ### 🤔 CONSIDER — Consolidate Screen Shake (see also `camera`)
@@ -84,9 +88,12 @@ location (prefer camera) and remove the other. See `src/camera/IDEA.md`.
 
 ## Performance
 
-### ❌ TODO — Effect Stack Deduplication
+### ✅ DONE — Effect Stack Deduplication
 **Source**: performance/15-postfx-shader-pipeline.md
+**Implemented**: 2026-04-16
 
-If the same effect type appears multiple times in a stack (e.g., two bloom passes), the
-pipeline makes redundant wgpu commands. Add deduplication / merge logic for identical
-consecutive pass types. Priority: **LOW**.
+`src/effect/stack.rs` — `PostFxStack::dedup_indices()` removes duplicate effect slots.
+`src/lua_api/effect_api.rs` — `stack:dedup()` method on LuaPostFxStack (pointer-identity dedup).
+Returns the number of slots removed.
+
+Tests: `tests/lua/unit/test_effect_dedup.lua`

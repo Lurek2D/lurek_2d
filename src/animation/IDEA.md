@@ -31,12 +31,23 @@ a named target clip with duration parameter.
 
 ---
 
-### ❌ TODO — Animation Blend Layers / Masks
+### ✅ DONE — Animation Blend Layers / Masks
 **Source**: features/animation.md — Feature Gaps #5
 
-No upper/lower body layer blending found. Needed for playing an attack animation on the upper
-body simultaneously with a walk on the lower body. No implementation in `src/animation/` or
-`animation_api.rs`.
+`src/animation/blend.rs` created with `BlendMask`, `BlendLayer`, and `BlendLayerSet` types.
+`pub use blend::{BlendLayer, BlendLayerSet, BlendMask}` re-exported from `src/animation/mod.rs`.
+`LuaBlendLayerSet` + `newBlendLayerSet()` factory added to `src/lua_api/animation_api.rs`.
+
+Each `BlendLayer` carries a clip name, blend weight, and an optional `BlendMask` (a list of
+bone names the layer is restricted to). Layers are managed by `BlendLayerSet`.
+
+```lua
+local layers = lurek.animation.newBlendLayerSet()
+layers:addLayer("upper", "attack", 1.0, {"spine", "shoulder_L", "shoulder_R"})
+layers:addLayer("lower", "walk",   1.0)
+```
+
+Implemented: 2026-04-18
 
 ---
 

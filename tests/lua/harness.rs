@@ -104,6 +104,11 @@ fn lua_test_math() {
 }
 
 #[test]
+fn lua_test_math_polygon_bool() {
+    run_lua_test("unit/test_math_polygon_bool.lua");
+}
+
+#[test]
 fn lua_test_timer() {
     run_lua_test("unit/test_timer.lua");
 }
@@ -116,6 +121,11 @@ fn lua_test_event() {
 #[test]
 fn lua_test_input() {
     run_lua_test("unit/test_input.lua");
+}
+
+#[test]
+fn lua_test_input_recording() {
+    run_lua_test("unit/test_input_recording.lua");
 }
 
 #[test]
@@ -349,8 +359,18 @@ fn lua_test_data() {
 }
 
 #[test]
+fn lua_test_data_msgpack() {
+    run_lua_test("unit/test_data_msgpack.lua");
+}
+
+#[test]
 fn lua_test_dataframe() {
     run_lua_test("unit/test_dataframe.lua");
+}
+
+#[test]
+fn lua_test_unit_dataframe_pivot_window() {
+    run_lua_test("unit/test_dataframe_pivot_window.lua");
 }
 
 #[test]
@@ -366,6 +386,11 @@ fn lua_test_pipeline() {
 #[test]
 fn lua_test_pathfinding() {
     run_lua_test("unit/test_pathfinding.lua");
+}
+
+#[test]
+fn lua_test_unit_pathfind_bidirectional() {
+    run_lua_test("unit/test_pathfind_bidirectional.lua");
 }
 
 #[test]
@@ -615,6 +640,11 @@ fn lua_test_filesystem() {
 }
 
 #[test]
+fn lua_test_filesystem_zip_watcher() {
+    run_lua_test("unit/test_filesystem_zip_watcher.lua");
+}
+
+#[test]
 fn lua_test_minimap() {
     run_lua_test("unit/test_minimap.lua");
 }
@@ -849,6 +879,11 @@ fn lua_test_sprite() {
 }
 
 #[test]
+fn lua_test_sprite_aseprite() {
+    run_lua_test("unit/test_sprite_aseprite.lua");
+}
+
+#[test]
 fn lua_test_animation_ext() {
     run_lua_test("unit/test_animation_ext.lua");
 }
@@ -927,8 +962,18 @@ fn lua_test_terminal() {
 }
 
 #[test]
+fn lua_test_terminal_ansi_completion() {
+    run_lua_test("unit/test_terminal_ansi_completion.lua");
+}
+
+#[test]
 fn lua_test_fx() {
     run_lua_test("unit/test_fx.lua");
+}
+
+#[test]
+fn lua_test_effect_dedup() {
+    run_lua_test("unit/test_effect_dedup.lua");
 }
 
 #[test]
@@ -1701,6 +1746,26 @@ fn lua_test_unit_math_aabb_tree() {
 }
 
 #[test]
+fn lua_test_unit_math_voronoi() {
+    run_lua_test("unit/test_math_voronoi.lua");
+}
+
+#[test]
+fn lua_test_unit_terminal_cell_size() {
+    run_lua_test("unit/test_terminal_cell_size.lua");
+}
+
+#[test]
+fn lua_test_unit_input_vibrate() {
+    run_lua_test("unit/test_input_vibrate.lua");
+}
+
+#[test]
+fn lua_test_unit_automation_highlight() {
+    run_lua_test("unit/test_automation_highlight.lua");
+}
+
+#[test]
 fn lua_test_unit_tween_spring() {
     run_lua_test("unit/test_tween_spring.lua");
 }
@@ -1723,4 +1788,11 @@ fn lua_test_unit_window_icon() {
 #[test]
 fn lua_test_unit_input_combo() {
     run_lua_test("unit/test_input_combo.lua");
+}
+
+// ─── Config: runtime fallback ─────────────────────────────────────────────────
+
+#[test]
+fn lua_test_config_fallback() {
+    run_lua_test("config/test_runtime_config_fallback.lua");
 }

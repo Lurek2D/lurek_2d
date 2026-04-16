@@ -31,7 +31,7 @@
 #>
 
 param(
-    [string]$OutDir   = "",
+    [string]$OutDir = "",
     [switch]$SkipBuild
 )
 
@@ -41,12 +41,12 @@ $ErrorActionPreference = 'Stop'
 $WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 if (-not $OutDir) { $OutDir = Join-Path $WorkspaceRoot 'dist' }
 
-$Version       = "0.13.0"
-$ArchName      = "lurek2d-windows-x86_64"
-$PackageDir    = Join-Path $OutDir $ArchName
-$ZipPath       = Join-Path $OutDir "$ArchName.zip"
+$Version = "0.13.0"
+$ArchName = "lurek2d-windows-x86_64"
+$PackageDir = Join-Path $OutDir $ArchName
+$ZipPath = Join-Path $OutDir "$ArchName.zip"
 # Release binary lives in build/release/
-$BinarySource  = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
+$BinarySource = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
 
 # -- Helpers -------------------------------------------------------------------
 function Write-Step([string]$Msg) { Write-Host "[dist] $Msg" -ForegroundColor Cyan }
@@ -77,9 +77,11 @@ if (-not $SkipBuild) {
     try {
         cargo build --release 2>&1 | ForEach-Object { Write-Host "    $_" }
         if ($LASTEXITCODE -ne 0) { Write-Fail "cargo build --release failed." }
-    } finally { Pop-Location }
+    }
+    finally { Pop-Location }
     Write-OK "Build succeeded."
-} else {
+}
+else {
     Write-Step "Skipping build (--SkipBuild set)."
 }
 
@@ -109,10 +111,12 @@ if ($upx) {
     if ($LASTEXITCODE -eq 0) {
         $SizeAfter = [math]::Round((Get-Item $DestBinary).Length / 1MB, 2)
         Write-OK "UPX compressed: $SizeBefore MB � $SizeAfter MB"
-    } else {
+    }
+    else {
         Write-Host "[warn] UPX returned non-zero; binary unchanged." -ForegroundColor Yellow
     }
-} else {
+}
+else {
     Write-Host "[dist] UPX not found on PATH -- skipping compression (add upx to PATH to enable)." -ForegroundColor DarkGray
 }
 
@@ -236,13 +240,13 @@ if (-not (Test-Path $IcoPath)) {
 }
 if (Test-Path $IcoPath) {
     Write-Step "Creating lurekc.lnk shortcut with Lurek2D icon ..."
-    $ws  = New-Object -ComObject WScript.Shell
+    $ws = New-Object -ComObject WScript.Shell
     $lnk = $ws.CreateShortcut((Join-Path $PackageDir 'lurekc.lnk'))
-    $lnk.TargetPath       = Join-Path $PackageDir 'lurekc.bat'
+    $lnk.TargetPath = Join-Path $PackageDir 'lurekc.bat'
     $lnk.WorkingDirectory = $PackageDir
-    $lnk.IconLocation     = "$IcoPath,0"
-    $lnk.Description      = "Lurek2D -- launch game without console window"
-    $lnk.WindowStyle      = 1
+    $lnk.IconLocation = "$IcoPath,0"
+    $lnk.Description = "Lurek2D -- launch game without console window"
+    $lnk.WindowStyle = 1
     $lnk.Save()
     Write-OK "Created lurekc.lnk (double-click to run a game, drag-and-drop supported)"
 }

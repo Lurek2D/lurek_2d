@@ -118,3 +118,4 @@ Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`
 - Keep this module reference synchronized with `src/runtime/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
 - This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
+- **conf.lua parse-error fallback (implemented 2026-04-16)**: `Config::load_from_conf_lua` handles Lua parse and eval errors by logging `L052` with the suffix "Using default config." and returning `Config::default()`. The engine always reaches the error screen rather than crashing before it exists. Tested in `tests/lua/config/test_runtime_config_fallback.lua`.

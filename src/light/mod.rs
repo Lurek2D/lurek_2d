@@ -1,4 +1,4 @@
-//! 2D point-light data model — Tier 1 core engine module.
+//! 2D point-light data model — Platform Services module.
 //!
 //! Provides `Light2D`, a pure data container describing a circular point light
 //! source in 2D space (position, radius, color, intensity, enabled flag).
@@ -12,8 +12,9 @@
 //!
 //! ## Tier
 //!
-//! `light` is a **Tier 1 — Core Engine** module. It may import only `math` and
-//! `engine`. It must not import other Tier 1 modules.
+//! `light` is a **Platform Services** module (Tier 2/3 in the five-group engine
+//! stack). It sits behind a pure-Rust contract; the renderer drives GPU light
+//! passes from `RenderCommand` variants emitted by `lua_api/light_api.rs`.
 
 /// Custom attenuation coefficients for distance falloff.
 pub mod attenuation;

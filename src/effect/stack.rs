@@ -251,6 +251,31 @@ impl PostFxStack {
         self.enabled.clear();
     }
 
+    /// Removes duplicate effect indices from the chain, keeping the first occurrence
+    /// of each index and discarding subsequent duplicates.
+    ///
+    /// This is useful for reducing redundant wgpu shader passes when the same effect
+    /// has been added more than once.
+    ///
+    /// # Returns
+    /// `usize` — the number of duplicate entries removed.
+    pub fn dedup_indices(&mut self) -> usize {
+        let mut seen = std::collections::HashSet::new();
+        let before = self.effects.len();
+        let mut new_effects = Vec::with_capacity(before);
+        let mut new_enabled = Vec::with_capacity(before);
+        for (idx, enabled) in self.effects.iter().zip(self.enabled.iter()) {
+            if seen.insert(*idx) {
+                new_effects.push(*idx);
+                new_enabled.push(*enabled);
+            }
+        }
+        let removed = before - new_effects.len();
+        self.effects = new_effects;
+        self.enabled = new_enabled;
+        removed
+    }
+
     // ── CPU rendering ──
 
     /// Renders a diagnostic image showing the effect stack layout.

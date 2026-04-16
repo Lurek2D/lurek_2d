@@ -9,7 +9,7 @@ use std::rc::Rc;
 
 use mlua::prelude::*;
 
-use crate::devtools::{FileWatcher, FrameStats, Logger, ProfileZone, Profiler};
+use crate::devtools::{FileWatcher, FrameStats, Logger, ProfileZone, Profiler, ReplConsole};
 use crate::runtime::SharedState;
 
 // ---------------------------------------------------------------------------
@@ -836,7 +836,85 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- newRepl --
+    /// Creates an interactive Lua REPL console with a bounded history buffer.
+    ///
+    /// The returned object evaluates Lua snippets against the live Lua VM and
+    /// keeps a scrollable input history.  Useful for in-game debug consoles.
+    ///
+    /// Methods on the returned userdata:
+    /// - `eval(code)` → string  — runs `code`, returns result or error text
+    /// - `history()` → table    — ordered array of past inputs (oldest first)
+    /// - `clear()` — wipes the history buffer
+    /// - `len()` → integer      — number of history entries
+    ///
+    /// # Usage
+    /// ```lua
+    /// local repl = lurek.devtools.newRepl(100)
+    /// local result = repl:eval("1 + 1")
+    /// ```
+    /// @param max_history : integer?
+    /// @return ReplConsole
+    dt.set(
+        "newRepl",
+        lua.create_function(|lua, max_history: Option<usize>| {
+            lua.create_userdata(LuaReplConsole {
+                inner: ReplConsole::new(max_history.unwrap_or(200)),
+            })
+        })?,
+    )?;
+
     // -- devtools namespace --
     luna.set("devtools", dt)?;
     Ok(())
+}
+
+// -------------------------------------------------------------------------------
+// LuaReplConsole UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`ReplConsole`] interactive evaluator.
+pub struct LuaReplConsole {
+    inner: ReplConsole,
+}
+
+impl LuaUserData for LuaReplConsole {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- eval --
+        /// Evaluates a Lua snippet and records the input in history.
+        ///
+        /// Single-expression inputs (e.g. `"1 + 2"`) return the result as a string.
+        /// Statement blocks (e.g. `"x = 10"`) return `"(ok)"` on success.
+        /// Any Lua error is caught and returned as an error string.
+        ///
+        /// @param code : string
+        /// @return string
+        methods.add_method_mut("eval", |lua, this, code: String| {
+            Ok(this.inner.eval(&code, lua))
+        });
+
+        // -- history --
+        /// Returns an ordered array of past inputs (oldest first).
+        /// @return table
+        methods.add_method("history", |lua, this, ()| {
+            let t = lua.create_table()?;
+            for (i, entry) in this.inner.history().iter().enumerate() {
+                t.set(i + 1, entry.clone())?;
+            }
+            Ok(t)
+        });
+
+        // -- clear --
+        /// Clears the REPL history buffer.
+        /// @return nil
+        methods.add_method_mut("clear", |_, this, ()| {
+            this.inner.clear();
+            Ok(())
+        });
+
+        // -- len --
+        /// Returns the number of history entries.
+        /// @return integer
+        methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+    }
 }

@@ -114,6 +114,8 @@ fn write_render_text(
 /// - `scrollback_offset` — `usize`. Viewport offset from the bottom (0 = show latest).
 /// - `cmd_history` — `Vec<String>`. Previously entered commands (oldest first).
 /// - `cmd_cursor` — `usize`. Browse position in `cmd_history` (0 = live input).
+/// - `cell_width_override` — `Option<f32>`. Per-terminal cell pixel width override.
+/// - `cell_height_override` — `Option<f32>`. Per-terminal cell pixel height override.
 #[derive(Debug, Clone)]
 pub struct Terminal {
     cols: usize,
@@ -133,6 +135,10 @@ pub struct Terminal {
     cmd_history: Vec<String>,
     /// Current browse position in history (0 = live input; 1 = last cmd).
     cmd_cursor: usize,
+    /// Override cell pixel width. `None` means auto-computed from font.
+    cell_width_override: Option<f32>,
+    /// Override cell pixel height. `None` means auto-computed from font.
+    cell_height_override: Option<f32>,
 }
 
 impl Terminal {
@@ -160,6 +166,8 @@ impl Terminal {
             scrollback_offset: 0,
             cmd_history: Vec::new(),
             cmd_cursor: 0,
+            cell_width_override: None,
+            cell_height_override: None,
         }
     }
 
@@ -208,6 +216,37 @@ impl Terminal {
     /// `(usize, usize)`.
     pub fn get_dimensions(&self) -> (usize, usize) {
         (self.cols, self.rows)
+    }
+
+    /// Set a per-terminal cell pixel size override.
+    ///
+    /// When set, `build_render_commands` will use these values instead of the
+    /// font-derived cell dimensions.  Both values must be positive; values ≤ 0
+    /// are clamped to 1.0.
+    ///
+    /// # Parameters
+    /// - `w` — `f32`. Cell pixel width.
+    /// - `h` — `f32`. Cell pixel height.
+    pub fn set_cell_size(&mut self, w: f32, h: f32) {
+        self.cell_width_override = Some(w.max(1.0));
+        self.cell_height_override = Some(h.max(1.0));
+    }
+
+    /// Clear the cell size override, reverting to font-derived dimensions.
+    pub fn reset_cell_size(&mut self) {
+        self.cell_width_override = None;
+        self.cell_height_override = None;
+    }
+
+    /// Return the active cell size override, or `None` if font-derived sizing is used.
+    ///
+    /// # Returns
+    /// `Option<(f32, f32)>`.
+    pub fn get_cell_size(&self) -> Option<(f32, f32)> {
+        match (self.cell_width_override, self.cell_height_override) {
+            (Some(w), Some(h)) => Some((w, h)),
+            _ => None,
+        }
     }
 
     /// Get the cursor position as 1-based coordinates.

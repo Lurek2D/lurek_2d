@@ -103,3 +103,9 @@ Scripts can be loaded programmatically from Lua tables or from serialized TOML f
 
 - Keep this module reference synchronized with `src/automation/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### New in 0.14.1
+
+- `Simulator.highlight_mode: bool` (default `false`) — hint flag for game-side replay overlays.
+- `Simulator::set_highlight_mode(enable: bool)` / `is_highlight_mode() -> bool`.
+- Lua: `lurek.simulator.setHighlightMode(enable)` / `isHighlightMode()`.

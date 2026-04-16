@@ -8,6 +8,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::animation::aseprite::load_aseprite_json;
+use crate::animation::blend::{BlendLayer, BlendLayerSet, BlendMask};
 use crate::animation::state_machine::{AnimParamValue, AnimStateMachine};
 use crate::animation::Animation;
 use crate::math::Rect;
@@ -387,6 +388,137 @@ impl LuaUserData for LuaAnimStateMachine {
 /// - `luna` — `&LuaTable`.
 /// - `_state` — `Rc<RefCell<SharedState>>`.
 ///
+// -------------------------------------------------------------------------------
+// LuaBlendLayerSet UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`BlendLayerSet`] blend layer compositor.
+pub struct LuaBlendLayerSet {
+    inner: BlendLayerSet,
+}
+
+impl LuaUserData for LuaBlendLayerSet {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- addLayer --
+        /// Appends a new blend layer.
+        ///
+        /// # Usage
+        /// ```lua
+        /// bls:addLayer("upper_body", "run", 1.0)
+        /// bls:addLayer("lower_body", "walk", 0.8, {"hip", "leg_l", "leg_r"})
+        /// ```
+        /// @param name : string
+        /// @param clip_name : string
+        /// @param weight : number
+        /// @param bones : table?
+        /// @return boolean
+        methods.add_method_mut(
+            "addLayer",
+            |_,
+             this,
+             (name, clip_name, weight, bones): (
+                String,
+                String,
+                f32,
+                Option<LuaTable>,
+            )| {
+                let mask = if let Some(t) = bones {
+                    let mut names: Vec<String> = Vec::new();
+                    for pair in t.pairs::<LuaValue, String>() {
+                        let (_, v) = pair?;
+                        names.push(v);
+                    }
+                    BlendMask::from_bones(names)
+                } else {
+                    BlendMask::all()
+                };
+                let layer = BlendLayer::new(&name, &clip_name, weight, mask);
+                this.inner
+                    .add_layer(layer)
+                    .map_err(LuaError::RuntimeError)?;
+                Ok(true)
+            },
+        );
+
+        // -- removeLayer --
+        /// Removes a blend layer by name.
+        /// @param name : string
+        /// @return boolean
+        methods.add_method_mut("removeLayer", |_, this, name: String| {
+            this.inner
+                .remove_layer(&name)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(true)
+        });
+
+        // -- setWeight --
+        /// Sets the blend weight of a named layer (clamped to [0, 1]).
+        /// @param name : string
+        /// @param weight : number
+        /// @return boolean
+        methods.add_method_mut("setWeight", |_, this, (name, weight): (String, f32)| {
+            this.inner
+                .set_weight(&name, weight)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(true)
+        });
+
+        // -- getWeight --
+        /// Returns the blend weight of a named layer, or nil if not found.
+        /// @param name : string
+        /// @return number?
+        methods.add_method("getWeight", |_, this, name: String| {
+            Ok(this.inner.get_weight(&name))
+        });
+
+        // -- setMask --
+        /// Replaces the bone mask of a layer.
+        /// @param name : string
+        /// @param bones : table
+        /// @return boolean
+        methods.add_method_mut("setMask", |_, this, (name, bones): (String, LuaTable)| {
+            let mut bone_names: Vec<String> = Vec::new();
+            for pair in bones.pairs::<LuaValue, String>() {
+                let (_, v) = pair?;
+                bone_names.push(v);
+            }
+            this.inner
+                .set_mask(&name, BlendMask::from_bones(bone_names))
+                .map_err(LuaError::RuntimeError)?;
+            Ok(true)
+        });
+
+        // -- listLayers --
+        /// Returns an ordered array of layer info tables: {name, clip_name, weight, bones}.
+        /// @return table
+        methods.add_method("listLayers", |lua, this, ()| {
+            let out = lua.create_table()?;
+            for (i, layer) in this.inner.layers().iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("name", layer.name.clone())?;
+                t.set("clip_name", layer.clip_name.clone())?;
+                t.set("weight", layer.weight)?;
+                let bones = lua.create_table()?;
+                for (j, b) in layer.mask.bone_names.iter().enumerate() {
+                    bones.set(j + 1, b.clone())?;
+                }
+                t.set("bones", bones)?;
+                out.set(i + 1, t)?;
+            }
+            Ok(out)
+        });
+
+        // -- len --
+        /// Returns the number of blend layers.
+        /// @return integer
+        methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+    }
+}
+
+// -------------------------------------------------------------------------------
+// register()
+// -------------------------------------------------------------------------------
+
 pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
@@ -467,6 +599,30 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, ()| {
             lua.create_userdata(LuaAnimSyncGroup {
                 inner: crate::animation::sync_group::AnimSyncGroup::new(),
+            })
+        })?,
+    )?;
+
+    // -- newBlendLayerSet --
+    /// Creates a new empty [`BlendLayerSet`] for compositing multiple animation clips.
+    ///
+    /// Layers are evaluated bottom-to-top; each carries a clip name, a blend weight,
+    /// and an optional bone mask.  Use `:addLayer`, `:setWeight`, and `:setMask` to
+    /// configure the set, then read the layer list with `:listLayers` to drive your
+    /// animation system.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local bls = lurek.animation.newBlendLayerSet()
+    /// bls:addLayer("base",  "idle", 1.0)
+    /// bls:addLayer("upper", "wave", 0.6, {"spine", "arm_r"})
+    /// ```
+    /// @return BlendLayerSet
+    tbl.set(
+        "newBlendLayerSet",
+        lua.create_function(|lua, ()| {
+            lua.create_userdata(LuaBlendLayerSet {
+                inner: BlendLayerSet::new(),
             })
         })?,
     )?;

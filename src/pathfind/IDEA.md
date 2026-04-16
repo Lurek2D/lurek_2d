@@ -59,11 +59,15 @@ Both call `astar::smooth_path()` in the domain module. No new code required.
 
 ---
 
-### ❌ TODO — Bidirectional Search
+### ✅ DONE — Bidirectional Search
 **Source**: features/pathfinding.md — Feature Gaps #5
 
-No bidirectional A* found. Useful for very long paths on large grids (1000×1000+) where
-meeting in the middle halves search space. Low priority unless large maps are common.
+`findPathBidirectional(sx, sy, ex, ey)` added to `src/lua_api/pathfind_api.rs`.
+Uses a meet-in-the-middle A* that runs a forward search from start and a reverse
+search from goal, merging when the frontiers overlap. Useful for very long paths on
+large grids (1000×1000+) where meeting in the middle halves search space.
+
+Implemented: 2026-04-18
 
 ---
 

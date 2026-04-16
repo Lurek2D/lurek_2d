@@ -31,11 +31,13 @@
 
 ---
 
-### ❌ TODO — Configurable Peer Limit (Increase from 8)
+### ✅ DONE — Configurable Peer Limit (Increase from 8)
 **Source**: features/network.md — Feature Gaps #1
 
-8-peer limit is hardcoded. Make `maxPeers` a parameter to `lurek.network.host(port, maxPeers)`.
-Many party and co-op games need 8–32 peers. Verify ENet limits.
+`lurek.network.newHost` and `lurek.network.newServer` now accept `maxPeers` as the
+preferred options key (with `peers` as the legacy alias).  The value is forwarded to
+`NetworkHost::new(port, peers: Option<usize>)`.  When neither key is provided, the
+existing default is used.  Updated docstrings explain the alias.
 
 ---
 

@@ -12,6 +12,14 @@
 //! Effects that work in-place take `&mut self`; effects that produce a new image take `&self`
 //! and return a new `ImageData`.  Apply effects after loading an image and before uploading
 //! to the GPU via `lurek.img.*`.
+//!
+//! ## Parallelism
+//!
+//! Pure per-pixel transforms (brightness, contrast, saturation, gamma, tint, grayscale, sepia,
+//! invert, threshold, posterize, fill) delegate to [`ImageData::map_pixel_par`], which uses
+//! [rayon](https://docs.rs/rayon) for images larger than 65 536 pixels and falls back to a
+//! serial loop for smaller ones.  Effects with sequential data dependencies (noise, convolution
+//! kernels) remain serial.
 
 use super::image_data::ImageData;
 
@@ -27,7 +35,7 @@ impl ImageData {
     /// # Parameters
     /// - `factor` — `f32`. Multiplier applied to each R, G, B channel.
     pub fn brightness(&mut self, factor: f32) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let r = (r as f32 * factor).clamp(0.0, 255.0) as u8;
             let g = (g as f32 * factor).clamp(0.0, 255.0) as u8;
             let b = (b as f32 * factor).clamp(0.0, 255.0) as u8;
@@ -45,7 +53,7 @@ impl ImageData {
     /// # Parameters
     /// - `factor` — `f32`. Contrast multiplier around the mid-point 128.
     pub fn contrast(&mut self, factor: f32) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let apply = |ch: u8| ((ch as f32 - 128.0) * factor + 128.0).clamp(0.0, 255.0) as u8;
             (apply(r), apply(g), apply(b), a)
         });
@@ -61,7 +69,7 @@ impl ImageData {
     /// # Parameters
     /// - `factor` — `f32`. Saturation scale: 0.0 = greyscale, 1.0 = original, > 1.0 = boosted.
     pub fn saturation(&mut self, factor: f32) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let luma = 0.2126 * r as f32 + 0.7152 * g as f32 + 0.0722 * b as f32;
             let lerp = |ch: f32| (luma + (ch - luma) * factor).clamp(0.0, 255.0) as u8;
             (lerp(r as f32), lerp(g as f32), lerp(b as f32), a)
@@ -78,7 +86,7 @@ impl ImageData {
     /// # Parameters
     /// - `gamma` — `f32`. Gamma exponent denominator (typically 0.4–2.2).
     pub fn gamma(&mut self, gamma: f32) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let apply =
                 |ch: u8| ((ch as f32 / 255.0).powf(1.0 / gamma) * 255.0).clamp(0.0, 255.0) as u8;
             (apply(r), apply(g), apply(b), a)
@@ -97,8 +105,13 @@ impl ImageData {
     /// - `tb` — `u8`. Blue component of the tint colour (0–255).
     /// - `factor` — `f32`. Blend weight from 0.0 (no tint) to 1.0 (full tint colour).
     pub fn tint(&mut self, tr: u8, tg: u8, tb: u8, factor: f32) {
-        let lerp = |a: u8, b: u8| (a as f32 + (b as f32 - a as f32) * factor).clamp(0.0, 255.0) as u8;
-        self.map_pixel(|_, _, r, g, b, a| (lerp(r, tr), lerp(g, tg), lerp(b, tb), a));
+        // Inline the lerp so the closure captures only `Copy` values and is `Send + Sync`.
+        self.map_pixel_par(move |_, _, r, g, b, a| {
+            let lerp = |from: u8, to: u8| {
+                (from as f32 + (to as f32 - from as f32) * factor).clamp(0.0, 255.0) as u8
+            };
+            (lerp(r, tr), lerp(g, tg), lerp(b, tb), a)
+        });
     }
 
     // ── Filters ─────────────────────────────────────────────────────────────
@@ -108,7 +121,7 @@ impl ImageData {
     /// Luminance is `round(0.2126*R + 0.7152*G + 0.0722*B)` and is written to all three
     /// colour channels, producing a greyscale image in RGB space.
     pub fn grayscale(&mut self) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let luma = (0.2126 * r as f32 + 0.7152 * g as f32 + 0.0722 * b as f32).round() as u8;
             (luma, luma, luma, a)
         });
@@ -123,7 +136,7 @@ impl ImageData {
     ///
     /// All output channels are clamped to \[0, 255\].
     pub fn sepia(&mut self) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(|_, _, r, g, b, a| {
             let rf = r as f32;
             let gf = g as f32;
             let bf = b as f32;
@@ -136,7 +149,7 @@ impl ImageData {
 
     /// Invert every RGB channel (`new = 255 - ch`), leaving alpha unchanged.
     pub fn invert(&mut self) {
-        self.map_pixel(|_, _, r, g, b, a| (255 - r, 255 - g, 255 - b, a));
+        self.map_pixel_par(|_, _, r, g, b, a| (255 - r, 255 - g, 255 - b, a));
     }
 
     /// Convert each pixel to black or white based on its luminance, leaving alpha unchanged.
@@ -147,7 +160,7 @@ impl ImageData {
     /// # Parameters
     /// - `value` — `u8`. Luminance threshold (0–255). 128 is a typical midpoint.
     pub fn threshold(&mut self, value: u8) {
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(move |_, _, r, g, b, a| {
             let luma = (0.2126 * r as f32 + 0.7152 * g as f32 + 0.0722 * b as f32).round() as u8;
             let v = if luma >= value { 255 } else { 0 };
             (v, v, v, a)
@@ -164,7 +177,7 @@ impl ImageData {
     pub fn posterize(&mut self, levels: u8) {
         let levels = levels.max(2);
         let l = levels as f32 - 1.0;
-        self.map_pixel(|_, _, r, g, b, a| {
+        self.map_pixel_par(move |_, _, r, g, b, a| {
             let apply = |ch: u8| ((ch as f32 / 255.0 * l).round() / l * 255.0).round() as u8;
             (apply(r), apply(g), apply(b), a)
         });
@@ -180,7 +193,7 @@ impl ImageData {
     /// - `b` — `u8`. Blue component (0–255).
     /// - `a` — `u8`. Alpha component (0–255).
     pub fn fill(&mut self, r: u8, g: u8, b: u8, a: u8) {
-        self.map_pixel(|_, _, _, _, _, _| (r, g, b, a));
+        self.map_pixel_par(move |_, _, _, _, _, _| (r, g, b, a));
     }
 
     /// Add pseudo-random noise to every RGB channel, leaving alpha unchanged.

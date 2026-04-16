@@ -192,3 +192,10 @@ Text operations: `print(x, y, text, fg, bg)` places styled text at a specific gr
 
 - Keep this module reference synchronized with `src/terminal/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### New in 0.14.1
+
+- `Terminal.cell_width_override: Option<f32>` and `cell_height_override: Option<f32>` — per-terminal cell pixel size override (default `None`).
+- `Terminal::set_cell_size(w, h)`, `reset_cell_size()`, `get_cell_size() -> Option<(f32,f32)>`.
+- Lua: `terminal:setCellSize(w, h)`, `terminal:resetCellSize()`, `terminal:getCellSize()` — returns `{w, h}` table or `nil`.
+- `render` respects the override; falls back to font-derived size.

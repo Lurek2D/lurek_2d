@@ -86,6 +86,7 @@ enum PlaybackState {
 /// - `elapsed` — `f32`.
 /// - `next_step_idx` — `usize`.
 /// - `state` — `PlaybackState`.
+/// - `highlight_mode` — `bool`. When `true`, a game can render an overlay showing current input positions.
 #[derive(Debug)]
 pub struct Simulator {
     /// All loaded scripts indexed by their name.
@@ -125,6 +126,12 @@ pub struct Simulator {
     /// Default is `1.0`. Values below `1.0` slow playback; values above `1.0` speed
     /// it up. Clamped to `[0.0, ∞)` by [`Simulator::set_playback_speed`].
     playback_speed: f32,
+    /// When `true`, a game-side render pass can draw an overlay showing the current
+    /// cursor position and key state for each simulated step.
+    ///
+    /// The engine does not render this overlay itself; the flag is a hint for the
+    /// Lua script that calls `lurek.simulator:isHighlightMode()`.
+    highlight_mode: bool,
 }
 
 impl Simulator {
@@ -145,6 +152,7 @@ impl Simulator {
             state: PlaybackState::Idle,
             macros: HashMap::new(),
             playback_speed: 1.0,
+            highlight_mode: false,
         }
     }
 
@@ -431,6 +439,27 @@ impl Simulator {
     /// `f32`.
     pub fn get_playback_speed(&self) -> f32 {
         self.playback_speed
+    }
+
+    /// Enable or disable the visual highlight overlay hint.
+    ///
+    /// When `true`, a game-side render pass is expected to draw a highlight
+    /// showing the current simulated cursor/key position.  The engine does
+    /// not render this overlay; the flag is a hint exposed via
+    /// `lurek.simulator:isHighlightMode()`.
+    ///
+    /// # Parameters
+    /// - `enable` — `bool`.
+    pub fn set_highlight_mode(&mut self, enable: bool) {
+        self.highlight_mode = enable;
+    }
+
+    /// Return whether the highlight overlay hint is active.
+    ///
+    /// # Returns
+    /// `bool`.
+    pub fn is_highlight_mode(&self) -> bool {
+        self.highlight_mode
     }
 
     /// Advance the playback clock by `dt` seconds and dispatch all due steps.

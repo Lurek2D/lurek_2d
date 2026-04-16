@@ -17,6 +17,10 @@ mod cell;
 pub mod render;
 mod terminal_state;
 mod widget;
+/// ANSI escape code parser for colour/style extraction.
+pub mod ansi;
+/// Tab-completion engine for TextBox inputs.
+pub mod completion;
 
 pub use cell::TCell;
 pub use terminal_state::Terminal;

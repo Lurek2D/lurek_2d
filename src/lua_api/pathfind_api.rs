@@ -11,7 +11,7 @@ use crate::log_msg;
 use crate::pathfind::ai_flow_field::FlowField as AiFlowField;
 use crate::pathfind::hpa::{build_abstract, AbstractGraph};
 use crate::pathfind::pathgrid::PathGrid;
-use crate::pathfind::{DiagonalMode, FlowField, NavGrid, UnitPathfinder, Waypoint};
+use crate::pathfind::{bidirectional_astar, DiagonalMode, FlowField, NavGrid, UnitPathfinder, Waypoint};
 use crate::pathfind::{HexGrid, HexLayout, JpsGrid, RangeMap};
 
 // -------------------------------------------------------------------------------
@@ -322,6 +322,54 @@ impl LuaUserData for LuaUnitPathfinder {
                 match result {
                     Some(path) => Ok(LuaValue::Table(waypoints_to_lua(lua, &path)?)),
                     None => Ok(LuaValue::Nil),
+                }
+            },
+        );
+
+        // -- findPathBidirectional --
+        /// Finds a path using bidirectional A★, expanding from start and goal simultaneously
+        /// for approximately half the node expansions of standard A★ on large open grids.
+        /// Returns a path table (1-based `{x, y}` entries) plus a `complete` boolean.
+        /// Returns `nil, false` when start or goal is not walkable or no path exists.
+        /// @param x1 : integer
+        /// @param y1 : integer
+        /// @param x2 : integer
+        /// @param y2 : integer
+        /// @param unitSize : integer?
+        /// @param maxNodes : integer?
+        /// @return table?, boolean
+        methods.add_method(
+            "findPathBidirectional",
+            |lua,
+             this,
+             (x1, y1, x2, y2, unit_size, max_nodes): (
+                u32,
+                u32,
+                u32,
+                u32,
+                Option<u32>,
+                Option<u32>,
+            )| {
+                let grid = this.inner.borrow();
+                let (path_opt, complete) = bidirectional_astar(
+                    &grid,
+                    (x1 - 1, y1 - 1),
+                    (x2 - 1, y2 - 1),
+                    unit_size.unwrap_or(1),
+                    max_nodes.unwrap_or(0),
+                );
+                match path_opt {
+                    Some(cells) => {
+                        let tbl = lua.create_table()?;
+                        for (i, (cx, cy)) in cells.iter().enumerate() {
+                            let entry = lua.create_table()?;
+                            entry.set("x", cx + 1)?;
+                            entry.set("y", cy + 1)?;
+                            tbl.set(i + 1, entry)?;
+                        }
+                        Ok((LuaValue::Table(tbl), complete))
+                    }
+                    None => Ok((LuaValue::Nil, false)),
                 }
             },
         );

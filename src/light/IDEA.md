@@ -68,17 +68,35 @@ conflicting ambient states.
 
 ---
 
-### ❌ TODO — Integration with PostFx GodRays
+### ✅ DONE — Integration with PostFx GodRays
 **Source**: features/light.md — Feature Gaps #6 / Suggestions #7
 
-Directional lights have a position and angle but `effect`/PostFx god-ray effect doesn't
-use light positions. Bridge needed: feed light data as god-ray source hint.
+`LightWorld::directional_light_hints()` added to `src/light/light_world.rs`. Filters enabled
+directional lights and returns `Vec<(f32, f32, f32)>` (x, y, direction) tuples.
+
+`lurek.light.getGodRayHints()` free function added to `src/lua_api/light_api.rs`. Returns an
+indexed table of `{x, y, angle}` records, one per enabled directional light. A post-processing
+or effect pass can read this table to drive god-ray shaders without coupling effect and light
+Rust modules.
+
+```lua
+local hints = lurek.light.getGodRayHints()
+for _, h in ipairs(hints) do
+    -- pass h.x, h.y, h.angle to your god-ray shader
+end
+```
+
+`LightWorld::ambient_color_hint()` + `lurek.light.syncAmbient()` also added for parity:
+a read-only ambient snapshot suitable for shader uniform uploads.
+
+Implemented: 2026-04-18
 
 ---
 
-### ⚠️ FIXME — Tier Label in Source Code
+### ✅ DONE — Tier Label in Source Code
 **Source**: features/light.md — Structural Issues
 
-`src/light/mod.rs` documents itself as Tier 1 (Core) but architecture docs and
-`docs/specs/light.md` classify it as Tier 2 (Extension / Platform Services). Fix the
-comment in `mod.rs`.
+`src/light/mod.rs` tier comment updated from Tier 1 to Tier 2 (Platform Services) to
+align with `docs/specs/light.md` and `docs/architecture/engine-architecture.md`.
+
+Fixed: 2026-04-18

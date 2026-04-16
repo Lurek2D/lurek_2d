@@ -18,6 +18,8 @@ use std::collections::HashMap;
 /// - `w` — `u32`. Width of the region, in pixels.
 /// - `h` — `u32`. Height of the region, in pixels.
 /// - `rotated` — `bool`. Whether the region was rotated 90 degrees during packing.
+/// - `flip_x` — `bool`. Whether the region should be drawn horizontally flipped.
+/// - `flip_y` — `bool`. Whether the region should be drawn vertically flipped.
 #[derive(Debug, Clone)]
 pub struct AtlasEntry {
     /// The region identifier.
@@ -32,6 +34,27 @@ pub struct AtlasEntry {
     pub h: u32,
     /// Whether the region was packed rotated.
     pub rotated: bool,
+    /// Horizontal flip flag.  Set via [`AtlasEntry::get_flipped`].
+    pub flip_x: bool,
+    /// Vertical flip flag.  Set via [`AtlasEntry::get_flipped`].
+    pub flip_y: bool,
+}
+
+impl AtlasEntry {
+    /// Returns a copy of this entry with the requested flip flags applied.
+    ///
+    /// # Parameters
+    /// - `flip_x` — `bool`. Flip horizontally.
+    /// - `flip_y` — `bool`. Flip vertically.
+    ///
+    /// # Returns
+    /// `AtlasEntry` — a clone of `self` with `flip_x` and `flip_y` set.
+    pub fn get_flipped(&self, flip_x: bool, flip_y: bool) -> AtlasEntry {
+        let mut cloned = self.clone();
+        cloned.flip_x = flip_x;
+        cloned.flip_y = flip_y;
+        cloned
+    }
 }
 
 /// In-memory sprite atlas built from a TexturePacker JSON export.
@@ -199,7 +222,88 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
         .and_then(|v| v.as_bool())
         .unwrap_or(false);
 
-    Ok(AtlasEntry { name, x, y, w, h, rotated })
+    Ok(AtlasEntry { name, x, y, w, h, rotated, flip_x: false, flip_y: false })
+}
+
+// -------------------------------------------------------------------------------
+// Aseprite JSON parser
+// -------------------------------------------------------------------------------
+
+/// Parses an Aseprite JSON export and returns a [`SpriteAtlas`].
+///
+/// Aseprite exports two JSON variants:
+/// - **Array**: `"frames": [ { "filename": "name", "frame": {"x":n,"y":n,"w":n,"h":n} } ]`
+/// - **Hash**: `"frames": { "name": { "frame": {"x":n,"y":n,"w":n,"h":n} } }`
+///
+/// The `"meta"` key (if present) is ignored.
+///
+/// # Parameters
+/// - `json_str` — `&str`. Raw Aseprite JSON export string.
+///
+/// # Returns
+/// `Result<SpriteAtlas, String>` — `Ok` with the populated atlas, or `Err` with a
+/// description of why parsing failed.
+pub fn parse_aseprite_json(json_str: &str) -> Result<SpriteAtlas, String> {
+    let value: serde_json::Value =
+        serde_json::from_str(json_str).map_err(|e| format!("Aseprite JSON parse error: {}", e))?;
+
+    let frames = value
+        .get("frames")
+        .ok_or("Missing 'frames' key in Aseprite JSON")?;
+
+    let mut atlas = SpriteAtlas::new();
+
+    match frames {
+        // Array format: [ { "filename": "name", "frame": {...} }, ... ]
+        serde_json::Value::Array(arr) => {
+            for item in arr {
+                let name = item
+                    .get("filename")
+                    .and_then(|v| v.as_str())
+                    .ok_or("Aseprite array frame missing 'filename'")?
+                    .to_owned();
+                let entry = parse_aseprite_frame(name, item)?;
+                atlas.add_entry(entry);
+            }
+        }
+        // Hash format: { "name": { "frame": {...} }, ... }
+        serde_json::Value::Object(map) => {
+            for (name, item) in map {
+                let entry = parse_aseprite_frame(name.clone(), item)?;
+                atlas.add_entry(entry);
+            }
+        }
+        _ => return Err("Aseprite 'frames' must be an object or array".into()),
+    }
+
+    Ok(atlas)
+}
+
+/// Extracts an [`AtlasEntry`] from a single Aseprite frame record.
+fn parse_aseprite_frame(name: String, item: &serde_json::Value) -> Result<AtlasEntry, String> {
+    let frame = item.get("frame").ok_or_else(|| {
+        format!("Aseprite frame '{}' missing 'frame' rect object", name)
+    })?;
+
+    let x = frame
+        .get("x")
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.x'", name))? as u32;
+    let y = frame
+        .get("y")
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.y'", name))? as u32;
+    let w = frame
+        .get("w")
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.w'", name))? as u32;
+    let h = frame
+        .get("h")
+        .and_then(|v| v.as_u64())
+        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.h'", name))? as u32;
+
+    // Aseprite does not record rotation — always false.
+    Ok(AtlasEntry { name, x, y, w, h, rotated: false, flip_x: false, flip_y: false })
 }
 
 // -------------------------------------------------------------------------------

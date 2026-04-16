@@ -171,3 +171,7 @@ HTTP, TCP, and WebSocket operations run on the `NetworkRuntime` background OS th
 - `HostRole` is metadata only — it does not change ENet behaviour, just helps game code distinguish server from client.
 - MessagePack pack/unpack supports Nil, Bool, Integer, Float, String, Array (sequential table), Map (string-keyed table). Functions and userdata cannot be serialized.
 - Keep this module reference synchronized with `src/network/` and any matching Lua bindings.
+
+### New in 0.14.1
+
+- `lurek.network.newHost` and `newServer` accept `maxPeers` as the preferred peer-limit key; `peers` is retained as a legacy alias.

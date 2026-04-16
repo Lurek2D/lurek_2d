@@ -5,6 +5,7 @@ use slotmap::SlotMap;
 use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use crate::light::light2d::Light2D;
+use crate::light::light_type::LightType;
 use crate::light::occluder::Occluder;
 use crate::log_msg;
 use crate::math::Color;
@@ -308,6 +309,37 @@ impl LightWorld {
             img.draw_circle(l.x as i32, l.y as i32, 5, 255, 240, 100, 255);
         }
         img
+    }
+
+    /// Returns the current ambient colour as an RGBA tuple in `[0.0, 1.0]`.
+    ///
+    /// This is a convenience accessor for renderers that need the ambient
+    /// light colour without depending on the [`Color`] type.  The order is
+    /// `[r, g, b, a]`, all in `0.0 – 1.0`.
+    ///
+    /// # Returns
+    /// `[f32; 4]`.
+    pub fn ambient_color_hint(&self) -> [f32; 4] {
+        [self.ambient.r, self.ambient.g, self.ambient.b, self.ambient.a]
+    }
+
+    /// Returns a list of position and direction hints for all enabled directional lights.
+    ///
+    /// Each element is `(x, y, direction_radians)`.  Useful for renderers and
+    /// post-processing effects (e.g. god-ray shaders) that need directional light
+    /// information without traversing the full [`SlotMap`].
+    ///
+    /// Only lights with `light_type == LightType::Directional` and `enabled == true`
+    /// are included.
+    ///
+    /// # Returns
+    /// `Vec<(f32, f32, f32)>`.
+    pub fn directional_light_hints(&self) -> Vec<(f32, f32, f32)> {
+        self.lights
+            .values()
+            .filter(|l| l.enabled && l.light_type == LightType::Directional)
+            .map(|l| (l.x, l.y, l.direction))
+            .collect()
     }
 
 }

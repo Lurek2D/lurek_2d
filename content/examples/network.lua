@@ -403,3 +403,9 @@ rt:shutdown()
 -- state:setTurnOrder({ peer1, peer2 })
 -- state:beginTurn()
 -- In process loop: state:poll(); state:sync()
+
+-- ─── maxPeers option ──────────────────────────────────────────────────────────
+-- Preferred key is "maxPeers" ("peers" is the legacy alias).
+local host = lurek.network.newHost({ port = 7777, maxPeers = 16 })
+local server = lurek.network.newServer({ port = 9000, maxPeers = 32 })
+

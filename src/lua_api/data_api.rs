@@ -1,6 +1,7 @@
 //! `lurek.data` — Binary data manipulation, compression, hashing, and encoding.
 
 use super::SharedState;
+use indexmap::IndexMap as LuaIndexMap;
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::collections::VecDeque;
@@ -532,8 +533,97 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- toMsgPack --
+    /// Serializes a Lua value (table, string, number, boolean, or nil) to MessagePack binary.
+    /// Returns the raw bytes as a Lua string.
+    /// @param value : any
+    /// @return string
+    tbl.set(
+        "toMsgPack",
+        lua.create_function(|lua, value: LuaValue| {
+            let serial =
+                crate::serial::lua_table::from_lua(&value).map_err(LuaError::external)?;
+            let json_val = serial_value_to_json(&serial);
+            let bytes = crate::data::msgpack::to_msgpack(&json_val)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_string(&bytes)
+        })?,
+    )?;
+
+    // -- fromMsgPack --
+    /// Deserializes a MessagePack binary string back into a Lua value.
+    /// @param bytes : string
+    /// @return any
+    tbl.set(
+        "fromMsgPack",
+        lua.create_function(|lua, bytes: LuaString| {
+            let raw: &[u8] = bytes.as_bytes();
+            let json_val =
+                crate::data::msgpack::from_msgpack(raw).map_err(LuaError::RuntimeError)?;
+            let serial = json_value_to_serial(&json_val);
+            crate::serial::lua_table::to_lua(lua, &serial)
+        })?,
+    )?;
+
     luna.set("data", tbl)?;
     Ok(())
+}
+
+/// Converts a `crate::serial::lua_table::SerialValue` to a `serde_json::Value`.
+///
+/// Used internally by the MessagePack API bridge.
+fn serial_value_to_json(sv: &crate::serial::lua_table::SerialValue) -> serde_json::Value {
+    use crate::serial::lua_table::SerialValue;
+    match sv {
+        SerialValue::Null => serde_json::Value::Null,
+        SerialValue::Bool(b) => serde_json::Value::Bool(*b),
+        SerialValue::Int(n) => serde_json::Value::Number((*n).into()),
+        SerialValue::Float(f) => serde_json::Number::from_f64(*f)
+            .map(serde_json::Value::Number)
+            .unwrap_or(serde_json::Value::Null),
+        SerialValue::Str(s) => serde_json::Value::String(s.clone()),
+        SerialValue::Seq(arr) => {
+            serde_json::Value::Array(arr.iter().map(serial_value_to_json).collect())
+        }
+        SerialValue::Map(map) => {
+            let obj: serde_json::Map<String, serde_json::Value> = map
+                .iter()
+                .map(|(k, v)| (k.clone(), serial_value_to_json(v)))
+                .collect();
+            serde_json::Value::Object(obj)
+        }
+    }
+}
+
+/// Converts a `serde_json::Value` back into a `crate::serial::lua_table::SerialValue`.
+///
+/// Used internally by the MessagePack API bridge.
+fn json_value_to_serial(val: &serde_json::Value) -> crate::serial::lua_table::SerialValue {
+    use crate::serial::lua_table::SerialValue;
+    match val {
+        serde_json::Value::Null => SerialValue::Null,
+        serde_json::Value::Bool(b) => SerialValue::Bool(*b),
+        serde_json::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                SerialValue::Int(i)
+            } else if let Some(f) = n.as_f64() {
+                SerialValue::Float(f)
+            } else {
+                SerialValue::Int(0)
+            }
+        }
+        serde_json::Value::String(s) => SerialValue::Str(s.clone()),
+        serde_json::Value::Array(arr) => {
+            SerialValue::Seq(arr.iter().map(json_value_to_serial).collect())
+        }
+        serde_json::Value::Object(obj) => {
+            let mut map = LuaIndexMap::new();
+            for (k, v) in obj {
+                map.insert(k.clone(), json_value_to_serial(v));
+            }
+            SerialValue::Map(map)
+        }
+    }
 }
 
 /// Access structured binary data efficiently without copying.

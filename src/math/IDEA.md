@@ -23,11 +23,13 @@ dot, cross, lerp. Previous feature note referenced only a stub — it is now com
 
 ---
 
-### ❌ TODO — Polygon Boolean Operations
+### ✅ DONE — Polygon Boolean Operations
 **Source**: features/math.md — Feature Gaps #2
 
-No polygon union/intersection/difference found. Common for destructible terrain, visibility
-polygons, and 2D CSG. Requires a suitable Rust library (e.g., `geo`/`i_overlay`).
+`lurek.math.polygonIntersection(a, b)`, `polygonUnion(a, b)`, `polygonDifference(a, b)` added in
+`math_api.rs`.  Pure-Rust implementation in `src/math/polygon.rs` using Sutherland-Hodgman
+clipping + Andrew's monotone-chain convex hull.  Both polygons are expressed as Lua arrays of
+`{x, y}` tables.  Exact for convex inputs; hull-approximation for concave / disjoint cases.
 
 ---
 
@@ -40,11 +42,15 @@ Input: flat `{x1,y1,...}` table; output: flat clipped polygon table.
 
 ---
 
-### ❌ TODO — Voronoi Tessellation
+### ✅ DONE — Voronoi Tessellation
 **Source**: features/math.md — Feature Gaps #5
 
-`procgen` module has brute-force Voronoi. `math` should own the Delaunay-dual Voronoi
-primitive (`voronoi_from_delaunay()`). Move or duplicate algorithmic core here.
+`src/math/voronoi.rs` — Bowyer–Watson incremental Delaunay triangulation with Voronoi dual.
+Exposes `voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell>`.
+`VoronoiCell { site: (f32, f32), vertices: Vec<(f32, f32)> }` with vertices ordered CCW by
+angle around site.  Near-duplicate inputs are deduplicated.  Convex-hull cells are open.
+Lua API: `lurek.math.voronoi({{x,y},…})` → `{{site={x,y}, vertices={{x,y},…}},…}`.
+Tests: `tests/lua/unit/test_math_voronoi.lua`.
 
 ---
 

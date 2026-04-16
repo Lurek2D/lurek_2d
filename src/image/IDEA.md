@@ -81,10 +81,12 @@ Supports arbitrary N×N kernels (ksize must be odd); edges are clamped; alpha is
 
 ## Performance
 
-### ❌ TODO — Parallel Pixel Operations (rayon)
+### ✅ DONE — Parallel Pixel Operations (rayon)
 **Source**: performance/12-image-cpu-pixel-ops.md
 
-CPU pixel operations (grayscale, blit, resize) are row-independent. Rayon row-level
-parallelism would improve throughput for large textures (2048×2048+). No rayon usage
-found in `src/image/effects.rs`. Priority: **LOW** — GPU-side PostFx is preferable for
-per-frame effects; CPU ops are mostly offline.
+11 pure pixel transform functions in `src/image/effects.rs` now use `map_pixel_par`
+(rayon-backed, 65 536-pixel threshold) instead of `map_pixel`:
+`brightness`, `contrast`, `saturation`, `gamma`, `tint`, `grayscale`, `sepia`, `invert`,
+`threshold`, `posterize`, `fill`.  The `tint` function was refactored to an inline closure
+for `Send + Sync` compliance.  `threshold` and `posterize` use `move` closures to capture
+`Copy` values correctly.

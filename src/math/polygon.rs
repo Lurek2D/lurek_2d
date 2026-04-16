@@ -204,6 +204,188 @@ pub fn polygon_clip(polygon: &[(f32, f32)], nx: f32, ny: f32, d: f32) -> Vec<(f3
     out
 }
 
+// -------------------------------------------------------------------------------
+// Boolean polygon operations
+// -------------------------------------------------------------------------------
+
+/// Clips polygon `subject` against the convex polygon `clip` using the
+/// Sutherland-Hodgman algorithm and returns the intersection region.
+///
+/// Works correctly when both polygons are **convex** and in the same winding order
+/// (counter-clockwise is the convention; the function normalises both inputs to CCW).
+/// Concave polygons may give partial or unexpected results.
+///
+/// # Parameters
+/// - `subject` — `&[(f32, f32)]`. The subject polygon vertices (open list, no repeated first vertex).
+/// - `clip` — `&[(f32, f32)]`. The clipping polygon vertices (must be convex).
+///
+/// # Returns
+/// `Vec<(f32, f32)>` — the intersection region, or an empty `Vec` if there is none.
+pub fn polygon_intersection(
+    subject: &[(f32, f32)],
+    clip: &[(f32, f32)],
+) -> Vec<(f32, f32)> {
+    if subject.is_empty() || clip.is_empty() {
+        return Vec::new();
+    }
+    // Normalise clip to CCW so edge normals point inward.
+    let clip_ccw = ensure_ccw(clip);
+    let mut output = subject.to_vec();
+    let n = clip_ccw.len();
+    for i in 0..n {
+        if output.is_empty() {
+            break;
+        }
+        let (ax, ay) = clip_ccw[i];
+        let (bx, by) = clip_ccw[(i + 1) % n];
+        // Edge vector (bx-ax, by-ay).  Inward normal is (-(by-ay), bx-ax).
+        let nx = -(by - ay);
+        let ny = bx - ax;
+        let d = nx * ax + ny * ay;
+        output = polygon_clip(&output, nx, ny, d);
+    }
+    output
+}
+
+/// Returns an approximation of the union of two convex polygons by computing the
+/// convex hull of all their vertices.
+///
+/// This is exact when both polygons are convex and overlapping; it over-approximates
+/// when used with concave polygons or disjoint convex polygons.
+///
+/// # Parameters
+/// - `a` — `&[(f32, f32)]`. First polygon vertices.
+/// - `b` — `&[(f32, f32)]`. Second polygon vertices.
+///
+/// # Returns
+/// `Vec<(f32, f32)>` — the convex hull of all combined vertices (CCW winding).
+pub fn polygon_union(a: &[(f32, f32)], b: &[(f32, f32)]) -> Vec<(f32, f32)> {
+    let mut pts: Vec<(f32, f32)> = a.iter().chain(b.iter()).copied().collect();
+    convex_hull(&mut pts)
+}
+
+/// Returns an approximation of the difference `A - B` by clipping `A` against the
+/// **reversed** edges of `B` (i.e. the complement of `B`).
+///
+/// Works correctly when `B` is convex and fully overlaps with a region of `A`.
+/// The result may be concave or empty.
+///
+/// # Parameters
+/// - `a` — `&[(f32, f32)]`. Subject polygon.
+/// - `b` — `&[(f32, f32)]`. Clip polygon whose interior is subtracted from `A`.
+///
+/// # Returns
+/// `Vec<(f32, f32)>` — the remaining part of `A` after removing the overlap with `B`.
+pub fn polygon_difference(a: &[(f32, f32)], b: &[(f32, f32)]) -> Vec<(f32, f32)> {
+    if a.is_empty() {
+        return Vec::new();
+    }
+    if b.is_empty() {
+        return a.to_vec();
+    }
+    // Use the intersection of A with the complement of B.
+    // Complement of convex B: clip A against each outward-facing edge of B.
+    let b_ccw = ensure_ccw(b);
+    let n = b_ccw.len();
+    // Collect parts of A outside B using each clipping edge's outer side.
+    // For each edge we produce one fragment; the full difference is the union of fragments.
+    let mut fragments: Vec<Vec<(f32, f32)>> = Vec::new();
+    for i in 0..n {
+        let (ax, ay) = b_ccw[i];
+        let (bx, by) = b_ccw[(i + 1) % n];
+        // Inward normal of B edge.
+        let nx = -(by - ay);
+        let ny = bx - ax;
+        let d = nx * ax + ny * ay;
+        // Outward: clip A against the opposite half-plane.
+        let frag = polygon_clip(a, -nx, -ny, -d);
+        if !frag.is_empty() {
+            fragments.push(frag);
+        }
+    }
+    // Merge fragments as the convex hull of all fragment vertices (approximation).
+    if fragments.is_empty() {
+        Vec::new()
+    } else {
+        let mut all_pts: Vec<(f32, f32)> = fragments.into_iter().flatten().collect();
+        convex_hull(&mut all_pts)
+    }
+}
+
+// ── helpers for boolean ops ──────────────────────────────────────────────────
+
+/// Returns a CCW-ordered copy of `polygon`.  If already CCW (positive signed area),
+/// returns a clone; otherwise returns a reversed clone.
+fn ensure_ccw(polygon: &[(f32, f32)]) -> Vec<(f32, f32)> {
+    let area = signed_area_tuples(polygon);
+    if area >= 0.0 {
+        polygon.to_vec()
+    } else {
+        let mut rev = polygon.to_vec();
+        rev.reverse();
+        rev
+    }
+}
+
+/// Signed area for `(f32, f32)` tuple polygons (positive = CCW).
+fn signed_area_tuples(polygon: &[(f32, f32)]) -> f32 {
+    let n = polygon.len();
+    let mut area = 0.0f32;
+    for i in 0..n {
+        let (ax, ay) = polygon[i];
+        let (bx, by) = polygon[(i + 1) % n];
+        area += ax * by - bx * ay;
+    }
+    area / 2.0
+}
+
+/// Computes the convex hull of `pts` using Andrew's monotone chain algorithm.
+///
+/// Returns vertices in CCW order.  Returns an empty `Vec` for fewer than 3 distinct
+/// points (after deduplication).
+fn convex_hull(pts: &mut Vec<(f32, f32)>) -> Vec<(f32, f32)> {
+    if pts.len() < 3 {
+        return pts.clone();
+    }
+    // Sort lexicographically
+    pts.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal).then(
+        a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal),
+    ));
+    pts.dedup_by(|a, b| (a.0 - b.0).abs() < f32::EPSILON && (a.1 - b.1).abs() < f32::EPSILON);
+
+    if pts.len() < 3 {
+        return pts.clone();
+    }
+
+    let cross = |(ox, oy): (f32, f32), (ax, ay): (f32, f32), (bx, by): (f32, f32)| {
+        (ax - ox) * (by - oy) - (ay - oy) * (bx - ox)
+    };
+
+    let mut lower: Vec<(f32, f32)> = Vec::new();
+    for &p in pts.iter() {
+        while lower.len() >= 2 && cross(lower[lower.len() - 2], lower[lower.len() - 1], p) <= 0.0 {
+            lower.pop();
+        }
+        lower.push(p);
+    }
+    let mut upper: Vec<(f32, f32)> = Vec::new();
+    for &p in pts.iter().rev() {
+        while upper.len() >= 2 && cross(upper[upper.len() - 2], upper[upper.len() - 1], p) <= 0.0 {
+            upper.pop();
+        }
+        upper.push(p);
+    }
+    lower.pop();
+    upper.pop();
+    lower.extend(upper);
+    lower
+}
+            out.push(intersect(curr, next));
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

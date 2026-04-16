@@ -24,6 +24,8 @@ pub mod pack;
 pub mod ring_buffer;
 /// TOML value parsing and encoding utilities.
 pub mod toml_convert;
+/// MessagePack binary serialization and deserialization.
+pub mod msgpack;
 pub use bin_pack::{
     measure_size as bin_measure_size, read as bin_read, write as bin_write, BinValue,
 };

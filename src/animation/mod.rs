@@ -25,8 +25,11 @@ pub mod state_machine;
 pub mod curve;
 /// Named animation synchronisation groups.
 pub mod sync_group;
+/// Blend-layer system for compositing multiple animation clips.
+pub mod blend;
 
 pub use clip::AnimClip;
+pub use blend::{BlendLayer, BlendLayerSet, BlendMask};
 pub use controller::Animation;
 pub use event::AnimEvent;
 pub use frame::{AnimFrame, AnimationFrame};

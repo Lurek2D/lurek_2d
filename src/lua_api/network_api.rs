@@ -752,7 +752,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- newHost --
     /// Creates a new network host bound to the given address.
-    /// @param opts : table
+    ///
+    /// Accepts `maxPeers` (preferred) or `peers` (legacy alias) to set the peer limit.
+    /// Valid range is `[1, MAX_PEERS]`. Defaults to `DEFAULT_PEERS` when omitted.
+    /// @param opts : table — { addr?, maxPeers?, peers?, channels?, inBandwidth?, outBandwidth? }
     /// @return NetworkHost
     tbl.set(
         "newHost",
@@ -761,9 +764,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 .get::<_, String>("addr")
                 .unwrap_or_else(|_| "0.0.0.0:0".to_string());
             let addr = parse_addr(&addr_str)?;
+            // Accept `maxPeers` (documented) or `peers` (legacy alias).
+            let peers: Option<usize> = opts
+                .get::<_, usize>("maxPeers")
+                .ok()
+                .or_else(|| opts.get("peers").ok());
             let host = NetworkHost::new(
                 addr,
-                opts.get("peers").ok(),
+                peers,
                 opts.get("channels").ok(),
                 opts.get("inBandwidth").ok(),
                 opts.get("outBandwidth").ok(),
@@ -777,7 +785,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- newServer --
     /// Creates a server host that binds to a port and accepts connections.
-    /// @param opts : table — { port, peers?, channels? }
+    ///
+    /// Accepts `maxPeers` (preferred) or `peers` (legacy alias) to set the peer limit.
+    /// Valid range is `[1, MAX_PEERS]`. Defaults to `DEFAULT_PEERS` when omitted.
+    /// @param opts : table — { port, maxPeers?, peers?, channels? }
     /// @return NetworkHost
     tbl.set(
         "newServer",
@@ -785,9 +796,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let port: u16 = opts.get("port").map_err(|_| {
                 LuaError::RuntimeError("newServer: 'port' field is required".into())
             })?;
+            // Accept `maxPeers` (documented) or `peers` (legacy alias).
+            let peers: Option<usize> = opts
+                .get::<_, usize>("maxPeers")
+                .ok()
+                .or_else(|| opts.get("peers").ok());
             let host = NetworkHost::create_server(
                 port,
-                opts.get("peers").ok(),
+                peers,
                 opts.get("channels").ok(),
             )
             .map_err(LuaError::external)?;

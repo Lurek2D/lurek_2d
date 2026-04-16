@@ -30,6 +30,12 @@ pub mod async_loader;
 /// Raw file data buffer loaded from the VFS.
 pub mod file_data;
 
+/// Read-only ZIP archive mounting for `.luna` bundles and mod archives.
+pub mod zip_mount;
+
+/// Polling-based file watcher for development hot-reload workflows.
+pub mod watcher;
+
 pub use async_loader::{AsyncLoader, LoadHandle, LoadResult, LoadStatus};
 pub use file_data::FileData;
 pub use file_handle::{FileHandle, FileMode};

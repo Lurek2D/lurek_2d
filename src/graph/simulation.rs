@@ -143,6 +143,68 @@ impl Graph {
         self.update(1.0)
     }
 
+    /// Advance the simulation by `dt` seconds with a parallelised decay phase.
+    ///
+    /// Identical to [`update`] but the decay life-decrement step runs across
+    /// all items in parallel using rayon, reducing per-frame CPU time when
+    /// the graph contains a large number of live items.  The remaining phases
+    /// (transit, push/pull flow, conversions, queues) run sequentially as
+    /// normal.
+    ///
+    /// # Parameters
+    /// - `dt` — `f64` — elapsed time in seconds.
+    ///
+    /// # Returns
+    /// `Vec<GraphEvent>`.
+    pub fn update_parallel(&mut self, dt: f64) -> Vec<GraphEvent> {
+        use rayon::prelude::*;
+        log_msg!(debug, GR01);
+        let mut events = Vec::new();
+
+        // Phase 1a: parallel decay decrement — each item is independent.
+        self.items.par_iter_mut().for_each(|(_, item)| {
+            if item.alive && item.decay_time >= 0.0 {
+                item.remaining_life -= dt;
+            }
+        });
+
+        // Phase 1b: sequential collect + remove dead items.
+        let dead_ids: Vec<u64> = self
+            .items
+            .iter()
+            .filter_map(|(id, item)| {
+                if item.alive && item.decay_time >= 0.0 && item.remaining_life <= 0.0 {
+                    Some(*id)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        for id in dead_ids {
+            if let Some(item) = self.items.get_mut(&id) {
+                item.kill();
+            }
+            events.push(GraphEvent::ItemDecay { item_id: id });
+            for node in self.nodes.values_mut() {
+                node.items.retain(|&iid| iid != id);
+                node.queue.retain(|&iid| iid != id);
+            }
+            for edge in self.edges.values_mut() {
+                edge.items_in_transit.retain(|&iid| iid != id);
+            }
+        }
+
+        // Remaining phases: sequential (mutably aliased structures).
+        self.process_transit(dt, &mut events);
+        self.process_cooldowns(dt);
+        self.process_push_flow(dt, &mut events);
+        self.process_pull_flow(dt, &mut events);
+        self.process_conversions(&mut events);
+        self.process_queues(dt, &mut events);
+        log_msg!(debug, GR02, "{}", events.len());
+        events
+    }
+
     /// Phase 1: Decay — decrement remaining_life, kill expired items.
     fn process_decay(&mut self, dt: f64, events: &mut Vec<GraphEvent>) {
         let mut dead_ids = Vec::new();

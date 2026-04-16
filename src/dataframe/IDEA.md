@@ -7,25 +7,36 @@
 
 ## Features
 
-### ❌ TODO — Pivot Tables
+### ✅ DONE — Pivot Tables
 **Source**: features/dataframe.md — Feature Gaps #1
 
-No pivot/reshape from long to wide format found. Needed for complex game-data analysis
-(turn stats into per-player columns, etc.).
+`DataFrame::pivot_table(row_key, col_key, value_key, agg_fn)` added to `src/dataframe/frame.rs`.
+`LuaDataFrame:pivotTable(row_key, col_key, value_key, agg?)` added to `src/lua_api/dataframe_api.rs`.
+Reshapes long-format data to wide; supported aggregations: `"sum"`, `"mean"`, `"count"`, `"min"`, `"max"`.
+
+```lua
+local wide = df:pivotTable("player", "round", "score", "sum")
+```
+
+Implemented: 2026-04-18
 
 ---
 
-### ❌ TODO — Window Functions (Rolling Average, Running Total, Rank)
+### ✅ DONE — Window Functions (Rolling Average, Running Total, Rank)
 **Source**: features/dataframe.md — Feature Gaps #2 / Suggestions #2
 
-No `rollingMean`, `rollingSum`, or rank functions found. Essential for leaderboards,
-time-series game stats, and smooth progression curves.
+Three window-function methods added to `src/dataframe/frame.rs` and `src/lua_api/dataframe_api.rs`:
 
-Suggested API:
+- `df:rollingMean(col, window, result_col?)` — sliding-window mean
+- `df:rollingSum(col, window, result_col?)` — sliding-window running total
+- `df:rank(col, order?, result_col?)` — rank column (order: `"asc"` | `"desc"`)
+
 ```lua
 df:rollingMean("damage", 5)   -- 5-frame rolling average
 df:rank("score", "desc")      -- leaderboard rank column
 ```
+
+Implemented: 2026-04-18
 
 ---
 

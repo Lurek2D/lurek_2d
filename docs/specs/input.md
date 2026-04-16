@@ -184,3 +184,7 @@ The `input` module is Lurek2D's hardware input abstraction layer. It owns the pe
 
 - Keep this module reference synchronized with `src/input/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### New in 0.14.1
+
+- `lurek.gamepad.vibrate(id, low_freq, high_freq, duration_ms)` — haptics stub. `low_freq` and `high_freq` clamped to `[0, 1]`, `duration_ms` clamped to `[0, ∞)`. Returns `false` (winit 0.30 has no haptics; ready for future support).

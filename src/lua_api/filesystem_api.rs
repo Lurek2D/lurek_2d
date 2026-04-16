@@ -6,6 +6,8 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::filesystem::{FileData, FileHandle, GameFS};
+use crate::filesystem::zip_mount::ZipMount;
+use crate::filesystem::watcher::FileWatcher;
 
 // -------------------------------------------------------------------------------
 // LuaFileData UserData
@@ -135,6 +137,55 @@ impl LuaUserData for LuaFileHandle {
 // Register
 // -------------------------------------------------------------------------------
 
+/// Lua userdata wrapper around a [`ZipMount`].
+///
+/// Obtained from `lurek.fs.mountZip(archive_path, prefix)`.
+struct LuaZipMount {
+    inner: ZipMount,
+}
+
+impl LuaUserData for LuaZipMount {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- readFile --
+        /// Reads a file from the ZIP and returns it as a string of bytes.
+        /// @param virtual_path : string
+        /// @return string
+        methods.add_method("readFile", |_, this, virtual_path: String| {
+            let bytes = this
+                .inner
+                .read_file(&virtual_path)
+                .map_err(LuaError::RuntimeError)?;
+            Ok(bytes)
+        });
+
+        // -- contains --
+        /// Returns true if `virtual_path` exists inside this ZIP mount.
+        /// @param virtual_path : string
+        /// @return boolean
+        methods.add_method("contains", |_, this, virtual_path: String| {
+            Ok(this.inner.contains(&virtual_path))
+        });
+
+        // -- listFiles --
+        /// Returns a sorted array of all virtual paths exposed by this ZIP mount.
+        /// @return table
+        methods.add_method("listFiles", |lua, this, ()| {
+            let files = this.inner.list_files();
+            let tbl = lua.create_table()?;
+            for (i, f) in files.iter().enumerate() {
+                tbl.set(i + 1, f.clone())?;
+            }
+            Ok(tbl)
+        });
+
+        // -- prefix --
+        /// Returns the virtual path prefix this archive was mounted under.
+        /// @return string
+        methods.add_method("prefix", |_, this, ()| Ok(this.inner.prefix.clone()));
+    }
+}
+
+// -------------------------------------------------------------------------------
 /// Registers the `lurek.fs` API table with the Lua VM.
 ///
 /// # Parameters
@@ -144,6 +195,66 @@ impl LuaUserData for LuaFileHandle {
 ///
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
+
+    // ── ZIP mounting ────────────────────────────────────────────────────────────
+
+    /// Mounts a ZIP archive at a virtual path prefix, making its contents readable
+    /// via the returned `ZipMount` userdata.  Returns a `ZipMount` handle.
+    /// @param archive_path : string
+    /// @param prefix : string  (virtual mount point, e.g. "mods/extra")
+    /// @return ZipMount
+    tbl.set(
+        "mountZip",
+        lua.create_function(|lua, (archive_path, prefix): (String, String)| {
+            let mount = ZipMount::new(&archive_path, &prefix)
+                .map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaZipMount { inner: mount })
+        })?,
+    )?;
+
+    // ── File watcher ────────────────────────────────────────────────────────────
+
+    let watcher_rc = Rc::new(RefCell::new(FileWatcher::new()));
+
+    let wrc = watcher_rc.clone();
+    /// Adds `path` to the polled file-watch list.
+    /// @param path : string
+    /// @return nil
+    tbl.set(
+        "watchPath",
+        lua.create_function(move |_, path: String| {
+            wrc.borrow_mut().watch(&path);
+            Ok(())
+        })?,
+    )?;
+
+    let wrc = watcher_rc.clone();
+    /// Removes `path` from the polled file-watch list.  No-op if not watched.
+    /// @param path : string
+    /// @return nil
+    tbl.set(
+        "unwatchPath",
+        lua.create_function(move |_, path: String| {
+            wrc.borrow_mut().unwatch(&path);
+            Ok(())
+        })?,
+    )?;
+
+    let wrc = watcher_rc.clone();
+    /// Polls all watched paths and returns an array of paths that changed since the
+    /// last call.  Call once per second or per slow-update tick for hot reload.
+    /// @return table   array of changed path strings
+    tbl.set(
+        "pollWatchers",
+        lua.create_function(move |lua, ()| {
+            let changed = wrc.borrow_mut().poll();
+            let tbl = lua.create_table()?;
+            for (i, p) in changed.iter().enumerate() {
+                tbl.set(i + 1, p.to_string_lossy().into_owned())?;
+            }
+            Ok(tbl)
+        })?,
+    )?;
 
     // -- read --
     /// Reads a text file and returns its contents as a string.

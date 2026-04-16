@@ -2,6 +2,52 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.14.2] — 2026-04-18
+### Added
+- **pathfind**: `lurek.pathfinding.findPathBidirectional(sx, sy, ex, ey)` — bidirectional A* search (meet-in-the-middle) for long paths on large grids. Added to `src/lua_api/pathfind_api.rs`.
+- **dataframe**: `DataFrame::pivot_table(row_key, col_key, value_key, agg_fn)` and `LuaDataFrame:pivotTable(row_key, col_key, value_key, agg?)` — reshape long-format data to wide format. Aggregations: `"sum"`, `"mean"`, `"count"`, `"min"`, `"max"`.
+- **dataframe**: `df:rollingMean(col, window, result_col?)` / `df:rollingSum(col, window, result_col?)` — sliding-window statistics columns.
+- **dataframe**: `df:rank(col, order?, result_col?)` — rank column with ascending/descending order; order defaults to `"asc"`.
+- **graph**: `GraphSimulation::update_parallel(dt)` — rayon-parallel item-count decay across all nodes; order-sensitive phases (transit, flow, conversion) remain sequential. `lurek.graph:tickParallel(dt)` Lua binding added.
+- **animation**: `src/animation/blend.rs` — `BlendMask`, `BlendLayer`, `BlendLayerSet` domain types for upper/lower body (or any bone-subset) blend compositing.
+- **animation**: `lurek.animation.newBlendLayerSet()` — factory for `LuaBlendLayerSet` UserData. Methods: `addLayer`, `removeLayer`, `setWeight`, `getWeight`, `setMask`, `listLayers`, `len`.
+- **devtools**: `src/devtools/repl.rs` — `ReplConsole` struct: runtime Lua REPL with bounded input history, expression-then-statement fallback evaluation.
+- **devtools**: `lurek.devtools.newRepl(max_history?)` — factory for `LuaReplConsole` UserData. Methods: `eval(code)`, `history()`, `clear()`, `len()`.
+- **raycaster**: `Raycaster2D::cast_floor_row(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)` — per-column `(tex_u, tex_v)` floor-casting for a single screen row using the Lode Vermeers algorithm.
+- **raycaster**: `raycaster:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)` — Lua wrapper; returns indexed table of `{u, v}` pairs (length = screen_width).
+- **light**: `LightWorld::ambient_color_hint()` — returns `[r, g, b, a]` snapshot of the ambient colour for shader uniform use.
+- **light**: `LightWorld::directional_light_hints()` — returns `Vec<(f32, f32, f32)>` (x, y, direction) for all enabled directional lights; for use by god-ray post-processing.
+- **light**: `lurek.light.syncAmbient()` — read-only ambient snapshot as `(r, g, b, a)` tuple, suitable for passing to effect passes.
+- **light**: `lurek.light.getGodRayHints()` — returns indexed table of `{x, y, angle}` records for enabled directional lights; drives volumetric god-ray shaders without coupling the light and effect modules.
+
+## [0.14.1] — 2026-04-17
+### Added
+- **math**: `lurek.math.voronoi(points)` — Bowyer–Watson Delaunay triangulation → Voronoi dual. Input: array of `{x,y}` tables. Output: array of `{site={x,y}, vertices=[{x,y},...]}` tables. Near-duplicate sites (< 1e-5 apart) are deduplicated. Convex-hull cells are open.
+- **terminal**: `terminal:setCellSize(w, h)` — sets per-terminal cell pixel size override (clamped to ≥ 1). `terminal:getCellSize()` returns `{w, h}` table or `nil`. `terminal:resetCellSize()` reverts to font-derived sizing. `render` respects the override.
+- **automation**: `lurek.simulator.setHighlightMode(enable)` / `isHighlightMode()` — boolean hint for game-side replay overlays showing simulated cursor/key positions.
+- **network**: `lurek.network.newHost` and `newServer` now accept `maxPeers` as the preferred peer-limit key (legacy `peers` alias retained).
+- **input**: `lurek.gamepad.vibrate(id, low_freq, high_freq, duration_ms)` — haptics stub. Parameters are clamped; returns `false` until winit haptics support lands.
+### Changed
+- **image**: 11 CPU pixel transforms in `src/image/effects.rs` (`brightness`, `contrast`, `saturation`, `gamma`, `tint`, `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`) now use `map_pixel_par` (rayon, 65 536-pixel threshold) for improved throughput on large textures.
+
+
+### Added
+- **data**: `lurek.data.toMsgPack(value)` / `fromMsgPack(bytes)` — MessagePack serialisation round-trip via `rmp-serde`. Accepts any Lua table or primitive; returns a byte-string.
+- **input**: `lurek.input.startRecording()` / `stopRecording()` / `loadRecording(path)` / `startPlayback(rec)` / `stopPlayback()` / `isRecording()` / `isPlayingBack()` / `getPlaybackFrame()` / `advancePlayback()` — full input recording and playback system. Recording is an `InputRecording` UserData with `:toJson()`, `:totalFrames()`, `:frameCount()`.
+- **filesystem**: `lurek.fs.mountZip(path, prefix?)` — mount a zip archive as a virtual filesystem prefix. Returns a `ZipMount` UserData with `:readFile(vpath)`, `:contains(vpath)`, `:listFiles()`, `:prefix()`. Path traversal is rejected.
+- **filesystem**: `lurek.fs.watchPath(path)` / `unwatchPath(path)` / `pollWatchers()` — lightweight filesystem polling watcher. `pollWatchers()` returns a table of changed paths since last poll.
+- **sprite**: `lurek.sprite.parseAsepriteAtlas(json_str)` — parse Aseprite JSON atlas format (both array and hash modes). Returns a `SpriteAtlas` UserData identical to `parseAtlas`.
+- **sprite**: `SpriteAtlas:getFlipped(name, flip_x, flip_y)` — returns an `AtlasEntry` table with flipped UV coordinates for horizontal / vertical sprite mirroring.
+- **terminal**: `lurek.terminal.stripAnsi(text)` — removes ANSI escape sequences from a string.
+- **terminal**: `lurek.terminal.parseAnsi(text)` — parses ANSI-coloured text into a table of `{text, fg_r, fg_g, fg_b, bg_r, bg_g, bg_b, bold}` span tables.
+- **terminal**: `lurek.terminal.printAnsi(term, col, row, text)` — renders an ANSI-coloured string to a `Terminal` UserData using parsed span colours.
+- **terminal**: `lurek.terminal.addCompletion(word)` / `removeCompletion(word)` / `clearCompletions()` / `getCompletions(prefix)` / `nextCompletion(prefix)` / `resetCompletion()` — tab-completion engine backed by `CompletionEngine`.
+- **postfx**: `PostFxStack:dedup()` — removes duplicate effect indices from the stack, returns count removed.
+- **postfx**: `lurek.postfx.setShaderErrorDisplay(enabled)` / `getShaderErrorDisplay()` — toggle in-window WGSL compile-error overlay.
+- **math**: `lurek.math.polygonIntersection(a, b)` — Sutherland-Hodgman polygon intersection. Both polygons are Lua arrays of `{x, y}` tables.
+- **math**: `lurek.math.polygonUnion(a, b)` — convex hull union of two polygons (exact for convex inputs).
+- **math**: `lurek.math.polygonDifference(a, b)` — approximate difference `A - B` using per-edge complement clipping.
+
 ## [0.13.0] — 2026-04-16
 ### Added
 - **data**: `lurek.data.newRingBuffer(capacity)` — fixed-capacity circular ring buffer UserData. Methods: `:push(value)`, `:pop()`, `:peek()`, `:peekNewest()`, `:len()`, `:capacity()`, `:isEmpty()`, `:isFull()`, `:clear()`, `:toTable()`. Accepts any Lua value via `LuaRegistryKey` storage.

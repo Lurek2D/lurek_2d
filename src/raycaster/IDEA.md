@@ -90,15 +90,25 @@ Tests: `tests/lua/unit/test_raycaster_sprite_manager.lua`.
 
 ---
 
-### ❌ TODO — Textured Floor/Ceiling Per-Pixel Casting
+### ✅ DONE — Textured Floor/Ceiling Per-Pixel Casting
 **Source**: features/raycaster.md — Feature Gaps #2
 
-Floor/ceiling currently support flat color. No per-pixel texture coordinate generation
-for textured floors (required for DOOM-style rendering). Suggested API:
+`Raycaster2D::cast_floor_row(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)` added to
+`src/raycaster/dda.rs`. Uses the Lode Vermeers floor-casting formula to compute per-column
+`(tex_u, tex_v)` pairs for a given screen row. Returns `Vec<(f32, f32)>` with one entry per
+screen-width column.
+
+`raycaster:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)` added to
+`src/lua_api/raycaster_api.rs`. Returns an indexed Lua table of `{u, v}` pairs.
+
 ```lua
-local floorRows = raycaster:castFloor(px, py, angle, fov, screenW, screenH)
--- returns array of {texU, texV} per screen column per floor row
+local uvs = rc:castFloorRow(cam.x, cam.y, cam.dx, cam.dy, cam.px, cam.py, row)
+for col, uv in ipairs(uvs) do
+    drawFloorPixel(col, row, uv.u, uv.v)
+end
 ```
+
+Implemented: 2026-04-18
 
 ---
 

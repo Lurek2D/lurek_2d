@@ -75,8 +75,17 @@ the flow graph. Requires Lua-Designer decision.
 
 ## Performance
 
-### ❌ TODO — Parallel Flow Tick (rayon)
+### ✅ DONE — Parallel Flow Tick (rayon)
 **Source**: performance/16-graph-flow-simulation.md
+
+`GraphSimulation::update_parallel(dt)` added to `src/graph/simulation.rs`.
+Uses `rayon::prelude::par_iter_mut` to decay item counts in all graph nodes
+concurrently, then sequentially handles dead-node removal, transit, flow,
+and conversion phases (order-sensitive phases cannot be parallelised).
+
+`lurek.graph:tickParallel(dt)` added to `src/lua_api/graph_api.rs`.
+
+Implemented: 2026-04-18
 
 Each node's tick (evaluate conversion rules, move items) is independent of other nodes in
 the same generation. Embarrassingly parallel with rayon. No parallelism found in

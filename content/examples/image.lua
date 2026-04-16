@@ -278,3 +278,9 @@ local stack2 = lurek.img.loadLayered("my_layers.lim")
 assert(stack2:layerCount() == 2)
 assert(stack2:getName(2) == "decal")
 ]]
+
+-- Note (0.14.1): brightness, contrast, saturation, gamma, tint, grayscale,
+-- sepia, invert, threshold, posterize, and fill now use rayon parallel
+-- processing (map_pixel_par) for large images (> 65 536 pixels).  The Lua
+-- API is unchanged.
+

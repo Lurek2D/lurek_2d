@@ -324,6 +324,30 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(sim.borrow().get_playback_speed()))?,
     )?;
 
+    // ── setHighlightMode ──────────────────────────────────────────────────────────────
+    /// Enables or disables the highlight overlay hint.
+    /// When true, a game render pass can visualise the current simulated cursor/key
+    /// position by calling `lurek.simulator:isHighlightMode()`.
+    /// @param enable : boolean
+    /// @return nil
+    let sim = simulator.clone();
+    tbl.set(
+        "setHighlightMode",
+        lua.create_function(move |_, enable: bool| {
+            sim.borrow_mut().set_highlight_mode(enable);
+            Ok(())
+        })?,
+    )?;
+
+    // ── isHighlightMode ───────────────────────────────────────────────────────────────
+    /// Returns whether the highlight overlay hint is active.
+    /// @return boolean
+    let sim = simulator.clone();
+    tbl.set(
+        "isHighlightMode",
+        lua.create_function(move |_, ()| Ok(sim.borrow().is_highlight_mode()))?,
+    )?;
+
     // ── waitUntil ───────────────────────────────────────────────────────────────────────
     /// Pauses playback advancement until predicate() returns true or timeout seconds elapse.
     /// While waiting, `update` does not forward elapsed time to the simulator.

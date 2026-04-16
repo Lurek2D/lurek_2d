@@ -42,6 +42,8 @@ pub mod transform;
 pub mod tween;
 /// 2D floating-point vector with arithmetic operators and common helpers.
 pub mod vec2;
+/// Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).
+pub mod voronoi;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;
@@ -56,6 +58,7 @@ pub use spatial_hash::SpatialHash;
 pub use transform::Transform;
 pub use tween::{Tween, TweenValue};
 pub use vec2::Vec2;
+pub use voronoi::{VoronoiCell, voronoi_from_points};
 
 /// Linear interpolation between `a` and `b` by factor `t` in [0, 1].
 ///

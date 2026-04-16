@@ -1062,6 +1062,73 @@ impl Raycaster2D {
             _ => (150, 150, 150),
         }
     }
+
+    /// Computes floor (or ceiling) texture coordinates for one horizontal screen row.
+    ///
+    /// Uses the Lode Vermeers floor-casting formula.  For every pixel column in
+    /// `row`, the function returns the corresponding `(tex_u, tex_v)` pair in
+    /// normalised texture space `[0.0, 1.0)`.  Callers can multiply by their
+    /// texture width/height to obtain texel indices.
+    ///
+    /// Rows below the screen centre are floor rows; rows above are ceiling rows.
+    /// Passing `row = self.height() as i32 / 2` returns zeros for every column
+    /// (the exact horizon line).
+    ///
+    /// # Parameters
+    /// - `cam_x` — `f32` — camera X position in cell coordinates.
+    /// - `cam_y` — `f32` — camera Y position in cell coordinates.
+    /// - `dir_x` — `f32` — camera direction X (normalised).
+    /// - `dir_y` — `f32` — camera direction Y (normalised).
+    /// - `plane_x` — `f32` — camera plane X (half-FOV vector).
+    /// - `plane_y` — `f32` — camera plane Y (half-FOV vector).
+    /// - `row` — `i32` — screen row to generate (0 = top of screen).
+    ///
+    /// # Returns
+    /// `Vec<(f32, f32)>` — one `(tex_u, tex_v)` per pixel column;
+    /// length equals `self.width()`.
+    pub fn cast_floor_row(
+        &self,
+        cam_x: f32,
+        cam_y: f32,
+        dir_x: f32,
+        dir_y: f32,
+        plane_x: f32,
+        plane_y: f32,
+        row: i32,
+    ) -> Vec<(f32, f32)> {
+        let w = self.width as i32;
+        let h = self.height as i32;
+        let half_h = h / 2;
+        let p = row - half_h; // pixels below (positive) or above (negative) the horizon
+
+        // At the exact horizon there is no perspective depth — return zeros.
+        if p == 0 {
+            return vec![(0.0, 0.0); w as usize];
+        }
+
+        // Perpendicular distance to the floor plane from the camera (height = 0.5).
+        let row_distance = 0.5 * h as f32 / p.abs() as f32;
+
+        // Step in world-space per screen pixel column.
+        let floor_step_x = row_distance * (dir_x + plane_x - (dir_x - plane_x)) / w as f32;
+        let floor_step_y = row_distance * (dir_y + plane_y - (dir_y - plane_y)) / w as f32;
+
+        // World-space position of the leftmost pixel in this row.
+        let mut floor_x = cam_x + row_distance * (dir_x - plane_x);
+        let mut floor_y = cam_y + row_distance * (dir_y - plane_y);
+
+        let mut result = Vec::with_capacity(w as usize);
+        for _ in 0..w {
+            // Fractional part = normalised texture coordinate in [0, 1).
+            let tx = floor_x - floor_x.floor();
+            let ty = floor_y - floor_y.floor();
+            floor_x += floor_step_x;
+            floor_y += floor_step_y;
+            result.push((tx, ty));
+        }
+        log::debug!("raycaster: cast_floor_row row={row} → {} samples", result.len());
+        result
+    }
 }
 
 

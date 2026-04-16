@@ -831,3 +831,11 @@ pub const IF03: &str = "IF03";
 pub const HX01: &str = "HX01";
 /// Stable ID for "spatial hash rebuilt with entity count".
 pub const HX02: &str = "HX02";
+
+// ── bidir_astar ───────────────────────────────────────────────────────────
+/// Stable ID for "bidirectional A* start or goal not walkable".
+pub const BI01: &str = "BI01";
+/// Stable ID for "bidirectional A* start equals goal".
+pub const BI02: &str = "BI02";
+/// Stable ID for "bidirectional A* meeting point found".
+pub const BI03: &str = "BI03";

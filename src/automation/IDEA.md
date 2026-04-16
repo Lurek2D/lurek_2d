@@ -48,8 +48,12 @@ rate. `0.5` = half-speed slow motion; `2.0` = double-speed fast forward.
 
 ---
 
-### ❌ TODO — Input Highlight Mode
+### ✅ DONE — Input Highlight Mode
 **Source**: features/automation.md — Suggestions #5
 
-No visual overlay showing simulated input positions (cursor, key indicators) during replay.
-Useful for recording demos and debugging automation scripts.
+`Simulator` now carries `highlight_mode: bool` (default `false`) with methods
+`set_highlight_mode(enable: bool)` and `is_highlight_mode() -> bool`.
+Lua API: `lurek.simulator.setHighlightMode(enable)` and `lurek.simulator.isHighlightMode()`.
+The engine does not draw the overlay itself; the flag is a hint for the game script's
+render pass to draw a cursor/key indicator overlay during replay.
+Tests: `tests/lua/unit/test_automation_highlight.lua`.

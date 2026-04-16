@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::math::Rect;
-use crate::sprite::atlas::{parse_texturepacker_json, SpriteAtlas};
+use crate::sprite::atlas::{parse_texturepacker_json, parse_aseprite_json, SpriteAtlas};
 use crate::sprite::sprite_sheet::SpriteSheet;
 
 // -------------------------------------------------------------------------------
@@ -198,6 +198,35 @@ impl LuaUserData for LuaSpriteAtlas {
             }
             Ok(t)
         });
+
+        // -- getFlipped --
+        /// Returns a copy of the named region with `flip_x` and `flip_y` flags set.
+        /// Returns nil if the region name is not found.
+        /// @param name : string
+        /// @param flip_x : boolean
+        /// @param flip_y : boolean
+        /// @return table?
+        methods.add_method(
+            "getFlipped",
+            |lua, this, (name, flip_x, flip_y): (String, bool, bool)| {
+                match this.inner.get_entry(&name) {
+                    Some(e) => {
+                        let flipped = e.get_flipped(flip_x, flip_y);
+                        let t = lua.create_table()?;
+                        t.set("name", flipped.name.as_str())?;
+                        t.set("x", flipped.x)?;
+                        t.set("y", flipped.y)?;
+                        t.set("w", flipped.w)?;
+                        t.set("h", flipped.h)?;
+                        t.set("rotated", flipped.rotated)?;
+                        t.set("flip_x", flipped.flip_x)?;
+                        t.set("flip_y", flipped.flip_y)?;
+                        Ok(LuaValue::Table(t))
+                    }
+                    None => Ok(LuaValue::Nil),
+                }
+            },
+        );
     }
 }
 
@@ -286,6 +315,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 })
             },
         )?,
+    )?;
+
+    // ── parseAsepriteAtlas ───────────────────────────────────────────────────
+    /// Parses an Aseprite JSON export string and returns a `SpriteAtlas`.
+    /// Supports both array and hash Aseprite export formats.
+    /// @param json_str : string
+    /// @return SpriteAtlas
+    tbl.set(
+        "parseAsepriteAtlas",
+        lua.create_function(|lua, json_str: String| {
+            let atlas = parse_aseprite_json(&json_str).map_err(LuaError::RuntimeError)?;
+            lua.create_userdata(LuaSpriteAtlas { inner: atlas })
+        })?,
     )?;
 
     luna.set("sprite", tbl)?;

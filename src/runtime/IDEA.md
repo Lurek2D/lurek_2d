@@ -42,11 +42,13 @@ registered based on config.
 
 ---
 
-### ❌ TODO — Config Fallback on `conf.lua` Parse Error
+### ✅ DONE — Config Fallback on `conf.lua` Parse Error (2026-04-16)
 **Source**: features/engine.md — Structural Issues
 
-Syntax error in `conf.lua` crashes before the error screen exists.
-A verified default config struct allows the engine to boot and display the error.
+`load_from_conf_lua()` logs `L052` with "Using default config." and returns
+`Config::default()` on any parse or eval error, so the engine always reaches
+the error screen instead of crashing during boot.
+Verified by `tests/lua/config/test_runtime_config_fallback.lua`.
 
 ---
 

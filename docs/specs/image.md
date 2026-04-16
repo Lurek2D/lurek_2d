@@ -266,3 +266,9 @@ The `texture` submodule provides `Texture` (a GPU handle with dimensions, format
 
 - Keep this module reference synchronized with `src/image/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### New in 0.14.1
+
+- 11 pixel transforms now use `map_pixel_par` (rayon, 65 536-pixel threshold): `brightness`, `contrast`, `saturation`, `gamma`, `tint`, `grayscale`, `sepia`, `invert`, `threshold`, `posterize`, `fill`.
+- `tint()` refactored to inline closure for `Send + Sync` compliance.
+- `threshold()` and `posterize()` use `move` closures to capture `Copy` values.

@@ -32,11 +32,35 @@ Named region extraction and frame group mapping from atlas metadata.
 
 ---
 
-### ❌ TODO — Aseprite JSON Atlas Format Support
+### ✅ DONE — Aseprite JSON Atlas Format Support
 **Source**: features/graphics.md — Feature Gaps #1
+**Implemented**: 2026-04-16
 
-`parseAtlas` handles TexturePacker format. Aseprite also exports JSON sprite sheets
-with a different schema. Many small-team and solo developers use Aseprite natively.
+`src/sprite/atlas.rs` — Added `parse_aseprite_json(json_str)` supporting both array
+(`"frames": [{"filename":..., "frame":{}}]`) and hash (`"frames":{"name":{"frame":{}}}`)
+Aseprite export formats.
+
+Lua API in `src/lua_api/sprite_api.rs`:
+- `lurek.sprite.parseAsepriteAtlas(json_str)` → `SpriteAtlas`
+
+All existing `SpriteAtlas` methods work on the result: `getEntry`, `getByIndex`,
+`entryCount`, `entryNames`, `getFlipped` (see below).
+
+---
+
+### ✅ DONE — Sprite Flip (flipX / flipY) as First-Class Atlas Feature
+**Source**: general API completeness
+**Implemented**: 2026-04-16
+
+`src/sprite/atlas.rs` — Added `flip_x: bool` and `flip_y: bool` fields to `AtlasEntry`
+(defaults to `false`) and `AtlasEntry::get_flipped(flip_x, flip_y) -> AtlasEntry`.
+
+Lua API in `src/lua_api/sprite_api.rs`:
+- `atlas:getFlipped(name, flip_x, flip_y)` → region table with `flip_x` / `flip_y` fields
+
+Works on atlases created by both `parseAtlas` and `parseAsepriteAtlas`.
+
+Tests: `tests/lua/unit/test_sprite_aseprite.lua` — 14 BDD cases.
 
 ---
 
@@ -66,10 +90,7 @@ Currently lighting and sprites are decoupled — a lit-sprite path would link th
 ---
 
 ### ❌ TODO — Sprite Flip (flipX / flipY) as First-Class Atlas Feature
-**Source**: general API completeness
-
-Flipping is currently done per draw call via transform scaling. A first-class
-`region:getFlipped(flipX, flipY)` returning a flipped UV region would be cleaner.
+This item was moved above and marked DONE — see above.
 
 ---
 

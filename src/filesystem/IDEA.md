@@ -8,24 +8,34 @@
 
 ## Features
 
-### ❌ TODO — ZIP Archive Mounting (HIGH PRIORITY)
+### ✅ DONE — ZIP Archive Mounting (HIGH PRIORITY)
 **Source**: features/filesystem.md — Feature Gaps #1 / Suggestions #1
+**Implemented**: 2026-04-16
 
-No `lurek.fs.mountZip(path, mountPoint)` found. ZIP mounting is critical for:
-- `.luna` distribution format (single-file game bundles)
-- Mod archive support
+`src/filesystem/zip_mount.rs` — `ZipMount` struct with entry index built at mount time.
+Lua API in `src/lua_api/filesystem_api.rs`:
+- `lurek.fs.mountZip(archive_path, prefix)` → `ZipMount` userdata
+- `ZipMount:readFile(virtual_path)` → bytes string
+- `ZipMount:contains(virtual_path)` → boolean
+- `ZipMount:listFiles()` → sorted array of virtual paths
+- `ZipMount:prefix()` → string
 
-Engine A (LÖVE) has this via the `.love` ZIP format. Without it, distribution is a
-directory copy only.
+Path traversal guard: rejects `..`, absolute paths, and Windows drive letters.
 
 ---
 
-### ❌ TODO — File Watcher / Change Notification
+### ✅ DONE — File Watcher / Change Notification
 **Source**: features/filesystem.md — Feature Gaps #2 / Suggestions #2
+**Implemented**: 2026-04-16
 
-No `lurek.fs.watch(path, fn)` found. File watching enables hot reload of Lua scripts,
-textures, and data files during development. One of the most-requested missing features
-for rapid iteration workflows.
+`src/filesystem/watcher.rs` — `FileWatcher` polling by `std::fs::metadata().modified()`.
+Lua API in `src/lua_api/filesystem_api.rs`:
+- `lurek.fs.watchPath(path)` — adds a path to the watch list
+- `lurek.fs.unwatchPath(path)` — removes a path
+- `lurek.fs.pollWatchers()` → array of changed path strings
+
+No OS-native notification APIs used — pure polling, no platform coupling.
+Tests: `tests/lua/unit/test_filesystem_zip_watcher.lua` — 8 BDD cases.
 
 ---
 

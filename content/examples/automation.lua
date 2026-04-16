@@ -159,3 +159,10 @@ end
 
 -- ─── lurek.simulator ────────────────────────────────────────────────────────────
 lurek.simulator.loadFromToml("physics_config", raw_toml_string)  -- Parses a TOML string and registers it as a named script
+
+-- Highlight mode: enable an overlay hint so a game render pass can draw
+-- a visual indicator of the current simulated cursor/key position.
+lurek.simulator.setHighlightMode(true)
+local is_hl = lurek.simulator.isHighlightMode()   -- true
+lurek.simulator.setHighlightMode(false)             -- disable
+

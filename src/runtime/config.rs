@@ -506,9 +506,11 @@ impl Config {
         }
 
         // If eval failed because conf.lua defines a function (no return), try exec.
+        // A genuine parse error will also fail here; log a clear fallback notice and
+        // continue with defaults so the engine can still reach the error screen.
         if eval_result.is_err() {
             if let Err(e) = lua.load(&code).set_name("conf.lua").exec() {
-                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
+                log_msg!(warn, L052_CONF_PARSE_ERR, "{}. Using default config.", e);
                 return (config, Some(format!("Error in conf.lua: {e}")));
             }
         }

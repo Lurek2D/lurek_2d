@@ -131,18 +131,6 @@ Implemented: source already present when IDEA.md was reviewed 2026-04-15
 
 ---
 
-### ❌ TODO — Springs (Physics-Based Interpolation)
-**Source**: features/animation.md — Tween section / Suggestions
-
-No spring-based interpolation (stiffness, damping). Springs produce natural overshooting
-motion that cannot be replicated with static easing functions.
-
-```lua
-lurek.tween.spring(target, {x = 200}, {stiffness=100, damping=10})
-```
-
----
-
 ### 🔇 LOW — Coroutine yield inside tween sequence
 **Source**: features/animation.md
 

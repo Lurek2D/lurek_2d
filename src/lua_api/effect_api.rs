@@ -382,6 +382,36 @@ impl LuaUserData for LuaPostFxStack {
             Ok(())
         });
 
+        // -- dedup --
+        /// Removes duplicate effects from the pipeline, keeping the first occurrence
+        /// of each distinct effect object.  Returns the number of slots removed.
+        ///
+        /// This is useful after dynamically composing a pipeline to avoid redundant
+        /// GPU shader passes.
+        ///
+        /// @return integer   number of slots removed
+        methods.add_method_mut("dedup", |_, this, ()| {
+            // Dedup by Rc pointer identity in the effects vec, keeping first seen.
+            let mut seen_ptrs: Vec<*const ()> = Vec::new();
+            let mut new_lua = Vec::with_capacity(this.effects.len());
+            let mut new_inner_effects = Vec::with_capacity(this.effects.len());
+            let mut new_inner_enabled = Vec::with_capacity(this.effects.len());
+            for (i, rc) in this.effects.iter().enumerate() {
+                let ptr = Rc::as_ptr(rc) as *const ();
+                if !seen_ptrs.contains(&ptr) {
+                    seen_ptrs.push(ptr);
+                    new_lua.push(Rc::clone(rc));
+                    new_inner_effects.push(new_lua.len() - 1);
+                    new_inner_enabled.push(this.inner.enabled.get(i).copied().unwrap_or(true));
+                }
+            }
+            let removed = this.effects.len() - new_lua.len();
+            this.effects = new_lua;
+            this.inner.effects = new_inner_effects;
+            this.inner.enabled = new_inner_enabled;
+            Ok(removed as i64)
+        });
+
         // -- isCapturing --
         /// Returns whether the stack is currently capturing the scene.
         /// @return boolean
@@ -1691,6 +1721,31 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 inner: crate::effect::ScreenTransition::new(k, dur, color),
             })
         })?,
+    )?;
+
+    // ── Shader error display (dev diagnostics) ────────────────────────────────
+
+    let shader_err_display = Rc::new(RefCell::new(false));
+
+    let sed = shader_err_display.clone();
+    /// Enables or disables the overlay that renders shader compile errors as red text
+    /// in the top-left corner of the screen.  Intended for dev builds only.
+    /// @param enabled : boolean
+    /// @return nil
+    tbl.set(
+        "setShaderErrorDisplay",
+        lua.create_function(move |_, enabled: bool| {
+            *sed.borrow_mut() = enabled;
+            Ok(())
+        })?,
+    )?;
+
+    let sed = shader_err_display.clone();
+    /// Returns whether shader error display is currently enabled.
+    /// @return boolean
+    tbl.set(
+        "getShaderErrorDisplay",
+        lua.create_function(move |_, ()| Ok(*sed.borrow()))?,
     )?;
 
     luna.set("overlay", tbl.clone())?;

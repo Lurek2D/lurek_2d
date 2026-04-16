@@ -627,6 +627,300 @@ impl DataFrame {
         result.data.push(computed);
         Ok(result)
     }
+
+    /// Reshapes this DataFrame from long to wide format (pivot table).
+    ///
+    /// Groups rows by `row_key`, creates one output column per unique `col_key`
+    /// value, and fills each cell with the aggregated `value_key` result.
+    /// Missing combinations become `CellValue::Nil`.
+    ///
+    /// # Parameters
+    /// - `row_key` — `ColRef` — column whose unique values become row labels.
+    /// - `col_key` — `ColRef` — column whose unique values become new output columns.
+    /// - `value_key` — `ColRef` — column of numeric values to aggregate.
+    /// - `agg_fn` — `&str` — `"mean"` | `"sum"` | `"count"` | `"first"` | `"last"`.
+    ///
+    /// # Returns
+    /// `Result<DataFrame, String>`.
+    pub fn pivot_table(
+        &self,
+        row_key: ColRef,
+        col_key: ColRef,
+        value_key: ColRef,
+        agg_fn: &str,
+    ) -> Result<DataFrame, String> {
+        let ri = self.resolve_col(row_key)?;
+        let ci = self.resolve_col(col_key)?;
+        let vi = self.resolve_col(value_key)?;
+        let n = self.nrows();
+
+        // Collect unique row-key and col-key values (insertion order).
+        let mut row_vals: Vec<CellValue> = Vec::new();
+        let mut col_vals: Vec<CellValue> = Vec::new();
+        for row in 0..n {
+            let rv = self.data[ri][row].clone();
+            if !row_vals.contains(&rv) {
+                row_vals.push(rv);
+            }
+            let cv = self.data[ci][row].clone();
+            if !col_vals.contains(&cv) {
+                col_vals.push(cv);
+            }
+        }
+
+        // Build result columns: first = row-key label, then one per unique col-key value.
+        let mut out_names: Vec<String> = Vec::with_capacity(1 + col_vals.len());
+        out_names.push(self.column_names[ri].clone());
+        for cv in &col_vals {
+            out_names.push(format!("{cv}"));
+        }
+
+        let n_rows = row_vals.len();
+        let n_out_cols = 1 + col_vals.len();
+        let mut out_data: Vec<Vec<CellValue>> = vec![vec![CellValue::Nil; n_rows]; n_out_cols];
+
+        // Fill row-label column.
+        for (r, rv) in row_vals.iter().enumerate() {
+            out_data[0][r] = rv.clone();
+        }
+
+        // Accumulate values into buckets keyed by (row_idx, col_idx).
+        let mut buckets: Vec<Vec<Vec<f64>>> = vec![vec![Vec::new(); col_vals.len()]; n_rows];
+        let mut first_vals: Vec<Vec<Option<CellValue>>> = vec![vec![None; col_vals.len()]; n_rows];
+        let mut last_vals: Vec<Vec<Option<CellValue>>> = vec![vec![None; col_vals.len()]; n_rows];
+
+        for row in 0..n {
+            let rv = &self.data[ri][row];
+            let cv = &self.data[ci][row];
+            let vv = &self.data[vi][row];
+            let Some(r_idx) = row_vals.iter().position(|x| x == rv) else {
+                continue;
+            };
+            let Some(c_idx) = col_vals.iter().position(|x| x == cv) else {
+                continue;
+            };
+            if let CellValue::Number(num) = vv {
+                buckets[r_idx][c_idx].push(*num);
+            }
+            if first_vals[r_idx][c_idx].is_none() {
+                first_vals[r_idx][c_idx] = Some(vv.clone());
+            }
+            last_vals[r_idx][c_idx] = Some(vv.clone());
+        }
+
+        // Aggregate and fill output data.
+        for r_idx in 0..n_rows {
+            for c_idx in 0..col_vals.len() {
+                let vals = &buckets[r_idx][c_idx];
+                let cell = match agg_fn {
+                    "sum" => {
+                        if vals.is_empty() {
+                            CellValue::Nil
+                        } else {
+                            CellValue::Number(vals.iter().sum::<f64>())
+                        }
+                    }
+                    "count" => CellValue::Number(vals.len() as f64),
+                    "first" => first_vals[r_idx][c_idx].clone().unwrap_or(CellValue::Nil),
+                    "last" => last_vals[r_idx][c_idx].clone().unwrap_or(CellValue::Nil),
+                    _ => {
+                        // "mean" is the default
+                        if vals.is_empty() {
+                            CellValue::Nil
+                        } else {
+                            CellValue::Number(vals.iter().sum::<f64>() / vals.len() as f64)
+                        }
+                    }
+                };
+                out_data[c_idx + 1][r_idx] = cell;
+            }
+        }
+
+        log::debug!("dataframe: pivot_table → {} rows × {} cols", n_rows, n_out_cols);
+        Ok(DataFrame::from_raw(out_names, out_data))
+    }
+
+    /// Appends a rolling mean column to a copy of this DataFrame.
+    ///
+    /// For each row `i`, computes the mean of the `window` most recent rows
+    /// (including row `i`). Rows before a full window use the available data.
+    /// Non-`Number` cells within the window are skipped; if the window is all
+    /// non-numeric, the result for that row is `Nil`.
+    ///
+    /// # Parameters
+    /// - `src_col` — `ColRef` — source column.
+    /// - `window` — `usize` — window size (must be ≥ 1).
+    /// - `result_col` — `&str` — name for the new column (must not already exist).
+    ///
+    /// # Returns
+    /// `Result<DataFrame, String>`.
+    pub fn rolling_mean(
+        &self,
+        src_col: ColRef,
+        window: usize,
+        result_col: &str,
+    ) -> Result<DataFrame, String> {
+        if window == 0 {
+            return Err("rolling_mean: window must be >= 1".to_string());
+        }
+        let ci = self.resolve_col(src_col)?;
+        let n = self.nrows();
+        let src = &self.data[ci];
+        let mut new_col: Vec<CellValue> = Vec::with_capacity(n);
+        for i in 0..n {
+            let start = i.saturating_sub(window - 1);
+            let nums: Vec<f64> = (start..=i)
+                .filter_map(|j| {
+                    if let CellValue::Number(v) = &src[j] {
+                        Some(*v)
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            if nums.is_empty() {
+                new_col.push(CellValue::Nil);
+            } else {
+                new_col.push(CellValue::Number(nums.iter().sum::<f64>() / nums.len() as f64));
+            }
+        }
+        let mut out = self.clone_df();
+        if out.column_names.contains(&result_col.to_string()) {
+            return Err(format!(
+                "rolling_mean: column '{result_col}' already exists"
+            ));
+        }
+        out.column_names.push(result_col.to_string());
+        out.data.push(new_col);
+        log::debug!("dataframe: rolling_mean window={window} → '{result_col}'");
+        Ok(out)
+    }
+
+    /// Appends a rolling sum column to a copy of this DataFrame.
+    ///
+    /// For each row `i`, sums the `window` most recent rows (including row `i`).
+    /// Rows before a full window use the available data. Non-`Number` cells
+    /// within the window contribute `0.0`. If the entire window is non-numeric
+    /// the result is `Nil`.
+    ///
+    /// # Parameters
+    /// - `src_col` — `ColRef` — source column.
+    /// - `window` — `usize` — window size (must be ≥ 1).
+    /// - `result_col` — `&str` — name for the new column (must not already exist).
+    ///
+    /// # Returns
+    /// `Result<DataFrame, String>`.
+    pub fn rolling_sum(
+        &self,
+        src_col: ColRef,
+        window: usize,
+        result_col: &str,
+    ) -> Result<DataFrame, String> {
+        if window == 0 {
+            return Err("rolling_sum: window must be >= 1".to_string());
+        }
+        let ci = self.resolve_col(src_col)?;
+        let n = self.nrows();
+        let src = &self.data[ci];
+        let mut new_col: Vec<CellValue> = Vec::with_capacity(n);
+        for i in 0..n {
+            let start = i.saturating_sub(window - 1);
+            let mut sum = 0.0f64;
+            let mut has_any = false;
+            for j in start..=i {
+                if let CellValue::Number(v) = &src[j] {
+                    sum += v;
+                    has_any = true;
+                }
+            }
+            new_col.push(if has_any {
+                CellValue::Number(sum)
+            } else {
+                CellValue::Nil
+            });
+        }
+        let mut out = self.clone_df();
+        if out.column_names.contains(&result_col.to_string()) {
+            return Err(format!(
+                "rolling_sum: column '{result_col}' already exists"
+            ));
+        }
+        out.column_names.push(result_col.to_string());
+        out.data.push(new_col);
+        log::debug!("dataframe: rolling_sum window={window} → '{result_col}'");
+        Ok(out)
+    }
+
+    /// Appends a dense-rank column to a copy of this DataFrame.
+    ///
+    /// Assigns 1-based ranks to rows ordered by `src_col`.  Tied values share
+    /// the same rank with no gaps (dense ranking).  Non-`Number` cells receive
+    /// rank `0`.
+    ///
+    /// # Parameters
+    /// - `src_col` — `ColRef` — column to rank.
+    /// - `order` — `&str` — `"asc"` (smallest → rank 1) or `"desc"` (largest → rank 1).
+    /// - `result_col` — `&str` — name for the new rank column (must not already exist).
+    ///
+    /// # Returns
+    /// `Result<DataFrame, String>`.
+    pub fn rank_column(
+        &self,
+        src_col: ColRef,
+        order: &str,
+        result_col: &str,
+    ) -> Result<DataFrame, String> {
+        let ci = self.resolve_col(src_col)?;
+        let n = self.nrows();
+        let src = &self.data[ci];
+
+        // Collect (row_index, value) for numeric cells only.
+        let mut indexed: Vec<(usize, f64)> = (0..n)
+            .filter_map(|i| {
+                if let CellValue::Number(v) = &src[i] {
+                    Some((i, *v))
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        // Sort by value according to the requested order.
+        if order == "desc" {
+            indexed
+                .sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        } else {
+            indexed
+                .sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+        }
+
+        // Assign dense ranks (tied values share the same rank, no gaps).
+        let mut ranks: Vec<CellValue> = vec![CellValue::Number(0.0); n];
+        let mut rank = 1usize;
+        let mut prev_val: Option<f64> = None;
+        let mut prev_rank = 1usize;
+        for (row_idx, val) in &indexed {
+            if Some(*val) == prev_val {
+                ranks[*row_idx] = CellValue::Number(prev_rank as f64);
+            } else {
+                ranks[*row_idx] = CellValue::Number(rank as f64);
+                prev_rank = rank;
+                prev_val = Some(*val);
+                rank += 1;
+            }
+        }
+
+        let mut out = self.clone_df();
+        if out.column_names.contains(&result_col.to_string()) {
+            return Err(format!(
+                "rank_column: column '{result_col}' already exists"
+            ));
+        }
+        out.column_names.push(result_col.to_string());
+        out.data.push(ranks);
+        log::debug!("dataframe: rank_column order={order} → '{result_col}'");
+        Ok(out)
+    }
 }
 
 // ---------------------------------------------------------------------------

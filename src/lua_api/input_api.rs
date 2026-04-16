@@ -139,6 +139,43 @@ impl LuaUserData for LuaCombo {
 }
 
 // -------------------------------------------------------------------------------
+// LuaInputRecording — userdata returned by stopRecording()
+// -------------------------------------------------------------------------------
+
+/// Lua userdata wrapper for a completed [`crate::input::recorder::InputRecording`].
+///
+/// Returned by `lurek.input.stopRecording()`.  Use `:toJson()` to persist the
+/// recording and `lurek.input.loadRecording(json)` to restore it for playback.
+struct LuaInputRecording {
+    inner: crate::input::recorder::InputRecording,
+}
+
+impl LuaUserData for LuaInputRecording {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- toJson --
+        /// Serializes this recording to a JSON string for saving to disk.
+        /// @return string
+        methods.add_method("toJson", |_, this, ()| {
+            this.inner.to_json().map_err(LuaError::RuntimeError)
+        });
+
+        // -- totalFrames --
+        /// Returns the total frame count when recording was stopped.
+        /// @return integer
+        methods.add_method("totalFrames", |_, this, ()| {
+            Ok(this.inner.total_frames as i64)
+        });
+
+        // -- frameCount --
+        /// Returns the number of sparse event frames stored in this recording.
+        /// @return integer
+        methods.add_method("frameCount", |_, this, ()| {
+            Ok(this.inner.frames.len() as i64)
+        });
+    }
+}
+
+// -------------------------------------------------------------------------------
 // Register
 // -------------------------------------------------------------------------------
 
@@ -628,11 +665,50 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- isVibrationSupported --
     /// Returns whether the gamepad supports haptic vibration.
+    ///
+    /// winit 0.30 does not expose a haptics API on any desktop platform. This function
+    /// always returns `false` in the current release. When platform support is added the
+    /// return value will reflect actual capability.
     /// @param id : integer
     /// @return boolean
     gamepad.set(
         "isVibrationSupported",
         lua.create_function(move |_, _id: usize| Ok(false))?,
+    )?;
+
+    // -- vibrate --
+    /// Requests haptic vibration on a gamepad.
+    ///
+    /// Parameters map to the standard dual-motor model used by most controllers:
+    /// - `low_freq`  — intensity of the low-frequency (rumble) motor `[0.0, 1.0]`
+    /// - `high_freq` — intensity of the high-frequency (buzz) motor `[0.0, 1.0]`
+    /// - `duration_ms` — how long to vibrate in milliseconds
+    ///
+    /// Returns `false` because winit 0.30 does not expose a haptics API. The call is
+    /// logged at `debug` level so it is visible in test recordings even on unsupported
+    /// platforms.  When a winit haptics backend is available this function will return
+    /// `true` on success.
+    ///
+    /// @param id : integer
+    /// @param low_freq : number
+    /// @param high_freq : number
+    /// @param duration_ms : number
+    /// @return boolean
+    gamepad.set(
+        "vibrate",
+        lua.create_function(
+            move |_, (id, low_freq, high_freq, duration_ms): (usize, f32, f32, f32)| {
+                let low_freq = low_freq.clamp(0.0, 1.0);
+                let high_freq = high_freq.clamp(0.0, 1.0);
+                let duration_ms = duration_ms.max(0.0);
+                log::debug!(
+                    "gamepad::vibrate id={id} low_freq={low_freq:.3} \
+                     high_freq={high_freq:.3} duration_ms={duration_ms:.1} \
+                     (platform stub — winit 0.30 has no haptics API)"
+                );
+                Ok(false)
+            },
+        )?,
     )?;
 
     // -- getGUID --
@@ -1066,6 +1142,115 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 detector: ComboDetector::new(steps, total_gap_ms),
                 total_elapsed_ms: 0,
             })
+        })?,
+    )?;
+
+    // ── Recording / Playback ──────────────────────────────────────────────────
+
+    let rec_rc = Rc::new(RefCell::new(crate::input::recorder::InputRecorder::new()));
+
+    let rc = rec_rc.clone();
+    /// Starts capturing input events frame-by-frame.  Clears any previous recording.
+    /// @return nil
+    input_tbl.set(
+        "startRecording",
+        lua.create_function(move |_, ()| {
+            rc.borrow_mut().start_recording();
+            Ok(())
+        })?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Stops recording and returns an `InputRecording` userdata, or nil if not recording.
+    /// @return InputRecording|nil
+    input_tbl.set(
+        "stopRecording",
+        lua.create_function(move |lua, ()| {
+            match rc.borrow_mut().stop_recording() {
+                Some(rec) => Ok(LuaValue::UserData(
+                    lua.create_userdata(LuaInputRecording { inner: rec })?,
+                )),
+                None => Ok(LuaValue::Nil),
+            }
+        })?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Loads a JSON-encoded recording string for playback.
+    /// @param json : string
+    /// @return nil
+    input_tbl.set(
+        "loadRecording",
+        lua.create_function(move |_, json: String| {
+            let rec = crate::input::recorder::InputRecording::from_json(&json)
+                .map_err(LuaError::RuntimeError)?;
+            rc.borrow_mut().load(rec);
+            Ok(())
+        })?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Starts playback from the beginning of the loaded recording.
+    /// @return nil
+    input_tbl.set(
+        "startPlayback",
+        lua.create_function(move |_, ()| {
+            rc.borrow_mut().start_playback();
+            Ok(())
+        })?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Stops playback immediately.
+    /// @return nil
+    input_tbl.set(
+        "stopPlayback",
+        lua.create_function(move |_, ()| {
+            rc.borrow_mut().stop_playback();
+            Ok(())
+        })?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Returns true if input recording is currently active.
+    /// @return boolean
+    input_tbl.set(
+        "isRecording",
+        lua.create_function(move |_, ()| Ok(rc.borrow().is_recording()))?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Returns true if input playback is currently active.
+    /// @return boolean
+    input_tbl.set(
+        "isPlayingBack",
+        lua.create_function(move |_, ()| Ok(rc.borrow().is_playing_back()))?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Returns the current playback frame index (0-based).  Returns 0 when not playing.
+    /// @return integer
+    input_tbl.set(
+        "getPlaybackFrame",
+        lua.create_function(move |_, ()| Ok(rc.borrow().playback_frame_index() as i64))?,
+    )?;
+
+    let rc = rec_rc.clone();
+    /// Advances playback by one frame and returns an array of key/button events for that
+    /// frame.  Each event is a table with `kind` ("down"|"up") and `name` string fields.
+    /// @return table
+    input_tbl.set(
+        "advancePlayback",
+        lua.create_function(move |lua, ()| {
+            let events = rc.borrow_mut().playback_frame();
+            let tbl = lua.create_table()?;
+            for (i, ev) in events.iter().enumerate() {
+                let etbl = lua.create_table()?;
+                etbl.set("kind", ev.kind.clone())?;
+                etbl.set("name", ev.name.clone())?;
+                tbl.set(i + 1, etbl)?;
+            }
+            Ok(tbl)
         })?,
     )?;
 

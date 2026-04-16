@@ -245,3 +245,14 @@ lurek.input.saveGamepadMappings("path/to/file")  -- Saves all stored gamepad map
 lurek.input.setBackgroundEvents(false)  -- Enable or disable receiving gamepad events when the window is not focused
 lurek.input.setGamepadMapping("gamepad_guid", sdl_mapping_string)  -- Stores or replaces a GameControllerDB mappinging string for the given GUID
 local set_vibration = lurek.input.setVibration(any)  -- Triggers haptic rumble (currently a no-op stub)
+
+-- ─── lurek.gamepad.vibrate ───────────────────────────────────────────────────
+-- Gamepad haptic vibration (stub, returns false until winit haptics lands).
+-- Parameters: gamepad id (0-based), low_freq [0,1], high_freq [0,1], duration_ms
+local ok = lurek.gamepad.vibrate(0, 0.8, 0.4, 300)  -- rumble pad 0 for 300 ms
+if not ok then
+    -- Platform does not support haptics; silently ignore
+end
+
+local supported = lurek.gamepad.isVibrationSupported(0)  -- always false on winit 0.30
+

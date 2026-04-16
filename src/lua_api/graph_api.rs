@@ -1397,6 +1397,26 @@ impl LuaUserData for LuaGraph {
             dispatch_events(lua, &this.inner, &cbs, events)
         });
 
+        // -- tickParallel --
+        /// Advances simulation by dt seconds using a parallelised decay phase.
+        ///
+        /// Functionally identical to `update` but the life-decrement scan runs
+        /// in parallel across all items via rayon, providing better CPU
+        /// utilisation for graphs with large item counts.  Event callbacks
+        /// are fired in the same order as `update`.
+        ///
+        /// # Usage
+        /// ```lua
+        /// graph:tickParallel(lurek.dt())
+        /// ```
+        /// @param dt : number
+        /// @return nil
+        methods.add_method("tickParallel", |lua, this, dt: f64| {
+            let events = this.inner.borrow_mut().update_parallel(dt);
+            let cbs = this.callbacks.borrow();
+            dispatch_events(lua, &this.inner, &cbs, events)
+        });
+
         // ── Pathfinding ─────────────────────────────────────────────
 
         // -- findPath --

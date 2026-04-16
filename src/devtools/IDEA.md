@@ -66,12 +66,22 @@ for external analysis or CSV export.
 
 ---
 
-### ❌ TODO — In-Game Console Widget (REPL)
+### ✅ DONE — In-Game Console Widget (REPL)
 **Source**: General devtools completeness
 
-`console_open` flag exists in `DevtoolsState` but no REPL input widget is bound.
-A REPL panel where developers can evaluate Lua expressions at runtime would be
-significantly more useful than the existing log-only console.
+`src/devtools/repl.rs` created with `ReplConsole` struct. Evaluates arbitrary Lua
+expressions at runtime: tries `return {expr}` first (value capture), then falls back
+to plain `exec()`. Maintains a bounded input history ring.
+
+`LuaReplConsole` UserData + `newRepl(max_history?)` factory added to `src/lua_api/devtools_api.rs`.
+
+```lua
+local repl = lurek.devtools.newRepl(50)
+local result = repl:eval("2 + 2")         -- "4"
+local history = repl:history()             -- table of past inputs
+```
+
+Implemented: 2026-04-18
 
 ---
 

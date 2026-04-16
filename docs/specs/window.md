@@ -134,3 +134,7 @@ Viewport API: `to_pixels(world_x, world_y)` converts world coordinates to pixel 
 
 - Keep this module reference synchronized with `src/window/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+
+### Already in place (0.14.0)
+
+- `lurek.window.setPosition(x, y)` / `getPosition()` — implemented via `WindowState.pending_position` and `src/window/management.rs`. IDEA.md was outdated; implementation predates 0.14.1.

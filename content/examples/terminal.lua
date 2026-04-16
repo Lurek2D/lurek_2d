@@ -253,3 +253,21 @@ function lurek.render()
     my_term:render(0, 0)
 end
 ]]
+
+--[[
+-- ─── terminal cell size override ─────────────────────────────────────────────
+local t = lurek.terminal.new(40, 24)
+
+-- Use 16×24 pixels per cell instead of the font-derived default
+t:setCellSize(16, 24)
+
+-- Check what is set
+local cs = t:getCellSize()   -- returns {w=16, h=24}
+if cs then
+    print(string.format("Cell: %d x %d", cs.w, cs.h))
+end
+
+-- Revert to font-derived size
+t:resetCellSize()
+assert(t:getCellSize() == nil)
+]]

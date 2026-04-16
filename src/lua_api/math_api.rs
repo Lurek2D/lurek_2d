@@ -2650,6 +2650,120 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, ()| lua.create_userdata(LuaAabbTree { inner: AabbTree::new() }))?,
     )?;
 
+    // ── Boolean polygon operations ────────────────────────────────────────────
+
+    /// Computes the intersection of two convex polygons using the Sutherland-Hodgman
+    /// algorithm.  Each polygon is a sequential table of `{x, y}` tables.
+    /// Returns the intersection region as the same table format, or an empty table
+    /// if the polygons do not overlap.
+    ///
+    /// @param a : table   polygon A (array of {x, y} tables)
+    /// @param b : table   polygon B (convex, array of {x, y} tables)
+    /// @return table
+    tbl.set(
+        "polygonIntersection",
+        lua.create_function(|lua, (a, b): (LuaTable, LuaTable)| {
+            let va = lua_table_to_poly(a)?;
+            let vb = lua_table_to_poly(b)?;
+            let result = polygon::polygon_intersection(&va, &vb);
+            poly_to_lua_table(lua, &result)
+        })?,
+    )?;
+
+    /// Computes the approximate union of two convex polygons as the convex hull of
+    /// all combined vertices.  Returns the result as an array of `{x, y}` tables.
+    ///
+    /// @param a : table
+    /// @param b : table
+    /// @return table
+    tbl.set(
+        "polygonUnion",
+        lua.create_function(|lua, (a, b): (LuaTable, LuaTable)| {
+            let va = lua_table_to_poly(a)?;
+            let vb = lua_table_to_poly(b)?;
+            let result = polygon::polygon_union(&va, &vb);
+            poly_to_lua_table(lua, &result)
+        })?,
+    )?;
+
+    /// Computes the approximate difference `A - B` (the part of A not covered by B).
+    /// Works best when B is convex.  Returns result as an array of `{x, y}` tables.
+    ///
+    /// @param a : table
+    /// @param b : table
+    /// @return table
+    tbl.set(
+        "polygonDifference",
+        lua.create_function(|lua, (a, b): (LuaTable, LuaTable)| {
+            let va = lua_table_to_poly(a)?;
+            let vb = lua_table_to_poly(b)?;
+            let result = polygon::polygon_difference(&va, &vb);
+            poly_to_lua_table(lua, &result)
+        })?,
+    )?;
+
+    // -- voronoi --
+    /// Computes the Voronoi diagram for a list of 2-D seed points.
+    ///
+    /// Each cell in the result has `site = {x, y}` (the input point) and
+    /// `vertices = {{x, y}, …}` (circumcenters of adjacent Delaunay triangles,
+    /// ordered CCW by angle around the site).  Cells on the convex hull are
+    /// open (no infinite rays).
+    ///
+    /// @param points : table -- array of `{x, y}` tables
+    /// @return table -- array of `{site={x,y}, vertices={{x,y},…}}` tables
+    tbl.set(
+        "voronoi",
+        lua.create_function(|lua, points: LuaTable| {
+            let pts = lua_table_to_poly(points)?;
+            let cells = crate::math::voronoi_from_points(&pts);
+            let out = lua.create_table()?;
+            for (i, cell) in cells.iter().enumerate() {
+                let site_tbl = lua.create_table()?;
+                site_tbl.set("x", cell.site.0)?;
+                site_tbl.set("y", cell.site.1)?;
+
+                let verts_tbl = lua.create_table()?;
+                for (j, &(vx, vy)) in cell.vertices.iter().enumerate() {
+                    let v = lua.create_table()?;
+                    v.set("x", vx)?;
+                    v.set("y", vy)?;
+                    verts_tbl.set(j + 1, v)?;
+                }
+
+                let cell_tbl = lua.create_table()?;
+                cell_tbl.set("site", site_tbl)?;
+                cell_tbl.set("vertices", verts_tbl)?;
+                out.set(i + 1, cell_tbl)?;
+            }
+            Ok(out)
+        })?,
+    )?;
+
     luna.set("math", tbl)?;
     Ok(())
+}
+
+/// Converts a Lua table of `{x, y}` sub-tables to a `Vec<(f32, f32)>`.
+fn lua_table_to_poly(tbl: LuaTable) -> LuaResult<Vec<(f32, f32)>> {
+    let mut pts = Vec::new();
+    for pair in tbl.pairs::<i64, LuaTable>() {
+        let (_, pt) = pair?;
+        let x: f32 = pt.get("x")?;
+        let y: f32 = pt.get("y")?;
+        pts.push((x, y));
+    }
+    Ok(pts)
+}
+
+/// Converts a `Vec<(f32, f32)>` to a Lua array of `{x, y}` sub-tables.
+fn poly_to_lua_table<'lua>(lua: &'lua Lua, pts: &[(f32, f32)]) -> LuaResult<LuaTable<'lua>> {
+    let arr = lua.create_table()?;
+    for (i, (x, y)) in pts.iter().enumerate() {
+        let t = lua.create_table()?;
+        t.set("x", *x)?;
+        t.set("y", *y)?;
+        arr.set(i + 1, t)?;
+    }
+    Ok(arr)
 }

@@ -444,6 +444,60 @@ impl LuaUserData for LuaRaycaster {
             },
         );
 
+        // -- castFloorRow --
+        /// Computes floor (or ceiling) texture UV coordinates for one horizontal screen row.
+        ///
+        /// For every pixel column in the given `row`, returns a `{u, v}` table
+        /// with normalised texture coordinates in `[0.0, 1.0)`.  Multiply `u` and `v`
+        /// by your texture width/height to obtain integer texel indices.
+        ///
+        /// Rows below the screen-centre half-height are floor rows; rows above
+        /// are ceiling rows.  Passing `row = screen_height / 2` returns zeros.
+        ///
+        /// # Usage
+        /// ```lua
+        /// local uvs = rc:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row)
+        /// for col, uv in ipairs(uvs) do
+        ///     local tx = math.floor(uv.u * TEX_W) % TEX_W
+        ///     local ty = math.floor(uv.v * TEX_H) % TEX_H
+        ///     -- sample floor texture at (tx, ty)
+        /// end
+        /// ```
+        /// @param cam_x : number
+        /// @param cam_y : number
+        /// @param dir_x : number
+        /// @param dir_y : number
+        /// @param plane_x : number
+        /// @param plane_y : number
+        /// @param row : integer
+        /// @return table
+        methods.add_method(
+            "castFloorRow",
+            |lua,
+             this,
+             (cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row): (
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                f32,
+                i32,
+            )| {
+                let uvs = this
+                    .inner
+                    .cast_floor_row(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, row);
+                let tbl = lua.create_table()?;
+                for (i, (u, v)) in uvs.iter().enumerate() {
+                    let t = lua.create_table()?;
+                    t.set("u", *u)?;
+                    t.set("v", *v)?;
+                    tbl.set(i + 1, t)?;
+                }
+                Ok(tbl)
+            },
+        );
+
         // -- projectSprite --
         /// Projects a world-space sprite onto screen space.
         /// @param sx : number

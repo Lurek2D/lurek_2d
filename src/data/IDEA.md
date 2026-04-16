@@ -25,12 +25,20 @@ unpacking of typed values into/from byte buffers.
 
 ---
 
-### ❌ TODO — MessagePack Serialization
+### ✅ DONE — MessagePack Serialization
 **Source**: features/data.md — Feature Gaps #1 / Suggestions #2
+**Implemented**: 2026-04-16
 
-No `toMsgPack(table)` / `fromMsgPack(bytes)` found. MessagePack is efficient binary
-serialization useful for networking and save files. The `data/pack.rs` custom format exists
-but MessagePack provides standard interoperability.
+`src/data/msgpack.rs` — `to_msgpack(value: &serde_json::Value) -> Result<Vec<u8>, String>`
+and `from_msgpack(bytes: &[u8]) -> Result<serde_json::Value, String>` using `rmp-serde`.
+
+Lua API: `lurek.data.toMsgPack(value)` returns a binary Lua string;
+`lurek.data.fromMsgPack(bytes)` decodes it back to a Lua value.
+
+Conversion chain: `LuaValue ↔ SerialValue ↔ serde_json::Value ↔ rmp_serde (bytes)`.
+
+Tests: `tests/lua/unit/test_data_msgpack.lua` — 9 cases covering
+nil/bool/int/float/string/flat-table/array/nested-table/invalid-bytes.
 
 ---
 

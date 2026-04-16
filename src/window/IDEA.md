@@ -75,10 +75,13 @@ level editors, and mod loaders. `rfd` crate would provide this cross-platform.
 
 ---
 
-### ❌ TODO — Window Position Control
+### ✅ DONE — Window Position Control
 **Source**: features/window.md — Suggestions #5
 
-No `lurek.window.setPosition(x, y)` for placing the window at a specific screen coordinate.
+`lurek.window.setPosition(x, y)` stores `(i32, i32)` in `WindowState.pending_position`, applied
+each frame via the deferred winit window management system.  `lurek.window.getPosition()` returns
+`x, y` from `WindowState`.  Implemented in `src/window/management.rs` and bound in
+`src/lua_api/window_api.rs`.
 
 ---
 

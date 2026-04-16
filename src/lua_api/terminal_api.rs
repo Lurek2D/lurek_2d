@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::rc::{Rc, Weak};
 
 use crate::terminal::{BorderStyle, Terminal, TerminalEvent, Widget, WidgetKind};
+use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
+use crate::terminal::completion::CompletionEngine;
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -611,14 +613,18 @@ impl LuaUserData for LuaTerminal {
             let st = this.binding.shared_state.borrow();
             let font_key = st.active_font.or(st.default_font);
             if let Some(fk) = font_key {
-                let (cell_w, cell_h) = font_cell_size(&st);
-                let commands = this.binding.terminal.borrow().build_render_commands(
+                let terminal = this.binding.terminal.borrow();
+                let (cell_w, cell_h) = terminal
+                    .get_cell_size()
+                    .unwrap_or_else(|| font_cell_size(&st));
+                let commands = terminal.build_render_commands(
                     x.unwrap_or(0.0),
                     y.unwrap_or(0.0),
                     cell_w,
                     cell_h,
                     fk,
                 );
+                drop(terminal);
                 drop(st);
                 this.binding
                     .shared_state
@@ -644,6 +650,39 @@ impl LuaUserData for LuaTerminal {
                 Err(LuaError::RuntimeError(
                     "terminal:setFont: built-in fonts not loaded".into(),
                 ))
+            }
+        });
+
+        // -- setCellSize --
+        /// Sets a per-terminal cell pixel size override, bypassing the font-derived size.
+        /// Both values are clamped to a minimum of 1.0.
+        /// @param w : number
+        /// @param h : number
+        /// @return nil
+        methods.add_method("setCellSize", |_, this, (w, h): (f32, f32)| {
+            this.binding.terminal.borrow_mut().set_cell_size(w, h);
+            Ok(())
+        });
+
+        // -- resetCellSize --
+        /// Removes the cell size override, restoring font-derived cell dimensions.
+        /// @return nil
+        methods.add_method("resetCellSize", |_, this, ()| {
+            this.binding.terminal.borrow_mut().reset_cell_size();
+            Ok(())
+        });
+
+        // -- getCellSize --
+        /// Returns the active cell size override as `{w, h}`, or `nil` if none is set.
+        /// @return table?
+        methods.add_method("getCellSize", |lua, this, ()| {
+            if let Some((w, h)) = this.binding.terminal.borrow().get_cell_size() {
+                let t = lua.create_table()?;
+                t.set("w", w)?;
+                t.set("h", h)?;
+                Ok(mlua::Value::Table(t))
+            } else {
+                Ok(mlua::Value::Nil)
             }
         });
 
@@ -1683,6 +1722,156 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 Ok(())
             },
         )?,
+    )?;
+
+    // ── ANSI escape code support ──────────────────────────────────────────────
+
+    /// Strips all ANSI escape codes from `text` and returns the plain string.
+    /// @param text : string
+    /// @return string
+    tbl.set(
+        "stripAnsi",
+        lua.create_function(|_, text: String| {
+            Ok(strip_ansi_codes(&text))
+        })?,
+    )?;
+
+    /// Parses `text` into coloured spans.  Returns an array of tables, each with
+    /// `text`, `bold`, and optional `fg`/`bg` sub-tables `{r,g,b}`.
+    /// @param text : string
+    /// @return table   array of span tables
+    tbl.set(
+        "parseAnsi",
+        lua.create_function(|lua, text: String| {
+            let spans = parse_ansi_spans(&text);
+            let arr = lua.create_table()?;
+            for (i, span) in spans.iter().enumerate() {
+                let t = lua.create_table()?;
+                t.set("text", span.text.clone())?;
+                t.set("bold", span.bold)?;
+                if let Some(ref c) = span.fg {
+                    let ct = lua.create_table()?;
+                    ct.set("r", c.r)?;
+                    ct.set("g", c.g)?;
+                    ct.set("b", c.b)?;
+                    t.set("fg", ct)?;
+                }
+                if let Some(ref c) = span.bg {
+                    let ct = lua.create_table()?;
+                    ct.set("r", c.r)?;
+                    ct.set("g", c.g)?;
+                    ct.set("b", c.b)?;
+                    t.set("bg", ct)?;
+                }
+                arr.set(i + 1, t)?;
+            }
+            Ok(arr)
+        })?,
+    )?;
+
+    /// Prints ANSI-escaped `text` onto terminal `t` starting at `(col, row)`.
+    /// Each span is drawn with its own colours.  Bold spans use bright-white if no
+    /// explicit colour is set.
+    /// @param t   : Terminal
+    /// @param col : integer
+    /// @param row : integer
+    /// @param text : string
+    /// @return nil
+    tbl.set(
+        "printAnsi",
+        lua.create_function(|_, (t_ud, col, row, text): (LuaAnyUserData, i64, i64, String)| {
+            let mut t = t_ud.borrow_mut::<LuaTerminal>()?;
+            let spans = parse_ansi_spans(&text);
+            let mut cur_col = col as usize;
+            for span in &spans {
+                let fg: [f32; 4] = span.fg.as_ref()
+                    .map(|c| [c.r as f32 / 255.0, c.g as f32 / 255.0, c.b as f32 / 255.0, 1.0])
+                    .unwrap_or(if span.bold { [1.0, 1.0, 1.0, 1.0] } else { [0.667, 0.667, 0.667, 1.0] });
+                let bg: Option<[f32; 4]> = span.bg.as_ref()
+                    .map(|c| [c.r as f32 / 255.0, c.g as f32 / 255.0, c.b as f32 / 255.0, 1.0]);
+                t.inner.print_colored(cur_col, row as usize, &span.text, fg, bg);
+                cur_col += span.text.chars().count();
+            }
+            Ok(())
+        })?,
+    )?;
+
+    // ── Tab completion ────────────────────────────────────────────────────────
+
+    let comp_rc = Rc::new(RefCell::new(CompletionEngine::new()));
+
+    let crc = comp_rc.clone();
+    /// Adds a candidate string to the tab-completion engine.
+    /// @param candidate : string
+    /// @return nil
+    tbl.set(
+        "addCompletion",
+        lua.create_function(move |_, candidate: String| {
+            crc.borrow_mut().add_candidate(&candidate);
+            Ok(())
+        })?,
+    )?;
+
+    let crc = comp_rc.clone();
+    /// Removes a candidate string from the tab-completion engine.
+    /// @param candidate : string
+    /// @return nil
+    tbl.set(
+        "removeCompletion",
+        lua.create_function(move |_, candidate: String| {
+            crc.borrow_mut().remove_candidate(&candidate);
+            Ok(())
+        })?,
+    )?;
+
+    let crc = comp_rc.clone();
+    /// Clears all completion candidates.
+    /// @return nil
+    tbl.set(
+        "clearCompletions",
+        lua.create_function(move |_, ()| {
+            crc.borrow_mut().clear();
+            Ok(())
+        })?,
+    )?;
+
+    let crc = comp_rc.clone();
+    /// Returns all registered candidates that start with `prefix`, as a sorted array.
+    /// @param prefix : string
+    /// @return table
+    tbl.set(
+        "getCompletions",
+        lua.create_function(move |lua, prefix: String| {
+            let matches = crc.borrow().completions_for(&prefix);
+            let t = lua.create_table()?;
+            for (i, m) in matches.iter().enumerate() {
+                t.set(i + 1, m.clone())?;
+            }
+            Ok(t)
+        })?,
+    )?;
+
+    let crc = comp_rc.clone();
+    /// Returns the next candidate for `prefix`, cycling on repeated calls.
+    /// Returns nil when there are no matches.
+    /// @param prefix : string
+    /// @return string|nil
+    tbl.set(
+        "nextCompletion",
+        lua.create_function(move |_, prefix: String| {
+            Ok(crc.borrow_mut().next_completion(&prefix))
+        })?,
+    )?;
+
+    let crc = comp_rc.clone();
+    /// Resets the cycling cursor without clearing the candidate list.
+    /// @return nil
+    tbl.set(
+        "resetCompletion",
+        lua.create_function(move |_, ()| {
+            crc.borrow_mut().reset();
+            Ok(())
+        })?,
     )?;
 
     luna.set("terminal", tbl)?;
