@@ -2,6 +2,19 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.15.0] — 2026-04-25
+### Added
+- **ui**: `src/ui/layout_loader.rs` — new domain module `layout_loader` with three public functions:
+  - `load_layout_def(ctx, def)` — recursively build a widget tree from a `WidgetDef` struct.
+  - `load_layout_toml(ctx, toml_src)` — parse a TOML string into `LayoutDef` then delegate to `load_layout_def`.
+  - `render_to_image(ctx, width, height, path)` — software-rasterise the widget tree to a PNG file (headless-safe, for tests).
+- **ui**: `WidgetDef` and `LayoutDef` serde-deserializable structs — enable declarative UI layouts via Lua tables or TOML files.
+- **ui**: `lurek.ui.loadLayout(def)` — load a widget tree from a Lua table definition and attach it to the UI root. Returns the pool index of the created root widget.
+- **ui**: `lurek.ui.loadLayoutFile(path)` — load a widget tree from a TOML layout file. Returns pool index.
+- **ui**: `lurek.ui.renderToImage(width, height, path)` — headless PNG rasteriser for evidence and golden tests. No GPU or window required.
+- **tests**: `tests/lua/unit/test_ui_layout.lua` — BDD unit tests covering API existence, flat/nested tree creation, id lookup, and all supported widget-type strings.
+- **tests**: `tests/lua/evidence/test_evidence_ui_layout_render.lua` — evidence tests producing `simple_hud.png` and `nested_panel.png` via `loadLayout` + `renderToImage`.
+
 ## [0.14.2] — 2026-04-18
 ### Added
 - **pathfind**: `lurek.pathfinding.findPathBidirectional(sx, sy, ex, ey)` — bidirectional A* search (meet-in-the-middle) for long paths on large grids. Added to `src/lua_api/pathfind_api.rs`.

@@ -837,3 +837,46 @@ local found_wg  = lurek.gui.findById("main_hud")    -- nil if no match
 local in_bounds = lurek.gui.containsPoint(150, 80)  -- true when (150,80) inside widget
 lurek.gui.clearAnchor()                        -- stop stretching, return to manual size
 
+--------------------------------------------------------------------------------
+-- Layout Definition Loader
+-- lurek.ui.loadLayout(def)           → pool_index: number
+-- lurek.ui.loadLayoutFile(path)      → pool_index: number
+-- lurek.ui.renderToImage(w, h, path) → nil
+--------------------------------------------------------------------------------
+-- Build a complete widget tree from a single Lua table description.
+-- Every node must have a `type` field (the widget kind string).
+-- All other fields (x, y, w, h, text, id, visible, enabled, tooltip,
+-- min, max, value, checked, on, placeholder, direction, spacing,
+-- orientation, group, children) are optional.
+
+local hud_root = lurek.ui.loadLayout({
+    type = "panel",
+    x = 0, y = 0, w = 320, h = 120,
+    children = {
+        -- HP bar
+        { type = "label",       text = "HP",     x = 10, y = 10, w = 60,  h = 24 },
+        { type = "progressbar", min = 0, max = 100, value = 80,
+          x = 80, y = 10, w = 220, h = 24 },
+        -- MP bar
+        { type = "label",       text = "MP",     x = 10, y = 46, w = 60,  h = 24 },
+        { type = "progressbar", min = 0, max = 100, value = 45,
+          x = 80, y = 46, w = 220, h = 24 },
+        -- Action buttons
+        { type = "button", text = "Attack",  id = "btn_attack",
+          x = 10, y = 82, w = 100, h = 28 },
+        { type = "button", text = "Defend",  id = "btn_defend",
+          x = 120, y = 82, w = 100, h = 28 },
+    }
+})
+-- hud_root is the pool index of the created panel widget
+
+-- Look up a specific widget by its id after loadLayout:
+local root = lurek.ui.getRoot()
+local attack_btn = root.findById("btn_attack")  -- widget handle or nil
+
+-- Load from a TOML file (e.g. assets/ui/hud.toml with a [root] section):
+-- local from_file = lurek.ui.loadLayoutFile("assets/ui/hud.toml")
+
+-- Render the current UI tree to PNG (headless-safe; intended for tests):
+-- lurek.ui.renderToImage(320, 120, "tests/lua/evidence/output/ui_layout/hud_snapshot.png")
+

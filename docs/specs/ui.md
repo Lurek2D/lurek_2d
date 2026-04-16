@@ -7,7 +7,7 @@
 - Lua API path(s): `src/lua_api/ui_api.rs`
 - Primary Lua namespace: `lurek.ui`
 - Rust test path(s): tests/rust/unit/gui_tests.rs
-- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/integration/test_localization_ui.lua
+- Lua test path(s): tests/lua/unit/test_gui.lua, tests/lua/unit/test_ui_layout.lua, tests/lua/integration/test_localization_ui.lua
 
 ## Summary
 
@@ -29,6 +29,7 @@ The `ui` module provides Lurek2D's retained-mode widget UI system, enabling game
 - `controls.rs`: Defines common interactive widgets such as buttons, labels, text inputs, sliders, check boxes, combo boxes, list boxes, and progress bars.
 - `data_graph_renderer.rs`: Implements data-series rendering helpers for charts and graph-style visualizations.
 - `extras.rs`: Defines secondary widgets and utility components such as menus, toolbars, dialogs, tables, tree views, tooltips, accordions, image widgets, and toasts.
+- `layout_loader.rs`: Implements pure-Rust layout definition loading (`WidgetDef` / TOML) and a headless software PNG rasteriser for test evidence generation.
 - `mod.rs`: Declares the UI submodules and re-exports the widget, context, theme, container, control, and chart-facing types.
 - `render.rs`: Walks UI state and theme data to produce render commands or CPU-side image output.
 - `theme.rs`: Stores theme style maps, widget visual state, and fallback behavior for widget styling.
@@ -313,11 +314,21 @@ The `ui` module provides Lurek2D's retained-mode widget UI system, enabling game
 - `WidgetBase::new` (`widget.rs`): Create a new `WidgetBase` with default values for the given widget type.
 - `WidgetBase::contains_point` (`widget.rs`): Test whether a point `(px, py)` lies within this widget's bounding rectangle.
 - `WidgetBase::clear_anchors` (`widget.rs`): Clear all anchor constraints.
+- `WidgetDef` (`struct`, `layout_loader.rs`): Serde-deserializable widget definition. All fields except `widget_type` are optional; `children` is a recursive `Vec<WidgetDef>`.
+- `LayoutDef` (`struct`, `layout_loader.rs`): Top-level TOML layout schema — wraps a single `root: WidgetDef` under the `[root]` TOML section.
+- `load_layout_def` (`fn`, `layout_loader.rs`): Recursively build a widget tree from a `WidgetDef` into a `GuiContext`. Returns the pool index of the created root widget.
+- `load_layout_toml` (`fn`, `layout_loader.rs`): Parse a TOML source string into a `LayoutDef` then delegate to `load_layout_def`. Returns the pool index of the created root widget.
+- `render_to_image` (`fn`, `layout_loader.rs`): Run the layout pass, software-rasterise each visible widget rectangle in a representative colour, and save the result as a PNG. Headless-safe.
 
 ## Lua API Reference
 
 - Binding path(s): `src/lua_api/ui_api.rs`
 - Namespace: `lurek.ui`
+
+### Layout Loader Functions
+- `lurek.ui.loadLayout(def)`: Load a widget tree from a Lua table definition (`def`) and attach it to the UI root. Returns the pool index of the created root widget as a number.
+- `lurek.ui.loadLayoutFile(path)`: Load a widget tree from a TOML layout file at `path` and attach it to the UI root. Returns the pool index of the created root widget as a number.
+- `lurek.ui.renderToImage(width, height, path)`: Run the layout pass and software-rasterise the current widget tree to a PNG file at `path`. Headless-safe; intended for evidence and golden tests.
 
 ### Module Functions
 - `lurek.ui.setPosition`: Sets the widget position.

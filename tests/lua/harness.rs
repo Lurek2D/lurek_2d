@@ -508,6 +508,11 @@ fn lua_test_gui() {
 }
 
 #[test]
+fn lua_test_unit_ui_layout() {
+    run_lua_test("unit/test_ui_layout.lua");
+}
+
+#[test]
 fn lua_test_serial() {
     run_lua_test("unit/test_serial.lua");
 }
@@ -1576,6 +1581,11 @@ fn lua_evidence_gui() {
 }
 
 #[test]
+fn lua_evidence_ui_layout_render() {
+    run_lua_test("evidence/test_evidence_ui_layout_render.lua");
+}
+
+#[test]
 fn lua_evidence_migrated_15() {
     run_lua_test("evidence/test_evidence_migrated_15.lua");
 }
@@ -1788,6 +1798,33 @@ fn lua_test_unit_window_icon() {
 #[test]
 fn lua_test_unit_input_combo() {
     run_lua_test("unit/test_input_combo.lua");
+}
+
+// ─── New IDEA.md features – 2026-04-18 ────────────────────────────────────────
+
+#[test]
+fn lua_test_unit_graph_parallel_tick() {
+    run_lua_test("unit/test_graph_parallel_tick.lua");
+}
+
+#[test]
+fn lua_test_unit_animation_blend() {
+    run_lua_test("unit/test_animation_blend.lua");
+}
+
+#[test]
+fn lua_test_unit_devtools_repl() {
+    run_lua_test("unit/test_devtools_repl.lua");
+}
+
+#[test]
+fn lua_test_unit_raycaster_floor_uv() {
+    run_lua_test("unit/test_raycaster_floor_uv.lua");
+}
+
+#[test]
+fn lua_test_unit_light_godrays() {
+    run_lua_test("unit/test_light_godrays.lua");
 }
 
 // ─── Config: runtime fallback ─────────────────────────────────────────────────

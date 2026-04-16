@@ -6005,8 +6005,332 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // ── Layout definition loader ────────────────────────────────────────
+
+    // -- loadLayout --
+    /// Load a widget tree from a Lua table definition and attach it to the UI
+    /// root (pool index 0).
+    ///
+    /// The `def` table must have a `type` field (the widget kind string) and
+    /// may have any of the recognised property fields (`x`, `y`, `w`, `h`,
+    /// `text`, `id`, `visible`, `enabled`, `tooltip`, `min`, `max`, `value`,
+    /// `checked`, `on`, `placeholder`, `direction`, `spacing`, `orientation`,
+    /// `group`) plus an optional `children` array of nested definition tables.
+    ///
+    /// Returns the pool index of the created root widget as a number. Use
+    /// `lurek.ui.getRoot():findById(id)` to retrieve handles to individual
+    /// widgets by their `id` fields.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local idx = lurek.ui.loadLayout({
+    ///   type = "panel", x = 0, y = 0, w = 400, h = 300,
+    ///   children = {
+    ///     { type = "label", text = "HP:", x = 10, y = 10, w = 80, h = 24, id = "hp_label" },
+    ///     { type = "button", text = "Attack", x = 10, y = 44, w = 100, h = 32, id = "atk_btn" },
+    ///   }
+    /// })
+    /// ```
+    /// @param def : table
+    /// @return number
+    let c = ctx.clone();
+    tbl.set(
+        "loadLayout",
+        lua.create_function(move |_, def: mlua::Table| {
+            let widget_def = lua_table_to_widget_def(&def)?;
+            let mut g = c.borrow_mut();
+            let root_idx = crate::ui::load_layout_def(&mut g, &widget_def)
+                .map_err(mlua::Error::external)?;
+            g.add_child(0, root_idx);
+            Ok(root_idx as u32)
+        })?,
+    )?;
+
+    // -- loadLayoutFile --
+    /// Load a widget tree from a TOML layout file and attach it to the UI root.
+    ///
+    /// The TOML file must have a `[root]` section containing a widget
+    /// definition. See `LayoutDef` / `WidgetDef` for the schema. Recognised
+    /// properties are the same as for `loadLayout`.
+    ///
+    /// Returns the pool index of the created root widget as a number.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local idx = lurek.ui.loadLayoutFile("assets/ui/hud.toml")
+    /// local label = lurek.ui.getRoot():findById("hp_label")
+    /// ```
+    /// @param path : string
+    /// @return number
+    let c = ctx.clone();
+    tbl.set(
+        "loadLayoutFile",
+        lua.create_function(move |_, path: String| {
+            let src = std::fs::read_to_string(&path)
+                .map_err(|e| mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}")))?;
+            let mut g = c.borrow_mut();
+            let root_idx = crate::ui::load_layout_toml(&mut g, &src)
+                .map_err(mlua::Error::external)?;
+            g.add_child(0, root_idx);
+            Ok(root_idx as u32)
+        })?,
+    )?;
+
+    // -- renderToImage --
+    /// Render the current UI widget tree to a PNG file for testing purposes.
+    ///
+    /// Runs the layout pass, then software-rasterises each visible widget's
+    /// computed bounding rectangle in a representative colour onto an RGBA
+    /// pixel buffer. The result is saved as a PNG file at `path`.
+    ///
+    /// This call is **headless-safe** — no GPU or window required — and is
+    /// intended for evidence and golden tests.
+    ///
+    /// # Usage
+    /// ```lua
+    /// lurek.ui.loadLayout({ type = "panel", w = 320, h = 200, children = {
+    ///   { type = "button", text = "OK", x = 10, y = 10, w = 100, h = 32 }
+    /// }})
+    /// lurek.ui.renderToImage(320, 200, "test_output/ui_snapshot.png")
+    /// ```
+    /// @param width : number
+    /// @param height : number
+    /// @param path : string
+    let c = ctx.clone();
+    tbl.set(
+        "renderToImage",
+        lua.create_function(move |_, (width, height, path): (u32, u32, String)| {
+            let mut g = c.borrow_mut();
+            crate::ui::render_to_image(&mut g, width, height, &path)
+                .map_err(mlua::Error::external)
+        })?,
+    )?;
+
     luna.set("ui", tbl)?;
     Ok(())
+}
+
+// ── Layout loader helpers ─────────────────────────────────────────────────────
+
+/// Recursively convert a Lua definition table into a `crate::ui::WidgetDef`.
+///
+/// The table must contain a `type` key (the widget kind string). All other
+/// fields are optional. A `children` key, if present, must be an array table
+/// of nested definition tables which are each converted recursively.
+///
+/// # Parameters
+///
+/// - `table` — `&mlua::Table`. Lua definition table.
+///
+/// # Returns
+///
+/// `LuaResult<WidgetDef>` — the converted definition, or a `LuaError` if a
+/// child table cannot be read.
+fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::WidgetDef> {
+    // Accept both "type" and "widget_type" as the kind key.
+    let widget_type: String = table
+        .get::<String>("type")
+        .or_else(|_| table.get::<String>("widget_type"))
+        .unwrap_or_else(|_| "panel".to_string());
+
+    let children_table: Option<mlua::Table> = table.get("children").ok();
+    let children = if let Some(ct) = children_table {
+        let len = ct.raw_len();
+        let mut result = Vec::with_capacity(len as usize);
+        for i in 1..=len {
+            let child_table: mlua::Table = ct.get(i)?;
+            result.push(lua_table_to_widget_def(&child_table)?);
+        }
+        Some(result)
+    } else {
+        None
+    };
+
+    Ok(crate::ui::WidgetDef {
+        widget_type,
+        id: table.get("id").ok(),
+        x: table.get("x").ok(),
+        y: table.get("y").ok(),
+        w: table.get("w").ok(),
+        h: table.get("h").ok(),
+        text: table.get("text").ok(),
+        min: table.get("min").ok(),
+        max: table.get("max").ok(),
+        value: table.get("value").ok(),
+        checked: table.get("checked").ok(),
+        on: table.get("on").ok(),
+        visible: table.get("visible").ok(),
+        enabled: table.get("enabled").ok(),
+        placeholder: table.get("placeholder").ok(),
+        tooltip: table.get("tooltip").ok(),
+        direction: table.get("direction").ok(),
+        spacing: table.get("spacing").ok(),
+        orientation: table.get("orientation").ok(),
+        group: table.get("group").ok(),
+        children,
+    }
+    // -- loadLayout --
+    /// Load a widget tree from a Lua table definition and attach it to the UI
+    /// root (pool index 0).
+    ///
+    /// The `def` table must have a `type` field (the widget kind string) and
+    /// may have any of the recognised property fields (`x`, `y`, `w`, `h`,
+    /// `text`, `id`, `visible`, `enabled`, `tooltip`, `min`, `max`, `value`,
+    /// `checked`, `on`, `placeholder`, `direction`, `spacing`, `orientation`,
+    /// `group`) plus an optional `children` array of nested definition tables.
+    ///
+    /// Returns the pool index of the created root widget as a number. Use
+    /// `lurek.ui.getRoot():findById(id)` to retrieve handles to individual
+    /// widgets by their `id` fields.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local idx = lurek.ui.loadLayout({
+    ///   type = "panel", x = 0, y = 0, w = 400, h = 300,
+    ///   children = {
+    ///     { type = "label", text = "HP:", x = 10, y = 10, w = 80, h = 24, id = "hp_label" },
+    ///     { type = "button", text = "Attack", x = 10, y = 44, w = 100, h = 32, id = "atk_btn" },
+    ///   }
+    /// })
+    /// ```
+    /// @param def : table
+    /// @return number
+    let c = ctx.clone();
+    tbl.set(
+        "loadLayout",
+        lua.create_function(move |_, def: mlua::Table| {
+            let widget_def = lua_table_to_widget_def(&def)?;
+            let mut g = c.borrow_mut();
+            let root_idx = crate::ui::load_layout_def(&mut g, &widget_def)
+                .map_err(mlua::Error::external)?;
+            g.add_child(0, root_idx);
+            Ok(root_idx as u32)
+        })?,
+    )?;
+
+    // -- loadLayoutFile --
+    /// Load a widget tree from a TOML layout file and attach it to the UI root.
+    ///
+    /// The TOML file must have a `[root]` section containing a widget
+    /// definition. See `LayoutDef` / `WidgetDef` for the schema. Recognised
+    /// properties are the same as for `loadLayout`.
+    ///
+    /// Returns the pool index of the created root widget as a number.
+    ///
+    /// # Usage
+    /// ```lua
+    /// local idx = lurek.ui.loadLayoutFile("assets/ui/hud.toml")
+    /// local label = lurek.ui.getRoot():findById("hp_label")
+    /// ```
+    /// @param path : string
+    /// @return number
+    let c = ctx.clone();
+    tbl.set(
+        "loadLayoutFile",
+        lua.create_function(move |_, path: String| {
+            let src = std::fs::read_to_string(&path)
+                .map_err(|e| mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}")))?;
+            let mut g = c.borrow_mut();
+            let root_idx = crate::ui::load_layout_toml(&mut g, &src)
+                .map_err(mlua::Error::external)?;
+            g.add_child(0, root_idx);
+            Ok(root_idx as u32)
+        })?,
+    )?;
+
+    // -- renderToImage --
+    /// Render the current UI widget tree to a PNG file for testing purposes.
+    ///
+    /// Runs the layout pass, then software-rasterises each visible widget's
+    /// computed bounding rectangle in a representative colour onto an RGBA
+    /// pixel buffer. The result is saved as a PNG file at `path`.
+    ///
+    /// This call is **headless-safe** — no GPU or window required — and is
+    /// intended for evidence and golden tests.
+    ///
+    /// # Usage
+    /// ```lua
+    /// lurek.ui.loadLayout({ type = "panel", w = 320, h = 200, children = {
+    ///   { type = "button", text = "OK", x = 10, y = 10, w = 100, h = 32 }
+    /// }})
+    /// lurek.ui.renderToImage(320, 200, "test_output/ui_snapshot.png")
+    /// ```
+    /// @param width : number
+    /// @param height : number
+    /// @param path : string
+    let c = ctx.clone();
+    tbl.set(
+        "renderToImage",
+        lua.create_function(move |_, (width, height, path): (u32, u32, String)| {
+            let mut g = c.borrow_mut();
+            crate::ui::render_to_image(&mut g, width, height, &path)
+                .map_err(mlua::Error::external)
+        })?,
+    )?;
+
+    luna.set("ui", tbl)?;
+    Ok(())
+}
+
+// ── Layout loader helpers ─────────────────────────────────────────────────────
+
+/// Recursively convert a Lua definition table into a `crate::ui::WidgetDef`.
+///
+/// The table must contain a `type` key (the widget kind string). All other
+/// fields are optional. A `children` key, if present, must be an array table
+/// of nested definition tables which are each converted recursively.
+///
+/// # Parameters
+///
+/// - `table` — `&mlua::Table`. Lua definition table.
+///
+/// # Returns
+///
+/// `LuaResult<WidgetDef>` — the converted definition, or a `LuaError` if a
+/// child table cannot be read.
+fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::WidgetDef> {
+    // Accept both "type" and "widget_type" as the kind key.
+    let widget_type: String = table
+        .get::<String>("type")
+        .or_else(|_| table.get::<String>("widget_type"))
+        .unwrap_or_else(|_| "panel".to_string());
+
+    let children_table: Option<mlua::Table> = table.get("children").ok();
+    let children = if let Some(ct) = children_table {
+        let len = ct.raw_len();
+        let mut result = Vec::with_capacity(len as usize);
+        for i in 1..=len {
+            let child_table: mlua::Table = ct.get(i)?;
+            result.push(lua_table_to_widget_def(&child_table)?);
+        }
+        Some(result)
+    } else {
+        None
+    };
+
+    Ok(crate::ui::WidgetDef {
+        widget_type,
+        id: table.get("id").ok(),
+        x: table.get("x").ok(),
+        y: table.get("y").ok(),
+        w: table.get("w").ok(),
+        h: table.get("h").ok(),
+        text: table.get("text").ok(),
+        min: table.get("min").ok(),
+        max: table.get("max").ok(),
+        value: table.get("value").ok(),
+        checked: table.get("checked").ok(),
+        on: table.get("on").ok(),
+        visible: table.get("visible").ok(),
+        enabled: table.get("enabled").ok(),
+        placeholder: table.get("placeholder").ok(),
+        tooltip: table.get("tooltip").ok(),
+        direction: table.get("direction").ok(),
+        spacing: table.get("spacing").ok(),
+        orientation: table.get("orientation").ok(),
+        group: table.get("group").ok(),
+        children,
+    })
 }
 
 // â”€â”€ LuaLineChart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
