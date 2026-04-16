@@ -2,7 +2,20 @@
 
 All notable changes to Lurek2D are recorded here.
 
-## [0.17.0] — 2026-04-29
+## [0.18.0] — 2026-05-15
+### Added
+- **render**: Automatic viewport culling (`aabb_visible_2d`) in `GpuRenderer::render_frame` for `Rectangle`, `RoundedRectangle`, `Circle`, `Ellipse`, `DrawImage`, and `DrawImageEx` commands. Off-screen primitives are skipped before tessellation when the render target is the screen. A 4 px margin prevents pop-in at edges. Canvas render-to-texture draws are not culled.
+- **app**: `.lurek` / `.luna` ZIP archive drag-and-drop support. Dragging an archive onto the engine window extracts it to a temporary directory and starts the game. Zip-slip path traversal protection enforced. Corresponding CLI detection fixed (was `.lunar`).
+- **runtime**: `SharedState` LRU texture eviction infrastructure: `resource_budget_bytes`, `frame_counter`, `texture_last_used` fields, `touch_texture()`, `evict_lru_resources()`, and `resource_memory_stats()` methods.
+- **runtime**: `L083_DROP_ARCHIVE` and `L084_DROP_ARCHIVE_FAIL` stable log message IDs added to `log_messages.rs`.
+- **engine Lua API**: `lurek.engine.setResourceBudget(bytes)` — configures maximum resident texture memory; `0` = unlimited (default).
+- **engine Lua API**: `lurek.engine.getResourceStats()` — returns `{texture_bytes, budget_bytes, texture_count}` for memory profiling.
+
+### Changed
+- **docs/specs**: `render.md`, `app.md`, `runtime.md`, and `audio.md` updated to reflect implemented features and MIDI disabled status.
+- **app IDEA.md, render IDEA.md, runtime IDEA.md, audio IDEA.md**: Marked previously-implemented features (gradients, layers, stencil, async loading, config fallback) as ✅ DONE; documented open items and MIDI state.
+
+ — 2026-04-29
 ### Changed
 - **docs/quality**: Raised minimum description length requirement from 15 to **25 characters** in `tools/audit/gen_coverage_gaps.py` (now `_MIN_DESC_LENGTH = 25`) and `tools/validate/cag_validate.py` (both short-desc thresholds updated from `< 20` / `< 10` to `< 25`).
 - **docstrings**: Fixed 116 short `///` Lua API descriptions across `ai_api.rs`, `audio_api.rs`, `compute_api.rs`, `dataframe_api.rs`, `devtools_api.rs`, `docs_api.rs`, `graph_api.rs`, `image_api.rs`, `math_api.rs`, `minimap_api.rs`, `mods_api.rs`, `network_api.rs`, `particle_api.rs`, `pathfind_api.rs`, `physics_api.rs`, `graphic_api.rs`, `save_api.rs`, `tween_api.rs`, `ui_api.rs`, `animation_api.rs`, `event_api.rs`, `pipeline_api.rs`, `timer_api.rs`, `window_api.rs` — all now meet the 25-char minimum.

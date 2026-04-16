@@ -39,30 +39,6 @@ dependencies.
 
 ## Gaps / Ideas
 
-### ✅ DONE — Expose Key Types to Lua
-**Source**: General API completeness
-
-✅ DONE (2026-04-16) — Verified: `Blackboard`, `Ring`, and `CommandStack` are all exposed
-as `LuaUserData` via `lurek.patterns.newBlackboard()`, `lurek.patterns.newRing(capacity)`,
-and `lurek.patterns.newCommandStack()` in `src/lua_api/patterns_api.rs`. Each type has
-comprehensive methods registered. No further work needed.
-
----
-
-### ✅ DONE — Trie (String Prefix Index)
-**Source**: General utility
-
-✅ DONE (2026-04-15) — New src/patterns/trie.rs with TrieNode/Trie. O(k) insert/search/prefix_search. Re-exported from mod.rs.
-
----
-
-### ✅ DONE — BiMap (Bidirectional Key–Value Map)
-**Source**: General utility
-
-✅ DONE (2026-04-15) — New src/patterns/bimap.rs with BiMap<K,V>. Bijection enforced. Re-exported from mod.rs.
-
----
-
 ### 🔇 LOW — Merge `observer.rs` and `event_bus.rs`
 **Source**: Design clarity
 

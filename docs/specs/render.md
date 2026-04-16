@@ -366,3 +366,4 @@ Additional `RenderCommand` variants have been added to the central enum, expandi
 
 - Keep this module reference synchronized with `src/render/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- **Viewport culling** (`aabb_visible_2d`) is applied automatically to `Rectangle`, `RoundedRectangle`, `Circle`, `Ellipse`, `DrawImage`, and `DrawImageEx` render commands when the draw target is the screen (`RenderTargetId::Screen`). A 4 px margin prevents pop-in at screen edges. Off-screen canvas draws are not culled (correct for render-to-texture workflows).

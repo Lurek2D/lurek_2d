@@ -8,60 +8,10 @@
 
 ## Features
 
-### ✅ DONE — HTTP Client (`httpGet`, `httpPost`)
-**Source**: features/network.md — Suggestions #2 (HIGH)
-
-`httpGet` / `httpPost` implemented in `network_api.rs` (line ~502+). Async via background
-`NetworkRuntime` started with `lurek.network.newRuntime()`. Handles callbacks via `poll()`.
-
----
-
-### ✅ DONE — WebSocket
-**Source**: features/network.md — Suggestions #3
-
-`openWebSocket`, `sendWebSocket`, `closeWebSocket` all implemented in `network_api.rs`
-(lines ~584–609). Polled for events via `poll()`.
-
----
-
-### ✅ DONE — MessagePack Serialization
-**Source**: features/network.md (implied)
-
-`network_api.rs` header (line ~3) documents MessagePack as a provided feature.
-
----
-
-### ✅ DONE — Configurable Peer Limit (Increase from 8)
-**Source**: features/network.md — Feature Gaps #1
-
-`lurek.network.newHost` and `lurek.network.newServer` now accept `maxPeers` as the
-preferred options key (with `peers` as the legacy alias).  The value is forwarded to
-`NetworkHost::new(port, peers: Option<usize>)`.  When neither key is provided, the
-existing default is used.  Updated docstrings explain the alias.
-
----
-
 ### ❌ DEFERRED — NAT Punchthrough
 **Source**: features/network.md — Feature Gaps #4
 
 Requires relay server infrastructure. Deferred.
-
----
-
-### ✅ DONE — Lobby / Session Discovery
-**Source**: features/network.md — Feature Gaps #2
-
-UDP LAN broadcast lobby implemented in `src/network/lobby.rs`.
-API: `lurek.network.createLobby(name, port, player_count?, max_players?)` and
-`lurek.network.discoverLobbies(timeout_ms?)` added to `src/lua_api/network_api.rs`.
-
----
-
-### ✅ DONE — State Sync Helpers
-**Source**: features/network.md — Feature Gaps #6 / Suggestions #5
-
-`lurek.network.syncEntity(host, entity_id, data, channel?, reliable?)` added to
-`src/lua_api/network_api.rs`. Packs `{id, data}` via MessagePack and broadcasts to all peers.
 
 ---
 

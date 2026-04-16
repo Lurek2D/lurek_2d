@@ -259,7 +259,7 @@ pub fn lurek_run() {
         let path = std::path::PathBuf::from(arg);
         if path
             .extension()
-            .map(|e| e.eq_ignore_ascii_case("lunar"))
+            .map(|e| e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("luna"))
             .unwrap_or(false)
         {
             match extract_lurek_archive(&path) {

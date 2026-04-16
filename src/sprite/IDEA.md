@@ -8,62 +8,6 @@
 
 ## Features
 
-### ✅ DONE — TexturePacker JSON Atlas Import
-**Source**: features/graphics.md — Feature Gaps #1 (IMPLEMENTED in sprite module)
-
-`lurek.sprite.parseAtlas(json_str)` → `SpriteAtlas` — TexturePacker hash or array
-format parsing via `src/sprite/atlas.rs:parse_texturepacker_json`.
-`LuaSpriteAtlas` with `impl LuaUserData` at `sprite_api.rs:141`.
-
----
-
-### ✅ DONE — Atlas-Derived SpriteSheet
-**Source**: `sprite_api.rs:219`
-
-`lurek.sprite.newAtlasSheet(atlas, sheet_w, sheet_h)` — wraps `SpriteAtlas` into
-a sprite-sheet with named region lookup.
-
----
-
-### ✅ DONE — Named Frame Groups / Region Lookup
-**Source**: `sprite_api.rs` — `LuaSpriteAtlas` methods
-
-Named region extraction and frame group mapping from atlas metadata.
-
----
-
-### ✅ DONE — Aseprite JSON Atlas Format Support
-**Source**: features/graphics.md — Feature Gaps #1
-**Implemented**: 2026-04-16
-
-`src/sprite/atlas.rs` — Added `parse_aseprite_json(json_str)` supporting both array
-(`"frames": [{"filename":..., "frame":{}}]`) and hash (`"frames":{"name":{"frame":{}}}`)
-Aseprite export formats.
-
-Lua API in `src/lua_api/sprite_api.rs`:
-- `lurek.sprite.parseAsepriteAtlas(json_str)` → `SpriteAtlas`
-
-All existing `SpriteAtlas` methods work on the result: `getEntry`, `getByIndex`,
-`entryCount`, `entryNames`, `getFlipped` (see below).
-
----
-
-### ✅ DONE — Sprite Flip (flipX / flipY) as First-Class Atlas Feature
-**Source**: general API completeness
-**Implemented**: 2026-04-16
-
-`src/sprite/atlas.rs` — Added `flip_x: bool` and `flip_y: bool` fields to `AtlasEntry`
-(defaults to `false`) and `AtlasEntry::get_flipped(flip_x, flip_y) -> AtlasEntry`.
-
-Lua API in `src/lua_api/sprite_api.rs`:
-- `atlas:getFlipped(name, flip_x, flip_y)` → region table with `flip_x` / `flip_y` fields
-
-Works on atlases created by both `parseAtlas` and `parseAsepriteAtlas`.
-
-Tests: `tests/lua/unit/test_sprite_aseprite.lua` — 14 BDD cases.
-
----
-
 ### ❌ TODO — Runtime Atlas Packing (Batch Textures → Single GPU Page)
 **Source**: features/graphics.md — Feature Gaps #1 / performance/02-gpu-rendering.md — Opportunity 2
 

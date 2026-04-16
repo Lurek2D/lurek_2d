@@ -8,60 +8,6 @@
 
 ## Features
 
-### ✅ DONE — Dijkstra Shortest Path
-**Source**: features/graph.md — Feature Gaps #3
-
-`shortestPath(from, to)` exposed in `graph_api.rs` (line ~1403). Uses edge weights.
-
----
-
-### ✅ DONE — Cycle Detection
-**Source**: features/graph.md — Feature Gaps #4
-
-`hasCycle()` implemented in `graph_api.rs` (line ~1525). Returns `true` if a directed cycle
-exists.
-
----
-
-### ✅ DONE — Topological Sort
-**Source**: features/graph.md — Feature Gaps #5
-
-`topologicalSort()` implemented in `graph_api.rs` (line ~1533). Returns sorted Node handles
-or `nil` if a cycle exists.
-
----
-
-### ✅ DONE — Graph Coloring
-**Source**: features/graph.md — Feature Gaps #7
-
-`colorGraph()` and `getNodeColor()` implemented in `algorithms.rs` + `graph_api.rs`.
-Returns a Lua table mapping node IDs to integer color indices (greedy BFS coloring,
-automatically uses the minimum number of colors for the graph structure).
-```lua
-local colors = g:colorGraph()  -- {[node_id] = color_int, ...}
-```
-
----
-
-### ✅ DONE — Minimum Spanning Tree
-**Source**: features/graph.md — Feature Gaps #6
-
-`mst()` (Kruskal's algorithm) found in `graph_api.rs` (line ~1560). Returns a table of
-edge IDs forming the MST.
-
----
-
-### ✅ DONE — Bipartite Check
-**Source**: features/graph.md — Feature Gaps #8
-
-`isBipartite()` implemented in `algorithms.rs` + `graph_api.rs`.
-Returns `true` if the graph has no odd-length cycles (2-colorable).
-```lua
-if g:isBipartite() then ... end
-```
-
----
-
 ### 🤔 CONSIDER — Algorithm Graph vs Flow Graph Naming
 **Source**: features/graph.md — Structural Issues
 
@@ -74,19 +20,3 @@ the flow graph. Requires Lua-Designer decision.
 ---
 
 ## Performance
-
-### ✅ DONE — Parallel Flow Tick (rayon)
-**Source**: performance/16-graph-flow-simulation.md
-
-`GraphSimulation::update_parallel(dt)` added to `src/graph/simulation.rs`.
-Uses `rayon::prelude::par_iter_mut` to decay item counts in all graph nodes
-concurrently, then sequentially handles dead-node removal, transit, flow,
-and conversion phases (order-sensitive phases cannot be parallelised).
-
-`lurek.graph:tickParallel(dt)` added to `src/lua_api/graph_api.rs`.
-
-Implemented: 2026-04-18
-
-Each node's tick (evaluate conversion rules, move items) is independent of other nodes in
-the same generation. Embarrassingly parallel with rayon. No parallelism found in
-`src/graph/flow.rs`. Priority: **MEDIUM** for graphs with 1000+ nodes.

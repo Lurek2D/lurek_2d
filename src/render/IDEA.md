@@ -8,114 +8,45 @@
 
 ## Features
 
-### ✅ DONE — Draw Command Queue (45+ RenderCommand variants)
-**Source**: features/graphics.md — Feature Summary
+### ✅ DONE — Gradient Fills (Linear / Radial / Horizontal / Vertical)
+**Source**: features/graphics.md — Feature Gaps #2 / Suggestions #3
 
-Render commands are deferred and processed after `lurek.render()` callback returns.
-No GPU calls inside Lua closures.
-
----
-
-### ✅ DONE — Sprite Batch
-**Source**: features/graphics.md — Summary, `src/graphics/sprite_batch.rs`
-
-`LuaSpriteBatch` type with `impl LuaUserData` in `render_api.rs`.
-
----
-
-### ✅ DONE — Custom WGSL Shaders with Uniform Passing
-**Source**: features/graphics.md — Summary
-
-`LuaShader` type with `impl LuaUserData` in `render_api.rs`.
-
----
-
-### ✅ DONE — Canvas Render-to-Texture
-**Source**: features/graphics.md — Summary
-
-`LuaCanvas` type with `impl LuaUserData`. Via `lurek.gfx.newCanvas(w, h)`.
-
----
-
-### ✅ DONE — Transform Stack (Push/Pop/Translate/Rotate/Scale)
-**Source**: features/graphics.md — Summary
-
-`lurek.gfx.push()`, `pop()`, `translate()`, `rotate()`, `scale()` implemented.
-
----
-
-### ✅ DONE — Nine-Slice Scaling
-**Source**: features/graphics.md — Summary
-
-Nine-slice implemented for UI panels.
-
----
-
-### ✅ DONE — Texture Atlas (Runtime Build)
-**Source**: features/graphics.md — Feature Gaps #1 (NOTE: runtime only, not JSON import)
-
-Runtime atlas construction exists. JSON import lives in `sprite_api.rs` as `parseAtlas` (TexturePacker format) — see `src/sprite/IDEA.md`.
+Implemented as `lurek.graphics.drawGradientRect(x, y, w, h, r1,g1,b1,a1, r2,g2,b2,a2, dir)`.
+Direction accepts `"horizontal"`, `"vertical"`, and `"radial"`.
+- `RenderCommand::DrawGradientRect` in `src/render/renderer.rs`
+- GPU tessellation in `src/render/gpu_renderer.rs`
+- Lua binding in `src/lua_api/render_api.rs`
 
 ---
 
 ### ✅ DONE — Render Layers / Groups
 **Source**: features/graphics.md — Feature Gaps #4 / Suggestions #2
 
-Named layer registry implemented in `render_api.rs` (local `Rc<RefCell<HashMap>>` inside
-`register`). Provides metadata-level layer management with z-ordering and visibility:
-```lua
-lurek.graphic.newLayer("background", -10)
-lurek.graphic.newLayer("entities", 0)
-lurek.graphic.setLayer("entities")     -- set active layer
-lurek.graphic.setLayerVisible("background", false)
-lurek.graphic.currentLayer()           -- → "entities"
-lurek.graphic.getLayerZOrder("background")  -- → -10
-```
-Note: layer metadata is engine-side only; game scripts should use this to organise draw
-calls. A future render-pass upgrade can map layers to GPU render passes.
+Implemented as `lurek.graphics.pushLayer(id, alpha, blend)` / `lurek.graphics.popLayer(id)`.
+Named layer visibility and Z-order: `setLayer(name)`, `setLayerVisible(name, bool)`, `setLayerZOrder(name, z)`.
+- `RenderCommand::PushLayer` / `PopLayer` in `src/render/renderer.rs`
+- `DrawLayer` struct in `src/render/draw_layer.rs`
+- Lua bindings in `src/lua_api/render_api.rs`
 
 ---
 
-### ❌ TODO — Gradient Fills (Linear / Radial)
-**Source**: features/graphics.md — Feature Gaps #2 / Suggestions #3
+### ✅ DONE — Stencil Buffer Operations
+**Source**: features/graphics.md — Feature Gaps #9
 
-No gradient draw commands. Suggested API:
-```lua
-lurek.gfx.drawGradient(x, y, w, h, color1, color2, dir)  -- "horizontal"/"vertical"/"radial"
-```
-High visual impact for health bars, backgrounds, vignettes, sky gradients.
-
----
-
-### ✅ DONE — Rich Text (Mixed Fonts / Colors / Sizes)
-**Source**: features/graphics.md — Feature Gaps #3 / Suggestions #4
-
-`TextSpan` struct + `RenderCommand::DrawRichText` added to `src/render/renderer.rs`.
-`lurek.graphic.printRich(spans, x, y)` registered in `src/lua_api/render_api.rs`.
-Each span carries independent `r/g/b/a` colour and `scale` multiplier.
-
-```lua
-lurek.graphic.printRich({
-  { text = "HP: ",  r=255, g=255, b=255, a=255, scale=1.0 },
-  { text = "100",   r=80,  g=200, b=80,  a=255, scale=1.0 },
-}, 10, 10)
-```
-
-Implemented: 2026-04-15
+Full wgpu stencil pipeline support:
+- `lurek.graphics.stencil(fn, action, value)` — `StencilBegin`/`StencilEnd` bracket
+- `lurek.graphics.setStencilTest(compare, value)` — `SetStencilTest` command
+- `CompareMode`, `StencilAction`, `StencilMode` types in `src/render/renderer.rs`
 
 ---
 
-### ❌ TODO — Render Layers / Groups
-**Source**: features/graphics.md — Feature Gaps #4 / Suggestions #2
+### ❌ TODO — Screenshot to ImageData (CPU Readback)
+**Source**: features/graphics.md — Feature Gaps #8
 
-No named render layers with independent sort order and visibility. Must manage draw
-order manually. Suggested API:
-```lua
-lurek.gfx.setLayer("background")
-lurek.gfx.setLayer("entities")
-lurek.gfx.setLayer("ui")
--- layers rendered in z-order, each with own sort
-```
+`saveScreenshot` writes a PNG to disk only. A `screenshotToImage()` call returning
+an in-memory `lurek.image.ImageData` object for CPU-side processing does not exist yet.
+The GPU readback path already exists in `app.rs`; needs a Lua callback pattern to
+deliver pixels without an extra disk round-trip.
 
 ---
 
@@ -123,47 +54,28 @@ lurek.gfx.setLayer("ui")
 **Source**: features/graphics.md — Feature Gaps #6
 
 Shapes rasterized without anti-aliasing. Jagged edges visible for rotated rectangles
-and small circles.
-
----
-
-### ❌ TODO — Stencil Buffer Operations
-**Source**: features/graphics.md — Feature Gaps #9
-
-No stencil buffer control. Requires wgpu pipeline changes. Enables masking and clipping
-to arbitrary shapes.
-
----
-
-### ❌ TODO — Screenshot to ImageData (CPU Readback)
-**Source**: features/graphics.md — Feature Gaps #8
-
-`saveScreenshot` writes to disk only. No frame capture into `lurek.image` for CPU processing.
+and small circles. Requires either MSAA pipeline variant or geometry-shader AA strips.
 
 ---
 
 ### 🤔 CONSIDER — Module Split (render/core, text, sprite, shader, shape)
 **Source**: features/graphics.md — Structural Issues
 
-The render module has 18 source files and 66+ Lua functions — the largest in the engine.
-Consider splitting into sub-modules for maintainability. Requires Architect decision.
+The render module has 13 source files and 60+ Lua functions — one of the largest in the engine.
+Consider splitting into sub-modules for maintainability. Requires Architect decision before
+any refactoring.
 
 ---
 
 ## Performance
 
-### ❌ TODO — Frustum / Viewport Culling (HIGH, Medium Effort)
+### ✅ DONE — Frustum / Viewport Culling
 **Source**: performance/02-gpu-rendering.md — Opportunity 1
 
-All `RenderCommand` entries are tessellated even when off-screen. Adding AABB-vs-viewport
-check before tessellation would skip 80%+ of work in scrolling games with many off-screen
-sprites.
-
-```rust
-// In render_pass.rs main loop — before tessellation
-let aabb = cmd.compute_aabb(&transform_stack);
-if !camera_viewport.intersects(aabb) { continue; }
-```
+Axis-aligned viewport cull added to `GpuRenderer::render_frame` in `src/render/gpu_renderer.rs`.
+`DrawImage`, `DrawImageEx`, `DrawQuad`, and `Rectangle` commands skip tessellation when their
+AABB does not intersect the current viewport rectangle. Applies only to commands where a tight
+AABB is cheap to compute; complex paths (Polygon, Polyline) are left unchecked.
 
 ---
 
@@ -172,7 +84,8 @@ if !camera_viewport.intersects(aabb) { continue; }
 
 Drawing N identical sprites produces N separate tessellations + N draw calls.
 GPU instancing with a single instance buffer would reduce particle-style sprite sets
-to 1 draw call with 1 quad template.
+to 1 draw call with 1 quad template. Requires a new wgpu pipeline variant and an
+instance-buffer vertex layout.
 
 ---
 

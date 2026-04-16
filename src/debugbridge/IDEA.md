@@ -14,21 +14,6 @@ to inspect and manipulate live game state without modifying Lua scripts.
 
 ## Features
 
-### ✅ DONE — External Tool Attach / Detach
-**Source**: `debugbridge_api.rs:4`
-
-VS Code extension and MCP server can attach to a running engine instance.
-`lurek.debugbridge.attach()` / `.detach()` lifecycle endpoints.
-
----
-
-### ✅ DONE — Live State Inspection Endpoint
-**Source**: `debugbridge_api.rs` — general bridge protocol
-
-External tools can query live engine state via the debugbridge channel.
-
----
-
 ### ❌ TODO — Lua DAP Protocol (Debug Adapter Protocol)
 **Source**: General debug completeness
 

@@ -103,6 +103,46 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|_, ()| Ok(cfg!(debug_assertions)))?,
     )?;
 
+    // -- setResourceBudget --
+    /// Sets the maximum resident texture memory budget in bytes.
+    ///
+    /// When the total pixel data of all loaded textures exceeds this value the
+    /// engine automatically evicts the least-recently-used textures each frame.
+    /// Pass `0` to disable the budget (unlimited, the default).
+    ///
+    /// @param budget_bytes : integer
+    let s = state.clone();
+    tbl.set(
+        "setResourceBudget",
+        lua.create_function(move |_, budget_bytes: u64| {
+            s.borrow_mut().resource_budget_bytes = budget_bytes;
+            Ok(())
+        })?,
+    )?;
+
+    // -- getResourceStats --
+    /// Returns a table with resident resource memory statistics.
+    ///
+    /// Fields:
+    /// - `texture_bytes` — Total pixel data in memory (width × height × 4 per texture).
+    /// - `budget_bytes`  — Configured budget; `0` means unlimited.
+    /// - `texture_count` — Number of loaded textures.
+    ///
+    /// @return table
+    let s = state.clone();
+    tbl.set(
+        "getResourceStats",
+        lua.create_function(move |lua, ()| {
+            let st = s.borrow();
+            let (tex_bytes, budget) = st.resource_memory_stats();
+            let out = lua.create_table()?;
+            out.set("texture_bytes", tex_bytes)?;
+            out.set("budget_bytes", budget)?;
+            out.set("texture_count", st.textures.len() as u64)?;
+            Ok(out)
+        })?,
+    )?;
+
     luna.set("engine", tbl)?;
     Ok(())
 }

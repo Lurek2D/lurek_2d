@@ -8,7 +8,7 @@
 //! window-management types used by both `engine` and `lua_api`.
 
 use std::cell::RefCell;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::rc::Weak;
 use std::sync::Arc;
@@ -401,6 +401,19 @@ pub struct SharedState {
     /// of each frame.  The renderer converts these quads to `DrawTexturedQuad`
     /// commands during the auto-collect phase.
     pub raycaster_output: Option<RaycasterScene>,
+    /// Maximum resident texture memory budget in bytes (0 = unlimited).
+    ///
+    /// When the sum of loaded texture pixel data exceeds this value the engine
+    /// evicts the least-recently-used textures during the next `step_timer` tick.
+    /// Set via `lurek.runtime.setResourceBudget`.
+    pub resource_budget_bytes: u64,
+    /// Monotonically increasing frame counter.  Incremented once per tick in `step_timer`.
+    pub frame_counter: u64,
+    /// Maps each live `TextureKey` to the frame on which it was last drawn.
+    ///
+    /// Updated by the render loop whenever a texture command is submitted.
+    /// Used by `evict_lru_resources` to find the oldest unused textures.
+    pub texture_last_used: HashMap<TextureKey, u64>,
 }
 
 impl SharedState {
@@ -487,6 +500,9 @@ impl SharedState {
             auto_tilemaps: Vec::new(),
             auto_ui_ctx: None,
             raycaster_output: None,
+            resource_budget_bytes: 0,
+            frame_counter: 0,
+            texture_last_used: HashMap::new(),
         }
     }
 
@@ -495,11 +511,88 @@ impl SharedState {
     /// # Returns
     /// `f64` — Frame delta time in seconds.
     pub fn step_timer(&mut self) -> f64 {
+        self.frame_counter = self.frame_counter.wrapping_add(1);
         let dt = self.clock.tick();
         self.delta_time = dt;
         self.total_time = self.clock.total();
         self.fps = self.clock.fps();
+        if self.resource_budget_bytes > 0 {
+            self.evict_lru_resources();
+        }
         dt
+    }
+
+    /// Records that a texture was used on the current frame.
+    ///
+    /// Called by the render command loop whenever a `DrawImage` or similar
+    /// command references `key`.  Used by `evict_lru_resources` to determine
+    /// which textures are safest to evict.
+    ///
+    /// # Parameters
+    /// - `key` — The `TextureKey` that was accessed this frame.
+    pub fn touch_texture(&mut self, key: TextureKey) {
+        self.texture_last_used.insert(key, self.frame_counter);
+    }
+
+    /// Evicts least-recently-used textures until resident size is within budget.
+    ///
+    /// Computes the total byte footprint of all loaded textures.  If the total
+    /// exceeds `resource_budget_bytes`, textures are sorted by their last-used
+    /// frame (oldest first) and removed one by one until the budget is met or
+    /// no more candidates remain.  Textures with no recorded last-used frame
+    /// are treated as oldest.
+    ///
+    /// The method only removes textures from `SharedState::textures`.
+    /// The corresponding GPU resources are invalidated during the normal
+    /// `released_texture_handles` flush that runs at the start of each frame.
+    pub fn evict_lru_resources(&mut self) {
+        // Compute total resident size: width * height * 4 bytes (RGBA8).
+        let total: u64 = self
+            .textures
+            .values()
+            .map(|t| (t.width as u64) * (t.height as u64) * 4)
+            .sum();
+        if total <= self.resource_budget_bytes {
+            return;
+        }
+        let mut over = total - self.resource_budget_bytes;
+        // Collect candidates sorted by last-used frame (oldest = evict first).
+        let mut candidates: Vec<(TextureKey, u64)> = self
+            .textures
+            .keys()
+            .map(|k| {
+                let last = self.texture_last_used.get(&k).copied().unwrap_or(0);
+                (k, last)
+            })
+            .collect();
+        candidates.sort_by_key(|(_, last)| *last);
+        for (key, _) in candidates {
+            if over == 0 {
+                break;
+            }
+            if let Some(tex) = self.textures.get(key) {
+                let size = (tex.width as u64) * (tex.height as u64) * 4;
+                // Mark for GPU release via the existing handle-based mechanism.
+                self.released_texture_handles.insert(tex.handle);
+                self.textures.remove(key);
+                self.texture_last_used.remove(&key);
+                over = over.saturating_sub(size);
+            }
+        }
+    }
+
+    /// Returns a summary of resident resource memory usage.
+    ///
+    /// # Returns
+    /// `(texture_bytes: u64, budget_bytes: u64)` — Resident texture memory and configured budget.
+    /// A `budget_bytes` of `0` means unlimited.
+    pub fn resource_memory_stats(&self) -> (u64, u64) {
+        let texture_bytes: u64 = self
+            .textures
+            .values()
+            .map(|t| (t.width as u64) * (t.height as u64) * 4)
+            .sum();
+        (texture_bytes, self.resource_budget_bytes)
     }
 
     /// Submits a background file-read request, lazily creating the async loader.

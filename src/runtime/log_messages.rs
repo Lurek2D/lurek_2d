@@ -326,6 +326,10 @@ pub const L080_GAME_DIR: &str = "L080";
 pub const L081_LOG_FILE: &str = "L081";
 /// Log message: could not create log file; logging falls back to stderr.
 pub const L082_LOG_FILE_FAIL: &str = "L082";
+/// Log message: a `.lurek` / `.luna` archive was dropped — extracting and loading.
+pub const L083_DROP_ARCHIVE: &str = "L083";
+/// Log message: failed to extract a dropped `.lurek` / `.luna` archive.
+pub const L084_DROP_ARCHIVE_FAIL: &str = "L084";
 
 // ---------------------------------------------------------------------------
 // Graphics font atlas growth IDs

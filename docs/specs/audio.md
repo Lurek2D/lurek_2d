@@ -514,3 +514,4 @@ The `Bus` type has been extended with duck-target support: `set_duck_target` and
 
 - Keep this module reference synchronized with `src/audio/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
+- **MIDI status**: The `midly` crate has been removed from `Cargo.toml`. Code stubs in `src/audio/midi/` remain and emit `A002_MIDI_DISABLED` log warnings at startup. To re-enable MIDI: add `midly = "0.5"` back to `Cargo.toml` and implement the disabled code paths in `midi_player.rs`. Alternatively, remove the dead code if MIDI support is not planned.

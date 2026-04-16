@@ -1304,6 +1304,68 @@ impl GpuRenderer {
     /// Returns `Err(wgpu::SurfaceError)` on transient errors; the caller should reconfigure on
     /// `SurfaceError::Lost`. When `capture_screenshot` is `true`, a successful frame may also
     /// return `Ok(Some((width, height, rgba_pixels)))` containing the presented screen image.
+
+    /// Returns `true` when the AABB of a primitive is within the visible viewport after the
+    /// full model→camera transform is applied.
+    ///
+    /// Used for CPU-side viewport culling before tessellation.  Adds a generous `margin` of
+    /// 4 pixels to avoid popping artefacts on primitives that are barely outside the viewport.
+    ///
+    /// Only applied when rendering to the screen target; canvas-to-canvas draws always proceed.
+    ///
+    /// # Parameters
+    /// - `x`, `y` — top-left of the primitive's AABB in model space.
+    /// - `w`, `h` — width and height of the AABB.  For shapes centred on (x, y), pass the
+    ///   full extent (e.g. `w = 2.0 * radius`).
+    /// - `model` — current CPU-side model matrix (top of the transform stack).
+    /// - `camera` — camera-view matrix (same one uploaded as `view_col*` uniform).
+    /// - `vp_w`, `vp_h` — viewport dimensions in logical pixels.
+    #[inline]
+    fn aabb_visible_2d(
+        x: f32,
+        y: f32,
+        w: f32,
+        h: f32,
+        model: &Mat3,
+        camera: &Mat3,
+        vp_w: f32,
+        vp_h: f32,
+    ) -> bool {
+        // Four corners of the AABB in model space.
+        let corners = [
+            crate::math::Vec2 { x, y },
+            crate::math::Vec2 { x: x + w, y },
+            crate::math::Vec2 { x, y: y + h },
+            crate::math::Vec2 { x: x + w, y: y + h },
+        ];
+        // MVP = camera * model  (same order as the vertex shader).
+        let mvp = *camera * *model;
+        let mut min_x = f32::INFINITY;
+        let mut max_x = f32::NEG_INFINITY;
+        let mut min_y = f32::INFINITY;
+        let mut max_y = f32::NEG_INFINITY;
+        for c in &corners {
+            let s = mvp.transform_point(*c);
+            if s.x < min_x {
+                min_x = s.x;
+            }
+            if s.x > max_x {
+                max_x = s.x;
+            }
+            if s.y < min_y {
+                min_y = s.y;
+            }
+            if s.y > max_y {
+                max_y = s.y;
+            }
+        }
+        const MARGIN: f32 = 4.0;
+        max_x >= -MARGIN
+            && min_x <= vp_w + MARGIN
+            && max_y >= -MARGIN
+            && min_y <= vp_h + MARGIN
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub fn render_frame(
         &mut self,
@@ -1422,6 +1484,15 @@ impl GpuRenderer {
                 RenderCommand::Rectangle { mode, x, y, w, h } => {
                     let mode = if wireframe { &DrawMode::Line } else { mode };
                     let t = transform_stack.last().unwrap();
+                    // Viewport culling: skip tessellation when the rect is entirely off-screen.
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            *x, *y, *w, *h, t, camera_matrix,
+                            self.width as f32, self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
                     self.tess_rect(
@@ -1464,6 +1535,15 @@ impl GpuRenderer {
                 } => {
                     let mode = if wireframe { &DrawMode::Line } else { mode };
                     let t = transform_stack.last().unwrap();
+                    // Viewport culling: skip tessellation when the rounded rect is off-screen.
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            *x, *y, *w, *h, t, camera_matrix,
+                            self.width as f32, self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
                     self.tess_rounded_rect(
@@ -1500,6 +1580,15 @@ impl GpuRenderer {
                 RenderCommand::Circle { mode, x, y, r } => {
                     let mode = if wireframe { &DrawMode::Line } else { mode };
                     let t = transform_stack.last().unwrap();
+                    // Viewport culling: skip tessellation when the circle is entirely off-screen.
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            x - r, y - r, r * 2.0, r * 2.0, t, camera_matrix,
+                            self.width as f32, self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
                     self.tess_ellipse(
@@ -1535,6 +1624,15 @@ impl GpuRenderer {
                 RenderCommand::Ellipse { mode, x, y, rx, ry } => {
                     let mode = if wireframe { &DrawMode::Line } else { mode };
                     let t = transform_stack.last().unwrap();
+                    // Viewport culling: skip tessellation when the ellipse is entirely off-screen.
+                    if current_target == RenderTargetId::Screen
+                        && !Self::aabb_visible_2d(
+                            x - rx, y - ry, rx * 2.0, ry * 2.0, t, camera_matrix,
+                            self.width as f32, self.height as f32,
+                        )
+                    {
+                        continue;
+                    }
                     let mut verts = Vec::new();
                     let mut idxs = Vec::new();
                     self.tess_ellipse(
@@ -1844,6 +1942,15 @@ impl GpuRenderer {
                         let w = gt.width as f32;
                         let h = gt.height as f32;
                         let t = transform_stack.last().unwrap();
+                        // Viewport culling: skip tessellation when the image is entirely off-screen.
+                        if current_target == RenderTargetId::Screen
+                            && !Self::aabb_visible_2d(
+                                *x, *y, w, h, t, camera_matrix,
+                                self.width as f32, self.height as f32,
+                            )
+                        {
+                            continue;
+                        }
                         let mut verts = Vec::with_capacity(4);
                         let mut idxs = Vec::with_capacity(6);
                         push_tex_quad(
@@ -1899,6 +2006,18 @@ impl GpuRenderer {
                         let w = gt.width as f32;
                         let h = gt.height as f32;
                         let t = transform_stack.last().unwrap();
+                        // Viewport culling: skip tessellation when the image is entirely off-screen.
+                        // Scale the AABB by |sx|/|sy| to account for applied scaling.
+                        if current_target == RenderTargetId::Screen
+                            && !Self::aabb_visible_2d(
+                                *x - *ox * sx.abs(), *y - *oy * sy.abs(),
+                                w * sx.abs(), h * sy.abs(),
+                                t, camera_matrix,
+                                self.width as f32, self.height as f32,
+                            )
+                        {
+                            continue;
+                        }
                         let mut verts = Vec::with_capacity(4);
                         let mut idxs = Vec::with_capacity(6);
                         push_tex_quad(

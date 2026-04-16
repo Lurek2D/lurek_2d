@@ -8,14 +8,6 @@
 
 ## Features
 
-### ✅ DONE — 2D and 1D Convolution
-**Source**: features/compute.md — Feature Gaps #3
-
-`convolve2D` and `convolve1d` implemented in `compute_api.rs` (lines ~558, ~729) backed by
-`src/compute/spatial.rs` and `src/compute/analytics.rs`.
-
----
-
 ### ⚠️ STUB — GPU Compute
 **Source**: features/compute.md — Feature Gaps #1
 
@@ -25,27 +17,10 @@ the `isOnGPU()` stub don't mislead users.
 
 ---
 
-### ✅ DONE — FFT (Fast Fourier Transform)
-**Source**: features/compute.md — Feature Gaps #4
-
-Cooley-Tukey iterative radix-2 FFT added in `src/compute/fft.rs`. Bound in `compute_api.rs` as:
-`lurek.compute.fft(samples)`, `lurek.compute.ifft(freqs)`, `lurek.compute.fftMagnitude(samples)`.
-
----
-
 ### ❌ DEFERRED — Sparse Array Support
 **Source**: features/compute.md — Feature Gaps #2
 
 Complex implementation. Deferred.
-
----
-
-### ✅ DONE — Advanced Linear Algebra
-**Source**: features/compute.md — Feature Gaps #5
-
-Added to `src/compute/linalg.rs` and bound in `compute_api.rs`:
-- `ndarray:luDecompose()` — Doolittle LU with partial pivoting; returns `{n, det_sign, perm, lu_data}`.
-- `ndarray:eigenPower(max_iter?, tol?)` — power iteration; returns `{value, vector}`.
 
 ---
 

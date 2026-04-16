@@ -8,58 +8,6 @@
 
 ## Features
 
-### ✅ DONE — Typed DataView (Typed Array Views)
-**Source**: features/data.md — Feature Gaps #5
-
-`DataView` and `LuaDataView` exist in `src/data/dataview.rs` and are exposed as
-`lurek.data.newDataView()` in `data_api.rs` (line ~315). Provides windowed typed-access
-over a ByteData buffer.
-
----
-
-### ✅ DONE — Binary Pack / Unpack
-**Source**: features/data.md (related)
-
-`pack.rs` with `PackValue` helpers exposed in `data_api.rs`. Structured binary packing and
-unpacking of typed values into/from byte buffers.
-
----
-
-### ✅ DONE — MessagePack Serialization
-**Source**: features/data.md — Feature Gaps #1 / Suggestions #2
-**Implemented**: 2026-04-16
-
-`src/data/msgpack.rs` — `to_msgpack(value: &serde_json::Value) -> Result<Vec<u8>, String>`
-and `from_msgpack(bytes: &[u8]) -> Result<serde_json::Value, String>` using `rmp-serde`.
-
-Lua API: `lurek.data.toMsgPack(value)` returns a binary Lua string;
-`lurek.data.fromMsgPack(bytes)` decodes it back to a Lua value.
-
-Conversion chain: `LuaValue ↔ SerialValue ↔ serde_json::Value ↔ rmp_serde (bytes)`.
-
-Tests: `tests/lua/unit/test_data_msgpack.lua` — 9 cases covering
-nil/bool/int/float/string/flat-table/array/nested-table/invalid-bytes.
-
----
-
-### ✅ DONE — Bit-Level Operations
-**Source**: features/data.md — Feature Gaps #3 / Suggestions #3
-
-✅ DONE (2026-04-15) — Added setBit, getBit, readBits as methods on ByteData in data_api.rs. Supports cross-byte bit reads.
-
----
-
-### ✅ DONE — Ring Buffer
-**Source**: features/data.md — Feature Gaps #4 / Suggestions #5
-
-`RingBuffer<T>` in `src/data/ring_buffer.rs` (pure Rust, `Clone` bound, O(1) push/pop).
-`LuaRingBuffer` in `src/lua_api/data_api.rs` stores values via `LuaRegistryKey` so the Lua
-GC cannot collect elements held by the buffer.  Exposed as `lurek.data.newRingBuffer(capacity)`
-with methods: `push`, `pop`, `peek`, `peekNewest`, `len`, `capacity`, `isEmpty`, `isFull`,
-`clear`, `toTable`.
-
----
-
 ### 🤔 CONSIDER — Rename Module Namespace
 **Source**: features/data.md — Structural Issues
 

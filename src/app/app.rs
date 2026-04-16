@@ -48,7 +48,7 @@ use crate::runtime::log_messages::{
     L070_SURFACE_NO_READBACK, L071_CURSOR_GRAB_FAIL, L072_CURSOR_GRAB_LOCK_FAIL,
     L073_CURSOR_POS_FAIL, L074_SCREENSHOT_NO_READBACK, L075_SCREENSHOT_SAVE_FAIL,
     L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED,
-    L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL,
+    L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
 };
 
 /// Recomputes viewport scale and offset based on game and window dimensions.
@@ -231,6 +231,12 @@ struct LunaApp {
     auto_screenshot_frame_count: u32,
     /// Wall-clock time when the first game frame started (used as a safety-exit deadline).
     auto_screenshot_start: Option<Instant>,
+
+    /// Keeps a drag-dropped `.lurek` / `.luna` archive's temporary extraction directory alive.
+    ///
+    /// `TempDir` deletes the directory when dropped; this field extends its lifetime to match
+    /// the running game session.  Replaced on every new drag-drop load.
+    lurek_temp_dir: Option<tempfile::TempDir>,
 }
 
 impl LunaApp {
@@ -284,6 +290,7 @@ impl LunaApp {
             auto_screenshot_done: false,
             auto_screenshot_frame_count: 0,
             auto_screenshot_start: None,
+            lurek_temp_dir: None,
         }
     }
 
@@ -1447,6 +1454,68 @@ impl LunaApp {
         }
     }
 
+    /// Extracts a `.lurek` or `.luna` archive into a fresh temp directory.
+    ///
+    /// Returns the extracted directory path and a `TempDir` handle (which must be kept alive
+    /// for the duration of the game session).  Rejects zip-slip paths with `..` or absolute
+    /// components before writing any entry to disk.
+    ///
+    /// # Parameters
+    /// - `archive_path` — Path to the `.lurek` or `.luna` file on disk.
+    ///
+    /// # Returns
+    /// `Ok((PathBuf, TempDir))` on success, or a descriptive error string on failure.
+    fn extract_lurek_archive(
+        archive_path: &std::path::Path,
+    ) -> Result<(std::path::PathBuf, tempfile::TempDir), String> {
+        use std::io;
+        let file = std::fs::File::open(archive_path)
+            .map_err(|e| format!("Cannot open archive '{}': {}", archive_path.display(), e))?;
+        let mut archive = zip::ZipArchive::new(file)
+            .map_err(|e| format!("Invalid ZIP archive '{}': {}", archive_path.display(), e))?;
+        let temp_dir = tempfile::tempdir()
+            .map_err(|e| format!("Failed to create temp dir: {}", e))?;
+
+        for i in 0..archive.len() {
+            let mut entry = archive
+                .by_index(i)
+                .map_err(|e| format!("Archive entry {}: {}", i, e))?;
+            let entry_name = entry.name().to_owned();
+
+            // Reject zip-slip: only allow Normal and CurDir components.
+            let relative = std::path::Path::new(&entry_name);
+            for component in relative.components() {
+                match component {
+                    std::path::Component::Normal(_) | std::path::Component::CurDir => {}
+                    _ => {
+                        return Err(format!(
+                            "Unsafe path in archive: '{}' — extraction rejected",
+                            entry_name
+                        ));
+                    }
+                }
+            }
+
+            let dest = temp_dir.path().join(relative);
+            if entry.is_dir() {
+                std::fs::create_dir_all(&dest)
+                    .map_err(|e| format!("Cannot create dir '{}': {}", dest.display(), e))?;
+            } else {
+                if let Some(parent) = dest.parent() {
+                    std::fs::create_dir_all(parent)
+                        .map_err(|e| format!("Cannot create dir '{}': {}", parent.display(), e))?;
+                }
+                let mut out = std::fs::File::create(&dest)
+                    .map_err(|e| format!("Cannot create file '{}': {}", dest.display(), e))?;
+                io::copy(&mut entry, &mut out)
+                    .map_err(|e| format!("Cannot write '{}': {}", dest.display(), e))?;
+            }
+        }
+
+        let dir = temp_dir.path().to_path_buf();
+        Ok((dir, temp_dir))
+    }
+
     fn restart_game(&mut self) {
         // Reset Lua state and reinitialise
         self.lua = None;
@@ -2387,7 +2456,25 @@ impl ApplicationHandler for LunaApp {
                 }
                 if !self.has_game {
                     let main_lua = path.join("main.lua");
-                    if path.is_dir() && main_lua.exists() {
+                    // Check for .lurek / .luna archive format first.
+                    let is_lurek_archive = path.extension().map(|e| {
+                        e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("luna")
+                    }).unwrap_or(false);
+
+                    if is_lurek_archive {
+                        log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
+                        match LunaApp::extract_lurek_archive(&path) {
+                            Ok((dir, td)) => {
+                                self.lurek_temp_dir = Some(td);
+                                self.game_dir = dir;
+                                self.explicit_game_dir = true;
+                                self.restart_game();
+                            }
+                            Err(e) => {
+                                log_msg!(warn, L084_DROP_ARCHIVE_FAIL, "{}: {}", path.display(), e);
+                            }
+                        }
+                    } else if path.is_dir() && main_lua.exists() {
                         log_msg!(info, L044_DROP_GAME, "{}", path.display());
                         self.game_dir = path;
                         self.explicit_game_dir = true;

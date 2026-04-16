@@ -95,6 +95,8 @@ Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`
 ## Lua API Reference
 
 - Namespace: `lurek.platform.setLogLevel`
+- **`lurek.engine.setResourceBudget(bytes)`** — Sets the maximum resident texture memory in bytes. Pass `0` for unlimited (default). When exceeded the engine evicts the least-recently-used textures each frame tick.
+- **`lurek.engine.getResourceStats()`** — Returns `{texture_bytes, budget_bytes, texture_count}`. Useful for memory profiling and adaptive quality settings.
 
 ## References
 
