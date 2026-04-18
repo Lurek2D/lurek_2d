@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-04-16T12:36:52.251789+00:00",
+    "generated": "2026-04-18T11:39:07.704277+00:00",
     "generator": "tools/gen_rust_api_data.py",
-    "version": "0.18.0",
+    "version": "0.20.0",
     "stats": {
       "rust_items": 1742,
       "rust_modules": 416,
       "rust_tests": 0,
-      "lua_tests": 337
+      "lua_tests": 351
     }
   },
   "rust_api": {
@@ -14213,30 +14213,30 @@
           {
             "name": "LayoutDef",
             "kind": "struct",
-            "description": "Top-level TOML layout descriptor.  A TOML layout file must contain a `[root]` section holding a `WidgetDef`.  # Example  ```toml [root] widget_type = \"panel\" w = 800.0 h = 600.0  [[root.children]] widget_type = \"label\" text = \"Score: 0\" id = \"score_label\" x = 10.0 y = 10.0 w = 200.0 h = 30.0  [[root.children]] widget_type = \"button\" text = \"Play\" id = \"play_btn\" x = 10.0 y = 50.0 w = 100.0 h = 32.0 ```  # Fields  - `root` — `WidgetDef`. Root widget definition.",
+            "description": "Top-level TOML layout descriptor.  A TOML layout file must contain a `[root]` section holding a `WidgetDef`. The optional `resolution` key declares the canvas size as `[width, height]`. When absent the canvas defaults to `root.w` × `root.h`, then falls back to 1280 × 720. The `resolution` field is used by the headless PNG renderer (`tools/ui/render_layout.py`) to set the output image size.  # Example  ```toml resolution = [1280, 720]  [root] widget_type = \"panel\" w = 1280.0 h = 720.0  [[root.children]] widget_type = \"label\" text = \"Score: 0\" id = \"score_label\" x = 10.0 y = 10.0 w = 200.0 h = 30.0  [[root.children]] widget_type = \"button\" text = \"Play\" id = \"play_btn\" x = 10.0 y = 50.0 w = 100.0 h = 32.0 ```  # Fields  - `resolution` — `[u32; 2]`. Optional `[width, height]` canvas size in pixels.   Overrides `root.w` / `root.h` for the PNG render pass. - `root` — `WidgetDef`. Root widget definition.",
             "file": "src/ui/layout_loader.rs",
-            "line": 160
+            "line": 168
           },
           {
             "name": "load_layout_def",
             "kind": "fn",
             "description": "Recursively build a widget tree inside `ctx` from a `WidgetDef` descriptor.  Creates a widget of the type given by `def.widget_type`, applies all specified properties, then recurses into `def.children`, attaching each child to the newly created parent widget.  The created root widget is **not** automatically attached to the global root (pool index 0); the caller must call `ctx.add_child(0, root_idx)` when the widget should be part of the rendered tree.  # Parameters  - `ctx` — `&mut GuiContext`. UI context to populate. - `def` — `&WidgetDef`. Widget descriptor to evaluate.  # Returns  Pool index of the newly created root widget on success, or `Err(String)` if `def.widget_type` is not a recognised type string.",
             "file": "src/ui/layout_loader.rs",
-            "line": 186
+            "line": 197
           },
           {
             "name": "load_layout_toml",
             "kind": "fn",
             "description": "Parse TOML source text conforming to the `LayoutDef` schema and build the described widget tree in `ctx`.  Convenience wrapper combining `toml::from_str::<LayoutDef>` and [`load_layout_def`].  # Parameters  - `ctx` — `&mut GuiContext`. UI context to populate. - `toml_src` — `&str`. UTF-8 TOML source text.  # Returns  Pool index of the root widget on success, or `Err(String)` on a TOML parse error or an unknown widget type.",
             "file": "src/ui/layout_loader.rs",
-            "line": 214
+            "line": 225
           },
           {
             "name": "render_to_image",
             "kind": "fn",
             "description": "Software-render the widget tree in `ctx` to a PNG file.  Runs the layout pass to compute `computed_rect` values for all widgets, then draws each visible widget's bounding rectangle onto an RGBA pixel buffer using a per-widget-type representative fill colour. The result is saved as a PNG file at `path` via the `image` crate.  This function is **headless-safe** — it has no dependency on wgpu, winit, or any GPU resource, making it suitable for evidence and golden tests.  Text is not rendered; only filled widget bounding boxes are drawn. Use the output to verify that the layout tree was built and positioned correctly.  # Parameters  - `ctx` — `&mut GuiContext`. UI context whose widget tree is rendered. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels. - `path` — `&str`. Destination file path for the PNG.  # Returns  `Ok(())` on success, or `Err(String)` if the PNG file could not be written.",
             "file": "src/ui/layout_loader.rs",
-            "line": 243
+            "line": 254
           }
         ]
       },
@@ -15377,6 +15377,41 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_integration_cardgame_tween.lua",
+        "module": "test_integration_cardgame_tween",
+        "name": "test_integration_cardgame_tween",
+        "description": "Integration test: library.cardgame × lurek.tween.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_integration_combat_physics.lua",
+        "module": "test_integration_combat_physics",
+        "name": "test_integration_combat_physics",
+        "description": "Integration test: library.combat × lurek.physics.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_integration_dialog_event.lua",
+        "module": "test_integration_dialog_event",
+        "name": "test_integration_dialog_event",
+        "description": "Integration test: library.dialog × lurek.signal (runtime name for \"lurek.event\").",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_integration_inventory_save.lua",
+        "module": "test_integration_inventory_save",
+        "name": "test_integration_inventory_save",
+        "description": "Integration test: library.inventory × lurek.codec (runtime name for \"lurek.serial\").",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_integration_quest_time.lua",
+        "module": "test_integration_quest_time",
+        "name": "test_integration_quest_time",
+        "description": "Integration test: library.quest × lurek.time.Scheduler.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_light_graphics.lua",
         "module": "test_light_graphics",
         "name": "test_light_graphics",
@@ -15629,6 +15664,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/library/test_library_cinematic.lua",
+        "module": "test_library_cinematic",
+        "name": "test_library_cinematic",
+        "description": "tests/lua/library/test_library_cinematic.lua",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/library/test_library_combat.lua",
         "module": "test_library_combat",
         "name": "test_library_combat",
@@ -15678,6 +15720,41 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/library/test_library_lobby.lua",
+        "module": "test_library_lobby",
+        "name": "test_library_lobby",
+        "description": "Room Creation",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_loot.lua",
+        "module": "test_library_loot",
+        "name": "test_library_loot",
+        "description": "tests/lua/library/test_library_loot.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_narrative.lua",
+        "module": "test_library_narrative",
+        "name": "test_library_narrative",
+        "description": "tests/lua/library/test_library_narrative.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_netstate.lua",
+        "module": "test_library_netstate",
+        "name": "test_library_netstate",
+        "description": "Construction & Authority",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_patterns.lua",
+        "module": "test_library_patterns",
+        "name": "test_library_patterns",
+        "description": "── newScheduler ──────────────────────────────────────────────────────────────",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/library/test_library_province_map.lua",
         "module": "test_library_province_map",
         "name": "test_library_province_map",
@@ -15689,6 +15766,27 @@
         "module": "test_library_quest",
         "name": "test_library_quest",
         "description": "tests/lua/unit/test_library_quest.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_rhythm.lua",
+        "module": "test_library_rhythm",
+        "name": "test_library_rhythm",
+        "description": "tests/lua/library/test_library_rhythm.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_roguelike.lua",
+        "module": "test_library_roguelike",
+        "name": "test_library_roguelike",
+        "description": "tests/lua/library/test_library_roguelike.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/library/test_library_rpc.lua",
+        "module": "test_library_rpc",
+        "name": "test_library_rpc",
+        "description": "Mock infrastructure",
         "kind": "lua"
       },
       {

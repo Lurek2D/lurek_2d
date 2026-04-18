@@ -1,9 +1,9 @@
 {
   "rust": {
     "total": 3904,
-    "covered": 1249,
-    "uncovered": 2655,
-    "coverage_pct": 32.0,
+    "covered": 1236,
+    "uncovered": 2668,
+    "coverage_pct": 31.7,
     "covered_items": [
       {
         "module": "ai",
@@ -1729,12 +1729,6 @@
       },
       {
         "module": "dataframe",
-        "name": "DataFrame::set_value",
-        "file": "src/dataframe/frame.rs",
-        "line": 427
-      },
-      {
-        "module": "dataframe",
         "name": "DataFrame::random",
         "file": "src/dataframe/frame.rs",
         "line": 496
@@ -2008,12 +2002,6 @@
         "name": "RelationshipManager::get_value",
         "file": "src/ecs/relationships.rs",
         "line": 219
-      },
-      {
-        "module": "ecs",
-        "name": "RelationshipManager::set_value",
-        "file": "src/ecs/relationships.rs",
-        "line": 232
       },
       {
         "module": "ecs",
@@ -5761,21 +5749,9 @@
       },
       {
         "module": "scene",
-        "name": "SceneStack::next_scene_id",
-        "file": "src/scene/stack.rs",
-        "line": 75
-      },
-      {
-        "module": "scene",
         "name": "SceneStack::push",
         "file": "src/scene/stack.rs",
         "line": 95
-      },
-      {
-        "module": "scene",
-        "name": "SceneStack::switch_to",
-        "file": "src/scene/stack.rs",
-        "line": 160
       },
       {
         "module": "scene",
@@ -5806,12 +5782,6 @@
         "name": "SceneStack::get_transition_progress_eased",
         "file": "src/scene/stack.rs",
         "line": 287
-      },
-      {
-        "module": "scene",
-        "name": "SceneStack::update_transition",
-        "file": "src/scene/stack.rs",
-        "line": 298
       },
       {
         "module": "scene",
@@ -7081,12 +7051,6 @@
       },
       {
         "module": "ui",
-        "name": "Slider::set_value",
-        "file": "src/ui/controls.rs",
-        "line": 257
-      },
-      {
-        "module": "ui",
         "name": "ProgressBar::new",
         "file": "src/ui/controls.rs",
         "line": 299
@@ -7147,24 +7111,6 @@
       },
       {
         "module": "ui",
-        "name": "SpinBox::set_value",
-        "file": "src/ui/controls.rs",
-        "line": 717
-      },
-      {
-        "module": "ui",
-        "name": "SpinBox::increment",
-        "file": "src/ui/controls.rs",
-        "line": 727
-      },
-      {
-        "module": "ui",
-        "name": "SpinBox::decrement",
-        "file": "src/ui/controls.rs",
-        "line": 732
-      },
-      {
-        "module": "ui",
         "name": "SpinBox::set_range",
         "file": "src/ui/controls.rs",
         "line": 741
@@ -7174,18 +7120,6 @@
         "name": "Switch::new",
         "file": "src/ui/controls.rs",
         "line": 779
-      },
-      {
-        "module": "ui",
-        "name": "Switch::toggle",
-        "file": "src/ui/controls.rs",
-        "line": 788
-      },
-      {
-        "module": "ui",
-        "name": "Switch::set_on",
-        "file": "src/ui/controls.rs",
-        "line": 797
       },
       {
         "module": "ui",
@@ -7402,18 +7336,6 @@
         "name": "Badge::new",
         "file": "src/ui/extras.rs",
         "line": 1142
-      },
-      {
-        "module": "ui",
-        "name": "Badge::display_text",
-        "file": "src/ui/extras.rs",
-        "line": 1157
-      },
-      {
-        "module": "ui",
-        "name": "Badge::set_count",
-        "file": "src/ui/extras.rs",
-        "line": 1169
       },
       {
         "module": "ui",
@@ -11091,6 +11013,12 @@
       },
       {
         "module": "dataframe",
+        "name": "DataFrame::set_value",
+        "file": "src/dataframe/frame.rs",
+        "line": 427
+      },
+      {
+        "module": "dataframe",
         "name": "DataFrame::clone_df",
         "file": "src/dataframe/frame.rs",
         "line": 441
@@ -11748,6 +11676,12 @@
         "name": "RelationshipManager::type_names",
         "file": "src/ecs/relationships.rs",
         "line": 196
+      },
+      {
+        "module": "ecs",
+        "name": "RelationshipManager::set_value",
+        "file": "src/ecs/relationships.rs",
+        "line": 232
       },
       {
         "module": "ecs",
@@ -20145,9 +20079,21 @@
       },
       {
         "module": "scene",
+        "name": "SceneStack::next_scene_id",
+        "file": "src/scene/stack.rs",
+        "line": 75
+      },
+      {
+        "module": "scene",
         "name": "SceneStack::pop",
         "file": "src/scene/stack.rs",
         "line": 127
+      },
+      {
+        "module": "scene",
+        "name": "SceneStack::switch_to",
+        "file": "src/scene/stack.rs",
+        "line": 160
       },
       {
         "module": "scene",
@@ -20178,6 +20124,12 @@
         "name": "SceneStack::is_transitioning",
         "file": "src/scene/stack.rs",
         "line": 268
+      },
+      {
+        "module": "scene",
+        "name": "SceneStack::update_transition",
+        "file": "src/scene/stack.rs",
+        "line": 298
       },
       {
         "module": "scene",
@@ -22929,6 +22881,12 @@
       },
       {
         "module": "ui",
+        "name": "Slider::set_value",
+        "file": "src/ui/controls.rs",
+        "line": 257
+      },
+      {
+        "module": "ui",
         "name": "ComboBox::add_item",
         "file": "src/ui/controls.rs",
         "line": 364
@@ -22974,6 +22932,36 @@
         "name": "TabBar::remove_tab",
         "file": "src/ui/controls.rs",
         "line": 560
+      },
+      {
+        "module": "ui",
+        "name": "SpinBox::set_value",
+        "file": "src/ui/controls.rs",
+        "line": 717
+      },
+      {
+        "module": "ui",
+        "name": "SpinBox::increment",
+        "file": "src/ui/controls.rs",
+        "line": 727
+      },
+      {
+        "module": "ui",
+        "name": "SpinBox::decrement",
+        "file": "src/ui/controls.rs",
+        "line": 732
+      },
+      {
+        "module": "ui",
+        "name": "Switch::toggle",
+        "file": "src/ui/controls.rs",
+        "line": 788
+      },
+      {
+        "module": "ui",
+        "name": "Switch::set_on",
+        "file": "src/ui/controls.rs",
+        "line": 797
       },
       {
         "module": "ui",
@@ -23187,21 +23175,33 @@
       },
       {
         "module": "ui",
+        "name": "Badge::display_text",
+        "file": "src/ui/extras.rs",
+        "line": 1157
+      },
+      {
+        "module": "ui",
+        "name": "Badge::set_count",
+        "file": "src/ui/extras.rs",
+        "line": 1169
+      },
+      {
+        "module": "ui",
         "name": "load_layout_def",
         "file": "src/ui/layout_loader.rs",
-        "line": 186
+        "line": 197
       },
       {
         "module": "ui",
         "name": "load_layout_toml",
         "file": "src/ui/layout_loader.rs",
-        "line": 214
+        "line": 225
       },
       {
         "module": "ui",
         "name": "render_to_image",
         "file": "src/ui/layout_loader.rs",
-        "line": 243
+        "line": 254
       },
       {
         "module": "ui",
@@ -23435,9 +23435,9 @@
   },
   "lua": {
     "total": 3622,
-    "covered": 3289,
-    "uncovered": 333,
-    "coverage_pct": 90.8,
+    "covered": 3291,
+    "uncovered": 331,
+    "coverage_pct": 90.9,
     "covered_items": [
       {
         "module": "ai",
@@ -37420,6 +37420,13 @@
       },
       {
         "module": "patterns",
+        "lua_name": "Funnel:pendingCount",
+        "kind": "method",
+        "file": "src/lua_api/patterns_api.rs",
+        "line": 1443
+      },
+      {
+        "module": "patterns",
         "lua_name": "RelationshipManager:defineType",
         "kind": "method",
         "file": "src/lua_api/patterns_api.rs",
@@ -38999,6 +39006,13 @@
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
         "line": 174
+      },
+      {
+        "module": "pipeline",
+        "lua_name": "Step:setTimeout",
+        "kind": "method",
+        "file": "src/lua_api/pipeline_api.rs",
+        "line": 184
       },
       {
         "module": "pipeline",
@@ -47705,13 +47719,6 @@
       },
       {
         "module": "patterns",
-        "lua_name": "Funnel:pendingCount",
-        "kind": "method",
-        "file": "src/lua_api/patterns_api.rs",
-        "line": 1443
-      },
-      {
-        "module": "patterns",
         "lua_name": "Funnel:getFlushCount",
         "kind": "method",
         "file": "src/lua_api/patterns_api.rs",
@@ -47849,13 +47856,6 @@
         "kind": "method",
         "file": "src/lua_api/pipeline_api.rs",
         "line": 139
-      },
-      {
-        "module": "pipeline",
-        "lua_name": "Step:setTimeout",
-        "kind": "method",
-        "file": "src/lua_api/pipeline_api.rs",
-        "line": 184
       },
       {
         "module": "pipeline",

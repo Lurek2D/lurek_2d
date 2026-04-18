@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated": "2026-04-16T12:36:53.182480+00:00",
+    "generated": "2026-04-18T11:39:08.856056+00:00",
     "generator": "tools/gen_lua_api_data.py",
-    "version": "0.18.0",
+    "version": "0.20.0",
     "stats": {
       "lua_functions": 3622,
       "lua_modules": 49

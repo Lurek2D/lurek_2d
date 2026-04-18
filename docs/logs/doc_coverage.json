@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-16T12:48:14.802383+00:00",
+  "generated_at": "2026-04-18T11:39:13.204496+00:00",
   "summary": {
     "rust": {
       "total": 5037,
@@ -44792,7 +44792,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 160,
+      "line": 168,
       "kind": "struct",
       "name": "LayoutDef",
       "has_doc": true
@@ -44801,7 +44801,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 186,
+      "line": 197,
       "kind": "fn",
       "name": "load_layout_def",
       "has_doc": true
@@ -44810,7 +44810,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 214,
+      "line": 225,
       "kind": "fn",
       "name": "load_layout_toml",
       "has_doc": true
@@ -44819,7 +44819,7 @@
       "source": "rust",
       "module": "ui",
       "file": "src/ui/layout_loader.rs",
-      "line": 243,
+      "line": 254,
       "kind": "fn",
       "name": "render_to_image",
       "has_doc": true
