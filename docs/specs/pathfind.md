@@ -21,7 +21,7 @@ For non-grid navigation: `graph_astar` and `graph_range` run A\* and Dijkstra ra
 
 The new `bidir.rs` source file introduces `BidirSearch`, a bidirectional A* implementation that searches simultaneously from start and goal, halving the effective search space on large navigation grids. Lua path query methods have been extended with new filtering and cost-annotation helpers accessible through `lurek.pathfind.*`, making multi-constraint pathfinding — avoid certain tile types, prefer low-cost corridors — practical from game scripts without modifying grid weights globally.
 
-**Scope boundary**: Feature Systems tier. Depends on `math`, `graph`, `runtime`. Lua bridge in `src/lua_api/pathfind_api.rs`.
+**Scope boundary**: Feature Systems tier. Depends on `math`, `graph`, `runtime`. Lua bridge in `src/lua_api/pathfind_api.rs`. The `ai` module re-exports `FlowField`, `Cell`, and `PathGrid` from here so `lurek.ai.*` can offer a unified scripting surface; treat that re-export as a stable contract for AI-side flow-field consumers.
 
 ## Files
 

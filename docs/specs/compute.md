@@ -11,7 +11,7 @@
 
 ## Summary
 
-The `compute` module provides Lurek2D's dense N-dimensional numerical array library, exposed to Lua scripts as `lurek.gpu.*`. Despite the `gpu` Lua namespace, all computation in this module runs on the CPU — the name reflects its intended use for matrix operations, signal processing, and numerical workloads that would otherwise require GPU compute shaders.
+The `compute` module provides Lurek2D's dense N-dimensional numerical array library, exposed to Lua scripts as `lurek.compute.*` (the bridge in `src/lua_api/compute_api.rs` registers the table under that name; an earlier `lurek.gpu` alias is no longer current). All computation runs on the CPU — the name reflects its intended use for matrix operations, signal processing, and numerical workloads that would otherwise require GPU compute shaders.
 
 The core type is `NdArray`, a row-major array supporting 1D, 2D, and 3D shapes with three element types: `f32`, `f64`, and `i32` (discriminated by the `DataType` enum). Construction: `new(shape, dtype)`, `zeros`, `ones`, `from_flat_data`. Access: `get(indices)`, `set(indices, value)`, `slice(ranges)`. Shape inspection: `shape()`, `ndim()`, `numel()`, `reshape(new_shape)`.
 
@@ -20,6 +20,8 @@ The `ops` submodule provides element-wise arithmetic (add, subtract, multiply, d
 The new `fft.rs` submodule adds a dedicated Fast Fourier Transform implementation alongside its inverse, complementing the existing `analytics` signal-processing helpers with a first-class FFT type optimized for power-of-two sequences. Lua scripts access these directly via `lurek.compute.fft(array)` and `lurek.compute.ifft(array)`, receiving a new `NdArray` containing the complex spectrum or the reconstructed time-domain signal.
 
 **Scope boundary**: Foundations tier. No Lurek2D module imports. Lua bridge in `src/lua_api/compute_api.rs`.
+
+_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
 
 ## Files
 

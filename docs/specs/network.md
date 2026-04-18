@@ -21,7 +21,9 @@ HTTP, TCP, and WebSocket operations run on the `NetworkRuntime` background OS th
 
 The `lobby.rs` source file introduces `NetworkLobby`, a LAN lobby discovery type that uses UDP broadcast to advertise and enumerate local game sessions. Lua scripts access the full lobby API through `lurek.net.lobby.*`, enabling game menus to list nearby games and join them without requiring a dedicated matchmaking server. `LobbyInfo` carries the session name, current player count, maximum capacity, and host address.
 
-**Scope boundary**: Core Runtime tier. No Platform Services or Feature Systems imports. Lua bridge in `src/lua_api/network_api.rs`.
+**Scope boundary**: Core Runtime tier. No Platform Services or Feature Systems imports. Lua bridge in `src/lua_api/network_api.rs`. The crate tree is heavy (`rusty_enet` + `ureq` + `tungstenite` + `rmp-serde` + `rustls`), which is why the module is a plugin candidate.
+
+_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
 
 ## Files
 

@@ -5,7 +5,7 @@
 - Module group: `Edge/Integration`
 - Source path: `src/lua_api/`
 - Lua API path(s): None direct
-- Primary Lua namespace: `lurek.ai`
+- Primary Lua namespace: `lurek.*` (registers every sub-namespace)
 - Rust test path(s): tests/rust/unit/; tests/rust/ext/
 - Lua test path(s): tests/lua/harness.rs; tests/lua/unit/; tests/lua/integration/; tests/lua/security/; tests/lua/stress/; tests/lua/golden/
 

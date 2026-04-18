@@ -23,6 +23,8 @@ Three new widget types complete the toolkit. The existing `chart.rs` chart rende
 
 **Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/ui_api.rs`.
 
+_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+
 ## Files
 
 - `chart.rs`: Generates CPU-rendered chart images for line, bar, scatter, pie, and area graphs without requiring the GPU path.

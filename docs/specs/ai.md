@@ -23,6 +23,8 @@ Diagnostic support has been expanded with `BtDebugState`, a snapshot of a behavi
 
 **Scope boundary**: Feature Systems tier. Depends on `math`, `pathfind`, `runtime`. Lua bridge in `src/lua_api/ai_api.rs`.
 
+_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+
 ## Files
 
 - `agent.rs`: Defines the core `Agent` record and the top-level decision-model selection enum used to attach different AI styles to an actor.

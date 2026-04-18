@@ -2,7 +2,7 @@
 
 ## General Info
 
-- Module group: `Platform Services.`
+- Module group: `Platform Services`
 - Source path: `src/render/`
 - Lua API path(s): `src/lua_api/render_api.rs`
 - Primary Lua namespace: `lurek.graphic`
@@ -17,9 +17,9 @@ The `render` module is Lurek2D's GPU rendering layer, backed by wgpu 22. Its fun
 
 `GpuRenderer` manages the wgpu `Device`, `Queue`, `Surface`, swapchain configuration, and all resource pools (`SlotMap<TextureKey, Texture>`, `SlotMap<FontKey, Font>`, `SlotMap<ShaderKey, Shader>`, `SlotMap<CanvasKey, Canvas>`, etc.). `Canvas` implements off-screen render-to-texture for post-processing and minimap rendering. `Font` rasterizes glyphs via the fontdue library into a GPU texture atlas with LRU glyph eviction. `Shader` wraps user-supplied WGSL with a uniform variable table updated each frame. `PostFxPipeline` orchestrates ping-pong texture passes for multi-pass post-processing.
 
-Additional `RenderCommand` variants have been added to the central enum, expanding the draw call surface for specialized rendering workloads. Blend mode options have been extended with new compositing modes accessible from Lua scripts via `lurek.graphic.*`, giving game developers finer control over how translucent sprites, UI layers, and post-processing effects composite together.
+Additional `RenderCommand` variants have been added to the central enum, expanding the draw call surface for specialized rendering workloads. Blend mode options have been extended with new compositing modes accessible from Lua scripts via `lurek.graphic.*`, giving game developers finer control over how translucent sprites, UI layers, and post-processing effects composite together. The Lua namespace is the singular `lurek.graphic` (not `lurek.graphics`); this matches the binding registration in `src/lua_api/graphic_api.rs`.
 
-**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `image`, `wgpu`. Lua bridge in `src/lua_api/render_api.rs` (registered as `lurek.graphics.*`).
+**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `image`, `wgpu`. Lua bridge in `src/lua_api/render_api.rs` (registered as `lurek.graphic.*`).
 
 ## Files
 

@@ -23,6 +23,8 @@ The new `collision_helpers.rs` source file provides lightweight stateless geomet
 
 **Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
 
+_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+
 ## Files
 
 - `body.rs`: Script-facing rigid-body types, constructors, bounding boxes, and local/world point helpers.
