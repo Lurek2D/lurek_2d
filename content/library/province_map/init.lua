@@ -1,7 +1,14 @@
 ﻿--- @module library.province_map
---- Province-map data model: provinces, adjacency edges, definitions,
---- borders, event bus, map modes, positions, routing, and faction helpers.
---- Pure-Lua port and extension of src/province_map/.
+--- @status full
+--- Pure-Lua province-map data model: provinces, adjacency edges,
+--- definitions, borders, event bus, map modes, positions, routing, and
+--- faction helpers. Self-contained — does not require any `lurek.*`
+--- module to operate.
+---
+--- The optional `M.newFromPng(path, defs?)` constructor uses
+--- `lurek.img.newProvinceGrid` to load and adjacency-scan a PNG colour
+--- map in a single Rust pass (see that function for details). All other
+--- entry points are pure Lua.
 ---
 --- **Coordinate system**: Pixel coordinates are 0-based (x: 0..width-1,
 --- y: 0..height-1). Internally, `pixel_lookup` uses 1-based Lua array
@@ -13,7 +20,10 @@
 --- `insertAdjacency` enforces the same invariant.  The canonical adjacency
 --- source is `ProvinceMap.adjacency`; call `getNeighbors(id)` for a
 --- province's neighbour list (computed dynamically from edges).
---- @status full
+---
+--- @see lurek.img.newProvinceGrid
+--- @see lurek.graph.newGraph
+--- @see lurek.codec.toJson
 
 local M = {}
 

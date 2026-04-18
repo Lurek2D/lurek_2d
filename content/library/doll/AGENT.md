@@ -1,8 +1,17 @@
 # Doll Library
 
 **Tier**: 3 — Lunasome (Pure Lua)
-**Status**: Implemented
+**Status**: full
 **Path**: `library/doll/`
+**Optional bindings**: `lurek.graphic` (caller-side renderer for `getDrawList()` entries), `lurek.img` (texture loader for `Part:setTexture`)
+
+## P7 batch B note
+
+The legacy `Doll:draw()` method previously dereferenced an undefined global
+`luna` and a non-existent namespace `lurek.gfx` (init.lua line 405). It is
+now a deprecated one-time-warning no-op. Library code does not call render
+APIs directly — callers must iterate `Doll:getDrawList()` and dispatch the
+entries to `lurek.graphic` (or any other renderer) themselves.
 
 ## Responsibility
 
@@ -13,11 +22,11 @@ draw list with world-space transforms.
 
 ## Key Types
 
-| Type | Constructor | Purpose |
-|---|---|---|
-| `Part` | `M.newPart()` | Visual element with texture, quad, offset, scale, color |
-| `DollTemplate` | `M.newTemplate(name)` | Socket layout blueprint |
-| `Doll` | `M.newDoll(template)` | Runtime instance — attach/detach parts, get draw list |
+| Type           | Constructor           | Purpose                                                 |
+| -------------- | --------------------- | ------------------------------------------------------- |
+| `Part`         | `M.newPart()`         | Visual element with texture, quad, offset, scale, color |
+| `DollTemplate` | `M.newTemplate(name)` | Socket layout blueprint                                 |
+| `Doll`         | `M.newDoll(template)` | Runtime instance — attach/detach parts, get draw list   |
 
 ## API Surface
 

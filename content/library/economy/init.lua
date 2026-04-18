@@ -1,9 +1,32 @@
 ﻿--- @module library.economy
+--- @status full
 --- @description Pure-Lua resource economy system with named resources, overflow policies,
 --- flow/decay/interest simulation, conversion rules with modifiers, and a ResourceManager.
 --- Optional: uses `lurek.log.debug()` / `lurek.log.info()` when available for transaction tracing.
 --- Port of the Rust src/economy/ module.
+--- @see lurek.math.clamp           value/capacity/minimum clamp helper used by `Resource:_clamp`
+--- @see lurek.math.lerp            useful for smoothing UI display of resource values
+--- @see lurek.math.round           round-trip helper when displaying integer-only resources
+--- @see lurek.codec.toJson         serialise resources/rules/modifiers for save persistence
+--- @see lurek.codec.fromJson       restore manager state from a JSON snapshot
+--- @see lurek.patterns.newEventBus optional transaction event bus from `manager:getEventBus()`
 local M = {}
+
+---------------------------------------------------------------------------
+-- Optional engine bindings (resolved once at load time, all guarded)
+---------------------------------------------------------------------------
+
+local _math_clamp
+if type(lurek) == "table" and type(lurek.math) == "table"
+   and type(lurek.math.clamp) == "function" then
+    _math_clamp = lurek.math.clamp
+end
+
+local _bus_factory
+if type(lurek) == "table" and type(lurek.patterns) == "table"
+   and type(lurek.patterns.newEventBus) == "function" then
+    _bus_factory = lurek.patterns.newEventBus
+end
 
 ---------------------------------------------------------------------------
 -- Logging helper (optional — works outside Lurek2D too)
@@ -72,7 +95,13 @@ function M.newResource(name, capacity)
 end
 
 --- Clamp a value to [minimum, capacity].
+--- Delegates to `lurek.math.clamp` when the engine binding is available;
+--- falls back to the inline branchy form when running outside Lurek2D.
 function Resource:_clamp(v)
+    if _math_clamp then
+        local hi = (self.capacity >= 0) and self.capacity or math.huge
+        return _math_clamp(v, self.minimum, hi)
+    end
     if v < self.minimum then v = self.minimum end
     if self.capacity >= 0 and v > self.capacity then v = self.capacity end
     return v
@@ -556,7 +585,23 @@ function M.newManager()
     local mgr = setmetatable({}, ResourceManager)
     mgr.resources        = {}
     mgr.conversion_rules = {}
+    mgr._event_bus       = nil  -- lazily created via getEventBus()
     return mgr
+end
+
+--- Return (or lazily create) an optional `lurek.patterns` EventBus that
+--- callers can subscribe to for transaction-style notifications. Returns
+--- nil when the engine binding is unavailable. The library does not
+--- auto-emit events on this bus — callers may emit on it from their own
+--- wrappers without breaking pure-Lua tests.
+--- @treturn table|nil EventBus instance, or nil when `lurek.patterns.newEventBus` is missing.
+--- @see lurek.patterns.newEventBus
+function ResourceManager:getEventBus()
+    if self._event_bus then return self._event_bus end
+    if not _bus_factory then return nil end
+    local ok, bus = pcall(_bus_factory)
+    if ok then self._event_bus = bus end
+    return self._event_bus
 end
 
 --- Create (or return existing) resource.

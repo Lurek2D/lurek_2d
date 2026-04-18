@@ -836,6 +836,26 @@ fn lua_test_library_patterns() {
     run_lua_test("library/test_library_patterns.lua");
 }
 #[test]
+fn lua_test_library_loot() {
+    run_lua_test("library/test_library_loot.lua");
+}
+#[test]
+fn lua_test_library_narrative() {
+    run_lua_test("library/test_library_narrative.lua");
+}
+#[test]
+fn lua_test_library_roguelike() {
+    run_lua_test("library/test_library_roguelike.lua");
+}
+#[test]
+fn lua_test_library_cinematic() {
+    run_lua_test("library/test_library_cinematic.lua");
+}
+#[test]
+fn lua_test_library_rhythm() {
+    run_lua_test("library/test_library_rhythm.lua");
+}
+#[test]
 fn lua_test_animation() {
     run_lua_test("unit/test_animation.lua");
 }
@@ -1848,4 +1868,31 @@ fn lua_test_unit_light_godrays() {
 #[test]
 fn lua_test_config_fallback() {
     run_lua_test("config/test_runtime_config_fallback.lua");
+}
+
+// ─── P9 Library × Engine Integration Tests ──────────────────────────────────
+
+#[test]
+fn lua_test_integration_dialog_event() {
+    run_lua_test("integration/test_integration_dialog_event.lua");
+}
+
+#[test]
+fn lua_test_integration_inventory_save() {
+    run_lua_test("integration/test_integration_inventory_save.lua");
+}
+
+#[test]
+fn lua_test_integration_quest_time() {
+    run_lua_test("integration/test_integration_quest_time.lua");
+}
+
+#[test]
+fn lua_test_integration_combat_physics() {
+    run_lua_test("integration/test_integration_combat_physics.lua");
+}
+
+#[test]
+fn lua_test_integration_cardgame_tween() {
+    run_lua_test("integration/test_integration_cardgame_tween.lua");
 }

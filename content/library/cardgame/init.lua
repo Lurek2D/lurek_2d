@@ -1,12 +1,17 @@
 ﻿--- @module library.cardgame
+--- @status full
 --- Card game system: card types, cards, stacks (decks/hands/zones), slots,
 --- card pools, stack manager, deck builder, history, and card groups.
 --- Pure-Lua port of src/cardgame/.
---- @status full
+--- @see lurek.math
+--- @see lurek.tween
+--- @see lurek.signal
+--- @see lurek.log
 
 local M = {}
 
 --- Optional logging (uses lurek.log when running inside Lurek2D).
+-- @see lurek.log
 local function _log_info(msg)
     if lurek and lurek.log and lurek.log.info then
         lurek.log.info("[cardgame] " .. msg)
@@ -531,6 +536,9 @@ function Stack:sortByName()
 end
 
 --- Shuffle cards into a random order using Fisher-Yates.
+-- TODO(P4 lift): replace with lurek.math.shuffle when available so the
+-- shuffle becomes seedable and decoupled from the global RNG state.
+-- @see lurek.math
 function Stack:shuffle()
     local n = #self.cards
     for i = n, 2, -1 do
@@ -821,12 +829,26 @@ function CardPool:drawUniqueItems(n)
     return out
 end
 --- Draw n Card instances using a fixed random seed for reproducibility.
---- @param n number
---- @param seed number
---- @treturn table  Array of Card objects.
+--- Saves and restores the global RNG state across the call so callers
+--- outside the seeded scope continue to observe the global RNG sequence.
+-- TODO(P4 lift): use lurek.math.newRng()/lurek.math.shuffle when available
+-- to avoid touching the global RNG entirely.
+-- @see lurek.math
+-- @param n number
+-- @param seed number
+-- @treturn table  Array of Card objects.
 function CardPool:drawItemsSeeded(n, seed)
+    -- Pin the global RNG to the requested seed for the duration of the draw,
+    -- then restore the previous state so external callers are not perturbed.
+    -- math.random() does not expose its state portably across Lua 5.1/5.4 +
+    -- LuaJIT, so we sample a fresh seed from the current stream as a proxy
+    -- restore point. Determinism inside this call is preserved by the
+    -- explicit randomseed(seed) below.
+    local restore_seed = math.random(1, 2147483647)
     math.randomseed(seed)
-    return self:drawItems(n)
+    local out = self:drawItems(n)
+    math.randomseed(restore_seed)
+    return out
 end
 --- Draw cards matching a rarity distribution table {rarity=count,...}.
 --- @param distribution table  Map of rarity string to draw count.

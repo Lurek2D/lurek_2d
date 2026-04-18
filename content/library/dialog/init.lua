@@ -15,8 +15,20 @@
 --   -- on input:   seq:advance()  /  seq:choose(1)
 --
 -- @module library.dialog
+-- @status full
+-- @see lurek.patterns.newEventBus  optional event bus mirror returned by `seq:getEventBus()`
+-- @see lurek.signal.newSignal      alternative scoped pub/sub backbone
+-- @see lurek.localization.t        translate `say`/`choice` text fields before passing them in
+-- @see lurek.codec.toJson          serialise/deserialise script node arrays for persistence
 
 local M = {}
+
+-- Optional cross-VM EventBus factory (resolved once at load time).
+local _bus_factory
+if type(lurek) == "table" and type(lurek.patterns) == "table"
+   and type(lurek.patterns.newEventBus) == "function" then
+    _bus_factory = lurek.patterns.newEventBus
+end
 
 -- ÔöÇÔöÇÔöÇ Internal constants ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
@@ -30,20 +42,6 @@ pcall(function()
 end)
 local function log_debug(msg)
     if _log then _log.debug(msg) end
-end
-
--- ÔöÇÔöÇÔöÇ Node executor helpers ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
---- Flatten nested branch nodes into a linear sequence with jump markers.
--- Choices embed a jump-table so execution can branch then reconverge.
--- @local
-local function flatten(nodes, out, next_after)
-    out = out or {}
-    for _, node in ipairs(nodes) do
-        table.insert(out, node)
-    end
-    -- next_after is appended after this block converges (used by choice branches)
-    return out
 end
 
 -- ÔöÇÔöÇÔöÇ Sequencer object ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
@@ -73,7 +71,12 @@ function M.newSequencer()
     local _choice_txt = ""
     local _choice_opts= {}   -- {label, branch} list
     local _wait_timer = 0.0
-    local _handlers   = {}   -- event_name Ôćĺ list of callbacks
+    local _handlers   = {}   -- event_name -> list of callbacks (canonical fallback)
+    local _bus        = nil  -- optional lurek.patterns EventBus mirror (lazy)
+    if _bus_factory then
+        local ok, bus = pcall(_bus_factory)
+        if ok then _bus = bus end
+    end
     local _pending_nodes = nil  -- nodes injected mid-sequence by a branch
     local _jump_count    = 0    -- jump counter for loop detection
 
@@ -85,6 +88,12 @@ function M.newSequencer()
             for _, fn in ipairs(list) do
                 fn(...)
             end
+        end
+        -- Optional mirror to lurek.patterns EventBus so external listeners
+        -- subscribed via seq:getEventBus() also receive the event. Failures
+        -- are silently demoted (the canonical _handlers path is unaffected).
+        if _bus and _bus.emit then
+            pcall(function() _bus:emit(event, ...) end)
         end
     end
 
@@ -394,6 +403,17 @@ function M.newSequencer()
             error("dialog:off() expects a string event name, got " .. type(event), 2)
         end
         _handlers[event] = nil
+    end
+
+    --- Return the optional `lurek.patterns` EventBus mirror, or nil when the
+    -- engine is not present. External systems can subscribe to any of the
+    -- sequencer's events through the bus without going through `seq:on()`.
+    -- The canonical event delivery path remains the local handler table, so
+    -- the bus is purely a parallel observer channel.
+    -- @treturn table|nil EventBus instance, or nil when unavailable.
+    -- @see lurek.patterns.newEventBus
+    function seq:getEventBus()
+        return _bus
     end
 
     return seq

@@ -1,19 +1,30 @@
 ﻿--- @module library.crafting
+--- @status full
 --- Crafting system: recipes, ingredients, outputs, job queues, stations,
 --- craft skills, perk trees, upgrade trees, modifier pools, and recipe knowledge.
 --- Pure-Lua port of src/crafting/.
---- @status full
+--- @see lurek.codec
+--- @see lurek.patterns
+--- @see lurek.signal
+--- @see lurek.log
 
 local M = {}
 
--- Optional logging via lurek.log (no-op if unavailable)
+-- Optional logging via lurek.log (no-op if unavailable).
+-- Hardened against the prior bug where a non-nil `lurek` table with a nil
+-- `lurek.log` would set `_log = nil` and crash later `_log.warn(...)` calls.
+-- @see lurek.log
 local _log
 do
     local ok, log_mod = pcall(function() return lurek and lurek.log end)
-    if ok and log_mod then
+    if ok and type(log_mod) == 'table' then
         _log = log_mod
     else
-        _log = { info = function() end, warn = function() end, debug = function() end, error = function() end }
+        _log = nil
+    end
+    if not _log then
+        local noop = function() end
+        _log = { info = noop, warn = noop, debug = noop, error = noop }
     end
 end
 
@@ -409,111 +420,12 @@ function RecipeRegistry:findHandCraftable()
 end
 
 -- ÔöÇÔöÇ CraftJob ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
-local CraftJob = {}
-CraftJob.__index = CraftJob
-
-function M.newCraftJob(id, recipe_id, total_time, quantity)
-    return setmetatable({
-        id         = id,
-        recipe_id  = recipe_id,
-        progress   = 0,
-        total_time = total_time,
-        quantity   = quantity or 1,
-        completed  = false,
-        paused     = false,
-        status     = 'active',
-    }, CraftJob)
-end
-
-function CraftJob:advance(dt)
-    if self.completed or self.paused then return false end
-    self.progress = math.min(self.progress + dt, self.total_time)
-    if self.progress >= self.total_time then
-        self.completed = true
-        self.status = 'completed'
-        return true
-    end
-    return false
-end
-
-function CraftJob:percent()
-    if self.total_time <= 0 then return 1 end
-    return math.min(self.progress / self.total_time, 1)
-end
-
--- ÔöÇÔöÇ CraftQueue ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
-local CraftQueue = {}
-CraftQueue.__index = CraftQueue
-
-function M.newCraftQueue(max_jobs)
-    return setmetatable({
-        jobs           = {},
-        _max_jobs      = max_jobs or 10,
-        max_concurrent = 1,
-        _next_id       = 1,
-    }, CraftQueue)
-end
-
-function CraftQueue:setMaxConcurrent(n)
-    self.max_concurrent = math.max(1, n)
-end
-
-function CraftQueue:enqueue(recipe_id, total_time, quantity)
-    if #self.jobs >= self._max_jobs then return nil end
-    local id = self._next_id
-    self._next_id = self._next_id + 1
-    local job = M.newCraftJob(id, recipe_id, total_time, quantity or 1)
-    self.jobs[#self.jobs+1] = job
-    return id
-end
-
-function CraftQueue:cancel(id)
-    for i, job in ipairs(self.jobs) do
-        if job.id == id then table.remove(self.jobs, i); return true end
-    end
-    return false
-end
-
-function CraftQueue:update(dt)
-    local completed = {}
-    local active = 0
-    for _, job in ipairs(self.jobs) do
-        if not job.completed and not job.paused then
-            if active < self.max_concurrent then
-                active = active + 1
-                if job:advance(dt) then
-                    completed[#completed+1] = job.id
-                end
-            end
-        end
-    end
-    return completed
-end
-
-function CraftQueue:collectCompleted()
-    local ids = {}
-    local remaining = {}
-    for _, job in ipairs(self.jobs) do
-        if job.completed then ids[#ids+1] = job.id
-        else remaining[#remaining+1] = job end
-    end
-    self.jobs = remaining
-    return ids
-end
-
-function CraftQueue:getJob(id)
-    for _, job in ipairs(self.jobs) do
-        if job.id == id then return job end
-    end
-    return nil
-end
-
-function CraftQueue:clear() self.jobs = {} end
-function CraftQueue:count() return #self.jobs end
-function CraftQueue:isFull() return #self.jobs >= self._max_jobs end
-function CraftQueue:maxJobs() return self._max_jobs end
+-- removed duplicate factory: original at line 416 (M.newCraftJob)
+-- removed duplicate factory: original at line 450 (M.newCraftQueue)
+-- The canonical CraftJob/CraftQueue definitions live further down in this
+-- file (search for "ÔöÇÔöÇ CraftJob"). The earlier blocks were silently shadowed
+-- at module load and are removed in P7 batch A. See work/library-overhaul-20260418/
+-- reports/P0_library_audit.md ┬º2.4 for the original defect citation.
 
 -- ÔöÇÔöÇ Station ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
@@ -814,40 +726,14 @@ end
 function PerkNode:unlock() self.unlocked = true end
 
 -- ÔöÇÔöÇ UpgradeNode/Tree ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
-local UpgradeNode = {}
-UpgradeNode.__index = UpgradeNode
-
-function M.newUpgradeNode(id)
-    return setmetatable({
-        id             = id,
-        name           = id,
-        cost           = {},
-        required_level = 0,
-        bonuses        = {},
-        children       = {},
-    }, UpgradeNode)
-end
-
-local UpgradeTree = {}
-UpgradeTree.__index = UpgradeTree
-
-function M.newUpgradeTree(root_id)
-    return setmetatable({ root_id = root_id, nodes = {} }, UpgradeTree)
-end
-
-function UpgradeTree:addNode(node) self.nodes[node.id] = node end
-function UpgradeTree:getNode(id)   return self.nodes[id] end
-
-function UpgradeTree:availableUpgrades(unlocked_set, level)
-    local out = {}
-    for id, node in pairs(self.nodes) do
-        if not unlocked_set[id] and node.required_level <= level then
-            out[#out+1] = node
-        end
-    end
-    return out
-end
+-- removed duplicate factory: original at line 821 (M.newUpgradeNode)
+-- removed duplicate factory: original at line 835 (M.newUpgradeTree)
+-- The canonical UpgradeNode/UpgradeTree definitions live further down (around
+-- line ~1100 / ~1145). The earlier blocks were silently shadowed at module
+-- load and are removed in P7 batch A. The first UpgradeTree:availableUpgrades
+-- method was already unreachable at runtime because the second
+-- `local UpgradeTree = {}` rebinding wiped the metatable. See
+-- work/library-overhaul-20260418/reports/P0_library_audit.md ┬º2.4.
 
 -- ÔöÇÔöÇ ModifierEntry/Pool ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
@@ -972,11 +858,12 @@ function RecipeKnowledge:groupProgress(name)
 end
 
 -- ÔöÇÔöÇ RecipeGroup ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
-
---- Convenience constructor for a named group of recipe IDs.
-function M.newRecipeGroup(name, ids)
-    return { name = name, ids = ids or {} }
-end
+-- removed duplicate factory: original at line 977 (M.newRecipeGroup)
+-- The earlier plain-table version was silently shadowed by the proper
+-- RecipeGroup class defined further down (search for "RecipeGroup: proper
+-- object"). Removing the dead earlier version preserves runtime behavior;
+-- the canonical definition exposes addRecipe/removeRecipe/getRecipes/etc.
+-- See work/library-overhaul-20260418/reports/P0_library_audit.md ┬º2.4.
 
 -- ÔöÇÔöÇ CraftJob ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 

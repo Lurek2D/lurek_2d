@@ -1,26 +1,38 @@
 ﻿--- @module library.battle
---- @description Pure-Lua turn-based battle system with combatants, actions,
+--- @status full
+--- Pure-Lua turn-based battle system with combatants, actions,
 --- status effects, initiative, damage types, and combat resolution.
 --- Port of the Rust src/battle/ module.
+--- @see lurek.math
+--- @see lurek.signal
+--- @see lurek.log
 local M = {}
 
 ---------------------------------------------------------------------------
 -- Internal helpers
 ---------------------------------------------------------------------------
 
---- Internal: deep-copy a value. Tables are copied recursively; metatables preserved.
-local function deep_copy(t)
+--- Internal: cycle-safe deep-copy of a value. Tables are copied recursively;
+--- metatables preserved; self-referential cycles return the same clone for
+--- repeat visits, preventing the infinite recursion that previously crashed
+--- `Combatant`/`CombatBattle` clone paths when callers attached cyclic metadata.
+-- TODO(P4 lift): replace with lurek.data.deepCopy when available.
+local function deep_copy(t, seen)
     if type(t) ~= "table" then return t end
+    seen = seen or {}
+    if seen[t] then return seen[t] end
     local copy = {}
+    seen[t] = copy
     for k, v in pairs(t) do
-        copy[k] = deep_copy(v)
+        copy[deep_copy(k, seen)] = deep_copy(v, seen)
     end
     return setmetatable(copy, getmetatable(t))
 end
 
 --- Internal: log a message via lurek.log if available.
---- @tparam string level  One of "debug", "info", "warn", "error".
---- @tparam string msg
+-- @see lurek.log
+-- @tparam string level  One of "debug", "info", "warn", "error".
+-- @tparam string msg
 local function _log(level, msg)
     if type(lurek) == "table" and type(lurek.log) == "table"
        and type(lurek.log[level]) == "function" then
@@ -634,10 +646,17 @@ function CombatBattle:_checkBattleOver()
 end
 
 --- Resolve an attack.
---- @tparam string attacker_name
---- @tparam string action_name
---- @tparam string target_name
---- @treturn table|nil CombatResult table or nil if invalid.
+-- TODO(P4 lift): switch to lurek.math.newRng() for seedable, deterministic
+-- battle replays. Currently uses the global Lua RNG which makes saves
+-- non-deterministic across reloads.
+-- @see lurek.math
+-- @tparam string attacker_name
+-- @tparam string action_name
+-- @tparam string target_name
+-- @treturn table|nil CombatResult table or nil if invalid.
+-- @usage
+--   local r = battle:attack("hero", "slash", "goblin")
+--   if r and r.hit then print(r.message) end
 function CombatBattle:attack(attacker_name, action_name, target_name)
     local atk = self:getCombatant(attacker_name)
     if not atk then return nil end
@@ -749,13 +768,15 @@ end
 -- ═══════════════════════════════════════════════════════════════════════
 
 --- Damage type enum.
--- @field Physical
--- @field Fire
--- @field Ice
--- @field Lightning
--- @field Poison
--- @field Arcane
--- @field Custom
+-- @field Physical  Physical (kinetic) damage.
+-- @field Fire      Fire / burning damage.
+-- @field Ice       Cold / frost damage.
+-- @field Lightning Electric damage.
+-- @field Poison    Damage-over-time toxin.
+-- @field Arcane    Magical / unblockable elemental.
+-- @field Heal      Negative damage; healing application.
+-- @field True      Bypasses all resistances.
+-- @field Custom    User-defined / scripted type.
 M.DamageType = {
     Physical  = "physical",
     Fire      = "fire",

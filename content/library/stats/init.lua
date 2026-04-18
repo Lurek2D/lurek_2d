@@ -1,10 +1,26 @@
 ﻿--- @module library.stats
+--- @status full
 --- RPG character stat sheets with attributes, buffs, skills, perks, traits,
 --- XP/levelling, action points, morale, resistances, encumbrance and initiative.
 --- Pure-Lua port of src/stats/.
---- @status full
+---
+--- ## Engine integrations
+---
+--- The library is self-contained but plays well with the following `lurek.*`
+--- namespaces (consume from your own game code, not from this module):
+---
+--- @see lurek.math.clamp
+--- @see lurek.math.lerp
+--- @see lurek.codec.toJson
+--- @see lurek.codec.fromJson
+--- @see lurek.dataframe
+--- @see lurek.savegame.SaveManager
 
 local M = {}
+
+-- Cache `lurek.math` helpers when available; fall back to local impls so the
+-- module still works in headless test VMs that don't load the engine.
+local _lm = (type(lurek) == 'table') and lurek.math or nil
 
 -- ÔöÇÔöÇ Enums ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
@@ -14,6 +30,13 @@ M.StackMode = { None = 'none', Duration = 'duration', Intensity = 'intensity' }
 -- ÔöÇÔöÇ Helpers ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 
 local function clamp(v, lo, hi)
+    -- Prefer the engine-provided clamp when both bounds are present (its
+    -- argument order matches lurek.math.clamp(value, min, max)). For the
+    -- one-sided cases (lo or hi nil) keep the local fallback that the
+    -- existing tests rely on.
+    if _lm and _lm.clamp and lo ~= nil and hi ~= nil then
+        return _lm.clamp(v, lo, hi)
+    end
     if lo and v < lo then return lo end
     if hi and v > hi then return hi end
     return v
@@ -935,6 +958,29 @@ function Sheet:restore(snap)
         self.morale.panic_threshold   = snap.morale.panic_threshold
         self.morale.berserk_threshold = snap.morale.berserk_threshold
     end
+end
+
+-- ── JSON helpers ───────────────────────────────────────────────────────────────
+
+--- Encode a snapshot table to a JSON string via `lurek.codec.toJson`.
+--- @tparam table snap Snapshot produced by `Sheet:snapshot`.
+--- @treturn string JSON-encoded snapshot.
+--- @see lurek.codec.toJson
+function M.snapshotToJson(snap)
+    assert(lurek and lurek.codec and lurek.codec.toJson,
+        "library.stats.snapshotToJson requires lurek.codec.toJson")
+    return lurek.codec.toJson(snap)
+end
+
+--- Decode a JSON snapshot string back into a Lua table via `lurek.codec.fromJson`.
+--- The returned table can be passed to `Sheet:restore`.
+--- @tparam string str JSON-encoded snapshot.
+--- @treturn table Decoded snapshot.
+--- @see lurek.codec.fromJson
+function M.snapshotFromJson(str)
+    assert(lurek and lurek.codec and lurek.codec.fromJson,
+        "library.stats.snapshotFromJson requires lurek.codec.fromJson")
+    return lurek.codec.fromJson(str)
 end
 
 return M

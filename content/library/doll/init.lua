@@ -1,10 +1,19 @@
---- lurek.doll — Socket-Based Visual Composition Engine
+--- library.doll — Socket-Based Visual Composition Engine
 -- Assembles composite visual objects (characters, vehicles, faces) from
 -- interchangeable Part sprites attached to named Socket positions on a
 -- DollTemplate blueprint. No physics, no collision, no gameplay logic —
 -- purely visual composition with draw ordering.
 --
--- @module lurek.doll
+-- The library never calls rendering APIs directly; it produces a sorted
+-- draw list via `Doll:getDrawList()` that the caller hands to its renderer
+-- (typically `lurek.graphic`). The legacy `Doll:draw()` method is retained
+-- as a deprecated no-op for source compatibility.
+--
+-- @module library.doll
+-- @status full
+-- @see lurek.graphic       caller-side renderer that consumes `getDrawList()` entries
+-- @see lurek.img           image/texture loader for `Part:setTexture()`
+-- @see lurek.codec.toJson  serialise template + part state for persistence
 
 local M = {}
 
@@ -235,6 +244,7 @@ function M.newDoll(template)
     local _slots    = {}       -- socketName → Part
     local _body     = nil
     local _userData = nil
+    local _draw_warned = false  -- one-time deprecation warning gate for doll:draw()
 
     -- Transform
     function doll:getPosition()      return _x, _y end
@@ -398,40 +408,26 @@ function M.newDoll(template)
         return list
     end
 
-    --- Convenience draw method — renders all visible parts via lurek.gfx.
-    -- Requires lurek.gfx to be available in the global environment.
+    --- Deprecated convenience draw shim — retained only as a no-op.
+    --
+    -- The original implementation referenced an undefined global (`luna`)
+    -- and a non-existent namespace (`lurek.gfx`), so the call chain was a
+    -- silent no-op in every build. Library code must not call rendering
+    -- APIs directly (per `library.*` conventions), so the correct path
+    -- now is for the caller to iterate `Doll:getDrawList()` and dispatch
+    -- the entries to `lurek.graphic` (or any other renderer) themselves.
+    --
+    -- This method emits a one-time warning on first invocation and then
+    -- returns immediately. It will be removed in a future major bump.
+    --
+    -- @deprecated use `Doll:getDrawList()` and dispatch to `lurek.graphic` in caller code
+    -- @see lurek.graphic
     function doll:draw()
-        if not _visible then return end
-        local g = luna and lurek.gfx
-        if not g then return end
-
-        local drawList = self:getDrawList()
-        for _, entry in ipairs(drawList) do
-            local part = entry.part
-            if part:isVisible() then
-                g.push()
-                g.translate(entry.x, entry.y)
-                g.rotate(entry.rotation)
-                g.scale(entry.scaleX, entry.scaleY)
-
-                local r, gb, b, a = part:getColor()
-                g.setColor(r, gb, b, a)
-
-                local tex = part:getTexture()
-                if tex then
-                    local quad = part:getQuad()
-                    local ox, oy = part:getOrigin()
-                    if quad then
-                        g.drawQuad(tex, quad, 0, 0, 0, 1, 1, ox, oy)
-                    else
-                        g.draw(tex, 0, 0, 0, 1, 1, ox, oy)
-                    end
-                end
-
-                g.setColor(1, 1, 1, 1)
-                g.pop()
-            end
+        if not _draw_warned then
+            _draw_warned = true
+            _logWarn("Doll:draw() is a deprecated no-op; iterate getDrawList() and call your renderer (e.g. lurek.graphic) from caller code")
         end
+        return
     end
 
     return doll

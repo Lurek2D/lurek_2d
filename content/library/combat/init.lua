@@ -1,13 +1,17 @@
 ﻿--- @module library.combat
+--- @status full
 --- Vehicle/turret/weapon combat system: collision groups, armor, chassis,
 --- turrets, weapons, projectiles, projectile pools, and the combat world.
 --- Pure-Lua port of src/combat/.
---- @status full
+--- @see lurek.math
+--- @see lurek.physics
+--- @see lurek.log
 
 local M = {}
 
 --- Optional debug logging via lurek.log when running inside the engine.
 --- Falls back to a no-op when lurek is unavailable (e.g. in tests).
+-- @see lurek.log
 local _log_debug = function() end
 if rawget(_G, 'lurek') and lurek.log and type(lurek.log.debug) == 'function' then
     _log_debug = function(msg) lurek.log.debug('[combat] ' .. msg) end
@@ -601,6 +605,12 @@ local CombatWorld = {}
 CombatWorld.__index = CombatWorld
 
 --- Creates an empty combat world.
+--- This is a logical container only — broad-phase hit detection and shape
+--- queries should be performed against a real physics world via
+--- `lurek.physics.newWorld():raycast()` / `:shapecast()` and the resulting
+--- contacts then mapped back onto chassis/turret/weapon entities here.
+-- @see lurek.physics
+-- @see lurek.math
 -- @return CombatWorld New world with no entities.
 function M.newCombatWorld()
     return setmetatable({

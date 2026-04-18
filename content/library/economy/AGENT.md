@@ -1,11 +1,13 @@
 # `economy` — Agent Reference (Lunasome)
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
-| **Source** | `library/economy/init.lua` |
-| **Lua Tests** | `tests/lua/library/test_library_economy.lua` |
-| **Depends on** | `lurek.*` public API only |
+| Property              | Value                                                                                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tier**              | Tier 3 — Lunasome (pure Lua, no Rust dependencies)                                                                                                                                                                        |
+| **Source**            | `library/economy/init.lua`                                                                                                                                                                                                |
+| **Lua Tests**         | `tests/lua/library/test_library_economy.lua`                                                                                                                                                                              |
+| **Depends on**        | `lurek.*` public API only                                                                                                                                                                                                 |
+| **Status**            | full                                                                                                                                                                                                                      |
+| **Optional bindings** | `lurek.math.clamp` (delegated by `Resource:_clamp` when available), `lurek.codec.toJson/fromJson` (recommended for save serialisation), `lurek.patterns.newEventBus` (transaction event bus from `manager:getEventBus()`) |
 
 ## Summary
 
@@ -52,20 +54,20 @@ M.ModifierType     ──  MULTIPLY | ADD | SET
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
+| File                       | Purpose                                                                                |
+| -------------------------- | -------------------------------------------------------------------------------------- |
 | `library/economy/init.lua` | Full implementation — Resource, Modifier, ConversionRule, ResourceManager, enum tables |
 
 ## Key Types
 
-| Type | Constructor | Purpose |
-|------|-------------|---------|
-| `Resource` | `M.newResource(name, capacity)` | Named balance with flow, decay, interest, upkeep, overflow, and reservation |
-| `Modifier` | `M.newModifier(mod_type, value, duration, source)` | Timed or permanent rate modifier ("multiply", "add", "set") |
-| `ConversionRule` | `M.newConversionRule(from, to, rate)` | Exchange rule between two resources with fee, cooldown, and modifier stack |
-| `ResourceManager` | `M.newManager()` | Multi-resource container with tick, convert, exchange, and group aggregation |
-| `M.OverflowPolicy` | enum table | `CLAMP`, `LOSE`, `WRAP` |
-| `M.ModifierType` | enum table | `MULTIPLY`, `ADD`, `SET` |
+| Type               | Constructor                                        | Purpose                                                                      |
+| ------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `Resource`         | `M.newResource(name, capacity)`                    | Named balance with flow, decay, interest, upkeep, overflow, and reservation  |
+| `Modifier`         | `M.newModifier(mod_type, value, duration, source)` | Timed or permanent rate modifier ("multiply", "add", "set")                  |
+| `ConversionRule`   | `M.newConversionRule(from, to, rate)`              | Exchange rule between two resources with fee, cooldown, and modifier stack   |
+| `ResourceManager`  | `M.newManager()`                                   | Multi-resource container with tick, convert, exchange, and group aggregation |
+| `M.OverflowPolicy` | enum table                                         | `CLAMP`, `LOSE`, `WRAP`                                                      |
+| `M.ModifierType`   | enum table                                         | `MULTIPLY`, `ADD`, `SET`                                                     |
 
 ## API at a Glance
 

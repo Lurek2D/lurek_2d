@@ -7,17 +7,26 @@
             "detail": "🔨 Compile the Lurek2D engine in debug mode — fast compile with full debug symbols. Default build task (Ctrl+Shift+B).",
             "type": "cargo",
             "command": "build",
-            "group": { "kind": "build", "isDefault": true },
-            "problemMatcher": ["$rustc"]
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Build: Release",
             "detail": "🔨 Compile with opt-level 3 + LTO enabled. Use this for distribution builds and performance measurement.",
             "type": "cargo",
             "command": "build",
-            "args": ["--release"],
+            "args": [
+                "--release"
+            ],
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Build: Check (fast)",
@@ -25,7 +34,9 @@
             "type": "cargo",
             "command": "check",
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         // ─── ▶️  RUN EXAMPLES (cargo run) ────────────────────────────────────
         // Pick-example tasks — use these to choose which game to run.
@@ -36,7 +47,9 @@
             "type": "shell",
             "command": "cargo run -- ${input:exampleGame}",
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Run Release: Pick Example",
@@ -44,7 +57,9 @@
             "type": "shell",
             "command": "cargo run --release -- ${input:exampleGame}",
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         // ─── 🧪 TEST ──────────────────────────────────────────────────────────
         {
@@ -52,71 +67,111 @@
             "detail": "🧪 Run the full test suite (unit + integration). All tests must pass before committing. Default test task.",
             "type": "cargo",
             "command": "test",
-            "group": { "kind": "test", "isDefault": true },
-            "problemMatcher": ["$rustc"]
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: All (verbose)",
             "detail": "🧪 Run the full test suite and print captured stdout/stderr for every test case (--nocapture).",
             "type": "cargo",
             "command": "test",
-            "args": ["--", "--nocapture"],
+            "args": [
+                "--",
+                "--nocapture"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Math module",
             "detail": "🧮 Run only math-related tests — Vec2, Mat3, Rect, distance, clamp, and fast math helpers.",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "math_tests"],
+            "args": [
+                "--test",
+                "math_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Physics module",
             "detail": "⚙️  Run only physics integration tests — bodies, world stepping, and AABB collision resolution.",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "physics_tests"],
+            "args": [
+                "--test",
+                "physics_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Graphics module",
             "detail": "🎨 Run only graphics integration tests — color, camera transforms, and draw command processing.",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "graphics_tests"],
+            "args": [
+                "--test",
+                "graphics_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Lua bindings",
             "detail": "🌙 Run only Lua binding tests — exercises the full lurek.* API surface headlessly (no window).",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "lua_tests"],
+            "args": [
+                "--test",
+                "lua_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Audio module",
             "detail": "🎵 Run only audio integration tests — source loading and mixer state (no playback in CI).",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "audio_tests"],
+            "args": [
+                "--test",
+                "audio_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Test: Input module",
             "detail": "🎮 Run only input integration tests — keyboard and mouse state machine.",
             "type": "cargo",
             "command": "test",
-            "args": ["--test", "input_tests"],
+            "args": [
+                "--test",
+                "input_tests"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         // ─── 🔍 QUALITY GATES ─────────────────────────────────────────────────
         {
@@ -125,16 +180,24 @@
             "type": "cargo",
             "command": "clippy",
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Lint: Clippy (deny warnings)",
             "detail": "🚫 Run Clippy in CI-strict mode (-D warnings) — every warning is a compile error. Use before pushing.",
             "type": "cargo",
             "command": "clippy",
-            "args": ["--", "-D", "warnings"],
+            "args": [
+                "--",
+                "-D",
+                "warnings"
+            ],
             "group": "build",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "Format: Apply",
@@ -154,9 +217,15 @@
             "label": "Quality Gate: Full",
             "detail": "✅ Run the complete quality gate: fmt check → clippy → all tests. All three must pass before any push to main.",
             "dependsOrder": "sequence",
-            "dependsOn": ["Format: Check", "Lint: Clippy", "Test: All"],
+            "dependsOn": [
+                "Format: Check",
+                "Lint: Clippy",
+                "Test: All"
+            ],
             "group": "test",
-            "problemMatcher": ["$rustc"]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         // ─── 📖 LUA API DOCUMENTATION ─────────────────────────────────────────
         {
@@ -193,6 +262,13 @@
             "detail": "📝 Run tools/docs/collect_docs.py to scan src/ and regenerate docs/api_generated.md with all public API items and doc comments.",
             "type": "shell",
             "command": "python tools/docs/collect_docs.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docs: Generate Library API",
+            "detail": "📚 Run tools/docs/gen_lib_docs.py to regenerate docs/API/library-docs.md (aggregate) and docs/API/libs/lib_<name>.md (per-library) from content/library/*/init.lua LDoc tags.",
+            "type": "shell",
+            "command": "python tools/docs/gen_lib_docs.py",
             "problemMatcher": []
         },
         {
@@ -314,14 +390,20 @@
             "label": "Build + Run Debug: Splash",
             "detail": "🔨 Rebuild debug binary then launch splash screen — guarantees you run the latest code. Use this when in doubt about stale binaries.",
             "dependsOrder": "sequence",
-            "dependsOn": ["Build: Debug", "Run Debug: Splash (drag-drop ready)"],
+            "dependsOn": [
+                "Build: Debug",
+                "Run Debug: Splash (drag-drop ready)"
+            ],
             "problemMatcher": []
         },
         {
             "label": "Build + Run Release: Splash",
             "detail": "🔨 Rebuild release binary then launch splash screen — use before drag-drop testing after code changes.",
             "dependsOrder": "sequence",
-            "dependsOn": ["Build: Release", "Run Release: Splash (drag-drop ready)"],
+            "dependsOn": [
+                "Build: Release",
+                "Run Release: Splash (drag-drop ready)"
+            ],
             "problemMatcher": []
         },
         // ─── 🚀 DISTRIBUTION ──────────────────────────────────────────────────
@@ -370,12 +452,30 @@
             "type": "pickString",
             "description": "Choose a demo to run",
             "options": [
-                { "label": "Hello World",   "value": "content/demos/hello_world"  },
-                { "label": "Physics Demo",  "value": "content/demos/physics_demo" },
-                { "label": "Sprites",       "value": "content/demos/sprites"      },
-                { "label": "Platformer",    "value": "content/demos/platformer"   },
-                { "label": "Scene Demo",    "value": "content/demos/scene_demo"   },
-                { "label": "Demo Game",     "value": "content/demos/demo_game"    }
+                {
+                    "label": "Hello World",
+                    "value": "content/demos/hello_world"
+                },
+                {
+                    "label": "Physics Demo",
+                    "value": "content/demos/physics_demo"
+                },
+                {
+                    "label": "Sprites",
+                    "value": "content/demos/sprites"
+                },
+                {
+                    "label": "Platformer",
+                    "value": "content/demos/platformer"
+                },
+                {
+                    "label": "Scene Demo",
+                    "value": "content/demos/scene_demo"
+                },
+                {
+                    "label": "Demo Game",
+                    "value": "content/demos/demo_game"
+                }
             ],
             "default": "content/demos/hello_world"
         }

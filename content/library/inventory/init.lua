@@ -13,8 +13,29 @@
 --   bag:addItem(sword, 1)
 --
 -- @module library.inventory
+-- @status full
+-- @see lurek.codec.toJson           serialise inventory snapshots for save round-trip
+-- @see lurek.codec.fromJson         restore inventory snapshots
+-- @see lurek.savegame.SaveManager   register inventory state via a SaveManager collector
+-- @see lurek.patterns.newEventBus   optional change-event bus from `inv:getEventBus()`
+-- @see lurek.data.deepCopy          P4 lift candidate — `item:clone()` will delegate when available
 
 local M = {}
+
+--- Optional engine bindings (resolved once at load time, all guarded).
+local _bus_factory
+if type(lurek) == "table" and type(lurek.patterns) == "table"
+   and type(lurek.patterns.newEventBus) == "function" then
+    _bus_factory = lurek.patterns.newEventBus
+end
+
+--- Optional `lurek.data.deepCopy` reference (resolved once). Currently unused
+--- but reserved for the P4 lift that will replace per-method `clone()` bodies.
+local _data_deep_copy
+if type(lurek) == "table" and type(lurek.data) == "table"
+   and type(lurek.data.deepCopy) == "function" then
+    _data_deep_copy = lurek.data.deepCopy
+end
 
 --- Optional engine logger. Uses lurek.log when running inside the engine,
 -- silently no-ops in standalone Lua.
@@ -130,6 +151,10 @@ function M.newItem(type_name)
     function item:getProperty(key) return _props[key] end
 
     --- Deep-copy this item definition.
+    -- TODO(P4 lift): once `lurek.data.deepCopy` ships, replace the manual
+    -- field-by-field rebuild below with `_data_deep_copy(item)` so that
+    -- arbitrary user-attached fields are preserved automatically.
+    -- @see lurek.data.deepCopy
     -- @treturn table copy of InvItem
     function item:clone()
         local c = M.newItem(type_name)
@@ -633,8 +658,24 @@ function M.newInventory()
     local _equip_order  = {}
     local _item_sets    = {}   -- array of ItemSet
     local _subsystems   = { weight=false, size=false, stacking=false, sets=false }
+    local _event_bus    = nil  -- lazy lurek.patterns EventBus
 
     local inv = {}
+
+    --- Return (or lazily create) an optional `lurek.patterns` EventBus that
+    -- callers can subscribe to for inventory change notifications. Returns
+    -- nil when the engine binding is unavailable. The library does not
+    -- auto-emit events on this bus; callers may emit on it from their own
+    -- wrappers without affecting baseline test behaviour.
+    -- @treturn table|nil EventBus instance, or nil when unavailable.
+    -- @see lurek.patterns.newEventBus
+    function inv:getEventBus()
+        if _event_bus then return _event_bus end
+        if not _bus_factory then return nil end
+        local ok, bus = pcall(_bus_factory)
+        if ok then _event_bus = bus end
+        return _event_bus
+    end
 
     -- ── Containers ──────────────────────────────────────────────────────────
 

@@ -1,12 +1,16 @@
 --- @module library.rpc
---- @description Pure-Lua Remote Procedure Call library built on lurek.network.
+--- @status full
+--- @description Pure-Lua Remote Procedure Call library built on `lurek.network`.
 --- Enables calling functions on remote peers over ENet with automatic
---- MessagePack serialization. Supports request/response, fire-and-forget,
---- and broadcast patterns.
+--- JSON serialisation via `lurek.codec`. Supports request/response,
+--- fire-and-forget, and broadcast patterns.
+--- @see lurek.network
+--- @see lurek.codec.toJson
+--- @see lurek.codec.fromJson
 ---
 --- ## RPC Protocol
 ---
---- Messages are serialized via `lurek.network.pack/unpack` (MessagePack).
+--- Messages are serialised via `lurek.codec.toJson` / `lurek.codec.fromJson`.
 --- Three message types flow over the wire:
 ---
 --- - **rpc_call**: `{type="rpc_call", id=N, name="fn", args={...}}`
@@ -32,7 +36,28 @@
 
 local M = {}
 
+-- LuaJIT exposes `unpack` as a global; Lua 5.4 only via `table.unpack`.
+-- Cache once at module load so per-call dispatch stays branchless.
+local _unpack = table.unpack or unpack
+
+-- Encode/decode helpers: prefer `lurek.codec.toJson/fromJson` (per P1 map);
+-- fall back to `lurek.network.pack/unpack` (MessagePack) when codec is
+-- unavailable in the host VM (e.g. headless test contexts).
+local function _encode(t)
+    if lurek and lurek.codec and lurek.codec.toJson then
+        return lurek.codec.toJson(t)
+    end
+    return lurek.network.pack(t)
+end
+local function _decode(s)
+    if lurek and lurek.codec and lurek.codec.fromJson then
+        return lurek.codec.fromJson(s)
+    end
+    return lurek.network.unpack(s)
+end
+
 --- Default timeout for pending RPC responses (seconds). 0 = no timeout.
+-- @field DEFAULT_TIMEOUT number
 M.DEFAULT_TIMEOUT = 30
 
 ---------------------------------------------------------------------------
@@ -126,7 +151,7 @@ function RPC:call(peer_id, name, callback, ...)
         method   = name,
         expires  = expires,
     }
-    local msg = lurek.network.pack({
+    local msg = _encode({
         type = "rpc_call",
         id   = id,
         name = name,
@@ -134,7 +159,7 @@ function RPC:call(peer_id, name, callback, ...)
     })
     self._host:send(peer_id, self._channel, msg, true)
     if self._log and lurek.log then
-        lurek.log.debug("[RPC] call id=" .. id .. " method=" .. name .. " peer=" .. tostring(peer_id))
+        lurek.log.debug("[RPC] call id=" .. tostring(id) .. " method=" .. name .. " peer=" .. tostring(peer_id))
     end
     return id
 end
@@ -149,7 +174,7 @@ function RPC:notify(peer_id, name, ...)
     if type(name) ~= "string" or name == "" then
         error("RPC:notify: name must be a non-empty string", 2)
     end
-    local msg = lurek.network.pack({
+    local msg = _encode({
         type    = "rpc_notify",
         name    = name,
         args    = { ... },
@@ -169,7 +194,7 @@ function RPC:broadcast(name, ...)
     if type(name) ~= "string" or name == "" then
         error("RPC:broadcast: name must be a non-empty string", 2)
     end
-    local msg = lurek.network.pack({
+    local msg = _encode({
         type    = "rpc_notify",
         name    = name,
         args    = { ... },
@@ -222,7 +247,7 @@ function RPC:poll()
     local ev = self._host:service()
     while ev do
         if ev.type == "receive" then
-            local ok, data = pcall(lurek.network.unpack, ev.data)
+            local ok, data = pcall(_decode, ev.data)
             if ok and type(data) == "table" then
                 self:_dispatch(ev.peer, data, responses)
             elseif self._on_error then
@@ -267,10 +292,12 @@ function RPC:_dispatch(peer_id, data, responses)
     if data.type == "rpc_call" and data.name then
         local handler = self._handlers[data.name]
         if handler then
-            local result = { pcall(handler, peer_id, unpack(data.args or {})) }
+            -- `_unpack` resolves to `table.unpack` on Lua 5.4 (where bare
+            -- `unpack` is removed) and to the global `unpack` on LuaJIT.
+            local result = { pcall(handler, peer_id, _unpack(data.args or {})) }
             local success = table.remove(result, 1)
             if data.id and data.id > 0 then
-                local resp = lurek.network.pack({
+                local resp = _encode({
                     type    = "rpc_response",
                     id      = data.id,
                     success = success,
@@ -287,7 +314,7 @@ function RPC:_dispatch(peer_id, data, responses)
     elseif data.type == "rpc_notify" and data.name then
         local handler = self._handlers[data.name]
         if handler then
-            local ok, err = pcall(handler, peer_id, unpack(data.args or {}))
+            local ok, err = pcall(handler, peer_id, _unpack(data.args or {}))
             if not ok and self._on_error then
                 self._on_error("RPC notify error in '" .. tostring(data.name) .. "': " .. tostring(err))
             end

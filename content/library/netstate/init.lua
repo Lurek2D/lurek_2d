@@ -1,26 +1,42 @@
---- @module library.netstate
---- @description Pure-Lua network state synchronization and turn-based game support.
---- Built on `lurek.network`, provides automatic state replication between peers
---- with per-key versioning, change callbacks, authority control, delta updates,
---- and turn-based game management.
----
---- **Authority model**: One peer is the *authority* (typically the server).
---- Only the authority can write state via `set()`. Non-authority peers receive
---- delta updates and full-state snapshots. Authority is set at construction
---- and can be toggled with `setAuthority()`.
----
---- **Per-key versioning**: Each key maintains its own monotonically increasing
---- version number. When a delta arrives, only entries whose version exceeds
---- the locally stored per-key version are applied — preventing stale replays
---- even under concurrent updates.
----
---- **Turn-based protocol**: Optional. When `turnBased = true`, the authority
---- manages a turn counter and a rotating peer order. `beginTurn()` advances
---- the turn and broadcasts the change. Clients receive turn events via `onTurn`.
----
---- **Limitation**: `requestFullState()` has no built-in timeout. If the authority
---- never responds, the client will not receive a snapshot. Callers should
---- implement their own timer-based retry or use `onFullStateTimeout` callback.
+--- Pure-Lua network state synchronization and turn-based game support.
+--
+-- Built on `lurek.network`, provides automatic state replication between peers
+-- with per-key versioning, change callbacks, authority control, delta updates,
+-- and turn-based game management.
+--
+-- **Authority model**: One peer is the *authority* (typically the server).
+-- Only the authority can write state via `set()`. Non-authority peers receive
+-- delta updates and full-state snapshots. Authority is set at construction
+-- and can be toggled with `setAuthority()`.
+--
+-- **Per-key versioning**: Each key maintains its own monotonically increasing
+-- version number. When a delta arrives, only entries whose version exceeds
+-- the locally stored per-key version are applied — preventing stale replays
+-- even under concurrent updates.
+--
+-- **Turn-based protocol**: Optional. When `turnBased = true`, the authority
+-- manages a turn counter and a rotating peer order. `beginTurn()` advances
+-- the turn and broadcasts the change. Clients receive turn events via `onTurn`.
+--
+-- **Wire format**: state deltas and full-state snapshots are encoded with
+-- `lurek.network.pack` / `lurek.network.unpack` (MessagePack — the canonical
+-- ENet payload format). For human-readable persistence (e.g. write a snapshot
+-- to disk for inspection), pair `:getAll()` with `lurek.codec.toJson`.
+--
+-- **Hash helper**: `:hashState()` is a deterministic FNV-1a digest of all
+-- replicated keys/values; useful for desync detection. When a future
+-- `lurek.data.hash` lift lands (P4 candidate), this should delegate.
+--
+-- **Limitation**: `requestFullState()` has no built-in timeout. If the authority
+-- never responds, the client will not receive a snapshot. Callers should
+-- implement their own timer-based retry or use the `onFullStateTimeout`
+-- callback.
+--
+-- @module library.netstate
+-- @status full
+-- @see lurek.network
+-- @see lurek.codec.toJson
+-- @see lurek.time.Scheduler
 local M = {}
 
 ---------------------------------------------------------------------------
@@ -589,6 +605,114 @@ function NetState:_fireCallbacks(key, value, old_value, peer_id)
     end
 end
 
+-- -----------------------------------------------------------------------
+-- Hashing & serialisation helpers
+-- -----------------------------------------------------------------------
+
+--- @local
+--- Stable string render of an arbitrary serialisable value (sorted keys).
+-- Used as the input to `hashState`.  Tables are emitted with their keys in
+-- alphabetical order so two equal states always produce identical strings.
+-- @tparam any v
+-- @treturn string
+local function _stable_render(v)
+    local t = type(v)
+    if t == "table" then
+        local keys = {}
+        for k in pairs(v) do keys[#keys + 1] = tostring(k) end
+        table.sort(keys)
+        local parts = {}
+        for _, k in ipairs(keys) do
+            parts[#parts + 1] = k .. "=" .. _stable_render(v[k])
+        end
+        return "{" .. table.concat(parts, ",") .. "}"
+    elseif t == "string" then
+        return string.format("%q", v)
+    else
+        return tostring(v)
+    end
+end
+
+-- Resolve a portable bitwise library: LuaJIT exposes `bit`, Lua 5.2+ exposes
+-- `bit32`, and Lua 5.3+ supports native bitwise operators (we wrap them in a
+-- table for a uniform call surface).
+local _bit
+do
+    if rawget(_G, "bit") then
+        _bit = _G.bit
+    elseif rawget(_G, "bit32") then
+        _bit = _G.bit32
+    else
+        -- Lua 5.3+ fallback using load() so that 5.1/LuaJIT parsers do not
+        -- choke on the `~` / `&` syntax.
+        local chunk = load([[
+            return {
+                bxor = function(a, b) return (a ~ b) & 0xFFFFFFFF end,
+                band = function(a, b) return (a & b) & 0xFFFFFFFF end,
+            }
+        ]])
+        if chunk then _bit = chunk() end
+    end
+end
+
+--- Compute a deterministic FNV-1a 32-bit digest of the current synced state.
+--- Useful for desync detection between authority and clients (compare digests
+--- after a sync round; mismatch indicates state divergence).
+---
+--- TODO(P4 lift): when `lurek.data.hash` lands in the engine (P4 lift candidate),
+--- this method should delegate to it for the inner string-hashing step.  Until
+--- then a small inline FNV-1a implementation keeps the library self-contained
+--- and works on both LuaJIT (`bit` library) and Lua 5.4 (native `~`/`&`).
+---
+--- @treturn number  32-bit unsigned hash of the sorted (key, value) pairs.
+--- @see lurek.data.hash
+function NetState:hashState()
+    local keys = {}
+    for k in pairs(self._state) do keys[#keys + 1] = k end
+    table.sort(keys)
+    local parts = {}
+    for _, k in ipairs(keys) do
+        local entry = self._state[k]
+        parts[#parts + 1] = k .. "=" .. _stable_render(entry.value)
+            .. "@" .. tostring(entry.version)
+    end
+    local s = table.concat(parts, "|")
+    if not _bit then
+        -- No bitwise library available; fall back to a simple polynomial hash
+        -- (still deterministic, weaker distribution but adequate for desync).
+        local h = 5381
+        for i = 1, #s do
+            h = (h * 33 + string.byte(s, i)) % 4294967296
+        end
+        return h
+    end
+    -- FNV-1a 32-bit
+    local mod = 4294967296  -- 2^32
+    local h = 2166136261
+    for i = 1, #s do
+        h = _bit.bxor(h, string.byte(s, i))
+        h = (h * 16777619) % mod
+    end
+    return _bit.band(h, 0xFFFFFFFF)
+end
+
+--- Serialise the current state to a JSON string via `lurek.codec.toJson`.
+--- Suitable for human-readable persistence (NOT for the wire — use the
+--- normal `:sync()` MessagePack path for peer-to-peer traffic).
+---
+--- Returns nil if `lurek.codec` is unavailable in this runtime.
+---
+--- @treturn string|nil  JSON snapshot of `:getAll()`, or nil.
+--- @see lurek.codec.toJson
+function NetState:toJson()
+    if not (lurek and lurek.codec and type(lurek.codec.toJson) == "function") then
+        return nil
+    end
+    local ok, s = pcall(lurek.codec.toJson, self:getAll())
+    if not ok then return nil end
+    return s
+end
+
 --- Request a full state snapshot from the authority.
 --- Useful when a client joins mid-game.
 ---
@@ -597,11 +721,12 @@ end
 --- their own timer-based retry, e.g.:
 ---
 ---     ns:requestFullState()
----     local deadline = lurek.timer.getTime() + 5.0
----     -- In process loop: if lurek.timer.getTime() > deadline then retry or invoke
+---     local deadline = lurek.time.getTime() + 5.0
+---     -- In process loop: if lurek.time.getTime() > deadline then retry or invoke
 ---     --   ns:onFullStateTimeout callback
 ---
 --- @treturn boolean  False if this instance is the authority (no-op), true if sent.
+--- @see lurek.time.getTime
 function NetState:requestFullState()
     if self._authority then return false end
     if not self._host then return false end

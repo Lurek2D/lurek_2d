@@ -13,6 +13,19 @@
 --
 -- All other transitions are rejected and return false.
 --
+-- **Engine integrations** (all optional — inject from your game code):
+--
+-- * Event bus: attach `lurek.patterns.newEventBus()` via `QuestLog:setEventBus`
+--   to receive `quest_started` / `quest_advanced` / `quest_completed` /
+--   `quest_failed` events.
+-- * Serialisation: `M.toJson(log)` / `M.fromJson(str)` round-trip the log
+--   through `lurek.codec.toJson` / `lurek.codec.fromJson`.
+-- * Persistence: register a custom collector with `lurek.savegame.SaveManager`
+--   that calls `M.toJson(log)` on save and `M.fromJson(str)` on load.
+-- * Time-limited objectives: drive expiry from a `lurek.time.Scheduler` you
+--   create in your game loop (call `QuestLog:failQuest(id)` from the callback);
+--   this library does not require `lurek.time` at runtime.
+--
 -- Usage:
 --   local quest = require("library.quest")
 --   local log = quest.newQuestLog()
@@ -27,6 +40,12 @@
 --   log:advanceObjective("tutorial", "talk_npc", 1)
 --
 -- @module library.quest
+-- @status full
+-- @see lurek.patterns.newEventBus
+-- @see lurek.codec.toJson
+-- @see lurek.codec.fromJson
+-- @see lurek.savegame.SaveManager
+-- @see lurek.time.Scheduler
 
 local M = {}
 
@@ -468,7 +487,36 @@ function M.newQuestLog()
     local self = setmetatable({}, QuestLog)
     self._quests = {}
     self._order = {}
+    self._event_bus = nil
     return self
+end
+
+--- Attach an event bus to receive quest lifecycle notifications.
+-- The bus must implement an `emit(name, payload)` method (e.g.
+-- `lurek.patterns.newEventBus()`). Pass `nil` to detach.
+-- Emitted events: `"quest_started"`, `"quest_advanced"`,
+-- `"quest_completed"`, `"quest_failed"`. The payload table contains
+-- at least `{ id = quest_id }` plus event-specific fields.
+-- @tparam table|nil bus  Event bus instance, or nil to clear.
+-- @see lurek.patterns.newEventBus
+function QuestLog:setEventBus(bus)
+    if bus ~= nil and type(bus) ~= "table" then
+        error("QuestLog:setEventBus: bus must be a table or nil", 2)
+    end
+    self._event_bus = bus
+end
+
+--- Get the currently attached event bus (nil when none).
+-- @treturn table|nil
+function QuestLog:getEventBus()
+    return self._event_bus
+end
+
+local function _emit(self, name, payload)
+    local bus = self._event_bus
+    if not bus or type(bus.emit) ~= "function" then return end
+    -- Use pcall so a buggy subscriber cannot break quest state changes.
+    pcall(bus.emit, bus, name, payload)
 end
 
 --- Register a quest. If a quest with the same id already exists, it is replaced.
@@ -538,34 +586,40 @@ function QuestLog:questCount()
 end
 
 --- Start quest by id (available -> active). Returns false if not found or invalid transition.
+-- Emits `"quest_started"` on the attached event bus.
 -- @tparam string id Quest id.
 -- @treturn boolean
 function QuestLog:startQuest(id)
     local q = self._quests[id]
-    if q then
-        return q:start()
+    if q and q:start() then
+        _emit(self, "quest_started", { id = id })
+        return true
     end
     return false
 end
 
 --- Complete quest by id (active -> completed). Returns false if not found or invalid transition.
+-- Emits `"quest_completed"` on the attached event bus.
 -- @tparam string id Quest id.
 -- @treturn boolean
 function QuestLog:completeQuest(id)
     local q = self._quests[id]
-    if q then
-        return q:complete()
+    if q and q:complete() then
+        _emit(self, "quest_completed", { id = id })
+        return true
     end
     return false
 end
 
 --- Fail quest by id (active -> failed). Returns false if not found or invalid transition.
+-- Emits `"quest_failed"` on the attached event bus.
 -- @tparam string id Quest id.
 -- @treturn boolean
 function QuestLog:failQuest(id)
     local q = self._quests[id]
-    if q then
-        return q:fail()
+    if q and q:fail() then
+        _emit(self, "quest_failed", { id = id })
+        return true
     end
     return false
 end
@@ -589,6 +643,8 @@ function QuestLog:failedIds()
 end
 
 --- Advance an objective in a specific quest. Returns false if quest or objective not found.
+-- Emits `"quest_advanced"` on the attached event bus when the underlying
+-- objective accepted the progress change.
 -- @tparam string quest_id Quest id.
 -- @tparam string obj_id Objective id.
 -- @tparam[opt=1] number amount Amount to advance (default 1).
@@ -597,10 +653,17 @@ end
 function QuestLog:advanceObjective(quest_id, obj_id, amount, stage_id)
     amount = amount or 1
     local q = self._quests[quest_id]
-    if q then
-        return q:advanceObjective(obj_id, amount, stage_id)
+    if not q then return false end
+    local ok = q:advanceObjective(obj_id, amount, stage_id)
+    if ok then
+        _emit(self, "quest_advanced", {
+            id        = quest_id,
+            objective = obj_id,
+            amount    = amount,
+            stage     = stage_id,
+        })
     end
-    return false
+    return ok
 end
 
 --- Reset a quest back to "available" with the first stage active and all objective
@@ -687,6 +750,101 @@ function Objective:removeTag(tag)
         if t == tag then table.remove(self.tags, i); return true end
     end
     return false
+end
+
+-- ─── JSON serialisation ─────────────────────────────────────────────────────────────
+
+local function _quest_to_table(q)
+    local stages = {}
+    for _, s in ipairs(q.stages) do
+        local objs = {}
+        for _, o in ipairs(s.objectives) do
+            local tags = {}
+            for _, t in ipairs(o.tags or {}) do tags[#tags+1] = t end
+            objs[#objs+1] = {
+                id = o.id, description = o.description,
+                current = o.current, required = o.required,
+                mandatory = o.mandatory, status = o.status,
+                visible = o.visible, tags = tags,
+            }
+        end
+        stages[#stages+1] = { id = s.id, name = s.name, objectives = objs }
+    end
+    local meta = {}
+    for k, v in pairs(q.metadata or {}) do meta[k] = v end
+    local journal = {}
+    for _, e in ipairs(q.journal or {}) do
+        journal[#journal+1] = { index = e.index, text = e.text, tag = e.tag }
+    end
+    return {
+        id = q.id, title = q.title, description = q.description,
+        status = q.status, current_stage = q.current_stage,
+        stages = stages, journal = journal, metadata = meta,
+        visible = q.visible, reward = q.reward,
+        _journal_counter = q._journal_counter,
+        _max_journal = q._max_journal,
+    }
+end
+
+local function _table_to_quest(t)
+    local q = M.newQuest(t.id, t.title, t._max_journal)
+    q.description     = t.description or ""
+    q.status          = t.status or "available"
+    q.current_stage   = t.current_stage or 1
+    q.visible         = t.visible ~= false
+    q.reward          = t.reward or ""
+    q._journal_counter = t._journal_counter or 0
+    for k, v in pairs(t.metadata or {}) do q.metadata[k] = v end
+    for _, e in ipairs(t.journal or {}) do
+        q.journal[#q.journal+1] = { index = e.index, text = e.text, tag = e.tag }
+    end
+    for _, sd in ipairs(t.stages or {}) do
+        local stage = M.newQuestStage(sd.id, sd.name)
+        for _, od in ipairs(sd.objectives or {}) do
+            local obj = M.newObjective(od.id, od.description, od.required or 0)
+            obj.current   = od.current or 0
+            obj.mandatory = od.mandatory ~= false
+            obj.status    = od.status or "pending"
+            obj.visible   = od.visible ~= false
+            for _, tg in ipairs(od.tags or {}) do obj:addTag(tg) end
+            stage:addObjective(obj)
+        end
+        q:addStage(stage)
+    end
+    return q
+end
+
+--- Encode a `QuestLog` to a JSON string via `lurek.codec.toJson`.
+-- @tparam QuestLog log
+-- @treturn string JSON-encoded log.
+-- @see lurek.codec.toJson
+function M.toJson(log)
+    assert(lurek and lurek.codec and lurek.codec.toJson,
+        "library.quest.toJson requires lurek.codec.toJson")
+    local quests = {}
+    for _, id in ipairs(log._order) do
+        quests[#quests+1] = _quest_to_table(log._quests[id])
+    end
+    return lurek.codec.toJson({ quests = quests })
+end
+
+--- Decode a JSON-encoded log into a fresh `QuestLog`. The optional `into`
+-- argument lets the caller reuse an existing log (its quests are replaced).
+-- @tparam string str JSON-encoded log produced by `M.toJson`.
+-- @tparam[opt] QuestLog into Existing log to populate; a new one is created when nil.
+-- @treturn QuestLog
+-- @see lurek.codec.fromJson
+function M.fromJson(str, into)
+    assert(lurek and lurek.codec and lurek.codec.fromJson,
+        "library.quest.fromJson requires lurek.codec.fromJson")
+    local data = lurek.codec.fromJson(str)
+    local log = into or M.newQuestLog()
+    log._quests = {}
+    log._order = {}
+    for _, qt in ipairs(data and data.quests or {}) do
+        log:addQuest(_table_to_quest(qt))
+    end
+    return log
 end
 
 return M

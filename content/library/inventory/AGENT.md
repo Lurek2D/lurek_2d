@@ -1,12 +1,12 @@
 # `inventory` — Agent Reference (Lunasome)
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Tier 3 --- Lunasome (pure Lua, no Rust dependencies) |
-| **Source** | \library/inventory/init.lua\ |
-| **Lua Tests** | \	ests/lua/library/test_library_inventory.lua\ |
-| **Depends on** | \lurek.*\ public API only |
-
+| Property              | Value                                                                                                                                                                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tier**              | Tier 3 --- Lunasome (pure Lua, no Rust dependencies)                                                                                                                                                                                            |
+| **Source**            | \library/inventory/init.lua\                                                                                                                                                                                                                    |
+| **Lua Tests**         | \	ests/lua/library/test_library_inventory.lua\                                                                                                                                                                                                  |
+| **Depends on**        | \lurek.*\ public API only                                                                                                                                                                                                                       |  | **Status** | full |
+| **Optional bindings** | `lurek.patterns.newEventBus` (change-event bus from `inv:getEventBus()`), `lurek.codec.toJson/fromJson` (save round-trip), `lurek.savegame.SaveManager` (recommended collector host), `lurek.data.deepCopy` (P4 lift target for `item:clone()`) |
 ## Summary
 
 Slot-based item inventory system with typed containers, item stacking, named
@@ -26,22 +26,22 @@ are simultaneously met across equip slots.
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
+| File                         | Purpose             |
+| ---------------------------- | ------------------- |
 | \library/inventory/init.lua\ | Full implementation |
 
 ## Key Types
 
-| Type | Constructor | Purpose |
-|------|-------------|---------|
-| InvItem | newItem(type) | Blueprint: type, tags, weight, size, stack_limit, properties |
-| ItemStack | newItemStack(item, qty, max) | Counted stack with add/remove/split/merge |
-| Slot | newSlot(type, state) | Single position with type filter, state, and optional stack |
-| Container | newContainer(name, mode, count) | Slot collection with removeSlot, addItem, queries |
-| Inventory | newInventory() | Top-level with equip slots, item sets, stack management |
-| ItemSet | newItemSet(name) | Set-bonus via tagged requirements |
-| M.ContainerMode | table | String constants: fixed, unlimited, expandable |
-| M.SlotState | table | String constants: Active, Passive, Idle |
+| Type            | Constructor                     | Purpose                                                      |
+| --------------- | ------------------------------- | ------------------------------------------------------------ |
+| InvItem         | newItem(type)                   | Blueprint: type, tags, weight, size, stack_limit, properties |
+| ItemStack       | newItemStack(item, qty, max)    | Counted stack with add/remove/split/merge                    |
+| Slot            | newSlot(type, state)            | Single position with type filter, state, and optional stack  |
+| Container       | newContainer(name, mode, count) | Slot collection with removeSlot, addItem, queries            |
+| Inventory       | newInventory()                  | Top-level with equip slots, item sets, stack management      |
+| ItemSet         | newItemSet(name)                | Set-bonus via tagged requirements                            |
+| M.ContainerMode | table                           | String constants: fixed, unlimited, expandable               |
+| M.SlotState     | table                           | String constants: Active, Passive, Idle                      |
 
 ## Container Methods
 

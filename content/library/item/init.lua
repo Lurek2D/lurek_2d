@@ -13,6 +13,15 @@
 --   print(it:getStat("dmg"))  -- 10
 --
 -- @module library.item
+-- @status full
+-- @see lurek.math
+-- @see lurek.codec.toJson
+--
+-- Note (P7 batch C, 0.6.0): the previous file split `M.newStack` and
+-- `M.newStackBuilder` into a base definition followed by a wrapper that
+-- monkey-patched extra methods onto the returned object (former lines
+-- 1004-1186 and 1191-1259 respectively). The wrappers were merged into the
+-- original definitions in this revision; functional behaviour is unchanged.
 
 local M = {}
 
@@ -266,6 +275,9 @@ function M.newItem(type_name)
 
     --- Deep-copy this item instance (stats, tags, meta, counters, slot, name — NOT owner).
     -- @treturn table new Item
+    -- TODO(P4 lift): replace with `lurek.data.deepCopy(it)` once that helper
+    -- ships (P4 lift candidate). The local fallback below preserves identical
+    -- behaviour and is safe on both LuaJIT and Lua 5.4.
     function it:clone()
         local c = M.newItem(type_name)
         for k, v in pairs(_stats)    do c:setStat(k, v) end
@@ -407,6 +419,185 @@ function M.newStack(name, capacity)
     function stack:getItems()
         local out = {}
         for _, it in ipairs(_items) do table.insert(out, it) end
+        return out
+    end
+
+    -- ── Extended methods (merged from former wrapper at lines 1004-1186) ──
+
+    --- Return true if the stack has no items.
+    -- @treturn boolean
+    function stack:isEmpty()
+        return #_items == 0
+    end
+
+    --- Pop n items from the top. Returns array of items (may be shorter if stack runs out).
+    -- @tparam number n
+    -- @treturn table
+    function stack:popMany(n)
+        local out = {}
+        for _ = 1, n do
+            local item = self:pop()
+            if item == nil then break end
+            out[#out+1] = item
+        end
+        return out
+    end
+
+    --- Move item at index `from` to index `to` (both 1-based). Returns false if invalid.
+    -- @tparam number from
+    -- @tparam number to
+    -- @treturn boolean
+    function stack:moveWithin(from, to)
+        if from < 1 or from > #_items or to < 1 or to > #_items then return false end
+        local item = table.remove(_items, from)
+        table.insert(_items, to, item)
+        return true
+    end
+
+    --- Return all items whose type matches. Uses item:getType().
+    -- @tparam string type_name
+    -- @treturn table
+    function stack:searchByType(type_name)
+        local out = {}
+        for _, it in ipairs(_items) do
+            if it.getType and it:getType() == type_name then out[#out+1] = it end
+        end
+        return out
+    end
+
+    --- Return all items that have the given tag.
+    -- @tparam string tag
+    -- @treturn table
+    function stack:searchByTag(tag)
+        local out = {}
+        for _, it in ipairs(_items) do
+            if it.hasTag and it:hasTag(tag) then out[#out+1] = it end
+        end
+        return out
+    end
+
+    --- Return all items in the given category.
+    -- @tparam string cat
+    -- @treturn table
+    function stack:searchByCategory(cat)
+        local out = {}
+        for _, it in ipairs(_items) do
+            if it.getCategory and it:getCategory() == cat then out[#out+1] = it end
+        end
+        return out
+    end
+
+    --- Return first item with the given type (or nil).
+    -- @tparam string type_name
+    -- @treturn table|nil
+    function stack:findByType(type_name)
+        for _, it in ipairs(_items) do
+            if it.getType and it:getType() == type_name then return it end
+        end
+        return nil
+    end
+
+    --- Return first item with the given tag (or nil).
+    -- @tparam string tag
+    -- @treturn table|nil
+    function stack:findByTag(tag)
+        for _, it in ipairs(_items) do
+            if it.hasTag and it:hasTag(tag) then return it end
+        end
+        return nil
+    end
+
+    --- Count items with the given type.
+    -- @tparam string type_name
+    -- @treturn number
+    function stack:countByType(type_name)
+        local n = 0
+        for _, it in ipairs(_items) do
+            if it.getType and it:getType() == type_name then n = n + 1 end
+        end
+        return n
+    end
+
+    --- Count items in the given category.
+    -- @tparam string cat
+    -- @treturn number
+    function stack:countByCategory(cat)
+        local n = 0
+        for _, it in ipairs(_items) do
+            if it.getCategory and it:getCategory() == cat then n = n + 1 end
+        end
+        return n
+    end
+
+    --- Count items with the given tag.
+    -- @tparam string tag
+    -- @treturn number
+    function stack:countByTag(tag)
+        local n = 0
+        for _, it in ipairs(_items) do
+            if it.hasTag and it:hasTag(tag) then n = n + 1 end
+        end
+        return n
+    end
+
+    --- Sort items ascending by a numeric stat. Items without the stat sort last.
+    -- @tparam string stat
+    function stack:sortByStat(stat)
+        table.sort(_items, function(a, b)
+            local va = (a.getStat and a:getStat(stat)) or math.huge
+            local vb = (b.getStat and b:getStat(stat)) or math.huge
+            return va < vb
+        end)
+    end
+
+    --- Sort items descending by a numeric stat.
+    -- @tparam string stat
+    function stack:sortByStatDesc(stat)
+        table.sort(_items, function(a, b)
+            local va = (a.getStat and a:getStat(stat)) or -math.huge
+            local vb = (b.getStat and b:getStat(stat)) or -math.huge
+            return va > vb
+        end)
+    end
+
+    --- Sort items by category (alphabetical).
+    function stack:sortByCategory()
+        table.sort(_items, function(a, b)
+            local ca = (a.getCategory and a:getCategory()) or ""
+            local cb = (b.getCategory and b:getCategory()) or ""
+            return ca < cb
+        end)
+    end
+
+    --- Sort items by type name (alphabetical).
+    function stack:sortByName()
+        table.sort(_items, function(a, b)
+            local ta = (a.getType and a:getType()) or ""
+            local tb = (b.getType and b:getType()) or ""
+            return ta < tb
+        end)
+    end
+
+    --- Shuffle items in-place (Fisher-Yates).
+    -- TODO(P4 lift): replace with `lurek.math.shuffle(_items)` once that
+    -- helper ships (P4 lift candidate; would also fix the LuaJIT vs Lua 5.4
+    -- RNG divergence noted in P4_lift_candidates.md).
+    function stack:shuffle()
+        for i = #_items, 2, -1 do
+            local j = math.random(1, i)
+            _items[i], _items[j] = _items[j], _items[i]
+        end
+    end
+
+    --- Return the type names of the top n items (without removing).
+    -- @tparam number n
+    -- @treturn table type name strings, top-first
+    function stack:peekTopNTypes(n)
+        local out = {}
+        for i = #_items, math.max(1, #_items - n + 1), -1 do
+            local it = _items[i]
+            out[#out+1] = it and it.getType and it:getType() or ""
+        end
         return out
     end
 
@@ -555,7 +746,11 @@ end
 --- Create a stack builder for constructing stacks from a recipe list.
 -- @treturn table StackBuilder object.
 function M.newStackBuilder()
-    local _recipe = {}
+    local _recipe     = {}
+    local _required   = {}   -- type_name -> true
+    local _banned     = {}   -- type_name -> true
+    local _with_items = {}   -- pre-built items from addWith()
+    local _shuffle    = false
 
     local builder = {}
 
@@ -566,7 +761,47 @@ function M.newStackBuilder()
         table.insert(_recipe, { type_name = type_name, count = count or 1 })
     end
 
-    --- Build the stack from the current recipe.
+    --- Add items with per-item stat overrides and extra tags.
+    -- Unlike add(), overrides are applied immediately to pre-built item instances.
+    -- @tparam string type_name
+    -- @tparam number count
+    -- @tparam[opt] table stat_overrides key->value stat map.
+    -- @tparam[opt] table extra_tags list of tag strings.
+    function builder:addWith(type_name, count, stat_overrides, extra_tags)
+        for _ = 1, (count or 1) do
+            local it = M.newItem(type_name)
+            for k, v in pairs(stat_overrides or {}) do it:setStat(k, v) end
+            for _, t in ipairs(extra_tags or {})    do it:addTag(t) end
+            _with_items[#_with_items+1] = it
+        end
+    end
+
+    --- Enable or disable Fisher-Yates shuffle after build.
+    -- @tparam boolean enabled
+    function builder:setShuffleOnBuild(enabled)
+        _shuffle = enabled == true
+    end
+
+    --- Require that a specific type appears at least once.
+    -- @tparam string type_name
+    function builder:requireType(type_name)
+        _required[type_name] = true
+    end
+
+    --- Ban a specific type from appearing.
+    -- @tparam string type_name
+    function builder:banType(type_name)
+        _banned[type_name] = true
+    end
+
+    --- Remove a ban on a type.
+    -- @tparam string type_name
+    function builder:removeBannedType(type_name)
+        _banned[type_name] = nil
+    end
+
+    --- Build the stack from recipe entries plus addWith items.
+    -- Applies shuffleOnBuild if enabled.
     -- @tparam string name Stack name.
     -- @treturn table Stack
     function builder:build(name)
@@ -576,7 +811,39 @@ function M.newStackBuilder()
                 s:push(M.newItem(entry.type_name))
             end
         end
+        for _, it in ipairs(_with_items) do s:push(it) end
+        if _shuffle then s:shuffle() end
         return s
+    end
+
+    --- Validate the current recipe + addWith items against required/banned constraints.
+    -- Returns nil on success, or an error string on failure.
+    -- @treturn string|nil
+    function builder:validateEntries()
+        local s = self:build("__validate_tmp__")
+        return self:validateStack(s)
+    end
+
+    --- Validate a pre-built stack against required/banned constraints.
+    -- Returns nil on success, or an error string on failure.
+    -- @tparam table stack
+    -- @treturn string|nil
+    function builder:validateStack(stack)
+        for _, it in ipairs(stack:getItems()) do
+            local t = it.getType and it:getType() or ""
+            if _banned[t] then return "banned type: " .. t end
+        end
+        for req in pairs(_required) do
+            if stack:countByType(req) == 0 then return "missing required type: " .. req end
+        end
+        return nil
+    end
+
+    --- Build the stack with a custom name (alias for build).
+    -- @tparam string name
+    -- @treturn table Stack
+    function builder:buildNamed(name)
+        return self:build(name)
     end
 
     return builder
@@ -586,10 +853,14 @@ end
 
 --- Action constants for StackHistory entries.
 M.HistoryAction = {
-    Push   = "push",
-    Pop    = "pop",
-    Clear  = "clear",
-    Custom = "custom",
+    Push     = "push",
+    Pop      = "pop",
+    Clear    = "clear",
+    Custom   = "custom",
+    Moved    = "moved",
+    Shuffled = "shuffled",
+    Sorted   = "sorted",
+    Built    = "built",
 }
 
 --- Create a bounded event history for stack operations.
@@ -994,317 +1265,6 @@ end
 
 
 -- ═══════════════════════════════════════════════════════════════════════
--- PARITY ADDITIONS — Phase 2A  (item)
--- ═══════════════════════════════════════════════════════════════════════
-
--- ── Stack: missing methods ────────────────────────────────────────────
--- Note: Stack methods below are added via the Stack metatable reference.
--- Because Stack is defined as a closure (not a metatable), we patch the
--- prototype at module level by wrapping newStack to inject extra methods.
-
-local _orig_newStack = M.newStack
-function M.newStack(name, capacity)
-    local stack = _orig_newStack(name, capacity)
-
-    --- Return true if the stack has no items.
-    -- @treturn boolean
-    function stack:isEmpty()
-        return self:size() == 0
-    end
-
-    --- Pop n items from the top. Returns array of items (may be shorter if stack runs out).
-    -- @tparam number n
-    -- @treturn table
-    function stack:popMany(n)
-        local out = {}
-        for _ = 1, n do
-            local item = self:pop()
-            if item == nil then break end
-            out[#out+1] = item
-        end
-        return out
-    end
-
-    --- Move item at index `from` to index `to` (both 1-based). Returns false if invalid.
-    -- @tparam number from
-    -- @tparam number to
-    -- @treturn boolean
-    function stack:moveWithin(from, to)
-        local items = self:getItems()
-        if from < 1 or from > #items or to < 1 or to > #items then return false end
-        local item = table.remove(items, from)
-        table.insert(items, to, item)
-        -- Rebuild internal state by clearing and re-pushing
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-        return true
-    end
-
-    --- Return all items whose type matches. Uses item:getType().
-    -- @tparam string type_name
-    -- @treturn table
-    function stack:searchByType(type_name)
-        local out = {}
-        for _, it in ipairs(self:getItems()) do
-            if it.getType and it:getType() == type_name then out[#out+1] = it end
-        end
-        return out
-    end
-
-    --- Return all items that have the given tag.
-    -- @tparam string tag
-    -- @treturn table
-    function stack:searchByTag(tag)
-        local out = {}
-        for _, it in ipairs(self:getItems()) do
-            if it.hasTag and it:hasTag(tag) then out[#out+1] = it end
-        end
-        return out
-    end
-
-    --- Return all items in the given category.
-    -- @tparam string cat
-    -- @treturn table
-    function stack:searchByCategory(cat)
-        local out = {}
-        for _, it in ipairs(self:getItems()) do
-            if it.getCategory and it:getCategory() == cat then out[#out+1] = it end
-        end
-        return out
-    end
-
-    --- Return first item with the given type (or nil).
-    -- @tparam string type_name
-    -- @treturn table|nil
-    function stack:findByType(type_name)
-        for _, it in ipairs(self:getItems()) do
-            if it.getType and it:getType() == type_name then return it end
-        end
-        return nil
-    end
-
-    --- Return first item with the given tag (or nil).
-    -- @tparam string tag
-    -- @treturn table|nil
-    function stack:findByTag(tag)
-        for _, it in ipairs(self:getItems()) do
-            if it.hasTag and it:hasTag(tag) then return it end
-        end
-        return nil
-    end
-
-    --- Count items with the given type.
-    -- @tparam string type_name
-    -- @treturn number
-    function stack:countByType(type_name)
-        local n = 0
-        for _, it in ipairs(self:getItems()) do
-            if it.getType and it:getType() == type_name then n = n + 1 end
-        end
-        return n
-    end
-
-    --- Count items in the given category.
-    -- @tparam string cat
-    -- @treturn number
-    function stack:countByCategory(cat)
-        local n = 0
-        for _, it in ipairs(self:getItems()) do
-            if it.getCategory and it:getCategory() == cat then n = n + 1 end
-        end
-        return n
-    end
-
-    --- Count items with the given tag.
-    -- @tparam string tag
-    -- @treturn number
-    function stack:countByTag(tag)
-        local n = 0
-        for _, it in ipairs(self:getItems()) do
-            if it.hasTag and it:hasTag(tag) then n = n + 1 end
-        end
-        return n
-    end
-
-    --- Sort items ascending by a numeric stat. Items without the stat sort last.
-    -- @tparam string stat
-    function stack:sortByStat(stat)
-        local items = self:getItems()
-        table.sort(items, function(a, b)
-            local va = (a.getStat and a:getStat(stat)) or math.huge
-            local vb = (b.getStat and b:getStat(stat)) or math.huge
-            return va < vb
-        end)
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-    end
-
-    --- Sort items descending by a numeric stat.
-    -- @tparam string stat
-    function stack:sortByStatDesc(stat)
-        local items = self:getItems()
-        table.sort(items, function(a, b)
-            local va = (a.getStat and a:getStat(stat)) or -math.huge
-            local vb = (b.getStat and b:getStat(stat)) or -math.huge
-            return va > vb
-        end)
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-    end
-
-    --- Sort items by category (alphabetical).
-    function stack:sortByCategory()
-        local items = self:getItems()
-        table.sort(items, function(a, b)
-            local ca = (a.getCategory and a:getCategory()) or ""
-            local cb = (b.getCategory and b:getCategory()) or ""
-            return ca < cb
-        end)
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-    end
-
-    --- Sort items by type name (alphabetical).
-    function stack:sortByName()
-        local items = self:getItems()
-        table.sort(items, function(a, b)
-            local ta = (a.getType and a:getType()) or ""
-            local tb = (b.getType and b:getType()) or ""
-            return ta < tb
-        end)
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-    end
-
-    --- Shuffle items in-place (Fisher-Yates).
-    function stack:shuffle()
-        local items = self:getItems()
-        for i = #items, 2, -1 do
-            local j = math.random(1, i)
-            items[i], items[j] = items[j], items[i]
-        end
-        self:clear()
-        for _, it in ipairs(items) do self:push(it) end
-    end
-
-    --- Return the type names of the top n items (without removing).
-    -- @tparam number n
-    -- @treturn table type name strings, top-first
-    function stack:peekTopNTypes(n)
-        local items = self:getItems()
-        local out = {}
-        for i = #items, math.max(1, #items - n + 1), -1 do
-            local it = items[i]
-            out[#out+1] = it and it.getType and it:getType() or ""
-        end
-        return out
-    end
-
-    return stack
-end
-
--- ── StackBuilder: missing methods ─────────────────────────────────────
-
-local _orig_newStackBuilder = M.newStackBuilder
-function M.newStackBuilder()
-    local builder     = _orig_newStackBuilder()
-    local _required   = {}   -- type_name -> true
-    local _banned     = {}   -- type_name -> true
-    local _with_items = {}   -- pre-built items from addWith()
-    local _shuffle    = false
-    -- Capture the base build before we override it.
-    local _base_build = builder.build
-
-    --- Add items with per-item stat overrides and extra tags.
-    -- Unlike add(), overrides are applied immediately to pre-built item instances.
-    -- @tparam string type_name
-    -- @tparam number count
-    -- @tparam[opt] table stat_overrides key->value stat map.
-    -- @tparam[opt] table extra_tags list of tag strings.
-    function builder:addWith(type_name, count, stat_overrides, extra_tags)
-        for _ = 1, (count or 1) do
-            local it = M.newItem(type_name)
-            for k, v in pairs(stat_overrides or {}) do it:setStat(k, v) end
-            for _, t in ipairs(extra_tags or {})    do it:addTag(t) end
-            _with_items[#_with_items+1] = it
-        end
-    end
-
-    --- Enable or disable Fisher-Yates shuffle after build.
-    -- @tparam boolean enabled
-    function builder:setShuffleOnBuild(enabled)
-        _shuffle = enabled == true
-    end
-
-    --- Require that a specific type appears at least once.
-    -- @tparam string type_name
-    function builder:requireType(type_name)
-        _required[type_name] = true
-    end
-
-    --- Ban a specific type from appearing.
-    -- @tparam string type_name
-    function builder:banType(type_name)
-        _banned[type_name] = true
-    end
-
-    --- Remove a ban on a type.
-    -- @tparam string type_name
-    function builder:removeBannedType(type_name)
-        _banned[type_name] = nil
-    end
-
-    --- Build the stack from recipe entries plus addWith items.
-    -- Applies shuffleOnBuild if enabled.
-    -- @tparam string name Stack name.
-    -- @treturn table Stack
-    function builder:build(name)
-        local s = _base_build(self, name)
-        for _, it in ipairs(_with_items) do s:push(it) end
-        if _shuffle then s:shuffle() end
-        return s
-    end
-
-    --- Validate the current recipe + addWith items against required/banned constraints.
-    -- Returns nil on success, or an error string on failure.
-    -- @treturn string|nil
-    function builder:validateEntries()
-        local s = self:build("__validate_tmp__")
-        return self:validateStack(s)
-    end
-
-    --- Validate a pre-built stack against required/banned constraints.
-    -- Returns nil on success, or an error string on failure.
-    -- @tparam table stack
-    -- @treturn string|nil
-    function builder:validateStack(stack)
-        for _, it in ipairs(stack:getItems()) do
-            local t = it.getType and it:getType() or ""
-            if _banned[t] then return "banned type: " .. t end
-        end
-        for req in pairs(_required) do
-            if stack:countByType(req) == 0 then return "missing required type: " .. req end
-        end
-        return nil
-    end
-
-    --- Build the stack with a custom name (alias for build).
-    -- @tparam string name
-    -- @treturn table Stack
-    function builder:buildNamed(name)
-        return self:build(name)
-    end
-
-    return builder
-end
-
--- ── HistoryAction: add missing variants ──────────────────────────────
-
-M.HistoryAction.Moved   = "moved"
-M.HistoryAction.Shuffled = "shuffled"
-M.HistoryAction.Sorted  = "sorted"
-M.HistoryAction.Built   = "built"
-
 -- ── Module-level free functions ────────────────────────────────────────
 
 --- Group items by category. Returns table: category -> {Item, ...}.

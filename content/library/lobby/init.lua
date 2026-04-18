@@ -1,23 +1,48 @@
---- @module library.lobby
---- @description Pure-Lua lobby and room management built on lurek.network.
---- Provides room creation, joining, player tracking, ready-check
---- coordination, host election, and password protection for multiplayer
---- pre-game lobbies.
----
---- Room lifecycle:
----   1. Server creates a room via `createRoom(name, opts)`.
----   2. Players join with `joinRoom(name, ...)`.  The first player becomes host.
----   3. Players toggle ready state with `setReady(ready, ...)`.
----   4. When `isAllReady()` returns true the host may start the game.
----   5. Players leave with `leaveRoom(...)`; host is re-elected automatically.
----   6. An empty room is removed automatically.
----
---- Player states: **not-ready** (default on join) → **ready** (via setReady).
+--- Pure-Lua lobby and room management built on `lurek.network`.
+--
+-- Provides room creation, joining, player tracking, ready-check
+-- coordination, host election, and password protection for multiplayer
+-- pre-game lobbies.
+--
+-- Room lifecycle:
+--
+--   1. Server creates a room via `createRoom(name, opts)`.
+--   2. Players join with `joinRoom(name, ...)`.  The first player becomes host.
+--   3. Players toggle ready state with `setReady(ready, ...)`.
+--   4. When `isAllReady()` returns true the host may start the game.
+--   5. Players leave with `leaveRoom(...)`; host is re-elected automatically.
+--   6. An empty room is removed automatically.
+--
+-- Player states: **not-ready** (default on join) → **ready** (via setReady).
+--
+-- @module library.lobby
+-- @status full
+-- @see lurek.network
+-- @see lurek.patterns.newEventBus
+-- @see lurek.codec.toJson
+--
+-- Wire format note: messages between peers are encoded with
+-- `lurek.network.pack` / `lurek.network.unpack` (MessagePack — the canonical
+-- ENet payload format). For human-readable persistence (e.g. saved lobby
+-- state), use `lurek.codec.toJson` / `lurek.codec.fromJson`.
 local M = {}
 
 local log_info  = (lurek and lurek.log and lurek.log.info)  or function() end
 local log_warn  = (lurek and lurek.log and lurek.log.warn)  or function() end
 local log_debug = (lurek and lurek.log and lurek.log.debug) or function() end
+
+--- Try to obtain a `lurek.patterns.newEventBus()` instance.
+-- Returns nil silently if `lurek.patterns` is unavailable (headless tests,
+-- module gated off, or older runtime).
+-- @local
+-- @treturn userdata|nil EventBus userdata or nil.
+local function _try_new_event_bus()
+    if lurek and lurek.patterns and type(lurek.patterns.newEventBus) == "function" then
+        local ok, bus = pcall(lurek.patterns.newEventBus, "library.lobby")
+        if ok then return bus end
+    end
+    return nil
+end
 
 ---------------------------------------------------------------------------
 -- Room (internal)
@@ -142,7 +167,23 @@ function M.new(host, channel)
     self._my_room    = nil  -- current room name (client-side / local player)
     self._my_name    = "Player"
     self._on_event   = nil
+    -- Optional `lurek.patterns.newEventBus` for typed pub-sub of lifecycle
+    -- events. Lazily created; nil if `lurek.patterns` is unavailable.
+    self._event_bus  = _try_new_event_bus()
     return self
+end
+
+--- Return the underlying `EventBus` (optional, may be nil).
+-- When non-nil, `:on(event, callback)` lets multiple listeners subscribe to
+-- the same lifecycle event without overwriting each other.  Event names match
+-- the strings passed to `:onEvent(fn)` (`room_created`, `room_removed`,
+-- `player_joined`, `player_left`, `player_ready`, `host_changed`,
+-- `player_disconnected`).
+-- @treturn userdata|nil  `EventBus` userdata, or nil if `lurek.patterns` is
+--   unavailable in this runtime.
+-- @see lurek.patterns.newEventBus
+function Lobby:getEventBus()
+    return self._event_bus
 end
 
 --- Set the local player name used when joining rooms.
@@ -156,11 +197,32 @@ function Lobby:setPlayerName(name)
 end
 
 --- Register a callback for lobby events.
---- @tparam function fn  `fn(event_type, data)` where event_type is one of:
----   `"room_created"`, `"room_removed"`, `"player_joined"`, `"player_left"`,
----   `"player_ready"`, `"host_changed"`, `"player_disconnected"`.
+--
+-- For multi-listener pub-sub, prefer `:getEventBus():on(event, fn)` when
+-- `lurek.patterns` is available.
+--
+-- @tparam function fn  `fn(event_type, data)` where event_type is one of:
+--   `"room_created"`, `"room_removed"`, `"player_joined"`, `"player_left"`,
+--   `"player_ready"`, `"host_changed"`, `"player_disconnected"`.
+-- @see Lobby:getEventBus
 function Lobby:onEvent(fn)
     self._on_event = fn
+end
+
+--- @local
+--- Internal: emit a lifecycle event to both the legacy single callback and
+-- the optional `lurek.patterns.newEventBus`. Safe when either is absent.
+-- @tparam string event_type
+-- @tparam table data
+function Lobby:_emit(event_type, data)
+    if self._on_event then
+        local ok, err = pcall(self._on_event, event_type, data)
+        if not ok then log_warn("[lobby] onEvent callback error: " .. tostring(err)) end
+    end
+    if self._event_bus then
+        local ok, err = pcall(function() self._event_bus:emit(event_type, data) end)
+        if not ok then log_warn("[lobby] EventBus emit error: " .. tostring(err)) end
+    end
 end
 
 --- Create a new room (server-side).
@@ -182,8 +244,8 @@ function Lobby:createRoom(name, opts)
     end
     self._rooms[name] = Room._new(name, opts)
     log_info("[lobby] room created: " .. name)
-    if self._on_event then
-        self._on_event("room_created", { name = name })
+    if self._on_event or self._event_bus then
+        self:_emit("room_created", { name = name })
     end
     return true
 end
@@ -202,8 +264,8 @@ function Lobby:removeRoom(name)
         self._my_room = nil
     end
     log_info("[lobby] room removed: " .. name)
-    if self._on_event then
-        self._on_event("room_removed", { name = name })
+    if self._on_event or self._event_bus then
+        self:_emit("room_removed", { name = name })
     end
 end
 
@@ -245,8 +307,8 @@ function Lobby:joinRoom(name, peer_id, player_name, password)
         self._my_room = name
     end
     log_info("[lobby] player " .. tostring(pid) .. " (" .. pname .. ") joined room: " .. name)
-    if self._on_event then
-        self._on_event("player_joined", { room = name, peer_id = pid, name = pname })
+    if self._on_event or self._event_bus then
+        self:_emit("player_joined", { room = name, peer_id = pid, name = pname })
     end
     return true
 end
@@ -283,14 +345,14 @@ function Lobby:leaveRoom(peer_id)
     room:removePlayer(pid)
     self._peer_rooms[pid] = nil
     log_info("[lobby] player " .. tostring(pid) .. " left room: " .. room_name)
-    if self._on_event then
-        self._on_event("player_left", { room = room_name, peer_id = pid })
+    if self._on_event or self._event_bus then
+        self:_emit("player_left", { room = room_name, peer_id = pid })
     end
     -- Notify host change
     if old_host == pid and room.host_peer and room.host_peer ~= old_host then
         log_info("[lobby] new host in " .. room_name .. ": " .. tostring(room.host_peer))
-        if self._on_event then
-            self._on_event("host_changed", { room = room_name, new_host = room.host_peer })
+        if self._on_event or self._event_bus then
+            self:_emit("host_changed", { room = room_name, new_host = room.host_peer })
         end
     end
     -- Auto-remove empty rooms
@@ -359,8 +421,8 @@ function Lobby:setReady(ready, peer_id)
     if player then
         player.ready = (ready == true)
         log_debug("[lobby] player " .. tostring(pid) .. " ready=" .. tostring(ready) .. " in " .. room_name)
-        if self._on_event then
-            self._on_event("player_ready", {
+        if self._on_event or self._event_bus then
+            self:_emit("player_ready", {
                 room = room_name, peer_id = pid, ready = player.ready,
             })
         end
@@ -420,7 +482,7 @@ function Lobby:poll()
                     self._peer_rooms[ev.peer] = nil
                     local e = { type = "player_disconnected", peer_id = ev.peer, room = room_name }
                     table.insert(events, e)
-                    if self._on_event then self._on_event("player_disconnected", e) end
+                    if self._on_event or self._event_bus then self:_emit("player_disconnected", e) end
                     if room:getPlayerCount() == 0 then
                         self._rooms[room_name] = nil
                     end

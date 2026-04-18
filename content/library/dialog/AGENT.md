@@ -1,12 +1,14 @@
 # `dialog` - Agent Reference (Lunasome)
 
-| Property | Value |
-|----------|-------|
-| **Tier** | Tier 3 - Lunasome (pure Lua, no Rust dependencies) |
-| **Source** | `library/dialog/init.lua` |
-| **Lua Tests** | `tests/lua/library/test_library_dialog.lua` |
-| **Depends on** | `lurek.*` public API only |
-| **Test count** | 40 tests, 40 passing |
+| Property              | Value                                                                                                                                                                                    |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tier**              | Tier 3 - Lunasome (pure Lua, no Rust dependencies)                                                                                                                                       |
+| **Source**            | `library/dialog/init.lua`                                                                                                                                                                |
+| **Lua Tests**         | `tests/lua/library/test_library_dialog.lua`                                                                                                                                              |
+| **Depends on**        | `lurek.*` public API only                                                                                                                                                                |
+| **Test count**        | 40 tests, 40 passing                                                                                                                                                                     |
+| **Status**            | full                                                                                                                                                                                     |
+| **Optional bindings** | `lurek.patterns.newEventBus` (mirrors events to a bus when present), `lurek.localization.t` (recommended for translatable line text), `lurek.codec.toJson/fromJson` (script persistence) |
 
 ## Summary
 
@@ -62,58 +64,58 @@ M.SequencerState --  IDLE | TYPING | WAITING | CHOICE | PAUSED | DONE
 
 ## Source Files
 
-| File | Purpose |
-|------|---------|
+| File                      | Purpose                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- |
 | `library/dialog/init.lua` | Full implementation: Sequencer, node constructors, NodeType + SequencerState enums |
 
 ## Key Types
 
-| Type | Constructor | Purpose |
-|------|-------------|---------|
-| `Sequencer` | `M.newSequencer()` | Frame-ticked dialogue runner |
-| say node | `M.say(actor, text, opts)` | Spoken line with typewrite reveal |
-| choice node | `M.choice(prompt, options, opts)` | Branching prompt |
-| wait node | `M.wait(seconds, opts)` | Timed delay node |
-| event node | `M.event(name, data, opts)` | Named hook signal |
-| call node | `M.call(fn, opts)` | Inline callback |
-| jump node | `M.jump(target, opts)` | Label-based control transfer |
-| `M.NodeType` | enum table | Type constants (SAY, CHOICE, WAIT, EVENT, CALL, JUMP) |
-| `M.SequencerState` | enum table | State constants matching `seq:getState()` |
+| Type               | Constructor                       | Purpose                                               |
+| ------------------ | --------------------------------- | ----------------------------------------------------- |
+| `Sequencer`        | `M.newSequencer()`                | Frame-ticked dialogue runner                          |
+| say node           | `M.say(actor, text, opts)`        | Spoken line with typewrite reveal                     |
+| choice node        | `M.choice(prompt, options, opts)` | Branching prompt                                      |
+| wait node          | `M.wait(seconds, opts)`           | Timed delay node                                      |
+| event node         | `M.event(name, data, opts)`       | Named hook signal                                     |
+| call node          | `M.call(fn, opts)`                | Inline callback                                       |
+| jump node          | `M.jump(target, opts)`            | Label-based control transfer                          |
+| `M.NodeType`       | enum table                        | Type constants (SAY, CHOICE, WAIT, EVENT, CALL, JUMP) |
+| `M.SequencerState` | enum table                        | State constants matching `seq:getState()`             |
 
 ## Sequencer API
 
 ### Core flow
 
-| Method | Description |
-|--------|-------------|
-| `load(nodes)` | Load script. Resets all state. |
-| `start()` | Begin playback. Empty script fires done/finished immediately. |
-| `update(dt)` | Advance timer and typewrite. Call every frame. |
-| `advance()` | TYPING completes reveal; WAITING moves to next node. |
-| `skip()` | TYPING instantly shows full text, enters WAITING. |
-| `choose(index)` | Select choice option (1-based); splices branch inline. |
+| Method          | Description                                                   |
+| --------------- | ------------------------------------------------------------- |
+| `load(nodes)`   | Load script. Resets all state.                                |
+| `start()`       | Begin playback. Empty script fires done/finished immediately. |
+| `update(dt)`    | Advance timer and typewrite. Call every frame.                |
+| `advance()`     | TYPING completes reveal; WAITING moves to next node.          |
+| `skip()`        | TYPING instantly shows full text, enters WAITING.             |
+| `choose(index)` | Select choice option (1-based); splices branch inline.        |
 
 ### State queries
 
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `getState()` | string | One of: idle, typing, waiting, choice, paused, done |
-| `isActive()` | boolean | true if not idle and not done |
-| `isWaitingForChoice()` | boolean | true in choice state only |
-| `currentSpeaker()` | string | Speaker of current say node, or empty string |
-| `currentText()` | string | Full text of current say node, or empty string |
-| `revealedText()` | string | Typewriter-revealed substring |
-| `getChoiceText()` | string | Prompt of current choice node, or empty string |
-| `getChoiceLabels()` | table | Array of option labels for current choice |
-| `getSpeed()` | number | Typewriter speed in chars/sec |
+| Method                 | Returns | Description                                         |
+| ---------------------- | ------- | --------------------------------------------------- |
+| `getState()`           | string  | One of: idle, typing, waiting, choice, paused, done |
+| `isActive()`           | boolean | true if not idle and not done                       |
+| `isWaitingForChoice()` | boolean | true in choice state only                           |
+| `currentSpeaker()`     | string  | Speaker of current say node, or empty string        |
+| `currentText()`        | string  | Full text of current say node, or empty string      |
+| `revealedText()`       | string  | Typewriter-revealed substring                       |
+| `getChoiceText()`      | string  | Prompt of current choice node, or empty string      |
+| `getChoiceLabels()`    | table   | Array of option labels for current choice           |
+| `getSpeed()`           | number  | Typewriter speed in chars/sec                       |
 
 ### Configuration
 
-| Method | Description |
-|--------|-------------|
-| `setSpeed(cps)` | Typewriter speed (default 20). 0 means text never advances. |
+| Method          | Description                                                                |
+| --------------- | -------------------------------------------------------------------------- |
+| `setSpeed(cps)` | Typewriter speed (default 20). 0 means text never advances.                |
 | `on(event, fn)` | Register callback. Events: line, typewrite, choice, event, finished, done. |
-| `off(event)` | Remove all callbacks for event. |
+| `off(event)`    | Remove all callbacks for event.                                            |
 
 ## Node cond and label
 
