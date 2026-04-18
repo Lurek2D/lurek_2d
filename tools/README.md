@@ -25,9 +25,12 @@ go under `work/{session}/scripts/` and are archived at session end.
 | [`tools/validate/`](validate/README.md) | Schema and structure validators (exit 1 on failure)                        | 5            |
 | [`tools/dist/`](dist/README.md)         | Build, package, and install scripts                                        | 7            |
 | [`tools/github/`](github/README.md)     | GitHub project management automation                                       | 1            |
-| [`tools/demos/`](demos/)                | Demo folder management and screenshot generation                           | 2            |
-| [`tools/ui/`](ui/README.md)             | UI layout tooling — render TOML layout files to PNG wireframe previews     | 1            |
+| [`tools/demos/`](demos/README.md)                | Demo folder management and screenshot generation                           | 2            |
+| [`tools/ui/`](ui/README.md)           | UI layout tooling — render TOML layout files to PNG wireframe previews     | 3            |
 | [`tools/dev/`](dev/README.md)           | Dev helper scripts                                                         | 1            |
+| [`tools/mods/`](mods/README.md)         | Mod scaffolding helpers (`lurek-mod` workflow)                              | 1            |
+| [`tools/screenshots/`](screenshots/README.md) | Legacy alias for `tools/demos/` screenshot capture                          | 1            |
+| [`tools/assets/`](assets/README.md)     | Notes on engine asset placement (no scripts)                               | 0            |
 
 ---
 
@@ -311,3 +314,69 @@ python tools/validate/cag_validate.py                 # validate CAG layer
 5. If the tool is invoked from `gen_all_docs.py`, add it to the `SCRIPTS` list there
 6. If it needs a VS Code task, add an entry in `.vscode/tasks.json`
 7. If it's a quality tool, consider adding it to the `quality-pipeline` skill
+
+---
+
+## Discovery for Agents
+
+AI agents working in this repo should pick a tool by **subfolder taxonomy first, script docstring second**. The taxonomy maps directly to intent:
+
+| Intent                                                | Subfolder           |
+| ----------------------------------------------------- | ------------------- |
+| "Is this CAG / spec / contract well-formed?"          | `tools/validate/`   |
+| "Measure quality / coverage / report gaps."           | `tools/audit/`      |
+| "Modify source files in-place to fix something."      | `tools/fix/`        |
+| "Regenerate generated documentation."                 | `tools/docs/`       |
+| "Build, package, or install the engine binary."       | `tools/dist/`       |
+| "Manage GitHub issues, milestones, or releases."      | `tools/github/`     |
+| "Maintain `content/demos/` (folders, screenshots)."   | `tools/demos/`      |
+| "Author or scaffold a `lurek-mod` plugin."            | `tools/mods/`       |
+| "Render or fix `*.layout.toml` UI files."             | `tools/ui/`         |
+| "Engine-developer helper (test-fix loop, etc)."       | `tools/dev/`        |
+
+Workflow:
+1. Classify the task into one of the rows above.
+2. Open that subfolder's `README.md` and pick the script whose one-line description matches.
+3. Read the script's module docstring (`python -c "import tools.subdir.script as m; print(m.__doc__)"` or just open the file) for full CLI flags.
+4. If no script fits, check **Standalone utilities** below — a one-shot might already exist.
+
+Validators always exit 1 on failure; auditors print metrics and return 0 unless `--strict` or `--threshold` is used; fixers default to in-place edits and should be invoked with `--dry-run` first when supported.
+
+---
+
+## Standalone utilities
+
+Scripts kept in `tools/` that are not currently referenced by any `.github/` agent, skill, or prompt. They remain because they are ad-hoc one-shots, archived debug helpers, or have niche scopes.
+
+| Script                                          | Kept because                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `tools/audit/annotate_tests.py`                 | One-shot — auto-inserts `@tests` markers when migrating a test folder.    |
+| `tools/audit/gen_coverage_gaps.py`              | Invoked via `gen_all_docs.py` orchestrator, not directly by agents.       |
+| `tools/audit/golden_test.py`                    | Manual diff-debug helper for golden-file regressions.                     |
+| `tools/audit/module_audit.py`                   | Superseded by `audit_module.py`; kept for legacy comparisons.             |
+| `tools/audit/test_analytics.py`                 | Trend-only reporter; consumed by humans, not gates.                       |
+| `tools/audit/unit_test_api_coverage.py`         | Niche metric; superset covered by `lua_api_test_coverage.py`.             |
+| `tools/audit/parse_test_log.py`                 | Internal helper for `quality_report.py`.                                  |
+| `tools/demos/organize_demos.py`                 | One-shot demos folder normaliser, run only when restructuring.            |
+| `tools/dev/test_fix_loop.py`                    | Local dev convenience; not part of CI or any agent workflow.              |
+| `tools/dist/pack.ps1`, `tools/dist/pack.py`     | Player-facing pack helpers, invoked from VS Code tasks not CAG.           |
+| `tools/docs/gen_docs_rust.py`                   | Run via `gen_all_docs.py`; not directly invoked by agents.                |
+| `tools/docs/gen_lua_api_skeleton.py`            | One-shot scaffolding tool for new `lua_api/*_api.rs` modules.             |
+| `tools/docs/gen_lua_dev_docs.py`                | Subset of `gen_all_docs.py` pipeline.                                     |
+| `tools/docs/gen_lua_library_api.py`             | Run via `gen_lib_docs.py`; chained internally.                            |
+| `tools/docs/gen_luadoc.py`                      | Chained from `gen_all_docs.py`; produces LuaCATS stubs.                   |
+| `tools/docs/gen_rust_api_data.py`               | Chained from `gen_all_docs.py`; produces JSON intermediate.               |
+| `tools/docs/gen_test_docs.py`                   | Chained from `gen_all_docs.py`.                                           |
+| `tools/docs/gen_wiki.py`                        | Manual wiki-rebuild helper; superseded by `gen_wiki_api.py` for API page. |
+| `tools/fix/add_lua_docstrings.py`               | Interactive — used by humans, not agents (auto variant is preferred).     |
+| `tools/fix/find_typed_params.py`                | One-shot discovery script.                                                |
+| `tools/fix/fix_thread_api.py`                   | One-shot repair for `src/lua_api/thread_api.rs`; idempotent, kept.        |
+| `tools/fix/fix_type_stub_vars.py`               | One-shot migration helper.                                                |
+| `tools/fix/fix_typeof_args.py`                  | One-shot migration helper.                                                |
+| `tools/fix/improve_examples.py`                 | Manual content-quality helper.                                            |
+| `tools/fix/strip_instance_method_comments.py`   | One-shot cleanup script; kept for repeatability.                          |
+| `tools/fix/uncomment_examples.py`               | One-shot — re-enables disabled example sections after big rewrites.       |
+| `tools/github/ideas_to_github_issues.py`        | One-shot — bulk-imports `ideas/` into Issues; rarely needed.              |
+| `tools/mods/mod_init.py`                        | Modder-facing scaffolder; invoked by humans via VS Code task.             |
+| `tools/validate/_cag_common.py`                 | Private helper module for CAG validators (not directly callable).         |
+

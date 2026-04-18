@@ -97,3 +97,23 @@ python tools/ui/render_layout.py content/demos/my_game/hud.layout.toml
 | menubar/statusbar | Very dark  |
 | badge             | Red        |
 | *unknown*         | Mid grey   |
+
+## snap_to_grid.py — Snap layouts to grid
+
+Snap every pixel-coordinate field in Lurek2D TOML layout files to a grid (default 8 px). Idempotent.
+
+```powershell
+python tools/ui/snap_to_grid.py content/layouts/hud.layout.toml
+python tools/ui/snap_to_grid.py --all content/ --grid 16
+python tools/ui/snap_to_grid.py --all content/ --dry-run
+```
+
+## fix_layouts.py — Repair layout files
+
+Validate and auto-repair common errors in TOML layout files: missing widget IDs, out-of-bounds coordinates, malformed widget tables.
+
+```powershell
+python tools/ui/fix_layouts.py content/layouts/hud.layout.toml
+python tools/ui/fix_layouts.py --all content/ --dry-run
+```
+

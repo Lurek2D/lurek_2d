@@ -114,3 +114,5 @@ When a `lua.load()` call is genuinely unavoidable, suppress the validator with a
 ## References
 
 - See related skills in `.github/skills/`.
+- [tools/docs/gen_lua_api_skeleton.py](../../../tools/docs/gen_lua_api_skeleton.py) — scaffold a new `src/lua_api/<module>_api.rs` skeleton.
+- [tools/docs/gen_rust_api_data.py](../../../tools/docs/gen_rust_api_data.py) — produce `docs/logs/rust_api_data.json` consumed by the Lua API doc generator.

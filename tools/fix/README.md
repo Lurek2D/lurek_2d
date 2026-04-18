@@ -18,6 +18,7 @@ stale path references.
 | `docstring_fix.py` | Apply docstring fixes from `docs/logs/docstring_audit.json` | `--dry-run` |
 | `fix_docstrings.py` | Auto-fill missing `# Parameters`/`# Returns`/`# Fields`/`# Variants` | — |
 | `improve_lua_docstrings.py` | Upgrade low-quality stub `///` comments with richer descriptions | `--dry-run` |
+| `fix_thread_api.py` | One-shot repair for `src/lua_api/thread_api.rs` malformed doc blocks (idempotent) | — |
 
 ### Source code fixers — automated source transformations
 

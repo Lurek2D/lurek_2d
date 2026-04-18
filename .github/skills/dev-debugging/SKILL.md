@@ -114,3 +114,4 @@ The prefix `luna2d::<module>:` is the Rust source. Search `src/<module>/` for th
 ## References
 
 - See related skills in `.github/skills/`.
+- [tools/dev/test_fix_loop.py](../../../tools/dev/test_fix_loop.py) — agent-friendly test-run / fix / re-run loop for fast iteration on failing tests.

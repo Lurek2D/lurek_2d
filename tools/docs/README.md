@@ -30,6 +30,8 @@ python tools/gen_all_docs.py
 | `gen_lua_dev_docs.py` | `lua_api_data.json` | `docs/API/` developer docs | — |
 | `gen_lua_library_api.py` | `content/library/` | LuaCATS stubs for Lunasome modules | — |
 | `gen_test_docs.py` | `tests/` | `docs/tests/test_docs_rust.md`, `docs/tests/test_docs_lua.md` | `--mode rust\|lua`, `--output` |
+| `gen_module_specs.py` | `src/<module>/` | `docs/specs/<module>.md` (merged module spec) | `--module NAME`, `--all`, `--scaffold`, `--write` |
+| `gen_wiki.py` | `src/`, `content/`, `docs/specs/` | All `docs/wiki/*.md` pages | — |
 
 ### Legacy / standalone reference
 

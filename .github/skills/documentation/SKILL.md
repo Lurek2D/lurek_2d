@@ -98,3 +98,6 @@ Never conflate these. A failing integration test and a failing cargo run are dif
 ## References
 
 - See related skills in `.github/skills/`.
+- [tools/docs/gen_wiki.py](../../../tools/docs/gen_wiki.py) — full wiki regenerator.
+- [tools/docs/gen_test_docs.py](../../../tools/docs/gen_test_docs.py) — generates `docs/tests/` from the test tree.
+- [tools/fix/add_lua_docstrings.py](../../../tools/fix/add_lua_docstrings.py) — interactive `///` docstring backfill for Lua API bindings.

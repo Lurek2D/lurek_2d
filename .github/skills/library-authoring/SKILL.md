@@ -113,4 +113,5 @@ Every public function and table field uses LDoc tags. The generator parses:
 - [.github/skills/lua-scripting/SKILL.md](../lua-scripting/SKILL.md) — `lurek.*` API usage idioms
 - [.github/skills/documentation/SKILL.md](../documentation/SKILL.md) — generated-doc rules
 - [tools/docs/gen_lib_docs.py](../../../tools/docs/gen_lib_docs.py) — library doc generator
+- [tools/mods/mod_init.py](../../../tools/mods/mod_init.py) — scaffold a new `lurek-mod` plugin layout.
 - [content/library/README.md](../../../content/library/README.md) — library index

@@ -1,3 +1,13 @@
+"""One-shot fix for thread_api.rs docstrings.
+
+Purpose: Repairs malformed `///` docstring blocks in `src/lua_api/thread_api.rs`
+that were produced by an early auto-doc pass (e.g. blank summary, return tag
+before description). Idempotent — safe to re-run.
+
+Usage: python tools/fix/fix_thread_api.py
+
+No CLI flags. Edits the file in place.
+"""
 import re
 with open('src/lua_api/thread_api.rs', 'r', encoding='utf-8') as f:
     content = f.read()

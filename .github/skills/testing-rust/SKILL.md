@@ -114,3 +114,7 @@ Lurek2D has a **two-layer test system** that runs entirely via `cargo test`:
 ## References
 
 - See related skills in `.github/skills/`.
+- [tools/audit/test_coverage.py](../../../tools/audit/test_coverage.py) — Rust+Lua test-coverage cross-reference report.
+- [tools/audit/golden_test.py](../../../tools/audit/golden_test.py) — golden-file diff harness for deterministic outputs.
+- [tools/audit/annotate_tests.py](../../../tools/audit/annotate_tests.py) — auto-insert `@tests`/`@covers` markers in Lua tests.
+- [tools/audit/unit_test_api_coverage.py](../../../tools/audit/unit_test_api_coverage.py) — unit-level API coverage metrics.
