@@ -219,8 +219,12 @@ def check_agent(path: Path, *, skills: set[str], agents: set[str]) -> list[Viola
             out.append(Violation(rel, "E104", "error",
                                  f"routes_to references unknown agent: '{a}'"))
 
-    # tools (formerly loads_tools) stays in frontmatter
+    # tools (formerly loads_tools) stays in frontmatter.
+    # Values without a path separator are VS Code built-in tool names (e.g.
+    # "vscode", "execute", "read") — skip the file-existence check for those.
     for t in fm.get_list("tools"):
+        if "/" not in t and "\\" not in t:
+            continue  # VS Code built-in tool name, not a repo path
         if not (WORKSPACE_ROOT / t).exists():
             out.append(Violation(rel, "E105", "error",
                                  f"tools references missing path: '{t}'"))
