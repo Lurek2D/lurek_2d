@@ -360,3 +360,44 @@ impl FlowField {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pathfind::nav_grid::NavGrid;
+    use std::rc::Rc;
+    use std::cell::RefCell;
+
+    fn open_grid(w: usize, h: usize) -> Rc<RefCell<NavGrid>> {
+        Rc::new(RefCell::new(NavGrid::new(w, h)))
+    }
+
+    #[test]
+    fn new_field_has_target() {
+        let g = open_grid(5, 5);
+        let ff = FlowFieldGrid::new(g);
+        assert!(ff.targets.is_empty());
+    }
+
+    #[test]
+    fn add_target_and_compute() {
+        let g = open_grid(5, 5);
+        let mut ff = FlowFieldGrid::new(g);
+        ff.add_target(4, 4);
+        ff.compute();
+        let (dx, dy) = ff.get_direction(0, 0);
+        assert!(dx > 0.0 || dy > 0.0, "should point toward target");
+    }
+
+    #[test]
+    fn blocked_path_no_direction() {
+        let g_inner = NavGrid::new(3, 1);
+        let g = Rc::new(RefCell::new(g_inner));
+        g.borrow_mut().set_blocked(1, 0, true);
+        let mut ff = FlowFieldGrid::new(g);
+        ff.add_target(2, 0);
+        ff.compute();
+        let (dx, dy) = ff.get_direction(0, 0);
+        assert!(dx == 0.0 && dy == 0.0, "unreachable should have no direction");
+    }
+}

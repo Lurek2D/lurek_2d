@@ -149,3 +149,5 @@ impl Observer {
         self.subscriptions.values().map(Vec::len).sum()
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

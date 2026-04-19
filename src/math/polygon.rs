@@ -1,11 +1,10 @@
 //! Polygon utilities: ear-clipping triangulation and convexity testing.
 //!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for polygon-related operations and data management.
-//! Primary functions: `triangulate()`, `is_convex()`.
+//! Provides [`triangulate`] (ear-clipping for simple polygons) and [`is_convex`]
+//! (cross-product sign consistency check). Also includes Sutherland-Hodgman
+//! polygon clipping against half-planes and convex polygons.
 //!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! All functions work with `Vec2` slices or `(f32, f32)` tuples.
 
 use crate::math::vec2::Vec2;
 
@@ -38,6 +37,8 @@ pub fn triangulate(polygon: &[Vec2]) -> Result<Vec<[Vec2; 3]>, String> {
     let mut indices: Vec<usize> = (0..n).collect();
     let mut triangles = Vec::new();
 
+    // Iteratively clip ear triangles until only one triangle remains.
+    // An "ear" is a convex vertex whose triangle contains no other vertex.
     while indices.len() > 3 {
         let mut ear_found = false;
         let len = indices.len();
@@ -384,105 +385,4 @@ fn convex_hull(pts: &mut Vec<(f32, f32)>) -> Vec<(f32, f32)> {
         }
     }
     out
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::math::vec2::Vec2;
-
-    // ── Triangulate ─────────────────────────────────────────────────────────
-
-    #[test]
-    fn triangulate_triangle_gives_one_result() {
-        let pts = vec![
-            Vec2::new(0.0, 0.0),
-            Vec2::new(1.0, 0.0),
-            Vec2::new(0.0, 1.0),
-        ];
-        let tris = triangulate(&pts).expect("valid polygon triangulates without error");
-        assert_eq!(tris.len(), 1);
-    }
-
-    #[test]
-    fn triangulate_square_gives_two_triangles() {
-        let pts = vec![
-            Vec2::new(0.0, 0.0),
-            Vec2::new(1.0, 0.0),
-            Vec2::new(1.0, 1.0),
-            Vec2::new(0.0, 1.0),
-        ];
-        let tris = triangulate(&pts).expect("valid polygon triangulates without error");
-        assert_eq!(tris.len(), 2);
-    }
-
-    #[test]
-    fn triangulate_too_few_points_returns_err() {
-        let pts = vec![Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0)];
-        assert!(triangulate(&pts).is_err());
-    }
-
-    // ── Convexity ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn is_convex_square_true() {
-        let pts = vec![
-            Vec2::new(0.0, 0.0),
-            Vec2::new(1.0, 0.0),
-            Vec2::new(1.0, 1.0),
-            Vec2::new(0.0, 1.0),
-        ];
-        assert!(is_convex(&pts));
-    }
-
-    #[test]
-    fn is_convex_triangle_true() {
-        let pts = vec![
-            Vec2::new(0.0, 0.0),
-            Vec2::new(2.0, 0.0),
-            Vec2::new(1.0, 2.0),
-        ];
-        assert!(is_convex(&pts));
-    }
-
-    #[test]
-    fn is_convex_less_than_three_false() {
-        let pts = vec![Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0)];
-        assert!(!is_convex(&pts));
-    }
-
-    // ── polygon_clip (Sutherland-Hodgman) ────────────────────────────────────
-
-    #[test]
-    fn polygon_clip_square_full_inside_unchanged() {
-        // Unit square, clip plane y >= -1 (plane below everything)
-        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
-        let clipped = polygon_clip(&sq, 0.0, 1.0, -1.0);
-        assert_eq!(clipped.len(), 4);
-    }
-
-    #[test]
-    fn polygon_clip_square_fully_outside_empty() {
-        // Unit square in [0,1]×[0,1], clip plane y >= 2.0 (no vertex qualifies)
-        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
-        let clipped = polygon_clip(&sq, 0.0, 1.0, 2.0);
-        assert!(clipped.is_empty());
-    }
-
-    #[test]
-    fn polygon_clip_square_half_produces_correct_vertex_count() {
-        // Unit square, clip plane y >= 0.5 — result is a rectangle with 4 vertices
-        let sq = [(0.0f32, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0)];
-        let clipped = polygon_clip(&sq, 0.0, 1.0, 0.5);
-        assert_eq!(clipped.len(), 4);
-        for (_, y) in &clipped {
-            assert!(*y >= 0.5 - 1e-5, "y={y} should be >= 0.5");
-        }
-    }
-
-    #[test]
-    fn polygon_clip_empty_input_returns_empty() {
-        let clipped = polygon_clip(&[], 1.0, 0.0, 0.0);
-        assert!(clipped.is_empty());
-    }
 }

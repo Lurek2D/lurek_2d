@@ -112,27 +112,3 @@ pub fn poisson_disk(
     points
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_poisson_disk_spacing() {
-        let points = poisson_disk(50.0, 50.0, 5.0, 30, 42);
-        assert!(!points.is_empty());
-        // Check all points are within bounds
-        for &(x, y) in &points {
-            assert!(x >= 0.0 && x < 50.0);
-            assert!(y >= 0.0 && y < 50.0);
-        }
-        // Check minimum distance constraint
-        for i in 0..points.len() {
-            for j in (i + 1)..points.len() {
-                let dx = points[i].0 - points[j].0;
-                let dy = points[i].1 - points[j].1;
-                let dist = (dx * dx + dy * dy).sqrt();
-                assert!(dist >= 4.9, "Points too close: {dist}"); // small tolerance
-            }
-        }
-    }
-}

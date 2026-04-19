@@ -607,3 +607,149 @@ fn render_note(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_player_defaults() {
+        let p = MidiPlayer::new();
+        assert!(!p.is_loaded());
+        assert!(!p.is_playing());
+        assert!(!p.is_paused());
+        assert_eq!(p.volume(), 1.0);
+        assert!(!p.is_looping());
+        assert_eq!(p.tempo_scale(), 1.0);
+        assert_eq!(p.current_bpm(), 120.0);
+        assert_eq!(p.tell(), 0.0);
+        assert_eq!(p.duration(), 0.0);
+        assert!(p.file_path().is_none());
+        assert!(p.bus_key().is_none());
+    }
+
+    #[test]
+    fn default_impl_matches_new() {
+        let a = MidiPlayer::new();
+        let b = MidiPlayer::default();
+        assert_eq!(a.volume(), b.volume());
+        assert_eq!(a.is_looping(), b.is_looping());
+        assert_eq!(a.tempo_scale(), b.tempo_scale());
+    }
+
+    #[test]
+    fn volume_set_get() {
+        let mut p = MidiPlayer::new();
+        p.set_volume(0.5);
+        assert_eq!(p.volume(), 0.5);
+        p.set_volume(-1.0);
+        assert_eq!(p.volume(), 0.0); // clamped
+    }
+
+    #[test]
+    fn looping_toggle() {
+        let mut p = MidiPlayer::new();
+        assert!(!p.is_looping());
+        p.set_looping(true);
+        assert!(p.is_looping());
+    }
+
+    #[test]
+    fn tempo_scale_clamps_low() {
+        let mut p = MidiPlayer::new();
+        p.set_tempo_scale(0.001);
+        assert_eq!(p.tempo_scale(), 0.01);
+    }
+
+    #[test]
+    fn channel_volume_and_mute() {
+        let mut p = MidiPlayer::new();
+        p.set_channel_volume(3, 0.5);
+        assert_eq!(p.channel_volume(3), 0.5);
+        assert_eq!(p.channel_volume(16), 0.0); // out of range
+
+        p.set_channel_muted(3, true);
+        assert!(p.is_channel_muted(3));
+        assert!(!p.is_channel_muted(0));
+    }
+
+    #[test]
+    fn solo_mutes_others() {
+        let mut p = MidiPlayer::new();
+        p.solo_channel(5);
+        for i in 0..16 {
+            if i == 5 {
+                assert!(!p.is_channel_muted(i));
+            } else {
+                assert!(p.is_channel_muted(i));
+            }
+        }
+        p.unsolo_all();
+        assert!(!p.is_channel_muted(0));
+    }
+
+    #[test]
+    fn channel_instrument() {
+        let mut p = MidiPlayer::new();
+        p.set_channel_instrument(0, 42);
+        assert_eq!(p.channel_instrument(0), 42);
+        assert_eq!(p.channel_instrument(16), 0); // out of range
+    }
+
+    #[test]
+    fn output_sample_rate_clamps() {
+        let mut p = MidiPlayer::new();
+        assert_eq!(p.get_output_sample_rate(), 44100);
+        p.set_output_sample_rate(100);
+        assert_eq!(p.get_output_sample_rate(), 8000);
+        p.set_output_sample_rate(500_000);
+        assert_eq!(p.get_output_sample_rate(), 192_000);
+    }
+
+    #[test]
+    fn output_channels_clamps() {
+        let mut p = MidiPlayer::new();
+        assert_eq!(p.get_output_channels(), 2);
+        p.set_output_channels(0);
+        assert_eq!(p.get_output_channels(), 1);
+        p.set_output_channels(5);
+        assert_eq!(p.get_output_channels(), 2);
+    }
+
+    #[test]
+    fn seek_and_tell() {
+        let mut p = MidiPlayer::new();
+        p.seek(5.0);
+        assert_eq!(p.tell(), 5.0);
+        p.seek(-1.0);
+        assert_eq!(p.tell(), 0.0); // clamped
+    }
+
+    #[test]
+    fn load_data_disabled_returns_false() {
+        let mut p = MidiPlayer::new();
+        assert!(!p.load_data(vec![1, 2, 3]));
+        assert!(!p.is_loaded());
+    }
+
+    #[test]
+    fn stop_resets_state() {
+        let mut p = MidiPlayer::new();
+        p.seek(5.0);
+        p.stop();
+        assert_eq!(p.tell(), 0.0);
+        assert_eq!(p.play_state(), PlayState::Stopped);
+    }
+
+    #[test]
+    fn midi_note_to_freq_a4() {
+        let freq = midi_note_to_freq(69);
+        assert!((freq - 440.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn midi_note_to_freq_c4() {
+        let freq = midi_note_to_freq(60);
+        assert!((freq - 261.63).abs() < 0.1);
+    }
+}

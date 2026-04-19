@@ -195,3 +195,109 @@ impl Default for Profiler {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn profiler_disabled_by_default() {
+        let p = Profiler::new();
+        assert!(!p.enabled);
+    }
+
+    #[test]
+    fn push_pop_when_disabled_is_noop() {
+        let mut p = Profiler::new();
+        p.push("zone");
+        p.pop();
+        p.end_frame();
+        assert!(p.frames.is_empty());
+    }
+
+    #[test]
+    fn enabled_push_pop_records_zone() {
+        let mut p = Profiler::new();
+        p.enabled = true;
+        p.push("update");
+        p.pop();
+        p.end_frame();
+        assert_eq!(p.frames.len(), 1);
+        assert!(!p.frames[0].is_empty());
+        assert_eq!(p.frames[0][0].name, "update");
+    }
+
+    #[test]
+    fn nested_zones_build_tree() {
+        let mut p = Profiler::new();
+        p.enabled = true;
+        p.push("outer");
+        p.push("inner");
+        p.pop();
+        p.pop();
+        p.end_frame();
+        let frame = &p.frames[0];
+        assert_eq!(frame.len(), 1);
+        assert_eq!(frame[0].name, "outer");
+        assert_eq!(frame[0].children.len(), 1);
+        assert_eq!(frame[0].children[0].name, "inner");
+    }
+
+    #[test]
+    fn profile_zone_self_time() {
+        let zone = ProfileZone {
+            name: "parent".to_string(),
+            start_time: 0.0,
+            end_time: 1.0,
+            children: vec![ProfileZone {
+                name: "child".to_string(),
+                start_time: 0.2,
+                end_time: 0.5,
+                children: vec![],
+            }],
+        };
+        assert!((zone.total_time() - 1.0).abs() < f64::EPSILON);
+        assert!((zone.self_time() - 0.7).abs() < 0.001);
+    }
+
+    #[test]
+    fn flatten_collects_all_zones() {
+        let zone = ProfileZone {
+            name: "a".to_string(),
+            start_time: 0.0,
+            end_time: 1.0,
+            children: vec![ProfileZone {
+                name: "b".to_string(),
+                start_time: 0.1,
+                end_time: 0.5,
+                children: vec![],
+            }],
+        };
+        let flat = zone.flatten();
+        assert_eq!(flat.len(), 2);
+    }
+
+    #[test]
+    fn max_frames_eviction() {
+        let mut p = Profiler::new();
+        p.enabled = true;
+        p.max_frames = 3;
+        for _ in 0..5 {
+            p.push("z");
+            p.pop();
+            p.end_frame();
+        }
+        assert_eq!(p.frames.len(), 3);
+    }
+
+    #[test]
+    fn reset_clears_everything() {
+        let mut p = Profiler::new();
+        p.enabled = true;
+        p.push("z");
+        p.pop();
+        p.end_frame();
+        p.reset();
+        assert!(p.frames.is_empty());
+    }
+}

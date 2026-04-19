@@ -172,3 +172,5 @@ impl Ring {
         if nums.is_empty() { 0.0 } else { nums.iter().sum::<f64>() / nums.len() as f64 }
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

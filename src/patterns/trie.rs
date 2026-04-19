@@ -187,36 +187,4 @@ fn count_keys(node: &TrieNode) -> usize {
     count
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn trie_insert_search_finds_inserted_key() {
-        let mut t = Trie::new();
-        t.insert("hello");
-        assert!(t.search("hello"));
-        assert!(!t.search("hell"));
-        assert!(!t.search("helloo"));
-    }
-
-    #[test]
-    fn trie_prefix_search_returns_all_matches() {
-        let mut t = Trie::new();
-        t.insert("damage.fire");
-        t.insert("damage.ice");
-        t.insert("heal");
-        let results = t.prefix_search("damage");
-        assert_eq!(results.len(), 2);
-        assert!(results.contains(&"damage.fire".to_string()));
-        assert!(results.contains(&"damage.ice".to_string()));
-    }
-
-    #[test]
-    fn trie_remove_deletes_exact_key() {
-        let mut t = Trie::new();
-        t.insert("key");
-        assert!(t.remove("key"));
-        assert!(!t.search("key"));
-    }
-}
+// Tests migrated to tests/rust/unit/patterns_tests.rs

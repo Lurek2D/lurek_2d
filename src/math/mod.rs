@@ -85,6 +85,7 @@ pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
 /// # Returns
 /// `f32`.
 pub fn remap(v: f32, in_min: f32, in_max: f32, out_min: f32, out_max: f32) -> f32 {
+    // Guard against near-zero input range to avoid division by zero
     let t = if (in_max - in_min).abs() < 1e-7 { 0.0 } else { (v - in_min) / (in_max - in_min) };
     out_min + t * (out_max - out_min)
 }

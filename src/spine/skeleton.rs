@@ -430,7 +430,6 @@ impl Skeleton {
         }
         slot.attachment_name.as_deref()
     }
-    }
 
     /// Returns the number of slots in this skeleton.
     ///
@@ -585,4 +584,265 @@ impl Skeleton {
         img
     }
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::spine::bone::Bone;
+    use crate::spine::slot::Slot;
+    use crate::spine::ik::IKConstraint;
+    use crate::spine::timeline::{BoneProperty, BoneTimeline, EasingType, SkeletonAnimation};
+
+    #[test]
+    fn new_skeleton_is_empty() {
+        let skel = Skeleton::new("hero");
+        assert_eq!(skel.name, "hero");
+        assert!(skel.bones.is_empty());
+        assert!(skel.slots.is_empty());
+        assert_eq!(skel.x, 0.0);
+        assert_eq!(skel.y, 0.0);
+        assert_eq!(skel.scale_x, 1.0);
+        assert_eq!(skel.scale_y, 1.0);
+    }
+
+    #[test]
+    fn add_bone_returns_incrementing_index() {
+        let mut skel = Skeleton::new("test");
+        assert_eq!(skel.add_bone(Bone::new("root")), 0);
+        assert_eq!(skel.add_bone(Bone::with_parent("arm", 0, 5.0, 0.0)), 1);
+        assert_eq!(skel.bone_count(), 2);
+    }
+
+    #[test]
+    fn add_slot_returns_incrementing_index() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        assert_eq!(skel.add_slot(Slot::new("body", 0)), 0);
+        assert_eq!(skel.add_slot(Slot::new("hat", 0)), 1);
+        assert_eq!(skel.slot_count(), 2);
+    }
+
+    #[test]
+    fn find_bone_by_name() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        skel.add_bone(Bone::with_parent("arm", 0, 5.0, 0.0));
+        assert_eq!(skel.find_bone("arm"), Some(1));
+        assert_eq!(skel.find_bone("missing"), None);
+    }
+
+    #[test]
+    fn find_slot_by_name() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        skel.add_slot(Slot::new("body", 0));
+        assert_eq!(skel.find_slot("body"), Some(0));
+        assert_eq!(skel.find_slot("missing"), None);
+    }
+
+    #[test]
+    fn add_bone_full_with_params() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let idx = skel.add_bone_full(BoneParams {
+            name: "leg".to_string(),
+            parent_index: Some(0),
+            x: 3.0,
+            y: -5.0,
+            rotation: 0.1,
+            scale_x: 1.0,
+            scale_y: 1.0,
+        });
+        assert_eq!(idx, 1);
+        assert_eq!(skel.bones[idx].local_x, 3.0);
+        assert_eq!(skel.bones[idx].local_y, -5.0);
+        assert_eq!(skel.bones[idx].local_rotation, 0.1);
+    }
+
+    #[test]
+    fn bone_world_transform_in_range() {
+        let mut skel = Skeleton::new("test");
+        let mut b = Bone::new("root");
+        b.world_x = 10.0;
+        b.world_y = 20.0;
+        b.world_rotation = 0.5;
+        b.world_scale_x = 2.0;
+        b.world_scale_y = 3.0;
+        skel.add_bone(b);
+        let t = skel.bone_world_transform(0).unwrap();
+        assert_eq!(t, (10.0, 20.0, 0.5, 2.0, 3.0));
+    }
+
+    #[test]
+    fn bone_world_transform_out_of_range() {
+        let skel = Skeleton::new("test");
+        assert!(skel.bone_world_transform(0).is_none());
+    }
+
+    #[test]
+    fn update_world_transforms_root_bone() {
+        let mut skel = Skeleton::new("test");
+        skel.x = 100.0;
+        skel.y = 200.0;
+        let mut root = Bone::new("root");
+        root.local_x = 10.0;
+        root.local_y = 20.0;
+        skel.add_bone(root);
+        skel.update_world_transforms();
+        let b = &skel.bones[0];
+        assert_eq!(b.world_x, 110.0);
+        assert_eq!(b.world_y, 220.0);
+    }
+
+    #[test]
+    fn update_world_transforms_child_bone() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        skel.add_bone(Bone::with_parent("child", 0, 10.0, 0.0));
+        skel.update_world_transforms();
+        let child = &skel.bones[1];
+        assert_eq!(child.world_x, 10.0);
+        assert_eq!(child.world_y, 0.0);
+    }
+
+    #[test]
+    fn set_root_position_propagates() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        skel.add_bone(Bone::with_parent("child", 0, 5.0, 0.0));
+        skel.set_root_position(50.0, 60.0);
+        assert_eq!(skel.bones[0].world_x, 50.0);
+        assert_eq!(skel.bones[0].world_y, 60.0);
+    }
+
+    #[test]
+    fn play_animation_unknown_returns_false() {
+        let mut skel = Skeleton::new("test");
+        assert!(!skel.play_animation("missing", false));
+    }
+
+    #[test]
+    fn play_and_stop_animation() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let anim = SkeletonAnimation::new("walk", 1.0);
+        skel.add_animation(anim);
+        assert!(skel.play_animation("walk", true));
+        assert!(skel.anim_playing);
+        skel.stop_animation();
+        assert!(!skel.anim_playing);
+    }
+
+    #[test]
+    fn update_animation_advances_time() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let mut anim = SkeletonAnimation::new("idle", 2.0);
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(0.0, 0.0, EasingType::Linear);
+        tl.add_key(2.0, 10.0, EasingType::Linear);
+        anim.add_timeline(tl);
+        skel.add_animation(anim);
+        skel.play_animation("idle", false);
+        skel.update_animation(0.5);
+        assert!((skel.get_animation_time() - 0.5).abs() < 0.01);
+    }
+
+    #[test]
+    fn animation_loops_wraps_time() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let anim = SkeletonAnimation::new("run", 1.0);
+        skel.add_animation(anim);
+        skel.play_animation("run", true);
+        skel.update_animation(1.5);
+        assert!(skel.get_animation_time() < 1.0);
+        assert!(skel.anim_playing);
+    }
+
+    #[test]
+    fn animation_non_loop_stops_at_end() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let anim = SkeletonAnimation::new("die", 1.0);
+        skel.add_animation(anim);
+        skel.play_animation("die", false);
+        skel.update_animation(2.0);
+        assert!(!skel.anim_playing);
+        assert!((skel.get_animation_time() - 1.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn add_ik_constraint_returns_index() {
+        let mut skel = Skeleton::new("test");
+        let ik = IKConstraint::new("arm_ik", vec![0, 1], true);
+        assert_eq!(skel.add_ik_constraint(ik), 0);
+    }
+
+    #[test]
+    fn set_ik_target_found() {
+        let mut skel = Skeleton::new("test");
+        skel.add_ik_constraint(IKConstraint::new("arm", vec![0, 1], true));
+        assert!(skel.set_ik_target("arm", 10.0, 20.0));
+    }
+
+    #[test]
+    fn set_ik_target_not_found() {
+        let mut skel = Skeleton::new("test");
+        assert!(!skel.set_ik_target("missing", 0.0, 0.0));
+    }
+
+    #[test]
+    fn skin_management() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        skel.add_slot(Slot::new("body", 0));
+        skel.add_skin("default");
+        skel.set_skin_mapping("default", "body", "body_normal");
+        assert!(skel.set_skin("default"));
+        assert_eq!(skel.get_skin(), Some("default"));
+        assert!(!skel.set_skin("nonexistent"));
+    }
+
+    #[test]
+    fn get_slot_attachment_with_skin_override() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let mut slot = Slot::new("body", 0);
+        slot.attachment_name = Some("default_body".to_string());
+        skel.add_slot(slot);
+
+        // Without skin, returns slot's own attachment
+        assert_eq!(skel.get_slot_attachment(0), Some("default_body"));
+
+        // With skin override
+        skel.add_skin("armored");
+        skel.set_skin_mapping("armored", "body", "armored_body");
+        skel.set_skin("armored");
+        assert_eq!(skel.get_slot_attachment(0), Some("armored_body"));
+    }
+
+    #[test]
+    fn get_slot_attachment_out_of_range() {
+        let skel = Skeleton::new("test");
+        assert!(skel.get_slot_attachment(99).is_none());
+    }
+
+    #[test]
+    fn add_slot_full_sets_attachment() {
+        let mut skel = Skeleton::new("test");
+        skel.add_bone(Bone::new("root"));
+        let idx = skel.add_slot_full("hat", 0, Some("wizard_hat".to_string()));
+        assert_eq!(skel.slots[idx].attachment_name.as_deref(), Some("wizard_hat"));
+    }
+
+    #[test]
+    fn find_animation_by_name() {
+        let mut skel = Skeleton::new("test");
+        skel.add_animation(SkeletonAnimation::new("walk", 1.0));
+        skel.add_animation(SkeletonAnimation::new("run", 0.5));
+        assert_eq!(skel.find_animation("run"), Some(1));
+        assert_eq!(skel.find_animation("missing"), None);
+    }
 }

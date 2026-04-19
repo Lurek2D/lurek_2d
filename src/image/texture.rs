@@ -1,13 +1,14 @@
-//! Texture implementation for the `graphics` subsystem.
+//! GPU texture handle with dimensions and CPU-to-renderer creation helpers.
 //!
-//! This module is part of Lurek2D's `graphics` subsystem and provides the implementation
-//! details for texture-related operations and data management.
-//! Key types exported from this module: `Texture`.
-//! Primary functions: `load()`, `from_rgba()`.
+//! [`Texture`] is a lightweight handle referencing pixel data stored in the
+//! renderer's [`SlotMap`]-based texture list.  Image files are decoded via the
+//! `image` crate, alpha-premultiplied, and inserted into [`TextureData`] storage
+//! through [`Texture::load`] or [`Texture::from_rgba`].
 //!
-//! All public items are documented. See the parent module for architectural context
+//! This module is part of Lurek2D's `image` subsystem (Platform Services tier).
+//!
+//! All public items are documented.  See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
-//!
 use crate::runtime::error::{EngineError, EngineResult};
 use crate::runtime::log_messages::TX01_TEX_DECODED;
 use crate::runtime::resource_keys::TextureKey;

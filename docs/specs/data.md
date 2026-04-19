@@ -17,13 +17,11 @@ The core type is `ByteData`, a heap-allocated raw byte buffer with bounds-checke
 
 Compression (`compress` submodule) supports deflate, gzip, lz4, and zlib via the `CompressFormat` enum. Hashing (`hash`) provides MD5, SHA-1, SHA-256, and SHA-512 via the `HashAlgorithm` enum. Encoding (`encode`) provides base64 and hex via the `EncodeFormat` enum.
 
-The `pack`/`unpack` functions provide a LÖVE2D-compatible binary pack format using format-string tokens (`b` byte, `i` / `I` signed/unsigned integers in various widths, `f` float, `d` double, `s` length-prefixed string, `z` null-terminated string, `c` fixed-length byte sequence). This API is used by network serialization and save-data encoding. The separate `bin_pack` module implements Lurek2D's own space-separated type-token serialization format for edge cases requiring human-readable binary encoding. `DataView` provides a windowed, read-only view into a byte slice without copying.
+The `pack`/`unpack` functions provide a LÖVE2D-compatible binary pack format using format-string tokens (`b` byte, `i` / `I` signed/unsigned integers in various widths, `f` float, `d` double, `s` length-prefixed string, `z` null-terminated string, `c` fixed-length byte sequence). This API is used by network serialization and save-data encoding. The separate `bin_pack` module implements Lurek2D's own space-separated type-token serialization format for edge cases requiring human-readable binary encoding. `DataView` provides a windowed, read-only view into a byte slice without copying. `RingBuffer` is a generic fixed-capacity circular buffer useful for input history, debug logs, and event queues. `toml_convert` handles TOML string ↔ `toml::Value` conversion for the Lua bridge, and `msgpack` provides MessagePack serialization via `rmp-serde` using `serde_json::Value` as the intermediate representation.
 
 Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` module under `lurek.codec`.
 
-Three new submodules significantly extend the toolkit. `cron.rs` adds `CronJob` and `CronSchedule` for cron-expression-based event scheduling, accessible from Lua via `lurek.data.newCron()`. `registry.rs` adds `DataRegistry`, a typed named-value store for global game data, accessible via `lurek.data.newRegistry()`. `relation.rs` adds `DataRelation`, a keyed mapping between entity identifiers with typed metadata, accessible via `lurek.data.newRelation()`. Each type ships with a full Lua method set for lifecycle management and data access.
-
-**Scope boundary**: Foundations tier. Depends only on external crates (deflate, lz4, sha2, base64, etc.). Lua bridge in `src/lua_api/data_api.rs`.
+**Scope boundary**: Foundations tier. Depends only on external crates (flate2, lz4_flex, sha2, base64, hex, rmp-serde, toml). Lua bridge in `src/lua_api/data_api.rs`.
 
 ## Files
 

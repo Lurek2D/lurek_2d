@@ -1,15 +1,10 @@
 //! Seedable random number generator for reproducible sequences.
 //!
-//! Wraps `fastrand::Rng` with engine-compatible API including
-//! seeding, state save/restore, and normal distribution sampling.
+//! Wraps `fastrand::Rng` with engine-compatible API including seeding, state
+//! save/restore, normal distribution sampling, and integer/float range helpers.
+//! Script code accesses this through `lurek.math.newRandomGenerator()`.
 //!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for random-related operations and data management.
-//! Key types exported from this module: `RandomGenerator`.
-//! Primary functions: `new()`, `with_seed()`, `random()`, `random_int()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Key type: [`RandomGenerator`].
 
 use fastrand::Rng;
 
@@ -151,83 +146,5 @@ impl Clone for RandomGenerator {
 impl Default for RandomGenerator {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Seeded determinism ──────────────────────────────────────────────────────
-
-    #[test]
-    fn same_seed_same_first_value() {
-        let mut r1 = RandomGenerator::with_seed(42);
-        let mut r2 = RandomGenerator::with_seed(42);
-        let v1 = r1.random();
-        let v2 = r2.random();
-        assert!((v1 - v2).abs() < f64::EPSILON);
-    }
-
-    #[test]
-    fn get_seed_returns_stored_seed() {
-        let r = RandomGenerator::with_seed(1234);
-        assert_eq!(r.get_seed(), 1234);
-    }
-
-    #[test]
-    fn set_seed_resets_sequence() {
-        let mut r = RandomGenerator::with_seed(99);
-        let first = r.random();
-        r.set_seed(99);
-        let again = r.random();
-        assert!((first - again).abs() < f64::EPSILON);
-    }
-
-    // ── Float range ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn random_float_in_range_never_below_min() {
-        let mut r = RandomGenerator::with_seed(7);
-        for _ in 0..1000 {
-            let v = r.random_float(0.0, 1.0);
-            assert!(v >= 0.0);
-        }
-    }
-
-    #[test]
-    fn random_float_in_range_never_above_max() {
-        let mut r = RandomGenerator::with_seed(7);
-        for _ in 0..1000 {
-            let v = r.random_float(0.0, 1.0);
-            assert!(v < 1.0);
-        }
-    }
-
-    // ── Int range ──────────────────────────────────────────────────────────────
-
-    #[test]
-    fn random_int_never_below_min() {
-        let mut r = RandomGenerator::with_seed(3);
-        for _ in 0..1000 {
-            let v = r.random_int(0, 9);
-            assert!(v >= 0);
-        }
-    }
-
-    #[test]
-    fn random_int_never_above_max_inclusive() {
-        let mut r = RandomGenerator::with_seed(3);
-        for _ in 0..1000 {
-            let v = r.random_int(0, 9);
-            assert!(v <= 9);
-        }
-    }
-
-    #[test]
-    fn random_int_min_equals_max_returns_min() {
-        let mut r = RandomGenerator::with_seed(1);
-        let v = r.random_int(5, 5);
-        assert_eq!(v, 5);
     }
 }

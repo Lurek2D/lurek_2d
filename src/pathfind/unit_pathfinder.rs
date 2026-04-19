@@ -422,3 +422,41 @@ impl UnitPathfinder {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pathfind::nav_grid::NavGrid;
+    use std::rc::Rc;
+    use std::cell::RefCell;
+
+    fn open_grid(w: usize, h: usize) -> Rc<RefCell<NavGrid>> {
+        Rc::new(RefCell::new(NavGrid::new(w, h)))
+    }
+
+    #[test]
+    fn find_path_trivial() {
+        let g = open_grid(5, 5);
+        let mut up = UnitPathfinder::new(g);
+        let path = up.find_path(0, 0, 4, 4);
+        assert!(path.is_some());
+    }
+
+    #[test]
+    fn cache_hit_returns_same_path() {
+        let g = open_grid(5, 5);
+        let mut up = UnitPathfinder::new(g);
+        let p1 = up.find_path(0, 0, 4, 4).unwrap();
+        let p2 = up.find_path(0, 0, 4, 4).unwrap();
+        assert_eq!(p1, p2);
+    }
+
+    #[test]
+    fn path_through_blocked_returns_none() {
+        let g_inner = NavGrid::new(3, 1);
+        let g = Rc::new(RefCell::new(g_inner));
+        g.borrow_mut().set_blocked(1, 0, true);
+        let mut up = UnitPathfinder::new(g);
+        assert!(up.find_path(0, 0, 2, 0).is_none());
+    }
+}

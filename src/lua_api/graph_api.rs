@@ -1,4 +1,9 @@
-//! `lurek.graph` — directed graph with item flow simulation.
+//! `lurek.graph` — Directed graph with item-flow simulation.
+//!
+//! Provides a node/edge graph model with typed item transport, overflow policies,
+//! conversion rules, demand/supply links, and event callbacks (`itemEnter`,
+//! `itemLeave`, etc.). Also exposes graph-level pathfinding (Dijkstra, BFS, A*)
+//! through the `find*` methods on the `Graph` userdata.
 
 use mlua::prelude::*;
 use std::cell::RefCell;

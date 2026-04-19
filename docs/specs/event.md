@@ -13,7 +13,7 @@
 
 The `event` module provides Lurek2D's centralised event queue — the single channel through which OS input, window state changes, custom Lua events, and automation-injected synthetic input flow before being dispatched to Lua callbacks. All modules that raise or consume events route through this module rather than coupling directly to each other.
 
-The core type is `EventQueue`, a double-buffered ring of `Event` values. `App` pushes events during the winit event handler; at the start of each logical-update tick the queue is drained and dispatched to the registered Lua listeners (key-down, key-up, mouse-move, etc.). Double-buffering means that events raised during a tick dispatch do not affect the same tick — they accumulate in the pending buffer and are visible on the next tick. This prevents re-entrant event-handling hazards.
+The core type is `EventQueue`, a FIFO ring of `Event` values backed by `VecDeque`. `App` pushes events during the winit event handler; at the start of each logical-update tick the queue is drained and dispatched to the registered Lua listeners (key-down, key-up, mouse-move, etc.).
 
 `Event` is a flat tagged enum that covers: keyboard events (key code, scancode, modifiers, repeat flag), mouse events (button, position, scroll delta), gamepad events (axis, button, device ID), text input (Unicode character), window events (resize, focus, close, file-drop), touch events, and user-defined events (`UserEvent` with a string key and an optional Lua value payload). The user event variant is what `lurek.event.emit(name, data)` uses to implement the publish-subscribe pattern between Lua scripts.
 

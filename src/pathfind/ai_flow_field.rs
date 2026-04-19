@@ -192,3 +192,101 @@ impl FlowField {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn open_grid(w: usize, h: usize) -> Vec<bool> {
+        vec![true; w * h]
+    }
+
+    #[test]
+    fn new_field_has_no_goal() {
+        let ff = FlowField::new(4, 4, open_grid(4, 4));
+        assert!(ff.goal.is_none());
+    }
+
+    #[test]
+    fn set_goal_computes_directions() {
+        let mut ff = FlowField::new(4, 4, open_grid(4, 4));
+        ff.set_goal(3, 3);
+        assert_eq!(ff.goal, Some((3, 3)));
+        assert_eq!(ff.get_distance(3, 3), 0.0);
+        assert!(ff.get_distance(0, 0) > 0.0);
+        assert!(ff.get_distance(0, 0) < f32::INFINITY);
+    }
+
+    #[test]
+    fn blocked_goal_stays_infinity() {
+        let mut walkable = open_grid(3, 3);
+        walkable[2 * 3 + 2] = false; // block (2,2)
+        let mut ff = FlowField::new(3, 3, walkable);
+        ff.set_goal(2, 2);
+        assert_eq!(ff.get_distance(0, 0), f32::INFINITY);
+    }
+
+    #[test]
+    fn direction_points_toward_goal() {
+        let mut ff = FlowField::new(5, 1, open_grid(5, 1));
+        ff.set_goal(4, 0);
+        let (dx, _dy) = ff.get_direction(0, 0);
+        assert!(dx > 0.0, "should point right toward goal");
+    }
+
+    #[test]
+    fn out_of_bounds_returns_defaults() {
+        let ff = FlowField::new(2, 2, open_grid(2, 2));
+        assert_eq!(ff.get_direction(10, 10), (0.0, 0.0));
+        assert_eq!(ff.get_distance(10, 10), f32::INFINITY);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn open_grid(w: usize, h: usize) -> Vec<bool> {
+        vec![true; w * h]
+    }
+
+    #[test]
+    fn new_field_has_no_goal() {
+        let ff = FlowField::new(4, 4, open_grid(4, 4));
+        assert!(ff.goal.is_none());
+    }
+
+    #[test]
+    fn set_goal_computes_directions() {
+        let mut ff = FlowField::new(4, 4, open_grid(4, 4));
+        ff.set_goal(3, 3);
+        assert_eq!(ff.goal, Some((3, 3)));
+        assert_eq!(ff.get_distance(3, 3), 0.0);
+        assert!(ff.get_distance(0, 0) > 0.0);
+        assert!(ff.get_distance(0, 0) < f32::INFINITY);
+    }
+
+    #[test]
+    fn blocked_goal_stays_infinity() {
+        let mut walkable = open_grid(3, 3);
+        walkable[2 * 3 + 2] = false; // block (2,2)
+        let mut ff = FlowField::new(3, 3, walkable);
+        ff.set_goal(2, 2);
+        assert_eq!(ff.get_distance(0, 0), f32::INFINITY);
+    }
+
+    #[test]
+    fn direction_points_toward_goal() {
+        let mut ff = FlowField::new(5, 1, open_grid(5, 1));
+        ff.set_goal(4, 0);
+        let (dx, _dy) = ff.get_direction(0, 0);
+        assert!(dx > 0.0, "should point right toward goal");
+    }
+
+    #[test]
+    fn out_of_bounds_returns_defaults() {
+        let ff = FlowField::new(2, 2, open_grid(2, 2));
+        assert_eq!(ff.get_direction(10, 10), (0.0, 0.0));
+        assert_eq!(ff.get_distance(10, 10), f32::INFINITY);
+    }
+}

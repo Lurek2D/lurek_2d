@@ -1,7 +1,7 @@
 //! Compile-time limits and defaults for the networking subsystem.
 //!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! All values are `pub const` and used by both the Rust domain layer
+//! (`src/network/`) and the Lua binding layer (`src/lua_api/network_api.rs`).
 
 /// Maximum number of simultaneous peer connections a single host supports.
 ///
@@ -38,19 +38,28 @@ pub const TCP_BUFFER_SIZE: usize = 65536;
 /// Used internally by the WebSocket polling loop.
 pub const WS_BUFFER_SIZE: usize = 65536;
 
-/// Default HTTP request timeout in seconds.
-///
-/// Applied when no explicit timeout is provided to `lurek.network.httpGet()`
-/// and related functions. Zero means no timeout.
-pub const HTTP_TIMEOUT_SECS: u64 = 30;
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-/// Read buffer size for TCP connections in bytes.
-///
-/// Each non-blocking read on a TCP socket attempts to fill a buffer of
-/// this size. 64 KiB is generous for game-protocol messages.
-pub const TCP_BUFFER_SIZE: usize = 65536;
+    #[test]
+    fn default_peers_within_max() {
+        assert!(DEFAULT_PEERS <= MAX_PEERS);
+    }
 
-/// Read buffer size for WebSocket connections in bytes.
-///
-/// Used internally by the WebSocket polling loop.
-pub const WS_BUFFER_SIZE: usize = 65536;
+    #[test]
+    fn default_channels_within_max() {
+        assert!(DEFAULT_CHANNELS <= MAX_CHANNELS);
+    }
+
+    #[test]
+    fn buffer_sizes_are_power_of_two() {
+        assert!(TCP_BUFFER_SIZE.is_power_of_two());
+        assert!(WS_BUFFER_SIZE.is_power_of_two());
+    }
+
+    #[test]
+    fn http_timeout_nonzero() {
+        assert!(HTTP_TIMEOUT_SECS > 0);
+    }
+}

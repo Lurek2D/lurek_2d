@@ -257,7 +257,7 @@ impl Animation {
     pub fn update(&mut self, dt: f32) {
         self.pending_events.clear();
 
-        // Advance crossfade timer — clamp at duration.
+        // Advance crossfade timer — clamp at duration so blend weight saturates at 1.0.
         if self.crossfade_duration > 0.0 {
             self.crossfade_timer = (self.crossfade_timer + dt).min(self.crossfade_duration);
         }
@@ -266,6 +266,9 @@ impl Animation {
             return;
         }
 
+        // Clone the clip to avoid holding a borrow on `self.clips` while mutating
+        // `self.current_frame_pos` and `self.pending_events` below.
+        // TODO(perf): refactor to avoid this clone — see IDEA.md §6.
         let clip = match &self.current_clip {
             Some(name) => match self.clips.get(name) {
                 Some(c) => c.clone(),
@@ -285,6 +288,7 @@ impl Animation {
 
         self.timer += dt * self.speed;
 
+        // Drain accumulated time in a loop: a large dt can skip multiple frames.
         while self.timer >= frame_duration {
             self.timer -= frame_duration;
             let next = self.current_frame_pos + 1;

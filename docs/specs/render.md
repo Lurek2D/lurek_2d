@@ -6,7 +6,7 @@
 - Source path: `src/render/`
 - Lua API path(s): `src/lua_api/render_api.rs`
 - Primary Lua namespace: `lurek.graphic`
-- Rust test path(s): none found in the workspace
+- Rust test path(s): `src/render/` (inline `#[cfg(test)]` in canvas, decal_surface, draw_layer, font, image_effect, mesh, shader, shape), `src/render/renderer_tests.rs`, `src/render/postfx_pipeline_tests.rs`
 - Lua test path(s): none found in the workspace
 
 ## Summary
@@ -15,7 +15,7 @@ The `render` module is Lurek2D's GPU rendering layer, backed by wgpu 22. Its fun
 
 `RenderCommand` is the central enum covering: `DrawImage` (textured quad with position, rotation, scale, color tint, blend mode, UV region), `DrawText` (string with font, size, color, alignment), `DrawShape` (compound vector shapes), `DrawMesh` (custom vertex geometry), `DrawCanvas` (render a Canvas off-screen target as an image), `PostProcess` (WGSL shader pass), `SetCamera` (push/pop camera transform), `SetBlend`, `PushScissor/PopScissor`, `DrawLayer` (Z-ordered batch), and `Clear`.
 
-`GpuRenderer` manages the wgpu `Device`, `Queue`, `Surface`, swapchain configuration, and all resource pools (`SlotMap<TextureKey, Texture>`, `SlotMap<FontKey, Font>`, `SlotMap<ShaderKey, Shader>`, `SlotMap<CanvasKey, Canvas>`, etc.). `Canvas` implements off-screen render-to-texture for post-processing and minimap rendering. `Font` rasterizes glyphs via the fontdue library into a GPU texture atlas with LRU glyph eviction. `Shader` wraps user-supplied WGSL with a uniform variable table updated each frame. `PostFxPipeline` orchestrates ping-pong texture passes for multi-pass post-processing.
+`GpuRenderer` manages the wgpu `Device`, `Queue`, `Surface`, swapchain configuration, and all resource pools (`SlotMap<TextureKey, Texture>`, `SlotMap<FontKey, Font>`, `SlotMap<ShaderKey, Shader>`, `SlotMap<CanvasKey, Canvas>`, etc.). `Canvas` implements off-screen render-to-texture for post-processing and minimap rendering. `Font` provides bitmap glyph lookup from embedded PNG sprite sheets (6 built-in sizes) with grid-based indexing. `Shader` wraps user-supplied WGSL with a uniform variable table updated each frame. `PostFxPipeline` orchestrates ping-pong texture passes for multi-pass post-processing.
 
 Additional `RenderCommand` variants have been added to the central enum, expanding the draw call surface for specialized rendering workloads. Blend mode options have been extended with new compositing modes accessible from Lua scripts via `lurek.graphic.*`, giving game developers finer control over how translucent sprites, UI layers, and post-processing effects composite together. The Lua namespace is the singular `lurek.graphic` (not `lurek.graphics`); this matches the binding registration in `src/lua_api/graphic_api.rs`.
 

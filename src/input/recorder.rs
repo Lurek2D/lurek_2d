@@ -223,7 +223,9 @@ impl InputRecorder {
 
         let mut events: Vec<InputEvent> = Vec::new();
         if let Some(rec) = &self.playback {
-            // Collect all recorded frames whose index matches the current frame.
+            // Sparse seek: advance through recorded frames whose index matches
+            // the current playback frame.  Multiple RecordedFrame entries can
+            // share the same frame index (e.g. mouse + keys recorded separately).
             while self.playback_idx < rec.frames.len()
                 && rec.frames[self.playback_idx].frame == self.frame
             {

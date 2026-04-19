@@ -538,3 +538,109 @@ impl TerrainMap {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_terrain_all_empty() {
+        let t = TerrainMap::new(32, 32, 8.0);
+        assert!(!t.get_cell(0, 0));
+        assert!(!t.get_cell(31, 31));
+        assert!(!t.is_dirty());
+    }
+
+    #[test]
+    fn set_cell_marks_dirty() {
+        let mut t = TerrainMap::new(32, 32, 8.0);
+        t.set_cell(5, 5, true);
+        assert!(t.get_cell(5, 5));
+        assert!(t.is_dirty());
+    }
+
+    #[test]
+    fn set_cell_out_of_bounds_ignored() {
+        let mut t = TerrainMap::new(8, 8, 4.0);
+        t.set_cell(100, 100, true); // should not panic
+        assert!(!t.is_dirty());
+    }
+
+    #[test]
+    fn fill_all_solid() {
+        let mut t = TerrainMap::new(16, 16, 4.0);
+        t.fill_all(true);
+        assert!(t.get_cell(0, 0));
+        assert!(t.get_cell(15, 15));
+        assert!(t.is_dirty());
+    }
+
+    #[test]
+    fn fill_circle_creates_solid() {
+        let mut t = TerrainMap::new(64, 64, 1.0);
+        t.fill_circle(32.0, 32.0, 10.0, true);
+        assert!(t.get_cell(32, 32));
+        assert!(t.is_dirty());
+    }
+
+    #[test]
+    fn fill_rect_creates_solid() {
+        let mut t = TerrainMap::new(32, 32, 1.0);
+        t.fill_rect(5.0, 5.0, 10.0, 10.0, true);
+        assert!(t.get_cell(10, 10));
+    }
+
+    #[test]
+    fn serialization_roundtrip() {
+        let mut t = TerrainMap::new(16, 16, 4.0);
+        t.fill_all(true);
+        t.set_cell(3, 3, false);
+        let bytes = t.to_bytes();
+        let t2 = TerrainMap::from_bytes(&bytes).unwrap();
+        assert_eq!(t2.width, 16);
+        assert_eq!(t2.height, 16);
+        assert!((t2.cell_size - 4.0).abs() < 1e-6);
+        assert!(t2.get_cell(0, 0));
+        assert!(!t2.get_cell(3, 3));
+    }
+
+    #[test]
+    fn from_bytes_too_short() {
+        assert!(TerrainMap::from_bytes(&[0; 8]).is_none());
+    }
+
+    #[test]
+    fn collapse_columns_removes_unsupported() {
+        let mut t = TerrainMap::new(4, 4, 1.0);
+        // Place a floating cell at (1, 1) with no floor below and no horizontal support.
+        t.set_cell(1, 1, true);
+        // Cell below (1, 2) is empty, and left/right neighbours on row 1 are empty.
+        let removed = t.collapse_columns();
+        assert_eq!(removed, 1);
+        assert!(!t.get_cell(1, 1));
+    }
+
+    #[test]
+    fn solid_cell_positions_returns_all_solid() {
+        let mut t = TerrainMap::new(4, 4, 2.0);
+        t.set_cell(0, 0, true);
+        t.set_cell(3, 3, true);
+        let positions = t.solid_cell_positions();
+        assert_eq!(positions.len(), 2);
+    }
+
+    #[test]
+    fn to_image_data_length() {
+        let t = TerrainMap::new(8, 8, 1.0);
+        let data = t.to_image_data([255, 255, 255, 255], [0, 0, 0, 255]);
+        assert_eq!(data.len(), 8 * 8 * 4);
+    }
+
+    #[test]
+    fn load_from_bytes_dimension_mismatch() {
+        let mut t = TerrainMap::new(8, 8, 1.0);
+        let t2 = TerrainMap::new(16, 16, 1.0);
+        let bytes = t2.to_bytes();
+        assert!(!t.load_from_bytes(&bytes));
+    }
+}

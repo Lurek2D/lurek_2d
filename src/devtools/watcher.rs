@@ -96,3 +96,46 @@ impl FileWatcher {
         std::fs::metadata(path).ok()?.modified().ok()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_watcher_is_empty() {
+        let w = FileWatcher::new();
+        assert!(w.paths.is_empty());
+    }
+
+    #[test]
+    fn watch_and_unwatch() {
+        let mut w = FileWatcher::new();
+        w.watch("test.txt");
+        assert_eq!(w.watched_paths().len(), 1);
+        assert!(w.unwatch("test.txt"));
+        assert!(w.paths.is_empty());
+    }
+
+    #[test]
+    fn unwatch_nonexistent_returns_false() {
+        let mut w = FileWatcher::new();
+        assert!(!w.unwatch("missing.txt"));
+    }
+
+    #[test]
+    fn clear_removes_all() {
+        let mut w = FileWatcher::new();
+        w.watch("a.txt");
+        w.watch("b.txt");
+        w.clear();
+        assert!(w.paths.is_empty());
+    }
+
+    #[test]
+    fn poll_nonexistent_file_no_panic() {
+        let mut w = FileWatcher::new();
+        w.watch("nonexistent_file_12345.txt");
+        let changed = w.poll();
+        assert!(changed.is_empty(), "first poll should be baseline");
+    }
+}

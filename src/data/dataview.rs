@@ -199,6 +199,9 @@ impl DataView {
     }
 
     /// Asserts that `idx + width` bytes are within this view's bounds.
+    ///
+    /// Every typed read calls this first so that all bounds errors are
+    /// caught before any pointer arithmetic touches the backing buffer.
     fn check(&self, idx: usize, width: usize) -> Result<(), String> {
         if idx + width > self.size {
             Err(format!(
@@ -212,6 +215,9 @@ impl DataView {
 }
 
 /// Lua-side wrapper around [`DataView`].
+///
+/// Keeps the domain type free of mlua method registration while exposing
+/// the same read-only accessor surface through the Lua bridge.
 ///
 /// # Fields
 /// - `inner` — `DataView`.
@@ -229,5 +235,20 @@ impl LuaDataView {
     /// `Self`.
     pub fn new(inner: DataView) -> Self {
         Self { inner }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Arc;
+
+    // NOTE: Tests private internals — stays inline
+    #[test]
+    fn lua_dataview_wraps_inner() {
+        let buf = Arc::new(vec![42u8]);
+        let dv = DataView::new(buf);
+        let lua_dv = LuaDataView::new(dv);
+        assert_eq!(lua_dv.inner.get_u8(0).unwrap(), 42);
     }
 }

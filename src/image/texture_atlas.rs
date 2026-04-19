@@ -186,3 +186,85 @@ impl TextureAtlas {
         self.shelves.clear();
     }
 }
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_atlas_is_empty() {
+        let a = TextureAtlas::new(256, 256, 1);
+        assert_eq!(a.get_region_count(), 0);
+        assert_eq!(a.get_dimensions(), (256, 256));
+    }
+
+    #[test]
+    fn pack_single_region() {
+        let mut a = TextureAtlas::new(128, 128, 0);
+        assert!(a.pack("hero", 32, 32));
+        assert_eq!(a.get_region_count(), 1);
+        let r = a.get_region("hero").unwrap();
+        assert_eq!(r.w, 32);
+        assert_eq!(r.h, 32);
+    }
+
+    #[test]
+    fn pack_multiple_regions_same_shelf() {
+        let mut a = TextureAtlas::new(128, 128, 0);
+        assert!(a.pack("a", 32, 32));
+        assert!(a.pack("b", 32, 32));
+        assert!(a.pack("c", 32, 32));
+        assert_eq!(a.get_region_count(), 3);
+    }
+
+    #[test]
+    fn pack_fails_when_full() {
+        let mut a = TextureAtlas::new(32, 32, 0);
+        assert!(a.pack("fits", 32, 32));
+        // No room for another 32×32 region
+        assert!(!a.pack("nope", 32, 32));
+    }
+
+    #[test]
+    fn pack_with_padding() {
+        let mut a = TextureAtlas::new(128, 128, 2);
+        assert!(a.pack("padded", 16, 16));
+        let r = a.get_region("padded").unwrap();
+        // Region should be offset by padding
+        assert!(r.x >= 2);
+        assert!(r.y >= 2);
+    }
+
+    #[test]
+    fn get_region_returns_none_for_unknown() {
+        let a = TextureAtlas::new(64, 64, 0);
+        assert!(a.get_region("missing").is_none());
+    }
+
+    #[test]
+    fn clear_resets_atlas() {
+        let mut a = TextureAtlas::new(128, 128, 0);
+        a.pack("x", 32, 32);
+        a.pack("y", 32, 32);
+        a.clear();
+        assert_eq!(a.get_region_count(), 0);
+        assert!(a.get_region("x").is_none());
+    }
+
+    #[test]
+    fn pack_region_wider_than_atlas_fails() {
+        let mut a = TextureAtlas::new(64, 64, 0);
+        assert!(!a.pack("too_wide", 128, 16));
+    }
+
+    #[test]
+    fn get_regions_returns_all() {
+        let mut a = TextureAtlas::new(256, 256, 0);
+        a.pack("a", 16, 16);
+        a.pack("b", 16, 16);
+        let all = a.get_regions();
+        assert_eq!(all.len(), 2);
+    }
+}

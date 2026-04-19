@@ -19,7 +19,7 @@ Each mod folder must contain a `mod.toml` with at minimum an `id`, `name`, and `
 
 Hot-reload queuing works by recording the mtime of each mounted mod folder at load time and comparing on each `tick()` call. When a change is detected, the mod is queued for reload notification to the Lua callback registered via `lurek.mods.onReload(fn)`.
 
-The new `registry.rs` file introduces `ModRegistry`, a typed name-to-value store for mod-contributed content such as custom item definitions, ability data, or configuration overrides. Lua scripts access it through the `lurek.mods.registry.*` namespace, allowing mods to register their content contributions into a shared catalog that the base game and other mods can discover by name without tight coupling between mod scripts.
+The new `registry.rs` file introduces `ModRegistry`, a typed name-to-value store for mod-contributed content such as custom item definitions, ability data, or configuration overrides. Lua scripts access it through the `lurek.mods.registry.*` namespace, allowing mods to register their content contributions into a shared catalog that the base game and other mods can discover by name without tight coupling between mod scripts. *(Note: `registry.rs` is a planned addition; as of 2026-04-18 the registry API is exposed only through hook/config methods on the Mod userdata in `mods_api.rs`.)*
 
 **Scope boundary**: Feature Systems tier. Depends on `filesystem`, `runtime`. Lua bridge in `src/lua_api/mods_api.rs`.
 

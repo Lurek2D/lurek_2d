@@ -94,7 +94,7 @@ impl KeyboardState {
     /// Records that a physical scancode is now held down.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `scancode` — Physical scancode name string (e.g. `"lshift"`, `"a"`).
     pub(crate) fn press_scancode(&mut self, scancode: String) {
         if self.scancodes_down.insert(scancode.clone()) {
             self.scancodes_pressed.push(scancode);
@@ -104,7 +104,7 @@ impl KeyboardState {
     /// Records that a physical scancode was released.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `scancode` — Physical scancode name string to mark as released.
     pub(crate) fn release_scancode(&mut self, scancode: String) {
         if self.scancodes_down.remove(&scancode) {
             self.scancodes_released.push(scancode);
@@ -125,7 +125,7 @@ impl KeyboardState {
     /// Enables or disables key repeat event delivery.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `enabled` — `true` to deliver key repeat events; `false` to suppress them.
     pub(crate) fn set_key_repeat(&mut self, enabled: bool) {
         self.key_repeat_enabled = enabled;
     }
@@ -141,7 +141,7 @@ impl KeyboardState {
     /// Enables or disables text input (IME) event delivery.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `enabled` — `true` to accept IME commit strings; `false` to ignore them.
     pub(crate) fn set_text_input(&mut self, enabled: bool) {
         self.text_input_enabled = enabled;
     }
@@ -157,7 +157,7 @@ impl KeyboardState {
     /// Pushes a committed text input string into the per-frame buffer.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `text` — UTF-8 string committed by the IME or direct character input.
     pub(crate) fn push_text_input(&mut self, text: String) {
         self.text_input_buffer.push(text);
     }
@@ -286,14 +286,18 @@ impl KeyboardState {
 
 /// Resolves a logical Luna key name to the closest physical scancode string.
 ///
+/// Single-character alphanumeric names map to themselves. Named keys like
+/// `"shift"` resolve to their left-side physical variant (`"lshift"`).
+///
 /// # Parameters
-/// - `crate` — parameter.
+/// - `key` — Logical key name (e.g. `"space"`, `"shift"`, `"a"`).
 ///
 /// # Returns
-/// `Option<String>`.
+/// `Option<String>` — Corresponding scancode, or `None` for unmapped names.
 pub(crate) fn get_scancode_from_key(key: &str) -> Option<String> {
     let normalized = key.to_ascii_lowercase();
 
+    // Single alphanumeric characters are their own scancode.
     if normalized.len() == 1
         && normalized
             .bytes()
@@ -303,12 +307,15 @@ pub(crate) fn get_scancode_from_key(key: &str) -> Option<String> {
     }
 
     match normalized.as_str() {
+        // Named keys that map 1:1 to their own scancode.
         "space" | "escape" | "return" | "tab" | "backspace" | "delete" | "insert" | "home"
         | "end" | "pageup" | "pagedown" | "left" | "right" | "up" | "down" | "capslock"
         | "numlock" => Some(normalized),
+        // Generic modifier names resolve to their left-side physical variant.
         "shift" => Some("lshift".to_string()),
         "ctrl" => Some("lctrl".to_string()),
         "alt" => Some("lalt".to_string()),
+        // Function keys map 1:1.
         "f1" | "f2" | "f3" | "f4" | "f5" | "f6" | "f7" | "f8" | "f9" | "f10" | "f11" | "f12" => {
             Some(normalized)
         }
@@ -318,14 +325,18 @@ pub(crate) fn get_scancode_from_key(key: &str) -> Option<String> {
 
 /// Resolves a physical scancode string to the closest logical Luna key name.
 ///
+/// Left/right modifier variants (`"lshift"`, `"rshift"`) collapse to their
+/// generic name (`"shift"`).
+///
 /// # Parameters
-/// - `crate` — parameter.
+/// - `scancode` — Physical scancode string (e.g. `"lshift"`, `"a"`, `"f1"`).
 ///
 /// # Returns
-/// `Option<String>`.
+/// `Option<String>` — Logical key name, or `None` for unmapped scancodes.
 pub(crate) fn get_key_from_scancode(scancode: &str) -> Option<String> {
     let normalized = scancode.to_ascii_lowercase();
 
+    // Single alphanumeric characters map directly.
     if normalized.len() == 1
         && normalized
             .bytes()
@@ -335,11 +346,13 @@ pub(crate) fn get_key_from_scancode(scancode: &str) -> Option<String> {
     }
 
     match normalized.as_str() {
+        // Standard named keys pass through unchanged.
         "space" | "escape" | "return" | "tab" | "backspace" | "delete" | "insert" | "home"
         | "end" | "pageup" | "pagedown" | "left" | "right" | "up" | "down" | "capslock"
         | "numlock" | "scrolllock" | "f1" | "f2" | "f3" | "f4" | "f5" | "f6" | "f7" | "f8"
         | "f9" | "f10" | "f11" | "f12" | "kp+" | "kp-" | "kp*" | "kp/" | "kp0" | "kp1" | "kp2"
         | "kp3" | "kp4" | "kp5" | "kp6" | "kp7" | "kp8" | "kp9" => Some(normalized),
+        // Left/right modifier variants collapse to their generic logical name.
         "lshift" | "rshift" => Some("shift".to_string()),
         "lctrl" | "rctrl" => Some("ctrl".to_string()),
         "lalt" | "ralt" => Some("alt".to_string()),
@@ -579,5 +592,114 @@ mod tests {
         kb.set_modifiers(true, false, false, false);
         assert!(kb.is_modifier_active("shift"));
         assert!(!kb.is_modifier_active("ctrl"));
+    }
+
+    #[test]
+    fn all_modifiers_active() {
+        let mut kb = KeyboardState::new();
+        kb.set_modifiers(true, true, true, true);
+        assert!(kb.is_modifier_active("shift"));
+        assert!(kb.is_modifier_active("ctrl"));
+        assert!(kb.is_modifier_active("alt"));
+        assert!(kb.is_modifier_active("meta"));
+        assert!(kb.is_modifier_active("super")); // alias for meta
+    }
+
+    #[test]
+    fn unknown_modifier_returns_false() {
+        let kb = KeyboardState::new();
+        assert!(!kb.is_modifier_active("nonexistent"));
+    }
+
+    // ── Scancode press / release ─────────────────────────────────────────────
+
+    #[test]
+    fn scancode_press_and_release() {
+        let mut kb = KeyboardState::new();
+        kb.press_scancode("lshift".into());
+        assert!(kb.is_scancode_down("lshift"));
+        kb.release_scancode("lshift".into());
+        assert!(!kb.is_scancode_down("lshift"));
+    }
+
+    #[test]
+    fn scancode_duplicate_press_ignored() {
+        let mut kb = KeyboardState::new();
+        kb.press_scancode("a".into());
+        kb.press_scancode("a".into()); // duplicate — should not double-count
+        assert!(kb.is_scancode_down("a"));
+    }
+
+    // ── Text input ────────────────────────────────────────────────────────────
+
+    #[test]
+    fn text_input_buffer_collects_and_clears() {
+        let mut kb = KeyboardState::new();
+        kb.set_text_input(true);
+        assert!(kb.has_text_input());
+        kb.push_text_input("hello".into());
+        kb.push_text_input("world".into());
+        assert_eq!(kb.get_text_input(), &["hello", "world"]);
+        kb.begin_frame();
+        assert!(kb.get_text_input().is_empty());
+    }
+
+    // ── Key repeat ────────────────────────────────────────────────────────────
+
+    #[test]
+    fn key_repeat_toggle() {
+        let mut kb = KeyboardState::new();
+        assert!(!kb.has_key_repeat());
+        kb.set_key_repeat(true);
+        assert!(kb.has_key_repeat());
+    }
+
+    // ── Clear ─────────────────────────────────────────────────────────────────
+
+    #[test]
+    fn clear_resets_all_state() {
+        let mut kb = KeyboardState::new();
+        kb.set_key_down("a");
+        kb.press_scancode("a".into());
+        kb.push_text_input("x".into());
+        kb.clear();
+        assert!(!kb.is_down("a"));
+        assert!(!kb.is_scancode_down("a"));
+        assert!(kb.get_text_input().is_empty());
+        assert!(kb.get_pressed().is_empty());
+        assert!(kb.get_released().is_empty());
+    }
+
+    // ── Scancode ↔ key mapping ───────────────────────────────────────────────
+
+    #[test]
+    fn scancode_from_key_single_char() {
+        assert_eq!(get_scancode_from_key("A"), Some("a".into()));
+        assert_eq!(get_scancode_from_key("5"), Some("5".into()));
+    }
+
+    #[test]
+    fn scancode_from_key_named_keys() {
+        assert_eq!(get_scancode_from_key("space"), Some("space".into()));
+        assert_eq!(get_scancode_from_key("shift"), Some("lshift".into()));
+        assert_eq!(get_scancode_from_key("ctrl"), Some("lctrl".into()));
+    }
+
+    #[test]
+    fn scancode_from_key_unknown() {
+        assert_eq!(get_scancode_from_key("nonexistent_key"), None);
+    }
+
+    #[test]
+    fn key_from_scancode_roundtrip() {
+        assert_eq!(get_key_from_scancode("a"), Some("a".into()));
+        assert_eq!(get_key_from_scancode("lshift"), Some("shift".into()));
+        assert_eq!(get_key_from_scancode("rctrl"), Some("ctrl".into()));
+    }
+
+    #[test]
+    fn key_from_scancode_function_keys() {
+        assert_eq!(get_key_from_scancode("f1"), Some("f1".into()));
+        assert_eq!(get_key_from_scancode("f12"), Some("f12".into()));
     }
 }

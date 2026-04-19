@@ -1,4 +1,4 @@
-//! Playback engine for the automation simulation module.
+﻿//! Playback engine for the automation simulation module.
 //!
 //! This module provides the [`Simulator`] struct and the private
 //! [`PlaybackState`] enum that drives it. The [`Simulator`] holds a named
@@ -40,10 +40,10 @@ use crate::log_msg;
 /// | Any | `Idle` | [`Simulator::stop`] called, or active script unloaded |
 ///
 /// # Variants
-/// - `Idle` — No script selected or playback explicitly stopped.
-/// - `Running` — A script is actively playing; `update` advances elapsed time.
-/// - `Paused` — Playback suspended; `update` is a no-op until resumed.
-/// - `Complete` — All steps in the active script have been dispatched.
+/// - `Idle` â€” No script selected or playback explicitly stopped.
+/// - `Running` â€” A script is actively playing; `update` advances elapsed time.
+/// - `Paused` â€” Playback suspended; `update` is a no-op until resumed.
+/// - `Complete` â€” All steps in the active script have been dispatched.
 #[derive(Debug, Clone, PartialEq)]
 enum PlaybackState {
     /// No script selected or playback stopped.
@@ -81,12 +81,12 @@ enum PlaybackState {
 /// via `Rc<RefCell<Simulator>>` and must not be shared across threads.
 ///
 /// # Fields
-/// - `scripts` — `HashMap<String, Script>`.
-/// - `active_script` — `Option<String>`.
-/// - `elapsed` — `f32`.
-/// - `next_step_idx` — `usize`.
-/// - `state` — `PlaybackState`.
-/// - `highlight_mode` — `bool`. When `true`, a game can render an overlay showing current input positions.
+/// - `scripts` â€” `HashMap<String, Script>`.
+/// - `active_script` â€” `Option<String>`.
+/// - `elapsed` â€” `f32`.
+/// - `next_step_idx` â€” `usize`.
+/// - `state` â€” `PlaybackState`.
+/// - `highlight_mode` â€” `bool`. When `true`, a game can render an overlay showing current input positions.
 #[derive(Debug)]
 pub struct Simulator {
     /// All loaded scripts indexed by their name.
@@ -115,7 +115,7 @@ pub struct Simulator {
     /// Controls whether [`Simulator::update`] advances elapsed time and
     /// dispatches steps. See [`PlaybackState`] for the full transition model.
     state: PlaybackState,
-    /// Named macro store — scripts saved for later replay with [`Simulator::play_macro`].
+    /// Named macro store â€” scripts saved for later replay with [`Simulator::play_macro`].
     ///
     /// Macros are stored separately from the main script registry so that calling
     /// [`Simulator::play_macro`] does not permanently pollute the script list beyond
@@ -124,7 +124,7 @@ pub struct Simulator {
     /// Playback speed multiplier applied to `dt` on every [`Simulator::update`] call.
     ///
     /// Default is `1.0`. Values below `1.0` slow playback; values above `1.0` speed
-    /// it up. Clamped to `[0.0, ∞)` by [`Simulator::set_playback_speed`].
+    /// it up. Clamped to `[0.0, âˆž)` by [`Simulator::set_playback_speed`].
     playback_speed: f32,
     /// When `true`, a game-side render pass can draw an overlay showing the current
     /// cursor position and key state for each simulated step.
@@ -160,11 +160,11 @@ impl Simulator {
     ///
     /// The script is indexed by [`Script::name`]. If a script with that name
     /// is already registered it is silently overwritten. The active script,
-    /// if running, is unaffected unless the new script replaces it — in that
+    /// if running, is unaffected unless the new script replaces it â€” in that
     /// case the replacement takes effect at the next [`Simulator::update`].
     ///
     /// # Parameters
-    /// - `script` — `Script`.
+    /// - `script` â€” `Script`.
     pub fn load(&mut self, script: Script) {
         log_msg!(debug, AT02_SCRIPT_LOAD, "{}", script.name);
         self.scripts.insert(script.name.clone(), script);
@@ -178,7 +178,7 @@ impl Simulator {
     /// playback to `Idle`.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -196,7 +196,7 @@ impl Simulator {
     /// or idle. Use [`Simulator::current_script`] to identify the active one.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -224,7 +224,7 @@ impl Simulator {
     /// `Err` if the script name is not registered.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Result<(), String>`.
@@ -357,7 +357,7 @@ impl Simulator {
     /// Used by [`Simulator::save_macro`] to snapshot an already-loaded script.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<Script>`.
@@ -370,7 +370,7 @@ impl Simulator {
     /// Returns `None` if no script with that name is registered.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<usize>`.
@@ -383,8 +383,8 @@ impl Simulator {
     /// Returns `false` if no script with that name is registered.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
-    /// - `limit` — `usize`.
+    /// - `name` â€” `&str`.
+    /// - `limit` â€” `usize`.
     ///
     /// # Returns
     /// `bool`.
@@ -404,8 +404,8 @@ impl Simulator {
     /// start playback.
     ///
     /// # Parameters
-    /// - `name` — `String`. The macro identifier.
-    /// - `script` — `Script`. The script to save.
+    /// - `name` â€” `String`. The macro identifier.
+    /// - `script` â€” `Script`. The script to save.
     pub fn save_macro(&mut self, name: String, script: Script) {
         self.macros.insert(name, script);
     }
@@ -415,7 +415,7 @@ impl Simulator {
     /// Returns `Err` if no macro with `name` exists.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Result<(), String>`.
@@ -433,7 +433,7 @@ impl Simulator {
     /// Return `true` if a macro with the given name has been saved.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -455,10 +455,10 @@ impl Simulator {
     /// Set the playback speed multiplier applied to `dt` on each [`Simulator::update`].
     ///
     /// Values below `1.0` slow playback; values above `1.0` speed it up.
-    /// Clamped to `[0.0, ∞)` — negative values are treated as `0.0` (frozen).
+    /// Clamped to `[0.0, âˆž)` â€” negative values are treated as `0.0` (frozen).
     ///
     /// # Parameters
-    /// - `factor` — `f32`.
+    /// - `factor` â€” `f32`.
     pub fn set_playback_speed(&mut self, factor: f32) {
         self.playback_speed = factor.max(0.0);
     }
@@ -481,7 +481,7 @@ impl Simulator {
     /// `lurek.simulator:isHighlightMode()`.
     ///
     /// # Parameters
-    /// - `enable` — `bool`.
+    /// - `enable` â€” `bool`.
     pub fn set_highlight_mode(&mut self, enable: bool) {
         self.highlight_mode = enable;
     }
@@ -505,8 +505,8 @@ impl Simulator {
     /// Is a no-op when `state != Running`.
     ///
     /// # Parameters
-    /// - `dt` — `f32`. Seconds since the previous frame.
-    /// - `event_queue` — `&mut EventQueue`.
+    /// - `dt` â€” `f32`. Seconds since the previous frame.
+    /// - `event_queue` â€” `&mut EventQueue`.
     pub fn update(&mut self, dt: f32, event_queue: &mut EventQueue) {
         if self.state != PlaybackState::Running {
             return;
@@ -543,14 +543,14 @@ impl Simulator {
     /// Translate a [`Step`] into a synthetic [`Event`] and push it into the queue.
     ///
     /// Each `Action` variant maps to a specific event name and argument list:
-    /// - `KeyPress` → `"keypressed"` with `(key, scancode, is_repeat)`
-    /// - `KeyRelease` → `"keyreleased"` with `(key, scancode)`
-    /// - `MouseMove` → `"mousemoved"` with `(x, y, dx, dy)`
-    /// - `MousePress` → `"mousepressed"` with `(x, y, button, false, clicks)`
-    /// - `MouseRelease` → `"mousereleased"` with `(x, y, button)`
-    /// - `MouseWheel` → `"wheelmoved"` with `(dx, dy)`
-    /// - `TextInput` → `"textinput"` with `(text)`
-    /// - `Wait` → no event pushed (pure delay)
+    /// - `KeyPress` â†’ `"keypressed"` with `(key, scancode, is_repeat)`
+    /// - `KeyRelease` â†’ `"keyreleased"` with `(key, scancode)`
+    /// - `MouseMove` â†’ `"mousemoved"` with `(x, y, dx, dy)`
+    /// - `MousePress` â†’ `"mousepressed"` with `(x, y, button, false, clicks)`
+    /// - `MouseRelease` â†’ `"mousereleased"` with `(x, y, button)`
+    /// - `MouseWheel` â†’ `"wheelmoved"` with `(dx, dy)`
+    /// - `TextInput` â†’ `"textinput"` with `(text)`
+    /// - `Wait` â†’ no event pushed (pure delay)
     fn dispatch_step(step: &Step, event_queue: &mut EventQueue) {
         match step.action {
             Action::KeyPress => {
@@ -632,7 +632,7 @@ impl Simulator {
                 });
             }
             Action::Wait => {
-                // No-op — just a timed delay.
+                // No-op â€” just a timed delay.
             }
         }
     }
@@ -643,3 +643,5 @@ impl Default for Simulator {
         Self::new()
     }
 }
+
+// Tests migrated to tests/rust/unit/automation_tests.rs

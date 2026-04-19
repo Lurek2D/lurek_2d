@@ -1,13 +1,8 @@
-//! System Api implementation for the `lua_api` subsystem.
+//! `lurek.platform` — Platform queries: OS name, CPU count, memory size, power state,
+//! preferred locales, clipboard access, and safe URL opening.
 //!
-//! This module is part of Lurek2D's `lua_api` subsystem and provides the implementation
-//! details for system api-related operations and data management.
-//! Key types exported from this module: `PowerState`.
-//! Primary functions: `get_processor_count()`, `get_memory_size()`, `open_url()`, `get_preferred_locales()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
-//!
+//! Registered as `lurek.platform.*` in the Lua VM. Domain logic is minimal —
+//! most functions delegate directly to `std` or `sysinfo`.
 use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -42,15 +37,12 @@ pub fn get_memory_size() -> u64 {
 
 /// Opens a URL in the default browser/application.
 ///
-/// @param url : &str
-///
-/// @return bool
-///
-///
 /// Only `http://`, `https://`, and `mailto:` schemes are allowed.
-/// - `url` ÔÇö the URL string to open
-/// @return true
+/// Returns `true` if the command was spawned, `false` if the scheme was
 /// rejected or the spawn failed.
+///
+/// @param url : &str
+/// @return bool
 pub fn open_url(url: &str) -> bool {
     let url_lower = url.to_lowercase();
     if !url_lower.starts_with("http://")
@@ -102,15 +94,9 @@ pub fn get_preferred_locales() -> Vec<String> {
     }
 }
 
-/// Power state of the device. Consult the module-level documentation for the broader usage context and preconditions.
+/// Power state of the host device.
 ///
-/// # Variants
-/// - `Unknown` — Unknown variant.
-/// - `Battery` — Battery variant.
-/// - `NoBattery` — NoBattery variant.
-/// - `Charging` — Charging variant.
-/// - `Charged` — Charged variant.
-///
+/// Returned by [`get_power_info`] and exposed to Lua via `lurek.platform.getPowerInfo()`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum PowerState {
     /// Cannot determine power state.
@@ -128,7 +114,6 @@ pub enum PowerState {
 impl PowerState {
     /// Returns the string representation used in Lua.
     ///
-    /// &'static str
     /// One of `"unknown"`, `"battery"`, `"nobattery"`, `"charging"`, or `"charged"`.
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -141,12 +126,11 @@ impl PowerState {
     }
 }
 
-/// Returns power/battery information: (state, percent, seconds)
-/// @return (PowerState, Option<u32>, Option<u32>)
+/// Returns power/battery information as `(state, percent, seconds)`.
 ///
-/// On desktop platforms this returns `(Unknown, None, None)`.
-/// A tuple of `(PowerState, Option<u32>, Option<u32>)` ÔÇö the power state,
-/// remaining battery percentage (0ÔÇô100), and remaining seconds on battery.
+/// On desktop platforms this always returns `(Unknown, None, None)`.
+///
+/// @return (PowerState, Option<u32>, Option<u32>)
 pub fn get_power_info() -> (PowerState, Option<u32>, Option<u32>) {
     (PowerState::Unknown, None, None)
 }

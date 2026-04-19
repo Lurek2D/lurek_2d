@@ -41,3 +41,34 @@ impl Lcg {
         (self.next() >> 33) as f32 / (1u64 << 31) as f32
     }
 }
+
+// NOTE: Tests private internals — stays inline
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deterministic_same_seed() {
+        let mut a = Lcg::new(42);
+        let mut b = Lcg::new(42);
+        for _ in 0..10 {
+            assert_eq!(a.next(), b.next());
+        }
+    }
+
+    #[test]
+    fn different_seeds_diverge() {
+        let mut a = Lcg::new(1);
+        let mut b = Lcg::new(2);
+        assert_ne!(a.next(), b.next());
+    }
+
+    #[test]
+    fn next_f32_in_unit_range() {
+        let mut rng = Lcg::new(0);
+        for _ in 0..100 {
+            let v = rng.next_f32();
+            assert!(v >= 0.0 && v < 1.0, "value out of [0,1): {v}");
+        }
+    }
+}

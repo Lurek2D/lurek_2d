@@ -394,12 +394,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 }
 
 impl Step {
-/// vec_from_lua_table.
+/// Parses a Lua array of step tables into a `Vec<Step>`.
 ///
-/// @param t : &LuaTable
-///
-/// LuaResult<Vec<Self>>
-///
+/// Each element must have an `"action"` field and optional timing/target fields.
 pub fn vec_from_lua_table(t: &LuaTable) -> LuaResult<Vec<Self>> {
         let len = t.len()? as usize;
         let mut steps = Vec::with_capacity(len);

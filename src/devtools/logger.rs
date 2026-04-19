@@ -248,3 +248,75 @@ impl Default for Logger {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn log_level_roundtrip() {
+        for name in &["trace", "debug", "info", "warn", "error", "fatal"] {
+            let level = LogLevel::from_str(name).unwrap();
+            assert_eq!(level.as_str(), *name);
+        }
+    }
+
+    #[test]
+    fn log_level_parse_unknown_returns_none() {
+        assert!(LogLevel::from_str("verbose").is_none());
+    }
+
+    #[test]
+    fn logger_push_respects_min_level() {
+        let mut logger = Logger::new();
+        logger.console_enabled = false;
+        logger.min_level = LogLevel::Warn;
+        logger.push("info", "should be filtered", "test", 1, None);
+        assert!(logger.history.is_empty());
+        logger.push("warn", "should pass", "test", 2, None);
+        assert_eq!(logger.history.len(), 1);
+    }
+
+    #[test]
+    fn logger_tail_returns_last_n() {
+        let mut logger = Logger::new();
+        logger.console_enabled = false;
+        for i in 0..10 {
+            logger.push("info", &format!("msg{i}"), "test", i, None);
+        }
+        let tail = logger.tail(Some(3));
+        assert_eq!(tail.len(), 3);
+        assert_eq!(tail[0].message, "msg7");
+    }
+
+    #[test]
+    fn logger_filter_category() {
+        let mut logger = Logger::new();
+        logger.console_enabled = false;
+        logger.push("info", "a", "test", 1, Some("audio"));
+        logger.push("info", "b", "test", 2, Some("physics"));
+        logger.push("info", "c", "test", 3, Some("audio_mixer"));
+        let filtered = logger.filter_category("audio");
+        assert_eq!(filtered.len(), 2);
+    }
+
+    #[test]
+    fn logger_clear_empties_history() {
+        let mut logger = Logger::new();
+        logger.console_enabled = false;
+        logger.push("info", "msg", "test", 1, None);
+        logger.clear();
+        assert!(logger.history.is_empty());
+    }
+
+    #[test]
+    fn logger_max_history_eviction() {
+        let mut logger = Logger::new();
+        logger.console_enabled = false;
+        logger.max_history = 5;
+        for i in 0..10 {
+            logger.push("info", &format!("msg{i}"), "test", i, None);
+        }
+        assert_eq!(logger.history.len(), 5);
+    }
+}

@@ -81,6 +81,8 @@ impl TweenEngine {
     /// `LuaResult<()>`.
     pub fn update(this_rc: &Rc<RefCell<Self>>, lua: &Lua, dt: f64) -> LuaResult<()> {
         // ── standalone tweens ─────────────────────────────────────────────
+        // Take-and-replace: move the key list out of the RefCell so we don't
+        // hold a borrow_mut while calling Lua callbacks (which may re-enter).
         let tween_keys = std::mem::take(&mut this_rc.borrow_mut().active_tweens);
         let mut still_active_tweens = Vec::with_capacity(tween_keys.len());
         for key in tween_keys {

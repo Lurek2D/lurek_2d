@@ -6,14 +6,14 @@
 - Source path: `src/thread/`
 - Lua API path(s): `src/lua_api/thread_api.rs`
 - Primary Lua namespace: `lurek.thread`
-- Rust test path(s): tests/rust/unit/thread_tests.rs
+- Rust test path(s): tests/rust/unit/thread_tests.rs, plus inline unit coverage in src/thread/channel.rs, src/thread/promise.rs, src/thread/pool.rs, src/thread/worker.rs
 - Lua test path(s): tests/lua/unit/test_thread.lua, tests/lua/stress/test_thread_stress.lua, tests/lua/integration/test_thread_data.lua
 
 ## Summary
 
 The `thread` module provides Lurek2D's background threading infrastructure for game scripts, allowing CPU-intensive work to run off the main Lua VM thread. Because LuaJIT VMs cannot be shared across OS threads (design constraint B-04), each background thread runs an isolated VM with its own script load.
 
-`Channel` is the cross-thread communication primitive: an MPSC queue backed by `Mutex<VecDeque<ChannelValue>>` plus a `Condvar` for blocking waits. `ChannelValue` is deliberately restricted to Nil, Bool, Number(f64), and String — Lua tables, UserData, and functions cannot cross thread boundaries safely. Operations: `push(v)` (non-blocking, always succeeds unless the channel is closed), `pop()` (non-blocking, returns nil if empty), `demand()` (blocking, waits until a value is available). Channels can be named and retrieved globally by name for pub-sub patterns.
+`Channel` is the cross-thread communication primitive: an MPMC queue backed by `Mutex<VecDeque<ChannelValue>>` plus a `Condvar` for blocking waits. `ChannelValue` supports Nil, Bool, Number(f64), String, serialized Tables, and raw Bytes — Lua UserData and functions cannot cross thread boundaries safely. Operations: `push(v)` (non-blocking, returns monotonic push ID), `pop()` (non-blocking, returns None if empty), `demand(timeout)` (blocking, waits until a value is available or timeout elapses), `supply(v)` (push only if empty), `peek()` (read without consuming). Channels can be named and retrieved globally by name for pub-sub patterns.
 
 `Worker` wraps an OS thread running an isolated LuaJIT VM: it loads a specified script file, then loops pulling tasks from an input `Channel`, executing the script's registered callback function with the task payload, and sending results to an output `Channel`. Workers can be paused, resumed, and terminated gracefully. Uncaught errors are captured in an error slot accessible from the main thread via `worker:get_error()`.
 

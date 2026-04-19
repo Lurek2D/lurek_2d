@@ -53,3 +53,61 @@ pub enum ParticleShape {
     /// Filled capsule (rectangle + two hemispherical caps), oriented along `particle.rotation`.
     Capsule,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_shape_is_square() {
+        assert_eq!(ParticleShape::default(), ParticleShape::Square);
+    }
+
+    #[test]
+    fn shrapnel_edges_cloned() {
+        let s = ParticleShape::Shrapnel { edges: 8 };
+        let c = s.clone();
+        assert_eq!(c, ParticleShape::Shrapnel { edges: 8 });
+    }
+
+    #[test]
+    fn ray_aspect_preserved() {
+        let s = ParticleShape::Ray { aspect: 6.0 };
+        if let ParticleShape::Ray { aspect } = s {
+            assert!((aspect - 6.0).abs() < f32::EPSILON);
+        } else {
+            panic!("expected Ray variant");
+        }
+    }
+
+    #[test]
+    fn ring_thickness_preserved() {
+        let s = ParticleShape::Ring { thickness: 0.3 };
+        if let ParticleShape::Ring { thickness } = s {
+            assert!((thickness - 0.3).abs() < f32::EPSILON);
+        } else {
+            panic!("expected Ring variant");
+        }
+    }
+
+    #[test]
+    fn all_variants_are_debug_printable() {
+        let variants: Vec<ParticleShape> = vec![
+            ParticleShape::Square,
+            ParticleShape::Circle,
+            ParticleShape::Triangle,
+            ParticleShape::Spark,
+            ParticleShape::Diamond,
+            ParticleShape::Shrapnel { edges: 5 },
+            ParticleShape::Ray { aspect: 4.0 },
+            ParticleShape::Puff,
+            ParticleShape::Ring { thickness: 0.2 },
+            ParticleShape::Capsule,
+        ];
+        for v in &variants {
+            let _ = format!("{:?}", v);
+        }
+        assert_eq!(variants.len(), 10);
+    }
+}
+

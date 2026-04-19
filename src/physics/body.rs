@@ -399,3 +399,100 @@ impl Body {
         (lx, ly)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_body_defaults() {
+        let b = Body::new(10.0, 20.0, BodyType::Dynamic);
+        assert_eq!(b.position.x, 10.0);
+        assert_eq!(b.position.y, 20.0);
+        assert_eq!(b.body_type, BodyType::Dynamic);
+        assert_eq!(b.mass, 1.0);
+        assert!((b.restitution - 0.3).abs() < 1e-6);
+    }
+
+    #[test]
+    fn new_circle_body() {
+        let b = Body::new_circle(5.0, 5.0, 16.0, BodyType::Static);
+        assert!(matches!(b.shape, BodyShape::Circle { radius } if (radius - 16.0).abs() < 1e-6));
+        assert_eq!(b.width, 32.0);
+        assert_eq!(b.height, 32.0);
+    }
+
+    #[test]
+    fn bounding_box_rect() {
+        let b = Body::new(100.0, 200.0, BodyType::Dynamic);
+        let bb = b.bounding_box();
+        assert!((bb.x - 84.0).abs() < 1e-6);
+        assert!((bb.y - 184.0).abs() < 1e-6);
+        assert!((bb.width - 32.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn bounding_box_circle() {
+        let b = Body::new_circle(0.0, 0.0, 10.0, BodyType::Dynamic);
+        let bb = b.bounding_box();
+        assert!((bb.x - (-10.0)).abs() < 1e-6);
+        assert!((bb.width - 20.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn collides_with_layer_filtering() {
+        let mut a = Body::new(0.0, 0.0, BodyType::Dynamic);
+        let mut b = Body::new(0.0, 0.0, BodyType::Dynamic);
+        a.layer = 1;
+        a.mask = 2;
+        b.layer = 2;
+        b.mask = 1;
+        assert!(a.collides_with_layer(&b));
+        b.mask = 0; // b doesn't accept layer 1
+        assert!(!a.collides_with_layer(&b));
+    }
+
+    #[test]
+    fn get_type_strings() {
+        assert_eq!(Body::new(0.0, 0.0, BodyType::Static).get_type(), "static");
+        assert_eq!(Body::new(0.0, 0.0, BodyType::Dynamic).get_type(), "dynamic");
+        assert_eq!(Body::new(0.0, 0.0, BodyType::Kinematic).get_type(), "kinematic");
+        assert_eq!(Body::new(0.0, 0.0, BodyType::Sensor).get_type(), "sensor");
+    }
+
+    #[test]
+    fn world_local_point_roundtrip() {
+        let mut b = Body::new(100.0, 200.0, BodyType::Dynamic);
+        b.angle = std::f32::consts::FRAC_PI_4;
+        let (wx, wy) = b.get_world_point(10.0, 0.0);
+        let (lx, ly) = b.get_local_point(wx, wy);
+        assert!((lx - 10.0).abs() < 1e-3);
+        assert!(ly.abs() < 1e-3);
+    }
+
+    #[test]
+    fn new_polygon_computes_bounding_size() {
+        let verts = vec![
+            Vec2::new(-5.0, -5.0),
+            Vec2::new(5.0, -5.0),
+            Vec2::new(5.0, 5.0),
+            Vec2::new(-5.0, 5.0),
+        ];
+        let b = Body::new_polygon(0.0, 0.0, verts, BodyType::Dynamic);
+        assert!((b.width - 10.0).abs() < 1e-6);
+        assert!((b.height - 10.0).abs() < 1e-6);
+        assert!(b.shape_ext.is_some());
+    }
+
+    #[test]
+    fn new_edge_body() {
+        let b = Body::new_edge(
+            0.0, 0.0,
+            Vec2::new(0.0, 0.0),
+            Vec2::new(10.0, 0.0),
+            BodyType::Static,
+        );
+        assert!((b.width - 10.0).abs() < 1e-6);
+        assert!(matches!(&b.shape_ext, Some(Shape::Edge { .. })));
+    }
+}

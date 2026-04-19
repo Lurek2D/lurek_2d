@@ -1,6 +1,12 @@
 //! Save/load slot system with collectors, schema versioning, dirty tracking,
 //! and auto-save.
 //!
+//! **NOTE**: This file is NOT declared in `mod.rs` and is therefore dead code.
+//! The canonical implementations of [`SaveManager`], [`SaveValue`],
+//! [`serialize_table`], and [`serialize_value`] live in `save_manager.rs`.
+//! This file appears to be an earlier copy retained during refactoring.
+//! See `TODO(dedup)` in `IDEA.md`.
+//!
 //! This module is part of Lurek2D's `savegame` subsystem and provides the implementation
 //! details for save data-related operations and data management.
 //! Key types exported from this module: `SlotMeta`, `SaveManager`, `SaveValue`.

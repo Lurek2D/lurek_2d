@@ -79,3 +79,5 @@ impl QueueMeta {
         self.capacity > 0 && len >= self.capacity
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

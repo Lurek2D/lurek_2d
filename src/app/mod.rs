@@ -2,6 +2,17 @@
 //!
 //! This module owns the [`App`] struct that drives the winit event loop, fires Lua
 //! callbacks, and coordinates rendering. It also provides the debug overlay and error screen.
+//!
+//! # Module group
+//!
+//! `Edge/Integration` — sits at the top of the dependency graph. Nothing in the
+//! engine imports from `app`; it orchestrates every other subsystem.
+//!
+//! # Key types
+//!
+//! - [`App`] — public entry point: call [`App::run()`] to start the engine.
+//! - [`DebugOverlay`] — lightweight FPS / draw-call counter (toggled via F12).
+//! - [`ErrorScreen`] — structured blue error screen for Lua and engine failures.
 
 /// Entry point for the Lurek2D engine lifecycle and game loop.
 pub mod app;

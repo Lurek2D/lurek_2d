@@ -369,3 +369,139 @@ fn current_bone_property(bone: &Bone, prop: &BoneProperty) -> f32 {
         BoneProperty::ScaleY => bone.local_scale_y,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── EasingType ────────────────────────────────────────────────────────
+
+    #[test]
+    fn linear_easing_passthrough() {
+        assert_eq!(EasingType::Linear.apply(0.0), 0.0);
+        assert_eq!(EasingType::Linear.apply(0.5), 0.5);
+        assert_eq!(EasingType::Linear.apply(1.0), 1.0);
+    }
+
+    #[test]
+    fn ease_in_starts_slow() {
+        let mid = EasingType::EaseIn.apply(0.5);
+        assert!(mid < 0.5, "EaseIn(0.5) = {mid}, expected < 0.5");
+    }
+
+    #[test]
+    fn ease_out_ends_slow() {
+        let mid = EasingType::EaseOut.apply(0.5);
+        assert!(mid > 0.5, "EaseOut(0.5) = {mid}, expected > 0.5");
+    }
+
+    #[test]
+    fn ease_in_out_symmetric() {
+        let v = EasingType::EaseInOut.apply(0.5);
+        assert!((v - 0.5).abs() < 0.01, "EaseInOut(0.5) = {v}, expected ~0.5");
+    }
+
+    #[test]
+    fn step_returns_zero() {
+        assert_eq!(EasingType::Step.apply(0.5), 0.0);
+    }
+
+    #[test]
+    fn easing_clamps_input() {
+        assert_eq!(EasingType::Linear.apply(-1.0), 0.0);
+        assert_eq!(EasingType::Linear.apply(2.0), 1.0);
+    }
+
+    // ── BoneTimeline ──────────────────────────────────────────────────────
+
+    #[test]
+    fn empty_timeline_evaluates_to_zero() {
+        let tl = BoneTimeline::new(0, BoneProperty::X);
+        assert_eq!(tl.evaluate(1.0), 0.0);
+    }
+
+    #[test]
+    fn single_keyframe_returns_value() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(0.0, 5.0, EasingType::Linear);
+        assert_eq!(tl.evaluate(0.0), 5.0);
+        assert_eq!(tl.evaluate(10.0), 5.0);
+    }
+
+    #[test]
+    fn linear_interpolation() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::Y);
+        tl.add_key(0.0, 0.0, EasingType::Linear);
+        tl.add_key(1.0, 10.0, EasingType::Linear);
+        let v = tl.evaluate(0.5);
+        assert!((v - 5.0).abs() < 0.01, "expected ~5.0, got {v}");
+    }
+
+    #[test]
+    fn before_first_key_returns_first_value() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(1.0, 3.0, EasingType::Linear);
+        tl.add_key(2.0, 6.0, EasingType::Linear);
+        assert_eq!(tl.evaluate(0.0), 3.0);
+    }
+
+    #[test]
+    fn after_last_key_returns_last_value() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(0.0, 1.0, EasingType::Linear);
+        tl.add_key(1.0, 9.0, EasingType::Linear);
+        assert_eq!(tl.evaluate(5.0), 9.0);
+    }
+
+    #[test]
+    fn step_easing_holds_previous() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::Rotation);
+        tl.add_key(0.0, 0.0, EasingType::Step);
+        tl.add_key(1.0, 90.0, EasingType::Linear);
+        assert_eq!(tl.evaluate(0.5), 0.0); // step holds at 0
+    }
+
+    #[test]
+    fn add_key_maintains_sorted_order() {
+        let mut tl = BoneTimeline::new(0, BoneProperty::X);
+        tl.add_key(2.0, 20.0, EasingType::Linear);
+        tl.add_key(0.0, 0.0, EasingType::Linear);
+        tl.add_key(1.0, 10.0, EasingType::Linear);
+        assert_eq!(tl.keys[0].time, 0.0);
+        assert_eq!(tl.keys[1].time, 1.0);
+        assert_eq!(tl.keys[2].time, 2.0);
+    }
+
+    // ── EventKeyframe ─────────────────────────────────────────────────────
+
+    #[test]
+    fn event_keyframe_new() {
+        let e = EventKeyframe::new(0.5, "footstep", 1.0);
+        assert_eq!(e.time, 0.5);
+        assert_eq!(e.name, "footstep");
+        assert_eq!(e.value, 1.0);
+    }
+
+    // ── SkeletonAnimation ─────────────────────────────────────────────────
+
+    #[test]
+    fn collect_events_in_range() {
+        let mut anim = SkeletonAnimation::new("walk", 2.0);
+        anim.add_event_key(0.5, "step_left", 0.0);
+        anim.add_event_key(1.0, "step_right", 0.0);
+        anim.add_event_key(1.5, "step_left", 0.0);
+
+        let events = anim.collect_events(0.3, 1.0);
+        assert_eq!(events.len(), 2);
+        assert_eq!(events[0].0, "step_left");
+        assert_eq!(events[1].0, "step_right");
+    }
+
+    #[test]
+    fn collect_events_empty_range() {
+        let mut anim = SkeletonAnimation::new("idle", 1.0);
+        anim.add_event_key(0.5, "blink", 0.0);
+        let events = anim.collect_events(0.6, 1.0);
+        assert!(events.is_empty());
+    }
+}

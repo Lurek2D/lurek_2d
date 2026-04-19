@@ -183,6 +183,7 @@ _Plugin candidacy: this module is a candidate for the plugin tier under proposed
 - All non-ENet I/O runs on the background `NetworkRuntime` thread — the Lua VM never blocks.
 - `HostRole` is metadata only — it does not change ENet behaviour, just helps game code distinguish server from client.
 - MessagePack pack/unpack supports Nil, Bool, Integer, Float, String, Array (sequential table), Map (string-keyed table). Functions and userdata cannot be serialized.
+- `constants.rs` and `error.rs` had duplicate definitions (copy-paste errors) — fixed in P3-C review (2026-04-18).
 - Keep this module reference synchronized with `src/network/` and any matching Lua bindings.
 
 ### New in 0.14.1

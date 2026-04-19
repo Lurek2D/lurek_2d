@@ -59,24 +59,3 @@ pub fn perlin_noise_periodic(x: f64, y: f64, px: f64, py: f64) -> f64 {
     lerp(v, x1, x2)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_perlin_noise_periodic() {
-        // Value at x should equal value at x + period
-        let v1 = perlin_noise_periodic(1.5, 2.3, 4.0, 4.0);
-        let v2 = perlin_noise_periodic(5.5, 2.3, 4.0, 4.0);
-        assert!(
-            (v1 - v2).abs() < 1e-10,
-            "Periodic noise not tiling: {v1} vs {v2}"
-        );
-
-        let v3 = perlin_noise_periodic(1.5, 6.3, 4.0, 4.0);
-        assert!(
-            (v1 - v3).abs() < 1e-10,
-            "Periodic noise not tiling Y: {v1} vs {v3}"
-        );
-    }
-}

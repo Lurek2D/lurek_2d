@@ -1,4 +1,9 @@
 //! `lurek.light` — 2D lighting, shadow occluders, and ambient control.
+//!
+//! Manages `Light` handles (point / directional / spot) and `Occluder` handles
+//! (line-segment shadow casters) within the engine's `LightWorld`. Supports
+//! attenuation, blend modes, falloff curves, shadow filtering, flicker configs,
+//! cookie textures, colour transitions, and ambient colour control.
 
 use super::SharedState;
 use mlua::prelude::*;

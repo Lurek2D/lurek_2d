@@ -123,3 +123,5 @@ impl Default for SimpleState {
         Self::new()
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

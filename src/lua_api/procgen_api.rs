@@ -926,12 +926,13 @@ impl CellularOpts {
 }
 
 impl VoronoiOpts {
-/// from_lua_table
-/// @param t : &LuaTable
-///
-/// @return LuaResult<Self>
-///
-pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
+    /// Parses a Lua options table into [`VoronoiOpts`].
+    ///
+    /// Supported keys: `warp_scale`, `warp_strength`, `seed`.
+    ///
+    /// @param t : &LuaTable
+    /// @return LuaResult<Self>
+    pub fn from_lua_table(t: &LuaTable) -> LuaResult<Self> {
         let mut opts = Self::default();
         if let Ok(v) = t.get::<_, f32>("warp_scale") { opts.warp_scale = v; }
         if let Ok(v) = t.get::<_, f32>("warp_strength") { opts.warp_strength = v; }

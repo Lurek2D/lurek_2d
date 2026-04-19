@@ -144,3 +144,5 @@ impl PriorityQueue {
         self.items.clear();
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

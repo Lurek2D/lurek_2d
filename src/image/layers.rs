@@ -358,3 +358,169 @@ impl LayeredImage {
         result
     }
 }
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_layer_is_transparent() {
+        let layer = ImageLayer::new("bg", 4, 4);
+        assert_eq!(layer.name, "bg");
+        assert_eq!(layer.opacity, 1.0);
+        assert!(layer.visible);
+        // All pixels should be transparent black
+        assert!(layer.data.as_bytes().iter().all(|&b| b == 0));
+    }
+
+    #[test]
+    fn new_layered_image_has_zero_layers() {
+        let li = LayeredImage::new(32, 32);
+        assert_eq!(li.width(), 32);
+        assert_eq!(li.height(), 32);
+        assert_eq!(li.layer_count(), 0);
+    }
+
+    #[test]
+    fn add_and_remove_layer() {
+        let mut li = LayeredImage::new(8, 8);
+        let idx = li.add_layer("first");
+        assert_eq!(idx, 0);
+        assert_eq!(li.layer_count(), 1);
+        let removed = li.remove_layer(0);
+        assert!(removed.is_some());
+        assert_eq!(li.layer_count(), 0);
+    }
+
+    #[test]
+    fn remove_out_of_bounds_returns_none() {
+        let mut li = LayeredImage::new(4, 4);
+        assert!(li.remove_layer(0).is_none());
+    }
+
+    #[test]
+    fn get_layer_by_index() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("a");
+        li.add_layer("b");
+        assert_eq!(li.get_layer(0).unwrap().name, "a");
+        assert_eq!(li.get_layer(1).unwrap().name, "b");
+        assert!(li.get_layer(2).is_none());
+    }
+
+    #[test]
+    fn set_opacity_clamps() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("x");
+        assert!(li.set_opacity(0, 1.5));
+        assert_eq!(li.get_layer(0).unwrap().opacity, 1.0);
+        assert!(li.set_opacity(0, -0.5));
+        assert_eq!(li.get_layer(0).unwrap().opacity, 0.0);
+        assert!(!li.set_opacity(5, 0.5)); // out of bounds
+    }
+
+    #[test]
+    fn set_visible_toggles() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("x");
+        assert!(li.set_visible(0, false));
+        assert!(!li.get_layer(0).unwrap().visible);
+    }
+
+    #[test]
+    fn set_name_renames() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("old");
+        assert!(li.set_name(0, "new"));
+        assert_eq!(li.get_layer(0).unwrap().name, "new");
+    }
+
+    #[test]
+    fn swap_layers_changes_order() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("bottom");
+        li.add_layer("top");
+        assert!(li.swap_layers(0, 1));
+        assert_eq!(li.get_layer(0).unwrap().name, "top");
+        assert_eq!(li.get_layer(1).unwrap().name, "bottom");
+    }
+
+    #[test]
+    fn swap_same_index_returns_false() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("a");
+        assert!(!li.swap_layers(0, 0));
+    }
+
+    #[test]
+    fn move_layer_reorders() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("a");
+        li.add_layer("b");
+        li.add_layer("c");
+        assert!(li.move_layer(2, 0));
+        assert_eq!(li.get_layer(0).unwrap().name, "c");
+    }
+
+    #[test]
+    fn merge_empty_stack_returns_blank() {
+        let li = LayeredImage::new(4, 4);
+        let merged = li.merge();
+        assert_eq!(merged.width(), 4);
+        assert_eq!(merged.height(), 4);
+        assert!(merged.as_bytes().iter().all(|&b| b == 0));
+    }
+
+    #[test]
+    fn merge_single_opaque_layer() {
+        let mut li = LayeredImage::new(2, 2);
+        li.add_layer("bg");
+        if let Some(layer) = li.get_layer_mut(0) {
+            layer.data.set_pixel(0, 0, 255, 0, 0, 255);
+        }
+        let merged = li.merge();
+        assert_eq!(merged.get_pixel(0, 0), Some((255, 0, 0, 255)));
+    }
+
+    #[test]
+    fn merge_skips_invisible_layers() {
+        let mut li = LayeredImage::new(2, 2);
+        li.add_layer("bg");
+        if let Some(layer) = li.get_layer_mut(0) {
+            layer.data.set_pixel(0, 0, 255, 0, 0, 255);
+            layer.visible = false;
+        }
+        let merged = li.merge();
+        // Invisible → should be blank
+        assert_eq!(merged.get_pixel(0, 0), Some((0, 0, 0, 0)));
+    }
+
+    #[test]
+    fn merge_respects_opacity() {
+        let mut li = LayeredImage::new(1, 1);
+        li.add_layer("half");
+        li.set_opacity(0, 0.5);
+        if let Some(layer) = li.get_layer_mut(0) {
+            layer.data.set_pixel(0, 0, 200, 100, 50, 255);
+        }
+        let merged = li.merge();
+        let (_, _, _, a) = merged.get_pixel(0, 0).unwrap();
+        // With 0.5 opacity on a 255-alpha pixel, effective alpha ≈ 0.5 → ~128
+        assert!((a as i32 - 128).abs() <= 1);
+    }
+
+    #[test]
+    fn set_layer_image_replaces_data() {
+        let mut li = LayeredImage::new(4, 4);
+        li.add_layer("target");
+        let mut src = ImageData::new(4, 4);
+        src.set_pixel(1, 1, 42, 84, 126, 200);
+        assert!(li.set_layer_image(0, &src));
+        assert_eq!(
+            li.get_layer(0).unwrap().data.get_pixel(1, 1),
+            Some((42, 84, 126, 200))
+        );
+    }
+}

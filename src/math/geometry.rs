@@ -1,14 +1,9 @@
 //! 2D geometry utility functions.
 //!
-//! Free functions for common geometric computations: intersections, containment,
-//! polygon operations, and rasterization.
-//!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for geometry-related operations and data management.
-//! Primary functions: `angle_between()`, `circle_contains_point()`, `circle_intersects_circle()`, `circle_intersects_line()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Free functions for common geometric computations: angle measurement, circle/line/
+//! rectangle intersection tests, point-in-polygon, convex hull (Andrew's monotone
+//! chain), polygon centroid and area, Bresenham line rasterisation, point-to-segment
+//! projection, and polygon offsetting.
 
 /// Returns the angle in radians from (x1, y1) to (x2, y2).
 ///
@@ -423,6 +418,9 @@ pub fn bresenham(x1: i32, y1: i32, x2: i32, y2: i32) -> Vec<(i32, i32)> {
 
 /// Computes the convex hull of a set of 2D points using Andrew's monotone chain algorithm.
 ///
+/// Sorts points lexicographically, then builds the lower and upper hulls
+/// by maintaining a stack of points with consistent left-turn cross products.
+///
 /// # Parameters
 /// - `points` — `&[f32]`.
 ///
@@ -608,97 +606,4 @@ fn in_circumcircle(p: (f64, f64), a: (f64, f64), b: (f64, f64), c: (f64, f64)) -
         + (ax * ax + ay * ay) * (bx * cy - by * cx);
 
     det > 0.0
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::f32::consts::PI;
-
-    #[test]
-    fn test_angle_between() {
-        let a = angle_between(0.0, 0.0, 1.0, 0.0);
-        assert!((a - 0.0).abs() < 1e-5);
-        let a = angle_between(0.0, 0.0, 0.0, 1.0);
-        assert!((a - PI / 2.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_circle_contains_point() {
-        assert!(circle_contains_point(0.0, 0.0, 5.0, 3.0, 4.0));
-        assert!(!circle_contains_point(0.0, 0.0, 5.0, 4.0, 4.0));
-    }
-
-    #[test]
-    fn test_circle_intersects_circle() {
-        assert!(circle_intersects_circle(0.0, 0.0, 3.0, 4.0, 0.0, 3.0));
-        assert!(!circle_intersects_circle(0.0, 0.0, 1.0, 10.0, 0.0, 1.0));
-    }
-
-    #[test]
-    fn test_segment_intersection() {
-        let (hit, pt) = segment_intersects_segment(0.0, 0.0, 2.0, 2.0, 0.0, 2.0, 2.0, 0.0);
-        assert!(hit);
-        let (ix, iy) = pt.expect("intersection exists after hit=true");
-        assert!((ix - 1.0).abs() < 1e-5);
-        assert!((iy - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_point_in_polygon() {
-        // Square: (0,0), (4,0), (4,4), (0,4)
-        let verts = [0.0, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
-        assert!(point_in_polygon(&verts, 2.0, 2.0));
-        assert!(!point_in_polygon(&verts, 5.0, 5.0));
-    }
-
-    #[test]
-    fn test_polygon_area() {
-        // Unit square
-        let verts = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
-        let area = polygon_area(&verts);
-        assert!((area.abs() - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_bresenham() {
-        let pts = bresenham(0, 0, 3, 0);
-        assert_eq!(pts, vec![(0, 0), (1, 0), (2, 0), (3, 0)]);
-    }
-
-    #[test]
-    fn test_closest_point_on_segment() {
-        let (cx, cy) = closest_point_on_segment(1.0, 2.0, 0.0, 0.0, 2.0, 0.0);
-        assert!((cx - 1.0).abs() < 1e-5);
-        assert!((cy - 0.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_convex_hull() {
-        // Square with center point — hull should be the square
-        let pts = [0.0, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0, 2.0, 2.0];
-        let hull = convex_hull(&pts);
-        assert_eq!(hull.len() / 2, 4); // 4 vertices
-    }
-
-    #[test]
-    fn test_line_intersect() {
-        let pt = line_intersect(0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0);
-        assert!(pt.is_some());
-        let (x, y) = pt.expect("closest point exists");
-        assert!((x - 0.5).abs() < 1e-5);
-        assert!((y - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_circle_intersects_line() {
-        let (hit, p1, p2) = circle_intersects_line(0.0, 0.0, 1.0, -2.0, 0.0, 2.0, 0.0);
-        assert!(hit);
-        assert!(p1.is_some());
-        assert!(p2.is_some());
-        let (x1, _) = p1.expect("intersection point exists");
-        let (x2, _) = p2.expect("intersection point exists");
-        assert!((x1.abs() - 1.0).abs() < 1e-5);
-        assert!((x2.abs() - 1.0).abs() < 1e-5);
-    }
 }

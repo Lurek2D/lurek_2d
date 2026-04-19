@@ -1,4 +1,4 @@
-//! Generic relationship system for entities.
+﻿//! Generic relationship system for entities.
 //!
 //! Stores symmetric numeric relations and named-state levels between entity pairs.
 //! Entity IDs are `u32` to match [`Universe`](super::Universe).
@@ -24,9 +24,9 @@ use crate::log_msg;
 /// ```
 ///
 /// # Fields
-/// - `name` — `String`.
-/// - `levels` — `Vec<String>`.
-/// - `default_level` — `String`.
+/// - `name` â€” `String`.
+/// - `levels` â€” `Vec<String>`.
+/// - `default_level` â€” `String`.
 #[derive(Debug, Clone)]
 pub struct RelationType {
     /// Name of this relation type (e.g. `"diplomacy"`, `"trade"`).
@@ -41,9 +41,9 @@ impl RelationType {
     /// Create a new relation type. Panics in debug if `default_level` is not in `levels`.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
-    /// - `levels` — `Vec<String>`.
-    /// - `default_level` — `&str`.
+    /// - `name` â€” `&str`.
+    /// - `levels` â€” `Vec<String>`.
+    /// - `default_level` â€” `&str`.
     ///
     /// # Returns
     /// `Self`.
@@ -62,7 +62,7 @@ impl RelationType {
     /// Return `true` if `level` is a valid level for this type.
     ///
     /// # Parameters
-    /// - `level` — `&str`.
+    /// - `level` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -73,24 +73,24 @@ impl RelationType {
 
 /// A relationship between two entities: numeric value plus per-type named levels.
 ///
-/// The relationship is keyed as `(min(a, b), max(a, b))` so that `A↔B` and `B↔A` share
+/// The relationship is keyed as `(min(a, b), max(a, b))` so that `Aâ†”B` and `Bâ†”A` share
 /// the same record. Code using [`RelationshipManager`] does not need to sort the IDs.
 ///
 /// # Fields
-/// - `from_id` — `u32`.
-/// - `to_id` — `u32`.
-/// - `value` — `f64`.
-/// - `s` — ``type_name → level_string`.`.
-/// - `type_levels` — `HashMap<String`.
+/// - `from_id` â€” `u32`.
+/// - `to_id` â€” `u32`.
+/// - `value` â€” `f64`.
+/// - `s` â€” ``type_name â†’ level_string`.`.
+/// - `type_levels` â€” `HashMap<String`.
 #[derive(Debug, Clone)]
 pub struct Relationship {
     /// First entity ID (lower of the two).
     pub from_id: u32,
     /// Second entity ID (higher of the two).
     pub to_id: u32,
-    /// The generic numeric relation value (e.g. −100 = hostile, +100 = allied).
+    /// The generic numeric relation value (e.g. âˆ’100 = hostile, +100 = allied).
     pub value: f64,
-    /// Per-type named states: `type_name → level_string`.
+    /// Per-type named states: `type_name â†’ level_string`.
     pub type_levels: HashMap<String, String>,
 }
 
@@ -109,13 +109,13 @@ impl Relationship {
 /// Manages all relation types and the per-pair relationship records.
 ///
 /// # Fields
-/// - `types` — `HashMap<String`.
-/// - `relations` — `HashMap<(u32`.
+/// - `types` â€” `HashMap<String`.
+/// - `relations` â€” `HashMap<(u32`.
 #[derive(Debug, Default)]
 pub struct RelationshipManager {
     types: HashMap<String, RelationType>,
     relations: HashMap<(u32, u32), Relationship>,
-    /// Directed named links: `(from_entity, relation_name)` → target entity IDs.
+    /// Directed named links: `(from_entity, relation_name)` â†’ target entity IDs.
     directed: HashMap<(u32, String), Vec<u32>>,
 }
 
@@ -138,16 +138,16 @@ impl RelationshipManager {
         Self::default()
     }
 
-    // ── Type definitions ────────────────────────────────────────────────────
+    // â”€â”€ Type definitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Define a named relation type with a set of valid levels.
     ///
     /// Replaces any existing type with the same name.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
-    /// - `levels` — `Vec<String>`.
-    /// - `default_level` — `&str`.
+    /// - `name` â€” `&str`.
+    /// - `levels` â€” `Vec<String>`.
+    /// - `default_level` â€” `&str`.
     pub fn define_type(&mut self, name: &str, levels: Vec<String>, default_level: &str) {
         log_msg!(debug, RL01, "{} ({} levels)", name, levels.len());
         self.types.insert(
@@ -162,7 +162,7 @@ impl RelationshipManager {
     /// are cleaned from all records.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -181,7 +181,7 @@ impl RelationshipManager {
     /// Get a reference to a relation type definition.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<&RelationType>`.
@@ -197,7 +197,7 @@ impl RelationshipManager {
         self.types.keys().cloned().collect()
     }
 
-    // ── Value ────────────────────────────────────────────────────────────────
+    // â”€â”€ Value â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Get the relationship record for a pair (creating it at zero if absent).
     fn ensure(&mut self, a: u32, b: u32) -> &mut Relationship {
@@ -211,8 +211,8 @@ impl RelationshipManager {
     /// Get the numeric relation value between two entities.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
     ///
     /// # Returns
     /// `f64`.
@@ -226,9 +226,9 @@ impl RelationshipManager {
     /// Set the numeric relation value between two entities.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
-    /// - `value` — `f64`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
+    /// - `value` â€” `f64`.
     pub fn set_value(&mut self, a: u32, b: u32, value: f64) {
         self.ensure(a, b).value = value;
     }
@@ -236,25 +236,25 @@ impl RelationshipManager {
     /// Adjust the numeric relation value by `delta`.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
-    /// - `delta` — `f64`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
+    /// - `delta` â€” `f64`.
     pub fn adjust_value(&mut self, a: u32, b: u32, delta: f64) {
         let rel = self.ensure(a, b);
         rel.value += delta;
     }
 
-    // ── Named levels ────────────────────────────────────────────────────────
+    // â”€â”€ Named levels â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Set the named level for a relation type between two entities.
     ///
     /// Returns `false` if the type is unknown or the level is not valid for that type.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
-    /// - `ype_name` — `&str`.
-    /// - `level` — `&str`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
+    /// - `ype_name` â€” `&str`.
+    /// - `level` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -277,9 +277,9 @@ impl RelationshipManager {
     /// Returns `None` if the type name is unknown.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
-    /// - `ype_name` — `&str`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
+    /// - `ype_name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<String>`.
@@ -294,13 +294,13 @@ impl RelationshipManager {
         Some(level)
     }
 
-    // ── Query ────────────────────────────────────────────────────────────────
+    // â”€â”€ Query â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Return `true` if a relationship record exists for this pair.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
     ///
     /// # Returns
     /// `bool`.
@@ -311,8 +311,8 @@ impl RelationshipManager {
     /// Remove a relationship record. Returns `true` if it existed.
     ///
     /// # Parameters
-    /// - `a` — `u32`.
-    /// - `b` — `u32`.
+    /// - `a` â€” `u32`.
+    /// - `b` â€” `u32`.
     ///
     /// # Returns
     /// `bool`.
@@ -323,7 +323,7 @@ impl RelationshipManager {
     /// Get all relationships involving a given entity.
     ///
     /// # Parameters
-    /// - `entity_id` — `u32`.
+    /// - `entity_id` â€” `u32`.
     ///
     /// # Returns
     /// `Vec<&Relationship>`.
@@ -350,17 +350,17 @@ impl RelationshipManager {
         self.relations.len()
     }
 
-    // ── Directed named links ─────────────────────────────────────────────────
+    // â”€â”€ Directed named links â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Add a directed named link from `from` to `to`.
     ///
-    /// Duplicates are silently ignored — calling `add_link(a, "owns", b)` twice
+    /// Duplicates are silently ignored â€” calling `add_link(a, "owns", b)` twice
     /// results in a single entry.
     ///
     /// # Parameters
-    /// - `from` — `u32`.
-    /// - `name` — `&str`.
-    /// - `to` — `u32`.
+    /// - `from` â€” `u32`.
+    /// - `name` â€” `&str`.
+    /// - `to` â€” `u32`.
     pub fn add_link(&mut self, from: u32, name: &str, to: u32) {
         let targets = self.directed.entry((from, name.to_string())).or_default();
         if !targets.contains(&to) {
@@ -371,11 +371,11 @@ impl RelationshipManager {
     /// Return all targets reachable from `from` via the named directed link.
     ///
     /// # Parameters
-    /// - `from` — `u32`.
-    /// - `name` — `&str`.
+    /// - `from` â€” `u32`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
-    /// `&[u32]` — empty slice when no links of this name exist.
+    /// `&[u32]` â€” empty slice when no links of this name exist.
     pub fn get_links(&self, from: u32, name: &str) -> &[u32] {
         self.directed
             .get(&(from, name.to_string()))
@@ -386,9 +386,9 @@ impl RelationshipManager {
     /// Remove the directed link from `from` to `to`.
     ///
     /// # Parameters
-    /// - `from` — `u32`.
-    /// - `name` — `&str`.
-    /// - `to` — `u32`.
+    /// - `from` â€” `u32`.
+    /// - `name` â€” `&str`.
+    /// - `to` â€” `u32`.
     pub fn remove_link(&mut self, from: u32, name: &str, to: u32) {
         if let Some(targets) = self.directed.get_mut(&(from, name.to_string())) {
             targets.retain(|&id| id != to);
@@ -398,8 +398,8 @@ impl RelationshipManager {
     /// Remove all directed links of the given name originating from `from`.
     ///
     /// # Parameters
-    /// - `from` — `u32`.
-    /// - `name` — `&str`.
+    /// - `from` â€” `u32`.
+    /// - `name` â€” `&str`.
     pub fn clear_links(&mut self, from: u32, name: &str) {
         self.directed.remove(&(from, name.to_string()));
     }
@@ -407,9 +407,9 @@ impl RelationshipManager {
     /// Return `true` if a directed link from `from` to `to` via `name` exists.
     ///
     /// # Parameters
-    /// - `from` — `u32`.
-    /// - `name` — `&str`.
-    /// - `to` — `u32`.
+    /// - `from` â€” `u32`.
+    /// - `name` â€” `&str`.
+    /// - `to` â€” `u32`.
     ///
     /// # Returns
     /// `bool`.
@@ -420,3 +420,5 @@ impl RelationshipManager {
             .unwrap_or(false)
     }
 }
+
+// Tests migrated to tests/rust/unit/ecs_tests.rs

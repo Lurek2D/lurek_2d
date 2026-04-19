@@ -167,39 +167,4 @@ impl<K: Clone + Hash + Eq, V: Clone + Hash + Eq> Default for BiMap<K, V> {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn bimap_insert_get_by_key_returns_value() {
-        let mut m: BiMap<&str, u32> = BiMap::new();
-        m.insert("health", 42);
-        assert_eq!(m.get_by_key(&"health"), Some(&42));
-    }
-
-    #[test]
-    fn bimap_get_by_value_returns_key() {
-        let mut m: BiMap<&str, u32> = BiMap::new();
-        m.insert("health", 42);
-        assert_eq!(m.get_by_value(&42), Some(&"health"));
-    }
-
-    #[test]
-    fn bimap_insert_same_key_removes_old_reverse() {
-        let mut m: BiMap<&str, u32> = BiMap::new();
-        m.insert("stat", 1);
-        m.insert("stat", 2);
-        assert!(!m.contains_value(&1));
-        assert_eq!(m.get_by_key(&"stat"), Some(&2));
-    }
-
-    #[test]
-    fn bimap_remove_by_key_removes_both_sides() {
-        let mut m: BiMap<&str, u32> = BiMap::new();
-        m.insert("x", 10);
-        m.remove_by_key(&"x");
-        assert!(!m.contains_key(&"x"));
-        assert!(!m.contains_value(&10));
-    }
-}
+// Tests migrated to tests/rust/unit/patterns_tests.rs

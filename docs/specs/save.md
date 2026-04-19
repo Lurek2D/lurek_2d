@@ -13,15 +13,11 @@
 
 The `save` module provides Lurek2D's game save/load orchestration system. It focuses on lifecycle management — coordinating when and what to save, handling schema versioning, running migrations, and driving auto-save — rather than on byte serialization (that responsibility belongs to `serial`).
 
-`SaveManager` is the core type: it maintains a registry of named collector module names (Lua callbacks that gather/restore game state), a current schema version integer, a dirty flag that becomes true when save data has changed, an optional `AutoSaveConfig` (interval in seconds + slot name), and a list of migration version checkpoints. `SlotMeta` describes one save slot: name string, Unix timestamp, schema version when saved, and a user-readable summary string.
+`SaveManager` is the core type: it maintains a registry of named collector module names (Lua callbacks that gather/restore game state), a current schema version integer, a dirty flag that becomes true when save data has changed, an optional auto-save config (interval in seconds + slot name), and a list of migration version checkpoints. `SlotMeta` describes one save slot: name string, Unix timestamp, schema version when saved, and a user-readable summary string. `SaveValue` is the Lua-compatible value enum (nil, bool, number, string, table) used for Rust-side serialization. `serialize_table` / `serialize_value` produce Lua-syntax return strings. `SaveValue::from_lua` converts `mlua::Value` to `SaveValue`.
 
-Save operations work through the collector pattern: `SaveManager::collect_all()` calls each registered Lua collector's `gather()` function and serializes its return value via `serial::to_toml`. `load_all()` calls each collector's `restore(data)` function with the deserialized save data. Collectors are responsible for their own data shape.
+Save operations work through the collector pattern: Lua registers named modules whose `gather()` / `restore()` callbacks are invoked by SaveManager. Schema versioning compares slot metadata against the current version and runs ordered migration functions. Auto-save triggers when the dirty flag is set and the configured interval elapses.
 
-Schema versioning: when a save slot is loaded, `SaveManager` compares its metadata version against the current schema version. If outdated, it runs all registered migration functions in ascending version order to bring the data forward before handing it to collectors.
-
-Auto-save: `tick(dt)` is called each frame; when the accumulated time since last save exceeds the configured interval (and the dirty flag is set), a save to the configured slot is triggered automatically.
-
-Minor serialisation additions have been made to the save pipeline, improving round-trip fidelity for edge-case data types that previously required manual workarounds in save collector callbacks. Lua scripts using the `lurek.save.*` API benefit transparently from these changes without needing to update existing collector implementations.
+**Note**: `save_data.rs` exists in the source tree but is NOT declared in `mod.rs` — it is dead code containing an older copy of the same types. The canonical implementation lives in `save_manager.rs`. The duplicate types and functions listed below from `save_data.rs` are NOT compiled or reachable.
 
 **Scope boundary**: Feature Systems tier. Depends on `filesystem`, `runtime`, `serial`. Lua bridge in `src/lua_api/save_api.rs`.
 

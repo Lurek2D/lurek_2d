@@ -1,15 +1,10 @@
-//! Bezier curve evaluation using De Casteljau's algorithm.
+//! Bézier curve evaluation using De Casteljau's algorithm.
 //!
 //! Supports arbitrary-degree curves with control point manipulation,
 //! rendering to polylines, derivative computation, and geometric transforms.
+//! Script code accesses this through `lurek.math.newBezierCurve()`.
 //!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for bezier-related operations and data management.
-//! Key types exported from this module: `BezierCurve`.
-//! Primary functions: `new()`, `evaluate()`, `render()`, `render_segment()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Key type: [`BezierCurve`].
 
 use crate::math::vec2::Vec2;
 
@@ -292,76 +287,5 @@ impl Clone for BezierCurve {
         Self {
             control_points: self.control_points.clone(),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::math::vec2::Vec2;
-
-    // ── Endpoints ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn evaluate_t0_is_first_control_point() {
-        let curve = BezierCurve::new(vec![Vec2::new(1.0, 2.0), Vec2::new(3.0, 4.0)]);
-        let p = curve.evaluate(0.0);
-        assert!((p.x - 1.0).abs() < 1e-5);
-        assert!((p.y - 2.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn evaluate_t1_is_last_control_point() {
-        let curve = BezierCurve::new(vec![Vec2::new(1.0, 2.0), Vec2::new(3.0, 4.0)]);
-        let p = curve.evaluate(1.0);
-        assert!((p.x - 3.0).abs() < 1e-5);
-        assert!((p.y - 4.0).abs() < 1e-5);
-    }
-
-    // ── Midpoint ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn linear_midpoint_is_average() {
-        let curve = BezierCurve::new(vec![Vec2::new(0.0, 0.0), Vec2::new(4.0, 2.0)]);
-        let p = curve.evaluate(0.5);
-        assert!((p.x - 2.0).abs() < 1e-5);
-        assert!((p.y - 1.0).abs() < 1e-5);
-    }
-
-    // ── Render ────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn render_produces_segments_plus_one_points() {
-        let curve = BezierCurve::new(vec![Vec2::ZERO, Vec2::ONE]);
-        let points = curve.render(4);
-        assert_eq!(points.len(), 5);
-    }
-
-    #[test]
-    fn render_first_point_is_start() {
-        let start = Vec2::new(1.0, 2.0);
-        let curve = BezierCurve::new(vec![start, Vec2::new(5.0, 6.0)]);
-        let points = curve.render(8);
-        assert!((points[0].x - start.x).abs() < 1e-5);
-        assert!((points[0].y - start.y).abs() < 1e-5);
-    }
-
-    // ── Control points ────────────────────────────────────────────────────────
-
-    #[test]
-    fn get_set_control_point_roundtrip() {
-        let mut curve = BezierCurve::new(vec![Vec2::ZERO, Vec2::ONE]);
-        let new_pt = Vec2::new(9.0, 8.0);
-        let ok = curve.set_control_point(0, new_pt);
-        assert!(ok);
-        let got = curve.get_control_point(0).expect("get_control_point returns Some for a valid index");
-        assert!((got.x - 9.0).abs() < 1e-5);
-        assert!((got.y - 8.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn get_control_point_out_of_bounds_returns_none() {
-        let curve = BezierCurve::new(vec![Vec2::ZERO, Vec2::ONE]);
-        assert!(curve.get_control_point(99).is_none());
     }
 }

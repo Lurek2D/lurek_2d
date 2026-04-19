@@ -392,52 +392,10 @@ fn replace_string_markers(s: &str) -> String {
     result
 }
 
+// NOTE: Tests private internals (replace_string_markers) — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn test_wrap_text_short_string() {
-        let result = wrap_text("hello world", 80);
-        assert_eq!(result, vec!["hello world"]);
-    }
-
-    #[test]
-    fn test_wrap_text_long_string() {
-        let input = "the quick brown fox jumps over the lazy dog and keeps running";
-        let result = wrap_text(input, 30);
-        for line in &result {
-            assert!(line.len() <= 30, "line too long: {}", line);
-        }
-        let joined = result.join(" ");
-        assert_eq!(joined, input);
-    }
-
-    #[test]
-    fn test_wrap_text_empty() {
-        let result = wrap_text("", 80);
-        assert!(result.is_empty());
-    }
-
-    #[test]
-    fn test_format_traceback_cleans_string_markers() {
-        let input = r#"stack traceback:
-	[string "main.lua"]:10: in function 'update'
-	[string "main.lua"]:5: in main chunk"#;
-        let result = format_traceback(input);
-        assert_eq!(result.len(), 2);
-        assert!(result[0].contains("main.lua:10"));
-        assert!(!result[0].contains("[string"));
-    }
-
-    #[test]
-    fn test_format_traceback_strips_header() {
-        let input = "stack traceback:\n\t[string \"test\"]:1: in main chunk";
-        let result = format_traceback(input);
-        for line in &result {
-            assert!(!line.contains("stack traceback:"));
-        }
-    }
 
     #[test]
     fn test_replace_string_markers() {
@@ -445,27 +403,6 @@ mod tests {
         let result = replace_string_markers(input);
         assert_eq!(result, "main.lua:10: in function 'foo'");
     }
-
-    #[test]
-    fn test_error_screen_from_simple_message() {
-        let screen = ErrorScreen::from_error("Something went wrong");
-        assert_eq!(screen.title, "Something went wrong");
-        assert!(screen.traceback_lines.is_empty());
-        let cmds = screen.build_render_commands(800, 600, None, None);
-        assert!(!cmds.is_empty());
-    }
-
-    #[test]
-    fn test_error_screen_from_multiline_message() {
-        let screen = ErrorScreen::from_error("Error in update\ndetail line 1\ndetail line 2");
-        assert_eq!(screen.title, "Error in update");
-        assert_eq!(screen.message_lines.len(), 2);
-    }
-
-    #[test]
-    fn test_error_screen_from_engine_error() {
-        let err = EngineError::LuaError("test error".to_string());
-        let screen = ErrorScreen::from_engine_error(&err);
-        assert!(screen.title.contains("Lua error"));
-    }
 }
+
+// Remaining tests migrated to tests/rust/unit/app_tests.rs

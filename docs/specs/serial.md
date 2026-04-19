@@ -6,22 +6,18 @@
 - Source path: `src/serial/`
 - Lua API path(s): `src/lua_api/serial_api.rs`
 - Primary Lua namespace: `lurek.codec`
-- Rust test path(s): tests/rust/unit/serial_tests.rs; inline tests in src/serial/csv.rs, src/serial/json.rs, src/serial/toml.rs, src/serial/yaml.rs
+- Rust test path(s): tests/rust/unit/serial_tests.rs; inline tests in src/serial/csv.rs, src/serial/json.rs, src/serial/toml.rs, src/serial/yaml.rs, src/serial/lua_table.rs, src/serial/msgpack.rs, src/serial/schema.rs, src/serial/xml.rs
 - Lua test path(s): tests/lua/unit/test_serial.lua
 
 ## Summary
 
-The `serial` module provides Lurek2D's format-agnostic text serialization and deserialization. Its central type is `SerialValue`, a recursive enum — Null, Bool, Number(f64), Text(String), List(Vec<SerialValue>), Map(IndexMap<String, SerialValue>) — that can represent any hierarchical data.
+The `serial` module provides Lurek2D's format-agnostic text serialization and deserialization. Its central type is `SerialValue`, a recursive enum — Null, Bool(bool), Int(i64), Float(f64), Str(String), Seq(Vec<SerialValue>), Map(IndexMap<String, SerialValue>) — that can represent any hierarchical data.
 
-Format modules operate on `SerialValue`, converting to and from format-specific string representations. **TOML** is the preferred human-authored config format (design assumption B-05): `serial::toml::to_string(v)` and `from_str(s)`. **JSON** is provided for external interop: `serial::json::to_string(v)` and `from_str(s)`. **CSV** supports configurable header presence, delimiter character, and quote character via `CsvOptions`: `to_csv(rows, opts)` and `from_csv(text, opts)`. **Lua table notation** emits a Lua-readable table literal for use in generated code. YAML is explicitly absent (design assumption B-05).
+Format modules operate on `SerialValue`, converting to and from format-specific string representations. **TOML** is the preferred human-authored config format (design assumption B-05): `serial::toml::to_toml(v)` and `from_toml(s)`. **JSON** is provided for external interop: `serial::json::to_json(v)` and `from_json(s)`. **CSV** supports configurable header presence and delimiter character via `CsvOptions`: `to_csv(rows, opts)` and `from_csv(text, opts)`. **MessagePack** provides binary encoding/decoding via `rmp-serde`. **XML** provides read-only parsing via `roxmltree`. YAML is explicitly absent (design assumption B-05); `yaml.rs` exists but is commented out in `mod.rs`.
 
-The module performs no file I/O — callers supply strings, receive strings. File reading and writing is the responsibility of `filesystem`. The `save` module uses `serial::to_toml` and `from_toml` to serialize save collector outputs. The `data/dataframe` serial submodules re-use `serial::CsvOptions` for DataFrame CSV round-trips.
+The module performs no file I/O — callers supply strings, receive strings. File reading and writing is the responsibility of `filesystem`. The `save` module uses `serial::to_toml` and `from_toml` to serialize save collector outputs.
 
-A `Codec` helper trait provides a unified `encode(value)` / `decode(text)` interface implemented for all four formats, enabling code that needs to switch serialization format at runtime without branching on format names.
-
-The new `rle.rs` source file adds `RleEncoder` and `RleDecoder`, a run-length encoding implementation for compressing repetitive binary sequences such as tilemap rows, sprite palette data, or binary save blobs. Lua scripts access these through `lurek.codec.*`, enabling lightweight in-process compression for data that benefits from RLE's simplicity and zero-dependency overhead without pulling in a full compression library.
-
-**Scope boundary**: Foundations tier. Depends only on external crates (toml, serde_json, csv, indexmap). Lua bridge in `src/lua_api/serial_api.rs` as `lurek.codec.*`.
+**Scope boundary**: Foundations tier. Depends only on external crates (toml, serde_json, csv, rmp-serde, roxmltree, indexmap). Lua bridge in `src/lua_api/serial_api.rs` as `lurek.codec.*`.
 
 ## Files
 
@@ -50,7 +46,7 @@ The new `rle.rs` source file adds `RleEncoder` and `RleDecoder`, a run-length en
 - `to_lua` (`lua_table.rs`): Converts a `SerialValue` tree into a Lua value tree.
 - `from_lua` (`lua_table.rs`): Converts a Lua value tree into a `SerialValue` tree.
 - `encode` (`msgpack.rs`): Encode a `SerialValue` tree to MessagePack bytes.
-- `decode` (`msgpack.rs`): Parse an XML string into a `SerialValue` tree.
+- `decode` (`msgpack.rs`): Decode MessagePack bytes into a `SerialValue` tree.
 - `validate` (`schema.rs`): Validate a `SerialValue` tree against a schema.
 - `from_toml` (`toml.rs`): Parse a TOML string into a `SerialValue`.
 - `to_toml` (`toml.rs`): Serialize a `SerialValue` to a TOML string.

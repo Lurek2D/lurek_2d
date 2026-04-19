@@ -213,3 +213,74 @@ fn detect_format(dds: &ddsfile::Dds) -> CompressedFormat {
     }
     CompressedFormat::Unknown
 }
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn format_as_str_roundtrip() {
+        assert_eq!(CompressedFormat::Dxt1.as_str(), "dxt1");
+        assert_eq!(CompressedFormat::Dxt3.as_str(), "dxt3");
+        assert_eq!(CompressedFormat::Dxt5.as_str(), "dxt5");
+        assert_eq!(CompressedFormat::Bc7.as_str(), "bc7");
+        assert_eq!(CompressedFormat::Etc1.as_str(), "etc1");
+        assert_eq!(CompressedFormat::Etc2Rgb.as_str(), "etc2_rgb");
+        assert_eq!(CompressedFormat::Etc2Rgba.as_str(), "etc2_rgba");
+        assert_eq!(CompressedFormat::Unknown.as_str(), "unknown");
+    }
+
+    #[test]
+    fn is_dds_magic_valid() {
+        assert!(CompressedImageData::is_dds_magic(&[0x44, 0x44, 0x53, 0x20]));
+        assert!(CompressedImageData::is_dds_magic(&[0x44, 0x44, 0x53, 0x20, 0xFF]));
+    }
+
+    #[test]
+    fn is_dds_magic_too_short() {
+        assert!(!CompressedImageData::is_dds_magic(&[0x44, 0x44, 0x53]));
+        assert!(!CompressedImageData::is_dds_magic(&[]));
+    }
+
+    #[test]
+    fn is_dds_magic_wrong_bytes() {
+        assert!(!CompressedImageData::is_dds_magic(&[0x89, 0x50, 0x4E, 0x47])); // PNG
+    }
+
+    #[test]
+    fn from_dds_rejects_garbage() {
+        let garbage = vec![0u8; 64];
+        assert!(CompressedImageData::from_dds(&garbage).is_err());
+    }
+
+    #[test]
+    fn from_file_rejects_missing_path() {
+        assert!(CompressedImageData::from_file("__nonexistent__.dds").is_err());
+    }
+
+    #[test]
+    fn is_dds_file_returns_false_for_missing() {
+        assert!(!CompressedImageData::is_dds_file("__nonexistent__.dds"));
+    }
+
+    #[test]
+    fn format_equality() {
+        assert_eq!(CompressedFormat::Bc7, CompressedFormat::Bc7);
+        assert_ne!(CompressedFormat::Dxt1, CompressedFormat::Dxt5);
+    }
+
+    #[test]
+    fn get_format_delegates_to_as_str() {
+        let data = CompressedImageData {
+            format: CompressedFormat::Dxt5,
+            width: 64,
+            height: 64,
+            mipmaps: vec![vec![0; 32]],
+        };
+        assert_eq!(data.get_format(), "dxt5");
+        assert_eq!(data.get_dimensions(), (64, 64));
+        assert_eq!(data.get_mipmap_count(), 1);
+    }
+}

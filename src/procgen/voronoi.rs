@@ -121,20 +121,3 @@ fn simple_hash_noise(x: f32, y: f32, seed: u64) -> f32 {
     (h & 0xFFFF) as f32 / 65535.0 * 2.0 - 1.0
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_voronoi_diagram() {
-        let points = vec![(5.0, 5.0), (15.0, 15.0)];
-        let (regions, dist, dist2) = voronoi_diagram(20, 20, &points, &VoronoiOpts::default());
-        assert_eq!(regions.len(), 400);
-        assert_eq!(dist.len(), 400);
-        assert_eq!(dist2.len(), 400);
-        // Corner (0,0) should be closest to point 0
-        assert_eq!(regions[0], 0);
-        // Corner (19,19) should be closest to point 1
-        assert_eq!(regions[19 * 20 + 19], 1);
-    }
-}

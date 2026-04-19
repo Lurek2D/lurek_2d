@@ -1,8 +1,12 @@
 //! Standalone noise functions: Perlin, Simplex, and fractal FBM.
 //!
-//! All return values in approximately `[-1.0, 1.0]`. Private helpers
-//! (`fade`, `lerp`, `hash*`, `grad*`, `simplex_contribution`) live below
-//! the public functions.
+//! Provides free functions for 2D/3D/4D Perlin noise, 2D/3D Simplex noise, and
+//! multi-octave fractal Brownian motion (FBM). These are simpler to call than
+//! [`super::noise_generator::NoiseGenerator`] when you don't need a reusable
+//! seeded generator object. All return values in approximately `[-1.0, 1.0]`.
+//!
+//! Private helpers (`fade`, `lerp`, `hash*`, `grad*`, `simplex_contribution`)
+//! live below the public functions.
 
 use super::noise_generator::NoiseGenerator;
 

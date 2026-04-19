@@ -193,3 +193,5 @@ impl Blackboard {
         self.data.is_empty()
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

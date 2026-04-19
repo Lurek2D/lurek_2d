@@ -19,7 +19,7 @@ The `raycaster` module implements a grid-based 2D raycaster engine for Wolfenste
 
 `SpriteProjection` projects billboarded textured sprites into screen space with depth buffer clipping. `DoorManager` manages sliding door states (open, closed, opening, closing) for grid-blocking interactive geometry. `HeightMap` adds variable floor and ceiling heights for stepped or multi-level environments. `visibility.rs` computes a 2D visibility polygon via endpoint raycasting for field-of-view shadows. The `segment` submodule provides `Segment` and a general `cast_ray_2d` line-segment intersection test.
 
-The new `floor_uv.rs` source file adds support for floor and ceiling UV texture mapping, enabling fully textured floor and ceiling surfaces in raycaster scenes rather than flat-colored fills. Lua scripts configure per-cell floor and ceiling texture UVs through the extended `lurek.raycaster.*` API, completing the visual feature set needed for Wolfenstein- and Doom-style environments where floor and ceiling textures are as important as wall textures.
+The new `cast_floor_row` method on `Raycaster2D` (in `dda.rs`) adds support for floor and ceiling UV texture coordinate computation, enabling fully textured floor and ceiling surfaces in raycaster scenes rather than flat-colored fills. Lua scripts can use the extended `lurek.raycaster.*` API to configure per-cell floor and ceiling textures, completing the visual feature set needed for Wolfenstein- and Doom-style environments where floor and ceiling textures are as important as wall textures.
 
 **Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`. Lua bridge in `src/lua_api/raycaster_api.rs`.
 

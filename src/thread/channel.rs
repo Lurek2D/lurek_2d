@@ -284,3 +284,4 @@ pub fn channel_value_to_lua(lua: &Lua, value: ChannelValue) -> LuaResult<LuaValu
         ChannelValue::Bytes(b) => Ok(LuaValue::String(lua.create_string(&b)?)),
     }
 }
+

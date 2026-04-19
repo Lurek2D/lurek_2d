@@ -48,3 +48,67 @@ pub fn test_circle_aabb(cx: f32, cy: f32, cr: f32, ax: f32, ay: f32, aw: f32, ah
     let dy = cy - closest_y;
     dx * dx + dy * dy < cr * cr
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn aabb_overlap() {
+        assert!(test_aabb(0.0, 0.0, 10.0, 10.0, 5.0, 5.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn aabb_no_overlap() {
+        assert!(!test_aabb(0.0, 0.0, 10.0, 10.0, 20.0, 20.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn aabb_adjacent_no_overlap() {
+        // Touching edge: ax + aw == bx → no overlap (strict inequality).
+        assert!(!test_aabb(0.0, 0.0, 10.0, 10.0, 10.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn circles_overlap() {
+        assert!(test_circles(0.0, 0.0, 5.0, 3.0, 0.0, 5.0));
+    }
+
+    #[test]
+    fn circles_no_overlap() {
+        assert!(!test_circles(0.0, 0.0, 2.0, 10.0, 0.0, 2.0));
+    }
+
+    #[test]
+    fn point_inside_aabb() {
+        assert!(test_point_aabb(5.0, 5.0, 0.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn point_outside_aabb() {
+        assert!(!test_point_aabb(15.0, 5.0, 0.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn point_on_boundary() {
+        // On the left/top edge → inside (>=); on the right/bottom → outside (<).
+        assert!(test_point_aabb(0.0, 0.0, 0.0, 0.0, 10.0, 10.0));
+        assert!(!test_point_aabb(10.0, 10.0, 0.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn circle_aabb_overlap() {
+        assert!(test_circle_aabb(5.0, 5.0, 3.0, 0.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn circle_aabb_no_overlap() {
+        assert!(!test_circle_aabb(20.0, 20.0, 1.0, 0.0, 0.0, 10.0, 10.0));
+    }
+
+    #[test]
+    fn circle_aabb_corner_case() {
+        // Circle just barely touching the AABB corner.
+        assert!(test_circle_aabb(12.0, 12.0, 3.0, 0.0, 0.0, 10.0, 10.0));
+    }
+}

@@ -13,7 +13,7 @@
 
 The `audio` module provides Lurek2D's sound loading, playback, and volume management. It wraps the `rodio` audio library behind a `Mixer` type that manages all loaded sounds, their playback state, volume, pitch, pan, looping, and fade effects. Game code accesses everything through the `lurek.audio.*` Lua bindings, which delegate to `Mixer` and `Bus` instances stored in `SharedState`.
 
-The `Mixer` is the central controller: it owns a `SlotMap<SoundKey, AudioSource>` for O(1) handle lookup and safe invalidation on release, and uses a rodio `OutputStream` + `OutputStreamHandle` for PCM output. Sounds may be loaded as `Static` (fully decoded into memory, suitable for short SFX) or `Stream` (incrementally decoded from disk, suitable for music). Pitch, volume, and pan are applied per-source; fade effects interpolate volume over time.
+The `Mixer` is the central controller: it owns a `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup and safe invalidation on release, and uses a rodio `OutputStream` + `OutputStreamHandle` for PCM output. Sounds may be loaded as `Static` (fully decoded into memory, suitable for short SFX) or `Stream` (incrementally decoded from disk, suitable for music). Pitch, volume, and pan are applied per-source; fade effects interpolate volume over time.
 
 `Bus` is a named group for applying shared volume and pause state to all sources assigned to it, e.g. a `"music"` bus or `"sfx"` bus. Buses are pure data containers; the mixer multiplies source volume/pitch by bus values on every `set_volume` or `update` call.
 
@@ -31,6 +31,7 @@ The `Bus` type has been extended with duck-target support: `set_duck_target` and
 - `midi.rs`: MIDI SoundFont state management.
 - `midi_player.rs`: Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM via sine-additive synthesis, and plays through a rodio `Sink`.
 - `mixer.rs`: Core audio mixer that owns every loaded sound and drives playback through rodio.
+- `mixer_tests.rs`: Unit tests for `mixer.rs` (split to sibling file — mixer.rs exceeds 1000 lines).
 - `mod.rs`: Audio subsystem for Lurek2D games.
 - `offline.rs`: Offline audio processing utilities.
 - `pool.rs`: Polyphonic sound pool for round-robin voice allocation.

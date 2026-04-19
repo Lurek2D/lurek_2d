@@ -437,3 +437,62 @@ impl InfluenceMap {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_map_has_no_layers() {
+        let im = InfluenceMap::new(4, 4, 1.0);
+        assert_eq!(im.get_width(), 4);
+        assert_eq!(im.get_height(), 4);
+        assert!(im.get_layer_names().is_empty());
+    }
+
+    #[test]
+    fn add_and_query_layer() {
+        let mut im = InfluenceMap::new(3, 3, 1.0);
+        im.add_layer("danger");
+        assert!(im.has_layer("danger"));
+        assert!(!im.has_layer("nope"));
+        im.set_influence("danger", 1, 1, 0.75);
+        assert!((im.get_influence("danger", 1, 1) - 0.75).abs() < 1e-6);
+    }
+
+    #[test]
+    fn out_of_bounds_returns_zero() {
+        let mut im = InfluenceMap::new(2, 2, 1.0);
+        im.add_layer("a");
+        assert_eq!(im.get_influence("a", 10, 10), 0.0);
+    }
+
+    #[test]
+    fn clear_layer_zeros_all() {
+        let mut im = InfluenceMap::new(3, 3, 1.0);
+        im.add_layer("test");
+        im.set_influence("test", 0, 0, 1.0);
+        im.set_influence("test", 2, 2, 1.0);
+        if let Some(data) = im.layers.get_mut("test") {
+            data.fill(0.0);
+        }
+        assert_eq!(im.get_influence("test", 0, 0), 0.0);
+    }
+
+    #[test]
+    fn stamp_influence_adds_values() {
+        let mut im = InfluenceMap::new(10, 10, 1.0);
+        im.add_layer("threat");
+        im.stamp_influence("threat", 5.0, 5.0, 3.0, 1.0, 1.0);
+        assert!(im.get_influence("threat", 5, 5) > 0.0);
+    }
+
+    #[test]
+    fn decay_reduces_values() {
+        let mut im = InfluenceMap::new(3, 3, 1.0);
+        im.add_layer("x");
+        im.set_influence("x", 1, 1, 1.0);
+        im.decay("x", 0.5);
+        assert!((im.get_influence("x", 1, 1) - 0.5).abs() < 1e-6);
+    }
+}

@@ -277,3 +277,46 @@ impl NeuralNet {
         self.layers.len()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn single_layer_forward() {
+        let nn = NeuralNet::new(&[2, 1]);
+        let out = nn.forward(&[1.0, 1.0]);
+        assert_eq!(out.len(), 1);
+    }
+
+    #[test]
+    fn two_layer_forward() {
+        let nn = NeuralNet::new(&[3, 4, 2]);
+        let out = nn.forward(&[1.0, 0.5, -0.3]);
+        assert_eq!(out.len(), 2);
+    }
+
+    #[test]
+    fn set_from_flat_round_trip() {
+        let mut nn = NeuralNet::new(&[2, 2]);
+        let flat = nn.to_flat();
+        nn.set_from_flat(&flat);
+        let flat2 = nn.to_flat();
+        assert_eq!(flat, flat2);
+    }
+
+    #[test]
+    fn layer_count_matches() {
+        let nn = NeuralNet::new(&[3, 5, 2]);
+        assert_eq!(nn.layer_count(), 2);
+    }
+
+    #[test]
+    fn output_bounded_by_activation() {
+        let nn = NeuralNet::new(&[2, 3]);
+        let out = nn.forward(&[100.0, -100.0]);
+        for v in &out {
+            assert!(*v >= 0.0 && *v <= 1.0, "sigmoid should bound output");
+        }
+    }
+}

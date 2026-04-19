@@ -1,18 +1,19 @@
-//! Frame timing and scheduled event system.
+//! Frame timing, scheduled events, and sleep utilities.
 //!
-//! Provides two complementary types: [`Clock`] for per-frame delta-time tracking and FPS
-//! measurement, and [`Scheduler`] for deferred and repeating Lua callback execution.
+//! This module is part of Lurek2D's **Core Runtime** tier and provides two complementary
+//! types plus a convenience sleep helper:
 //!
-//! ## Subsystem inventory
-//! - [`clock`] — [`Clock`]: `tick()` updates `dt`, smoothed FPS, elapsed time, frame count
-//! - [`scheduler`] — [`Scheduler`]: `schedule(delay, fn)`, `every(interval, fn)`,
-//!   `after_frames(n, fn)` with cancellation handles
+//! - [`Clock`]: per-frame delta-time tracking, rolling FPS measurement, total elapsed
+//!   time, and frame counting. Called once per frame by `App` at the top of the game loop.
+//! - [`Scheduler`]: one-shot (`after`) and repeating (`every`) timed events with
+//!   individual pause/resume, cancellation handles, named events, and a global
+//!   time-scale multiplier.
+//! - [`sleep`]: suspends the calling OS thread — intended **only** for worker VM threads;
+//!   calling from the main VM stalls the engine frame loop.
 //!
 //! ## Threading constraint
-//! `Scheduler` callbacks run synchronously on the main thread. Errors from callbacks are
-//! caught and forwarded through the engine error channel rather than panicking. The `sleep()`
-//! helper is intended only for worker VM threads — calling it from the main VM stalls
-//! the engine frame loop.
+//! Both `Clock` and `Scheduler` live on the main thread inside `SharedState`.
+//! Background threads should use `lurek.thread.Channel` for timed coordination.
 //!
 //! All public items are documented. Lua bridge: `src/lua_api/timer_api.rs`.
 

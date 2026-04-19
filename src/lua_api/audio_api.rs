@@ -1,4 +1,8 @@
-//! `lurek.audio` -- Audio playback, mixing, MIDI synthesis, and DSP effects.
+//! `lurek.audio` — Audio playback, mixing, MIDI synthesis, and DSP effects.
+//!
+//! Registers sources (streamed or static), bus-based mixing, MIDI playback,
+//! streaming decoders, `SoundData` buffers, and spatial audio positioning.
+//! All mixer state lives in [`SharedState`].
 
 use super::SharedState;
 use mlua::prelude::*;

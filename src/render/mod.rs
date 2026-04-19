@@ -35,7 +35,6 @@ pub mod gpu_renderer;
 pub mod image_effect;
 /// Custom geometry mesh with per-vertex position, UV, and color data.
 pub mod mesh;
-/// Nine-slice (9-patch) image rendering for scalable UI elements.
 /// RenderCommand queue, draw enums, and texture data types.
 pub mod renderer;
 /// Custom WGSL shader support with uniform variables.
@@ -44,11 +43,9 @@ pub mod shader;
 pub mod shape;
 /// GPU pipeline for post-processing effects: capture, ping-pong shader passes, and compositing.
 pub mod postfx_pipeline;
-/// Sprite struct combining a texture, transform, and tint color.
-/// Sprite batching for efficient rendering of many sprites sharing one texture.
-/// Grid-based sprite sheet with directional support and named groups.
-/// Texture loading and TextureData storage for the renderer.
-/// CPU-side bin-packing texture atlas using shelf algorithm.
+
+
+
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
 pub use draw_layer::DrawLayer;

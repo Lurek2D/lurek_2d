@@ -255,7 +255,8 @@ impl LightWorld {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(10, 10, 15, 255);
 
-        // Collect light parameters
+        // Pre-collect light parameters to avoid repeated SlotMap lookups
+        // during the per-pixel accumulation loop.
         let light_params: Vec<(f32, f32, f32, f32, f32, f32)> = self
             .lights
             .values()

@@ -93,6 +93,9 @@ pub fn from_lua(val: &LuaValue) -> LuaResult<SerialValue> {
                 .to_string(),
         )),
         LuaValue::Table(t) => {
+            // Heuristic: if the table's raw_len > 0 and every integer key
+            // 1..=raw_len is non-nil, treat it as a sequence (Lua array).
+            // Otherwise fall through to the map (dictionary) path.
             let raw_len = t.raw_len();
             if raw_len > 0 {
                 let mut is_seq = true;
@@ -112,6 +115,8 @@ pub fn from_lua(val: &LuaValue) -> LuaResult<SerialValue> {
                     return Ok(SerialValue::Seq(arr));
                 }
             }
+            // Fall through to map path: iterate all key-value pairs,
+            // coercing numeric keys to strings for SerialValue::Map.
             let mut map = IndexMap::new();
             for pair in t.clone().pairs::<LuaValue, LuaValue>() {
                 let (k, v) = pair?;

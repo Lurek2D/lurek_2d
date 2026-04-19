@@ -6,24 +6,26 @@
 - Source path: `src/physics/`
 - Lua API path(s): `src/lua_api/physics_api.rs`
 - Primary Lua namespace: `lurek.physics`
-- Rust test path(s): none found in the workspace
+- Rust test path(s): `src/physics/world_tests.rs`, inline `#[cfg(test)]` in `body.rs`, `shape.rs`, `zone.rs`, `cellular.rs`, `terrain.rs`, `render.rs`, `collision_helpers.rs`
 - Lua test path(s): none found in the workspace
 
 ## Summary
 
-The `physics` module provides Lurek2D's rigid-body physics simulation backed by the rapier2d library. It exposes a comprehensive 2D physics API for game scripts while handling all the complexity of the rapier pipeline internally.
+The `physics` module provides Lurek2D's rigid-body physics simulation backed by the rapier2d 0.32 library. It exposes a comprehensive 2D physics API for game scripts while handling all the complexity of the rapier pipeline internally.
 
-`World` owns the complete rapier simulation state: rigid body set, collider set, joint set, broad-phase, narrow-phase, integration parameters, and the pipeline. `World::step(dt)` advances the simulation by one time step and collects all collision contact events. `World::get_collision_events()` returns a `Vec<CollisionInfo>` for script-side response each frame. `World::raycast(origin, direction, max_distance, mask)` returns `Option<RaycastHit>` with hit point, normal, and body reference.
+`World` owns the complete rapier simulation state: rigid body set, collider set, joint set, broad-phase, narrow-phase, integration parameters, and the pipeline. `World::step(dt)` advances the simulation by one time step — syncing body property changes into rapier, running the pipeline, and reading back positions/velocities for dynamic bodies. `World::get_collision_events()` returns a `Vec<BodyContact>` (re-exported as `CollisionEvent`) for script-side response each frame. `World::raycast(origin, direction, max_distance, mask)` returns `Option<RaycastHit>` with hit point, normal, and body reference. `World::step_fixed(accumulated_dt, step_dt, max_steps)` provides fixed-timestep sub-stepping for deterministic simulation.
 
-`Body` instances are created with `BodyType` (Dynamic, Kinematic, or Static) and `BodyShape` (Rectangle, Circle, Capsule, or compound polygon). Sensor bodies (triggers) detect overlaps without generating impulse responses. Joint types: fixed, revolute (hinge), prismatic (slider), distance, spring, rope, and weld.
+`Body` instances are created with `BodyType` (Dynamic, Kinematic, Static, or Sensor) and `BodyShape` (Rect or Circle). Sensor bodies detect overlaps without generating impulse responses. Extended shapes (`Shape` enum) support polygons, edges, and chains beyond the basic primitives. `StandaloneShape` wraps a `Shape` with default fixture parameters for reuse across multiple bodies.
 
-Extended features: `PhysicsZone` adds per-region gravity and damping overrides applied before each pipeline step — useful for water, low-gravity zones, and wind fields; `ZoneEvent` fires when bodies enter or leave zones. `TerrainMap` is a destructible terrain system using a bit-grid of solid/empty cells with chunked static colliders that update when cells are modified. `CellularWorld` is a separate falling-sand automaton that is physically independent of rapier, simulating per-cell material gravity and interaction rules.
+Joint types: revolute (pin), prismatic (slider), distance, weld (rigid), rope (max distance), wheel (prismatic + rotation), friction, motor, and mouse (spring target). Pulley and gear joints are stubs that fall back to distance/revolute.
 
-The new `collision_helpers.rs` source file provides lightweight stateless geometric collision utilities that complement the full rapier pipeline — useful for scripted pre-checks without spawning physics bodies. The `CellularWorld` falling-sand automaton has been expanded with documented `CELL_*` material constants and new cellular interaction methods accessible from Lua. Together these additions make the physics module a more self-contained toolkit for games that mix rapier rigid-body simulation with cellular automaton effects.
+Extended features: `PhysicsZone` adds per-region gravity and damping overrides applied before each pipeline step — useful for water, low-gravity zones, and wind fields; `ZoneEvent` fires when bodies enter or leave zones. `ZoneTracker` provides change-detection for zone membership. `TerrainMap` is a destructible terrain system using a bit-grid of solid/empty cells with chunked 16×16 static colliders that update when cells are modified via `flush()`. `CellularWorld` is a separate falling-sand automaton independent of rapier, simulating per-cell material gravity (sand, water, fire, gas, rock) and interaction rules with configurable palettes and serialization.
 
-**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
+The `collision_helpers` module provides lightweight stateless geometric collision utilities (AABB, circle, point tests) that complement the full rapier pipeline — useful for scripted pre-checks without spawning physics bodies.
 
-_Plugin candidacy: this module is a candidate for the plugin tier under proposed constraint A-05 — see [docs/architecture/plugins.md](../architecture/plugins.md)._
+**Scope boundary**: Platform Services tier. Depends on `math`, `runtime`, `image`, `render` (for debug commands), `rapier2d`. Lua bridge in `src/lua_api/physics_api.rs`.
+
+_Plugin candidacy: CORE-KEEP — physics is fundamental to 2D games and too central to extract. See [docs/architecture/plugins.md](../architecture/plugins.md)._
 
 ## Files
 

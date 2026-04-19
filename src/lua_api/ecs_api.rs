@@ -1,4 +1,8 @@
-//! `lurek.entity` - Lightweight ECS with entity lifecycle, components, tags, layers, and blueprints.
+//! `lurek.entity` — Lightweight ECS with entity lifecycle, components, tags, layers, and blueprints.
+//!
+//! Wraps [`crate::ecs::Universe`] as `LuaUniverse` userdata. Supports spawn/kill,
+//! per-entity component CRUD, tag flags, named layers, queries, blueprints, and
+//! component add/remove observer callbacks.
 
 use super::SharedState;
 use mlua::prelude::*;

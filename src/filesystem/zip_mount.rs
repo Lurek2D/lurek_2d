@@ -137,6 +137,7 @@ fn is_traversal(path: &str) -> bool {
     path.contains("..") || path.starts_with('/') || (path.len() >= 2 && path.as_bytes()[1] == b':')
 }
 
+// NOTE: Tests private internals — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;

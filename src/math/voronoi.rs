@@ -112,6 +112,11 @@ fn edge_key(a: usize, b: usize) -> (usize, usize) {
 
 /// Bowyer–Watson incremental Delaunay triangulation.
 ///
+/// Inserts each real point one at a time. For each insertion, finds all
+/// triangles whose circumcircle contains the new point (“bad” triangles),
+/// computes the boundary polygon of the hole they leave, and re-triangulates
+/// the hole by connecting the new point to each boundary edge.
+///
 /// `pts` must contain all real input points followed by the 3 super-triangle
 /// vertices.  `n_real` is the count of real points.
 fn bowyer_watson(pts: &[(f32, f32)], n_real: usize) -> Vec<Tri> {
@@ -247,8 +252,9 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
         }
     }
 
-    // Sort each cell's circumcenters CCW by angle around the site, then
-    // remove near-duplicate vertices left by shared circumcircle rounding.
+    // Sort each cell's circumcenters CCW by angle around the site so the
+    // vertices form a proper polygon, then deduplicate near-coincident
+    // vertices introduced by floating-point rounding in shared circumcircles.
     for cell in &mut cells {
         let (sx, sy) = cell.site;
         cell.vertices.sort_by(|&(ax, ay), &(bx, by)| {
@@ -270,34 +276,3 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
 // Tests
 // ---------------------------------------------------------------------------
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn voronoi_empty_returns_empty() {
-        assert!(voronoi_from_points(&[]).is_empty());
-    }
-
-    #[test]
-    fn voronoi_single_site_has_no_vertices() {
-        let cells = voronoi_from_points(&[(0.0, 0.0)]);
-        assert_eq!(cells.len(), 1);
-        assert!(cells[0].vertices.is_empty());
-    }
-
-    #[test]
-    fn voronoi_four_sites_has_correct_count() {
-        let pts = [(0.0, 0.0), (1.0, 0.0), (0.5, 1.0), (0.5, 0.5)];
-        let cells = voronoi_from_points(&pts);
-        assert_eq!(cells.len(), 4, "one cell per site");
-    }
-
-    #[test]
-    fn voronoi_deduplicates_near_coincident_points() {
-        // Two points almost on top of each other should produce a single cell.
-        let pts = [(0.0, 0.0), (0.0, 0.0_f32 + 1e-7), (1.0, 0.0), (0.5, 1.0)];
-        let cells = voronoi_from_points(&pts);
-        assert!(cells.len() < pts.len(), "near-duplicate should be merged");
-    }
-}

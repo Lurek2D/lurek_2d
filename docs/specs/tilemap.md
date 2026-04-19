@@ -19,9 +19,7 @@ The `tilemap` module is Lurek2D's tile-map authoring and rendering subsystem. It
 
 External format parsers: `load_tmx(path)` parses Tiled `.tmx` XML exports with object layers, tile properties, image layers, and tileset references; `load_ldtk(path)` parses LDtk JSON exports. Both populate native `TileMap` + `TileSet` structures.
 
-`AutoTileSheet` implements bitmask-based automatic tile selection (RPGMaker or 48-tile atlas layouts) where the displayed tile is chosen based on which of the eight cardinal and diagonal neighbors are the same terrain type. `IsoMap` adds painter's-algorithm isometric depth sorting. `ChunkMap` provides a `HashMap<(i32,i32), Vec<u8>>` sparse infinite map with async chunk loading callbacks.
-
-The new `iso.rs` source file introduces `IsoRenderer`, a dedicated isometric rendering type that handles depth-sorted painter's-algorithm draw calls for isometric tile maps. Lua scripts construct isometric renderers via `lurek.tilemap.newIsoRenderer()` and drive rendering through its method set, replacing manual draw-call sorting for isometric scenes. This complements the existing `IsoMap` data container and `coords.rs` coordinate helpers with a complete rendering pipeline that integrates with the same `RenderCommand` queue as the rest of the engine.
+`AutoTileSheet` implements bitmask-based automatic tile selection (RPGMaker or 48-tile atlas layouts) where the displayed tile is chosen based on which of the eight cardinal and diagonal neighbors are the same terrain type. `IsoMap` adds painter's-algorithm isometric depth sorting with multi-level Z-stacking and configurable part schemas. `ChunkMap` provides a `HashMap<(i32,i32), Vec<u32>>` sparse infinite map with explicit chunk load/unload lifecycle.
 
 **Scope boundary**: Feature Systems tier. Depends on `render`, `math`, `runtime`, `image`. Lua bridge in `src/lua_api/tilemap_api.rs`.
 

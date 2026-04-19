@@ -175,3 +175,70 @@ impl QualityReport {
         Self::compute(&catalog)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::docs::entry::{DocEntry, ParamInfo};
+
+    fn full_entry() -> DocEntry {
+        let mut e = DocEntry::new("play", "audio", "function");
+        e.description = "Plays a sound".into();
+        e.example = Some("lurek.audio.play('boom')".into());
+        e.since = Some("0.1.0".into());
+        e.parameters.push(ParamInfo {
+            name: "path".into(),
+            type_name: "string".into(),
+            description: "file".into(),
+            optional: false,
+            default: None,
+        });
+        e
+    }
+
+    #[test]
+    fn quality_score_full_entry() {
+        let score = quality_score(&full_entry());
+        assert!((score - 1.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn quality_score_empty_entry() {
+        let e = DocEntry::new("x", "m", "function");
+        let score = quality_score(&e);
+        assert!(score < 0.5);
+    }
+
+    #[test]
+    fn quality_grade_mapping() {
+        assert_eq!(quality_grade(1.0), "A");
+        assert_eq!(quality_grade(0.8), "B");
+        assert_eq!(quality_grade(0.6), "C");
+        assert_eq!(quality_grade(0.4), "D");
+        assert_eq!(quality_grade(0.1), "F");
+    }
+
+    #[test]
+    fn validation_report_clean() {
+        let r = ValidationReport::new();
+        assert!(r.is_clean());
+        assert_eq!(r.total_issues(), 0);
+    }
+
+    #[test]
+    fn validation_report_with_issues() {
+        let mut r = ValidationReport::new();
+        r.missing.push("lurek.audio.play".into());
+        r.incomplete.push("lurek.audio.stop".into());
+        assert!(!r.is_clean());
+        assert_eq!(r.total_issues(), 2);
+    }
+
+    #[test]
+    fn quality_report_from_entries() {
+        let entries = vec![full_entry()];
+        let report = QualityReport::from_entries(&entries);
+        assert!((report.overall_score - 1.0).abs() < 1e-9);
+        assert_eq!(report.module_grade("audio"), "A");
+    }
+}

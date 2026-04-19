@@ -97,37 +97,4 @@ impl Default for DebugOverlay {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::runtime::resource_keys::FontKey;
-    use slotmap::SlotMap;
-
-    #[test]
-    fn test_disabled_returns_empty() {
-        let overlay = DebugOverlay::new();
-        assert!(!overlay.enabled);
-        let mut fonts: SlotMap<FontKey, ()> = SlotMap::with_key();
-        let fk = fonts.insert(());
-        let cmds = overlay.build_render_commands(800, 60.0, 10, Some(fk));
-        assert!(cmds.is_empty());
-    }
-
-    #[test]
-    fn test_enabled_returns_commands() {
-        let mut overlay = DebugOverlay::new();
-        overlay.enabled = true;
-        let mut fonts: SlotMap<FontKey, ()> = SlotMap::with_key();
-        let fk = fonts.insert(());
-        let cmds = overlay.build_render_commands(800, 60.0, 10, Some(fk));
-        assert!(!cmds.is_empty());
-    }
-
-    #[test]
-    fn test_enabled_no_font_returns_empty() {
-        let mut overlay = DebugOverlay::new();
-        overlay.enabled = true;
-        let cmds = overlay.build_render_commands(800, 60.0, 10, None);
-        assert!(cmds.is_empty());
-    }
-}
+// Tests migrated to tests/rust/unit/app_tests.rs

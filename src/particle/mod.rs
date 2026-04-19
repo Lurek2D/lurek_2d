@@ -8,18 +8,21 @@
 //!
 //! Supports multi-stop size/color/alpha interpolation, emission shapes,
 //! radial/tangential acceleration, linear damping, relative mode, texture-based rendering,
-//! and five built-in geometric particle shapes (Square, Circle, Triangle, Spark, Diamond).
+//! and ten built-in geometric particle shapes (Square, Circle, Triangle, Spark, Diamond,
+//! Shrapnel, Ray, Puff, Ring, Capsule).
 //!
 //! ## Sub-files
 //!
 //! | File | Purpose |
 //! |------|---------|
 //! | `config.rs`   | Enums (`AreaDistribution`, `InsertMode`, `EmitterState`, `EmissionShape`, `RelativeMode`) and `ParticleConfig` (~50 fields) |
-//! | `shapes.rs`   | `ParticleShape` enum — five geometric render primitives |
+//! | `shapes.rs`   | `ParticleShape` enum — ten geometric render primitives |
 //! | `particle.rs` | `Particle` per-particle live state (pos, vel, life, rotation, …) |
 //! | `emitter.rs`  | `ParticleSystem` simulation loop, physics integration, and `build_render_commands()` |
 //! | `math.rs`     | Math helpers: `lerp`, `interpolate_sizes`, `interpolate_colors`, `interpolate_alphas` |
 //! | `emission.rs` | Spawn-offset calculators for area distribution and emission shapes |
+//! | `render.rs`   | `generate_render_commands()` wrappers for `ParticleSystem` and `Trail` |
+//! | `trail.rs`    | `Trail` / `TrailPoint` — fading ribbon effect attached to moving objects |
 
 /// Emitter configuration enums and `ParticleConfig` struct.
 pub mod config;

@@ -141,3 +141,5 @@ impl ObjectPool {
     /// `bool`.
     pub fn is_active(&self, id: u64) -> bool { self.active.contains(&id) }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

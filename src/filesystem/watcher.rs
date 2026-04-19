@@ -102,34 +102,3 @@ impl Default for FileWatcher {
 fn read_mtime(path: &str) -> Option<SystemTime> {
     std::fs::metadata(path).ok()?.modified().ok()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_watcher_is_empty() {
-        let w = FileWatcher::new();
-        assert!(w.is_empty());
-        assert_eq!(w.len(), 0);
-    }
-
-    #[test]
-    fn watch_and_unwatch_len() {
-        let mut w = FileWatcher::new();
-        w.watch("some_file.txt");
-        assert_eq!(w.len(), 1);
-        assert!(w.is_watching("some_file.txt"));
-        w.unwatch("some_file.txt");
-        assert_eq!(w.len(), 0);
-    }
-
-    #[test]
-    fn poll_nonexistent_no_change_on_second_poll() {
-        let mut w = FileWatcher::new();
-        w.watch("does_not_exist_xyz_abc.lua");
-        // Both polls see mtime=None → no change
-        let changed = w.poll();
-        assert!(changed.is_empty(), "nonexistent file should not be 'changed'");
-    }
-}

@@ -324,6 +324,7 @@ impl Default for DepthSorter {
     }
 }
 
+// NOTE: Tests private internals (dirty, entries, RADIX_THRESHOLD) — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;

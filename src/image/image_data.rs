@@ -1,11 +1,15 @@
 //! CPU-side RGBA8 pixel buffer for image manipulation.
 //!
-//! This module is part of Lurek2D's `image` subsystem and provides the implementation
-//! details for image data-related operations and data management.
-//! Key types exported from this module: `ImageData`.
-//! Primary functions: `new()`, `from_file()`, `from_bytes()`, `width()`.
+//! [`ImageData`] is the central CPU image type in Lurek2D.  It stores pixels in
+//! row-major RGBA8 format (4 bytes per pixel) and supports construction from file
+//! (`from_file`), raw bytes (`from_bytes`), or a zeroed allocation (`new`).
 //!
-//! All public items are documented. See the parent module for architectural context
+//! Provides per-pixel read/write, drawing primitives (rect, circle, line, label),
+//! a parallel per-pixel transform (`map_pixel_par` via Rayon), and PNG encoding.
+//!
+//! This module is part of Lurek2D's `image` subsystem (Platform Services tier).
+//!
+//! All public items are documented.  See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
 use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
@@ -277,16 +281,20 @@ impl ImageData {
         }
     }
 
-    /// draw_circle.
+    /// Draw a filled circle onto the image.
+    ///
+    /// Functionally equivalent to [`draw_circle_safe`](Self::draw_circle_safe) but uses
+    /// unsigned radius and casts internally.  Pixels outside the image bounds are
+    /// silently clipped.
     ///
     /// # Parameters
-    /// - `cx` — `i32`.
-    /// - `cy` — `i32`.
-    /// - `radius` — `u32`.
-    /// - `r` — `u8`.
-    /// - `g` — `u8`.
-    /// - `b` — `u8`.
-    /// - `a` — `u8`.
+    /// - `cx` — `i32`. Centre X.
+    /// - `cy` — `i32`. Centre Y.
+    /// - `radius` — `u32`. Radius in pixels.
+    /// - `r` — `u8`. Red channel.
+    /// - `g` — `u8`. Green channel.
+    /// - `b` — `u8`. Blue channel.
+    /// - `a` — `u8`. Alpha channel.
     pub fn draw_circle(&mut self, cx: i32, cy: i32, radius: u32, r: u8, g: u8, b: u8, a: u8) {
         let rad = radius as i32;
         let y0 = (cy - rad).max(0) as u32;
@@ -517,6 +525,142 @@ impl ImageData {
                     row[idx + 3] = na;
                 }
             });
+    }
+}
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_creates_zeroed_image() {
+        let img = ImageData::new(4, 4);
+        assert_eq!(img.width(), 4);
+        assert_eq!(img.height(), 4);
+        assert_eq!(img.pixels.len(), 4 * 4 * 4);
+        assert!(img.pixels.iter().all(|&b| b == 0));
+    }
+
+    #[test]
+    fn from_bytes_accepts_correct_size() {
+        let bytes = vec![0u8; 2 * 2 * 4];
+        let img = ImageData::from_bytes(2, 2, bytes).unwrap();
+        assert_eq!(img.dimensions(), (2, 2));
+    }
+
+    #[test]
+    fn from_bytes_rejects_wrong_size() {
+        let bytes = vec![0u8; 10];
+        assert!(ImageData::from_bytes(2, 2, bytes).is_err());
+    }
+
+    #[test]
+    fn get_set_pixel_roundtrip() {
+        let mut img = ImageData::new(8, 8);
+        assert!(img.set_pixel(3, 5, 100, 200, 50, 255));
+        assert_eq!(img.get_pixel(3, 5), Some((100, 200, 50, 255)));
+    }
+
+    #[test]
+    fn get_pixel_out_of_bounds_returns_none() {
+        let img = ImageData::new(4, 4);
+        assert_eq!(img.get_pixel(4, 0), None);
+        assert_eq!(img.get_pixel(0, 4), None);
+    }
+
+    #[test]
+    fn set_pixel_out_of_bounds_returns_false() {
+        let mut img = ImageData::new(4, 4);
+        assert!(!img.set_pixel(4, 0, 0, 0, 0, 0));
+        assert!(!img.set_pixel(0, 4, 0, 0, 0, 0));
+    }
+
+    #[test]
+    fn paste_copies_pixels() {
+        let mut dst = ImageData::new(8, 8);
+        let mut src = ImageData::new(2, 2);
+        src.set_pixel(0, 0, 255, 0, 0, 255);
+        src.set_pixel(1, 1, 0, 255, 0, 255);
+        dst.paste(&src, 3, 3);
+        assert_eq!(dst.get_pixel(3, 3), Some((255, 0, 0, 255)));
+        assert_eq!(dst.get_pixel(4, 4), Some((0, 255, 0, 255)));
+    }
+
+    #[test]
+    fn map_pixel_transforms_all_pixels() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 10, 20, 30, 255);
+        img.set_pixel(1, 0, 40, 50, 60, 255);
+        img.map_pixel(|_, _, r, g, b, a| (255 - r, 255 - g, 255 - b, a));
+        assert_eq!(img.get_pixel(0, 0), Some((245, 235, 225, 255)));
+        assert_eq!(img.get_pixel(1, 0), Some((215, 205, 195, 255)));
+    }
+
+    #[test]
+    fn draw_rect_clips_at_edges() {
+        let mut img = ImageData::new(4, 4);
+        img.draw_rect(-1, -1, 3, 3, 200, 100, 50, 255);
+        // Only pixels in-bounds should be set
+        assert_eq!(img.get_pixel(0, 0), Some((200, 100, 50, 255)));
+        assert_eq!(img.get_pixel(1, 1), Some((200, 100, 50, 255)));
+        assert_eq!(img.get_pixel(2, 0), Some((0, 0, 0, 0))); // outside rect
+    }
+
+    #[test]
+    fn draw_line_bresenham_horizontal() {
+        let mut img = ImageData::new(8, 4);
+        img.draw_line(1, 2, 6, 2, 255, 255, 255, 255);
+        for x in 1..=6 {
+            assert_eq!(img.get_pixel(x, 2), Some((255, 255, 255, 255)));
+        }
+    }
+
+    #[test]
+    fn draw_circle_sets_center_pixel() {
+        let mut img = ImageData::new(16, 16);
+        img.draw_circle(8, 8, 3, 128, 64, 32, 255);
+        assert_eq!(img.get_pixel(8, 8), Some((128, 64, 32, 255)));
+    }
+
+    #[test]
+    fn encode_png_produces_valid_png() {
+        let img = ImageData::new(4, 4);
+        let bytes = img.encode_png().unwrap();
+        // PNG magic: \x89PNG
+        assert_eq!(&bytes[0..4], &[0x89, 0x50, 0x4E, 0x47]);
+    }
+
+    #[test]
+    fn as_bytes_returns_full_buffer() {
+        let img = ImageData::new(3, 3);
+        assert_eq!(img.as_bytes().len(), 3 * 3 * 4);
+    }
+
+    #[test]
+    fn get_string_returns_clone() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 42, 0, 0, 255);
+        let s = img.get_string();
+        assert_eq!(s.len(), 2 * 2 * 4);
+        assert_eq!(s[0], 42);
+    }
+
+    #[test]
+    fn map_pixel_par_matches_map_pixel() {
+        let mut a = ImageData::new(4, 4);
+        let mut b = ImageData::new(4, 4);
+        for y in 0..4u32 {
+            for x in 0..4u32 {
+                let v = (x * 16 + y * 64) as u8;
+                a.set_pixel(x, y, v, v, v, 255);
+                b.set_pixel(x, y, v, v, v, 255);
+            }
+        }
+        a.map_pixel(|_, _, r, g, b, a| (255 - r, g, b, a));
+        b.map_pixel_par(|_, _, r, g, b, a| (255 - r, g, b, a));
+        assert_eq!(a.pixels, b.pixels);
     }
 }
 

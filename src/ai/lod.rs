@@ -183,3 +183,49 @@ impl Default for AILod {
         ])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_has_three_tiers() {
+        let lod = AILod::default();
+        assert_eq!(lod.tier_count(), 3);
+    }
+
+    #[test]
+    fn near_agent_tier_zero() {
+        let lod = AILod::default();
+        assert_eq!(lod.tier_for((100.0, 0.0), (0.0, 0.0)), 0);
+    }
+
+    #[test]
+    fn far_agent_tier_two() {
+        let lod = AILod::default();
+        assert_eq!(lod.tier_for((5000.0, 0.0), (0.0, 0.0)), 2);
+    }
+
+    #[test]
+    fn should_update_tier_zero_always() {
+        let lod = AILod::default();
+        assert!(lod.should_update(0, 1));
+        assert!(lod.should_update(0, 999));
+    }
+
+    #[test]
+    fn should_update_tier_one_every_4() {
+        let lod = AILod::default();
+        assert!(lod.should_update(1, 0));
+        assert!(!lod.should_update(1, 1));
+        assert!(lod.should_update(1, 4));
+    }
+
+    #[test]
+    fn assign_tiers_batch() {
+        let lod = AILod::default();
+        let agents = vec![(10.0, 10.0), (500.0, 0.0), (2000.0, 0.0)];
+        let tiers = lod.assign_tiers(&agents, (0.0, 0.0));
+        assert_eq!(tiers, vec![0, 1, 2]);
+    }
+}

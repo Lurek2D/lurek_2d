@@ -207,3 +207,5 @@ impl Bus {
         self.duck_target = None;
     }
 }
+
+// Tests migrated to tests/rust/unit/audio_tests.rs

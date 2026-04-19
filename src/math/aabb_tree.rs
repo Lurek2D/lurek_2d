@@ -5,8 +5,9 @@
 //! "best first" sibling-selection heuristic to minimise total AABB surface area.
 //!
 //! Typical use case: broad-phase collision detection for variable-size objects,
-//! replacing a uniform [`super::SpatialHash`] when object sizes vary greatly.
-
+//! replacing a uniform [`super::SpatialHash`] when object sizes vary greatly.//!
+//! Key types: [`AabbEntry`] (leaf data), [`AabbTree`] (the tree itself).
+//! All queries (rect, point) are O(log n) on balanced trees.
 use std::collections::HashMap;
 
 // -------------------------------------------------------------------------------
@@ -173,6 +174,10 @@ impl AabbTree {
         };
 
         // --- Find the best sibling using Box2D surface-area heuristic ---
+        // The goal is to minimise the total surface area increase caused by
+        // inserting the new leaf. We walk the tree with a pruning stack:
+        // if a sub-tree's lower-bound insertion cost already exceeds the
+        // current best, we skip it entirely.
         let sibling = self.find_best_sibling(root, min_x, min_y, max_x, max_y);
 
         // Read sibling data before any potential realloc.

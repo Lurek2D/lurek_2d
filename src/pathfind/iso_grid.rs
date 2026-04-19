@@ -224,3 +224,121 @@ fn reconstruct_path(came_from: &HashMap<(u32, u32), (u32, u32)>, mut current: (u
     path.reverse();
     path
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_grid_defaults() {
+        let g = IsoGrid::new(5, 5);
+        assert_eq!(g.width, 5);
+        assert_eq!(g.height, 5);
+        assert!(!g.is_blocked_or_oob(0, 0));
+    }
+
+    #[test]
+    fn blocked_cell_no_path() {
+        let mut g = IsoGrid::new(3, 3);
+        g.set_blocked(1, 0, true);
+        g.set_blocked(1, 1, true);
+        g.set_blocked(1, 2, true);
+        assert!(g.find_path((0, 0), (2, 0)).is_none());
+    }
+
+    #[test]
+    fn trivial_same_cell() {
+        let g = IsoGrid::new(3, 3);
+        let path = g.find_path((1, 1), (1, 1)).unwrap();
+        assert_eq!(path, vec![(1, 1)]);
+    }
+
+    #[test]
+    fn simple_path_exists() {
+        let g = IsoGrid::new(5, 5);
+        let path = g.find_path((0, 0), (4, 4));
+        assert!(path.is_some());
+        let p = path.unwrap();
+        assert_eq!(*p.first().unwrap(), (0, 0));
+        assert_eq!(*p.last().unwrap(), (4, 4));
+    }
+
+    #[test]
+    fn line_of_sight_clear() {
+        let g = IsoGrid::new(5, 5);
+        assert!(g.line_of_sight((0, 0), (4, 4)));
+    }
+
+    #[test]
+    fn line_of_sight_blocked() {
+        let mut g = IsoGrid::new(5, 5);
+        g.set_blocked(2, 2, true);
+        assert!(!g.line_of_sight((0, 0), (4, 4)));
+    }
+
+    #[test]
+    fn neighbors_gives_4_directions() {
+        let g = IsoGrid::new(5, 5);
+        let n = g.neighbors(2, 2);
+        assert_eq!(n.len(), 4);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_grid_defaults() {
+        let g = IsoGrid::new(5, 5);
+        assert_eq!(g.width, 5);
+        assert_eq!(g.height, 5);
+        assert!(!g.is_blocked_or_oob(0, 0));
+    }
+
+    #[test]
+    fn blocked_cell_no_path() {
+        let mut g = IsoGrid::new(3, 3);
+        g.set_blocked(1, 0, true);
+        g.set_blocked(1, 1, true);
+        g.set_blocked(1, 2, true);
+        assert!(g.find_path((0, 0), (2, 0)).is_none());
+    }
+
+    #[test]
+    fn trivial_same_cell() {
+        let g = IsoGrid::new(3, 3);
+        let path = g.find_path((1, 1), (1, 1)).unwrap();
+        assert_eq!(path, vec![(1, 1)]);
+    }
+
+    #[test]
+    fn simple_path_exists() {
+        let g = IsoGrid::new(5, 5);
+        let path = g.find_path((0, 0), (4, 4));
+        assert!(path.is_some());
+        let p = path.unwrap();
+        assert_eq!(*p.first().unwrap(), (0, 0));
+        assert_eq!(*p.last().unwrap(), (4, 4));
+    }
+
+    #[test]
+    fn line_of_sight_clear() {
+        let g = IsoGrid::new(5, 5);
+        assert!(g.line_of_sight((0, 0), (4, 4)));
+    }
+
+    #[test]
+    fn line_of_sight_blocked() {
+        let mut g = IsoGrid::new(5, 5);
+        g.set_blocked(2, 2, true);
+        assert!(!g.line_of_sight((0, 0), (4, 4)));
+    }
+
+    #[test]
+    fn neighbors_gives_4_directions() {
+        let g = IsoGrid::new(5, 5);
+        let n = g.neighbors(2, 2);
+        assert_eq!(n.len(), 4);
+    }
+}

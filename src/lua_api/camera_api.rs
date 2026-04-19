@@ -1,4 +1,8 @@
 //! `lurek.camera` — Camera2D creation and manipulation for 2D viewport control.
+//!
+//! Each `Camera2D` has position, zoom, rotation, viewport bounds, optional world-space
+//! clamping, waypoint path following, smooth zoom tweening, per-layer parallax factors,
+//! and screen↔world coordinate transforms.
 
 use super::SharedState;
 use mlua::prelude::*;

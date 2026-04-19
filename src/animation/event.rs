@@ -46,3 +46,40 @@ impl AnimEvent {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn type_name_finished() {
+        assert_eq!(AnimEvent::Finished.type_name(), "finished");
+    }
+
+    #[test]
+    fn type_name_looped() {
+        assert_eq!(AnimEvent::Looped.type_name(), "looped");
+    }
+
+    #[test]
+    fn type_name_frame_changed() {
+        let ev = AnimEvent::FrameChanged { frame_index: 3 };
+        assert_eq!(ev.type_name(), "frameChanged");
+    }
+
+    #[test]
+    fn frame_index_returns_some_for_frame_changed() {
+        let ev = AnimEvent::FrameChanged { frame_index: 7 };
+        assert_eq!(ev.frame_index(), Some(7));
+    }
+
+    #[test]
+    fn frame_index_returns_none_for_finished() {
+        assert_eq!(AnimEvent::Finished.frame_index(), None);
+    }
+
+    #[test]
+    fn frame_index_returns_none_for_looped() {
+        assert_eq!(AnimEvent::Looped.frame_index(), None);
+    }
+}

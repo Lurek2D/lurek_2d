@@ -138,3 +138,5 @@ impl Funnel {
         self.accumulated = 0.0;
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

@@ -237,3 +237,61 @@ impl BlendLayerSet {
         self.layers.iter().find(|l| l.name == name)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn blend_mask_all_matches_everything() {
+        let mask = BlendMask::all();
+        assert!(mask.includes("torso"));
+        assert!(mask.includes("arm_l"));
+    }
+
+    #[test]
+    fn blend_mask_from_bones_filters() {
+        let mask = BlendMask::from_bones(vec!["arm_l".to_string(), "arm_r".to_string()]);
+        assert!(mask.includes("arm_l"));
+        assert!(!mask.includes("torso"));
+    }
+
+    #[test]
+    fn blend_layer_clamps_weight() {
+        let layer = BlendLayer::new("base", "idle", 1.5, BlendMask::all());
+        assert!((layer.weight - 1.0).abs() < 1e-5);
+        let layer2 = BlendLayer::new("base2", "idle", -0.5, BlendMask::all());
+        assert!((layer2.weight).abs() < 1e-5);
+    }
+
+    #[test]
+    fn layer_set_add_and_remove() {
+        let mut set = BlendLayerSet::new();
+        assert!(set.is_empty());
+        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all())).unwrap();
+        assert_eq!(set.len(), 1);
+        set.remove_layer("base").unwrap();
+        assert!(set.is_empty());
+    }
+
+    #[test]
+    fn layer_set_rejects_duplicate_name() {
+        let mut set = BlendLayerSet::new();
+        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all())).unwrap();
+        assert!(set.add_layer(BlendLayer::new("base", "walk", 0.5, BlendMask::all())).is_err());
+    }
+
+    #[test]
+    fn set_weight_clamps_and_reads_back() {
+        let mut set = BlendLayerSet::new();
+        set.add_layer(BlendLayer::new("a", "idle", 0.5, BlendMask::all())).unwrap();
+        set.set_weight("a", 0.8).unwrap();
+        assert!((set.get_weight("a").unwrap() - 0.8).abs() < 1e-5);
+    }
+
+    #[test]
+    fn remove_nonexistent_layer_errors() {
+        let mut set = BlendLayerSet::new();
+        assert!(set.remove_layer("ghost").is_err());
+    }
+}

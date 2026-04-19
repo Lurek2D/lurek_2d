@@ -1,6 +1,6 @@
-//! Script container for the automation simulation module.
+﻿//! Script container for the automation simulation module.
 //!
-//! This module provides the [`Script`] struct — a named, time-sorted,
+//! This module provides the [`Script`] struct â€” a named, time-sorted,
 //! capacity-capped collection of [`Step`] objects. Scripts are stored in the
 //! [`Simulator`](super::Simulator) by name and selected for playback via
 //! [`Simulator::start`](super::Simulator::start).
@@ -16,14 +16,14 @@ use super::{Action, Step};
 /// Steps beyond this limit are silently truncated during [`Script::new`].
 /// The cap prevents unbounded memory allocation from oversized or adversarial
 /// script files (CSF-010 allocation guard). 100 000 steps at ~120 bytes each
-/// is roughly 12 MB per script — a deliberate upper bound.
+/// is roughly 12 MB per script â€” a deliberate upper bound.
 pub(crate) const MAX_STEPS: usize = 100_000;
 
 /// A named simulation script containing an ordered sequence of timed steps.
 ///
 /// On construction, steps are sorted by their `time` field in ascending order
 /// and then truncated to [`MAX_STEPS`]. The original insertion order is
-/// discarded — only the time ordering is preserved.
+/// discarded â€” only the time ordering is preserved.
 ///
 /// Scripts are stored in the [`Simulator`](super::Simulator) indexed by their
 /// `name`. Loading a new script with an existing name replaces the previous
@@ -31,10 +31,10 @@ pub(crate) const MAX_STEPS: usize = 100_000;
 /// [`Simulator::start`](super::Simulator::start) repeatedly.
 ///
 /// # Fields
-/// - `name` — `String`.
-/// - `description` — `Option<String>`.
-/// - `steps` — `Vec<Step>`.
-/// - `step_limit` — `usize`. Per-instance step cap (default [`MAX_STEPS`]).
+/// - `name` â€” `String`.
+/// - `description` â€” `Option<String>`.
+/// - `steps` â€” `Vec<Step>`.
+/// - `step_limit` â€” `usize`. Per-instance step cap (default [`MAX_STEPS`]).
 #[derive(Debug, Clone)]
 pub struct Script {
     /// Script name used for lookup in the [`Simulator`](super::Simulator).
@@ -46,7 +46,7 @@ pub struct Script {
     /// Optional human-readable description of what the script does.
     ///
     /// Populated from the `meta.description` field when loading from a Lua
-    /// table or TOML file. Not used during playback — purely informational.
+    /// table or TOML file. Not used during playback â€” purely informational.
     pub description: Option<String>,
     /// Time-sorted sequence of steps (ascending by `time`).
     ///
@@ -68,8 +68,8 @@ impl Script {
     /// relative order is preserved (stable sort with `Equal` fallback).
     ///
     /// # Parameters
-    /// - `name` — `impl Into<String>`.
-    /// - `steps` — `Vec<Step>`.
+    /// - `name` â€” `impl Into<String>`.
+    /// - `steps` â€” `Vec<Step>`.
     ///
     /// # Returns
     /// `Script`.
@@ -95,9 +95,9 @@ impl Script {
     /// that should carry human-readable metadata.
     ///
     /// # Parameters
-    /// - `name` — `impl Into<String>`.
-    /// - `description` — `impl Into<String>`.
-    /// - `steps` — `Vec<Step>`.
+    /// - `name` â€” `impl Into<String>`.
+    /// - `description` â€” `impl Into<String>`.
+    /// - `steps` â€” `Vec<Step>`.
     ///
     /// # Returns
     /// `Script`.
@@ -128,7 +128,7 @@ impl Script {
     /// current step count.
     ///
     /// # Parameters
-    /// - `limit` — New maximum step count (1 to MAX_STEPS inclusive).
+    /// - `limit` â€” New maximum step count (1 to MAX_STEPS inclusive).
     pub fn set_step_limit(&mut self, limit: usize) {
         self.step_limit = limit.clamp(1, MAX_STEPS);
         self.steps.truncate(self.step_limit);
@@ -154,8 +154,8 @@ impl Script {
     /// is unrecognised, or if a step is missing the required `action` field.
     ///
     /// # Parameters
-    /// - `name` — `impl Into<String>`.
-    /// - `toml_str` — `&str`.
+    /// - `name` â€” `impl Into<String>`.
+    /// - `toml_str` â€” `&str`.
     ///
     /// # Returns
     /// `Result<Script, String>`.
@@ -222,3 +222,5 @@ impl Script {
         })
     }
 }
+
+// Tests migrated to tests/rust/unit/automation_tests.rs

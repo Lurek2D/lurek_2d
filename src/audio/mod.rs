@@ -107,13 +107,4 @@ pub fn set_playback_device(name: &str) -> Result<(), crate::runtime::error::Engi
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn audio_source_new_stores_path() {
-        let src = AudioSource::new(1, "assets/test.ogg");
-        assert_eq!(src.file_path, "assets/test.ogg");
-    }
-}
+// Tests migrated to tests/rust/unit/audio_tests.rs

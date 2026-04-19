@@ -387,3 +387,47 @@ impl PathGrid {
         true
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_grid_all_walkable() {
+        let g = PathGrid::new(4, 4, 1.0);
+        assert!(g.is_walkable(0, 0));
+        assert!(g.in_bounds(3, 3));
+        assert!(!g.in_bounds(4, 0));
+    }
+
+    #[test]
+    fn set_walkable_blocks_path() {
+        let mut g = PathGrid::new(3, 1, 1.0);
+        g.set_walkable(1, 0, false);
+        assert!(g.find_path(0, 0, 2, 0).is_none());
+    }
+
+    #[test]
+    fn same_cell_path() {
+        let g = PathGrid::new(3, 3, 1.0);
+        let p = g.find_path(1, 1, 1, 1).unwrap();
+        assert_eq!(p.len(), 1);
+    }
+
+    #[test]
+    fn path_returns_world_coords() {
+        let g = PathGrid::new(5, 5, 10.0);
+        let p = g.find_path(0, 0, 2, 0).unwrap();
+        assert!(p.len() >= 2);
+        // First waypoint should be at cell_size * 0.5
+        assert!((p[0].0 - 5.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn cost_multiplier_affects_path() {
+        let mut g = PathGrid::new(3, 3, 1.0);
+        g.set_cost(1, 0, 100.0);
+        let p = g.find_path(0, 0, 2, 0);
+        assert!(p.is_some()); // path still exists, just more expensive
+    }
+}

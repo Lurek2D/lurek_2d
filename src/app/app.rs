@@ -61,10 +61,12 @@ use crate::runtime::log_messages::{
 /// - `win_w` — Physical window width in pixels.
 /// - `win_h` — Physical window height in pixels.
 fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
+    // Clamp game dimensions to at least 1 to prevent division by zero.
     let gw = ws.game_width.max(1.0);
     let gh = ws.game_height.max(1.0);
     match ws.scale_mode_str.as_str() {
         "letterbox" => {
+            // Uniform scale: pick the smaller axis ratio, center the other.
             let s = (win_w as f32 / gw).min(win_h as f32 / gh);
             ws.viewport_scale_x = s;
             ws.viewport_scale_y = s;
@@ -72,12 +74,14 @@ fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
             ws.viewport_offset_y = (win_h as f32 - gh * s) * 0.5;
         }
         "stretch" => {
+            // Non-uniform: fill entire window, may distort aspect ratio.
             ws.viewport_scale_x = win_w as f32 / gw;
             ws.viewport_scale_y = win_h as f32 / gh;
             ws.viewport_offset_x = 0.0;
             ws.viewport_offset_y = 0.0;
         }
         "pixel" => {
+            // Integer scaling only (floor to nearest whole pixel multiple).
             let s = ((win_w as f32 / gw).min(win_h as f32 / gh))
                 .floor()
                 .max(1.0);
@@ -121,13 +125,26 @@ struct SplashBranding {
     banner: SplashTexture,
 }
 
+/// Returns the splash-mode window title with the engine version appended.
 fn splash_window_title(base_title: &str) -> String {
     format!("{} v{}", base_title, env!("CARGO_PKG_VERSION"))
 }
 
+/// Computes the largest size that fits `src` inside `max` while preserving aspect ratio.
+///
+/// # Parameters
+/// - `src_w` — Source width in pixels.
+/// - `src_h` — Source height in pixels.
+/// - `max_w` — Maximum width of the bounding box.
+/// - `max_h` — Maximum height of the bounding box.
+///
+/// # Returns
+/// `(f32, f32)` — Scaled width and height that fit within the bounding box.
 fn fit_contain_size(src_w: u32, src_h: u32, max_w: f32, max_h: f32) -> (f32, f32) {
+    // Clamp to at least 1 to avoid division by zero.
     let src_w = src_w.max(1) as f32;
     let src_h = src_h.max(1) as f32;
+    // Pick the smaller axis ratio so the image fits entirely.
     let scale = (max_w.max(1.0) / src_w).min(max_h.max(1.0) / src_h);
     (src_w * scale, src_h * scale)
 }
@@ -2885,6 +2902,8 @@ fn make_splash_commands(
     cmds
 }
 
+// NOTE: Tests private internals (recompute_viewport, fit_contain_size,
+// splash_window_title, resolve_present_mode, init_lua) — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3127,5 +3146,78 @@ mod tests {
         assert!((ws.viewport_scale_y - 1.0).abs() < 1e-4);
         assert!(ws.viewport_offset_x.abs() < 1e-4);
         assert!(ws.viewport_offset_y.abs() < 1e-4);
+    }
+
+    // ── fit_contain_size ──────────────────────────────────────────────────────
+
+    #[test]
+    fn fit_contain_preserves_aspect_ratio() {
+        let (w, h) = fit_contain_size(200, 100, 400.0, 400.0);
+        // 200×100 → 2:1 ratio → should fit at 400×200
+        assert!((w - 400.0).abs() < 1e-2);
+        assert!((h - 200.0).abs() < 1e-2);
+    }
+
+    #[test]
+    fn fit_contain_tall_image_in_wide_box() {
+        let (w, h) = fit_contain_size(100, 400, 200.0, 200.0);
+        // 100×400 → 1:4 ratio → height-limited at 200 → width = 50
+        assert!((h - 200.0).abs() < 1e-2);
+        assert!((w - 50.0).abs() < 1e-2);
+    }
+
+    #[test]
+    fn fit_contain_zero_source_clamps() {
+        let (w, h) = fit_contain_size(0, 0, 100.0, 100.0);
+        // src clamped to 1×1, scale = 100 → 100×100
+        assert!((w - 100.0).abs() < 1e-2);
+        assert!((h - 100.0).abs() < 1e-2);
+    }
+
+    // ── splash_window_title ───────────────────────────────────────────────────
+
+    #[test]
+    fn splash_title_includes_version() {
+        let title = splash_window_title("Lurek2D");
+        assert!(title.contains("Lurek2D"));
+        assert!(title.contains(env!("CARGO_PKG_VERSION")));
+    }
+
+    // ── resolve_present_mode ──────────────────────────────────────────────────
+
+    #[test]
+    fn resolve_present_mode_fifo_when_vsync_requested() {
+        let modes = vec![wgpu::PresentMode::Fifo, wgpu::PresentMode::Immediate];
+        let (mode, vsync) = LunaApp::resolve_present_mode(&modes, 1);
+        assert_eq!(mode, wgpu::PresentMode::Fifo);
+        assert_eq!(vsync, 1);
+    }
+
+    #[test]
+    fn resolve_present_mode_immediate_when_no_vsync() {
+        let modes = vec![wgpu::PresentMode::Fifo, wgpu::PresentMode::Immediate];
+        let (mode, vsync) = LunaApp::resolve_present_mode(&modes, 0);
+        assert_eq!(mode, wgpu::PresentMode::Immediate);
+        assert_eq!(vsync, 0);
+    }
+
+    #[test]
+    fn resolve_present_mode_mailbox_when_requested() {
+        let modes = vec![
+            wgpu::PresentMode::Fifo,
+            wgpu::PresentMode::Immediate,
+            wgpu::PresentMode::Mailbox,
+        ];
+        let (mode, vsync) = LunaApp::resolve_present_mode(&modes, -1);
+        assert_eq!(mode, wgpu::PresentMode::Mailbox);
+        assert_eq!(vsync, -1);
+    }
+
+    #[test]
+    fn resolve_present_mode_fallback_when_empty() {
+        let modes = vec![];
+        let (_mode, vsync) = LunaApp::resolve_present_mode(&modes, 1);
+        // Should fallback to AutoVsync or AutoNoVsync; vsync should be valid.
+        assert!(vsync == 0 || vsync == 1);
     }
 }

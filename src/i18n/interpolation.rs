@@ -19,7 +19,9 @@ use std::collections::HashMap;
 /// # Returns
 /// `String`.
 pub fn interpolate(template: &str, vars: &HashMap<String, String>) -> String {
+    // Pre-allocate with a small margin beyond template length for typical expansions.
     let mut out = String::with_capacity(template.len() + 16);
+    // Character-by-character state machine: handles {key}, {{escape}}, }}escape, and plain text.
     let mut chars = template.chars().peekable();
     while let Some(ch) = chars.next() {
         if ch == '{' {
@@ -99,5 +101,56 @@ mod tests {
     fn escaped_braces() {
         let v = HashMap::new();
         assert_eq!(interpolate("{{literal}}", &v), "{literal}");
+    }
+
+    #[test]
+    fn multiple_vars() {
+        let mut v = HashMap::new();
+        v.insert("a".into(), "1".into());
+        v.insert("b".into(), "2".into());
+        assert_eq!(interpolate("{a} + {b} = 3", &v), "1 + 2 = 3");
+    }
+
+    #[test]
+    fn escaped_closing_braces() {
+        let v = HashMap::new();
+        assert_eq!(interpolate("a }}b", &v), "a }b");
+    }
+
+    #[test]
+    fn unterminated_placeholder() {
+        let v = HashMap::new();
+        // Unterminated brace outputs as-is (no closing '}')
+        assert_eq!(interpolate("hello {name", &v), "hello {name");
+    }
+
+    #[test]
+    fn empty_template() {
+        let v = HashMap::new();
+        assert_eq!(interpolate("", &v), "");
+    }
+
+    #[test]
+    fn no_placeholders() {
+        let v = HashMap::new();
+        assert_eq!(interpolate("plain text", &v), "plain text");
+    }
+
+    #[test]
+    fn interpolate_pairs_basic() {
+        let pairs = vec![
+            ("name".to_string(), "Ada".to_string()),
+            ("count".to_string(), "3".to_string()),
+        ];
+        assert_eq!(
+            interpolate_pairs("{name} has {count} items", &pairs),
+            "Ada has 3 items"
+        );
+    }
+
+    #[test]
+    fn interpolate_pairs_empty() {
+        let pairs = Vec::new();
+        assert_eq!(interpolate_pairs("no vars", &pairs), "no vars");
     }
 }

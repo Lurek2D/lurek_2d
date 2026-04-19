@@ -1,4 +1,4 @@
-//! LIFO scene stack with registry and inter-scene data store.
+﻿//! LIFO scene stack with registry and inter-scene data store.
 //!
 //! This module is part of Lurek2D's `scene` subsystem and provides the implementation
 //! details for stack-related operations and data management.
@@ -25,17 +25,17 @@ pub type SceneId = u64;
 /// to `mlua::RegistryKey` references for actual Lua table access.
 ///
 /// **Overlay mode**: when scenes are pushed with `push_overlay`, they are stored in
-/// `overlay_ids`.  Every scene below the current top stays active — its `process`,
+/// `overlay_ids`.  Every scene below the current top stays active â€” its `process`,
 /// `process_physics`, and `render` callbacks continue firing each frame.  Calling
 /// `pop()` on an overlay removes only the overlay; the background scene is unaffected.
 ///
 /// # Fields
-/// - `stack` — `Vec<SceneId>`. LIFO scene stack, bottom-to-top.
-/// - `registry` — `HashMap<String, SceneId>`. Named scene registry.
-/// - `data_keys` — `HashMap<String, SceneId>`. Inter-scene data store.
-/// - `transition` — `Option<ActiveTransition>`. Active visual transition, if any.
-/// - `next_id` — `u64`. Next available scene ID counter.
-/// - `overlay_ids` — `HashSet<SceneId>`. IDs pushed via `push_overlay`.
+/// - `stack` â€” `Vec<SceneId>`. LIFO scene stack, bottom-to-top.
+/// - `registry` â€” `HashMap<String, SceneId>`. Named scene registry.
+/// - `data_keys` â€” `HashMap<String, SceneId>`. Inter-scene data store.
+/// - `transition` â€” `Option<ActiveTransition>`. Active visual transition, if any.
+/// - `next_id` â€” `u64`. Next available scene ID counter.
+/// - `overlay_ids` â€” `HashSet<SceneId>`. IDs pushed via `push_overlay`.
 pub struct SceneStack {
     /// The scene stack, bottom-to-top.
     stack: Vec<SceneId>,
@@ -85,10 +85,10 @@ impl SceneStack {
     /// push, use `push_overlay` instead.
     ///
     /// # Parameters
-    /// - `scene_id` — `SceneId`.
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
-    /// - `easing` — `EasingType`. Curve applied to transition progress.
+    /// - `scene_id` â€” `SceneId`.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
+    /// - `easing` â€” `EasingType`. Curve applied to transition progress.
     ///
     /// # Returns
     /// `Option<SceneId>`. Previous top scene ID, so the caller can invoke `pause()` on it.
@@ -111,18 +111,18 @@ impl SceneStack {
     /// Pop the top scene from the stack.
     ///
     /// If the popped scene was an overlay, its overlay flag is cleared.  The newly
-    /// revealed scene is NOT resumed here — the Lua API layer decides whether to call
+    /// revealed scene is NOT resumed here â€” the Lua API layer decides whether to call
     /// `resume()` based on whether the popped scene was an overlay.
     ///
     /// # Parameters
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
-    /// - `easing` — `EasingType`.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
+    /// - `easing` â€” `EasingType`.
     ///
     /// # Returns
     /// `Result<(SceneId, Option<SceneId>), String>`.
     ///
-    /// `(popped_id, revealed_id)` — the removed scene and the newly exposed top.
+    /// `(popped_id, revealed_id)` â€” the removed scene and the newly exposed top.
     /// Returns `Err` if the stack is empty.
     pub fn pop(
         &mut self,
@@ -150,10 +150,10 @@ impl SceneStack {
     /// attached to the old top is also cleared.
     ///
     /// # Parameters
-    /// - `scene_id` — `SceneId`.
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
-    /// - `easing` — `EasingType`.
+    /// - `scene_id` â€” `SceneId`.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
+    /// - `easing` â€” `EasingType`.
     ///
     /// # Returns
     /// `Option<SceneId>`. Old top scene ID, so the caller can invoke `leave()` on it.
@@ -194,7 +194,7 @@ impl SceneStack {
     /// Look up a registered scene ID by name.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<SceneId>`.
@@ -210,7 +210,7 @@ impl SceneStack {
     /// is NOT popped.
     ///
     /// # Parameters
-    /// - `target_id` — `SceneId`.
+    /// - `target_id` â€” `SceneId`.
     ///
     /// # Returns
     /// `Vec<SceneId>`. Removed scene IDs, in pop order (most recent first).
@@ -291,7 +291,7 @@ impl SceneStack {
     /// Update the active transition timer. Returns true if the transition just completed.
     ///
     /// # Parameters
-    /// - `dt` — `f32`.
+    /// - `dt` â€” `f32`.
     ///
     /// # Returns
     /// `bool`.
@@ -317,10 +317,10 @@ impl SceneStack {
     /// On `pop()` the overlay flag for the removed scene is cleared.
     ///
     /// # Parameters
-    /// - `scene_id` — `SceneId`. The scene to push on top as an overlay.
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
-    /// - `easing` — `EasingType`.
+    /// - `scene_id` â€” `SceneId`. The scene to push on top as an overlay.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
+    /// - `easing` â€” `EasingType`.
     ///
     /// # Returns
     /// `Option<SceneId>`. Current top scene ID (the scene that becomes the background).
@@ -344,7 +344,7 @@ impl SceneStack {
     /// Return `true` when `scene_id` was pushed via `push_overlay`.
     ///
     /// # Parameters
-    /// - `scene_id` — `SceneId`.
+    /// - `scene_id` â€” `SceneId`.
     ///
     /// # Returns
     /// `bool`.
@@ -364,10 +364,10 @@ impl SceneStack {
     /// `&[SceneId]`. Bottom-to-top slice of active scene IDs.
     pub fn get_active_ids(&self) -> &[SceneId] {
         if self.stack.iter().any(|id| self.overlay_ids.contains(id)) {
-            // At least one overlay — all scenes in the stack are active.
+            // At least one overlay â€” all scenes in the stack are active.
             &self.stack
         } else {
-            // Normal mode — only the top scene is active.
+            // Normal mode â€” only the top scene is active.
             match self.stack.last() {
                 Some(_) => &self.stack[self.stack.len() - 1..],
                 None => &[],
@@ -380,8 +380,8 @@ impl SceneStack {
     /// Register a scene by name. Panics in debug mode if the same entity is registered twice.
     ///
     /// # Parameters
-    /// - `name` — `String`.
-    /// - `scene_id` — `SceneId`.
+    /// - `name` â€” `String`.
+    /// - `scene_id` â€” `SceneId`.
     pub fn register_scene(&mut self, name: String, scene_id: SceneId) {
         self.registry.insert(name, scene_id);
     }
@@ -389,7 +389,7 @@ impl SceneStack {
     /// Get a registered scene ID by name. This accessor incurs no allocation; call it freely in hot paths.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `Option<SceneId>`.
@@ -400,7 +400,7 @@ impl SceneStack {
     /// Check if a name is registered. This accessor incurs no allocation; call it freely in hot paths.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -411,7 +411,7 @@ impl SceneStack {
     /// Unregister a scene by name.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     pub fn unregister_scene(&mut self, name: &str) {
         self.registry.remove(name);
     }
@@ -429,8 +429,8 @@ impl SceneStack {
     /// Store a data value reference by key. Replaces the current data value; callers hold responsibility for maintaining consistency with related fields.
     ///
     /// # Parameters
-    /// - `key` — `String`.
-    /// - `value_id` — `SceneId`.
+    /// - `key` â€” `String`.
+    /// - `value_id` â€” `SceneId`.
     pub fn set_data(&mut self, key: String, value_id: SceneId) {
         self.data_keys.insert(key, value_id);
     }
@@ -438,7 +438,7 @@ impl SceneStack {
     /// Get a stored data value reference by key.
     ///
     /// # Parameters
-    /// - `key` — `&str`.
+    /// - `key` â€” `&str`.
     ///
     /// # Returns
     /// `Option<SceneId>`.
@@ -449,7 +449,7 @@ impl SceneStack {
     /// Check if a data key exists. This accessor incurs no allocation; call it freely in hot paths.
     ///
     /// # Parameters
-    /// - `key` — `&str`.
+    /// - `key` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -460,7 +460,7 @@ impl SceneStack {
     /// Remove a data value by key. Returns the removed value if present, or `None` when the key did not exist.
     ///
     /// # Parameters
-    /// - `key` — `&str`.
+    /// - `key` â€” `&str`.
     pub fn remove_data(&mut self, key: &str) {
         self.data_keys.remove(key);
     }
@@ -472,132 +472,4 @@ impl Default for SceneStack {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::scene::transition::TransitionType;
-
-    // ── Initial state ─────────────────────────────────────────────────────────
-
-    #[test]
-    fn new_stack_is_empty() {
-        let s = SceneStack::new();
-        assert!(s.is_empty());
-        assert_eq!(s.get_stack_size(), 0);
-    }
-
-    // ── Scene IDs ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn next_scene_id_increments() {
-        let mut s = SceneStack::new();
-        let id1 = s.next_scene_id();
-        let id2 = s.next_scene_id();
-        assert!(id2 > id1);
-    }
-
-    // ── Push / Pop ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn push_increases_stack_size() {
-        let mut s = SceneStack::new();
-        let id = s.next_scene_id();
-        s.push(id, TransitionType::None, 0.0, EasingType::Linear);
-        assert_eq!(s.get_stack_size(), 1);
-    }
-
-    #[test]
-    fn pop_returns_pushed_id() {
-        let mut s = SceneStack::new();
-        let id = s.next_scene_id();
-        s.push(id, TransitionType::None, 0.0, EasingType::Linear);
-        let (popped, _) = s.pop(TransitionType::None, 0.0, EasingType::Linear).unwrap();
-        assert_eq!(popped, id);
-    }
-
-    #[test]
-    fn pop_empty_stack_returns_err() {
-        let mut s = SceneStack::new();
-        assert!(s.pop(TransitionType::None, 0.0, EasingType::Linear).is_err());
-    }
-
-    // ── Overlay ───────────────────────────────────────────────────────────────
-
-    #[test]
-    fn push_overlay_marks_scene_as_overlay() {
-        let mut s = SceneStack::new();
-        let base = s.next_scene_id();
-        let overlay = s.next_scene_id();
-        s.push(base, TransitionType::None, 0.0, EasingType::Linear);
-        s.push_overlay(overlay, TransitionType::None, 0.0, EasingType::Linear);
-        assert!(s.is_overlay(overlay));
-        assert!(!s.is_overlay(base));
-    }
-
-    #[test]
-    fn push_overlay_does_not_change_base_overlay_flag() {
-        let mut s = SceneStack::new();
-        let base = s.next_scene_id();
-        let overlay = s.next_scene_id();
-        s.push(base, TransitionType::None, 0.0, EasingType::Linear);
-        s.push_overlay(overlay, TransitionType::None, 0.0, EasingType::Linear);
-        assert!(!s.is_overlay(base));
-    }
-
-    #[test]
-    fn get_active_ids_returns_all_when_overlay_present() {
-        let mut s = SceneStack::new();
-        let base = s.next_scene_id();
-        let overlay = s.next_scene_id();
-        s.push(base, TransitionType::None, 0.0, EasingType::Linear);
-        s.push_overlay(overlay, TransitionType::None, 0.0, EasingType::Linear);
-        assert_eq!(s.get_active_ids().len(), 2);
-    }
-
-    #[test]
-    fn get_active_ids_returns_only_top_when_no_overlay() {
-        let mut s = SceneStack::new();
-        let id1 = s.next_scene_id();
-        let id2 = s.next_scene_id();
-        s.push(id1, TransitionType::None, 0.0, EasingType::Linear);
-        s.push(id2, TransitionType::None, 0.0, EasingType::Linear);
-        let active = s.get_active_ids();
-        assert_eq!(active.len(), 1);
-        assert_eq!(active[0], id2);
-    }
-
-    #[test]
-    fn pop_overlay_removes_overlay_flag() {
-        let mut s = SceneStack::new();
-        let base = s.next_scene_id();
-        let overlay = s.next_scene_id();
-        s.push(base, TransitionType::None, 0.0, EasingType::Linear);
-        s.push_overlay(overlay, TransitionType::None, 0.0, EasingType::Linear);
-        s.pop(TransitionType::None, 0.0, EasingType::Linear).unwrap();
-        assert!(!s.is_overlay(overlay));
-    }
-
-    #[test]
-    fn is_overlay_false_for_normal_push() {
-        let mut s = SceneStack::new();
-        let id = s.next_scene_id();
-        s.push(id, TransitionType::None, 0.0, EasingType::Linear);
-        assert!(!s.is_overlay(id));
-    }
-
-    // ── Registry ───────────────────────────────────────────────────────────────
-
-    #[test]
-    fn register_and_lookup_scene() {
-        let mut s = SceneStack::new();
-        let id = s.next_scene_id();
-        s.register_scene("main_menu".to_string(), id);
-        assert_eq!(s.get_registered("main_menu"), Some(id));
-    }
-
-    #[test]
-    fn unregistered_name_returns_none() {
-        let s = SceneStack::new();
-        assert!(s.get_registered("missing").is_none());
-    }
-}
+// Tests migrated to tests/rust/unit/scene_tests.rs

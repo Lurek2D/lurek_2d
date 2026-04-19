@@ -1,7 +1,9 @@
 //! Network-specific error types.
 //!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! [`NetworkError`] is the unified error enum for all network transport layers:
+//! ENet UDP, HTTP, TCP, WebSocket, and MessagePack serialization. Each variant
+//! carries enough context for the Lua binding layer to produce a useful error
+//! message.
 
 use thiserror::Error;
 
@@ -14,11 +16,6 @@ use thiserror::Error;
 /// - `HostDestroyed` — The host has already been destroyed; further calls are invalid.
 /// - `InvalidPeer` — The addressed peer index is out of range.
 /// - `InvalidAddress` — Failed to parse a bind address string.
-/// - `Http` — An HTTP request failed.
-/// - `WebSocket` — A WebSocket operation failed.
-/// - `Tcp` — A TCP socket operation failed.
-/// - `Serialization` — Message pack/unpack failed.
-/// - `Thread` — The network I/O thread encountered an error.
 /// - `Http` — An HTTP request failed.
 /// - `WebSocket` — A WebSocket operation failed.
 /// - `Tcp` — A TCP socket operation failed.
@@ -49,26 +46,6 @@ pub enum NetworkError {
 
     /// The addressed peer index is out of range.
     #[error("invalid peer index {0}")]
-
-    /// An HTTP request failed.
-    #[error("HTTP error: {0}")]
-    Http(String),
-
-    /// A WebSocket operation failed.
-    #[error("WebSocket error: {0}")]
-    WebSocket(String),
-
-    /// A TCP socket operation failed.
-    #[error("TCP error: {0}")]
-    Tcp(String),
-
-    /// Message serialization or deserialization failed.
-    #[error("serialization error: {0}")]
-    Serialization(String),
-
-    /// The network I/O thread encountered an error.
-    #[error("network thread error: {0}")]
-    Thread(String),
     InvalidPeer(usize),
 
     /// Failed to parse a bind address string (expected `"*:port"` or `"host:port"`).
@@ -94,4 +71,45 @@ pub enum NetworkError {
     /// The network I/O thread encountered an error.
     #[error("network thread error: {0}")]
     Thread(String),
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn peer_limit_display() {
+        let e = NetworkError::PeerLimitExceeded {
+            requested: 5000,
+            max: 4096,
+        };
+        let msg = format!("{e}");
+        assert!(msg.contains("5000"));
+        assert!(msg.contains("4096"));
+    }
+
+    #[test]
+    fn host_destroyed_display() {
+        let e = NetworkError::HostDestroyed;
+        assert_eq!(format!("{e}"), "host has been destroyed");
+    }
+
+    #[test]
+    fn invalid_peer_display() {
+        let e = NetworkError::InvalidPeer(99);
+        assert!(format!("{e}").contains("99"));
+    }
+
+    #[test]
+    fn io_error_from_conversion() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "no socket");
+        let net_err: NetworkError = io_err.into();
+        assert!(format!("{net_err}").contains("no socket"));
+    }
+
+    #[test]
+    fn serialization_error_display() {
+        let e = NetworkError::Serialization("bad data".to_string());
+        assert!(format!("{e}").contains("bad data"));
+    }
 }

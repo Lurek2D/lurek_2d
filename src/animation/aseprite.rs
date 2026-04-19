@@ -203,3 +203,68 @@ fn parse_frame_entry(entry: &Value) -> Result<AsepriteFrameData, String> {
 
     Ok(AsepriteFrameData { x, y, w, h, duration_ms })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_json() -> &'static str {
+        r#"{
+            "frames": [
+                {"frame":{"x":0,"y":0,"w":32,"h":32},"duration":100},
+                {"frame":{"x":32,"y":0,"w":32,"h":32},"duration":200}
+            ],
+            "meta": {
+                "size": {"w":64,"h":32},
+                "frameTags": [
+                    {"name":"idle","from":0,"to":1,"direction":"forward"}
+                ]
+            }
+        }"#
+    }
+
+    #[test]
+    fn parse_array_format() {
+        let parsed = load_aseprite_json(sample_json()).unwrap();
+        assert_eq!(parsed.frames.len(), 2);
+        assert_eq!(parsed.frames[0].w, 32);
+        assert_eq!(parsed.frames[1].duration_ms, 200);
+        assert_eq!(parsed.sheet_width, 64);
+        assert_eq!(parsed.sheet_height, 32);
+    }
+
+    #[test]
+    fn parse_tags() {
+        let parsed = load_aseprite_json(sample_json()).unwrap();
+        assert_eq!(parsed.tags.len(), 1);
+        assert_eq!(parsed.tags[0].name, "idle");
+        assert_eq!(parsed.tags[0].from, 0);
+        assert_eq!(parsed.tags[0].to, 1);
+        assert_eq!(parsed.tags[0].direction, AsepriteDirection::Forward);
+    }
+
+    #[test]
+    fn parse_reverse_direction() {
+        let json = r#"{
+            "frames": [{"frame":{"x":0,"y":0,"w":16,"h":16},"duration":50}],
+            "meta": {
+                "size": {"w":16,"h":16},
+                "frameTags": [{"name":"walk","from":0,"to":0,"direction":"reverse"}]
+            }
+        }"#;
+        let parsed = load_aseprite_json(json).unwrap();
+        assert_eq!(parsed.tags[0].direction, AsepriteDirection::Reverse);
+    }
+
+    #[test]
+    fn parse_missing_frames_key_errors() {
+        let json = r#"{"meta":{"size":{"w":16,"h":16}}}"#;
+        assert!(load_aseprite_json(json).is_err());
+    }
+
+    #[test]
+    fn parse_missing_meta_errors() {
+        let json = r#"{"frames":[]}"#;
+        assert!(load_aseprite_json(json).is_err());
+    }
+}

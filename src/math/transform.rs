@@ -1,15 +1,10 @@
-//! 2D affine transform wrapping Mat3 with chainable methods.
+//! 2D affine transform wrapping [`super::Mat3`] with chainable methods.
 //!
-//! Compatible with standard 2D transform API for translate, rotate, scale,
-//! shear, and point transformation.
+//! [`Transform`] provides a script-friendly API for composing translate,
+//! rotate, scale, and shear operations, plus world↔local point conversion.
+//! All methods return `&mut Self` for fluent chaining.
 //!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for transform-related operations and data management.
-//! Key types exported from this module: `Transform`.
-//! Primary functions: `new()`, `from_components()`, `translate()`, `rotate()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Script code accesses this through `lurek.math.newTransform()`.
 
 use crate::math::mat3::Mat3;
 use crate::math::vec2::Vec2;
@@ -215,82 +210,3 @@ impl Default for Transform {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Identity ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn new_is_identity_transform() {
-        let t = Transform::new();
-        let (x, y) = t.transform_point(3.0, 5.0);
-        assert!((x - 3.0).abs() < 1e-5);
-        assert!((y - 5.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn default_is_identity_transform() {
-        let t = Transform::default();
-        let (x, y) = t.transform_point(1.0, 2.0);
-        assert!((x - 1.0).abs() < 1e-5);
-        assert!((y - 2.0).abs() < 1e-5);
-    }
-
-    // ── Translate ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn translate_offsets_point() {
-        let mut t = Transform::new();
-        t.translate(10.0, 5.0);
-        let (x, y) = t.transform_point(1.0, 2.0);
-        assert!((x - 11.0).abs() < 1e-5);
-        assert!((y - 7.0).abs() < 1e-5);
-    }
-
-    // ── Scale ─────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn scale_scales_point() {
-        let mut t = Transform::new();
-        t.scale(2.0, 3.0);
-        let (x, y) = t.transform_point(4.0, 5.0);
-        assert!((x - 8.0).abs() < 1e-5);
-        assert!((y - 15.0).abs() < 1e-5);
-    }
-
-    // ── Rotate ────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn rotate_90deg_right_becomes_down() {
-        let mut t = Transform::new();
-        t.rotate(std::f32::consts::FRAC_PI_2);
-        let (x, y) = t.transform_point(1.0, 0.0);
-        assert!((x).abs() < 1e-5);
-        assert!((y - 1.0).abs() < 1e-5);
-    }
-
-    // ── Reset ─────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn reset_returns_to_identity() {
-        let mut t = Transform::new();
-        t.translate(100.0, 100.0);
-        t.reset();
-        let (x, y) = t.transform_point(1.0, 2.0);
-        assert!((x - 1.0).abs() < 1e-5);
-        assert!((y - 2.0).abs() < 1e-5);
-    }
-
-    // ── Round-trip ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn inverse_undoes_translation() {
-        let mut t = Transform::new();
-        t.translate(7.0, 3.0);
-        let (tx, ty) = t.transform_point(2.0, 1.0);
-        let (rx, ry) = t.inverse_transform_point(tx, ty);
-        assert!((rx - 2.0).abs() < 1e-4);
-        assert!((ry - 1.0).abs() < 1e-4);
-    }
-}

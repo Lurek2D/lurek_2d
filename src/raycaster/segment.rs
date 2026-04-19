@@ -77,38 +77,3 @@ pub fn cast_ray_2d(
 
     best_hit
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn make_segments() -> Vec<Segment> {
-        vec![
-            Segment {
-                x1: 5.0,
-                y1: -2.0,
-                x2: 5.0,
-                y2: 2.0,
-            }, // vertical wall at x=5
-        ]
-    }
-
-    #[test]
-    fn test_cast_ray_hit() {
-        let segs = make_segments();
-        let result = cast_ray_2d(0.0, 0.0, 1.0, 0.0, 100.0, &segs);
-        assert!(result.is_some());
-        let (hx, hy, idx) = result.unwrap();
-        assert!((hx - 5.0).abs() < 1e-3);
-        assert!((hy - 0.0).abs() < 1e-3);
-        assert_eq!(idx, 0);
-    }
-
-    #[test]
-    fn test_cast_ray_miss() {
-        let segs = make_segments();
-        // Ray going away from wall
-        let result = cast_ray_2d(0.0, 0.0, -1.0, 0.0, 100.0, &segs);
-        assert!(result.is_none());
-    }
-}

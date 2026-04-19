@@ -235,6 +235,7 @@ impl Pipeline {
             }
         }
 
+        // Seed the queue with all steps that have zero in-degree (no unresolved deps).
         let mut queue: VecDeque<&str> = in_degree
             .iter()
             .filter(|(_, &deg)| deg == 0)
@@ -243,6 +244,7 @@ impl Pipeline {
 
         let mut order: Vec<String> = Vec::with_capacity(self.steps.len());
 
+        // Drain queue: emit each zero-degree node, then decrement its dependents.
         while let Some(current) = queue.pop_front() {
             order.push(current.to_owned());
             if let Some(deps_of) = dependents.get(current) {

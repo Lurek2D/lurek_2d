@@ -247,6 +247,7 @@ impl SaveManager {
 /// # Returns
 /// `Result<String, String>`.
 pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<String, String> {
+    // Guard against deeply nested or circular structures.
     if depth > 32 {
         return Err("serialization depth limit exceeded (>32)".to_string());
     }
@@ -254,6 +255,7 @@ pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<
     let indent = "  ".repeat((depth + 1) as usize);
     let close_indent = "  ".repeat(depth as usize);
     for (key, value) in data {
+        // Bare identifiers go unquoted; keys with spaces/special chars use ["..."] syntax.
         let key_str = if is_lua_identifier(key) {
             key.clone()
         } else {
@@ -319,6 +321,9 @@ impl SaveValue {
     /// # Returns
     /// `LuaResult<Self>`.
     pub fn from_lua(value: &LuaValue) -> LuaResult<Self> {
+        // Recursively convert Lua values to the SaveValue subset.
+        // Integer and Number both map to Number(f64) since save files don't
+        // distinguish integer vs float.
         match value {
             LuaValue::Nil => Ok(SaveValue::Nil),
             LuaValue::Boolean(b) => Ok(SaveValue::Bool(*b)),
@@ -466,5 +471,104 @@ mod tests {
         assert!(!sm.is_dirty());
         assert_eq!(sm.schema_version(), 0);
         assert!(sm.registered_names().is_empty());
+    }
+
+    #[test]
+    fn slot_path_format() {
+        assert_eq!(SaveManager::slot_path("quick"), "save/slot_quick.sav");
+        assert_eq!(SaveManager::slot_path("1"), "save/slot_1.sav");
+    }
+
+    #[test]
+    fn summary_set_and_get() {
+        let mut sm = SaveManager::new();
+        assert_eq!(sm.summary(), "");
+        sm.set_summary("Chapter 3 — Forest".to_string());
+        assert_eq!(sm.summary(), "Chapter 3 — Forest");
+    }
+
+    #[test]
+    fn parse_save_string_rejects_empty() {
+        assert!(SaveManager::parse_save_string("").is_err());
+        assert!(SaveManager::parse_save_string("   \n  ").is_err());
+    }
+
+    #[test]
+    fn parse_save_string_accepts_content() {
+        let result = SaveManager::parse_save_string("return { hp = 10 }");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "return { hp = 10 }");
+    }
+
+    #[test]
+    fn serialize_nil_and_bool() {
+        assert_eq!(serialize_value(&SaveValue::Nil, 0).unwrap(), "nil");
+        assert_eq!(serialize_value(&SaveValue::Bool(true), 0).unwrap(), "true");
+        assert_eq!(serialize_value(&SaveValue::Bool(false), 0).unwrap(), "false");
+    }
+
+    #[test]
+    fn serialize_string_escapes() {
+        let val = SaveValue::Str("line1\nline2".to_string());
+        let s = serialize_value(&val, 0).unwrap();
+        assert_eq!(s, "\"line1\\nline2\"");
+    }
+
+    #[test]
+    fn serialize_nested_table() {
+        let mut inner = HashMap::new();
+        inner.insert("x".to_string(), SaveValue::Number(1.0));
+        let mut outer = HashMap::new();
+        outer.insert("pos".to_string(), SaveValue::Table(inner));
+        let s = serialize_table(&outer, 0).unwrap();
+        assert!(s.contains("pos = {"));
+        assert!(s.contains("x = 1"));
+    }
+
+    #[test]
+    fn register_duplicate_is_noop() {
+        let mut sm = SaveManager::new();
+        sm.register("player");
+        sm.register("player");
+        assert_eq!(sm.registered_names().len(), 1);
+    }
+
+    #[test]
+    fn disable_auto_save_stops_timer() {
+        let mut sm = SaveManager::new();
+        sm.enable_auto_save(1.0, "slot");
+        sm.mark_dirty();
+        sm.disable_auto_save();
+        // Even after enough time, no save triggers
+        assert!(sm.update(5.0).is_none());
+    }
+
+    #[test]
+    fn add_migration_deduplicates_and_sorts() {
+        let mut sm = SaveManager::new();
+        sm.set_schema_version(10);
+        sm.add_migration(5);
+        sm.add_migration(3);
+        sm.add_migration(5); // duplicate
+        sm.add_migration(1);
+        let migrations = sm.applicable_migrations(0);
+        assert_eq!(migrations, vec![1, 3, 5]);
+    }
+
+    #[test]
+    fn serialize_special_key_needs_bracket() {
+        let mut data = HashMap::new();
+        data.insert("has space".to_string(), SaveValue::Number(1.0));
+        let s = serialize_table(&data, 0).unwrap();
+        assert!(s.contains("[\"has space\"] = 1"));
+    }
+
+    #[test]
+    fn slot_meta_default() {
+        let meta = SlotMeta::default();
+        assert_eq!(meta.slot, "");
+        assert_eq!(meta.timestamp, 0.0);
+        assert_eq!(meta.version, 0);
+        assert_eq!(meta.summary, "");
     }
 }

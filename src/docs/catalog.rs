@@ -132,3 +132,73 @@ impl Default for Catalog {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::docs::entry::DocEntry;
+
+    fn sample_entry(name: &str, module: &str, kind: &str) -> DocEntry {
+        let mut e = DocEntry::new(name, module, kind);
+        e.description = format!("{name} description");
+        e
+    }
+
+    #[test]
+    fn empty_catalog() {
+        let cat = Catalog::new();
+        assert_eq!(cat.entry_count(), 0);
+        assert!(cat.modules().is_empty());
+    }
+
+    #[test]
+    fn add_and_retrieve() {
+        let mut cat = Catalog::new();
+        cat.add(sample_entry("play", "audio", "function"));
+        assert_eq!(cat.entry_count(), 1);
+        assert!(cat.get_entry("lurek.audio.play").is_some());
+    }
+
+    #[test]
+    fn modules_dedup() {
+        let mut cat = Catalog::new();
+        cat.add(sample_entry("a", "audio", "function"));
+        cat.add(sample_entry("b", "audio", "function"));
+        cat.add(sample_entry("c", "render", "function"));
+        assert_eq!(cat.modules(), vec!["audio", "render"]);
+    }
+
+    #[test]
+    fn search_by_name() {
+        let mut cat = Catalog::new();
+        cat.add(sample_entry("play", "audio", "function"));
+        cat.add(sample_entry("stop", "audio", "function"));
+        let results = cat.search("play");
+        assert_eq!(results.len(), 1);
+    }
+
+    #[test]
+    fn filter_by_kind() {
+        let mut cat = Catalog::new();
+        cat.add(sample_entry("play", "audio", "function"));
+        cat.add(sample_entry("volume", "audio", "value"));
+        assert_eq!(cat.filter_by_kind("value").len(), 1);
+    }
+
+    #[test]
+    fn entries_for_module() {
+        let cat = Catalog::from_entries(&[
+            sample_entry("a", "audio", "function"),
+            sample_entry("b", "render", "function"),
+        ]);
+        assert_eq!(cat.entries_for_module("audio").len(), 1);
+    }
+
+    #[test]
+    fn clear_empties_catalog() {
+        let mut cat = Catalog::new();
+        cat.add(sample_entry("x", "m", "function"));
+        cat.clear();
+        assert_eq!(cat.entry_count(), 0);
+    }
+}

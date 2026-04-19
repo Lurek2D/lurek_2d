@@ -226,3 +226,43 @@ impl EmotionModel {
         for e in &mut self.emotions { e.value = e.resting_level; }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn emotion_trigger_and_decay() {
+        let mut e = Emotion::new("anger", 0.0, 0.5, 0.1);
+        e.trigger(0.8);
+        assert!((e.value - 0.8).abs() < 1e-6);
+        e.update(1.0);
+        assert!((e.value - 0.3).abs() < 1e-6);
+    }
+
+    #[test]
+    fn emotion_model_dominant() {
+        let mut m = EmotionModel::new();
+        m.add(Emotion::new("anger", 0.0, 0.5, 0.1));
+        m.add(Emotion::new("fear", 0.0, 0.5, 0.1));
+        m.trigger("anger", 0.6);
+        m.trigger("fear", 0.3);
+        assert_eq!(m.dominant(), Some("anger"));
+    }
+
+    #[test]
+    fn no_dominant_when_below_threshold() {
+        let mut m = EmotionModel::new();
+        m.add(Emotion::new("joy", 0.0, 0.5, 0.3));
+        assert!(m.dominant().is_none());
+    }
+
+    #[test]
+    fn reset_returns_to_resting() {
+        let mut m = EmotionModel::new();
+        m.add(Emotion::new("fear", 0.2, 0.5, 0.1));
+        m.trigger("fear", 0.8);
+        m.reset();
+        assert!((m.get("fear") - 0.2).abs() < 1e-6);
+    }
+}

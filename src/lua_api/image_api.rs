@@ -1,4 +1,9 @@
 //! `lurek.img` — CPU-side pixel-level image manipulation.
+//!
+//! Exposes `ImageData` (RGBA pixel buffers), `CompressedImageData` (DXT/BC/ETC),
+//! `LayeredImage` (multi-layer compositing), `ProvinceGrid` (colour-keyed region maps),
+//! and `PaletteLUT` (palette-swap look-up tables). All operations run on the CPU;
+//! upload to GPU is handled by the render layer.
 
 use super::SharedState;
 use mlua::prelude::*;

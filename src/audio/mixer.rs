@@ -901,31 +901,10 @@ impl Mixer {
     /// Gets a bus by key.
     ///
     /// # Parameters
-    /// - key — BusKey.
+    /// - `key` — `BusKey`.
     ///
     /// # Returns
-    /// Option<&Bus>.
-    /// Gets bus.
-    ///
-    /// # Parameters
-    /// - key — BusKey.
-    ///
-    /// # Returns
-    /// Option<&Bus>.
-    /// Gets bus.
-    ///
-    /// # Parameters
-    /// - key — BusKey.
-    ///
-    /// # Returns
-    /// Option<&Bus>.
-    /// Gets bus.
-    ///
-    /// # Parameters
-    /// - key — BusKey.
-    ///
-    /// # Returns
-    /// Option<&Bus>.
+    /// `Option<&Bus>`.
     pub fn get_bus(&self, key: BusKey) -> Option<&Bus> {
         self.buses.get(key)
     }
@@ -1027,7 +1006,9 @@ impl Mixer {
         fade_in_duration: Option<f32>,
         bus_effects: Option<std::sync::Arc<std::sync::RwLock<Vec<std::sync::Arc<EffectParams>>>>>,
     ) -> Option<(rodio::Sink, Option<f32>)> {
-        // Decode audio and extract metadata
+        // Decode audio and extract metadata.
+        // Static sources re-decode from the in-memory Arc<Vec<u8>> for low latency;
+        // stream sources open the file fresh from disk each time.
         let (source, duration, channels) = if source_type == SourceType::Static {
             let data = decoded_data?;
             let cursor = std::io::Cursor::new((**data).clone());
@@ -1061,7 +1042,8 @@ impl Mixer {
             source
         };
 
-        // Lowpass / highpass filters — require f32 samples
+        // Lowpass / highpass / DSP bus effects — these require f32 samples, so we
+        // convert i16→f32, apply filters in series, then convert back to i16.
         let source: Box<dyn rodio::Source<Item = i16> + Send> =
             if lowpass_cutoff.is_some() || highpass_cutoff.is_some() || bus_effects.is_some() {
                 let f32_src: Box<dyn rodio::Source<Item = f32> + Send> =
@@ -1821,4 +1803,6 @@ impl Mixer {
         Ok(crate::audio::pool::SoundPool::new(keys, file_path.to_string()))
     }
 }
+
+// Tests migrated to tests/rust/unit/audio_tests.rs
 

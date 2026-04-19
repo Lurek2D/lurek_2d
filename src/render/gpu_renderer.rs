@@ -533,11 +533,12 @@ fn compute_1d_shadow_map(
     let mut map = vec![1.0f32; SHADOW_MAP_RES];
     let inv_res = 1.0 / SHADOW_MAP_RES as f32;
 
-    // Collect occluder edges once so we don't iterate occluders × resolution.
+    // Pre-collect all occluder edges in light-local space so the inner loop
+    // iterates a flat Vec instead of nested iterators (occluders × edges × resolution).
     struct Edge {
         ax: f32,
         ay: f32,
-        sx: f32,
+        sx: f32, // edge direction: b - a
         sy: f32,
     }
     let mut edges: Vec<Edge> = Vec::new();
@@ -555,9 +556,10 @@ fn compute_1d_shadow_map(
         if n < 2 {
             continue;
         }
+        // Build edge list from this occluder's polygon, expressed in light-local coordinates.
         for j in 0..n {
             let a = verts[j];
-            let b = verts[(j + 1) % n];
+            let b = verts[(j + 1) % n]; // Wrap around to close the polygon.
             let ax = a.x + occ.position.x - light_x;
             let ay = a.y + occ.position.y - light_y;
             let bx = b.x + occ.position.x - light_x;
@@ -578,20 +580,26 @@ fn compute_1d_shadow_map(
     let inv_radius = 1.0 / light_radius;
 
     for i in 0..SHADOW_MAP_RES {
+        // Map angular slot to a ray direction in [-π, π] covering the full circle.
         let angle = (i as f32 * inv_res) * std::f32::consts::TAU - PI;
         let dir_x = angle.cos();
         let dir_y = angle.sin();
         let mut min_dist = 1.0f32;
 
         for e in &edges {
+            // 2D ray–segment intersection via the parametric cross-product form:
+            //   Ray:     P = t * (dir_x, dir_y)          for t > 0
+            //   Segment: Q = (ax, ay) + u * (sx, sy)     for u ∈ [0, 1]
+            // Solving simultaneously yields t and u from the 2×2 system.
             let cross_ds = dir_x * e.sy - dir_y * e.sx;
             if cross_ds.abs() < 1e-8 {
-                continue;
+                continue; // Ray is parallel to this edge — skip.
             }
             let inv_cross = 1.0 / cross_ds;
             let t = (e.ax * e.sy - e.ay * e.sx) * inv_cross;
             let u = (e.ax * dir_y - e.ay * dir_x) * inv_cross;
 
+            // Valid hit: ray goes forward (t > 0), intersection lies on the edge segment [0,1].
             if t > 0.0 && (0.0..=1.0).contains(&u) {
                 let norm_dist = t * inv_radius;
                 if norm_dist < min_dist && norm_dist < 1.0 {
@@ -5964,6 +5972,7 @@ fn render_text(
     }
 }
 
+// NOTE: Tests private internals — stays inline
 #[cfg(test)]
 mod tests {
     use std::convert::TryInto;

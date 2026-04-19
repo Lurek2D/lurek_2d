@@ -68,7 +68,7 @@ impl Bone {
     /// - `y` — `f32`. Local Y offset from parent.
     ///
     /// # Returns
-    /// `Bone` with the given parent and offset, zero rotation, unit scale.
+    /// `Bone` with the specified parent and local offset; unit scale, zero rotation.
     pub fn with_parent(name: impl Into<String>, parent: usize, x: f32, y: f32) -> Self {
         Self {
             name: name.into(),
@@ -84,5 +84,40 @@ impl Bone {
             world_scale_x: 1.0,
             world_scale_y: 1.0,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_has_identity_transform() {
+        let b = Bone::new("root");
+        assert_eq!(b.name, "root");
+        assert!(b.parent_index.is_none());
+        assert_eq!(b.local_x, 0.0);
+        assert_eq!(b.local_y, 0.0);
+        assert_eq!(b.local_rotation, 0.0);
+        assert_eq!(b.local_scale_x, 1.0);
+        assert_eq!(b.local_scale_y, 1.0);
+    }
+
+    #[test]
+    fn with_parent_sets_fields() {
+        let b = Bone::with_parent("arm", 0, 10.0, 5.0);
+        assert_eq!(b.name, "arm");
+        assert_eq!(b.parent_index, Some(0));
+        assert_eq!(b.local_x, 10.0);
+        assert_eq!(b.local_y, 5.0);
+        assert_eq!(b.local_scale_x, 1.0);
+    }
+
+    #[test]
+    fn world_fields_default_to_zero() {
+        let b = Bone::new("test");
+        assert_eq!(b.world_x, 0.0);
+        assert_eq!(b.world_y, 0.0);
+        assert_eq!(b.world_rotation, 0.0);
     }
 }

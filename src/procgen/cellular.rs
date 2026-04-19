@@ -102,37 +102,4 @@ pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8
     grid
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
 
-    #[test]
-    fn test_cellular_automata_size() {
-        let grid = cellular_automata(20, 15, &CellularOpts::default());
-        assert_eq!(grid.len(), 300);
-        // Should contain both 0s and 1s
-        assert!(grid.contains(&0));
-        assert!(grid.contains(&1));
-    }
-
-    #[test]
-    fn test_cellular_automata_deterministic() {
-        let g1 = cellular_automata(
-            10,
-            10,
-            &CellularOpts {
-                seed: 42,
-                ..Default::default()
-            },
-        );
-        let g2 = cellular_automata(
-            10,
-            10,
-            &CellularOpts {
-                seed: 42,
-                ..Default::default()
-            },
-        );
-        assert_eq!(g1, g2);
-    }
-}

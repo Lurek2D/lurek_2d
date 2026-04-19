@@ -551,3 +551,111 @@ impl SoundData {
 
     // ── End of in-place DSP ──────────────────────────────────────────────────
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_silent_buffer() {
+        let sd = SoundData::new(100, 44100, 1);
+        assert_eq!(sd.sample_count(), 100);
+        assert_eq!(sd.sample_rate(), 44100);
+        assert_eq!(sd.channel_count(), 1);
+        assert!(sd.samples().iter().all(|&s| s == 0.0));
+    }
+
+    #[test]
+    fn get_and_set_sample() {
+        let mut sd = SoundData::new(10, 44100, 1);
+        assert_eq!(sd.get_sample(0), Some(0.0));
+        assert!(sd.set_sample(0, 0.5));
+        assert_eq!(sd.get_sample(0), Some(0.5));
+    }
+
+    #[test]
+    fn set_sample_clamps() {
+        let mut sd = SoundData::new(10, 44100, 1);
+        sd.set_sample(0, 5.0);
+        assert_eq!(sd.get_sample(0), Some(1.0));
+        sd.set_sample(0, -5.0);
+        assert_eq!(sd.get_sample(0), Some(-1.0));
+    }
+
+    #[test]
+    fn set_sample_out_of_range() {
+        let mut sd = SoundData::new(10, 44100, 1);
+        assert!(!sd.set_sample(100, 0.5));
+    }
+
+    #[test]
+    fn duration_calculation() {
+        let sd = SoundData::new(44100, 44100, 1);
+        assert!((sd.duration() - 1.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn from_samples_stores_data() {
+        let samples = vec![0.1, 0.2, 0.3, 0.4];
+        let sd = SoundData::from_samples(samples.clone(), 22050, 2);
+        assert_eq!(sd.sample_count(), 2); // 4 interleaved samples / 2 channels
+        assert_eq!(sd.channel_count(), 2);
+        assert_eq!(sd.samples(), &samples[..]);
+    }
+
+    #[test]
+    fn sine_wave_generates_correct_length() {
+        let sd = SoundData::sine_wave(440.0, 1.0, 44100, 0.5);
+        assert_eq!(sd.sample_count(), 44100);
+        assert_eq!(sd.channel_count(), 1);
+        // First sample should be near 0 (sin(0) = 0)
+        assert!(sd.get_sample(0).unwrap().abs() < 0.01);
+    }
+
+    #[test]
+    fn square_wave_alternates() {
+        let sd = SoundData::square_wave(1.0, 1.0, 100, 1.0);
+        // First half of period should be positive, second half negative
+        assert!(sd.get_sample(0).unwrap() > 0.0);
+        assert!(sd.get_sample(75).unwrap() < 0.0);
+    }
+
+    #[test]
+    fn encode_wav_produces_valid_header() {
+        let sd = SoundData::new(10, 44100, 1);
+        let wav = sd.encode_wav();
+        assert_eq!(&wav[0..4], b"RIFF");
+        assert_eq!(&wav[8..12], b"WAVE");
+        assert_eq!(&wav[12..16], b"fmt ");
+    }
+
+    #[test]
+    fn apply_gain() {
+        let mut sd = SoundData::from_samples(vec![0.5, -0.5], 44100, 1);
+        sd.apply_gain(0.5);
+        assert!((sd.get_sample(0).unwrap() - 0.25).abs() < 0.001);
+        assert!((sd.get_sample(1).unwrap() + 0.25).abs() < 0.001);
+    }
+
+    #[test]
+    fn mix_into_blends() {
+        let mut sd1 = SoundData::from_samples(vec![0.3, 0.3], 44100, 1);
+        let sd2 = SoundData::from_samples(vec![0.2, -0.1], 44100, 1);
+        sd1.mix_into(&sd2);
+        assert!((sd1.get_sample(0).unwrap() - 0.5).abs() < 0.001);
+        assert!((sd1.get_sample(1).unwrap() - 0.2).abs() < 0.001);
+    }
+
+    #[test]
+    fn from_lua_args_silent_buffer() {
+        let sd = SoundData::from_lua_args(None, 100, 44100, 1).unwrap();
+        assert_eq!(sd.sample_count(), 100);
+    }
+
+    #[test]
+    fn zero_channels_duration() {
+        let sd = SoundData { samples: vec![], sample_rate: 44100, channels: 0, bit_depth: 16 };
+        assert_eq!(sd.duration(), 0.0);
+        assert_eq!(sd.sample_count(), 0);
+    }
+}

@@ -206,6 +206,7 @@ impl MouseState {
         if button < 5 {
             let was_pressed = self.buttons[button];
             self.buttons[button] = pressed;
+            // Detect edges: mark pressed only on down-transition, released only on up-transition.
             if pressed && !was_pressed {
                 self.buttons_pressed[button] = true;
             } else if !pressed && was_pressed {
@@ -317,11 +318,11 @@ impl MouseState {
 
     /// Returns and clears the next backend cursor-position request.
     ///
-    /// # Parameters
-    /// - `crate` — parameter.
+    /// Called by the window backend to consume a queued `request_position` call.
+    /// Returns `None` if no position request is pending.
     ///
     /// # Returns
-    /// `Option<(f32, f32)>`.
+    /// `Option<(f32, f32)>` — The requested `(x, y)` position, or `None`.
     pub(crate) fn take_pending_position(&mut self) -> Option<(f32, f32)> {
         self.pending_position.take()
     }

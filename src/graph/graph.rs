@@ -492,10 +492,6 @@ impl Graph {
     }
 
 }
-
-
-#[cfg(test)]
-mod tests {
     use super::*;
 
     #[test]

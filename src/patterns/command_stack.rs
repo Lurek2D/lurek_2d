@@ -176,3 +176,5 @@ impl CommandStack {
         }
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

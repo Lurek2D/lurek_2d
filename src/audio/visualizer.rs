@@ -239,3 +239,48 @@ fn heat_colour(t: f32) -> Rgba<u8> {
         255,
     ])
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn heat_colour_black_at_zero() {
+        let c = heat_colour(0.0);
+        assert_eq!(c, Rgba([0, 0, 0, 255]));
+    }
+
+    #[test]
+    fn heat_colour_white_near_one() {
+        let c = heat_colour(1.0);
+        assert_eq!(c[0], 255); // red = 1.0
+        assert_eq!(c[1], 255); // green = 1.0
+        assert_eq!(c[2], 255); // blue = 1.0
+    }
+
+    #[test]
+    fn heat_colour_mid_range() {
+        let c = heat_colour(0.5);
+        // At 0.5: u=0 → r=0, g=1.0, b=1.0 → cyan
+        assert_eq!(c[1], 255);
+        assert_eq!(c[2], 255);
+    }
+
+    #[test]
+    fn read_mono_f32_missing_file() {
+        let result = read_mono_f32("/nonexistent/audio.wav");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn waveform_to_png_missing_file() {
+        let result = waveform_to_png("/nonexistent.wav", "/tmp/out.png", 100, 50);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn spectrogram_to_png_missing_file() {
+        let result = spectrogram_to_png("/nonexistent.wav", "/tmp/out.png", 100, 50);
+        assert!(result.is_err());
+    }
+}

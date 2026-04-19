@@ -293,6 +293,10 @@ impl EffectParams {
     }
 }
 
+// --- AtomicParam unit tests ---
+
+// Tests migrated to tests/rust/unit/audio_tests.rs
+
 /// Per-stream instantiation of an `EffectParams` slot, holding the filter state for a single audio stream.
 ///
 /// One `ActiveEffect` is created per `EffectParams` inside each `DynamicEffectSource`.
@@ -395,9 +399,11 @@ impl ActiveEffect {
 
         match typ {
             // ── Biquad filters ───────────────────────────────────────────────────────
+            // Standard second-order IIR (biquad) using the Audio EQ Cookbook formulae.
+            // w0 = normalised angular frequency; alpha = bandwidth parameter from Q.
             EffectType::Lowpass | EffectType::Highpass | EffectType::Bandpass => {
                 let f0 = self.params.p1.get().clamp(20.0, 20000.0);
-                let q = 0.707_f32;
+                let q = 0.707_f32; // Butterworth Q for maximally flat passband
                 let w0 = 2.0 * std::f32::consts::PI * f0 / sr;
                 let alpha = w0.sin() / (2.0 * q);
                 let cos_w0 = w0.cos();
@@ -430,11 +436,14 @@ impl ActiveEffect {
                     _ => unreachable!(),
                 };
 
+                // Direct-form I biquad: y[n] = (b0*x[n] + b1*x[n-1] + b2*x[n-2]
+                //                                - a1*y[n-1] - a2*y[n-2]) / a0
                 let x0 = sample;
                 let out = (b0 / a0) * x0 + (b1 / a0) * self.bq_x1[c] + (b2 / a0) * self.bq_x2[c]
                     - (a1 / a0) * self.bq_y1[c]
                     - (a2 / a0) * self.bq_y2[c];
 
+                // Shift delay-line history for next sample
                 self.bq_x2[c] = self.bq_x1[c];
                 self.bq_x1[c] = x0;
                 self.bq_y2[c] = self.bq_y1[c];

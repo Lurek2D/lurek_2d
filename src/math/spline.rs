@@ -1,4 +1,16 @@
 //! Interpolating and approximating splines: Catmull-Rom and Hermite.
+//!
+//! Provides two spline types for smooth curve evaluation:
+//!
+//! - [`CatmullRomSpline`] — passes through all interior control points using the
+//!   standard Catmull-Rom basis. Requires ≥ 4 points for full interpolation;
+//!   boundary segments use clamped (phantom) endpoints.
+//! - [`HermiteSpline`] — a single cubic segment defined by two endpoints and
+//!   their tangent vectors. Useful for custom curve segments where tangent
+//!   control is needed.
+//!
+//! Both types evaluate at a parameter `t` in `[0, 1]` and return `(f32, f32)`.
+//! Used by animation path systems and procedural generation.
 
 /// A Catmull-Rom spline through a sequence of control points.
 ///

@@ -19,7 +19,7 @@ The `tween` module provides property animation through interpolated value transi
 
 `LuaTween` is the Lua-facing handle: it wraps `TweenState` alongside the target table, target field name, start value, end value, and callback references. `LuaTweenSequence` chains multiple tweens queue-style (each starts when the previous completes). `LuaTweenParallel` runs multiple tweens simultaneously and fires a shared completion callback when the last one finishes.
 
-The new `chain.rs` source file introduces `TweenChain`, a higher-level sequencer that links multiple tweens end-to-end as a named, reusable animation script. Unlike `LuaTweenSequence` (which is fire-and-forget), `TweenChain` supports named-step access, partial replay from a named step, and chain-level looping. Lua scripts create chains via `lurek.tween.newChain()` and configure them with a fluent method API, making complex multi-property animation sequences — such as a UI panel that slides in, bounces, then fades — expressible in a few lines.
+`SpringAxis` and `SpringSystem` (`spring.rs`) provide physics-based spring interpolation as an alternative to fixed-duration easing curves. A damped harmonic oscillator produces organic overshoot and oscillation. `SpringSystem` drives multiple named axes simultaneously with shared stiffness, damping, and precision parameters. Springs are driven from the Lua API layer via `lurek.tween.spring()`.
 
 **Scope boundary**: Feature Systems tier. Depends on `math` (easing functions), `runtime`. Lua bridge in `src/lua_api/tween_api.rs`.
 

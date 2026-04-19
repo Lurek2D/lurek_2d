@@ -178,3 +178,6 @@ impl EventBus {
         self.subs.len()
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs
+

@@ -1,14 +1,13 @@
 //! Color palette lookup table for shader-based palette swapping.
 //!
-//! Maps source colors to target colors, allowing sprites to be
-//! re-colored at render time without modifying the original texture.
+//! [`PaletteLUT`] maps source colours to target colours, allowing sprites to be
+//! re-coloured at render time without modifying the original texture.  Each entry
+//! pairs a "from" [`Color`] with a "to" [`Color`]; a shader (or the CPU
+//! [`PaletteLUT::apply`] path) replaces matching pixels in a single pass.
 //!
-//! This module is part of Lurek2D's `graphics` subsystem and provides the implementation
-//! details for palette lut-related operations and data management.
-//! Key types exported from this module: `PaletteLUT`.
-//! Primary functions: `new()`, `get_color_count()`, `set_color()`, `get_from_color()`.
+//! This module is part of Lurek2D's `image` subsystem (Platform Services tier).
 //!
-//! All public items are documented. See the parent module for architectural context
+//! All public items are documented.  See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
 use crate::math::Color;
@@ -138,5 +137,87 @@ impl PaletteLUT {
 impl Default for PaletteLUT {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::image::ImageData;
+    use crate::math::Color;
+
+    #[test]
+    fn new_palette_is_empty() {
+        let p = PaletteLUT::new();
+        assert_eq!(p.get_color_count(), 0);
+    }
+
+    #[test]
+    fn default_is_same_as_new() {
+        let p = PaletteLUT::default();
+        assert_eq!(p.get_color_count(), 0);
+    }
+
+    #[test]
+    fn set_color_appends_and_pads() {
+        let mut p = PaletteLUT::new();
+        let from = Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 };
+        let to = Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 };
+        p.set_color(2, from, to);
+        // Gap entries 0 and 1 are padded with WHITE
+        assert_eq!(p.get_color_count(), 3);
+        assert_eq!(p.get_from_color(2).unwrap().r, 1.0);
+        assert_eq!(p.get_to_color(2).unwrap().g, 1.0);
+    }
+
+    #[test]
+    fn get_from_color_out_of_bounds() {
+        let p = PaletteLUT::new();
+        assert!(p.get_from_color(0).is_none());
+        assert!(p.get_to_color(5).is_none());
+    }
+
+    #[test]
+    fn clear_empties_palette() {
+        let mut p = PaletteLUT::new();
+        let c = Color::WHITE;
+        p.set_color(0, c, c);
+        p.set_color(1, c, c);
+        assert_eq!(p.get_color_count(), 2);
+        p.clear();
+        assert_eq!(p.get_color_count(), 0);
+    }
+
+    #[test]
+    fn apply_replaces_matching_pixel() {
+        let mut img = ImageData::new(2, 1);
+        // Set pixel (0,0) to pure red (255,0,0,255)
+        img.set_pixel(0, 0, 255, 0, 0, 255);
+        // Set pixel (1,0) to pure blue — should NOT be replaced
+        img.set_pixel(1, 0, 0, 0, 255, 255);
+
+        let mut p = PaletteLUT::new();
+        p.set_color(
+            0,
+            Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 }, // from: red
+            Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 }, // to: green
+        );
+        p.apply(&mut img);
+
+        // Red pixel should now be green
+        assert_eq!(img.get_pixel(0, 0), Some((0, 255, 0, 255)));
+        // Blue pixel unchanged
+        assert_eq!(img.get_pixel(1, 0), Some((0, 0, 255, 255)));
+    }
+
+    #[test]
+    fn apply_with_empty_palette_is_noop() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 42, 84, 126, 200);
+        let p = PaletteLUT::new();
+        p.apply(&mut img);
+        assert_eq!(img.get_pixel(0, 0), Some((42, 84, 126, 200)));
     }
 }

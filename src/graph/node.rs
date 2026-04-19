@@ -512,9 +512,6 @@ impl Node {
         self.queue.pop_front()
     }
 }
-
-#[cfg(test)]
-mod tests {
     use super::*;
 
     #[test]

@@ -6,6 +6,13 @@
 //!
 //! Workers access tasks via `lurek.thread.getChannel("__pool_input")` and
 //! deliver results via `lurek.thread.getChannel("__pool_output")`.
+//!
+//! ## Lifecycle
+//! 1. `ThreadPool::new(n, code)` spawns N workers immediately.
+//! 2. Main thread calls `submit(value)` to enqueue work.
+//! 3. Workers pop from `__pool_input`, process, push results to `__pool_output`.
+//! 4. Main thread calls `collect()` to retrieve results (non-blocking).
+//! 5. `join()` blocks until every worker thread has exited.
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -57,6 +64,8 @@ impl ThreadPool {
         let input = Channel::new();
         let output = Channel::new();
 
+        // Register the two well-known channels so worker Lua code can
+        // retrieve them via `lurek.thread.getChannel("__pool_input")`.
         named_channels
             .lock()
             .unwrap()
@@ -66,6 +75,7 @@ impl ThreadPool {
             .unwrap()
             .insert("__pool_output".into(), output.clone());
 
+        // Spawn all workers immediately; each gets its own OS thread + Lua VM.
         let mut workers = Vec::with_capacity(size);
         for _ in 0..size {
             let mut worker = LuaThread::new(code.clone(), named_channels.clone());
@@ -117,3 +127,4 @@ impl ThreadPool {
         self.size
     }
 }
+

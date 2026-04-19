@@ -107,3 +107,5 @@ impl Mediator {
         self.next_id = 0;
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

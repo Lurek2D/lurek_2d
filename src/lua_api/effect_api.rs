@@ -1,4 +1,9 @@
 //! `lurek.effect` — Composable visual effects: post-processing pipeline and screen overlays.
+//!
+//! Exposes `PostFxEffect` (individual shader passes), `PostFxStack` (ordered chains),
+//! `ImageEffect` (named preset bundles), `Overlay` (screen-space weather/vignette),
+//! and `ScreenTransition` (fade/wipe between scenes). Also provides render-to-texture
+//! feedback loops for motion-trail effects.
 
 use super::SharedState;
 use mlua::prelude::*;

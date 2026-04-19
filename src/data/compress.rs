@@ -1,12 +1,8 @@
 //! Data compression and decompression using deflate, gzip, zlib, and LZ4.
 //!
-//! This module is part of Lurek2D's `data` subsystem and provides the implementation
-//! details for compress-related operations and data management.
-//! Key types exported from this module: `CompressFormat`.
-//! Primary functions: `parse_str()`, `compress()`, `decompress()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! All four formats operate on whole byte buffers. `compress()` and `decompress()`
+//! are the primary entry points; LZ4 uses `lz4_flex` (block mode, size-prepended),
+//! while deflate/gzip/zlib use `flate2` with configurable compression level 0–9.
 
 use std::io::{Read, Write};
 
@@ -30,7 +26,8 @@ pub enum CompressFormat {
 }
 
 impl CompressFormat {
-    /// Parse a format name string. Returns an error if the source data is malformed or missing.
+    /// Parse a format name string (case-insensitive).
+    /// Accepts `"deflate"`, `"gzip"` / `"gz"`, `"lz4"`, `"zlib"`.
     ///
     /// # Parameters
     /// - `s` — `&str`.
@@ -92,6 +89,7 @@ pub fn compress(data: &[u8], format: CompressFormat, level: u32) -> Result<Vec<u
                 .finish()
                 .map_err(|e| format!("Zlib finish error: {}", e))
         }
+        // LZ4 block mode ignores the `level` param — compression speed is fixed.
         CompressFormat::Lz4 => Ok(lz4_flex::compress_prepend_size(data)),
     }
 }

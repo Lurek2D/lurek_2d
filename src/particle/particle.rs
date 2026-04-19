@@ -53,3 +53,53 @@ pub struct Particle {
     pub shape_seed: u32,
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Helper: construct a particle with default test values.
+    fn default_particle() -> Particle {
+        Particle {
+            x: 10.0,
+            y: 20.0,
+            vx: 1.0,
+            vy: -2.0,
+            life: 1.5,
+            max_life: 3.0,
+            rotation: 0.0,
+            spin: 0.5,
+            radial_accel: 0.0,
+            tangential_accel: 0.0,
+            linear_damping: 0.0,
+            size_variation: 0.0,
+            origin_x: 0.0,
+            origin_y: 0.0,
+            shape_seed: 42,
+        }
+    }
+
+    #[test]
+    fn particle_clone_preserves_fields() {
+        let p = default_particle();
+        let c = p.clone();
+        assert!((c.x - 10.0).abs() < f32::EPSILON);
+        assert!((c.vy - (-2.0)).abs() < f32::EPSILON);
+        assert_eq!(c.shape_seed, 42);
+    }
+
+    #[test]
+    fn particle_debug_format_contains_fields() {
+        let p = default_particle();
+        let dbg = format!("{:?}", p);
+        assert!(dbg.contains("Particle"));
+        assert!(dbg.contains("shape_seed"));
+    }
+
+    #[test]
+    fn particle_life_ratio() {
+        let p = default_particle();
+        let ratio = 1.0 - (p.life / p.max_life);
+        assert!((ratio - 0.5).abs() < f32::EPSILON);
+    }
+}
+

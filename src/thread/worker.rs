@@ -1,8 +1,14 @@
 //! Background Lua thread with independent VM.
 //!
-//! Each `LuaThread` spawns an OS thread running its own `mlua::Lua` instance.
-//! Communication with the main thread happens exclusively through `Channel`
-//! objects — no Lua state is shared across threads.
+//! Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance.
+//! Communication with the main thread happens exclusively through [`Channel`]
+//! objects — no Lua state is shared across threads (design constraint **B-04**).
+//!
+//! ## Worker sandbox
+//! Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`,
+//! `lurek.fs.read(path)` (read-only, no `..` traversal), and the `arg` global table.
+//! Graphics, audio, window, input, physics, and any module touching `SharedState`
+//! are deliberately excluded.
 
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -101,13 +107,16 @@ impl LuaThread {
         log_msg!(info, TH02_WORKER_START);
 
         let handle = thread::spawn(move || {
+            // Each worker gets a fresh Lua VM — no state shared with main thread.
             let lua = mlua::Lua::new();
 
+            // Register the sandboxed subset of lurek.* API (channel access, fs.read, arg table).
             if let Err(e) = register_thread_safe_modules(&lua, &channels, &args) {
                 *state.lock().unwrap() = ThreadState::Error(e.to_string());
                 return;
             }
 
+            // Execute the user-provided Lua code; capture panics as Error state.
             match lua.load(&code).exec() {
                 Ok(()) => {
                     *state.lock().unwrap() = ThreadState::Completed;
@@ -235,3 +244,4 @@ fn register_thread_safe_modules(
 
     Ok(())
 }
+

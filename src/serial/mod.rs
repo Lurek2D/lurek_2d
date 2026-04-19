@@ -9,7 +9,7 @@
 pub mod csv;
 /// JSON parsing and serialization via serde_json.
 pub mod json;
-/// Shared intermediate representation for all serial formats.
+/// `SerialValue` type definition and Lua↔`SerialValue` bidirectional conversion.
 pub mod lua_table;
 /// MessagePack encoding and decoding via rmp-serde.
 pub mod msgpack;

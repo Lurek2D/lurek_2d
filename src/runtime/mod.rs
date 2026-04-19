@@ -3,6 +3,20 @@
 //! This module owns the foundational types that every other module in the engine imports.
 //! It provides [`SharedState`], [`Config`], [`EngineError`], typed resource keys, and the
 //! structured log message catalog.
+//!
+//! # Module group
+//!
+//! `Core Runtime` — this is the dependency tree's root.  No engine module may import
+//! *into* runtime; every engine module may import *from* it.
+//!
+//! # Key types
+//!
+//! - [`Config`] — engine configuration loaded from `conf.toml` or `conf.lua`.
+//! - [`EngineError`] / [`EngineResult`] — structured error enum and result alias.
+//! - [`SharedState`] — central mutable state passed as `Rc<RefCell<SharedState>>`.
+//! - [`MessageCatalog`] — TOML-backed human-readable log message catalog.
+//! - Resource keys: [`TextureKey`](resource_keys::TextureKey),
+//!   [`FontKey`](resource_keys::FontKey), [`CanvasKey`](resource_keys::CanvasKey), etc.
 
 /// Engine and window configuration structs (Config, WindowConfig, etc.).
 pub mod config;

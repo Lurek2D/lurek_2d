@@ -1,4 +1,8 @@
 //! `lurek.signal` — Event queue polling and pub-sub signal dispatching.
+//!
+//! Provides `Signal` userdata for named-event pub-sub with once-fire handles,
+//! per-handle filter predicates, wildcard subscriptions, and integration with the
+//! engine event bus for built-in events (resize, focus, quit, etc.).
 
 use super::SharedState;
 use mlua::prelude::*;

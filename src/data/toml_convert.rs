@@ -1,14 +1,8 @@
 //! TOML parsing and encoding for Lurek2D.
 //!
-//! Converts between TOML strings and Lua tables. Supports the full TOML spec
-//! via the `toml` crate, mapping types to their Lua equivalents.
-//!
-//! This module is part of Lurek2D's `data` subsystem and provides the implementation
-//! details for toml convert-related operations and data management.
-//! Primary functions: `parse_toml()`, `encode_toml()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Converts between TOML strings and `toml::Value` trees. The Lua bridge
+//! (`lurek.data.parseToml` / `lurek.data.encodeToml`) maps `toml::Value`
+//! to/from Lua tables. Supports the full TOML v1.0 spec via the `toml` crate.
 
 /// Parse a TOML string into a `toml::Value`.
 ///
@@ -24,6 +18,9 @@ pub fn parse_toml(input: &str) -> Result<toml::Value, String> {
 }
 
 /// Encode a `toml::Value` into a TOML string.
+///
+/// Only table values are accepted at the top level because the TOML spec
+/// requires documents to be tables. Non-table values produce an error.
 ///
 /// # Parameters
 /// - `value` — `&toml::Value`.

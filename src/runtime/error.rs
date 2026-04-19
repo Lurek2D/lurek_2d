@@ -191,3 +191,5 @@ impl EngineError {
 /// # Returns
 /// Wraps any value type `T` in a `Result` that carries an `EngineError` on failure.
 pub type EngineResult<T> = Result<T, EngineError>;
+
+// Tests migrated to tests/rust/unit/runtime_tests.rs

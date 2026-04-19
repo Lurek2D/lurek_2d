@@ -1,4 +1,8 @@
 //! `lurek.dataframe` — Column-major tabular data with query, analytics, and SQL.
+//!
+//! Exposes `DataFrame` (column-oriented table with filter, sort, group, join, pivot)
+//! and `Database` (named collection of DataFrames with SQL query support). Supports
+//! CSV/JSON serialization and aggregation functions (sum, mean, min, max, count).
 
 use super::SharedState;
 use mlua::prelude::*;

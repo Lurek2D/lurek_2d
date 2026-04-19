@@ -2,7 +2,10 @@
 //!
 //! Provides Perlin, Simplex, Worley noise in 1D–4D, plus fractal
 //! combinators (FBM, ridged, turbulence), domain warping, and 2D map
-//! generation (`MapGenOptions`).
+//! generation (`MapGenOptions`). Unlike the standalone functions in
+//! [`super::noise_functions`], this module uses a permutation-table–based
+//! approach seeded once at construction, making it more efficient for
+//! repeated sampling.
 //!
 //! Enums: `DistType`, `NoiseKind`, `FractalType`.
 //! Primary struct: `NoiseGenerator`.
@@ -156,12 +159,15 @@ impl NoiseGenerator {
     fn build_perm(&mut self) {
         let mut table: Vec<u8> = (0..=255).collect();
         let mut lcg = self.seed;
-        // Fisher–Yates shuffle driven by LCG
+        // Fisher–Yates shuffle driven by a linear congruential generator.
+        // Using the Knuth LCG multiplier ensures uniform distribution of swaps.
         for i in (1..256).rev() {
             lcg = lcg.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1);
             let j = (lcg >> 33) as usize % (i + 1);
             table.swap(i, j);
         }
+        // Duplicate the table into the upper half so index wrapping via `& 255`
+        // in the `p()` helper never needs a modulo — just two consecutive reads.
         self.perm[..256].copy_from_slice(&table);
         self.perm[256..].copy_from_slice(&table);
     }

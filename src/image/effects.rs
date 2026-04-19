@@ -709,3 +709,302 @@ impl ImageData {
         Ok(out)
     }
 }
+
+// ── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Helper: create a 4×4 image with a known gradient fill.
+    fn gradient_4x4() -> ImageData {
+        let mut img = ImageData::new(4, 4);
+        for y in 0..4u32 {
+            for x in 0..4u32 {
+                let v = (x * 30 + y * 60) as u8;
+                img.set_pixel(x, y, v, v, v, 255);
+            }
+        }
+        img
+    }
+
+    // ── Color / Tone ────────────────────────────────────────
+
+    #[test]
+    fn brightness_zero_produces_black() {
+        let mut img = gradient_4x4();
+        img.brightness(0.0);
+        for y in 0..4 {
+            for x in 0..4 {
+                let (r, g, b, a) = img.get_pixel(x, y).unwrap();
+                assert_eq!((r, g, b), (0, 0, 0));
+                assert_eq!(a, 255);
+            }
+        }
+    }
+
+    #[test]
+    fn brightness_one_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.brightness(1.0);
+        assert_eq!(img.as_bytes(), orig.as_bytes());
+    }
+
+    #[test]
+    fn contrast_one_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.contrast(1.0);
+        assert_eq!(img.as_bytes(), orig.as_bytes());
+    }
+
+    #[test]
+    fn saturation_zero_produces_grayscale() {
+        let mut img = ImageData::new(1, 1);
+        img.set_pixel(0, 0, 200, 100, 50, 255);
+        img.saturation(0.0);
+        let (r, g, b, _) = img.get_pixel(0, 0).unwrap();
+        assert_eq!(r, g);
+        assert_eq!(g, b);
+    }
+
+    #[test]
+    fn gamma_one_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.gamma(1.0);
+        // Allow ±1 for floating-point rounding
+        for (a, b) in img.as_bytes().iter().zip(orig.as_bytes().iter()) {
+            assert!((*a as i32 - *b as i32).abs() <= 1);
+        }
+    }
+
+    #[test]
+    fn tint_zero_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.tint(255, 0, 0, 0.0);
+        assert_eq!(img.as_bytes(), orig.as_bytes());
+    }
+
+    // ── Filters ─────────────────────────────────────────────
+
+    #[test]
+    fn grayscale_makes_channels_equal() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 200, 100, 50, 255);
+        img.grayscale();
+        let (r, g, b, _) = img.get_pixel(0, 0).unwrap();
+        assert_eq!(r, g);
+        assert_eq!(g, b);
+    }
+
+    #[test]
+    fn invert_double_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.invert();
+        img.invert();
+        assert_eq!(img.as_bytes(), orig.as_bytes());
+    }
+
+    #[test]
+    fn threshold_128_binarises() {
+        let mut img = ImageData::new(2, 1);
+        img.set_pixel(0, 0, 200, 200, 200, 255); // above threshold
+        img.set_pixel(1, 0, 20, 20, 20, 255);     // below threshold
+        img.threshold(128);
+        assert_eq!(img.get_pixel(0, 0), Some((255, 255, 255, 255)));
+        assert_eq!(img.get_pixel(1, 0), Some((0, 0, 0, 255)));
+    }
+
+    #[test]
+    fn posterize_2_levels() {
+        let mut img = ImageData::new(1, 1);
+        img.set_pixel(0, 0, 100, 100, 100, 255);
+        img.posterize(2);
+        let (r, _, _, _) = img.get_pixel(0, 0).unwrap();
+        // With 2 levels the only outputs are 0 or 255
+        assert!(r == 0 || r == 255);
+    }
+
+    #[test]
+    fn fill_overwrites_all_pixels() {
+        let mut img = gradient_4x4();
+        img.fill(42, 84, 126, 200);
+        for y in 0..4 {
+            for x in 0..4 {
+                assert_eq!(img.get_pixel(x, y), Some((42, 84, 126, 200)));
+            }
+        }
+    }
+
+    #[test]
+    fn noise_zero_is_identity() {
+        let orig = gradient_4x4();
+        let mut img = orig.clone();
+        img.noise(0);
+        assert_eq!(img.as_bytes(), orig.as_bytes());
+    }
+
+    #[test]
+    fn alpha_mask_zero_makes_transparent() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 100, 100, 100, 255);
+        img.alpha_mask(0.0);
+        let (_, _, _, a) = img.get_pixel(0, 0).unwrap();
+        assert_eq!(a, 0);
+    }
+
+    // ── Geometric ───────────────────────────────────────────
+
+    #[test]
+    fn flip_horizontal_swaps_left_right() {
+        let mut img = ImageData::new(4, 1);
+        img.set_pixel(0, 0, 10, 0, 0, 255);
+        img.set_pixel(3, 0, 90, 0, 0, 255);
+        img.flip_horizontal();
+        assert_eq!(img.get_pixel(0, 0).unwrap().0, 90);
+        assert_eq!(img.get_pixel(3, 0).unwrap().0, 10);
+    }
+
+    #[test]
+    fn flip_vertical_swaps_top_bottom() {
+        let mut img = ImageData::new(1, 4);
+        img.set_pixel(0, 0, 10, 0, 0, 255);
+        img.set_pixel(0, 3, 90, 0, 0, 255);
+        img.flip_vertical();
+        assert_eq!(img.get_pixel(0, 0).unwrap().0, 90);
+        assert_eq!(img.get_pixel(0, 3).unwrap().0, 10);
+    }
+
+    #[test]
+    fn rotate_90_cw_swaps_dimensions() {
+        let img = ImageData::new(8, 4);
+        let rotated = img.rotate_90_cw();
+        assert_eq!(rotated.width(), 4);
+        assert_eq!(rotated.height(), 8);
+    }
+
+    #[test]
+    fn crop_returns_subregion() {
+        let mut img = ImageData::new(8, 8);
+        img.set_pixel(2, 3, 42, 0, 0, 255);
+        let cropped = img.crop(2, 3, 2, 2).unwrap();
+        assert_eq!(cropped.width(), 2);
+        assert_eq!(cropped.height(), 2);
+        assert_eq!(cropped.get_pixel(0, 0), Some((42, 0, 0, 255)));
+    }
+
+    #[test]
+    fn crop_out_of_bounds_returns_none() {
+        let img = ImageData::new(4, 4);
+        assert!(img.crop(3, 3, 2, 2).is_none());
+    }
+
+    #[test]
+    fn resize_nearest_scales() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 255, 0, 0, 255);
+        let scaled = img.resize_nearest(4, 4);
+        assert_eq!(scaled.width(), 4);
+        assert_eq!(scaled.height(), 4);
+        // Top-left quadrant should be red
+        assert_eq!(scaled.get_pixel(0, 0).unwrap().0, 255);
+    }
+
+    // ── Convolution ─────────────────────────────────────────
+
+    #[test]
+    fn blur_zero_is_clone() {
+        let img = gradient_4x4();
+        let blurred = img.blur(0);
+        assert_eq!(blurred.as_bytes(), img.as_bytes());
+    }
+
+    #[test]
+    fn blur_produces_same_dimensions() {
+        let img = gradient_4x4();
+        let blurred = img.blur(2);
+        assert_eq!(blurred.dimensions(), img.dimensions());
+    }
+
+    #[test]
+    fn sharpen_preserves_dimensions() {
+        let img = gradient_4x4();
+        let sharpened = img.sharpen();
+        assert_eq!(sharpened.dimensions(), img.dimensions());
+    }
+
+    #[test]
+    fn resize_bilinear_returns_correct_dims() {
+        let img = gradient_4x4();
+        let resized = img.resize(8, 8).unwrap();
+        assert_eq!(resized.dimensions(), (8, 8));
+    }
+
+    #[test]
+    fn resize_zero_returns_none() {
+        let img = gradient_4x4();
+        assert!(img.resize(0, 8).is_none());
+    }
+
+    #[test]
+    fn blit_composites_over() {
+        let mut dst = ImageData::new(4, 4);
+        dst.fill(0, 0, 0, 255); // solid black
+        let mut src = ImageData::new(2, 2);
+        src.fill(255, 0, 0, 128); // semi-transparent red
+        dst.blit(&src, 1, 1);
+        let (r, _, _, _) = dst.get_pixel(1, 1).unwrap();
+        assert!(r > 0); // blended red component
+    }
+
+    #[test]
+    fn get_region_matches_crop() {
+        let mut img = ImageData::new(8, 8);
+        img.set_pixel(2, 2, 42, 84, 126, 255);
+        let a = img.crop(2, 2, 3, 3).unwrap();
+        let b = img.get_region(2, 2, 3, 3).unwrap();
+        assert_eq!(a.as_bytes(), b.as_bytes());
+    }
+
+    #[test]
+    fn diff_identical_is_zero() {
+        let img = gradient_4x4();
+        assert_eq!(img.diff(&img), 0);
+    }
+
+    #[test]
+    fn diff_different_is_nonzero() {
+        let a = gradient_4x4();
+        let mut b = gradient_4x4();
+        b.invert();
+        assert!(a.diff(&b) > 0);
+    }
+
+    #[test]
+    fn convolve_identity_kernel() {
+        let img = gradient_4x4();
+        // 3×3 identity kernel: all zeros except centre = 1
+        let kernel = [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0];
+        let result = img.convolve(&kernel, 3).unwrap();
+        // Should be identical to original for interior pixels
+        assert_eq!(result.dimensions(), img.dimensions());
+    }
+
+    #[test]
+    fn convolve_rejects_even_ksize() {
+        let img = ImageData::new(4, 4);
+        let kernel = [1.0; 4];
+        assert!(img.convolve(&kernel, 2).is_err());
+    }
+
+    #[test]
+    fn convolve_rejects_mismatched_len() {
+        let img = ImageData::new(4, 4);
+        let kernel = [1.0; 5]; // should be 9 for ksize=3
+        assert!(img.convolve(&kernel, 3).is_err());
+    }
+}

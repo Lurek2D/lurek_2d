@@ -19,7 +19,7 @@ The `input` module is Lurek2D's hardware input abstraction layer. It owns the pe
 
 `GamepadState` wraps gilrs gamepad state: per-axis float values with dead-zone filtering applied, per-button flags following the same pressed/held/released model, and a device ID for multi-controller support. `GamepadMappings` provides stable string names for axes and buttons. `TouchState` tracks per-finger `TouchPoint` records (ID, position, phase) using the same pressed/held/released flag model.
 
-Three new source files extend the hardware input surface. `gamepad.rs` consolidates gamepad state management into a dedicated `GamepadState` type with dead-zone filtering and multi-controller device ID support, now exposed via `lurek.input.newGamepad()`. `gesture.rs` introduces `GestureDetector` for recognizing swipe, pinch, and tap gestures from touch events, exposed via `lurek.input.newGesture()`. `rumble.rs` introduces `RumbleEffect` for gamepad force-feedback with configurable intensity and duration, applied via `lurek.input.setRumble()`.
+Additional source files extend the hardware input surface. `gamepad.rs` consolidates gamepad state management into a dedicated `GamepadState` type with button/axis tracking, hat-direction synthesis from D-pad buttons, and SDL2-format controller mappings via `GamepadMappings`. `combo.rs` provides `ComboDetector` for recognising ordered multi-step key/button input sequences within configurable time windows. `recorder.rs` provides `InputRecorder` for frame-by-frame input recording and deterministic playback with JSON serialisation, used for automated test replay.
 
 **Scope boundary**: Platform Services tier. Depends on `event`, `runtime`, `math`. Lua bridge in `src/lua_api/input_api.rs`.
 

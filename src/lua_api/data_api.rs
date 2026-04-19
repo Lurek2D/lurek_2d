@@ -1,4 +1,8 @@
 //! `lurek.data` — Binary data manipulation, compression, hashing, and encoding.
+//!
+//! Provides struct-style `pack`/`unpack`, binary file I/O via `ByteData`/`DataView`,
+//! compression (deflate, gzip, zstd, lz4), cryptographic and non-cryptographic hashing,
+//! base64/hex encoding, TOML parsing, `RingBuffer`, and an ordered-map type.
 
 use super::SharedState;
 use indexmap::IndexMap as LuaIndexMap;

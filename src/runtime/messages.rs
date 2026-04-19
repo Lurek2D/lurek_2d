@@ -201,6 +201,7 @@ fn collect_strings(val: &toml::Value, out: &mut HashMap<String, String>) {
     }
 }
 
+// NOTE: Tests private internals (CATALOG_TOML) — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;

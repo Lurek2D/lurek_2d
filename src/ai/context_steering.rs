@@ -391,3 +391,47 @@ fn angle_diff_f32(a: f32, b: f32) -> f32 {
     while d <= -PI { d += TAU; }
     d
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_context_steering_slot_count() {
+        let cs = ContextSteering::new(8);
+        assert_eq!(cs.slot_count(), 8);
+    }
+
+    #[test]
+    fn seek_sets_interest() {
+        let mut cs = ContextSteering::new(8);
+        cs.seek((1.0, 0.0), (0.0, 0.0), 1.0);
+        let best = cs.best_direction();
+        assert!(best.0 > 0.0, "should point right toward target");
+    }
+
+    #[test]
+    fn avoid_sets_danger() {
+        let mut cs = ContextSteering::new(8);
+        cs.seek((1.0, 0.0), (0.0, 0.0), 1.0);
+        cs.avoid((0.5, 0.0), (0.0, 0.0), 1.0, 5.0);
+        let best = cs.best_direction();
+        // danger should steer away from direct path
+        assert!(best.1.abs() > 0.01 || best.0 < 0.5);
+    }
+
+    #[test]
+    fn reset_clears_rings() {
+        let mut cs = ContextSteering::new(8);
+        cs.seek((1.0, 0.0), (0.0, 0.0), 1.0);
+        cs.reset();
+        let (dx, dy) = cs.best_direction();
+        assert!(dx.abs() < 1e-6 && dy.abs() < 1e-6);
+    }
+
+    #[test]
+    fn angle_diff_wraps() {
+        let d = angle_diff_f32(0.1, TAU - 0.1);
+        assert!((d - 0.2).abs() < 1e-3);
+    }
+}

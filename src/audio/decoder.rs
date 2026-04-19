@@ -130,3 +130,92 @@ impl Decoder {
         self.cursor = 0;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Helper: build a Decoder from a pre-filled PCM buffer (bypasses file I/O).
+    fn make_decoder(pcm: Vec<i16>, sample_rate: u32, channels: u16, buffer_size: usize) -> Decoder {
+        Decoder {
+            path: "test.wav".to_string(),
+            sample_rate,
+            channels,
+            bit_depth: 16,
+            buffer_size,
+            cursor: 0,
+            pcm,
+        }
+    }
+
+    #[test]
+    fn decode_returns_chunks() {
+        let pcm: Vec<i16> = (0..10).collect();
+        let mut dec = make_decoder(pcm, 44100, 1, 4);
+        let c1 = dec.decode().unwrap();
+        assert_eq!(c1.len(), 4);
+        assert_eq!(c1, vec![0, 1, 2, 3]);
+
+        let c2 = dec.decode().unwrap();
+        assert_eq!(c2, vec![4, 5, 6, 7]);
+
+        let c3 = dec.decode().unwrap();
+        assert_eq!(c3, vec![8, 9]); // partial last chunk
+
+        assert!(dec.decode().is_none()); // EOF
+    }
+
+    #[test]
+    fn get_duration_stereo() {
+        let pcm = vec![0i16; 88200]; // 1 second of stereo at 44100
+        let dec = make_decoder(pcm, 44100, 2, 1024);
+        assert!((dec.get_duration() - 1.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn get_duration_zero_rate() {
+        let dec = make_decoder(vec![], 0, 1, 1024);
+        assert_eq!(dec.get_duration(), 0.0);
+    }
+
+    #[test]
+    fn seek_and_tell() {
+        let pcm = vec![0i16; 44100]; // 1 sec mono
+        let mut dec = make_decoder(pcm, 44100, 1, 512);
+        assert_eq!(dec.tell(), 0.0);
+
+        dec.seek(0.5);
+        assert!((dec.tell() - 0.5).abs() < 0.01);
+    }
+
+    #[test]
+    fn seek_beyond_end_clamps() {
+        let pcm = vec![0i16; 100];
+        let mut dec = make_decoder(pcm, 44100, 1, 512);
+        dec.seek(100.0); // way past end
+        assert!(dec.decode().is_none());
+    }
+
+    #[test]
+    fn rewind_resets_cursor() {
+        let pcm: Vec<i16> = (0..10).collect();
+        let mut dec = make_decoder(pcm, 44100, 1, 5);
+        dec.decode(); // consume first chunk
+        dec.rewind();
+        let c = dec.decode().unwrap();
+        assert_eq!(c[0], 0);
+    }
+
+    #[test]
+    fn is_seekable_always_true() {
+        let dec = make_decoder(vec![], 44100, 1, 512);
+        assert!(dec.is_seekable());
+    }
+
+    #[test]
+    fn buffer_size_min_one() {
+        // buffer_size of 0 should be clamped to 1 in from_file; test the struct directly
+        let dec = make_decoder(vec![1, 2, 3], 44100, 1, 1);
+        assert_eq!(dec.buffer_size, 1);
+    }
+}

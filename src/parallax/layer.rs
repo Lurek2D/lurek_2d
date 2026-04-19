@@ -216,8 +216,9 @@ impl ParallaxLayer {
 
     /// Computes the world-pixel scroll offset for the given camera position.
     ///
-    /// Combines camera-driven scroll, static offset, autoscroll accumulator,
-    /// and optional axis clamping.
+    /// Formula: `pixel_offset = camera * scroll_factor + manual_offset + autoscroll_accum`.
+    /// Optional axis clamping is applied after accumulation to prevent the layer
+    /// from scrolling beyond designer-specified bounds.
     fn compute_pixel_offset(&self, cam_x: f32, cam_y: f32) -> (f32, f32) {
         let mut px = cam_x * self.scroll_factor[0] + self.offset[0] + self.autoscroll_accum[0];
         let mut py = cam_y * self.scroll_factor[1] + self.offset[1] + self.autoscroll_accum[1];
@@ -268,7 +269,8 @@ impl ParallaxLayer {
         let (px, py) = self.compute_pixel_offset(cam_x, cam_y);
 
         // Start position: for repeat axes use modulo so we always start at or
-        // before the left/top screen edge; for non-repeat, offset directly.
+        // before the left/top screen edge; for non-repeat, use raw negative offset
+        // so the single tile slides with the camera.
         let start_x = if self.repeat_x {
             -px.rem_euclid(tex_w)
         } else {
@@ -282,6 +284,9 @@ impl ParallaxLayer {
 
         let mut tiles: Vec<(f32, f32)> = Vec::new();
 
+        // Generate tile positions covering the visible screen area.
+        // The 4-way (repeat_x, repeat_y) matrix determines whether we
+        // tile along one axis, both, or neither.
         match (self.repeat_x, self.repeat_y) {
             (true, true) => {
                 let mut tx = start_x;

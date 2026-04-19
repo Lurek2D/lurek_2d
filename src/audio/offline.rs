@@ -209,3 +209,45 @@ fn write_wav_i16(
 
     w.flush().map_err(|e| e.to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalize_rejects_zero_target() {
+        let result = normalize_file("dummy.wav", "out.wav", 0.0);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("(0.0, 1.0]"));
+    }
+
+    #[test]
+    fn normalize_rejects_above_one() {
+        let result = normalize_file("dummy.wav", "out.wav", 1.5);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn offline_effect_struct_fields() {
+        let effect = OfflineEffect {
+            typ: EffectType::Lowpass,
+            p1: 1000.0,
+            p2: 0.707,
+            p3: 0.5,
+        };
+        assert_eq!(effect.typ, EffectType::Lowpass);
+        assert_eq!(effect.p1, 1000.0);
+    }
+
+    #[test]
+    fn write_wav_i16_rejects_bad_path() {
+        let result = write_wav_i16("/nonexistent/dir/out.wav", &[0.0, 0.5, -0.5], 44100, 1);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn read_wav_f32_rejects_missing_file() {
+        let result = read_wav_f32("/nonexistent/audio.wav");
+        assert!(result.is_err());
+    }
+}

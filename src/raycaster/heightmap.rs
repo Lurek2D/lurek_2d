@@ -128,39 +128,3 @@ impl HeightMap {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_default_heights() {
-        let hm = HeightMap::new(4, 4);
-        assert!((hm.floor_at(0, 0)).abs() < 1e-5);
-        assert!((hm.ceiling_at(0, 0) - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_set_floor_ceiling() {
-        let mut hm = HeightMap::new(4, 4);
-        hm.set_floor(1, 2, 0.5);
-        hm.set_ceiling(1, 2, 0.8);
-        assert!((hm.floor_at(1, 2) - 0.5).abs() < 1e-5);
-        assert!((hm.ceiling_at(1, 2) - 0.8).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_out_of_bounds() {
-        let hm = HeightMap::new(4, 4);
-        assert!((hm.floor_at(10, 10)).abs() < 1e-5);
-        assert!((hm.ceiling_at(10, 10) - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_set_rect() {
-        let mut hm = HeightMap::new(8, 8);
-        hm.set_floor_rect(2, 2, 3, 3, 0.25);
-        assert!((hm.floor_at(3, 3) - 0.25).abs() < 1e-5);
-        assert!((hm.floor_at(0, 0)).abs() < 1e-5);
-    }
-}

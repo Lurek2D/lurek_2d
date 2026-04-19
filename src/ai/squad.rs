@@ -177,3 +177,37 @@ impl Squad {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_remove_member() {
+        let mut s = Squad::new("alpha", FormationType::Line);
+        s.add_member(1);
+        s.add_member(2);
+        assert_eq!(s.members.len(), 2);
+        s.remove_member(1);
+        assert_eq!(s.members.len(), 1);
+    }
+
+    #[test]
+    fn line_formation_positions() {
+        let mut s = Squad::new("bravo", FormationType::Line);
+        s.add_member(0);
+        s.add_member(1);
+        let p0 = s.formation_position(0, (0.0, 0.0), 10.0);
+        let p1 = s.formation_position(1, (0.0, 0.0), 10.0);
+        assert!((p0.1 - p1.1).abs() > 1.0, "different positions");
+    }
+
+    #[test]
+    fn circle_formation_center() {
+        let mut s = Squad::new("charlie", FormationType::Circle);
+        s.add_member(0);
+        let pos = s.formation_position(0, (100.0, 100.0), 20.0);
+        let dist = ((pos.0 - 100.0).powi(2) + (pos.1 - 100.0).powi(2)).sqrt();
+        assert!((dist - 20.0).abs() < 1e-3);
+    }
+}

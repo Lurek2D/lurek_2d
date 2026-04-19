@@ -152,15 +152,18 @@ impl GamepadState {
     /// # Returns
     /// `&'static str`.
     pub fn get_hat(&self, hat: u32) -> &'static str {
+        // Only hat index 0 (primary D-pad) is supported; others return centered.
         if hat != 0 {
             return "c";
         }
 
+        // Read D-pad button states (hard-coded indices match gilrs mapping).
         let up = self.is_button_pressed(10);
         let down = self.is_button_pressed(11);
         let left = self.is_button_pressed(12);
         let right = self.is_button_pressed(13);
 
+        // 8-direction hat: u/d/l/r and diagonals. "c" = centered (no direction).
         match (up, down, left, right) {
             (true, false, false, false) => "u",
             (true, false, false, true) => "ru",

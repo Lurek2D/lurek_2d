@@ -556,7 +556,8 @@ impl Camera2D {
             } else {
                 let ratio = self.shake_timer / self.shake_duration;
                 let t = self.shake_timer;
-                // Deterministic pseudo-random from timer value.
+                // Deterministic pseudo-random shake using sin() of scaled timer values.
+                // Different frequency multipliers (53, 97) ensure x and y offsets are uncorrelated.
                 let ox = (t * 53.0).sin() * self.shake_intensity * ratio;
                 let oy = (t * 97.0).sin() * self.shake_intensity * ratio;
                 self.shake_offset = Vec2::new(ox, oy);
@@ -617,115 +618,4 @@ impl Default for Camera2D {
     }
 }
 
-// ── Unit tests ──────────────────────────────────────────────────────────
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn camera_default_identity() {
-        let cam = Camera::default();
-        assert!((cam.position.x).abs() < f32::EPSILON);
-        assert!((cam.position.y).abs() < f32::EPSILON);
-        assert!((cam.zoom - 1.0).abs() < f32::EPSILON);
-        assert!((cam.rotation).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn camera_view_matrix_identity_at_default() {
-        let cam = Camera::default();
-        let m = cam.view_matrix();
-        let p = m.transform_point(Vec2::new(10.0, 20.0));
-        assert!((p.x - 10.0).abs() < 1e-5);
-        assert!((p.y - 20.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn camera2d_new_centered() {
-        let cam = Camera2D::new(800.0, 600.0);
-        assert!((cam.position.x).abs() < f32::EPSILON);
-        assert!((cam.position.y).abs() < f32::EPSILON);
-        assert!((cam.zoom - 1.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn camera2d_to_screen_and_back() {
-        let cam = Camera2D::new(800.0, 600.0);
-        let (sx, sy) = cam.to_screen_coords(100.0, 200.0);
-        let (wx, wy) = cam.to_world_coords(sx, sy);
-        assert!((wx - 100.0).abs() < 1e-3);
-        assert!((wy - 200.0).abs() < 1e-3);
-    }
-
-    #[test]
-    fn camera2d_bounds_clamping() {
-        let mut cam = Camera2D::new(100.0, 100.0);
-        cam.set_bounds(0.0, 0.0, 500.0, 500.0);
-        cam.set_position(-1000.0, -1000.0);
-        cam.update(0.016);
-        // Camera should be clamped so visible area is inside bounds.
-        let (px, py) = cam.get_position();
-        assert!(px >= 0.0);
-        assert!(py >= 0.0);
-    }
-
-    #[test]
-    fn camera2d_follow_instant_snap() {
-        let mut cam = Camera2D::new(800.0, 600.0);
-        cam.set_follow_smooth(0.0);
-        cam.set_target(200.0, 300.0);
-        cam.update(0.016);
-        let (px, py) = cam.get_position();
-        assert!((px - 200.0).abs() < 1e-3);
-        assert!((py - 300.0).abs() < 1e-3);
-    }
-
-    #[test]
-    fn camera2d_follow_smooth_moves_toward_target() {
-        let mut cam = Camera2D::new(800.0, 600.0);
-        cam.set_follow_smooth(5.0);
-        cam.set_target(200.0, 0.0);
-        cam.update(0.1);
-        let (px, _) = cam.get_position();
-        // Should have moved toward 200 but not arrived yet.
-        assert!(px > 0.0);
-        assert!(px < 200.0);
-    }
-
-    #[test]
-    fn camera2d_shake_decays() {
-        let mut cam = Camera2D::new(800.0, 600.0);
-        cam.shake(10.0, 0.5);
-        cam.update(0.6); // past duration
-                         // Shake offset should be zero after duration expires.
-        assert!((cam.shake_offset.x).abs() < f32::EPSILON);
-        assert!((cam.shake_offset.y).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn camera2d_visible_area_scales_with_zoom() {
-        let cam1 = Camera2D::new(800.0, 600.0);
-        let (_, _, w1, h1) = cam1.get_visible_area();
-
-        let mut cam2 = Camera2D::new(800.0, 600.0);
-        cam2.set_zoom(2.0);
-        let (_, _, w2, h2) = cam2.get_visible_area();
-
-        assert!((w2 - w1 / 2.0).abs() < 1e-3);
-        assert!((h2 - h1 / 2.0).abs() < 1e-3);
-    }
-
-    #[test]
-    fn camera2d_dead_zone_prevents_small_movements() {
-        let mut cam = Camera2D::new(800.0, 600.0);
-        cam.set_dead_zone(100.0, 100.0);
-        cam.set_follow_smooth(0.0);
-        cam.set_target(10.0, 10.0); // inside dead zone
-        cam.update(0.016);
-        let (px, py) = cam.get_position();
-        // Camera should not have moved.
-        assert!((px).abs() < f32::EPSILON);
-        assert!((py).abs() < f32::EPSILON);
-    }
-}

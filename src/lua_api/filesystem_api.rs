@@ -1,4 +1,8 @@
 //! `lurek.fs` — Sandboxed file I/O, directory queries, and async asset loading.
+//!
+//! All paths are resolved through the game's [`GameFS`] sandbox. Supports file
+//! read/write via `FileHandle`, bulk-data via `FileData`, ZIP archive mounting,
+//! directory listing, path manipulation, and per-file change watching.
 
 use super::SharedState;
 use mlua::prelude::*;

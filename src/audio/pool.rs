@@ -135,3 +135,5 @@ impl SoundPool {
         !self.keys.is_empty()
     }
 }
+
+// Tests migrated to tests/rust/unit/audio_tests.rs

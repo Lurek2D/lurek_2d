@@ -49,6 +49,8 @@ impl<T: Clone> RingBuffer<T> {
     pub fn push(&mut self, value: T) -> bool {
         let had_space = self.len < self.capacity;
         if had_space {
+            // Write position is always (head + len) mod capacity — this keeps
+            // the logical ring contiguous even after wrap-around.
             let write_pos = (self.head + self.len) % self.capacity;
             self.data[write_pos] = Some(value);
             self.len += 1;

@@ -2,6 +2,10 @@
 //!
 //! Items are keyed by a string ID and stored with axis-aligned bounding boxes.
 //! The grid partitions space into fixed-size cells for O(1) bucket lookup.
+//! Supports rectangle, circle, and line-segment queries.
+//!
+//! Choose [`SpatialHash`] when objects are roughly the same size. For objects
+//! with highly variable sizes, prefer [`super::AabbTree`] instead.
 
 use std::collections::{HashMap, HashSet};
 /// An item stored in the spatial hash, identified by a string ID with an AABB.
@@ -281,6 +285,9 @@ impl SpatialHash {
     }
 
     /// Tests whether a line segment intersects an AABB using the slab method.
+    /// The slab method projects the segment onto each axis independently and
+    /// computes the overlap interval [tmin, tmax]. If that interval is valid
+    /// (tmin <= tmax) after both axes, the segment intersects the box.
     #[allow(clippy::too_many_arguments)]
     fn segment_aabb(
         x1: f32,
@@ -336,80 +343,5 @@ impl SpatialHash {
         }
 
         true
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn insert_and_query_rect() {
-        let mut sh = SpatialHash::new(64.0);
-        sh.insert("a".into(), 10.0, 10.0, 20.0, 20.0);
-        let hits = sh.query_rect(5.0, 5.0, 30.0, 30.0);
-        assert!(hits.contains(&"a".to_string()));
-    }
-
-    #[test]
-    fn query_misses_non_overlapping() {
-        let mut sh = SpatialHash::new(64.0);
-        sh.insert("a".into(), 10.0, 10.0, 20.0, 20.0);
-        let hits = sh.query_rect(100.0, 100.0, 10.0, 10.0);
-        assert!(hits.is_empty());
-    }
-
-    #[test]
-    fn remove_then_query_empty() {
-        let mut sh = SpatialHash::new(64.0);
-        sh.insert("a".into(), 10.0, 10.0, 20.0, 20.0);
-        sh.remove("a");
-        let hits = sh.query_rect(5.0, 5.0, 30.0, 30.0);
-        assert!(hits.is_empty());
-        assert_eq!(sh.item_count(), 0);
-    }
-
-    #[test]
-    fn query_circle_filters_by_distance() {
-        let mut sh = SpatialHash::new(64.0);
-        // Item at corner — just outside the circle
-        sh.insert("far".into(), 90.0, 90.0, 10.0, 10.0);
-        // Item near centre
-        sh.insert("near".into(), 48.0, 48.0, 4.0, 4.0);
-        let hits = sh.query_circle(50.0, 50.0, 10.0);
-        assert!(hits.contains(&"near".to_string()));
-        assert!(!hits.contains(&"far".to_string()));
-    }
-
-    #[test]
-    fn multiple_items_same_cell() {
-        let mut sh = SpatialHash::new(100.0);
-        sh.insert("a".into(), 1.0, 1.0, 5.0, 5.0);
-        sh.insert("b".into(), 2.0, 2.0, 5.0, 5.0);
-        sh.insert("c".into(), 3.0, 3.0, 5.0, 5.0);
-        assert_eq!(sh.item_count(), 3);
-        let hits = sh.query_rect(0.0, 0.0, 10.0, 10.0);
-        assert_eq!(hits.len(), 3);
-    }
-
-    #[test]
-    fn update_moves_item() {
-        let mut sh = SpatialHash::new(64.0);
-        sh.insert("a".into(), 10.0, 10.0, 5.0, 5.0);
-        sh.update("a".into(), 200.0, 200.0, 5.0, 5.0);
-        // Old location should miss
-        assert!(sh.query_rect(5.0, 5.0, 20.0, 20.0).is_empty());
-        // New location should hit
-        assert!(sh
-            .query_rect(195.0, 195.0, 20.0, 20.0)
-            .contains(&"a".to_string()));
-    }
-
-    #[test]
-    fn query_segment_hits() {
-        let mut sh = SpatialHash::new(64.0);
-        sh.insert("a".into(), 50.0, 50.0, 10.0, 10.0);
-        let hits = sh.query_segment(0.0, 55.0, 100.0, 55.0);
-        assert!(hits.contains(&"a".to_string()));
     }
 }

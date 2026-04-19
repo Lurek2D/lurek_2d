@@ -5,7 +5,15 @@
 //! stores active sinks thread-locally so Lua-level log calls can fan out to each
 //! registered destination without touching the Rust `log` crate.
 //!
-//! # Supported sinks
+//! ## Design
+//!
+//! Each [`Sink`] is owned by one Lua VM via its [`SinkRegistry`].  Sinks are
+//! identified by a monotonically increasing `u64` id assigned by the registry.
+//! The level-filtering logic lives in [`Sink::write`] / [`Sink::write_structured`]
+//! so callers don't need to pre-filter.
+//!
+//! ## Supported sinks
+//!
 //! | Kind | Description |
 //! |---|---|
 //! | `File` | Writes every entry to a UTF-8 text file (append mode). |
@@ -22,33 +30,34 @@ use std::sync::{Mutex, MutexGuard};
 
 // ── LogLevel ──────────────────────────────────────────────────────────────
 
-/// Minimum log level that a sink will accept.
+/// Minimum severity threshold that a [`Sink`] will accept.
 ///
-/// # Variants
-/// - `Debug` — Debug variant.
-/// - `Info` — Info variant.
-/// - `Warn` — Warn variant.
-/// - `Error` — Error variant.
+/// Entries below a sink's configured `SinkLevel` are silently dropped.
+/// The ordering is `Debug < Info < Warn < Error`, derived via `PartialOrd` /
+/// `Ord`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SinkLevel {
-    /// Debug variant.
+    /// Lowest severity — verbose diagnostic output.
     Debug,
-    /// Info variant.
+    /// Normal operational messages.
     Info,
-    /// Warn variant.
+    /// Potential issues that do not prevent execution.
     Warn,
-    /// Error variant.
+    /// Critical failures requiring attention.
     Error,
 }
 
 impl SinkLevel {
-    /// Parses a level string ("debug", "info", "warn", "error"). Defaults to [`SinkLevel::Debug`].
+    /// Parses a level string (case-insensitive).  Recognised inputs:
+    /// `"debug"`, `"info"`, `"warn"` / `"warning"`, `"error"` / `"err"`.
+    /// Any other value — including empty strings — falls back to
+    /// [`SinkLevel::Debug`].
     ///
     /// # Parameters
-    /// - `s` — `&str`.
+    /// - `s` — level name (case-insensitive).
     ///
     /// # Returns
-    /// `Self`.
+    /// The corresponding `SinkLevel`.
     pub fn from_str(s: &str) -> Self {
         match s.to_lowercase().as_str() {
             "info" => Self::Info,
@@ -58,10 +67,8 @@ impl SinkLevel {
         }
     }
 
-    /// Returns a short lowercase string representation.
-    ///
-    /// # Returns
-    /// `&'static str`.
+    /// Returns the canonical uppercase display string (`"DEBUG"`, `"INFO"`,
+    /// `"WARN"`, `"ERROR"`).
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Debug => "DEBUG",
@@ -191,14 +198,15 @@ impl RotatingFileSink {
 
     /// Performs the rotation: closes the current file, renames backups, opens a new base file.
     fn rotate(&mut self) {
-        // Close the current file handle by dropping it before any rename.
-        // This is required on Windows where open files cannot be renamed.
+        // 1. Close the current file handle by dropping it before any rename.
+        //    Required on Windows where open file handles prevent renames.
         self.file = None;
 
-        // Delete the oldest backup so the shift does not overflow `keep_files`.
+        // 2. Delete the oldest backup so the upward shift doesn't overflow `keep_files`.
         Self::delete_oldest_if_needed(&self.path, self.keep_files);
 
-        // Shift backups upward: .N-1 → .N, …, .1 → .2
+        // 3. Shift backups upward: .N-1 → .N, …, .1 → .2
+        //    Iterating in reverse avoids overwriting a higher-numbered backup.
         for i in (1..self.keep_files).rev() {
             let from = Self::backup_path(&self.path, i);
             let to = Self::backup_path(&self.path, i + 1);
@@ -207,14 +215,14 @@ impl RotatingFileSink {
             }
         }
 
-        // Rename base → .1
+        // 4. Rename base → .1
         if self.path.exists() {
             let backup_1 = Self::backup_path(&self.path, 1);
             let _ = fs::rename(&self.path, &backup_1);
         }
 
-        // Open a fresh base file; `file` remains `None` on failure and will be
-        // retried lazily on the next `write_with_rotation` call.
+        // 5. Open a fresh base file; `file` remains `None` on failure and will
+        //    be retried lazily on the next `write_with_rotation` call.
         match OpenOptions::new().create(true).write(true).truncate(true).open(&self.path) {
             Ok(f) => {
                 self.file = Some(f);
@@ -260,30 +268,29 @@ impl std::fmt::Debug for RotatingFileSink {
 
 /// The dispatching strategy for a registered sink.
 ///
-/// # Variants
-/// - `File` — File variant.
-/// - `Memory` — Memory variant.
-/// - `RotatingFile` — RotatingFile variant.
+/// Each variant owns its storage — a file handle, a ring buffer, or a
+/// [`RotatingFileSink`] — behind a [`Mutex`] so the sink can be shared
+/// safely with the `SinkRegistry`.
 pub enum SinkKind {
-    /// Writes entries to a file.
+    /// Writes entries to an append-mode text file.
     File {
-        /// The open file handle.
+        /// The open file handle (mutex-guarded for concurrent writes).
         file: Mutex<File>,
-        /// Filesystem path for display.
+        /// Filesystem path for display and diagnostics.
         path: String,
     },
-    /// Retains entries in an in-memory ring buffer.
+    /// Retains entries in a bounded in-memory ring buffer.
     Memory {
-        /// Ring buffer of recent entries.
+        /// Ring buffer of recent entries, evicting oldest on overflow.
         entries: Mutex<VecDeque<MemoryEntry>>,
-        /// Maximum retained entries.
+        /// Maximum retained entries before eviction.
         capacity: usize,
     },
-    /// Appends entries to a file with automatic rotation by size.
+    /// Appends entries to a file with automatic size-based rotation.
     RotatingFile {
         /// The mutex-guarded rotating file sink.
         sink: Mutex<RotatingFileSink>,
-        /// Filesystem path for display.
+        /// Filesystem path for display and diagnostics.
         path: String,
     },
 }
@@ -302,10 +309,10 @@ impl std::fmt::Debug for SinkKind {
 
 /// A registered log output destination.
 ///
-/// # Fields
-/// - `id` — `u64`.
-/// - `min_level` — `SinkLevel`.
-/// - `kind` — `SinkKind`.
+/// Each `Sink` owns a [`SinkKind`] backend and an independent
+/// [`SinkLevel`] threshold.  The [`SinkRegistry`] assigns the `id` when
+/// the sink is added; callers use that id to remove, flush, or read from
+/// the sink later.
 #[derive(Debug)]
 pub struct Sink {
     /// Unique sink id.
@@ -390,11 +397,15 @@ impl Sink {
 
     /// Dispatches a log entry to this sink (no-op when below `min_level`).
     ///
+    /// The formatted output for file-based sinks is `[LEVEL] tag: message\n`.
+    /// Memory sinks store a [`MemoryEntry`] with `fields: None`.
+    ///
     /// # Parameters
-    /// - `level` — `SinkLevel`.
-    /// - `tag` — `&str`.
-    /// - `message` — `&str`.
+    /// - `level` — severity of this entry.
+    /// - `tag` — caller-provided category (e.g. `"Lua"`, `"Audio"`).
+    /// - `message` — the log text.
     pub fn write(&self, level: SinkLevel, tag: &str, message: &str) {
+        // Level gate — fast reject entries below this sink's threshold.
         if level < self.min_level {
             return;
         }
@@ -408,6 +419,7 @@ impl Sink {
             }
             SinkKind::Memory { entries, capacity } => {
                 if let Ok(mut q) = entries.lock() {
+                    // Evict oldest entry when the ring buffer is full.
                     if q.len() >= *capacity {
                         q.pop_front();
                     }
@@ -466,6 +478,7 @@ impl Sink {
             }
             SinkKind::Memory { entries, capacity } => {
                 if let Ok(mut q) = entries.lock() {
+                    // Evict oldest when full; structured entries store the raw fields map.
                     if q.len() >= *capacity {
                         q.pop_front();
                     }
@@ -511,15 +524,15 @@ impl Sink {
         }
     }
 
-    /// Reads all memory entries and optionally drains them.
+    /// Reads all entries from a memory sink and optionally drains them.
     ///
-    /// Returns `None` when called on a non-memory sink.
+    /// Returns `None` when called on a file or rotating-file sink.
     ///
     /// # Parameters
-    /// - `drain` — `bool`.
+    /// - `drain` — if `true`, the buffer is cleared after reading.
     ///
     /// # Returns
-    /// `Option<Vec<MemoryEntry>>`.
+    /// `Some(Vec<MemoryEntry>)` for memory sinks; `None` otherwise.
     pub fn read_memory(&self, drain: bool) -> Option<Vec<MemoryEntry>> {
         match &self.kind {
             SinkKind::Memory { entries, .. } => {
@@ -533,7 +546,7 @@ impl Sink {
                     Some(Vec::new())
                 }
             }
-            SinkKind::File { .. } => None,
+            _ => None,
         }
     }
 
@@ -559,15 +572,17 @@ impl Sink {
 
 // ── SinkRegistry ─────────────────────────────────────────────────────────
 
-/// Thread-local registry of active log sinks.
+/// Per-VM registry of active log sinks.
 ///
-/// # Fields
-/// - `sinks` — `Vec<Sink>`.
-/// - `next_id` — `u64`.
+/// Lua code keeps one `SinkRegistry` per VM and fans every emitted message
+/// out to all registered sinks via [`dispatch`](Self::dispatch) or
+/// [`dispatch_structured`](Self::dispatch_structured).  Sink ids are
+/// monotonically increasing and never reused within a registry lifetime.
 #[derive(Debug, Default)]
 pub struct SinkRegistry {
-    /// Active sinks.
+    /// Active sinks, in insertion order.
     pub sinks: Vec<Sink>,
+    /// Next id to assign (monotonically increasing).
     next_id: u64,
 }
 

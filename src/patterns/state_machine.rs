@@ -214,3 +214,5 @@ impl StateMachine {
         self.states.get(state).map(|s| s.has_update).unwrap_or(false)
     }
 }
+
+// Tests migrated to tests/rust/unit/patterns_tests.rs

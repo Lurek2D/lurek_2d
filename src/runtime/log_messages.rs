@@ -843,3 +843,5 @@ pub const BI01: &str = "BI01";
 pub const BI02: &str = "BI02";
 /// Stable ID for "bidirectional A* meeting point found".
 pub const BI03: &str = "BI03";
+
+// Tests migrated to tests/rust/unit/runtime_tests.rs

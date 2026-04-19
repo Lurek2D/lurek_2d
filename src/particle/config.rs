@@ -407,3 +407,96 @@ impl Default for ParticleConfig {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_config_pool_and_rate() {
+        let cfg = ParticleConfig::default();
+        assert_eq!(cfg.max_particles, 256);
+        assert!((cfg.emission_rate - 10.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn default_config_lifetime_range() {
+        let cfg = ParticleConfig::default();
+        assert!(cfg.lifetime_min <= cfg.lifetime_max);
+        assert!((cfg.lifetime_min - 1.0).abs() < f32::EPSILON);
+        assert!((cfg.lifetime_max - 2.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn default_config_speed_range() {
+        let cfg = ParticleConfig::default();
+        assert!(cfg.speed_min <= cfg.speed_max);
+    }
+
+    #[test]
+    fn default_config_sizes_and_colors() {
+        let cfg = ParticleConfig::default();
+        assert_eq!(cfg.sizes.len(), 2);
+        assert_eq!(cfg.colors.len(), 2);
+    }
+
+    #[test]
+    fn default_config_shape_is_square() {
+        let cfg = ParticleConfig::default();
+        assert_eq!(cfg.shape, ParticleShape::default());
+    }
+
+    #[test]
+    fn area_distribution_default_is_none() {
+        assert_eq!(AreaDistribution::default(), AreaDistribution::None);
+    }
+
+    #[test]
+    fn insert_mode_default_is_top() {
+        assert_eq!(InsertMode::default(), InsertMode::Top);
+    }
+
+    #[test]
+    fn emission_shape_default_is_point() {
+        assert_eq!(EmissionShape::default(), EmissionShape::Point);
+    }
+
+    #[test]
+    fn relative_mode_default_is_detached() {
+        assert_eq!(RelativeMode::default(), RelativeMode::Detached);
+    }
+
+    #[test]
+    fn attractor_clone_preserves_fields() {
+        let a = Attractor { x: 1.0, y: 2.0, strength: 50.0, radius: 100.0 };
+        let b = a.clone();
+        assert!((b.strength - 50.0).abs() < f32::EPSILON);
+        assert!((b.radius - 100.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn bounce_bounds_clone_preserves_restitution() {
+        let bb = BounceBounds {
+            x_min: 0.0, x_max: 800.0,
+            y_min: 0.0, y_max: 600.0,
+            restitution: 0.7,
+        };
+        let c = bb.clone();
+        assert!((c.restitution - 0.7).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn default_config_no_death_emitter() {
+        let cfg = ParticleConfig::default();
+        assert!(cfg.death_emitter.is_none());
+        assert_eq!(cfg.death_burst_count, 0);
+    }
+
+    #[test]
+    fn default_config_shape_helper_fields() {
+        let cfg = ParticleConfig::default();
+        assert_eq!(cfg.shrapnel_edges, 6);
+        assert!((cfg.ray_aspect - 4.0).abs() < f32::EPSILON);
+        assert!((cfg.ring_thickness - 0.2).abs() < f32::EPSILON);
+    }
+}
+

@@ -107,9 +107,10 @@ impl ParticleSystem {
             }
         }
 
-        // Update existing particles
+        // --- Phase 1: advance existing particles (Euler integration) ---
         for p in &mut self.particles {
-            // Radial and tangential acceleration
+            // Radial/tangential acceleration: compute unit direction from birth origin
+            // so radial accel pushes outward and tangential accel orbits around it.
             let dx = p.x - p.origin_x;
             let dy = p.y - p.origin_y;
             let dist = (dx * dx + dy * dy).sqrt();
@@ -122,11 +123,11 @@ impl ParticleSystem {
                 p.vy += (radial_y * p.radial_accel + tangential_y * p.tangential_accel) * dt;
             }
 
-            // Linear acceleration (gravity)
+            // Constant-force gravity applied uniformly to all particles
             p.vx += self.config.gravity_x * dt;
             p.vy += self.config.gravity_y * dt;
 
-            // Linear damping
+            // Linear damping — exponential decay: v' = v / (1 + damping * dt)
             if p.linear_damping > f32::EPSILON {
                 let damping = 1.0 / (1.0 + p.linear_damping * dt);
                 p.vx *= damping;
@@ -212,7 +213,9 @@ impl ParticleSystem {
             p.life -= dt;
         }
 
-        // Remove dead particles; optionally spawn death sub-bursts
+        // --- Phase 2: remove dead particles; optionally spawn death sub-bursts ---
+        // When death_emitter is configured, each dying particle spawns a child burst
+        // at its final world position, enabling cascading effects (e.g. firework stages).
         if self.config.death_emitter.is_some() && self.config.death_burst_count > 0 {
             let death_cfg = self.config.death_emitter.as_ref().unwrap().as_ref().clone();
             let burst = self.config.death_burst_count;
@@ -245,7 +248,9 @@ impl ParticleSystem {
             !sub.is_empty() || sub.is_active()
         });
 
-        // Emit new particles only when active
+        // --- Phase 3: emit new particles using fractional accumulator ---
+        // The accumulator carries sub-frame emission debt so emission_rate < 1/dt
+        // still produces particles at the correct average rate over time.
         if self.state == EmitterState::Active {
             self.emit_accumulator += self.config.emission_rate * dt;
             let to_emit = self.emit_accumulator as u32;
@@ -441,9 +446,11 @@ impl ParticleSystem {
     /// # Returns
     /// `Vec<RenderCommand>`.
     ///
-    /// All particles are batched into a single `DrawParticleSystem` command. Each particle
-    /// is sized and colored by multi-stop interpolation based on remaining lifetime.
-    /// When `alpha_keyframes` are set, the alpha channel is overridden independently.
+    /// All particles are batched into a single `DrawParticleSystem` command so the
+    /// GPU renderer can issue one instanced draw call for the entire system. Each
+    /// particle is sized and colored by multi-stop interpolation based on remaining
+    /// lifetime. When `alpha_keyframes` are set, the alpha channel is overridden
+    /// independently of the color gradient.
     ///
     /// # Parameters
     /// - `ox` — World X offset added to each particle position.
@@ -459,6 +466,9 @@ impl ParticleSystem {
             let t = 1.0 - (p.life / p.max_life);
             let size = interpolate_sizes(&self.config.sizes, t, p.size_variation);
 
+            // Choose interpolation parameter: either lifetime-based (default) or
+            // speed-based (when color_by_speed is enabled). Speed-based mapping
+            // normalises the current speed into [speed_color_min, speed_color_max].
             let color_t = if self.config.color_by_speed {
                 let speed = (p.vx * p.vx + p.vy * p.vy).sqrt();
                 let range = self.config.speed_color_max - self.config.speed_color_min;
@@ -496,6 +506,9 @@ impl ParticleSystem {
                 ParticleShape::Capsule => ParticleRenderShape::Capsule,
             };
 
+            // Texture + quad selection: when a sprite sheet is attached, choose
+            // the active quad either by flipbook frame index (animated_frames > 0)
+            // or by lifetime progress (default).
             let (texture_key, quad, quad_tex_dims) = if let Some(tex_key) = self.config.texture_id {
                 if !self.config.quads.is_empty() {
                     let quad_idx = if self.config.animated_frames > 0 {
@@ -901,409 +914,4 @@ impl ParticleSystem {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::super::config::{EmissionShape, ParticleConfig, RelativeMode};
-    use super::super::emission::emission_shape_offset;
-    use super::super::math::{interpolate_alphas, interpolate_colors, interpolate_sizes, lerp};
-    use super::*;
 
-    #[test]
-    fn test_default_config() {
-        let cfg = ParticleConfig::default();
-        assert_eq!(cfg.max_particles, 256);
-        assert!((cfg.emission_rate - 10.0).abs() < f32::EPSILON);
-        assert_eq!(cfg.sizes.len(), 2);
-        assert!((cfg.sizes[0] - 4.0).abs() < f32::EPSILON);
-        assert!((cfg.sizes[1] - 1.0).abs() < f32::EPSILON);
-        assert_eq!(cfg.colors.len(), 2);
-    }
-
-    #[test]
-    fn test_system_creation() {
-        let sys = ParticleSystem::new(ParticleConfig::default());
-        assert_eq!(sys.count(), 0);
-        assert!(sys.is_active());
-    }
-
-    #[test]
-    fn test_update_emits_particles() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(1.0);
-        assert!(sys.count() > 0);
-    }
-
-    #[test]
-    fn test_particles_die() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        cfg.lifetime_min = 0.1;
-        cfg.lifetime_max = 0.1;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(0.05);
-        let count_after_emit = sys.count();
-        assert!(count_after_emit > 0);
-        sys.stop();
-        sys.update(0.2);
-        assert_eq!(sys.count(), 0);
-    }
-
-    #[test]
-    fn test_inactive_no_emit() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 1000.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.stop();
-        sys.update(1.0);
-        assert_eq!(sys.count(), 0);
-    }
-
-    #[test]
-    fn test_max_particles_cap() {
-        let mut cfg = ParticleConfig::default();
-        cfg.max_particles = 5;
-        cfg.emission_rate = 1000.0;
-        cfg.lifetime_min = 10.0;
-        cfg.lifetime_max = 10.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(1.0);
-        assert!(sys.count() <= 5);
-    }
-
-    #[test]
-    fn test_reset_clears_particles() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(1.0);
-        assert!(sys.count() > 0);
-        sys.reset();
-        assert_eq!(sys.count(), 0);
-    }
-
-    #[test]
-    fn test_draw_commands_count() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(1.0);
-        let count = sys.count();
-        assert!(count > 0);
-        let cmds = sys.build_render_commands(0.0, 0.0);
-        // All particles are batched into a single DrawParticleSystem command
-        assert_eq!(cmds.len(), 1);
-        if let crate::render::renderer::RenderCommand::DrawParticleSystem { particles } = &cmds[0] {
-            assert_eq!(particles.len(), count);
-        } else {
-            panic!("expected DrawParticleSystem");
-        }
-    }
-
-    #[test]
-    fn test_gravity_affects_velocity() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        cfg.gravity_y = 100.0;
-        cfg.speed_min = 0.0;
-        cfg.speed_max = 0.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(0.01);
-        let initial_vy: Vec<f32> = sys.particles.iter().map(|p| p.vy).collect();
-        sys.update(1.0);
-        for (i, p) in sys.particles.iter().enumerate() {
-            if i < initial_vy.len() {
-                assert!(p.vy > initial_vy[i]);
-            }
-        }
-    }
-
-    #[test]
-    fn test_lerp_basic() {
-        assert!((lerp(0.0, 10.0, 0.0) - 0.0).abs() < f32::EPSILON);
-        assert!((lerp(0.0, 10.0, 0.5) - 5.0).abs() < f32::EPSILON);
-        assert!((lerp(0.0, 10.0, 1.0) - 10.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_sizes_empty() {
-        assert!((interpolate_sizes(&[], 0.5, 0.0) - 1.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_sizes_single() {
-        assert!((interpolate_sizes(&[5.0], 0.5, 0.0) - 5.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_sizes_two_stops() {
-        assert!((interpolate_sizes(&[10.0, 2.0], 0.0, 0.0) - 10.0).abs() < 1e-5);
-        assert!((interpolate_sizes(&[10.0, 2.0], 0.5, 0.0) - 6.0).abs() < 1e-5);
-        assert!((interpolate_sizes(&[10.0, 2.0], 1.0, 0.0) - 2.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_interpolate_sizes_three_stops() {
-        let sizes = [10.0, 20.0, 5.0];
-        assert!((interpolate_sizes(&sizes, 0.0, 0.0) - 10.0).abs() < 1e-5);
-        assert!((interpolate_sizes(&sizes, 0.25, 0.0) - 15.0).abs() < 1e-5);
-        assert!((interpolate_sizes(&sizes, 0.5, 0.0) - 20.0).abs() < 1e-5);
-        assert!((interpolate_sizes(&sizes, 1.0, 0.0) - 5.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_interpolate_colors_empty() {
-        let c = interpolate_colors(&[], 0.5);
-        assert!((c[0] - 1.0).abs() < f32::EPSILON);
-        assert!((c[3] - 1.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_colors_two_stops() {
-        let colors = [[1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 0.0, 0.0]];
-        let mid = interpolate_colors(&colors, 0.5);
-        assert!((mid[0] - 0.5).abs() < 1e-5);
-        assert!((mid[1] - 0.5).abs() < 1e-5);
-        assert!((mid[2] - 0.0).abs() < 1e-5);
-        assert!((mid[3] - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_emitter_state_transitions() {
-        let mut sys = ParticleSystem::new(ParticleConfig::default());
-        assert!(sys.is_active());
-        sys.pause();
-        assert!(sys.is_paused());
-        sys.resume();
-        assert!(sys.is_active());
-        sys.stop();
-        assert!(sys.is_stopped());
-        sys.start();
-        assert!(sys.is_active());
-    }
-
-    #[test]
-    fn test_interpolate_alphas_empty() {
-        assert!((interpolate_alphas(&[], 0.5) - 1.0).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_alphas_single() {
-        assert!((interpolate_alphas(&[0.5], 0.0) - 0.5).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_interpolate_alphas_two_stops() {
-        assert!((interpolate_alphas(&[1.0, 0.0], 0.0) - 1.0).abs() < 1e-5);
-        assert!((interpolate_alphas(&[1.0, 0.0], 0.5) - 0.5).abs() < 1e-5);
-        assert!((interpolate_alphas(&[1.0, 0.0], 1.0) - 0.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_interpolate_alphas_four_stops() {
-        let alphas = [1.0, 0.9, 0.5, 0.0];
-        assert!((interpolate_alphas(&alphas, 0.0) - 1.0).abs() < 1e-5);
-        assert!((interpolate_alphas(&alphas, 1.0) - 0.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_default_config_new_fields() {
-        let cfg = ParticleConfig::default();
-        assert!(cfg.alpha_keyframes.is_empty());
-        assert_eq!(cfg.emission_shape, EmissionShape::Point);
-        assert_eq!(cfg.relative_mode, RelativeMode::Detached);
-    }
-
-    #[test]
-    fn test_emission_shape_circle() {
-        let shape = EmissionShape::Circle {
-            radius: 10.0,
-            fill: true,
-        };
-        let (x, y) = emission_shape_offset(&shape);
-        let dist = (x * x + y * y).sqrt();
-        assert!(dist <= 10.0 + 1e-5);
-    }
-
-    #[test]
-    fn test_emission_shape_rectangle() {
-        let shape = EmissionShape::Rectangle {
-            width: 20.0,
-            height: 10.0,
-        };
-        let (x, y) = emission_shape_offset(&shape);
-        assert!(x.abs() <= 10.0 + 1e-5);
-        assert!(y.abs() <= 5.0 + 1e-5);
-    }
-
-    #[test]
-    fn test_emission_shape_ring() {
-        let shape = EmissionShape::Ring {
-            inner_radius: 5.0,
-            outer_radius: 10.0,
-        };
-        let (x, y) = emission_shape_offset(&shape);
-        let dist = (x * x + y * y).sqrt();
-        assert!(dist >= 5.0 - 1e-5);
-        assert!(dist <= 10.0 + 1e-5);
-    }
-
-    #[test]
-    fn test_emission_shape_line() {
-        let shape = EmissionShape::Line {
-            length: 20.0,
-            angle: 0.0,
-        };
-        let (x, y) = emission_shape_offset(&shape);
-        assert!(x.abs() <= 10.0 + 1e-5);
-        assert!(y.abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_emission_shape_cone() {
-        let shape = EmissionShape::Cone {
-            radius: 10.0,
-            angle: 0.0,
-            spread: std::f32::consts::PI,
-        };
-        let (x, y) = emission_shape_offset(&shape);
-        let dist = (x * x + y * y).sqrt();
-        assert!(dist <= 10.0 + 1e-5);
-    }
-
-    #[test]
-    fn test_clone_config() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 42.0;
-        cfg.alpha_keyframes = vec![1.0, 0.5, 0.0];
-        cfg.emission_shape = EmissionShape::Circle {
-            radius: 5.0,
-            fill: true,
-        };
-        cfg.relative_mode = RelativeMode::Attached;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(0.1);
-        let cloned = sys.clone_config();
-        assert_eq!(cloned.count(), 0);
-        assert!((cloned.config.emission_rate - 42.0).abs() < 1e-5);
-        assert_eq!(cloned.config.alpha_keyframes, vec![1.0, 0.5, 0.0]);
-        assert_eq!(
-            cloned.config.emission_shape,
-            EmissionShape::Circle {
-                radius: 5.0,
-                fill: true
-            }
-        );
-        assert_eq!(cloned.config.relative_mode, RelativeMode::Attached);
-    }
-
-    #[test]
-    fn test_alpha_keyframes_override_in_draw() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        cfg.alpha_keyframes = vec![1.0, 0.0]; // fade from 1 to 0
-        cfg.lifetime_min = 1.0;
-        cfg.lifetime_max = 1.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(0.5); // emit some particles
-        let cmds = sys.build_render_commands(0.0, 0.0);
-        // Should have commands; alpha should be driven by alpha_keyframes
-        assert!(!cmds.is_empty());
-    }
-
-    #[test]
-    fn test_warm_up_fills_particles() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        cfg.lifetime_min = 5.0;
-        cfg.lifetime_max = 5.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.warm_up(1.0);
-        assert!(sys.count() > 0, "warm_up should have emitted particles");
-    }
-
-    #[test]
-    fn test_warm_up_clamped_to_30s() {
-        let mut cfg = ParticleConfig::default();
-        cfg.max_particles = 5;
-        cfg.emission_rate = 1.0;
-        cfg.lifetime_min = 0.1;
-        cfg.lifetime_max = 0.1;
-        let mut sys = ParticleSystem::new(cfg);
-        // 999 seconds should be clamped to 30 — must not hang
-        sys.warm_up(999.0);
-        // Just verify it returns without hanging
-    }
-
-    #[test]
-    fn test_attractor_add_and_count() {
-        let mut sys = ParticleSystem::new(ParticleConfig::default());
-        assert_eq!(sys.attractor_count(), 0);
-        sys.add_attractor(100.0, 200.0, 50.0, 300.0);
-        sys.add_attractor(-50.0, 0.0, -30.0, 100.0);
-        assert_eq!(sys.attractor_count(), 2);
-    }
-
-    #[test]
-    fn test_attractor_clear() {
-        let mut sys = ParticleSystem::new(ParticleConfig::default());
-        sys.add_attractor(0.0, 0.0, 1.0, 10.0);
-        sys.clear_attractors();
-        assert_eq!(sys.attractor_count(), 0);
-    }
-
-    #[test]
-    fn test_set_and_clear_bounds() {
-        let mut sys = ParticleSystem::new(ParticleConfig::default());
-        assert!(sys.bounce_bounds.is_none());
-        sys.set_bounds(0.0, 800.0, 0.0, 600.0, 0.8);
-        assert!(sys.bounce_bounds.is_some());
-        let bb = sys.bounce_bounds.as_ref().unwrap();
-        assert!((bb.restitution - 0.8).abs() < 1e-5);
-        sys.clear_bounds();
-        assert!(sys.bounce_bounds.is_none());
-    }
-
-    #[test]
-    fn test_shape_seed_is_assigned() {
-        let mut cfg = ParticleConfig::default();
-        cfg.emission_rate = 100.0;
-        cfg.lifetime_min = 5.0;
-        cfg.lifetime_max = 5.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.update(0.1);
-        // All particles must have a shape_seed field (compile check is sufficient;
-        // values may collide by random chance but the field must exist)
-        for p in &sys.particles {
-            let _seed: u32 = p.shape_seed; // type check
-        }
-        assert!(sys.count() > 0);
-    }
-
-    #[test]
-    fn test_bounce_reverse_velocity() {
-        let mut cfg = ParticleConfig::default();
-        cfg.speed_min = 100.0;
-        cfg.speed_max = 100.0;
-        cfg.direction = 0.0; // rightward
-        cfg.spread = 0.0;
-        cfg.emission_rate = 1000.0;
-        cfg.lifetime_min = 5.0;
-        cfg.lifetime_max = 5.0;
-        cfg.gravity_x = 0.0;
-        cfg.gravity_y = 0.0;
-        let mut sys = ParticleSystem::new(cfg);
-        sys.set_bounds(-50.0, 50.0, -50.0, 50.0, 1.0);
-        sys.update(0.01);
-        // Run for a while — with right wall at 50 and speed=100, should bounce back
-        for _ in 0..100 {
-            sys.update(0.01);
-        }
-        // Particles should still be within (or very near) bounds
-        for p in &sys.particles {
-            let wx = p.x + sys.emitter_x;
-            assert!(wx <= 55.0 && wx >= -55.0, "particle x {wx} should stay near bounds");
-        }
-    }
-}

@@ -1,4 +1,11 @@
 //! 3D floating-point vector with arithmetic operators and common helpers.
+//!
+//! Provides `Vec3` — a 3-component `f32` vector for 3D math operations such as
+//! cross products, projections, reflections, and distance calculations.
+//! Used by noise generators (3D/4D coordinates), lighting direction vectors,
+//! and any subsystem that needs a compact 3D value type.
+//!
+//! All operations are `Copy` — no heap allocations.
 
 use std::fmt;
 use std::ops::{Add, Div, Mul, Neg, Sub};

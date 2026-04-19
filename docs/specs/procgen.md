@@ -6,14 +6,14 @@
 - Source path: `src/procgen/`
 - Lua API path(s): `src/lua_api/procgen_api.rs`
 - Primary Lua namespace: `lurek.procgen`
-- Rust test path(s): none found in the workspace
+- Rust test path(s): `src/procgen/noise_tests.rs` (sibling), plus inline `#[cfg(test)]` in all other `.rs` files
 - Lua test path(s): none found in the workspace
 
 ## Summary
 
 The `procgen` module is Lurek2D's procedural content generation library. It is a Foundations tier module that depends only on `math`, enabling all generators to run headlessly in tests and pre-generation passes without a window or GPU.
 
-Noise: `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, `simplex_noise_3d` are direct noise functions. `NoiseGenerator` is a configurable wrapper with `NoiseKind` (Perlin, Simplex, Worley), `FractalType` (fBm, Ridged, Billow, plain), octaves, lacunarity, gain, and frequency. `generate_noise_map_parallel` fills a 2D grid using Rayon for fast multi-threaded generation. `perlin_noise_periodic` generates tileable Perlin noise for seamless textures.
+Noise: `perlin2d`, `perlin3d`, `perlin4d`, `simplex2d`, `simplex_noise_3d` are direct noise functions. `NoiseGenerator` is a configurable wrapper with `NoiseKind` (Perlin, Simplex), `FractalType` (Fbm, Ridged, Turbulence), octaves, lacunarity, persistence, and frequency. Worley 2D/3D cellular noise supports Euclidean, Manhattan, and Chebyshev distance metrics. `generate_noise_map_parallel` fills a 2D grid using Rayon for fast multi-threaded generation. `perlin_noise_periodic` generates tileable Perlin noise for seamless textures.
 
 Dungeon generation: `bsp_dungeon(opts)` uses Binary Space Partitioning; `rooms_dungeon(opts)` uses random room placement with connected corridors; `cellular_automata(opts)` applies Game-of-Life cave smoothing. `Heightmap` generates terrain using fractal noise, hydraulic erosion passes, and normalization to [0, 1].
 

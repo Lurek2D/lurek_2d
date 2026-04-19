@@ -126,3 +126,47 @@ impl DocEntry {
         missing
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_entry_qualified_name() {
+        let e = DocEntry::new("play", "audio", "function");
+        assert_eq!(e.qualified_name, "lurek.audio.play");
+        assert_eq!(e.module, "audio");
+        assert_eq!(e.kind, "function");
+    }
+
+    #[test]
+    fn is_complete_with_description_and_params() {
+        let mut e = DocEntry::new("play", "audio", "function");
+        assert!(!e.is_complete()); // no description
+        e.description = "Plays a sound".into();
+        assert!(!e.is_complete()); // no params/returns
+        e.parameters.push(ParamInfo {
+            name: "path".into(),
+            type_name: "string".into(),
+            description: "sound file".into(),
+            optional: false,
+            default: None,
+        });
+        assert!(e.is_complete());
+    }
+
+    #[test]
+    fn value_kind_complete_without_params() {
+        let mut e = DocEntry::new("pi", "math", "value");
+        e.description = "The constant pi".into();
+        assert!(e.is_complete());
+    }
+
+    #[test]
+    fn missing_fields() {
+        let e = DocEntry::new("x", "m", "function");
+        let missing = e.missing_fields();
+        assert!(missing.contains(&"description"));
+        assert!(missing.contains(&"parameters_or_returns"));
+    }
+}

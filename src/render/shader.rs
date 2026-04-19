@@ -428,6 +428,7 @@ fn consume_attribute(text: &str) -> &str {
     &text[index..]
 }
 
+// NOTE: Tests private internals — stays inline
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -486,5 +487,93 @@ fn helper(color: vec4<f32>) -> vec4<f32> {
         assert!(prepared.source.contains("fn fs_main("));
         wgpu::naga::front::wgsl::parse_str(&prepared.source)
             .expect("rewritten fragment helper should remain valid WGSL");
+    }
+
+    // ── Pure-logic helper tests ─────────────────────────────────────────
+
+    #[test]
+    fn split_top_level_commas_simple() {
+        let parts = split_top_level_commas("a, b, c");
+        assert_eq!(parts, vec!["a", "b", "c"]);
+    }
+
+    #[test]
+    fn split_top_level_commas_nested_parens() {
+        let parts = split_top_level_commas("foo(a, b), bar");
+        assert_eq!(parts, vec!["foo(a, b)", "bar"]);
+    }
+
+    #[test]
+    fn split_top_level_commas_nested_angles() {
+        let parts = split_top_level_commas("vec4<f32>, vec2<f32>");
+        assert_eq!(parts, vec!["vec4<f32>", "vec2<f32>"]);
+    }
+
+    #[test]
+    fn split_top_level_commas_single_item() {
+        let parts = split_top_level_commas("only_one");
+        assert_eq!(parts, vec!["only_one"]);
+    }
+
+    #[test]
+    fn split_top_level_commas_empty() {
+        let parts = split_top_level_commas("");
+        assert_eq!(parts, vec![""]);
+    }
+
+    #[test]
+    fn find_matching_paren_basic() {
+        let text = "(hello)";
+        assert_eq!(find_matching_paren(text, 0).unwrap(), 6);
+    }
+
+    #[test]
+    fn find_matching_paren_nested() {
+        let text = "(a(b)c)rest";
+        assert_eq!(find_matching_paren(text, 0).unwrap(), 6);
+    }
+
+    #[test]
+    fn find_matching_paren_unclosed() {
+        let text = "(oops";
+        assert!(find_matching_paren(text, 0).is_err());
+    }
+
+    #[test]
+    fn consume_attribute_simple() {
+        let result = consume_attribute("@location rest");
+        assert_eq!(result, " rest");
+    }
+
+    #[test]
+    fn consume_attribute_with_parens() {
+        let result = consume_attribute("@location(0) rest");
+        assert_eq!(result, " rest");
+    }
+
+    #[test]
+    fn consume_attribute_nested_parens() {
+        let result = consume_attribute("@group(a(b)) end");
+        assert_eq!(result, " end");
+    }
+
+    #[test]
+    fn strip_leading_attributes_removes_all() {
+        let result = strip_leading_attributes("@location(0) @builtin(position) color: vec4<f32>");
+        assert_eq!(result, "color: vec4<f32>");
+    }
+
+    #[test]
+    fn strip_leading_attributes_no_attributes() {
+        let result = strip_leading_attributes("color: vec4<f32>");
+        assert_eq!(result, "color: vec4<f32>");
+    }
+
+    #[test]
+    fn shader_has_uniform_returns_true_after_send() {
+        let mut shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string()).unwrap();
+        shader.send("brightness".to_string(), UniformValue::Float(0.5));
+        assert!(shader.has_uniform("brightness"));
+        assert!(!shader.has_uniform("nonexistent"));
     }
 }

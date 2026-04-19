@@ -1,12 +1,8 @@
-//! Contiguous byte buffer accessible from Lua.
+//! Contiguous byte buffer for binary data manipulation.
 //!
-//! This module is part of Lurek2D's `data` subsystem and provides the implementation
-//! details for byte data-related operations and data management.
-//! Key types exported from this module: `ByteData`.
-//! Primary functions: `new()`, `from_bytes()`, `from_string()`, `len()`.
-//!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! [`ByteData`] wraps a `Vec<u8>` with indexed get/set operations and string
+//! conversion. It is the primary mutable byte container in the engine, used by
+//! pack/unpack, compression, and the Lua `lurek.data.newByteData()` API.
 
 /// Contiguous byte buffer for binary data manipulation.
 ///
@@ -33,7 +29,7 @@ impl ByteData {
         }
     }
 
-    /// Create from an existing byte vector. Returns a fully initialised instance with all fields set to their initial values.
+    /// Create from an existing byte vector, taking ownership.
     ///
     /// # Parameters
     /// - `bytes` — `Vec<u8>`.
@@ -44,7 +40,7 @@ impl ByteData {
         Self { data: bytes }
     }
 
-    /// Create from a string. Returns a fully initialised instance with all fields set to their initial values.
+    /// Create from a UTF-8 string, copying the string’s bytes into the buffer.
     ///
     /// # Parameters
     /// - `s` — `&str`.
@@ -65,7 +61,7 @@ impl ByteData {
         self.data.len()
     }
 
-    /// Check if the buffer is empty. This accessor incurs no allocation; call it freely in hot paths.
+    /// Check if the buffer contains zero bytes.
     ///
     /// # Returns
     /// `bool`.
@@ -133,78 +129,5 @@ impl ByteData {
         Self {
             data: self.data.clone(),
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Construction ──────────────────────────────────────────────────────────
-
-    #[test]
-    fn new_zero_filled_correct_len() {
-        let bd = ByteData::new(8);
-        assert_eq!(bd.len(), 8);
-        assert_eq!(bd.get_byte(0), Some(0));
-        assert_eq!(bd.get_byte(7), Some(0));
-    }
-
-    #[test]
-    fn from_bytes_preserves_data() {
-        let bd = ByteData::from_bytes(vec![1, 2, 3]);
-        assert_eq!(bd.len(), 3);
-        assert_eq!(bd.get_byte(0), Some(1));
-        assert_eq!(bd.get_byte(2), Some(3));
-    }
-
-    #[test]
-    fn from_string_converts_correctly() {
-        let bd = ByteData::from_string("hi");
-        assert_eq!(bd.len(), 2);
-        assert_eq!(bd.get_byte(0), Some(b'h'));
-        assert_eq!(bd.get_byte(1), Some(b'i'));
-    }
-
-    // ── Get / Set ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn set_byte_roundtrip() {
-        let mut bd = ByteData::new(4);
-        let ok = bd.set_byte(2, 42);
-        assert!(ok);
-        assert_eq!(bd.get_byte(2), Some(42));
-    }
-
-    #[test]
-    fn set_byte_out_of_bounds_returns_false() {
-        let mut bd = ByteData::new(4);
-        assert!(!bd.set_byte(10, 1));
-    }
-
-    #[test]
-    fn get_byte_out_of_bounds_returns_none() {
-        let bd = ByteData::new(4);
-        assert!(bd.get_byte(99).is_none());
-    }
-
-    // ── Buffer ops ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn is_empty_zero_size() {
-        let bd = ByteData::new(0);
-        assert!(bd.is_empty());
-    }
-
-    #[test]
-    fn as_bytes_matches_data() {
-        let bd = ByteData::from_bytes(vec![10, 20, 30]);
-        assert_eq!(bd.as_bytes(), &[10u8, 20, 30]);
-    }
-
-    #[test]
-    fn get_string_roundtrip() {
-        let bd = ByteData::from_string("hello");
-        assert_eq!(bd.get_string(), "hello");
     }
 }

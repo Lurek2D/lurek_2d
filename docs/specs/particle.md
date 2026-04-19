@@ -13,11 +13,11 @@
 
 The `particle` module implements emitter-based 2D particle systems. A `ParticleSystem` manages a bounded pool of short-lived `Particle` instances, advancing position, velocity, lifetime, rotation, and visual properties each frame with Euler integration, and recycling dead particles to keep memory allocation bounded at `ParticleConfig::max_particles`.
 
-`ParticleConfig` (~50 fields) controls all emission and simulation parameters: particles-per-second rate, `EmissionShape` (Point, Circle, Ring, Line, Box, or Polygon), `AreaDistribution` (uniform, center-weighted, or edge-only), velocity spread (min/max speed and angle), rotation (initial range, angular velocity range), linear damping, radial and tangential acceleration, lifetime range (min/max seconds), and multi-stop gradient interpolation for size, color, and alpha over each particle's normalized life. `InsertMode` (OldestFirst or Absorb) determines behavior when the pool is full.
+`ParticleConfig` (~50 fields) controls all emission and simulation parameters: particles-per-second rate, `EmissionShape` (Point, Circle, Rectangle, Ring, Line, Cone, Star, Spiral), `AreaDistribution` (None, Uniform, Normal, Ellipse, BorderEllipse, BorderRectangle), velocity spread (min/max speed and angle), rotation (initial range, angular velocity range), linear damping, radial and tangential acceleration, quadratic drag, orbital rotation, turbulence, lifetime range (min/max seconds), and multi-stop gradient interpolation for size, color, and alpha over each particle's normalized life. `InsertMode` (Top, Bottom, Random) determines where new particles are placed in the draw order.
 
-`EmitterState` tracks whether the emitter is active, paused, or one-shot. `RelativeMode` selects whether particles move in world space or follow the emitter's position after spawn. Texture support: the `ParticleSystem` holds an optional `TextureKey`; particles are rendered as textured quads aligned to their velocity vector or at a fixed rotation.
+`EmitterState` tracks whether the emitter is active, paused, or stopped. `RelativeMode` selects whether particles move in world space or follow the emitter's position after spawn. Point attractors and axis-aligned bounce bounds provide additional per-frame forces. Death sub-emitters (`death_emitter` + `death_burst_count`) enable cascading particle bursts at each particle's death position. Texture support: the `ParticleSystem` holds an optional `TextureKey`; particles are rendered as textured quads with optional flipbook animation.
 
-`ParticleShape` is an enum of five geometric render primitives (Square, Circle, Triangle, Spark, Diamond) for texture-free particle rendering. `Trail` adds a ribbon effect as a `Vec<TrailPoint>` history attached to each particle for smoke, laser, and motion-blur effects.
+`ParticleShape` is an enum of ten geometric render primitives (Square, Circle, Triangle, Spark, Diamond, Shrapnel, Ray, Puff, Ring, Capsule) for texture-free particle rendering, each with deterministic shape generation via `Particle::shape_seed`. `Trail` adds a time-fading ribbon effect as a `Vec<TrailPoint>` history for smoke, laser, and motion-blur effects.
 
 Additional emitter control methods have been added to `ParticleSystem`, enabling finer runtime manipulation of active emitter state through the Lua API. These updates extend the `ParticleConfig` parameter set with new shape and physics modifiers that game scripts can adjust mid-flight, including updated support for shrapnel emission patterns, ring-thickness control, and ray-aspect particle rendering.
 
@@ -28,6 +28,7 @@ Additional emitter control methods have been added to `ParticleSystem`, enabling
 - `config.rs`: Defines ParticleConfig and the enums that control emission shape, area distribution, insert mode, emitter state, and relative motion.
 - `emission.rs`: Computes spawn offsets from the configured area-distribution and emission-shape rules.
 - `emitter.rs`: Defines ParticleSystem, including spawning, simulation updates, emitter lifecycle, and batched render-command generation.
+- `emitter_tests.rs`: Unit tests for ParticleSystem (split from emitter.rs for file-size management).
 - `math.rs`: Defines interpolation and random-sampling helpers used during particle updates.
 - `mod.rs`: Declares the particle submodules and re-exports the public emitter, config, particle, trail, and helper types.
 - `particle.rs`: Defines Particle, the live per-particle state record used during simulation.

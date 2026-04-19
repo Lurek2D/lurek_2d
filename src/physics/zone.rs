@@ -428,3 +428,148 @@ impl Default for ZoneTracker {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rect_boundary_contains() {
+        let b = ZoneBoundary::Rect { x: 10.0, y: 10.0, width: 100.0, height: 50.0 };
+        assert!(b.contains(50.0, 30.0));
+        assert!(!b.contains(5.0, 30.0));
+        // Edge: inclusive
+        assert!(b.contains(10.0, 10.0));
+        assert!(b.contains(110.0, 60.0));
+    }
+
+    #[test]
+    fn circle_boundary_contains() {
+        let b = ZoneBoundary::Circle { cx: 50.0, cy: 50.0, radius: 10.0 };
+        assert!(b.contains(50.0, 50.0));
+        assert!(b.contains(55.0, 50.0));
+        assert!(!b.contains(65.0, 50.0));
+    }
+
+    #[test]
+    fn zone_new_rect_defaults() {
+        let z = PhysicsZone::new_rect(0, 0.0, 0.0, 100.0, 100.0);
+        assert!(z.enabled);
+        assert_eq!(z.priority, 0);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Zero));
+        assert_eq!(z.layer_mask, 0xFFFF_FFFF);
+    }
+
+    #[test]
+    fn zone_set_circle() {
+        let mut z = PhysicsZone::new_rect(1, 0.0, 0.0, 10.0, 10.0);
+        z.set_circle(50.0, 50.0, 25.0);
+        assert!(matches!(z.boundary, ZoneBoundary::Circle { cx, cy, radius }
+            if (cx - 50.0).abs() < 1e-6 && (cy - 50.0).abs() < 1e-6 && (radius - 25.0).abs() < 1e-6));
+    }
+
+    #[test]
+    fn zone_gravity_modes() {
+        let mut z = PhysicsZone::new_rect(0, 0.0, 0.0, 10.0, 10.0);
+        z.set_gravity_directional(0.0, 9.8);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Directional { .. }));
+        z.set_gravity_point(5.0, 5.0, 100.0);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Point { .. }));
+        z.set_gravity_repulsor(5.0, 5.0, 50.0);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Repulsor { .. }));
+        z.set_gravity_zero();
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Zero));
+    }
+
+    #[test]
+    fn zone_contains_disabled() {
+        let mut z = PhysicsZone::new_rect(0, 0.0, 0.0, 100.0, 100.0);
+        assert!(z.contains(50.0, 50.0));
+        z.enabled = false;
+        assert!(!z.contains(50.0, 50.0));
+    }
+
+    #[test]
+    fn tracker_enter_leave_events() {
+        let mut tracker = ZoneTracker::new();
+        // Body enters zone 1.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Enter);
+        assert_eq!(events[0].zone_id, 1);
+
+        // Body stays in zone 1 — no events.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert!(events.is_empty());
+
+        // Body leaves zone 1.
+        let events = tracker.update(0, HashSet::new());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Leave);
+    }
+
+    #[test]
+    fn tracker_remove_body() {
+        let mut tracker = ZoneTracker::new();
+        tracker.update(0, [1].into_iter().collect());
+        tracker.remove_body(0);
+        // Re-entering after removal should produce an Enter event.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Enter);
+    }
+}
+            if (cx - 50.0).abs() < 1e-6 && (cy - 50.0).abs() < 1e-6 && (radius - 25.0).abs() < 1e-6));
+    }
+
+    #[test]
+    fn zone_gravity_modes() {
+        let mut z = PhysicsZone::new_rect(0, 0.0, 0.0, 10.0, 10.0);
+        z.set_gravity_directional(0.0, 9.8);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Directional { .. }));
+        z.set_gravity_point(5.0, 5.0, 100.0);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Point { .. }));
+        z.set_gravity_repulsor(5.0, 5.0, 50.0);
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Repulsor { .. }));
+        z.set_gravity_zero();
+        assert!(matches!(z.gravity_mode, ZoneGravityMode::Zero));
+    }
+
+    #[test]
+    fn zone_contains_disabled() {
+        let mut z = PhysicsZone::new_rect(0, 0.0, 0.0, 100.0, 100.0);
+        assert!(z.contains(50.0, 50.0));
+        z.enabled = false;
+        assert!(!z.contains(50.0, 50.0));
+    }
+
+    #[test]
+    fn tracker_enter_leave_events() {
+        let mut tracker = ZoneTracker::new();
+        // Body enters zone 1.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Enter);
+        assert_eq!(events[0].zone_id, 1);
+
+        // Body stays in zone 1 — no events.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert!(events.is_empty());
+
+        // Body leaves zone 1.
+        let events = tracker.update(0, HashSet::new());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Leave);
+    }
+
+    #[test]
+    fn tracker_remove_body() {
+        let mut tracker = ZoneTracker::new();
+        tracker.update(0, [1].into_iter().collect());
+        tracker.remove_body(0);
+        // Re-entering after removal should produce an Enter event.
+        let events = tracker.update(0, [1].into_iter().collect());
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].kind, ZoneEventKind::Enter);
+    }
+}

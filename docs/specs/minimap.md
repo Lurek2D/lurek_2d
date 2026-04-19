@@ -13,9 +13,9 @@
 
 The `minimap` module provides a grid-based minimap data model for overhead map displays with fog of war, tracked game objects, pings, persistent markers, and a viewport rectangle overlay. It is a Feature Systems tier module that is pure CPU — it has no direct GPU dependencies and produces `RenderCommand` entries for the renderer each frame.
 
-`Minimap` is the main data container: a 2D grid of cells, each storing a terrain color, optional `FogLevel` (Hidden/Explored/Visible), and an impassable flag. Fog is used for classic fog-of-war: hidden cells render fully opaque, explored cells render semi-transparent, visible cells render clearly. `ColorMode` controls whether the minimap renders terrain colors directly or blends them with a configurable fog tint.
+`Minimap` is the main data container: a 2D grid of cells, each storing a terrain type ID. Fog-of-war is tracked per-cell via a `FogLevel` enum (Hidden/Explored/Visible). `ColorMode` controls whether cells are colored by terrain type or by owner faction (political mode falls back to terrain colors since per-cell owner is not stored).
 
-`MinimapObject` entries represent tracked game entities: each carries world position, `MinimapObjectType` (Player/Enemy/Ally/Item/Poi), a display color, and an optional icon texture key. `update_object(id, world_x, world_y)` keeps tracked entities current as they move. A `SlotMap<ObjectKey, MinimapObject>` manages the pool with safe stale-handle detection.
+`MinimapObject` entries represent tracked game entities: each carries a grid position, a `type_index` into the registered `MinimapObjectType` array, and an `owner` identifier. `set_object(id, x, y, type_index, owner)` creates or updates tracked entities. A `HashMap<u32, MinimapObject>` manages the pool keyed by user-assigned IDs.
 
 `MinimapPing` provides temporary pulsing markers at a world position for events like alerts or waypoints. `MinimapMarker` adds persistent named icons for points of interest. The viewport rectangle overlay uses the current `Camera` bounds from `SharedState` to draw a rectangle on the minimap showing which part of the world is currently visible on screen.
 

@@ -1,12 +1,11 @@
-//! Vec2 implementation for the `math` subsystem.
+//! 2D floating-point vector — the primary math currency for positions,
+//! velocities, directions, and interpolation throughout the engine.
 //!
-//! This module is part of Lurek2D's `math` subsystem and provides the implementation
-//! details for vec2-related operations and data management.
-//! Key types exported from this module: `Vec2`.
-//! Primary functions: `new()`, `zero()`, `splat()`, `dot()`.
+//! [`Vec2`] implements standard arithmetic operators (`+`, `-`, `*`, `/`,
+//! negation, `+=`, `-=`, `*=`) and geometric helpers: `dot`, `cross`,
+//! `length`, `normalize`, `distance`, `lerp`, `angle`, `rotate`, `perpendicular`.
 //!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! All operations are `Copy` — no references or allocations needed.
 //!
 use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Sub, SubAssign};
 
@@ -258,132 +257,5 @@ impl Neg for Vec2 {
             x: -self.x,
             y: -self.y,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Construction ──────────────────────────────────────────────────────────
-
-    #[test]
-    fn new_fields_correct() {
-        let v = Vec2::new(3.0, 4.0);
-        assert!((v.x - 3.0).abs() < 1e-5);
-        assert!((v.y - 4.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn zero_constant_both_zero() {
-        assert!((Vec2::ZERO.x).abs() < 1e-5);
-        assert!((Vec2::ZERO.y).abs() < 1e-5);
-    }
-
-    #[test]
-    fn splat_components_equal() {
-        let v = Vec2::splat(5.0);
-        assert!((v.x - 5.0).abs() < 1e-5);
-        assert!((v.y - 5.0).abs() < 1e-5);
-    }
-
-    // ── Dot product ───────────────────────────────────────────────────────────
-
-    #[test]
-    fn dot_perpendicular_is_zero() {
-        assert!((Vec2::RIGHT.dot(Vec2::UP)).abs() < 1e-5);
-    }
-
-    #[test]
-    fn dot_parallel_is_one() {
-        assert!((Vec2::RIGHT.dot(Vec2::RIGHT) - 1.0).abs() < 1e-5);
-    }
-
-    // ── Length / normalize ────────────────────────────────────────────────────
-
-    #[test]
-    fn length_three_four_five() {
-        let v = Vec2::new(3.0, 4.0);
-        assert!((v.length() - 5.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn length_squared_correct() {
-        let v = Vec2::new(3.0, 4.0);
-        assert!((v.length_squared() - 25.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn normalize_gives_unit_length() {
-        let v = Vec2::new(3.0, 4.0).normalize();
-        assert!((v.length() - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn normalize_zero_vector_returns_zero() {
-        let v = Vec2::ZERO.normalize();
-        assert!((v.x).abs() < 1e-5);
-        assert!((v.y).abs() < 1e-5);
-    }
-
-    // ── Lerp / distance ───────────────────────────────────────────────────────
-
-    #[test]
-    fn lerp_midpoint_is_half() {
-        let v = Vec2::ZERO.lerp(Vec2::ONE, 0.5);
-        assert!((v.x - 0.5).abs() < 1e-5);
-        assert!((v.y - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn distance_three_four_five() {
-        let d = Vec2::ZERO.distance(Vec2::new(3.0, 4.0));
-        assert!((d - 5.0).abs() < 1e-5);
-    }
-
-    // ── Arithmetic ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn add_components() {
-        let r = Vec2::new(1.0, 2.0) + Vec2::new(3.0, 4.0);
-        assert!((r.x - 4.0).abs() < 1e-5);
-        assert!((r.y - 6.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn sub_components() {
-        let r = Vec2::new(5.0, 3.0) - Vec2::new(2.0, 1.0);
-        assert!((r.x - 3.0).abs() < 1e-5);
-        assert!((r.y - 2.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn neg_flips_sign() {
-        let r = -Vec2::new(1.0, -1.0);
-        assert!((r.x - (-1.0)).abs() < 1e-5);
-        assert!((r.y - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn mul_scalar() {
-        let r = Vec2::new(2.0, 3.0) * 4.0;
-        assert!((r.x - 8.0).abs() < 1e-5);
-        assert!((r.y - 12.0).abs() < 1e-5);
-    }
-
-    // ── Perpendicular / cross ─────────────────────────────────────────────────
-
-    #[test]
-    fn perpendicular_rotates_ccw() {
-        let v = Vec2::new(1.0, 0.0).perpendicular();
-        assert!((v.x - 0.0).abs() < 1e-5);
-        assert!((v.y - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn cross_known_value() {
-        let a = Vec2::new(1.0, 0.0);
-        let b = Vec2::new(0.0, 1.0);
-        assert!((a.cross(b) - 1.0).abs() < 1e-5);
     }
 }

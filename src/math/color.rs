@@ -1,12 +1,11 @@
 //! RGBA color value type for the Lurek2D math layer.
 //!
-//! This module is part of Lurek2D's `math` subsystem (Baseline layer).
-//! `Color` is a pure value type with no engine dependencies.
-//! Key types exported from this module: `Color`.
-//! Primary functions: `from_u8()`, `to_u8()`, `to_rgb_u32()`.
+//! [`Color`] is a pure value type with no engine dependencies, stored as four
+//! `f32` components in `[0.0, 1.0]`. Conversion to/from `u8` and packed `u32`
+//! formats is provided for wgpu vertex colours and Lua interop.
 //!
-//! All public items are documented. See the parent module for architectural context
-//! and the `lurek.*` Lua API for the scripting interface.
+//! Named constructors for common colours: `WHITE`, `BLACK`, `RED`, `GREEN`,
+//! `BLUE`, `TRANSPARENT`.
 
 /// RGBA color stored as `f32` components in the range `[0.0, 1.0]`.
 ///
@@ -201,98 +200,5 @@ pub fn linear_to_gamma(c: f32) -> f32 {
         c * 12.92
     } else {
         1.055 * c.powf(1.0 / 2.4) - 0.055
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Constants ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn white_constant_all_channels_one() {
-        let c = Color::WHITE;
-        assert!((c.r - 1.0).abs() < 1e-5);
-        assert!((c.g - 1.0).abs() < 1e-5);
-        assert!((c.b - 1.0).abs() < 1e-5);
-        assert!((c.a - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn black_constant_rgb_zero_alpha_one() {
-        let c = Color::BLACK;
-        assert!((c.r).abs() < 1e-5);
-        assert!((c.g).abs() < 1e-5);
-        assert!((c.b).abs() < 1e-5);
-        assert!((c.a - 1.0).abs() < 1e-5);
-    }
-
-    // ── Construction ──────────────────────────────────────────────────────────
-
-    #[test]
-    fn from_u8_red_correct() {
-        let c = Color::from_u8(255, 0, 0, 255);
-        assert!((c.r - 1.0).abs() < 1e-5);
-        assert!((c.g).abs() < 1e-5);
-        assert!((c.b).abs() < 1e-5);
-        assert!((c.a - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn from_u8_zero_gives_transparent_black() {
-        let c = Color::from_u8(0, 0, 0, 0);
-        assert!((c.r).abs() < 1e-5);
-        assert!((c.a).abs() < 1e-5);
-    }
-
-    // ── Conversion ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn to_u8_white_gives_255() {
-        let (r, g, b, a) = Color::WHITE.to_u8();
-        assert_eq!(r, 255);
-        assert_eq!(g, 255);
-        assert_eq!(b, 255);
-        assert_eq!(a, 255);
-    }
-
-    #[test]
-    fn to_rgb_u32_red_expected_value() {
-        let v = Color::RED.to_rgb_u32();
-        assert_eq!(v, 0x00FF_0000u32);
-    }
-
-    #[test]
-    fn to_rgb_u32_blue_expected_value() {
-        let v = Color::BLUE.to_rgb_u32();
-        assert_eq!(v, 0x0000_00FFu32);
-    }
-
-    #[test]
-    fn default_is_white() {
-        let c = Color::default();
-        assert!((c.r - 1.0).abs() < 1e-5);
-        assert!((c.a - 1.0).abs() < 1e-5);
-    }
-
-    // ── Gamma / linear ────────────────────────────────────────────────────────
-
-    #[test]
-    fn gamma_to_linear_zero_is_zero() {
-        assert!((gamma_to_linear(0.0)).abs() < 1e-5);
-    }
-
-    #[test]
-    fn linear_to_gamma_zero_is_zero() {
-        assert!((linear_to_gamma(0.0)).abs() < 1e-5);
-    }
-
-    #[test]
-    fn gamma_linear_roundtrip() {
-        let original = 0.5f32;
-        let linear = gamma_to_linear(original);
-        let back = linear_to_gamma(linear);
-        assert!((back - original).abs() < 1e-4);
     }
 }

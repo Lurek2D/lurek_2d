@@ -562,3 +562,116 @@ pub fn default_palette(cell: CellType) -> [u8; 4] {
 // for TerrainMap but not here.  Keep in scope for future use.
 #[allow(unused_imports)]
 use std::collections::HashSet as _HashSet;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_world_is_all_air() {
+        let w = CellularWorld::new(8, 8);
+        assert_eq!(w.get_cell(0, 0), CellType::Air);
+        assert_eq!(w.get_cell(7, 7), CellType::Air);
+        assert_eq!(w.count_cells(CellType::Air), 64);
+    }
+
+    #[test]
+    fn set_get_cell() {
+        let mut w = CellularWorld::new(4, 4);
+        w.set_cell(1, 2, CellType::Sand);
+        assert_eq!(w.get_cell(1, 2), CellType::Sand);
+        assert_eq!(w.get_cell(0, 0), CellType::Air);
+    }
+
+    #[test]
+    fn out_of_bounds_returns_air() {
+        let w = CellularWorld::new(4, 4);
+        assert_eq!(w.get_cell(100, 100), CellType::Air);
+    }
+
+    #[test]
+    fn fill_rect_sets_cells() {
+        let mut w = CellularWorld::new(8, 8);
+        w.fill_rect(2, 2, 3, 3, CellType::Rock);
+        assert_eq!(w.count_cells(CellType::Rock), 9);
+        assert_eq!(w.get_cell(2, 2), CellType::Rock);
+        assert_eq!(w.get_cell(4, 4), CellType::Rock);
+        assert_eq!(w.get_cell(5, 5), CellType::Air);
+    }
+
+    #[test]
+    fn fill_circle_sets_cells() {
+        let mut w = CellularWorld::new(16, 16);
+        w.fill_circle(8, 8, 3, CellType::Water);
+        assert!(w.count_cells(CellType::Water) > 0);
+        assert_eq!(w.get_cell(8, 8), CellType::Water);
+    }
+
+    #[test]
+    fn sand_falls_down() {
+        let mut w = CellularWorld::new(4, 4);
+        w.set_cell(1, 0, CellType::Sand);
+        w.step();
+        // Sand should have moved down.
+        assert_eq!(w.get_cell(1, 1), CellType::Sand);
+    }
+
+    #[test]
+    fn step_n_advances_multiple() {
+        let mut w = CellularWorld::new(4, 8);
+        w.set_cell(2, 0, CellType::Sand);
+        w.step_n(4);
+        // Sand should be at row 4 or later.
+        assert_eq!(w.get_cell(2, 0), CellType::Air);
+    }
+
+    #[test]
+    fn find_cells_returns_positions() {
+        let mut w = CellularWorld::new(4, 4);
+        w.set_cell(1, 2, CellType::Rock);
+        w.set_cell(3, 3, CellType::Rock);
+        let rocks = w.find_cells(CellType::Rock);
+        assert_eq!(rocks.len(), 2);
+        assert!(rocks.contains(&(1, 2)));
+        assert!(rocks.contains(&(3, 3)));
+    }
+
+    #[test]
+    fn serialization_roundtrip() {
+        let mut w = CellularWorld::new(8, 8);
+        w.set_cell(3, 3, CellType::Sand);
+        w.set_cell(5, 5, CellType::Water);
+        let bytes = w.to_bytes();
+        let w2 = CellularWorld::from_bytes(&bytes).unwrap();
+        assert_eq!(w2.width, 8);
+        assert_eq!(w2.height, 8);
+        assert_eq!(w2.get_cell(3, 3), CellType::Sand);
+        assert_eq!(w2.get_cell(5, 5), CellType::Water);
+        assert_eq!(w2.get_cell(0, 0), CellType::Air);
+    }
+
+    #[test]
+    fn from_bytes_too_short() {
+        assert!(CellularWorld::from_bytes(&[0; 4]).is_none());
+    }
+
+    #[test]
+    fn cell_type_from_u8_unknown() {
+        assert_eq!(CellType::from_u8(255), CellType::Air);
+    }
+
+    #[test]
+    fn default_palette_returns_correct_colors() {
+        let air = default_palette(CellType::Air);
+        assert_eq!(air, [20, 20, 30, 255]);
+        let sand = default_palette(CellType::Sand);
+        assert_eq!(sand, [194, 178, 128, 255]);
+    }
+
+    #[test]
+    fn to_image_data_length() {
+        let w = CellularWorld::new(4, 4);
+        let data = w.to_image_data(|_| [0, 0, 0, 255]);
+        assert_eq!(data.len(), 4 * 4 * 4);
+    }
+}

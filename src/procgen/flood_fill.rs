@@ -80,18 +80,4 @@ pub fn flood_fill(
     result
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
 
-    #[test]
-    fn test_flood_fill() {
-        let data = vec![1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
-        let result = flood_fill(&data, 4, 4, 0, 0, 1, true);
-        assert_eq!(result[0], 1); // (0,0)
-        assert_eq!(result[1], 1); // (1,0)
-        assert_eq!(result[4], 1); // (0,1)
-        assert_eq!(result[5], 1); // (1,1)
-        assert_eq!(result[2], 0); // (2,0) is 0, not >= 1
-    }
-}

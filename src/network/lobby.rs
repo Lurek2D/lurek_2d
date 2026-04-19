@@ -150,6 +150,8 @@ pub fn discover_lobbies(timeout_ms: u64) -> Vec<LobbyInfo> {
     let start = Instant::now();
     let mut buf = [0u8; 512];
 
+    // Poll loop: read datagrams until the deadline expires.
+    // Each received datagram is parsed and deduplicated by (host, port).
     loop {
         if start.elapsed() >= deadline {
             break;
@@ -221,5 +223,39 @@ mod tests {
         let sender: SocketAddr = "10.0.0.5:47777".parse().unwrap();
         let info = LobbyInfo::from_wire(wire, sender).unwrap();
         assert_eq!(info.host, "10.0.0.5");
+    }
+
+    #[test]
+    fn lobby_info_defaults_for_optional_fields() {
+        let wire = "name=Test;port=8000";
+        let parsed = LobbyInfo::from_wire(wire, dummy_addr()).unwrap();
+        assert_eq!(parsed.player_count, 0);
+        assert_eq!(parsed.max_players, 0);
+    }
+
+    #[test]
+    fn lobby_info_ignores_unknown_fields() {
+        let wire = "name=Test;port=8000;extra=foo;players=3;max=10";
+        let parsed = LobbyInfo::from_wire(wire, dummy_addr()).unwrap();
+        assert_eq!(parsed.name, "Test");
+        assert_eq!(parsed.player_count, 3);
+    }
+
+    #[test]
+    fn lobby_info_equality() {
+        let a = LobbyInfo {
+            name: "A".to_string(),
+            host: "1.2.3.4".to_string(),
+            port: 7777,
+            player_count: 1,
+            max_players: 4,
+        };
+        let b = a.clone();
+        assert_eq!(a, b);
+    }
+
+    #[test]
+    fn lobby_port_constant() {
+        assert_eq!(LOBBY_PORT, 47_777);
     }
 }

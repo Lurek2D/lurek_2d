@@ -601,6 +601,7 @@ impl GameFS {
     /// # Returns
     /// `Result<Vec<u8>, EngineError>`.
     pub fn load_chunk(&self, path: &str) -> EngineResult<Vec<u8>> {
+        // Search mount layers newest-first so that later mounts override earlier ones.
         for layer in self.mounts.iter().rev() {
             if let Some(rel) = path.strip_prefix(&layer.mountpoint) {
                 let candidate = layer.source.join(rel.trim_start_matches('/'));
@@ -854,6 +855,10 @@ fn glob_match(pattern: &str, name: &str) -> bool {
     glob_match_inner(&pat, &txt)
 }
 
+/// Recursive backtracking matcher for [`glob_match`].
+///
+/// For `*`: tries matching zero characters first (skip `*` in pattern), then
+/// consumes one text character and retries — classic NFA-style backtracking.
 fn glob_match_inner(pat: &[char], txt: &[char]) -> bool {
     match (pat.first(), txt.first()) {
         (None, None) => true,
@@ -865,5 +870,24 @@ fn glob_match_inner(pat: &[char], txt: &[char]) -> bool {
         (Some('?'), Some(_)) => glob_match_inner(&pat[1..], &txt[1..]),
         (Some(p), Some(t)) if p == t => glob_match_inner(&pat[1..], &txt[1..]),
         _ => false,
+    }
+}
+
+// NOTE: Tests private internals — stays inline
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn glob_match_star_pattern() {
+        assert!(glob_match("*.txt", "hello.txt"));
+        assert!(!glob_match("*.txt", "hello.rs"));
+        assert!(glob_match("*", "anything"));
+    }
+
+    #[test]
+    fn glob_match_question_pattern() {
+        assert!(glob_match("?.txt", "a.txt"));
+        assert!(!glob_match("?.txt", "ab.txt"));
     }
 }

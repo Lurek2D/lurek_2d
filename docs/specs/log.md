@@ -11,15 +11,11 @@
 
 ## Summary
 
-The `log` module provides Lurek2D's Lua-accessible logging interface and its configurable sink system. It wraps the Rust `log` crate facade so that game scripts can emit structured log messages alongside engine log output, controlled by the `RUST_LOG` environment variable.
+The `log` module is Lurek2D's Foundations-tier logging façade exposed to Lua through `lurek.log.*`. It wraps the Rust `log` crate so that game-script output appears alongside engine log output, all controlled by the `RUST_LOG` environment variable.
 
-The public module-level functions (`set_level`, `get_level`, `enabled_for`) delegate to `crate::runtime::log_messages` for global log level management. These are what the `lurek.log.*` Lua API exposes for log filtering.
+**Global level management** — `set_level`, `get_level`, and `enabled_for` delegate to `crate::runtime::log_messages`, giving Lua scripts a single knob for the global log filter. **Structured logging** — `log_structured` emits `msg { k1=v1, … }` through the Rust `log` crate; the caller is responsible for also dispatching to `SinkRegistry` for VM-local sinks.
 
-The `sinks` submodule adds an out-of-band log routing layer on top of the standard `log` crate output. A `Sink` is a trait with a single `write(entry: &MemoryEntry)` method. `SinkRegistry` maintains a list of registered `Sink` implementations. Two built-in sinks are provided: `FileSink` appends formatted log entries to a file path with optional rotation; `MemorySink` keeps a fixed-size ring buffer of the last N `MemoryEntry` records accessible from Lua for in-game debug consoles. Each sink has an independent `SinkLevel` threshold so, for example, the file sink can capture all `debug` output while the in-memory sink captures only `warn` and above.
-
-Log output from game scripts appears alongside engine log output. The separation between the `log` crate global level (controlled by `RUST_LOG`) and the per-sink `SinkLevel` lets developers have fine-grained control over where different severity messages appear.
-
-The `sinks.rs` file has been expanded with `LogSink` and `LogFilter` as higher-level abstractions that Lua scripts can configure directly through logging channel helpers, allowing game code to install custom sinks and set per-category filter rules without dropping to Rust. These improvements make in-game diagnostic tooling — such as a console that shows only warning-level messages from a specific subsystem — practical to implement from pure Lua.
+The `sinks` submodule adds an out-of-band log routing layer on top of the standard `log` crate output. A `Sink` combines a `SinkKind` backend (file, memory ring buffer, or rotating file) with an independent `SinkLevel` threshold. `SinkRegistry` maintains a per-VM list of registered sinks so that every emitted message fans out to each destination without touching the Rust `log` crate. This separation lets developers have fine-grained control — for example, the file sink can capture all `debug` output while the in-memory sink captures only `warn` and above, independent of the `RUST_LOG` global filter.
 
 **Scope boundary**: Core Runtime tier. Depends on `runtime`. Lua bridge in `src/lua_api/log_api.rs`.
 

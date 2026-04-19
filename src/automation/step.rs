@@ -1,4 +1,4 @@
-//! Step definitions for the automation simulation module.
+﻿//! Step definitions for the automation simulation module.
 //!
 //! This module provides the [`Action`] enum and [`Step`] struct that form the
 //! building blocks of a simulation script. A `Step` pairs a wall-clock offset
@@ -20,14 +20,14 @@
 /// into the corresponding variant, and [`Action::as_str`] for the reverse.
 ///
 /// # Variants
-/// - `KeyPress` — Simulate a key press event (`"keypressed"` dispatch).
-/// - `KeyRelease` — Simulate a key release event (`"keyreleased"` dispatch).
-/// - `MouseMove` — Simulate mouse movement (`"mousemoved"` dispatch).
-/// - `MousePress` — Simulate a mouse button press (`"mousepressed"` dispatch).
-/// - `MouseRelease` — Simulate a mouse button release (`"mousereleased"` dispatch).
-/// - `MouseWheel` — Simulate a mouse wheel scroll (`"wheelmoved"` dispatch).
-/// - `TextInput` — Simulate raw text input (`"textinput"` dispatch).
-/// - `Wait` — No-op pause; just a timed delay with no event dispatched.
+/// - `KeyPress` â€” Simulate a key press event (`"keypressed"` dispatch).
+/// - `KeyRelease` â€” Simulate a key release event (`"keyreleased"` dispatch).
+/// - `MouseMove` â€” Simulate mouse movement (`"mousemoved"` dispatch).
+/// - `MousePress` â€” Simulate a mouse button press (`"mousepressed"` dispatch).
+/// - `MouseRelease` â€” Simulate a mouse button release (`"mousereleased"` dispatch).
+/// - `MouseWheel` â€” Simulate a mouse wheel scroll (`"wheelmoved"` dispatch).
+/// - `TextInput` â€” Simulate raw text input (`"textinput"` dispatch).
+/// - `Wait` â€” No-op pause; just a timed delay with no event dispatched.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Action {
     /// Simulate a key press event (`"keypressed"` dispatch).
@@ -69,7 +69,7 @@ pub enum Action {
     /// No-op timed delay.
     ///
     /// No event is dispatched. A `Wait` step exists only to introduce a pause
-    /// in the playback sequence — useful for ensuring a specific elapsed-time
+    /// in the playback sequence â€” useful for ensuring a specific elapsed-time
     /// gap between surrounding steps.
     Wait,
 }
@@ -85,7 +85,7 @@ impl Action {
     /// `"KeyPress"` and `"KEYPRESS"` are not accepted.
     ///
     /// # Parameters
-    /// - `s` — `&str`.
+    /// - `s` â€” `&str`.
     ///
     /// # Returns
     /// `Option<Action>`.
@@ -146,21 +146,21 @@ impl Action {
 /// | `mouserelease` | `x`, `y`, `button` | pos `(0,0)`, btn `1` |
 /// | `mousewheel` | `x`, `y` (scroll deltas) | both `0.0` |
 /// | `textinput` | `text` | `""` |
-/// | `wait` | — | — |
+/// | `wait` | â€” | â€” |
 ///
 /// # Fields
-/// - `time` — `f32`.
-/// - `action` — `Action`.
-/// - `key` — `Option<String>`.
-/// - `scancode` — `Option<String>`.
-/// - `x` — `Option<f64>`.
-/// - `y` — `Option<f64>`.
-/// - `dx` — `Option<f64>`.
-/// - `dy` — `Option<f64>`.
-/// - `button` — `Option<u32>`.
-/// - `text` — `Option<String>`.
-/// - `is_repeat` — `bool`.
-/// - `clicks` — `Option<u32>`.
+/// - `time` â€” `f32`.
+/// - `action` â€” `Action`.
+/// - `key` â€” `Option<String>`.
+/// - `scancode` â€” `Option<String>`.
+/// - `x` â€” `Option<f64>`.
+/// - `y` â€” `Option<f64>`.
+/// - `dx` â€” `Option<f64>`.
+/// - `dy` â€” `Option<f64>`.
+/// - `button` â€” `Option<u32>`.
+/// - `text` â€” `Option<String>`.
+/// - `is_repeat` â€” `bool`.
+/// - `clicks` â€” `Option<u32>`.
 #[derive(Debug, Clone)]
 pub struct Step {
     /// Seconds from script start when this step fires.
@@ -220,7 +220,7 @@ pub struct Step {
     /// Whether this is a key-repeat event.
     ///
     /// Used by [`Action::KeyPress`]. When `true`, the dispatched `keypressed`
-    /// event carries `true` in its `is_repeat` argument — matching what the
+    /// event carries `true` in its `is_repeat` argument â€” matching what the
     /// OS reports for physically held-down keys. Defaults to `false`.
     pub is_repeat: bool,
     /// Click count for a mouse press event.
@@ -240,8 +240,8 @@ impl Step {
     /// action-specific parameters.
     ///
     /// # Parameters
-    /// - `time` — `f32`.
-    /// - `action` — `Action`.
+    /// - `time` â€” `f32`.
+    /// - `action` â€” `Action`.
     ///
     /// # Returns
     /// `Step`.
@@ -274,3 +274,5 @@ impl Step {
         self.scancode.as_deref().or(self.key.as_deref())
     }
 }
+
+// Tests migrated to tests/rust/unit/automation_tests.rs
