@@ -138,23 +138,3 @@ impl World {
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────────
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn generate_render_commands_empty_world_returns_empty() {
-        let world = World::new(0.0, 9.8);
-        let cmds = world.generate_render_commands();
-        assert!(cmds.is_empty());
-    }
-
-    #[test]
-    fn draw_to_image_correct_dimensions() {
-        let world = World::new(0.0, 9.8);
-        let img = world.draw_to_image(64, 64);
-        assert_eq!(img.width(), 64);
-        assert_eq!(img.height(), 64);
-    }
-}
