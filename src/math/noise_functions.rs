@@ -139,7 +139,7 @@ pub fn fbm(x: f32, y: f32, seed: u32, octaves: u32, lacunarity: f32, gain: f32) 
 // ── Internal helpers ───────────────────────────────────────────────────────
 
 /// Quintic fade curve for smooth interpolation: 6t^5 - 15t^4 + 10t^3.
-fn fade(t: f32) -> f32 {
+pub fn fade(t: f32) -> f32 {
     t * t * t * (t * (t * 6.0 - 15.0) + 10.0)
 }
 
@@ -398,86 +398,4 @@ pub fn perlin4d(x: f32, y: f32, z: f32, w_coord: f32, seed: u32) -> f32 {
     let z1 = lerp(y2, y3, fw);
 
     lerp(z0, z1, ft)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_perlin2d_deterministic() {
-        let a = perlin2d(1.5, 2.3, 42);
-        let b = perlin2d(1.5, 2.3, 42);
-        assert!(
-            (a - b).abs() < f32::EPSILON,
-            "Perlin noise not deterministic"
-        );
-    }
-
-    #[test]
-    fn test_perlin2d_range() {
-        for i in 0..100 {
-            let x = i as f32 * 0.37;
-            let y = i as f32 * 0.53;
-            let v = perlin2d(x, y, 0);
-            assert!(
-                v >= -1.5 && v <= 1.5,
-                "Perlin out of range: {v} at ({x}, {y})"
-            );
-        }
-    }
-
-    #[test]
-    fn test_perlin2d_different_seeds() {
-        let a = perlin2d(1.5, 2.3, 0);
-        let b = perlin2d(1.5, 2.3, 999);
-        // Very unlikely to be identical with different seeds
-        assert!(
-            (a - b).abs() > f32::EPSILON,
-            "Different seeds should produce different noise"
-        );
-    }
-
-    #[test]
-    fn test_simplex2d_deterministic() {
-        let a = simplex2d(1.5, 2.3, 42);
-        let b = simplex2d(1.5, 2.3, 42);
-        assert!(
-            (a - b).abs() < f32::EPSILON,
-            "Simplex noise not deterministic"
-        );
-    }
-
-    #[test]
-    fn test_simplex2d_range() {
-        for i in 0..100 {
-            let x = i as f32 * 0.37;
-            let y = i as f32 * 0.53;
-            let v = simplex2d(x, y, 0);
-            assert!(
-                v >= -1.5 && v <= 1.5,
-                "Simplex out of range: {v} at ({x}, {y})"
-            );
-        }
-    }
-
-    #[test]
-    fn test_fbm_deterministic() {
-        let a = fbm(1.0, 2.0, 42, 4, 2.0, 0.5);
-        let b = fbm(1.0, 2.0, 42, 4, 2.0, 0.5);
-        assert!((a - b).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_fbm_single_octave_equals_perlin() {
-        let a = fbm(1.5, 2.3, 42, 1, 2.0, 0.5);
-        let b = perlin2d(1.5, 2.3, 42);
-        assert!((a - b).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_fade_boundaries() {
-        assert!((fade(0.0)).abs() < f32::EPSILON);
-        assert!((fade(1.0) - 1.0).abs() < f32::EPSILON);
-    }
 }

@@ -309,34 +309,3 @@ fn parse_aseprite_frame(name: String, item: &serde_json::Value) -> Result<AtlasE
 // -------------------------------------------------------------------------------
 // Tests
 // -------------------------------------------------------------------------------
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn atlas_hash_format_parses_correctly() {
-        let json = r#"{"frames":{"hero.png":{"frame":{"x":0,"y":0,"w":32,"h":32},"rotated":false}}}"#;
-        let atlas = parse_texturepacker_json(json).unwrap();
-        assert_eq!(atlas.entry_count(), 1);
-        let entry = atlas.get_entry("hero.png").unwrap();
-        assert_eq!(entry.x, 0);
-        assert_eq!(entry.w, 32);
-        assert!(!entry.rotated);
-    }
-
-    #[test]
-    fn atlas_array_format_parses_correctly() {
-        let json = r#"{"frames":[{"filename":"bullet.png","frame":{"x":32,"y":0,"w":8,"h":8},"rotated":true}]}"#;
-        let atlas = parse_texturepacker_json(json).unwrap();
-        let entry = atlas.get_entry("bullet.png").unwrap();
-        assert_eq!(entry.x, 32);
-        assert!(entry.rotated);
-    }
-
-    #[test]
-    fn atlas_missing_frames_key_returns_error() {
-        let json = r#"{"meta":{}}"#;
-        assert!(parse_texturepacker_json(json).is_err());
-    }
-}

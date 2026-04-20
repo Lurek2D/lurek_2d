@@ -125,7 +125,7 @@ impl ZipMount {
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 /// Normalise a path: collapse duplicate slashes, strip leading slash.
-fn normalise(path: &str) -> String {
+pub fn normalise(path: &str) -> String {
     let cleaned = path.replace('\\', "/");
     let parts: Vec<&str> = cleaned.split('/').filter(|s| !s.is_empty()).collect();
     parts.join("/")
@@ -133,27 +133,6 @@ fn normalise(path: &str) -> String {
 
 /// Returns `true` if any path component is `..`, or if the path starts with
 /// a drive letter (Windows absolute), to prevent traversal attacks.
-fn is_traversal(path: &str) -> bool {
+pub fn is_traversal(path: &str) -> bool {
     path.contains("..") || path.starts_with('/') || (path.len() >= 2 && path.as_bytes()[1] == b':')
-}
-
-// NOTE: Tests private internals — stays inline
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn normalise_collapses_slashes() {
-        assert_eq!(normalise("//foo//bar/"), "foo/bar");
-    }
-
-    #[test]
-    fn is_traversal_detects_dotdot() {
-        assert!(is_traversal("../secret"));
-    }
-
-    #[test]
-    fn is_traversal_allows_normal_path() {
-        assert!(!is_traversal("assets/images/hero.png"));
-    }
 }

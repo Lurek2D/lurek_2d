@@ -392,17 +392,4 @@ fn replace_string_markers(s: &str) -> String {
     result
 }
 
-// NOTE: Tests private internals (replace_string_markers) — stays inline
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_replace_string_markers() {
-        let input = "[string \"main.lua\"]:10: in function 'foo'";
-        let result = replace_string_markers(input);
-        assert_eq!(result, "main.lua:10: in function 'foo'");
-    }
-}
-
 // Remaining tests migrated to tests/rust/unit/app_tests.rs

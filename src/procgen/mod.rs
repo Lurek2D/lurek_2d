@@ -13,7 +13,7 @@ pub mod flood_fill;
 /// Heightmap generation using fractal noise, erosion, and normalization.
 pub mod heightmap;
 /// Linear congruential generator for deterministic procgen.
-pub(crate) mod lcg;
+pub mod lcg;
 /// L-system string rewriter for procedural plant/structure generation.
 pub mod lsystem;
 /// Markov chain name generator.

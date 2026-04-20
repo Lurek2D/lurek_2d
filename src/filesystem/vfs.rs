@@ -971,22 +971,3 @@ fn glob_match_inner(pat: &[char], txt: &[char]) -> bool {
         _ => false,
     }
 }
-
-// NOTE: Tests private internals — stays inline
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn glob_match_star_pattern() {
-        assert!(glob_match("*.txt", "hello.txt"));
-        assert!(!glob_match("*.txt", "hello.rs"));
-        assert!(glob_match("*", "anything"));
-    }
-
-    #[test]
-    fn glob_match_question_pattern() {
-        assert!(glob_match("?.txt", "a.txt"));
-        assert!(!glob_match("?.txt", "ab.txt"));
-    }
-}

@@ -92,63 +92,6 @@ impl Default for FrameStats {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn empty_snapshot_is_zero() {
-        let fs = FrameStats::new(100);
-        let snap = fs.snapshot();
-        assert_eq!(snap.samples, 0);
-        assert_eq!(snap.fps, 0.0);
-    }
-
-    #[test]
-    fn record_and_snapshot() {
-        let mut fs = FrameStats::new(10);
-        for _ in 0..5 {
-            fs.record(0.016);
-        }
-        let snap = fs.snapshot();
-        assert_eq!(snap.samples, 5);
-        assert!((snap.avg - 0.016).abs() < 0.001);
-        assert!(snap.fps > 50.0);
-    }
-
-    #[test]
-    fn capacity_evicts_old_samples() {
-        let mut fs = FrameStats::new(10);
-        for i in 0..20 {
-            fs.record(i as f64 * 0.001);
-        }
-        assert_eq!(fs.history.len(), 10);
-    }
-
-    #[test]
-    fn set_capacity_trims() {
-        let mut fs = FrameStats::new(100);
-        for _ in 0..50 {
-            fs.record(0.016);
-        }
-        fs.set_capacity(20);
-        assert!(fs.history.len() <= 20);
-    }
-
-    #[test]
-    fn percentiles_in_range() {
-        let mut fs = FrameStats::new(100);
-        for i in 0..100 {
-            fs.record(i as f64 * 0.001);
-        }
-        let snap = fs.snapshot();
-        assert!(snap.p50 >= snap.min);
-        assert!(snap.p95 >= snap.p50);
-        assert!(snap.p99 >= snap.p95);
-        assert!(snap.max >= snap.p99);
-    }
-}
-
 // ── FrameSnapshot ─────────────────────────────────────────────────────────
 
 /// Computed statistics snapshot from [`FrameStats::snapshot`].

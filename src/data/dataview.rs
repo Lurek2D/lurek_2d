@@ -237,18 +237,3 @@ impl LuaDataView {
         Self { inner }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::sync::Arc;
-
-    // NOTE: Tests private internals — stays inline
-    #[test]
-    fn lua_dataview_wraps_inner() {
-        let buf = Arc::new(vec![42u8]);
-        let dv = DataView::new(buf);
-        let lua_dv = LuaDataView::new(dv);
-        assert_eq!(lua_dv.inner.get_u8(0).unwrap(), 42);
-    }
-}

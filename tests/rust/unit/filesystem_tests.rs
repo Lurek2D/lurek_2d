@@ -698,3 +698,24 @@ mod create_temp_file_tests {
         std::fs::remove_dir_all(&base).ok();
     }
 }
+
+// ── zip_mount ─────────────────────────────────────────────────────────────
+
+mod zip_mount_tests {
+    use lurek2d::filesystem::zip_mount::*;
+
+        #[test]
+        fn normalise_collapses_slashes() {
+            assert_eq!(normalise("//foo//bar/"), "foo/bar");
+        }
+
+        #[test]
+        fn is_traversal_detects_dotdot() {
+            assert!(is_traversal("../secret"));
+        }
+
+        #[test]
+        fn is_traversal_allows_normal_path() {
+            assert!(!is_traversal("assets/images/hero.png"));
+        }
+}

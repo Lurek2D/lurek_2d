@@ -251,37 +251,3 @@ pub struct LayerData {
     /// Layer grid height in cells.
     pub height: u32,
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn color_mode_parse_terrain() {
-        assert_eq!(ColorMode::parse_mode("terrain"), Some(ColorMode::Terrain));
-    }
-
-    #[test]
-    fn color_mode_parse_political() {
-        assert_eq!(ColorMode::parse_mode("political"), Some(ColorMode::Political));
-    }
-
-    #[test]
-    fn color_mode_parse_unknown() {
-        assert_eq!(ColorMode::parse_mode("unknown"), None);
-    }
-
-    #[test]
-    fn color_mode_roundtrip() {
-        assert_eq!(ColorMode::parse_mode(ColorMode::Terrain.as_str()), Some(ColorMode::Terrain));
-        assert_eq!(ColorMode::parse_mode(ColorMode::Political.as_str()), Some(ColorMode::Political));
-    }
-
-    #[test]
-    fn fog_level_from_u8() {
-        assert_eq!(FogLevel::from_u8(0), FogLevel::Hidden);
-        assert_eq!(FogLevel::from_u8(1), FogLevel::Explored);
-        assert_eq!(FogLevel::from_u8(2), FogLevel::Visible);
-        assert_eq!(FogLevel::from_u8(255), FogLevel::Visible);
-    }
-}

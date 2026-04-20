@@ -798,3 +798,34 @@ mod namegen_tests {
         assert_eq!(a.generate(1, 10), b.generate(1, 10));
     }
 }
+
+// ── lcg ─────────────────────────────────────────────────────────────
+
+mod lcg_tests {
+    use lurek2d::procgen::lcg::*;
+
+        #[test]
+        fn deterministic_same_seed() {
+            let mut a = Lcg::new(42);
+            let mut b = Lcg::new(42);
+            for _ in 0..10 {
+                assert_eq!(a.next(), b.next());
+            }
+        }
+
+        #[test]
+        fn different_seeds_diverge() {
+            let mut a = Lcg::new(1);
+            let mut b = Lcg::new(2);
+            assert_ne!(a.next(), b.next());
+        }
+
+        #[test]
+        fn next_f32_in_unit_range() {
+            let mut rng = Lcg::new(0);
+            for _ in 0..100 {
+                let v = rng.next_f32();
+                assert!(v >= 0.0 && v < 1.0, "value out of [0,1): {v}");
+            }
+        }
+}
