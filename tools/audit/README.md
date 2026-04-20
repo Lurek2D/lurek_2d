@@ -50,6 +50,14 @@ coverage — producing reports that tell you what still needs work.
 | `stress_report.py`     | Stress test timing report        | stdout / JSON               |
 | `test_analytics.py`    | Test execution trend analysis    | stdout                      |
 
+### Testing constraints (TST-02/03/04)
+
+| Script                   | Purpose                                                                                    | Output        |
+| ------------------------ | ------------------------------------------------------------------------------------------ | ------------- |
+| `inline_test_audit.py`   | Find every inline `#[cfg(test)]` block in `src/**/*.rs` (TST-02) and suggest migration target. | stdout / JSON |
+| `thin_wrapper_audit.py`  | Score `src/lua_api/*_api.rs` for business logic outside Lua closures (TST-03).             | stdout / JSON |
+| `thin_modrs_audit.py`    | Flag `src/**/mod.rs` containing definitions or stray code (TST-04).                        | stdout / JSON |
+
 ### CAG layer audits
 
 | Script                    | Purpose                                                                                                                | Output                  |
