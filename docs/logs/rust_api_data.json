@@ -1,20 +1,20 @@
 {
   "meta": {
-    "generated": "2026-04-19T21:21:54.234708+00:00",
+    "generated": "2026-04-20T05:45:51.955801+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.20.0",
     "stats": {
-      "rust_items": 1807,
-      "rust_modules": 430,
+      "rust_items": 1811,
+      "rust_modules": 431,
       "rust_tests": 0,
       "lua_tests": 262
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 1807,
-      "documented": 1795,
-      "modules": 430
+      "total_items": 1811,
+      "documented": 1799,
+      "modules": 431
     },
     "modules": {
       "ai::agent": {
@@ -2649,7 +2649,7 @@
         ]
       },
       "data::hash": {
-        "module_doc": "Cryptographic hash functions for data integrity verification.  [`hash()`] computes a digest over an in-memory byte slice and returns a hex-encoded string. Supported algorithms: MD5, SHA-1, SHA-256, SHA-512. MD5 and SHA-1 are provided for compatibility checks only — not for security.",
+        "module_doc": "Cryptographic hash functions for data integrity verification.  [`hash()`] computes a digest over an in-memory byte slice and returns a hex-encoded string. Supported algorithms: MD5, SHA-1, SHA-256, SHA-512. MD5 and SHA-1 are provided for compatibility checks only — not for security.  [`crc32()`] computes a CRC-32 checksum of a byte slice using the IEEE polynomial. Useful for non-security integrity checks and binary format validation.",
         "source_file": "src/data/hash.rs",
         "items": [
           {
@@ -2657,14 +2657,21 @@
             "kind": "enum",
             "description": "Supported cryptographic hash algorithms for `lurek.data.hash()`.  # Variants - `Md5` — Md5 variant. - `Sha1` — Sha1 variant. - `Sha256` — Sha256 variant. - `Sha512` — Sha512 variant.",
             "file": "src/data/hash.rs",
-            "line": 18
+            "line": 22
           },
           {
             "name": "hash",
             "kind": "fn",
             "description": "Compute the hash of data using the specified algorithm, returned as a hex string.  # Parameters - `algorithm` — `HashAlgorithm`. - `data` — `&[u8]`.  # Returns `String`.",
             "file": "src/data/hash.rs",
-            "line": 61
+            "line": 65
+          },
+          {
+            "name": "crc32",
+            "kind": "fn",
+            "description": "Computes the CRC-32 checksum of `data` using the IEEE polynomial.  Suitable for non-security integrity checks and binary format validation. The result is a `u32` returned as `u64` for ergonomic use in Lua (integers are 64-bit in LuaJIT and Lua 5.4).  # Parameters - `data` — `&[u8]` — Input bytes.  # Returns `u64` — CRC-32 value in `[0, 2³²)`.",
+            "file": "src/data/hash.rs",
+            "line": 97
           }
         ]
       },
@@ -5986,6 +5993,19 @@
           }
         ]
       },
+      "math::circle": {
+        "module_doc": "Circle value type for 2D collision geometry and containment queries.  [`Circle`] stores a centre point and radius. It provides area, perimeter, containment, and intersection tests. Used for circular hitboxes, sensor areas, and as input to `AabbTree::query_circle`.",
+        "source_file": "src/math/circle.rs",
+        "items": [
+          {
+            "name": "Circle",
+            "kind": "struct",
+            "description": "A circle defined by its centre and radius.  # Fields - `x` — X coordinate of the centre. - `y` — Y coordinate of the centre. - `radius` — Radius (should be non-negative).",
+            "file": "src/math/circle.rs",
+            "line": 15
+          }
+        ]
+      },
       "math::color": {
         "module_doc": "RGBA color value type for the Lurek2D math layer.  [`Color`] is a pure value type with no engine dependencies, stored as four `f32` components in `[0.0, 1.0]`. Conversion to/from `u8` and packed `u32` formats is provided for wgpu vertex colours and Lua interop.  Named constructors for common colours: `WHITE`, `BLACK`, `RED`, `GREEN`, `BLUE`, `TRANSPARENT`.",
         "source_file": "src/math/color.rs",
@@ -6344,158 +6364,165 @@
             "line": 14
           },
           {
+            "name": "circle",
+            "kind": "mod",
+            "description": "Circle value type for 2D collision geometry and containment queries.",
+            "file": "src/math/mod.rs",
+            "line": 16
+          },
+          {
             "name": "color",
             "kind": "mod",
             "description": "RGBA color value type: named constants, `f32` and `u8` construction, packed `u32` output.",
             "file": "src/math/mod.rs",
-            "line": 16
+            "line": 18
           },
           {
             "name": "easing",
             "kind": "mod",
             "description": "Standard easing functions for smooth animation and interpolation.",
             "file": "src/math/mod.rs",
-            "line": 18
+            "line": 20
           },
           {
             "name": "geometry",
             "kind": "mod",
             "description": "2D geometry utility functions: intersections, containment, polygon ops, rasterization.",
             "file": "src/math/mod.rs",
-            "line": 20
+            "line": 22
           },
           {
             "name": "mat3",
             "kind": "mod",
             "description": "3x3 column-major matrix for 2D transforms (translate, rotate, scale).",
             "file": "src/math/mod.rs",
-            "line": 23
+            "line": 25
           },
           {
             "name": "vec3",
             "kind": "mod",
             "description": "3D floating-point vector with arithmetic operators and common helpers.",
             "file": "src/math/mod.rs",
-            "line": 25
+            "line": 27
           },
           {
             "name": "spline",
             "kind": "mod",
             "description": "Interpolating and approximating splines: Catmull-Rom and Hermite.",
             "file": "src/math/mod.rs",
-            "line": 27
+            "line": 29
           },
           {
             "name": "polygon",
             "kind": "mod",
             "description": "Polygon utilities: ear-clipping triangulation and convexity testing.",
             "file": "src/math/mod.rs",
-            "line": 29
+            "line": 31
           },
           {
             "name": "aabb_tree",
             "kind": "mod",
             "description": "Dynamic AABB tree for efficient broad-phase overlap queries.",
             "file": "src/math/mod.rs",
-            "line": 32
+            "line": 34
           },
           {
             "name": "random",
             "kind": "mod",
             "description": "Seedable random number generator for reproducible sequences.",
             "file": "src/math/mod.rs",
-            "line": 34
+            "line": 36
           },
           {
             "name": "rect",
             "kind": "mod",
             "description": "Axis-aligned rectangle with intersection and containment queries.",
             "file": "src/math/mod.rs",
-            "line": 36
+            "line": 38
           },
           {
             "name": "spatial_hash",
             "kind": "mod",
             "description": "Spatial hash for efficient broad-phase AABB collision queries.",
             "file": "src/math/mod.rs",
-            "line": 38
+            "line": 40
           },
           {
             "name": "sphere",
             "kind": "mod",
             "description": "Spherical math helpers (lat/lon, ray-sphere, great-circle, axial tilt).",
             "file": "src/math/mod.rs",
-            "line": 40
+            "line": 42
           },
           {
             "name": "transform",
             "kind": "mod",
             "description": "2D affine transform with chainable methods wrapping Mat3.",
             "file": "src/math/mod.rs",
-            "line": 42
+            "line": 44
           },
           {
             "name": "tween",
             "kind": "mod",
             "description": "Value interpolator with easing curves.",
             "file": "src/math/mod.rs",
-            "line": 44
+            "line": 46
           },
           {
             "name": "vec2",
             "kind": "mod",
             "description": "2D floating-point vector with arithmetic operators and common helpers.",
             "file": "src/math/mod.rs",
-            "line": 46
+            "line": 48
           },
           {
             "name": "voronoi",
             "kind": "mod",
             "description": "Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).",
             "file": "src/math/mod.rs",
-            "line": 48
+            "line": 50
           },
           {
             "name": "lerp",
             "kind": "fn",
             "description": "Linear interpolation between `a` and `b` by factor `t` in [0, 1].  # Parameters - `a` — `f32`. - `b` — `f32`. - `t` — `f32`.  # Returns `f32`.",
             "file": "src/math/mod.rs",
-            "line": 74
+            "line": 77
           },
           {
             "name": "remap",
             "kind": "fn",
             "description": "Remap `v` from `[in_min, in_max]` to `[out_min, out_max]`.  # Parameters - `v` — `f32`. - `in_min` — `f32`. - `in_max` — `f32`. - `out_min` — `f32`. - `out_max` — `f32`.  # Returns `f32`.",
             "file": "src/math/mod.rs",
-            "line": 89
+            "line": 92
           },
           {
             "name": "clamp",
             "kind": "fn",
             "description": "Clamp `v` to the range `[min, max]`.  # Parameters - `v` — Value to clamp. - `min` — Lower bound. - `max` — Upper bound.  # Returns `f32` — `v` clamped to `[min, max]`.",
             "file": "src/math/mod.rs",
-            "line": 104
+            "line": 107
           },
           {
             "name": "sign",
             "kind": "fn",
             "description": "Returns the sign of `v`: `1.0` if positive, `-1.0` if negative, `0.0` if zero.  # Parameters - `v` — `f32`.  # Returns `f32` — `-1.0`, `0.0`, or `1.0`.",
             "file": "src/math/mod.rs",
-            "line": 121
+            "line": 124
           },
           {
             "name": "smoothstep",
             "kind": "fn",
             "description": "Hermite smooth interpolation between 0 and 1 when `x` is in `[edge0, edge1]`.  Returns 0 if `x <= edge0`, 1 if `x >= edge1`, and a smooth cubic curve in between.  # Parameters - `edge0` — Lower edge of the transition. - `edge1` — Upper edge of the transition. - `x` — Input value.  # Returns `f32` — Smoothly interpolated value in `[0, 1]`.",
             "file": "src/math/mod.rs",
-            "line": 142
+            "line": 145
           },
           {
             "name": "inverse_lerp",
             "kind": "fn",
             "description": "Inverse linear interpolation: returns the `t` factor such that `lerp(a, b, t) ≈ v`.  # Parameters - `a` — Start value. - `b` — End value. - `v` — Value between `a` and `b`.  # Returns `f32` — Interpolation factor; `0.0` if `a ≈ b`.",
             "file": "src/math/mod.rs",
-            "line": 156
+            "line": 159
           }
         ]
       },
@@ -10469,6 +10496,13 @@
             "description": "Convenience alias for `Result<T, EngineError>` used throughout the engine.  # Returns Wraps any value type `T` in a `Result` that carries an `EngineError` on failure.",
             "file": "src/runtime/error.rs",
             "line": 197
+          },
+          {
+            "name": "ErrorSnapshot",
+            "kind": "struct",
+            "description": "A serialisable snapshot of an engine error.  This struct captures all fields of an [`EngineError`] needed for diagnostics: the human-readable message, numeric code, category name, and a recovery hint. Used by `lurek.platform.errorSnapshot()` and by the engine's JSON crash reporter.  # Fields - `message` — The display message for this error. - `code` — The four-digit numeric code, e.g. `\"E1004\"`. - `category` — The category name, e.g. `\"filesystem\"`. - `recovery_hint` — Short actionable hint to present to the user.",
+            "file": "src/runtime/error.rs",
+            "line": 212
           }
         ]
       },
@@ -16787,7 +16821,7 @@
         "file": "tests/lua/unit/test_globe.lua",
         "module": "test_globe",
         "name": "test_globe",
-        "description": "Lurek2D Globe API Tests",
+        "description": "tests/lua/unit/test_globe.lua",
         "kind": "lua"
       },
       {

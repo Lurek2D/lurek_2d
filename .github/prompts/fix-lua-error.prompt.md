@@ -1,6 +1,5 @@
 ---
 description: "Debug and fix Lua script errors in Lurek2D. Use when a Lua game script exits with an error, panics the engine, or produces unexpected mlu..."
-agent: Debugger
 ---
 # Fix Lua Error
 

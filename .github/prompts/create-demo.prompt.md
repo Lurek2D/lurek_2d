@@ -1,7 +1,5 @@
 ---
 description: "Create one or more new Lurek2D demo projects in content/demos/. Generates conf.toml, main.lua, README.md, and screen.png for each demo. U..."
-agent: Developer
-tools: [tools/screenshots/gen_demo_screenshots.py]
 ---
 # Create Demo
 

@@ -200,4 +200,39 @@ print("remaining history: " .. #history)
 --@api-stub: RingBuffer:clear
 undo:clear()
 
+-- =============================================================================
+-- New in 0.15.0: DataWriter — binary write buffer
+-- =============================================================================
+
+local w = lurek.data.newWriter()
+
+-- Write individual fields.
+w:writeU8(0x01)
+w:writeU32LE(0xDEADBEEF)
+w:writeString("hello")
+print(string.format("DataWriter len after writes: %d", w:len()))
+
+-- Seek to position 0 and overwrite the first byte.
+w:seek(0)
+w:writeU8(0xFF)
+print(string.format("cursor after seek+write: %d", w:tell()))
+
+-- Export the raw bytes as a Lua string.
+local bytes = w:toBytes()
+print(string.format("toBytes length: %d, first byte: 0x%02X", #bytes, string.byte(bytes, 1)))
+
+-- =============================================================================
+-- New in 0.15.0: lurek.data.crc32
+-- =============================================================================
+
+-- CRC-32 is a fast, non-cryptographic checksum — ideal for asset validation.
+local checksum = lurek.data.crc32("123456789")
+-- ISO/IEC 3309 check value: 0xCBF43926 = 3421780262
+print(string.format("crc32('123456789') = 0x%08X (%d)", checksum, checksum))
+
+local ck_hello = lurek.data.crc32("hello")
+local ck_world = lurek.data.crc32("world")
+print(string.format("crc32('hello')=%d  crc32('world')=%d  equal=%s",
+  ck_hello, ck_world, tostring(ck_hello == ck_world)))
+
 print("\n-- data.lua example complete --")

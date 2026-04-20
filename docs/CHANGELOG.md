@@ -1,7 +1,28 @@
-# Lurek2D Changelog
+﻿# Lurek2D Changelog
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.1] — 2026-04-21
+
+### Feature Batch — IDEA.md Items (math · filesystem · data · runtime)
+- **feat(math): `Circle` value type** — new `src/math/circle.rs` with `Circle::new(x,y,r)`, `area()`, `perimeter()`, `contains(px,py)`, `intersects(&Circle)`, `aabb()->(f32,f32,f32,f32)`, `center()->Vec2`. Negative radius clamped to 0.
+- **feat(math): `AabbTree::query_circle` + `query_segment`** — broad-phase circle overlap test (closest-point refinement) and segment intersection test (slab method) added to `src/math/aabb_tree.rs`.
+- **feat(filesystem): `VirtualFs::stat`** — lightweight file-size and type query returning `(u64, bool, bool)` (size, is_file, is_dir); sandboxed against path traversal.
+- **feat(filesystem): `VirtualFs::create_temp_file`** — creates a unique scratch file under `save/`, returns relative path; uses atomic counter + microsecond timestamp for uniqueness.
+- **feat(data): `data::crc32`** — CRC-32 checksum via `crc32fast` crate; returns `u64`; added `crc32fast = "1"` direct dependency to `Cargo.toml`.
+- **feat(runtime): `ErrorSnapshot` struct + `EngineError::snapshot()`** — serialises any `EngineError` to `{ message, code, category, recovery_hint }` via hand-rolled `to_json()`; zero external dependencies.
+- **feat(lua_api): `lurek.math.newCircle(x,y,r)`** — `LuaCircle` userdata with `area`, `perimeter`, `contains`, `intersects`, `aabb`, `x`, `y`, `radius` methods.
+- **feat(lua_api): `AabbTree:queryCircle` + `AabbTree:querySegment`** — new methods on `LuaAabbTree` exposing the two new query functions to Lua.
+- **feat(lua_api): `lurek.fs.stat(path)`** — returns `{ size, isFile, isDir }` table; rejects path traversal.
+- **feat(lua_api): `lurek.fs.createTempFile(prefix?)`** — returns relative path of new scratch file under `save/`.
+- **feat(lua_api): `lurek.data.crc32(str)`** — integer CRC-32 in `[0, 2^32)` from a Lua string.
+- **feat(lua_api): `lurek.platform.errorSnapshot(msg)`** — JSON string with `message`, `code`, `category`, `recovery_hint` fields for test assertion and crash reporting.
+- **test(lua): BDD tests for all new APIs** — added describe/it blocks to `test_math.lua` (Circle, querySegment), `test_filesystem.lua` (stat, createTempFile), `test_data.lua` (crc32), `test_system.lua` (errorSnapshot).
+- **test(rust): unit tests for non-Lua-reachable internals** — appended new mod blocks to `math_tests.rs` (circle_tests, aabb_tree_query_tests), `filesystem_tests.rs` (stat_tests, create_temp_file_tests), `data_tests.rs` (crc32_tests), `runtime_tests.rs` (error_snapshot_tests).
+- **docs(idea): marked all 6 new items DONE** — `src/math/IDEA.md` (gaps 10+11), `src/filesystem/IDEA.md` (gaps 1+2, feat 1), `src/data/IDEA.md` (helper crc32), `src/runtime/IDEA.md` (feat 3).
+- **docs(specs): updated math.md, filesystem.md, data.md, runtime.md** — added Circle, AabbTree query methods, stat, createTempFile, crc32, ErrorSnapshot to Functions, Types, and Lua API Reference sections.
+- **docs(examples): updated math.lua, filesystem.lua, data.lua** — added worked examples for all new APIs.
+- **chore(skills/prompts): baked 3 architectural hard constraints** — added `## Hard Constraints` to `.github/prompts/workflow-feature-development.prompt.md`; "No tests in src/" and "mod.rs is declarations only" rules to `.github/skills/rust-coding/SKILL.md`; "Thin Wrapper Contract" to `.github/skills/lua-rust-bridge/SKILL.md`.
 ## [0.20.0] — 2026-04-18
 
 - **fix(globe-compliance): `globe_api.rs` — removed `panic!()` in production path, split multi-param `@param` lines to one per line, normalized function header comments to `// -- methodName --`.** Eliminates the one forbidden `panic!` in `addProvince` (now returns `LuaError::RuntimeError`) and fixes all 30 multi-param `@param` doc lines to comply with the lua-rust-bridge skill rule.

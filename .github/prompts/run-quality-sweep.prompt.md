@@ -1,7 +1,5 @@
 ---
 description: Execute the audit-fix-verify quality sweep across the repo.
-agent: Reviewer
-tools: [tools/validate/cag_validate.py]
 ---
 # Run Quality Sweep
 

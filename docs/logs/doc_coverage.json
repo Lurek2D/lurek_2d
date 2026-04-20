@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-19T21:21:57.562937+00:00",
+  "generated_at": "2026-04-20T05:45:55.061418+00:00",
   "summary": {
     "rust": {
-      "total": 5222,
-      "covered": 5222,
+      "total": 5239,
+      "covered": 5239,
       "missing": 0,
       "pct": 100.0
     },
@@ -14,8 +14,8 @@
       "pct": 96.2
     },
     "total": {
-      "total": 5275,
-      "covered": 5273,
+      "total": 5292,
+      "covered": 5290,
       "missing": 2,
       "pct": 100.0
     }
@@ -25,7 +25,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 758,
+      "line": 808,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": false
@@ -34,7 +34,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 759,
+      "line": 809,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": false
@@ -9108,7 +9108,7 @@
       "source": "rust",
       "module": "data",
       "file": "src/data/hash.rs",
-      "line": 18,
+      "line": 22,
       "kind": "enum",
       "name": "HashAlgorithm",
       "has_doc": true
@@ -9117,7 +9117,7 @@
       "source": "rust",
       "module": "data",
       "file": "src/data/hash.rs",
-      "line": 39,
+      "line": 43,
       "kind": "fn",
       "name": "parse_str",
       "has_doc": true
@@ -9126,9 +9126,18 @@
       "source": "rust",
       "module": "data",
       "file": "src/data/hash.rs",
-      "line": 61,
+      "line": 65,
       "kind": "fn",
       "name": "hash",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "data",
+      "file": "src/data/hash.rs",
+      "line": 97,
+      "kind": "fn",
+      "name": "crc32",
       "has_doc": true
     },
     {
@@ -13719,6 +13728,24 @@
       "line": 854,
       "kind": "fn",
       "name": "glob",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "filesystem",
+      "file": "src/filesystem/vfs.rs",
+      "line": 901,
+      "kind": "fn",
+      "name": "stat",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "filesystem",
+      "file": "src/filesystem/vfs.rs",
+      "line": 923,
+      "kind": "fn",
+      "name": "create_temp_file",
       "has_doc": true
     },
     {
@@ -20358,7 +20385,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/data_api.rs",
-      "line": 743,
+      "line": 751,
       "kind": "struct",
       "name": "LuaDataWriter",
       "has_doc": true
@@ -20565,7 +20592,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 533,
+      "line": 573,
       "kind": "struct",
       "name": "LuaGlobeRegistry",
       "has_doc": true
@@ -20574,7 +20601,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 628,
+      "line": 668,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -20718,7 +20745,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 36,
+      "line": 37,
       "kind": "struct",
       "name": "LuaVec2",
       "has_doc": true
@@ -20727,7 +20754,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 207,
+      "line": 208,
       "kind": "struct",
       "name": "LuaVec3",
       "has_doc": true
@@ -20736,7 +20763,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 329,
+      "line": 330,
       "kind": "struct",
       "name": "LuaCatmullRom",
       "has_doc": true
@@ -20745,7 +20772,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 385,
+      "line": 386,
       "kind": "struct",
       "name": "LuaHermite",
       "has_doc": true
@@ -20754,7 +20781,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 407,
+      "line": 408,
       "kind": "struct",
       "name": "LuaRandomGenerator",
       "has_doc": true
@@ -20763,7 +20790,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 485,
+      "line": 486,
       "kind": "struct",
       "name": "LuaTransform",
       "has_doc": true
@@ -20772,7 +20799,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 644,
+      "line": 645,
       "kind": "struct",
       "name": "LuaBezierCurve",
       "has_doc": true
@@ -20781,7 +20808,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 789,
+      "line": 790,
       "kind": "struct",
       "name": "LuaTween",
       "has_doc": true
@@ -20790,7 +20817,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 910,
+      "line": 911,
       "kind": "struct",
       "name": "LuaSpatialHash",
       "has_doc": true
@@ -20799,7 +20826,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1019,
+      "line": 1039,
       "kind": "struct",
       "name": "LuaNoiseGenerator",
       "has_doc": true
@@ -20808,7 +20835,16 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1337,
+      "line": 1354,
+      "kind": "struct",
+      "name": "LuaCircle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "lua_api",
+      "file": "src/lua_api/math_api.rs",
+      "line": 1421,
       "kind": "struct",
       "name": "LuaAabbTree",
       "has_doc": true
@@ -20817,7 +20853,7 @@
       "source": "rust",
       "module": "lua_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 1449,
+      "line": 1533,
       "kind": "fn",
       "name": "register",
       "has_doc": true
@@ -21879,7 +21915,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 123,
+      "line": 203,
       "kind": "fn",
       "name": "new",
       "has_doc": true
@@ -21888,7 +21924,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 142,
+      "line": 222,
       "kind": "fn",
       "name": "insert",
       "has_doc": true
@@ -21897,7 +21933,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 241,
+      "line": 321,
       "kind": "fn",
       "name": "remove",
       "has_doc": true
@@ -21906,7 +21942,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 311,
+      "line": 391,
       "kind": "fn",
       "name": "query",
       "has_doc": true
@@ -21915,7 +21951,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 348,
+      "line": 428,
       "kind": "fn",
       "name": "query_point",
       "has_doc": true
@@ -21924,7 +21960,25 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 361,
+      "line": 445,
+      "kind": "fn",
+      "name": "query_circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/aabb_tree.rs",
+      "line": 470,
+      "kind": "fn",
+      "name": "query_segment",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/aabb_tree.rs",
+      "line": 488,
       "kind": "fn",
       "name": "update",
       "has_doc": true
@@ -21933,7 +21987,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 373,
+      "line": 500,
       "kind": "fn",
       "name": "contains",
       "has_doc": true
@@ -21942,7 +21996,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 378,
+      "line": 505,
       "kind": "fn",
       "name": "len",
       "has_doc": true
@@ -21951,7 +22005,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 383,
+      "line": 510,
       "kind": "fn",
       "name": "is_empty",
       "has_doc": true
@@ -21960,7 +22014,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/aabb_tree.rs",
-      "line": 388,
+      "line": 515,
       "kind": "fn",
       "name": "clear",
       "has_doc": true
@@ -22116,6 +22170,78 @@
       "line": 278,
       "kind": "fn",
       "name": "get_interpolated_angle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 15,
+      "kind": "struct",
+      "name": "Circle",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 34,
+      "kind": "fn",
+      "name": "new",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 46,
+      "kind": "fn",
+      "name": "center",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 54,
+      "kind": "fn",
+      "name": "area",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 62,
+      "kind": "fn",
+      "name": "perimeter",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 75,
+      "kind": "fn",
+      "name": "contains",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 91,
+      "kind": "fn",
+      "name": "intersects",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "math",
+      "file": "src/math/circle.rs",
+      "line": 105,
+      "kind": "fn",
+      "name": "aabb",
       "has_doc": true
     },
     {
@@ -22725,7 +22851,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 74,
+      "line": 77,
       "kind": "fn",
       "name": "lerp",
       "has_doc": true
@@ -22734,7 +22860,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 89,
+      "line": 92,
       "kind": "fn",
       "name": "remap",
       "has_doc": true
@@ -22743,7 +22869,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 104,
+      "line": 107,
       "kind": "fn",
       "name": "clamp",
       "has_doc": true
@@ -22752,7 +22878,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 121,
+      "line": 124,
       "kind": "fn",
       "name": "sign",
       "has_doc": true
@@ -22761,7 +22887,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 142,
+      "line": 145,
       "kind": "fn",
       "name": "smoothstep",
       "has_doc": true
@@ -22770,7 +22896,7 @@
       "source": "rust",
       "module": "math",
       "file": "src/math/mod.rs",
-      "line": 156,
+      "line": 159,
       "kind": "fn",
       "name": "inverse_lerp",
       "has_doc": true
@@ -34680,6 +34806,33 @@
       "line": 197,
       "kind": "type",
       "name": "EngineResult",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "runtime",
+      "file": "src/runtime/error.rs",
+      "line": 212,
+      "kind": "struct",
+      "name": "ErrorSnapshot",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "runtime",
+      "file": "src/runtime/error.rs",
+      "line": 231,
+      "kind": "fn",
+      "name": "to_json",
+      "has_doc": true
+    },
+    {
+      "source": "rust",
+      "module": "runtime",
+      "file": "src/runtime/error.rs",
+      "line": 246,
+      "kind": "fn",
+      "name": "snapshot",
       "has_doc": true
     },
     {
@@ -47133,7 +47286,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 754,
+      "line": 804,
       "kind": "fn",
       "name": "MAX_PROVINCES",
       "has_doc": true
@@ -47142,7 +47295,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 757,
+      "line": 807,
       "kind": "fn",
       "name": "LOD_FAR",
       "has_doc": true
@@ -47151,7 +47304,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 758,
+      "line": 808,
       "kind": "fn",
       "name": "LOD_MID",
       "has_doc": false
@@ -47160,7 +47313,7 @@
       "source": "lua_api",
       "module": "globe_api",
       "file": "src/lua_api/globe_api.rs",
-      "line": 759,
+      "line": 809,
       "kind": "fn",
       "name": "LOD_NEAR",
       "has_doc": false
@@ -47169,7 +47322,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2278,
+      "line": 2362,
       "kind": "fn",
       "name": "pi",
       "has_doc": true
@@ -47178,7 +47331,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2283,
+      "line": 2367,
       "kind": "fn",
       "name": "tau",
       "has_doc": true
@@ -47187,7 +47340,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2288,
+      "line": 2372,
       "kind": "fn",
       "name": "huge",
       "has_doc": true
@@ -47196,7 +47349,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2312,
+      "line": 2396,
       "kind": "fn",
       "name": "sin",
       "has_doc": true
@@ -47205,7 +47358,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2318,
+      "line": 2402,
       "kind": "fn",
       "name": "cos",
       "has_doc": true
@@ -47214,7 +47367,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2324,
+      "line": 2408,
       "kind": "fn",
       "name": "tan",
       "has_doc": true
@@ -47223,7 +47376,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2330,
+      "line": 2414,
       "kind": "fn",
       "name": "asin",
       "has_doc": true
@@ -47232,7 +47385,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2336,
+      "line": 2420,
       "kind": "fn",
       "name": "acos",
       "has_doc": true
@@ -47241,7 +47394,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2367,
+      "line": 2451,
       "kind": "fn",
       "name": "sqrt",
       "has_doc": true
@@ -47250,7 +47403,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2373,
+      "line": 2457,
       "kind": "fn",
       "name": "abs",
       "has_doc": true
@@ -47259,7 +47412,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2379,
+      "line": 2463,
       "kind": "fn",
       "name": "floor",
       "has_doc": true
@@ -47268,7 +47421,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2385,
+      "line": 2469,
       "kind": "fn",
       "name": "ceil",
       "has_doc": true
@@ -47277,7 +47430,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2391,
+      "line": 2475,
       "kind": "fn",
       "name": "round",
       "has_doc": true
@@ -47286,7 +47439,7 @@
       "source": "lua_api",
       "module": "math_api",
       "file": "src/lua_api/math_api.rs",
-      "line": 2397,
+      "line": 2481,
       "kind": "fn",
       "name": "exp",
       "has_doc": true

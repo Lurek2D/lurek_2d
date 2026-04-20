@@ -32,6 +32,6 @@ pub mod resource_keys;
 pub mod shared_state;
 
 pub use config::Config;
-pub use error::{EngineError, EngineResult, ErrorCategory};
+pub use error::{EngineError, EngineResult, ErrorCategory, ErrorSnapshot};
 pub use messages::MessageCatalog;
 pub use shared_state::{ErrorInfo, FullscreenType, RendererStats, ScreenshotRequest, SharedState, WindowState};

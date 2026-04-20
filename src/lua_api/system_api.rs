@@ -425,6 +425,23 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?;
     }
 
+    // lurek.platform.errorSnapshot(err) -> string
+    /// Serialises an engine error message to a compact JSON string.
+    ///
+    /// Pass the error string from a Lua `pcall` catch block. Returns a JSON
+    /// object with `message`, `code`, `category`, and `hint` fields.
+    ///
+    /// @param err : string  Error message (e.g. the second return of `pcall`).
+    /// @return string  JSON: `{"message":"...","code":"...","category":"...","hint":"..."}`.
+    system.set(
+        "errorSnapshot",
+        lua.create_function(|_, msg: String| {
+            use crate::runtime::EngineError;
+            let snap = EngineError::LuaError(msg).snapshot();
+            Ok(snap.to_json())
+        })?,
+    )?;
+
     // lurek.platform.getArch() -> string
     /// Returns the CPU architecture string for the current machine.
     /// @return string
@@ -432,12 +449,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     system.set(
         "getArch",
         lua.create_function(|_, ()| Ok(std::env::consts::ARCH.to_string()))?,
-    )?;
-
-    // lurek.platform.getEnv(name) -> string|nil
-    /// Returns the value of the named OS environment variable, or nil if not set.
-    /// @param name : string
-    /// @return string?
     /// - `name` ÔÇö Environment variable name (case-sensitive on Linux/macOS).
     /// String value of the variable, or nil if it is not set.
     system.set(

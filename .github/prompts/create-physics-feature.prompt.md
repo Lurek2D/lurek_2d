@@ -1,6 +1,5 @@
 ---
 description: Create a new physics body type or collision behavior in the physics engine.
-agent: Developer
 ---
 # Create Physics Feature
 

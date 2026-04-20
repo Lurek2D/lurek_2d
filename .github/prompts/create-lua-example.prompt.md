@@ -1,6 +1,5 @@
 ---
 description: Create a new self-contained Lua example game in content/examples/. Use when demonstrating a Lurek2D API feature or workflow. Produces a r...
-agent: Developer
 ---
 # Create Lua Example
 

@@ -25,18 +25,18 @@ The `math` module is Lurek2D's foundational mathematics library — the leaf of 
 
 ## Gap List
 
-1. No `clamp` free function in mod.rs (libraries like `content/library/stats/init.lua` re-implement it)
-2. No `sign` / `smoothstep` / `inverseLerp` utility functions
-3. Vec2 lacks `from_angle` constructor and `reflect` method
-4. Vec3 lacks `splat` constructor
-5. Color lacks HSL conversion and `from_hex` constructor (only HSV→RGB exists)
-6. No `Rect::union` method (only intersection)
-7. No `Rect::from_center` / `Rect::from_points` constructors
-8. CatmullRomSpline lacks `add_point` / `remove_point` mutation methods
-9. Transform lacks `decompose()` to extract position/rotation/scale back out
-10. No `Circle` value type for collision geometry
-11. AabbTree lacks `query_circle` and `query_segment` (SpatialHash has both)
-12. Easing module lacks `inOutElastic` and `inOutBounce` curves
+1. ~~No `clamp` free function in mod.rs~~ ✅ **DONE** — Added `clamp(v, min, max)` to `mod.rs`.
+2. ~~No `sign` / `smoothstep` / `inverseLerp` utility functions~~ ✅ **DONE** — Added all three to `mod.rs`.
+3. ~~Vec2 lacks `from_angle` constructor and `reflect` method~~ ✅ **DONE** — Added `Vec2::from_angle` and `Vec2::reflect`.
+4. ~~Vec3 lacks `splat` constructor~~ ✅ **DONE** — Added `Vec3::splat`.
+5. ~~Color lacks HSL conversion and `from_hex` constructor~~ ✅ **DONE** — Added `Color::from_hex`, `Color::to_hsl`, `color::hsl_to_rgb`.
+6. ~~No `Rect::union` method~~ ✅ **DONE** — Added `Rect::union`.
+7. ~~No `Rect::from_center` / `Rect::from_points` constructors~~ ✅ **DONE** — Added both.
+8. ~~CatmullRomSpline lacks `add_point` / `remove_point` mutation methods~~ ✅ **DONE** — Added both.
+9. ~~Transform lacks `decompose()`~~ ✅ **DONE** — Added `Transform::decompose() -> (f32, f32, f32, f32, f32)`.
+10. ~~No `Circle` value type for collision geometry~~ ✅ **DONE** — Added `Circle` struct with `area`, `perimeter`, `contains`, `intersects`, `aabb`; Lua: `lurek.math.newCircle(x,y,r)`.
+11. ~~AabbTree lacks `query_circle` and `query_segment` (SpatialHash has both)~~ ✅ **DONE** — Added `query_circle` and `query_segment`; Lua: `aabbTree:queryCircle`, `aabbTree:querySegment`.
+12. ~~Easing module lacks `inOutElastic` and `inOutBounce` curves~~ ✅ **DONE** — Added `ease_in_out_elastic`, `ease_in_out_bounce`, `ease_in_out_back`.
 
 ## Feature Ideas
 

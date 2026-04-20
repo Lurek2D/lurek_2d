@@ -1,7 +1,7 @@
 ---
 name: Architect
 description: "Design Lurek2D module boundaries, dependency direction, and crate organisation while keeping the import graph acyclic."
-tools: [tools/audit/audit_module.py, tools/validate/validate_module_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Architect
 

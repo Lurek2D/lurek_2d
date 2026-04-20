@@ -3,6 +3,10 @@
 //! [`hash()`] computes a digest over an in-memory byte slice and returns a
 //! hex-encoded string. Supported algorithms: MD5, SHA-1, SHA-256, SHA-512.
 //! MD5 and SHA-1 are provided for compatibility checks only — not for security.
+//!
+//! [`crc32()`] computes a CRC-32 checksum of a byte slice using the IEEE
+//! polynomial. Useful for non-security integrity checks and binary format
+//! validation.
 
 use md5::Digest;
 use sha1;
@@ -77,4 +81,19 @@ pub fn hash(algorithm: HashAlgorithm, data: &[u8]) -> String {
             hex::encode(result)
         }
     }
+}
+
+/// Computes the CRC-32 checksum of `data` using the IEEE polynomial.
+///
+/// Suitable for non-security integrity checks and binary format validation.
+/// The result is a `u32` returned as `u64` for ergonomic use in Lua (integers
+/// are 64-bit in LuaJIT and Lua 5.4).
+///
+/// # Parameters
+/// - `data` — `&[u8]` — Input bytes.
+///
+/// # Returns
+/// `u64` — CRC-32 value in `[0, 2³²)`.
+pub fn crc32(data: &[u8]) -> u64 {
+    crc32fast::hash(data) as u64
 }

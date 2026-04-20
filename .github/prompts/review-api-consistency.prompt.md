@@ -1,6 +1,5 @@
 ---
 description: "Review Lua API consistency: naming patterns, parameter conventions, return types across all lurek.* modules."
-agent: Lua-Designer
 ---
 # Review Api Consistency
 

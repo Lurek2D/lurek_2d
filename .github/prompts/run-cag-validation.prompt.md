@@ -1,7 +1,5 @@
 ---
 description: "Run CAG validation to check all agents, skills, prompts, and instructions for compliance."
-agent: Developer
-tools: [tools/validate/cag_validate.py]
 ---
 # Run Cag Validation
 

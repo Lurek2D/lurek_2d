@@ -284,3 +284,76 @@ mod scheduler_tests {
         assert_eq!(sched.get_repeat_count(id), Some(2));
     }
 }
+
+// ── after_frames / every_frames / update_frames ───────────────────────────────
+
+mod frame_event_tests {
+    use lurek2d::timer::Scheduler;
+
+    #[test]
+    fn after_frames_fires_after_n_update_frames() {
+        let mut s = Scheduler::new();
+        let id = s.after_frames(2);
+        assert_eq!(s.update_frames().len(), 0);
+        let fired = s.update_frames();
+        assert!(fired.contains(&id));
+    }
+
+    #[test]
+    fn after_frames_fires_exactly_once() {
+        let mut s = Scheduler::new();
+        let id = s.after_frames(1);
+        let mut total = 0;
+        for _ in 0..5 {
+            let fired = s.update_frames();
+            if fired.contains(&id) {
+                total += 1;
+            }
+        }
+        assert_eq!(total, 1);
+    }
+
+    #[test]
+    fn after_frames_zero_fires_on_first_update() {
+        let mut s = Scheduler::new();
+        let id = s.after_frames(0);
+        let fired = s.update_frames();
+        assert!(fired.contains(&id));
+    }
+
+    #[test]
+    fn every_frames_fires_repeatedly() {
+        let mut s = Scheduler::new();
+        let id = s.every_frames(2, -1);
+        let mut count = 0;
+        for _ in 0..6 {
+            if s.update_frames().contains(&id) {
+                count += 1;
+            }
+        }
+        assert_eq!(count, 3);
+    }
+
+    #[test]
+    fn every_frames_respects_count_limit() {
+        let mut s = Scheduler::new();
+        let id = s.every_frames(1, 3);
+        let mut count = 0;
+        for _ in 0..10 {
+            if s.update_frames().contains(&id) {
+                count += 1;
+            }
+        }
+        assert_eq!(count, 3);
+    }
+
+    #[test]
+    fn update_frames_returns_all_due_ids() {
+        let mut s = Scheduler::new();
+        let id1 = s.after_frames(1);
+        let id2 = s.after_frames(1);
+        let fired = s.update_frames();
+        assert!(fired.contains(&id1));
+        assert!(fired.contains(&id2));
+    }
+}

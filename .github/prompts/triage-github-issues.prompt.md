@@ -1,7 +1,5 @@
 ---
 description: "Triage and label GitHub issues using mcp_github_* tools."
-agent: Manager
-tools: [tools/validate/cag_validate.py]
 ---
 # Triage Github Issues
 

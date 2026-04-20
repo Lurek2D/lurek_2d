@@ -114,6 +114,86 @@ fn aabbs_overlap(
     !(ax2 < bx1 || ax1 > bx2 || ay2 < by1 || ay1 > by2)
 }
 
+/// Returns `true` when the AABB `[min_x, max_x] × [min_y, max_y]` overlaps a
+/// circle centred at `(cx, cy)` with the given `radius`.
+///
+/// Uses the closest-point-on-AABB test: if the squared distance from the
+/// closest AABB point to the circle centre is ≤ radius², they overlap.
+#[inline]
+fn aabb_circle_overlap(
+    min_x: f32,
+    min_y: f32,
+    max_x: f32,
+    max_y: f32,
+    cx: f32,
+    cy: f32,
+    radius: f32,
+) -> bool {
+    let nearest_x = cx.clamp(min_x, max_x);
+    let nearest_y = cy.clamp(min_y, max_y);
+    let dx = cx - nearest_x;
+    let dy = cy - nearest_y;
+    dx * dx + dy * dy <= radius * radius
+}
+
+/// Returns `true` when the AABB `[min_x, max_x] × [min_y, max_y]` is
+/// intersected by the line segment from `(x1, y1)` to `(x2, y2)`.
+///
+/// Uses the parametric slab method: clip the segment against each axis pair
+/// and check if the surviving interval is non-empty.
+#[inline]
+fn aabb_segment_overlap(
+    min_x: f32,
+    min_y: f32,
+    max_x: f32,
+    max_y: f32,
+    x1: f32,
+    y1: f32,
+    x2: f32,
+    y2: f32,
+) -> bool {
+    let mut t_min = 0.0_f32;
+    let mut t_max = 1.0_f32;
+
+    // X slab
+    let dx = x2 - x1;
+    if dx.abs() < 1e-8 {
+        if x1 < min_x || x1 > max_x {
+            return false;
+        }
+    } else {
+        let inv = 1.0 / dx;
+        let ta = (min_x - x1) * inv;
+        let tb = (max_x - x1) * inv;
+        let (ta, tb) = if ta <= tb { (ta, tb) } else { (tb, ta) };
+        t_min = t_min.max(ta);
+        t_max = t_max.min(tb);
+        if t_min > t_max {
+            return false;
+        }
+    }
+
+    // Y slab
+    let dy = y2 - y1;
+    if dy.abs() < 1e-8 {
+        if y1 < min_y || y1 > max_y {
+            return false;
+        }
+    } else {
+        let inv = 1.0 / dy;
+        let ta = (min_y - y1) * inv;
+        let tb = (max_y - y1) * inv;
+        let (ta, tb) = if ta <= tb { (ta, tb) } else { (tb, ta) };
+        t_min = t_min.max(ta);
+        t_max = t_max.min(tb);
+        if t_min > t_max {
+            return false;
+        }
+    }
+
+    true
+}
+
 // -------------------------------------------------------------------------------
 // AabbTree impl
 // -------------------------------------------------------------------------------
@@ -349,13 +429,60 @@ impl AabbTree {
         self.query(x, y, x, y)
     }
 
-    /// Updates the AABB for an existing entry.
+    /// Returns the ids of all entries whose AABBs overlap the given circle.
     ///
-    /// Returns `true` if the entry existed and was updated, `false` otherwise.
-    /// Internally performs a remove followed by a fresh insert.
+    /// First prunes by circle AABB, then refines with a circle-vs-AABB overlap
+    /// test: the closest point on the AABB to the circle centre must be within
+    /// the radius.
     ///
     /// # Parameters
-    /// - `id` — Identifier of the entry to update.
+    /// - `cx` — Circle centre X.
+    /// - `cy` — Circle centre Y.
+    /// - `radius` — Circle radius.
+    ///
+    /// # Returns
+    /// `Vec<u64>` — Entry ids whose AABBs overlap the circle.
+    pub fn query_circle(&self, cx: f32, cy: f32, radius: f32) -> Vec<u64> {
+        let broad = self.query(cx - radius, cy - radius, cx + radius, cy + radius);
+        broad
+            .into_iter()
+            .filter(|id| {
+                if let Some(e) = self.entries.get(id) {
+                    aabb_circle_overlap(e.min_x, e.min_y, e.max_x, e.max_y, cx, cy, radius)
+                } else {
+                    false
+                }
+            })
+            .collect()
+    }
+
+    /// Returns the ids of all entries whose AABBs overlap the line segment
+    /// from `(x1, y1)` to `(x2, y2)`.
+    ///
+    /// Uses the slab method to test AABB vs segment intersection.
+    ///
+    /// # Parameters
+    /// - `x1`, `y1` — Start of the segment.
+    /// - `x2`, `y2` — End of the segment.
+    ///
+    /// # Returns
+    /// `Vec<u64>` — Entry ids whose AABBs are crossed by the segment.
+    pub fn query_segment(&self, x1: f32, y1: f32, x2: f32, y2: f32) -> Vec<u64> {
+        // Broad-phase: AABB of the segment
+        let (bmin_x, bmax_x) = if x1 <= x2 { (x1, x2) } else { (x2, x1) };
+        let (bmin_y, bmax_y) = if y1 <= y2 { (y1, y2) } else { (y2, y1) };
+        let broad = self.query(bmin_x, bmin_y, bmax_x, bmax_y);
+        broad
+            .into_iter()
+            .filter(|id| {
+                if let Some(e) = self.entries.get(id) {
+                    aabb_segment_overlap(e.min_x, e.min_y, e.max_x, e.max_y, x1, y1, x2, y2)
+                } else {
+                    false
+                }
+            })
+            .collect()
+    }
     /// - `min_x`, `min_y` — New minimum corner.
     /// - `max_x`, `max_y` — New maximum corner.
     pub fn update(&mut self, id: u64, min_x: f32, min_y: f32, max_x: f32, max_y: f32) -> bool {

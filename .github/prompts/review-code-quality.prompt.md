@@ -1,6 +1,5 @@
 ---
 description: "Run a full code review against Lurek2D quality gates: compilation, lint, format, tests, conventions."
-agent: Reviewer
 ---
 # Review Code Quality
 

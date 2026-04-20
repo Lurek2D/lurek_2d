@@ -1,7 +1,5 @@
 ---
 description: "Create a new Lurek2D roadmap phase file with all required metadata, tasks, and acceptance gates."
-agent: Architect
-tools: [tools/validate/cag_validate.py]
 ---
 # Create Roadmap Phase
 

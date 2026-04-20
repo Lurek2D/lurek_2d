@@ -1,7 +1,7 @@
 ---
 name: Physicist
 description: "Own the Lurek2D physics subsystem (`src/physics/`, `src/lua_api/physics_api.rs`): rapier2d integration, bodies, shapes, joints, contact events."
-tools: [tools/docs/collect_docs.py, tools/audit/doc_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Physicist
 

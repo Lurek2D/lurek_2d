@@ -1,7 +1,7 @@
 ---
 name: Tester
 description: "Write and maintain Lurek2D tests across Rust integration, Rust unit, Lua BDD, evidence, and golden layers; enforces the Lua-first testing rule."
-tools: [tools/audit/test_coverage.py, tools/audit/lua_evidence_golden_contract_audit.py, tools/audit/lua_test_structure_audit.py, tools/audit/integration_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Tester
 

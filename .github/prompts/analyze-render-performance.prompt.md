@@ -1,6 +1,5 @@
 ---
 description: "Analyze rendering performance: frame time, draw command throughput, texture memory, wgpu pipeline operations."
-agent: Renderer
 ---
 # Analyze Render Performance
 

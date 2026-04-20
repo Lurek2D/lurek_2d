@@ -34,8 +34,8 @@ The `runtime` module is the dependency tree's root — every other Rust module i
 
 ## 4. Gap List
 
-1. **[P1][GAP]** `Filesystem` category missing in `ErrorCategory` — `FileSystemError` and `IoError` share `System` category, losing granularity for user-facing diagnostics.
-   - Why: error screen could show filesystem-specific hints vs generic system errors.
+1. ~~**[P1][GAP]** `Filesystem` category missing in `ErrorCategory` — `FileSystemError` and `IoError` share `System` category, losing granularity for user-facing diagnostics.~~ ✅ **DONE** — Added `ErrorCategory::Filesystem`; `EngineError::FileSystemError` now maps to `ErrorCategory::Filesystem` with `as_str() = "filesystem"`.
+   - ~~Why: error screen could show filesystem-specific hints vs generic system errors.~~
 2. **[P2][GAP]** No `SharedState` size tracking beyond textures — fonts, canvases, shaders, meshes, particle systems have no memory accounting.
    - Why: LRU eviction only covers textures; large font atlases or canvas pools can still exceed GPU memory.
 3. **[P2][GAP]** `ModulesConfig` has no validation for `animation` requiring `graphics`, `tween` not requiring anything, etc. — only 6 of 30+ flags are validated.
@@ -52,10 +52,10 @@ The `runtime` module is the dependency tree's root — every other Rust module i
    - Rationale: Prevents GPU OOM on integrated GPUs (Player on Intel UHD / AMD APU).
    - Effort: M · Risk: low.
 
-3. **[P3][FEAT]** `Serialisable error snapshots` — Serialize `ErrorInfo` (code + category + message + hint) to JSON for crash reporting or test assertion.
-   - Rationale: Enables automated game testing (GameTest, EngTest) to assert on specific error codes.
-   - Effort: S · Risk: low.
-   - Competitor inspiration: `[Solar2D: runtime errors include errorType and errorMessage fields in JSON event objects]`.
+3. ~~**[P3][FEAT]** `Serialisable error snapshots` — Serialize `ErrorInfo` (code + category + message + hint) to JSON for crash reporting or test assertion.~~ ✅ **DONE** — Added `ErrorSnapshot` struct + `EngineError::snapshot()` + `lurek.platform.errorSnapshot(msg)` Lua binding.
+   - ~~Rationale: Enables automated game testing (GameTest, EngTest) to assert on specific error codes.~~
+   - ~~Effort: S · Risk: low.~~
+   - ~~Competitor inspiration: `[Solar2D: runtime errors include errorType and errorMessage fields in JSON event objects]`.~~
 
 ## 6. Performance / Reliability / Quality Ideas
 

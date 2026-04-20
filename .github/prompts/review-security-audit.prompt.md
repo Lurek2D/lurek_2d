@@ -1,6 +1,5 @@
 ---
 description: "Security audit for Lurek2D Lua sandboxing, filesystem access, and input validation. Use when adding filesystem features, untrusted script..."
-agent: Security
 ---
 # Review Security Audit
 

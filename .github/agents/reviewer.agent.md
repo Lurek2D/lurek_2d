@@ -1,7 +1,7 @@
 ---
 name: Reviewer
 description: "Code review and quality gate enforcement for Lurek2D — checks Rust conventions, module boundaries, API patterns, test coverage; reports findings, does not rewrite code."
-tools: [tools/validate/cag_validate.py, tools/audit/doc_coverage.py, tools/audit/test_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Reviewer
 

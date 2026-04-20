@@ -1,7 +1,6 @@
 ---
 description: Full release readiness check for Lurek2D. Use before tagging a release or merging to main. Runs all quality gates and produces a go/no-go...
-agent: Manager
-tools: [tools/validate/cag_validate.py]
+
 ---
 # Workflow Release Check
 

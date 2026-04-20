@@ -1,7 +1,5 @@
 ---
 description: Add or modify a GitHub Actions workflow for Lurek2D.
-agent: Developer
-tools: [tools/validate/cag_validate.py]
 ---
 # Setup Ci Pipeline
 

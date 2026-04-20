@@ -1,6 +1,5 @@
 ---
 description: "Create a new Lua API function in the lurek.* namespace. Guides through API design, Rust binding implementation, documentation, and testing."
-agent: Developer
 ---
 # Create Api Function
 

@@ -570,4 +570,109 @@ describe("fs.watchPath / pollWatchers", function()
 
 end)
 
-test_summary()
+-- ── listRecursive ─────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.fs.listRecursive function.
+describe("lurek.fs.listRecursive", function()
+  -- @covers lurek.fs.listRecursive
+  -- @description listRecursive is exposed as a function on lurek.fs.
+  it("listRecursive is a function", function()
+    expect_type("function", lurek.fs.listRecursive)
+  end)
+
+  -- @covers lurek.fs.listRecursive
+  -- @description listRecursive on a directory with nested files returns a table.
+  it("returns a table with recursive file paths", function()
+    local dir  = TMP .. "lr/"
+    local sub  = dir .. "sub/"
+    lurek.fs.createDirectory(sub)
+    lurek.fs.write(dir .. "a.txt", "a")
+    lurek.fs.write(sub .. "b.txt", "b")
+    local items = lurek.fs.listRecursive(dir)
+    expect_type("table", items)
+    expect_true(#items >= 2, "should list at least 2 entries")
+    -- cleanup
+    lurek.fs.remove(sub .. "b.txt")
+    lurek.fs.remove(sub)
+    lurek.fs.remove(dir .. "a.txt")
+    lurek.fs.remove(dir)
+  end)
+
+  -- @covers lurek.fs.listRecursive
+  -- @description listRecursive on an empty directory returns an empty table.
+  it("returns empty table for empty directory", function()
+    local dir = TMP .. "lr_empty/"
+    lurek.fs.createDirectory(dir)
+    local items = lurek.fs.listRecursive(dir)
+    expect_type("table", items)
+    expect_equal(0, #items)
+    lurek.fs.remove(dir)
+  end)
+
+  -- @covers lurek.fs.listRecursive
+  -- @description path traversal attempt raises an error (sandbox rejection).
+  it("path traversal is rejected with an error", function()
+    local ok = pcall(lurek.fs.listRecursive, "save/../..")
+    expect_equal(false, ok)
+  end)
+end)
+
+describe("lurek.fs.stat lightweight file statistics", function()
+  -- @covers lurek.fs.stat
+  it("stat is a function", function()
+    expect_equal("function", type(lurek.fs.stat))
+  end)
+
+  -- @covers lurek.fs.stat
+  it("stat rejects path traversal", function()
+    local ok = pcall(lurek.fs.stat, "../../etc/passwd")
+    expect_equal(false, ok)
+  end)
+
+  -- @covers lurek.fs.stat
+  it("stat returns table with size, isFile, isDir fields", function()
+    -- Write a known file first so stat can find it
+    lurek.fs.write("save/_stat_test.txt", "hello")
+    local info = lurek.fs.stat("save/_stat_test.txt")
+    expect_not_nil(info)
+    expect_equal("number", type(info.size))
+    expect_equal("boolean", type(info.isFile))
+    expect_equal("boolean", type(info.isDir))
+    expect_true(info.isFile)
+    expect_true(not info.isDir)
+  end)
+
+  -- @covers lurek.fs.stat
+  it("stat size matches written content length", function()
+    lurek.fs.write("save/_stat_size.txt", "abcde")
+    local info = lurek.fs.stat("save/_stat_size.txt")
+    expect_equal(5, info.size)
+  end)
+end)
+
+describe("lurek.fs.createTempFile temporary file creation", function()
+  -- @covers lurek.fs.createTempFile
+  it("createTempFile is a function", function()
+    expect_equal("function", type(lurek.fs.createTempFile))
+  end)
+
+  -- @covers lurek.fs.createTempFile
+  it("createTempFile returns a string path", function()
+    local path = lurek.fs.createTempFile("test_")
+    expect_equal("string", type(path))
+    expect_true(#path > 0)
+  end)
+
+  -- @covers lurek.fs.createTempFile
+  it("createTempFile path starts with save/", function()
+    local path = lurek.fs.createTempFile("pfx_")
+    expect_equal("save/", path:sub(1, 5))
+  end)
+
+  -- @covers lurek.fs.createTempFile
+  it("two calls return different paths", function()
+    local a = lurek.fs.createTempFile("tmp")
+    local b = lurek.fs.createTempFile("tmp")
+    expect_true(a ~= b)
+  end)
+end)
+

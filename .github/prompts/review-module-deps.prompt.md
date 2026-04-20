@@ -1,6 +1,5 @@
 ---
 description: "Review module dependencies for correctness: no cross-domain imports, correct dependency direction."
-agent: Architect
 ---
 # Review Module Deps
 

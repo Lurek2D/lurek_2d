@@ -891,4 +891,169 @@ describe("RingBuffer mixed value types", function()
   end)
 end)
 
+-- ── DataWriter ────────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.data.newWriter / DataWriter binary buffer API.
+describe("lurek.data.newWriter DataWriter", function()
+  -- @covers lurek.data.newWriter
+  -- @description newWriter returns a non-nil userdata.
+  it("newWriter returns a userdata", function()
+    local w = lurek.data.newWriter()
+    expect_not_nil(w)
+    expect_type("userdata", w)
+  end)
+
+  -- @covers lurek.data.DataWriter.len
+  -- @description fresh writer has length 0.
+  it("fresh writer has len 0", function()
+    local w = lurek.data.newWriter()
+    expect_equal(0, w:len())
+  end)
+
+  -- @covers lurek.data.DataWriter.writeU8
+  -- @covers lurek.data.DataWriter.len
+  -- @description writeU8 increments buffer length by 1.
+  it("writeU8 increments len by 1", function()
+    local w = lurek.data.newWriter()
+    w:writeU8(42)
+    expect_equal(1, w:len())
+  end)
+
+  -- @covers lurek.data.DataWriter.toBytes
+  -- @description toBytes returns a string containing the written byte.
+  it("toBytes returns correct byte value", function()
+    local w = lurek.data.newWriter()
+    w:writeU8(0x41) -- ASCII 'A'
+    local b = w:toBytes()
+    expect_type("string", b)
+    expect_equal("A", b)
+  end)
+
+  -- @covers lurek.data.DataWriter.writeU32LE
+  -- @covers lurek.data.DataWriter.len
+  -- @description writeU32LE writes exactly 4 bytes.
+  it("writeU32LE writes 4 bytes", function()
+    local w = lurek.data.newWriter()
+    w:writeU32LE(0)
+    expect_equal(4, w:len())
+  end)
+
+  -- @covers lurek.data.DataWriter.writeString
+  -- @covers lurek.data.DataWriter.len
+  -- @description writeString writes a 4-byte LE length prefix followed by content.
+  it("writeString adds 4-byte length prefix plus content", function()
+    local w = lurek.data.newWriter()
+    w:writeString("hi")
+    -- 4 bytes (u32 LE length) + 2 bytes ("hi") = 6
+    expect_equal(6, w:len())
+  end)
+
+  -- @covers lurek.data.DataWriter.writeString
+  -- @description writeString preserves content in toBytes output.
+  it("writeString content survives toBytes round-trip", function()
+    local w = lurek.data.newWriter()
+    w:writeString("AB")
+    local b = w:toBytes()
+    -- bytes 5-6 should be 'A' and 'B'
+    expect_equal(string.byte("A"), string.byte(b, 5))
+    expect_equal(string.byte("B"), string.byte(b, 6))
+  end)
+
+  -- @covers lurek.data.DataWriter.tell
+  -- @description tell reports cursor position after writes.
+  it("tell advances after writes", function()
+    local w = lurek.data.newWriter()
+    expect_equal(0, w:tell())
+    w:writeU8(1)
+    expect_equal(1, w:tell())
+    w:writeU8(2)
+    expect_equal(2, w:tell())
+  end)
+
+  -- @covers lurek.data.DataWriter.seek
+  -- @covers lurek.data.DataWriter.tell
+  -- @description seek moves cursor to the given position.
+  it("seek repositions the cursor", function()
+    local w = lurek.data.newWriter()
+    w:writeU8(1)
+    w:writeU8(2)
+    w:writeU8(3)
+    w:seek(1)
+    expect_equal(1, w:tell())
+  end)
+
+  -- @covers lurek.data.DataWriter.seek
+  -- @covers lurek.data.DataWriter.len
+  -- @description seek past end zero-extends the buffer.
+  it("seek past end extends buffer with zeros", function()
+    local w = lurek.data.newWriter()
+    w:seek(4)
+    expect_equal(4, w:len())
+  end)
+
+  -- @covers lurek.data.DataWriter.writeU8
+  -- @covers lurek.data.DataWriter.seek
+  -- @covers lurek.data.DataWriter.toBytes
+  -- @description seek then write overwrites at the given position.
+  it("seek + writeU8 overwrites at cursor", function()
+    local w = lurek.data.newWriter()
+    w:writeU8(0x00)
+    w:writeU8(0x00)
+    w:seek(0)
+    w:writeU8(0xFF)
+    local b = w:toBytes()
+    expect_equal(2, #b)
+    expect_equal(0xFF, string.byte(b, 1))
+    expect_equal(0x00, string.byte(b, 2))
+  end)
+
+  -- @covers lurek.data.DataWriter.writeU8
+  -- @description multiple writes accumulate in order.
+  it("multiple writeU8 calls accumulate in order", function()
+    local w = lurek.data.newWriter()
+    w:writeU8(10)
+    w:writeU8(20)
+    w:writeU8(30)
+    expect_equal(3, w:len())
+    local b = w:toBytes()
+    expect_equal(10, string.byte(b, 1))
+    expect_equal(20, string.byte(b, 2))
+    expect_equal(30, string.byte(b, 3))
+  end)
+end)
+
+describe("lurek.data crc32 checksum", function()
+  it("crc32 is a function", function()
+    expect_equal("function", type(lurek.data.crc32))
+  end)
+
+  it("crc32 of empty string is known constant", function()
+    local v = lurek.data.crc32("")
+    -- CRC-32 of empty bytes is 0x00000000 = 0
+    expect_equal(0, v)
+  end)
+
+  it("crc32 of '123456789' is known constant 0xCBF43926", function()
+    local v = lurek.data.crc32("123456789")
+    -- 0xCBF43926 = 3421780262
+    expect_equal(3421780262, v)
+  end)
+
+  it("crc32 is deterministic", function()
+    local a = lurek.data.crc32("hello")
+    local b = lurek.data.crc32("hello")
+    expect_equal(a, b)
+  end)
+
+  it("crc32 differs for different inputs", function()
+    local a = lurek.data.crc32("hello")
+    local b = lurek.data.crc32("world")
+    expect_true(a ~= b)
+  end)
+
+  it("crc32 returns an integer type", function()
+    local v = lurek.data.crc32("test")
+    expect_equal("number", type(v))
+  end)
+end)
+
 test_summary()

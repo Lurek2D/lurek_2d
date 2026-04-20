@@ -1,7 +1,7 @@
 ---
 name: Research
 description: "Find accurate, cited information from web, official docs, or the codebase and return a structured findings report — never implementation code."
-tools: [tools/validate/cag_validate.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Research
 

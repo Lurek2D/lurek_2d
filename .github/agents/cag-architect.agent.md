@@ -1,7 +1,7 @@
 ---
 name: CAG-Architect
 description: "Maintain the Lurek2D `.github/` CAG layer (system prompt, agents, skills, prompts) and keep `cag_validate.py --baseline` clean."
-tools: [tools/validate/cag_validate.py, tools/audit/cag_link_check.py, tools/audit/cag_coverage.py, tools/audit/cag_persona_matrix.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # CAG-Architect
 

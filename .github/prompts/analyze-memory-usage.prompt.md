@@ -1,6 +1,5 @@
 ---
 description: "Analyze and reduce memory usage in the Lurek2D engine. Use when frame memory allocations are excessive, the buffer grows unboundedly, or..."
-agent: Developer
 ---
 # Analyze Memory Usage
 

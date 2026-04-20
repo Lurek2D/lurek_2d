@@ -13,6 +13,7 @@ use crate::math::noise_functions;
 use crate::math::polygon;
 use crate::math::AabbTree;
 use crate::math::BezierCurve;
+use crate::math::Circle;
 use crate::math::NoiseGenerator;
 use crate::math::RandomGenerator;
 use crate::math::SpatialHash;
@@ -21,7 +22,8 @@ use crate::math::Tween;
 use crate::math::Vec2;
 use crate::math::Vec3;
 use crate::math::{CatmullRomSpline, HermiteSpline};
-use crate::math::{lerp, remap};
+use crate::math::{lerp, remap, clamp, sign, smoothstep, inverse_lerp};
+use crate::math::color::hsl_to_rgb;
 use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 
 // -------------------------------------------------------------------------------
@@ -151,6 +153,23 @@ impl LuaUserData for LuaVec2 {
         methods.add_method("cross", |_, this, other: LuaAnyUserData| {
             let o = other.borrow::<LuaVec2>()?;
             Ok(this.inner.cross(o.inner) as f64)
+        });
+
+        // -- fromAngle --
+        /// Creates a unit vector from an angle in radians.
+        /// @param radians : number
+        /// @return Vec2
+        methods.add_function("fromAngle", |lua, radians: f64| {
+            lua.create_userdata(LuaVec2 { inner: Vec2::from_angle(radians as f32) })
+        });
+
+        // -- reflect --
+        /// Reflects this vector off a surface with the given normal.
+        /// @param normal : Vec2
+        /// @return Vec2
+        methods.add_method("reflect", |lua, this, normal: LuaAnyUserData| {
+            let n = normal.borrow::<LuaVec2>()?;
+            lua.create_userdata(LuaVec2 { inner: this.inner.reflect(n.inner) })
         });
 
         // Metamethods
@@ -292,6 +311,14 @@ impl LuaUserData for LuaVec3 {
         methods.add_method("scale", |lua, this, s: f32| {
             lua.create_userdata(LuaVec3 { inner: this.inner * s })
         });
+
+        // -- splat --
+        /// Creates a Vec3 with all components set to `v`.
+        /// @param v : number
+        /// @return Vec3
+        methods.add_function("splat", |lua, v: f32| {
+            lua.create_userdata(LuaVec3 { inner: Vec3::splat(v) })
+        });
     }
 }
 
@@ -329,6 +356,25 @@ impl LuaUserData for LuaCatmullRom {
         /// Number of control points.
         /// @return integer
         methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+
+        // -- addPoint --
+        /// Appends a control point to the spline.
+        /// @param x : number
+        /// @param y : number
+        methods.add_method_mut("addPoint", |_, this, (x, y): (f32, f32)| {
+            this.inner.add_point((x, y));
+            Ok(())
+        });
+
+        // -- removePoint --
+        /// Removes the control point at `index` (0-based) and returns it.
+        /// @param index : integer
+        /// @return number, number
+        methods.add_method_mut("removePoint", |_, this, idx: usize| {
+            this.inner.remove_point(idx)
+                .map(|(x, y)| (x, y))
+                .ok_or_else(|| LuaError::RuntimeError("index out of bounds".into()))
+        });
     }
 }
 
@@ -580,6 +626,13 @@ impl LuaUserData for LuaTransform {
                 }
             }
             Ok(t)
+        });
+
+        // -- decompose --
+        /// Decomposes this transform into translation, rotation, and scale.
+        /// @return number, number, number, number, number — x, y, angle, scaleX, scaleY
+        methods.add_method("decompose", |_, this, ()| {
+            Ok(this.inner.decompose())
         });
     }
 }
@@ -947,6 +1000,25 @@ impl LuaUserData for LuaSpatialHash {
             },
         );
 
+        // -- querySegment --
+        /// Returns IDs of items whose AABBs are intersected by the line segment.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        /// @return table
+        methods.add_method(
+            "querySegment",
+            |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+                let ids = this.inner.query_segment(x1, y1, x2, y2);
+                let t = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    t.set(i + 1, id.as_str())?;
+                }
+                Ok(t)
+            },
+        );
+
         // -- getCellSize --
         /// Returns the cell size used to partition the spatial hash grid.
         /// @return number
@@ -1273,6 +1345,70 @@ impl LuaUserData for LuaNoiseGenerator {
 // -------------------------------------------------------------------------------
 // Register
 // -------------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------------
+// LuaCircle UserData
+// -------------------------------------------------------------------------------
+
+/// Lua-side wrapper around a [`Circle`].
+pub struct LuaCircle {
+    inner: Circle,
+}
+
+impl LuaUserData for LuaCircle {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- area --
+        /// Returns the area of the circle (π r²).
+        /// @return number
+        methods.add_method("area", |_, this, ()| Ok(this.inner.area()));
+
+        // -- perimeter --
+        /// Returns the circumference of the circle (2 π r).
+        /// @return number
+        methods.add_method("perimeter", |_, this, ()| Ok(this.inner.perimeter()));
+
+        // -- contains --
+        /// Returns true if the point (px, py) lies inside or on the boundary.
+        /// @param px : number
+        /// @param py : number
+        /// @return boolean
+        methods.add_method("contains", |_, this, (px, py): (f32, f32)| {
+            Ok(this.inner.contains(px, py))
+        });
+
+        // -- intersects --
+        /// Returns true if this circle overlaps another circle.
+        /// @param other : Circle
+        /// @return boolean
+        methods.add_method("intersects", |_, this, other: LuaAnyUserData| {
+            let other = other.borrow::<LuaCircle>()?;
+            Ok(this.inner.intersects(&other.inner))
+        });
+
+        // -- aabb --
+        /// Returns the axis-aligned bounding box as (min_x, min_y, max_x, max_y).
+        /// @return number, number, number, number
+        methods.add_method("aabb", |_, this, ()| {
+            let (x1, y1, x2, y2) = this.inner.aabb();
+            Ok((x1, y1, x2, y2))
+        });
+
+        // -- x --
+        /// Returns the circle centre X.
+        /// @return number
+        methods.add_method("x", |_, this, ()| Ok(this.inner.x));
+
+        // -- y --
+        /// Returns the circle centre Y.
+        /// @return number
+        methods.add_method("y", |_, this, ()| Ok(this.inner.y));
+
+        // -- radius --
+        /// Returns the circle radius.
+        /// @return number
+        methods.add_method("radius", |_, this, ()| Ok(this.inner.radius));
+    }
+}
 
 // -------------------------------------------------------------------------------
 // LuaAabbTree UserData
@@ -1814,6 +1950,33 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "outBack",
         lua.create_function(|_, t: f32| Ok(easing::ease_out_back(t)))?,
+    )?;
+
+    // -- inOutElastic --
+    /// Elastic ease-in-out — spring-like oscillation on both ends.
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "inOutElastic",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_elastic(t)))?,
+    )?;
+
+    // -- inOutBounce --
+    /// Bounce ease-in-out — bouncing motion on both ends.
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "inOutBounce",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_bounce(t)))?,
+    )?;
+
+    // -- inOutBack --
+    /// Back ease-in-out — overshoot on both ends.
+    /// @param t : number
+    /// @return number
+    tbl.set(
+        "inOutBack",
+        lua.create_function(|_, t: f32| Ok(easing::ease_in_out_back(t)))?,
     )?;
 
     // ── Geometry ─────────────────────────────────────────────────────
@@ -2627,6 +2790,129 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- clamp --
+    /// Clamps `v` between `min` and `max`.
+    /// @param v : number
+    /// @param min : number
+    /// @param max : number
+    /// @return number
+    tbl.set(
+        "clamp",
+        lua.create_function(|_, (v, min, max): (f32, f32, f32)| Ok(clamp(v, min, max)))?,
+    )?;
+
+    // -- sign --
+    /// Returns -1, 0, or 1 depending on the sign of `v`.
+    /// @param v : number
+    /// @return number
+    tbl.set(
+        "sign",
+        lua.create_function(|_, v: f32| Ok(sign(v)))?,
+    )?;
+
+    // -- smoothstep --
+    /// Hermite smoothstep between `edge0` and `edge1`.
+    /// @param edge0 : number
+    /// @param edge1 : number
+    /// @param x : number
+    /// @return number
+    tbl.set(
+        "smoothstep",
+        lua.create_function(|_, (edge0, edge1, x): (f32, f32, f32)| Ok(smoothstep(edge0, edge1, x)))?,
+    )?;
+
+    // -- inverseLerp --
+    /// Returns the interpolation parameter t for `v` in [a, b].
+    /// @param a : number
+    /// @param b : number
+    /// @param v : number
+    /// @return number
+    tbl.set(
+        "inverseLerp",
+        lua.create_function(|_, (a, b, v): (f32, f32, f32)| Ok(inverse_lerp(a, b, v)))?,
+    )?;
+
+    // -- hslToRgb --
+    /// Converts HSL (h: 0-360, s: 0-1, l: 0-1) to RGBA (r, g, b, a) floats.
+    /// @param h : number
+    /// @param s : number
+    /// @param l : number
+    /// @return number, number, number, number
+    tbl.set(
+        "hslToRgb",
+        lua.create_function(|_, (h, s, l): (f32, f32, f32)| {
+            let c = hsl_to_rgb(h, s, l);
+            Ok((c.r, c.g, c.b, c.a))
+        })?,
+    )?;
+
+    // -- fromHex --
+    /// Parses a hex color string (#RRGGBB or #RRGGBBAA) into (r, g, b, a) floats.
+    /// @param hex : string
+    /// @return number, number, number, number
+    tbl.set(
+        "fromHex",
+        lua.create_function(|_, hex: String| {
+            use crate::math::Color;
+            Color::from_hex(&hex)
+                .map(|c| (c.r, c.g, c.b, c.a))
+                .ok_or_else(|| LuaError::RuntimeError(format!("invalid hex color: {}", hex)))
+        })?,
+    )?;
+
+    // -- rgbToHsl --
+    /// Converts RGBA floats to HSL (h: 0-360, s: 0-1, l: 0-1).
+    /// @param r : number
+    /// @param g : number
+    /// @param b : number
+    /// @return number, number, number
+    tbl.set(
+        "rgbToHsl",
+        lua.create_function(|_, (r, g, b): (f32, f32, f32)| {
+            use crate::math::Color;
+            let c = Color::new(r, g, b, 1.0);
+            Ok(c.to_hsl())
+        })?,
+    )?;
+
+    // ── Rect utilities ──────────────────────────────────────────────
+
+    // -- rectUnion --
+    /// Returns the union (bounding box) of two rectangles.
+    /// @param x1 : number
+    /// @param y1 : number
+    /// @param w1 : number
+    /// @param h1 : number
+    /// @param x2 : number
+    /// @param y2 : number
+    /// @param w2 : number
+    /// @param h2 : number
+    /// @return number, number, number, number
+    tbl.set(
+        "rectUnion",
+        lua.create_function(|_, (x1, y1, w1, h1, x2, y2, w2, h2): (f32, f32, f32, f32, f32, f32, f32, f32)| {
+            let a = Rect::new(x1, y1, w1, h1);
+            let b = Rect::new(x2, y2, w2, h2);
+            let u = a.union(&b);
+            Ok((u.x, u.y, u.width, u.height))
+        })?,
+    )?;
+
+    // -- rectFromCenter --
+    /// Creates a rectangle centered at (cx, cy) with the given width and height.
+    /// @param cx : number
+    /// @param cy : number
+    /// @param w : number
+    /// @param h : number
+    /// @return number, number, number, number
+    tbl.set(
+        "rectFromCenter",
+        lua.create_function(|_, (cx, cy, w, h): (f32, f32, f32, f32)| {
+            let r = Rect::from_center(cx, cy, w, h);
+            Ok((r.x, r.y, r.width, r.height))
+        })?,
+    )?;
+
     // -- polygonClip --
     /// Clips a polygon against a single half-plane using the Sutherland-Hodgman algorithm.
     /// @return table
@@ -2670,6 +2956,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "aabbTree",
         lua.create_function(|lua, ()| lua.create_userdata(LuaAabbTree { inner: AabbTree::new() }))?,
+    )?;
+
+    // -- newCircle --
+    /// Creates a new Circle value type with the given centre and radius.
+    /// @param x : number      Centre X coordinate.
+    /// @param y : number      Centre Y coordinate.
+    /// @param radius : number Radius (clamped to 0 if negative).
+    /// @return Circle
+    tbl.set(
+        "newCircle",
+        lua.create_function(|lua, (x, y, radius): (f32, f32, f32)| {
+            lua.create_userdata(LuaCircle { inner: Circle::new(x, y, radius) })
+        })?,
     )?;
 
     // ── Boolean polygon operations ────────────────────────────────────────────

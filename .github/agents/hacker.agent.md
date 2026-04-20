@@ -1,7 +1,7 @@
 ---
 name: Hacker
 description: "Adversarially probe `lurek.*` and the Lua sandbox at runtime for crashes, misuse paths, and sandbox escapes; report findings — does not implement fixes."
-tools: [tools/audit/lua_evidence_golden_contract_audit.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Hacker
 

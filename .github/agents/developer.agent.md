@@ -1,7 +1,7 @@
 ---
 name: Developer
 description: Implement Rust engine features and bug fixes across non-specialist Lurek2D modules with passing tests and zero clippy warnings.
-tools: [tools/docs/collect_docs.py, tools/docs/gen_lua_api.py, tools/audit/doc_coverage.py, tools/validate/cag_validate.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Developer
 

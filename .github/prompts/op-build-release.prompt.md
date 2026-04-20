@@ -1,6 +1,5 @@
 ---
 description: Build a release binary for Lurek2D for a target platform. Use when creating a distributable build. Produces a stripped release binary in...
-agent: Developer
 ---
 # Op Build Release
 

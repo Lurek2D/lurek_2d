@@ -38,6 +38,8 @@ pub enum ErrorCategory {
     Resource,
     /// Lua script execution errors.
     Script,
+    /// Filesystem and sandboxed I/O errors.
+    Filesystem,
     /// System-level or I/O errors.
     System,
 }
@@ -53,6 +55,7 @@ impl ErrorCategory {
             Self::Runtime => "runtime",
             Self::Resource => "resource",
             Self::Script => "script",
+            Self::Filesystem => "filesystem",
             Self::System => "system",
         }
     }
@@ -152,7 +155,8 @@ impl EngineError {
             | Self::PhysicsError(_) => ErrorCategory::Runtime,
             Self::ResourceNotFound(_) | Self::ResourceNotLoaded(_) => ErrorCategory::Resource,
             Self::LuaError(_) => ErrorCategory::Script,
-            Self::FileSystemError(_) | Self::IoError(_) => ErrorCategory::System,
+            Self::FileSystemError(_) => ErrorCategory::Filesystem,
+            Self::IoError(_) => ErrorCategory::System,
         }
     }
 
@@ -191,5 +195,62 @@ impl EngineError {
 /// # Returns
 /// Wraps any value type `T` in a `Result` that carries an `EngineError` on failure.
 pub type EngineResult<T> = Result<T, EngineError>;
+
+/// A serialisable snapshot of an engine error.
+///
+/// This struct captures all fields of an [`EngineError`] needed for
+/// diagnostics: the human-readable message, numeric code, category name, and a
+/// recovery hint. Used by `lurek.platform.errorSnapshot()` and by the engine's
+/// JSON crash reporter.
+///
+/// # Fields
+/// - `message` — The display message for this error.
+/// - `code` — The four-digit numeric code, e.g. `"E1004"`.
+/// - `category` — The category name, e.g. `"filesystem"`.
+/// - `recovery_hint` — Short actionable hint to present to the user.
+#[derive(Debug, Clone)]
+pub struct ErrorSnapshot {
+    /// Display message for this error.
+    pub message: String,
+    /// Stable four-digit code, e.g. `"E1004"`.
+    pub code: &'static str,
+    /// Category name, e.g. `"filesystem"`.
+    pub category: &'static str,
+    /// Short actionable recovery hint.
+    pub recovery_hint: &'static str,
+}
+
+impl ErrorSnapshot {
+    /// Serialises the snapshot to a compact JSON string.
+    ///
+    /// The output has the form
+    /// `{"message":"...","code":"...","category":"...","hint":"..."}`.
+    ///
+    /// # Returns
+    /// `String`.
+    pub fn to_json(&self) -> String {
+        // Escape double quotes and backslashes so the JSON is always valid.
+        let escaped = self.message.replace('\\', "\\\\").replace('"', "\\\"");
+        format!(
+            r#"{{"message":"{}","code":"{}","category":"{}","hint":"{}"}}"#,
+            escaped, self.code, self.category, self.recovery_hint
+        )
+    }
+}
+
+impl EngineError {
+    /// Creates an [`ErrorSnapshot`] capturing all diagnostic fields of this error.
+    ///
+    /// # Returns
+    /// [`ErrorSnapshot`].
+    pub fn snapshot(&self) -> ErrorSnapshot {
+        ErrorSnapshot {
+            message: self.to_string(),
+            code: self.code(),
+            category: self.category().as_str(),
+            recovery_hint: self.recovery_hint(),
+        }
+    }
+}
 
 // Tests migrated to tests/rust/unit/runtime_tests.rs

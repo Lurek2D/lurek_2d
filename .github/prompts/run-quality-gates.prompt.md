@@ -1,6 +1,5 @@
 ---
 description: "Run full quality gates: build, clippy, format check, and all tests."
-agent: Reviewer
 ---
 # Run Quality Gates
 

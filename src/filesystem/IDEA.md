@@ -35,27 +35,27 @@ creation, no arbitrary path access, no network filesystem support.
 
 ## 4. Gap List
 
-1. **[P2][GAP]** `Temp file creation` — no `createTempFile()` for intermediate processing.
-   - Why: procedural generation or offline processing may need scratch files.
-2. **[P2][GAP]** `File size query without full metadata` — no lightweight size-only query.
-   - Why: scripts checking file sizes in loops pay for unnecessary metadata.
-3. **[P3][GAP]** `Recursive glob` — current `glob()` is single-depth only; no `**` recursive descent.
-   - Why: large projects with nested asset folders need deep wildcard search.
+1. ~~**[P2][GAP]** `Temp file creation` — no `createTempFile()` for intermediate processing.~~ ✅ **DONE** — Added `VirtualFs::create_temp_file` + `lurek.fs.createTempFile(prefix?)` Lua binding.
+   - ~~Why: procedural generation or offline processing may need scratch files.~~
+2. ~~**[P2][GAP]** `File size query without full metadata` — no lightweight size-only query.~~ ✅ **DONE** — Added `VirtualFs::stat` + `lurek.fs.stat(path)` returning `{size, isFile, isDir}`.
+   - ~~Why: scripts checking file sizes in loops pay for unnecessary metadata.~~
+3. ~~**[P3][GAP]** `Recursive glob` — current `glob()` is single-depth only; no `**` recursive descent.~~ ✅ **DONE** — Added `VirtualFs::list_recursive` and `lurek.fs.listRecursive(path)` Lua binding.
+   - ~~Why: large projects with nested asset folders need deep wildcard search.~~
 
 ## 5. Feature Ideas
 
-1. **[P2][FEAT]** `lurek.fs.stat(path)` — Lightweight file-size and type query without full metadata.
-   - Rationale: scripts checking sizes in loops pay for unnecessary `modified_time` + `readonly` lookups.
-   - Effort: S · Risk: low.
-   - Competitor inspiration: [Godot: FileAccess.get_length — docs.godotengine.org/en/stable/classes/class_FileAccess.html].
+1. ~~**[P2][FEAT]** `lurek.fs.stat(path)` — Lightweight file-size and type query without full metadata.~~ ✅ **DONE** — Implemented as `VirtualFs::stat` + `lurek.fs.stat(path)`.
+   - ~~Rationale: scripts checking sizes in loops pay for unnecessary `modified_time` + `readonly` lookups.~~
+   - ~~Effort: S · Risk: low.~~
+   - ~~Competitor inspiration: [Godot: FileAccess.get_length — docs.godotengine.org/en/stable/classes/class_FileAccess.html].~~
 2. **[P3][FEAT]** `Async write support` — extend AsyncLoader to support background writes.
    - Rationale: large save files or screenshots can stall the main thread.
    - Effort: M · Risk: med (write ordering guarantees needed).
    - Competitor inspiration: [Solar2D: system.pathForFile + async callbacks — docs.coronalabs.com/api/library/system/pathForFile.html].
-3. **[P3][FEAT]** `lurek.fs.listRecursive(path)` — Recursive directory listing.
-   - Rationale: asset discovery without manual recursion in Lua.
-   - Effort: S · Risk: low.
-   - Competitor inspiration: [Defold: resource.get_all — defold.com/ref/stable/resource/].
+3. ~~**[P3][FEAT]** `lurek.fs.listRecursive(path)` — Recursive directory listing.~~ ✅ **DONE** — Implemented as `VirtualFs::list_recursive` + `lurek.fs.listRecursive`.
+   - ~~Rationale: asset discovery without manual recursion in Lua.~~
+   - ~~Effort: S · Risk: low.~~
+   - ~~Competitor inspiration: [Defold: resource.get_all — defold.com/ref/stable/resource/].~~
 
 ## 6. Performance / Reliability / Quality Ideas
 

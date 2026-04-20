@@ -343,3 +343,25 @@ print("waiting for 10 frames: " .. tostring(frame_wait))
 -- scheduler update in the main loop.
 lurek.timer.tickWaits(0.016)
 print("waits ticked by 0.016 sec")
+
+-- =============================================================================
+-- New in 0.15.0: Frame-count Based Scheduler Events
+-- =============================================================================
+
+-- Create a scheduler and use afterFrames to trigger a one-shot callback.
+local sched = lurek.time.newScheduler()
+
+sched:afterFrames(3, function()
+  print("fired: afterFrames(3)")
+end)
+
+-- everyFrames with a count limit.
+sched:everyFrames(2, function()
+  print("everyFrames(2) fired")
+end, 4)  -- fires at most 4 times
+
+-- Simulate 6 game ticks.
+for i = 1, 6 do
+  local fired_count = sched:updateFrames()
+  print(string.format("tick %d: %d event(s) fired", i, fired_count))
+end

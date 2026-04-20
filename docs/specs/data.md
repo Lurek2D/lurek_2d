@@ -85,6 +85,7 @@ Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` modu
 - `decode` (`encode.rs`): Decode a string back into bytes using the specified format.
 - `HashAlgorithm::parse_str` (`hash.rs`): Parse an algorithm name string.
 - `hash` (`hash.rs`): Compute the hash of data using the specified algorithm, returned as a hex string.
+- `crc32` (`hash.rs`): Compute the CRC-32 checksum of `data`, returned as a `u64` in the range `[0, 2³²)`.
 - `to_msgpack` (`msgpack.rs`): Serializes a `serde_json::Value` to MessagePack bytes.
 - `from_msgpack` (`msgpack.rs`): Deserializes MessagePack bytes into a `serde_json::Value`.
 - `pack` (`pack.rs`): Packs values according to a format string into a `ByteData` buffer.
@@ -119,6 +120,7 @@ Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` modu
 - `lurek.data.encode`: Encodes binary data using the given format (base64, hex).
 - `lurek.data.decode`: Decodes encoded text back to binary (base64, hex).
 - `lurek.data.hash`: Returns the cryptographic hash of the input (md5, sha1, sha256, sha512).
+- `lurek.data.crc32`: Returns the CRC-32 checksum of the input string as an integer in `[0, 2³²)`.
 - `lurek.data.newByteData`: Creates a new mutable byte buffer from a size or string.
 - `lurek.data.newDataView`: Creates a read-only windowed view into a byte string.
 - `lurek.data.write`: Writes values using the Lurek2D Binary Pack Format.
@@ -159,6 +161,26 @@ Text format parsing (JSON, TOML, CSV) is the responsibility of the `serial` modu
 - `mlua:getByte`: Get a byte at the specified offset.
 - `mlua:setByte`: Set a byte at the specified offset.
 - `mlua:clone`: Clone the ByteData.
+
+### `DataWriter` Methods
+
+Created via `lurek.data.newWriter()`. Provides a sequential binary write buffer with a movable cursor.
+
+- `DataWriter:writeU8(v)`: Writes one unsigned byte.
+- `DataWriter:writeI8(v)`: Writes one signed byte.
+- `DataWriter:writeU16LE(v)`: Writes a 16-bit unsigned integer, little-endian.
+- `DataWriter:writeU16BE(v)`: Writes a 16-bit unsigned integer, big-endian.
+- `DataWriter:writeI16LE(v)`: Writes a 16-bit signed integer, little-endian.
+- `DataWriter:writeU32LE(v)`: Writes a 32-bit unsigned integer, little-endian.
+- `DataWriter:writeI32LE(v)`: Writes a 32-bit signed integer, little-endian.
+- `DataWriter:writeF32LE(v)`: Writes a 32-bit IEEE 754 float, little-endian.
+- `DataWriter:writeF64LE(v)`: Writes a 64-bit IEEE 754 double, little-endian.
+- `DataWriter:writeString(s)`: Writes a 4-byte LE length prefix followed by the raw UTF-8 bytes of `s`.
+- `DataWriter:writeBytes(s)`: Appends the raw bytes of string `s` without any length prefix.
+- `DataWriter:seek(pos)`: Moves the write cursor to byte offset `pos`. Zero-extends the buffer if `pos` is past the current end.
+- `DataWriter:tell()`: Returns the current write cursor position.
+- `DataWriter:len()`: Returns the total length of the buffer in bytes.
+- `DataWriter:toBytes()`: Returns the buffer contents as a Lua string.
 
 ## References
 

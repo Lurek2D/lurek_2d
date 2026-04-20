@@ -638,4 +638,124 @@ print("gamma 0.5 -> linear: " .. lin)
 local gam = lurek.math.linearToGamma(lin)
 print("linear -> gamma: " .. gam)
 
+-- =============================================================================
+-- New in 0.15.0: Scalar Utilities
+-- =============================================================================
+
+-- sign: returns -1, 0, or 1.
+local s1 = lurek.math.sign(-4.5)   -- -1
+local s2 = lurek.math.sign(0)      -- 0
+local s3 = lurek.math.sign(7)      -- 1
+print("sign: " .. s1 .. ", " .. s2 .. ", " .. s3)
+
+-- smoothstep: smooth Hermite interpolation.
+local ss = lurek.math.smoothstep(0, 100, 50)
+print("smoothstep(0,100,50): " .. ss)
+
+-- inverseLerp: reverse of lerp.
+local il = lurek.math.inverseLerp(0, 100, 25)
+print("inverseLerp(0,100,25): " .. il)   -- 0.25
+
+-- =============================================================================
+-- New in 0.15.0: HSL Colour Utilities
+-- =============================================================================
+
+-- fromHex: parse hex colour string.
+local r, g, b, a = lurek.math.fromHex("#ff8800")
+print(string.format("fromHex #ff8800 -> r=%.2f g=%.2f b=%.2f a=%.2f", r, g, b, a))
+
+-- rgbToHsl / hslToRgb roundtrip.
+local h, sat, l = lurek.math.rgbToHsl(r, g, b)
+print(string.format("rgbToHsl -> h=%.2f s=%.2f l=%.2f", h, sat, l))
+local r2, g2, b2 = lurek.math.hslToRgb(h, sat, l)
+print(string.format("hslToRgb back -> r=%.2f g=%.2f b=%.2f", r2, g2, b2))
+
+-- =============================================================================
+-- New in 0.15.0: Rect Utilities
+-- =============================================================================
+
+-- rectUnion: bounding rect of two rects.
+local ux, uy, uw, uh = lurek.math.rectUnion(0, 0, 40, 40, 20, 20, 40, 40)
+print(string.format("rectUnion: x=%s y=%s w=%s h=%s", ux, uy, uw, uh))
+
+-- rectFromCenter: rect whose centre is at (cx, cy).
+local rx, ry, rw, rh = lurek.math.rectFromCenter(100, 100, 50, 30)
+print(string.format("rectFromCenter(100,100,50,30): x=%s y=%s", rx, ry))
+
+-- =============================================================================
+-- New in 0.15.0: Vec2 / Vec3 Extensions
+-- =============================================================================
+
+-- Vec2.fromAngle: unit vector from angle (radians).
+local dir = lurek.math.Vec2.fromAngle(math.pi / 4)
+print(string.format("Vec2.fromAngle(pi/4): x=%.3f y=%.3f", dir.x, dir.y))
+
+-- Vec2:reflect: reflect vector about a normal.
+local vel = lurek.math.Vec2.new(1, -1)
+local norm = lurek.math.Vec2.new(0, 1)
+local refl = vel:reflect(norm)
+print(string.format("reflect (1,-1) off (0,1): x=%.1f y=%.1f", refl.x, refl.y))
+
+-- Vec3.splat: fill all components with a single value.
+local uniform = lurek.math.Vec3.splat(7)
+print(string.format("Vec3.splat(7): x=%s y=%s z=%s", uniform.x, uniform.y, uniform.z))
+
+-- =============================================================================
+-- New in 0.15.0: Transform Decompose
+-- =============================================================================
+
+local t = lurek.math.Transform.new()
+local tx, ty, angle, sx, sy = t:decompose()
+print(string.format("Transform.decompose identity: tx=%s ty=%s angle=%s sx=%s sy=%s", tx, ty, angle, sx, sy))
+
+-- =============================================================================
+-- New in 0.15.0: Extra Easing Functions
+-- =============================================================================
+
+print(string.format("inOutElastic(0.5): %.4f", lurek.math.inOutElastic(0.5)))
+print(string.format("inOutBounce(0.5):  %.4f", lurek.math.inOutBounce(0.5)))
+print(string.format("inOutBack(0.5):    %.4f", lurek.math.inOutBack(0.5)))
+
+-- =============================================================================
+-- New in 0.15.0: CatmullRomSpline Mutations
+-- =============================================================================
+
+local spline = lurek.math.CatmullRomSpline.new()
+spline:addPoint(0, 0)
+spline:addPoint(100, 50)
+spline:addPoint(200, 0)
+print("spline points after 3 addPoint: " .. spline:count())
+spline:removePoint(2)
+print("spline points after removePoint(2): " .. spline:count())
+
+-- =============================================================================
+-- New in 0.15.0: Circle Value Type
+-- =============================================================================
+
+local c = lurek.math.newCircle(0, 0, 5)
+print(string.format("Circle area:      %.4f", c:area()))
+print(string.format("Circle perimeter: %.4f", c:perimeter()))
+print("Circle contains (3,4): " .. tostring(c:contains(3, 4)))
+print("Circle contains (6,0): " .. tostring(c:contains(6, 0)))
+
+local c2 = lurek.math.newCircle(8, 0, 5)
+print("Circles intersect (d=8, r=5+5): " .. tostring(c:intersects(c2)))
+
+local x1, y1, x2, y2 = c:aabb()
+print(string.format("Circle AABB: (%.1f, %.1f, %.1f, %.1f)", x1, y1, x2, y2))
+
+-- =============================================================================
+-- New in 0.15.0: AabbTree querySegment
+-- =============================================================================
+
+local tree = lurek.math.aabbTree()
+tree:insert("platform", 0, 4, 10, 6)
+tree:insert("wall",     8, 0, 10, 8)
+
+local hits = tree:querySegment(5, 0, 5, 10)
+print("querySegment hits: " .. #hits)
+for _, id in ipairs(hits) do
+  print("  hit: " .. id)
+end
+
 print("\n-- math.lua example complete --")

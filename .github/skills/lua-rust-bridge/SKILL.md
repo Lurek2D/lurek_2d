@@ -36,6 +36,12 @@ description: "Load this skill when designing or implementing the bridge between 
 
 **Rule**: `lua_api/` is a translation layer only. Business logic stays in domain modules. If `lua_api/*.rs` contains more than ~10 lines of logic per function, move that logic to the domain module.
 
+**Thin Wrapper Contract (enforced by Reviewer):**
+- Each binding closure does exactly one thing: validate parameters, call a single domain function, convert the return value.
+- Any condition that is not parameter validation belongs in the domain module.
+- Any loop, algorithm, or multi-step operation in a `lua_api/` closure is a violation — extract to domain module immediately.
+- The audit tool (`tools/validate/validate_lua_api.py`) flags closures over the 10-line threshold as `ERROR`.
+
 ### Registration Contract
 Every API module MUST follow this exact pattern (gold standard: `src/lua_api/timer_api.rs`):
 

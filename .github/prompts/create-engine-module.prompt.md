@@ -1,6 +1,5 @@
 ---
 description: "Create a new engine module in src/ with correct structure, dependencies, and registration."
-agent: Developer
 ---
 # Create Engine Module
 

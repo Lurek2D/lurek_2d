@@ -14,8 +14,8 @@ use std::sync::Arc;
 
 use crate::data::toml_convert;
 use crate::data::{
-    self, BinValue, ByteData, CompressFormat, DataView, EncodeFormat, HashAlgorithm, LuaDataView,
-    PackValue,
+    self, BinValue, ByteData, CompressFormat, DataView, DataWriter, EncodeFormat, HashAlgorithm,
+    LuaDataView, PackValue,
 };
 
 // -------------------------------------------------------------------------------
@@ -408,10 +408,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // -- newByteData --
-    /// Creates a new mutable byte buffer from a size or string.
-    /// @param value : integer|string
-    /// @return ByteData
+    // -- crc32 --
+    /// Returns the CRC-32 checksum of the input data as an integer.
+    ///
+    /// Uses the IEEE polynomial. Suitable for non-security integrity checks and
+    /// binary format validation. Not suitable as a cryptographic hash.
+    ///
+    /// @param data : string   Input bytes (may be binary).
+    /// @return integer        CRC-32 value in [0, 2^32).
+    tbl.set(
+        "crc32",
+        lua.create_function(|_, raw_data: LuaString| {
+            Ok(data::crc32(raw_data.as_bytes()))
     tbl.set(
         "newByteData",
         lua.create_function(|lua, value: LuaValue| {
@@ -571,6 +579,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
+    // -- newWriter --
+    /// Creates a new write-cursor for building binary data.
+    /// @return DataWriter
+    tbl.set(
+        "newWriter",
+        lua.create_function(|lua, ()| lua.create_userdata(LuaDataWriter { inner: DataWriter::new() }))?,
+    )?;
+
     luna.set("data", tbl)?;
     Ok(())
 }
@@ -724,6 +740,116 @@ impl LuaUserData for LuaDataView {
         /// Returns the size of this view in bytes.
         /// @return integer
         methods.add_method("getSize", |_, this, ()| Ok(this.inner.get_size() as i64));
+    }
+}
+
+// -------------------------------------------------------------------------------
+// LuaDataWriter
+// -------------------------------------------------------------------------------
+
+/// Write-cursor wrapper for the `lurek.data` module.
+pub struct LuaDataWriter {
+    pub(crate) inner: DataWriter,
+}
+
+impl LuaUserData for LuaDataWriter {
+    fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
+        // -- writeU8 --
+        /// Writes an unsigned 8-bit integer.
+        /// @param value : integer
+        methods.add_method_mut("writeU8", |_, this, v: u8| {
+            this.inner.write_u8(v);
+            Ok(())
+        });
+        // -- writeI8 --
+        /// Writes a signed 8-bit integer.
+        /// @param value : integer
+        methods.add_method_mut("writeI8", |_, this, v: i8| {
+            this.inner.write_i8(v);
+            Ok(())
+        });
+        // -- writeU16LE --
+        /// Writes an unsigned 16-bit LE integer.
+        /// @param value : integer
+        methods.add_method_mut("writeU16LE", |_, this, v: u16| {
+            this.inner.write_u16_le(v);
+            Ok(())
+        });
+        // -- writeU16BE --
+        /// Writes an unsigned 16-bit BE integer.
+        /// @param value : integer
+        methods.add_method_mut("writeU16BE", |_, this, v: u16| {
+            this.inner.write_u16_be(v);
+            Ok(())
+        });
+        // -- writeI16LE --
+        /// Writes a signed 16-bit LE integer.
+        /// @param value : integer
+        methods.add_method_mut("writeI16LE", |_, this, v: i16| {
+            this.inner.write_i16_le(v);
+            Ok(())
+        });
+        // -- writeU32LE --
+        /// Writes an unsigned 32-bit LE integer.
+        /// @param value : integer
+        methods.add_method_mut("writeU32LE", |_, this, v: u32| {
+            this.inner.write_u32_le(v);
+            Ok(())
+        });
+        // -- writeI32LE --
+        /// Writes a signed 32-bit LE integer.
+        /// @param value : integer
+        methods.add_method_mut("writeI32LE", |_, this, v: i32| {
+            this.inner.write_i32_le(v);
+            Ok(())
+        });
+        // -- writeF32LE --
+        /// Writes a 32-bit LE float.
+        /// @param value : number
+        methods.add_method_mut("writeF32LE", |_, this, v: f32| {
+            this.inner.write_f32_le(v);
+            Ok(())
+        });
+        // -- writeF64LE --
+        /// Writes a 64-bit LE float.
+        /// @param value : number
+        methods.add_method_mut("writeF64LE", |_, this, v: f64| {
+            this.inner.write_f64_le(v);
+            Ok(())
+        });
+        // -- writeString --
+        /// Writes a length-prefixed UTF-8 string (4-byte LE length + bytes).
+        /// @param value : string
+        methods.add_method_mut("writeString", |_, this, s: String| {
+            this.inner.write_string(&s);
+            Ok(())
+        });
+        // -- writeBytes --
+        /// Writes raw bytes from a Lua string.
+        /// @param value : string
+        methods.add_method_mut("writeBytes", |_, this, s: mlua::String| {
+            this.inner.write_bytes(s.as_bytes());
+            Ok(())
+        });
+        // -- seek --
+        /// Moves the write cursor to the given position.
+        /// @param pos : integer
+        methods.add_method_mut("seek", |_, this, pos: usize| {
+            this.inner.seek(pos);
+            Ok(())
+        });
+        // -- tell --
+        /// Returns the current write cursor position.
+        /// @return integer
+        methods.add_method("tell", |_, this, ()| Ok(this.inner.tell()));
+        // -- len --
+        /// Returns the total buffer length.
+        /// @return integer
+        methods.add_method("len", |_, this, ()| Ok(this.inner.len()));
+        // -- toBytes --
+        /// Returns the buffer contents as a Lua string.
+        /// @return string
+        methods.add_method("toBytes", |lua, this, ()| lua.create_string(this.inner.as_bytes()));
     }
 }
 

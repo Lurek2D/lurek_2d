@@ -1,6 +1,5 @@
 ---
 description: "Fix a dependency issue in Cargo.toml: version conflict, missing feature, or unnecessary dependency."
-agent: Developer
 ---
 # Fix Dependency Issue
 

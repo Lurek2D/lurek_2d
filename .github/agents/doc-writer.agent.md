@@ -1,7 +1,7 @@
 ---
 name: Doc-Writer
 description: "Write and maintain Lurek2D user-facing documentation under `docs/`, `content/demos/`, and `content/examples/`, kept in sync with current code."
-tools: [tools/docs/collect_docs.py, tools/docs/gen_lua_api.py, tools/docs/gen_wiki_api.py, tools/docs/gen_engine_docs.py, tools/audit/doc_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Doc-Writer
 

@@ -532,3 +532,74 @@ describe("lurek.time physicsMaxSteps configurability", function()
     end)
 end)
 
+-- ── afterFrames / everyFrames / updateFrames ──────────────────────────────────
+-- @description Tests for frame-count based scheduler events: afterFrames, everyFrames, updateFrames.
+describe("lurek.time scheduler frame events", function()
+  -- @covers lurek.time.newScheduler
+  -- @covers lurek.time.Scheduler.afterFrames
+  -- @covers lurek.time.Scheduler.updateFrames
+  -- @description afterFrames fires callback exactly after the given number of updateFrames calls.
+  it("afterFrames fires after n frames", function()
+    local s = lurek.time.newScheduler()
+    local fired = 0
+    s:afterFrames(2, function() fired = fired + 1 end)
+    expect_equal(0, fired)
+    s:updateFrames()
+    expect_equal(0, fired)
+    s:updateFrames()
+    expect_equal(1, fired)
+  end)
+
+  -- @covers lurek.time.Scheduler.afterFrames
+  -- @description afterFrames fires exactly once even after many more frames.
+  it("afterFrames fires exactly once", function()
+    local s = lurek.time.newScheduler()
+    local fired = 0
+    s:afterFrames(1, function() fired = fired + 1 end)
+    for _ = 1, 5 do s:updateFrames() end
+    expect_equal(1, fired)
+  end)
+
+  -- @covers lurek.time.Scheduler.everyFrames
+  -- @covers lurek.time.Scheduler.updateFrames
+  -- @description everyFrames fires once every n frames over 6 frames.
+  it("everyFrames fires every n frames", function()
+    local s = lurek.time.newScheduler()
+    local fired = 0
+    s:everyFrames(2, function() fired = fired + 1 end)
+    for _ = 1, 6 do s:updateFrames() end
+    expect_equal(3, fired)
+  end)
+
+  -- @covers lurek.time.Scheduler.everyFrames
+  -- @description everyFrames with a count limit stops after that many firings.
+  it("everyFrames respects count limit", function()
+    local s = lurek.time.newScheduler()
+    local fired = 0
+    s:everyFrames(1, function() fired = fired + 1 end, 3)
+    for _ = 1, 10 do s:updateFrames() end
+    expect_equal(3, fired)
+  end)
+
+  -- @covers lurek.time.Scheduler.updateFrames
+  -- @description updateFrames returns the number of callbacks that fired this call.
+  it("updateFrames returns fired count", function()
+    local s = lurek.time.newScheduler()
+    s:afterFrames(1, function() end)
+    s:afterFrames(1, function() end)
+    local count = s:updateFrames()
+    expect_equal(2, count)
+  end)
+
+  -- @covers lurek.time.Scheduler.afterFrames
+  -- @description afterFrames with n=0 fires immediately on the first updateFrames.
+  it("afterFrames(0) fires on first updateFrames", function()
+    local s = lurek.time.newScheduler()
+    local fired = 0
+    s:afterFrames(0, function() fired = fired + 1 end)
+    s:updateFrames()
+    expect_equal(1, fired)
+  end)
+end)
+
+test_summary()

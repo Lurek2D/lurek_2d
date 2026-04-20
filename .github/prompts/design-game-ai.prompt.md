@@ -1,7 +1,5 @@
 ---
 description: "Design FSM, BT, GOAP, or Utility AI for game actors via lurek.ai."
-agent: Developer
-tools: [tools/validate/cag_validate.py]
 ---
 # Design Game Ai
 

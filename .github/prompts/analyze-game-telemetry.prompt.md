@@ -1,7 +1,5 @@
 ---
 description: Parse log data and produce game telemetry analytics.
-agent: Research
-tools: [tools/validate/cag_validate.py]
 ---
 # Analyze Game Telemetry
 

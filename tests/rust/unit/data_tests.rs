@@ -859,3 +859,142 @@ mod bin_pack_tests {
         assert!(result.is_err());
     }
 }
+
+// ── DataWriter ────────────────────────────────────────────────────────────────
+
+mod data_writer_tests {
+    use lurek2d::data::DataWriter;
+
+    #[test]
+    fn new_is_empty() {
+        let w = DataWriter::new();
+        assert_eq!(w.len(), 0);
+        assert!(w.is_empty());
+    }
+
+    #[test]
+    fn write_u8_increments_len() {
+        let mut w = DataWriter::new();
+        w.write_u8(42);
+        assert_eq!(w.len(), 1);
+    }
+
+    #[test]
+    fn write_u8_correct_byte_value() {
+        let mut w = DataWriter::new();
+        w.write_u8(0xAB);
+        assert_eq!(w.as_bytes(), &[0xAB]);
+    }
+
+    #[test]
+    fn write_u32_le_writes_four_bytes() {
+        let mut w = DataWriter::new();
+        w.write_u32_le(0x01020304);
+        assert_eq!(w.len(), 4);
+        let b = w.as_bytes();
+        assert_eq!(b[0], 0x04); // LE: least significant first
+        assert_eq!(b[3], 0x01);
+    }
+
+    #[test]
+    fn write_string_adds_length_prefix() {
+        let mut w = DataWriter::new();
+        w.write_string("hi");
+        // 4 bytes LE prefix + 2 bytes content
+        assert_eq!(w.len(), 6);
+    }
+
+    #[test]
+    fn write_string_content_preserved() {
+        let mut w = DataWriter::new();
+        w.write_string("AB");
+        let b = w.as_bytes();
+        assert_eq!(b[4], b'A');
+        assert_eq!(b[5], b'B');
+    }
+
+    #[test]
+    fn tell_starts_at_zero() {
+        let w = DataWriter::new();
+        assert_eq!(w.tell(), 0);
+    }
+
+    #[test]
+    fn tell_advances_after_write() {
+        let mut w = DataWriter::new();
+        w.write_u8(1);
+        w.write_u8(2);
+        assert_eq!(w.tell(), 2);
+    }
+
+    #[test]
+    fn seek_repositions_cursor() {
+        let mut w = DataWriter::new();
+        w.write_u8(1);
+        w.write_u8(2);
+        w.write_u8(3);
+        w.seek(1);
+        assert_eq!(w.tell(), 1);
+    }
+
+    #[test]
+    fn seek_past_end_extends_buffer() {
+        let mut w = DataWriter::new();
+        w.seek(4);
+        assert_eq!(w.len(), 4);
+    }
+
+    #[test]
+    fn seek_and_overwrite() {
+        let mut w = DataWriter::new();
+        w.write_u8(0x00);
+        w.write_u8(0x00);
+        w.seek(0);
+        w.write_u8(0xFF);
+        let b = w.into_bytes();
+        assert_eq!(b.len(), 2);
+        assert_eq!(b[0], 0xFF);
+        assert_eq!(b[1], 0x00);
+    }
+
+    #[test]
+    fn into_bytes_returns_all_written() {
+        let mut w = DataWriter::new();
+        w.write_u8(10);
+        w.write_u8(20);
+        w.write_u8(30);
+        let b = w.into_bytes();
+        assert_eq!(b, vec![10, 20, 30]);
+    }
+}
+
+mod crc32_tests {
+    use lurek2d::data::crc32;
+
+    #[test]
+    fn crc32_empty_is_zero() {
+        assert_eq!(0, crc32(b""));
+    }
+
+    #[test]
+    fn crc32_known_vector_123456789() {
+        // Standard CRC-32/ISO-HDLC check value for "123456789" is 0xCBF43926
+        assert_eq!(0xCBF4_3926_u64, crc32(b"123456789"));
+    }
+
+    #[test]
+    fn crc32_is_deterministic() {
+        assert_eq!(crc32(b"hello"), crc32(b"hello"));
+    }
+
+    #[test]
+    fn crc32_differs_for_different_inputs() {
+        assert_ne!(crc32(b"hello"), crc32(b"world"));
+    }
+
+    #[test]
+    fn crc32_result_fits_in_u32_range() {
+        let v = crc32(b"test");
+        assert!(v <= u32::MAX as u64);
+    }
+}

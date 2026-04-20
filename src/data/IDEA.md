@@ -36,10 +36,10 @@ The `data` module provides Lurek2D's binary-data toolkit: byte buffers with type
 
 ## 5. Feature Ideas
 
-1. **[P3][FEAT]** `DataWriter` — write-cursor companion to `DataView` for building binary messages sequentially.
-   - Rationale: Symmetric read/write API simplifies binary protocol work for GameDev.
-   - Effort: M · Risk: low.
-   - Competitor inspiration: [love2d: "love.data.ByteData with string.pack for binary protocols" — https://love2d.org/wiki/ByteData]
+1. ~~**[P3][FEAT]** `DataWriter` — write-cursor companion to `DataView` for building binary messages sequentially.~~ ✅ **DONE** — `DataWriter` added to `src/data/data_writer.rs`. Methods: `write_u8`, `write_u32_le`, `write_string`, `seek`, `tell`, `len`, `into_bytes`, and more. Lua: `lurek.data.newWriter()` returns a DataWriter userdata.
+   - ~~Rationale: Symmetric read/write API simplifies binary protocol work for GameDev.~~
+   - ~~Effort: M · Risk: low.~~
+   - ~~Competitor inspiration: [love2d: "love.data.ByteData with string.pack for binary protocols" — https://love2d.org/wiki/ByteData]~~
 2. **[P3][FEAT]** Streaming compress/decompress via reader/writer wrappers — chunk-based for large data.
    - Rationale: Prevents 2x peak memory for large files.
    - Effort: M · Risk: low.
@@ -68,7 +68,7 @@ TODO(dedup): log::sinks — `MemorySink` uses `VecDeque` as a bounded ring, dupl
 
 ## 9. TODO(helper): Engine-Level Helper Candidates
 
-TODO(helper): `lurek.data.crc32(str)` — expose CRC-32 for quick checksum needs (asset validation); currently only md5/sha256 are in the Lua surface.
+~~TODO(helper): `lurek.data.crc32(str)` — expose CRC-32 for quick checksum needs (asset validation); currently only md5/sha256 are in the Lua surface.~~ ✅ **DONE** — Added `data::crc32(data: &[u8]) -> u64` + `lurek.data.crc32(str)` Lua binding (via `crc32fast` crate).
 
 ## 10. TODO(plugin): Plugin Candidacy Proposal
 

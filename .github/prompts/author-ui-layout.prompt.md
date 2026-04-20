@@ -1,7 +1,5 @@
 ---
 description: Author or edit a content/layouts/ TOML UI layout.
-agent: Lua-Designer
-tools: [tools/validate/cag_validate.py]
 ---
 # Author Ui Layout
 

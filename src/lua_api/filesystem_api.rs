@@ -638,6 +638,79 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    // -- listRecursive --
+    /// Returns a sorted list of all files under `path`, recursively.
+    ///
+    /// Paths are relative to the game root and use `/` separators.
+    ///
+    /// @param path : string
+    /// @return table  array of relative file paths
+    let s = state.clone();
+    tbl.set(
+        "listRecursive",
+        lua.create_function(move |lua, path: String| {
+            let paths = s
+                .borrow()
+                .fs
+                .list_recursive(&path)
+                .map_err(LuaError::external)?;
+            let result = lua.create_table()?;
+            for (i, p) in paths.iter().enumerate() {
+                result.set(i + 1, p.as_str())?;
+            }
+            Ok(result)
+        })?,
+    )?;
+
+    // -- stat --
+    /// Returns lightweight file statistics for the given path.
+    ///
+    /// Returns a table with fields:
+    /// - `size`   (integer) — File size in bytes (0 for directories).
+    /// - `isFile` (boolean) — `true` if the path is a regular file.
+    /// - `isDir`  (boolean) — `true` if the path is a directory.
+    ///
+    /// Raises a Lua error if the path is inaccessible or outside the sandbox.
+    ///
+    /// @param path : string
+    /// @return table  { size: integer, isFile: boolean, isDir: boolean }
+    let s = state.clone();
+    tbl.set(
+        "stat",
+        lua.create_function(move |lua, path: String| {
+            let (size, is_file, is_dir) = s
+                .borrow()
+                .fs
+                .stat(&path)
+                .map_err(LuaError::external)?;
+            let t = lua.create_table()?;
+            t.set("size", size)?;
+            t.set("isFile", is_file)?;
+            t.set("isDir", is_dir)?;
+            Ok(t)
+        })?,
+    )?;
+
+    // -- createTempFile --
+    /// Creates an empty temporary file in the `save/` sandbox and returns its
+    /// relative path.
+    ///
+    /// The caller is responsible for deleting the file when done.
+    ///
+    /// @param prefix : string?  Optional name prefix (default `"tmp"`).
+    /// @return string  Relative path of the created temp file (e.g. `"save/tmp123.tmp"`).
+    let s = state.clone();
+    tbl.set(
+        "createTempFile",
+        lua.create_function(move |_, prefix: Option<String>| {
+            let prefix = prefix.as_deref().unwrap_or("tmp");
+            s.borrow()
+                .fs
+                .create_temp_file(prefix)
+                .map_err(LuaError::external)
+        })?,
+    )?;
+
     luna.set("fs", tbl)?;
     Ok(())
 }

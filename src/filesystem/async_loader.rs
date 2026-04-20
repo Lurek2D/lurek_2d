@@ -120,6 +120,10 @@ impl AsyncLoader {
                 .is_err()
             {
                 // Queue full — report as an error result immediately.
+                log::warn!(
+                    "Async load queue full; request dropped for '{}'",
+                    resolved_path.display()
+                );
                 if let Ok(mut map) = self.results.lock() {
                     map.insert(id, LoadResult::Error("Async load queue is full".into()));
                 }

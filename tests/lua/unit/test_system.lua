@@ -560,4 +560,37 @@ describe("lurek.signal.quit", function()
         expect_type("function", lurek.signal.quit)
     end)
 end)
+
+describe("lurek.platform.errorSnapshot serialisation", function()
+    -- @covers lurek.platform.errorSnapshot
+    it("errorSnapshot is a function", function()
+        expect_equal("function", type(lurek.platform.errorSnapshot))
+    end)
+
+    -- @covers lurek.platform.errorSnapshot
+    it("returns a non-empty string", function()
+        local json = lurek.platform.errorSnapshot("test error")
+        expect_equal("string", type(json))
+        expect_true(#json > 0)
+    end)
+
+    -- @covers lurek.platform.errorSnapshot
+    it("output contains message field", function()
+        local json = lurek.platform.errorSnapshot("my error")
+        expect_true(json:find('"message"') ~= nil)
+    end)
+
+    -- @covers lurek.platform.errorSnapshot
+    it("output contains code field", function()
+        local json = lurek.platform.errorSnapshot("err")
+        expect_true(json:find('"code"') ~= nil)
+    end)
+
+    -- @covers lurek.platform.errorSnapshot
+    it("output contains category field", function()
+        local json = lurek.platform.errorSnapshot("err")
+        expect_true(json:find('"category"') ~= nil)
+    end)
+end)
+
 test_summary()

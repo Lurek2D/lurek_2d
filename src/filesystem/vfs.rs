@@ -117,6 +117,20 @@ impl GameFS {
         &self.base_dir
     }
 
+    /// Rejects paths containing `..` (parent-directory) components.
+    ///
+    /// Prevents path-traversal attacks by scanning path components.
+    fn reject_traversal(path: &str) -> EngineResult<()> {
+        for component in std::path::Path::new(path).components() {
+            if let std::path::Component::ParentDir = component {
+                return Err(EngineError::FileSystemError(
+                    "Access denied: path traversal detected".into(),
+                ));
+            }
+        }
+        Ok(())
+    }
+
     /// Reads the file at `path` (relative to base dir) and returns its contents as a `String`.
     ///
     /// Canonicalises the path and rejects any path that escapes the base directory,
@@ -193,14 +207,7 @@ impl GameFS {
                 "Write access restricted to save/ directory".into(),
             ));
         }
-        // Prevent path traversal via ".." components
-        for component in std::path::Path::new(path).components() {
-            if let std::path::Component::ParentDir = component {
-                return Err(EngineError::FileSystemError(
-                    "Access denied: path traversal detected".into(),
-                ));
-            }
-        }
+        Self::reject_traversal(path)?;
         if let Some(parent) = full.parent() {
             std::fs::create_dir_all(parent).map_err(|e| {
                 EngineError::FileSystemError(format!("Failed to create directories: {}", e))
@@ -264,6 +271,52 @@ impl GameFS {
             }
         }
         Ok(entries)
+    }
+
+    /// Lists all entries recursively under `path`, returning paths relative to `path`.
+    ///
+    /// Traverses subdirectories depth-first. Applies the same sandbox check as `resolve_read_path`.
+    ///
+    /// # Parameters
+    /// - `path` — Relative directory path within the game root.
+    ///
+    /// # Returns
+    /// `Ok(Vec<String>)` — Relative paths (using `/` separator) of all files and directories found.
+    pub fn list_recursive(&self, path: &str) -> EngineResult<Vec<String>> {
+        let resolved = self.resolve_read_path(path)?;
+        let mut results = Vec::new();
+        Self::collect_recursive(&resolved, &resolved, &mut results)?;
+        results.sort();
+        Ok(results)
+    }
+
+    /// Internal recursive directory walker.
+    fn collect_recursive(
+        base: &std::path::Path,
+        dir: &std::path::Path,
+        out: &mut Vec<String>,
+    ) -> EngineResult<()> {
+        let rd = std::fs::read_dir(dir).map_err(|e| {
+            EngineError::FileSystemError(format!(
+                "Failed to read directory '{}': {}",
+                dir.display(),
+                e
+            ))
+        })?;
+        for entry in rd {
+            let entry = entry.map_err(|e| {
+                EngineError::FileSystemError(format!("Failed to read entry: {}", e))
+            })?;
+            let entry_path = entry.path();
+            if let Ok(rel) = entry_path.strip_prefix(base) {
+                let rel_str = rel.to_string_lossy().replace('\\', "/");
+                out.push(rel_str);
+            }
+            if entry_path.is_dir() {
+                Self::collect_recursive(base, &entry_path, out)?;
+            }
+        }
+        Ok(())
     }
 
     // ── Directory Operations ──────────────────────────────────────────
@@ -398,14 +451,7 @@ impl GameFS {
                 "Write access restricted to save/ directory".into(),
             ));
         }
-        // Prevent path traversal via ".." components
-        for component in std::path::Path::new(path).components() {
-            if let std::path::Component::ParentDir = component {
-                return Err(EngineError::FileSystemError(
-                    "Access denied: path traversal detected".into(),
-                ));
-            }
-        }
+        Self::reject_traversal(path)?;
         if let Some(parent) = full.parent() {
             std::fs::create_dir_all(parent).map_err(|e| {
                 EngineError::FileSystemError(format!("Failed to create directories: {}", e))
@@ -694,14 +740,7 @@ impl GameFS {
                 "Write access restricted to save/ directory".into(),
             ));
         }
-        // Prevent path traversal by checking for ".." components
-        for component in std::path::Path::new(path).components() {
-            if let std::path::Component::ParentDir = component {
-                return Err(EngineError::FileSystemError(
-                    "Access denied: path traversal detected".into(),
-                ));
-            }
-        }
+        Self::reject_traversal(path)?;
         Ok(full)
     }
 
@@ -844,6 +883,66 @@ impl GameFS {
         }
         matches.sort();
         Ok(matches)
+    }
+
+    /// Returns lightweight file-size statistics for a path without loading file
+    /// contents.
+    ///
+    /// Unlike [`get_info`], this method returns only the data needed for
+    /// `lurek.fs.stat`: file size, and booleans indicating whether the path is
+    /// a regular file or a directory.
+    ///
+    /// # Parameters
+    /// - `path` — Relative path inside the game directory.
+    ///
+    /// # Returns
+    /// `Ok((size, is_file, is_dir))` on success, `Err(EngineError)` if the
+    /// path is inaccessible or outside the sandbox.
+    pub fn stat(&self, path: &str) -> EngineResult<(u64, bool, bool)> {
+        let resolved = self.resolve_read_path(path)?;
+        let meta = std::fs::metadata(&resolved).map_err(|e| {
+            EngineError::FileSystemError(format!("stat failed for '{}': {}", path, e))
+        })?;
+        Ok((meta.len(), meta.is_file(), meta.is_dir()))
+    }
+
+    /// Creates a temporary file inside the `save/` sandbox and returns its
+    /// relative path.
+    ///
+    /// The path follows the pattern `save/<prefix><timestamp>_<counter>.tmp`.
+    /// The file is created empty and ready for writing. The caller is
+    /// responsible for deleting it when done.
+    ///
+    /// # Parameters
+    /// - `prefix` — Optional name prefix for the temp file. Defaults to `"tmp"`.
+    ///
+    /// # Returns
+    /// `Ok(String)` — Relative path of the created temp file.
+    /// `Err(EngineError)` — If the save directory cannot be created or the file
+    ///   cannot be opened.
+    pub fn create_temp_file(&self, prefix: &str) -> EngineResult<String> {
+        let save_dir = self.base_dir.join("save");
+        std::fs::create_dir_all(&save_dir).map_err(|e| {
+            EngineError::FileSystemError(format!("create_temp_file: cannot create save/: {}", e))
+        })?;
+        let ts = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_micros())
+            .unwrap_or(0);
+        // Use a simple counter to reduce collisions when called in tight loops.
+        static COUNTER: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+        let n = COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let safe_prefix = prefix
+            .chars()
+            .map(|c| if c.is_alphanumeric() || c == '_' || c == '-' { c } else { '_' })
+            .take(32)
+            .collect::<String>();
+        let filename = format!("{}{}_{}.tmp", safe_prefix, ts, n);
+        let full_path = save_dir.join(&filename);
+        std::fs::File::create(&full_path).map_err(|e| {
+            EngineError::FileSystemError(format!("create_temp_file: cannot create file: {}", e))
+        })?;
+        Ok(format!("save/{}", filename))
     }
 }
 

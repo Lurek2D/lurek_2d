@@ -1,6 +1,5 @@
 ---
 description: "Write or update API reference documentation for lurek.* functions. Use when new Lua bindings are added or existing ones change. Produces..."
-agent: Doc-Writer
 ---
 # Doc Api Reference
 

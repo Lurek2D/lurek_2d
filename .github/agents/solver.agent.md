@@ -1,7 +1,7 @@
 ---
 name: Solver
 description: Structured root-cause analysis and alternative evaluation for hard Lurek2D engineering problems; delivers a decision-ready solution report — does not implement code.
-tools: [tools/audit/audit_module.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Solver
 

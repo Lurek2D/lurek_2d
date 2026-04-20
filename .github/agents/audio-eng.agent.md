@@ -1,7 +1,7 @@
 ---
 name: Audio-Eng
 description: "Own the Lurek2D audio pipeline (`src/audio/`, `src/lua_api/audio_api.rs`): rodio integration, mixer, sources, spatial state, and the `lurek.audio.*` API."
-tools: [tools/docs/collect_docs.py, tools/audit/doc_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Audio-Eng
 

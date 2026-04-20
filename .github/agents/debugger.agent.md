@@ -1,7 +1,7 @@
 ---
 name: Debugger
 description: "Diagnose runtime bugs in Lurek2D using log analysis, code reading, and a minimal repro; deliver a root-cause report — does not implement fixes."
-tools: [tools/audit/parse_test_log.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Debugger
 

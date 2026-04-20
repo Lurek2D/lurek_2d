@@ -1,7 +1,5 @@
 ---
 description: "Author a new agent, skill, or prompt following CAG standards."
-agent: CAG-Architect
-tools: [tools/validate/cag_validate.py]
 ---
 # Add Cag Artifact
 

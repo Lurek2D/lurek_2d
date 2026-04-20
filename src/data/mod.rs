@@ -14,6 +14,8 @@ pub mod byte_data;
 pub mod compress;
 /// Windowed read-only byte-buffer view.
 pub mod dataview;
+/// Write-cursor companion to `DataView`.
+pub mod data_writer;
 /// Base64 and hex encoding/decoding.
 pub mod encode;
 /// Cryptographic hash functions (MD5, SHA-1, SHA-256, SHA-512).
@@ -32,7 +34,8 @@ pub use bin_pack::{
 pub use byte_data::ByteData;
 pub use compress::{compress, decompress, CompressFormat};
 pub use dataview::{DataView, LuaDataView};
+pub use data_writer::DataWriter;
 pub use encode::{decode, encode, EncodeFormat};
-pub use hash::{hash, HashAlgorithm};
+pub use hash::{crc32, hash, HashAlgorithm};
 pub use pack::{get_packed_size, pack, unpack, PackValue};
 pub use ring_buffer::RingBuffer;

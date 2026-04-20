@@ -1,7 +1,5 @@
 ---
 description: "Rewrite content/examples/<module>.lua files as scenario-driven learning examples. Each example tells a coherent story about WHEN and WHY..."
-agent: Developer
-tools: [tools/audit/example_coverage.py]
 ---
 # Flesh Out Example
 

@@ -1,7 +1,5 @@
 ---
 description: "End-to-end roadmap phase completion: Manager-orchestrated workflow that audits a phase file, builds an evidence matrix of every deliverab..."
-agent: Architect
-tools: [tools/docs/collect_docs.py, tools/docs/gen_docs_lua.py]
 ---
 # Analyze Roadmap Phase
 

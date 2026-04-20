@@ -1,6 +1,5 @@
 ---
 description: Create a new RenderCommand variant for the rendering pipeline with full integration.
-agent: Developer
 ---
 # Create Draw Command
 

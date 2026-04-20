@@ -1,7 +1,5 @@
 ---
 description: "Add a post-processing visual effect (CRT, bloom, distortion, etc)."
-agent: Renderer
-tools: [tools/validate/cag_validate.py]
 ---
 # Add Visual Effect
 

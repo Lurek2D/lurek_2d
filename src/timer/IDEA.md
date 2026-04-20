@@ -28,15 +28,14 @@ The `timer` module owns time measurement (`Clock`) and deferred/repeating event 
 
 ## 4. Gap List
 
-1. **[P3][GAP]** No `after_frames(n)` — scheduling by frame count (useful for VFX sequencing at fixed step).
-   - Why: GameDev must convert frame count to seconds manually, which breaks if `time_scale` changes.
+1. ~~**[P3][GAP]** No `after_frames(n)` — scheduling by frame count (useful for VFX sequencing at fixed step).~~ ✅ **DONE** — Added `after_frames(n)`, `every_frames(n, count)`, and `update_frames()` to `Scheduler` + `lurek.time` Lua bindings.
+   - ~~Why: GameDev must convert frame count to seconds manually, which breaks if `time_scale` changes.~~
 
 ## 5. Feature Ideas
 
-1. **[P3][FEAT]** `after_frames(n)` — fire after N update ticks rather than elapsed seconds.
-   - Rationale: Deterministic frame-count scheduling is simpler for VFX chains and cutscenes.
+1. ~~**[P3][FEAT]** `after_frames(n)` — fire after N update ticks rather than elapsed seconds.~~ ✅ **DONE** — Implemented as `Scheduler::after_frames`, `every_frames`, `update_frames`; Lua: `scheduler:afterFrames(n, fn)`, `scheduler:everyFrames(n, fn, count?)`, `scheduler:updateFrames()`.
+   - ~~Rationale: Deterministic frame-count scheduling is simpler for VFX chains and cutscenes.~~
    - Effort: S · Risk: low.
-   - Competitor inspiration: [godot-2d: "Timer.wait_time supports both time and idle_frame counts" — https://docs.godotengine.org/en/stable/classes/class_SceneTreeTimer.html]
 
 ## 6. Performance / Reliability / Quality Ideas
 

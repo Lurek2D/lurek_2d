@@ -1,6 +1,5 @@
 ---
 description: "Fix compilation errors, clippy warnings, or formatting issues in Rust source code."
-agent: Developer
 ---
 # Fix Compilation Errors
 

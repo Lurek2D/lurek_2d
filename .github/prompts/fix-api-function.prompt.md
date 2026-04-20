@@ -1,6 +1,5 @@
 ---
 description: "Fix a broken or incorrect Lua API function: signature, behavior, or error handling."
-agent: Developer
 ---
 # Fix Api Function
 

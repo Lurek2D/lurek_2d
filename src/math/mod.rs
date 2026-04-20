@@ -12,6 +12,8 @@
 //!
 /// Bezier curve evaluation using De Casteljau's algorithm.
 pub mod bezier;
+/// Circle value type for 2D collision geometry and containment queries.
+pub mod circle;
 /// RGBA color value type: named constants, `f32` and `u8` construction, packed `u32` output.
 pub mod color;
 /// Standard easing functions for smooth animation and interpolation.
@@ -49,6 +51,7 @@ pub mod voronoi;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;
+pub use circle::Circle;
 pub use color::{gamma_to_linear, linear_to_gamma, Color};
 pub use geometry::*;
 pub use mat3::Mat3;

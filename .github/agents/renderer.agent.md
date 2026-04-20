@@ -1,7 +1,7 @@
 ---
 name: Renderer
 description: "Own the Lurek2D wgpu render pipeline (`src/render/`, `src/lua_api/render_api.rs`): RenderCommand queue, textures, sprites, canvases, shaders, blend modes."
-tools: [tools/docs/collect_docs.py, tools/audit/doc_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Renderer
 

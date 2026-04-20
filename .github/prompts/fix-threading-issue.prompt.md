@@ -1,6 +1,5 @@
 ---
 description: "Diagnose and fix threading issues in Lurek2D: Channel deadlocks, Worker lifecycle bugs, message delivery failures, or background Lua VM e..."
-agent: Debugger
 ---
 # Fix Threading Issue
 

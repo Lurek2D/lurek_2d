@@ -1,6 +1,5 @@
 ---
 description: Create a new Lua game example in the content/examples/ directory with main.lua and all required assets.
-agent: Developer
 ---
 # Create Game Example
 

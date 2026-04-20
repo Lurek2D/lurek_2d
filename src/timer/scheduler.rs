@@ -44,6 +44,35 @@ pub struct ScheduledEvent {
     pub paused: bool,
 }
 
+/// A frame-count–based scheduled event.
+///
+/// # Fields
+/// - `id` — `u32`.
+/// - `name` — `Option<String>`.
+/// - `target_frames` — `u64`. Fire when this many frames have elapsed since creation.
+/// - `frames_elapsed` — `u64`. Frames counted so far.
+/// - `interval_frames` — `u64`. For repeating: frames between firings.
+/// - `count` — `i32`. How many times left to fire (0 = expired, -1 = infinite).
+/// - `one_shot` — `bool`.
+/// - `paused` — `bool`.
+#[derive(Debug, Clone)]
+pub struct FrameEvent {
+    /// Unique numeric identifier (shares ID-space with time-based events).
+    pub id: u32,
+    /// Optional name.
+    pub name: Option<String>,
+    /// Frames remaining until next fire.
+    pub remaining_frames: u64,
+    /// Interval in frames for repeating events.
+    pub interval_frames: u64,
+    /// How many times left to fire (0 = expired, -1 = infinite).
+    pub count: i32,
+    /// Whether this is a one-shot event.
+    pub one_shot: bool,
+    /// Whether this event is individually paused.
+    pub paused: bool,
+}
+
 /// Manages a collection of timed events (one-shot and repeating).
 ///
 /// Each event has an integer ID (returned on creation) that can be used for
@@ -61,6 +90,7 @@ pub struct ScheduledEvent {
 #[derive(Debug, Clone)]
 pub struct Scheduler {
     events: Vec<ScheduledEvent>,
+    frame_events: Vec<FrameEvent>,
     next_id: u32,
     /// Global time multiplier applied to every `update(dt)` call.
     time_scale: f64,
@@ -81,6 +111,7 @@ impl Scheduler {
         log_msg!(debug, TI01);
         Self {
             events: Vec::new(),
+            frame_events: Vec::new(),
             next_id: 1,
             time_scale: 1.0,
         }
@@ -196,6 +227,53 @@ impl Scheduler {
         id
     }
 
+    // ── Frame-Based Scheduling ──────────────────────────────────────────
+
+    /// Schedule a one-shot event that fires after `n` frames.
+    ///
+    /// # Parameters
+    /// - `n` — `u64`. Number of frames to wait.
+    ///
+    /// # Returns
+    /// `u32` — event ID.
+    pub fn after_frames(&mut self, n: u64) -> u32 {
+        let id = self.next_id;
+        self.next_id += 1;
+        self.frame_events.push(FrameEvent {
+            id,
+            name: None,
+            remaining_frames: n,
+            interval_frames: n,
+            count: 1,
+            one_shot: true,
+            paused: false,
+        });
+        id
+    }
+
+    /// Schedule a repeating event that fires every `n` frames.
+    ///
+    /// # Parameters
+    /// - `n` — `u64`. Interval in frames.
+    /// - `count` — `i32`. How many times to fire (-1 = infinite).
+    ///
+    /// # Returns
+    /// `u32` — event ID.
+    pub fn every_frames(&mut self, n: u64, count: i32) -> u32 {
+        let id = self.next_id;
+        self.next_id += 1;
+        self.frame_events.push(FrameEvent {
+            id,
+            name: None,
+            remaining_frames: n,
+            interval_frames: n,
+            count,
+            one_shot: false,
+            paused: false,
+        });
+        id
+    }
+
     // ── Cancellation ──────────────────────────────────────────────────────
 
     /// Cancel a scheduled event by its ID.
@@ -210,6 +288,9 @@ impl Scheduler {
     pub fn cancel(&mut self, id: u32) -> bool {
         if let Some(pos) = self.events.iter().position(|e| e.id == id) {
             self.events.remove(pos);
+            true
+        } else if let Some(pos) = self.frame_events.iter().position(|e| e.id == id) {
+            self.frame_events.remove(pos);
             true
         } else {
             false
@@ -246,8 +327,9 @@ impl Scheduler {
     ///
     /// Returns the number cancelled.
     pub fn cancel_all(&mut self) -> u32 {
-        let count = self.events.len() as u32;
+        let count = (self.events.len() + self.frame_events.len()) as u32;
         self.events.clear();
+        self.frame_events.clear();
         log_msg!(debug, TI04, "{}", count);
         count
     }
@@ -505,12 +587,51 @@ impl Scheduler {
 
     // ── Collection queries ────────────────────────────────────────────────
 
+    /// Advance all non-paused frame-based events by one frame.
+    ///
+    /// # Returns
+    /// `Vec<u32>` — IDs of frame events that fired this frame.
+    ///
+    /// Call once per game frame (not affected by `time_scale`).
+    pub fn update_frames(&mut self) -> Vec<u32> {
+        let mut fired = Vec::new();
+
+        for event in &mut self.frame_events {
+            if event.paused {
+                continue;
+            }
+            if event.remaining_frames > 0 {
+                event.remaining_frames -= 1;
+            }
+            if event.remaining_frames == 0 {
+                fired.push(event.id);
+                if event.one_shot {
+                    event.count = 0;
+                } else if event.count > 0 {
+                    event.count -= 1;
+                    if event.count > 0 {
+                        event.remaining_frames = event.interval_frames;
+                    } else {
+                        // count reached 0, will be cleaned up
+                    }
+                } else {
+                    // count == -1 (infinite)
+                    event.remaining_frames = event.interval_frames;
+                }
+            }
+        }
+
+        self.frame_events.retain(|e| e.count != 0);
+
+        fired
+    }
+
     /// Get the number of active (non-expired) scheduled events.
     ///
     /// # Returns
     /// `usize`.
     pub fn count(&self) -> usize {
-        self.events.len()
+        self.events.len() + self.frame_events.len()
     }
 
     /// Get the IDs of all active events.
@@ -518,7 +639,9 @@ impl Scheduler {
     /// # Returns
     /// `Vec<u32>`.
     pub fn active_ids(&self) -> Vec<u32> {
-        self.events.iter().map(|e| e.id).collect()
+        let mut ids: Vec<u32> = self.events.iter().map(|e| e.id).collect();
+        ids.extend(self.frame_events.iter().map(|e| e.id));
+        ids
     }
 
     /// Returns `true` if no events are scheduled.
@@ -526,7 +649,7 @@ impl Scheduler {
     /// # Returns
     /// `bool`.
     pub fn is_empty(&self) -> bool {
-        self.events.is_empty()
+        self.events.is_empty() && self.frame_events.is_empty()
     }
 }
 

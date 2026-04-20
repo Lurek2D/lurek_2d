@@ -1,6 +1,5 @@
 ---
 description: Write a new integration test suite for a Lurek2D module. Use when a module lacks test coverage or new public API needs validation. Produc...
-agent: Tester
 ---
 # Create Integration Test
 

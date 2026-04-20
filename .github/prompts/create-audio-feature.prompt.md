@@ -1,6 +1,5 @@
 ---
 description: "Add a new audio feature to the Lurek2D engine. Use when implementing new audio API functions, new format support, or mixer improvements...."
-agent: Developer
 ---
 # Create Audio Feature
 

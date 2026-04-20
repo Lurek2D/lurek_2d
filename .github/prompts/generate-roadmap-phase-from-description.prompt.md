@@ -1,6 +1,5 @@
 ---
 description: Generate a complete Lurek2D roadmap phase file from a natural language description of scope and goals.
-agent: Architect
 ---
 # Generate Roadmap Phase From Description
 

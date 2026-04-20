@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 4067,
-    "covered": 3107,
+    "total": 4081,
+    "covered": 3121,
     "uncovered": 960,
-    "coverage_pct": 76.4,
+    "coverage_pct": 76.5,
     "covered_items": [
       {
         "module": "ai",
@@ -3891,13 +3891,19 @@
         "module": "data",
         "name": "HashAlgorithm::parse_str",
         "file": "src/data/hash.rs",
-        "line": 39
+        "line": 43
       },
       {
         "module": "data",
         "name": "hash",
         "file": "src/data/hash.rs",
-        "line": 61
+        "line": 65
+      },
+      {
+        "module": "data",
+        "name": "crc32",
+        "file": "src/data/hash.rs",
+        "line": 97
       },
       {
         "module": "data",
@@ -5890,6 +5896,18 @@
         "name": "GameFS::glob",
         "file": "src/filesystem/vfs.rs",
         "line": 854
+      },
+      {
+        "module": "filesystem",
+        "name": "GameFS::stat",
+        "file": "src/filesystem/vfs.rs",
+        "line": 901
+      },
+      {
+        "module": "filesystem",
+        "name": "GameFS::create_temp_file",
+        "file": "src/filesystem/vfs.rs",
+        "line": 923
       },
       {
         "module": "filesystem",
@@ -8637,7 +8655,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/globe_api.rs",
-        "line": 628
+        "line": 668
       },
       {
         "module": "lua_api",
@@ -8679,7 +8697,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/math_api.rs",
-        "line": 1449
+        "line": 1533
       },
       {
         "module": "lua_api",
@@ -8877,61 +8895,73 @@
         "module": "math",
         "name": "AabbTree::new",
         "file": "src/math/aabb_tree.rs",
-        "line": 123
+        "line": 203
       },
       {
         "module": "math",
         "name": "AabbTree::insert",
         "file": "src/math/aabb_tree.rs",
-        "line": 142
+        "line": 222
       },
       {
         "module": "math",
         "name": "AabbTree::remove",
         "file": "src/math/aabb_tree.rs",
-        "line": 241
+        "line": 321
       },
       {
         "module": "math",
         "name": "AabbTree::query",
         "file": "src/math/aabb_tree.rs",
-        "line": 311
+        "line": 391
       },
       {
         "module": "math",
         "name": "AabbTree::query_point",
         "file": "src/math/aabb_tree.rs",
-        "line": 348
+        "line": 428
+      },
+      {
+        "module": "math",
+        "name": "AabbTree::query_circle",
+        "file": "src/math/aabb_tree.rs",
+        "line": 445
+      },
+      {
+        "module": "math",
+        "name": "AabbTree::query_segment",
+        "file": "src/math/aabb_tree.rs",
+        "line": 470
       },
       {
         "module": "math",
         "name": "AabbTree::update",
         "file": "src/math/aabb_tree.rs",
-        "line": 361
+        "line": 488
       },
       {
         "module": "math",
         "name": "AabbTree::contains",
         "file": "src/math/aabb_tree.rs",
-        "line": 373
+        "line": 500
       },
       {
         "module": "math",
         "name": "AabbTree::len",
         "file": "src/math/aabb_tree.rs",
-        "line": 378
+        "line": 505
       },
       {
         "module": "math",
         "name": "AabbTree::is_empty",
         "file": "src/math/aabb_tree.rs",
-        "line": 383
+        "line": 510
       },
       {
         "module": "math",
         "name": "AabbTree::clear",
         "file": "src/math/aabb_tree.rs",
-        "line": 388
+        "line": 515
       },
       {
         "module": "math",
@@ -8992,6 +9022,48 @@
         "name": "BezierCurve::get_interpolated_position",
         "file": "src/math/bezier.rs",
         "line": 263
+      },
+      {
+        "module": "math",
+        "name": "Circle::new",
+        "file": "src/math/circle.rs",
+        "line": 34
+      },
+      {
+        "module": "math",
+        "name": "Circle::center",
+        "file": "src/math/circle.rs",
+        "line": 46
+      },
+      {
+        "module": "math",
+        "name": "Circle::area",
+        "file": "src/math/circle.rs",
+        "line": 54
+      },
+      {
+        "module": "math",
+        "name": "Circle::perimeter",
+        "file": "src/math/circle.rs",
+        "line": 62
+      },
+      {
+        "module": "math",
+        "name": "Circle::contains",
+        "file": "src/math/circle.rs",
+        "line": 75
+      },
+      {
+        "module": "math",
+        "name": "Circle::intersects",
+        "file": "src/math/circle.rs",
+        "line": 91
+      },
+      {
+        "module": "math",
+        "name": "Circle::aabb",
+        "file": "src/math/circle.rs",
+        "line": 105
       },
       {
         "module": "math",
@@ -9321,37 +9393,37 @@
         "module": "math",
         "name": "lerp",
         "file": "src/math/mod.rs",
-        "line": 74
+        "line": 77
       },
       {
         "module": "math",
         "name": "remap",
         "file": "src/math/mod.rs",
-        "line": 89
+        "line": 92
       },
       {
         "module": "math",
         "name": "clamp",
         "file": "src/math/mod.rs",
-        "line": 104
+        "line": 107
       },
       {
         "module": "math",
         "name": "sign",
         "file": "src/math/mod.rs",
-        "line": 121
+        "line": 124
       },
       {
         "module": "math",
         "name": "smoothstep",
         "file": "src/math/mod.rs",
-        "line": 142
+        "line": 145
       },
       {
         "module": "math",
         "name": "inverse_lerp",
         "file": "src/math/mod.rs",
-        "line": 156
+        "line": 159
       },
       {
         "module": "math",
@@ -14506,6 +14578,18 @@
         "name": "EngineError::recovery_hint",
         "file": "src/runtime/error.rs",
         "line": 167
+      },
+      {
+        "module": "runtime",
+        "name": "ErrorSnapshot::to_json",
+        "file": "src/runtime/error.rs",
+        "line": 231
+      },
+      {
+        "module": "runtime",
+        "name": "EngineError::snapshot",
+        "file": "src/runtime/error.rs",
+        "line": 246
       },
       {
         "module": "runtime",
@@ -24412,10 +24496,10 @@
     ]
   },
   "lua": {
-    "total": 3710,
-    "covered": 3368,
-    "uncovered": 342,
-    "coverage_pct": 90.8,
+    "total": 3723,
+    "covered": 3383,
+    "uncovered": 340,
+    "coverage_pct": 90.9,
     "covered_items": [
       {
         "module": "ai",
@@ -28822,206 +28906,213 @@
       },
       {
         "module": "data",
+        "lua_name": "lurek.data.crc32",
+        "kind": "function",
+        "file": "src/lua_api/data_api.rs",
+        "line": 419
+      },
+      {
+        "module": "data",
         "lua_name": "lurek.data.newByteData",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 415
+        "line": 423
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newDataView",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 441
+        "line": 449
       },
       {
         "module": "data",
         "lua_name": "lurek.data.write",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 459
+        "line": 467
       },
       {
         "module": "data",
         "lua_name": "lurek.data.read",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 475
+        "line": 483
       },
       {
         "module": "data",
         "lua_name": "lurek.data.size",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 491
+        "line": 499
       },
       {
         "module": "data",
         "lua_name": "lurek.data.parseToml",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 502
+        "line": 510
       },
       {
         "module": "data",
         "lua_name": "lurek.data.encodeToml",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 514
+        "line": 522
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newRingBuffer",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 527
+        "line": 535
       },
       {
         "module": "data",
         "lua_name": "lurek.data.toMsgPack",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 547
+        "line": 555
       },
       {
         "module": "data",
         "lua_name": "lurek.data.fromMsgPack",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 563
+        "line": 571
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newWriter",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 577
+        "line": 585
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 650
+        "line": 658
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt16",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 683
+        "line": 691
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt32",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 705
+        "line": 713
       },
       {
         "module": "data",
         "lua_name": "DataView:getFloat",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 716
+        "line": 724
       },
       {
         "module": "data",
         "lua_name": "DataView:getDouble",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 727
+        "line": 735
       },
       {
         "module": "data",
         "lua_name": "DataView:getSize",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 734
+        "line": 742
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 752
+        "line": 760
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 787
+        "line": 795
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeString",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 815
+        "line": 823
       },
       {
         "module": "data",
         "lua_name": "DataWriter:seek",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 829
+        "line": 837
       },
       {
         "module": "data",
         "lua_name": "DataWriter:tell",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 836
+        "line": 844
       },
       {
         "module": "data",
         "lua_name": "DataWriter:len",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 840
+        "line": 848
       },
       {
         "module": "data",
         "lua_name": "DataWriter:toBytes",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 844
+        "line": 852
       },
       {
         "module": "data",
         "lua_name": "mlua:getSize",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 853
+        "line": 861
       },
       {
         "module": "data",
         "lua_name": "mlua:getString",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 857
+        "line": 865
       },
       {
         "module": "data",
         "lua_name": "mlua:getByte",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 862
+        "line": 870
       },
       {
         "module": "data",
         "lua_name": "mlua:setByte",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 876
+        "line": 884
       },
       {
         "module": "data",
         "lua_name": "mlua:clone",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 890
+        "line": 898
       },
       {
         "module": "dataframe",
@@ -32111,6 +32202,20 @@
         "line": 649
       },
       {
+        "module": "filesystem",
+        "lua_name": "lurek.filesystem.stat",
+        "kind": "function",
+        "file": "src/lua_api/filesystem_api.rs",
+        "line": 678
+      },
+      {
+        "module": "filesystem",
+        "lua_name": "lurek.filesystem.createTempFile",
+        "kind": "function",
+        "file": "src/lua_api/filesystem_api.rs",
+        "line": 703
+      },
+      {
         "module": "globe",
         "lua_name": "Globe:addProvince",
         "kind": "method",
@@ -32122,343 +32227,357 @@
         "lua_name": "Globe:removeProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 116
+        "line": 117
       },
       {
         "module": "globe",
         "lua_name": "Globe:provinceCount",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 123
+        "line": 124
       },
       {
         "module": "globe",
         "lua_name": "Globe:getNeighbors",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 131
+        "line": 132
       },
       {
         "module": "globe",
         "lua_name": "Globe:setProvinceAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 147
+        "line": 150
       },
       {
         "module": "globe",
         "lua_name": "Globe:getProvinceAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 162
+        "line": 166
       },
       {
         "module": "globe",
         "lua_name": "Globe:pan",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 174
+        "line": 179
       },
       {
         "module": "globe",
         "lua_name": "Globe:zoom",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 181
+        "line": 186
       },
       {
         "module": "globe",
         "lua_name": "Globe:setCamera",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 188
+        "line": 195
       },
       {
         "module": "globe",
         "lua_name": "Globe:getCamera",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 200
+        "line": 207
       },
       {
         "module": "globe",
         "lua_name": "Globe:getLod",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 207
+        "line": 214
       },
       {
         "module": "globe",
         "lua_name": "Globe:pick",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 221
+        "line": 229
       },
       {
         "module": "globe",
         "lua_name": "Globe:setActiveViewer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 242
+        "line": 252
       },
       {
         "module": "globe",
         "lua_name": "Globe:revealProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 249
+        "line": 260
       },
       {
         "module": "globe",
         "lua_name": "Globe:hideProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 256
+        "line": 268
       },
       {
         "module": "globe",
         "lua_name": "Globe:isVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 264
+        "line": 277
       },
       {
         "module": "globe",
         "lua_name": "Globe:revealAll",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 271
+        "line": 284
       },
       {
         "module": "globe",
         "lua_name": "Globe:addMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 284
+        "line": 300
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 294
+        "line": 310
       },
       {
         "module": "globe",
         "lua_name": "Globe:moveMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 301
+        "line": 319
       },
       {
         "module": "globe",
         "lua_name": "Globe:setMarkerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 308
+        "line": 327
       },
       {
         "module": "globe",
         "lua_name": "Globe:setMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 315
+        "line": 336
       },
       {
         "module": "globe",
         "lua_name": "Globe:getMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 323
+        "line": 345
       },
       {
         "module": "globe",
         "lua_name": "Globe:addLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 333
+        "line": 358
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLabelText",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 342
+        "line": 368
+      },
+      {
+        "module": "globe",
+        "lua_name": "Globe:setLabelVisible",
+        "kind": "method",
+        "file": "src/lua_api/globe_api.rs",
+        "line": 376
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 356
+        "line": 383
       },
       {
         "module": "globe",
         "lua_name": "Globe:addLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 365
+        "line": 393
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 381
+        "line": 409
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerColor",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 388
+        "line": 421
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 395
+        "line": 429
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerAlpha",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 402
+        "line": 437
       },
       {
         "module": "globe",
         "lua_name": "Globe:setTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 411
+        "line": 446
       },
       {
         "module": "globe",
         "lua_name": "Globe:getTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 418
+        "line": 453
       },
       {
         "module": "globe",
         "lua_name": "Globe:setRotation",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 425
+        "line": 460
       },
       {
         "module": "globe",
         "lua_name": "Globe:update",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 432
+        "line": 467
+      },
+      {
+        "module": "globe",
+        "lua_name": "Globe:setBorders",
+        "kind": "method",
+        "file": "src/lua_api/globe_api.rs",
+        "line": 474
       },
       {
         "module": "globe",
         "lua_name": "Globe:findPath",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 449
+        "line": 485
       },
       {
         "module": "globe",
         "lua_name": "Globe:reachable",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 469
+        "line": 506
       },
       {
         "module": "globe",
         "lua_name": "Globe:addArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 487
+        "line": 527
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 511
+        "line": 551
       },
       {
         "module": "globe",
         "lua_name": "Globe:getName",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 518
+        "line": 558
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:new",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 545
+        "line": 585
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:get",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 564
+        "line": 604
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:remove",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 585
+        "line": 625
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:names",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 595
+        "line": 635
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.new",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 640
+        "line": 680
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.get",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 662
+        "line": 702
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.loadFromTOML",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 687
+        "line": 729
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCircleDistance",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 711
+        "line": 756
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCirclePath",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 722
+        "line": 771
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.latLonToUnit",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 741
+        "line": 791
       },
       {
         "module": "graph",
@@ -35097,1155 +35216,1218 @@
         "lua_name": "Vec2:dot",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 63
+        "line": 64
       },
       {
         "module": "math",
         "lua_name": "Vec2:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 71
+        "line": 72
       },
       {
         "module": "math",
         "lua_name": "Vec2:x",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 76
+        "line": 77
       },
       {
         "module": "math",
         "lua_name": "Vec2:y",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 81
+        "line": 82
       },
       {
         "module": "math",
         "lua_name": "Vec2:lengthSquared",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 86
+        "line": 87
       },
       {
         "module": "math",
         "lua_name": "Vec2:normalize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 94
+        "line": 95
       },
       {
         "module": "math",
         "lua_name": "Vec2:normalized",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 102
+        "line": 103
       },
       {
         "module": "math",
         "lua_name": "Vec2:lerp",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 112
+        "line": 113
       },
       {
         "module": "math",
         "lua_name": "Vec2:distance",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 121
+        "line": 122
       },
       {
         "module": "math",
         "lua_name": "Vec2:angle",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 129
+        "line": 130
       },
       {
         "module": "math",
         "lua_name": "Vec2:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 136
+        "line": 137
       },
       {
         "module": "math",
         "lua_name": "Vec2:perpendicular",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 144
+        "line": 145
       },
       {
         "module": "math",
         "lua_name": "Vec2:cross",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 152
+        "line": 153
       },
       {
         "module": "math",
         "lua_name": "Vec2:reflect",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 169
+        "line": 170
       },
       {
         "module": "math",
         "lua_name": "Vec3:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 231
+        "line": 232
       },
       {
         "module": "math",
         "lua_name": "Vec3:lengthSquared",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 236
+        "line": 237
       },
       {
         "module": "math",
         "lua_name": "Vec3:normalize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 242
+        "line": 243
       },
       {
         "module": "math",
         "lua_name": "Vec3:dot",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 250
+        "line": 251
       },
       {
         "module": "math",
         "lua_name": "Vec3:cross",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 260
+        "line": 261
       },
       {
         "module": "math",
         "lua_name": "Vec3:lerp",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 271
+        "line": 272
       },
       {
         "module": "math",
         "lua_name": "Vec3:distance",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 280
+        "line": 281
       },
       {
         "module": "math",
         "lua_name": "Vec3:add",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 290
+        "line": 291
       },
       {
         "module": "math",
         "lua_name": "Vec3:sub",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 300
+        "line": 301
       },
       {
         "module": "math",
         "lua_name": "Vec3:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 310
+        "line": 311
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:sample",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 339
+        "line": 340
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:sampleSegment",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 349
+        "line": 350
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:len",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 357
+        "line": 358
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:addPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 363
+        "line": 364
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:removePoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 372
+        "line": 373
       },
       {
         "module": "math",
         "lua_name": "Hermite:sample",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 395
+        "line": 396
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:random",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 416
+        "line": 417
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:randomFloat",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 423
+        "line": 424
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:randomInt",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 432
+        "line": 433
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:setSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 459
+        "line": 460
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:getState",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 467
+        "line": 468
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:setState",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 473
+        "line": 474
       },
       {
         "module": "math",
         "lua_name": "Transform:translate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 496
+        "line": 497
       },
       {
         "module": "math",
         "lua_name": "Transform:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 505
+        "line": 506
       },
       {
         "module": "math",
         "lua_name": "Transform:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 515
+        "line": 516
       },
       {
         "module": "math",
         "lua_name": "Transform:reset",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 533
+        "line": 534
       },
       {
         "module": "math",
         "lua_name": "Transform:transformPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 585
+        "line": 586
       },
       {
         "module": "math",
         "lua_name": "Transform:inverseTransformPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 594
+        "line": 595
       },
       {
         "module": "math",
         "lua_name": "Transform:inverse",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 601
+        "line": 602
       },
       {
         "module": "math",
         "lua_name": "Transform:clone",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 610
+        "line": 611
       },
       {
         "module": "math",
         "lua_name": "Transform:decompose",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 633
+        "line": 634
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:evaluate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 654
+        "line": 655
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:render",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 663
+        "line": 664
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getDerivative",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 675
+        "line": 676
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getControlPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 686
+        "line": 687
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getControlPointCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 741
+        "line": 742
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 748
+        "line": 749
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:translate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 755
+        "line": 756
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 766
+        "line": 767
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 777
+        "line": 778
       },
       {
         "module": "math",
         "lua_name": "Tween:update",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 799
+        "line": 800
       },
       {
         "module": "math",
         "lua_name": "Tween:reset",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 804
+        "line": 805
       },
       {
         "module": "math",
         "lua_name": "Tween:getValue",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 815
+        "line": 816
       },
       {
         "module": "math",
         "lua_name": "Tween:isComplete",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 847
+        "line": 848
       },
       {
         "module": "math",
         "lua_name": "Tween:getEasingName",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 857
+        "line": 858
       },
       {
         "module": "math",
         "lua_name": "Tween:getDuration",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 864
+        "line": 865
       },
       {
         "module": "math",
         "lua_name": "Tween:getTime",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 869
+        "line": 870
       },
       {
         "module": "math",
         "lua_name": "Tween:setTime",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 880
+        "line": 881
       },
       {
         "module": "math",
         "lua_name": "Tween:set",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 889
+        "line": 890
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:remove",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 952
+        "line": 953
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:clear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 960
+        "line": 961
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:getCellSize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1005
+        "line": 1025
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:getItemCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1010
+        "line": 1030
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin2d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1062
+        "line": 1082
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin3d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1072
+        "line": 1092
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex2d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1098
+        "line": 1118
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:setSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1318
+        "line": 1338
       },
       {
         "module": "math",
-        "lua_name": "AabbTree:remove",
+        "lua_name": "Circle:area",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1365
+        "line": 1363
       },
       {
         "module": "math",
-        "lua_name": "AabbTree:queryPoint",
+        "lua_name": "Circle:perimeter",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1368
+      },
+      {
+        "module": "math",
+        "lua_name": "Circle:contains",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1375
+      },
+      {
+        "module": "math",
+        "lua_name": "Circle:intersects",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1383
+      },
+      {
+        "module": "math",
+        "lua_name": "Circle:aabb",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
         "line": 1391
       },
       {
         "module": "math",
+        "lua_name": "Circle:x",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1399
+      },
+      {
+        "module": "math",
+        "lua_name": "Circle:y",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1404
+      },
+      {
+        "module": "math",
+        "lua_name": "Circle:radius",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1409
+      },
+      {
+        "module": "math",
+        "lua_name": "AabbTree:remove",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1449
+      },
+      {
+        "module": "math",
+        "lua_name": "AabbTree:queryPoint",
+        "kind": "method",
+        "file": "src/lua_api/math_api.rs",
+        "line": 1475
+      },
+      {
+        "module": "math",
         "lua_name": "AabbTree:contains",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1420
+        "line": 1504
       },
       {
         "module": "math",
         "lua_name": "AabbTree:len",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1425
+        "line": 1509
       },
       {
         "module": "math",
         "lua_name": "AabbTree:isEmpty",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1430
+        "line": 1514
       },
       {
         "module": "math",
         "lua_name": "AabbTree:clear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1435
+        "line": 1519
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newRandomGenerator",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1458
+        "line": 1542
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newTransform",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1481
+        "line": 1565
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newBezierCurve",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1521
+        "line": 1605
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newTween",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1547
+        "line": 1631
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newSpatialHash",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1561
+        "line": 1645
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newNoiseGenerator",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1574
+        "line": 1658
       },
       {
         "module": "math",
         "lua_name": "lurek.math.perlin2d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1591
+        "line": 1675
       },
       {
         "module": "math",
         "lua_name": "lurek.math.perlin3d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1605
+        "line": 1689
       },
       {
         "module": "math",
         "lua_name": "lurek.math.simplex2d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1618
+        "line": 1702
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fbm",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1634
+        "line": 1718
       },
       {
         "module": "math",
         "lua_name": "lurek.math.applyEasing",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1665
+        "line": 1749
       },
       {
         "module": "math",
         "lua_name": "lurek.math.linear",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1677
+        "line": 1761
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1686
+        "line": 1770
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1695
+        "line": 1779
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1704
+        "line": 1788
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1713
+        "line": 1797
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1722
+        "line": 1806
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1731
+        "line": 1815
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1767
+        "line": 1851
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1776
+        "line": 1860
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1785
+        "line": 1869
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1794
+        "line": 1878
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1803
+        "line": 1887
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1821
+        "line": 1905
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1830
+        "line": 1914
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1839
+        "line": 1923
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1857
+        "line": 1941
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1866
+        "line": 1950
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1875
+        "line": 1959
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1884
+        "line": 1968
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1893
+        "line": 1977
       },
       {
         "module": "math",
         "lua_name": "lurek.math.triangulate",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1905
+        "line": 1989
       },
       {
         "module": "math",
         "lua_name": "lurek.math.isConvex",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1940
+        "line": 2024
       },
       {
         "module": "math",
         "lua_name": "lurek.math.gammaToLinear",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1963
+        "line": 2047
       },
       {
         "module": "math",
         "lua_name": "lurek.math.linearToGamma",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1972
+        "line": 2056
       },
       {
         "module": "math",
         "lua_name": "lurek.math.angleBetween",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1986
+        "line": 2070
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleContainsPoint",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2001
+        "line": 2085
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsCircle",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2017
+        "line": 2101
       },
       {
         "module": "math",
         "lua_name": "lurek.math.bresenham",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2258
+        "line": 2342
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2294
+        "line": 2378
       },
       {
         "module": "math",
         "lua_name": "lurek.math.deg",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2303
+        "line": 2387
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sin",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2312
+        "line": 2396
       },
       {
         "module": "math",
         "lua_name": "lurek.math.cos",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2318
+        "line": 2402
       },
       {
         "module": "math",
         "lua_name": "lurek.math.tan",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2324
+        "line": 2408
       },
       {
         "module": "math",
         "lua_name": "lurek.math.asin",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2330
+        "line": 2414
       },
       {
         "module": "math",
         "lua_name": "lurek.math.acos",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2336
+        "line": 2420
       },
       {
         "module": "math",
         "lua_name": "lurek.math.atan",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2343
+        "line": 2427
       },
       {
         "module": "math",
         "lua_name": "lurek.math.atan2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2358
+        "line": 2442
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sqrt",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2367
+        "line": 2451
       },
       {
         "module": "math",
         "lua_name": "lurek.math.abs",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2373
+        "line": 2457
       },
       {
         "module": "math",
         "lua_name": "lurek.math.floor",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2379
+        "line": 2463
       },
       {
         "module": "math",
         "lua_name": "lurek.math.ceil",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2385
+        "line": 2469
       },
       {
         "module": "math",
         "lua_name": "lurek.math.round",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2391
+        "line": 2475
       },
       {
         "module": "math",
         "lua_name": "lurek.math.exp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2397
+        "line": 2481
       },
       {
         "module": "math",
         "lua_name": "lurek.math.log",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2404
+        "line": 2488
       },
       {
         "module": "math",
         "lua_name": "lurek.math.pow",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2419
+        "line": 2503
       },
       {
         "module": "math",
         "lua_name": "lurek.math.min",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2428
+        "line": 2512
       },
       {
         "module": "math",
         "lua_name": "lurek.math.max",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2441
+        "line": 2525
       },
       {
         "module": "math",
         "lua_name": "lurek.math.clamp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2456
+        "line": 2540
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sign",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2465
+        "line": 2549
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2494
+        "line": 2578
       },
       {
         "module": "math",
         "lua_name": "lurek.math.distance",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2506
+        "line": 2590
       },
       {
         "module": "math",
         "lua_name": "lurek.math.distanceSq",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2522
+        "line": 2606
       },
       {
         "module": "math",
         "lua_name": "lurek.math.random",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2538
+        "line": 2622
       },
       {
         "module": "math",
         "lua_name": "lurek.math.randomInt",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2568
+        "line": 2652
       },
       {
         "module": "math",
         "lua_name": "lurek.math.simplexNoise",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2584
+        "line": 2668
       },
       {
         "module": "math",
         "lua_name": "lurek.math.vec2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2600
+        "line": 2684
       },
       {
         "module": "math",
         "lua_name": "lurek.math.Vec2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2612
+        "line": 2696
       },
       {
         "module": "math",
         "lua_name": "lurek.math.vec3",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2625
+        "line": 2709
       },
       {
         "module": "math",
         "lua_name": "lurek.math.Vec3",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2638
+        "line": 2722
       },
       {
         "module": "math",
         "lua_name": "lurek.math.catmullRom",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2650
+        "line": 2734
       },
       {
         "module": "math",
         "lua_name": "lurek.math.hermite",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2675
+        "line": 2759
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2689
+        "line": 2773
       },
       {
         "module": "math",
         "lua_name": "lurek.math.remap",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2702
+        "line": 2786
       },
       {
         "module": "math",
         "lua_name": "lurek.math.clamp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2715
+        "line": 2799
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sign",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2724
+        "line": 2808
       },
       {
         "module": "math",
         "lua_name": "lurek.math.smoothstep",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2735
+        "line": 2819
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inverseLerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2746
+        "line": 2830
       },
       {
         "module": "math",
         "lua_name": "lurek.math.hslToRgb",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2757
+        "line": 2841
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fromHex",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2769
+        "line": 2853
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rgbToHsl",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2785
+        "line": 2869
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rectUnion",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2807
+        "line": 2891
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rectFromCenter",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2824
+        "line": 2908
       },
       {
         "module": "math",
         "lua_name": "lurek.math.aabbTree",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2872
+        "line": 2956
+      },
+      {
+        "module": "math",
+        "lua_name": "lurek.math.newCircle",
+        "kind": "function",
+        "file": "src/lua_api/math_api.rs",
+        "line": 2967
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonIntersection",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2887
+        "line": 2984
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonUnion",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2903
+        "line": 3000
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonDifference",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2919
+        "line": 3016
       },
       {
         "module": "math",
         "lua_name": "lurek.math.voronoi",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2940
+        "line": 3037
       },
       {
         "module": "minimap",
@@ -43270,31 +43452,38 @@
       },
       {
         "module": "system",
+        "lua_name": "lurek.system.errorSnapshot",
+        "kind": "function",
+        "file": "src/lua_api/system_api.rs",
+        "line": 436
+      },
+      {
+        "module": "system",
         "lua_name": "lurek.system.getArch",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 432
+        "line": 449
       },
       {
         "module": "system",
         "lua_name": "lurek.system.getEnv",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 443
+        "line": 454
       },
       {
         "module": "system",
         "lua_name": "lurek.system.getArgs",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 454
+        "line": 465
       },
       {
         "module": "system",
         "lua_name": "lurek.system.parseArgs",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 472
+        "line": 483
       },
       {
         "module": "terminal",
@@ -48287,77 +48476,77 @@
         "lua_name": "DataView:getInt8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 661
+        "line": 669
       },
       {
         "module": "data",
         "lua_name": "DataView:getInt16",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 672
+        "line": 680
       },
       {
         "module": "data",
         "lua_name": "DataView:getInt32",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 694
+        "line": 702
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 759
+        "line": 767
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU16LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 766
+        "line": 774
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU16BE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 773
+        "line": 781
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI16LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 780
+        "line": 788
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 794
+        "line": 802
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeF32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 801
+        "line": 809
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeF64LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 808
+        "line": 816
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeBytes",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 822
+        "line": 830
       },
       {
         "module": "dataframe",
@@ -48651,21 +48840,7 @@
         "lua_name": "Globe:pickLatLon",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 231
-      },
-      {
-        "module": "globe",
-        "lua_name": "Globe:setLabelVisible",
-        "kind": "method",
-        "file": "src/lua_api/globe_api.rs",
-        "line": 349
-      },
-      {
-        "module": "globe",
-        "lua_name": "Globe:setBorders",
-        "kind": "method",
-        "file": "src/lua_api/globe_api.rs",
-        "line": 439
+        "line": 241
       },
       {
         "module": "graph",
@@ -48798,210 +48973,210 @@
         "lua_name": "RandomGenerator:getSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 453
+        "line": 454
       },
       {
         "module": "math",
         "lua_name": "Transform:shear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 525
+        "line": 526
       },
       {
         "module": "math",
         "lua_name": "Transform:getMatrix",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 617
+        "line": 618
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:removeControlPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 731
+        "line": 732
       },
       {
         "module": "math",
         "lua_name": "Tween:getAllValues",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 835
+        "line": 836
       },
       {
         "module": "math",
         "lua_name": "Tween:getValueCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 852
+        "line": 853
       },
       {
         "module": "math",
         "lua_name": "Tween:getClock",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 874
+        "line": 875
       },
       {
         "module": "math",
         "lua_name": "Tween:addValue",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 899
+        "line": 900
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin1d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1055
+        "line": 1075
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin4d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1083
+        "line": 1103
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex1d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1091
+        "line": 1111
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex3d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1108
+        "line": 1128
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:getSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1312
+        "line": 1332
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1740
+        "line": 1824
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1749
+        "line": 1833
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1758
+        "line": 1842
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1812
+        "line": 1896
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1848
+        "line": 1932
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsLine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2037
+        "line": 2121
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2064
+        "line": 2148
       },
       {
         "module": "math",
         "lua_name": "lurek.math.closestPointOnSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2090
+        "line": 2174
       },
       {
         "module": "math",
         "lua_name": "lurek.math.convexHull",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2103
+        "line": 2187
       },
       {
         "module": "math",
         "lua_name": "lurek.math.delaunayTriangulate",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2125
+        "line": 2209
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lineIntersect",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2162
+        "line": 2246
       },
       {
         "module": "math",
         "lua_name": "lurek.math.pointInPolygon",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2180
+        "line": 2264
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonArea",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2197
+        "line": 2281
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonCentroid",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2214
+        "line": 2298
       },
       {
         "module": "math",
         "lua_name": "lurek.math.segmentIntersectsSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2239
+        "line": 2323
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fmod",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2483
+        "line": 2567
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonClip",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2844
+        "line": 2928
       },
       {
         "module": "mods",
@@ -49841,14 +50016,14 @@
         "lua_name": "lurek.system.runBatch",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 541
+        "line": 552
       },
       {
         "module": "system",
         "lua_name": "lurek.system.getBatchResults",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 594
+        "line": 605
       },
       {
         "module": "terminal",

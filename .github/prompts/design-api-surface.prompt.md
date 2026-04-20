@@ -1,6 +1,5 @@
 ---
 description: "Design a new lurek.* Lua API surface. Use when adding a new function or module to the lurek.* namespace. Produces a finalized API spec re..."
-agent: Lua-Designer
 ---
 # Design Api Surface
 

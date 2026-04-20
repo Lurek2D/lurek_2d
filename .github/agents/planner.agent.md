@@ -1,7 +1,7 @@
 ---
 name: Planner
 description: "Decompose complex Lurek2D requests into a sequenced phase plan with agent assignments, parallelism, risks, and binary done-when gates."
-tools: [tools/validate/cag_validate.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Planner
 

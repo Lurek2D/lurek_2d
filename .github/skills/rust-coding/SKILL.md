@@ -47,6 +47,8 @@ description: "Load this skill when writing or reviewing Rust code in the Lurek2D
 - **Formatting**: Run `cargo fmt` before commit, `cargo clippy` must produce 0 warnings
 - **Testing**: Every public function should have at least one test
 - **Naming**: Types are `PascalCase`, functions are `snake_case`, constants are `SCREAMING_SNAKE_CASE`
+- **No tests in `src/`**: Never add `#[cfg(test)]` or `mod tests { … }` to any file under `src/`. All Rust tests live in `tests/rust/unit/<module>_tests.rs`.
+- **`mod.rs` is declarations only**: `src/<module>/mod.rs` must contain ONLY `pub mod`, `pub use`, and `pub(crate)` re-exports. All implementation goes into named sub-files (`circle.rs`, `spline.rs`, etc.). The reviewer will reject any struct, enum, impl, or fn found in `mod.rs`.
 
 ### Module Group System
 Lurek2D source is organized in five responsibility groups — no cycles, ever:
@@ -85,6 +87,8 @@ Use scoped commands during development. Full `cargo test` only at commit time:
 - `let _ = result;` — silently discarding errors; use `?` or explicitly handle
 - Lua game logic inside `src/lua_api/` rust closures — keep lua_api thin; business logic belongs in domain modules
 - `.unwrap()` and `.expect()` outside of tests and CLI tooling
+- `#[cfg(test)]` blocks anywhere inside `src/` — test modules in `src/` pollute the domain layer; always use `tests/rust/unit/`
+- Any implementation (structs, enums, fns, impls) in `mod.rs` — mod.rs is declarations-only; put all code in named sub-files
 
 ## Companion File Index
 

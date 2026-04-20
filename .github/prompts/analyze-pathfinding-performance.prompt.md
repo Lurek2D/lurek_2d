@@ -1,6 +1,5 @@
 ---
 description: "Analyze and optimize pathfinding performance: A★ cost, grid size impact, HPA★ preprocessing, flow field computation, and multi-unit coord..."
-agent: Optimizer
 ---
 # Analyze Pathfinding Performance
 

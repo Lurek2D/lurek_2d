@@ -1,6 +1,5 @@
 ---
 description: "Update the status, tasks, or acceptance gates of an existing Lurek2D roadmap phase file."
-agent: Architect
 ---
 # Workflow Update Roadmap Phase
 

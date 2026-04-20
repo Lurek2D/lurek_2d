@@ -1,7 +1,7 @@
 ---
 name: Player
 description: "Subjectively review Lurek2D demos, examples, and API proposals through named player personas; report fun and friction — never check correctness."
-tools: [tools/audit/example_coverage.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Player
 

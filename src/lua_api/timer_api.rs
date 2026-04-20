@@ -56,6 +56,18 @@ impl LuaUserData for LuaScheduler {
             Ok(id)
         });
 
+        // -- afterFrames --
+        /// Schedules a callback to fire once after `n` frames.
+        /// @param n : integer
+        /// @param func : function
+        /// @return integer
+        methods.add_method_mut("afterFrames", |lua, this, (n, func): (u64, LuaFunction)| {
+            let key = lua.create_registry_value(func)?;
+            let id = this.scheduler.after_frames(n);
+            this.callbacks.insert(id, key);
+            Ok(id)
+        });
+
         // -- afterNamed --
         /// Schedules a named one-shot callback, replacing any existing event with the same name.
         /// @param name : string
@@ -88,6 +100,22 @@ impl LuaUserData for LuaScheduler {
             |lua, this, (interval, func, count): (f64, LuaFunction, Option<i32>)| {
                 let key = lua.create_registry_value(func)?;
                 let id = this.scheduler.every(interval, count.unwrap_or(-1));
+                this.callbacks.insert(id, key);
+                Ok(id)
+            },
+        );
+
+        // -- everyFrames --
+        /// Schedules a callback to fire every `n` frames.
+        /// @param n : integer — frame interval
+        /// @param func : function — callback
+        /// @param count : integer? — repetitions (-1 = infinite, default)
+        /// @return integer — event ID
+        methods.add_method_mut(
+            "everyFrames",
+            |lua, this, (n, func, count): (u64, LuaFunction, Option<i32>)| {
+                let key = lua.create_registry_value(func)?;
+                let id = this.scheduler.every_frames(n, count.unwrap_or(-1));
                 this.callbacks.insert(id, key);
                 Ok(id)
             },
@@ -273,6 +301,34 @@ impl LuaUserData for LuaScheduler {
         /// @return integer
         methods.add_method_mut("update", |lua, this, dt: f64| {
             let fired_ids = this.scheduler.update(dt);
+            let fired_count = fired_ids.len() as u32;
+            for &id in &fired_ids {
+                if let Some(key) = this.callbacks.get(&id) {
+                    if let Ok(func) = lua.registry_value::<LuaFunction>(key) {
+                        let _ = func.call::<_, ()>(());
+                    }
+                }
+            }
+            let active: HashSet<u32> = this.scheduler.active_ids().into_iter().collect();
+            let dead: Vec<u32> = this
+                .callbacks
+                .keys()
+                .filter(|id| !active.contains(id))
+                .copied()
+                .collect();
+            for id in dead {
+                Self::remove_callback(lua, &mut this.callbacks, id)?;
+                this.named_ids.retain(|_, v| *v != id);
+            }
+            Ok(fired_count)
+        });
+
+        // -- updateFrames --
+        /// Advances frame-based events by one frame, firing due callbacks.
+        /// Call once per frame from the game loop.
+        /// @return integer — number of callbacks fired
+        methods.add_method_mut("updateFrames", |lua, this, ()| {
+            let fired_ids = this.scheduler.update_frames();
             let fired_count = fired_ids.len() as u32;
             for &id in &fired_ids {
                 if let Some(key) = this.callbacks.get(&id) {

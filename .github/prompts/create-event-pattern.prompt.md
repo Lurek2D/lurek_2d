@@ -1,6 +1,5 @@
 ---
-description: ﻿---.
-agent: Developer
+description: The prompt finishes when every Success Criteria item below is checked..
 ---
 # Create Event Pattern
 

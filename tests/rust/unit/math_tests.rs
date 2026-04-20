@@ -1733,3 +1733,407 @@ mod sphere_tests {
         assert!(approx(v.z, 4.0, 1e-6));
     }
 }
+
+// ── sign / smoothstep / inverse_lerp ─────────────────────────────────────────
+
+mod scalar_helpers_tests {
+    use lurek2d::math::{sign, smoothstep, inverse_lerp};
+
+    #[test]
+    fn sign_positive() {
+        assert_eq!(sign(3.0_f32), 1.0);
+    }
+
+    #[test]
+    fn sign_negative() {
+        assert_eq!(sign(-7.5_f32), -1.0);
+    }
+
+    #[test]
+    fn sign_zero() {
+        assert_eq!(sign(0.0_f32), 0.0);
+    }
+
+    #[test]
+    fn smoothstep_clamps_below() {
+        assert_eq!(smoothstep(0.0, 1.0, -1.0), 0.0);
+    }
+
+    #[test]
+    fn smoothstep_clamps_above() {
+        assert_eq!(smoothstep(0.0, 1.0, 2.0), 1.0);
+    }
+
+    #[test]
+    fn smoothstep_midpoint() {
+        let v = smoothstep(0.0, 1.0, 0.5);
+        assert!((v - 0.5).abs() < 1e-5, "smoothstep(0,1,0.5) = {}", v);
+    }
+
+    #[test]
+    fn inverse_lerp_start() {
+        assert_eq!(inverse_lerp(0.0, 10.0, 0.0), 0.0);
+    }
+
+    #[test]
+    fn inverse_lerp_end() {
+        assert_eq!(inverse_lerp(0.0, 10.0, 10.0), 1.0);
+    }
+
+    #[test]
+    fn inverse_lerp_midpoint() {
+        let v = inverse_lerp(0.0, 10.0, 5.0);
+        assert!((v - 0.5).abs() < 1e-5, "inverse_lerp midpoint = {}", v);
+    }
+}
+
+// ── Color::from_hex / to_hsl / hsl_to_rgb ─────────────────────────────────────
+
+mod color_new_tests {
+    use lurek2d::math::{Color};
+    use lurek2d::math::color::hsl_to_rgb;
+
+    #[test]
+    fn from_hex_white() {
+        let c = Color::from_hex("#ffffff").unwrap();
+        assert!((c.r - 1.0).abs() < 1e-5);
+        assert!((c.g - 1.0).abs() < 1e-5);
+        assert!((c.b - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn from_hex_black() {
+        let c = Color::from_hex("#000000").unwrap();
+        assert_eq!(c.r, 0.0);
+        assert_eq!(c.g, 0.0);
+        assert_eq!(c.b, 0.0);
+    }
+
+    #[test]
+    fn from_hex_invalid_returns_none() {
+        assert!(Color::from_hex("notahex").is_none());
+    }
+
+    #[test]
+    fn to_hsl_white() {
+        let c = Color::new(1.0, 1.0, 1.0, 1.0);
+        let (h, s, l) = c.to_hsl();
+        assert!((l - 1.0).abs() < 1e-5, "l = {}", l);
+        let _ = (h, s); // white has undefined hue
+    }
+
+    #[test]
+    fn hsl_to_rgb_white() {
+        let c = hsl_to_rgb(0.0, 0.0, 1.0);
+        assert!((c.r - 1.0).abs() < 1e-5);
+        assert!((c.g - 1.0).abs() < 1e-5);
+        assert!((c.b - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn hsl_to_rgb_roundtrip() {
+        let orig = Color::new(0.3, 0.6, 0.9, 1.0);
+        let (h, s, l) = orig.to_hsl();
+        let back = hsl_to_rgb(h, s, l);
+        assert!((back.r - orig.r).abs() < 1e-4);
+        assert!((back.g - orig.g).abs() < 1e-4);
+        assert!((back.b - orig.b).abs() < 1e-4);
+    }
+}
+
+// ── Rect::union / from_center ─────────────────────────────────────────────────
+
+mod rect_new_tests {
+    use lurek2d::math::Rect;
+
+    #[test]
+    fn union_identical_rects() {
+        let a = Rect::new(0.0, 0.0, 10.0, 10.0);
+        let u = a.union(&a);
+        assert_eq!(u.x, 0.0);
+        assert_eq!(u.y, 0.0);
+        assert_eq!(u.w, 10.0);
+        assert_eq!(u.h, 10.0);
+    }
+
+    #[test]
+    fn union_adjacent_rects() {
+        let a = Rect::new(0.0, 0.0, 5.0, 5.0);
+        let b = Rect::new(5.0, 0.0, 5.0, 5.0);
+        let u = a.union(&b);
+        assert_eq!(u.x, 0.0);
+        assert_eq!(u.w, 10.0);
+    }
+
+    #[test]
+    fn from_center_top_left() {
+        let r = Rect::from_center(10.0, 10.0, 4.0, 6.0);
+        assert_eq!(r.x, 8.0);
+        assert_eq!(r.y, 7.0);
+        assert_eq!(r.w, 4.0);
+        assert_eq!(r.h, 6.0);
+    }
+
+    #[test]
+    fn from_center_preserves_size() {
+        let r = Rect::from_center(0.0, 0.0, 8.0, 12.0);
+        assert_eq!(r.w, 8.0);
+        assert_eq!(r.h, 12.0);
+    }
+}
+
+// ── Vec2::from_angle / reflect ─────────────────────────────────────────────────
+
+mod vec2_new_tests {
+    use lurek2d::math::Vec2;
+    use std::f32::consts::PI;
+
+    #[test]
+    fn from_angle_zero_points_right() {
+        let v = Vec2::from_angle(0.0);
+        assert!((v.x - 1.0).abs() < 1e-5);
+        assert!(v.y.abs() < 1e-5);
+    }
+
+    #[test]
+    fn from_angle_half_pi_points_up() {
+        let v = Vec2::from_angle(PI / 2.0);
+        assert!(v.x.abs() < 1e-5);
+        assert!((v.y - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn from_angle_is_unit_length() {
+        let v = Vec2::from_angle(1.23);
+        let len = (v.x * v.x + v.y * v.y).sqrt();
+        assert!((len - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn reflect_off_horizontal_normal() {
+        let v = Vec2::new(1.0, -1.0);
+        let n = Vec2::new(0.0, 1.0);
+        let r = v.reflect(n);
+        assert!((r.x - 1.0).abs() < 1e-5);
+        assert!((r.y - 1.0).abs() < 1e-5);
+    }
+}
+
+// ── Vec3::splat ────────────────────────────────────────────────────────────────
+
+mod vec3_new_tests {
+    use lurek2d::math::Vec3;
+
+    #[test]
+    fn splat_fills_all_components() {
+        let v = Vec3::splat(5.0);
+        assert_eq!(v.x, 5.0);
+        assert_eq!(v.y, 5.0);
+        assert_eq!(v.z, 5.0);
+    }
+
+    #[test]
+    fn splat_zero() {
+        let v = Vec3::splat(0.0);
+        assert_eq!(v.x, 0.0);
+        assert_eq!(v.y, 0.0);
+        assert_eq!(v.z, 0.0);
+    }
+}
+
+// ── Transform::decompose ──────────────────────────────────────────────────────
+
+mod transform_decompose_tests {
+    use lurek2d::math::Transform;
+
+    #[test]
+    fn identity_decomposes_to_zero_pos_zero_angle_unit_scale() {
+        let t = Transform::default();
+        let (x, y, a, sx, sy) = t.decompose();
+        assert!((x).abs() < 1e-5);
+        assert!((y).abs() < 1e-5);
+        assert!((a).abs() < 1e-5);
+        assert!((sx - 1.0).abs() < 1e-5);
+        assert!((sy - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn decompose_returns_five_values() {
+        let t = Transform::default();
+        let _tup: (f32, f32, f32, f32, f32) = t.decompose();
+    }
+}
+
+// ── easing: ease_in_out_elastic / bounce / back ───────────────────────────────
+
+mod easing_new_tests {
+    use lurek2d::math::easing::{ease_in_out_elastic, ease_in_out_bounce, ease_in_out_back};
+
+    #[test]
+    fn elastic_boundaries() {
+        assert!((ease_in_out_elastic(0.0)).abs() < 1e-5);
+        assert!((ease_in_out_elastic(1.0) - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn elastic_symmetric() {
+        let lo = ease_in_out_elastic(0.25);
+        let hi = ease_in_out_elastic(0.75);
+        assert!((1.0 - lo - hi).abs() < 1e-5, "lo={} hi={}", lo, hi);
+    }
+
+    #[test]
+    fn bounce_boundaries() {
+        assert!((ease_in_out_bounce(0.0)).abs() < 1e-5);
+        assert!((ease_in_out_bounce(1.0) - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn back_boundaries() {
+        assert!((ease_in_out_back(0.0)).abs() < 1e-5);
+        assert!((ease_in_out_back(1.0) - 1.0).abs() < 1e-5);
+    }
+}
+
+// ── CatmullRomSpline::add_point / remove_point ────────────────────────────────
+
+mod catmull_rom_new_tests {
+    use lurek2d::math::CatmullRomSpline;
+
+    #[test]
+    fn add_point_increases_len() {
+        let mut s = CatmullRomSpline::new(vec![]);
+        s.add_point((0.0, 0.0));
+        s.add_point((1.0, 1.0));
+        assert_eq!(s.len(), 2);
+    }
+
+    #[test]
+    fn remove_point_decreases_len() {
+        let mut s = CatmullRomSpline::new(vec![]);
+        s.add_point((0.0, 0.0));
+        s.add_point((1.0, 1.0));
+        s.add_point((2.0, 0.0));
+        s.remove_point(1);
+        assert_eq!(s.len(), 2);
+    }
+
+    #[test]
+    fn remove_point_out_of_range_is_safe() {
+        let mut s = CatmullRomSpline::new(vec![]);
+        s.add_point((0.0, 0.0));
+        s.remove_point(99);
+        assert_eq!(s.len(), 1);
+    }
+
+    #[test]
+    fn remove_all_points_gives_empty() {
+        let mut s = CatmullRomSpline::new(vec![]);
+        s.add_point((0.0, 0.0));
+        s.remove_point(0);
+        assert!(s.is_empty());
+    }
+}
+
+mod circle_tests {
+    use lurek2d::math::Circle;
+
+    #[test]
+    fn new_radius_clamped_to_zero_if_negative() {
+        let c = Circle::new(0.0, 0.0, -3.0);
+        assert_eq!(c.radius, 0.0);
+    }
+
+    #[test]
+    fn area_is_pi_r_squared() {
+        let c = Circle::new(0.0, 0.0, 1.0);
+        let area = c.area();
+        assert!((area - std::f32::consts::PI).abs() < 1e-5, "area={area}");
+    }
+
+    #[test]
+    fn perimeter_is_2_pi_r() {
+        let c = Circle::new(0.0, 0.0, 3.0);
+        let p = c.perimeter();
+        assert!(
+            (p - 6.0 * std::f32::consts::PI).abs() < 1e-5,
+            "perimeter={p}"
+        );
+    }
+
+    #[test]
+    fn contains_inside() {
+        let c = Circle::new(0.0, 0.0, 5.0);
+        assert!(c.contains(0.0, 0.0));
+        // (3,4) is exactly on boundary: 3²+4²=25
+        assert!(c.contains(3.0, 4.0));
+    }
+
+    #[test]
+    fn contains_outside() {
+        let c = Circle::new(0.0, 0.0, 5.0);
+        assert!(!c.contains(4.0, 4.0)); // 4²+4²=32 > 25
+    }
+
+    #[test]
+    fn intersects_overlapping() {
+        let a = Circle::new(0.0, 0.0, 3.0);
+        let b = Circle::new(4.0, 0.0, 3.0);
+        assert!(a.intersects(&b));
+    }
+
+    #[test]
+    fn intersects_distant() {
+        let a = Circle::new(0.0, 0.0, 1.0);
+        let b = Circle::new(10.0, 0.0, 1.0);
+        assert!(!a.intersects(&b));
+    }
+
+    #[test]
+    fn aabb_is_symmetric() {
+        let c = Circle::new(0.0, 0.0, 2.0);
+        let (x1, y1, x2, y2) = c.aabb();
+        assert!((x1 - (-2.0)).abs() < 1e-6);
+        assert!((y1 - (-2.0)).abs() < 1e-6);
+        assert!((x2 - 2.0).abs() < 1e-6);
+        assert!((y2 - 2.0).abs() < 1e-6);
+    }
+}
+
+mod aabb_tree_query_tests {
+    use lurek2d::math::AabbTree;
+
+    #[test]
+    fn query_circle_finds_overlapping_entry() {
+        let mut tree = AabbTree::new();
+        tree.insert("box", 0.0, 0.0, 4.0, 4.0);
+        let hits = tree.query_circle(2.0, 2.0, 1.0);
+        assert_eq!(1, hits.len());
+        assert_eq!("box", hits[0]);
+    }
+
+    #[test]
+    fn query_circle_misses_distant_entry() {
+        let mut tree = AabbTree::new();
+        tree.insert("box", 20.0, 20.0, 24.0, 24.0);
+        let hits = tree.query_circle(0.0, 0.0, 1.0);
+        assert!(hits.is_empty());
+    }
+
+    #[test]
+    fn query_segment_finds_crossed_entry() {
+        let mut tree = AabbTree::new();
+        tree.insert("box", 0.0, 0.0, 4.0, 4.0);
+        let hits = tree.query_segment(2.0, -1.0, 2.0, 5.0);
+        assert_eq!(1, hits.len());
+        assert_eq!("box", hits[0]);
+    }
+
+    #[test]
+    fn query_segment_misses_parallel_segment() {
+        let mut tree = AabbTree::new();
+        tree.insert("box", 10.0, 10.0, 20.0, 20.0);
+        let hits = tree.query_segment(0.0, 0.0, 5.0, 5.0);
+        assert!(hits.is_empty());
+    }
+}

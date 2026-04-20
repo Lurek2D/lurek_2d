@@ -1484,4 +1484,420 @@ describe("lurek.math.voronoi near-duplicate deduplication", function()
   end)
 end)
 
+-- ── smoothstep ────────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.smoothstep function.
+describe("lurek.math.smoothstep", function()
+  -- @covers lurek.math.smoothstep
+  -- @description x <= e0 returns 0.
+  it("x <= e0 returns 0", function()
+    expect_equal(0, lurek.math.smoothstep(0, 1, -0.5))
+  end)
+  -- @covers lurek.math.smoothstep
+  -- @description x >= e1 returns 1.
+  it("x >= e1 returns 1", function()
+    expect_equal(1, lurek.math.smoothstep(0, 1, 2))
+  end)
+  -- @covers lurek.math.smoothstep
+  -- @description midpoint returns 0.5.
+  it("midpoint returns 0.5", function()
+    expect_near(0.5, lurek.math.smoothstep(0, 1, 0.5), 1e-5)
+  end)
+  -- @covers lurek.math.smoothstep
+  -- @description result is between 0 and 1 for interior x.
+  it("interior result is in [0,1]", function()
+    local v = lurek.math.smoothstep(0, 1, 0.3)
+    expect_true(v >= 0 and v <= 1, "smoothstep in range")
+  end)
+end)
+
+-- ── inverseLerp ───────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.inverseLerp function.
+describe("lurek.math.inverseLerp", function()
+  -- @covers lurek.math.inverseLerp
+  -- @description returns 0 at start of range.
+  it("returns 0 at start", function()
+    expect_equal(0, lurek.math.inverseLerp(0, 10, 0))
+  end)
+  -- @covers lurek.math.inverseLerp
+  -- @description returns 1 at end of range.
+  it("returns 1 at end", function()
+    expect_equal(1, lurek.math.inverseLerp(0, 10, 10))
+  end)
+  -- @covers lurek.math.inverseLerp
+  -- @description returns 0.5 at midpoint.
+  it("returns 0.5 at midpoint", function()
+    expect_near(0.5, lurek.math.inverseLerp(0, 10, 5), 1e-5)
+  end)
+end)
+
+-- ── hslToRgb / rgbToHsl ───────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.hslToRgb and lurek.math.rgbToHsl functions.
+describe("lurek.math hslToRgb and rgbToHsl", function()
+  -- @covers lurek.math.hslToRgb
+  -- @description hsl(0,0,1) is white: r=g=b=1.
+  it("hslToRgb white is (1,1,1,1)", function()
+    local r, g, b, a = lurek.math.hslToRgb(0, 0, 1.0)
+    expect_near(1.0, r, 1e-5)
+    expect_near(1.0, g, 1e-5)
+    expect_near(1.0, b, 1e-5)
+    expect_near(1.0, a, 1e-5)
+  end)
+  -- @covers lurek.math.hslToRgb
+  -- @description hsl(0,0,0) is black: r=g=b=0.
+  it("hslToRgb black is (0,0,0)", function()
+    local r, g, b = lurek.math.hslToRgb(0, 0, 0.0)
+    expect_near(0.0, r, 1e-5)
+    expect_near(0.0, g, 1e-5)
+    expect_near(0.0, b, 1e-5)
+  end)
+  -- @covers lurek.math.rgbToHsl
+  -- @description pure red (1,0,0) gives hsl(0, 1, 0.5).
+  it("rgbToHsl red gives (0, 1, 0.5)", function()
+    local h, s, l = lurek.math.rgbToHsl(1.0, 0.0, 0.0)
+    expect_near(0.0, h, 1e-5)
+    expect_near(1.0, s, 1e-5)
+    expect_near(0.5, l, 1e-5)
+  end)
+  -- @covers lurek.math.hslToRgb
+  -- @covers lurek.math.rgbToHsl
+  -- @description roundtrip: rgb → hsl → rgb preserves the original colour.
+  it("hslToRgb/rgbToHsl roundtrip preserves colour", function()
+    local r0, g0, b0 = 0.3, 0.6, 0.9
+    local h, s, l = lurek.math.rgbToHsl(r0, g0, b0)
+    local r1, g1, b1 = lurek.math.hslToRgb(h, s, l)
+    expect_near(r0, r1, 1e-4)
+    expect_near(g0, g1, 1e-4)
+    expect_near(b0, b1, 1e-4)
+  end)
+end)
+
+-- ── fromHex ───────────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.fromHex colour parser.
+describe("lurek.math.fromHex", function()
+  -- @covers lurek.math.fromHex
+  -- @description #ffffff parses to (1,1,1,1).
+  it("parses #ffffff as white", function()
+    local r, g, b, a = lurek.math.fromHex("#ffffff")
+    expect_near(1.0, r, 1e-5)
+    expect_near(1.0, g, 1e-5)
+    expect_near(1.0, b, 1e-5)
+    expect_near(1.0, a, 1e-5)
+  end)
+  -- @covers lurek.math.fromHex
+  -- @description #000000 parses to (0,0,0,1).
+  it("parses #000000 as black", function()
+    local r, g, b, a = lurek.math.fromHex("#000000")
+    expect_near(0.0, r, 1e-5)
+    expect_near(0.0, g, 1e-5)
+    expect_near(0.0, b, 1e-5)
+    expect_near(1.0, a, 1e-5)
+  end)
+  -- @covers lurek.math.fromHex
+  -- @description invalid hex string returns nil.
+  it("invalid hex returns nil", function()
+    local r = lurek.math.fromHex("notahex")
+    expect_equal(nil, r)
+  end)
+end)
+
+-- ── rectUnion ─────────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.rectUnion function.
+describe("lurek.math.rectUnion", function()
+  -- @covers lurek.math.rectUnion
+  -- @description union of two identical rects is that same rect.
+  it("union of equal rects is that rect", function()
+    local x, y, w, h = lurek.math.rectUnion(0, 0, 10, 10, 0, 0, 10, 10)
+    expect_equal(0, x)
+    expect_equal(0, y)
+    expect_equal(10, w)
+    expect_equal(10, h)
+  end)
+  -- @covers lurek.math.rectUnion
+  -- @description union of two side-by-side rects spans both.
+  it("union of adjacent rects spans both", function()
+    local x, y, w, h = lurek.math.rectUnion(0, 0, 5, 5, 5, 0, 5, 5)
+    expect_equal(0, x)
+    expect_equal(0, y)
+    expect_equal(10, w)
+    expect_equal(5, h)
+  end)
+  -- @covers lurek.math.rectUnion
+  -- @description union returns 4 number values.
+  it("returns four numbers", function()
+    local x, y, w, h = lurek.math.rectUnion(1, 2, 3, 4, 5, 6, 7, 8)
+    expect_type("number", x)
+    expect_type("number", y)
+    expect_type("number", w)
+    expect_type("number", h)
+  end)
+end)
+
+-- ── rectFromCenter ────────────────────────────────────────────────────────────
+-- @description Tests for the lurek.math.rectFromCenter function.
+describe("lurek.math.rectFromCenter", function()
+  -- @covers lurek.math.rectFromCenter
+  -- @description top-left corner equals center minus half-size.
+  it("top-left is center minus half-size", function()
+    local x, y, w, h = lurek.math.rectFromCenter(10, 10, 4, 6)
+    expect_equal(8, x)
+    expect_equal(7, y)
+    expect_equal(4, w)
+    expect_equal(6, h)
+  end)
+  -- @covers lurek.math.rectFromCenter
+  -- @description size (w,h) is preserved unchanged.
+  it("size is preserved", function()
+    local _, _, w, h = lurek.math.rectFromCenter(0, 0, 8, 12)
+    expect_equal(8, w)
+    expect_equal(12, h)
+  end)
+end)
+
+-- ── Vec2:fromAngle / reflect ──────────────────────────────────────────────────
+-- @description Tests for Vec2:fromAngle and Vec2:reflect.
+describe("lurek.math Vec2 fromAngle and reflect", function()
+  -- @covers lurek.math.Vec2.fromAngle
+  -- @description fromAngle(0) points in the +X direction.
+  it("fromAngle(0) returns unit +X", function()
+    local v = lurek.math.Vec2.fromAngle(0)
+    expect_near(1.0, v.x, 1e-5)
+    expect_near(0.0, v.y, 1e-5)
+  end)
+  -- @covers lurek.math.Vec2.fromAngle
+  -- @description fromAngle(pi/2) points in the +Y direction.
+  it("fromAngle(pi/2) returns unit +Y", function()
+    local v = lurek.math.Vec2.fromAngle(math.pi / 2)
+    expect_near(0.0, v.x, 1e-5)
+    expect_near(1.0, v.y, 1e-5)
+  end)
+  -- @covers lurek.math.Vec2.fromAngle
+  -- @description result has unit length.
+  it("fromAngle result is unit length", function()
+    local v = lurek.math.Vec2.fromAngle(1.23)
+    local len = math.sqrt(v.x * v.x + v.y * v.y)
+    expect_near(1.0, len, 1e-5)
+  end)
+  -- @covers lurek.math.Vec2.reflect
+  -- @description reflecting (1,-1) off a horizontal normal (0,1) gives (1,1).
+  it("reflect off horizontal normal", function()
+    local v = lurek.math.Vec2.new(1, -1)
+    local n = lurek.math.Vec2.new(0, 1)
+    local r = v:reflect(n)
+    expect_near(1.0, r.x, 1e-5)
+    expect_near(1.0, r.y, 1e-5)
+  end)
+  -- @covers lurek.math.Vec2.reflect
+  -- @description reflecting a vector along its normal returns the negative vector.
+  it("reflect parallel to normal flips sign", function()
+    local v = lurek.math.Vec2.new(0, -1)
+    local n = lurek.math.Vec2.new(0, 1)
+    local r = v:reflect(n)
+    expect_near(0.0, r.x, 1e-5)
+    expect_near(1.0, r.y, 1e-5)
+  end)
+end)
+
+-- ── Vec3:splat ────────────────────────────────────────────────────────────────
+-- @description Tests for Vec3:splat constructor.
+describe("lurek.math Vec3 splat", function()
+  -- @covers lurek.math.Vec3.splat
+  -- @description splat(5) creates Vec3 with all components equal to 5.
+  it("splat(5) gives Vec3(5,5,5)", function()
+    local v = lurek.math.Vec3.splat(5)
+    expect_equal(5, v.x)
+    expect_equal(5, v.y)
+    expect_equal(5, v.z)
+  end)
+  -- @covers lurek.math.Vec3.splat
+  -- @description splat(0) creates a zero vector.
+  it("splat(0) gives zero Vec3", function()
+    local v = lurek.math.Vec3.splat(0)
+    expect_equal(0, v.x)
+    expect_equal(0, v.y)
+    expect_equal(0, v.z)
+  end)
+end)
+
+-- ── Transform:decompose ───────────────────────────────────────────────────────
+-- @description Tests for Transform:decompose returning (tx, ty, angle, sx, sy).
+describe("lurek.math Transform decompose", function()
+  -- @covers lurek.math.Transform.decompose
+  -- @description decompose returns exactly 5 number values.
+  it("decompose returns 5 numbers", function()
+    local t = lurek.math.Transform.new()
+    local x, y, a, sx, sy = t:decompose()
+    expect_type("number", x)
+    expect_type("number", y)
+    expect_type("number", a)
+    expect_type("number", sx)
+    expect_type("number", sy)
+  end)
+  -- @covers lurek.math.Transform.decompose
+  -- @description identity transform decomposes to (0, 0, 0, 1, 1).
+  it("identity decomposes to (0,0,0,1,1)", function()
+    local t = lurek.math.Transform.new()
+    local x, y, a, sx, sy = t:decompose()
+    expect_near(0.0, x, 1e-5)
+    expect_near(0.0, y, 1e-5)
+    expect_near(0.0, a, 1e-5)
+    expect_near(1.0, sx, 1e-5)
+    expect_near(1.0, sy, 1e-5)
+  end)
+end)
+
+-- ── easing: inOutElastic / inOutBounce / inOutBack ───────────────────────────
+-- @description Tests for the inOutElastic, inOutBounce, inOutBack easing functions.
+describe("lurek.math easing inOut variants", function()
+  -- @covers lurek.math.inOutElastic
+  -- @description inOutElastic returns 0 at t=0 and 1 at t=1.
+  it("inOutElastic boundary values", function()
+    expect_near(0.0, lurek.math.inOutElastic(0), 1e-5)
+    expect_near(1.0, lurek.math.inOutElastic(1), 1e-5)
+  end)
+  -- @covers lurek.math.inOutElastic
+  -- @description inOutElastic is symmetric: f(1-t) == 1 - f(t).
+  it("inOutElastic is symmetric", function()
+    local lo = lurek.math.inOutElastic(0.25)
+    local hi = lurek.math.inOutElastic(0.75)
+    expect_near(1.0 - lo, hi, 1e-5)
+  end)
+  -- @covers lurek.math.inOutBounce
+  -- @description inOutBounce returns 0 at t=0 and 1 at t=1.
+  it("inOutBounce boundary values", function()
+    expect_near(0.0, lurek.math.inOutBounce(0), 1e-5)
+    expect_near(1.0, lurek.math.inOutBounce(1), 1e-5)
+  end)
+  -- @covers lurek.math.inOutBounce
+  -- @description inOutBounce is monotonically non-decreasing.
+  it("inOutBounce is non-decreasing", function()
+    local prev = lurek.math.inOutBounce(0)
+    for i = 1, 10 do
+      local cur = lurek.math.inOutBounce(i / 10)
+      expect_true(cur >= prev - 1e-6, "inOutBounce non-decreasing at t=" .. (i/10))
+      prev = cur
+    end
+  end)
+  -- @covers lurek.math.inOutBack
+  -- @description inOutBack returns 0 at t=0 and 1 at t=1.
+  it("inOutBack boundary values", function()
+    expect_near(0.0, lurek.math.inOutBack(0), 1e-5)
+    expect_near(1.0, lurek.math.inOutBack(1), 1e-5)
+  end)
+end)
+
+-- ── CatmullRomSpline: addPoint / removePoint ──────────────────────────────────
+-- @description Tests for CatmullRomSpline addPoint and removePoint methods.
+describe("lurek.math CatmullRomSpline addPoint and removePoint", function()
+  -- @covers lurek.math.CatmullRomSpline.addPoint
+  -- @description adding two points increases count to 2.
+  it("addPoint increases point count", function()
+    local s = lurek.math.CatmullRomSpline.new()
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    expect_equal(2, s:count())
+  end)
+  -- @covers lurek.math.CatmullRomSpline.removePoint
+  -- @description removePoint(2) removes the second point, reducing count by 1.
+  it("removePoint reduces count by 1", function()
+    local s = lurek.math.CatmullRomSpline.new()
+    s:addPoint(0, 0)
+    s:addPoint(1, 1)
+    s:addPoint(2, 0)
+    s:removePoint(2)
+    expect_equal(2, s:count())
+  end)
+  -- @covers lurek.math.CatmullRomSpline.removePoint
+  -- @description removePoint with out-of-range index leaves count unchanged.
+  it("removePoint out-of-range is safe", function()
+    local s = lurek.math.CatmullRomSpline.new()
+    s:addPoint(0, 0)
+    s:removePoint(99)
+    expect_equal(1, s:count())
+  end)
+  -- @covers lurek.math.CatmullRomSpline.addPoint
+  -- @covers lurek.math.CatmullRomSpline.removePoint
+  -- @description add then remove all points leaves an empty spline.
+  it("adding then removing all points gives empty spline", function()
+    local s = lurek.math.CatmullRomSpline.new()
+    s:addPoint(0, 0)
+    s:addPoint(1, 0)
+    s:removePoint(1)
+    s:removePoint(1)
+    expect_equal(0, s:count())
+  end)
+end)
+
+describe("lurek.math Circle value type", function()
+  it("newCircle returns an object", function()
+    local c = lurek.math.newCircle(0, 0, 5)
+    expect_not_nil(c)
+  end)
+
+  it("area returns pi*r^2", function()
+    local c = lurek.math.newCircle(0, 0, 1)
+    local area = c:area()
+    expect_near(math.pi, area, 1e-5)
+  end)
+
+  it("perimeter returns 2*pi*r", function()
+    local c = lurek.math.newCircle(0, 0, 3)
+    local p = c:perimeter()
+    expect_near(6 * math.pi, p, 1e-5)
+  end)
+
+  it("contains returns true for point inside", function()
+    local c = lurek.math.newCircle(0, 0, 5)
+    expect_true(c:contains(0, 0))
+    expect_true(c:contains(3, 4))
+  end)
+
+  it("contains returns false for point outside", function()
+    local c = lurek.math.newCircle(0, 0, 5)
+    expect_false(c:contains(4, 4))
+  end)
+
+  it("intersects returns true when circles overlap", function()
+    local a = lurek.math.newCircle(0, 0, 3)
+    local b = lurek.math.newCircle(4, 0, 3)
+    expect_true(a:intersects(b))
+  end)
+
+  it("intersects returns false when circles are apart", function()
+    local a = lurek.math.newCircle(0, 0, 1)
+    local b = lurek.math.newCircle(10, 0, 1)
+    expect_false(a:intersects(b))
+  end)
+
+  it("aabb returns 4 numbers covering the circle", function()
+    local c = lurek.math.newCircle(0, 0, 2)
+    local x1, y1, x2, y2 = c:aabb()
+    expect_near(-2, x1, 1e-5)
+    expect_near(-2, y1, 1e-5)
+    expect_near( 2, x2, 1e-5)
+    expect_near( 2, y2, 1e-5)
+  end)
+
+  it("negative radius is clamped to 0", function()
+    local c = lurek.math.newCircle(1, 2, -5)
+    expect_near(0, c:radius(), 1e-5)
+  end)
+end)
+
+describe("lurek.math AabbTree querySegment", function()
+  it("querySegment returns ids crossed by segment", function()
+    local t = lurek.math.aabbTree()
+    t:insert("box", 0, 0, 4, 4)
+    local hits = t:querySegment(2, -1, 2, 5)
+    expect_equal(1, #hits)
+    expect_equal("box", hits[1])
+  end)
+
+  it("querySegment misses non-intersecting AABB", function()
+    local t = lurek.math.aabbTree()
+    t:insert("box", 10, 10, 20, 20)
+    local hits = t:querySegment(0, 0, 5, 5)
+    expect_equal(0, #hits)
+  end)
+end)
+
 test_summary()

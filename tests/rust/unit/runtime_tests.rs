@@ -273,3 +273,70 @@ mod config_tests {
         assert!(!c.modules.particle);
     }
 }
+
+// ── ErrorCategory::Filesystem ────────────────────────────────────────────────
+
+mod error_category_filesystem_tests {
+    use super::*;
+
+    #[test]
+    fn filesystem_category_as_str() {
+        assert_eq!(ErrorCategory::Filesystem.as_str(), "filesystem");
+    }
+
+    #[test]
+    fn filesystem_error_maps_to_filesystem_category() {
+        let e = EngineError::FileSystemError("test".into());
+        assert_eq!(e.category(), ErrorCategory::Filesystem);
+    }
+
+    #[test]
+    fn filesystem_error_code() {
+        let e = EngineError::FileSystemError("test".into());
+        assert_eq!(e.code(), "E1006");
+    }
+}
+
+mod error_snapshot_tests {
+    use lurek2d::runtime::{EngineError, ErrorSnapshot};
+
+    #[test]
+    fn snapshot_has_nonempty_message() {
+        let e = EngineError::LuaError("test error".into());
+        let s: ErrorSnapshot = e.snapshot();
+        assert!(!s.message.is_empty());
+        assert!(s.message.contains("test error"), "message={}", s.message);
+    }
+
+    #[test]
+    fn snapshot_has_code() {
+        let e = EngineError::LuaError("x".into());
+        let s = e.snapshot();
+        assert!(!s.code.is_empty(), "code should not be empty");
+    }
+
+    #[test]
+    fn snapshot_has_category() {
+        let e = EngineError::LuaError("x".into());
+        let s = e.snapshot();
+        assert!(!s.category.is_empty(), "category should not be empty");
+    }
+
+    #[test]
+    fn to_json_contains_expected_fields() {
+        let e = EngineError::LuaError("hello".into());
+        let json = e.snapshot().to_json();
+        assert!(json.contains("\"message\""), "json={json}");
+        assert!(json.contains("\"code\""), "json={json}");
+        assert!(json.contains("\"category\""), "json={json}");
+        assert!(json.contains("\"recovery_hint\""), "json={json}");
+    }
+
+    #[test]
+    fn to_json_escapes_double_quotes_in_message() {
+        let e = EngineError::LuaError(r#"say "hello""#.into());
+        let json = e.snapshot().to_json();
+        // The message value should not break the JSON structure
+        assert!(json.contains(r#"say \"hello\""#), "json={json}");
+    }
+}

@@ -1,7 +1,7 @@
 ---
 name: Security
 description: "Audit Lurek2D for memory safety, Lua sandboxing, input validation, and path-traversal protection; report classified findings — does not implement fixes."
-tools: [tools/validate/validate_lua_api.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Security
 

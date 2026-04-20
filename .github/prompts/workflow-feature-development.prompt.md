@@ -1,7 +1,5 @@
 ---
 description: "Full feature development workflow from design to merged code. Use when starting, extending, or refactoring a Lurek2D feature. Orchestrate..."
-agent: Manager
-tools: [tools/audit/audit_module.py, tools/audit/test_coverage.py, tools/dist/dist.ps1, tools/docs/collect_docs.py, tools/docs/gen_docs_lua.py, tools/gen_all_docs.py]
 ---
 # Workflow Feature Development
 
@@ -30,17 +28,25 @@ Full feature development workflow from design to merged code. Use when starting,
 11. Provide: current dependency graph, proposed new module or boundary change.
 12. Get back: approved module structure and dependency direction — DAG invariant confirmed.
 
+## Hard Constraints
+
+These three rules are **absolute** — violations are commit-blocking errors, not warnings:
+
+1. **No tests in `src/` files** — All tests live in `tests/rust/unit/<module>_tests.rs`. Never add `#[cfg(test)]` blocks or `mod tests { … }` to any file under `src/`. The language server will flag them; the reviewer will reject them.
+2. **`mod.rs` is declarations only** — Every `src/<module>/mod.rs` contains only `pub mod`, `pub use`, and `pub(crate)` re-exports. No structs, enums, impls, or free functions. All implementation belongs in named sub-files (`circle.rs`, `spline.rs`, etc.).
+3. **Lua API files must stay thin** — `src/lua_api/<module>_api.rs` is a translation layer only. Each binding closure must contain ≤ 10 lines of logic. Any logic beyond parameter validation and type conversion belongs in the domain module under `src/<module>/`. Violating this rule copies business logic into two places and breaks the Thin Wrapper Rule from `lua-rust-bridge` skill.
+
 ## Success Criteria
 
-- [ ] Working Rust implementation in `src/<module>/` — domain logic only, no mlua
-- [ ] Thin `src/lua_api/<module>_api.rs` wrapper registering all new public methods
-- [ ] Updated `src/<module>/IDEA.md`
-- [ ] Minimal `src/<module>/mod.rs` — declarations only
+- [ ] Working Rust implementation in `src/<module>/` — domain logic only, no mlua; no tests inside `src/`
+- [ ] Thin `src/lua_api/<module>_api.rs` wrapper — ≤ 10 lines of logic per closure; no business logic
+- [ ] Updated `src/<module>/IDEA.md` — implemented items marked `✅ DONE`
+- [ ] `src/<module>/mod.rs` contains ONLY `pub mod` / `pub use` / `pub(crate)` re-exports — zero implementation
 - [ ] File-level `//!` on every `.rs` file touched
-- [ ] Lua BDD tests in `tests/lua/` registered in `tests/lua/harness.rs`
-- [ ] Rust unit tests in `tests/rust/unit/` only for private internals
+- [ ] Lua BDD tests in `tests/lua/unit/` registered in `tests/lua/harness.rs`
+- [ ] Rust unit tests in `tests/rust/unit/<module>_tests.rs` only — never in `src/` files
 - [ ] Expanded docstrings on all public items; `python tools/docs/collect_docs.py --report-missing` exits 0
-- [ ] Updated `docs/specs/<module>.md`; spec MDs removed from `src/`
+- [ ] Updated `docs/specs/<module>.md`; no spec MDs inside `src/`
 - [ ] Regenerated `docs/API/lua-api.md` via `python tools/gen_all_docs.py`
 - [ ] `content/examples/<module>.lua` demonstrating the new API
 - [ ] `docs/CHANGELOG.md` entry; `Cargo.toml` version bumped if MINOR/MAJOR
@@ -49,6 +55,9 @@ Full feature development workflow from design to merged code. Use when starting,
 
 - Skipping the Success Criteria check before declaring the prompt done.
 - Running `git add .` instead of staging only the files this prompt produced.
+- Adding `#[cfg(test)]` blocks anywhere under `src/` — all tests go under `tests/`.
+- Adding any struct, enum, impl, or fn to `mod.rs` — it must remain declarations-only.
+- Putting more than ~10 lines of logic in a `lua_api/` closure — extract to domain module.
 
 ## Example Invocation
 

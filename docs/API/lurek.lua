@@ -3586,6 +3586,11 @@ function mlua:setByte(offset, value) end
 ---@return string
 function lurek.data.compress(format_str, raw_data, level) end
 
+--- Returns the CRC-32 checksum of the input data as an integer.
+---@param raw_data any
+---@return integer
+function lurek.data.crc32(raw_data) end
+
 --- Decodes encoded text back to binary (base64, hex).
 ---@param format_str any
 ---@param encoded any
@@ -3626,9 +3631,7 @@ function lurek.data.getPackedSize(fmt, vals) end
 ---@return string
 function lurek.data.hash(algo_str, raw_data) end
 
---- Creates a new mutable byte buffer from a size or string.
 ---@param value any
----@return ByteData
 function lurek.data.newByteData(value) end
 
 --- Creates a read-only windowed view into a byte string.
@@ -5886,6 +5889,11 @@ function lurek.filesystem.copy(src, dst) end
 ---@return nil
 function lurek.filesystem.createDirectory(path) end
 
+--- Creates an empty temporary file in the `save/` sandbox and returns its
+---@param prefix? any (optional)
+---@return string
+function lurek.filesystem.createTempFile(prefix) end
+
 --- Returns whether the given file or directory exists.
 ---@param path any
 ---@return boolean
@@ -6013,6 +6021,11 @@ function lurek.filesystem.removeDir(path) end
 ---@param name any
 ---@return nil
 function lurek.filesystem.setIdentity(name) end
+
+--- Returns lightweight file statistics for the given path.
+---@param path any
+---@return table
+function lurek.filesystem.stat(path) end
 
 --- Removes a virtual mount layer by mountpoint.
 ---@param mp any
@@ -6313,7 +6326,7 @@ function lurek.globe.greatCirclePath(la, lo, lb, lo2, n) end
 --- Convert lat/lon (degrees) to a unit-sphere Cartesian vector {x, y, z}.
 ---@param lat any
 ---@param lon any
----@return {number
+---@return table
 function lurek.globe.latLonToUnit(lat, lon) end
 
 ---@param name any
@@ -8388,6 +8401,45 @@ function CatmullRom:sample(t) end
 ---@return number
 function CatmullRom:sampleSegment(seg, t) end
 
+--- Lua-side wrapper around a [`Circle`].
+---@class Circle
+local Circle = {}
+
+--- Returns the axis-aligned bounding box as (min_x, min_y, max_x, max_y).
+---@return number
+function Circle:aabb() end
+
+--- Returns the area of the circle (π r²).
+---@return number
+function Circle:area() end
+
+--- Returns true if the point (px, py) lies inside or on the boundary.
+---@param px any
+---@param py any
+---@return boolean
+function Circle:contains(px, py) end
+
+--- Returns true if this circle overlaps another circle.
+---@param other any
+---@return boolean
+function Circle:intersects(other) end
+
+--- Returns the circumference of the circle (2 π r).
+---@return number
+function Circle:perimeter() end
+
+--- Returns the circle radius.
+---@return number
+function Circle:radius() end
+
+--- Returns the circle centre X.
+---@return number
+function Circle:x() end
+
+--- Returns the circle centre Y.
+---@return number
+function Circle:y() end
+
 --- Lua-side wrapper around a [`HermiteSpline`].
 ---@class Hermite
 local Hermite = {}
@@ -9129,6 +9181,13 @@ function lurek.math.min() end
 ---@param points any
 ---@return BezierCurve
 function lurek.math.newBezierCurve(points) end
+
+--- Creates a new Circle value type with the given centre and radius.
+---@param x any
+---@param y any
+---@param radius any
+---@return Circle
+function lurek.math.newCircle(x, y, radius) end
 
 --- Creates a new seeded noise generator.
 ---@param seed? any (optional)
@@ -15215,6 +15274,11 @@ function lurek.sprite.parseAtlas(json_str) end
 ---@class lurek.system
 lurek.system = {}
 
+--- Serialises an engine error message to a compact JSON string.
+---@param msg any
+---@return string
+function lurek.system.errorSnapshot(msg) end
+
 --- Returns the CPU architecture string for the current machine.
 ---@return string
 function lurek.system.getArch() end
@@ -15235,9 +15299,8 @@ function lurek.system.getClipboardText() end
 --- Returns whether the debug overlay is currently visible.
 function lurek.system.getDebugOverlay() end
 
---- Returns the value of the named OS environment variable, or nil if not set.
+--- - `name` ÔÇö Environment variable name (case-sensitive on Linux/macOS).
 ---@param name any
----@return string?
 function lurek.system.getEnv(name) end
 
 --- Returns a table of system information including OS name, CPU model, and installed RAM.

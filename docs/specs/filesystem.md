@@ -184,6 +184,12 @@ Two additional types expand the runtime I/O surface. `FileWatcher` (from `watche
 - `ZipMount:listFiles`: Returns a sorted array of all virtual paths exposed by this ZIP mount.
 - `ZipMount:prefix`: Returns the virtual path prefix this archive was mounted under.
 
+### New in 0.15.0 (Lua API)
+
+- `lurek.fs.listRecursive(path)` — Recursively lists all files under `path` (relative to the game root). Returns a flat array of path strings. Raises a Lua error on path-traversal attempts (`..` in path) or if the directory cannot be read.
+- `lurek.fs.stat(path)` — Returns a table `{ size: integer, isFile: boolean, isDir: boolean }` for the file or directory at `path` (sandboxed). Raises on path-traversal or missing entry.
+- `lurek.fs.createTempFile(prefix?)` — Creates an empty scratch file under `save/` and returns its relative path. Each call generates a unique name. `prefix` is sanitised (alphanumeric, `_`, `-`; max 32 chars).
+
 ## References
 
 - `runtime`: Imports or references `runtime` from `src/runtime/`.

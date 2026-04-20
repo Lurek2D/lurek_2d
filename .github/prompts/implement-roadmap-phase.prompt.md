@@ -1,7 +1,5 @@
 ---
 description: "Complete phase implementation from a roadmap file. Runs pre-flight analysis of what already exists, audits external libraries so nothing..."
-agent: Architect
-tools: [tools/docs/collect_docs.py, tools/validate/cag_validate.py]
 ---
 # Implement Roadmap Phase
 

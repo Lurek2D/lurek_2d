@@ -75,10 +75,14 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
 ---
 
-## 3. Lua Docstring Issues (15 items)
+## 3. Lua Docstring Issues (16 items)
 
 Lua API items with missing or very short descriptions (< 25 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
+
+### `data`
+
+- `function` **`lurek.data.newByteData`** — *(no description)*
 
 ### `globe`
 

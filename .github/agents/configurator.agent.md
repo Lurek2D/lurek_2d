@@ -1,7 +1,7 @@
 ---
 name: Configurator
 description: "Author and validate Lurek2D project configuration (`conf.lua`, `conf.toml`, Cargo features) against the `Config` struct in `src/runtime/config.rs`."
-tools: [tools/validate/validate_game.py, tools/validate/validate_lua_api.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Configurator
 

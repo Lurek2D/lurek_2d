@@ -1,6 +1,5 @@
 ---
 description: "Create a new AI behavior for Lurek2D game entities. Use when implementing FSM states, behavior tree nodes, steering behaviors, or GOAP ac..."
-agent: Developer
 ---
 # Create Ai Behavior
 

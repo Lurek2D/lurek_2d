@@ -1,6 +1,5 @@
 ---
 description: "Fix failing tests: diagnose why tests fail and correct either the test or the code."
-agent: Tester
 ---
 # Fix Failing Tests
 

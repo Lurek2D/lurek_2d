@@ -99,6 +99,18 @@ Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`
 
 - Namespace: `lurek.platform.setLogLevel`
 
+### New in 0.15.0
+
+**Error category additions**
+
+`ErrorCategory::Filesystem` was added. `EngineError::FileSystemError` now maps to this category (previously mapped to `System`). `ErrorCategory::as_str()` returns `"filesystem"`.
+
+**ErrorSnapshot serialisation**
+
+`ErrorSnapshot` struct added to `src/runtime/error.rs`. Fields: `message: String`, `code: &'static str`, `category: &'static str`, `recovery_hint: &'static str`. `ErrorSnapshot::to_json()` serialises to a compact JSON object. `EngineError::snapshot()` constructs an `ErrorSnapshot` from any `EngineError`.
+
+Lua: `lurek.platform.errorSnapshot(message)` — wraps `message` as a `LuaError`, calls `.snapshot().to_json()`, and returns a JSON string with `message`, `code`, `category`, and `recovery_hint` fields.
+
 ## References
 
 - `audio`: Imports or references `audio` from `src/audio/`.

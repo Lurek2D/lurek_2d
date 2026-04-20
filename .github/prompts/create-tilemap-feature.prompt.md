@@ -1,7 +1,5 @@
 ---
 description: "Create a new tilemap feature (layer type, autotile rule, collision mapping, or TMX extension). Follow the tilemap module's existing patte..."
-agent: Developer
-tools: [tools/docs/gen_docs_lua.py]
 ---
 # Create Tilemap Feature
 

@@ -121,6 +121,9 @@ The timer module has been extended with physics step controls: `setPhysicsMaxSte
 - `Scheduler:setTimeScale`: Sets a global time-scale multiplier for this scheduler.
 - `Scheduler:getTimeScale`: Returns the current time-scale multiplier.
 - `Scheduler:update`: Advances all timers by dt seconds, firing due callbacks.
+- `Scheduler:afterFrames`: Schedules a one-shot callback that fires after exactly `n` calls to `updateFrames`. Returns an event ID.
+- `Scheduler:everyFrames`: Schedules a repeating callback that fires every `n` calls to `updateFrames`, for `count` repetitions (default: infinite). Returns an event ID.
+- `Scheduler:updateFrames`: Advances all frame-based events by one tick, firing due callbacks. Returns the number of callbacks that fired this call.
 
 ## References
 

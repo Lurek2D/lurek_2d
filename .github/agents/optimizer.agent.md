@@ -1,7 +1,7 @@
 ---
 name: Optimizer
 description: "Profile Lurek2D performance, identify hot-path bottlenecks, and recommend ranked optimisations with measurement evidence; does not implement them."
-tools: [tools/audit/stress_report.py, tools/audit/quality_report.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Optimizer
 

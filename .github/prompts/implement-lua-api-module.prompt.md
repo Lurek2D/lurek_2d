@@ -1,7 +1,5 @@
 ---
 description: "Build or rebuild a lurek.* Lua API module from domain module source. Reads domain pub fn signatures, designs the Lua surface, then writes..."
-agent: Lua-Designer
-tools: [tools/validate/validate_lua_api.py]
 ---
 # Implement Lua Api Module
 

@@ -2090,6 +2090,7 @@ dependencies = [
  "arboard",
  "base64",
  "bytemuck",
+ "crc32fast",
  "csv",
  "ddsfile",
  "directories",

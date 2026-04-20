@@ -1,6 +1,5 @@
 ---
 description: "Review entity lifecycle patterns for correctness: spawn, alive check, kill, ID recycling, blueprint usage, and layer organization. Use wh..."
-agent: Reviewer
 ---
 # Review Entity Lifecycle
 

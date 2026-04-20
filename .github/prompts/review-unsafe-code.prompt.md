@@ -1,6 +1,5 @@
 ---
 description: "Review unsafe code blocks: verify SAFETY comments and justification for every unsafe usage."
-agent: Security
 ---
 # Review Unsafe Code
 

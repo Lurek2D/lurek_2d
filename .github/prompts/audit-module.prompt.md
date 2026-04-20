@@ -1,7 +1,5 @@
 ---
 description: "End-to-end quality audit of one or more Lurek2D src/ modules. Validates spec, AGENT.md, Lua bridge separation, docstrings, example comple..."
-agent: Reviewer
-tools: [tools/audit/audit_module.py, tools/audit/test_coverage.py, tools/docs/collect_docs.py, tools/validate/validate_lua_api.py]
 ---
 # Audit Module
 

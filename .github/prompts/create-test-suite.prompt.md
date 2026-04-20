@@ -1,6 +1,5 @@
 ---
 description: Create integration or unit tests for a Lurek2D module with proper patterns and coverage.
-agent: Tester
 ---
 # Create Test Suite
 

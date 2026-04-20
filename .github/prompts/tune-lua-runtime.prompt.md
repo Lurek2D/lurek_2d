@@ -1,7 +1,6 @@
 ---
 description: "Tune LuaJIT GC, FFI, or hot-path Lua patterns."
-agent: Optimizer
-tools: [tools/validate/cag_validate.py]
+
 ---
 # Tune Lua Runtime
 

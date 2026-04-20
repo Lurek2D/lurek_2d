@@ -1,7 +1,7 @@
 ---
 name: Lua-Designer
 description: "Design the public `lurek.*` Lua API surface — naming, signatures, defaults, callbacks — for GameDev and Modder users; does not write Rust bindings."
-tools: [tools/docs/gen_lua_api.py, tools/validate/validate_lua_api.py]
+tools: [vscode, execute, read, agent, browser, edit, search, web, todo]
 ---
 # Lua-Designer
 

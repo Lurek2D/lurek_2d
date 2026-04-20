@@ -1,7 +1,5 @@
 ---
 description: "Tune Cargo profiles, feature flags, and build outputs for Lurek2D."
-agent: Developer
-tools: [tools/validate/cag_validate.py]
 ---
 # Tune Cargo Build
 

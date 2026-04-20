@@ -1,7 +1,5 @@
 ---
 description: "Add a command, completion, or webview to extensions/vscode/."
-agent: Developer
-tools: [tools/validate/cag_validate.py]
 ---
 # Extend Vscode Extension
 

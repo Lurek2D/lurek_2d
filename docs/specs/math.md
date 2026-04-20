@@ -79,11 +79,20 @@ Three new source files add major computational capabilities. `voronoi.rs` introd
 - `AabbTree::remove` (`aabb_tree.rs`): Removes the entry with the given `id` from the tree.
 - `AabbTree::query` (`aabb_tree.rs`): Returns the ids of all entries whose AABBs overlap the query rectangle.
 - `AabbTree::query_point` (`aabb_tree.rs`): Returns the ids of all entries whose AABBs contain the point `(x, y)`.
+- `AabbTree::query_circle` (`aabb_tree.rs`): Returns the ids of all entries whose AABBs overlap the query circle (cx, cy, radius).
+- `AabbTree::query_segment` (`aabb_tree.rs`): Returns the ids of all entries whose AABBs are crossed by the line segment from (x1,y1) to (x2,y2).
 - `AabbTree::update` (`aabb_tree.rs`): Updates the AABB for an existing entry.
 - `AabbTree::contains` (`aabb_tree.rs`): Returns `true` if an entry with the given `id` exists in the tree.
 - `AabbTree::len` (`aabb_tree.rs`): Returns the number of entries currently in the tree.
 - `AabbTree::is_empty` (`aabb_tree.rs`): Returns `true` if the tree contains no entries.
 - `AabbTree::clear` (`aabb_tree.rs`): Removes all entries and resets the tree to the empty state.
+- `Circle::new` (`circle.rs`): Creates a `Circle` with center `(x, y)` and `radius` (clamped to 0 if negative).
+- `Circle::center` (`circle.rs`): Returns the center as `Vec2`.
+- `Circle::area` (`circle.rs`): Returns π r².
+- `Circle::perimeter` (`circle.rs`): Returns 2 π r.
+- `Circle::contains` (`circle.rs`): Returns `true` if the point `(px, py)` is inside or on the circle.
+- `Circle::intersects` (`circle.rs`): Returns `true` if the two circles overlap.
+- `Circle::aabb` (`circle.rs`): Returns the axis-aligned bounding box as `(x1, y1, x2, y2)`.
 - `BezierCurve::new` (`bezier.rs`): Create a new Bezier curve from control points.
 - `BezierCurve::evaluate` (`bezier.rs`): Evaluate the curve at parameter `t` using De Casteljau's algorithm.
 - `BezierCurve::render` (`bezier.rs`): Render the curve as a polyline with the given number of segments.
@@ -363,6 +372,7 @@ Three new source files add major computational capabilities. `voronoi.rs` introd
 - `lurek.math.remap`: Remaps `v` from [in_min, in_max] to [out_min, out_max].
 - `lurek.math.polygonClip`: Clips a polygon against a single half-plane using the Sutherland-Hodgman algorithm.
 - `lurek.math.aabbTree`: Creates a new empty AABB tree for efficient broad-phase overlap queries.
+- `lurek.math.newCircle(x, y, radius)`: Creates a `Circle` value object with center `(x, y)` and the given `radius`.
 - `lurek.math.polygonIntersection`: Computes the intersection of two convex polygons using the Sutherland-Hodgman
 - `lurek.math.polygonUnion`: Computes the approximate union of two convex polygons as the convex hull of
 - `lurek.math.polygonDifference`: Computes the approximate difference `A - B` (the part of A not covered by B).
@@ -371,10 +381,22 @@ Three new source files add major computational capabilities. `voronoi.rs` introd
 ### `AabbTree` Methods
 - `AabbTree:remove`: Removes the entry with the given id.
 - `AabbTree:queryPoint`: Returns the ids of all entries whose AABBs contain the given point.
+- `AabbTree:queryCircle`: Returns the ids of all entries whose AABBs overlap a circle `(cx, cy, radius)`.
+- `AabbTree:querySegment`: Returns the ids of all entries whose AABBs are crossed by the segment from `(x1,y1)` to `(x2,y2)`.
 - `AabbTree:contains`: Returns true if an entry with the given id exists in the tree.
 - `AabbTree:len`: Returns the number of entries in the tree.
 - `AabbTree:isEmpty`: Returns true if the tree contains no entries.
 - `AabbTree:clear`: Removes all entries from the tree.
+
+### `Circle` Methods
+- `Circle:area()`: Returns π r².
+- `Circle:perimeter()`: Returns 2 π r.
+- `Circle:contains(px, py)`: Returns true if the point lies inside or on the circle.
+- `Circle:intersects(other)`: Returns true if the two circles overlap.
+- `Circle:aabb()`: Returns `x1, y1, x2, y2` — the AABB enclosing the circle.
+- `Circle:x()`: Returns the center x coordinate.
+- `Circle:y()`: Returns the center y coordinate.
+- `Circle:radius()`: Returns the radius.
 
 ### `BezierCurve` Methods
 - `BezierCurve:evaluate`: Evaluates the curve at parameter t, returning (x, y).
@@ -492,3 +514,38 @@ Three new source files add major computational capabilities. `voronoi.rs` introd
   - `voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell>` — near-duplicate deduplication, CCW vertex ordering.
   - Lua: `lurek.math.voronoi({{x,y},…})` → `{{site={x,y}, vertices={{x,y},…}},…}`.
   - Re-exported as `crate::math::VoronoiCell` and `crate::math::voronoi_from_points`.
+
+### New in 0.15.0
+
+**Free functions (scalar utilities)**
+- `lurek.math.sign(v)` — Returns `1`, `-1`, or `0` based on the sign of `v`.
+- `lurek.math.smoothstep(e0, e1, x)` — Hermite interpolation clamped to `[0, 1]`.
+- `lurek.math.inverseLerp(a, b, v)` — Inverse of lerp: returns `t` such that `lerp(a, b, t) == v`.
+
+**Colour utilities**
+- `lurek.math.hslToRgb(h, s, l)` — Converts HSL (0–1 range each) to RGBA. Returns `r, g, b, a` (a = 1.0).
+- `lurek.math.rgbToHsl(r, g, b)` — Converts RGB to HSL. Returns `h, s, l`.
+- `lurek.math.fromHex(hex)` — Parses a hex colour string (`#RRGGBB` or `#RRGGBBAA`). Returns `r, g, b, a` or `nil` on failure.
+
+**Rect constructors**
+- `lurek.math.rectUnion(x1, y1, w1, h1, x2, y2, w2, h2)` — Returns the bounding union rect `x, y, w, h`.
+- `lurek.math.rectFromCenter(cx, cy, w, h)` — Returns a rect whose centre is `(cx, cy)`, returning `x, y, w, h`.
+
+**Vec2 additions**
+- `Vec2.fromAngle(radians)` — Creates a unit Vec2 pointing in the given direction (class function).
+- `Vec2:reflect(normal)` — Returns this vector reflected about the given unit normal Vec2.
+
+**Vec3 additions**
+- `Vec3.splat(v)` — Creates a Vec3 with all components equal to `v` (class function).
+
+**Transform additions**
+- `Transform:decompose()` — Returns five numbers `tx, ty, angle, scale_x, scale_y` extracted from the matrix.
+
+**Easing additions**
+- `lurek.math.inOutElastic(t)` — In-out elastic ease. Symmetric: `f(1-t) == 1 - f(t)`.
+- `lurek.math.inOutBounce(t)` — In-out bounce ease.
+- `lurek.math.inOutBack(t)` — In-out back (overshoot) ease.
+
+**CatmullRomSpline mutations**
+- `CatmullRomSpline:addPoint(x, y)` — Appends a control point to the spline.
+- `CatmullRomSpline:removePoint(index)` — Removes the control point at the given 1-based index. Out-of-range is a no-op.
