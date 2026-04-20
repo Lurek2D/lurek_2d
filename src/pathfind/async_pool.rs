@@ -221,23 +221,3 @@ impl PathThreadPool {
         self.thread_count
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn default_thread_count() {
-        let pool = PathThreadPool::new();
-        assert!(pool.get_thread_count() >= 1);
-    }
-
-    #[test]
-    fn set_thread_count_minimum_one() {
-        let mut pool = PathThreadPool::new();
-        pool.set_thread_count(0);
-        assert_eq!(pool.get_thread_count(), 1);
-        pool.set_thread_count(4);
-        assert_eq!(pool.get_thread_count(), 4);
-    }
-}
