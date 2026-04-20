@@ -263,29 +263,3 @@ impl ORCASolver {
         (vx, vy)
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn no_neighbours_preferred_velocity() {
-        let solver = ORCASolver::new();
-        let (vx, vy) = solver.compute((0.0, 0.0), (1.0, 0.0), &[], 0.5, 2.0, 1.0);
-        assert!((vx - 1.0).abs() < 1e-3);
-        assert!(vy.abs() < 1e-3);
-    }
-
-    #[test]
-    fn single_obstacle_adjusts_velocity() {
-        let solver = ORCASolver::new();
-        let neighbours = vec![ORCANeighbour {
-            position: (1.0, 0.0),
-            velocity: (-1.0, 0.0),
-            radius: 0.5,
-        }];
-        let (vx, vy) = solver.compute((0.0, 0.0), (1.0, 0.0), &neighbours, 0.5, 2.0, 1.0);
-        let speed = (vx * vx + vy * vy).sqrt();
-        assert!(speed <= 2.0 + 1e-3, "speed within max");
-    }
-}

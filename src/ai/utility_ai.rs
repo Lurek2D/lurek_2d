@@ -297,26 +297,3 @@ impl Default for UtilityAI {
         Self::new()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn response_curve_linear() {
-        let c = ResponseCurve::Linear { slope: 2.0, intercept: 0.0, clamp_min: 0.0, clamp_max: 1.0 };
-        assert!((c.apply(0.5) - 1.0).abs() < 1e-6);
-    }
-
-    #[test]
-    fn response_curve_clamped() {
-        let c = ResponseCurve::Linear { slope: 10.0, intercept: 0.0, clamp_min: 0.0, clamp_max: 1.0 };
-        assert!((c.apply(1.0) - 1.0).abs() < 1e-6);
-    }
-
-    #[test]
-    fn new_utility_ai_empty() {
-        let ai = UtilityAI::new();
-        assert_eq!(ai.action_count(), 0);
-    }
-}

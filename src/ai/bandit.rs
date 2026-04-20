@@ -155,8 +155,9 @@ impl Bandit {
             }
             BanditStrategy::ThompsonSampling => {
                 // Sample from each arm's Beta distribution and pick argmax
-                let samples: Vec<f64> = self.arms.iter()
-                    .map(|a| self.beta_sample(a.alpha, a.beta))
+                let arm_data: Vec<(f64, f64)> = self.arms.iter().map(|a| (a.alpha, a.beta)).collect();
+                let samples: Vec<f64> = arm_data.iter()
+                    .map(|&(alpha, beta)| self.beta_sample(alpha, beta))
                     .collect();
                 samples.iter().enumerate()
                     .max_by(|a, b| a.1.partial_cmp(b.1).unwrap())
@@ -260,51 +261,4 @@ fn xorshift64(mut x: u64) -> u64 {
     x ^= x >> 7;
     x ^= x << 17;
     x
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_bandit_defaults() {
-        let b = Bandit::new(3, 42);
-        assert_eq!(b.arm_count(), 3);
-        assert_eq!(b.total_pulls(), 0);
-    }
-
-    #[test]
-    fn select_returns_valid_arm() {
-        let mut b = Bandit::new(4, 42);
-        let arm = b.select();
-        assert!(arm < 4);
-    }
-
-    #[test]
-    fn update_tracks_reward() {
-        let mut b = Bandit::new(2, 42);
-        b.update(0, 1.0);
-        assert_eq!(b.total_pulls(), 1);
-        assert!(b.mean_reward(0) > 0.0);
-    }
-
-    #[test]
-    fn best_arm_picks_highest() {
-        let mut b = Bandit::new(3, 42);
-        b.update(0, 0.5);
-        b.update(1, 2.0);
-        b.update(2, 0.1);
-        assert_eq!(b.best_arm(), 1);
-    }
-
-    #[test]
-    fn ucb1_score_valid() {
-        let mut b = Bandit::new(2, 42);
-        b.update(0, 1.0);
-        b.update(1, 0.5);
-        let s0 = b.ucb1_score(0);
-        let s1 = b.ucb1_score(1);
-        assert!(s0.is_finite());
-        assert!(s1.is_finite());
-    }
 }

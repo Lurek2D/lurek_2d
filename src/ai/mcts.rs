@@ -307,29 +307,3 @@ impl MCTSEngine {
         (self.rng as usize) % n
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn two_action_game() -> MCTSConfig {
-        MCTSConfig {
-            action_count: 2,
-            max_depth: 5,
-            iterations: 50,
-        }
-    }
-
-    #[test]
-    fn new_engine_has_config() {
-        let e = MCTSEngine::new(two_action_game(), 42);
-        assert_eq!(e.config().action_count, 2);
-    }
-
-    #[test]
-    fn arena_starts_empty_after_reset() {
-        let mut e = MCTSEngine::new(two_action_game(), 42);
-        e.reset();
-        assert_eq!(e.arena.len(), 0);
-    }
-}

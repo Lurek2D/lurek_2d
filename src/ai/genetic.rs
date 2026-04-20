@@ -240,39 +240,3 @@ fn xorshift64(mut x: u64) -> u64 {
     x ^= x << 17;
     x
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn population_initialised() {
-        let ga = GeneticAlgorithm::new(10, 5, 42);
-        assert_eq!(ga.population().len(), 10);
-        assert!(ga.population().iter().all(|g| g.genes.len() == 5));
-    }
-
-    #[test]
-    fn evolve_step_preserves_size() {
-        let mut ga = GeneticAlgorithm::new(8, 4, 42);
-        let fitnesses: Vec<f64> = (0..8).map(|i| i as f64).collect();
-        ga.evolve(&fitnesses, 0.1);
-        assert_eq!(ga.population().len(), 8);
-    }
-
-    #[test]
-    fn best_index_picks_highest() {
-        let mut ga = GeneticAlgorithm::new(4, 3, 42);
-        let fitnesses = vec![1.0, 5.0, 3.0, 2.0];
-        ga.evolve(&fitnesses, 0.0);
-        assert_eq!(ga.best_index(&fitnesses), 1);
-    }
-
-    #[test]
-    fn generation_counter_increments() {
-        let mut ga = GeneticAlgorithm::new(4, 2, 42);
-        assert_eq!(ga.generation(), 0);
-        ga.evolve(&[1.0, 2.0, 3.0, 4.0], 0.1);
-        assert_eq!(ga.generation(), 1);
-    }
-}

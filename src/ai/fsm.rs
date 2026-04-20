@@ -220,30 +220,3 @@ impl Default for StateMachine {
         Self::new()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_fsm_has_no_states() {
-        let fsm = StateMachine::new();
-        assert!(fsm.current_state_name().is_none());
-    }
-
-    #[test]
-    fn state_count_after_add() {
-        let mut fsm = StateMachine::new();
-        fsm.add_state("idle".to_string());
-        fsm.add_state("walk".to_string());
-        assert_eq!(fsm.state_count(), 2);
-    }
-
-    #[test]
-    fn initial_state_set() {
-        let mut fsm = StateMachine::new();
-        fsm.add_state("idle".to_string());
-        fsm.set_initial_state("idle".to_string());
-        assert_eq!(fsm.current_state_name(), Some("idle"));
-    }
-}

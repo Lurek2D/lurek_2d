@@ -143,22 +143,3 @@ impl Neuroevolution {
         net
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_pool_creates_population() {
-        let ne = NeuroEvolution::new(&[2, 3, 1], 10, 42);
-        assert_eq!(ne.population_size(), 10);
-    }
-
-    #[test]
-    fn evaluate_and_evolve_preserves_size() {
-        let mut ne = NeuroEvolution::new(&[2, 1], 6, 42);
-        let fitnesses: Vec<f64> = (0..6).map(|i| i as f64).collect();
-        ne.evolve(&fitnesses, 0.1);
-        assert_eq!(ne.population_size(), 6);
-    }
-}

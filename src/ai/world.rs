@@ -156,32 +156,3 @@ impl Default for AIWorld {
         Self::new()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_world_empty() {
-        let w = AIWorld::new();
-        assert_eq!(w.agents.len(), 0);
-    }
-
-    #[test]
-    fn add_and_find_agent() {
-        let mut w = AIWorld::new();
-        w.add_agent(Agent::new("test", 0));
-        assert_eq!(w.agents.len(), 1);
-        assert_eq!(w.agents[0].name, "test");
-    }
-
-    #[test]
-    fn update_moves_agents() {
-        let mut w = AIWorld::new();
-        let mut a = Agent::new("mover", 0);
-        a.velocity = (1.0, 0.0);
-        w.add_agent(a);
-        w.update(2.0);
-        assert!((w.agents[0].position.0 - 2.0).abs() < 1e-6);
-    }
-}

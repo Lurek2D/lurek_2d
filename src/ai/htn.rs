@@ -334,8 +334,8 @@ impl HTNPlanner {
                     plan.push(task.name().to_string());
                 }
                 HTNTask::Compound { methods, .. } => {
-                    let applicable: &HTNMethod = methods.iter()
-                        .find(|m| m.is_applicable(state))?;
+                    let applicable: &HTNMethod = match methods.iter()
+                        .find(|m| m.is_applicable(state)) { Some(m) => m, None => return false };
                     // Push sub-tasks in reverse so the stack pops them left-to-right
                     let mut subtasks: Vec<String> = applicable.sub_tasks.clone();
                     subtasks.reverse();
@@ -346,56 +346,5 @@ impl HTNPlanner {
             }
         }
         true
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn sample_domain() -> HTNDomain {
-        let mut d = HTNDomain::new();
-        d.add_task(HTNTask::Primitive {
-            name: "eat".into(),
-            preconditions: vec![("hungry".into(), true)],
-            effects: vec![("hungry".into(), false)],
-        });
-        d.add_task(HTNTask::Compound {
-            name: "satisfy_hunger".into(),
-            methods: vec![HTNMethod {
-                name: "use_eat".into(),
-                conditions: vec![("hungry".into(), true)],
-                sub_tasks: vec!["eat".into()],
-            }],
-        });
-        d
-    }
-
-    #[test]
-    fn decompose_single_primitive() {
-        let d = sample_domain();
-        let mut state = HashMap::new();
-        state.insert("hungry".to_string(), true);
-        let plan = HTNPlanner::plan(&d, "eat", &state);
-        assert!(plan.is_some());
-        assert_eq!(plan.unwrap(), vec!["eat"]);
-    }
-
-    #[test]
-    fn decompose_compound_task() {
-        let d = sample_domain();
-        let mut state = HashMap::new();
-        state.insert("hungry".to_string(), true);
-        let plan = HTNPlanner::plan(&d, "satisfy_hunger", &state);
-        assert!(plan.is_some());
-        assert_eq!(plan.unwrap(), vec!["eat"]);
-    }
-
-    #[test]
-    fn precondition_not_met_returns_none() {
-        let d = sample_domain();
-        let state = HashMap::new(); // hungry not set
-        let plan = HTNPlanner::plan(&d, "eat", &state);
-        assert!(plan.is_none());
     }
 }

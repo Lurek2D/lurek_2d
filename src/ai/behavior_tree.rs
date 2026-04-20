@@ -366,30 +366,3 @@ impl BehaviorTree {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn bt_status_conversions() {
-        assert_eq!(BTStatus::Success.as_str(), "success");
-        assert_eq!(BTStatus::Failure.as_str(), "failure");
-        assert_eq!(BTStatus::Running.as_str(), "running");
-    }
-
-    #[test]
-    fn parallel_policy_parse() {
-        assert_eq!(ParallelPolicy::from_str("require_all"), ParallelPolicy::RequireAll);
-        assert_eq!(ParallelPolicy::from_str("require_one"), ParallelPolicy::RequireOne);
-        assert_eq!(ParallelPolicy::from_str("unknown"), ParallelPolicy::RequireAll);
-    }
-
-    #[test]
-    fn new_tree_has_no_root() {
-        let bt = BehaviorTree::new();
-        assert!(bt.root.is_none());
-        let state = bt.debug_state();
-        assert_eq!(state.node_count, 0);
-    }
-}

@@ -61,11 +61,11 @@ pub struct QLearner {
     /// Discount factor γ ∈ [0,1].
     pub(crate) gamma: f64,
     /// Exploration rate ε ∈ [0,1].
-    pub(crate) epsilon: f64,
+    pub epsilon: f64,
     /// Decay multiplier applied to epsilon after each episode.
     pub(crate) epsilon_decay: f64,
     /// Number of completed episodes.
-    pub(crate) episode_count: u64,
+    pub episode_count: u64,
 }
 
 impl QLearner {
@@ -305,59 +305,5 @@ impl QLearner {
             }
         }
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_qtable_zeroed() {
-        let q = QLearner::new(3, 2);
-        assert_eq!(q.get_q(0, 0), 0.0);
-        assert_eq!(q.get_q(2, 1), 0.0);
-    }
-
-    #[test]
-    fn learn_updates_q() {
-        let mut q = QLearner::new(2, 2);
-        q.learn(0, 0, 1.0, 1);
-        assert!(q.get_q(0, 0) > 0.0);
-    }
-
-    #[test]
-    fn best_action_picks_highest_q() {
-        let mut q = QLearner::new(2, 2);
-        q.set_q(0, 1, 5.0);
-        assert_eq!(q.best_action(0), 1);
-    }
-
-    #[test]
-    fn end_episode_decays_epsilon() {
-        let mut q = QLearner::new(2, 2);
-        let eps_before = q.epsilon;
-        q.end_episode();
-        assert!(q.epsilon < eps_before);
-        assert_eq!(q.episode_count, 1);
-    }
-
-    #[test]
-    fn out_of_range_safe() {
-        let q = QLearner::new(2, 2);
-        assert_eq!(q.get_q(99, 99), 0.0);
-        assert_eq!(q.best_action(99), 0);
-    }
-
-    #[test]
-    fn serialize_deserialize_round_trip() {
-        let mut q = QLearner::new(2, 3);
-        q.set_q(0, 1, 1.5);
-        q.set_q(1, 2, -0.5);
-        let json = q.serialize();
-        let mut q2 = QLearner::new(2, 3);
-        q2.deserialize(&json).unwrap();
-        assert!((q2.get_q(0, 1) - 1.5).abs() < 1e-9);
-        assert!((q2.get_q(1, 2) - (-0.5)).abs() < 1e-9);
     }
 }

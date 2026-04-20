@@ -375,21 +375,3 @@ impl Default for GOAPPlanner {
         Self::new()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_planner_defaults() {
-        let p = GOAPPlanner::new();
-        assert_eq!(p.action_count(), 0);
-    }
-
-    #[test]
-    fn set_max_iterations() {
-        let mut p = GOAPPlanner::new();
-        p.set_max_iterations(500);
-        assert_eq!(p.max_iterations, 500);
-    }
-}

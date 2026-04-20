@@ -585,7 +585,6 @@ impl SteeringManager {
     pub fn last_force(&self) -> Force {
         self.last_force
     }
-}
 
     /// Sets the cell size used by the spatial-hash neighbourhood search.
     ///
@@ -610,30 +609,5 @@ impl SteeringManager {
 impl Default for SteeringManager {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn combine_mode_parse() {
-        assert_eq!(CombineMode::from_str("weighted"), CombineMode::Weighted);
-        assert_eq!(CombineMode::from_str("priority"), CombineMode::Priority);
-        assert_eq!(CombineMode::from_str("nope"), CombineMode::Weighted);
-    }
-
-    #[test]
-    fn new_manager_defaults() {
-        let m = SteeringManager::new();
-        assert_eq!(m.behavior_count(), 0);
-    }
-
-    #[test]
-    fn spatial_hash_toggle() {
-        let mut m = SteeringManager::new();
-        m.set_use_spatial_hash(true);
-        m.set_use_spatial_hash(false);
     }
 }

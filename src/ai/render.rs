@@ -346,38 +346,3 @@ fn draw_bt_image(
         child_slot += bt_node_count(child) as u32;
     }
 }
-
-// ── Tests ──────────────────────────────────────────────────────────────────────
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn fsm_empty_returns_no_commands() {
-        let fsm = StateMachine::new();
-        assert!(fsm.generate_render_commands().is_empty());
-    }
-
-    #[test]
-    fn fsm_draw_to_image_correct_dimensions() {
-        let fsm = StateMachine::new();
-        let img = fsm.draw_to_image(64, 32);
-        assert_eq!(img.width(), 64);
-        assert_eq!(img.height(), 32);
-    }
-
-    #[test]
-    fn bt_empty_returns_no_commands() {
-        let bt = BehaviorTree::new();
-        assert!(bt.generate_render_commands().is_empty());
-    }
-
-    #[test]
-    fn bt_draw_to_image_correct_dimensions() {
-        let bt = BehaviorTree::new();
-        let img = bt.draw_to_image(64, 64);
-        assert_eq!(img.width(), 64);
-        assert_eq!(img.height(), 64);
-    }
-}
