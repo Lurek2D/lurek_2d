@@ -25,4 +25,5 @@ pub mod completion;
 pub use cell::TCell;
 pub use terminal_state::Terminal;
 pub(crate) use terminal_state::TerminalEvent;
+pub(crate) use terminal_state::{MAX_COLS, MAX_ROWS};
 pub use widget::{BorderStyle, Widget, WidgetBase, WidgetKind};

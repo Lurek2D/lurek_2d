@@ -1,7 +1,7 @@
-import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import { resolveWorkspaceApiDocPath, searchApiDocumentation } from "../services/apiDocs.js";
+import { execParallelCargoCommand } from "../services/parallelCargo.js";
 
 /**
  * MCP tool definition following the Model Context Protocol schema.
@@ -86,7 +86,7 @@ export function getToolDefinitions(): ToolDefinition[] {
     {
       name: "lurek2d.checkBuild",
       description:
-        "Run `cargo check` and return compiler diagnostics.",
+        "Run the wrapper-backed repo check flow and return compiler diagnostics.",
       inputSchema: {
         type: "object",
         properties: {},
@@ -111,38 +111,10 @@ export function getToolDefinitions(): ToolDefinition[] {
 }
 
 /**
- * Executes a shell command in the workspace and returns combined output.
- *
- * @param command - The command string to execute.
- * @param cwd - Working directory for the command.
- * @param timeoutMs - Maximum execution time in milliseconds.
- * @returns Combined stdout and stderr output.
- */
-function execCommand(
-  command: string,
-  cwd: string,
-  timeoutMs: number = 60_000
-): Promise<string> {
-  return new Promise((resolve) => {
-    child_process.exec(
-      command,
-      { cwd, timeout: timeoutMs, maxBuffer: 1024 * 1024 },
-      (error, stdout, stderr) => {
-        const output = (stdout || "") + (stderr || "");
-        if (error) {
-          resolve(`${output}\n[exit code: ${error.code ?? "unknown"}]`);
-        } else {
-          resolve(output || "(no output)");
-        }
-      }
-    );
-  });
-}
-
 /**
  * Creates the handler for `lurek2d.runExample`.
  *
- * Builds and runs the specified demo via `cargo run -- content/demos/<name>`.
+ * Builds and runs the specified showcase game via the wrapper-backed run path.
  */
 export function handleRunExample(
   workspaceRoot: string
@@ -154,17 +126,14 @@ export function handleRunExample(
     }
 
     // Validate example exists
-    const exampleDir = path.join(workspaceRoot, "demos", name);
+    const exampleDir = path.join(workspaceRoot, "content", "games", "showcase", name);
     if (!fs.existsSync(exampleDir)) {
       const available = listExampleDirs(workspaceRoot);
-      return `Demo "${name}" not found. Available: ${available.join(", ")}`;
+      return `Showcase game "${name}" not found. Available: ${available.join(", ")}`;
     }
 
-    return execCommand(
-      `cargo run -- content/content/demos/${name}`,
-      workspaceRoot,
-      120_000
-    );
+    const relativeGamePath = path.posix.join("content", "games", "showcase", name);
+    return execParallelCargoCommand(workspaceRoot, ["run", "debug", "--", relativeGamePath], 120_000);
   };
 }
 
@@ -215,7 +184,7 @@ export function handleListExamples(
   return async () => {
     const examples = listExampleDirs(workspaceRoot);
     if (examples.length === 0) {
-      return "No demos found in content/content/demos/ directory.";
+      return "No showcase games found in content/games/showcase/.";
     }
     return examples.join("\n");
   };
@@ -224,7 +193,7 @@ export function handleListExamples(
 /**
  * Creates the handler for `lurek2d.runLuaTest`.
  *
- * Runs a Lua test file via `cargo run -- <file>`.
+ * Runs a Lua test file via the wrapper-backed debug run path.
  */
 export function handleRunLuaTest(
   workspaceRoot: string
@@ -245,20 +214,21 @@ export function handleRunLuaTest(
       return `Test file not found: ${file}`;
     }
 
-    return execCommand(`cargo run -- ${file}`, workspaceRoot, 120_000);
+    const relativeFile = path.relative(workspaceRoot, resolved).replace(/\\/g, "/");
+    return execParallelCargoCommand(workspaceRoot, ["run", "debug", "--", relativeFile], 120_000);
   };
 }
 
 /**
  * Creates the handler for `lurek2d.checkBuild`.
  *
- * Runs `cargo check` and returns the compiler output.
+ * Runs the wrapper-backed repo check flow and returns the compiler output.
  */
 export function handleCheckBuild(
   workspaceRoot: string
 ): ToolHandler {
   return async () => {
-    return execCommand("cargo check 2>&1", workspaceRoot, 120_000);
+    return execParallelCargoCommand(workspaceRoot, ["check"], 120_000);
   };
 }
 
@@ -294,10 +264,10 @@ export function handleGetLogs(
 }
 
 /**
- * Lists demo directory names from the workspace content/demos/ folder.
+ * Lists showcase game directory names from the workspace content/games/showcase/ folder.
  */
 function listExampleDirs(workspaceRoot: string): string[] {
-  const examplesDir = path.join(workspaceRoot, "demos");
+  const examplesDir = path.join(workspaceRoot, "content", "games", "showcase");
   if (!fs.existsSync(examplesDir)) {
     return [];
   }

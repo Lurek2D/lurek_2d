@@ -1112,7 +1112,7 @@ impl LuaUserData for LuaSoundPool {
         /// @param name : string
         /// @return nil
         methods.add_method_mut("setBus", |_, this, name: String| {
-            this.pool.set_bus(name.clone());
+            this.pool.set_bus(&name);
             let keys: Vec<_> = this.pool.all_keys().to_vec();
             let bus_key = this.state.borrow().mixer.get_bus_by_name(&name);
             let mut st = this.state.borrow_mut();
@@ -2709,9 +2709,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setStereoWidth",
         lua.create_function(move |_, (src_ud, width): (LuaAnyUserData, f32)| {
             let key = src_ud
-                .borrow::<LuaAudioSource>()
+                .borrow::<LuaSource>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an AudioSource".into()))?
-                .0;
+                .key;
             s.borrow_mut()
                 .mixer
                 .set_stereo_width(key, width)
@@ -2728,9 +2728,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "getStereoWidth",
         lua.create_function(move |_, src_ud: LuaAnyUserData| {
             let key = src_ud
-                .borrow::<LuaAudioSource>()
+                .borrow::<LuaSource>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an AudioSource".into()))?
-                .0;
+                .key;
             s.borrow()
                 .mixer
                 .get_stereo_width(key)
@@ -2749,9 +2749,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setRandomPitch",
         lua.create_function(move |_, (src_ud, min, max): (LuaAnyUserData, f32, f32)| {
             let key = src_ud
-                .borrow::<LuaAudioSource>()
+                .borrow::<LuaSource>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an AudioSource".into()))?
-                .0;
+                .key;
             s.borrow_mut()
                 .mixer
                 .set_random_pitch(key, min, max)
@@ -2768,9 +2768,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "clearRandomPitch",
         lua.create_function(move |_, src_ud: LuaAnyUserData| {
             let key = src_ud
-                .borrow::<LuaAudioSource>()
+                .borrow::<LuaSource>()
                 .map_err(|_| LuaError::RuntimeError("argument must be an AudioSource".into()))?
-                .0;
+                .key;
             s.borrow_mut().mixer.clear_random_pitch(key);
             Ok(())
         })?,
@@ -2788,13 +2788,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(
             move |_, (from_ud, to_ud, duration): (LuaAnyUserData, LuaAnyUserData, f32)| {
                 let from_key = from_ud
-                    .borrow::<LuaAudioSource>()
+                    .borrow::<LuaSource>()
                     .map_err(|_| LuaError::RuntimeError("from must be an AudioSource".into()))?
-                    .0;
+                    .key;
                 let to_key = to_ud
-                    .borrow::<LuaAudioSource>()
+                    .borrow::<LuaSource>()
                     .map_err(|_| LuaError::RuntimeError("to must be an AudioSource".into()))?
-                    .0;
+                    .key;
                 let game_dir = s.borrow().game_dir.clone();
                 s.borrow_mut()
                     .mixer
@@ -3078,3 +3078,7 @@ impl mlua::UserData for SoundData {
         });
     }
 }
+
+
+
+

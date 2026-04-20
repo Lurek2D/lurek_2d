@@ -80,6 +80,7 @@ import {
 } from "./commands/cag.js";
 import { registerTestCommands } from "./commands/testGenerator.js";
 import { DebugBridge } from "./services/debugBridge.js";
+import { buildBuildCommand, buildCheckCommand } from "./services/parallelCargo.js";
 import { registerDebugBridgeCommands } from "./commands/debugBridge.js";
 import { registerGameJamCommands } from "./commands/gameJam.js";
 import { registerLibraryCommands } from "./commands/library.js";
@@ -632,7 +633,7 @@ window.addEventListener('resize',draw);
   registerCommand(context, "lurek.jam.quickBuild", () => {
     const terminal = vscode.window.createTerminal("Lurek2D Quick Build");
     terminal.show();
-    terminal.sendText("cargo build --release");
+    terminal.sendText(buildBuildCommand("release"));
   });
   registerCommand(context, "lurek.jam.checklist", () => {
     vscode.window.showInformationMessage(
@@ -652,7 +653,7 @@ window.addEventListener('resize',draw);
   registerCommand(context, "lurek2d.checkBuild", () => {
     const terminal = vscode.window.createTerminal("Lurek2D Build Check");
     terminal.show();
-    terminal.sendText("cargo check");
+    terminal.sendText(buildCheckCommand());
   });
   registerCommand(context, "lurek2d.getApiDoc", () => browseApi());
 

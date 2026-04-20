@@ -3,7 +3,7 @@
 #
 # Usage:
 #   bash tools/dist.sh                    # Build + package to dist/
-#   bash tools/dist.sh --skip-build       # Skip cargo build
+#   bash tools/dist.sh --skip-build       # Skip the wrapper-backed release build
 #   bash tools/dist.sh --out /tmp/rel     # Custom output directory
 #   bash tools/dist.sh --help
 #
@@ -35,7 +35,7 @@ done
 
 # ── Setup ──────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WORKSPACE="$(dirname "$SCRIPT_DIR")"
+WORKSPACE="$(dirname "$(dirname "$SCRIPT_DIR")")"
 VERSION="0.4.0"
 
 # Detect target triple
@@ -68,7 +68,7 @@ fi
 # ── 2. Release build ───────────────────────────────────────────────────────────
 if [[ $SKIP_BUILD -eq 0 ]]; then
     step "Building Lurek2D (release) …"
-    (cd "$WORKSPACE" && cargo build --release)
+  (cd "$WORKSPACE" && python tools/dev/parallel_cargo.py build release)
     ok "Build succeeded."
 else
     step "Skipping build (--skip-build set)."

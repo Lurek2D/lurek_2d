@@ -625,7 +625,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns an array of all currently loaded locale codes.
     /// @return table  -- array of locale code strings
     loc.set("getLoadedLocales", lua.create_function(move |lua, ()| {
-        let locales = s.borrow().catalog.locales();
+        let binding = s.borrow();
+        let locales = binding.catalog.locales();
         let tbl = lua.create_table()?;
         for (i, locale) in locales.iter().enumerate() {
             tbl.set(i + 1, *locale)?;

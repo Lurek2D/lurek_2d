@@ -433,7 +433,7 @@ fn emit_spin_box(base: &WidgetBase, style: &WidgetStyle, cmds: &mut Vec<RenderCo
 
 /// Emit the sliding thumb pill of a Switch widget.
 ///
-/// When `on` is true the thumb slides to the right side.  
+/// When `on` is true the thumb slides to the right side.
 /// `thumb_t` in `[0.0, 1.0]` drives the animated position.
 ///
 /// # Parameters
@@ -469,8 +469,7 @@ fn emit_switch(
     // Thumb
     let t = thumb_t.clamp(0.0, 1.0);
     let thumb_r = (base.height * 0.5 - 2.0).max(2.0);
-    let thumb_cx =
-        base.x + thumb_r + 2.0 + (base.width - (thumb_r + 2.0) * 2.0).max(0.0) * t;
+    let thumb_cx = base.x + thumb_r + 2.0 + (base.width - (thumb_r + 2.0) * 2.0).max(0.0) * t;
     let thumb_cy = base.y + base.height * 0.5;
     cmds.push(RenderCommand::SetColor(1.0, 1.0, 1.0, 1.0));
     cmds.push(RenderCommand::Circle {
@@ -569,7 +568,7 @@ fn render_widget(
             }
         }
         WidgetKind::RadioButton(w) => {
-            if w.checked {
+            if w.selected {
                 emit_radio_button(base, style, cmds);
             }
         }
@@ -577,7 +576,15 @@ fn render_widget(
             emit_combo_box_arrow(base, style, cmds);
         }
         WidgetKind::ScrollBar(w) => {
-            emit_scroll_bar(base, w.position, w.content_size, w.view_size, w.vertical, style, cmds);
+            emit_scroll_bar(
+                base,
+                w.position,
+                w.content_size,
+                w.view_size,
+                w.vertical,
+                style,
+                cmds,
+            );
         }
         WidgetKind::Switch(w) => {
             emit_switch(base, w.on, w.thumb_t, style, cmds);
@@ -700,5 +707,3 @@ impl GuiContext {
         img
     }
 }
-
-

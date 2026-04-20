@@ -20,7 +20,7 @@ use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
     BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, PathSegment,
-    PhysicsDebugConfig, PhysicsDebugShape, RenderCommand, SpineSlotDraw, TextAlign, TextureData,
+    ParticleRenderShape, PhysicsDebugConfig, PhysicsDebugShape, RenderCommand, SpineSlotDraw, TextAlign, TextureData,
 };
 use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};
 use crate::runtime::log_messages::{
@@ -3709,6 +3709,12 @@ impl GpuRenderer {
                     height,
                 } => {
                     pending_postfx.push((*stack_id, passes.clone(), *width, *height));
+                }
+                RenderCommand::DrawRichText { .. } => {
+                    // Rich text rendering: not yet implemented in GPU renderer.
+                }
+                RenderCommand::DrawConvexFan { .. } => {
+                    // Convex fan rendering: not yet implemented in GPU renderer.
                 }
             }
         }

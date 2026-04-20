@@ -760,13 +760,13 @@ impl PostFxPipeline {
                 layout: Some(&layout),
                 vertex: wgpu::VertexState {
                     module: &module,
-                    entry_point: Some("vs_main"),
+                    entry_point: "vs_main",
                     buffers: &[],
                     compilation_options: Default::default(),
                 },
                 fragment: Some(wgpu::FragmentState {
                     module: &module,
-                    entry_point: Some("fs_main"),
+                    entry_point: "fs_main",
                     targets: &[Some(wgpu::ColorTargetState {
                         format: surface_format,
                         blend: Some(wgpu::BlendState::REPLACE),
@@ -847,13 +847,13 @@ impl PostFxPipeline {
             layout: Some(&layout),
             vertex: wgpu::VertexState {
                 module: &module,
-                entry_point: Some("vs_main"),
+                entry_point: "vs_main",
                 buffers: &[],
                 compilation_options: Default::default(),
             },
             fragment: Some(wgpu::FragmentState {
                 module: &module,
-                entry_point: Some("fs_main"),
+                entry_point: "fs_main",
                 targets: &[Some(wgpu::ColorTargetState {
                     format: self.surface_format,
                     blend: Some(wgpu::BlendState::REPLACE),
@@ -1040,310 +1040,6 @@ impl PostFxPipeline {
     }
 }
 
-    ///
-    /// The function allocates (or reuses) two ping-pong textures, dispatches each
-    /// pass, then does a final copy pass to `target_view`. If `passes` is empty the
-    /// function is a no-op. An unknown effect name is silently skipped with a
-    /// `log::warn!`.
-    ///
-    /// # Parameters
-    /// - `device` — wgpu logical device.
-    /// - `queue` — wgpu command queue.
-    /// - `encoder` — Active command encoder (shared with the frame).
-    /// - `capture_view` — The view that holds the rendered scene to apply effects to.
-    /// - `target_view` — Output surface or canvas texture view.
-    /// - `passes` — [`PostFxPass`] list built by the Lua PostFxStack.
-    /// - `width` / `height` — Frame dimensions in pixels.
-    pub fn apply(
-        &self,
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        encoder: &mut wgpu::CommandEncoder,
-        capture_view: &wgpu::TextureView,
-        target_view: &wgpu::TextureView,
-        passes: &[crate::render::renderer::PostFxPass],
-        width: u32,
-        height: u32,
-    ) {
-        if passes.is_empty() {
-            // Nothing to do — just copy capture to target.
-            self.run_copy_pass(device, encoder, queue, capture_view, target_view);
-            return;
-        }
 
-        // Allocate ping-pong textures.
-        let ping = PostFxTexture::new(device, width, height, "postfx_ping", self.surface_format);
-        let pong = PostFxTexture::new(device, width, height, "postfx_pong", self.surface_format);
 
-        // Textures indexed by ping-pong flip.
-        let textures = [&ping, &pong];
 
-        // First pass reads from capture.
-        let mut src_view: &wgpu::TextureView = capture_view;
-        let mut dst_idx = 0usize; // write to ping first
-
-        let n = passes.len();
-        for (i, pass) in passes.iter().enumerate() {
-            let is_last = i == n - 1;
-            let dst_view: &wgpu::TextureView = if is_last {
-                target_view
-            } else {
-                &textures[dst_idx].view
-            };
-
-            // Update params UBO.
-            let raw = params_to_uniform(&pass.params);
-            queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-
-            // Look up pipeline.
-            let effect_key = pass.effect_name.as_str();
-            let Some(pipeline) = self.pipelines.get(effect_key) else {
-                log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
-                // Passthrough: copy src to dst so the chain isn't broken.
-                self.run_copy_pass(device, encoder, queue, src_view, dst_view);
-                if !is_last {
-                    src_view = &textures[dst_idx].view;
-                    dst_idx = 1 - dst_idx;
-                }
-                continue;
-            };
-
-            // Create transient bind group.
-            let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                label: Some("postfx_bg"),
-                layout: &self.bind_group_layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::TextureView(src_view),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::Sampler(&self.sampler),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 2,
-                        resource: self.params_buf.as_entire_binding(),
-                    },
-                ],
-            });
-
-            {
-                let mut rp = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                    label: Some("postfx_pass"),
-                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view: dst_view,
-                        resolve_target: None,
-                        ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(wgpu::Color::BLACK),
-                            store: wgpu::StoreOp::Store,
-                        },
-                    })],
-                    depth_stencil_attachment: None,
-                    ..Default::default()
-                });
-                rp.set_pipeline(pipeline);
-                rp.set_bind_group(0, &bind_group, &[]);
-                rp.draw(0..3, 0..1); // full-screen triangle
-            }
-
-            // Advance ping-pong (only relevant for intermediate passes).
-            if !is_last {
-                src_view = &textures[dst_idx].view;
-                dst_idx = 1 - dst_idx;
-            }
-        }
-    }
-
-    /// Run a passthrough (copy) pass from `src_view` to `dst_view`.
-    fn run_copy_pass(
-        &self,
-        device: &wgpu::Device,
-        encoder: &mut wgpu::CommandEncoder,
-        queue: &wgpu::Queue,
-        src_view: &wgpu::TextureView,
-        dst_view: &wgpu::TextureView,
-    ) {
-        let raw = [0.0f32; 16];
-        queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-        let Some(copy_pipeline) = self.pipelines.get("__copy") else {
-            return;
-        };
-        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-            label: Some("postfx_copy_bg"),
-            layout: &self.bind_group_layout,
-            entries: &[
-                wgpu::BindGroupEntry {
-                    binding: 0,
-                    resource: wgpu::BindingResource::TextureView(src_view),
-                },
-                wgpu::BindGroupEntry {
-                    binding: 1,
-                    resource: wgpu::BindingResource::Sampler(&self.sampler),
-                },
-                wgpu::BindGroupEntry {
-                    binding: 2,
-                    resource: self.params_buf.as_entire_binding(),
-                },
-            ],
-        });
-        let mut rp = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-            label: Some("postfx_copy_pass"),
-            color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                view: dst_view,
-                resolve_target: None,
-                ops: wgpu::Operations {
-                    load: wgpu::LoadOp::Clear(wgpu::Color::BLACK),
-                    store: wgpu::StoreOp::Store,
-                },
-            })],
-            depth_stencil_attachment: None,
-            ..Default::default()
-        });
-        rp.set_pipeline(copy_pipeline);
-        rp.set_bind_group(0, &bind_group, &[]);
-        rp.draw(0..3, 0..1);
-    }
-}
-
-    ///
-    /// The function allocates (or reuses) two ping-pong textures, dispatches each
-    /// pass, then does a final copy pass to `target_view`. If `passes` is empty the
-    /// function is a no-op. An unknown effect name is silently skipped with a
-    /// `log::warn!`.
-    ///
-    /// # Parameters
-    /// - `device` — wgpu logical device.
-    /// - `queue` — wgpu command queue.
-    /// - `encoder` — Active command encoder (shared with the frame).
-    /// - `capture_view` — The view that holds the rendered scene to apply effects to.
-    /// - `target_view` — Output surface or canvas texture view.
-    /// - `passes` — [`PostFxPass`] list built by the Lua PostFxStack.
-    /// - `width` / `height` — Frame dimensions in pixels.
-    pub fn apply(
-        &self,
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-        encoder: &mut wgpu::CommandEncoder,
-        capture_view: &wgpu::TextureView,
-        target_view: &wgpu::TextureView,
-        passes: &[crate::render::renderer::PostFxPass],
-        width: u32,
-        height: u32,
-    ) {
-        if passes.is_empty() {
-            // Nothing to do — just copy capture to target.
-            self.run_copy_pass(encoder, capture_view, target_view, queue);
-            return;
-        }
-
-        // Allocate ping-pong textures.
-        let ping = PostFxTexture::new(device, width, height, "postfx_ping", self.surface_format);
-        let pong = PostFxTexture::new(device, width, height, "postfx_pong", self.surface_format);
-
-        // Textures indexed by ping-pong flip.
-        let textures = [&ping, &pong];
-
-        // First pass reads from capture.
-        let mut src_view: &wgpu::TextureView = capture_view;
-        let mut dst_idx = 0usize; // write to ping first
-
-        let n = passes.len();
-        for (i, pass) in passes.iter().enumerate() {
-            let is_last = i == n - 1;
-            let dst_view: &wgpu::TextureView = if is_last {
-                target_view
-            } else {
-                &textures[dst_idx].view
-            };
-
-            // Update params UBO.
-            let raw = params_to_uniform(&pass.params);
-            queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-
-            // Look up pipeline.
-            let effect_key = pass.effect_name.as_str();
-            let Some(pipeline) = self.pipelines.get(effect_key) else {
-                log::warn!("PostFxPipeline: unknown effect '{}' — skipped", effect_key);
-                // Passthrough: copy src to dst so the chain isn't broken.
-                if !is_last {
-                    self.run_copy_pass(encoder, src_view, dst_view, queue);
-                    src_view = &textures[dst_idx].view;
-                    dst_idx = 1 - dst_idx;
-                } else {
-                    self.run_copy_pass(encoder, src_view, target_view, queue);
-                }
-                continue;
-            };
-
-            // Create transient bind group.
-            let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
-                label: Some("postfx_bg"),
-                layout: &self.bind_group_layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::TextureView(src_view),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::Sampler(&self.sampler),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 2,
-                        resource: self.params_buf.as_entire_binding(),
-                    },
-                ],
-            });
-
-            {
-                let mut rp = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                    label: Some("postfx_pass"),
-                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                        view: dst_view,
-                        resolve_target: None,
-                        ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(wgpu::Color::BLACK),
-                            store: wgpu::StoreOp::Store,
-                        },
-                    })],
-                    depth_stencil_attachment: None,
-                    ..Default::default()
-                });
-                rp.set_pipeline(pipeline);
-                rp.set_bind_group(0, &bind_group, &[]);
-                rp.draw(0..3, 0..1); // full-screen triangle
-            }
-
-            // Advance ping-pong (only relevant for intermediate passes).
-            if !is_last {
-                src_view = &textures[dst_idx].view;
-                dst_idx = 1 - dst_idx;
-            }
-        }
-    }
-
-    /// Internal: run a bare copy pass (passthrough shader) from `src_view` to `dst_view`.
-    fn run_copy_pass(
-        &self,
-        encoder: &mut wgpu::CommandEncoder,
-        src_view: &wgpu::TextureView,
-        dst_view: &wgpu::TextureView,
-        queue: &wgpu::Queue,
-    ) {
-        let raw = [0.0f32; 16];
-        queue.write_buffer(&self.params_buf, 0, bytemuck::cast_slice(&raw));
-        let Some(copy_pipeline) = self.pipelines.get("__copy") else {
-            return;
-        };
-        let bind_group = self
-            .bind_group_layout
-            .create_bind_group_from_device_unchecked(src_view, &self.sampler, &self.params_buf);
-        let _ = bind_group;
-        // Manual bind group creation (run_copy_pass cannot borrow device, so we duplicate logic).
-        let _ = (src_view, dst_view, copy_pipeline, queue);
-        // NOTE: run_copy_pass is best-effort; the real copy happens via the pass loop above.
-        // This stub exists so unknown-effect paths compile; the `apply` loop handles the actual copy.
-        let _ = encoder;
-    }
-}

@@ -153,6 +153,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     r_tbl.set(i + 1, *r + 1)?;
                     d_tbl.set(i + 1, *d)?;
                     d2_tbl.set(i + 1, *d2)?;
+                }
+                Ok((r_tbl, d_tbl, d2_tbl))
+            },
+        )?,
+    )?;
+
     // -- bspDungeon --
     /// Generates a dungeon using Binary Space Partitioning.
     /// @param opts : table?
@@ -511,12 +517,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             for (i, &val) in map.iter().enumerate() { out.set(i + 1, val)?; }
             Ok(out)
         })?,
-    )?;
-
-                }
-                Ok((r_tbl, d_tbl, d2_tbl))
-            },
-        )?,
     )?;
 
     // -- bspDungeon --

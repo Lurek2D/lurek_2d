@@ -420,6 +420,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "crc32",
         lua.create_function(|_, raw_data: LuaString| {
             Ok(data::crc32(raw_data.as_bytes()))
+        })?,
+    )?;
+
     tbl.set(
         "newByteData",
         lua.create_function(|lua, value: LuaValue| {

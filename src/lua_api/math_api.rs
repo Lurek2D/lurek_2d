@@ -16,6 +16,7 @@ use crate::math::BezierCurve;
 use crate::math::Circle;
 use crate::math::NoiseGenerator;
 use crate::math::RandomGenerator;
+use crate::math::Rect;
 use crate::math::SpatialHash;
 use crate::math::Transform;
 use crate::math::Tween;

@@ -453,9 +453,9 @@ mod projection_tests {
         spec.rotation_deg = 90.0;
         let m2 = build_view_matrix(&spec, &cam);
         // The matrices should differ.
-        let same = m1.m[0][0] == m2.m[0][0]
-            && m1.m[1][1] == m2.m[1][1]
-            && m1.m[2][2] == m2.m[2][2];
+        let same = m1.cols[0][0] == m2.cols[0][0]
+            && m1.cols[1][1] == m2.cols[1][1]
+            && m1.cols[2][2] == m2.cols[2][2];
         assert!(!same, "matrices should differ for different rotation_deg");
     }
 

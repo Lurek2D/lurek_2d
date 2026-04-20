@@ -10,7 +10,7 @@ This report identifies three categories of coverage issues:
 
 ---
 
-## 1. Rust→Lua Gaps (21 items)
+## 1. Rust→Lua Gaps (75 items)
 
 These public Rust functions are **not exposed** to the `lurek.*` Lua API.
 This may be intentional (engine internals) or an oversight.
@@ -42,6 +42,84 @@ This may be intentional (engine internals) or an oversight.
 - `project_province` — Project a province's boundary vertices. Returns `None` if th `src/globe/projection.rs:129`
 - `screen_delta_to_pan` — Convert a screen delta `(dx, dy)` in pixels to a globe pan ` `src/globe/projection.rs:193`
 
+### `image::visualization::animation`
+
+- `animation_playback_control_to_image` — Render an animation playback-control timeline diagram.  Draw `src/image/visualization/animation.rs:138`
+- `draw_animation_frame_grid_to_image` — Render an animation's frame grid as a strip of numbered cell `src/image/visualization/animation.rs:21`
+- `draw_animation_playback_to_image` — Render an animation playback strip as snapshot columns.  Dra `src/image/visualization/animation.rs:84`
+- `draw_animation_to_image` — Render an animation as a CPU image for headless testing.  De `src/image/visualization/animation.rs:215`
+
+### `image::visualization::audio`
+
+- `draw_sound_waveform_to_image` — Draw a single waveform as a colored plot on a dark backgroun `src/image/visualization/audio.rs:282`
+- `waveform_stereo_to_image` — Render interleaved stereo audio samples as a two-channel wav `src/image/visualization/audio.rs:109`
+- `waveform_to_image` — Render audio samples as a waveform visualization.  Draws a w `src/image/visualization/audio.rs:21`
+- `waveform_zoomed_to_image` — Render a zoomed-in waveform showing individual sample cycles `src/image/visualization/audio.rs:191`
+
+### `image::visualization::camera`
+
+- `camera_bounds_to_image` — Render a camera bounds-clamping summary panel.  Draws the wo `src/image/visualization/camera.rs:229`
+- `camera_follow_to_image` — Render a camera follow-and-deadzone trail diagram.  Draws th `src/image/visualization/camera.rs:274`
+- `camera_rotation_to_image` — Render six camera rotation steps in a 3-column grid.  Each p `src/image/visualization/camera.rs:149`
+- `camera_shake_to_image` — Render a camera shake trail and move-by result.  Draws per-f `src/image/visualization/camera.rs:343`
+- `draw_camera_bounds_to_image` — Render a set of camera positions as labelled coloured rectan `src/image/visualization/camera.rs:483`
+- `draw_camera_debug_to_image` — Render a camera debug visualization showing viewport, positi `src/image/visualization/camera.rs:25`
+- `draw_camera_follow_trail_to_image` — Render a camera follow trail with target points and dead-zon `src/image/visualization/camera.rs:526`
+- `draw_camera_rotation_grid_to_image` — Render a grid of camera rotation panels, each showing 8 colo `src/image/visualization/camera.rs:406`
+- `draw_camera_shake_trail_to_image` — Render a camera shake trail with fading circles and referenc `src/image/visualization/camera.rs:591`
+- `draw_camera_to_image` — Render a camera as a CPU image for headless testing.  Delega `src/image/visualization/camera.rs:661`
+- `draw_camera_zoom_comparison_to_image` — Render a zoom comparison showing the world at multiple zoom  `src/image/visualization/camera.rs:92`
+
+### `image::visualization::easing`
+
+- `bezier_curves_to_image` — Render multiple cubic Bezier curves with control-point overl `src/image/visualization/easing.rs:115`
+- `draw_bezier_advanced_to_image` — Draw a bezier advanced operations overview.  Renders the ori `src/image/visualization/easing.rs:180`
+- `easing_comparison_to_image` — Render multiple easing curves overlaid on a single chart.  E `src/image/visualization/easing.rs:73`
+- `easing_gallery_to_image` — Render a gallery of easing curves as a grid of small charts. `src/image/visualization/easing.rs:21`
+
+### `image::visualization::geometry`
+
+- `draw_geometry_intersections_to_image` — Draw geometry intersection tests visualization.  Renders seg `src/image/visualization/geometry.rs:287`
+- `draw_geometry_shapes_to_image` — Draw a comprehensive geometry shapes & queries visualization `src/image/visualization/geometry.rs:173`
+- `filled_primitives_to_image` — Render filled rectangle and circle primitives with HSV-colou `src/image/visualization/geometry.rs:124`
+- `polygon_gallery_to_image` — Render a gallery of regular polygons (triangle→dodecagon), a `src/image/visualization/geometry.rs:18`
+- `spiral_to_image` — Render concentric colored circles to demonstrate angular seg `src/image/visualization/geometry.rs:93`
+
+### `image::visualization::graph`
+
+- `draw_graph_item_flow_to_image` — Render a pipeline graph with nodes, directional pipes, and i `src/image/visualization/graph.rs:88`
+- `draw_graph_operations_to_image` — Render a graph with explicit node positions, labels, edge li `src/image/visualization/graph.rs:22`
+
+### `image::visualization::image_ops`
+
+- `draw_color_wheel_to_image` — Draw an HSV colour wheel.  Generates radial hue-saturation g `src/image/visualization/image_ops.rs:138`
+- `draw_image_comparison_to_image` — Draw a side-by-side comparison of multiple images.  Places e `src/image/visualization/image_ops.rs:21`
+- `draw_pixel_transform_grid_to_image` — Draw a 4-column pixel transform grid: original, invert, gray `src/image/visualization/image_ops.rs:70`
+
+### `image::visualization::noise`
+
+- `heightmap_to_image` — Render a flat heightmap buffer as a colored elevation image. `src/image/visualization/noise.rs:121`
+- `noise_comparison_to_image` — Render multiple noise maps side by side as a horizontal stri `src/image/visualization/noise.rs:234`
+- `noise_map_to_image` — Render a noise map buffer as a grayscale image (normalised ` `src/image/visualization/noise.rs:210`
+- `noise_raw_to_image` — Render a 2D noise function where the output is already in `[ `src/image/visualization/noise.rs:50`
+- `noise_terrain_to_image` — Render a 2D noise function as a terrain-colored image.  Maps `src/image/visualization/noise.rs:80`
+- `noise_to_image` — Render a 2D noise function to a grayscale image.  Samples `n `src/image/visualization/noise.rs:21`
+- `terrain_elevation_to_image` — Render a flat heightmap buffer with terrain-band coloring.   `src/image/visualization/noise.rs:174`
+
+### `image::visualization::procgen`
+
+- `cellular_grid_to_image` — Render a cellular automata grid (1=alive, 0=dead) as a scale `src/image/visualization/procgen.rs:21`
+- `colored_points_to_image` — Render a set of 2-D points, each colored by its index in the `src/image/visualization/procgen.rs:149`
+- `draw_delaunay_to_image` — Draw Delaunay triangulation visualization.  Renders triangle `src/image/visualization/procgen.rs:175`
+- `dungeon_grid_to_image` — Render a BSP dungeon grid (0=floor, 1=wall) as a scaled tile `src/image/visualization/procgen.rs:111`
+- `points_to_image` — Render a set of 2D points as dots on a dark background.  # P `src/image/visualization/procgen.rs:84`
+- `voronoi_to_image` — Render a Voronoi region map as a colored image.  Each region `src/image/visualization/procgen.rs:56`
+
+### `image::visualization::ui`
+
+- `hud_bars_to_image` — Render a game HUD with HP/MP/Stamina/XP bars and skill coold `src/image/visualization/ui.rs:142`
+- `panel_layout_to_image` — Render a mock settings panel with title bar, sliders, checkb `src/image/visualization/ui.rs:16`
+
 ### `math::sphere`
 
 - `axial_tilt_mat` — Rotation matrix around the X axis (axial-tilt convention). ` `src/math/sphere.rs:146`
@@ -51,12 +129,27 @@ This may be intentional (engine internals) or an oversight.
 - `rot_z` — Rotation about the Z axis by `angle_deg` degrees. `src/math/sphere.rs:165`
 - `unit_to_lat_lon` — Inverse of `lat_lon_to_unit`. Returns `(lat_deg, lon_deg)`.  `src/math/sphere.rs:63`
 
+### `particle::visualization`
+
+- `draw_explosion_to_image` — Render an explosion burst: particles radiate from center wit `src/particle/visualization.rs:88`
+- `draw_lifecycle_to_image` — Renders a bar chart of particle lifecycle counts over time i `src/particle/visualization.rs:262`
+- `draw_over_image` — Render particles over a provided background image.  Particle `src/particle/visualization.rs:178`
+- `draw_rain_to_image` — Render particles styled as falling rain streaks.  # Paramete `src/particle/visualization.rs:112`
+- `draw_spark_trail_to_image` — Render particles as hot orange sparks with short trails.  #  `src/particle/visualization.rs:142`
+- `paint_onto` — Paint live spark particles onto an existing mutable image.   `src/particle/visualization.rs:232`
+
 ---
 
-## 2. Rust Docstring Issues (12 items)
+## 2. Rust Docstring Issues (15 items)
 
 Public Rust items with missing or very short descriptions (< 25 chars).
 These appear as `// (undocumented)` in `docs/API/rust-api.md`.
+
+### `automation`
+
+- `mod` **script** `src/automation/mod.rs:46`
+- `mod` **simulator** `src/automation/mod.rs:47`
+- `mod` **step** `src/automation/mod.rs:48`
 
 ### `globe`
 

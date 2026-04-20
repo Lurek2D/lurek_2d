@@ -22,7 +22,7 @@
     Root output folder.  Default: dist/ inside the workspace.
 
 .PARAMETER SkipBuild
-    Skip cargo build (use an already-compiled binary).  Useful for CI.
+    Skip the wrapper-backed release build (use an already-compiled binary).  Useful for CI.
 
 .EXAMPLE
     .\tools\dist.ps1
@@ -75,8 +75,8 @@ if (-not $SkipBuild) {
     Write-Step "Building Lurek2D (dist -- size-optimised) -- this may take several minutes ..."
     Push-Location $WorkspaceRoot
     try {
-        cargo build --release 2>&1 | ForEach-Object { Write-Host "    $_" }
-        if ($LASTEXITCODE -ne 0) { Write-Fail "cargo build --release failed." }
+        python tools/dev/parallel_cargo.py build release 2>&1 | ForEach-Object { Write-Host "    $_" }
+        if ($LASTEXITCODE -ne 0) { Write-Fail "parallel_cargo.py build release failed." }
     }
     finally { Pop-Location }
     Write-OK "Build succeeded."

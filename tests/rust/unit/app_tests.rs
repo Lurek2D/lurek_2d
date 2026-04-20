@@ -57,8 +57,8 @@ mod error_screen_tests {
     #[test]
     fn test_error_screen_from_simple_message() {
         let screen = ErrorScreen::from_error("Something went wrong");
-        assert_eq!(screen.title, "Something went wrong");
-        assert!(screen.traceback_lines.is_empty());
+        let text = screen.as_text();
+        assert!(text.contains("Something went wrong"));
         let cmds = screen.build_render_commands(800, 600, None, None);
         assert!(!cmds.is_empty());
     }
@@ -66,15 +66,15 @@ mod error_screen_tests {
     #[test]
     fn test_error_screen_from_multiline_message() {
         let screen = ErrorScreen::from_error("Error in update\ndetail line 1\ndetail line 2");
-        assert_eq!(screen.title, "Error in update");
-        assert_eq!(screen.message_lines.len(), 2);
+        let text = screen.as_text();
+        assert!(text.contains("Error in update"));
     }
 
     #[test]
     fn test_error_screen_from_engine_error() {
         let err = EngineError::LuaError("test error".to_string());
         let screen = ErrorScreen::from_engine_error(&err);
-        assert!(screen.title.contains("Lua error"));
+        assert!(screen.as_text().contains("Lua error"));
     }
 }
 

@@ -549,7 +549,7 @@ mod noise_tests {
     fn noise_generator_different_seeds_differ() {
         let a = NoiseGenerator::new(0);
         let b = NoiseGenerator::new(99);
-        assert_ne!(a.perlin_2d(1.0, 2.0), b.perlin_2d(1.0, 2.0));
+        assert_ne!(a.perlin_2d(1.25, 2.5), b.perlin_2d(1.25, 2.5));
     }
 
     #[test]

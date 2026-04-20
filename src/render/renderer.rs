@@ -243,7 +243,6 @@ pub struct PostFxPass {
     pub shader_id: Option<usize>,
 }
 
-#[derive(Debug, Clone)]
 /// RenderCommand.
 ///
 /// # Variants
@@ -352,6 +351,7 @@ impl TextSpan {
 }
 
 /// Enqueues a typed draw or state command into the per-frame GPU render queue.
+#[derive(Debug, Clone)]
 pub enum RenderCommand {
     SetColor(f32, f32, f32, f32),
     Rectangle {

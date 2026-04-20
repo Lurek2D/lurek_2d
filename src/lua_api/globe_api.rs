@@ -238,10 +238,13 @@ impl LuaUserData for LuaGlobe {
         /// @param sy : number
         /// @return number?
         /// @return number?
-        methods.add_method("pickLatLon", |_, this, (sx, sy): (f32, f32)| {
+        methods.add_method("pickLatLon", |_lua, this, (sx, sy): (f32, f32)| {
             this.with(|g| {
-                g.pick_screen(sx, sy).map(|r| (r.lat_deg, r.lon_deg))
-            })
+                match g.pick_screen(sx, sy) {
+                    Some(r) => (Some(r.centroid_screen.x as f64), Some(r.centroid_screen.y as f64)),
+                    None => (None, None),
+                }
+            }).map(|(x, y)| (x, y))
         });
 
         // ── Fog of war ───────────────────────────────────────────────────────
@@ -284,7 +287,7 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut("revealAll", |_, this, viewer: String| {
             this.with_mut(|g| {
                 let ids: Vec<u32> = g.graph.iter().map(|p| p.id).collect();
-                g.fog.reveal_batch(&viewer, &ids);
+                for id in ids { g.fog.reveal(&viewer, id); }
             })
         });
 
@@ -343,7 +346,7 @@ impl LuaUserData for LuaGlobe {
         /// @param key : string
         /// @return string?
         methods.add_method("getMarkerAttr", |_, this, (id, key): (u32, String)| {
-            this.with(|g| g.markers.get_attr(id, &key))
+            this.with(|g| g.markers.get_attr(id, &key).map(|s| s.to_owned()))
         });
 
         // ── Labels ───────────────────────────────────────────────────────────
@@ -419,7 +422,7 @@ impl LuaUserData for LuaGlobe {
         /// @param b : number
         /// @param a : number
         methods.add_method_mut("setLayerColor", |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
-            this.with_mut(|g| g.layers.set_province_color(&layer, id, [r, g, b, a]))
+            this.with_mut(|globe| globe.layers.set_province_color(&layer, id, [r, g, b, a]))
         });
 
         // -- setLayerVisible --
@@ -815,3 +818,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     luna.set("globe", tbl)?;
     Ok(())
 }
+
+
+
+

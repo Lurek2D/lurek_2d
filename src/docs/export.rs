@@ -228,7 +228,7 @@ mod tests {
 
     #[test]
     fn export_completions_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_completions");
+        let dir = std::env::temp_dir().join("lurek_test_export_completions_lib");
         let _ = std::fs::create_dir_all(&dir);
         let path = dir.join("completions.json");
         export_completions(&test_entries(), path.to_str().unwrap()).unwrap();
@@ -239,7 +239,7 @@ mod tests {
 
     #[test]
     fn export_hover_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_hover");
+        let dir = std::env::temp_dir().join("lurek_test_export_hover_lib");
         let _ = std::fs::create_dir_all(&dir);
         let path = dir.join("hover.json");
         export_hover(&test_entries(), path.to_str().unwrap()).unwrap();
@@ -250,7 +250,7 @@ mod tests {
 
     #[test]
     fn export_signatures_writes_file() {
-        let dir = std::env::temp_dir().join("lurek_test_export_sigs");
+        let dir = std::env::temp_dir().join("lurek_test_export_sigs_lib");
         let _ = std::fs::create_dir_all(&dir);
         let path = dir.join("sigs.json");
         export_signatures(&test_entries(), path.to_str().unwrap()).unwrap();
@@ -261,7 +261,7 @@ mod tests {
 
     #[test]
     fn export_all_creates_three_files() {
-        let dir = std::env::temp_dir().join("lurek_test_export_all");
+        let dir = std::env::temp_dir().join("lurek_test_export_all_lib");
         let _ = std::fs::remove_dir_all(&dir);
         export_all(&test_entries(), dir.to_str().unwrap()).unwrap();
         assert!(dir.join("completions.json").exists());

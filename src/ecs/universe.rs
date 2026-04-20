@@ -151,7 +151,7 @@ impl Universe {
     /// # Returns
     /// `u32`.
     #[inline]
-    pub(crate) fn pack_id(slot: u32, gen: u8) -> u32 {
+    pub fn pack_id(slot: u32, gen: u8) -> u32 {
         ((gen as u32) << 24) | (slot & 0x00FF_FFFF)
     }
 
@@ -163,7 +163,7 @@ impl Universe {
     /// # Returns
     /// `u32`.
     #[inline]
-    pub(crate) fn unpack_slot(id: u32) -> u32 {
+    pub fn unpack_slot(id: u32) -> u32 {
         id & 0x00FF_FFFF
     }
 
@@ -175,7 +175,7 @@ impl Universe {
     /// # Returns
     /// `u8`.
     #[inline]
-    pub(crate) fn unpack_gen(id: u32) -> u8 {
+    pub fn unpack_gen(id: u32) -> u8 {
         (id >> 24) as u8
     }
 
@@ -1198,7 +1198,6 @@ impl Universe {
         // NOTE: blueprints are preserved
         Ok(())
     }
-}
 
     // === Observer Events ===
 

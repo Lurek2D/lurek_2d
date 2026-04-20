@@ -27,7 +27,7 @@ go under `work/{session}/scripts/` and are archived at session end.
 | [`tools/github/`](github/README.md)     | GitHub project management automation                                       | 1            |
 | [`tools/demos/`](demos/README.md)                | Demo folder management and screenshot generation                           | 2            |
 | [`tools/ui/`](ui/README.md)           | UI layout tooling — render TOML layout files to PNG wireframe previews     | 3            |
-| [`tools/dev/`](dev/README.md)           | Dev helper scripts                                                         | 1            |
+| [`tools/dev/`](dev/README.md)           | Dev helper scripts                                                         | 2            |
 | [`tools/mods/`](mods/README.md)         | Mod scaffolding helpers (`lurek-mod` workflow)                              | 1            |
 | [`tools/screenshots/`](screenshots/README.md) | Legacy alias for `tools/demos/` screenshot capture                          | 1            |
 | [`tools/assets/`](assets/README.md)     | Notes on engine asset placement (no scripts)                               | 0            |
@@ -210,6 +210,7 @@ All validators exit 0 on pass, 1 on failure.
 
 | Script                 | Purpose                             |
 | ---------------------- | ----------------------------------- |
+| `dev/parallel_cargo.py` | Unified build/check/run/test/clippy/fmt/doc orchestration with bounded Rust test fan-out |
 | `dev/test_fix_loop.py` | Dev helper: test-fix iteration loop |
 
 ### Root-level scripts

@@ -7,9 +7,10 @@
 #   bash tools/install.sh --uninstall           # Remove /usr/local/bin/lurek2d
 #   bash tools/install.sh --prefix ~/.local --uninstall
 #
-# The script builds the release binary, copies it to <prefix>/bin/lurek2d, and
-# copies the content/demos/ folder to <prefix>/share/lurek2d/examples.
-# Requires: cargo, bash >= 4
+# The script builds the release binary through tools/dev/parallel_cargo.py,
+# copies it to <prefix>/bin/lurek2d, and copies the content/demos/ folder to
+# <prefix>/share/lurek2d/examples.
+# Requires: python, cargo, bash >= 4
 
 set -euo pipefail
 
@@ -44,7 +45,7 @@ fail() { echo -e "\033[31m[ FAIL ]\033[0m $*" >&2; exit 1; }
 
 # ── Locate workspace root ─────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WORKSPACE_ROOT="$(dirname "$SCRIPT_DIR")"
+WORKSPACE_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
 if [[ ! -f "$WORKSPACE_ROOT/Cargo.toml" ]]; then
     fail "Cannot find Cargo.toml. Run from the lurek2d workspace root."
 fi
@@ -73,7 +74,7 @@ fi
 
 # ── Build ─────────────────────────────────────────────────────────────────────
 step "Building Lurek2D (release) — this may take a minute..."
-(cd "$WORKSPACE_ROOT" && cargo build --release)
+(cd "$WORKSPACE_ROOT" && python tools/dev/parallel_cargo.py build release)
 ok "Build succeeded."
 
 BUILT_BINARY="$WORKSPACE_ROOT/build/release/luna"

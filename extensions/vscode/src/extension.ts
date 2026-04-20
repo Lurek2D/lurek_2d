@@ -3,6 +3,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { startMcpServer } from "./mcp/server";
 import { resolveWorkspaceApiDocPath, searchApiDocumentation } from "./services/apiDocs.js";
+import { buildCheckCommand, buildRunCommand } from "./services/parallelCargo.js";
 
 /** Status bar item displayed when the extension is active. */
 let statusBarItem: vscode.StatusBarItem;
@@ -76,7 +77,7 @@ function getExamplesDir(): string | undefined {
   if (!root) {
     return undefined;
   }
-  const examplesDir = path.join(root, "demos");
+  const examplesDir = path.join(root, "content", "games", "showcase");
   if (fs.existsSync(examplesDir)) {
     return examplesDir;
   }
@@ -84,7 +85,7 @@ function getExamplesDir(): string | undefined {
 }
 
 /**
- * Lists demo directory names from the workspace content/demos/ folder.
+ * Lists showcase game directory names from the workspace content/games/showcase/ folder.
  */
 function listExampleNames(): string[] {
   const examplesDir = getExamplesDir();
@@ -104,8 +105,8 @@ function listExampleNames(): string[] {
 /**
  * Command: Lurek2D: Run Example
  *
- * Shows a quick-pick list of available examples and runs the selected one
- * in an integrated terminal via `cargo run -- content/demos/<name>`.
+ * Shows a quick-pick list of available showcase games and runs the selected one
+ * in an integrated terminal via the wrapper-backed run command.
  */
 async function runExampleCommand(): Promise<void> {
   const examples = listExampleNames();
@@ -124,7 +125,9 @@ async function runExampleCommand(): Promise<void> {
 
   const terminal = vscode.window.createTerminal("Lurek2D Example");
   terminal.show();
-  terminal.sendText(`cargo run -- content/content/demos/${selected}`);
+  terminal.sendText(
+    buildRunCommand("debug", [path.posix.join("content", "games", "showcase", selected)]),
+  );
 }
 
 /**
@@ -146,12 +149,12 @@ async function listExamplesCommand(): Promise<void> {
 /**
  * Command: Lurek2D: Check Build
  *
- * Runs `cargo check` in a terminal and reports results.
+ * Runs the wrapper-backed repo check flow in a terminal and reports results.
  */
 async function checkBuildCommand(): Promise<void> {
   const terminal = vscode.window.createTerminal("Lurek2D Build Check");
   terminal.show();
-  terminal.sendText("cargo check 2>&1");
+  terminal.sendText(buildCheckCommand());
 }
 
 /**

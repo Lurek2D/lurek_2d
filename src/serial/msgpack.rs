@@ -99,8 +99,16 @@ pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
 /// # Returns
 /// `Result<SerialValue, String>`.
 pub fn decode(bytes: &[u8]) -> Result<SerialValue, String> {
-    let mv: MsgValue =
-        rmps::from_slice(bytes).map_err(|e| format!("MessagePack decode error: {e}"))?;
+    let mv: MsgValue = {
+        let mut deserializer = rmps::Deserializer::new(std::io::Cursor::new(bytes));
+        let value = MsgValue::deserialize(&mut deserializer)
+            .map_err(|e| format!("MessagePack decode error: {e}"))?;
+        let consumed = deserializer.get_ref().position() as usize;
+        if consumed != bytes.len() {
+            return Err("MessagePack decode error: trailing bytes after root value".to_string());
+        }
+        value
+    };
     log_msg!(debug, SR04_MSGPACK_DEC);
     Ok(msg_to_serial(mv))
 }

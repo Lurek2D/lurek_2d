@@ -449,7 +449,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     system.set(
         "getArch",
         lua.create_function(|_, ()| Ok(std::env::consts::ARCH.to_string()))?,
-    /// - `name` ÔÇö Environment variable name (case-sensitive on Linux/macOS).
+    )?;
+
+    // lurek.platform.getEnv(name) -> string?
+    /// Returns the value of an environment variable, or nil if not set.
+    /// - `name` — Environment variable name (case-sensitive on Linux/macOS).
     /// String value of the variable, or nil if it is not set.
     system.set(
         "getEnv",

@@ -975,9 +975,9 @@ impl LuaUserData for LuaDataFrame {
         /// @param expr : string
         /// @return DataFrame
         methods.add_method("withEval", |lua, this, (col_name, expr): (String, String)| {
-            let result = this.inner.with_eval(&col_name, &expr)
+            let result = this.inner.borrow().with_eval(&col_name, &expr)
                 .map_err(|e| LuaError::RuntimeError(e))?;
-            lua.create_userdata(LuaDataFrame { inner: result })
+            lua.create_userdata(LuaDataFrame::new(result))
         });
 
         // -- pivotTable --

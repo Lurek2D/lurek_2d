@@ -906,7 +906,7 @@ mod build_scene_tests {
 
 // ── dda (migrated from src/raycaster/dda.rs) ─────────────────────────
 
-mod dda_tests {
+mod raycaster2d_tests {
     use super::*;
     use std::f32::consts::PI;
 

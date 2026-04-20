@@ -361,7 +361,7 @@ mod spatial_tests {
     }
 
     #[test]
-    fn dilate() {
+    fn dilate_basic() {
         let input = arr_2d(
             &[
                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
@@ -394,7 +394,7 @@ mod spatial_tests {
     }
 
     #[test]
-    fn erode() {
+    fn erode_basic() {
         // 3x3 all ones → erode with radius 1 → only center survives
         let input = arr_2d(&[1.0; 9], 3, 3);
         let out = erode(&input, 1).unwrap();

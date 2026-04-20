@@ -1,9 +1,9 @@
-//! Audio visualisation utilities — waveform and spectrogram PNG export.
+﻿//! Audio visualisation utilities â€” waveform and spectrogram PNG export.
 //!
 //! Decodes a WAV file to f32 samples and renders one of two visualisations:
 //!
-//! - [`waveform_to_png`] — draws the amplitude envelope as a vertical bar per pixel column.
-//! - [`spectrogram_to_png`] — renders a time–frequency heat-map using a simple DFT on
+//! - [`waveform_to_png`] â€” draws the amplitude envelope as a vertical bar per pixel column.
+//! - [`spectrogram_to_png`] â€” renders a timeâ€“frequency heat-map using a simple DFT on
 //!   512-sample windows.
 //!
 //! Both functions write their output as a true-colour PNG using the `image` crate.  No audio
@@ -14,9 +14,9 @@ use std::{fs::File, io::BufReader};
 use image::{ImageBuffer, Rgba};
 use rodio::{Decoder, Source};
 
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Public API
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Renders the amplitude waveform of `input_wav` to a PNG file at `output_png`.
 ///
@@ -24,10 +24,10 @@ use rodio::{Decoder, Source};
 /// amplitude within that slice determine the vertical extent of the bar drawn for that column.
 ///
 /// # Parameters
-/// - `input_wav`  — `&str`. Path to the source WAV file.
-/// - `output_png` — `&str`. Destination path for the PNG image.
-/// - `width`      — `u32`. Output image width in pixels.
-/// - `height`     — `u32`. Output image height in pixels.
+/// - `input_wav`  â€” `&str`. Path to the source WAV file.
+/// - `output_png` â€” `&str`. Destination path for the PNG image.
+/// - `width`      â€” `u32`. Output image width in pixels.
+/// - `height`     â€” `u32`. Output image height in pixels.
 ///
 /// # Returns
 /// `Result<(), String>`. Returns an error string if the file cannot be decoded or saved.
@@ -76,17 +76,17 @@ pub fn waveform_to_png(
         .map_err(|e| format!("cannot save PNG '{}': {}", output_png, e))
 }
 
-/// Renders a time–frequency spectrogram of `input_wav` to a PNG file at `output_png`.
+/// Renders a timeâ€“frequency spectrogram of `input_wav` to a PNG file at `output_png`.
 ///
 /// Each pixel column corresponds to one 512-sample DFT window.  Frequency bins are mapped
 /// vertically from low (bottom) to Nyquist (top).  Magnitude is mapped to a heat-map colour
 /// ranging from black (quiet) through dark blue, cyan, and bright yellow (loud).
 ///
 /// # Parameters
-/// - `input_wav`  — `&str`. Path to the source WAV file.
-/// - `output_png` — `&str`. Destination path for the PNG image.
-/// - `width`      — `u32`. Output image width in pixels.
-/// - `height`     — `u32`. Output image height in pixels.
+/// - `input_wav`  â€” `&str`. Path to the source WAV file.
+/// - `output_png` â€” `&str`. Destination path for the PNG image.
+/// - `width`      â€” `u32`. Output image width in pixels.
+/// - `height`     â€” `u32`. Output image height in pixels.
 ///
 /// # Returns
 /// `Result<(), String>`. Returns an error string if the file cannot be decoded or saved.
@@ -127,7 +127,7 @@ pub fn spectrogram_to_png(
             *s *= hann;
         }
 
-        // Simple O(N²) DFT — only compute the first half (half_win bins)
+        // Simple O(NÂ˛) DFT â€” only compute the first half (half_win bins)
         let mut mags = vec![0.0_f32; half_win];
         for k in 0..half_win {
             let mut re = 0.0_f32;
@@ -150,7 +150,7 @@ pub fn spectrogram_to_png(
         .fold(0.0_f32, f32::max)
         .max(1e-6);
 
-    // Build image: x = time, y = frequency (low at bottom → inverted)
+    // Build image: x = time, y = frequency (low at bottom â†’ inverted)
     let bg: Rgba<u8> = Rgba([0, 0, 0, 255]);
     let mut img: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(width, height, |_, _| bg);
 
@@ -165,7 +165,7 @@ pub fn spectrogram_to_png(
             let bin = bin.min(half_win - 1);
             let mag_norm = (mags[bin] / global_max).clamp(0.0, 1.0);
 
-            // Heat-map: 0→black, 0.25→dark blue, 0.5→cyan, 0.75→yellow, 1→white
+            // Heat-map: 0â†’black, 0.25â†’dark blue, 0.5â†’cyan, 0.75â†’yellow, 1â†’white
             let colour = heat_colour(mag_norm);
             img.put_pixel(px, py, colour);
         }
@@ -175,16 +175,16 @@ pub fn spectrogram_to_png(
         .map_err(|e| format!("cannot save PNG '{}': {}", output_png, e))
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Internal helpers
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Decodes a WAV file and downmixes to mono f32 samples in `[-1.0, 1.0]`.
 ///
 /// Stereo files are mixed down by averaging left and right channels.
 ///
 /// # Parameters
-/// - `path` — `&str`. Path to the WAV file.
+/// - `path` â€” `&str`. Path to the WAV file.
 ///
 /// # Returns
 /// `Result<Vec<f32>, String>`.
@@ -209,10 +209,10 @@ fn read_mono_f32(path: &str) -> Result<Vec<f32>, String> {
 
 /// Maps a normalised magnitude (`[0.0, 1.0]`) to a heat-map RGBA colour.
 ///
-/// The palette transitions: black → deep blue → cyan → yellow → white.
+/// The palette transitions: black â†’ deep blue â†’ cyan â†’ yellow â†’ white.
 ///
 /// # Parameters
-/// - `t` — `f32`. Normalised intensity in `[0.0, 1.0]`.
+/// - `t` â€” `f32`. Normalised intensity in `[0.0, 1.0]`.
 ///
 /// # Returns
 /// `Rgba<u8>`.
@@ -238,49 +238,4 @@ fn heat_colour(t: f32) -> Rgba<u8> {
         (b * 255.0) as u8,
         255,
     ])
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn heat_colour_black_at_zero() {
-        let c = heat_colour(0.0);
-        assert_eq!(c, Rgba([0, 0, 0, 255]));
-    }
-
-    #[test]
-    fn heat_colour_white_near_one() {
-        let c = heat_colour(1.0);
-        assert_eq!(c[0], 255); // red = 1.0
-        assert_eq!(c[1], 255); // green = 1.0
-        assert_eq!(c[2], 255); // blue = 1.0
-    }
-
-    #[test]
-    fn heat_colour_mid_range() {
-        let c = heat_colour(0.5);
-        // At 0.5: u=0 → r=0, g=1.0, b=1.0 → cyan
-        assert_eq!(c[1], 255);
-        assert_eq!(c[2], 255);
-    }
-
-    #[test]
-    fn read_mono_f32_missing_file() {
-        let result = read_mono_f32("/nonexistent/audio.wav");
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn waveform_to_png_missing_file() {
-        let result = waveform_to_png("/nonexistent.wav", "/tmp/out.png", 100, 50);
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn spectrogram_to_png_missing_file() {
-        let result = spectrogram_to_png("/nonexistent.wav", "/tmp/out.png", 100, 50);
-        assert!(result.is_err());
-    }
 }

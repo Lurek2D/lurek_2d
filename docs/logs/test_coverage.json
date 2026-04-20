@@ -1,9 +1,9 @@
 {
   "rust": {
-    "total": 4081,
-    "covered": 3154,
-    "uncovered": 927,
-    "coverage_pct": 77.3,
+    "total": 4080,
+    "covered": 3161,
+    "uncovered": 919,
+    "coverage_pct": 77.5,
     "covered_items": [
       {
         "module": "ai",
@@ -51,19 +51,19 @@
         "module": "ai",
         "name": "Bandit::update",
         "file": "src/ai/bandit.rs",
-        "line": 176
+        "line": 177
       },
       {
         "module": "ai",
         "name": "Bandit::best_arm",
         "file": "src/ai/bandit.rs",
-        "line": 190
+        "line": 191
       },
       {
         "module": "ai",
         "name": "Bandit::reset",
         "file": "src/ai/bandit.rs",
-        "line": 197
+        "line": 198
       },
       {
         "module": "ai",
@@ -253,9 +253,27 @@
       },
       {
         "module": "ai",
+        "name": "ContextSteering::add_seek_target",
+        "file": "src/ai/context_steering.rs",
+        "line": 217
+      },
+      {
+        "module": "ai",
+        "name": "ContextSteering::clear_behaviors",
+        "file": "src/ai/context_steering.rs",
+        "line": 255
+      },
+      {
+        "module": "ai",
         "name": "ContextSteering::evaluate",
         "file": "src/ai/context_steering.rs",
         "line": 272
+      },
+      {
+        "module": "ai",
+        "name": "ContextSteering::chosen_direction",
+        "file": "src/ai/context_steering.rs",
+        "line": 348
       },
       {
         "module": "ai",
@@ -283,15 +301,15 @@
       },
       {
         "module": "ai",
-        "name": "AIDirector::phase_str",
-        "file": "src/ai/director.rs",
-        "line": 192
-      },
-      {
-        "module": "ai",
         "name": "AIDirector::elapsed",
         "file": "src/ai/director.rs",
         "line": 198
+      },
+      {
+        "module": "ai",
+        "name": "AIDirector::total_events",
+        "file": "src/ai/director.rs",
+        "line": 204
       },
       {
         "module": "ai",
@@ -421,6 +439,12 @@
       },
       {
         "module": "ai",
+        "name": "StateMachine::add_state_raw",
+        "file": "src/ai/fsm.rs",
+        "line": 170
+      },
+      {
+        "module": "ai",
         "name": "StateMachine::set_initial_state",
         "file": "src/ai/fsm.rs",
         "line": 213
@@ -436,6 +460,12 @@
         "name": "GeneticAlgorithm::new",
         "file": "src/ai/genetic.rs",
         "line": 106
+      },
+      {
+        "module": "ai",
+        "name": "GeneticAlgorithm::pop_size",
+        "file": "src/ai/genetic.rs",
+        "line": 134
       },
       {
         "module": "ai",
@@ -475,6 +505,12 @@
       },
       {
         "module": "ai",
+        "name": "GOAPPlanner::get_max_iterations",
+        "file": "src/ai/goap.rs",
+        "line": 360
+      },
+      {
+        "module": "ai",
         "name": "GOAPPlanner::set_max_iterations",
         "file": "src/ai/goap.rs",
         "line": 368
@@ -493,6 +529,12 @@
       },
       {
         "module": "ai",
+        "name": "HTNMethod::with_preconditions",
+        "file": "src/ai/htn.rs",
+        "line": 173
+      },
+      {
+        "module": "ai",
         "name": "HTNDomain::new",
         "file": "src/ai/htn.rs",
         "line": 214
@@ -502,6 +544,18 @@
         "name": "HTNDomain::register",
         "file": "src/ai/htn.rs",
         "line": 222
+      },
+      {
+        "module": "ai",
+        "name": "HTNDomain::add_primitive",
+        "file": "src/ai/htn.rs",
+        "line": 233
+      },
+      {
+        "module": "ai",
+        "name": "HTNDomain::add_compound",
+        "file": "src/ai/htn.rs",
+        "line": 247
       },
       {
         "module": "ai",
@@ -541,21 +595,9 @@
       },
       {
         "module": "ai",
-        "name": "AILod::tier_for",
-        "file": "src/ai/lod.rs",
-        "line": 126
-      },
-      {
-        "module": "ai",
         "name": "AILod::assign_tiers",
         "file": "src/ai/lod.rs",
         "line": 147
-      },
-      {
-        "module": "ai",
-        "name": "AILod::should_update",
-        "file": "src/ai/lod.rs",
-        "line": 162
       },
       {
         "module": "ai",
@@ -589,6 +631,12 @@
       },
       {
         "module": "ai",
+        "name": "Need::deprive",
+        "file": "src/ai/needs.rs",
+        "line": 111
+      },
+      {
+        "module": "ai",
         "name": "Need::update",
         "file": "src/ai/needs.rs",
         "line": 119
@@ -616,6 +664,12 @@
         "name": "NeedSystem::new",
         "file": "src/ai/needs.rs",
         "line": 247
+      },
+      {
+        "module": "ai",
+        "name": "NeedSystem::add_need",
+        "file": "src/ai/needs.rs",
+        "line": 255
       },
       {
         "module": "ai",
@@ -697,6 +751,18 @@
       },
       {
         "module": "ai",
+        "name": "NeuralNet::set_weights",
+        "file": "src/ai/neural_net.rs",
+        "line": 246
+      },
+      {
+        "module": "ai",
+        "name": "NeuralNet::get_weights",
+        "file": "src/ai/neural_net.rs",
+        "line": 263
+      },
+      {
+        "module": "ai",
         "name": "NeuralNet::layer_count",
         "file": "src/ai/neural_net.rs",
         "line": 276
@@ -706,6 +772,18 @@
         "name": "Neuroevolution::new",
         "file": "src/ai/neuroevolution.rs",
         "line": 50
+      },
+      {
+        "module": "ai",
+        "name": "Neuroevolution::pop_size",
+        "file": "src/ai/neuroevolution.rs",
+        "line": 71
+      },
+      {
+        "module": "ai",
+        "name": "Neuroevolution::set_fitness",
+        "file": "src/ai/neuroevolution.rs",
+        "line": 94
       },
       {
         "module": "ai",
@@ -739,6 +817,18 @@
       },
       {
         "module": "ai",
+        "name": "ORCASolver::remove_agent",
+        "file": "src/ai/orca.rs",
+        "line": 151
+      },
+      {
+        "module": "ai",
+        "name": "ORCASolver::agent_count",
+        "file": "src/ai/orca.rs",
+        "line": 163
+      },
+      {
+        "module": "ai",
         "name": "ORCASolver::compute",
         "file": "src/ai/orca.rs",
         "line": 173
@@ -766,6 +856,12 @@
         "name": "StimulusWorld::add",
         "file": "src/ai/perception.rs",
         "line": 191
+      },
+      {
+        "module": "ai",
+        "name": "StimulusWorld::add_visual",
+        "file": "src/ai/perception.rs",
+        "line": 211
       },
       {
         "module": "ai",
@@ -865,6 +961,12 @@
       },
       {
         "module": "ai",
+        "name": "Squad::get_formation_position",
+        "file": "src/ai/squad.rs",
+        "line": 141
+      },
+      {
+        "module": "ai",
         "name": "CombineMode::parse_str",
         "file": "src/ai/steering.rs",
         "line": 66
@@ -913,9 +1015,9 @@
       },
       {
         "module": "ai",
-        "name": "set_use_spatial_hash",
+        "name": "SteeringManager::add_seek",
         "file": "src/ai/steering.rs",
-        "line": 605
+        "line": 455
       },
       {
         "module": "ai",
@@ -949,21 +1051,27 @@
       },
       {
         "module": "ai",
+        "name": "StrategyAI::active_goal",
+        "file": "src/ai/strategy.rs",
+        "line": 187
+      },
+      {
+        "module": "ai",
         "name": "StrategyAI::update",
         "file": "src/ai/strategy.rs",
         "line": 201
       },
       {
         "module": "ai",
-        "name": "StrategyAI::goal_count",
+        "name": "StrategyAI::force_evaluate",
         "file": "src/ai/strategy.rs",
-        "line": 256
+        "line": 219
       },
       {
         "module": "ai",
-        "name": "StrategyAI::time_until_next",
+        "name": "StrategyAI::goal_count",
         "file": "src/ai/strategy.rs",
-        "line": 262
+        "line": 256
       },
       {
         "module": "ai",
@@ -1087,6 +1195,12 @@
       },
       {
         "module": "ai",
+        "name": "UtilityAI::last_action_name",
+        "file": "src/ai/utility_ai.rs",
+        "line": 260
+      },
+      {
+        "module": "ai",
         "name": "UtilityAI::evaluate",
         "file": "src/ai/utility_ai.rs",
         "line": 272
@@ -1102,6 +1216,36 @@
         "name": "AIWorld::add_agent",
         "file": "src/ai/world.rs",
         "line": 71
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::remove_agent",
+        "file": "src/ai/world.rs",
+        "line": 91
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::get_agent_index",
+        "file": "src/ai/world.rs",
+        "line": 112
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::agent_count",
+        "file": "src/ai/world.rs",
+        "line": 120
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::global_blackboard",
+        "file": "src/ai/world.rs",
+        "line": 128
+      },
+      {
+        "module": "ai",
+        "name": "AIWorld::global_blackboard_mut",
+        "file": "src/ai/world.rs",
+        "line": 136
       },
       {
         "module": "ai",
@@ -1425,19 +1569,19 @@
         "module": "animation",
         "name": "AnimStateMachine::get_state",
         "file": "src/animation/state_machine.rs",
-        "line": 302
+        "line": 303
       },
       {
         "module": "animation",
         "name": "AnimStateMachine::force_state",
         "file": "src/animation/state_machine.rs",
-        "line": 313
+        "line": 314
       },
       {
         "module": "animation",
         "name": "AnimStateMachine::get_animation",
         "file": "src/animation/state_machine.rs",
-        "line": 334
+        "line": 335
       },
       {
         "module": "animation",
@@ -2569,6 +2713,18 @@
       },
       {
         "module": "automation",
+        "name": "Script::set_step_limit",
+        "file": "src/automation/script.rs",
+        "line": 132
+      },
+      {
+        "module": "automation",
+        "name": "Script::get_step_limit",
+        "file": "src/automation/script.rs",
+        "line": 141
+      },
+      {
+        "module": "automation",
         "name": "Script::from_toml",
         "file": "src/automation/script.rs",
         "line": 162
@@ -2590,6 +2746,12 @@
         "name": "Simulator::unload",
         "file": "src/automation/simulator.rs",
         "line": 185
+      },
+      {
+        "module": "automation",
+        "name": "Simulator::has_script",
+        "file": "src/automation/simulator.rs",
+        "line": 203
       },
       {
         "module": "automation",
@@ -2635,9 +2797,21 @@
       },
       {
         "module": "automation",
+        "name": "Simulator::current_step",
+        "file": "src/automation/simulator.rs",
+        "line": 313
+      },
+      {
+        "module": "automation",
         "name": "Simulator::step_count",
         "file": "src/automation/simulator.rs",
         "line": 325
+      },
+      {
+        "module": "automation",
+        "name": "Simulator::current_script",
+        "file": "src/automation/simulator.rs",
+        "line": 340
       },
       {
         "module": "automation",
@@ -2647,9 +2821,27 @@
       },
       {
         "module": "automation",
-        "name": "Simulator::set_playback_speed",
+        "name": "Simulator::save_macro",
         "file": "src/automation/simulator.rs",
-        "line": 462
+        "line": 409
+      },
+      {
+        "module": "automation",
+        "name": "Simulator::play_macro",
+        "file": "src/automation/simulator.rs",
+        "line": 422
+      },
+      {
+        "module": "automation",
+        "name": "Simulator::has_macro",
+        "file": "src/automation/simulator.rs",
+        "line": 440
+      },
+      {
+        "module": "automation",
+        "name": "Simulator::list_macros",
+        "file": "src/automation/simulator.rs",
+        "line": 451
       },
       {
         "module": "automation",
@@ -3028,6 +3220,12 @@
         "name": "Camera2D::update",
         "file": "src/camera/types.rs",
         "line": 486
+      },
+      {
+        "module": "camera",
+        "name": "Camera2D::effect_offset",
+        "file": "src/camera/types.rs",
+        "line": 593
       },
       {
         "module": "camera",
@@ -4053,109 +4251,109 @@
         "module": "dataframe",
         "name": "DataFrame::new",
         "file": "src/dataframe/frame.rs",
-        "line": 204
+        "line": 205
       },
       {
         "module": "dataframe",
         "name": "DataFrame::nrows",
         "file": "src/dataframe/frame.rs",
-        "line": 216
+        "line": 217
       },
       {
         "module": "dataframe",
         "name": "DataFrame::ncols",
         "file": "src/dataframe/frame.rs",
-        "line": 228
+        "line": 229
       },
       {
         "module": "dataframe",
         "name": "DataFrame::columns",
         "file": "src/dataframe/frame.rs",
-        "line": 236
+        "line": 237
       },
       {
         "module": "dataframe",
         "name": "DataFrame::count",
         "file": "src/dataframe/frame.rs",
-        "line": 244
+        "line": 245
       },
       {
         "module": "dataframe",
         "name": "DataFrame::resolve_col",
         "file": "src/dataframe/frame.rs",
-        "line": 258
+        "line": 259
       },
       {
         "module": "dataframe",
         "name": "DataFrame::add_column",
         "file": "src/dataframe/frame.rs",
-        "line": 286
+        "line": 287
       },
       {
         "module": "dataframe",
         "name": "DataFrame::remove_column",
         "file": "src/dataframe/frame.rs",
-        "line": 303
+        "line": 304
       },
       {
         "module": "dataframe",
         "name": "DataFrame::rename_column",
         "file": "src/dataframe/frame.rs",
-        "line": 318
+        "line": 319
       },
       {
         "module": "dataframe",
         "name": "DataFrame::get_column",
         "file": "src/dataframe/frame.rs",
-        "line": 334
+        "line": 335
       },
       {
         "module": "dataframe",
         "name": "DataFrame::add_row",
         "file": "src/dataframe/frame.rs",
-        "line": 347
+        "line": 348
       },
       {
         "module": "dataframe",
         "name": "DataFrame::remove_row",
         "file": "src/dataframe/frame.rs",
-        "line": 370
+        "line": 371
       },
       {
         "module": "dataframe",
         "name": "DataFrame::get_row",
         "file": "src/dataframe/frame.rs",
-        "line": 388
+        "line": 389
       },
       {
         "module": "dataframe",
         "name": "DataFrame::get_value",
         "file": "src/dataframe/frame.rs",
-        "line": 409
+        "line": 410
       },
       {
         "module": "dataframe",
         "name": "DataFrame::set_value",
         "file": "src/dataframe/frame.rs",
-        "line": 427
+        "line": 428
       },
       {
         "module": "dataframe",
         "name": "DataFrame::clone_df",
         "file": "src/dataframe/frame.rs",
-        "line": 441
+        "line": 442
       },
       {
         "module": "dataframe",
         "name": "DataFrame::from_raw",
         "file": "src/dataframe/frame.rs",
-        "line": 471
+        "line": 472
       },
       {
         "module": "dataframe",
         "name": "DataFrame::random",
         "file": "src/dataframe/frame.rs",
-        "line": 496
+        "line": 497
       },
       {
         "module": "dataframe",
@@ -5307,7 +5505,7 @@
         "module": "effect",
         "name": "PostFxStack::generate_render_commands",
         "file": "src/effect/render.rs",
-        "line": 61
+        "line": 66
       },
       {
         "module": "effect",
@@ -5319,103 +5517,103 @@
         "module": "effect",
         "name": "PostFxStack::new",
         "file": "src/effect/stack.rs",
-        "line": 58
+        "line": 59
       },
       {
         "module": "effect",
         "name": "PostFxStack::add",
         "file": "src/effect/stack.rs",
-        "line": 77
+        "line": 78
       },
       {
         "module": "effect",
         "name": "PostFxStack::remove",
         "file": "src/effect/stack.rs",
-        "line": 95
+        "line": 96
       },
       {
         "module": "effect",
         "name": "PostFxStack::insert",
         "file": "src/effect/stack.rs",
-        "line": 115
+        "line": 116
       },
       {
         "module": "effect",
         "name": "PostFxStack::set_enabled",
         "file": "src/effect/stack.rs",
-        "line": 126
+        "line": 127
       },
       {
         "module": "effect",
         "name": "PostFxStack::is_enabled",
         "file": "src/effect/stack.rs",
-        "line": 139
+        "line": 140
       },
       {
         "module": "effect",
         "name": "PostFxStack::get_effect_count",
         "file": "src/effect/stack.rs",
-        "line": 151
+        "line": 152
       },
       {
         "module": "effect",
         "name": "PostFxStack::get_effect",
         "file": "src/effect/stack.rs",
-        "line": 162
+        "line": 163
       },
       {
         "module": "effect",
         "name": "PostFxStack::enabled_effects",
         "file": "src/effect/stack.rs",
-        "line": 179
+        "line": 180
       },
       {
         "module": "effect",
         "name": "PostFxStack::resize",
         "file": "src/effect/stack.rs",
-        "line": 197
+        "line": 198
       },
       {
         "module": "effect",
         "name": "PostFxStack::get_width",
         "file": "src/effect/stack.rs",
-        "line": 208
+        "line": 209
       },
       {
         "module": "effect",
         "name": "PostFxStack::get_height",
         "file": "src/effect/stack.rs",
-        "line": 218
+        "line": 219
       },
       {
         "module": "effect",
         "name": "PostFxStack::get_dimensions",
         "file": "src/effect/stack.rs",
-        "line": 228
+        "line": 229
       },
       {
         "module": "effect",
         "name": "PostFxStack::len",
         "file": "src/effect/stack.rs",
-        "line": 236
+        "line": 237
       },
       {
         "module": "effect",
         "name": "PostFxStack::is_empty",
         "file": "src/effect/stack.rs",
-        "line": 244
+        "line": 245
       },
       {
         "module": "effect",
         "name": "PostFxStack::clear",
         "file": "src/effect/stack.rs",
-        "line": 249
+        "line": 250
       },
       {
         "module": "effect",
         "name": "PostFxStack::dedup_indices",
         "file": "src/effect/stack.rs",
-        "line": 262
+        "line": 263
       },
       {
         "module": "effect",
@@ -6280,6 +6478,12 @@
         "name": "MarkerStore::is_empty",
         "file": "src/globe/marker.rs",
         "line": 121
+      },
+      {
+        "module": "globe",
+        "name": "pick",
+        "file": "src/globe/picking.rs",
+        "line": 64
       },
       {
         "module": "globe",
@@ -7515,37 +7719,37 @@
         "module": "image",
         "name": "ImageData::draw_circle",
         "file": "src/image/image_data.rs",
-        "line": 298
+        "line": 264
       },
       {
         "module": "image",
         "name": "ImageData::draw_line",
         "file": "src/image/image_data.rs",
-        "line": 330
+        "line": 296
       },
       {
         "module": "image",
         "name": "ImageData::encode_png",
         "file": "src/image/image_data.rs",
-        "line": 456
+        "line": 422
       },
       {
         "module": "image",
         "name": "ImageData::as_bytes",
         "file": "src/image/image_data.rs",
-        "line": 473
+        "line": 439
       },
       {
         "module": "image",
         "name": "ImageData::get_string",
         "file": "src/image/image_data.rs",
-        "line": 481
+        "line": 447
       },
       {
         "module": "image",
         "name": "ImageData::map_pixel_par",
         "file": "src/image/image_data.rs",
-        "line": 500
+        "line": 466
       },
       {
         "module": "image",
@@ -7790,8 +7994,8 @@
       {
         "module": "image",
         "name": "draw_animation_frame_grid_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 23
+        "file": "src/image/visualization/animation.rs",
+        "line": 21
       },
       {
         "module": "input",
@@ -7903,12 +8107,6 @@
       },
       {
         "module": "input",
-        "name": "GamepadState::get_guid",
-        "file": "src/input/gamepad.rs",
-        "line": 143
-      },
-      {
-        "module": "input",
         "name": "GamepadState::get_hat",
         "file": "src/input/gamepad.rs",
         "line": 154
@@ -7969,21 +8167,9 @@
       },
       {
         "module": "input",
-        "name": "KeyboardState::is_scancode_down",
-        "file": "src/input/keyboard.rs",
-        "line": 121
-      },
-      {
-        "module": "input",
         "name": "KeyboardState::set_key_repeat",
         "file": "src/input/keyboard.rs",
         "line": 129
-      },
-      {
-        "module": "input",
-        "name": "KeyboardState::has_key_repeat",
-        "file": "src/input/keyboard.rs",
-        "line": 137
       },
       {
         "module": "input",
@@ -7993,21 +8179,9 @@
       },
       {
         "module": "input",
-        "name": "KeyboardState::has_text_input",
-        "file": "src/input/keyboard.rs",
-        "line": 153
-      },
-      {
-        "module": "input",
         "name": "KeyboardState::push_text_input",
         "file": "src/input/keyboard.rs",
         "line": 161
-      },
-      {
-        "module": "input",
-        "name": "KeyboardState::get_text_input",
-        "file": "src/input/keyboard.rs",
-        "line": 169
       },
       {
         "module": "input",
@@ -8751,7 +8925,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/animation_api.rs",
-        "line": 522
+        "line": 526
       },
       {
         "module": "lua_api",
@@ -8847,7 +9021,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/globe_api.rs",
-        "line": 669
+        "line": 672
       },
       {
         "module": "lua_api",
@@ -8889,7 +9063,7 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/math_api.rs",
-        "line": 1533
+        "line": 1534
       },
       {
         "module": "lua_api",
@@ -8931,13 +9105,13 @@
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1396
+        "line": 1397
       },
       {
         "module": "lua_api",
         "name": "register",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1122
+        "line": 1123
       },
       {
         "module": "lua_api",
@@ -9585,37 +9759,37 @@
         "module": "math",
         "name": "lerp",
         "file": "src/math/mod.rs",
-        "line": 77
+        "line": 82
       },
       {
         "module": "math",
         "name": "remap",
         "file": "src/math/mod.rs",
-        "line": 92
+        "line": 97
       },
       {
         "module": "math",
         "name": "clamp",
         "file": "src/math/mod.rs",
-        "line": 107
+        "line": 112
       },
       {
         "module": "math",
         "name": "sign",
         "file": "src/math/mod.rs",
-        "line": 124
+        "line": 129
       },
       {
         "module": "math",
         "name": "smoothstep",
         "file": "src/math/mod.rs",
-        "line": 145
+        "line": 150
       },
       {
         "module": "math",
         "name": "inverse_lerp",
         "file": "src/math/mod.rs",
-        "line": 159
+        "line": 164
       },
       {
         "module": "math",
@@ -11185,18 +11359,6 @@
       },
       {
         "module": "particle",
-        "name": "emission_offset",
-        "file": "src/particle/emission.rs",
-        "line": 13
-      },
-      {
-        "module": "particle",
-        "name": "emission_shape_offset",
-        "file": "src/particle/emission.rs",
-        "line": 76
-      },
-      {
-        "module": "particle",
         "name": "ParticleSystem::new",
         "file": "src/particle/emitter.rs",
         "line": 68
@@ -11251,12 +11413,6 @@
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::clone_config",
-        "file": "src/particle/emitter.rs",
-        "line": 400
-      },
-      {
-        "module": "particle",
         "name": "ParticleSystem::is_active",
         "file": "src/particle/emitter.rs",
         "line": 408
@@ -11293,12 +11449,6 @@
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::warm_up",
-        "file": "src/particle/emitter.rs",
-        "line": 565
-      },
-      {
-        "module": "particle",
         "name": "ParticleSystem::add_attractor",
         "file": "src/particle/emitter.rs",
         "line": 583
@@ -11320,42 +11470,6 @@
         "name": "ParticleSystem::set_bounds",
         "file": "src/particle/emitter.rs",
         "line": 611
-      },
-      {
-        "module": "particle",
-        "name": "ParticleSystem::clear_bounds",
-        "file": "src/particle/emitter.rs",
-        "line": 622
-      },
-      {
-        "module": "particle",
-        "name": "ParticleSystem::draw_to_image",
-        "file": "src/particle/emitter.rs",
-        "line": 638
-      },
-      {
-        "module": "particle",
-        "name": "lerp",
-        "file": "src/particle/math.rs",
-        "line": 12
-      },
-      {
-        "module": "particle",
-        "name": "interpolate_sizes",
-        "file": "src/particle/math.rs",
-        "line": 33
-      },
-      {
-        "module": "particle",
-        "name": "interpolate_colors",
-        "file": "src/particle/math.rs",
-        "line": 62
-      },
-      {
-        "module": "particle",
-        "name": "interpolate_alphas",
-        "file": "src/particle/math.rs",
-        "line": 95
       },
       {
         "module": "particle",
@@ -11454,6 +11568,12 @@
         "line": 265
       },
       {
+        "module": "particle",
+        "name": "draw_to_image",
+        "file": "src/particle/visualization.rs",
+        "line": 23
+      },
+      {
         "module": "pathfind",
         "name": "FlowField::new",
         "file": "src/pathfind/ai_flow_field.rs",
@@ -11527,15 +11647,15 @@
       },
       {
         "module": "pathfind",
-        "name": "PathThreadPool::set_thread_count",
-        "file": "src/pathfind/async_pool.rs",
-        "line": 212
-      },
-      {
-        "module": "pathfind",
         "name": "PathThreadPool::get_thread_count",
         "file": "src/pathfind/async_pool.rs",
         "line": 220
+      },
+      {
+        "module": "pathfind",
+        "name": "bidirectional_astar",
+        "file": "src/pathfind/bidir.rs",
+        "line": 169
       },
       {
         "module": "pathfind",
@@ -11581,27 +11701,9 @@
       },
       {
         "module": "pathfind",
-        "name": "graph_astar",
-        "file": "src/pathfind/graph_nav.rs",
-        "line": 27
-      },
-      {
-        "module": "pathfind",
-        "name": "graph_range",
-        "file": "src/pathfind/graph_nav.rs",
-        "line": 90
-      },
-      {
-        "module": "pathfind",
         "name": "ProvinceCostFn::new",
         "file": "src/pathfind/graph_path.rs",
         "line": 52
-      },
-      {
-        "module": "pathfind",
-        "name": "find_province_path",
-        "file": "src/pathfind/graph_path.rs",
-        "line": 137
       },
       {
         "module": "pathfind",
@@ -11677,12 +11779,6 @@
       },
       {
         "module": "pathfind",
-        "name": "HexGrid::set_blocked",
-        "file": "src/pathfind/hex_grid.rs",
-        "line": 66
-      },
-      {
-        "module": "pathfind",
         "name": "HexGrid::set_cost",
         "file": "src/pathfind/hex_grid.rs",
         "line": 78
@@ -11713,12 +11809,6 @@
       },
       {
         "module": "pathfind",
-        "name": "HexGrid::range_of_movement",
-        "file": "src/pathfind/hex_grid.rs",
-        "line": 194
-      },
-      {
-        "module": "pathfind",
         "name": "HexGrid::neighbors",
         "file": "src/pathfind/hex_grid.rs",
         "line": 229
@@ -11731,15 +11821,9 @@
       },
       {
         "module": "pathfind",
-        "name": "build_abstract",
+        "name": "is_reachable",
         "file": "src/pathfind/hpa.rs",
-        "line": 136
-      },
-      {
-        "module": "pathfind",
-        "name": "hpa_star",
-        "file": "src/pathfind/hpa.rs",
-        "line": 384
+        "line": 521
       },
       {
         "module": "pathfind",
@@ -11809,12 +11893,6 @@
       },
       {
         "module": "pathfind",
-        "name": "IsoGrid::set_blocked",
-        "file": "src/pathfind/iso_grid.rs",
-        "line": 50
-      },
-      {
-        "module": "pathfind",
         "name": "IsoGrid::set_cost",
         "file": "src/pathfind/iso_grid.rs",
         "line": 62
@@ -11845,12 +11923,6 @@
       },
       {
         "module": "pathfind",
-        "name": "JpsGrid::set_blocked",
-        "file": "src/pathfind/jps.rs",
-        "line": 42
-      },
-      {
-        "module": "pathfind",
         "name": "JpsGrid::is_blocked",
         "file": "src/pathfind/jps.rs",
         "line": 56
@@ -11878,12 +11950,6 @@
         "name": "NavGrid::new",
         "file": "src/pathfind/nav_grid.rs",
         "line": 101
-      },
-      {
-        "module": "pathfind",
-        "name": "NavGrid::from_costs",
-        "file": "src/pathfind/nav_grid.rs",
-        "line": 125
       },
       {
         "module": "pathfind",
@@ -11923,12 +11989,6 @@
       },
       {
         "module": "pathfind",
-        "name": "NavGrid::set_blocked",
-        "file": "src/pathfind/nav_grid.rs",
-        "line": 212
-      },
-      {
-        "module": "pathfind",
         "name": "NavGrid::is_walkable",
         "file": "src/pathfind/nav_grid.rs",
         "line": 225
@@ -11950,12 +12010,6 @@
         "name": "NavGrid::load_from_bytes",
         "file": "src/pathfind/nav_grid.rs",
         "line": 275
-      },
-      {
-        "module": "pathfind",
-        "name": "NavGrid::save_to_bytes",
-        "file": "src/pathfind/nav_grid.rs",
-        "line": 288
       },
       {
         "module": "pathfind",
@@ -12049,21 +12103,9 @@
       },
       {
         "module": "pathfind",
-        "name": "RangeMap::cost_to",
-        "file": "src/pathfind/range_map.rs",
-        "line": 132
-      },
-      {
-        "module": "pathfind",
         "name": "RangeMap::reachable_cells",
         "file": "src/pathfind/range_map.rs",
         "line": 143
-      },
-      {
-        "module": "pathfind",
-        "name": "RangeMap::reachable_cells_with_cost",
-        "file": "src/pathfind/range_map.rs",
-        "line": 161
       },
       {
         "module": "pathfind",
@@ -12094,6 +12136,12 @@
         "name": "UnitPathfinder::find_path",
         "file": "src/pathfind/unit_pathfinder.rs",
         "line": 94
+      },
+      {
+        "module": "pathfind",
+        "name": "UnitPathfinder::is_reachable",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 300
       },
       {
         "module": "pathfind",
@@ -12529,6 +12577,12 @@
       },
       {
         "module": "patterns",
+        "name": "ObjectPool::release_all",
+        "file": "src/patterns/object_pool.rs",
+        "line": 90
+      },
+      {
+        "module": "patterns",
         "name": "ObjectPool::active_count",
         "file": "src/patterns/object_pool.rs",
         "line": 127
@@ -12820,6 +12874,12 @@
         "name": "StateMachine::has_state",
         "file": "src/patterns/state_machine.rs",
         "line": 104
+      },
+      {
+        "module": "patterns",
+        "name": "StateMachine::state_names",
+        "file": "src/patterns/state_machine.rs",
+        "line": 112
       },
       {
         "module": "patterns",
@@ -14689,21 +14749,9 @@
       },
       {
         "module": "render",
-        "name": "apply",
-        "file": "src/render/postfx_pipeline.rs",
-        "line": 1057
-      },
-      {
-        "module": "render",
-        "name": "apply",
-        "file": "src/render/postfx_pipeline.rs",
-        "line": 1223
-      },
-      {
-        "module": "render",
         "name": "TextSpan::new",
         "file": "src/render/renderer.rs",
-        "line": 349
+        "line": 348
       },
       {
         "module": "render",
@@ -14835,7 +14883,7 @@
         "module": "runtime",
         "name": "SharedState::new",
         "file": "src/runtime/shared_state.rs",
-        "line": 433
+        "line": 434
       },
       {
         "module": "save",
@@ -15952,12 +16000,6 @@
         "name": "Terminal::textinput",
         "file": "src/terminal/terminal_state.rs",
         "line": 449
-      },
-      {
-        "module": "terminal",
-        "name": "Terminal::mousepressed",
-        "file": "src/terminal/terminal_state.rs",
-        "line": 462
       },
       {
         "module": "terminal",
@@ -17569,12 +17611,6 @@
       },
       {
         "module": "timer",
-        "name": "sleep",
-        "file": "src/timer/mod.rs",
-        "line": 35
-      },
-      {
-        "module": "timer",
         "name": "Scheduler::new",
         "file": "src/timer/scheduler.rs",
         "line": 110
@@ -17722,6 +17758,12 @@
         "name": "Scheduler::is_empty",
         "file": "src/timer/scheduler.rs",
         "line": 651
+      },
+      {
+        "module": "timer",
+        "name": "sleep",
+        "file": "src/timer/sleep.rs",
+        "line": 10
       },
       {
         "module": "tween",
@@ -18639,19 +18681,19 @@
         "module": "ui",
         "name": "GuiContext::build_render_commands",
         "file": "src/ui/render.rs",
-        "line": 620
+        "line": 627
       },
       {
         "module": "ui",
         "name": "GuiContext::generate_render_commands",
         "file": "src/ui/render.rs",
-        "line": 645
+        "line": 652
       },
       {
         "module": "ui",
         "name": "GuiContext::draw_to_image",
         "file": "src/ui/render.rs",
-        "line": 661
+        "line": 668
       },
       {
         "module": "ui",
@@ -18987,12 +19029,6 @@
       },
       {
         "module": "ai",
-        "name": "ContextSteering::add_seek_target",
-        "file": "src/ai/context_steering.rs",
-        "line": 217
-      },
-      {
-        "module": "ai",
         "name": "ContextSteering::add_wander",
         "file": "src/ai/context_steering.rs",
         "line": 226
@@ -19008,18 +19044,6 @@
         "name": "ContextSteering::add_avoid_bounds",
         "file": "src/ai/context_steering.rs",
         "line": 250
-      },
-      {
-        "module": "ai",
-        "name": "ContextSteering::clear_behaviors",
-        "file": "src/ai/context_steering.rs",
-        "line": 255
-      },
-      {
-        "module": "ai",
-        "name": "ContextSteering::chosen_direction",
-        "file": "src/ai/context_steering.rs",
-        "line": 348
       },
       {
         "module": "ai",
@@ -19047,9 +19071,9 @@
       },
       {
         "module": "ai",
-        "name": "AIDirector::total_events",
+        "name": "AIDirector::phase_str",
         "file": "src/ai/director.rs",
-        "line": 204
+        "line": 192
       },
       {
         "module": "ai",
@@ -19089,21 +19113,9 @@
       },
       {
         "module": "ai",
-        "name": "StateMachine::add_state_raw",
-        "file": "src/ai/fsm.rs",
-        "line": 170
-      },
-      {
-        "module": "ai",
         "name": "StateMachine::add_transition_raw",
         "file": "src/ai/fsm.rs",
         "line": 194
-      },
-      {
-        "module": "ai",
-        "name": "GeneticAlgorithm::pop_size",
-        "file": "src/ai/genetic.rs",
-        "line": 134
       },
       {
         "module": "ai",
@@ -19131,12 +19143,6 @@
       },
       {
         "module": "ai",
-        "name": "GOAPPlanner::get_max_iterations",
-        "file": "src/ai/goap.rs",
-        "line": 360
-      },
-      {
-        "module": "ai",
         "name": "HTNTask::is_primitive",
         "file": "src/ai/htn.rs",
         "line": 90
@@ -19155,33 +19161,27 @@
       },
       {
         "module": "ai",
-        "name": "HTNMethod::with_preconditions",
-        "file": "src/ai/htn.rs",
-        "line": 173
-      },
-      {
-        "module": "ai",
         "name": "HTNMethod::is_applicable",
         "file": "src/ai/htn.rs",
         "line": 188
       },
       {
         "module": "ai",
-        "name": "HTNDomain::add_primitive",
-        "file": "src/ai/htn.rs",
-        "line": 233
-      },
-      {
-        "module": "ai",
-        "name": "HTNDomain::add_compound",
-        "file": "src/ai/htn.rs",
-        "line": 247
-      },
-      {
-        "module": "ai",
         "name": "HTNDomain::task_count",
         "file": "src/ai/htn.rs",
         "line": 269
+      },
+      {
+        "module": "ai",
+        "name": "AILod::tier_for",
+        "file": "src/ai/lod.rs",
+        "line": 126
+      },
+      {
+        "module": "ai",
+        "name": "AILod::should_update",
+        "file": "src/ai/lod.rs",
+        "line": 162
       },
       {
         "module": "ai",
@@ -19197,12 +19197,6 @@
       },
       {
         "module": "ai",
-        "name": "Need::deprive",
-        "file": "src/ai/needs.rs",
-        "line": 111
-      },
-      {
-        "module": "ai",
         "name": "NeedAdvertisement::is_available",
         "file": "src/ai/needs.rs",
         "line": 185
@@ -19212,12 +19206,6 @@
         "name": "NeedAdvertisement::use_it",
         "file": "src/ai/needs.rs",
         "line": 191
-      },
-      {
-        "module": "ai",
-        "name": "NeedSystem::add_need",
-        "file": "src/ai/needs.rs",
-        "line": 255
       },
       {
         "module": "ai",
@@ -19251,33 +19239,9 @@
       },
       {
         "module": "ai",
-        "name": "NeuralNet::set_weights",
-        "file": "src/ai/neural_net.rs",
-        "line": 246
-      },
-      {
-        "module": "ai",
-        "name": "NeuralNet::get_weights",
-        "file": "src/ai/neural_net.rs",
-        "line": 263
-      },
-      {
-        "module": "ai",
-        "name": "Neuroevolution::pop_size",
-        "file": "src/ai/neuroevolution.rs",
-        "line": 71
-      },
-      {
-        "module": "ai",
         "name": "Neuroevolution::chromosome_to_net",
         "file": "src/ai/neuroevolution.rs",
         "line": 82
-      },
-      {
-        "module": "ai",
-        "name": "Neuroevolution::set_fitness",
-        "file": "src/ai/neuroevolution.rs",
-        "line": 94
       },
       {
         "module": "ai",
@@ -19290,24 +19254,6 @@
         "name": "Neuroevolution::best_fitness",
         "file": "src/ai/neuroevolution.rs",
         "line": 122
-      },
-      {
-        "module": "ai",
-        "name": "ORCASolver::remove_agent",
-        "file": "src/ai/orca.rs",
-        "line": 151
-      },
-      {
-        "module": "ai",
-        "name": "ORCASolver::agent_count",
-        "file": "src/ai/orca.rs",
-        "line": 163
-      },
-      {
-        "module": "ai",
-        "name": "StimulusWorld::add_visual",
-        "file": "src/ai/perception.rs",
-        "line": 211
       },
       {
         "module": "ai",
@@ -19395,18 +19341,6 @@
       },
       {
         "module": "ai",
-        "name": "Squad::get_formation_position",
-        "file": "src/ai/squad.rs",
-        "line": 141
-      },
-      {
-        "module": "ai",
-        "name": "SteeringManager::add_seek",
-        "file": "src/ai/steering.rs",
-        "line": 455
-      },
-      {
-        "module": "ai",
         "name": "SteeringManager::add_flee",
         "file": "src/ai/steering.rs",
         "line": 472
@@ -19455,9 +19389,15 @@
       },
       {
         "module": "ai",
-        "name": "set_cell_size",
+        "name": "SteeringManager::set_cell_size",
         "file": "src/ai/steering.rs",
-        "line": 594
+        "line": 593
+      },
+      {
+        "module": "ai",
+        "name": "SteeringManager::set_use_spatial_hash",
+        "file": "src/ai/steering.rs",
+        "line": 604
       },
       {
         "module": "ai",
@@ -19485,15 +19425,9 @@
       },
       {
         "module": "ai",
-        "name": "StrategyAI::active_goal",
+        "name": "StrategyAI::time_until_next",
         "file": "src/ai/strategy.rs",
-        "line": 187
-      },
-      {
-        "module": "ai",
-        "name": "StrategyAI::force_evaluate",
-        "file": "src/ai/strategy.rs",
-        "line": 219
+        "line": 262
       },
       {
         "module": "ai",
@@ -19530,42 +19464,6 @@
         "name": "UtilityAI::add_consideration",
         "file": "src/ai/utility_ai.rs",
         "line": 232
-      },
-      {
-        "module": "ai",
-        "name": "UtilityAI::last_action_name",
-        "file": "src/ai/utility_ai.rs",
-        "line": 260
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::remove_agent",
-        "file": "src/ai/world.rs",
-        "line": 91
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::get_agent_index",
-        "file": "src/ai/world.rs",
-        "line": 112
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::agent_count",
-        "file": "src/ai/world.rs",
-        "line": 120
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::global_blackboard",
-        "file": "src/ai/world.rs",
-        "line": 128
-      },
-      {
-        "module": "ai",
-        "name": "AIWorld::global_blackboard_mut",
-        "file": "src/ai/world.rs",
-        "line": 136
       },
       {
         "module": "animation",
@@ -19607,7 +19505,7 @@
         "module": "animation",
         "name": "AnimStateMachine::get_animation_mut",
         "file": "src/animation/state_machine.rs",
-        "line": 342
+        "line": 343
       },
       {
         "module": "app",
@@ -19875,39 +19773,9 @@
       },
       {
         "module": "automation",
-        "name": "Script::set_step_limit",
-        "file": "src/automation/script.rs",
-        "line": 132
-      },
-      {
-        "module": "automation",
-        "name": "Script::get_step_limit",
-        "file": "src/automation/script.rs",
-        "line": 141
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::has_script",
-        "file": "src/automation/simulator.rs",
-        "line": 203
-      },
-      {
-        "module": "automation",
         "name": "Simulator::get_scripts",
         "file": "src/automation/simulator.rs",
         "line": 215
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::current_step",
-        "file": "src/automation/simulator.rs",
-        "line": 313
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::current_script",
-        "file": "src/automation/simulator.rs",
-        "line": 340
       },
       {
         "module": "automation",
@@ -19929,27 +19797,9 @@
       },
       {
         "module": "automation",
-        "name": "Simulator::save_macro",
+        "name": "Simulator::set_playback_speed",
         "file": "src/automation/simulator.rs",
-        "line": 409
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::play_macro",
-        "file": "src/automation/simulator.rs",
-        "line": 422
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::has_macro",
-        "file": "src/automation/simulator.rs",
-        "line": 440
-      },
-      {
-        "module": "automation",
-        "name": "Simulator::list_macros",
-        "file": "src/automation/simulator.rs",
-        "line": 451
+        "line": 462
       },
       {
         "module": "automation",
@@ -20010,12 +19860,6 @@
         "name": "Camera2D::effective_zoom",
         "file": "src/camera/types.rs",
         "line": 581
-      },
-      {
-        "module": "camera",
-        "name": "Camera2D::effect_offset",
-        "file": "src/camera/types.rs",
-        "line": 593
       },
       {
         "module": "compute",
@@ -20237,43 +20081,43 @@
         "module": "dataframe",
         "name": "DataFrame::column_data_mut",
         "file": "src/dataframe/frame.rs",
-        "line": 455
+        "line": 456
       },
       {
         "module": "dataframe",
         "name": "DataFrame::raw_data",
         "file": "src/dataframe/frame.rs",
-        "line": 479
+        "line": 480
       },
       {
         "module": "dataframe",
         "name": "DataFrame::with_eval",
         "file": "src/dataframe/frame.rs",
-        "line": 609
+        "line": 610
       },
       {
         "module": "dataframe",
         "name": "DataFrame::pivot_table",
         "file": "src/dataframe/frame.rs",
-        "line": 645
+        "line": 646
       },
       {
         "module": "dataframe",
         "name": "DataFrame::rolling_mean",
         "file": "src/dataframe/frame.rs",
-        "line": 757
+        "line": 758
       },
       {
         "module": "dataframe",
         "name": "DataFrame::rolling_sum",
         "file": "src/dataframe/frame.rs",
-        "line": 813
+        "line": 814
       },
       {
         "module": "dataframe",
         "name": "DataFrame::rank_column",
         "file": "src/dataframe/frame.rs",
-        "line": 867
+        "line": 868
       },
       {
         "module": "dataframe",
@@ -20619,39 +20463,39 @@
       },
       {
         "module": "ecs",
-        "name": "take_component_events",
+        "name": "Universe::take_component_events",
         "file": "src/ecs/universe.rs",
-        "line": 1209
+        "line": 1208
       },
       {
         "module": "ecs",
-        "name": "query_not",
+        "name": "Universe::query_not",
         "file": "src/ecs/universe.rs",
-        "line": 1226
+        "line": 1225
       },
       {
         "module": "ecs",
-        "name": "spawn_bulk",
+        "name": "Universe::spawn_bulk",
         "file": "src/ecs/universe.rs",
-        "line": 1284
+        "line": 1283
       },
       {
         "module": "ecs",
-        "name": "serialize_to_table",
+        "name": "Universe::serialize_to_table",
         "file": "src/ecs/universe.rs",
-        "line": 1314
+        "line": 1313
       },
       {
         "module": "ecs",
-        "name": "deserialize_from_table",
+        "name": "Universe::deserialize_from_table",
         "file": "src/ecs/universe.rs",
-        "line": 1393
+        "line": 1392
       },
       {
         "module": "ecs",
         "name": "deep_copy_table",
         "file": "src/ecs/universe.rs",
-        "line": 1514
+        "line": 1513
       },
       {
         "module": "effect",
@@ -20741,37 +20585,37 @@
         "module": "effect",
         "name": "PostFxStack::draw_info_to_image",
         "file": "src/effect/stack.rs",
-        "line": 292
+        "line": 293
       },
       {
         "module": "effect",
         "name": "PostFxStack::draw_stack_management_to_image",
         "file": "src/effect/stack.rs",
-        "line": 382
+        "line": 383
       },
       {
         "module": "effect",
         "name": "PostFxStack::draw_effect_catalog_to_image",
         "file": "src/effect/stack.rs",
-        "line": 420
+        "line": 421
       },
       {
         "module": "effect",
         "name": "PostFxStack::draw_effect_parameters_to_image",
         "file": "src/effect/stack.rs",
-        "line": 465
+        "line": 466
       },
       {
         "module": "effect",
         "name": "PostFxStack::draw_effect_type_bars_to_image",
         "file": "src/effect/stack.rs",
-        "line": 507
+        "line": 508
       },
       {
         "module": "effect",
         "name": "PostFxStack::draw_effect_types_to_image",
         "file": "src/effect/stack.rs",
-        "line": 546
+        "line": 547
       },
       {
         "module": "event",
@@ -21147,15 +20991,9 @@
       },
       {
         "module": "image",
-        "name": "ImageData::draw_circle_safe",
-        "file": "src/image/image_data.rs",
-        "line": 265
-      },
-      {
-        "module": "image",
         "name": "ImageData::draw_label",
         "file": "src/image/image_data.rs",
-        "line": 371
+        "line": 337
       },
       {
         "module": "image",
@@ -21190,284 +21028,296 @@
       {
         "module": "image",
         "name": "draw_animation_playback_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 85
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_debug_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 137
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_zoom_comparison_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 204
-      },
-      {
-        "module": "image",
-        "name": "noise_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 263
-      },
-      {
-        "module": "image",
-        "name": "noise_raw_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 292
-      },
-      {
-        "module": "image",
-        "name": "noise_terrain_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 322
-      },
-      {
-        "module": "image",
-        "name": "heightmap_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 363
-      },
-      {
-        "module": "image",
-        "name": "terrain_elevation_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 416
-      },
-      {
-        "module": "image",
-        "name": "easing_gallery_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 458
-      },
-      {
-        "module": "image",
-        "name": "easing_comparison_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 510
-      },
-      {
-        "module": "image",
-        "name": "bezier_curves_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 554
-      },
-      {
-        "module": "image",
-        "name": "cellular_grid_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 622
-      },
-      {
-        "module": "image",
-        "name": "voronoi_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 658
-      },
-      {
-        "module": "image",
-        "name": "points_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 686
-      },
-      {
-        "module": "image",
-        "name": "dungeon_grid_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 713
-      },
-      {
-        "module": "image",
-        "name": "noise_map_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 747
-      },
-      {
-        "module": "image",
-        "name": "noise_comparison_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 771
-      },
-      {
-        "module": "image",
-        "name": "polygon_gallery_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 819
-      },
-      {
-        "module": "image",
-        "name": "spiral_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 894
-      },
-      {
-        "module": "image",
-        "name": "filled_primitives_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 925
-      },
-      {
-        "module": "image",
-        "name": "panel_layout_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 971
-      },
-      {
-        "module": "image",
-        "name": "hud_bars_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1097
-      },
-      {
-        "module": "image",
-        "name": "camera_rotation_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1186
-      },
-      {
-        "module": "image",
-        "name": "camera_bounds_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1268
-      },
-      {
-        "module": "image",
-        "name": "camera_follow_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1315
-      },
-      {
-        "module": "image",
-        "name": "camera_shake_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1386
+        "file": "src/image/visualization/animation.rs",
+        "line": 84
       },
       {
         "module": "image",
         "name": "animation_playback_control_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1455
-      },
-      {
-        "module": "image",
-        "name": "waveform_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1534
-      },
-      {
-        "module": "image",
-        "name": "waveform_stereo_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1622
-      },
-      {
-        "module": "image",
-        "name": "waveform_zoomed_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1704
-      },
-      {
-        "module": "image",
-        "name": "colored_points_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1797
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_rotation_grid_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1823
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_bounds_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1900
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_follow_trail_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 1943
-      },
-      {
-        "module": "image",
-        "name": "draw_camera_shake_trail_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2008
-      },
-      {
-        "module": "image",
-        "name": "draw_graph_operations_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2081
-      },
-      {
-        "module": "image",
-        "name": "draw_graph_item_flow_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2147
-      },
-      {
-        "module": "image",
-        "name": "draw_geometry_shapes_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2235
-      },
-      {
-        "module": "image",
-        "name": "draw_geometry_intersections_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2349
-      },
-      {
-        "module": "image",
-        "name": "draw_delaunay_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2449
-      },
-      {
-        "module": "image",
-        "name": "draw_image_comparison_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2527
-      },
-      {
-        "module": "image",
-        "name": "draw_pixel_transform_grid_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2576
-      },
-      {
-        "module": "image",
-        "name": "draw_color_wheel_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2644
-      },
-      {
-        "module": "image",
-        "name": "draw_sound_waveform_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2677
-      },
-      {
-        "module": "image",
-        "name": "draw_bezier_advanced_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2740
+        "file": "src/image/visualization/animation.rs",
+        "line": 138
       },
       {
         "module": "image",
         "name": "draw_animation_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2925
+        "file": "src/image/visualization/animation.rs",
+        "line": 215
+      },
+      {
+        "module": "image",
+        "name": "waveform_to_image",
+        "file": "src/image/visualization/audio.rs",
+        "line": 21
+      },
+      {
+        "module": "image",
+        "name": "waveform_stereo_to_image",
+        "file": "src/image/visualization/audio.rs",
+        "line": 109
+      },
+      {
+        "module": "image",
+        "name": "waveform_zoomed_to_image",
+        "file": "src/image/visualization/audio.rs",
+        "line": 191
+      },
+      {
+        "module": "image",
+        "name": "draw_sound_waveform_to_image",
+        "file": "src/image/visualization/audio.rs",
+        "line": 282
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_debug_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 25
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_zoom_comparison_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 92
+      },
+      {
+        "module": "image",
+        "name": "camera_rotation_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 149
+      },
+      {
+        "module": "image",
+        "name": "camera_bounds_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 229
+      },
+      {
+        "module": "image",
+        "name": "camera_follow_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 274
+      },
+      {
+        "module": "image",
+        "name": "camera_shake_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 343
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_rotation_grid_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 406
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_bounds_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 483
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_follow_trail_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 526
+      },
+      {
+        "module": "image",
+        "name": "draw_camera_shake_trail_to_image",
+        "file": "src/image/visualization/camera.rs",
+        "line": 591
       },
       {
         "module": "image",
         "name": "draw_camera_to_image",
-        "file": "src/image/visualization.rs",
-        "line": 2945
+        "file": "src/image/visualization/camera.rs",
+        "line": 661
+      },
+      {
+        "module": "image",
+        "name": "easing_gallery_to_image",
+        "file": "src/image/visualization/easing.rs",
+        "line": 21
+      },
+      {
+        "module": "image",
+        "name": "easing_comparison_to_image",
+        "file": "src/image/visualization/easing.rs",
+        "line": 73
+      },
+      {
+        "module": "image",
+        "name": "bezier_curves_to_image",
+        "file": "src/image/visualization/easing.rs",
+        "line": 115
+      },
+      {
+        "module": "image",
+        "name": "draw_bezier_advanced_to_image",
+        "file": "src/image/visualization/easing.rs",
+        "line": 180
+      },
+      {
+        "module": "image",
+        "name": "polygon_gallery_to_image",
+        "file": "src/image/visualization/geometry.rs",
+        "line": 18
+      },
+      {
+        "module": "image",
+        "name": "spiral_to_image",
+        "file": "src/image/visualization/geometry.rs",
+        "line": 93
+      },
+      {
+        "module": "image",
+        "name": "filled_primitives_to_image",
+        "file": "src/image/visualization/geometry.rs",
+        "line": 124
+      },
+      {
+        "module": "image",
+        "name": "draw_geometry_shapes_to_image",
+        "file": "src/image/visualization/geometry.rs",
+        "line": 173
+      },
+      {
+        "module": "image",
+        "name": "draw_geometry_intersections_to_image",
+        "file": "src/image/visualization/geometry.rs",
+        "line": 287
+      },
+      {
+        "module": "image",
+        "name": "draw_graph_operations_to_image",
+        "file": "src/image/visualization/graph.rs",
+        "line": 22
+      },
+      {
+        "module": "image",
+        "name": "draw_graph_item_flow_to_image",
+        "file": "src/image/visualization/graph.rs",
+        "line": 88
+      },
+      {
+        "module": "image",
+        "name": "draw_image_comparison_to_image",
+        "file": "src/image/visualization/image_ops.rs",
+        "line": 21
+      },
+      {
+        "module": "image",
+        "name": "draw_pixel_transform_grid_to_image",
+        "file": "src/image/visualization/image_ops.rs",
+        "line": 70
+      },
+      {
+        "module": "image",
+        "name": "draw_color_wheel_to_image",
+        "file": "src/image/visualization/image_ops.rs",
+        "line": 138
+      },
+      {
+        "module": "image",
+        "name": "hsv_to_rgb_viz",
+        "file": "src/image/visualization/mod.rs",
+        "line": 33
+      },
+      {
+        "module": "image",
+        "name": "noise_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 21
+      },
+      {
+        "module": "image",
+        "name": "noise_raw_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 50
+      },
+      {
+        "module": "image",
+        "name": "noise_terrain_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 80
+      },
+      {
+        "module": "image",
+        "name": "heightmap_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 121
+      },
+      {
+        "module": "image",
+        "name": "terrain_elevation_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 174
+      },
+      {
+        "module": "image",
+        "name": "noise_map_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 210
+      },
+      {
+        "module": "image",
+        "name": "noise_comparison_to_image",
+        "file": "src/image/visualization/noise.rs",
+        "line": 234
+      },
+      {
+        "module": "image",
+        "name": "cellular_grid_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 21
+      },
+      {
+        "module": "image",
+        "name": "voronoi_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 56
+      },
+      {
+        "module": "image",
+        "name": "points_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 84
+      },
+      {
+        "module": "image",
+        "name": "dungeon_grid_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 111
+      },
+      {
+        "module": "image",
+        "name": "colored_points_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 149
+      },
+      {
+        "module": "image",
+        "name": "draw_delaunay_to_image",
+        "file": "src/image/visualization/procgen.rs",
+        "line": 175
+      },
+      {
+        "module": "image",
+        "name": "panel_layout_to_image",
+        "file": "src/image/visualization/ui.rs",
+        "line": 16
+      },
+      {
+        "module": "image",
+        "name": "hud_bars_to_image",
+        "file": "src/image/visualization/ui.rs",
+        "line": 142
+      },
+      {
+        "module": "input",
+        "name": "GamepadState::get_guid",
+        "file": "src/input/gamepad.rs",
+        "line": 143
       },
       {
         "module": "input",
@@ -21480,6 +21330,30 @@
         "name": "GamepadMappings::save_to_file",
         "file": "src/input/gamepad.rs",
         "line": 316
+      },
+      {
+        "module": "input",
+        "name": "KeyboardState::is_scancode_down",
+        "file": "src/input/keyboard.rs",
+        "line": 121
+      },
+      {
+        "module": "input",
+        "name": "KeyboardState::has_key_repeat",
+        "file": "src/input/keyboard.rs",
+        "line": 137
+      },
+      {
+        "module": "input",
+        "name": "KeyboardState::has_text_input",
+        "file": "src/input/keyboard.rs",
+        "line": 153
+      },
+      {
+        "module": "input",
+        "name": "KeyboardState::get_text_input",
+        "file": "src/input/keyboard.rs",
+        "line": 169
       },
       {
         "module": "input",
@@ -21791,7 +21665,7 @@
         "module": "lua_api",
         "name": "ParticleConfig::from_lua_opts",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1538
+        "line": 1539
       },
       {
         "module": "lua_api",
@@ -22245,57 +22119,105 @@
       },
       {
         "module": "particle",
+        "name": "emission_offset",
+        "file": "src/particle/emission.rs",
+        "line": 13
+      },
+      {
+        "module": "particle",
+        "name": "emission_shape_offset",
+        "file": "src/particle/emission.rs",
+        "line": 76
+      },
+      {
+        "module": "particle",
         "name": "ParticleSystem::move_to",
         "file": "src/particle/emitter.rs",
         "line": 389
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::draw_explosion_to_image",
+        "name": "ParticleSystem::clone_config",
         "file": "src/particle/emitter.rs",
-        "line": 701
+        "line": 400
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::draw_rain_to_image",
+        "name": "ParticleSystem::warm_up",
         "file": "src/particle/emitter.rs",
-        "line": 724
+        "line": 565
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::draw_spark_trail_to_image",
+        "name": "ParticleSystem::clear_bounds",
         "file": "src/particle/emitter.rs",
-        "line": 753
+        "line": 622
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::draw_over_image",
-        "file": "src/particle/emitter.rs",
-        "line": 801
+        "name": "interpolate_sizes",
+        "file": "src/particle/math.rs",
+        "line": 22
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::paint_onto",
-        "file": "src/particle/emitter.rs",
-        "line": 854
+        "name": "interpolate_colors",
+        "file": "src/particle/math.rs",
+        "line": 51
       },
       {
         "module": "particle",
-        "name": "ParticleSystem::draw_lifecycle_to_image",
-        "file": "src/particle/emitter.rs",
-        "line": 884
+        "name": "interpolate_alphas",
+        "file": "src/particle/math.rs",
+        "line": 84
       },
       {
         "module": "particle",
         "name": "rand_range",
         "file": "src/particle/math.rs",
-        "line": 118
+        "line": 107
       },
       {
         "module": "particle",
         "name": "rand_normal",
         "file": "src/particle/math.rs",
-        "line": 129
+        "line": 118
+      },
+      {
+        "module": "particle",
+        "name": "draw_explosion_to_image",
+        "file": "src/particle/visualization.rs",
+        "line": 88
+      },
+      {
+        "module": "particle",
+        "name": "draw_rain_to_image",
+        "file": "src/particle/visualization.rs",
+        "line": 112
+      },
+      {
+        "module": "particle",
+        "name": "draw_spark_trail_to_image",
+        "file": "src/particle/visualization.rs",
+        "line": 142
+      },
+      {
+        "module": "particle",
+        "name": "draw_over_image",
+        "file": "src/particle/visualization.rs",
+        "line": 178
+      },
+      {
+        "module": "particle",
+        "name": "paint_onto",
+        "file": "src/particle/visualization.rs",
+        "line": 232
+      },
+      {
+        "module": "particle",
+        "name": "draw_lifecycle_to_image",
+        "file": "src/particle/visualization.rs",
+        "line": 262
       },
       {
         "module": "pathfind",
@@ -22305,9 +22227,9 @@
       },
       {
         "module": "pathfind",
-        "name": "bidirectional_astar",
-        "file": "src/pathfind/bidir.rs",
-        "line": 169
+        "name": "PathThreadPool::set_thread_count",
+        "file": "src/pathfind/async_pool.rs",
+        "line": 212
       },
       {
         "module": "pathfind",
@@ -22341,15 +22263,51 @@
       },
       {
         "module": "pathfind",
+        "name": "graph_astar",
+        "file": "src/pathfind/graph_nav.rs",
+        "line": 27
+      },
+      {
+        "module": "pathfind",
+        "name": "graph_range",
+        "file": "src/pathfind/graph_nav.rs",
+        "line": 90
+      },
+      {
+        "module": "pathfind",
+        "name": "find_province_path",
+        "file": "src/pathfind/graph_path.rs",
+        "line": 137
+      },
+      {
+        "module": "pathfind",
         "name": "province_reachable",
         "file": "src/pathfind/graph_path.rs",
         "line": 248
       },
       {
         "module": "pathfind",
-        "name": "is_reachable",
+        "name": "HexGrid::set_blocked",
+        "file": "src/pathfind/hex_grid.rs",
+        "line": 66
+      },
+      {
+        "module": "pathfind",
+        "name": "HexGrid::range_of_movement",
+        "file": "src/pathfind/hex_grid.rs",
+        "line": 194
+      },
+      {
+        "module": "pathfind",
+        "name": "build_abstract",
         "file": "src/pathfind/hpa.rs",
-        "line": 521
+        "line": 136
+      },
+      {
+        "module": "pathfind",
+        "name": "hpa_star",
+        "file": "src/pathfind/hpa.rs",
+        "line": 384
       },
       {
         "module": "pathfind",
@@ -22407,6 +22365,36 @@
       },
       {
         "module": "pathfind",
+        "name": "IsoGrid::set_blocked",
+        "file": "src/pathfind/iso_grid.rs",
+        "line": 50
+      },
+      {
+        "module": "pathfind",
+        "name": "JpsGrid::set_blocked",
+        "file": "src/pathfind/jps.rs",
+        "line": 42
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::from_costs",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 125
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::set_blocked",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 212
+      },
+      {
+        "module": "pathfind",
+        "name": "NavGrid::save_to_bytes",
+        "file": "src/pathfind/nav_grid.rs",
+        "line": 288
+      },
+      {
+        "module": "pathfind",
         "name": "NavGrid::set_diagonal_mode",
         "file": "src/pathfind/nav_grid.rs",
         "line": 312
@@ -22443,6 +22431,18 @@
       },
       {
         "module": "pathfind",
+        "name": "RangeMap::cost_to",
+        "file": "src/pathfind/range_map.rs",
+        "line": 132
+      },
+      {
+        "module": "pathfind",
+        "name": "RangeMap::reachable_cells_with_cost",
+        "file": "src/pathfind/range_map.rs",
+        "line": 161
+      },
+      {
+        "module": "pathfind",
         "name": "UnitPathfinder::find_path_smooth",
         "file": "src/pathfind/unit_pathfinder.rs",
         "line": 146
@@ -22470,12 +22470,6 @@
         "name": "UnitPathfinder::find_nearest_walkable",
         "file": "src/pathfind/unit_pathfinder.rs",
         "line": 240
-      },
-      {
-        "module": "pathfind",
-        "name": "UnitPathfinder::is_reachable",
-        "file": "src/pathfind/unit_pathfinder.rs",
-        "line": 300
       },
       {
         "module": "pathfind",
@@ -22514,6 +22508,12 @@
         "line": 405
       },
       {
+        "module": "pathfind",
+        "name": "UnitPathfinder::nav_grid",
+        "file": "src/pathfind/unit_pathfinder.rs",
+        "line": 411
+      },
+      {
         "module": "patterns",
         "name": "BiMap::remove_by_value",
         "file": "src/patterns/bimap.rs",
@@ -22545,12 +22545,6 @@
       },
       {
         "module": "patterns",
-        "name": "ObjectPool::release_all",
-        "file": "src/patterns/object_pool.rs",
-        "line": 90
-      },
-      {
-        "module": "patterns",
         "name": "ObjectPool::prewarm",
         "file": "src/patterns/object_pool.rs",
         "line": 103
@@ -22560,12 +22554,6 @@
         "name": "ObjectPool::idle_count",
         "file": "src/patterns/object_pool.rs",
         "line": 121
-      },
-      {
-        "module": "patterns",
-        "name": "StateMachine::state_names",
-        "file": "src/patterns/state_machine.rs",
-        "line": 112
       },
       {
         "module": "patterns",
@@ -23013,51 +23001,51 @@
       },
       {
         "module": "raycaster",
-        "name": "Raycaster2D::draw_top_down_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 595
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::draw_view_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 663
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::draw_depth_map_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 740
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::draw_line_of_sight_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 801
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::draw_camera_sweep_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 868
-      },
-      {
-        "module": "raycaster",
-        "name": "Raycaster2D::draw_textured_view_to_image",
-        "file": "src/raycaster/dda.rs",
-        "line": 928
-      },
-      {
-        "module": "raycaster",
         "name": "Raycaster2D::cast_floor_row",
         "file": "src/raycaster/dda.rs",
-        "line": 1089
+        "line": 599
       },
       {
         "module": "raycaster",
         "name": "HeightMap::set_ceiling_rect",
         "file": "src/raycaster/heightmap.rs",
         "line": 123
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_top_down_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 29
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_view_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 99
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_depth_map_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 176
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_line_of_sight_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 237
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_camera_sweep_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 306
+      },
+      {
+        "module": "raycaster",
+        "name": "Raycaster2D::draw_textured_view_to_image",
+        "file": "src/raycaster/visualization.rs",
+        "line": 366
       },
       {
         "module": "render",
@@ -23207,49 +23195,49 @@
         "module": "runtime",
         "name": "SharedState::step_timer",
         "file": "src/runtime/shared_state.rs",
-        "line": 513
+        "line": 514
       },
       {
         "module": "runtime",
         "name": "SharedState::touch_texture",
         "file": "src/runtime/shared_state.rs",
-        "line": 533
+        "line": 534
       },
       {
         "module": "runtime",
         "name": "SharedState::evict_lru_resources",
         "file": "src/runtime/shared_state.rs",
-        "line": 548
+        "line": 549
       },
       {
         "module": "runtime",
         "name": "SharedState::resource_memory_stats",
         "file": "src/runtime/shared_state.rs",
-        "line": 589
+        "line": 590
       },
       {
         "module": "runtime",
         "name": "SharedState::request_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 605
+        "line": 606
       },
       {
         "module": "runtime",
         "name": "SharedState::load_default_fonts",
         "file": "src/runtime/shared_state.rs",
-        "line": 622
+        "line": 623
       },
       {
         "module": "runtime",
         "name": "SharedState::poll_async_load",
         "file": "src/runtime/shared_state.rs",
-        "line": 645
+        "line": 646
       },
       {
         "module": "runtime",
         "name": "SharedState::compute_stats",
         "file": "src/runtime/shared_state.rs",
-        "line": 688
+        "line": 689
       },
       {
         "module": "scene",
@@ -23496,6 +23484,12 @@
         "name": "Terminal::get_focused",
         "file": "src/terminal/terminal_state.rs",
         "line": 427
+      },
+      {
+        "module": "terminal",
+        "name": "Terminal::mousepressed",
+        "file": "src/terminal/terminal_state.rs",
+        "line": 462
       },
       {
         "module": "terminal",
@@ -24496,8 +24490,8 @@
     ]
   },
   "lua": {
-    "total": 3723,
-    "covered": 3384,
+    "total": 3720,
+    "covered": 3381,
     "uncovered": 339,
     "coverage_pct": 90.9,
     "covered_items": [
@@ -26410,133 +26404,133 @@
         "lua_name": "AnimStateMachine:getQuad",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 364
+        "line": 368
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:removeLayer",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 446
+        "line": 450
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:setWeight",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 458
+        "line": 462
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:getWeight",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 469
+        "line": 473
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:setMask",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 478
+        "line": 482
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:listLayers",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 493
+        "line": 497
       },
       {
         "module": "animation",
         "lua_name": "BlendLayerSet:len",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 513
+        "line": 517
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.new",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 528
+        "line": 532
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.fromAseprite",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 543
+        "line": 547
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newStateMachine",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 565
+        "line": 569
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newBlendLayerSet",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 622
+        "line": 626
       },
       {
         "module": "animation",
         "lua_name": "AnimCurve:addKeyframe",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 653
+        "line": 657
       },
       {
         "module": "animation",
         "lua_name": "AnimCurve:eval",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 666
+        "line": 670
       },
       {
         "module": "animation",
         "lua_name": "AnimCurve:setEasing",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 675
+        "line": 679
       },
       {
         "module": "animation",
         "lua_name": "AnimCurve:clear",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 704
+        "line": 708
       },
       {
         "module": "animation",
         "lua_name": "AnimSyncGroup:add",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 737
+        "line": 741
       },
       {
         "module": "animation",
         "lua_name": "AnimSyncGroup:remove",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 749
+        "line": 753
       },
       {
         "module": "animation",
         "lua_name": "AnimSyncGroup:clear",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 755
+        "line": 759
       },
       {
         "module": "animation",
         "lua_name": "AnimSyncGroup:memberCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 764
+        "line": 768
       },
       {
         "module": "audio",
@@ -28916,203 +28910,203 @@
         "lua_name": "lurek.data.newByteData",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 423
+        "line": 426
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newDataView",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 449
+        "line": 452
       },
       {
         "module": "data",
         "lua_name": "lurek.data.write",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 467
+        "line": 470
       },
       {
         "module": "data",
         "lua_name": "lurek.data.read",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 483
+        "line": 486
       },
       {
         "module": "data",
         "lua_name": "lurek.data.size",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 499
+        "line": 502
       },
       {
         "module": "data",
         "lua_name": "lurek.data.parseToml",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 510
+        "line": 513
       },
       {
         "module": "data",
         "lua_name": "lurek.data.encodeToml",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 522
+        "line": 525
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newRingBuffer",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 535
+        "line": 538
       },
       {
         "module": "data",
         "lua_name": "lurek.data.toMsgPack",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 555
+        "line": 558
       },
       {
         "module": "data",
         "lua_name": "lurek.data.fromMsgPack",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 571
+        "line": 574
       },
       {
         "module": "data",
         "lua_name": "lurek.data.newWriter",
         "kind": "function",
         "file": "src/lua_api/data_api.rs",
-        "line": 585
+        "line": 588
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 658
+        "line": 661
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt16",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 691
+        "line": 694
       },
       {
         "module": "data",
         "lua_name": "DataView:getUInt32",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 713
+        "line": 716
       },
       {
         "module": "data",
         "lua_name": "DataView:getFloat",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 724
+        "line": 727
       },
       {
         "module": "data",
         "lua_name": "DataView:getDouble",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 735
+        "line": 738
       },
       {
         "module": "data",
         "lua_name": "DataView:getSize",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 742
+        "line": 745
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 760
+        "line": 763
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 795
+        "line": 798
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeString",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 823
+        "line": 826
       },
       {
         "module": "data",
         "lua_name": "DataWriter:seek",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 837
+        "line": 840
       },
       {
         "module": "data",
         "lua_name": "DataWriter:tell",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 844
+        "line": 847
       },
       {
         "module": "data",
         "lua_name": "DataWriter:len",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 848
+        "line": 851
       },
       {
         "module": "data",
         "lua_name": "DataWriter:toBytes",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 852
+        "line": 855
       },
       {
         "module": "data",
         "lua_name": "mlua:getSize",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 861
+        "line": 864
       },
       {
         "module": "data",
         "lua_name": "mlua:getString",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 865
+        "line": 868
       },
       {
         "module": "data",
         "lua_name": "mlua:getByte",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 870
+        "line": 873
       },
       {
         "module": "data",
         "lua_name": "mlua:setByte",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 884
+        "line": 887
       },
       {
         "module": "data",
         "lua_name": "mlua:clone",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 898
+        "line": 901
       },
       {
         "module": "dataframe",
@@ -31863,14 +31857,14 @@
         "lua_name": "lurek.event.clearHistory",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 491
+        "line": 490
       },
       {
         "module": "event",
         "lua_name": "lurek.event.push",
         "kind": "function",
         "file": "src/lua_api/event_api.rs",
-        "line": 510
+        "line": 509
       },
       {
         "module": "filesystem",
@@ -32311,280 +32305,280 @@
         "lua_name": "Globe:setActiveViewer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 252
+        "line": 255
       },
       {
         "module": "globe",
         "lua_name": "Globe:revealProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 260
+        "line": 263
       },
       {
         "module": "globe",
         "lua_name": "Globe:hideProvince",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 268
+        "line": 271
       },
       {
         "module": "globe",
         "lua_name": "Globe:isVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 277
+        "line": 280
       },
       {
         "module": "globe",
         "lua_name": "Globe:revealAll",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 284
+        "line": 287
       },
       {
         "module": "globe",
         "lua_name": "Globe:addMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 300
+        "line": 303
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 310
+        "line": 313
       },
       {
         "module": "globe",
         "lua_name": "Globe:moveMarker",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 319
+        "line": 322
       },
       {
         "module": "globe",
         "lua_name": "Globe:setMarkerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 327
+        "line": 330
       },
       {
         "module": "globe",
         "lua_name": "Globe:setMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 336
+        "line": 339
       },
       {
         "module": "globe",
         "lua_name": "Globe:getMarkerAttr",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 345
+        "line": 348
       },
       {
         "module": "globe",
         "lua_name": "Globe:addLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 358
+        "line": 361
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLabelText",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 368
+        "line": 371
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLabelVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 376
+        "line": 379
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeLabel",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 383
+        "line": 386
       },
       {
         "module": "globe",
         "lua_name": "Globe:addLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 393
+        "line": 396
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeLayer",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 409
+        "line": 412
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerColor",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 421
+        "line": 424
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerVisible",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 429
+        "line": 432
       },
       {
         "module": "globe",
         "lua_name": "Globe:setLayerAlpha",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 437
+        "line": 440
       },
       {
         "module": "globe",
         "lua_name": "Globe:setTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 446
+        "line": 449
       },
       {
         "module": "globe",
         "lua_name": "Globe:getTimeOfDay",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 453
+        "line": 456
       },
       {
         "module": "globe",
         "lua_name": "Globe:setRotation",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 460
+        "line": 463
       },
       {
         "module": "globe",
         "lua_name": "Globe:update",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 467
+        "line": 470
       },
       {
         "module": "globe",
         "lua_name": "Globe:setBorders",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 474
+        "line": 477
       },
       {
         "module": "globe",
         "lua_name": "Globe:findPath",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 485
+        "line": 488
       },
       {
         "module": "globe",
         "lua_name": "Globe:reachable",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 506
+        "line": 509
       },
       {
         "module": "globe",
         "lua_name": "Globe:addArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 527
+        "line": 530
       },
       {
         "module": "globe",
         "lua_name": "Globe:removeArc",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 551
+        "line": 554
       },
       {
         "module": "globe",
         "lua_name": "Globe:getName",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 558
+        "line": 561
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:new",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 585
+        "line": 588
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:get",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 604
+        "line": 607
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:remove",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 626
+        "line": 629
       },
       {
         "module": "globe",
         "lua_name": "GlobeRegistry:names",
         "kind": "method",
         "file": "src/lua_api/globe_api.rs",
-        "line": 636
+        "line": 639
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.new",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 681
+        "line": 684
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.get",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 703
+        "line": 706
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.loadFromTOML",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 730
+        "line": 733
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCircleDistance",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 757
+        "line": 760
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.greatCirclePath",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 772
+        "line": 775
       },
       {
         "module": "globe",
         "lua_name": "lurek.globe.latLonToUnit",
         "kind": "function",
         "file": "src/lua_api/globe_api.rs",
-        "line": 792
+        "line": 795
       },
       {
         "module": "graph",
@@ -34870,101 +34864,101 @@
       },
       {
         "module": "light",
-        "lua_name": "Occluder:setVertices",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 738
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:getVertices",
+        "lua_name": "Light:transitionTo",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
         "line": 751
       },
       {
         "module": "light",
-        "lua_name": "Occluder:setPosition",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 768
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:getPosition",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 779
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:setOpacity",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 791
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:getOpacity",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 802
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:setLightMask",
+        "lua_name": "Light:transitionProgress",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
         "line": 813
       },
       {
         "module": "light",
+        "lua_name": "Occluder:setVertices",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 862
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:getVertices",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 875
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:setPosition",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 892
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:getPosition",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 903
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:setOpacity",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 915
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:getOpacity",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 926
+      },
+      {
+        "module": "light",
+        "lua_name": "Occluder:setLightMask",
+        "kind": "method",
+        "file": "src/lua_api/light_api.rs",
+        "line": 937
+      },
+      {
+        "module": "light",
         "lua_name": "Occluder:getLightMask",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 824
+        "line": 948
       },
       {
         "module": "light",
         "lua_name": "Occluder:setEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 835
+        "line": 959
       },
       {
         "module": "light",
         "lua_name": "Occluder:isEnabled",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 846
+        "line": 970
       },
       {
         "module": "light",
         "lua_name": "Occluder:remove",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 856
+        "line": 980
       },
       {
         "module": "light",
         "lua_name": "Occluder:isValid",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 864
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:transitionTo",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 912
-      },
-      {
-        "module": "light",
-        "lua_name": "Occluder:transitionProgress",
-        "kind": "method",
-        "file": "src/lua_api/light_api.rs",
-        "line": 974
+        "line": 988
       },
       {
         "module": "light",
@@ -35223,1218 +35217,1218 @@
         "lua_name": "Vec2:dot",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 64
+        "line": 65
       },
       {
         "module": "math",
         "lua_name": "Vec2:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 72
+        "line": 73
       },
       {
         "module": "math",
         "lua_name": "Vec2:x",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 77
+        "line": 78
       },
       {
         "module": "math",
         "lua_name": "Vec2:y",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 82
+        "line": 83
       },
       {
         "module": "math",
         "lua_name": "Vec2:lengthSquared",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 87
+        "line": 88
       },
       {
         "module": "math",
         "lua_name": "Vec2:normalize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 95
+        "line": 96
       },
       {
         "module": "math",
         "lua_name": "Vec2:normalized",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 103
+        "line": 104
       },
       {
         "module": "math",
         "lua_name": "Vec2:lerp",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 113
+        "line": 114
       },
       {
         "module": "math",
         "lua_name": "Vec2:distance",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 122
+        "line": 123
       },
       {
         "module": "math",
         "lua_name": "Vec2:angle",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 130
+        "line": 131
       },
       {
         "module": "math",
         "lua_name": "Vec2:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 137
+        "line": 138
       },
       {
         "module": "math",
         "lua_name": "Vec2:perpendicular",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 145
+        "line": 146
       },
       {
         "module": "math",
         "lua_name": "Vec2:cross",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 153
+        "line": 154
       },
       {
         "module": "math",
         "lua_name": "Vec2:reflect",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 170
+        "line": 171
       },
       {
         "module": "math",
         "lua_name": "Vec3:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 232
+        "line": 233
       },
       {
         "module": "math",
         "lua_name": "Vec3:lengthSquared",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 237
+        "line": 238
       },
       {
         "module": "math",
         "lua_name": "Vec3:normalize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 243
+        "line": 244
       },
       {
         "module": "math",
         "lua_name": "Vec3:dot",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 251
+        "line": 252
       },
       {
         "module": "math",
         "lua_name": "Vec3:cross",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 261
+        "line": 262
       },
       {
         "module": "math",
         "lua_name": "Vec3:lerp",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 272
+        "line": 273
       },
       {
         "module": "math",
         "lua_name": "Vec3:distance",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 281
+        "line": 282
       },
       {
         "module": "math",
         "lua_name": "Vec3:add",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 291
+        "line": 292
       },
       {
         "module": "math",
         "lua_name": "Vec3:sub",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 301
+        "line": 302
       },
       {
         "module": "math",
         "lua_name": "Vec3:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 311
+        "line": 312
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:sample",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 340
+        "line": 341
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:sampleSegment",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 350
+        "line": 351
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:len",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 358
+        "line": 359
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:addPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 364
+        "line": 365
       },
       {
         "module": "math",
         "lua_name": "CatmullRom:removePoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 373
+        "line": 374
       },
       {
         "module": "math",
         "lua_name": "Hermite:sample",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 396
+        "line": 397
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:random",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 417
+        "line": 418
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:randomFloat",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 424
+        "line": 425
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:randomInt",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 433
+        "line": 434
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:setSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 460
+        "line": 461
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:getState",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 468
+        "line": 469
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:setState",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 474
+        "line": 475
       },
       {
         "module": "math",
         "lua_name": "Transform:translate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 497
+        "line": 498
       },
       {
         "module": "math",
         "lua_name": "Transform:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 506
+        "line": 507
       },
       {
         "module": "math",
         "lua_name": "Transform:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 516
+        "line": 517
       },
       {
         "module": "math",
         "lua_name": "Transform:reset",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 534
+        "line": 535
       },
       {
         "module": "math",
         "lua_name": "Transform:transformPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 586
+        "line": 587
       },
       {
         "module": "math",
         "lua_name": "Transform:inverseTransformPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 595
+        "line": 596
       },
       {
         "module": "math",
         "lua_name": "Transform:inverse",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 602
+        "line": 603
       },
       {
         "module": "math",
         "lua_name": "Transform:clone",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 611
+        "line": 612
       },
       {
         "module": "math",
         "lua_name": "Transform:decompose",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 634
+        "line": 635
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:evaluate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 655
+        "line": 656
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:render",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 664
+        "line": 665
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getDerivative",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 676
+        "line": 677
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getControlPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 687
+        "line": 688
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:getControlPointCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 742
+        "line": 743
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:length",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 749
+        "line": 750
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:translate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 756
+        "line": 757
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:rotate",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 767
+        "line": 768
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:scale",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 778
+        "line": 779
       },
       {
         "module": "math",
         "lua_name": "Tween:update",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 800
+        "line": 801
       },
       {
         "module": "math",
         "lua_name": "Tween:reset",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 805
+        "line": 806
       },
       {
         "module": "math",
         "lua_name": "Tween:getValue",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 816
+        "line": 817
       },
       {
         "module": "math",
         "lua_name": "Tween:isComplete",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 848
+        "line": 849
       },
       {
         "module": "math",
         "lua_name": "Tween:getEasingName",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 858
+        "line": 859
       },
       {
         "module": "math",
         "lua_name": "Tween:getDuration",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 865
+        "line": 866
       },
       {
         "module": "math",
         "lua_name": "Tween:getTime",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 870
+        "line": 871
       },
       {
         "module": "math",
         "lua_name": "Tween:setTime",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 881
+        "line": 882
       },
       {
         "module": "math",
         "lua_name": "Tween:set",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 890
+        "line": 891
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:remove",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 953
+        "line": 954
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:clear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 961
+        "line": 962
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:getCellSize",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1025
+        "line": 1026
       },
       {
         "module": "math",
         "lua_name": "SpatialHash:getItemCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1030
+        "line": 1031
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin2d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1082
+        "line": 1083
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin3d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1092
+        "line": 1093
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex2d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1118
+        "line": 1119
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:setSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1338
+        "line": 1339
       },
       {
         "module": "math",
         "lua_name": "Circle:area",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1363
+        "line": 1364
       },
       {
         "module": "math",
         "lua_name": "Circle:perimeter",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1368
+        "line": 1369
       },
       {
         "module": "math",
         "lua_name": "Circle:contains",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1375
+        "line": 1376
       },
       {
         "module": "math",
         "lua_name": "Circle:intersects",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1383
+        "line": 1384
       },
       {
         "module": "math",
         "lua_name": "Circle:aabb",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1391
+        "line": 1392
       },
       {
         "module": "math",
         "lua_name": "Circle:x",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1399
+        "line": 1400
       },
       {
         "module": "math",
         "lua_name": "Circle:y",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1404
+        "line": 1405
       },
       {
         "module": "math",
         "lua_name": "Circle:radius",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1409
+        "line": 1410
       },
       {
         "module": "math",
         "lua_name": "AabbTree:remove",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1449
+        "line": 1450
       },
       {
         "module": "math",
         "lua_name": "AabbTree:queryPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1475
+        "line": 1476
       },
       {
         "module": "math",
         "lua_name": "AabbTree:contains",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1504
+        "line": 1505
       },
       {
         "module": "math",
         "lua_name": "AabbTree:len",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1509
+        "line": 1510
       },
       {
         "module": "math",
         "lua_name": "AabbTree:isEmpty",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1514
+        "line": 1515
       },
       {
         "module": "math",
         "lua_name": "AabbTree:clear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1519
+        "line": 1520
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newRandomGenerator",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1542
+        "line": 1543
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newTransform",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1565
+        "line": 1566
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newBezierCurve",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1605
+        "line": 1606
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newTween",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1631
+        "line": 1632
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newSpatialHash",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1645
+        "line": 1646
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newNoiseGenerator",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1658
+        "line": 1659
       },
       {
         "module": "math",
         "lua_name": "lurek.math.perlin2d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1675
+        "line": 1676
       },
       {
         "module": "math",
         "lua_name": "lurek.math.perlin3d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1689
+        "line": 1690
       },
       {
         "module": "math",
         "lua_name": "lurek.math.simplex2d",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1702
+        "line": 1703
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fbm",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1718
+        "line": 1719
       },
       {
         "module": "math",
         "lua_name": "lurek.math.applyEasing",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1749
+        "line": 1750
       },
       {
         "module": "math",
         "lua_name": "lurek.math.linear",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1761
+        "line": 1762
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1770
+        "line": 1771
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1779
+        "line": 1780
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutQuad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1788
+        "line": 1789
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1797
+        "line": 1798
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1806
+        "line": 1807
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutCubic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1815
+        "line": 1816
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1851
+        "line": 1852
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1860
+        "line": 1861
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutSine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1869
+        "line": 1870
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1878
+        "line": 1879
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1887
+        "line": 1888
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1905
+        "line": 1906
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1914
+        "line": 1915
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1923
+        "line": 1924
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1941
+        "line": 1942
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1950
+        "line": 1951
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutElastic",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1959
+        "line": 1960
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1968
+        "line": 1969
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutBack",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1977
+        "line": 1978
       },
       {
         "module": "math",
         "lua_name": "lurek.math.triangulate",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1989
+        "line": 1990
       },
       {
         "module": "math",
         "lua_name": "lurek.math.isConvex",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2024
+        "line": 2025
       },
       {
         "module": "math",
         "lua_name": "lurek.math.gammaToLinear",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2047
+        "line": 2048
       },
       {
         "module": "math",
         "lua_name": "lurek.math.linearToGamma",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2056
+        "line": 2057
       },
       {
         "module": "math",
         "lua_name": "lurek.math.angleBetween",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2070
+        "line": 2071
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleContainsPoint",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2085
+        "line": 2086
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsCircle",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2101
+        "line": 2102
       },
       {
         "module": "math",
         "lua_name": "lurek.math.bresenham",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2342
+        "line": 2343
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rad",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2378
+        "line": 2379
       },
       {
         "module": "math",
         "lua_name": "lurek.math.deg",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2387
+        "line": 2388
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sin",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2396
+        "line": 2397
       },
       {
         "module": "math",
         "lua_name": "lurek.math.cos",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2402
+        "line": 2403
       },
       {
         "module": "math",
         "lua_name": "lurek.math.tan",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2408
+        "line": 2409
       },
       {
         "module": "math",
         "lua_name": "lurek.math.asin",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2414
+        "line": 2415
       },
       {
         "module": "math",
         "lua_name": "lurek.math.acos",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2420
+        "line": 2421
       },
       {
         "module": "math",
         "lua_name": "lurek.math.atan",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2427
+        "line": 2428
       },
       {
         "module": "math",
         "lua_name": "lurek.math.atan2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2442
+        "line": 2443
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sqrt",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2451
+        "line": 2452
       },
       {
         "module": "math",
         "lua_name": "lurek.math.abs",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2457
+        "line": 2458
       },
       {
         "module": "math",
         "lua_name": "lurek.math.floor",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2463
+        "line": 2464
       },
       {
         "module": "math",
         "lua_name": "lurek.math.ceil",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2469
+        "line": 2470
       },
       {
         "module": "math",
         "lua_name": "lurek.math.round",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2475
+        "line": 2476
       },
       {
         "module": "math",
         "lua_name": "lurek.math.exp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2481
+        "line": 2482
       },
       {
         "module": "math",
         "lua_name": "lurek.math.log",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2488
+        "line": 2489
       },
       {
         "module": "math",
         "lua_name": "lurek.math.pow",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2503
+        "line": 2504
       },
       {
         "module": "math",
         "lua_name": "lurek.math.min",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2512
+        "line": 2513
       },
       {
         "module": "math",
         "lua_name": "lurek.math.max",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2525
+        "line": 2526
       },
       {
         "module": "math",
         "lua_name": "lurek.math.clamp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2540
+        "line": 2541
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sign",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2549
+        "line": 2550
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2578
+        "line": 2579
       },
       {
         "module": "math",
         "lua_name": "lurek.math.distance",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2590
+        "line": 2591
       },
       {
         "module": "math",
         "lua_name": "lurek.math.distanceSq",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2606
+        "line": 2607
       },
       {
         "module": "math",
         "lua_name": "lurek.math.random",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2622
+        "line": 2623
       },
       {
         "module": "math",
         "lua_name": "lurek.math.randomInt",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2652
+        "line": 2653
       },
       {
         "module": "math",
         "lua_name": "lurek.math.simplexNoise",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2668
+        "line": 2669
       },
       {
         "module": "math",
         "lua_name": "lurek.math.vec2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2684
+        "line": 2685
       },
       {
         "module": "math",
         "lua_name": "lurek.math.Vec2",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2696
+        "line": 2697
       },
       {
         "module": "math",
         "lua_name": "lurek.math.vec3",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2709
+        "line": 2710
       },
       {
         "module": "math",
         "lua_name": "lurek.math.Vec3",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2722
+        "line": 2723
       },
       {
         "module": "math",
         "lua_name": "lurek.math.catmullRom",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2734
+        "line": 2735
       },
       {
         "module": "math",
         "lua_name": "lurek.math.hermite",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2759
+        "line": 2760
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2773
+        "line": 2774
       },
       {
         "module": "math",
         "lua_name": "lurek.math.remap",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2786
+        "line": 2787
       },
       {
         "module": "math",
         "lua_name": "lurek.math.clamp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2799
+        "line": 2800
       },
       {
         "module": "math",
         "lua_name": "lurek.math.sign",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2808
+        "line": 2809
       },
       {
         "module": "math",
         "lua_name": "lurek.math.smoothstep",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2819
+        "line": 2820
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inverseLerp",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2830
+        "line": 2831
       },
       {
         "module": "math",
         "lua_name": "lurek.math.hslToRgb",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2841
+        "line": 2842
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fromHex",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2853
+        "line": 2854
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rgbToHsl",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2869
+        "line": 2870
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rectUnion",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2891
+        "line": 2892
       },
       {
         "module": "math",
         "lua_name": "lurek.math.rectFromCenter",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2908
+        "line": 2909
       },
       {
         "module": "math",
         "lua_name": "lurek.math.aabbTree",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2956
+        "line": 2957
       },
       {
         "module": "math",
         "lua_name": "lurek.math.newCircle",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2967
+        "line": 2968
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonIntersection",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2984
+        "line": 2985
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonUnion",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 3000
+        "line": 3001
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonDifference",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 3016
+        "line": 3017
       },
       {
         "module": "math",
         "lua_name": "lurek.math.voronoi",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 3037
+        "line": 3038
       },
       {
         "module": "minimap",
@@ -37512,560 +37506,560 @@
         "lua_name": "ParticleSystem:update",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 40
+        "line": 41
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:emit",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 52
+        "line": 53
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:start",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 63
+        "line": 64
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:stop",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 74
+        "line": 75
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:pause",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 85
+        "line": 86
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:resume",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 96
+        "line": 97
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:reset",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 107
+        "line": 108
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:moveTo",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 120
+        "line": 121
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:count",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 131
+        "line": 132
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:isActive",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 139
+        "line": 140
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:isPaused",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 150
+        "line": 151
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:isStopped",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 161
+        "line": 162
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:isEmpty",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 172
+        "line": 173
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:isFull",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 183
+        "line": 184
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:release",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 194
+        "line": 195
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getCount",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 203
+        "line": 204
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:type",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 220
+        "line": 221
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:typeOf",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 226
+        "line": 227
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setPosition",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 235
+        "line": 236
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getPosition",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 247
+        "line": 248
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setEmissionRate",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 260
+        "line": 261
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getEmissionRate",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 271
+        "line": 272
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setParticleLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 284
+        "line": 285
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getParticleLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 296
+        "line": 297
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setEmitterLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 311
+        "line": 312
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getEmitterLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 322
+        "line": 323
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSpeed",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 335
+        "line": 336
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSpeed",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 347
+        "line": 348
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setDirection",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 362
+        "line": 363
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getDirection",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 373
+        "line": 374
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSpread",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 385
+        "line": 386
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSpread",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 396
+        "line": 397
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getLinearAcceleration",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 428
+        "line": 429
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getRadialAcceleration",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 464
+        "line": 465
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getTangentialAcceleration",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 495
+        "line": 496
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setLinearDamping",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 514
+        "line": 515
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getLinearDamping",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 526
+        "line": 527
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSizes",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 541
+        "line": 542
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSizes",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 560
+        "line": 561
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSizeVariation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 577
+        "line": 578
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSizeVariation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 588
+        "line": 589
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setRotation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 601
+        "line": 602
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getRotation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 613
+        "line": 614
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSpin",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 629
+        "line": 630
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSpin",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 641
+        "line": 642
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setSpinVariation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 656
+        "line": 657
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getSpinVariation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 667
+        "line": 668
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setRelativeRotation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 679
+        "line": 680
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:hasRelativeRotation",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 690
+        "line": 691
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setColors",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 702
+        "line": 703
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getColors",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 725
+        "line": 726
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setOffset",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 748
+        "line": 749
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getOffset",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 760
+        "line": 761
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setInsertMode",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 775
+        "line": 776
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getInsertMode",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 792
+        "line": 793
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setBufferSize",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 810
+        "line": 811
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getBufferSize",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 822
+        "line": 823
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setEmissionArea",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 838
+        "line": 839
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getEmissionArea",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 863
+        "line": 864
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setShape",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 887
+        "line": 888
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getShape",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 916
+        "line": 917
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getGravity",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 940
+        "line": 941
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setGravity",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 956
+        "line": 957
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:render",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 977
+        "line": 978
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:clone",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1050
+        "line": 1051
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:drawToImage",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1067
+        "line": 1068
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:toImage",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1082
+        "line": 1083
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:warmUp",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1098
+        "line": 1099
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:clearAttractors",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1130
+        "line": 1131
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getAttractorCount",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1142
+        "line": 1143
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:clearBounds",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1175
+        "line": 1176
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:addSubEmitter",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1192
+        "line": 1193
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:setFlipbook",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1211
+        "line": 1212
       },
       {
         "module": "particle",
         "lua_name": "ParticleSystem:getFlipbook",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1238
+        "line": 1239
       },
       {
         "module": "particle",
         "lua_name": "Trail:update",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1281
+        "line": 1282
       },
       {
         "module": "particle",
         "lua_name": "Trail:getWidth",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1299
+        "line": 1300
       },
       {
         "module": "particle",
         "lua_name": "Trail:setLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1305
+        "line": 1306
       },
       {
         "module": "particle",
         "lua_name": "Trail:clear",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1366
+        "line": 1367
       },
       {
         "module": "particle",
         "lua_name": "Trail:drawToImage",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1376
+        "line": 1377
       },
       {
         "module": "particle",
         "lua_name": "lurek.particle.newSystem",
         "kind": "function",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1404
+        "line": 1405
       },
       {
         "module": "pathfind",
@@ -38177,371 +38171,371 @@
         "lua_name": "UnitPathfinder:getPathLength",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 382
+        "line": 383
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:getPathCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 391
+        "line": 392
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:setCacheEnabled",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 517
+        "line": 518
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:isCacheEnabled",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 525
+        "line": 526
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:clearCache",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 532
+        "line": 533
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:getCacheSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 540
+        "line": 541
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:setCacheMaxSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 548
+        "line": 549
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 556
+        "line": 557
       },
       {
         "module": "pathfind",
         "lua_name": "UnitPathfinder:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 562
+        "line": 563
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:getDirection",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 621
+        "line": 622
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:getCostToTarget",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 639
+        "line": 640
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:isCalculated",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 646
+        "line": 647
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:getTargets",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 653
+        "line": 654
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 683
+        "line": 684
       },
       {
         "module": "pathfind",
         "lua_name": "FlowField:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 689
+        "line": 690
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:getWidth",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 708
+        "line": 709
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:getHeight",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 715
+        "line": 716
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:getCellSize",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 722
+        "line": 723
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:setWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 732
+        "line": 733
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:isWalkable",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 742
+        "line": 743
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 752
+        "line": 753
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:getCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 762
+        "line": 763
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 829
+        "line": 830
       },
       {
         "module": "pathfind",
         "lua_name": "PathGrid:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 835
+        "line": 836
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:getWidth",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 854
+        "line": 855
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:getHeight",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 861
+        "line": 862
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:hasGoal",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 868
+        "line": 869
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:setGoal",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 877
+        "line": 878
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:getDirection",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 904
+        "line": 905
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:getDistance",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 913
+        "line": 914
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:type",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 920
+        "line": 921
       },
       {
         "module": "pathfind",
         "lua_name": "AiFlowField:typeOf",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 926
+        "line": 927
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 948
+        "line": 949
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:setCost",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 959
+        "line": 960
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 969
+        "line": 970
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 980
+        "line": 981
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:lineOfSight",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1003
+        "line": 1004
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:fieldOfView",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1013
+        "line": 1014
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:rangeOfMovement",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1031
+        "line": 1032
       },
       {
         "module": "pathfind",
         "lua_name": "HexGrid:distance",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1050
+        "line": 1051
       },
       {
         "module": "pathfind",
         "lua_name": "JpsGrid:setBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1073
+        "line": 1074
       },
       {
         "module": "pathfind",
         "lua_name": "JpsGrid:isBlocked",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1083
+        "line": 1084
       },
       {
         "module": "pathfind",
         "lua_name": "JpsGrid:findPath",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1094
+        "line": 1095
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1130
+        "line": 1131
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathfinder",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1144
+        "line": 1145
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1158
+        "line": 1159
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1174
+        "line": 1175
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newPathFlowField",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1187
+        "line": 1188
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.getThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1217
+        "line": 1218
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newNavGridFromTileMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1233
+        "line": 1234
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newHexGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1274
+        "line": 1275
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.newJpsGrid",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1290
+        "line": 1291
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.rangeMap",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1302
+        "line": 1303
       },
       {
         "module": "patterns",
@@ -40669,7 +40663,7 @@
         "lua_name": "lurek.physics.newCellular",
         "kind": "function",
         "file": "src/lua_api/physics_api.rs",
-        "line": 2704
+        "line": 2705
       },
       {
         "module": "pipeline",
@@ -41061,77 +41055,77 @@
         "lua_name": "lurek.procgen.bspDungeon",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 160
+        "line": 166
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.roomsDungeon",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 196
+        "line": 202
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.heightmap",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 237
+        "line": 243
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.wfcGenerate",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 266
+        "line": 272
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.lsystem",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 314
+        "line": 320
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.lsystemSegments",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 348
+        "line": 354
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.generateName",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 388
+        "line": 394
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.generateNames",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 407
+        "line": 413
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.worldGraph",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 428
+        "line": 434
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.noiseMap",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 462
+        "line": 468
       },
       {
         "module": "procgen",
         "lua_name": "lurek.procgen.noiseMapParallel",
         "kind": "function",
         "file": "src/lua_api/procgen_api.rs",
-        "line": 496
+        "line": 502
       },
       {
         "module": "procgen",
@@ -43476,21 +43470,21 @@
         "lua_name": "lurek.system.getEnv",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 454
+        "line": 458
       },
       {
         "module": "system",
         "lua_name": "lurek.system.getArgs",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 465
+        "line": 469
       },
       {
         "module": "system",
         "lua_name": "lurek.system.parseArgs",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 483
+        "line": 487
       },
       {
         "module": "terminal",
@@ -43910,70 +43904,70 @@
         "lua_name": "lurek.terminal.stripAnsi",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1735
+        "line": 1740
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.parseAnsi",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1747
+        "line": 1752
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.addCompletion",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1811
+        "line": 1816
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.removeCompletion",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1823
+        "line": 1828
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.clearCompletions",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1834
+        "line": 1839
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.getCompletions",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1846
+        "line": 1851
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.nextCompletion",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1863
+        "line": 1868
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.resetCompletion",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1873
+        "line": 1878
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.getMaxCols",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1884
+        "line": 1889
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.getMaxRows",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1894
+        "line": 1899
       },
       {
         "module": "thread",
@@ -47778,94 +47772,73 @@
       },
       {
         "module": "ui",
-        "lua_name": "Image_Widget:loadLayout",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6195
-      },
-      {
-        "module": "ui",
-        "lua_name": "Image_Widget:loadLayoutFile",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6224
-      },
-      {
-        "module": "ui",
-        "lua_name": "Image_Widget:renderToImage",
-        "kind": "method",
-        "file": "src/lua_api/ui_api.rs",
-        "line": 6258
-      },
-      {
-        "module": "ui",
         "lua_name": "LineChart:setYMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6370
+        "line": 6212
       },
       {
         "module": "ui",
         "lua_name": "LineChart:setXMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6378
+        "line": 6220
       },
       {
         "module": "ui",
         "lua_name": "LineChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6386
+        "line": 6228
       },
       {
         "module": "ui",
         "lua_name": "BarChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6442
+        "line": 6284
       },
       {
         "module": "ui",
         "lua_name": "ScatterPlot:setXRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6491
+        "line": 6333
       },
       {
         "module": "ui",
         "lua_name": "ScatterPlot:setYRange",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6500
+        "line": 6342
       },
       {
         "module": "ui",
         "lua_name": "ScatterPlot:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6508
+        "line": 6350
       },
       {
         "module": "ui",
         "lua_name": "PieChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6549
+        "line": 6391
       },
       {
         "module": "ui",
         "lua_name": "AreaChart:setYMax",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6594
+        "line": 6436
       },
       {
         "module": "ui",
         "lua_name": "AreaChart:drawToImage",
         "kind": "method",
         "file": "src/lua_api/ui_api.rs",
-        "line": 6602
+        "line": 6444
       },
       {
         "module": "window",
@@ -48238,21 +48211,21 @@
         "lua_name": "lurek.animation.newCurve",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 582
+        "line": 586
       },
       {
         "module": "animation",
         "lua_name": "lurek.animation.newSyncGroup",
         "kind": "function",
         "file": "src/lua_api/animation_api.rs",
-        "line": 598
+        "line": 602
       },
       {
         "module": "animation",
         "lua_name": "AnimCurve:keyframeCount",
         "kind": "method",
         "file": "src/lua_api/animation_api.rs",
-        "line": 696
+        "line": 700
       },
       {
         "module": "audio",
@@ -48483,77 +48456,77 @@
         "lua_name": "DataView:getInt8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 669
+        "line": 672
       },
       {
         "module": "data",
         "lua_name": "DataView:getInt16",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 680
+        "line": 683
       },
       {
         "module": "data",
         "lua_name": "DataView:getInt32",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 702
+        "line": 705
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI8",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 767
+        "line": 770
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU16LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 774
+        "line": 777
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeU16BE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 781
+        "line": 784
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI16LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 788
+        "line": 791
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeI32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 802
+        "line": 805
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeF32LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 809
+        "line": 812
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeF64LE",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 816
+        "line": 819
       },
       {
         "module": "data",
         "lua_name": "DataWriter:writeBytes",
         "kind": "method",
         "file": "src/lua_api/data_api.rs",
-        "line": 830
+        "line": 833
       },
       {
         "module": "dataframe",
@@ -48928,255 +48901,255 @@
       },
       {
         "module": "light",
-        "lua_name": "Occluder:addFlicker",
+        "lua_name": "Light:addFlicker",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 888
+        "line": 727
       },
       {
         "module": "light",
-        "lua_name": "Occluder:updateTransition",
+        "lua_name": "Light:updateTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 944
+        "line": 783
       },
       {
         "module": "light",
-        "lua_name": "Occluder:stopTransition",
+        "lua_name": "Light:stopTransition",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 965
+        "line": 804
       },
       {
         "module": "light",
-        "lua_name": "Occluder:setCookie",
+        "lua_name": "Light:setCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 983
+        "line": 822
       },
       {
         "module": "light",
-        "lua_name": "Occluder:getCookie",
+        "lua_name": "Light:getCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 991
+        "line": 830
       },
       {
         "module": "light",
-        "lua_name": "Occluder:clearCookie",
+        "lua_name": "Light:clearCookie",
         "kind": "method",
         "file": "src/lua_api/light_api.rs",
-        "line": 998
+        "line": 837
       },
       {
         "module": "math",
         "lua_name": "RandomGenerator:getSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 454
+        "line": 455
       },
       {
         "module": "math",
         "lua_name": "Transform:shear",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 526
+        "line": 527
       },
       {
         "module": "math",
         "lua_name": "Transform:getMatrix",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 618
+        "line": 619
       },
       {
         "module": "math",
         "lua_name": "BezierCurve:removeControlPoint",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 732
+        "line": 733
       },
       {
         "module": "math",
         "lua_name": "Tween:getAllValues",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 836
+        "line": 837
       },
       {
         "module": "math",
         "lua_name": "Tween:getValueCount",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 853
+        "line": 854
       },
       {
         "module": "math",
         "lua_name": "Tween:getClock",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 875
+        "line": 876
       },
       {
         "module": "math",
         "lua_name": "Tween:addValue",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 900
+        "line": 901
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin1d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1075
+        "line": 1076
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:perlin4d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1103
+        "line": 1104
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex1d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1111
+        "line": 1112
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:simplex3d",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1128
+        "line": 1129
       },
       {
         "module": "math",
         "lua_name": "NoiseGenerator:getSeed",
         "kind": "method",
         "file": "src/lua_api/math_api.rs",
-        "line": 1332
+        "line": 1333
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1824
+        "line": 1825
       },
       {
         "module": "math",
         "lua_name": "lurek.math.outQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1833
+        "line": 1834
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutQuart",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1842
+        "line": 1843
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inOutExpo",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1896
+        "line": 1897
       },
       {
         "module": "math",
         "lua_name": "lurek.math.inBounce",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 1932
+        "line": 1933
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsLine",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2121
+        "line": 2122
       },
       {
         "module": "math",
         "lua_name": "lurek.math.circleIntersectsSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2148
+        "line": 2149
       },
       {
         "module": "math",
         "lua_name": "lurek.math.closestPointOnSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2174
+        "line": 2175
       },
       {
         "module": "math",
         "lua_name": "lurek.math.convexHull",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2187
+        "line": 2188
       },
       {
         "module": "math",
         "lua_name": "lurek.math.delaunayTriangulate",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2209
+        "line": 2210
       },
       {
         "module": "math",
         "lua_name": "lurek.math.lineIntersect",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2246
+        "line": 2247
       },
       {
         "module": "math",
         "lua_name": "lurek.math.pointInPolygon",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2264
+        "line": 2265
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonArea",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2281
+        "line": 2282
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonCentroid",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2298
+        "line": 2299
       },
       {
         "module": "math",
         "lua_name": "lurek.math.segmentIntersectsSegment",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2323
+        "line": 2324
       },
       {
         "module": "math",
         "lua_name": "lurek.math.fmod",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2567
+        "line": 2568
       },
       {
         "module": "math",
         "lua_name": "lurek.math.polygonClip",
         "kind": "function",
         "file": "src/lua_api/math_api.rs",
-        "line": 2928
+        "line": 2929
       },
       {
         "module": "mods",
@@ -49365,42 +49338,42 @@
         "lua_name": "Trail:pushPoint",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1272
+        "line": 1273
       },
       {
         "module": "particle",
         "lua_name": "Trail:setWidth",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1291
+        "line": 1292
       },
       {
         "module": "particle",
         "lua_name": "Trail:getLifetime",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1313
+        "line": 1314
       },
       {
         "module": "particle",
         "lua_name": "Trail:setMinDistance",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1319
+        "line": 1320
       },
       {
         "module": "particle",
         "lua_name": "Trail:getPointCount",
         "kind": "method",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1359
+        "line": 1360
       },
       {
         "module": "particle",
         "lua_name": "lurek.particle.newTrail",
         "kind": "function",
         "file": "src/lua_api/particle_api.rs",
-        "line": 1426
+        "line": 1427
       },
       {
         "module": "pathfind",
@@ -49428,14 +49401,14 @@
         "lua_name": "FlowField:getDirectionAngle",
         "kind": "method",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 630
+        "line": 631
       },
       {
         "module": "pathfind",
         "lua_name": "lurek.pathfind.setThreadCount",
         "kind": "function",
         "file": "src/lua_api/pathfind_api.rs",
-        "line": 1206
+        "line": 1207
       },
       {
         "module": "patterns",
@@ -50016,14 +49989,14 @@
         "lua_name": "lurek.system.runBatch",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 552
+        "line": 556
       },
       {
         "module": "system",
         "lua_name": "lurek.system.getBatchResults",
         "kind": "function",
         "file": "src/lua_api/system_api.rs",
-        "line": 605
+        "line": 609
       },
       {
         "module": "terminal",
@@ -50051,70 +50024,70 @@
         "lua_name": "lurek.terminal.scrollbackLen",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1484
+        "line": 1485
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.setScrollbackCap",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1500
+        "line": 1502
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.pushCmdHistory",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1520
+        "line": 1522
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.prevCmd",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1536
+        "line": 1538
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.nextCmd",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1551
+        "line": 1554
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.cmdHistoryLen",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1564
+        "line": 1568
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.clearCmdHistory",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1577
+        "line": 1582
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.applyTheme",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1597
+        "line": 1602
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.printHighlighted",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1638
+        "line": 1643
       },
       {
         "module": "terminal",
         "lua_name": "lurek.terminal.printAnsi",
         "kind": "function",
         "file": "src/lua_api/terminal_api.rs",
-        "line": 1784
+        "line": 1789
       },
       {
         "module": "tilemap",

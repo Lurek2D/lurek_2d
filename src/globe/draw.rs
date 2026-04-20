@@ -120,7 +120,7 @@ pub fn emit_globe_frame(
         cmds.push(RenderCommand::SetLineWidth(arc.width));
         cmds.push(RenderCommand::SetColor(ar, ag, ab, aa));
         cmds.push(RenderCommand::Polyline {
-            points: arc.screen_points.clone(),
+            points: arc.screen_points.iter().flat_map(|p| [p.x, p.y]).collect(),
         });
     }
 
@@ -200,7 +200,7 @@ pub fn project_arc(
     lat_b: f32,
     lon_b: f32,
     steps: u32,
-    view: &crate::math::Mat3x3,
+    view: &crate::math::sphere::Mat3x3,
     spec: &GlobeSpec,
     camera: &OrbitCamera,
 ) -> Vec<f32> {
@@ -214,3 +214,5 @@ pub fn project_arc(
     }
     out
 }
+
+

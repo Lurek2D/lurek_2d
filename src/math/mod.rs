@@ -48,6 +48,10 @@ pub mod tween;
 pub mod vec2;
 /// Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).
 pub mod voronoi;
+/// Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.
+pub mod noise_functions;
+/// Seeded procedural noise generator with fractal and map-generation helpers.
+pub mod noise_generator;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;
@@ -64,6 +68,7 @@ pub use transform::Transform;
 pub use tween::{Tween, TweenValue};
 pub use vec2::Vec2;
 pub use voronoi::{VoronoiCell, voronoi_from_points};
+pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 
 /// Linear interpolation between `a` and `b` by factor `t` in [0, 1].
 ///

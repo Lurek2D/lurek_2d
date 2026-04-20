@@ -4,7 +4,7 @@
     Install or uninstall the Lurek2D engine locally on Windows.
 
 .DESCRIPTION
-    Builds the Lurek2D engine in release mode, copies the binary to
+    Builds the Lurek2D engine in release mode through tools/dev/parallel_cargo.py, copies the binary to
     %USERPROFILE%\bin (or a custom destination via -Destination), and
     copies the content/demos/ folder so you can run games from any terminal.
 
@@ -73,7 +73,7 @@ if ($Uninstall) {
 # ── Install path ───────────────────────────────────────────────────────────────
 
 # 1. Verify we are at the workspace root
-$WorkspaceRoot = Split-Path $PSScriptRoot -Parent
+$WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $CargoToml = Join-Path $WorkspaceRoot 'Cargo.toml'
 if (-not (Test-Path $CargoToml)) {
     Write-Fail "Cannot find Cargo.toml. Run this script from the lurek2d workspace root."
@@ -83,8 +83,8 @@ if (-not (Test-Path $CargoToml)) {
 Write-Step "Building Lurek2D (release) — this may take a minute..."
 Push-Location $WorkspaceRoot
 try {
-    cargo build --release 2>&1 | ForEach-Object { Write-Host "    $_" }
-    if ($LASTEXITCODE -ne 0) { Write-Fail "cargo build --release failed (exit $LASTEXITCODE)." }
+    python tools/dev/parallel_cargo.py build release 2>&1 | ForEach-Object { Write-Host "    $_" }
+    if ($LASTEXITCODE -ne 0) { Write-Fail "parallel_cargo.py build release failed (exit $LASTEXITCODE)." }
 } finally {
     Pop-Location
 }

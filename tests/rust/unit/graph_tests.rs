@@ -341,6 +341,7 @@ mod item_tests {
 
 mod node_tests {
     use super::*;
+    use std::str::FromStr;
 
     #[test]
     fn new_node_defaults() {

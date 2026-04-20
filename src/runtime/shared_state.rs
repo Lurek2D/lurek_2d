@@ -14,6 +14,7 @@ use std::rc::Weak;
 use std::sync::Arc;
 
 use slotmap::SlotMap;
+use slotmap::Key as SlotmapKey;
 use winit::window::Window;
 
 use crate::audio::midi::MidiState;
@@ -573,7 +574,7 @@ impl SharedState {
             if let Some(tex) = self.textures.get(key) {
                 let size = (tex.width as u64) * (tex.height as u64) * 4;
                 // Mark for GPU release via the existing handle-based mechanism.
-                self.released_texture_handles.insert(tex.handle);
+                self.released_texture_handles.insert(key.data().as_ffi());
                 self.textures.remove(key);
                 self.texture_last_used.remove(&key);
                 over = over.saturating_sub(size);

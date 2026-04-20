@@ -84,9 +84,9 @@ export async function runExample(
     return;
   }
 
-  const examplesDir = path.join(root, "content", "demos");
+  const examplesDir = path.join(root, "content", "games", "showcase");
   if (!fs.existsSync(examplesDir)) {
-    vscode.window.showWarningMessage("No content/content/demos/ directory found.");
+    vscode.window.showWarningMessage("No content/games/showcase/ directory found.");
     return;
   }
 

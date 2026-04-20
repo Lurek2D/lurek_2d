@@ -1,14 +1,19 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import {
+  buildLuaTestsCommand,
+  buildTestAllCommand,
+  buildTestTargetCommand,
+} from "../services/parallelCargo.js";
 
 /**
- * Runs all tests (cargo test).
+ * Runs the full repo-owned test flow through the wrapper.
  */
 export function testAll(): void {
   const terminal = getOrCreateTerminal("Lurek2D Tests");
   terminal.show();
-  terminal.sendText("cargo test");
+  terminal.sendText(buildTestAllCommand());
 }
 
 /**
@@ -17,7 +22,7 @@ export function testAll(): void {
 export function testModule(moduleName: string): void {
   const terminal = getOrCreateTerminal("Lurek2D Tests");
   terminal.show();
-  terminal.sendText(`cargo test ${moduleName}_tests`);
+  terminal.sendText(buildTestTargetCommand(moduleName));
 }
 
 /**
@@ -26,7 +31,7 @@ export function testModule(moduleName: string): void {
 export function testLuaAll(): void {
   const terminal = getOrCreateTerminal("Lurek2D Tests");
   terminal.show();
-  terminal.sendText("cargo test --test lua_tests");
+  terminal.sendText(buildLuaTestsCommand());
 }
 
 /**
@@ -35,7 +40,7 @@ export function testLuaAll(): void {
 export function testLuaGolden(): void {
   const terminal = getOrCreateTerminal("Lurek2D Tests");
   terminal.show();
-  terminal.sendText("cargo test --test golden_tests");
+  terminal.sendText(buildTestTargetCommand("golden_tests"));
 }
 
 /**
@@ -64,7 +69,7 @@ export async function generateTestForFile(): Promise<void> {
       return;
     }
     const skeleton = `-- Tests for ${fileName}.lua
--- Run with: cargo run -- tests/lua/${fileName}_test.lua
+  -- Run with: python tools/dev/parallel_cargo.py run debug -- tests/lua/${fileName}_test.lua
 
 local passed, failed = 0, 0
 

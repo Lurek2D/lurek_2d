@@ -353,7 +353,11 @@ impl LuaUserData for LuaAnimStateMachine {
                         "setParam: value must be boolean, integer, or number".into(),
                     )),
                 };
-                this.inner.set_param(&name, param);
+                match param {
+                    AnimParamValue::Bool(b) => this.inner.set_param_bool(&name, b),
+                    AnimParamValue::Int(i) => this.inner.set_param_int(&name, i),
+                    AnimParamValue::Float(f) => this.inner.set_param_float(&name, f),
+                }
                 Ok(())
             },
         );

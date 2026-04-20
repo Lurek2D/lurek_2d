@@ -1495,7 +1495,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @return nil
         methods.add_method("defineType", |_, this, (name, levels, default_level): (String, LuaTable, Option<String>)| {
             let lvs: Vec<String> = levels.sequence_values::<String>().collect::<LuaResult<_>>()?;
-            this.rm.borrow_mut().define_type(&name, lvs, default_level.as_deref());
+            this.rm.borrow_mut().define_type(&name, lvs, default_level.as_deref().unwrap_or(""));
             Ok(())
         });
 
@@ -1573,7 +1573,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// @param b : integer
         /// @return nil
         methods.add_method("removePair", |_, this, (a, b): (u32, u32)| {
-            this.rm.borrow_mut().remove_pair(a, b);
+            this.rm.borrow_mut().remove_relation(a, b);
             Ok(())
         });
 
@@ -1581,7 +1581,7 @@ impl LuaUserData for LuaRelationshipManager {
         /// Returns the total number of stored relationship pairs.
         /// @return integer
         methods.add_method("pairCount", |_, this, ()| {
-            Ok(this.rm.borrow().pair_count())
+            Ok(this.rm.borrow().relation_count())
         });
     }
 }

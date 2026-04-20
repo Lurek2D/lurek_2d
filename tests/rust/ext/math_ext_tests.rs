@@ -908,7 +908,7 @@ fn convex_hull() {
 // ═════════════════════════════════════════════════════════════════════════
 
 #[test]
-fn cast_ray_2d() {
+fn cast_ray_2d_test() {
     let segments = vec![
         Segment {
             x1: 5.0,
@@ -927,7 +927,7 @@ fn cast_ray_2d() {
 }
 
 #[test]
-fn field_of_view() {
+fn field_of_view_test() {
     // Simple box room
     let segments = vec![
         Segment {
@@ -970,7 +970,7 @@ fn field_of_view() {
 }
 
 #[test]
-fn project_column() {
+fn project_column_test() {
     let (height, top, bottom) = project_column(5.0, std::f32::consts::FRAC_PI_3, 480.0);
     assert!(height > 0.0, "Column height should be positive");
     assert!(top < bottom, "Top should be above bottom");
@@ -982,7 +982,7 @@ fn project_column() {
 }
 
 #[test]
-fn distance_shade() {
+fn distance_shade_test() {
     let shade_near = distance_shade(1.0, 20.0);
     let shade_far = distance_shade(18.0, 20.0);
     assert!(shade_near > shade_far, "Near objects should be brighter");

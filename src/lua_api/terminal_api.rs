@@ -1443,7 +1443,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let _ = s.borrow();
-            term_ref.inner.push_scrollback(&line);
+            term_ref.binding.terminal.borrow_mut().push_scrollback(&line);
             Ok(())
         })?,
     )?;
@@ -1466,7 +1466,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             move |lua, (term_ud, offset, count): (LuaAnyUserData, usize, usize)| {
                 let term_ref = term_ud.borrow::<LuaTerminal>()?;
                 let _ = s.borrow();
-                let lines = term_ref.inner.get_scrollback(offset, count);
+                let binding = term_ref.binding.terminal.borrow_mut();
+                let lines = binding.get_scrollback(offset, count);
                 let result = lua.create_table()?;
                 for (i, l) in lines.iter().enumerate() {
                     result.set(i + 1, l.to_string())?;
@@ -1485,7 +1486,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "scrollbackLen",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
-            Ok(term_ref.inner.scrollback_len())
+            let mut binding = term_ref.binding.terminal.borrow_mut();
+            Ok(binding.scrollback_len())
         })?,
     )?;
 
@@ -1501,7 +1503,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setScrollbackCap",
         lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.inner.set_scrollback_cap(cap);
+            term_ref.binding.terminal.borrow_mut().set_scrollback_cap(cap);
             Ok(())
         })?,
     )?;
@@ -1521,7 +1523,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "pushCmdHistory",
         lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.inner.push_cmd_history(&cmd);
+            term_ref.binding.terminal.borrow_mut().push_cmd_history(&cmd);
             Ok(())
         })?,
     )?;
@@ -1537,7 +1539,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "prevCmd",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            Ok(term_ref.inner.prev_cmd().map(|s| s.to_owned()))
+            let mut binding = term_ref.binding.terminal.borrow_mut();
+            Ok(binding.prev_cmd().map(|s| s.to_owned()))
         })?,
     )?;
 
@@ -1552,7 +1555,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "nextCmd",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            Ok(term_ref.inner.next_cmd().map(|s| s.to_owned()))
+            let mut binding = term_ref.binding.terminal.borrow_mut();
+            Ok(binding.next_cmd().map(|s| s.to_owned()))
         })?,
     )?;
 
@@ -1565,7 +1569,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "cmdHistoryLen",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let term_ref = term_ud.borrow::<LuaTerminal>()?;
-            Ok(term_ref.inner.cmd_history_len())
+            let mut binding = term_ref.binding.terminal.borrow_mut();
+            Ok(binding.cmd_history_len())
         })?,
     )?;
 
@@ -1578,7 +1583,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "clearCmdHistory",
         lua.create_function(|_, term_ud: LuaAnyUserData| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.inner.clear_cmd_history();
+            term_ref.binding.terminal.borrow_mut().clear_cmd_history();
             Ok(())
         })?,
     )?;
@@ -1613,7 +1618,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let fg = [fr as f32 / 255.0, fg_c as f32 / 255.0, fb as f32 / 255.0, 1.0];
             let bg = [br as f32 / 255.0, bg_c as f32 / 255.0, bb as f32 / 255.0, 1.0];
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.inner.set_default_colors(fg, bg);
+            term_ref.binding.terminal.borrow_mut().set_default_colors(fg, bg);
             Ok(())
         })?,
     )?;
@@ -1687,7 +1692,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                         .min_by_key(|(pos, _)| *pos);
                     match best {
                         None => {
-                            term_ref.inner.print_colored(
+                            term_ref.binding.terminal.borrow_mut().print_colored(
                                 cur_col,
                                 row,
                                 remaining,
@@ -1699,7 +1704,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                         Some((pos, rule)) => {
                             if pos > 0 {
                                 let prefix = &remaining[..pos];
-                                term_ref.inner.print_colored(
+                                term_ref.binding.terminal.borrow_mut().print_colored(
                                     cur_col,
                                     row,
                                     prefix,
@@ -1710,7 +1715,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                             }
                             let end = pos + rule.pattern.len();
                             let token = &remaining[pos..end];
-                            term_ref.inner.print_colored(
+                            term_ref.binding.terminal.borrow_mut().print_colored(
                                 cur_col,
                                 row,
                                 token,
@@ -1793,7 +1798,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     .unwrap_or(if span.bold { [1.0, 1.0, 1.0, 1.0] } else { [0.667, 0.667, 0.667, 1.0] });
                 let bg: Option<[f32; 4]> = span.bg.as_ref()
                     .map(|c| [c.r as f32 / 255.0, c.g as f32 / 255.0, c.b as f32 / 255.0, 1.0]);
-                t.inner.print_colored(cur_col, row as usize, &span.text, fg, bg);
+                t.binding.terminal.borrow_mut().print_colored(cur_col, row as usize, &span.text, fg, bg);
                 cur_col += span.text.chars().count();
             }
             Ok(())
@@ -1884,7 +1889,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "getMaxCols",
         lua.create_function(|_, ()| {
-            Ok(crate::terminal::terminal_state::MAX_COLS as u32)
+            Ok(crate::terminal::MAX_COLS as u32)
         })?,
     )?;
 
@@ -1894,7 +1899,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "getMaxRows",
         lua.create_function(|_, ()| {
-            Ok(crate::terminal::terminal_state::MAX_ROWS as u32)
+            Ok(crate::terminal::MAX_ROWS as u32)
         })?,
     )?;
 

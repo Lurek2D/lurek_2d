@@ -471,9 +471,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     let v = match arg {
                         EventArg::Nil => LuaValue::Nil,
                         EventArg::Bool(b) => LuaValue::Boolean(*b),
-                        EventArg::Int(n) => LuaValue::Integer(*n),
-                        EventArg::Float(f) => LuaValue::Number(*f),
-                        EventArg::String(s) => lua.create_string(s)?.into(),
+                        EventArg::Num(n) => LuaValue::Number(*n),
+                        EventArg::Str(s) => LuaValue::String(lua.create_string(s)?),
                     };
                     args_tbl.set(j + 1, v)?;
                 }

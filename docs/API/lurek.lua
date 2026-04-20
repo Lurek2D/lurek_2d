@@ -7776,6 +7776,17 @@ lurek.light = {}
 ---@class Light
 local Light = {}
 
+--- Convenience method to set a flicker effect using amplitude range and
+---@param min any
+---@param max any
+---@param hz any
+---@return nil
+function Light:addFlicker(min, max, hz) end
+
+--- Removes the cookie texture assignment.
+---@return nil
+function Light:clearCookie() end
+
 --- Returns the custom attenuation coefficients as (constant, linear, quadratic).
 ---@return number
 function Light:getAttenuation() end
@@ -7787,6 +7798,10 @@ function Light:getBlendMode() end
 --- Returns the light's tint color as (r, g, b, a).
 ---@return number
 function Light:getColor() end
+
+--- Returns the current cookie texture path, or `nil` if unset.
+---@return string?
+function Light:getCookie() end
 
 --- Returns the direction angle in radians.
 ---@return number
@@ -7896,6 +7911,11 @@ function Light:setBlendMode(mode) end
 ---@return nil
 function Light:setColor(r, g, b, a) end
 
+--- Sets the texture path used as a light cookie (mask) for projection.
+---@param path any
+---@return nil
+function Light:setCookie(path) end
+
 --- Sets the direction angle in radians.
 ---@param dir any
 ---@return nil
@@ -7993,24 +8013,28 @@ function Light:setShadowSmooth(s) end
 ---@return nil
 function Light:setVolumetric(b) end
 
+--- Cancels the active light transition.
+---@return nil
+function Light:stopTransition() end
+
+--- Returns the fractional progress `[0, 1]` of the active transition,
+---@return number
+function Light:transitionProgress() end
+
+--- Begins a smooth linear transition of the light's color, intensity,
+---@param target any
+---@param duration any
+---@return nil
+function Light:transitionTo(target, duration) end
+
+--- Advances the active transition by `dt` seconds and applies the
+---@param dt any
+---@return boolean
+function Light:updateTransition(dt) end
+
 --- Lua-side handle to an occluder resource stored in [`LightWorld`].
 ---@class Occluder
 local Occluder = {}
-
---- Convenience method to set a flicker effect using amplitude range and
----@param min any
----@param max any
----@param hz any
----@return nil
-function Occluder:addFlicker(min, max, hz) end
-
---- Removes the cookie texture assignment.
----@return nil
-function Occluder:clearCookie() end
-
---- Returns the current cookie texture path, or `nil` if unset.
----@return string?
-function Occluder:getCookie() end
 
 --- Returns the light interaction bitmask.
 ---@return integer
@@ -8040,11 +8064,6 @@ function Occluder:isValid() end
 ---@return nil
 function Occluder:remove() end
 
---- Sets the texture path used as a light cookie (mask) for projection.
----@param path any
----@return nil
-function Occluder:setCookie(path) end
-
 --- Sets whether this occluder is active.
 ---@param b any
 ---@return nil
@@ -8070,25 +8089,6 @@ function Occluder:setPosition(x, y) end
 ---@param tbl any
 ---@return nil
 function Occluder:setVertices(tbl) end
-
---- Cancels the active light transition.
----@return nil
-function Occluder:stopTransition() end
-
---- Returns the fractional progress `[0, 1]` of the active transition,
----@return number
-function Occluder:transitionProgress() end
-
---- Begins a smooth linear transition of the light's color, intensity,
----@param target any
----@param duration any
----@return nil
-function Occluder:transitionTo(target, duration) end
-
---- Advances the active transition by `dt` seconds and applies the
----@param dt any
----@return boolean
-function Occluder:updateTransition(dt) end
 
 --- Advances flicker phase for all lights with flicker enabled.
 ---@param dt any
@@ -12893,9 +12893,9 @@ function lurek.physics.newRectangleShape(w, h) end
 ---@param width any
 ---@param height any
 ---@param cell_size any
----@param world_handle any
+---@param world_ud any
 ---@return LuaTerrain
-function lurek.physics.newTerrain(width, height, cell_size, world_handle) end
+function lurek.physics.newTerrain(width, height, cell_size, world_ud) end
 
 --- Creates a new physics world with the given gravity vector.
 ---@param gx any
@@ -15306,7 +15306,7 @@ function lurek.system.getClipboardText() end
 --- Returns whether the debug overlay is currently visible.
 function lurek.system.getDebugOverlay() end
 
---- - `name` ÔÇö Environment variable name (case-sensitive on Linux/macOS).
+--- Returns the value of an environment variable, or nil if not set.
 ---@param name any
 function lurek.system.getEnv(name) end
 
@@ -17614,16 +17614,6 @@ function Image_Widget:keypressed(key) end
 ---@return number
 function Image_Widget:loadLayout(def) end
 
---- Load a widget tree from a Lua table definition and attach it to the UI
----@param def table
----@return number
-function Image_Widget:loadLayout(def) end
-
---- Load a widget tree from a TOML layout file and attach it to the UI root.
----@param path any
----@return number
-function Image_Widget:loadLayoutFile(path) end
-
 --- Load a widget tree from a TOML layout file and attach it to the UI root.
 ---@param path any
 ---@return number
@@ -17873,12 +17863,6 @@ function Image_Widget:newWindow(title) end
 ---@param state any
 ---@return string?
 function Image_Widget:parseWidgetState(state) end
-
---- Render the current UI widget tree to a PNG file for testing purposes.
----@param width any
----@param height any
----@param path any
-function Image_Widget:renderToImage(width, height, path) end
 
 --- Render the current UI widget tree to a PNG file for testing purposes.
 ---@param width any

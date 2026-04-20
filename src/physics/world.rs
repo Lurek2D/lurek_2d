@@ -1069,7 +1069,7 @@ impl World {
                 if let Some(&Some((nx, ny))) = self.one_way_normals.get(platform_id) {
                     if let Some(&handle) = self.body_handles.get(mover_id) {
                         if let Some(rb) = self.rbodies.get_mut(handle) {
-                            let cv = *rb.linvel();
+                            let cv = rb.linvel();
                             let cdot = cv.x * nx + cv.y * ny;
                             // Negative dot → mover travelling in pass-through direction.
                             if cdot < 0.0 {

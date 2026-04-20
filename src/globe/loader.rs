@@ -105,7 +105,7 @@ fn parse_toml_province_list(src: &str) -> Result<Vec<TomlProvince>, String> {
         }
         if let Some(b) = current.as_mut() {
             if in_attrs {
-                parse_kv_string(line, |k, v| b.attrs.insert(k, v));
+                parse_kv_string(line, |k, v| { b.attrs.insert(k, v); });
             } else {
                 parse_field(line, b).map_err(|e| format!("line {}: {}", line_no, e))?;
             }
@@ -255,3 +255,8 @@ pub fn load_from_png_file(_path: &str) -> Result<Vec<Province>, String> {
     // analysis per color, convex-hull or bounding-polygon extraction, lat/lon mapping.
     Ok(Vec::new())
 }
+
+
+
+
+

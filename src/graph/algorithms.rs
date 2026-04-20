@@ -205,12 +205,12 @@ impl Graph {
 
         let mut result = Vec::new();
         for (&edge_id, _) in &sorted_edges {
-            let edge = &self.edges[edge_id];
+            let edge = &self.edges[&edge_id];
             let rx = find(&mut parent, edge.from_node);
             let ry = find(&mut parent, edge.to_node);
             if rx != ry {
                 parent.insert(rx, ry);
-                result.push(*edge_id);
+                result.push(edge_id);
             }
         }
         result

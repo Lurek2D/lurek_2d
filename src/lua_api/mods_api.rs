@@ -641,7 +641,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// boolean, string?
     tbl.set(
         "checkApiVersion",
-        lua.create_function(|_, (mod_ud, host_version): (LuaAnyUserData, String)| {
+        lua.create_function(|lua, (mod_ud, host_version): (LuaAnyUserData, String)| {
             let api_ver = {
                 let m = mod_ud.borrow::<LuaMod>()?;
                 m.inner.api_version.clone()

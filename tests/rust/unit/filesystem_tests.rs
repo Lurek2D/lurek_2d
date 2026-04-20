@@ -608,16 +608,16 @@ mod async_loader_tests {
     }
 }
 
-// ── reject_traversal (via VirtualFs) ─────────────────────────────────────────
+// ── reject_traversal (via GameFS) ─────────────────────────────────────────
 
 mod reject_traversal_tests {
-    use lurek2d::filesystem::VirtualFs;
+    use lurek2d::filesystem::GameFS;
     use std::path::PathBuf;
 
-    fn make_vfs() -> VirtualFs {
+    fn make_vfs() -> GameFS {
         let base = std::env::temp_dir().join("lurek_traversal_test");
         std::fs::create_dir_all(&base).ok();
-        VirtualFs::new(PathBuf::from(base))
+        GameFS::new(PathBuf::from(base))
     }
 
     #[test]
@@ -639,7 +639,7 @@ mod reject_traversal_tests {
         let base = std::env::temp_dir().join("lurek_traversal_test");
         let sub = base.join("sub");
         std::fs::create_dir_all(&sub).ok();
-        let vfs = VirtualFs::new(base.clone());
+        let vfs = GameFS::new(base.clone());
         let result = vfs.list_recursive("sub");
         assert!(result.is_ok(), "valid path should succeed");
         std::fs::remove_dir_all(&sub).ok();
@@ -647,13 +647,13 @@ mod reject_traversal_tests {
 }
 
 mod stat_tests {
-    use lurek2d::filesystem::VirtualFs;
+    use lurek2d::filesystem::GameFS;
 
     #[test]
     fn stat_returns_size_for_existing_file() {
         let base = std::env::temp_dir().join("lurek_stat_test");
         std::fs::create_dir_all(&base).ok();
-        let vfs = VirtualFs::new(base.clone());
+        let vfs = GameFS::new(base.clone());
         // write file first
         std::fs::write(base.join("a.txt"), b"hello").unwrap();
         let (size, is_file, is_dir) = vfs.stat("a.txt").unwrap();
@@ -667,7 +667,7 @@ mod stat_tests {
     fn stat_rejects_path_traversal() {
         let base = std::env::temp_dir().join("lurek_stat_trav");
         std::fs::create_dir_all(&base).ok();
-        let vfs = VirtualFs::new(base.clone());
+        let vfs = GameFS::new(base.clone());
         let result = vfs.stat("../../etc/passwd");
         assert!(result.is_err(), "traversal should be rejected");
         std::fs::remove_dir_all(&base).ok();
@@ -675,13 +675,13 @@ mod stat_tests {
 }
 
 mod create_temp_file_tests {
-    use lurek2d::filesystem::VirtualFs;
+    use lurek2d::filesystem::GameFS;
 
     #[test]
     fn create_temp_file_returns_path_under_save() {
         let base = std::env::temp_dir().join("lurek_tmp_test");
         std::fs::create_dir_all(base.join("save")).ok();
-        let vfs = VirtualFs::new(base.clone());
+        let vfs = GameFS::new(base.clone());
         let path = vfs.create_temp_file("pfx_").unwrap();
         assert!(path.starts_with("save/"), "path={path}");
         std::fs::remove_dir_all(&base).ok();
@@ -691,7 +691,7 @@ mod create_temp_file_tests {
     fn two_create_temp_file_calls_differ() {
         let base = std::env::temp_dir().join("lurek_tmp_diff");
         std::fs::create_dir_all(base.join("save")).ok();
-        let vfs = VirtualFs::new(base.clone());
+        let vfs = GameFS::new(base.clone());
         let a = vfs.create_temp_file("t_").unwrap();
         let b = vfs.create_temp_file("t_").unwrap();
         assert_ne!(a, b, "successive temp files must be unique");

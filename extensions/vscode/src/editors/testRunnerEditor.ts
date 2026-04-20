@@ -2,6 +2,11 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import { WebviewEditor, getNonce, wrapHtml } from "./shared.js";
+import {
+  buildLuaTestsCommand,
+  buildTestAllCommand,
+  buildTestTargetCommand,
+} from "../services/parallelCargo.js";
 
 // ── Static fallback — auto-updated from actual tests/ directory ──
 const KNOWN_MODULES = [
@@ -29,16 +34,16 @@ export class TestRunnerEditor extends WebviewEditor {
         this.pushDiscoveredSuites();
         break;
       case "runAll":
-        this.runCargoTest("", "all");
+        this.runParallelTestCommand(buildTestAllCommand(), "all");
         break;
       case "runSuite":
-        this.runCargoTest(msg.suite as string, msg.suite as string);
+        this.runSuite(msg.suite as string);
         break;
       case "runLua":
-        this.runCargoTest("--test lua_tests", "lua");
+        this.runParallelTestCommand(buildLuaTestsCommand(), "lua");
         break;
       case "runGolden":
-        this.runCargoTest("--test golden_tests", "golden");
+        this.runParallelTestCommand(buildTestTargetCommand("golden_tests"), "golden");
         break;
       case "stop":
         vscode.window.showInformationMessage("Use the terminal to cancel the running test.");
@@ -73,8 +78,8 @@ export class TestRunnerEditor extends WebviewEditor {
     }
 
     // Add specials at the end
-    result.push({ name: "lua_tests", tests: ["(lua vm tests — run via cargo test --test lua_tests)"] });
-    result.push({ name: "golden_tests", tests: ["(golden output tests — run via cargo test --test golden_tests)"] });
+    result.push({ name: "lua_tests", tests: ["(lua vm tests — run via parallel_cargo.py test lua)"] });
+    result.push({ name: "golden_tests", tests: ["(golden output tests — run via parallel_cargo.py test target golden_tests)"] });
     return result;
   }
 
@@ -102,16 +107,22 @@ export class TestRunnerEditor extends WebviewEditor {
   }
 
   private fallbackSuites(): { name: string; tests: string[] }[] {
-    return KNOWN_MODULES.map((m) => ({ name: `${m}_tests`, tests: [`(run: cargo test --test ${m}_tests)`] }));
+    return KNOWN_MODULES.map((m) => ({ name: `${m}_tests`, tests: [`(run: python tools/dev/parallel_cargo.py test target ${m}_tests)`] }));
   }
 
-  private runCargoTest(filter: string, label: string): void {
+  private runSuite(suite: string): void {
+    const command = suite === "lua_tests"
+      ? buildLuaTestsCommand()
+      : buildTestTargetCommand(suite);
+    this.runParallelTestCommand(command, suite);
+  }
+
+  private runParallelTestCommand(command: string, label: string): void {
     const existing = vscode.window.terminals.find((t) => t.name === "Lurek2D Tests");
     const terminal = existing ?? vscode.window.createTerminal("Lurek2D Tests");
     terminal.show();
-    const cmd = filter ? `cargo test ${filter}` : "cargo test";
-    terminal.sendText(cmd);
-    this.panel.webview.postMessage({ type: "testStarted", filter: label });
+    terminal.sendText(command);
+    this.panel.webview.postMessage({ type: "testStarted", filter: label, command });
   }
 
   protected getHtml(): string {
@@ -172,7 +183,7 @@ export class TestRunnerEditor extends WebviewEditor {
         }
         if (data.type === 'testStarted') {
           document.getElementById('statusSummary').textContent = 'Running: ' + data.filter;
-          document.getElementById('output').textContent = '$ cargo test ' + data.filter + '\\n\\nSee "Lurek2D Tests" terminal for live output.';
+          document.getElementById('output').textContent = '$ ' + data.command + '\\n\\nSee "Lurek2D Tests" terminal for live output.';
         }
       });
 

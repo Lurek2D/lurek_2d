@@ -310,8 +310,8 @@ mod types_tests {
         let mut cam = Camera2D::new(800.0, 600.0);
         cam.shake(10.0, 0.5);
         cam.update(0.6);
-        assert!((cam.shake_offset.x).abs() < f32::EPSILON);
-        assert!((cam.shake_offset.y).abs() < f32::EPSILON);
+        assert!((cam.effect_offset().0).abs() < f32::EPSILON);
+        assert!((cam.effect_offset().1).abs() < f32::EPSILON);
     }
 
     #[test]

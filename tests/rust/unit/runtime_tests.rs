@@ -158,7 +158,7 @@ mod error_tests {
     fn io_errors_map_to_system_category() {
         assert_eq!(
             EngineError::FileSystemError("".into()).category(),
-            ErrorCategory::System
+            ErrorCategory::Filesystem
         );
         let io = EngineError::IoError(std::io::Error::new(std::io::ErrorKind::NotFound, ""));
         assert_eq!(io.category(), ErrorCategory::System);
@@ -404,7 +404,7 @@ mod error_snapshot_tests {
         assert!(json.contains("\"message\""), "json={json}");
         assert!(json.contains("\"code\""), "json={json}");
         assert!(json.contains("\"category\""), "json={json}");
-        assert!(json.contains("\"recovery_hint\""), "json={json}");
+        assert!(json.contains("\"hint\""), "json={json}");
     }
 
     #[test]

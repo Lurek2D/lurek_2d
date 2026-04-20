@@ -419,12 +419,12 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
     match ctx.widgets.get_mut(idx) {
         Some(WidgetKind::Slider(sl)) => {
             if let Some(v) = def.value {
-                sl.value = v as f32;
+                sl.value = v as f64;
             }
         }
         Some(WidgetKind::ProgressBar(pb)) => {
             if let Some(v) = def.value {
-                pb.value = v as f32;
+                pb.value = v as f64;
             }
         }
         Some(WidgetKind::SpinBox(sb)) => {
@@ -546,8 +546,7 @@ fn fill_rect(
                 continue;
             }
             let dst_a = 255u32 - src_a;
-            pixels[off] =
-                ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
+            pixels[off] = ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
             pixels[off + 1] =
                 ((color[1] as u32 * src_a + pixels[off + 1] as u32 * dst_a) / 255) as u8;
             pixels[off + 2] =
@@ -556,5 +555,3 @@ fn fill_rect(
         }
     }
 }
-
-

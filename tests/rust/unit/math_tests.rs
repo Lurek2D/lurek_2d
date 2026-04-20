@@ -1852,8 +1852,8 @@ mod rect_new_tests {
         let u = a.union(&a);
         assert_eq!(u.x, 0.0);
         assert_eq!(u.y, 0.0);
-        assert_eq!(u.w, 10.0);
-        assert_eq!(u.h, 10.0);
+        assert_eq!(u.width, 10.0);
+        assert_eq!(u.height, 10.0);
     }
 
     #[test]
@@ -1862,7 +1862,7 @@ mod rect_new_tests {
         let b = Rect::new(5.0, 0.0, 5.0, 5.0);
         let u = a.union(&b);
         assert_eq!(u.x, 0.0);
-        assert_eq!(u.w, 10.0);
+        assert_eq!(u.width, 10.0);
     }
 
     #[test]
@@ -1870,15 +1870,15 @@ mod rect_new_tests {
         let r = Rect::from_center(10.0, 10.0, 4.0, 6.0);
         assert_eq!(r.x, 8.0);
         assert_eq!(r.y, 7.0);
-        assert_eq!(r.w, 4.0);
-        assert_eq!(r.h, 6.0);
+        assert_eq!(r.width, 4.0);
+        assert_eq!(r.height, 6.0);
     }
 
     #[test]
     fn from_center_preserves_size() {
         let r = Rect::from_center(0.0, 0.0, 8.0, 12.0);
-        assert_eq!(r.w, 8.0);
-        assert_eq!(r.h, 12.0);
+        assert_eq!(r.width, 8.0);
+        assert_eq!(r.height, 12.0);
     }
 }
 
@@ -2106,16 +2106,16 @@ mod aabb_tree_query_tests {
     #[test]
     fn query_circle_finds_overlapping_entry() {
         let mut tree = AabbTree::new();
-        tree.insert("box", 0.0, 0.0, 4.0, 4.0);
+        tree.insert(1, 0.0, 0.0, 4.0, 4.0);
         let hits = tree.query_circle(2.0, 2.0, 1.0);
         assert_eq!(1, hits.len());
-        assert_eq!("box", hits[0]);
+        assert_eq!(1u64, hits[0]);
     }
 
     #[test]
     fn query_circle_misses_distant_entry() {
         let mut tree = AabbTree::new();
-        tree.insert("box", 20.0, 20.0, 24.0, 24.0);
+        tree.insert(1, 20.0, 20.0, 24.0, 24.0);
         let hits = tree.query_circle(0.0, 0.0, 1.0);
         assert!(hits.is_empty());
     }
@@ -2123,16 +2123,16 @@ mod aabb_tree_query_tests {
     #[test]
     fn query_segment_finds_crossed_entry() {
         let mut tree = AabbTree::new();
-        tree.insert("box", 0.0, 0.0, 4.0, 4.0);
+        tree.insert(1, 0.0, 0.0, 4.0, 4.0);
         let hits = tree.query_segment(2.0, -1.0, 2.0, 5.0);
         assert_eq!(1, hits.len());
-        assert_eq!("box", hits[0]);
+        assert_eq!(1u64, hits[0]);
     }
 
     #[test]
     fn query_segment_misses_parallel_segment() {
         let mut tree = AabbTree::new();
-        tree.insert("box", 10.0, 10.0, 20.0, 20.0);
+        tree.insert(1, 10.0, 10.0, 20.0, 20.0);
         let hits = tree.query_segment(0.0, 0.0, 5.0, 5.0);
         assert!(hits.is_empty());
     }

@@ -341,7 +341,7 @@ mod context_tests {
     #[test]
     fn toast_lifecycle() {
         let mut ctx = GuiContext::new();
-        ctx.add_toast("Hello", 1.0);
+        ctx.add_toast(lurek2d::ui::Toast::new("Hello", 1.0));
         assert_eq!(ctx.toast_count(), 1);
         ctx.update(2.0);
         assert_eq!(ctx.toast_count(), 0, "toast should expire");
@@ -378,7 +378,7 @@ mod data_graph_renderer_tests {
         let gr = GraphRenderer::new();
         assert!(gr.show_grid);
         assert!(gr.show_axes);
-        assert_eq!(gr.series.len(), 0);
+        assert_eq!(gr.series().len(), 0);
     }
 
     #[test]
@@ -539,6 +539,7 @@ mod containers_tests {
 // ── chart ─────────────────────────────────────────────────────────────────────
 
 mod chart_tests {
+    use lurek2d::image::ImageData;
     use lurek2d::math::Color;
     use lurek2d::ui::chart::*;
 
@@ -567,7 +568,8 @@ mod chart_tests {
             color: Color::new(1.0, 0.0, 0.0, 1.0),
             values: vec![(0.0, 0.0), (1.0, 50.0), (2.0, 100.0)],
         });
-        let img = lc.draw_to_image();
+        let mut img = ImageData::new(400, 300);
+        lc.draw_to_image(&mut img);
         assert_eq!(img.width(), 400);
         assert_eq!(img.height(), 300);
     }
@@ -577,14 +579,16 @@ mod chart_tests {
         let mut pc = PieChart::new(ChartConfig::default());
         pc.add_segment("A", 50.0, Color::new(1.0, 0.0, 0.0, 1.0));
         pc.add_segment("B", 50.0, Color::new(0.0, 1.0, 0.0, 1.0));
-        let img = pc.draw_to_image();
+        let mut img = ImageData::new(400, 300);
+        pc.draw_to_image(&mut img);
         assert_eq!(img.width(), 400);
     }
 
     #[test]
     fn bar_chart_empty_draw_does_not_panic() {
         let bc = BarChart::new(ChartConfig::default());
-        let img = bc.draw_to_image();
+        let mut img = ImageData::new(400, 300);
+        bc.draw_to_image(&mut img);
         assert_eq!(img.width(), 400);
     }
 }

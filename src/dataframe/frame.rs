@@ -141,6 +141,7 @@ pub enum ColRef {
 /// Data is stored as `data[col_index][row_index]`. All public methods
 /// that accept row indices use **0-based** indexing; the Lua binding
 /// layer is responsible for converting from 1-based.
+#[derive(Clone)]
 pub struct DataFrame {
     pub(crate) column_names: Vec<String>,
     pub(crate) data: Vec<Vec<CellValue>>,
@@ -620,7 +621,7 @@ impl DataFrame {
         let mut computed: Vec<CellValue> = Vec::with_capacity(n_rows);
         for row_idx in 0..n_rows {
             let val = eval_expr_row(&tokens, self, row_idx)?;
-            computed.push(CellValue::Float(val));
+            computed.push(CellValue::Number(val));
         }
         let mut result = self.clone();
         result.column_names.push(col_name.to_string());
@@ -986,8 +987,7 @@ fn eval_expr_row(tokens: &[ExprToken], df: &DataFrame, row_idx: usize) -> Result
                 let col_idx = df.column_names.iter().position(|c| c == name)
                     .ok_or_else(|| format!("with_eval: column '{name}' not found"))?;
                 let v = match df.data[col_idx].get(row_idx) {
-                    Some(CellValue::Float(f)) => *f,
-                    Some(CellValue::Int(i)) => *i as f64,
+                    Some(CellValue::Number(f)) => *f,
                     _ => 0.0,
                 };
                 values.push(v);

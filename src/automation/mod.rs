@@ -43,9 +43,9 @@
 //! `math`, `engine`, and all Tier 1 modules (`event`, `input`, etc.). It
 //! must not import other Tier 2 modules.
 
-mod script;
-mod simulator;
-mod step;
+pub mod script;
+pub mod simulator;
+pub mod step;
 
 pub use script::Script;
 pub use simulator::Simulator;

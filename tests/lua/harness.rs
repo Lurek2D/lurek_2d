@@ -1,8 +1,9 @@
 ﻿//! Test harness that discovers and runs all Lua integration test scripts.
 //!
 //! # Running tests in parallel
-//! All `#[test]` functions create their own independent Lua VM, so they run fully
-//! in parallel with `cargo test`. Each VM is isolated — no shared state between tests.
+//! Cargo runs test executables serially, but libtest may run the `#[test]`
+//! functions inside this harness in parallel. Each function creates its own
+//! independent Lua VM, so those in-process runs stay isolated from each other.
 //!
 //! # Filtering
 //! Use a substring to filter: `cargo test lua_test_math` — runs only math tests.
@@ -17,8 +18,8 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::time::Instant;
 
-use lurek2d::runtime::config::Config;
 use lurek2d::lua_api::{create_lua_vm, SharedState};
+use lurek2d::runtime::config::Config;
 
 fn create_test_vm() -> mlua::Lua {
     let state = Rc::new(RefCell::new(SharedState::new(
@@ -104,8 +105,7 @@ fn lua_test_math() {
 }
 
 #[test]
-fn lua_test_math_polygon_bool() {
-}
+fn lua_test_math_polygon_bool() {}
 
 #[test]
 fn lua_test_timer() {
@@ -123,12 +123,15 @@ fn lua_test_input() {
 }
 
 #[test]
-fn lua_test_input_recording() {
+fn lua_test_input_recording() {}
+
+#[test]
+fn lua_test_ui() {
+    run_lua_test("unit/test_ui.lua");
 }
 
 #[test]
 fn lua_test_window() {
-    run_lua_test("unit/test_ui.lua");
     run_lua_test("unit/test_window.lua");
 }
 
@@ -148,36 +151,28 @@ fn lua_test_physics() {
 }
 
 #[test]
-fn lua_test_physics_ext() {
-}
+fn lua_test_physics_ext() {}
 
 #[test]
-fn lua_test_physics_zone() {
-}
+fn lua_test_physics_zone() {}
 
 #[test]
-fn lua_test_physics_terrain() {
-}
+fn lua_test_physics_terrain() {}
 
 #[test]
-fn lua_test_physics_terrain_collapse() {
-}
+fn lua_test_physics_terrain_collapse() {}
 
 #[test]
-fn lua_test_physics_cellular() {
-}
+fn lua_test_physics_cellular() {}
 
 #[test]
-fn lua_test_physics_step_fixed() {
-}
+fn lua_test_physics_step_fixed() {}
 
 #[test]
-fn lua_test_collision_helpers() {
-}
+fn lua_test_collision_helpers() {}
 
 #[test]
-fn lua_test_physics_body_data() {
-}
+fn lua_test_physics_body_data() {}
 
 #[test]
 fn lua_evidence_physics_ext() {
@@ -245,52 +240,40 @@ fn lua_test_ai() {
 }
 
 #[test]
-fn lua_test_ai_traits() {
-}
+fn lua_test_ai_traits() {}
 
 #[test]
-fn lua_test_ai_perception() {
-}
+fn lua_test_ai_perception() {}
 
 #[test]
-fn lua_test_ai_context_steering() {
-}
+fn lua_test_ai_context_steering() {}
 
 #[test]
-fn lua_test_ai_needs() {
-}
+fn lua_test_ai_needs() {}
 
 #[test]
-fn lua_test_ai_director() {
-}
+fn lua_test_ai_director() {}
 
 #[test]
-fn lua_test_ai_htn() {
-}
+fn lua_test_ai_htn() {}
 
 #[test]
-fn lua_test_ai_mcts() {
-}
+fn lua_test_ai_mcts() {}
 
 #[test]
-fn lua_test_ai_emotion() {
-}
+fn lua_test_ai_emotion() {}
 
 #[test]
-fn lua_test_ai_orca() {
-}
+fn lua_test_ai_orca() {}
 
 #[test]
-fn lua_test_ai_ml() {
-}
+fn lua_test_ai_ml() {}
 
 #[test]
-fn lua_test_ai_strategy() {
-}
+fn lua_test_ai_strategy() {}
 
 #[test]
-fn lua_test_ai_lod() {
-}
+fn lua_test_ai_lod() {}
 
 #[test]
 fn lua_test_automation() {
@@ -298,32 +281,30 @@ fn lua_test_automation() {
 }
 
 #[test]
-fn lua_test_audio_bus() {
-}
+fn lua_test_audio_bus() {}
 
 #[test]
-fn lua_test_audio_dsp() {
-}
+fn lua_test_audio_dsp() {}
 
 #[test]
-fn lua_test_audio_effects() {
-}
+fn lua_test_audio_effects() {}
 
 #[test]
-fn lua_test_audio_pool() {
-}
+fn lua_test_audio_pool() {}
 
 #[test]
-fn lua_test_audio_stereo() {
-}
+fn lua_test_audio_stereo() {}
 
 #[test]
-fn lua_test_audio_offline() {
+fn lua_test_audio_offline() {}
+
+#[test]
+fn lua_test_collision() {
+    run_lua_test("unit/test_collision.lua");
 }
 
 #[test]
 fn lua_test_compute() {
-    run_lua_test("unit/test_collision.lua");
     run_lua_test("unit/test_compute.lua");
 }
 
@@ -333,8 +314,7 @@ fn lua_test_data() {
 }
 
 #[test]
-fn lua_test_data_msgpack() {
-}
+fn lua_test_data_msgpack() {}
 
 #[test]
 fn lua_test_dataframe() {
@@ -342,8 +322,7 @@ fn lua_test_dataframe() {
 }
 
 #[test]
-fn lua_test_unit_dataframe_pivot_window() {
-}
+fn lua_test_unit_dataframe_pivot_window() {}
 
 #[test]
 fn lua_test_graph() {
@@ -366,8 +345,7 @@ fn lua_test_pathfinding() {
 }
 
 #[test]
-fn lua_test_unit_pathfind_bidirectional() {
-}
+fn lua_test_unit_pathfind_bidirectional() {}
 
 #[test]
 fn lua_test_signal() {
@@ -390,8 +368,7 @@ fn lua_test_localization() {
 }
 
 #[test]
-fn lua_test_joystick_ext() {
-}
+fn lua_test_joystick_ext() {}
 
 #[test]
 fn lua_test_devtools() {
@@ -417,8 +394,7 @@ fn lua_test_log() {
 }
 
 #[test]
-fn lua_test_unit_log_api() {
-}
+fn lua_test_unit_log_api() {}
 
 // === lurek.gfx.newShape / CompoundShape tests ===
 
@@ -482,8 +458,7 @@ fn lua_test_gui() {
 }
 
 #[test]
-fn lua_test_unit_ui_layout() {
-}
+fn lua_test_unit_ui_layout() {}
 
 #[test]
 fn lua_test_serial() {
@@ -491,16 +466,13 @@ fn lua_test_serial() {
 }
 
 #[test]
-fn lua_test_unit_serial_msgpack() {
-}
+fn lua_test_unit_serial_msgpack() {}
 
 #[test]
-fn lua_test_unit_serial_xml() {
-}
+fn lua_test_unit_serial_xml() {}
 
 #[test]
-fn lua_test_unit_serial_schema() {
-}
+fn lua_test_unit_serial_schema() {}
 
 #[test]
 fn lua_test_thread() {
@@ -508,12 +480,15 @@ fn lua_test_thread() {
 }
 
 #[test]
-fn lua_test_thread_new_features() {
+fn lua_test_thread_new_features() {}
+
+#[test]
+fn lua_test_rendering() {
+    run_lua_test("unit/test_rendering.lua");
 }
 
 #[test]
 fn lua_test_savegame() {
-    run_lua_test("unit/test_rendering.lua");
     run_lua_test("unit/test_savegame.lua");
 }
 
@@ -523,16 +498,13 @@ fn lua_test_modding() {
 }
 
 #[test]
-fn lua_test_unit_effect_overlay_water() {
-}
+fn lua_test_unit_effect_overlay_water() {}
 
 #[test]
-fn lua_test_unit_postfx_stack_extended() {
-}
+fn lua_test_unit_postfx_stack_extended() {}
 
 #[test]
-fn lua_test_unit_image_extended() {
-}
+fn lua_test_unit_image_extended() {}
 
 #[test]
 fn lua_test_evidence_postfx_types() {
@@ -602,9 +574,17 @@ fn lua_test_drawlayer() {
 }
 
 #[test]
-fn lua_test_entity() {
+fn lua_test_effect() {
     run_lua_test("unit/test_effect.lua");
+}
+
+#[test]
+fn lua_test_engine() {
     run_lua_test("unit/test_engine.lua");
+}
+
+#[test]
+fn lua_test_entity() {
     run_lua_test("unit/test_entity.lua");
 }
 
@@ -614,8 +594,7 @@ fn lua_test_filesystem() {
 }
 
 #[test]
-fn lua_test_filesystem_zip_watcher() {
-}
+fn lua_test_filesystem_zip_watcher() {}
 
 #[test]
 fn lua_test_minimap() {
@@ -623,16 +602,13 @@ fn lua_test_minimap() {
 }
 
 #[test]
-fn lua_test_unit_minimap_overlay() {
-}
+fn lua_test_unit_minimap_overlay() {}
 
 #[test]
-fn lua_test_unit_minimap_path() {
-}
+fn lua_test_unit_minimap_path() {}
 
 #[test]
-fn lua_test_unit_minimap_layers() {
-}
+fn lua_test_unit_minimap_layers() {}
 
 #[test]
 fn lua_test_particle() {
@@ -645,16 +621,13 @@ fn lua_test_parallax() {
 }
 
 #[test]
-fn lua_test_parallax_tiling() {
-}
+fn lua_test_parallax_tiling() {}
 
 #[test]
-fn lua_test_parallax_depth() {
-}
+fn lua_test_parallax_depth() {}
 
 #[test]
-fn lua_test_parallax_blend() {
-}
+fn lua_test_parallax_blend() {}
 
 #[test]
 fn lua_test_postfx() {
@@ -662,8 +635,7 @@ fn lua_test_postfx() {
 }
 
 #[test]
-fn lua_test_image_effect() {
-}
+fn lua_test_image_effect() {}
 
 #[test]
 fn lua_test_overlay() {
@@ -691,8 +663,7 @@ fn lua_test_font() {
 }
 
 #[test]
-fn lua_test_window_scaling() {
-}
+fn lua_test_window_scaling() {}
 
 #[test]
 fn lua_test_tilemap() {
@@ -829,20 +800,16 @@ fn lua_test_network_host() {
     run_lua_test("unit/test_network.lua");
 }
 #[test]
-fn lua_test_network_constants() {
-}
+fn lua_test_network_constants() {}
 
 #[test]
-fn lua_test_network_pack_unpack() {
-}
+fn lua_test_network_pack_unpack() {}
 
 #[test]
-fn lua_test_network_roles() {
-}
+fn lua_test_network_roles() {}
 
 #[test]
-fn lua_test_network_runtime() {
-}
+fn lua_test_network_runtime() {}
 
 #[test]
 fn lua_test_security_network() {
@@ -858,11 +825,9 @@ fn lua_test_raycaster() {
     run_lua_test("unit/test_raycaster.lua");
 }
 #[test]
-fn lua_test_raycaster_transparent() {
-}
+fn lua_test_raycaster_transparent() {}
 #[test]
-fn lua_test_raycaster_sprite_manager() {
-}
+fn lua_test_raycaster_sprite_manager() {}
 #[test]
 fn lua_test_spine() {
     run_lua_test("unit/test_spine.lua");
@@ -874,28 +839,22 @@ fn lua_test_sprite() {
 }
 
 #[test]
-fn lua_test_sprite_aseprite() {
-}
+fn lua_test_sprite_aseprite() {}
 
 #[test]
-fn lua_test_animation_ext() {
-}
+fn lua_test_animation_ext() {}
 
 #[test]
-fn lua_test_spine_ext() {
-}
+fn lua_test_spine_ext() {}
 
 #[test]
-fn lua_test_tilemap_ext() {
-}
+fn lua_test_tilemap_ext() {}
 
 #[test]
-fn lua_test_tilemap_large_map() {
-}
+fn lua_test_tilemap_large_map() {}
 
 #[test]
-fn lua_test_rendering_drawing_contract() {
-}
+fn lua_test_rendering_drawing_contract() {}
 
 #[test]
 fn lua_integration_data_system() {
@@ -951,8 +910,7 @@ fn lua_test_terminal() {
 }
 
 #[test]
-fn lua_test_terminal_ansi_completion() {
-}
+fn lua_test_terminal_ansi_completion() {}
 
 #[test]
 fn lua_test_fx() {
@@ -960,8 +918,7 @@ fn lua_test_fx() {
 }
 
 #[test]
-fn lua_test_effect_dedup() {
-}
+fn lua_test_effect_dedup() {}
 
 #[test]
 fn lua_test_config() {
@@ -1095,8 +1052,7 @@ fn lua_stress_thread() {
 // ─── Property-Based ──────────────────────────────────────────────────────────
 
 #[test]
-fn lua_unit_math_property() {
-}
+fn lua_unit_math_property() {}
 
 // ─── Unit library tests (battle / crafting / dialog) ─────────────────────────
 
@@ -1485,7 +1441,6 @@ fn lua_evidence_combined() {
     run_lua_test("evidence/test_evidence_combined.lua");
 }
 
-
 #[test]
 fn lua_evidence_math() {
     run_lua_test("evidence/test_evidence_math.lua");
@@ -1646,24 +1601,19 @@ fn lua_stress_procgen() {
 // ── ECS extensions ──────────────────────────────────────────────────────────
 
 #[test]
-fn lua_test_unit_entity_query_not() {
-}
+fn lua_test_unit_entity_query_not() {}
 
 #[test]
-fn lua_test_unit_entity_serialization() {
-}
+fn lua_test_unit_entity_serialization() {}
 
 #[test]
-fn lua_test_unit_entity_observers() {
-}
+fn lua_test_unit_entity_observers() {}
 
 #[test]
-fn lua_test_unit_entity_system_priority() {
-}
+fn lua_test_unit_entity_system_priority() {}
 
 #[test]
-fn lua_test_unit_entity_relationships() {
-}
+fn lua_test_unit_entity_relationships() {}
 
 #[test]
 fn lua_stress_entity_bulk_spawn() {
@@ -1673,38 +1623,30 @@ fn lua_stress_entity_bulk_spawn() {
 // ── Patterns extensions ──────────────────────────────────────────────────────
 
 #[test]
-fn lua_test_unit_patterns_mediator() {
-}
+fn lua_test_unit_patterns_mediator() {}
 
 #[test]
-fn lua_test_unit_patterns_strategy() {
-}
+fn lua_test_unit_patterns_strategy() {}
 
 #[test]
-fn lua_test_unit_patterns_collections() {
-}
+fn lua_test_unit_patterns_collections() {}
 
 // ── Scene extensions ─────────────────────────────────────────────────────────
 
 #[test]
-fn lua_test_unit_scene_overlay() {
-}
+fn lua_test_unit_scene_overlay() {}
 
 #[test]
-fn lua_test_unit_scene_transitions() {
-}
+fn lua_test_unit_scene_transitions() {}
 
 #[test]
-fn lua_test_unit_scene_preload() {
-}
+fn lua_test_unit_scene_preload() {}
 
 #[test]
-fn lua_test_unit_scene_transitions_extended() {
-}
+fn lua_test_unit_scene_transitions_extended() {}
 
 #[test]
-fn lua_test_unit_scene_serialization() {
-}
+fn lua_test_unit_scene_serialization() {}
 
 #[test]
 fn lua_stress_scene_depth_sort() {
@@ -1714,70 +1656,54 @@ fn lua_stress_scene_depth_sort() {
 // ── New IDEA.md features – 2026-04-16 ────────────────────────────────────────
 
 #[test]
-fn lua_test_unit_data_ring_buffer() {
-}
+fn lua_test_unit_data_ring_buffer() {}
 
 #[test]
-fn lua_test_unit_math_aabb_tree() {
-}
+fn lua_test_unit_math_aabb_tree() {}
 
 #[test]
-fn lua_test_unit_math_voronoi() {
-}
+fn lua_test_unit_math_voronoi() {}
 
 #[test]
-fn lua_test_unit_terminal_cell_size() {
-}
+fn lua_test_unit_terminal_cell_size() {}
 
 #[test]
-fn lua_test_unit_input_vibrate() {
-}
+fn lua_test_unit_input_vibrate() {}
 
 #[test]
-fn lua_test_unit_automation_highlight() {
-}
+fn lua_test_unit_automation_highlight() {}
 
 #[test]
-fn lua_test_unit_tween_spring() {
-}
+fn lua_test_unit_tween_spring() {}
 
 #[test]
-fn lua_test_unit_log_structured() {
-}
+fn lua_test_unit_log_structured() {}
 
 #[test]
-fn lua_test_unit_camera_effects() {
-}
+fn lua_test_unit_camera_effects() {}
 
 #[test]
-fn lua_test_unit_window_icon() {
-}
+fn lua_test_unit_window_icon() {}
 
 #[test]
-fn lua_test_unit_input_combo() {
-}
+fn lua_test_unit_input_combo() {}
 
 // ─── New IDEA.md features – 2026-04-18 ────────────────────────────────────────
 
 #[test]
-fn lua_test_unit_graph_parallel_tick() {
-}
+fn lua_test_unit_graph_parallel_tick() {}
 
 #[test]
-fn lua_test_unit_animation_blend() {
-}
+fn lua_test_unit_animation_blend() {}
 
 #[test]
-fn lua_test_unit_devtools_repl() {
-}
+fn lua_test_unit_devtools_repl() {}
 
 #[test]
-fn lua_test_unit_raycaster_floor_uv() {
-}
+fn lua_test_unit_raycaster_floor_uv() {}
 
 #[test]
-fn lua_test_unit_light_godrays() {
-}
+fn lua_test_unit_light_godrays() {}
 
 // ─── Config: runtime fallback ─────────────────────────────────────────────────
 

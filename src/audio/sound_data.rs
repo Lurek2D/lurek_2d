@@ -1,4 +1,4 @@
-//! Decoded PCM audio sample buffer with per-sample read/write access.
+﻿//! Decoded PCM audio sample buffer with per-sample read/write access.
 //!
 //! `SoundData` stores fully decoded f32 PCM samples in interleaved channel
 //! order (for stereo: L, R, L, R, ...). It can be created as a silent buffer
@@ -15,10 +15,10 @@ use rodio::Source;
 /// procedural audio, oscillators, and effect processing from Lua.
 ///
 /// # Fields
-/// - `samples` — `Vec<f32>`.
-/// - `sample_rate` — `u32`.
-/// - `channels` — `u16`.
-/// - `bit_depth` — `u16`.
+/// - `samples` â€” `Vec<f32>`.
+/// - `sample_rate` â€” `u32`.
+/// - `channels` â€” `u16`.
+/// - `bit_depth` â€” `u16`.
 #[derive(Debug, Clone)]
 pub struct SoundData {
     samples: Vec<f32>,
@@ -31,9 +31,9 @@ impl SoundData {
     /// Create a silent buffer with the given number of samples.
     ///
     /// # Parameters
-    /// - `sample_count` — `usize`.
-    /// - `sample_rate` — `u32`.
-    /// - `channels` — `u16`.
+    /// - `sample_count` â€” `usize`.
+    /// - `sample_rate` â€” `u32`.
+    /// - `channels` â€” `u16`.
     ///
     /// # Returns
     /// `Self`.
@@ -49,9 +49,9 @@ impl SoundData {
     /// Create a `SoundData` from an existing f32 sample buffer.
     ///
     /// # Parameters
-    /// - `samples` — `Vec<f32>`.
-    /// - `sample_rate` — `u32`.
-    /// - `channels` — `u16`.
+    /// - `samples` â€” `Vec<f32>`.
+    /// - `sample_rate` â€” `u32`.
+    /// - `channels` â€” `u16`.
     ///
     /// # Returns
     /// `Self`.
@@ -71,10 +71,10 @@ impl SoundData {
     /// `count` samples is created with [`SoundData::new`].
     ///
     /// # Parameters
-    /// - `path` — `Option<&str>`. Full resolved file path for file loading; `None` for a silent buffer.
-    /// - `count` — `usize`. Sample count for a silent buffer; ignored when `path` is `Some`.
-    /// - `sample_rate` — `u32`. Sample rate in Hz (e.g. `44100`).
-    /// - `channels` — `u16`. Channel count (e.g. `1` for mono, `2` for stereo).
+    /// - `path` â€” `Option<&str>`. Full resolved file path for file loading; `None` for a silent buffer.
+    /// - `count` â€” `usize`. Sample count for a silent buffer; ignored when `path` is `Some`.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz (e.g. `44100`).
+    /// - `channels` â€” `u16`. Channel count (e.g. `1` for mono, `2` for stereo).
     ///
     /// # Returns
     /// `Result<Self, String>`.
@@ -93,7 +93,7 @@ impl SoundData {
     /// Decode an audio file to SoundData. Returns a fully initialised instance with all fields set to their initial values.
     ///
     /// # Parameters
-    /// - `path` — `&str`.
+    /// - `path` â€” `&str`.
     ///
     /// # Returns
     /// `Result<Self, String>`.
@@ -122,7 +122,7 @@ impl SoundData {
     /// Get a sample at the given index (interleaved).
     ///
     /// # Parameters
-    /// - `index` — `usize`.
+    /// - `index` â€” `usize`.
     ///
     /// # Returns
     /// `Option<f32>`.
@@ -141,8 +141,8 @@ impl SoundData {
     /// Set a sample at the given index (clamped to [-1.0, 1.0]).
     ///
     /// # Parameters
-    /// - `index` — `usize`.
-    /// - `value` — `f32`.
+    /// - `index` â€” `usize`.
+    /// - `value` â€” `f32`.
     ///
     /// # Returns
     /// `bool`.
@@ -253,15 +253,15 @@ impl SoundData {
         buf
     }
 
-    // ── Procedural waveform generators ──────────────────────────────────────
+    // â”€â”€ Procedural waveform generators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Generate a mono sine-wave buffer.
     ///
     /// # Parameters
-    /// - `freq` — `f32`. Frequency in Hz.
-    /// - `duration` — `f32`. Duration in seconds.
-    /// - `sample_rate` — `u32`. Sample rate in Hz.
-    /// - `amplitude` — `f32`. Peak amplitude in `[0, 1]`.
+    /// - `freq` â€” `f32`. Frequency in Hz.
+    /// - `duration` â€” `f32`. Duration in seconds.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz.
+    /// - `amplitude` â€” `f32`. Peak amplitude in `[0, 1]`.
     ///
     /// # Returns
     /// `Self`.
@@ -279,10 +279,10 @@ impl SoundData {
     /// Generate a mono square-wave buffer.
     ///
     /// # Parameters
-    /// - `freq` — `f32`. Frequency in Hz.
-    /// - `duration` — `f32`. Duration in seconds.
-    /// - `sample_rate` — `u32`. Sample rate in Hz.
-    /// - `amplitude` — `f32`. Peak amplitude in `[0, 1]`.
+    /// - `freq` â€” `f32`. Frequency in Hz.
+    /// - `duration` â€” `f32`. Duration in seconds.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz.
+    /// - `amplitude` â€” `f32`. Peak amplitude in `[0, 1]`.
     ///
     /// # Returns
     /// `Self`.
@@ -305,10 +305,10 @@ impl SoundData {
     /// Generate a mono sawtooth-wave buffer.
     ///
     /// # Parameters
-    /// - `freq` — `f32`. Frequency in Hz.
-    /// - `duration` — `f32`. Duration in seconds.
-    /// - `sample_rate` — `u32`. Sample rate in Hz.
-    /// - `amplitude` — `f32`. Peak amplitude in `[0, 1]`.
+    /// - `freq` â€” `f32`. Frequency in Hz.
+    /// - `duration` â€” `f32`. Duration in seconds.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz.
+    /// - `amplitude` â€” `f32`. Peak amplitude in `[0, 1]`.
     ///
     /// # Returns
     /// `Self`.
@@ -327,10 +327,10 @@ impl SoundData {
     /// Generate a mono triangle-wave buffer.
     ///
     /// # Parameters
-    /// - `freq` — `f32`. Frequency in Hz.
-    /// - `duration` — `f32`. Duration in seconds.
-    /// - `sample_rate` — `u32`. Sample rate in Hz.
-    /// - `amplitude` — `f32`. Peak amplitude in `[0, 1]`.
+    /// - `freq` â€” `f32`. Frequency in Hz.
+    /// - `duration` â€” `f32`. Duration in seconds.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz.
+    /// - `amplitude` â€” `f32`. Peak amplitude in `[0, 1]`.
     ///
     /// # Returns
     /// `Self`.
@@ -349,10 +349,10 @@ impl SoundData {
     /// Generate a reproducible white-noise buffer using a simple LCG PRNG.
     ///
     /// # Parameters
-    /// - `duration` — `f32`. Duration in seconds.
-    /// - `sample_rate` — `u32`. Sample rate in Hz.
-    /// - `amplitude` — `f32`. Peak amplitude in `[0, 1]`.
-    /// - `seed` — `u32`. Seed for the pseudo-random number generator.
+    /// - `duration` â€” `f32`. Duration in seconds.
+    /// - `sample_rate` â€” `u32`. Sample rate in Hz.
+    /// - `amplitude` â€” `f32`. Peak amplitude in `[0, 1]`.
+    /// - `seed` â€” `u32`. Seed for the pseudo-random number generator.
     ///
     /// # Returns
     /// `Self`.
@@ -369,7 +369,7 @@ impl SoundData {
         Self::from_samples(samples, sample_rate, 1)
     }
 
-    // ── End of procedural generators ────────────────────────────────────────
+    // â”€â”€ End of procedural generators â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Draws the waveform of the audio samples onto an `ImageData` object.
     ///
@@ -377,15 +377,15 @@ impl SoundData {
     /// the amplitude to the vertical axis (`h`), using the provided color.
     ///
     /// # Parameters
-    /// - `img` — `&mut crate::image::ImageData`.
-    /// - `x` — `i32`.
-    /// - `y` — `i32`.
-    /// - `w` — `u32`.
-    /// - `h` — `u32`.
-    /// - `r` — `u8`.
-    /// - `g` — `u8`.
-    /// - `b` — `u8`.
-    /// - `a` — `u8`.
+    /// - `img` â€” `&mut crate::image::ImageData`.
+    /// - `x` â€” `i32`.
+    /// - `y` â€” `i32`.
+    /// - `w` â€” `u32`.
+    /// - `h` â€” `u32`.
+    /// - `r` â€” `u8`.
+    /// - `g` â€” `u8`.
+    /// - `b` â€” `u8`.
+    /// - `a` â€” `u8`.
     pub fn draw_waveform(
         &self,
         img: &mut crate::image::ImageData,
@@ -468,15 +468,15 @@ impl SoundData {
         }
     }
 
-    // ── In-place sample-domain DSP filters ──────────────────────────────────
+    // â”€â”€ In-place sample-domain DSP filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Apply a first-order IIR low-pass filter in-place to the sample buffer.
     ///
     /// Uses the bilinear transform: `y[n] = alpha * x[n] + (1 - alpha) * y[n-1]`
-    /// where `alpha = cutoff_hz / (cutoff_hz + sample_rate / (2π))`.
+    /// where `alpha = cutoff_hz / (cutoff_hz + sample_rate / (2Ď€))`.
     ///
     /// # Parameters
-    /// - `cutoff_hz` — `f32`. Cut-off frequency in Hz.
+    /// - `cutoff_hz` â€” `f32`. Cut-off frequency in Hz.
     pub fn apply_lowpass(&mut self, cutoff_hz: f32) {
         if self.samples.is_empty() || cutoff_hz <= 0.0 {
             return;
@@ -496,7 +496,7 @@ impl SoundData {
     /// `y[n] = alpha * (y[n-1] + x[n] - x[n-1])`
     ///
     /// # Parameters
-    /// - `cutoff_hz` — `f32`. Cut-off frequency in Hz.
+    /// - `cutoff_hz` â€” `f32`. Cut-off frequency in Hz.
     pub fn apply_highpass(&mut self, cutoff_hz: f32) {
         if self.samples.is_empty() || cutoff_hz <= 0.0 {
             return;
@@ -517,8 +517,8 @@ impl SoundData {
     /// Apply a simple bandpass filter in-place (lowpass cascaded with highpass).
     ///
     /// # Parameters
-    /// - `low_hz` — `f32`. High-pass cut-off frequency in Hz.
-    /// - `high_hz` — `f32`. Low-pass cut-off frequency in Hz.
+    /// - `low_hz` â€” `f32`. High-pass cut-off frequency in Hz.
+    /// - `high_hz` â€” `f32`. Low-pass cut-off frequency in Hz.
     pub fn apply_bandpass(&mut self, low_hz: f32, high_hz: f32) {
         self.apply_highpass(low_hz);
         self.apply_lowpass(high_hz);
@@ -527,7 +527,7 @@ impl SoundData {
     /// Apply gain (amplitude scaling) in-place.
     ///
     /// # Parameters
-    /// - `gain` — `f32`. Multiplication factor applied to every sample.
+    /// - `gain` â€” `f32`. Multiplication factor applied to every sample.
     pub fn apply_gain(&mut self, gain: f32) {
         for s in self.samples.iter_mut() {
             *s = (*s * gain).clamp(-1.0, 1.0);
@@ -539,7 +539,7 @@ impl SoundData {
     /// Shorter buffers are zero-padded. Result samples are clamped to `[-1, 1]`.
     ///
     /// # Parameters
-    /// - `other` — `&SoundData`.
+    /// - `other` â€” `&SoundData`.
     pub fn mix_into(&mut self, other: &SoundData) {
         let len = self.samples.len().max(other.samples.len());
         self.samples.resize(len, 0.0);
@@ -549,113 +549,5 @@ impl SoundData {
         }
     }
 
-    // ── End of in-place DSP ──────────────────────────────────────────────────
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_silent_buffer() {
-        let sd = SoundData::new(100, 44100, 1);
-        assert_eq!(sd.sample_count(), 100);
-        assert_eq!(sd.sample_rate(), 44100);
-        assert_eq!(sd.channel_count(), 1);
-        assert!(sd.samples().iter().all(|&s| s == 0.0));
-    }
-
-    #[test]
-    fn get_and_set_sample() {
-        let mut sd = SoundData::new(10, 44100, 1);
-        assert_eq!(sd.get_sample(0), Some(0.0));
-        assert!(sd.set_sample(0, 0.5));
-        assert_eq!(sd.get_sample(0), Some(0.5));
-    }
-
-    #[test]
-    fn set_sample_clamps() {
-        let mut sd = SoundData::new(10, 44100, 1);
-        sd.set_sample(0, 5.0);
-        assert_eq!(sd.get_sample(0), Some(1.0));
-        sd.set_sample(0, -5.0);
-        assert_eq!(sd.get_sample(0), Some(-1.0));
-    }
-
-    #[test]
-    fn set_sample_out_of_range() {
-        let mut sd = SoundData::new(10, 44100, 1);
-        assert!(!sd.set_sample(100, 0.5));
-    }
-
-    #[test]
-    fn duration_calculation() {
-        let sd = SoundData::new(44100, 44100, 1);
-        assert!((sd.duration() - 1.0).abs() < 0.001);
-    }
-
-    #[test]
-    fn from_samples_stores_data() {
-        let samples = vec![0.1, 0.2, 0.3, 0.4];
-        let sd = SoundData::from_samples(samples.clone(), 22050, 2);
-        assert_eq!(sd.sample_count(), 2); // 4 interleaved samples / 2 channels
-        assert_eq!(sd.channel_count(), 2);
-        assert_eq!(sd.samples(), &samples[..]);
-    }
-
-    #[test]
-    fn sine_wave_generates_correct_length() {
-        let sd = SoundData::sine_wave(440.0, 1.0, 44100, 0.5);
-        assert_eq!(sd.sample_count(), 44100);
-        assert_eq!(sd.channel_count(), 1);
-        // First sample should be near 0 (sin(0) = 0)
-        assert!(sd.get_sample(0).unwrap().abs() < 0.01);
-    }
-
-    #[test]
-    fn square_wave_alternates() {
-        let sd = SoundData::square_wave(1.0, 1.0, 100, 1.0);
-        // First half of period should be positive, second half negative
-        assert!(sd.get_sample(0).unwrap() > 0.0);
-        assert!(sd.get_sample(75).unwrap() < 0.0);
-    }
-
-    #[test]
-    fn encode_wav_produces_valid_header() {
-        let sd = SoundData::new(10, 44100, 1);
-        let wav = sd.encode_wav();
-        assert_eq!(&wav[0..4], b"RIFF");
-        assert_eq!(&wav[8..12], b"WAVE");
-        assert_eq!(&wav[12..16], b"fmt ");
-    }
-
-    #[test]
-    fn apply_gain() {
-        let mut sd = SoundData::from_samples(vec![0.5, -0.5], 44100, 1);
-        sd.apply_gain(0.5);
-        assert!((sd.get_sample(0).unwrap() - 0.25).abs() < 0.001);
-        assert!((sd.get_sample(1).unwrap() + 0.25).abs() < 0.001);
-    }
-
-    #[test]
-    fn mix_into_blends() {
-        let mut sd1 = SoundData::from_samples(vec![0.3, 0.3], 44100, 1);
-        let sd2 = SoundData::from_samples(vec![0.2, -0.1], 44100, 1);
-        sd1.mix_into(&sd2);
-        assert!((sd1.get_sample(0).unwrap() - 0.5).abs() < 0.001);
-        assert!((sd1.get_sample(1).unwrap() - 0.2).abs() < 0.001);
-    }
-
-    #[test]
-    fn from_lua_args_silent_buffer() {
-        let sd = SoundData::from_lua_args(None, 100, 44100, 1).unwrap();
-        assert_eq!(sd.sample_count(), 100);
-    }
-
-    #[test]
-    fn zero_channels_duration() {
-        let sd = SoundData { samples: vec![], sample_rate: 44100, channels: 0, bit_depth: 16 };
-        assert_eq!(sd.duration(), 0.0);
-        assert_eq!(sd.sample_count(), 0);
-    }
+    // â”€â”€ End of in-place DSP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 }

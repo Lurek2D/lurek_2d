@@ -12,7 +12,8 @@ use lurek2d::render::postfx_pipeline::params_to_uniform;
 use lurek2d::render::renderer::{
     BlendMode, DepthMode, PhysicsDebugConfig, StencilAction, StencilMode, TextSpan, TextureData,
 };
-use lurek2d::render::shape::{CompoundShape, DrawMode, ShapeCommand};
+use lurek2d::render::shape::{CompoundShape, ShapeCommand};
+use lurek2d::render::DrawMode;
 
 // ── canvas tests ────────────────────────────────────────────────────────────
 

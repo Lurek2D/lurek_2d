@@ -381,8 +381,3 @@ fn convex_hull(pts: &mut Vec<(f32, f32)>) -> Vec<(f32, f32)> {
     lower.extend(upper);
     lower
 }
-            out.push(intersect(curr, next));
-        }
-    }
-    out
-}

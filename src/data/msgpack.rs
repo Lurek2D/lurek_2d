@@ -32,5 +32,16 @@ pub fn to_msgpack(value: &serde_json::Value) -> Result<Vec<u8>, String> {
 /// # Returns
 /// `Result<serde_json::Value, String>`. The decoded value or an error description.
 pub fn from_msgpack(bytes: &[u8]) -> Result<serde_json::Value, String> {
-    rmp_serde::from_slice(bytes).map_err(|e| format!("MessagePack decode error: {e}"))
+    use serde::Deserialize;
+
+    let mut deserializer = rmp_serde::Deserializer::new(std::io::Cursor::new(bytes));
+    let value = serde_json::Value::deserialize(&mut deserializer)
+        .map_err(|e| format!("MessagePack decode error: {e}"))?;
+
+    let consumed = deserializer.get_ref().position() as usize;
+    if consumed != bytes.len() {
+        return Err("MessagePack decode error: trailing bytes after root value".to_string());
+    }
+
+    Ok(value)
 }

@@ -115,7 +115,7 @@ impl AsyncLoader {
             if tx
                 .try_send(LoadRequest {
                     handle,
-                    resolved_path,
+                    resolved_path: resolved_path.clone(),
                 })
                 .is_err()
             {

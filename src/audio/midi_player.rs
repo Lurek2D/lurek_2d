@@ -1,4 +1,4 @@
-//! Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM
+﻿//! Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM
 //! via sine-additive synthesis, and plays through a rodio `Sink`.
 //!
 //! This module is part of Lurek2D's `audio` subsystem and provides the implementation
@@ -22,13 +22,13 @@ use std::path::Path;
 /// Pre-parsed MIDI metadata extracted during `load()`.
 ///
 /// # Fields
-/// - `duration_secs` — `f64`.
-/// - `ticks_per_beat` — `u16`.
-/// - `original_tempo_bpm` — `f64`.
-/// - `track_count` — `usize`.
-/// - `track_names` — `Vec<Option<String>>`.
-/// - `note_count` — `usize`.
-/// - `channel_count` — `usize`.
+/// - `duration_secs` â€” `f64`.
+/// - `ticks_per_beat` â€” `u16`.
+/// - `original_tempo_bpm` â€” `f64`.
+/// - `track_count` â€” `usize`.
+/// - `track_names` â€” `Vec<Option<String>>`.
+/// - `note_count` â€” `usize`.
+/// - `channel_count` â€” `usize`.
 #[derive(Debug, Clone)]
 pub struct MidiData {
     /// Total duration of the MIDI file in seconds.
@@ -56,21 +56,21 @@ pub struct MidiData {
 /// for basic MIDI playback (though `MidiState` enables SF2 loading).
 ///
 /// # Fields
-/// - `midi_data` — `Option<MidiData>`.
-/// - `raw_midi` — `Option<Vec<u8>>`.
-/// - `file_path` — `Option<String>`.
-/// - `volume` — `f32`.
-/// - `looping` — `bool`.
-/// - `tempo_scale` — `f32`.
-/// - `current_bpm` — `f64`.
-/// - `channel_muted` — `[bool; 16]`.
-/// - `channel_volume` — `[f32; 16]`.
-/// - `channel_instrument` — `[u8; 16]`.
-/// - `track_muted` — `Vec<bool>`.
-/// - `position_secs` — `f64`.
-/// - `sink` — `Option<rodio::Sink>`.
-/// - `play_state` — `PlayState`.
-/// - `bus_key` — `Option<BusKey>`.
+/// - `midi_data` â€” `Option<MidiData>`.
+/// - `raw_midi` â€” `Option<Vec<u8>>`.
+/// - `file_path` â€” `Option<String>`.
+/// - `volume` â€” `f32`.
+/// - `looping` â€” `bool`.
+/// - `tempo_scale` â€” `f32`.
+/// - `current_bpm` â€” `f64`.
+/// - `channel_muted` â€” `[bool; 16]`.
+/// - `channel_volume` â€” `[f32; 16]`.
+/// - `channel_instrument` â€” `[u8; 16]`.
+/// - `track_muted` â€” `Vec<bool>`.
+/// - `position_secs` â€” `f64`.
+/// - `sink` â€” `Option<rodio::Sink>`.
+/// - `play_state` â€” `PlayState`.
+/// - `bus_key` â€” `Option<BusKey>`.
 pub struct MidiPlayer {
     midi_data: Option<MidiData>,
     raw_midi: Option<Vec<u8>>,
@@ -89,9 +89,9 @@ pub struct MidiPlayer {
     bus_key: Option<BusKey>,
     /// PCM output sample rate in Hz. Default 44100.
     ///
-    /// Clamped to 8000–192000 by `set_output_sample_rate`.
+    /// Clamped to 8000â€“192000 by `set_output_sample_rate`.
     output_sample_rate: u32,
-    /// PCM output channel count. Default 2 (stereo). Range: 1–2.
+    /// PCM output channel count. Default 2 (stereo). Range: 1â€“2.
     output_channels: u16,
 }
 
@@ -131,7 +131,7 @@ impl MidiPlayer {
     /// Loads and parses a MIDI file from the given path.
     ///
     /// # Parameters
-    /// - `path` — `&Path`.
+    /// - `path` â€” `&Path`.
     ///
     /// # Returns
     /// `bool`.
@@ -157,7 +157,7 @@ impl MidiPlayer {
     /// Loads MIDI from raw bytes (e.g., embedded data).
     ///
     /// # Parameters
-    /// - `data` — `Vec<u8>`.
+    /// - `data` â€” `Vec<u8>`.
     ///
     /// # Returns
     /// `bool`.
@@ -188,7 +188,7 @@ impl MidiPlayer {
     /// Plays the loaded MIDI through the given output stream handle.
     ///
     /// # Parameters
-    /// - `stream_handle` — `&rodio::OutputStreamHandle`.
+    /// - `stream_handle` â€” `&rodio::OutputStreamHandle`.
     /// Renders the full MIDI to PCM using sine-additive synthesis.
     pub fn play(&mut self, stream_handle: &rodio::OutputStreamHandle) {
         if self.midi_data.is_none() || self.raw_midi.is_none() {
@@ -260,7 +260,7 @@ impl MidiPlayer {
     /// Seeks to a position in seconds.
     ///
     /// # Parameters
-    /// - `secs` — `f64`.
+    /// - `secs` â€” `f64`.
     pub fn seek(&mut self, secs: f64) {
         self.position_secs = secs.max(0.0);
     }
@@ -284,7 +284,7 @@ impl MidiPlayer {
     /// Sets the master volume (0.0 = silent, values above 1.0 amplify).
     ///
     /// # Parameters
-    /// - `vol` — `f32`.
+    /// - `vol` â€” `f32`.
     pub fn set_volume(&mut self, vol: f32) {
         self.volume = vol.max(0.0);
     }
@@ -300,7 +300,7 @@ impl MidiPlayer {
     /// Sets whether playback should loop. Replaces the current looping value; callers hold responsibility for maintaining consistency with related fields.
     ///
     /// # Parameters
-    /// - `looping` — `bool`.
+    /// - `looping` â€” `bool`.
     pub fn set_looping(&mut self, looping: bool) {
         self.looping = looping;
     }
@@ -316,7 +316,7 @@ impl MidiPlayer {
     /// Sets the tempo scale factor (minimum 0.01).
     ///
     /// # Parameters
-    /// - `scale` — `f32`.
+    /// - `scale` â€” `f32`.
     pub fn set_tempo_scale(&mut self, scale: f32) {
         self.tempo_scale = scale.max(0.01);
     }
@@ -358,8 +358,8 @@ impl MidiPlayer {
     /// Sets the volume for a specific MIDI channel (0-15).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
-    /// - `vol` — `f32`.
+    /// - `ch` â€” `usize`.
+    /// - `vol` â€” `f32`.
     pub fn set_channel_volume(&mut self, ch: usize, vol: f32) {
         if ch < 16 {
             self.channel_volume[ch] = vol.max(0.0);
@@ -369,7 +369,7 @@ impl MidiPlayer {
     /// Returns the volume for a specific MIDI channel (0-15).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
+    /// - `ch` â€” `usize`.
     ///
     /// # Returns
     /// `f32`.
@@ -384,8 +384,8 @@ impl MidiPlayer {
     /// Sets the mute state for a specific MIDI channel (0-15).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
-    /// - `muted` — `bool`.
+    /// - `ch` â€” `usize`.
+    /// - `muted` â€” `bool`.
     pub fn set_channel_muted(&mut self, ch: usize, muted: bool) {
         if ch < 16 {
             self.channel_muted[ch] = muted;
@@ -395,7 +395,7 @@ impl MidiPlayer {
     /// Returns whether a specific MIDI channel (0-15) is muted.
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
+    /// - `ch` â€” `usize`.
     ///
     /// # Returns
     /// `bool`.
@@ -406,8 +406,8 @@ impl MidiPlayer {
     /// Sets the instrument (program number) for a MIDI channel (0-15).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
-    /// - `inst` — `u8`.
+    /// - `ch` â€” `usize`.
+    /// - `inst` â€” `u8`.
     pub fn set_channel_instrument(&mut self, ch: usize, inst: u8) {
         if ch < 16 {
             self.channel_instrument[ch] = inst;
@@ -417,7 +417,7 @@ impl MidiPlayer {
     /// Returns the instrument (program number) for a MIDI channel (0-15).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
+    /// - `ch` â€” `usize`.
     ///
     /// # Returns
     /// `u8`.
@@ -440,7 +440,7 @@ impl MidiPlayer {
     /// Solos a channel (mutes all others).
     ///
     /// # Parameters
-    /// - `ch` — `usize`.
+    /// - `ch` â€” `usize`.
     pub fn solo_channel(&mut self, ch: usize) {
         for i in 0..16 {
             self.channel_muted[i] = i != ch;
@@ -463,7 +463,7 @@ impl MidiPlayer {
     /// Returns the name of a track by index, if it has one.
     ///
     /// # Parameters
-    /// - `idx` — `usize`.
+    /// - `idx` â€” `usize`.
     ///
     /// # Returns
     /// `Option<&str>`.
@@ -477,8 +477,8 @@ impl MidiPlayer {
     /// Sets the mute state for a specific track by index.
     ///
     /// # Parameters
-    /// - `idx` — `usize`.
-    /// - `muted` — `bool`.
+    /// - `idx` â€” `usize`.
+    /// - `muted` â€” `bool`.
     pub fn set_track_muted(&mut self, idx: usize, muted: bool) {
         if idx < self.track_muted.len() {
             self.track_muted[idx] = muted;
@@ -488,7 +488,7 @@ impl MidiPlayer {
     /// Returns whether a specific track is muted.
     ///
     /// # Parameters
-    /// - `idx` — `usize`.
+    /// - `idx` â€” `usize`.
     ///
     /// # Returns
     /// `bool`.
@@ -507,7 +507,7 @@ impl MidiPlayer {
     /// Sets the audio bus key for mixer routing.
     ///
     /// # Parameters
-    /// - `key` — `Option<BusKey>`.
+    /// - `key` â€” `Option<BusKey>`.
     pub fn set_bus_key(&mut self, key: Option<BusKey>) {
         self.bus_key = key;
     }
@@ -536,10 +536,10 @@ impl MidiPlayer {
         self.output_sample_rate
     }
 
-    /// Sets the PCM output sample rate in Hz (clamped to 8000–192000).
+    /// Sets the PCM output sample rate in Hz (clamped to 8000â€“192000).
     ///
     /// # Parameters
-    /// - `rate` — `u32`.
+    /// - `rate` â€” `u32`.
     pub fn set_output_sample_rate(&mut self, rate: u32) {
         self.output_sample_rate = rate.clamp(8000, 192_000);
     }
@@ -552,10 +552,10 @@ impl MidiPlayer {
         self.output_channels
     }
 
-    /// Sets the PCM output channel count (clamped to 1–2).
+    /// Sets the PCM output channel count (clamped to 1â€“2).
     ///
     /// # Parameters
-    /// - `channels` — `u16`.
+    /// - `channels` â€” `u16`.
     pub fn set_output_channels(&mut self, channels: u16) {
         self.output_channels = channels.clamp(1, 2);
     }
@@ -605,151 +605,5 @@ fn render_note(
             pcm[idx] = pcm[idx].saturating_add(sample);
             pcm[idx + 1] = pcm[idx + 1].saturating_add(sample);
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_player_defaults() {
-        let p = MidiPlayer::new();
-        assert!(!p.is_loaded());
-        assert!(!p.is_playing());
-        assert!(!p.is_paused());
-        assert_eq!(p.volume(), 1.0);
-        assert!(!p.is_looping());
-        assert_eq!(p.tempo_scale(), 1.0);
-        assert_eq!(p.current_bpm(), 120.0);
-        assert_eq!(p.tell(), 0.0);
-        assert_eq!(p.duration(), 0.0);
-        assert!(p.file_path().is_none());
-        assert!(p.bus_key().is_none());
-    }
-
-    #[test]
-    fn default_impl_matches_new() {
-        let a = MidiPlayer::new();
-        let b = MidiPlayer::default();
-        assert_eq!(a.volume(), b.volume());
-        assert_eq!(a.is_looping(), b.is_looping());
-        assert_eq!(a.tempo_scale(), b.tempo_scale());
-    }
-
-    #[test]
-    fn volume_set_get() {
-        let mut p = MidiPlayer::new();
-        p.set_volume(0.5);
-        assert_eq!(p.volume(), 0.5);
-        p.set_volume(-1.0);
-        assert_eq!(p.volume(), 0.0); // clamped
-    }
-
-    #[test]
-    fn looping_toggle() {
-        let mut p = MidiPlayer::new();
-        assert!(!p.is_looping());
-        p.set_looping(true);
-        assert!(p.is_looping());
-    }
-
-    #[test]
-    fn tempo_scale_clamps_low() {
-        let mut p = MidiPlayer::new();
-        p.set_tempo_scale(0.001);
-        assert_eq!(p.tempo_scale(), 0.01);
-    }
-
-    #[test]
-    fn channel_volume_and_mute() {
-        let mut p = MidiPlayer::new();
-        p.set_channel_volume(3, 0.5);
-        assert_eq!(p.channel_volume(3), 0.5);
-        assert_eq!(p.channel_volume(16), 0.0); // out of range
-
-        p.set_channel_muted(3, true);
-        assert!(p.is_channel_muted(3));
-        assert!(!p.is_channel_muted(0));
-    }
-
-    #[test]
-    fn solo_mutes_others() {
-        let mut p = MidiPlayer::new();
-        p.solo_channel(5);
-        for i in 0..16 {
-            if i == 5 {
-                assert!(!p.is_channel_muted(i));
-            } else {
-                assert!(p.is_channel_muted(i));
-            }
-        }
-        p.unsolo_all();
-        assert!(!p.is_channel_muted(0));
-    }
-
-    #[test]
-    fn channel_instrument() {
-        let mut p = MidiPlayer::new();
-        p.set_channel_instrument(0, 42);
-        assert_eq!(p.channel_instrument(0), 42);
-        assert_eq!(p.channel_instrument(16), 0); // out of range
-    }
-
-    #[test]
-    fn output_sample_rate_clamps() {
-        let mut p = MidiPlayer::new();
-        assert_eq!(p.get_output_sample_rate(), 44100);
-        p.set_output_sample_rate(100);
-        assert_eq!(p.get_output_sample_rate(), 8000);
-        p.set_output_sample_rate(500_000);
-        assert_eq!(p.get_output_sample_rate(), 192_000);
-    }
-
-    #[test]
-    fn output_channels_clamps() {
-        let mut p = MidiPlayer::new();
-        assert_eq!(p.get_output_channels(), 2);
-        p.set_output_channels(0);
-        assert_eq!(p.get_output_channels(), 1);
-        p.set_output_channels(5);
-        assert_eq!(p.get_output_channels(), 2);
-    }
-
-    #[test]
-    fn seek_and_tell() {
-        let mut p = MidiPlayer::new();
-        p.seek(5.0);
-        assert_eq!(p.tell(), 5.0);
-        p.seek(-1.0);
-        assert_eq!(p.tell(), 0.0); // clamped
-    }
-
-    #[test]
-    fn load_data_disabled_returns_false() {
-        let mut p = MidiPlayer::new();
-        assert!(!p.load_data(vec![1, 2, 3]));
-        assert!(!p.is_loaded());
-    }
-
-    #[test]
-    fn stop_resets_state() {
-        let mut p = MidiPlayer::new();
-        p.seek(5.0);
-        p.stop();
-        assert_eq!(p.tell(), 0.0);
-        assert_eq!(p.play_state(), PlayState::Stopped);
-    }
-
-    #[test]
-    fn midi_note_to_freq_a4() {
-        let freq = midi_note_to_freq(69);
-        assert!((freq - 440.0).abs() < 0.01);
-    }
-
-    #[test]
-    fn midi_note_to_freq_c4() {
-        let freq = midi_note_to_freq(60);
-        assert!((freq - 261.63).abs() < 0.1);
     }
 }

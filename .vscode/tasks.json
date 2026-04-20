@@ -4,9 +4,9 @@
         // ─── 🔨 BUILD ─────────────────────────────────────────────────────────
         {
             "label": "Build: Debug",
-            "detail": "🔨 Compile the Lurek2D engine in debug mode — fast compile with full debug symbols. Default build task (Ctrl+Shift+B).",
-            "type": "cargo",
-            "command": "build",
+            "detail": "🔨 Compile the Lurek2D engine in debug mode through tools/dev/parallel_cargo.py using the detected logical CPU count. Default build task (Ctrl+Shift+B).",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py build debug",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -17,12 +17,9 @@
         },
         {
             "label": "Build: Release",
-            "detail": "🔨 Compile with opt-level 3 + LTO enabled. Use this for distribution builds and performance measurement.",
-            "type": "cargo",
-            "command": "build",
-            "args": [
-                "--release"
-            ],
+            "detail": "🔨 Compile the Lurek2D engine in release mode through tools/dev/parallel_cargo.py with the detected logical CPU count. Use this for distribution builds and performance measurement.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py build release",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
@@ -30,22 +27,22 @@
         },
         {
             "label": "Build: Check (fast)",
-            "detail": "⚡ Type-check and resolve the crate without producing a binary — much faster than a full build. Use during active development.",
-            "type": "cargo",
-            "command": "check",
+            "detail": "⚡ Type-check and resolve the crate through tools/dev/parallel_cargo.py without producing a binary — much faster than a full build.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py check",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
             ]
         },
-        // ─── ▶️  RUN EXAMPLES (cargo run) ────────────────────────────────────
-        // Pick-example tasks — use these to choose which game to run.
+        // ─── ▶️  RUN SHOWCASE GAMES ──────────────────────────────────────────
+        // Pick-example tasks — use these to choose which showcase game to run.
         // The Tasks picker will ask you to select an example from the list.
         {
             "label": "Run Debug: Pick Example",
-            "detail": "🐛 Build (debug) and run a chosen example — pick from the list.",
+            "detail": "🐛 Build (debug) and run a chosen showcase game through tools/dev/parallel_cargo.py.",
             "type": "shell",
-            "command": "cargo run -- ${input:exampleGame}",
+            "command": "python tools/dev/parallel_cargo.py run debug -- ${input:exampleGame}",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
@@ -53,9 +50,9 @@
         },
         {
             "label": "Run Release: Pick Example",
-            "detail": "🚀 Build (release, LTO) and run a chosen example — pick from the list.",
+            "detail": "🚀 Build (release) and run a chosen showcase game through tools/dev/parallel_cargo.py.",
             "type": "shell",
-            "command": "cargo run --release -- ${input:exampleGame}",
+            "command": "python tools/dev/parallel_cargo.py run release -- ${input:exampleGame}",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
@@ -64,26 +61,33 @@
         // ─── 🧪 TEST ──────────────────────────────────────────────────────────
         {
             "label": "Test: All",
-            "detail": "🧪 Run the full test suite (unit + integration). All tests must pass before committing. Default test task.",
-            "type": "cargo",
-            "command": "test",
+            "detail": "🧪 Run the full test suite through the parallel orchestration path: bounded Rust test fan-out first, then the Lua bindings harness. Default test task.",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Test: Rust targets (all cores)",
+                "Test: Lua bindings"
+            ],
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test: Rust targets (all cores)",
+            "detail": "🧪 Fan out non-Lua Rust test targets through tools/dev/parallel_cargo.py with bounded subprocess concurrency and per-process libtest threads.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test rust",
+            "group": "test",
             "problemMatcher": [
                 "$rustc"
             ]
         },
         {
             "label": "Test: All (verbose)",
-            "detail": "🧪 Run the full test suite and print captured stdout/stderr for every test case (--nocapture).",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--",
-                "--nocapture"
-            ],
+            "detail": "🧪 Run the full repo-owned test flow through tools/dev/parallel_cargo.py with verbose cargo output and --nocapture.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test all --verbose --nocapture",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -92,12 +96,8 @@
         {
             "label": "Test: Math module",
             "detail": "🧮 Run only math-related tests — Vec2, Mat3, Rect, distance, clamp, and fast math helpers.",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "math_tests"
-            ],
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target math_tests",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -106,12 +106,8 @@
         {
             "label": "Test: Physics module",
             "detail": "⚙️  Run only physics integration tests — bodies, world stepping, and AABB collision resolution.",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "physics_tests"
-            ],
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target physics_tests",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -120,12 +116,8 @@
         {
             "label": "Test: Graphics module",
             "detail": "🎨 Run only graphics integration tests — color, camera transforms, and draw command processing.",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "graphics_tests"
-            ],
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target graphics_tests",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -133,13 +125,9 @@
         },
         {
             "label": "Test: Lua bindings",
-            "detail": "🌙 Run only Lua binding tests — exercises the full lurek.* API surface headlessly (no window).",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "lua_tests"
-            ],
+            "detail": "🌙 Run only Lua binding tests through tools/dev/parallel_cargo.py — exercises the full lurek.* API surface headlessly (no window).",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test lua",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -148,12 +136,8 @@
         {
             "label": "Test: Audio module",
             "detail": "🎵 Run only audio integration tests — source loading and mixer state (no playback in CI).",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "audio_tests"
-            ],
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target audio_tests",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -162,12 +146,8 @@
         {
             "label": "Test: Input module",
             "detail": "🎮 Run only input integration tests — keyboard and mouse state machine.",
-            "type": "cargo",
-            "command": "test",
-            "args": [
-                "--test",
-                "input_tests"
-            ],
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py test target input_tests",
             "group": "test",
             "problemMatcher": [
                 "$rustc"
@@ -176,9 +156,9 @@
         // ─── 🔍 QUALITY GATES ─────────────────────────────────────────────────
         {
             "label": "Lint: Clippy",
-            "detail": "🔍 Run Clippy lints against all targets. Must report 0 warnings before any commit.",
-            "type": "cargo",
-            "command": "clippy",
+            "detail": "🔍 Run Clippy through tools/dev/parallel_cargo.py against the workspace.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py clippy",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
@@ -186,14 +166,9 @@
         },
         {
             "label": "Lint: Clippy (deny warnings)",
-            "detail": "🚫 Run Clippy in CI-strict mode (-D warnings) — every warning is a compile error. Use before pushing.",
-            "type": "cargo",
-            "command": "clippy",
-            "args": [
-                "--",
-                "-D",
-                "warnings"
-            ],
+            "detail": "🚫 Run Clippy through tools/dev/parallel_cargo.py in CI-strict mode (-D warnings).",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py clippy --deny-warnings",
             "group": "build",
             "problemMatcher": [
                 "$rustc"
@@ -201,16 +176,16 @@
         },
         {
             "label": "Format: Apply",
-            "detail": "📐 Auto-format all Rust source files with rustfmt (rewrites in place). Safe to run at any time.",
+            "detail": "📐 Auto-format all Rust source files through tools/dev/parallel_cargo.py.",
             "type": "shell",
-            "command": "cargo fmt",
+            "command": "python tools/dev/parallel_cargo.py fmt apply",
             "problemMatcher": []
         },
         {
             "label": "Format: Check",
-            "detail": "📐 Verify all files are already correctly formatted without modifying them. Used in CI and the full quality gate.",
+            "detail": "📐 Verify formatting through tools/dev/parallel_cargo.py without modifying files.",
             "type": "shell",
-            "command": "cargo fmt --check",
+            "command": "python tools/dev/parallel_cargo.py fmt check",
             "problemMatcher": []
         },
         {
@@ -252,9 +227,9 @@
         // ─── 📖 DOCUMENTATION ─────────────────────────────────────────────────
         {
             "label": "Docs: Open in Browser",
-            "detail": "📖 Generate rustdoc for lurek2d and open the HTML output in the default browser (cargo doc --open).",
+            "detail": "📖 Generate rustdoc for lurek2d and open the HTML output through tools/dev/parallel_cargo.py.",
             "type": "shell",
-            "command": "cargo doc --open --no-deps",
+            "command": "python tools/dev/parallel_cargo.py doc --open --no-deps",
             "problemMatcher": []
         },
         {
@@ -450,34 +425,34 @@
         {
             "id": "exampleGame",
             "type": "pickString",
-            "description": "Choose a demo to run",
+            "description": "Choose a showcase game to run",
             "options": [
                 {
                     "label": "Hello World",
-                    "value": "content/demos/hello_world"
-                },
-                {
-                    "label": "Physics Demo",
-                    "value": "content/demos/physics_demo"
+                    "value": "content/games/showcase/hello_world"
                 },
                 {
                     "label": "Sprites",
-                    "value": "content/demos/sprites"
-                },
-                {
-                    "label": "Platformer",
-                    "value": "content/demos/platformer"
+                    "value": "content/games/showcase/sprites"
                 },
                 {
                     "label": "Scene Demo",
-                    "value": "content/demos/scene_demo"
+                    "value": "content/games/showcase/scene_demo"
                 },
                 {
                     "label": "Demo Game",
-                    "value": "content/demos/demo_game"
+                    "value": "content/games/showcase/demo_game"
+                },
+                {
+                    "label": "Light Demo",
+                    "value": "content/games/showcase/light_demo"
+                },
+                {
+                    "label": "Particles Demo",
+                    "value": "content/games/showcase/particles_demo"
                 }
             ],
-            "default": "content/demos/hello_world"
+            "default": "content/games/showcase/hello_world"
         }
     ]
 }

@@ -1,23 +1,22 @@
 import * as vscode from "vscode";
-import * as child_process from "child_process";
 import * as path from "path";
 import * as fs from "fs";
+import { buildRunCommand, buildTerminalCommand } from "./parallelCargo.js";
 
 /**
  * Manages the Lurek2D game process lifecycle — finding the binary,
  * launching, stopping, and reporting status.
  */
 export class LurekProcessService {
-  private process: child_process.ChildProcess | null = null;
   private terminal: vscode.Terminal | null = null;
   private readonly _onStatusChange = new vscode.EventEmitter<boolean>();
   public readonly onStatusChange = this._onStatusChange.event;
 
   /**
-   * Finds the lurek2d binary. Checks the user setting first,
-   * then PATH, then falls back to `cargo run`.
+   * Finds an installed lurek2d binary. Checks the user setting first,
+   * then PATH, then falls back to the repo wrapper if the workspace contains Cargo.toml.
    */
-  async findLurekBinary(): Promise<string> {
+  async findLurekBinary(): Promise<string | undefined> {
     // 1. Check user setting
     const configured = vscode.workspace
       .getConfiguration("lurek")
@@ -41,7 +40,7 @@ export class LurekProcessService {
     if (workspaceRoot) {
       const cargoToml = path.join(workspaceRoot, "Cargo.toml");
       if (fs.existsSync(cargoToml)) {
-        return "cargo run --";
+        return undefined;
       }
     }
 
@@ -67,9 +66,10 @@ export class LurekProcessService {
     }
 
     const binary = await this.findLurekBinary();
-    const cmd = binary.startsWith("cargo run")
-      ? `${binary} ${gameDir} ${args.join(" ")}`.trim()
-      : `"${binary}" ${gameDir} ${args.join(" ")}`.trim();
+    const launchArgs = [gameDir, ...args];
+    const cmd = binary
+      ? buildTerminalCommand(binary, launchArgs)
+      : buildRunCommand("debug", launchArgs);
 
     this.terminal = vscode.window.createTerminal({
       name: "Lurek2D",
@@ -89,10 +89,6 @@ export class LurekProcessService {
     if (this.terminal) {
       this.terminal.dispose();
       this.terminal = null;
-    }
-    if (this.process) {
-      this.process.kill();
-      this.process = null;
     }
     this._onStatusChange.fire(false);
     vscode.commands.executeCommand("setContext", "lurek.gameRunning", false);

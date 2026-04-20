@@ -682,7 +682,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "pollDpiChange",
         lua.create_function(move |lua, ()| {
-            let current = s.borrow().dpi_scale;
+            let current = s.borrow().window_state.dpi_scale;
             let prev = *pd.borrow();
             if (current - prev).abs() > f64::EPSILON {
                 *pd.borrow_mut() = current;
@@ -770,3 +770,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     luna.set("window", tbl)?;
     Ok(())
 }
+
+
+
+

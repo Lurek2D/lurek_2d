@@ -1576,7 +1576,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 s.borrow_mut()
                     .render_commands
                     .push(RenderCommand::Triangle {
-                        mode: parse_draw_mode(&mode)?
+                        mode: parse_draw_mode(&mode)?,
                         x1,
                         y1,
                         x2,
@@ -4060,7 +4060,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 let alpha = alpha.unwrap_or(1.0).clamp(0.0, 1.0);
                 let blend = match blend_mode.as_deref().unwrap_or("alpha") {
                     "alpha"    => BlendMode::Alpha,
-                    "add" | "additive" => BlendMode::Additive,
+                    "add" | "additive" => BlendMode::Add,
                     "multiply" => BlendMode::Multiply,
                     "replace" | "none" => BlendMode::Replace,
                     "screen"   => BlendMode::Screen,

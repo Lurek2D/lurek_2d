@@ -714,6 +714,130 @@ impl LuaUserData for LuaLight {
             }
         });
 
+
+        // -- addFlicker --
+        /// Convenience method to set a flicker effect using amplitude range and
+        /// frequency. `min` and `max` are multipliers for the base intensity
+        /// (e.g. `0.8, 1.2` = ±20%). `hz` is the oscillation frequency in
+        /// cycles per second.
+        /// @param min : number  — lower intensity multiplier
+        /// @param max : number  — upper intensity multiplier
+        /// @param hz  : number  — oscillation frequency (cycles/s)
+        /// @return nil
+        methods.add_method("addFlicker", |_, this, (min, max, hz): (f32, f32, f32)| {
+            let strength = ((max - min) / 2.0).abs();
+            let speed = hz * std::f32::consts::TAU;
+            let mut st = this.state.borrow_mut();
+            let light = st.light_world.get_light_mut(this.key)
+                .ok_or_else(|| invalid_light("Light:addFlicker"))?;
+            *light.flicker_mut() = FlickerConfig::new(speed, strength);
+            Ok(())
+        });
+
+        // -- transitionTo --
+        /// Begins a smooth linear transition of the light's color, intensity,
+        /// and/or radius from their current values to the targets specified in
+        /// `target`. Call `light:updateTransition(dt)` every frame to advance
+        /// it.
+        ///
+        /// `target` fields (all optional):
+        /// - `color`     : `{r, g, b, a?}`
+        /// - `intensity` : `number`
+        /// - `radius`    : `number`
+        ///
+        /// @param target   : table
+        /// @param duration : number
+        /// @return nil
+        methods.add_method("transitionTo", |_, this, (target, duration): (LuaTable, f32)| {
+            let st = this.state.borrow();
+            let light = st.light_world.get_light(this.key)
+                .ok_or_else(|| invalid_light("Light:transitionTo"))?;
+            let from_color = [light.color.r, light.color.g, light.color.b, light.color.a];
+            let from_intensity = light.intensity;
+            let from_radius = light.radius;
+            drop(st);
+            let to_color: [f32; 4] = if let Ok(ct) = target.get::<_, LuaTable>("color") {
+                [
+                    ct.get::<_, f32>(1).unwrap_or(from_color[0]),
+                    ct.get::<_, f32>(2).unwrap_or(from_color[1]),
+                    ct.get::<_, f32>(3).unwrap_or(from_color[2]),
+                    ct.get::<_, f32>(4).unwrap_or(from_color[3]),
+                ]
+            } else {
+                from_color
+            };
+            let to_intensity = target.get::<_, f32>("intensity").unwrap_or(from_intensity);
+            let to_radius = target.get::<_, f32>("radius").unwrap_or(from_radius);
+            *this.transition.borrow_mut() = Some(LightTransition::new(
+                from_color, to_color, from_intensity, to_intensity, from_radius, to_radius, duration,
+            ));
+            Ok(())
+        });
+
+        // -- updateTransition --
+        /// Advances the active transition by `dt` seconds and applies the
+        /// interpolated values to the light. Returns `true` while the
+        /// transition is still running.
+        /// @param dt : number
+        /// @return boolean
+        methods.add_method("updateTransition", |_, this, dt: f32| {
+            let result = this.transition.borrow_mut().as_mut().and_then(|t| t.update(dt));
+            if let Some((color, intensity, radius)) = result {
+                let mut st = this.state.borrow_mut();
+                if let Some(light) = st.light_world.get_light_mut(this.key) {
+                    light.color.r = color[0];
+                    light.color.g = color[1];
+                    light.color.b = color[2];
+                    light.color.a = color[3];
+                    light.intensity = intensity;
+                    light.set_radius(radius);
+                }
+                Ok(true)
+            } else {
+                Ok(false)
+            }
+        });
+
+        // -- stopTransition --
+        /// Cancels the active light transition.
+        /// @return nil
+        methods.add_method("stopTransition", |_, this, ()| {
+            this.transition.borrow_mut().take();
+            Ok(())
+        });
+
+        // -- transitionProgress --
+        /// Returns the fractional progress `[0, 1]` of the active transition,
+        /// or `1` if none is running.
+        /// @return number
+        methods.add_method("transitionProgress", |_, this, ()| {
+            Ok(this.transition.borrow().as_ref().map(|t| t.progress()).unwrap_or(1.0))
+        });
+
+        // -- setCookie --
+        /// Sets the texture path used as a light cookie (mask) for projection.
+        /// The engine will use this path when rendering the light's projection.
+        /// @param path : string
+        /// @return nil
+        methods.add_method("setCookie", |_, this, path: String| {
+            *this.cookie_path.borrow_mut() = Some(path);
+            Ok(())
+        });
+
+        // -- getCookie --
+        /// Returns the current cookie texture path, or `nil` if unset.
+        /// @return string?
+        methods.add_method("getCookie", |_, this, ()| {
+            Ok(this.cookie_path.borrow().clone())
+        });
+
+        // -- clearCookie --
+        /// Removes the cookie texture assignment.
+        /// @return nil
+        methods.add_method("clearCookie", |_, this, ()| {
+            this.cookie_path.borrow_mut().take();
+            Ok(())
+        });
     }
 }
 
@@ -874,130 +998,6 @@ impl LuaUserData for LuaOccluder {
                 Some(o) => Ok(format!("Occluder({} verts)", o.get_vertices().len())),
                 None => Ok("Occluder(invalid)".to_string()),
             }
-        });
-
-        // -- addFlicker --
-        /// Convenience method to set a flicker effect using amplitude range and
-        /// frequency. `min` and `max` are multipliers for the base intensity
-        /// (e.g. `0.8, 1.2` = ±20%). `hz` is the oscillation frequency in
-        /// cycles per second.
-        /// @param min : number  — lower intensity multiplier
-        /// @param max : number  — upper intensity multiplier
-        /// @param hz  : number  — oscillation frequency (cycles/s)
-        /// @return nil
-        methods.add_method("addFlicker", |_, this, (min, max, hz): (f32, f32, f32)| {
-            let strength = ((max - min) / 2.0).abs();
-            let speed = hz * std::f32::consts::TAU;
-            let mut st = this.state.borrow_mut();
-            let light = st.light_world.get_light_mut(this.key)
-                .ok_or_else(|| invalid_light("Light:addFlicker"))?;
-            *light.flicker_mut() = FlickerConfig::new(speed, strength);
-            Ok(())
-        });
-
-        // -- transitionTo --
-        /// Begins a smooth linear transition of the light's color, intensity,
-        /// and/or radius from their current values to the targets specified in
-        /// `target`. Call `light:updateTransition(dt)` every frame to advance
-        /// it.
-        ///
-        /// `target` fields (all optional):
-        /// - `color`     : `{r, g, b, a?}`
-        /// - `intensity` : `number`
-        /// - `radius`    : `number`
-        ///
-        /// @param target   : table
-        /// @param duration : number
-        /// @return nil
-        methods.add_method("transitionTo", |_, this, (target, duration): (LuaTable, f32)| {
-            let st = this.state.borrow();
-            let light = st.light_world.get_light(this.key)
-                .ok_or_else(|| invalid_light("Light:transitionTo"))?;
-            let from_color = [light.color.r, light.color.g, light.color.b, light.color.a];
-            let from_intensity = light.intensity;
-            let from_radius = light.radius;
-            drop(st);
-            let to_color: [f32; 4] = if let Ok(ct) = target.get::<_, LuaTable>("color") {
-                [
-                    ct.get::<_, f32>(1).unwrap_or(from_color[0]),
-                    ct.get::<_, f32>(2).unwrap_or(from_color[1]),
-                    ct.get::<_, f32>(3).unwrap_or(from_color[2]),
-                    ct.get::<_, f32>(4).unwrap_or(from_color[3]),
-                ]
-            } else {
-                from_color
-            };
-            let to_intensity = target.get::<_, f32>("intensity").unwrap_or(from_intensity);
-            let to_radius = target.get::<_, f32>("radius").unwrap_or(from_radius);
-            *this.transition.borrow_mut() = Some(LightTransition::new(
-                from_color, to_color, from_intensity, to_intensity, from_radius, to_radius, duration,
-            ));
-            Ok(())
-        });
-
-        // -- updateTransition --
-        /// Advances the active transition by `dt` seconds and applies the
-        /// interpolated values to the light. Returns `true` while the
-        /// transition is still running.
-        /// @param dt : number
-        /// @return boolean
-        methods.add_method("updateTransition", |_, this, dt: f32| {
-            let result = this.transition.borrow_mut().as_mut().and_then(|t| t.update(dt));
-            if let Some((color, intensity, radius)) = result {
-                let mut st = this.state.borrow_mut();
-                if let Some(light) = st.light_world.get_light_mut(this.key) {
-                    light.color.r = color[0];
-                    light.color.g = color[1];
-                    light.color.b = color[2];
-                    light.color.a = color[3];
-                    light.intensity = intensity;
-                    light.set_radius(radius);
-                }
-                Ok(true)
-            } else {
-                Ok(false)
-            }
-        });
-
-        // -- stopTransition --
-        /// Cancels the active light transition.
-        /// @return nil
-        methods.add_method("stopTransition", |_, this, ()| {
-            this.transition.borrow_mut().take();
-            Ok(())
-        });
-
-        // -- transitionProgress --
-        /// Returns the fractional progress `[0, 1]` of the active transition,
-        /// or `1` if none is running.
-        /// @return number
-        methods.add_method("transitionProgress", |_, this, ()| {
-            Ok(this.transition.borrow().as_ref().map(|t| t.progress()).unwrap_or(1.0))
-        });
-
-        // -- setCookie --
-        /// Sets the texture path used as a light cookie (mask) for projection.
-        /// The engine will use this path when rendering the light's projection.
-        /// @param path : string
-        /// @return nil
-        methods.add_method("setCookie", |_, this, path: String| {
-            *this.cookie_path.borrow_mut() = Some(path);
-            Ok(())
-        });
-
-        // -- getCookie --
-        /// Returns the current cookie texture path, or `nil` if unset.
-        /// @return string?
-        methods.add_method("getCookie", |_, this, ()| {
-            Ok(this.cookie_path.borrow().clone())
-        });
-
-        // -- clearCookie --
-        /// Removes the cookie texture assignment.
-        /// @return nil
-        methods.add_method("clearCookie", |_, this, ()| {
-            this.cookie_path.borrow_mut().take();
-            Ok(())
         });
 
     }

@@ -2684,7 +2684,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newTerrain",
         lua.create_function({
-            move |_, (width, height, cell_size, world_handle): (u32, u32, f32, LuaWorld)| {
+            move |_, (width, height, cell_size, world_ud): (u32, u32, f32, mlua::AnyUserData)| {
+                let world_handle: std::cell::Ref<LuaWorld> = world_ud.borrow::<LuaWorld>()?;
                 let terrain = TerrainMap::new(width, height, cell_size);
                 Ok(LuaTerrain {
                     terrain: Rc::new(RefCell::new(terrain)),

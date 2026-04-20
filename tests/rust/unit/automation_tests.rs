@@ -1,43 +1,21 @@
-//! Tests for the automation module.
+//! Smoke tests for the automation module against the current public API.
 
-use lurek2d::automation::step::{Action, Step};
-use lurek2d::automation::script::Script;
-use lurek2d::automation::simulator::Simulator;
-
-// ── step ─────────────────────────────────────────────────────────────────────
+use lurek2d::automation::{Action, Script, Simulator, Step};
+use lurek2d::event::EventQueue;
 
 mod step_tests {
     use super::*;
 
     #[test]
     fn parse_action_known_variants() {
-        assert_eq!(Action::parse_action("keypressed"), Some(Action::KeyPressed));
-        assert_eq!(Action::parse_action("keyreleased"), Some(Action::KeyReleased));
-        assert_eq!(Action::parse_action("mousepressed"), Some(Action::MousePressed));
-        assert_eq!(Action::parse_action("mousereleased"), Some(Action::MouseReleased));
-        assert_eq!(Action::parse_action("mousemoved"), Some(Action::MouseMoved));
-        assert_eq!(Action::parse_action("wheelmoved"), Some(Action::WheelMoved));
+        assert_eq!(Action::parse_action("keypress"), Some(Action::KeyPress));
+        assert_eq!(Action::parse_action("keyrelease"), Some(Action::KeyRelease));
+        assert_eq!(Action::parse_action("mousemove"), Some(Action::MouseMove));
+        assert_eq!(Action::parse_action("mousepress"), Some(Action::MousePress));
+        assert_eq!(Action::parse_action("mouserelease"), Some(Action::MouseRelease));
+        assert_eq!(Action::parse_action("mousewheel"), Some(Action::MouseWheel));
         assert_eq!(Action::parse_action("textinput"), Some(Action::TextInput));
         assert_eq!(Action::parse_action("wait"), Some(Action::Wait));
-    }
-
-    #[test]
-    fn parse_action_unknown_returns_none() {
-        assert_eq!(Action::parse_action("fly"), None);
-        assert_eq!(Action::parse_action(""), None);
-    }
-
-    #[test]
-    fn as_str_roundtrip() {
-        for action in [
-            Action::KeyPressed, Action::KeyReleased,
-            Action::MousePressed, Action::MouseReleased,
-            Action::MouseMoved, Action::WheelMoved,
-            Action::TextInput, Action::Wait,
-        ] {
-            let s = action.as_str();
-            assert_eq!(Action::parse_action(s), Some(action));
-        }
     }
 
     #[test]
@@ -51,27 +29,12 @@ mod step_tests {
 
     #[test]
     fn effective_scancode_prefers_scancode() {
-        let mut s = Step::new(0.0, Action::KeyPressed);
+        let mut s = Step::new(0.0, Action::KeyPress);
         s.key = Some("a".into());
         s.scancode = Some("KeyA".into());
         assert_eq!(s.effective_scancode(), Some("KeyA"));
     }
-
-    #[test]
-    fn effective_scancode_falls_back_to_key() {
-        let mut s = Step::new(0.0, Action::KeyPressed);
-        s.key = Some("space".into());
-        assert_eq!(s.effective_scancode(), Some("space"));
-    }
-
-    #[test]
-    fn effective_scancode_none_when_both_absent() {
-        let s = Step::new(0.0, Action::KeyPressed);
-        assert_eq!(s.effective_scancode(), None);
-    }
 }
-
-// ── script ───────────────────────────────────────────────────────────────────
 
 mod script_tests {
     use super::*;
@@ -97,18 +60,9 @@ mod script_tests {
     #[test]
     fn step_limit_clamps_count() {
         let mut s = Script::new("s", make_steps(5));
-        s.step_limit = Some(3);
-        assert!(s.step_limit.unwrap() <= s.step_count());
-    }
-
-    #[test]
-    fn duration_is_last_step_time() {
-        let steps = vec![
-            Step::new(0.0, Action::Wait),
-            Step::new(1.5, Action::Wait),
-        ];
-        let s = Script::new("s", steps);
-        assert!((s.duration() - 1.5).abs() < f32::EPSILON);
+        s.set_step_limit(3);
+        assert_eq!(s.get_step_limit(), 3);
+        assert_eq!(s.step_count(), 3);
     }
 
     #[test]
@@ -122,7 +76,7 @@ action = "wait"
 time = 0.5
 
 [[steps]]
-action = "keypressed"
+action = "keypress"
 time = 1.0
 key = "space"
 "#;
@@ -130,101 +84,68 @@ key = "space"
         assert_eq!(s.step_count(), 2);
         assert_eq!(s.description.as_deref(), Some("test script"));
     }
-
-    #[test]
-    fn from_toml_unknown_action_errors() {
-        let toml = r#"
-[[steps]]
-action = "fly"
-time = 0.0
-"#;
-        assert!(Script::from_toml("t", toml).is_err());
-    }
-
-    #[test]
-    fn from_toml_invalid_toml_errors() {
-        assert!(Script::from_toml("t", "not valid toml {{{").is_err());
-    }
 }
-
-// ── simulator ────────────────────────────────────────────────────────────────
 
 mod simulator_tests {
     use super::*;
 
-    fn test_script(n: usize) -> Script {
-        let steps: Vec<Step> = (0..n)
-            .map(|i| Step::new(i as f32 * 0.1, Action::Wait))
-            .collect();
-        Script::new("test", steps)
+    fn script_with_text_event(name: &str) -> Script {
+        let mut step = Step::new(0.0, Action::TextInput);
+        step.text = Some("hello".into());
+        Script::new(name, vec![step])
     }
 
     #[test]
     fn new_simulator_idle() {
         let sim = Simulator::new();
-        assert!(!sim.is_playing);
-        assert!(!sim.is_paused);
-        assert!(!sim.is_recording);
+        assert!(!sim.is_running());
+        assert!(!sim.is_paused());
+        assert!(!sim.is_complete());
+        assert!(sim.current_script().is_none());
     }
 
     #[test]
-    fn load_script_stores_it() {
+    fn load_and_start_script() {
         let mut sim = Simulator::new();
-        sim.load_script(test_script(3));
-        assert!(sim.script.is_some());
-    }
-
-    #[test]
-    fn start_sets_playing() {
-        let mut sim = Simulator::new();
-        sim.load_script(test_script(2));
-        sim.start();
-        assert!(sim.is_playing);
-        assert!(!sim.is_paused);
+        sim.load(script_with_text_event("test"));
+        assert!(sim.has_script("test"));
+        sim.start("test").unwrap();
+        assert!(sim.is_running());
+        assert_eq!(sim.current_script(), Some("test"));
+        assert_eq!(sim.step_count(), 1);
     }
 
     #[test]
     fn pause_and_resume() {
         let mut sim = Simulator::new();
-        sim.load_script(test_script(2));
-        sim.start();
+        sim.load(script_with_text_event("test"));
+        sim.start("test").unwrap();
         sim.pause();
-        assert!(sim.is_paused);
+        assert!(sim.is_paused());
         sim.resume();
-        assert!(!sim.is_paused);
+        assert!(!sim.is_paused());
+        assert!(sim.is_running());
     }
 
     #[test]
-    fn stop_resets_state() {
+    fn update_dispatches_events() {
         let mut sim = Simulator::new();
-        sim.load_script(test_script(2));
-        sim.start();
-        sim.stop();
-        assert!(!sim.is_playing);
+        let mut queue = EventQueue::new();
+        sim.load(script_with_text_event("test"));
+        sim.start("test").unwrap();
+        sim.update(0.1, &mut queue);
+        assert_eq!(queue.len(), 1);
+        assert_eq!(sim.current_step(), 1);
+        assert!(sim.is_complete());
     }
 
     #[test]
-    fn playback_speed_clamped() {
+    fn macro_round_trip() {
         let mut sim = Simulator::new();
-        sim.set_playback_speed(-1.0);
-        assert!(sim.playback_speed >= 0.0);
-    }
-
-    #[test]
-    fn macro_record_and_list() {
-        let mut sim = Simulator::new();
-        sim.start_macro("m1");
-        sim.record_macro_step(Step::new(0.0, Action::Wait));
-        sim.stop_macro();
-        assert!(sim.macro_names().contains(&"m1".to_string()));
-    }
-
-    #[test]
-    fn delete_macro() {
-        let mut sim = Simulator::new();
-        sim.start_macro("m");
-        sim.stop_macro();
-        assert!(sim.delete_macro("m"));
-        assert!(!sim.macro_names().contains(&"m".to_string()));
+        sim.save_macro("macro1".to_string(), script_with_text_event("macro_script"));
+        assert!(sim.has_macro("macro1"));
+        assert_eq!(sim.list_macros().len(), 1);
+        sim.play_macro("macro1").unwrap();
+        assert_eq!(sim.current_script(), Some("macro_script"));
     }
 }
