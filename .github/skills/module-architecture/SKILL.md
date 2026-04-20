@@ -44,9 +44,9 @@ description: "Load this skill when designing module boundaries, dependency direc
   - `content/library/` → Lunasome, pure Lua; when a new gameplay-domain helper can live there, prefer that over a new Rust module
 - **No upward imports**: lower groups must not import higher groups. Feature Systems allows same-group imports only when the dependency graph remains acyclic
 - **One responsibility**: Each module owns one subsystem — no shared kitchen-sink modules
-- **mod.rs pattern**: Each module has `mod.rs` for re-exports + separate files for types
+- **Thin `mod.rs` rule (TST-04)**: Every `mod.rs` contains ONLY `pub mod X;` declarations, `pub use X::*;` re-exports, module-level attributes (`#![...]`), and doc comments. Function / struct / enum / trait / `impl` definitions MUST live in sibling files such as `src/<module>/facade.rs`, `src/<module>/register.rs`, or topic-named files. Reinforces Zen Rule 7 ("split by reason to change"). Full text: [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints). Enforcement: `thin_modrs_audit.py` scheduled to land in `tools/audit/` during session `testing-cleanup-20260420` P3.
 - **Visibility**: Default to `pub(crate)`; use `pub` only for types used by `tests/` or external consumers
-- **New module checklist**: Create directory, add `mod.rs`, add `pub mod` to `lib.rs` when it belongs in the Rust crate surface, and add tests in the correct registered test family
+- **New module checklist**: Create directory, add `mod.rs` (thin — declarations only), add sibling files for types/impls, add `pub mod` to `lib.rs` when it belongs in the Rust crate surface, and add tests in the correct registered test family
 - **Math is special**: `Vec2`, `Mat3`, `Rect` are foundational — all modules may depend on `math`
 
 ## Companion File Index

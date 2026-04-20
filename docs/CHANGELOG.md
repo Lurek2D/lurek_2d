@@ -7,6 +7,7 @@ All notable changes to Lurek2D are recorded here.
 ### Testing Architecture — Binding Constraints TST-01..TST-04 (session testing-cleanup-20260420 P1)
 
 - **docs(testing): add binding constraints TST-01..TST-04 for Lua-first testing, centralised Rust unit tests, thin Lua wrappers, and thin `mod.rs`** — New "Testing Constraints" section in [philosophy.md](architecture/philosophy.md#testing-constraints); new "Test placement" section in [test-framework.md](architecture/test-framework.md#test-placement) with decision tree, banned-patterns list, and forward references to the P3 audit scripts (`inline_test_audit.py`, `thin_wrapper_audit.py`, `thin_modrs_audit.py`); [handbook.md § 9 Testing](handbook.md#9-testing) rewritten with the three contributor-facing rules and corrected constraint references (previously cited C-04 in error). Note: prefix is **TST-*** (not plain T-*) because `T-01..T-08` are already taken by Active Module Group Constraints.
+- **cag(testing): enforce TST-01..TST-04 across system prompt, testing-rust / lua-rust-bridge / module-architecture skills, tester agent, and add /audit-test-placement prompt (session testing-cleanup-20260420 P2)** — System prompt adds the four TST constraints under Binding Constraints, strengthens the Lua-first bullet, and adds a Cross-Artifact Sync row for inline `#[cfg(test)]` additions. `testing-rust` skill rewritten around TST-01..TST-04 (new description, placement decision tree, banned patterns, references). `lua-rust-bridge` skill adds a Thin Wrapper Enforcement block citing TST-03. `module-architecture` skill adds a Thin `mod.rs` rule citing TST-04. `tester` agent workflow and anti-patterns updated to classify tests per TST-01 and reject inline `#[cfg(test)]`. New prompt `.github/prompts/audit-test-placement.prompt.md` wraps the (P3) audit scripts behind `/audit-test-placement`.
 
 ### Globe Module Quality — Docstrings + Rust Unit Tests + Lua Coverage
 
@@ -18,6 +19,10 @@ All notable changes to Lurek2D are recorded here.
 ### Test Harness + VS Code Tasks
 
 - **chore(testing): split bundled `lua_tests` cases and add explicit all-core tasks** — `lua_test_window`, `lua_test_compute`, `lua_test_savegame`, and `lua_test_entity` now map one Lua file per `#[test]` so libtest can schedule them independently inside the harness, and `.vscode/tasks.json` now adds OS-specific `Build: Debug (all cores)`, `Test: All (all cores)`, and `Test: Lua bindings (all cores)` tasks that set both Cargo `-j` and libtest `--test-threads`.
+
+### Parallel Cargo Orchestration
+
+- **chore(devtools): add `tools/dev/parallel_cargo.py` and wire targeted all-core tasks** — Added a stdlib-only cargo orchestration helper for `build debug`, `build release`, `test lua`, and parallel `test rust` fan-out over discovered non-Lua test targets; `.vscode/tasks.json` now uses it for debug build all-cores and Lua bindings all-cores, and adds `Build: Release (all cores)` plus `Test: Rust targets (all cores)`.
 
 ## [0.20.2] — 2026-04-22
 

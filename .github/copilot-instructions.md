@@ -17,6 +17,10 @@ Verbatim from `docs/architecture/philosophy.md`. Do not propose changes without 
 - **B-03** 60 FPS at 1080p target on integrated GPUs (Intel UHD, AMD APU).
 - **B-04** Concurrency in Rust threads; LuaJIT VMs cannot share state — use `Channel` for cross-VM comms.
 - **B-05** TOML for human-authored config; JSON for external interop only; no YAML.
+- **TST-01** Lua-first testing: behaviour reachable via `lurek.*` MUST be tested in `tests/lua/` — see [philosophy.md § Testing Constraints](../docs/architecture/philosophy.md#testing-constraints).
+- **TST-02** Inline `#[cfg(test)]` blocks in `src/**/*.rs` are banned; Rust unit tests live in `tests/rust/unit/<module>_tests.rs`.
+- **TST-03** `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and conversions — business logic lives in `src/<module>/`.
+- **TST-04** Every `mod.rs` holds only `pub mod`, `pub use`, attributes, and doc comments — definitions live in sibling files.
 
 ## Cross-Artifact Sync
 
@@ -31,6 +35,7 @@ When you change one of these, you MUST update the others in the same commit.
 | `content/library/<name>/init.lua` changed    | `content/library/<name>/example.lua` · `tests/lua/library/test_library_<name>.lua` · `tests/lua/harness.rs` · regen `docs/API/library-docs.md` via `tools/docs/gen_lib_docs.py` |
 | Plugin candidacy note in `docs/specs/<module>.md` changed | `docs/architecture/plugins.md` §5 candidate table                       |
 | Contributor onboarding flow changes (build steps, first-game tutorial, quality gates) | `docs/handbook.md` (relevant section) · `CONTRIBUTING.md` if needed |
+| Added inline `#[cfg(test)]` in `src/`        | Revert — violates TST-02. Move to `tests/rust/unit/<module>_tests.rs` or `tests/lua/unit/test_<module>.lua`. |
 | Any change                                   | `docs/CHANGELOG.md`                                                      |
 
 Regenerate API references with `python tools/gen_all_docs.py` whenever Rust or Lua API surface changes.
@@ -46,7 +51,7 @@ This system prompt is a discovery index, not a manual. Find specialised context 
 - **Module specs** live in `docs/specs/<module>.md` — load directly when you need the canonical reference for a Rust module, its Lua bindings, types, and functions.
 - **Sessions** must create `work/<session-name>/` with subfolders `scripts/`, `handovers/`, `reports/`, `data/`, `examples/`, `other/`, `temp/`, `logs/`. Append one JSONL entry per completed phase to `logs/agent_log.jsonl`; never overwrite. Move completed sessions to `work/archive/`.
 - **API namespace** is `lurek.*` exclusively — never bare globals or external prefixes. The Thin Wrapper Rule binds: `src/lua_api/<module>_api.rs` owns ALL `impl LuaUserData` and `mlua` imports; domain modules under `src/<module>/` stay pure-Rust.
-- **Lua-first testing rule**: behaviour observable through `lurek.*` MUST be tested in Lua under `tests/lua/`. Rust unit tests under `tests/rust/unit/` are reserved for non-Lua-reachable internals.
+- **Lua-first testing rule (TST-01)**: behaviour observable through `lurek.*` MUST be tested in Lua under `tests/lua/`. Rust unit tests under `tests/rust/unit/` are reserved for non-Lua-reachable internals. Full text: [philosophy.md § Testing Constraints](../docs/architecture/philosophy.md#testing-constraints).
 
 **Full CAG system documentation:** [docs/architecture/cag-system.md](../docs/architecture/cag-system.md).
 

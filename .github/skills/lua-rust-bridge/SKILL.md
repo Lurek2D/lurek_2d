@@ -36,11 +36,13 @@ description: "Load this skill when designing or implementing the bridge between 
 
 **Rule**: `lua_api/` is a translation layer only. Business logic stays in domain modules. If `lua_api/*.rs` contains more than ~10 lines of logic per function, move that logic to the domain module.
 
-**Thin Wrapper Contract (enforced by Reviewer):**
-- Each binding closure does exactly one thing: validate parameters, call a single domain function, convert the return value.
-- Any condition that is not parameter validation belongs in the domain module.
-- Any loop, algorithm, or multi-step operation in a `lua_api/` closure is a violation — extract to domain module immediately.
-- The audit tool (`tools/validate/validate_lua_api.py`) flags closures over the 10-line threshold as `ERROR`.
+### Thin Wrapper Enforcement (TST-03)
+
+Binding constraint **TST-03** (see [philosophy.md § Testing Constraints](../../../docs/architecture/philosophy.md#testing-constraints)) makes the thin-wrapper rule load-bearing and auditable:
+
+- `src/lua_api/<module>_api.rs` contains ONLY `impl LuaUserData` blocks, `pub fn register(...)`, helper `Lua<X>` wrapper structs, and `Lua <-> Rust` type conversions. Business logic (math, state machines, algorithms, multi-step ops) MUST live in `src/<module>/` as pure Rust; each binding closure is validate -> delegate -> convert.
+- Tests target the extracted Rust (`tests/rust/unit/<module>_tests.rs`) or the public API in Lua (`tests/lua/`, per **TST-01**); they never target `src/lua_api/` directly.
+- Enforcement: `Reviewer`, `tools/validate/validate_lua_api.py` (closures > ~10 lines of logic = ERROR), plus the `thin_wrapper_audit.py` script scheduled to land in `tools/audit/` during session `testing-cleanup-20260420` P3.
 
 ### Registration Contract
 Every API module MUST follow this exact pattern (gold standard: `src/lua_api/timer_api.rs`):

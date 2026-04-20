@@ -14,7 +14,7 @@ Tester serves the EngDev, GameTest, and EngTest personas by owning the two-layer
 ### Owns
 - `tests/rust/unit/`, `tests/rust/stress/`, `tests/rust/golden/`, `tests/rust/config/`, `tests/rust/security/`, `tests/rust/ext/`.
 - `tests/lua/harness.rs` registration plus `tests/lua/{unit,content/library,integration,stress,security,evidence,golden,content/demos}/`.
-- `#[cfg(test)]` unit tests inside `src/` modules.
+- Enforcement of TST-01..TST-04 (placement, no inline `#[cfg(test)]`, thin wrappers, thin `mod.rs`).
 - Float-comparison helpers and `tests/lua/init.lua` BDD framework.
 - Enforcement of evidence vs golden test contracts.
 
@@ -38,17 +38,18 @@ Tester serves the EngDev, GameTest, and EngTest personas by owning the two-layer
 
 ## Workflow
 1. Read the feature spec and `docs/specs/<module>.md`; load [skill: testing-rust](.github/skills/testing-rust/SKILL.md).
-2. Pick the correct tier per the Lua-first rule: behaviour observable through `lurek.*` → Lua BDD test in `tests/lua/`. Internal Rust-only invariants → `tests/rust/unit/` or `#[cfg(test)]`.
-3. Write the test(s); each Lua file ends with `test_summary()` and includes `@covers lurek.<func>` markers.
-4. For new Lua files, append the `#[test] fn lua_test_<category>_<name>()` entry to `tests/lua/harness.rs`. For new Rust binaries, register `[[test]]` in `Cargo.toml`.
-5. Run scoped: `cargo test --test <module>_tests` and `cargo test lua_test_<category>_<name>` (per skill, not full `cargo test`).
-6. Run [tool: test_coverage](tools/audit/test_coverage.py), [tool: lua_evidence_golden_contract_audit](tools/audit/lua_evidence_golden_contract_audit.py), [tool: lua_test_structure_audit](tools/audit/lua_test_structure_audit.py), and [tool: integration_coverage](tools/audit/integration_coverage.py).
-7. Final gate: `cargo test && cargo clippy -- -D warnings`. Update `docs/CHANGELOG.md` if needed.
-8. Commit: `git add tests/ Cargo.toml docs/CHANGELOG.md` then `git commit -m "test(scope): description"`. Hand off to `Developer` (production bug found), `Reviewer`, or other agent. If `.github/` was touched, route final review to `CAG-Architect`.
-9. **Confirm branch**: run `git rev-parse --abbrev-ref HEAD` and verify it matches the working branch before staging anything.
-10. **Persist artifacts**: write deliverables under `work/<session>/{reports,data,scripts,handovers}/` and append a JSONL log entry per phase to `work/<session>/logs/agent_log.jsonl`.
-11. **Update CHANGELOG**: add one bullet under the current version in `docs/CHANGELOG.md` describing what changed.
-12. **End-of-session handoff**: route to `Manager` (or your `routes_to` agent); for sessions touching `.github/`, ensure `CAG-Architect` performs an End-of-Session CAG Sweep (see [docs/architecture/cag-system.md § 7](../../docs/architecture/cag-system.md#7-end-of-session-cag-sweep-contract)).
+2. Classify each new test per **TST-01**: behaviour observable through `lurek.*` → Lua BDD test in `tests/lua/`; internal Rust-only invariants → `tests/rust/unit/<module>_tests.rs`. Never duplicate Lua-reachable coverage in Rust.
+3. Reject any `#[cfg(test)]` or `#[test]` added inside `src/**/*.rs` (**TST-02** violation); relocate to `tests/rust/unit/<module>_tests.rs` before the PR can proceed.
+4. Write the test(s); each Lua file ends with `test_summary()` and includes `@covers lurek.<func>` markers.
+5. For new Lua files, append the `#[test] fn lua_test_<category>_<name>()` entry to `tests/lua/harness.rs` (manual — no auto-discovery) and confirm it compiles. For new Rust binaries, register `[[test]]` in `Cargo.toml`.
+6. Run scoped: `cargo test --test <module>_tests` and `cargo test lua_test_<category>_<name>` (per skill, not full `cargo test`).
+7. Run [tool: test_coverage](tools/audit/test_coverage.py), [tool: lua_evidence_golden_contract_audit](tools/audit/lua_evidence_golden_contract_audit.py), [tool: lua_test_structure_audit](tools/audit/lua_test_structure_audit.py), and [tool: integration_coverage](tools/audit/integration_coverage.py).
+8. Final gate: `cargo test && cargo clippy -- -D warnings`. Update `docs/CHANGELOG.md` if needed.
+9. Commit: `git add tests/ Cargo.toml docs/CHANGELOG.md` then `git commit -m "test(scope): description"`. Hand off to `Developer` (production bug found), `Reviewer`, or other agent. If `.github/` was touched, route final review to `CAG-Architect`.
+10. **Confirm branch**: run `git rev-parse --abbrev-ref HEAD` and verify it matches the working branch before staging anything.
+11. **Persist artifacts**: write deliverables under `work/<session>/{reports,data,scripts,handovers}/` and append a JSONL log entry per phase to `work/<session>/logs/agent_log.jsonl`.
+12. **Update CHANGELOG**: add one bullet under the current version in `docs/CHANGELOG.md` describing what changed.
+13. **End-of-session handoff**: route to `Manager` (or your `routes_to` agent); for sessions touching `.github/`, ensure `CAG-Architect` performs an End-of-Session CAG Sweep (see [docs/architecture/cag-system.md § 7](../../docs/architecture/cag-system.md#7-end-of-session-cag-sweep-contract)).
 
 ## Routing Table
 
@@ -65,7 +66,10 @@ Tester serves the EngDev, GameTest, and EngTest personas by owning the two-layer
 - Test and Fix: writing a test then immediately patching production code in the same commit.
 - Float Equality: `assert_eq!` on `f32`/`f64` instead of epsilon tolerance.
 - Test Coupling: tests depending on execution order or shared mutable state.
-- Missing Lua Layer: writing only Rust integration tests for behaviour observable through `lurek.*` (Lua-first rule violation).
+- Missing Lua Layer: writing only Rust integration tests for behaviour observable through `lurek.*` (**TST-01** violation).
+- Adding `#[cfg(test)]` or `#[test]` inside `src/` — **TST-02** violation; all Rust unit tests belong in `tests/rust/unit/<module>_tests.rs`.
+- Writing Rust tests for `lurek.*`-reachable behaviour — **TST-01** violation; rewrite as a Lua BDD test.
+- Writing business logic inside `src/lua_api/*_api.rs` to make a binding "testable" — **TST-03** violation; extract to `src/<module>/` first, then test the domain function.
 - Adding evidence-test logic to a golden test (or vice versa) — the contracts are distinct.
 
 ## CAG Metadata
