@@ -224,7 +224,7 @@ fn read_f32(buf: &[u8], offset: usize) -> Result<f32, String> {
 // -------------------------------------------------------------------------------
 
 /// Encode a flat [`ImageData`] into a complete LIMG binary blob.
-fn encode_flat(img: &ImageData) -> Result<Vec<u8>, String> {
+pub fn encode_flat(img: &ImageData) -> Result<Vec<u8>, String> {
     let mut buf = write_header(TYPE_FLAT);
     push_u32(&mut buf, img.width);
     push_u32(&mut buf, img.height);
@@ -234,7 +234,7 @@ fn encode_flat(img: &ImageData) -> Result<Vec<u8>, String> {
 }
 
 /// Decode the payload section of a flat LIMG blob.
-fn decode_flat(payload: &[u8]) -> Result<ImageData, String> {
+pub fn decode_flat(payload: &[u8]) -> Result<ImageData, String> {
     if payload.len() < 8 {
         return Err("LIMG flat payload too short".into());
     }
@@ -366,7 +366,7 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
 // -------------------------------------------------------------------------------
 
 /// Validate the LIMG header and return `(type_flag, payload_slice)`.
-fn parse_header(data: &[u8]) -> Result<(u8, &[u8]), String> {
+pub fn parse_header(data: &[u8]) -> Result<(u8, &[u8]), String> {
     if data.len() < 6 {
         return Err("LIMG file too short to contain a valid header".into());
     }
@@ -385,32 +385,4 @@ fn parse_header(data: &[u8]) -> Result<(u8, &[u8]), String> {
     }
     let type_flag = data[5];
     Ok((type_flag, &data[6..]))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::image::ImageData;
-
-    #[test]
-    fn encode_then_decode_flat_preserves_pixels() {
-        let mut img = ImageData::new(2, 2);
-        img.set_pixel(0, 0, 255, 0, 128, 255);
-        img.set_pixel(1, 1, 0, 200, 50, 128);
-
-        let encoded = encode_flat(&img).unwrap();
-        // Header: 4 magic + 1 version + 1 type = 6 bytes minimum
-        assert!(encoded.len() > 6);
-        assert_eq!(&encoded[0..4], b"LIMG");
-        assert_eq!(encoded[4], 1); // version
-        assert_eq!(encoded[5], 0); // TYPE_FLAT
-
-        let (type_flag, payload) = parse_header(&encoded).unwrap();
-        assert_eq!(type_flag, 0);
-        let decoded = decode_flat(payload).unwrap();
-        assert_eq!(decoded.width(), 2);
-        assert_eq!(decoded.height(), 2);
-        let (r, g, b, a) = decoded.get_pixel(0, 0).unwrap();
-        assert_eq!((r, g, b, a), (255, 0, 128, 255));
-    }
 }

@@ -375,8 +375,8 @@ mod image_data_tests {
         let img = ImageData::new(4, 4);
         assert_eq!(img.width(), 4);
         assert_eq!(img.height(), 4);
-        assert_eq!(img.pixels.len(), 4 * 4 * 4);
-        assert!(img.pixels.iter().all(|&b| b == 0));
+        assert_eq!(img.as_bytes().len(), 4 * 4 * 4);
+        assert!(img.as_bytes().iter().all(|&b| b == 0));
     }
 
     #[test]
@@ -494,7 +494,7 @@ mod image_data_tests {
         }
         a.map_pixel(|_, _, r, g, b, a| (255 - r, g, b, a));
         b.map_pixel_par(|_, _, r, g, b, a| (255 - r, g, b, a));
-        assert_eq!(a.pixels, b.pixels);
+        assert_eq!(a.as_bytes(), b.as_bytes());
     }
 }
 
@@ -974,3 +974,33 @@ mod visualization_tests {
         assert_eq!(img.height(), 8);
     }
 }
+
+// ── serial tests ─────────────────────────────────────────────────────────────
+
+mod serial_tests {
+    use super::*;
+    use lurek2d::image::serial::{decode_flat, encode_flat, parse_header};
+
+    #[test]
+    fn encode_then_decode_flat_preserves_pixels() {
+        let mut img = ImageData::new(2, 2);
+        img.set_pixel(0, 0, 255, 0, 128, 255);
+        img.set_pixel(1, 1, 0, 200, 50, 128);
+
+        let encoded = encode_flat(&img).unwrap();
+        // Header: 4 magic + 1 version + 1 type = 6 bytes minimum
+        assert!(encoded.len() > 6);
+        assert_eq!(&encoded[0..4], b"LIMG");
+        assert_eq!(encoded[4], 1); // version
+        assert_eq!(encoded[5], 0); // TYPE_FLAT
+
+        let (type_flag, payload) = parse_header(&encoded).unwrap();
+        assert_eq!(type_flag, 0);
+        let decoded = decode_flat(payload).unwrap();
+        assert_eq!(decoded.width(), 2);
+        assert_eq!(decoded.height(), 2);
+        let (r, g, b, a) = decoded.get_pixel(0, 0).unwrap();
+        assert_eq!((r, g, b, a), (255, 0, 128, 255));
+    }
+}
+
