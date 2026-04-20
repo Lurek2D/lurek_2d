@@ -236,61 +236,15 @@ impl TcpConnectionManager {
     pub fn close_all(&mut self) {
         self.connections.clear();
     }
+
+    /// Returns `true` if there are no active TCP connections.
+    pub fn is_empty(&self) -> bool {
+        self.connections.is_empty()
+    }
 }
 
 impl Default for TcpConnectionManager {
     fn default() -> Self {
         Self::new()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_manager_has_no_connections() {
-        let mgr = TcpConnectionManager::new();
-        assert!(mgr.connections.is_empty());
-    }
-
-    #[test]
-    fn default_matches_new() {
-        let mgr = TcpConnectionManager::default();
-        assert!(mgr.connections.is_empty());
-    }
-
-    #[test]
-    fn close_all_on_empty_is_noop() {
-        let mut mgr = TcpConnectionManager::new();
-        mgr.close_all();
-        assert!(mgr.connections.is_empty());
-    }
-
-    #[test]
-    fn close_nonexistent_sends_disconnect() {
-        let mut mgr = TcpConnectionManager::new();
-        let (tx, rx) = mpsc::channel();
-        // Closing an ID that was never connected should silently do nothing
-        // (no entry in the map → no response sent).
-        mgr.close(999, &tx);
-        assert!(rx.try_recv().is_err());
-    }
-
-    #[test]
-    fn send_to_nonexistent_sends_error() {
-        let mut mgr = TcpConnectionManager::new();
-        let (tx, rx) = mpsc::channel();
-        mgr.send(42, b"hello", &tx);
-        let resp = rx.try_recv().unwrap();
-        if let NetworkResponse::TcpEvent { id, event } = resp {
-            assert_eq!(id, 42);
-            match event {
-                TcpEvent::Error(msg) => assert!(msg.contains("not found")),
-                other => panic!("expected Error, got {:?}", other),
-            }
-        } else {
-            panic!("expected TcpEvent");
-        }
     }
 }

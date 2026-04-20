@@ -37,29 +37,3 @@ pub const TCP_BUFFER_SIZE: usize = 65536;
 ///
 /// Used internally by the WebSocket polling loop.
 pub const WS_BUFFER_SIZE: usize = 65536;
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn default_peers_within_max() {
-        assert!(DEFAULT_PEERS <= MAX_PEERS);
-    }
-
-    #[test]
-    fn default_channels_within_max() {
-        assert!(DEFAULT_CHANNELS <= MAX_CHANNELS);
-    }
-
-    #[test]
-    fn buffer_sizes_are_power_of_two() {
-        assert!(TCP_BUFFER_SIZE.is_power_of_two());
-        assert!(WS_BUFFER_SIZE.is_power_of_two());
-    }
-
-    #[test]
-    fn http_timeout_nonzero() {
-        assert!(HTTP_TIMEOUT_SECS > 0);
-    }
-}

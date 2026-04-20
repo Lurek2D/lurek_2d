@@ -452,3 +452,101 @@ mod net_thread_tests {
         rt.shutdown();
     }
 }
+
+// ── tcp tests ────────────────────────────────────────────────────────────────
+
+mod tcp_tests {
+    use lurek2d::network::net_thread::{NetworkResponse, TcpEvent};
+    use lurek2d::network::tcp::TcpConnectionManager;
+    use std::sync::mpsc;
+
+    #[test]
+    fn new_manager_has_no_connections() {
+        let mgr = TcpConnectionManager::new();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn default_matches_new() {
+        let mgr = TcpConnectionManager::default();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn close_all_on_empty_is_noop() {
+        let mut mgr = TcpConnectionManager::new();
+        mgr.close_all();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn close_nonexistent_sends_disconnect() {
+        let mut mgr = TcpConnectionManager::new();
+        let (tx, rx) = mpsc::channel();
+        // Closing an ID that was never connected should silently do nothing
+        // (no entry in the map → no response sent).
+        mgr.close(999, &tx);
+        assert!(rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn send_to_nonexistent_sends_error() {
+        let mut mgr = TcpConnectionManager::new();
+        let (tx, rx) = mpsc::channel();
+        mgr.send(42, b"hello", &tx);
+        let resp = rx.try_recv().unwrap();
+        if let NetworkResponse::TcpEvent { id, event } = resp {
+            assert_eq!(id, 42);
+            match event {
+                TcpEvent::Error(msg) => assert!(msg.contains("not found")),
+                other => panic!("expected Error, got {:?}", other),
+            }
+        } else {
+            panic!("expected TcpEvent");
+        }
+    }
+}
+
+// ── websocket tests ──────────────────────────────────────────────────────────
+
+mod websocket_tests {
+    use lurek2d::network::net_thread::{NetworkResponse, WsEvent};
+    use lurek2d::network::websocket::WebSocketManager;
+    use std::sync::mpsc;
+
+    #[test]
+    fn new_manager_has_no_connections() {
+        let mgr = WebSocketManager::new();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn default_matches_new() {
+        let mgr = WebSocketManager::default();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn close_all_on_empty_is_noop() {
+        let mut mgr = WebSocketManager::new();
+        mgr.close_all();
+        assert!(mgr.is_empty());
+    }
+
+    #[test]
+    fn send_to_nonexistent_sends_error() {
+        let mut mgr = WebSocketManager::new();
+        let (tx, rx) = mpsc::channel();
+        mgr.send(77, b"msg", true, &tx);
+        let resp = rx.try_recv().unwrap();
+        if let NetworkResponse::WebSocketEvent { id, event } = resp {
+            assert_eq!(id, 77);
+            match event {
+                WsEvent::Error(msg) => assert!(msg.contains("not found")),
+                other => panic!("expected Error, got {:?}", other),
+            }
+        } else {
+            panic!("expected WebSocketEvent");
+        }
+    }
+}
