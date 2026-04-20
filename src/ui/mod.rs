@@ -44,20 +44,10 @@ pub mod render;
 /// Core widget trait and shared widget-state types.
 pub mod widget;
 
-pub use containers::{
-    DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel,
-    SplitPanel,
-};
+pub use containers::{DockPanel, GUIWindow, Layout, LayoutDirection, NinePatch, NineSlice, Panel, ScrollPanel, SplitPanel};
 pub use context::{GuiContext, GuiEvent};
-pub use controls::{
-    Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider,
-    SpinBox, Switch, TabBar, TextInput,
-};
-pub use extras::{
-    Accordion, AccordionSection, Badge, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar,
-    MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton,
-    TooltipPanel, TreeNode, TreeView,
-};
+pub use controls::{Button, CheckBox, ComboBox, Label, ListBox, ProgressBar, RadioButton, ScrollBar, Slider, SpinBox, Switch, TabBar, TextInput};
+pub use extras::{Accordion, AccordionSection, Badge, ColorPicker, Dialog, GUITable, ImageWidget, MenuBar, MenuItem, Separator, Spacer, StatusBar, TableColumn, Toast, Toolbar, ToolbarButton, TooltipPanel, TreeNode, TreeView};
 pub use theme::{Theme, WidgetStyle};
 pub use widget::{WidgetBase, WidgetState, WidgetType};
 
@@ -71,9 +61,6 @@ pub use data_graph_renderer::{GraphRenderer, GraphSeries};
 
 /// Configurable chart rendering to `ImageData` (line, bar, scatter, pie, area).
 pub mod chart;
-pub use chart::{
-    AreaChart, AreaLayer, BarCategory, BarChart, ChartConfig, ChartMargin, ChartSeries,
-    LineChart, PieChart, PieSegment, ScatterPlot,
-};
+pub use chart::{AreaChart, AreaLayer, BarCategory, BarChart, ChartConfig, ChartMargin, ChartSeries, LineChart, PieChart, PieSegment, ScatterPlot};
 
 
