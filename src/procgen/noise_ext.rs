@@ -58,4 +58,3 @@ pub fn perlin_noise_periodic(x: f64, y: f64, px: f64, py: f64) -> f64 {
     let x2 = lerp(u, n01, n11);
     lerp(v, x1, x2)
 }
-

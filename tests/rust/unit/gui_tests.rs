@@ -20,13 +20,19 @@ use lurek2d::ui::widget::{WidgetBase, WidgetType};
 #[test]
 fn widget_style_default_shadow_alpha_is_zero() {
     let s = WidgetStyle::default();
-    assert!((s.shadow_color[3]).abs() < 1e-5, "default shadow alpha must be zero");
+    assert!(
+        (s.shadow_color[3]).abs() < 1e-5,
+        "default shadow alpha must be zero"
+    );
 }
 
 #[test]
 fn widget_style_default_highlight_alpha_is_zero() {
     let s = WidgetStyle::default();
-    assert!((s.highlight_alpha).abs() < 1e-5, "default highlight_alpha must be zero");
+    assert!(
+        (s.highlight_alpha).abs() < 1e-5,
+        "default highlight_alpha must be zero"
+    );
 }
 
 #[test]
@@ -106,7 +112,10 @@ fn switch_new_off_has_thumb_t_zero() {
 #[test]
 fn switch_new_on_has_thumb_t_one() {
     let sw = Switch::new(true);
-    assert!((sw.thumb_t - 1.0).abs() < 1e-5, "thumb_t must be 1.0 when on");
+    assert!(
+        (sw.thumb_t - 1.0).abs() < 1e-5,
+        "thumb_t must be 1.0 when on"
+    );
 }
 
 // ─── Theme::default_dark ──────────────────────────────────────────────────────
@@ -118,7 +127,10 @@ fn theme_default_dark_has_button_style() {
     use lurek2d::ui::widget::{WidgetState, WidgetType};
     let theme = Theme::default_dark();
     let style = theme.get_style(WidgetType::Button, WidgetState::Normal);
-    assert!(style.is_some(), "default_dark must include a style for Button/Normal");
+    assert!(
+        style.is_some(),
+        "default_dark must include a style for Button/Normal"
+    );
 }
 
 #[test]
@@ -128,7 +140,10 @@ fn theme_default_dark_button_has_nonzero_corner_radius() {
     let style = theme
         .get_style(WidgetType::Button, WidgetState::Normal)
         .unwrap();
-    assert!(style.corner_radius > 0.0, "Button in default_dark must have corner_radius > 0");
+    assert!(
+        style.corner_radius > 0.0,
+        "Button in default_dark must have corner_radius > 0"
+    );
 }
 
 // ─── GuiContext private internals ─────────────────────────────────────────────
@@ -177,12 +192,18 @@ fn gui_context_set_viewport_stores_dimensions() {
 fn gui_context_set_default_theme_installs_theme() {
     let mut ctx = GuiContext::new();
     ctx.set_default_theme();
-    assert!(ctx.theme.is_some(), "set_default_theme must install a non-None theme");
+    assert!(
+        ctx.theme.is_some(),
+        "set_default_theme must install a non-None theme"
+    );
 }
 
 #[test]
 fn gui_context_add_spin_box_returns_valid_index() {
     let mut ctx = GuiContext::new();
     let idx = ctx.add_spin_box(0.0, 10.0);
-    assert!(idx < ctx.widgets.len(), "returned index must be within widgets pool");
+    assert!(
+        idx < ctx.widgets.len(),
+        "returned index must be within widgets pool"
+    );
 }

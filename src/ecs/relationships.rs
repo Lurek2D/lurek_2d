@@ -1,4 +1,4 @@
-﻿//! Generic relationship system for entities.
+//! Generic relationship system for entities.
 //!
 //! Stores symmetric numeric relations and named-state levels between entity pairs.
 //! Entity IDs are `u32` to match [`Universe`](super::Universe).
@@ -13,8 +13,8 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{RL01, RL02, RL03};
 use crate::log_msg;
+use crate::runtime::log_messages::{RL01, RL02, RL03};
 
 /// Definition of a named relation type with a fixed set of valid level strings.
 ///

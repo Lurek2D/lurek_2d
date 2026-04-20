@@ -46,7 +46,11 @@ impl NameGen {
             }
         }
 
-        Self { order, chain, rng: Lcg::new(seed) }
+        Self {
+            order,
+            chain,
+            rng: Lcg::new(seed),
+        }
     }
 
     /// Generate a single name with length in `[min_len, max_len]`.
@@ -91,21 +95,33 @@ impl NameGen {
         for _ in 0..max_len + self.order + 4 {
             let key: String = context.iter().collect();
             let options = self.chain.get(&key)?;
-            if options.is_empty() { return None; }
+            if options.is_empty() {
+                return None;
+            }
 
             let idx = (self.rng.next() as usize) % options.len();
             let next = options[idx];
 
-            if next == '\x01' { break; } // end sentinel
-            if next != '\x00' { name.push(next); }
-            if name.len() >= max_len { break; }
+            if next == '\x01' {
+                break;
+            } // end sentinel
+            if next != '\x00' {
+                name.push(next);
+            }
+            if name.len() >= max_len {
+                break;
+            }
 
             // Advance context
             context.remove(0);
             context.push(next);
         }
 
-        if name.is_empty() { None } else { Some(capitalise(name)) }
+        if name.is_empty() {
+            None
+        } else {
+            Some(capitalise(name))
+        }
     }
 }
 
@@ -116,4 +132,3 @@ fn capitalise(mut s: String) -> String {
         Some(c) => c.to_uppercase().to_string() + chars.as_str(),
     }
 }
-

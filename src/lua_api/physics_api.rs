@@ -7,7 +7,10 @@ use std::rc::Rc;
 
 use super::SharedState;
 use crate::math::Vec2;
-use crate::physics::{Body, BodyType, CellType, CellularWorld, PhysicsZone, RaycastHit, Shape, TerrainMap, World, ZoneGravityMode};
+use crate::physics::{
+    Body, BodyType, CellType, CellularWorld, PhysicsZone, RaycastHit, Shape, TerrainMap, World,
+    ZoneGravityMode,
+};
 
 // -------------------------------------------------------------------------------
 // Helper: parse BodyType from string
@@ -114,9 +117,24 @@ impl LuaUserData for LuaWorld {
         /// @return nil
         methods.add_method(
             "drawDebug",
-            |_, this, (target, r, g, b, a): (mlua::AnyUserData, Option<u8>, Option<u8>, Option<u8>, Option<u8>)| {
-                let mut target_ref = target.borrow_mut::<crate::lua_api::render_api::LuaImageData>()?;
-                this.world.borrow().draw_debug_to_image(&mut target_ref.inner, r.unwrap_or(0), g.unwrap_or(255), b.unwrap_or(0), a.unwrap_or(255));
+            |_,
+             this,
+             (target, r, g, b, a): (
+                mlua::AnyUserData,
+                Option<u8>,
+                Option<u8>,
+                Option<u8>,
+                Option<u8>,
+            )| {
+                let mut target_ref =
+                    target.borrow_mut::<crate::lua_api::render_api::LuaImageData>()?;
+                this.world.borrow().draw_debug_to_image(
+                    &mut target_ref.inner,
+                    r.unwrap_or(0),
+                    g.unwrap_or(255),
+                    b.unwrap_or(0),
+                    a.unwrap_or(255),
+                );
                 Ok(())
             },
         );
@@ -129,7 +147,8 @@ impl LuaUserData for LuaWorld {
         methods.add_method("step", |lua, this, dt: f32| {
             this.world.borrow_mut().step(dt);
             // Collect events while not holding the borrow.
-            let begins: Vec<(usize, usize)> = this.world.borrow().get_begin_contact_events().to_vec();
+            let begins: Vec<(usize, usize)> =
+                this.world.borrow().get_begin_contact_events().to_vec();
             let ends: Vec<(usize, usize)> = this.world.borrow().get_end_contact_events().to_vec();
             if let Some(key) = &*this.begin_contact_key.borrow() {
                 let cb: LuaFunction = lua.registry_value(key)?;
@@ -972,11 +991,14 @@ impl LuaUserData for LuaWorld {
         /// @param bodyId : integer
         /// @param data : any
         /// @return nil
-        methods.add_method("setBodyData", |lua, this, (id, value): (usize, LuaValue)| {
-            let key = lua.create_registry_value(value)?;
-            this.body_data.borrow_mut().insert(id, key);
-            Ok(())
-        });
+        methods.add_method(
+            "setBodyData",
+            |lua, this, (id, value): (usize, LuaValue)| {
+                let key = lua.create_registry_value(value)?;
+                this.body_data.borrow_mut().insert(id, key);
+                Ok(())
+            },
+        );
 
         // -- getBodyData --
         /// Returns the Lua data previously attached to a body, or nil if none is set.
@@ -1028,10 +1050,13 @@ impl LuaUserData for LuaWorld {
         /// @param nx : number
         /// @param ny : number
         /// @return nil
-        methods.add_method("setBodyOneWay", |_, this, (id, nx, ny): (usize, f32, f32)| {
-            this.world.borrow_mut().set_body_one_way(id, nx, ny);
-            Ok(())
-        });
+        methods.add_method(
+            "setBodyOneWay",
+            |_, this, (id, nx, ny): (usize, f32, f32)| {
+                this.world.borrow_mut().set_body_one_way(id, nx, ny);
+                Ok(())
+            },
+        );
 
         // -- clearBodyOneWay --
         /// Removes the one-way platform flag from a body.
@@ -1143,10 +1168,16 @@ impl LuaUserData for LuaWorld {
         /// @param max_steps : integer  -- safety cap on sub-steps per call
         /// @return nil
         /// number  -- unconsumed remainder (pass back next frame)
-        methods.add_method_mut("stepFixed", |_, this, (accum, step_dt, max_steps): (f32, f32, u32)| {
-            let (_, remainder) = this.world.borrow_mut().step_fixed(accum, step_dt, max_steps);
-            Ok(remainder)
-        });
+        methods.add_method_mut(
+            "stepFixed",
+            |_, this, (accum, step_dt, max_steps): (f32, f32, u32)| {
+                let (_, remainder) = this
+                    .world
+                    .borrow_mut()
+                    .step_fixed(accum, step_dt, max_steps);
+                Ok(remainder)
+            },
+        );
 
         // -- addZone --
         /// Creates a rectangular gravity/damping zone and returns a LuaZone handle.
@@ -1182,10 +1213,13 @@ impl LuaUserData for LuaWorld {
                 let row = lua.create_table()?;
                 row.set("zone_id", evt.zone_id)?;
                 row.set("body_id", evt.body_id)?;
-                row.set("kind", match evt.kind {
-                    crate::physics::ZoneEventKind::Enter => "enter",
-                    crate::physics::ZoneEventKind::Leave => "leave",
-                })?;
+                row.set(
+                    "kind",
+                    match evt.kind {
+                        crate::physics::ZoneEventKind::Enter => "enter",
+                        crate::physics::ZoneEventKind::Leave => "leave",
+                    },
+                )?;
                 tbl.set(i + 1, row)?;
             }
             Ok(tbl)
@@ -1286,13 +1320,16 @@ impl LuaUserData for LuaZone {
         /// @param cy : number  -- attractor centre Y
         /// @param strength : number  -- force constant k (F = k / r²)
         /// @return nil
-        methods.add_method("setGravityPoint", |_, this, (cx, cy, strength): (f32, f32, f32)| {
-            let mut w = this.world.borrow_mut();
-            if let Some(z) = w.zone_mut(this.zone_id) {
-                z.set_gravity_point(cx, cy, strength);
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setGravityPoint",
+            |_, this, (cx, cy, strength): (f32, f32, f32)| {
+                let mut w = this.world.borrow_mut();
+                if let Some(z) = w.zone_mut(this.zone_id) {
+                    z.set_gravity_point(cx, cy, strength);
+                }
+                Ok(())
+            },
+        );
 
         // -- setGravityRepulsor --
         /// Sets point-repulsor gravity inside the zone.
@@ -1301,13 +1338,16 @@ impl LuaUserData for LuaZone {
         /// @param cy : number  -- repulsor centre Y
         /// @param strength : number  -- force constant k (F = k / r²)
         /// @return nil
-        methods.add_method("setGravityRepulsor", |_, this, (cx, cy, strength): (f32, f32, f32)| {
-            let mut w = this.world.borrow_mut();
-            if let Some(z) = w.zone_mut(this.zone_id) {
-                z.set_gravity_repulsor(cx, cy, strength);
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setGravityRepulsor",
+            |_, this, (cx, cy, strength): (f32, f32, f32)| {
+                let mut w = this.world.borrow_mut();
+                if let Some(z) = w.zone_mut(this.zone_id) {
+                    z.set_gravity_repulsor(cx, cy, strength);
+                }
+                Ok(())
+            },
+        );
 
         // -- setGravityZero --
         /// Suppresses gravity inside the zone (zero-g pocket).
@@ -1343,13 +1383,16 @@ impl LuaUserData for LuaZone {
         ///
         /// @param value : number | nil
         /// @return nil
-        methods.add_method("setAngularDampingOverride", |_, this, value: Option<f32>| {
-            let mut w = this.world.borrow_mut();
-            if let Some(z) = w.zone_mut(this.zone_id) {
-                z.angular_damping_override = value;
-            }
-            Ok(())
-        });
+        methods.add_method(
+            "setAngularDampingOverride",
+            |_, this, value: Option<f32>| {
+                let mut w = this.world.borrow_mut();
+                if let Some(z) = w.zone_mut(this.zone_id) {
+                    z.angular_damping_override = value;
+                }
+                Ok(())
+            },
+        );
 
         // -- destroy --
         /// Removes the zone from the world.
@@ -1405,10 +1448,13 @@ impl LuaUserData for LuaTerrain {
         /// @param radius : number  -- world-space radius
         /// @param solid : boolean  -- true = fill, false = dig
         /// @return nil
-        methods.add_method_mut("fillCircle", |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
-            this.terrain.borrow_mut().fill_circle(wx, wy, radius, solid);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "fillCircle",
+            |_, this, (wx, wy, radius, solid): (f32, f32, f32, bool)| {
+                this.terrain.borrow_mut().fill_circle(wx, wy, radius, solid);
+                Ok(())
+            },
+        );
 
         // -- fillRect --
         /// Fills a rectangular region of cells.
@@ -1419,10 +1465,13 @@ impl LuaUserData for LuaTerrain {
         /// @param h : number  -- height (world pixels)
         /// @param solid : boolean
         /// @return nil
-        methods.add_method_mut("fillRect", |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
-            this.terrain.borrow_mut().fill_rect(wx, wy, w, h, solid);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "fillRect",
+            |_, this, (wx, wy, w, h, solid): (f32, f32, f32, f32, bool)| {
+                this.terrain.borrow_mut().fill_rect(wx, wy, w, h, solid);
+                Ok(())
+            },
+        );
 
         // -- fillAll --
         /// Sets every cell in the grid to `solid`.
@@ -1441,7 +1490,9 @@ impl LuaUserData for LuaTerrain {
         ///
         /// @return nil
         methods.add_method_mut("flush", |_, this, ()| {
-            this.terrain.borrow_mut().flush(&mut this.world.borrow_mut());
+            this.terrain
+                .borrow_mut()
+                .flush(&mut this.world.borrow_mut());
             Ok(())
         });
 
@@ -1490,26 +1541,29 @@ impl LuaUserData for LuaTerrain {
         /// @param restitution : number
         /// @return nil
         /// table  -- array of body IDs (integers)
-        methods.add_method_mut("spawnDebris", |lua, this, (positions, mass, restitution): (LuaTable, f32, f32)| {
-            let mut pts: Vec<(f32, f32)> = Vec::new();
-            for i in 1..=positions.raw_len() {
-                let row: LuaTable = positions.raw_get(i)?;
-                let x: f32 = row.get("x")?;
-                let y: f32 = row.get("y")?;
-                pts.push((x, y));
-            }
-            let ids = this.terrain.borrow().spawn_debris_at(
-                &mut this.world.borrow_mut(),
-                &pts,
-                mass,
-                restitution,
-            );
-            let tbl = lua.create_table()?;
-            for (i, id) in ids.iter().enumerate() {
-                tbl.set(i + 1, *id)?;
-            }
-            Ok(tbl)
-        });
+        methods.add_method_mut(
+            "spawnDebris",
+            |lua, this, (positions, mass, restitution): (LuaTable, f32, f32)| {
+                let mut pts: Vec<(f32, f32)> = Vec::new();
+                for i in 1..=positions.raw_len() {
+                    let row: LuaTable = positions.raw_get(i)?;
+                    let x: f32 = row.get("x")?;
+                    let y: f32 = row.get("y")?;
+                    pts.push((x, y));
+                }
+                let ids = this.terrain.borrow().spawn_debris_at(
+                    &mut this.world.borrow_mut(),
+                    &pts,
+                    mass,
+                    restitution,
+                );
+                let tbl = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    tbl.set(i + 1, *id)?;
+                }
+                Ok(tbl)
+            },
+        );
 
         // -- toImageData --
         /// Returns the terrain as an RGBA byte string.
@@ -1524,13 +1578,16 @@ impl LuaUserData for LuaTerrain {
         /// @param eb : integer  -- empty B
         /// @return nil
         /// string  -- RGBA bytes (width × height × 4)
-        methods.add_method("toImageData", |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
-            let buf = this.terrain.borrow().to_image_data(
-                [sr, sg, sb, 255],
-                [er, eg, eb, 255],
-            );
-            lua.create_string(&buf)
-        });
+        methods.add_method(
+            "toImageData",
+            |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
+                let buf = this
+                    .terrain
+                    .borrow()
+                    .to_image_data([sr, sg, sb, 255], [er, eg, eb, 255]);
+                lua.create_string(&buf)
+            },
+        );
 
         // -- toBytes --
         /// Serialises the terrain grid to a byte string for save/load.
@@ -1597,10 +1654,15 @@ impl LuaUserData for LuaCellular {
         /// @param ch : integer  -- height in cells
         /// @param cell_type : integer
         /// @return nil
-        methods.add_method_mut("fillRect", |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
-            this.sim.borrow_mut().fill_rect(cx0, cy0, cw, ch, CellType::from_u8(t));
-            Ok(())
-        });
+        methods.add_method_mut(
+            "fillRect",
+            |_, this, (cx0, cy0, cw, ch, t): (u32, u32, u32, u32, u8)| {
+                this.sim
+                    .borrow_mut()
+                    .fill_rect(cx0, cy0, cw, ch, CellType::from_u8(t));
+                Ok(())
+            },
+        );
 
         // -- fillCircle --
         /// Fills a circle of cells with the given material.
@@ -1610,10 +1672,15 @@ impl LuaUserData for LuaCellular {
         /// @param r_cells : integer  -- radius in cells
         /// @param cell_type : integer
         /// @return nil
-        methods.add_method_mut("fillCircle", |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
-            this.sim.borrow_mut().fill_circle(cx, cy, r, CellType::from_u8(t));
-            Ok(())
-        });
+        methods.add_method_mut(
+            "fillCircle",
+            |_, this, (cx, cy, r, t): (u32, u32, u32, u8)| {
+                this.sim
+                    .borrow_mut()
+                    .fill_circle(cx, cy, r, CellType::from_u8(t));
+                Ok(())
+            },
+        );
 
         // -- step --
         /// Advances the simulation by one tick.
@@ -1640,7 +1707,10 @@ impl LuaUserData for LuaCellular {
         /// string  -- RGBA bytes (width × height × 4)
         /// @return nil
         methods.add_method("toImageData", |lua, this, ()| {
-            let buf = this.sim.borrow().to_image_data(crate::physics::default_palette);
+            let buf = this
+                .sim
+                .borrow()
+                .to_image_data(crate::physics::default_palette);
             lua.create_string(&buf)
         });
 
@@ -1653,10 +1723,19 @@ impl LuaUserData for LuaCellular {
         /// @param ch : integer  -- region height
         /// @return nil
         /// string  -- RGBA bytes (cw × ch × 4)
-        methods.add_method("toImageDataRegion", |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
-            let buf = this.sim.borrow().to_image_data_region(cx0, cy0, cw, ch, crate::physics::default_palette);
-            lua.create_string(&buf)
-        });
+        methods.add_method(
+            "toImageDataRegion",
+            |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
+                let buf = this.sim.borrow().to_image_data_region(
+                    cx0,
+                    cy0,
+                    cw,
+                    ch,
+                    crate::physics::default_palette,
+                );
+                lua.create_string(&buf)
+            },
+        );
 
         // -- countCells --
         /// Counts cells of the given material type.
@@ -2283,9 +2362,7 @@ impl LuaUserData for LuaPhysicsShape {
 // `PhysicsShapeSnapshot` (physics domain) and `PhysicsDebugShape` (render
 // domain) cannot know about each other without creating a circular dependency.
 // The lua_api boundary layer is the correct home for this conversion.
-impl From<crate::physics::PhysicsShapeSnapshot>
-    for crate::render::renderer::PhysicsDebugShape
-{
+impl From<crate::physics::PhysicsShapeSnapshot> for crate::render::renderer::PhysicsDebugShape {
     fn from(s: crate::physics::PhysicsShapeSnapshot) -> Self {
         Self {
             x: s.x,
@@ -2613,63 +2690,65 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "drawDebugGpu",
-        lua.create_function(move |_, (world_ud, config_val): (LuaAnyUserData, LuaValue)| {
-            let world_ref = world_ud.borrow::<LuaWorld>()?;
-            let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world_ref
-                .world
-                .borrow()
-                .extract_shape_snapshots()
-                .into_iter()
-                .map(Into::into)
-                .collect();
+        lua.create_function(
+            move |_, (world_ud, config_val): (LuaAnyUserData, LuaValue)| {
+                let world_ref = world_ud.borrow::<LuaWorld>()?;
+                let shapes: Vec<crate::render::renderer::PhysicsDebugShape> = world_ref
+                    .world
+                    .borrow()
+                    .extract_shape_snapshots()
+                    .into_iter()
+                    .map(Into::into)
+                    .collect();
 
-            let mut cfg = crate::render::renderer::PhysicsDebugConfig::default();
-            if let LuaValue::Table(tbl) = config_val {
-                if let Ok(v) = tbl.get::<_, LuaTable>("bodyColor") {
-                    cfg.body_color = [
-                        v.get::<_, f32>(1).unwrap_or(cfg.body_color[0]),
-                        v.get::<_, f32>(2).unwrap_or(cfg.body_color[1]),
-                        v.get::<_, f32>(3).unwrap_or(cfg.body_color[2]),
-                        v.get::<_, f32>(4).unwrap_or(cfg.body_color[3]),
-                    ];
+                let mut cfg = crate::render::renderer::PhysicsDebugConfig::default();
+                if let LuaValue::Table(tbl) = config_val {
+                    if let Ok(v) = tbl.get::<_, LuaTable>("bodyColor") {
+                        cfg.body_color = [
+                            v.get::<_, f32>(1).unwrap_or(cfg.body_color[0]),
+                            v.get::<_, f32>(2).unwrap_or(cfg.body_color[1]),
+                            v.get::<_, f32>(3).unwrap_or(cfg.body_color[2]),
+                            v.get::<_, f32>(4).unwrap_or(cfg.body_color[3]),
+                        ];
+                    }
+                    if let Ok(v) = tbl.get::<_, LuaTable>("staticColor") {
+                        cfg.static_color = [
+                            v.get::<_, f32>(1).unwrap_or(cfg.static_color[0]),
+                            v.get::<_, f32>(2).unwrap_or(cfg.static_color[1]),
+                            v.get::<_, f32>(3).unwrap_or(cfg.static_color[2]),
+                            v.get::<_, f32>(4).unwrap_or(cfg.static_color[3]),
+                        ];
+                    }
+                    if let Ok(v) = tbl.get::<_, LuaTable>("sleepColor") {
+                        cfg.sleep_color = [
+                            v.get::<_, f32>(1).unwrap_or(cfg.sleep_color[0]),
+                            v.get::<_, f32>(2).unwrap_or(cfg.sleep_color[1]),
+                            v.get::<_, f32>(3).unwrap_or(cfg.sleep_color[2]),
+                            v.get::<_, f32>(4).unwrap_or(cfg.sleep_color[3]),
+                        ];
+                    }
+                    if let Ok(v) = tbl.get::<_, LuaTable>("sensorColor") {
+                        cfg.sensor_color = [
+                            v.get::<_, f32>(1).unwrap_or(cfg.sensor_color[0]),
+                            v.get::<_, f32>(2).unwrap_or(cfg.sensor_color[1]),
+                            v.get::<_, f32>(3).unwrap_or(cfg.sensor_color[2]),
+                            v.get::<_, f32>(4).unwrap_or(cfg.sensor_color[3]),
+                        ];
+                    }
+                    if let Ok(w) = tbl.get::<_, f32>("lineWidth") {
+                        cfg.line_width = w;
+                    }
                 }
-                if let Ok(v) = tbl.get::<_, LuaTable>("staticColor") {
-                    cfg.static_color = [
-                        v.get::<_, f32>(1).unwrap_or(cfg.static_color[0]),
-                        v.get::<_, f32>(2).unwrap_or(cfg.static_color[1]),
-                        v.get::<_, f32>(3).unwrap_or(cfg.static_color[2]),
-                        v.get::<_, f32>(4).unwrap_or(cfg.static_color[3]),
-                    ];
-                }
-                if let Ok(v) = tbl.get::<_, LuaTable>("sleepColor") {
-                    cfg.sleep_color = [
-                        v.get::<_, f32>(1).unwrap_or(cfg.sleep_color[0]),
-                        v.get::<_, f32>(2).unwrap_or(cfg.sleep_color[1]),
-                        v.get::<_, f32>(3).unwrap_or(cfg.sleep_color[2]),
-                        v.get::<_, f32>(4).unwrap_or(cfg.sleep_color[3]),
-                    ];
-                }
-                if let Ok(v) = tbl.get::<_, LuaTable>("sensorColor") {
-                    cfg.sensor_color = [
-                        v.get::<_, f32>(1).unwrap_or(cfg.sensor_color[0]),
-                        v.get::<_, f32>(2).unwrap_or(cfg.sensor_color[1]),
-                        v.get::<_, f32>(3).unwrap_or(cfg.sensor_color[2]),
-                        v.get::<_, f32>(4).unwrap_or(cfg.sensor_color[3]),
-                    ];
-                }
-                if let Ok(w) = tbl.get::<_, f32>("lineWidth") {
-                    cfg.line_width = w;
-                }
-            }
 
-            s.borrow_mut()
-                .render_commands
-                .push(crate::render::renderer::RenderCommand::DrawPhysicsDebug {
-                    shapes,
-                    config: cfg,
-                });
-            Ok(())
-        })?,
+                s.borrow_mut().render_commands.push(
+                    crate::render::renderer::RenderCommand::DrawPhysicsDebug {
+                        shapes,
+                        config: cfg,
+                    },
+                );
+                Ok(())
+            },
+        )?,
     )?;
 
     // ── Terrain factory ──────────────────────────────────────────────────────
@@ -2712,19 +2791,18 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // ── Cell-type constants ───────────────────────────────────────────────────
-    tbl.set("CELL_AIR",   CellType::Air   as u8)?;
+    tbl.set("CELL_AIR", CellType::Air as u8)?;
     /// Sand cell type constant for the cellular automaton simulation.
-    tbl.set("CELL_SAND",  CellType::Sand  as u8)?;
+    tbl.set("CELL_SAND", CellType::Sand as u8)?;
     /// Water cell type constant; flows and spreads horizontally in the simulation.
     tbl.set("CELL_WATER", CellType::Water as u8)?;
     /// Immovable rock cell type constant; acts as a solid obstacle.
-    tbl.set("CELL_ROCK",  CellType::Rock  as u8)?;
+    tbl.set("CELL_ROCK", CellType::Rock as u8)?;
     /// Fire cell type constant; spreads upward and ignites nearby flammable cells.
-    tbl.set("CELL_FIRE",  CellType::Fire  as u8)?;
+    tbl.set("CELL_FIRE", CellType::Fire as u8)?;
     /// Gas cell type constant; rises and disperses across the simulation grid.
-    tbl.set("CELL_GAS",   CellType::Gas   as u8)?;
+    tbl.set("CELL_GAS", CellType::Gas as u8)?;
 
     luna.set("physics", tbl)?;
     Ok(())
 }
-

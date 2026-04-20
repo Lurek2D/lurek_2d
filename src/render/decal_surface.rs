@@ -63,5 +63,3 @@ impl DecalSurface {
         self.height
     }
 }
-
-

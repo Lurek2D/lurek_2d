@@ -1,4 +1,4 @@
-﻿//! [`Animation`] â€” main controller for sprite animation playback.
+//! [`Animation`] â€” main controller for sprite animation playback.
 
 use std::collections::HashMap;
 
@@ -7,8 +7,8 @@ use crate::math::Rect;
 use super::clip::AnimClip;
 use super::event::AnimEvent;
 use super::frame::AnimFrame;
-use crate::runtime::log_messages::{AN01_ANIM_CTRL_INIT, AN02_CLIP_ADDED, AN03_CLIP_NOT_FOUND};
 use crate::log_msg;
+use crate::runtime::log_messages::{AN01_ANIM_CTRL_INIT, AN02_CLIP_ADDED, AN03_CLIP_NOT_FOUND};
 
 /// Sprite animation with named clips, speed control, and playback events.
 ///
@@ -593,7 +593,11 @@ impl Animation {
             // Calculate FPS from the first frame's duration.
             let fps = {
                 let dur_ms = parsed.frames[tag.from].duration_ms;
-                if dur_ms > 0 { 1000.0 / dur_ms as f32 } else { 10.0 }
+                if dur_ms > 0 {
+                    1000.0 / dur_ms as f32
+                } else {
+                    10.0
+                }
             };
 
             anim.add_clip(&tag.name, indices, fps, true);

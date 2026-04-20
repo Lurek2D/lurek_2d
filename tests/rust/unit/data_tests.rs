@@ -619,17 +619,38 @@ mod compress_tests {
 
     #[test]
     fn parse_known_formats() {
-        assert_eq!(CompressFormat::parse_str("deflate").unwrap(), CompressFormat::Deflate);
-        assert_eq!(CompressFormat::parse_str("gzip").unwrap(), CompressFormat::Gzip);
-        assert_eq!(CompressFormat::parse_str("gz").unwrap(), CompressFormat::Gzip);
-        assert_eq!(CompressFormat::parse_str("lz4").unwrap(), CompressFormat::Lz4);
-        assert_eq!(CompressFormat::parse_str("zlib").unwrap(), CompressFormat::Zlib);
+        assert_eq!(
+            CompressFormat::parse_str("deflate").unwrap(),
+            CompressFormat::Deflate
+        );
+        assert_eq!(
+            CompressFormat::parse_str("gzip").unwrap(),
+            CompressFormat::Gzip
+        );
+        assert_eq!(
+            CompressFormat::parse_str("gz").unwrap(),
+            CompressFormat::Gzip
+        );
+        assert_eq!(
+            CompressFormat::parse_str("lz4").unwrap(),
+            CompressFormat::Lz4
+        );
+        assert_eq!(
+            CompressFormat::parse_str("zlib").unwrap(),
+            CompressFormat::Zlib
+        );
     }
 
     #[test]
     fn parse_case_insensitive() {
-        assert_eq!(CompressFormat::parse_str("DEFLATE").unwrap(), CompressFormat::Deflate);
-        assert_eq!(CompressFormat::parse_str("GZip").unwrap(), CompressFormat::Gzip);
+        assert_eq!(
+            CompressFormat::parse_str("DEFLATE").unwrap(),
+            CompressFormat::Deflate
+        );
+        assert_eq!(
+            CompressFormat::parse_str("GZip").unwrap(),
+            CompressFormat::Gzip
+        );
     }
 
     #[test]
@@ -672,7 +693,12 @@ mod compress_tests {
     #[test]
     fn empty_input_roundtrip() {
         let data = b"";
-        for fmt in [CompressFormat::Deflate, CompressFormat::Gzip, CompressFormat::Zlib, CompressFormat::Lz4] {
+        for fmt in [
+            CompressFormat::Deflate,
+            CompressFormat::Gzip,
+            CompressFormat::Zlib,
+            CompressFormat::Lz4,
+        ] {
             let compressed = compress(data, fmt, 6).unwrap();
             let decompressed = decompress(&compressed, fmt).unwrap();
             assert_eq!(decompressed, data, "failed for {:?}", fmt);

@@ -8,10 +8,10 @@
 pub mod ai_flow_field;
 /// AStar, Dijkstra, and line-of-sight on NavGrid.
 pub mod astar;
-/// Bidirectional A* for halved search space on large grids.
-pub mod bidir;
 /// Async pathfinding thread pool for off-thread NavGrid queries.
 pub mod async_pool;
+/// Bidirectional A* for halved search space on large grids.
+pub mod bidir;
 /// Flow field pathfinding for crowd steering (NavGrid-based).
 pub mod flow_field;
 /// Adjacency-graph pathfinding (A* and Dijkstra) over abstract neighbor maps.
@@ -34,8 +34,8 @@ pub mod unit_pathfinder;
 
 pub use ai_flow_field::FlowField as SimpleFlowField;
 pub use astar::{astar, line_of_sight, smooth_path};
-pub use bidir::bidirectional_astar;
 pub use async_pool::PathThreadPool;
+pub use bidir::bidirectional_astar;
 pub use flow_field::FlowField;
 pub use graph_path::{find_province_path, province_reachable, ProvinceCostFn, ProvincePath};
 pub use grid::Grid;

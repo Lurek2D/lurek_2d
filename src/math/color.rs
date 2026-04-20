@@ -291,8 +291,12 @@ pub fn hsl_to_rgb(h: f32, s: f32, l: f32) -> Color {
     let h = h / 360.0;
 
     let hue_to_rgb = |p: f32, q: f32, mut t: f32| -> f32 {
-        if t < 0.0 { t += 1.0; }
-        if t > 1.0 { t -= 1.0; }
+        if t < 0.0 {
+            t += 1.0;
+        }
+        if t > 1.0 {
+            t -= 1.0;
+        }
         if t < 1.0 / 6.0 {
             return p + (q - p) * 6.0 * t;
         }

@@ -7,7 +7,6 @@ use std::rc::Rc;
 
 use crate::automation::{Action, Script, Simulator, Step};
 
-
 // -------------------------------------------------------------------------------
 // Register
 // -------------------------------------------------------------------------------
@@ -23,8 +22,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let simulator = Rc::new(RefCell::new(Simulator::new()));
     // wait_state holds an optional (predicate_key, timeout, elapsed) triple
     // used by `waitUntil` to gate playback advancement.
-    let wait_state: Rc<RefCell<Option<(LuaRegistryKey, f32, f32)>>> =
-        Rc::new(RefCell::new(None));
+    let wait_state: Rc<RefCell<Option<(LuaRegistryKey, f32, f32)>>> = Rc::new(RefCell::new(None));
 
     // ── load ─────────────────────────────────────────────────────────────────
     /// Loads a named script from a Lua data table containing a steps array.
@@ -163,8 +161,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     return Ok(());
                 }
             }
-            sim.borrow_mut()
-                .update(dt, &mut s.borrow_mut().event_queue);
+            sim.borrow_mut().update(dt, &mut s.borrow_mut().event_queue);
             Ok(())
         })?,
     )?;
@@ -220,9 +217,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let sim = simulator.clone();
     tbl.set(
         "getCurrentScript",
-        lua.create_function(move |_, ()| {
-            Ok(sim.borrow().current_script().map(|s| s.to_string()))
-        })?,
+        lua.create_function(move |_, ()| Ok(sim.borrow().current_script().map(|s| s.to_string())))?,
     )?;
 
     // ── getElapsedTime ───────────────────────────────────────────────────────
@@ -303,7 +298,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "playMacro",
         lua.create_function(move |_, name: String| {
-            sim.borrow_mut().play_macro(&name).map_err(LuaError::external)
+            sim.borrow_mut()
+                .play_macro(&name)
+                .map_err(LuaError::external)
         })?,
     )?;
 
@@ -394,10 +391,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 }
 
 impl Step {
-/// Parses a Lua array of step tables into a `Vec<Step>`.
-///
-/// Each element must have an `"action"` field and optional timing/target fields.
-pub fn vec_from_lua_table(t: &LuaTable) -> LuaResult<Vec<Self>> {
+    /// Parses a Lua array of step tables into a `Vec<Step>`.
+    ///
+    /// Each element must have an `"action"` field and optional timing/target fields.
+    pub fn vec_from_lua_table(t: &LuaTable) -> LuaResult<Vec<Self>> {
         let len = t.len()? as usize;
         let mut steps = Vec::with_capacity(len);
         for i in 1..=len {

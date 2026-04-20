@@ -23,5 +23,5 @@ pub mod sinks;
 /// Structured log emission and level facade (`log_structured`, `set_level`, `get_level`, `enabled_for`).
 pub mod facade;
 
-pub use sinks::{MemoryEntry, RotatingFileSink, Sink, SinkLevel, SinkRegistry};
 pub use facade::{enabled_for, get_level, log_structured, set_level, LogFields};
+pub use sinks::{MemoryEntry, RotatingFileSink, Sink, SinkLevel, SinkRegistry};

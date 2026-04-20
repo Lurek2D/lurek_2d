@@ -3,8 +3,8 @@
 //! Labels are text annotations on the globe surface. All semantics (country, region,
 //! capital, note, etc.) are user-defined via `label_type`. Nothing is hardcoded.
 
-use std::collections::HashMap;
 use crate::globe::types::{Label, LabelStyle};
+use std::collections::HashMap;
 
 /// Store and lifecycle manager for globe labels.
 ///
@@ -33,16 +33,19 @@ impl LabelStore {
     ) -> u32 {
         let id = self.next_id;
         self.next_id += 1;
-        self.labels.insert(id, Label {
+        self.labels.insert(
             id,
-            label_type: label_type.into(),
-            lat_deg,
-            lon_deg,
-            text: text.into(),
-            visible: true,
-            style,
-            min_lod,
-        });
+            Label {
+                id,
+                label_type: label_type.into(),
+                lat_deg,
+                lon_deg,
+                text: text.into(),
+                visible: true,
+                style,
+                min_lod,
+            },
+        );
         id
     }
 
@@ -99,7 +102,9 @@ impl LabelStore {
 
     /// Iterate over visible labels at or above the given LOD tier.
     pub fn iter_visible(&self, lod_tier: u8) -> impl Iterator<Item = &Label> {
-        self.labels.values().filter(move |l| l.visible && l.min_lod <= lod_tier)
+        self.labels
+            .values()
+            .filter(move |l| l.visible && l.min_lod <= lod_tier)
     }
 
     /// Number of labels.

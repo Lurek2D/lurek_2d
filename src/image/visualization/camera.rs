@@ -4,9 +4,9 @@
 //! zoom comparisons, rotation grids, bounds summaries, follow/deadzone trails,
 //! shake trails, and convenience wrappers.
 
+use super::hsv_to_rgb_viz;
 use crate::camera::Camera2D;
 use crate::image::ImageData;
-use super::hsv_to_rgb_viz;
 
 /// Render a camera debug visualization showing viewport, position, and zoom.
 ///

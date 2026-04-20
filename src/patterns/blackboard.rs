@@ -86,7 +86,8 @@ impl Blackboard {
     pub fn set_bool(&mut self, key: &str, value: bool) {
         self.revision += 1;
         self.key_revisions.insert(key.to_string(), self.revision);
-        self.data.insert(key.to_string(), BlackboardValue::Bool(value));
+        self.data
+            .insert(key.to_string(), BlackboardValue::Bool(value));
     }
 
     /// Sets a numeric fact.
@@ -97,7 +98,8 @@ impl Blackboard {
     pub fn set_number(&mut self, key: &str, value: f64) {
         self.revision += 1;
         self.key_revisions.insert(key.to_string(), self.revision);
-        self.data.insert(key.to_string(), BlackboardValue::Number(value));
+        self.data
+            .insert(key.to_string(), BlackboardValue::Number(value));
     }
 
     /// Sets a string fact.
@@ -108,7 +110,8 @@ impl Blackboard {
     pub fn set_text(&mut self, key: &str, value: String) {
         self.revision += 1;
         self.key_revisions.insert(key.to_string(), self.revision);
-        self.data.insert(key.to_string(), BlackboardValue::Text(value));
+        self.data
+            .insert(key.to_string(), BlackboardValue::Text(value));
     }
 
     /// Clears (sets to nil) a fact.

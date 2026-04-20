@@ -97,9 +97,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return boolean, string
     tbl.set(
         "getFullscreen",
-        lua.create_function(move |_, ()| {
-            Ok(window::get_fullscreen(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::get_fullscreen(&s.borrow().window_state)))?,
     )?;
 
     // -- isOpen --
@@ -144,9 +142,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "hasMouseFocus",
-        lua.create_function(move |_, ()| {
-            Ok(window::has_mouse_focus(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::has_mouse_focus(&s.borrow().window_state)))?,
     )?;
 
     // -- isMinimized --
@@ -155,9 +151,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "isMinimized",
-        lua.create_function(move |_, ()| {
-            Ok(window::is_minimized(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::is_minimized(&s.borrow().window_state)))?,
     )?;
 
     // -- isMaximized --
@@ -166,9 +160,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "isMaximized",
-        lua.create_function(move |_, ()| {
-            Ok(window::is_maximized(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::is_maximized(&s.borrow().window_state)))?,
     )?;
 
     // -- isVisible --
@@ -222,9 +214,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "getPosition",
-        lua.create_function(move |_, ()| {
-            Ok(window::get_position(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::get_position(&s.borrow().window_state)))?,
     )?;
 
     // -- setPosition --
@@ -281,9 +271,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "getDPIScale",
-        lua.create_function(move |_, ()| {
-            Ok(window::get_dpi_scale(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::get_dpi_scale(&s.borrow().window_state)))?,
     )?;
 
     // -- toPixels --
@@ -345,7 +333,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "setMode",
         lua.create_function(move |_, (w, h, flags): (u32, u32, Option<LuaTable>)| {
-            let fs = flags.as_ref().and_then(|f| f.get::<_, bool>("fullscreen").ok());
+            let fs = flags
+                .as_ref()
+                .and_then(|f| f.get::<_, bool>("fullscreen").ok());
             let fst = flags
                 .as_ref()
                 .and_then(|f| f.get::<_, String>("fullscreentype").ok());
@@ -505,9 +495,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "getNativeDPIScale",
-        lua.create_function(move |_, ()| {
-            Ok(window::get_dpi_scale(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::get_dpi_scale(&s.borrow().window_state)))?,
     )?;
 
     // -- getDisplayOrientation --
@@ -554,10 +542,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- isHighDPIAllowed --
     /// Returns whether high-DPI rendering is allowed.
     /// @return boolean
-    tbl.set(
-        "isHighDPIAllowed",
-        lua.create_function(|_, ()| Ok(false))?,
-    )?;
+    tbl.set("isHighDPIAllowed", lua.create_function(|_, ()| Ok(false))?)?;
 
     // -- getScaleInfo --
     /// Returns viewport scale and offset information as a table.
@@ -626,9 +611,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "isFullscreen",
-        lua.create_function(move |_, ()| {
-            Ok(window::is_fullscreen(&s.borrow().window_state))
-        })?,
+        lua.create_function(move |_, ()| Ok(window::is_fullscreen(&s.borrow().window_state)))?,
     )?;
 
     // -- isResizable --
@@ -747,10 +730,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     Some(paths) => {
                         let tbl = lua.create_table()?;
                         for (i, p) in paths.iter().enumerate() {
-                            tbl.set(
-                                i + 1,
-                                p.to_string_lossy().to_string(),
-                            )?;
+                            tbl.set(i + 1, p.to_string_lossy().to_string())?;
                         }
                         Ok(LuaValue::Table(tbl))
                     }
@@ -770,7 +750,3 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     luna.set("window", tbl)?;
     Ok(())
 }
-
-
-
-

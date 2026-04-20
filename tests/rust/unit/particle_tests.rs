@@ -148,7 +148,12 @@ mod config_tests {
 
     #[test]
     fn attractor_clone_preserves_fields() {
-        let a = Attractor { x: 1.0, y: 2.0, strength: 50.0, radius: 100.0 };
+        let a = Attractor {
+            x: 1.0,
+            y: 2.0,
+            strength: 50.0,
+            radius: 100.0,
+        };
         let b = a.clone();
         assert!((b.strength - 50.0).abs() < f32::EPSILON);
         assert!((b.radius - 100.0).abs() < f32::EPSILON);
@@ -243,17 +248,27 @@ mod emission_tests {
 
     #[test]
     fn emission_shape_circle_edge_only() {
-        let shape = EmissionShape::Circle { radius: 10.0, fill: false };
+        let shape = EmissionShape::Circle {
+            radius: 10.0,
+            fill: false,
+        };
         for _ in 0..50 {
             let (x, y) = emission_shape_offset(&shape);
             let dist = (x * x + y * y).sqrt();
-            assert!((dist - 10.0).abs() < 1e-3, "edge-only circle should be at radius");
+            assert!(
+                (dist - 10.0).abs() < 1e-3,
+                "edge-only circle should be at radius"
+            );
         }
     }
 
     #[test]
     fn emission_shape_star_stays_bounded() {
-        let shape = EmissionShape::Star { points: 5, outer_radius: 20.0, inner_radius: 10.0 };
+        let shape = EmissionShape::Star {
+            points: 5,
+            outer_radius: 20.0,
+            inner_radius: 10.0,
+        };
         for _ in 0..100 {
             let (x, y) = emission_shape_offset(&shape);
             let dist = (x * x + y * y).sqrt();
@@ -263,7 +278,10 @@ mod emission_tests {
 
     #[test]
     fn emission_shape_spiral_stays_bounded() {
-        let shape = EmissionShape::Spiral { revolutions: 3.0, radius: 50.0 };
+        let shape = EmissionShape::Spiral {
+            revolutions: 3.0,
+            radius: 50.0,
+        };
         for _ in 0..100 {
             let (x, y) = emission_shape_offset(&shape);
             let dist = (x * x + y * y).sqrt();
@@ -427,7 +445,11 @@ mod trail_render_tests {
     fn single_point_no_commands() {
         let mut trail = Trail::new(1.0, 4.0);
         trail.min_distance = 0.0;
-        trail.points.push(TrailPoint { x: 0.0, y: 0.0, age: 0.0 });
+        trail.points.push(TrailPoint {
+            x: 0.0,
+            y: 0.0,
+            age: 0.0,
+        });
         let cmds = trail.build_render_commands();
         assert!(cmds.is_empty());
     }
@@ -436,13 +458,33 @@ mod trail_render_tests {
     fn two_points_produce_three_commands() {
         let mut trail = Trail::new(1.0, 4.0);
         trail.min_distance = 0.0;
-        trail.points.push(TrailPoint { x: 0.0, y: 0.0, age: 0.0 });
-        trail.points.push(TrailPoint { x: 10.0, y: 0.0, age: 0.5 });
+        trail.points.push(TrailPoint {
+            x: 0.0,
+            y: 0.0,
+            age: 0.0,
+        });
+        trail.points.push(TrailPoint {
+            x: 10.0,
+            y: 0.0,
+            age: 0.5,
+        });
         let cmds = trail.build_render_commands();
         assert_eq!(cmds.len(), 3);
         assert!(matches!(cmds[0], RenderCommand::SetColor(..)));
-        assert!(matches!(cmds[1], RenderCommand::Triangle { mode: DrawMode::Fill, .. }));
-        assert!(matches!(cmds[2], RenderCommand::Triangle { mode: DrawMode::Fill, .. }));
+        assert!(matches!(
+            cmds[1],
+            RenderCommand::Triangle {
+                mode: DrawMode::Fill,
+                ..
+            }
+        ));
+        assert!(matches!(
+            cmds[2],
+            RenderCommand::Triangle {
+                mode: DrawMode::Fill,
+                ..
+            }
+        ));
     }
 
     #[test]
@@ -451,8 +493,16 @@ mod trail_render_tests {
         trail.head_color = Color::new(1.0, 0.0, 0.0, 1.0);
         trail.tail_color = Color::new(0.0, 1.0, 0.0, 1.0);
         trail.min_distance = 0.0;
-        trail.points.push(TrailPoint { x: 0.0, y: 0.0, age: 0.0 });
-        trail.points.push(TrailPoint { x: 10.0, y: 0.0, age: 2.0 });
+        trail.points.push(TrailPoint {
+            x: 0.0,
+            y: 0.0,
+            age: 0.0,
+        });
+        trail.points.push(TrailPoint {
+            x: 10.0,
+            y: 0.0,
+            age: 2.0,
+        });
         let cmds = trail.build_render_commands();
         match &cmds[0] {
             RenderCommand::SetColor(r, g, _b, _a) => {
@@ -468,8 +518,16 @@ mod trail_render_tests {
         let mut trail = Trail::new(1.0, 10.0);
         trail.end_width = 2.0;
         trail.min_distance = 0.0;
-        trail.points.push(TrailPoint { x: 0.0, y: 0.0, age: 0.0 });
-        trail.points.push(TrailPoint { x: 20.0, y: 0.0, age: 1.0 });
+        trail.points.push(TrailPoint {
+            x: 0.0,
+            y: 0.0,
+            age: 0.0,
+        });
+        trail.points.push(TrailPoint {
+            x: 20.0,
+            y: 0.0,
+            age: 1.0,
+        });
         let cmds = trail.build_render_commands();
         match &cmds[1] {
             RenderCommand::Triangle { y1, y2, .. } => {

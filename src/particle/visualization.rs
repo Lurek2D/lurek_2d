@@ -39,8 +39,7 @@ pub fn draw_to_image(ps: &ParticleSystem, width: u32, height: u32) -> ImageData 
             } else {
                 ca
             };
-            let size =
-                interpolate_sizes(&ps.config.sizes, t, p.size_variation).max(1.0) as i32;
+            let size = interpolate_sizes(&ps.config.sizes, t, p.size_variation).max(1.0) as i32;
             let ri = (cr * 255.0) as u8;
             let gi = (cg * 255.0) as u8;
             let bi = (cb * 255.0) as u8;

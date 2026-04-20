@@ -6,23 +6,25 @@
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
-use std::collections::HashMap;
 
-use crate::globe::registry::{Globe, GlobeRegistry};
-use crate::globe::types::{
-    GlobeSpec, Province, GlobeError, LodTier, Layer, Marker, MarkerStyle, Label, LabelStyle,
-    MAX_PROVINCES,
-};
-use crate::globe::projection::OrbitCamera;
 use crate::globe::fog::FogStore;
-use crate::globe::marker::MarkerStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
 use crate::globe::loader;
+use crate::globe::marker::MarkerStore;
 use crate::globe::picking::{pick, PickResult};
-use crate::math::sphere::{great_circle_distance, great_circle_path, lat_lon_to_unit, unit_to_lat_lon};
+use crate::globe::projection::OrbitCamera;
+use crate::globe::registry::{Globe, GlobeRegistry};
+use crate::globe::types::{
+    GlobeError, GlobeSpec, Label, LabelStyle, Layer, LodTier, Marker, MarkerStyle, Province,
+    MAX_PROVINCES,
+};
+use crate::math::sphere::{
+    great_circle_distance, great_circle_path, lat_lon_to_unit, unit_to_lat_lon,
+};
 
 // ── LuaGlobe ────────────────────────────────────────────────────────────────
 
@@ -38,21 +40,25 @@ pub struct LuaGlobe {
 
 impl LuaGlobe {
     fn with<R>(&self, f: impl FnOnce(&Globe) -> R) -> LuaResult<R> {
-        let guard = self.reg.lock().map_err(|e| {
-            mlua::Error::RuntimeError(format!("globe registry lock poisoned: {e}"))
-        })?;
-        guard.get(&self.name).map(f).ok_or_else(|| {
-            mlua::Error::RuntimeError(format!("globe '{}' not found", self.name))
-        })
+        let guard = self
+            .reg
+            .lock()
+            .map_err(|e| mlua::Error::RuntimeError(format!("globe registry lock poisoned: {e}")))?;
+        guard
+            .get(&self.name)
+            .map(f)
+            .ok_or_else(|| mlua::Error::RuntimeError(format!("globe '{}' not found", self.name)))
     }
 
     fn with_mut<R>(&self, f: impl FnOnce(&mut Globe) -> R) -> LuaResult<R> {
-        let mut guard = self.reg.lock().map_err(|e| {
-            mlua::Error::RuntimeError(format!("globe registry lock poisoned: {e}"))
-        })?;
-        guard.get_mut(&self.name).map(f).ok_or_else(|| {
-            mlua::Error::RuntimeError(format!("globe '{}' not found", self.name))
-        })
+        let mut guard = self
+            .reg
+            .lock()
+            .map_err(|e| mlua::Error::RuntimeError(format!("globe registry lock poisoned: {e}")))?;
+        guard
+            .get_mut(&self.name)
+            .map(f)
+            .ok_or_else(|| mlua::Error::RuntimeError(format!("globe '{}' not found", self.name)))
     }
 }
 
@@ -69,10 +75,9 @@ impl LuaUserData for LuaGlobe {
             let id: u32 = p.get("id")?;
             let ct: LuaTable = p.get("centroid")?;
             let centroid = (ct.get::<_, f32>(1)?, ct.get::<_, f32>(2)?);
-            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices")
-                .map_err(|_| mlua::Error::RuntimeError(
-                    format!("province {id}: 'vertices' field is required")
-                ))?;
+            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").map_err(|_| {
+                mlua::Error::RuntimeError(format!("province {id}: 'vertices' field is required"))
+            })?;
             let mut vertices = Vec::new();
             for vt in verts_tbl.sequence_values::<LuaTable>() {
                 let vt = vt?;
@@ -103,11 +108,7 @@ impl LuaUserData for LuaGlobe {
                 texture: None,
                 base_color,
             };
-            this.with_mut(|g| {
-                g.add_province(province)
-                    .map(|_| true)
-                    .unwrap_or(false)
-            })
+            this.with_mut(|g| g.add_province(province).map(|_| true).unwrap_or(false))
         });
 
         // -- removeProvince --
@@ -147,16 +148,19 @@ impl LuaUserData for LuaGlobe {
         /// @param id : integer
         /// @param key : string
         /// @param value : string
-        methods.add_method_mut("setProvinceAttr", |_, this, (id, key, val): (u32, String, String)| {
-            this.with_mut(|g| {
-                if let Some(p) = g.get_province_mut(id) {
-                    p.attrs.insert(key, val);
-                    true
-                } else {
-                    false
-                }
-            })
-        });
+        methods.add_method_mut(
+            "setProvinceAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
+                this.with_mut(|g| {
+                    if let Some(p) = g.get_province_mut(id) {
+                        p.attrs.insert(key, val);
+                        true
+                    } else {
+                        false
+                    }
+                })
+            },
+        );
 
         // -- getProvinceAttr --
         /// Gets a string attribute from a province.
@@ -164,10 +168,7 @@ impl LuaUserData for LuaGlobe {
         /// @param key : string
         /// @return string?
         methods.add_method("getProvinceAttr", |_, this, (id, key): (u32, String)| {
-            this.with(|g| {
-                g.get_province(id)
-                    .and_then(|p| p.attrs.get(&key).cloned())
-            })
+            this.with(|g| g.get_province(id).and_then(|p| p.attrs.get(&key).cloned()))
         });
 
         // ── Camera ──────────────────────────────────────────────────────────
@@ -212,11 +213,14 @@ impl LuaUserData for LuaGlobe {
         /// Returns the current LOD tier as a string: "far", "mid", or "near".
         /// @return string
         methods.add_method("getLod", |_, this, ()| {
-            this.with(|g| match g.camera.lod() {
-                LodTier::Far => "far",
-                LodTier::Mid => "mid",
-                LodTier::Near => "near",
-            }.to_string())
+            this.with(|g| {
+                match g.camera.lod() {
+                    LodTier::Far => "far",
+                    LodTier::Mid => "mid",
+                    LodTier::Near => "near",
+                }
+                .to_string()
+            })
         });
 
         // ── Picking ─────────────────────────────────────────────────────────
@@ -227,9 +231,7 @@ impl LuaUserData for LuaGlobe {
         /// @param sy : number
         /// @return integer?
         methods.add_method("pick", |_, this, (sx, sy): (f32, f32)| {
-            this.with(|g| {
-                g.pick_screen(sx, sy).map(|r| r.province_id)
-            })
+            this.with(|g| g.pick_screen(sx, sy).map(|r| r.province_id))
         });
 
         // -- pickLatLon --
@@ -239,12 +241,14 @@ impl LuaUserData for LuaGlobe {
         /// @return number?
         /// @return number?
         methods.add_method("pickLatLon", |_lua, this, (sx, sy): (f32, f32)| {
-            this.with(|g| {
-                match g.pick_screen(sx, sy) {
-                    Some(r) => (Some(r.centroid_screen.x as f64), Some(r.centroid_screen.y as f64)),
-                    None => (None, None),
-                }
-            }).map(|(x, y)| (x, y))
+            this.with(|g| match g.pick_screen(sx, sy) {
+                Some(r) => (
+                    Some(r.centroid_screen.x as f64),
+                    Some(r.centroid_screen.y as f64),
+                ),
+                None => (None, None),
+            })
+            .map(|(x, y)| (x, y))
         });
 
         // ── Fog of war ───────────────────────────────────────────────────────
@@ -287,7 +291,9 @@ impl LuaUserData for LuaGlobe {
         methods.add_method_mut("revealAll", |_, this, viewer: String| {
             this.with_mut(|g| {
                 let ids: Vec<u32> = g.graph.iter().map(|p| p.id).collect();
-                for id in ids { g.fog.reveal(&viewer, id); }
+                for id in ids {
+                    g.fog.reveal(&viewer, id);
+                }
             })
         });
 
@@ -300,11 +306,15 @@ impl LuaUserData for LuaGlobe {
         /// @param lon : number
         /// @param label : string?
         /// @return integer
-        methods.add_method_mut("addMarker", |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
-            this.with_mut(|g| {
-                g.markers.add(mtype, lat, lon, label, MarkerStyle::default())
-            })
-        });
+        methods.add_method_mut(
+            "addMarker",
+            |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
+                this.with_mut(|g| {
+                    g.markers
+                        .add(mtype, lat, lon, label, MarkerStyle::default())
+                })
+            },
+        );
 
         // -- removeMarker --
         /// Remove a marker by ID.
@@ -336,9 +346,12 @@ impl LuaUserData for LuaGlobe {
         /// @param id : integer
         /// @param key : string
         /// @param value : string
-        methods.add_method_mut("setMarkerAttr", |_, this, (id, key, val): (u32, String, String)| {
-            this.with_mut(|g| g.markers.set_attr(id, key, val))
-        });
+        methods.add_method_mut(
+            "setMarkerAttr",
+            |_, this, (id, key, val): (u32, String, String)| {
+                this.with_mut(|g| g.markers.set_attr(id, key, val))
+            },
+        );
 
         // -- getMarkerAttr --
         /// Get a string attribute from a marker.
@@ -358,11 +371,15 @@ impl LuaUserData for LuaGlobe {
         /// @param lon : number
         /// @param text : string
         /// @return integer
-        methods.add_method_mut("addLabel", |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
-            this.with_mut(|g| {
-                g.labels.add(ltype, lat, lon, text, LabelStyle::default(), 0)
-            })
-        });
+        methods.add_method_mut(
+            "addLabel",
+            |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
+                this.with_mut(|g| {
+                    g.labels
+                        .add(ltype, lat, lon, text, LabelStyle::default(), 0)
+                })
+            },
+        );
 
         // -- setLabelText --
         /// Update label text.
@@ -393,18 +410,21 @@ impl LuaUserData for LuaGlobe {
         /// Add or replace a named thematic layer.
         /// @param name : string
         /// @param z_order : integer?
-        methods.add_method_mut("addLayer", |_, this, (name, z_order): (String, Option<i32>)| {
-            this.with_mut(|g| {
-                g.layers.add(Layer {
-                    name,
-                    visible: true,
-                    alpha: 1.0,
-                    z_order: z_order.unwrap_or(0),
-                    kind: String::new(),
-                    province_colors: HashMap::new(),
+        methods.add_method_mut(
+            "addLayer",
+            |_, this, (name, z_order): (String, Option<i32>)| {
+                this.with_mut(|g| {
+                    g.layers.add(Layer {
+                        name,
+                        visible: true,
+                        alpha: 1.0,
+                        z_order: z_order.unwrap_or(0),
+                        kind: String::new(),
+                        province_colors: HashMap::new(),
+                    })
                 })
-            })
-        });
+            },
+        );
 
         // -- removeLayer --
         /// Remove a layer.
@@ -421,9 +441,12 @@ impl LuaUserData for LuaGlobe {
         /// @param g : number
         /// @param b : number
         /// @param a : number
-        methods.add_method_mut("setLayerColor", |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
-            this.with_mut(|globe| globe.layers.set_province_color(&layer, id, [r, g, b, a]))
-        });
+        methods.add_method_mut(
+            "setLayerColor",
+            |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
+                this.with_mut(|globe| globe.layers.set_province_color(&layer, id, [r, g, b, a]))
+            },
+        );
 
         // -- setLayerVisible --
         /// Set layer visibility.
@@ -467,9 +490,7 @@ impl LuaUserData for LuaGlobe {
         // -- update --
         /// Advance globe simulation by dt seconds.
         /// @param dt : number
-        methods.add_method_mut("update", |_, this, dt: f32| {
-            this.with_mut(|g| g.update(dt))
-        });
+        methods.add_method_mut("update", |_, this, dt: f32| this.with_mut(|g| g.update(dt)));
 
         // -- setBorders --
         /// Enable or disable province border rendering.
@@ -486,9 +507,7 @@ impl LuaUserData for LuaGlobe {
         /// @param to_id : integer
         /// @return table<integer>?
         methods.add_method("findPath", |lua, this, (from_id, to_id): (u32, u32)| {
-            let path_opt = this.with(|g| {
-                g.graph.find_path_default(from_id, to_id)
-            })?;
+            let path_opt = this.with(|g| g.graph.find_path_default(from_id, to_id))?;
             match path_opt {
                 None => Ok(None),
                 Some(path) => {
@@ -506,16 +525,17 @@ impl LuaUserData for LuaGlobe {
         /// @param start_id : integer
         /// @param max_cost : number
         /// @return table<integer, number>
-        methods.add_method("reachable", |lua, this, (start_id, max_cost): (u32, f64)| {
-            let reached = this.with(|g| {
-                g.graph.reachable_default(start_id, max_cost)
-            })?;
-            let t = lua.create_table()?;
-            for (id, cost) in reached {
-                t.set(id, cost)?;
-            }
-            Ok(t)
-        });
+        methods.add_method(
+            "reachable",
+            |lua, this, (start_id, max_cost): (u32, f64)| {
+                let reached = this.with(|g| g.graph.reachable_default(start_id, max_cost))?;
+                let t = lua.create_table()?;
+                for (id, cost) in reached {
+                    t.set(id, cost)?;
+                }
+                Ok(t)
+            },
+        );
 
         // ── Arc management ──────────────────────────────────────────────────
 
@@ -527,26 +547,29 @@ impl LuaUserData for LuaGlobe {
         /// @param lon2 : number
         /// @param steps : integer?
         /// @return integer
-        methods.add_method_mut("addArc", |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
-            let steps = steps.unwrap_or(24);
-            this.with_mut(|g| {
-                let arc_id = g.arc_next_id;
-                g.arc_next_id += 1;
-                let arc = crate::globe::types::Arc {
-                    id: arc_id,
-                    arc_type: "route".to_string(),
-                    screen_points: Vec::new(), // will be computed at draw time
-                    color: [1.0, 1.0, 0.0, 1.0],
-                    width: 1.5,
-                    from: (lat1, lon1),
-                    to: (lat2, lon2),
-                    steps,
-                    visible: true,
-                };
-                g.arcs.insert(arc_id, arc);
-                arc_id
-            })
-        });
+        methods.add_method_mut(
+            "addArc",
+            |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
+                let steps = steps.unwrap_or(24);
+                this.with_mut(|g| {
+                    let arc_id = g.arc_next_id;
+                    g.arc_next_id += 1;
+                    let arc = crate::globe::types::Arc {
+                        id: arc_id,
+                        arc_type: "route".to_string(),
+                        screen_points: Vec::new(), // will be computed at draw time
+                        color: [1.0, 1.0, 0.0, 1.0],
+                        width: 1.5,
+                        from: (lat1, lon1),
+                        to: (lat2, lon2),
+                        steps,
+                        visible: true,
+                    };
+                    g.arcs.insert(arc_id, arc);
+                    arc_id
+                })
+            },
+        );
 
         // -- removeArc --
         /// Remove an arc by ID.
@@ -558,9 +581,7 @@ impl LuaUserData for LuaGlobe {
         // -- getName --
         /// Returns the globe name.
         /// @return string
-        methods.add_method("getName", |_, this, ()| {
-            Ok(this.name.clone())
-        });
+        methods.add_method("getName", |_, this, ()| Ok(this.name.clone()));
 
         // -- __tostring --
         methods.add_meta_method(LuaMetaMethod::ToString, |_, this, ()| {
@@ -585,20 +606,23 @@ impl LuaUserData for LuaGlobeRegistry {
         /// @param name : string
         /// @param spec : table?
         /// @return Globe
-        methods.add_method_mut("new", |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
-            let spec = parse_globe_spec(spec_tbl);
-            {
-                let mut guard = this.reg.lock().map_err(|e| {
-                    mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                })?;
-                guard.create(name.clone(), spec);
-            }
-            Ok(LuaGlobe {
-                reg: this.reg.clone(),
-                name,
-                state: this.state.clone(),
-            })
-        });
+        methods.add_method_mut(
+            "new",
+            |_, this, (name, spec_tbl): (String, Option<LuaTable>)| {
+                let spec = parse_globe_spec(spec_tbl);
+                {
+                    let mut guard = this.reg.lock().map_err(|e| {
+                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                    })?;
+                    guard.create(name.clone(), spec);
+                }
+                Ok(LuaGlobe {
+                    reg: this.reg.clone(),
+                    name,
+                    state: this.state.clone(),
+                })
+            },
+        );
 
         // -- get --
         /// Get an existing globe by name, or nil.
@@ -627,9 +651,10 @@ impl LuaUserData for LuaGlobeRegistry {
         /// @param name : string
         /// @return boolean
         methods.add_method_mut("remove", |_, this, name: String| {
-            let mut guard = this.reg.lock().map_err(|e| {
-                mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-            })?;
+            let mut guard = this
+                .reg
+                .lock()
+                .map_err(|e| mlua::Error::RuntimeError(format!("registry lock poisoned: {e}")))?;
             Ok(guard.remove(&name).is_some())
         });
 
@@ -637,9 +662,10 @@ impl LuaUserData for LuaGlobeRegistry {
         /// Returns a table of all globe names.
         /// @return table<string>
         methods.add_method("names", |lua, this, ()| {
-            let guard = this.reg.lock().map_err(|e| {
-                mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-            })?;
+            let guard = this
+                .reg
+                .lock()
+                .map_err(|e| mlua::Error::RuntimeError(format!("registry lock poisoned: {e}")))?;
             let names = guard.names();
             let t = lua.create_table()?;
             for (i, n) in names.iter().enumerate() {
@@ -655,13 +681,27 @@ impl LuaUserData for LuaGlobeRegistry {
 fn parse_globe_spec(tbl: Option<LuaTable>) -> GlobeSpec {
     let mut spec = GlobeSpec::default();
     if let Some(t) = tbl {
-        if let Ok(v) = t.get::<_, f32>("radius") { spec.radius = v; }
-        if let Ok(v) = t.get::<_, f32>("axial_tilt_deg") { spec.axial_tilt_deg = v; }
-        if let Ok(v) = t.get::<_, f32>("rotation_deg") { spec.rotation_deg = v; }
-        if let Ok(v) = t.get::<_, f32>("time_of_day") { spec.time_of_day = v; }
-        if let Ok(v) = t.get::<_, bool>("render_borders") { spec.render_borders = v; }
-        if let Ok(v) = t.get::<_, f32>("border_width") { spec.border_width = v; }
-        if let Ok(v) = t.get::<_, f32>("ambient") { spec.ambient = v; }
+        if let Ok(v) = t.get::<_, f32>("radius") {
+            spec.radius = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("axial_tilt_deg") {
+            spec.axial_tilt_deg = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("rotation_deg") {
+            spec.rotation_deg = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("time_of_day") {
+            spec.time_of_day = v;
+        }
+        if let Ok(v) = t.get::<_, bool>("render_borders") {
+            spec.render_borders = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("border_width") {
+            spec.border_width = v;
+        }
+        if let Ok(v) = t.get::<_, f32>("ambient") {
+            spec.ambient = v;
+        }
     }
     spec
 }
@@ -691,7 +731,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     })?;
                     guard.create(name.clone(), spec);
                 }
-                Ok(LuaGlobe { reg: reg.clone(), name, state: s.clone() })
+                Ok(LuaGlobe {
+                    reg: reg.clone(),
+                    name,
+                    state: s.clone(),
+                })
             })?,
         )?;
     }
@@ -713,7 +757,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     guard.get(&name).is_some()
                 };
                 if exists {
-                    Ok(Some(LuaGlobe { reg: reg.clone(), name, state: s.clone() }))
+                    Ok(Some(LuaGlobe {
+                        reg: reg.clone(),
+                        name,
+                        state: s.clone(),
+                    }))
                 } else {
                     Ok(None)
                 }
@@ -732,21 +780,27 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         /// @return Globe
         tbl.set(
             "loadFromTOML",
-            lua.create_function(move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
-                let spec = parse_globe_spec(spec_tbl);
-                let provinces = loader::load_from_toml_str(&toml_src)
-                    .map_err(|e| mlua::Error::RuntimeError(e))?;
-                {
-                    let mut guard = reg.lock().map_err(|e| {
-                        mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
-                    })?;
-                    let globe = guard.create(name.clone(), spec);
-                    for p in provinces {
-                        let _ = globe.add_province(p);
+            lua.create_function(
+                move |_, (name, toml_src, spec_tbl): (String, String, Option<LuaTable>)| {
+                    let spec = parse_globe_spec(spec_tbl);
+                    let provinces = loader::load_from_toml_str(&toml_src)
+                        .map_err(|e| mlua::Error::RuntimeError(e))?;
+                    {
+                        let mut guard = reg.lock().map_err(|e| {
+                            mlua::Error::RuntimeError(format!("registry lock poisoned: {e}"))
+                        })?;
+                        let globe = guard.create(name.clone(), spec);
+                        for p in provinces {
+                            let _ = globe.add_province(p);
+                        }
                     }
-                }
-                Ok(LuaGlobe { reg: reg.clone(), name, state: s.clone() })
-            })?,
+                    Ok(LuaGlobe {
+                        reg: reg.clone(),
+                        name,
+                        state: s.clone(),
+                    })
+                },
+            )?,
         )?;
     }
 
@@ -818,7 +872,3 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     luna.set("globe", tbl)?;
     Ok(())
 }
-
-
-
-

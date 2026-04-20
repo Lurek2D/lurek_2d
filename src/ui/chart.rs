@@ -260,7 +260,6 @@ impl LineChart {
                 safe_circle(img, x, y, 3, cr, cg, cb, 255);
             }
         }
-
     }
 }
 
@@ -355,7 +354,8 @@ impl BarChart {
         let (bgr, bgg, bgb) = cfg.bg_color;
         img.fill(bgr, bgg, bgb, 255);
 
-        let (left, right, top, bottom) = draw_grid_and_axes(img, cfg, self.categories.len() as u32, 5);
+        let (left, right, top, bottom) =
+            draw_grid_and_axes(img, cfg, self.categories.len() as u32, 5);
         let chart_h = (bottom - top) as f32;
         let (lr, lg, lb) = cfg.label_color;
 
@@ -378,11 +378,17 @@ impl BarChart {
                 let bh = (val / self.y_max * chart_h) as i32;
                 let bx = group_x + 10 + si as i32 * (bar_w + 2);
                 img.draw_rect(bx, bottom - bh, bar_w as u32, bh as u32, cr, cg, cb, 255);
-                img.draw_label(&format!("{}", val as i32), bx + 2, bottom - bh - 8, lr, lg, lb);
+                img.draw_label(
+                    &format!("{}", val as i32),
+                    bx + 2,
+                    bottom - bh - 8,
+                    lr,
+                    lg,
+                    lb,
+                );
             }
             img.draw_label(&cat.label, group_x + 8, bottom + 6, lr, lg, lb);
         }
-
     }
 }
 
@@ -474,7 +480,6 @@ impl ScatterPlot {
                 safe_circle(img, px, py, 4, cr, cg, cb, 180);
             }
         }
-
     }
 }
 
@@ -617,7 +622,9 @@ impl PieChart {
             let sweep = seg.value / total * 2.0 * std::f32::consts::PI;
             let lx = cx + angle.cos() * radius;
             let ly = cy + angle.sin() * radius;
-            img.draw_line(cx as i32, cy as i32, lx as i32, ly as i32, 255, 255, 255, 255);
+            img.draw_line(
+                cx as i32, cy as i32, lx as i32, ly as i32, 255, 255, 255, 255,
+            );
             angle += sweep;
         }
 
@@ -637,7 +644,6 @@ impl PieChart {
         if let Some(ref title) = cfg.title {
             img.draw_label(title, 10, 10, lr, lg, lb);
         }
-
     }
 }
 
@@ -771,8 +777,5 @@ impl AreaChart {
         if let Some(ref title) = cfg.title {
             img.draw_label(title, left + 10, 10, lr, lg, lb);
         }
-
     }
 }
-
-

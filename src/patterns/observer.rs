@@ -71,8 +71,15 @@ impl Observer {
     pub fn subscribe(&mut self, key: &str, once: bool) -> u64 {
         let id = self.next_id;
         self.next_id += 1;
-        let entry = ObserverEntry { id, key: key.to_string(), once };
-        self.subscriptions.entry(key.to_string()).or_default().push(entry);
+        let entry = ObserverEntry {
+            id,
+            key: key.to_string(),
+            once,
+        };
+        self.subscriptions
+            .entry(key.to_string())
+            .or_default()
+            .push(entry);
         id
     }
 
@@ -88,7 +95,9 @@ impl Observer {
         for subs in self.subscriptions.values_mut() {
             let before = subs.len();
             subs.retain(|e| e.id != id);
-            if subs.len() < before { found = true; }
+            if subs.len() < before {
+                found = true;
+            }
         }
         found
     }
@@ -109,14 +118,18 @@ impl Observer {
         if let Some(subs) = self.subscriptions.get(key) {
             for e in subs {
                 ids.push(e.id);
-                if e.once { once_ids.push(e.id); }
+                if e.once {
+                    once_ids.push(e.id);
+                }
             }
         }
         // Wildcard
         if let Some(subs) = self.subscriptions.get("*") {
             for e in subs {
                 ids.push(e.id);
-                if e.once { once_ids.push(e.id); }
+                if e.once {
+                    once_ids.push(e.id);
+                }
             }
         }
 

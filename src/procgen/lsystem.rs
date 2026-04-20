@@ -122,12 +122,20 @@ impl LSystem {
                     x += heading.cos() * step;
                     y += heading.sin() * step;
                 }
-                '+' => { heading -= angle_rad; }
-                '-' => { heading += angle_rad; }
-                '[' => { stack.push((x, y, heading)); }
+                '+' => {
+                    heading -= angle_rad;
+                }
+                '-' => {
+                    heading += angle_rad;
+                }
+                '[' => {
+                    stack.push((x, y, heading));
+                }
                 ']' => {
                     if let Some((sx, sy, sh)) = stack.pop() {
-                        x = sx; y = sy; heading = sh;
+                        x = sx;
+                        y = sy;
+                        heading = sh;
                     }
                 }
                 _ => {}

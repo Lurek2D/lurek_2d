@@ -1,4 +1,4 @@
-﻿//! Spherical math helpers used by `src/globe/`.
+//! Spherical math helpers used by `src/globe/`.
 //!
 //! Pure-math functions on the unit sphere â€” no rendering, no allocation, no globals.
 //!
@@ -22,7 +22,9 @@ pub struct Mat3x3 {
 impl Mat3x3 {
     /// 3Ã—3 identity.
     pub fn identity() -> Self {
-        Self { cols: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]] }
+        Self {
+            cols: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+        }
     }
 
     /// Construct from three column vectors.
@@ -75,8 +77,7 @@ pub fn great_circle_distance(lat1_deg: f32, lon1_deg: f32, lat2_deg: f32, lon2_d
     let lat2 = lat2_deg.to_radians();
     let dlat = (lat2_deg - lat1_deg).to_radians();
     let dlon = (lon2_deg - lon1_deg).to_radians();
-    let a = (dlat * 0.5).sin().powi(2)
-        + lat1.cos() * lat2.cos() * (dlon * 0.5).sin().powi(2);
+    let a = (dlat * 0.5).sin().powi(2) + lat1.cos() * lat2.cos() * (dlon * 0.5).sin().powi(2);
     2.0 * a.sqrt().clamp(0.0, 1.0).asin()
 }
 
@@ -108,7 +109,11 @@ pub fn great_circle_path(
         } else {
             let a = ((1.0 - t) * omega).sin() / sin_omega;
             let b = (t * omega).sin() / sin_omega;
-            Vec3::new(p1.x * a + p2.x * b, p1.y * a + p2.y * b, p1.z * a + p2.z * b)
+            Vec3::new(
+                p1.x * a + p2.x * b,
+                p1.y * a + p2.y * b,
+                p1.z * a + p2.z * b,
+            )
         };
         out.push(unit_to_lat_lon(v));
     }

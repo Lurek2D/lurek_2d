@@ -95,8 +95,8 @@ impl ZipMount {
 
         let file = std::fs::File::open(&self.archive_path)
             .map_err(|e| format!("ZipMount: cannot open archive: {}", e))?;
-        let mut archive = zip::ZipArchive::new(file)
-            .map_err(|e| format!("ZipMount: parse error: {}", e))?;
+        let mut archive =
+            zip::ZipArchive::new(file).map_err(|e| format!("ZipMount: parse error: {}", e))?;
         let mut entry = archive
             .by_name(&entry_name)
             .map_err(|e| format!("ZipMount: entry '{}' not found: {}", entry_name, e))?;

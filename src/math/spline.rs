@@ -31,7 +31,9 @@ impl CatmullRomSpline {
     ///
     /// At least 2 points are required; fewer than 4 will give degenerate results.
     pub fn new(points: Vec<(f32, f32)>) -> Self {
-        Self { control_points: points }
+        Self {
+            control_points: points,
+        }
     }
 
     /// Sample the spline at a global parameter `t` in [0, 1] spanning the whole curve.

@@ -6,10 +6,10 @@
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::runtime::log_messages::{PL01_PIPELINE_INIT, PL02_STEP_ADD};
 use crate::log_msg;
 use crate::pipeline::result::{PipelineResult, PipelineStatus};
 use crate::pipeline::step::{PipelineStep, StepStatus};
+use crate::runtime::log_messages::{PL01_PIPELINE_INIT, PL02_STEP_ADD};
 
 /// Determines how the pipeline responds when a step fails.
 ///
@@ -368,10 +368,7 @@ impl Pipeline {
             match dep_status {
                 StepStatus::Completed => {}
                 StepStatus::Skipped | StepStatus::Failed => {
-                    let is_optional = self
-                        .get_step(dep_name)
-                        .map(|s| s.optional)
-                        .unwrap_or(false);
+                    let is_optional = self.get_step(dep_name).map(|s| s.optional).unwrap_or(false);
                     if !is_optional {
                         return Ok(false);
                     }

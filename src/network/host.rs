@@ -13,8 +13,8 @@ use rusty_enet::{self as enet, Host, HostSettings, Packet, PacketKind, PeerID};
 
 use super::constants::{DEFAULT_CHANNELS, DEFAULT_PEERS, MAX_PEERS};
 use super::error::NetworkError;
-use crate::runtime::log_messages::{NW01_HOST_BIND, NW04_NET_ERROR};
 use crate::log_msg;
+use crate::runtime::log_messages::{NW01_HOST_BIND, NW04_NET_ERROR};
 
 /// The role of a network host in a multiplayer game.
 ///
@@ -556,7 +556,13 @@ impl NetworkHost {
         let addr: SocketAddr = addr_str
             .parse()
             .map_err(|e: std::net::AddrParseError| NetworkError::InvalidAddress(e.to_string()))?;
-        let mut host = Self::new(addr, max_peers.or(Some(DEFAULT_PEERS)), channels, None, None)?;
+        let mut host = Self::new(
+            addr,
+            max_peers.or(Some(DEFAULT_PEERS)),
+            channels,
+            None,
+            None,
+        )?;
         host.role = HostRole::Server;
         Ok(host)
     }

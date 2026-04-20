@@ -113,7 +113,9 @@ impl AILod {
     ///
     /// # Returns
     /// `usize`.
-    pub fn tier_count(&self) -> usize { self.tiers.len() }
+    pub fn tier_count(&self) -> usize {
+        self.tiers.len()
+    }
 
     /// Determines the LOD tier index for an agent at `agent_pos` from `ref_pos`.
     ///
@@ -145,7 +147,10 @@ impl AILod {
     /// # Returns
     /// `Vec<usize>`.
     pub fn assign_tiers(&self, agent_positions: &[(f32, f32)], ref_pos: (f32, f32)) -> Vec<usize> {
-        agent_positions.iter().map(|&p| self.tier_for(p, ref_pos)).collect()
+        agent_positions
+            .iter()
+            .map(|&p| self.tier_for(p, ref_pos))
+            .collect()
     }
 
     /// Returns `true` if an agent in `tier` should be updated on `frame_number`.
@@ -162,8 +167,11 @@ impl AILod {
     pub fn should_update(&self, tier: usize, frame_number: u64) -> bool {
         match self.tiers.get(tier) {
             Some(t) => {
-                if t.update_every == 0 { false }
-                else { frame_number % t.update_every as u64 == 0 }
+                if t.update_every == 0 {
+                    false
+                } else {
+                    frame_number % t.update_every as u64 == 0
+                }
             }
             None => false,
         }
@@ -177,9 +185,9 @@ impl Default for AILod {
     /// - Tier 2 `"far"`: ∞, every 16 frames.
     fn default() -> Self {
         Self::new(vec![
-            LodTier::new("near",  400.0, 1,  400.0),
-            LodTier::new("mid",   800.0, 4,  600.0),
-            LodTier::new("far",   f32::INFINITY, 16, 2000.0),
+            LodTier::new("near", 400.0, 1, 400.0),
+            LodTier::new("mid", 800.0, 4, 600.0),
+            LodTier::new("far", f32::INFINITY, 16, 2000.0),
         ])
     }
 }

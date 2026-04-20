@@ -7,11 +7,11 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::math::Color;
+use crate::raycaster::sprite_manager::SpriteManager;
 use crate::raycaster::{
     distance_shade, project_column, DoorDirection, DoorManager, DoorState, HeightMap, PointLight,
     RayHit, Raycaster2D, RaycasterScene, SceneBuildParams, WorldSprite,
 };
-use crate::raycaster::sprite_manager::SpriteManager;
 use crate::runtime::resource_keys::TextureKey;
 
 // -------------------------------------------------------------------------------
@@ -229,7 +229,11 @@ impl LuaUserData for LuaPointLight {
         /// Returns the RGB color as three separate values.
         /// @return number, number, number
         methods.add_method("color", |_, this, ()| {
-            Ok((this.inner.color[0], this.inner.color[1], this.inner.color[2]))
+            Ok((
+                this.inner.color[0],
+                this.inner.color[1],
+                this.inner.color[2],
+            ))
         });
 
         // -- set --
@@ -407,13 +411,10 @@ impl LuaUserData for LuaRaycaster {
         /// @param tile_type : integer
         /// @param alpha     : number
         /// @return nil
-        methods.add_method_mut(
-            "setWallAlpha",
-            |_, this, (tile_type, alpha): (u8, f32)| {
-                this.inner.set_wall_alpha(tile_type, alpha);
-                Ok(())
-            },
-        );
+        methods.add_method_mut("setWallAlpha", |_, this, (tile_type, alpha): (u8, f32)| {
+            this.inner.set_wall_alpha(tile_type, alpha);
+            Ok(())
+        });
 
         // -- getWallAlpha --
         /// Returns the opacity for a wall tile type. Returns 1.0 if not set.

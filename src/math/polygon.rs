@@ -222,10 +222,7 @@ pub fn polygon_clip(polygon: &[(f32, f32)], nx: f32, ny: f32, d: f32) -> Vec<(f3
 ///
 /// # Returns
 /// `Vec<(f32, f32)>` — the intersection region, or an empty `Vec` if there is none.
-pub fn polygon_intersection(
-    subject: &[(f32, f32)],
-    clip: &[(f32, f32)],
-) -> Vec<(f32, f32)> {
+pub fn polygon_intersection(subject: &[(f32, f32)], clip: &[(f32, f32)]) -> Vec<(f32, f32)> {
     if subject.is_empty() || clip.is_empty() {
         return Vec::new();
     }
@@ -349,9 +346,11 @@ fn convex_hull(pts: &mut Vec<(f32, f32)>) -> Vec<(f32, f32)> {
         return pts.clone();
     }
     // Sort lexicographically
-    pts.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal).then(
-        a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal),
-    ));
+    pts.sort_by(|a, b| {
+        a.0.partial_cmp(&b.0)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then(a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
+    });
     pts.dedup_by(|a, b| (a.0 - b.0).abs() < f32::EPSILON && (a.1 - b.1).abs() < f32::EPSILON);
 
     if pts.len() < 3 {

@@ -8,9 +8,9 @@
 //!
 //! This module contains no rendering code and no Lua imports.
 
-use std::collections::{HashMap, HashSet};
 use crate::globe::types::{GlobeError, Province, ProvinceId, MAX_PROVINCES};
 use crate::pathfind::graph_path::{find_province_path, ProvinceCostFn, ProvincePath};
+use std::collections::{HashMap, HashSet};
 
 /// Complete province topology for one globe instance.
 ///
@@ -96,8 +96,15 @@ impl ProvinceGraph {
         to: ProvinceId,
         cost_fn: &ProvinceCostFn,
     ) -> Result<ProvincePath, GlobeError> {
-        find_province_path(&self.neighbors, &self.centroids, &self.edge_tags, from, to, cost_fn)
-            .ok_or(GlobeError::NoPath(from, to))
+        find_province_path(
+            &self.neighbors,
+            &self.centroids,
+            &self.edge_tags,
+            from,
+            to,
+            cost_fn,
+        )
+        .ok_or(GlobeError::NoPath(from, to))
     }
 
     /// Find all provinces reachable from `start` within `max_cost`.
@@ -123,8 +130,16 @@ impl ProvinceGraph {
     }
 
     /// Set a user attribute on a province.
-    pub fn set_attr(&mut self, id: ProvinceId, key: String, value: String) -> Result<(), GlobeError> {
-        let p = self.provinces.get_mut(&id).ok_or(GlobeError::ProvinceNotFound(id))?;
+    pub fn set_attr(
+        &mut self,
+        id: ProvinceId,
+        key: String,
+        value: String,
+    ) -> Result<(), GlobeError> {
+        let p = self
+            .provinces
+            .get_mut(&id)
+            .ok_or(GlobeError::ProvinceNotFound(id))?;
         p.attrs.insert(key, value);
         Ok(())
     }

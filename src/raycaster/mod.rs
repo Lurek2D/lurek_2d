@@ -12,10 +12,10 @@ pub mod column_batch;
 pub mod dda;
 /// Column-based depth buffer for sprite occlusion.
 pub mod depth_buffer;
-/// CPU software-rendering fallback for headless testing.
-pub mod draw;
 /// Sliding door support for grid-based raycaster levels.
 pub mod doors;
+/// CPU software-rendering fallback for headless testing.
+pub mod draw;
 /// Floor and ceiling height variations for stepped or multi-level environments.
 pub mod heightmap;
 /// Static and dynamic point lighting for raycaster worlds.
@@ -32,10 +32,10 @@ pub mod render;
 pub mod scene;
 /// Line segment definition and ray-segment intersection testing.
 pub mod segment;
-/// Sprite projection for billboard rendering.
-pub mod sprite_projection;
 /// Batch sprite manager with depth-sorted projection for raycaster worlds.
 pub mod sprite_manager;
+/// Sprite projection for billboard rendering.
+pub mod sprite_projection;
 /// Visibility polygon via endpoint raycasting.
 pub mod visibility;
 /// Diagnostic draw_*_to_image helpers for raycaster debugging.
@@ -54,6 +54,6 @@ pub use projection::{distance_shade, project_column};
 pub use ray_hit::RayHit;
 pub use scene::{BillboardSprite, CeilingQuad, FloorQuad, RaycasterScene, WallQuad};
 pub use segment::{cast_ray_2d, Segment};
-pub use sprite_projection::SpriteProjection;
 pub use sprite_manager::{SpriteManager, WorldSprite as ManagedSprite};
+pub use sprite_projection::SpriteProjection;
 pub use visibility::field_of_view;

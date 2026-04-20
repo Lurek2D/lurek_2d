@@ -794,22 +794,43 @@ impl PostFxPipeline {
         pipelines.insert("blur_v".into(), build("postfx_blur_v", SHADER_BLUR_V));
         pipelines.insert("vignette".into(), build("postfx_vignette", SHADER_VIGNETTE));
         pipelines.insert("noise".into(), build("postfx_noise", SHADER_NOISE));
-        pipelines.insert("grayscale".into(), build("postfx_grayscale", SHADER_GRAYSCALE));
+        pipelines.insert(
+            "grayscale".into(),
+            build("postfx_grayscale", SHADER_GRAYSCALE),
+        );
         pipelines.insert("sepia".into(), build("postfx_sepia", SHADER_SEPIA));
         pipelines.insert("invert".into(), build("postfx_invert", SHADER_INVERT));
         pipelines.insert("crt".into(), build("postfx_crt", SHADER_CRT));
-        pipelines.insert("chromatic".into(), build("postfx_chromatic", SHADER_CHROMATIC));
-        pipelines.insert("scanlines".into(), build("postfx_scanlines", SHADER_SCANLINES));
+        pipelines.insert(
+            "chromatic".into(),
+            build("postfx_chromatic", SHADER_CHROMATIC),
+        );
+        pipelines.insert(
+            "scanlines".into(),
+            build("postfx_scanlines", SHADER_SCANLINES),
+        );
         pipelines.insert("pixelate".into(), build("postfx_pixelate", SHADER_PIXELATE));
         pipelines.insert("hueshift".into(), build("postfx_hueshift", SHADER_HUESHIFT));
-        pipelines.insert("edgedetect".into(), build("postfx_edgedetect", SHADER_EDGEDETECT));
+        pipelines.insert(
+            "edgedetect".into(),
+            build("postfx_edgedetect", SHADER_EDGEDETECT),
+        );
         pipelines.insert("godrays".into(), build("postfx_godrays", SHADER_GODRAYS));
-        pipelines.insert("waterdistort".into(), build("postfx_waterdistort", SHADER_WATERDISTORT));
+        pipelines.insert(
+            "waterdistort".into(),
+            build("postfx_waterdistort", SHADER_WATERDISTORT),
+        );
         pipelines.insert("sharpen".into(), build("postfx_sharpen", SHADER_SHARPEN));
         pipelines.insert("dither".into(), build("postfx_dither", SHADER_DITHER));
         pipelines.insert("outline".into(), build("postfx_outline", SHADER_OUTLINE));
-        pipelines.insert("depthoffield".into(), build("postfx_depthoffield", SHADER_DEPTHOFFIELD));
-        pipelines.insert("motionblur".into(), build("postfx_motionblur", SHADER_MOTIONBLUR));
+        pipelines.insert(
+            "depthoffield".into(),
+            build("postfx_depthoffield", SHADER_DEPTHOFFIELD),
+        );
+        pipelines.insert(
+            "motionblur".into(),
+            build("postfx_motionblur", SHADER_MOTIONBLUR),
+        );
         pipelines.insert("__copy".into(), build("postfx_copy", SHADER_COPY));
 
         Self {
@@ -1039,7 +1060,3 @@ impl PostFxPipeline {
         rp.draw(0..3, 0..1);
     }
 }
-
-
-
-

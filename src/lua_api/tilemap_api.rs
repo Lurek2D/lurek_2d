@@ -11,11 +11,11 @@ use crate::tilemap::autotile_sheet::{AutoTileLayout, AutoTileSheet};
 use crate::tilemap::chunk::ChunkMap;
 use crate::tilemap::coords;
 use crate::tilemap::isomap::IsoMap;
+use crate::tilemap::large_map_renderer::LargeMapRenderer;
+use crate::tilemap::ldtk::load_ldtk;
 use crate::tilemap::mapgen::{
     Edge, MapBlock, MapGen, MapGroup, MapOrientation, MapScript, MapSize, ScriptStep, StepType,
 };
-use crate::tilemap::ldtk::load_ldtk;
-use crate::tilemap::large_map_renderer::LargeMapRenderer;
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 
@@ -715,8 +715,8 @@ impl LuaUserData for LuaTileMap {
         methods.add_method("getOrientation", |_, this, ()| {
             let o = this.inner.borrow().get_orientation();
             Ok(match o {
-                MapOrientation::TopDown   => "topdown",
-                MapOrientation::SideView  => "sideview",
+                MapOrientation::TopDown => "topdown",
+                MapOrientation::SideView => "sideview",
                 MapOrientation::Isometric => "isometric",
                 MapOrientation::Hexagonal => "hexagonal",
             })
@@ -728,13 +728,16 @@ impl LuaUserData for LuaTileMap {
         /// @return nil
         methods.add_method("setOrientation", |_, this, orientation: String| {
             let o = match orientation.as_str() {
-                "topdown"    => MapOrientation::TopDown,
-                "sideview"   => MapOrientation::SideView,
-                "isometric"  => MapOrientation::Isometric,
-                "hexagonal"  => MapOrientation::Hexagonal,
-                other => return Err(LuaError::RuntimeError(format!(
-                    "setOrientation: unknown '{}' (valid: topdown, sideview, isometric, hexagonal)", other
-                ))),
+                "topdown" => MapOrientation::TopDown,
+                "sideview" => MapOrientation::SideView,
+                "isometric" => MapOrientation::Isometric,
+                "hexagonal" => MapOrientation::Hexagonal,
+                other => {
+                    return Err(LuaError::RuntimeError(format!(
+                    "setOrientation: unknown '{}' (valid: topdown, sideview, isometric, hexagonal)",
+                    other
+                )))
+                }
             };
             this.inner.borrow_mut().set_orientation(o);
             Ok(())
@@ -790,22 +793,25 @@ impl LuaUserData for LuaTileMap {
         /// @param layer : integer
         /// @param walkable_gids : table
         /// @return table
-        methods.add_method("toNavGrid", |lua, this, (layer, gids_tbl): (usize, LuaTable)| {
-            let mut gids: Vec<u32> = Vec::new();
-            for v in gids_tbl.sequence_values::<u32>() {
-                gids.push(v?);
-            }
-            let grid = this.inner.borrow().to_nav_grid(layer, &gids);
-            let outer = lua.create_table()?;
-            for (row_idx, row) in grid.iter().enumerate() {
-                let inner_tbl = lua.create_table()?;
-                for (col_idx, &walkable) in row.iter().enumerate() {
-                    inner_tbl.set(col_idx + 1, walkable)?;
+        methods.add_method(
+            "toNavGrid",
+            |lua, this, (layer, gids_tbl): (usize, LuaTable)| {
+                let mut gids: Vec<u32> = Vec::new();
+                for v in gids_tbl.sequence_values::<u32>() {
+                    gids.push(v?);
                 }
-                outer.set(row_idx + 1, inner_tbl)?;
-            }
-            Ok(outer)
-        });
+                let grid = this.inner.borrow().to_nav_grid(layer, &gids);
+                let outer = lua.create_table()?;
+                for (row_idx, row) in grid.iter().enumerate() {
+                    let inner_tbl = lua.create_table()?;
+                    for (col_idx, &walkable) in row.iter().enumerate() {
+                        inner_tbl.set(col_idx + 1, walkable)?;
+                    }
+                    outer.set(row_idx + 1, inner_tbl)?;
+                }
+                Ok(outer)
+            },
+        );
 
         // -- onTileEnter --
         /// Registers a callback fired when any entity's tile GID matches `gid`.
@@ -1950,7 +1956,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newIsoMap",
         lua.create_function(
-            |lua, (width, height, tile_w, tile_h, level_height, part_count): (u32, u32, u32, u32, u32, Option<u32>)| {
+            |lua,
+             (width, height, tile_w, tile_h, level_height, part_count): (
+                u32,
+                u32,
+                u32,
+                u32,
+                u32,
+                Option<u32>,
+            )| {
                 lua.create_userdata(LuaIsoMap {
                     inner: Rc::new(RefCell::new(IsoMap::new(
                         width,
@@ -2468,18 +2482,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "fromLDtk",
         lua.create_function({
             let state = state.clone();
-            move |lua, (json_str, level_name): (String, Option<String>)| {
-                match load_ldtk(&json_str, level_name.as_deref()) {
-                    Ok(map) => {
-                        let ud = lua.create_userdata(LuaTileMap {
-                            inner: Rc::new(RefCell::new(map)),
-                            state: state.clone(),
-                            tile_callbacks: Rc::new(RefCell::new(Vec::new())),
-                        })?;
-                        Ok(LuaValue::UserData(ud))
-                    }
-                    Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
+            move |lua, (json_str, level_name): (String, Option<String>)| match load_ldtk(
+                &json_str,
+                level_name.as_deref(),
+            ) {
+                Ok(map) => {
+                    let ud = lua.create_userdata(LuaTileMap {
+                        inner: Rc::new(RefCell::new(map)),
+                        state: state.clone(),
+                        tile_callbacks: Rc::new(RefCell::new(Vec::new())),
+                    })?;
+                    Ok(LuaValue::UserData(ud))
                 }
+                Err(e) => Err(LuaError::RuntimeError(format!("fromLDtk: {}", e))),
             }
         })?,
     )?;

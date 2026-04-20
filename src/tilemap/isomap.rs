@@ -115,7 +115,9 @@ impl IsoLevel {
             height,
             visible: true,
             tiles: (0..(width * height) as usize)
-                .map(|_| IsoTile { parts: vec![0u32; pc] })
+                .map(|_| IsoTile {
+                    parts: vec![0u32; pc],
+                })
                 .collect(),
         }
     }
@@ -263,7 +265,14 @@ impl IsoMap {
     /// `Self`.
     ///
     /// Add levels with [`add_level`](Self::add_level) before placing tiles.
-    pub fn new(width: u32, height: u32, tile_w: u32, tile_h: u32, level_height: u32, part_count: u32) -> Self {
+    pub fn new(
+        width: u32,
+        height: u32,
+        tile_w: u32,
+        tile_h: u32,
+        level_height: u32,
+        part_count: u32,
+    ) -> Self {
         let part_count = part_count.max(1);
         Self {
             width,
@@ -289,7 +298,8 @@ impl IsoMap {
     /// `usize`.
     pub fn add_level(&mut self) -> usize {
         let idx = self.levels.len();
-        self.levels.push(IsoLevel::new(self.width, self.height, self.part_count));
+        self.levels
+            .push(IsoLevel::new(self.width, self.height, self.part_count));
         idx
     }
 

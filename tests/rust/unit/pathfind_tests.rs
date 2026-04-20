@@ -639,7 +639,10 @@ mod nav_grid_tests {
 
     #[test]
     fn diagonal_mode_round_trip() {
-        assert_eq!(DiagonalMode::from_lua_str("always"), Some(DiagonalMode::Always));
+        assert_eq!(
+            DiagonalMode::from_lua_str("always"),
+            Some(DiagonalMode::Always)
+        );
         assert_eq!(DiagonalMode::from_lua_str("none"), Some(DiagonalMode::None));
         assert_eq!(
             DiagonalMode::from_lua_str("nocornercut"),
@@ -759,7 +762,9 @@ mod range_map_tests {
         let blocked = vec![false; 4];
         let rm = RangeMap::from_grid(2, 2, &costs, &blocked, 0, 0, 5.0, false);
         let cells = rm.reachable_cells_with_cost();
-        assert!(cells.iter().any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
+        assert!(cells
+            .iter()
+            .any(|(x, y, c)| *x == 0 && *y == 0 && *c == 0.0));
     }
 }
 

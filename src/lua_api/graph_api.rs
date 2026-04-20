@@ -11,9 +11,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::str::FromStr;
 
-use crate::runtime::SharedState;
 use crate::graph::pathfinding::PathResult;
 use crate::graph::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};
+use crate::runtime::SharedState;
 
 // ── Constants ───────────────────────────────────────────────────────────
 
@@ -1621,21 +1621,30 @@ impl LuaUserData for LuaGraph {
         /// @param from_node : Node
         /// @param to_node : Node
         /// @return table?
-        methods.add_method("astar", |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {
-            let from_id = from_node.borrow::<LuaNode>()?.id;
-            let to_id = to_node.borrow::<LuaNode>()?.id;
-            let positions = HashMap::new();
-            match this.inner.borrow().astar_graph(from_id, to_id, &positions) {
-                None => Ok(LuaValue::Nil),
-                Some(path) => {
-                    let t = lua.create_table()?;
-                    for (i, &nid) in path.iter().enumerate() {
-                        t.set(i + 1, lua.create_userdata(LuaNode { graph: this.inner.clone(), id: nid })?)?;
+        methods.add_method(
+            "astar",
+            |lua, this, (from_node, to_node): (LuaAnyUserData, LuaAnyUserData)| {
+                let from_id = from_node.borrow::<LuaNode>()?.id;
+                let to_id = to_node.borrow::<LuaNode>()?.id;
+                let positions = HashMap::new();
+                match this.inner.borrow().astar_graph(from_id, to_id, &positions) {
+                    None => Ok(LuaValue::Nil),
+                    Some(path) => {
+                        let t = lua.create_table()?;
+                        for (i, &nid) in path.iter().enumerate() {
+                            t.set(
+                                i + 1,
+                                lua.create_userdata(LuaNode {
+                                    graph: this.inner.clone(),
+                                    id: nid,
+                                })?,
+                            )?;
+                        }
+                        Ok(LuaValue::Table(t))
                     }
-                    Ok(LuaValue::Table(t))
                 }
-            }
-        });
+            },
+        );
 
         // ── Supply / Demand ─────────────────────────────────────────
 

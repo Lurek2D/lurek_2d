@@ -1121,5 +1121,3 @@ pub fn bitwise_rshift(a: &NdArray, amount: u32) -> Result<NdArray, String> {
     }
     Ok(out)
 }
-
-

@@ -24,8 +24,8 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{BB01, BB02, BB03};
 use crate::log_msg;
+use crate::runtime::log_messages::{BB01, BB02, BB03};
 
 /// A typed value stored in a blackboard slot.
 ///

@@ -71,7 +71,15 @@ impl EventBus {
     pub fn subscribe(&mut self, event: &str, priority: i64, once: bool) -> u64 {
         let id = self.next_id;
         self.next_id += 1;
-        self.subs.insert(id, Subscription { id, event: event.to_string(), priority, once });
+        self.subs.insert(
+            id,
+            Subscription {
+                id,
+                event: event.to_string(),
+                priority,
+                once,
+            },
+        );
         id
     }
 
@@ -94,8 +102,12 @@ impl EventBus {
     /// # Returns
     /// `Vec<u64>`.
     pub fn get_listeners(&self, event: &str) -> Vec<u64> {
-        if !self.enabled { return Vec::new(); }
-        let mut listeners: Vec<&Subscription> = self.subs.values()
+        if !self.enabled {
+            return Vec::new();
+        }
+        let mut listeners: Vec<&Subscription> = self
+            .subs
+            .values()
             .filter(|s| s.event == event || s.event == "*")
             .collect();
         listeners.sort_by(|a, b| b.priority.cmp(&a.priority));
@@ -110,7 +122,9 @@ impl EventBus {
     /// # Returns
     /// `Vec<u64>`.
     pub fn drain_once(&mut self, ids: &[u64]) -> Vec<u64> {
-        let once: Vec<u64> = ids.iter().copied()
+        let once: Vec<u64> = ids
+            .iter()
+            .copied()
             .filter(|id| self.subs.get(id).map(|s| s.once).unwrap_or(false))
             .collect();
         for id in &once {
@@ -127,11 +141,15 @@ impl EventBus {
     /// # Returns
     /// `Vec<u64>`.
     pub fn clear_event(&mut self, event: &str) -> Vec<u64> {
-        let ids: Vec<u64> = self.subs.values()
+        let ids: Vec<u64> = self
+            .subs
+            .values()
             .filter(|s| s.event == event)
             .map(|s| s.id)
             .collect();
-        for id in &ids { self.subs.remove(id); }
+        for id in &ids {
+            self.subs.remove(id);
+        }
         ids
     }
 
@@ -161,7 +179,9 @@ impl EventBus {
     /// # Returns
     /// `Vec<String>`.
     pub fn event_names(&self) -> Vec<String> {
-        let mut events: Vec<String> = self.subs.values()
+        let mut events: Vec<String> = self
+            .subs
+            .values()
             .map(|s| s.event.clone())
             .collect::<std::collections::HashSet<_>>()
             .into_iter()
@@ -180,4 +200,3 @@ impl EventBus {
 }
 
 // Tests migrated to tests/rust/unit/patterns_tests.rs
-

@@ -60,7 +60,11 @@ impl Raycaster2D {
         img.draw_circle(
             (player_x * scale as f32) as i32,
             (player_y * scale as f32) as i32,
-            4, 255, 255, 0, 255,
+            4,
+            255,
+            255,
+            0,
+            255,
         );
         // Cast rays in all directions
         for angle_deg in (0..360).step_by(15) {
@@ -71,7 +75,12 @@ impl Raycaster2D {
                 img.draw_line(
                     (player_x * scale as f32) as i32,
                     (player_y * scale as f32) as i32,
-                    ex, ey, 255, 200, 0, 180,
+                    ex,
+                    ey,
+                    255,
+                    200,
+                    0,
+                    180,
                 );
             }
         }
@@ -146,9 +155,14 @@ impl Raycaster2D {
                 let g = (cg as f32 * shade) as u8;
                 let b = (cb as f32 * shade) as u8;
                 img.draw_line(
-                    x as i32, top.max(0),
-                    x as i32, bot.min(height as i32 - 1),
-                    r, g, b, 255,
+                    x as i32,
+                    top.max(0),
+                    x as i32,
+                    bot.min(height as i32 - 1),
+                    r,
+                    g,
+                    b,
+                    255,
                 );
             }
         }
@@ -244,8 +258,7 @@ impl Raycaster2D {
     ) -> crate::image::ImageData {
         let w = self.width();
         let h = self.height();
-        let mut img =
-            crate::image::ImageData::new(w * scale, h * scale);
+        let mut img = crate::image::ImageData::new(w * scale, h * scale);
         img.fill(40, 40, 50, 255);
         // Draw walls
         for y in 0..h {
@@ -253,34 +266,45 @@ impl Raycaster2D {
                 if self.get_cell(x, y) > 0 {
                     for py in 0..scale {
                         for px in 0..scale {
-                            img.set_pixel(
-                                x * scale + px,
-                                y * scale + py,
-                                120, 120, 130, 255,
-                            );
+                            img.set_pixel(x * scale + px, y * scale + py, 120, 120, 130, 255);
                         }
                     }
                 }
             }
         }
         let can_see = self.line_of_sight(ax, ay, bx, by);
-        let color = if can_see { (0u8, 255u8, 0u8) } else { (255u8, 0u8, 0u8) };
+        let color = if can_see {
+            (0u8, 255u8, 0u8)
+        } else {
+            (255u8, 0u8, 0u8)
+        };
         img.draw_line(
             (ax * scale as f32) as i32,
             (ay * scale as f32) as i32,
             (bx * scale as f32) as i32,
             (by * scale as f32) as i32,
-            color.0, color.1, color.2, 200,
+            color.0,
+            color.1,
+            color.2,
+            200,
         );
         img.draw_circle(
             (ax * scale as f32) as i32,
             (ay * scale as f32) as i32,
-            4, 0, 255, 255, 255,
+            4,
+            0,
+            255,
+            255,
+            255,
         );
         img.draw_circle(
             (bx * scale as f32) as i32,
             (by * scale as f32) as i32,
-            4, 255, 255, 0, 255,
+            4,
+            255,
+            255,
+            0,
+            255,
         );
         img
     }
@@ -346,7 +370,6 @@ impl Raycaster2D {
         img
     }
 
-
     /// Draw a first-person textured raycaster view with procedural textures.
     ///
     /// Each cell value maps to a procedural texture (brick, stone, wood, metal,
@@ -365,9 +388,12 @@ impl Raycaster2D {
     /// `ImageData`.
     pub fn draw_textured_view_to_image(
         &self,
-        ox: f32, oy: f32,
-        angle: f32, fov: f32,
-        width: u32, height: u32,
+        ox: f32,
+        oy: f32,
+        angle: f32,
+        fov: f32,
+        width: u32,
+        height: u32,
         max_dist: f32,
     ) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
@@ -379,11 +405,21 @@ impl Raycaster2D {
             let r = (10.0 + t * 20.0) as u8;
             let g = (15.0 + t * 30.0) as u8;
             let b = (40.0 + t * 80.0) as u8;
-            for x in 0..width { img.set_pixel(x, y, r, g, b, 255); }
+            for x in 0..width {
+                img.set_pixel(x, y, r, g, b, 255);
+            }
         }
         let star_positions: [(u32, u32); 10] = [
-            (50, 20), (150, 40), (280, 15), (400, 35), (520, 25), (600, 45),
-            (100, 60), (350, 55), (500, 70), (80, 90),
+            (50, 20),
+            (150, 40),
+            (280, 15),
+            (400, 35),
+            (520, 25),
+            (600, 45),
+            (100, 60),
+            (350, 55),
+            (500, 70),
+            (80, 90),
         ];
         for &(sx, sy) in &star_positions {
             if sx < width && sy < half_h {
@@ -417,7 +453,8 @@ impl Raycaster2D {
                 for y in top.max(0)..bot.min(height as i32) {
                     let frac_y = (y - top) as f32 / (bot - top).max(1) as f32;
                     let frac_x = (hit.distance * 3.7) % 1.0;
-                    let (tr, tg, tb) = Self::procedural_texture_color(hit.cell_value, frac_y, frac_x);
+                    let (tr, tg, tb) =
+                        Self::procedural_texture_color(hit.cell_value, frac_y, frac_x);
                     let r = (tr as f32 * shade) as u8;
                     let g = (tg as f32 * shade) as u8;
                     let b = (tb as f32 * shade) as u8;
@@ -426,7 +463,14 @@ impl Raycaster2D {
             }
         }
 
-        img.draw_label("PROCEDURAL TEXTURED RAYCASTER", (width / 4) as i32, (height - 15) as i32, 100, 255, 100);
+        img.draw_label(
+            "PROCEDURAL TEXTURED RAYCASTER",
+            (width / 4) as i32,
+            (height - 15) as i32,
+            100,
+            255,
+            100,
+        );
         img
     }
 
@@ -437,9 +481,13 @@ impl Raycaster2D {
                 // Brick pattern
                 let brick_y = (frac_y * 4.0) as u32;
                 let offset = if brick_y.is_multiple_of(2) { 0 } else { 4 };
-                let is_mortar = frac_y * 4.0 % 1.0 < 0.1
-                    || (frac_x * 8.0 + offset as f32) % 1.0 < 0.12;
-                if is_mortar { (120, 110, 100) } else { (180, 60, 40) }
+                let is_mortar =
+                    frac_y * 4.0 % 1.0 < 0.1 || (frac_x * 8.0 + offset as f32) % 1.0 < 0.12;
+                if is_mortar {
+                    (120, 110, 100)
+                } else {
+                    (180, 60, 40)
+                }
             }
             2 => {
                 let block_x = (frac_x * 3.0) as u32;
@@ -459,13 +507,21 @@ impl Raycaster2D {
             4 => {
                 let panel_y = (frac_y * 4.0) as u32;
                 let is_seam = frac_y * 4.0 % 1.0 < 0.08;
-                let rivet = frac_x > 0.45 && frac_x < 0.55
-                    && frac_y * 4.0 % 1.0 > 0.4 && frac_y * 4.0 % 1.0 < 0.6;
-                if rivet { (200, 200, 210) }
-                else if is_seam { (60, 65, 75) }
-                else {
+                let rivet = frac_x > 0.45
+                    && frac_x < 0.55
+                    && frac_y * 4.0 % 1.0 > 0.4
+                    && frac_y * 4.0 % 1.0 < 0.6;
+                if rivet {
+                    (200, 200, 210)
+                } else if is_seam {
+                    (60, 65, 75)
+                } else {
                     let shade = 100 + (panel_y * 10 % 30) as u8;
-                    (shade, (shade as u16 + 10).min(255) as u8, (shade as u16 + 25).min(255) as u8)
+                    (
+                        shade,
+                        (shade as u16 + 10).min(255) as u8,
+                        (shade as u16 + 25).min(255) as u8,
+                    )
                 }
             }
             5 => {
@@ -495,7 +551,11 @@ impl Raycaster2D {
                     4 => (x, 0.0, c),
                     _ => (c, 0.0, x),
                 };
-                (((r + m) * 255.0) as u8, ((g + m) * 255.0) as u8, ((b + m) * 255.0) as u8)
+                (
+                    ((r + m) * 255.0) as u8,
+                    ((g + m) * 255.0) as u8,
+                    ((b + m) * 255.0) as u8,
+                )
             }
             _ => (150, 150, 150),
         }

@@ -1,4 +1,4 @@
-﻿//! `lurek.parallax` — multi-layer scrolling background system.
+//! `lurek.parallax` — multi-layer scrolling background system.
 //!
 //! Registers `lurek.parallax.newLayer(opts)` and `lurek.parallax.newSet(name)`.
 //! Domain logic lives in `src/parallax/`; this file is the thin Lua bridge only.
@@ -8,8 +8,8 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::render::{BlendMode, RenderCommand};
 use crate::parallax::layer::ParallaxLayer;
+use crate::render::{BlendMode, RenderCommand};
 
 use crate::lua_api::render_api::LuaImage;
 

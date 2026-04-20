@@ -2,13 +2,13 @@
 
 use slotmap::SlotMap;
 
-use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
-use crate::runtime::resource_keys::{LightKey, OccluderKey};
 use crate::light::light2d::Light2D;
 use crate::light::light_type::LightType;
 use crate::light::occluder::Occluder;
 use crate::log_msg;
 use crate::math::Color;
+use crate::runtime::log_messages::{LW01_LIGHT_WORLD_INIT, LW02_LIGHT_ADD};
+use crate::runtime::resource_keys::{LightKey, OccluderKey};
 
 /// Resource pool and state for the 2D lighting system.
 ///
@@ -279,7 +279,14 @@ impl LightWorld {
                     fg += lg * atten * 200.0;
                     fb += lb * atten * 200.0;
                 }
-                img.set_pixel(x, y, fr.min(255.0) as u8, fg.min(255.0) as u8, fb.min(255.0) as u8, 255);
+                img.set_pixel(
+                    x,
+                    y,
+                    fr.min(255.0) as u8,
+                    fg.min(255.0) as u8,
+                    fb.min(255.0) as u8,
+                    255,
+                );
             }
         }
 
@@ -298,9 +305,14 @@ impl LightWorld {
                     max_y = max_y.max(v.y);
                 }
                 img.draw_rect(
-                    min_x as i32, min_y as i32,
-                    (max_x - min_x) as u32, (max_y - min_y) as u32,
-                    20, 20, 25, 255,
+                    min_x as i32,
+                    min_y as i32,
+                    (max_x - min_x) as u32,
+                    (max_y - min_y) as u32,
+                    20,
+                    20,
+                    25,
+                    255,
                 );
             }
         }
@@ -321,7 +333,12 @@ impl LightWorld {
     /// # Returns
     /// `[f32; 4]`.
     pub fn ambient_color_hint(&self) -> [f32; 4] {
-        [self.ambient.r, self.ambient.g, self.ambient.b, self.ambient.a]
+        [
+            self.ambient.r,
+            self.ambient.g,
+            self.ambient.b,
+            self.ambient.a,
+        ]
     }
 
     /// Returns a list of position and direction hints for all enabled directional lights.
@@ -342,7 +359,6 @@ impl LightWorld {
             .map(|l| (l.x, l.y, l.direction))
             .collect()
     }
-
 }
 
 impl Default for LightWorld {

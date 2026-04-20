@@ -25,13 +25,20 @@ mod heightmap_tests {
 
     #[test]
     fn get_clamps_oob() {
-        let hm = Heightmap::generate(&HeightmapOpts { width: 4, height: 4, ..Default::default() });
+        let hm = Heightmap::generate(&HeightmapOpts {
+            width: 4,
+            height: 4,
+            ..Default::default()
+        });
         let _ = hm.get(100, 100); // should not panic
     }
 
     #[test]
     fn erosion_keeps_normalised() {
-        let hm = Heightmap::generate(&HeightmapOpts { erosion_passes: 3, ..Default::default() });
+        let hm = Heightmap::generate(&HeightmapOpts {
+            erosion_passes: 3,
+            ..Default::default()
+        });
         for &v in &hm.cells {
             assert!(v >= 0.0 && v <= 1.0, "post-erosion value out of [0,1]: {v}");
         }
@@ -39,7 +46,11 @@ mod heightmap_tests {
 
     #[test]
     fn to_rgba_bytes_length() {
-        let hm = Heightmap::generate(&HeightmapOpts { width: 4, height: 4, ..Default::default() });
+        let hm = Heightmap::generate(&HeightmapOpts {
+            width: 4,
+            height: 4,
+            ..Default::default()
+        });
         assert_eq!(hm.to_rgba_bytes().len(), 4 * 4 * 4);
     }
 }
@@ -118,7 +129,11 @@ mod bsp_tests {
 
     #[test]
     fn rooms_within_bounds() {
-        let opts = BspOpts { width: 32, height: 32, ..Default::default() };
+        let opts = BspOpts {
+            width: 32,
+            height: 32,
+            ..Default::default()
+        };
         let d = bsp_dungeon(&opts);
         for r in &d.rooms {
             assert!(r.x + r.w <= opts.width, "room exceeds width");
@@ -256,10 +271,12 @@ mod wfc_tests {
     #[test]
     fn empty_tiles_return_none_grid() {
         let opts = WfcOpts {
-            width: 4, height: 4,
+            width: 4,
+            height: 4,
             tiles: vec![],
             rules: WfcRules::default(),
-            seed: 0, max_attempts: 1,
+            seed: 0,
+            max_attempts: 1,
         };
         let grid = wfc_generate(&opts);
         assert!(grid.cells.iter().all(|c| c.is_none()));
@@ -270,10 +287,12 @@ mod wfc_tests {
         let mut rules = WfcRules::default();
         rules.adjacencies.insert(1, vec![1]);
         let opts = WfcOpts {
-            width: 3, height: 3,
+            width: 3,
+            height: 3,
             tiles: vec![WfcTile { id: 1, weight: 1.0 }],
             rules,
-            seed: 42, max_attempts: 5,
+            seed: 42,
+            max_attempts: 5,
         };
         let grid = wfc_generate(&opts);
         assert!(grid.cells.iter().all(|c| *c == Some(1)));
@@ -282,10 +301,12 @@ mod wfc_tests {
     #[test]
     fn zero_size_grid() {
         let opts = WfcOpts {
-            width: 0, height: 0,
+            width: 0,
+            height: 0,
             tiles: vec![WfcTile { id: 1, weight: 1.0 }],
             rules: WfcRules::default(),
-            seed: 0, max_attempts: 1,
+            seed: 0,
+            max_attempts: 1,
         };
         let grid = wfc_generate(&opts);
         assert!(grid.cells.is_empty());
@@ -297,10 +318,15 @@ mod wfc_tests {
         rules.adjacencies.insert(1, vec![1, 2]);
         rules.adjacencies.insert(2, vec![1, 2]);
         let opts = WfcOpts {
-            width: 4, height: 4,
-            tiles: vec![WfcTile { id: 1, weight: 1.0 }, WfcTile { id: 2, weight: 1.0 }],
+            width: 4,
+            height: 4,
+            tiles: vec![
+                WfcTile { id: 1, weight: 1.0 },
+                WfcTile { id: 2, weight: 1.0 },
+            ],
             rules,
-            seed: 99, max_attempts: 5,
+            seed: 99,
+            max_attempts: 5,
         };
         let a = wfc_generate(&opts);
         let b = wfc_generate(&opts);
@@ -340,7 +366,11 @@ mod rooms_tests {
 
     #[test]
     fn grid_size_matches_opts() {
-        let opts = RoomsOpts { width: 32, height: 24, ..Default::default() };
+        let opts = RoomsOpts {
+            width: 32,
+            height: 24,
+            ..Default::default()
+        };
         let d = rooms_dungeon(&opts);
         assert_eq!(d.grid.len(), (32 * 24) as usize);
     }
@@ -399,7 +429,11 @@ mod render_tests {
 
     #[test]
     fn empty_grid_to_rgba_empty() {
-        let grid = NoiseGrid { width: 0, height: 0, cells: Vec::new() };
+        let grid = NoiseGrid {
+            width: 0,
+            height: 0,
+            cells: Vec::new(),
+        };
         assert!(grid.to_rgba_bytes().is_empty());
     }
 
@@ -420,7 +454,11 @@ mod render_tests {
 
     #[test]
     fn empty_grid_returns_no_commands() {
-        let grid = NoiseGrid { width: 0, height: 0, cells: Vec::new() };
+        let grid = NoiseGrid {
+            width: 0,
+            height: 0,
+            cells: Vec::new(),
+        };
         assert!(grid.generate_render_commands(8.0).is_empty());
     }
 }
@@ -491,7 +529,10 @@ mod noise_tests {
     fn simplex2d_value_range() {
         for i in 0..100 {
             let v = simplex2d(i as f32 * 0.41, i as f32 * 0.59, 0);
-            assert!(v >= -1.5 && v <= 1.5, "simplex2d out of expected range: {v}");
+            assert!(
+                v >= -1.5 && v <= 1.5,
+                "simplex2d out of expected range: {v}"
+            );
         }
     }
 
@@ -695,7 +736,10 @@ mod noise_tests {
     #[test]
     fn generate_map_ridged_mode() {
         let g = NoiseGenerator::new(0);
-        let opts = MapGenOptions { fractal: FractalType::Ridged, ..Default::default() };
+        let opts = MapGenOptions {
+            fractal: FractalType::Ridged,
+            ..Default::default()
+        };
         let map = g.generate_map(4, 4, &opts);
         assert_eq!(map.len(), 16);
         assert!(map.iter().all(|v| v.is_finite()));
@@ -704,7 +748,10 @@ mod noise_tests {
     #[test]
     fn generate_map_turbulence_mode() {
         let g = NoiseGenerator::new(0);
-        let opts = MapGenOptions { fractal: FractalType::Turbulence, ..Default::default() };
+        let opts = MapGenOptions {
+            fractal: FractalType::Turbulence,
+            ..Default::default()
+        };
         let map = g.generate_map(4, 4, &opts);
         assert_eq!(map.len(), 16);
     }
@@ -720,14 +767,20 @@ mod noise_tests {
 
     #[test]
     fn parallel_map_ridged() {
-        let opts = MapGenOptions { fractal: FractalType::Ridged, ..Default::default() };
+        let opts = MapGenOptions {
+            fractal: FractalType::Ridged,
+            ..Default::default()
+        };
         let map = generate_noise_map_parallel(4, 4, &opts);
         assert_eq!(map.len(), 16);
     }
 
     #[test]
     fn parallel_map_turbulence() {
-        let opts = MapGenOptions { fractal: FractalType::Turbulence, ..Default::default() };
+        let opts = MapGenOptions {
+            fractal: FractalType::Turbulence,
+            ..Default::default()
+        };
         let map = generate_noise_map_parallel(4, 4, &opts);
         assert_eq!(map.len(), 16);
     }
@@ -804,28 +857,28 @@ mod namegen_tests {
 mod lcg_tests {
     use lurek2d::procgen::lcg::*;
 
-        #[test]
-        fn deterministic_same_seed() {
-            let mut a = Lcg::new(42);
-            let mut b = Lcg::new(42);
-            for _ in 0..10 {
-                assert_eq!(a.next(), b.next());
-            }
+    #[test]
+    fn deterministic_same_seed() {
+        let mut a = Lcg::new(42);
+        let mut b = Lcg::new(42);
+        for _ in 0..10 {
+            assert_eq!(a.next(), b.next());
         }
+    }
 
-        #[test]
-        fn different_seeds_diverge() {
-            let mut a = Lcg::new(1);
-            let mut b = Lcg::new(2);
-            assert_ne!(a.next(), b.next());
-        }
+    #[test]
+    fn different_seeds_diverge() {
+        let mut a = Lcg::new(1);
+        let mut b = Lcg::new(2);
+        assert_ne!(a.next(), b.next());
+    }
 
-        #[test]
-        fn next_f32_in_unit_range() {
-            let mut rng = Lcg::new(0);
-            for _ in 0..100 {
-                let v = rng.next_f32();
-                assert!(v >= 0.0 && v < 1.0, "value out of [0,1): {v}");
-            }
+    #[test]
+    fn next_f32_in_unit_range() {
+        let mut rng = Lcg::new(0);
+        for _ in 0..100 {
+            let v = rng.next_f32();
+            assert!(v >= 0.0 && v < 1.0, "value out of [0,1): {v}");
         }
+    }
 }

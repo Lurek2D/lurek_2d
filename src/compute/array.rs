@@ -207,15 +207,21 @@ impl NdArray {
         let offset = flat * self.dtype.byte_size();
         match self.dtype {
             DataType::Float32 => {
-                let bytes: [u8; 4] = self.data[offset..offset + 4].try_into().expect("byte slice invariant: offset validated by flat_index");
+                let bytes: [u8; 4] = self.data[offset..offset + 4]
+                    .try_into()
+                    .expect("byte slice invariant: offset validated by flat_index");
                 f32::from_le_bytes(bytes) as f64
             }
             DataType::Float64 => {
-                let bytes: [u8; 8] = self.data[offset..offset + 8].try_into().expect("byte slice invariant: offset validated by flat_index");
+                let bytes: [u8; 8] = self.data[offset..offset + 8]
+                    .try_into()
+                    .expect("byte slice invariant: offset validated by flat_index");
                 f64::from_le_bytes(bytes)
             }
             DataType::Int32 => {
-                let bytes: [u8; 4] = self.data[offset..offset + 4].try_into().expect("byte slice invariant: offset validated by flat_index");
+                let bytes: [u8; 4] = self.data[offset..offset + 4]
+                    .try_into()
+                    .expect("byte slice invariant: offset validated by flat_index");
                 i32::from_le_bytes(bytes) as f64
             }
         }
@@ -253,7 +259,9 @@ impl NdArray {
     /// `i32`.
     pub fn get_i32(&self, flat: usize) -> i32 {
         let offset = flat * self.dtype.byte_size();
-        let bytes: [u8; 4] = self.data[offset..offset + 4].try_into().expect("byte slice invariant: offset validated by flat_index");
+        let bytes: [u8; 4] = self.data[offset..offset + 4]
+            .try_into()
+            .expect("byte slice invariant: offset validated by flat_index");
         i32::from_le_bytes(bytes)
     }
 
@@ -389,7 +397,11 @@ impl NdArray {
         }
         let total = Self::element_count(shape);
         if total > MAX_ELEMENTS {
-            log::warn!("ndarray: element count {} exceeds safety limit {}", total, MAX_ELEMENTS);
+            log::warn!(
+                "ndarray: element count {} exceeds safety limit {}",
+                total,
+                MAX_ELEMENTS
+            );
             return Err(format!(
                 "element count {total} exceeds maximum {MAX_ELEMENTS}"
             ));
@@ -439,11 +451,7 @@ impl NdArray {
     /// # Returns
     /// `String`.
     pub fn display_string(&self) -> String {
-        format!(
-            "Array({:?}, dtype={})",
-            self.shape,
-            self.dtype.name()
-        )
+        format!("Array({:?}, dtype={})", self.shape, self.dtype.name())
     }
 
     /// Total number of elements for a given shape.
@@ -451,4 +459,3 @@ impl NdArray {
         shape.iter().product()
     }
 }
-

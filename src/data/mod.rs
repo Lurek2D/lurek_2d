@@ -12,29 +12,29 @@ pub mod bin_pack;
 pub mod byte_data;
 /// Deflate, gzip, lz4, and zlib compression/decompression.
 pub mod compress;
-/// Windowed read-only byte-buffer view.
-pub mod dataview;
 /// Write-cursor companion to `DataView`.
 pub mod data_writer;
+/// Windowed read-only byte-buffer view.
+pub mod dataview;
 /// Base64 and hex encoding/decoding.
 pub mod encode;
 /// Cryptographic hash functions (MD5, SHA-1, SHA-256, SHA-512).
 pub mod hash;
+/// MessagePack binary serialization and deserialization.
+pub mod msgpack;
 /// Binary pack/unpack utilities compatible with the LÖVE2D `data.pack` API.
 pub mod pack;
 /// Fixed-capacity circular ring buffer for any `Clone` element type.
 pub mod ring_buffer;
 /// TOML value parsing and encoding utilities.
 pub mod toml_convert;
-/// MessagePack binary serialization and deserialization.
-pub mod msgpack;
 pub use bin_pack::{
     measure_size as bin_measure_size, read as bin_read, write as bin_write, BinValue,
 };
 pub use byte_data::ByteData;
 pub use compress::{compress, decompress, CompressFormat};
-pub use dataview::{DataView, LuaDataView};
 pub use data_writer::DataWriter;
+pub use dataview::{DataView, LuaDataView};
 pub use encode::{decode, encode, EncodeFormat};
 pub use hash::{crc32, hash, HashAlgorithm};
 pub use pack::{get_packed_size, pack, unpack, PackValue};

@@ -548,14 +548,7 @@ impl AabbTree {
     /// # Parameters
     /// - `start` — Root of the sub-tree to search (usually the global root).
     /// - `lx1..ly2` — AABB of the new leaf.
-    fn find_best_sibling(
-        &self,
-        start: usize,
-        lx1: f32,
-        ly1: f32,
-        lx2: f32,
-        ly2: f32,
-    ) -> usize {
+    fn find_best_sibling(&self, start: usize, lx1: f32, ly1: f32, lx2: f32, ly2: f32) -> usize {
         let leaf_area = aabb_area(lx1, ly1, lx2, ly2);
 
         let mut best = start;

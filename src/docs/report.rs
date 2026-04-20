@@ -22,27 +22,39 @@ pub fn quality_score(entry: &DocEntry) -> f64 {
 
     // description
     total += 1;
-    if !entry.description.is_empty() { passed += 1; }
+    if !entry.description.is_empty() {
+        passed += 1;
+    }
 
     // qualified_name populated
     total += 1;
-    if !entry.qualified_name.is_empty() { passed += 1; }
+    if !entry.qualified_name.is_empty() {
+        passed += 1;
+    }
 
     // parameters or returns (only for non-value kinds)
     if entry.kind != "value" {
         total += 1;
-        if !entry.parameters.is_empty() || !entry.returns.is_empty() { passed += 1; }
+        if !entry.parameters.is_empty() || !entry.returns.is_empty() {
+            passed += 1;
+        }
     }
 
     // example present
     total += 1;
-    if entry.example.is_some() { passed += 1; }
+    if entry.example.is_some() {
+        passed += 1;
+    }
 
     // since field present
     total += 1;
-    if entry.since.is_some() { passed += 1; }
+    if entry.since.is_some() {
+        passed += 1;
+    }
 
-    if total == 0 { return 0.0; }
+    if total == 0 {
+        return 0.0;
+    }
     passed as f64 / total as f64
 }
 
@@ -56,11 +68,17 @@ pub fn quality_score(entry: &DocEntry) -> f64 {
 ///
 /// A ≥ 0.9, B ≥ 0.7, C ≥ 0.5, D ≥ 0.3, F < 0.3.
 pub fn quality_grade(score: f64) -> &'static str {
-    if score >= 0.9 { "A" }
-    else if score >= 0.7 { "B" }
-    else if score >= 0.5 { "C" }
-    else if score >= 0.3 { "D" }
-    else { "F" }
+    if score >= 0.9 {
+        "A"
+    } else if score >= 0.7 {
+        "B"
+    } else if score >= 0.5 {
+        "C"
+    } else if score >= 0.3 {
+        "D"
+    } else {
+        "F"
+    }
 }
 
 /// A report comparing a known API surface against catalog coverage.
@@ -133,14 +151,21 @@ impl QualityReport {
         let mut module_totals: HashMap<String, (f64, usize)> = HashMap::new();
         for entry in &entries {
             let score = quality_score(entry);
-            let slot = module_totals.entry(entry.module.clone()).or_insert((0.0, 0));
+            let slot = module_totals
+                .entry(entry.module.clone())
+                .or_insert((0.0, 0));
             slot.0 += score;
             slot.1 += 1;
         }
 
         let module_scores: HashMap<String, f64> = module_totals
             .iter()
-            .map(|(m, (sum, count))| (m.clone(), if *count > 0 { sum / *count as f64 } else { 0.0 }))
+            .map(|(m, (sum, count))| {
+                (
+                    m.clone(),
+                    if *count > 0 { sum / *count as f64 } else { 0.0 },
+                )
+            })
             .collect();
 
         let overall_score = if entries.is_empty() {
@@ -149,7 +174,11 @@ impl QualityReport {
             entries.iter().map(quality_score).sum::<f64>() / entries.len() as f64
         };
 
-        Self { entries, module_scores, overall_score }
+        Self {
+            entries,
+            module_scores,
+            overall_score,
+        }
     }
 
     /// Returns the letter grade for the given module.

@@ -6,9 +6,9 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::{Rc, Weak};
 
-use crate::terminal::{BorderStyle, Terminal, TerminalEvent, Widget, WidgetKind};
 use crate::terminal::ansi::{parse_ansi_spans, strip_ansi_codes};
 use crate::terminal::completion::CompletionEngine;
+use crate::terminal::{BorderStyle, Terminal, TerminalEvent, Widget, WidgetKind};
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -427,7 +427,6 @@ struct LuaTerminal {
 
 impl LuaUserData for LuaTerminal {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- set --
         /// Sets a cell at 1-based coordinates with character FG and BG colours.
         /// @param col : integer
@@ -539,21 +538,19 @@ impl LuaUserData for LuaTerminal {
         /// Sets the focused widget, or clears focus if nil is passed.
         /// @param widget : Widget?
         /// @return nil
-        methods.add_method("setFocus", |_, this, value: LuaValue| {
-            match value {
-                LuaValue::Nil => {
-                    this.binding.terminal.borrow_mut().set_focus(None);
-                    Ok(())
-                }
-                LuaValue::UserData(userdata) => {
-                    let widget = widget_handle_from_userdata(&userdata)?;
-                    let index = attached_index_for_terminal(&widget, &this.binding)
-                        .ok_or_else(|| wrong_terminal("Terminal:setFocus"))?;
-                    this.binding.terminal.borrow_mut().set_focus(Some(index));
-                    Ok(())
-                }
-                _ => Err(runtime_error("Terminal:setFocus", "expected widget or nil")),
+        methods.add_method("setFocus", |_, this, value: LuaValue| match value {
+            LuaValue::Nil => {
+                this.binding.terminal.borrow_mut().set_focus(None);
+                Ok(())
             }
+            LuaValue::UserData(userdata) => {
+                let widget = widget_handle_from_userdata(&userdata)?;
+                let index = attached_index_for_terminal(&widget, &this.binding)
+                    .ok_or_else(|| wrong_terminal("Terminal:setFocus"))?;
+                this.binding.terminal.borrow_mut().set_focus(Some(index));
+                Ok(())
+            }
+            _ => Err(runtime_error("Terminal:setFocus", "expected widget or nil")),
         });
 
         // -- getFocused --
@@ -715,10 +712,13 @@ impl LuaUserData for LuaTerminal {
             let new_h = rows as u32 * cell_h as u32;
             drop(terminal);
             drop(st);
-            this.binding.shared_state.borrow_mut().window_state.pending_size = Some((new_w, new_h));
+            this.binding
+                .shared_state
+                .borrow_mut()
+                .window_state
+                .pending_size = Some((new_w, new_h));
             Ok(())
         });
-
     }
 }
 
@@ -734,7 +734,6 @@ struct LuaWidget {
 
 impl LuaUserData for LuaWidget {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- setPosition --
         /// Sets the widget position from 1-based coordinates.
         /// @param col : integer
@@ -844,7 +843,9 @@ impl LuaUserData for LuaWidget {
         /// @return nil
         methods.add_method("setText", |lua, this, text: String| {
             let changed = with_widget_mut(&this.binding, "Widget:setText", |widget| {
-                widget.set_text(text).map_err(|e| runtime_error("Widget:setText", e))
+                widget
+                    .set_text(text)
+                    .map_err(|e| runtime_error("Widget:setText", e))
             })?;
             if changed {
                 dispatch_callback(lua, &this.binding, CallbackKind::Change)?;
@@ -857,7 +858,9 @@ impl LuaUserData for LuaWidget {
         /// @return string
         methods.add_method("getText", |_, this, ()| {
             with_widget(&this.binding, "Widget:getText", |widget| {
-                widget.get_text().map_err(|e| runtime_error("Widget:getText", e))
+                widget
+                    .get_text()
+                    .map_err(|e| runtime_error("Widget:getText", e))
             })
         });
 
@@ -1275,7 +1278,6 @@ impl LuaUserData for LuaWidget {
                 }
             }
         });
-
     }
 }
 
@@ -1457,7 +1459,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, (term_ud, line): (LuaAnyUserData, String)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
             let _ = s.borrow();
-            term_ref.binding.terminal.borrow_mut().push_scrollback(&line);
+            term_ref
+                .binding
+                .terminal
+                .borrow_mut()
+                .push_scrollback(&line);
             Ok(())
         })?,
     )?;
@@ -1517,7 +1523,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "setScrollbackCap",
         lua.create_function(|_, (term_ud, cap): (LuaAnyUserData, usize)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.binding.terminal.borrow_mut().set_scrollback_cap(cap);
+            term_ref
+                .binding
+                .terminal
+                .borrow_mut()
+                .set_scrollback_cap(cap);
             Ok(())
         })?,
     )?;
@@ -1537,7 +1547,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "pushCmdHistory",
         lua.create_function(|_, (term_ud, cmd): (LuaAnyUserData, String)| {
             let mut term_ref = term_ud.borrow_mut::<LuaTerminal>()?;
-            term_ref.binding.terminal.borrow_mut().push_cmd_history(&cmd);
+            term_ref
+                .binding
+                .terminal
+                .borrow_mut()
+                .push_cmd_history(&cmd);
             Ok(())
         })?,
     )?;
@@ -1683,11 +1697,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                         let br: u8 = bt.get(1).ok()?;
                         let bg_c: u8 = bt.get(2).ok()?;
                         let bb: u8 = bt.get(3).ok()?;
-                        Some([br as f32 / 255.0, bg_c as f32 / 255.0, bb as f32 / 255.0, 1.0])
+                        Some([
+                            br as f32 / 255.0,
+                            bg_c as f32 / 255.0,
+                            bb as f32 / 255.0,
+                            1.0,
+                        ])
                     });
                     rules.push(Rule {
                         pattern,
-                        fg: [fr as f32 / 255.0, fg_c as f32 / 255.0, fb as f32 / 255.0, 1.0],
+                        fg: [
+                            fr as f32 / 255.0,
+                            fg_c as f32 / 255.0,
+                            fb as f32 / 255.0,
+                            1.0,
+                        ],
                         bg,
                     });
                 }
@@ -1698,44 +1722,34 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 while !remaining.is_empty() {
                     let best = rules
                         .iter()
-                        .filter_map(|r| {
-                            remaining
-                                .find(r.pattern.as_str())
-                                .map(|pos| (pos, r))
-                        })
+                        .filter_map(|r| remaining.find(r.pattern.as_str()).map(|pos| (pos, r)))
                         .min_by_key(|(pos, _)| *pos);
                     match best {
                         None => {
-                            term_ref.binding.terminal.borrow_mut().print_colored(
-                                cur_col,
-                                row,
-                                remaining,
-                                default_fg,
-                                None,
-                            );
+                            term_ref
+                                .binding
+                                .terminal
+                                .borrow_mut()
+                                .print_colored(cur_col, row, remaining, default_fg, None);
                             break;
                         }
                         Some((pos, rule)) => {
                             if pos > 0 {
                                 let prefix = &remaining[..pos];
-                                term_ref.binding.terminal.borrow_mut().print_colored(
-                                    cur_col,
-                                    row,
-                                    prefix,
-                                    default_fg,
-                                    None,
-                                );
+                                term_ref
+                                    .binding
+                                    .terminal
+                                    .borrow_mut()
+                                    .print_colored(cur_col, row, prefix, default_fg, None);
                                 cur_col += prefix.chars().count();
                             }
                             let end = pos + rule.pattern.len();
                             let token = &remaining[pos..end];
-                            term_ref.binding.terminal.borrow_mut().print_colored(
-                                cur_col,
-                                row,
-                                token,
-                                rule.fg,
-                                rule.bg,
-                            );
+                            term_ref
+                                .binding
+                                .terminal
+                                .borrow_mut()
+                                .print_colored(cur_col, row, token, rule.fg, rule.bg);
                             cur_col += token.chars().count();
                             remaining = &remaining[end..];
                         }
@@ -1753,9 +1767,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return string
     tbl.set(
         "stripAnsi",
-        lua.create_function(|_, text: String| {
-            Ok(strip_ansi_codes(&text))
-        })?,
+        lua.create_function(|_, text: String| Ok(strip_ansi_codes(&text)))?,
     )?;
 
     /// Parses `text` into coloured spans.  Returns an array of tables, each with
@@ -1802,21 +1814,48 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return nil
     tbl.set(
         "printAnsi",
-        lua.create_function(|_, (t_ud, col, row, text): (LuaAnyUserData, i64, i64, String)| {
-            let mut t = t_ud.borrow_mut::<LuaTerminal>()?;
-            let spans = parse_ansi_spans(&text);
-            let mut cur_col = col as usize;
-            for span in &spans {
-                let fg: [f32; 4] = span.fg.as_ref()
-                    .map(|c| [c.r as f32 / 255.0, c.g as f32 / 255.0, c.b as f32 / 255.0, 1.0])
-                    .unwrap_or(if span.bold { [1.0, 1.0, 1.0, 1.0] } else { [0.667, 0.667, 0.667, 1.0] });
-                let bg: Option<[f32; 4]> = span.bg.as_ref()
-                    .map(|c| [c.r as f32 / 255.0, c.g as f32 / 255.0, c.b as f32 / 255.0, 1.0]);
-                t.binding.terminal.borrow_mut().print_colored(cur_col, row as usize, &span.text, fg, bg);
-                cur_col += span.text.chars().count();
-            }
-            Ok(())
-        })?,
+        lua.create_function(
+            |_, (t_ud, col, row, text): (LuaAnyUserData, i64, i64, String)| {
+                let mut t = t_ud.borrow_mut::<LuaTerminal>()?;
+                let spans = parse_ansi_spans(&text);
+                let mut cur_col = col as usize;
+                for span in &spans {
+                    let fg: [f32; 4] = span
+                        .fg
+                        .as_ref()
+                        .map(|c| {
+                            [
+                                c.r as f32 / 255.0,
+                                c.g as f32 / 255.0,
+                                c.b as f32 / 255.0,
+                                1.0,
+                            ]
+                        })
+                        .unwrap_or(if span.bold {
+                            [1.0, 1.0, 1.0, 1.0]
+                        } else {
+                            [0.667, 0.667, 0.667, 1.0]
+                        });
+                    let bg: Option<[f32; 4]> = span.bg.as_ref().map(|c| {
+                        [
+                            c.r as f32 / 255.0,
+                            c.g as f32 / 255.0,
+                            c.b as f32 / 255.0,
+                            1.0,
+                        ]
+                    });
+                    t.binding.terminal.borrow_mut().print_colored(
+                        cur_col,
+                        row as usize,
+                        &span.text,
+                        fg,
+                        bg,
+                    );
+                    cur_col += span.text.chars().count();
+                }
+                Ok(())
+            },
+        )?,
     )?;
 
     // ── Tab completion ────────────────────────────────────────────────────────
@@ -1902,9 +1941,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return integer
     tbl.set(
         "getMaxCols",
-        lua.create_function(|_, ()| {
-            Ok(crate::terminal::MAX_COLS as u32)
-        })?,
+        lua.create_function(|_, ()| Ok(crate::terminal::MAX_COLS as u32))?,
     )?;
 
     // -- getMaxRows --
@@ -1912,9 +1949,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return integer
     tbl.set(
         "getMaxRows",
-        lua.create_function(|_, ()| {
-            Ok(crate::terminal::MAX_ROWS as u32)
-        })?,
+        lua.create_function(|_, ()| Ok(crate::terminal::MAX_ROWS as u32))?,
     )?;
 
     luna.set("terminal", tbl)?;

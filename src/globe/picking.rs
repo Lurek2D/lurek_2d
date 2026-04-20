@@ -3,11 +3,11 @@
 //! Given a screen coordinate `(sx, sy)`, `pick` returns the topmost visible
 //! province whose projected 2D polygon contains the point.
 
-use crate::globe::types::{GlobeSpec, ProvinceId};
 use crate::globe::projection::{build_view_matrix, OrbitCamera};
 use crate::globe::topology::ProvinceGraph;
-use crate::math::Vec2;
+use crate::globe::types::{GlobeSpec, ProvinceId};
 use crate::math::sphere::lat_lon_to_unit;
+use crate::math::Vec2;
 
 /// Result of a successful province pick operation.
 ///
@@ -104,11 +104,14 @@ pub fn pick(
         if point_in_polygon(pt, &screen_verts) {
             let z = c_cam.z;
             if best.as_ref().map_or(true, |(prev_z, _)| z > *prev_z) {
-                best = Some((z, PickResult {
-                    province_id: province.id,
-                    screen_pos: (sx, sy),
-                    centroid_screen,
-                }));
+                best = Some((
+                    z,
+                    PickResult {
+                        province_id: province.id,
+                        screen_pos: (sx, sy),
+                        centroid_screen,
+                    },
+                ));
             }
         }
     }

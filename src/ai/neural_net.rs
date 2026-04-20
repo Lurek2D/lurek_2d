@@ -57,11 +57,11 @@ impl Activation {
     /// `Self`.
     pub fn from_str(s: &str) -> Self {
         match s.to_lowercase().as_str() {
-            "relu"    => Self::ReLU,
+            "relu" => Self::ReLU,
             "sigmoid" => Self::Sigmoid,
-            "tanh"    => Self::Tanh,
+            "tanh" => Self::Tanh,
             "softmax" => Self::Softmax,
-            _         => Self::Linear,
+            _ => Self::Linear,
         }
     }
 
@@ -71,10 +71,10 @@ impl Activation {
     /// `&str`.
     pub fn as_str(self) -> &'static str {
         match self {
-            Self::ReLU    => "relu",
+            Self::ReLU => "relu",
             Self::Sigmoid => "sigmoid",
-            Self::Tanh    => "tanh",
-            Self::Linear  => "linear",
+            Self::Tanh => "tanh",
+            Self::Linear => "linear",
             Self::Softmax => "softmax",
         }
     }
@@ -85,14 +85,30 @@ impl Activation {
     /// - `v` — `&mut [f32]`.
     pub fn apply(self, v: &mut [f32]) {
         match self {
-            Self::ReLU    => { for x in v.iter_mut() { if *x < 0.0 { *x = 0.0; } } }
-            Self::Sigmoid => { for x in v.iter_mut() { *x = 1.0 / (1.0 + (-*x).exp()); } }
-            Self::Tanh    => { for x in v.iter_mut() { *x = x.tanh(); } }
-            Self::Linear  => {}
+            Self::ReLU => {
+                for x in v.iter_mut() {
+                    if *x < 0.0 {
+                        *x = 0.0;
+                    }
+                }
+            }
+            Self::Sigmoid => {
+                for x in v.iter_mut() {
+                    *x = 1.0 / (1.0 + (-*x).exp());
+                }
+            }
+            Self::Tanh => {
+                for x in v.iter_mut() {
+                    *x = x.tanh();
+                }
+            }
+            Self::Linear => {}
             Self::Softmax => {
                 let max = v.iter().cloned().fold(f32::NEG_INFINITY, f32::max);
                 let sum: f32 = v.iter().map(|&x| (x - max).exp()).sum();
-                for x in v.iter_mut() { *x = (*x - max).exp() / sum; }
+                for x in v.iter_mut() {
+                    *x = (*x - max).exp() / sum;
+                }
             }
         }
     }
@@ -207,7 +223,8 @@ impl NeuralNet {
     /// - `outputs` — `usize`.
     /// - `activation` — `Activation`.
     pub fn add_layer(&mut self, inputs: usize, outputs: usize, activation: Activation) {
-        self.layers.push(NeuralLayer::new(inputs, outputs, activation));
+        self.layers
+            .push(NeuralLayer::new(inputs, outputs, activation));
     }
 
     /// Returns the total number of trainable parameters across all layers.
@@ -244,13 +261,19 @@ impl NeuralNet {
     /// # Returns
     /// `bool`.
     pub fn set_weights(&mut self, weights: &[f32]) -> bool {
-        if weights.len() != self.param_count() { return false; }
+        if weights.len() != self.param_count() {
+            return false;
+        }
         let mut offset = 0;
         for layer in &mut self.layers {
             let w_count = layer.inputs * layer.outputs;
-            layer.weights.copy_from_slice(&weights[offset..offset + w_count]);
+            layer
+                .weights
+                .copy_from_slice(&weights[offset..offset + w_count]);
             offset += w_count;
-            layer.biases.copy_from_slice(&weights[offset..offset + layer.outputs]);
+            layer
+                .biases
+                .copy_from_slice(&weights[offset..offset + layer.outputs]);
             offset += layer.outputs;
         }
         true

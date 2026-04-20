@@ -126,4 +126,3 @@ impl Promise {
         self.worker.lock().unwrap().get_error()
     }
 }
-

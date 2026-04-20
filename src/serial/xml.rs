@@ -22,12 +22,20 @@ fn node_to_serial(node: roxmltree::Node) -> SerialValue {
     let mut map: IndexMap<String, SerialValue> = IndexMap::new();
 
     // tag name
-    map.insert("tag".to_string(), SerialValue::Str(node.tag_name().name().to_string()));
+    map.insert(
+        "tag".to_string(),
+        SerialValue::Str(node.tag_name().name().to_string()),
+    );
 
     // attributes
     let attrs: IndexMap<String, SerialValue> = node
         .attributes()
-        .map(|a| (a.name().to_string(), SerialValue::Str(a.value().to_string())))
+        .map(|a| {
+            (
+                a.name().to_string(),
+                SerialValue::Str(a.value().to_string()),
+            )
+        })
         .collect();
     if !attrs.is_empty() {
         map.insert("attrs".to_string(), SerialValue::Map(attrs));
@@ -71,8 +79,7 @@ fn node_to_serial(node: roxmltree::Node) -> SerialValue {
 /// # Returns
 /// `Result<SerialValue, String>`.
 pub fn decode(s: &str) -> Result<SerialValue, String> {
-    let doc = roxmltree::Document::parse(s)
-        .map_err(|e| format!("XML parse error: {e}"))?;
+    let doc = roxmltree::Document::parse(s).map_err(|e| format!("XML parse error: {e}"))?;
     log_msg!(debug, SR06_XML_OK);
     Ok(node_to_serial(doc.root_element()))
 }

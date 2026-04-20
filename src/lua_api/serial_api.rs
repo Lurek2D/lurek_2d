@@ -145,8 +145,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "decodeMsgPack",
         lua.create_function(|lua, bytes: mlua::String| {
-            let val = crate::serial::from_msgpack(bytes.as_bytes())
-                .map_err(LuaError::RuntimeError)?;
+            let val =
+                crate::serial::from_msgpack(bytes.as_bytes()).map_err(LuaError::RuntimeError)?;
             crate::serial::lua_table::to_lua(lua, &val)
         })?,
     )?;

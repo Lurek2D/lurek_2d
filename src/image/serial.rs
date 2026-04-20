@@ -102,8 +102,7 @@ pub fn save_image(img: &ImageData, path: &str) -> Result<(), String> {
 /// # Returns
 /// `Result<ImageData, String>`.
 pub fn load_image(path: &str) -> Result<ImageData, String> {
-    let data =
-        std::fs::read(path).map_err(|e| format!("LIMG read error '{}': {}", path, e))?;
+    let data = std::fs::read(path).map_err(|e| format!("LIMG read error '{}': {}", path, e))?;
     let (type_flag, payload) = parse_header(&data)?;
     if type_flag != TYPE_FLAT {
         return Err(format!(
@@ -141,8 +140,7 @@ pub fn save_layered(stack: &LayeredImage, path: &str) -> Result<(), String> {
 /// # Returns
 /// `Result<LayeredImage, String>`.
 pub fn load_layered(path: &str) -> Result<LayeredImage, String> {
-    let data =
-        std::fs::read(path).map_err(|e| format!("LIMG read error '{}': {}", path, e))?;
+    let data = std::fs::read(path).map_err(|e| format!("LIMG read error '{}': {}", path, e))?;
     let (type_flag, payload) = parse_header(&data)?;
     if type_flag != TYPE_LAYERED {
         return Err(format!(
@@ -171,7 +169,8 @@ fn compress(raw: &[u8]) -> Result<Vec<u8>, String> {
     let mut enc = ZlibEncoder::new(Vec::new(), Compression::default());
     enc.write_all(raw)
         .map_err(|e| format!("zlib compress error: {}", e))?;
-    enc.finish().map_err(|e| format!("zlib finish error: {}", e))
+    enc.finish()
+        .map_err(|e| format!("zlib finish error: {}", e))
 }
 
 /// Decompress zlib bytes.
@@ -303,10 +302,7 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
         pos += 2;
         let name_end = pos + name_len;
         if name_end > payload.len() {
-            return Err(format!(
-                "LIMG layered: layer {} name out of bounds",
-                i
-            ));
+            return Err(format!("LIMG layered: layer {} name out of bounds", i));
         }
         let name = std::str::from_utf8(&payload[pos..name_end])
             .map_err(|e| format!("LIMG layered: layer {} name is invalid UTF-8: {}", i, e))?
@@ -319,7 +315,10 @@ fn decode_layered(payload: &[u8]) -> Result<LayeredImage, String> {
 
         // visible
         if pos >= payload.len() {
-            return Err(format!("LIMG layered: layer {} visible flag out of bounds", i));
+            return Err(format!(
+                "LIMG layered: layer {} visible flag out of bounds",
+                i
+            ));
         }
         let visible = payload[pos] != 0;
         pos += 1;
@@ -371,10 +370,7 @@ pub fn parse_header(data: &[u8]) -> Result<(u8, &[u8]), String> {
         return Err("LIMG file too short to contain a valid header".into());
     }
     if &data[0..4] != MAGIC {
-        return Err(format!(
-            "LIMG: invalid magic bytes (got {:?})",
-            &data[0..4]
-        ));
+        return Err(format!("LIMG: invalid magic bytes (got {:?})", &data[0..4]));
     }
     let version = data[4];
     if version != VERSION {

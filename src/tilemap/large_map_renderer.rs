@@ -366,11 +366,13 @@ impl LargeMapRenderer {
     fn visible_chunk_range(&self) -> (i32, i32, i32, i32) {
         // Zero viewport means no culling — return the full map extent.
         if self.viewport_w <= 0.0 || self.viewport_h <= 0.0 {
-            let chunks_x = ((self.map_width as i32 * self.tile_width as i32)
-                .max(1) + self.chunk_size as i32 - 1)
+            let chunks_x = ((self.map_width as i32 * self.tile_width as i32).max(1)
+                + self.chunk_size as i32
+                - 1)
                 / self.chunk_size as i32;
-            let chunks_y = ((self.map_height as i32 * self.tile_height as i32)
-                .max(1) + self.chunk_size as i32 - 1)
+            let chunks_y = ((self.map_height as i32 * self.tile_height as i32).max(1)
+                + self.chunk_size as i32
+                - 1)
                 / self.chunk_size as i32;
             return (-1, chunks_x, -1, chunks_y);
         }

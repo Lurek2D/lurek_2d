@@ -316,9 +316,7 @@ impl CellularWorld {
                         // Rise upward.
                         if cy > 0 {
                             let above = ((cy - 1) * w + cx) as usize;
-                            if next[above] == CellType::Air
-                                && (self.rng_u8() & 3) != 0
-                            {
+                            if next[above] == CellType::Air && (self.rng_u8() & 3) != 0 {
                                 next_fire[above] = next_fire[idx].saturating_sub(1);
                                 next[above] = CellType::Fire;
                                 next[idx] = CellType::Air;
@@ -327,8 +325,7 @@ impl CellularWorld {
                             }
                         }
                         // Stochastic spread to neighbours.
-                        let spread_dirs: [(i64, i64); 4] =
-                            [(-1, 0), (1, 0), (0, -1), (0, 1)];
+                        let spread_dirs: [(i64, i64); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
                         if (self.rng_u8() & 15) == 0 {
                             let di = (self.rng_u8() as usize) % 4;
                             let (dx, dy) = spread_dirs[di];
@@ -336,9 +333,7 @@ impl CellularWorld {
                             let ny = cy + dy;
                             if nx >= 0 && nx < w && ny >= 0 && ny < h {
                                 let ni = (ny * w + nx) as usize;
-                                if next[ni] == CellType::Air
-                                    || next[ni] == CellType::Gas
-                                {
+                                if next[ni] == CellType::Air || next[ni] == CellType::Gas {
                                     next[ni] = CellType::Fire;
                                     next_fire[ni] = 40 + (self.rng_u8() % 20);
                                 }
@@ -511,7 +506,10 @@ impl CellularWorld {
         if cell_bytes.len() < total {
             return None;
         }
-        let cells: Vec<CellType> = cell_bytes[..total].iter().map(|&b| CellType::from_u8(b)).collect();
+        let cells: Vec<CellType> = cell_bytes[..total]
+            .iter()
+            .map(|&b| CellType::from_u8(b))
+            .collect();
         Some(Self {
             width,
             height,

@@ -3,19 +3,19 @@
 //! `emit_globe_frame` converts a `Globe` snapshot into a flat `Vec<RenderCommand>`
 //! suitable for the Lurek2D render queue. No GPU state is held here.
 
-use std::collections::HashMap;
-use crate::globe::types::{GlobeSpec, LodTier, ProvinceId, Arc as GlobeArc};
-use crate::globe::projection::{OrbitCamera, build_view_matrix, project_province, project_point};
-use crate::globe::lighting::{sun_direction, province_intensity};
-use crate::globe::topology::ProvinceGraph;
 use crate::globe::fog::FogStore;
-use crate::globe::marker::MarkerStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
+use crate::globe::lighting::{province_intensity, sun_direction};
+use crate::globe::marker::MarkerStore;
+use crate::globe::projection::{build_view_matrix, project_point, project_province, OrbitCamera};
+use crate::globe::topology::ProvinceGraph;
+use crate::globe::types::{Arc as GlobeArc, GlobeSpec, LodTier, ProvinceId};
 use crate::math::sphere::great_circle_path;
 use crate::math::Vec2;
-use crate::render::renderer::{RenderCommand, BlendMode, DrawMode};
+use crate::render::renderer::{BlendMode, DrawMode, RenderCommand};
 use crate::runtime::resource_keys::{FontKey, TextureKey};
+use std::collections::HashMap;
 
 /// Emit all render commands for one globe frame.
 ///
@@ -63,12 +63,8 @@ pub fn emit_globe_frame(
             }
         }
 
-        let intensity = province_intensity(
-            province.centroid.0,
-            province.centroid.1,
-            &sun,
-            spec.ambient,
-        );
+        let intensity =
+            province_intensity(province.centroid.0, province.centroid.1, &sun, spec.ambient);
 
         let base = layers
             .effective_color(province.id)
@@ -95,11 +91,7 @@ pub fn emit_globe_frame(
                 let [br, bg, bb, ba] = spec.border_color;
                 cmds.push(RenderCommand::SetLineWidth(spec.border_width));
                 cmds.push(RenderCommand::SetColor(br, bg, bb, ba));
-                let mut pts: Vec<f32> = proj
-                    .screen_verts
-                    .iter()
-                    .flat_map(|v| [v.x, v.y])
-                    .collect();
+                let mut pts: Vec<f32> = proj.screen_verts.iter().flat_map(|v| [v.x, v.y]).collect();
                 if let Some(first) = proj.screen_verts.first() {
                     pts.push(first.x);
                     pts.push(first.y);
@@ -126,15 +118,9 @@ pub fn emit_globe_frame(
 
     // ── 3. Markers ────────────────────────────────────────────────────────────
     for marker in markers.iter_visible() {
-        if let Some(screen) = project_point(
-            marker.lat_deg,
-            marker.lon_deg,
-            &view,
-            radius,
-            zoom,
-            cx,
-            cy,
-        ) {
+        if let Some(screen) =
+            project_point(marker.lat_deg, marker.lon_deg, &view, radius, zoom, cx, cy)
+        {
             let [mr, mg, mb, ma] = marker.style.color;
             let r = (marker.style.size * 0.5).max(2.0);
             cmds.push(RenderCommand::SetColor(mr, mg, mb, ma));
@@ -163,15 +149,9 @@ pub fn emit_globe_frame(
     if lod >= LodTier::Mid {
         if let Some(font_key) = default_font {
             for label in labels.iter_visible(lod_u8) {
-                if let Some(screen) = project_point(
-                    label.lat_deg,
-                    label.lon_deg,
-                    &view,
-                    radius,
-                    zoom,
-                    cx,
-                    cy,
-                ) {
+                if let Some(screen) =
+                    project_point(label.lat_deg, label.lon_deg, &view, radius, zoom, cx, cy)
+                {
                     let [lr, lg, lb, la] = label.style.color;
                     let scale = (label.style.font_size / 16.0).clamp(0.5, 4.0);
                     cmds.push(RenderCommand::SetColor(lr, lg, lb, la));
@@ -207,12 +187,18 @@ pub fn project_arc(
     let pts = great_circle_path(lat_a, lon_a, lat_b, lon_b, steps);
     let mut out = Vec::with_capacity(pts.len() * 2);
     for (lat, lon) in pts {
-        if let Some(v) = project_point(lat, lon, view, spec.radius, camera.zoom, camera.screen_cx, camera.screen_cy) {
+        if let Some(v) = project_point(
+            lat,
+            lon,
+            view,
+            spec.radius,
+            camera.zoom,
+            camera.screen_cx,
+            camera.screen_cy,
+        ) {
             out.push(v.x);
             out.push(v.y);
         }
     }
     out
 }
-
-

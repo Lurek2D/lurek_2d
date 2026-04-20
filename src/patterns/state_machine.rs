@@ -91,7 +91,14 @@ impl StateMachine {
     /// - `has_exit` — `bool`.
     /// - `has_update` — `bool`.
     pub fn add_state(&mut self, name: &str, has_enter: bool, has_exit: bool, has_update: bool) {
-        self.states.insert(name.to_string(), StateInfo { has_enter, has_exit, has_update });
+        self.states.insert(
+            name.to_string(),
+            StateInfo {
+                has_enter,
+                has_exit,
+                has_update,
+            },
+        );
     }
 
     /// Whether a state is registered.
@@ -140,7 +147,9 @@ impl StateMachine {
     /// # Returns
     /// `bool`.
     pub fn can_transition(&self, from: &str, to: &str) -> bool {
-        self.transitions.iter().any(|t| t.from == from && t.to == to)
+        self.transitions
+            .iter()
+            .any(|t| t.from == from && t.to == to)
             || self.transitions.is_empty() // No transition rules = free FSM
     }
 
@@ -153,7 +162,9 @@ impl StateMachine {
     /// # Returns
     /// `Option<&TransitionRule>`.
     pub fn get_transition<'a>(&'a self, from: &str, to: &str) -> Option<&'a TransitionRule> {
-        self.transitions.iter().find(|t| t.from == from && t.to == to)
+        self.transitions
+            .iter()
+            .find(|t| t.from == from && t.to == to)
     }
 
     /// Advances to a new state and records history.  Does NOT fire Lua callbacks —
@@ -197,7 +208,8 @@ impl StateMachine {
     /// # Returns
     /// `Vec<&str>`.
     pub fn reachable_from<'a>(&'a self, from: &str) -> Vec<&'a str> {
-        self.transitions.iter()
+        self.transitions
+            .iter()
             .filter(|t| t.from == from)
             .map(|t| t.to.as_str())
             .collect()
@@ -211,7 +223,10 @@ impl StateMachine {
     /// # Returns
     /// `bool`.
     pub fn has_update_callback(&self, state: &str) -> bool {
-        self.states.get(state).map(|s| s.has_update).unwrap_or(false)
+        self.states
+            .get(state)
+            .map(|s| s.has_update)
+            .unwrap_or(false)
     }
 }
 

@@ -58,9 +58,9 @@ impl DirectorPhase {
     pub fn as_str(self) -> &'static str {
         match self {
             Self::BuildUp => "build_up",
-            Self::Peak    => "peak",
+            Self::Peak => "peak",
             Self::Sustain => "sustain",
-            Self::Relief  => "relief",
+            Self::Relief => "relief",
         }
     }
 }
@@ -99,13 +99,13 @@ pub struct DirectorConfig {
 impl Default for DirectorConfig {
     fn default() -> Self {
         Self {
-            tension_decay_rate:   0.05,
-            peak_threshold:       0.8,
-            relief_threshold:     0.3,
-            sustain_duration:     15.0,
+            tension_decay_rate: 0.05,
+            peak_threshold: 0.8,
+            relief_threshold: 0.3,
+            sustain_duration: 15.0,
             max_tension_per_event: 0.25,
-            peak_spawn_factor:    2.0,
-            relief_loot_factor:   2.5,
+            peak_spawn_factor: 2.0,
+            relief_loot_factor: 2.5,
         }
     }
 }
@@ -177,31 +177,41 @@ impl AIDirector {
     ///
     /// # Returns
     /// `f32`.
-    pub fn tension(&self) -> f32 { self.tension }
+    pub fn tension(&self) -> f32 {
+        self.tension
+    }
 
     /// Returns the current pacing phase.
     ///
     /// # Returns
     /// `DirectorPhase`.
-    pub fn phase(&self) -> DirectorPhase { self.phase }
+    pub fn phase(&self) -> DirectorPhase {
+        self.phase
+    }
 
     /// Returns the current phase as a string label.
     ///
     /// # Returns
     /// `&str`.
-    pub fn phase_str(&self) -> &'static str { self.phase.as_str() }
+    pub fn phase_str(&self) -> &'static str {
+        self.phase.as_str()
+    }
 
     /// Returns the total elapsed time in seconds.
     ///
     /// # Returns
     /// `f32`.
-    pub fn elapsed(&self) -> f32 { self.elapsed }
+    pub fn elapsed(&self) -> f32 {
+        self.elapsed
+    }
 
     /// Returns the total number of events pushed to this director.
     ///
     /// # Returns
     /// `u32`.
-    pub fn total_events(&self) -> u32 { self.total_events }
+    pub fn total_events(&self) -> u32 {
+        self.total_events
+    }
 
     /// Pushes a stress event that raises tension. `intensity` is clamped to
     /// `[0, max_tension_per_event]` before application.
@@ -267,7 +277,9 @@ impl AIDirector {
     /// `f32`.
     pub fn spawn_rate_factor(&self) -> f32 {
         match self.phase {
-            DirectorPhase::BuildUp => 1.0 + self.tension * (self.config.peak_spawn_factor - 1.0) * 0.5,
+            DirectorPhase::BuildUp => {
+                1.0 + self.tension * (self.config.peak_spawn_factor - 1.0) * 0.5
+            }
             DirectorPhase::Peak | DirectorPhase::Sustain => self.config.peak_spawn_factor,
             DirectorPhase::Relief => 0.25,
         }
@@ -279,7 +291,7 @@ impl AIDirector {
     /// `f32`.
     pub fn loot_factor(&self) -> f32 {
         match self.phase {
-            DirectorPhase::Relief  => self.config.relief_loot_factor,
+            DirectorPhase::Relief => self.config.relief_loot_factor,
             DirectorPhase::BuildUp => 1.0,
             DirectorPhase::Peak | DirectorPhase::Sustain => 0.5,
         }
@@ -293,10 +305,10 @@ impl AIDirector {
     /// `f32`.
     pub fn ambient_intensity(&self) -> f32 {
         match self.phase {
-            DirectorPhase::Peak    => (self.tension * 0.5 + 0.5).clamp(0.0, 1.0),
+            DirectorPhase::Peak => (self.tension * 0.5 + 0.5).clamp(0.0, 1.0),
             DirectorPhase::Sustain => 0.6f32.max(self.tension),
             DirectorPhase::BuildUp => self.tension,
-            DirectorPhase::Relief  => (self.tension * 0.5).max(0.1),
+            DirectorPhase::Relief => (self.tension * 0.5).max(0.1),
         }
     }
 

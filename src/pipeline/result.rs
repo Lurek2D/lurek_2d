@@ -100,5 +100,3 @@ impl Default for PipelineResult {
         Self::new()
     }
 }
-
-

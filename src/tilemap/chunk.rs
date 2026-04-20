@@ -9,9 +9,9 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{CK01, CK02, CK03};
 use crate::log_msg;
 use crate::math::Rect;
+use crate::runtime::log_messages::{CK01, CK02, CK03};
 
 /// A chunk-based tilemap that supports large and infinite maps through sparse storage.
 ///

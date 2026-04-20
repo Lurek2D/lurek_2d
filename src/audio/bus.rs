@@ -8,8 +8,8 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 use crate::audio::dsp::{AtomicParam, EffectParams, EffectType};
-use crate::runtime::log_messages::{BU01, BU02, BU03};
 use crate::log_msg;
+use crate::runtime::log_messages::{BU01, BU02, BU03};
 
 /// A named audio bus that applies volume, pitch, and pause overrides to all
 /// sources assigned to it.

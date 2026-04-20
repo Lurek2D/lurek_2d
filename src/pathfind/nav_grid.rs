@@ -8,8 +8,8 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::{NG01, NG02, NG03};
 use crate::log_msg;
+use crate::runtime::log_messages::{NG01, NG02, NG03};
 
 /// Controls how diagonal movement is handled during pathfinding.
 ///
@@ -487,7 +487,11 @@ impl NavGrid {
             img.draw_circle(
                 (sx * cell_size + cell_size / 2) as i32,
                 (sy * cell_size + cell_size / 2) as i32,
-                6, 0, 255, 0, 255,
+                6,
+                0,
+                255,
+                0,
+                255,
             );
         }
         // End marker
@@ -495,10 +499,13 @@ impl NavGrid {
             img.draw_circle(
                 (ex * cell_size + cell_size / 2) as i32,
                 (ey * cell_size + cell_size / 2) as i32,
-                6, 255, 0, 0, 255,
+                6,
+                255,
+                0,
+                0,
+                255,
             );
         }
         img
     }
-
 }

@@ -13,22 +13,22 @@
 //!
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
-use crate::runtime::log_messages::{TR01, TR02};
 use crate::log_msg;
+use crate::runtime::log_messages::{TR01, TR02};
 
 /// Visual transition types between scenes.
 ///
 /// # Variants
-/// - `None` — Instant switch, no animation.
-/// - `Fade` — Alpha cross-fade.
-/// - `SlideLeft` — New scene slides in from the right.
-/// - `SlideRight` — New scene slides in from the left.
-/// - `SlideUp` — New scene slides in from the bottom.
-/// - `SlideDown` — New scene slides in from the top.
-/// - `Wipe` — Horizontal luminance wipe from left to right.
-/// - `Iris` — Radial iris open/close centred on the screen.
-/// - `Zoom` — Scale-in for the entering scene, scale-out for the leaving scene.
-/// - `CrossFade` — Dissolve using a dithered noise threshold.
+/// - `None` â€” Instant switch, no animation.
+/// - `Fade` â€” Alpha cross-fade.
+/// - `SlideLeft` â€” New scene slides in from the right.
+/// - `SlideRight` â€” New scene slides in from the left.
+/// - `SlideUp` â€” New scene slides in from the bottom.
+/// - `SlideDown` â€” New scene slides in from the top.
+/// - `Wipe` â€” Horizontal luminance wipe from left to right.
+/// - `Iris` â€” Radial iris open/close centred on the screen.
+/// - `Zoom` â€” Scale-in for the entering scene, scale-out for the leaving scene.
+/// - `CrossFade` â€” Dissolve using a dithered noise threshold.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TransitionType {
     /// Instant switch, no animation.
@@ -59,7 +59,7 @@ impl TransitionType {
     /// Unrecognised strings map to `TransitionType::None`.
     ///
     /// # Parameters
-    /// - `s` — `&str`. Case-sensitive token, e.g. `"fade"`, `"wipe"`, `"iris"`.
+    /// - `s` â€” `&str`. Case-sensitive token, e.g. `"fade"`, `"wipe"`, `"iris"`.
     ///
     /// # Returns
     /// `Self`.
@@ -81,30 +81,30 @@ impl TransitionType {
 
 /// Easing curve applied to normalized transition progress.
 ///
-/// All variants operate on a value `t ∈ [0, 1]` and return a value in `[0, 1]`.
+/// All variants operate on a value `t â [0, 1]` and return a value in `[0, 1]`.
 /// Use `EasingType::apply(t)` to convert raw linear progress to the eased value.
 ///
 /// # Variants
-/// - `Linear` — No easing; output equals input.
-/// - `EaseIn` — Starts slow, ends fast (quadratic acceleration).
-/// - `EaseOut` — Starts fast, ends slow (quadratic deceleration).
-/// - `EaseInOut` — Hermite S-curve; smooth at both ends.
-/// - `Bounce` — Standard bounce ease-out with three diminishing bounces at the end.
-/// - `Back` — Slight overshoot before settling (c1 = 1.70158).
+/// - `Linear` â€” No easing; output equals input.
+/// - `EaseIn` â€” Starts slow, ends fast (quadratic acceleration).
+/// - `EaseOut` â€” Starts fast, ends slow (quadratic deceleration).
+/// - `EaseInOut` â€” Hermite S-curve; smooth at both ends.
+/// - `Bounce` â€” Standard bounce ease-out with three diminishing bounces at the end.
+/// - `Back` â€” Slight overshoot before settling (c1 = 1.70158).
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum EasingType {
-    /// No easing — output equals input (t).
+    /// No easing â€” output equals input (t).
     #[default]
     Linear,
-    /// Quadratic acceleration — starts slow, ends fast.
+    /// Quadratic acceleration â€” starts slow, ends fast.
     EaseIn,
-    /// Quadratic deceleration — starts fast, ends slow.
+    /// Quadratic deceleration â€” starts fast, ends slow.
     EaseOut,
-    /// Hermite S-curve — smooth acceleration and deceleration.
+    /// Hermite S-curve â€” smooth acceleration and deceleration.
     EaseInOut,
-    /// Bounce ease-out — three diminishing bounces at the end of the transition.
+    /// Bounce ease-out â€” three diminishing bounces at the end of the transition.
     Bounce,
-    /// Slight overshoot — the value briefly exceeds 1.0 before settling.
+    /// Slight overshoot â€” the value briefly exceeds 1.0 before settling.
     Back,
 }
 
@@ -114,7 +114,7 @@ impl EasingType {
     /// Unrecognised strings map to `EasingType::Linear`.
     ///
     /// # Parameters
-    /// - `s` — `&str`. Token, e.g. `"ease_in"`, `"bounce"`.
+    /// - `s` â€” `&str`. Token, e.g. `"ease_in"`, `"bounce"`.
     ///
     /// # Returns
     /// `Self`.
@@ -137,7 +137,7 @@ impl EasingType {
     /// exceed `1.0` during its overshoot phase.
     ///
     /// # Parameters
-    /// - `t` — `f32`. Normalised time in `[0, 1]`.
+    /// - `t` â€” `f32`. Normalised time in `[0, 1]`.
     ///
     /// # Returns
     /// `f32`. Eased progress value.
@@ -168,7 +168,7 @@ impl EasingType {
 /// Evaluates the standard three-bounce equation for a normalised input `t`.
 ///
 /// # Parameters
-/// - `t` — `f32`.
+/// - `t` â€” `f32`.
 ///
 /// # Returns
 /// `f32`.
@@ -198,10 +198,10 @@ fn bounce_out(t: f32) -> f32 {
 /// Both raw (`progress`) and eased (`progress_eased`) values are available.
 ///
 /// # Fields
-/// - `transition_type` — `TransitionType`. Visual effect to apply.
-/// - `duration` — `f32`. Total animation duration in seconds.
-/// - `elapsed` — `f32`. Time elapsed since the transition started.
-/// - `easing` — `EasingType`. Curve applied to the raw progress value.
+/// - `transition_type` â€” `TransitionType`. Visual effect to apply.
+/// - `duration` â€” `f32`. Total animation duration in seconds.
+/// - `elapsed` â€” `f32`. Time elapsed since the transition started.
+/// - `easing` â€” `EasingType`. Curve applied to the raw progress value.
 pub struct ActiveTransition {
     /// The type of visual transition.
     pub transition_type: TransitionType,
@@ -219,8 +219,8 @@ impl ActiveTransition {
     /// Use `new_with_easing` when a non-linear easing curve is required.
     ///
     /// # Parameters
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
     ///
     /// # Returns
     /// `Self`.
@@ -240,9 +240,9 @@ impl ActiveTransition {
     /// the raw `progress()` value.
     ///
     /// # Parameters
-    /// - `transition_type` — `TransitionType`.
-    /// - `duration` — `f32`.
-    /// - `easing` — `EasingType`.
+    /// - `transition_type` â€” `TransitionType`.
+    /// - `duration` â€” `f32`.
+    /// - `easing` â€” `EasingType`.
     ///
     /// # Returns
     /// `Self`.
@@ -263,7 +263,7 @@ impl ActiveTransition {
     /// Set the easing curve after construction.
     ///
     /// # Parameters
-    /// - `easing` — `EasingType`.
+    /// - `easing` â€” `EasingType`.
     pub fn set_easing(&mut self, easing: EasingType) {
         self.easing = easing;
     }
@@ -319,196 +319,8 @@ impl ActiveTransition {
     /// Advance the transition timer by `dt` seconds.
     ///
     /// # Parameters
-    /// - `dt` — `f32`.
+    /// - `dt` â€” `f32`.
     pub fn update(&mut self, dt: f32) {
         self.elapsed += dt;
     }
 }
-
-// NOTE: Tests private internals (easing field, internal ActiveTransition state) — stays inline
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── ActiveTransition construction ─────────────────────────────────────────
-
-    #[test]
-    fn new_starts_at_zero_elapsed() {
-        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        assert!((t.elapsed).abs() < 1e-5);
-    }
-
-    #[test]
-    fn new_defaults_to_linear_easing() {
-        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        assert_eq!(t.easing, EasingType::Linear);
-    }
-
-    #[test]
-    fn new_with_easing_stores_easing() {
-        let t = ActiveTransition::new_with_easing(TransitionType::Wipe, 0.5, EasingType::EaseIn);
-        assert_eq!(t.easing, EasingType::EaseIn);
-        assert_eq!(t.transition_type, TransitionType::Wipe);
-    }
-
-    #[test]
-    fn set_easing_updates_field() {
-        let mut t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        t.set_easing(EasingType::Bounce);
-        assert_eq!(t.get_easing(), EasingType::Bounce);
-    }
-
-    // ── Progress ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn progress_at_start_is_zero() {
-        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        assert!((t.progress()).abs() < 1e-5);
-    }
-
-    #[test]
-    fn progress_after_half_duration_is_half() {
-        let mut t = ActiveTransition::new(TransitionType::Fade, 2.0);
-        t.update(1.0);
-        assert!((t.progress() - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn progress_clamped_at_one() {
-        let mut t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        t.update(10.0);
-        assert!((t.progress() - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn zero_duration_progress_is_one() {
-        let t = ActiveTransition::new(TransitionType::None, 0.0);
-        assert!((t.progress() - 1.0).abs() < 1e-5);
-    }
-
-    // ── Eased progress ───────────────────────────────────────────────────────
-
-    #[test]
-    fn progress_eased_linear_identity() {
-        let mut t = ActiveTransition::new_with_easing(TransitionType::Fade, 2.0, EasingType::Linear);
-        t.update(1.0); // t = 0.5
-        assert!((t.progress_eased() - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn progress_eased_ease_in_starts_slow() {
-        // At t=0.5 EaseIn gives 0.25 (t²)
-        let mut t = ActiveTransition::new_with_easing(TransitionType::Fade, 2.0, EasingType::EaseIn);
-        t.update(1.0);
-        assert!((t.progress_eased() - 0.25).abs() < 1e-5);
-    }
-
-    #[test]
-    fn progress_eased_ease_out_ends_slow() {
-        // At t=0.5 EaseOut gives 1-(0.5)²=0.75
-        let mut t = ActiveTransition::new_with_easing(TransitionType::Fade, 2.0, EasingType::EaseOut);
-        t.update(1.0);
-        assert!((t.progress_eased() - 0.75).abs() < 1e-5);
-    }
-
-    #[test]
-    fn progress_eased_ease_in_out_midpoint_is_half() {
-        // Hermite S-curve is symmetric around 0.5
-        let mut t = ActiveTransition::new_with_easing(TransitionType::Fade, 2.0, EasingType::EaseInOut);
-        t.update(1.0);
-        assert!((t.progress_eased() - 0.5).abs() < 1e-4);
-    }
-
-    #[test]
-    fn progress_eased_bounce_clips_to_one_at_end() {
-        let mut t = ActiveTransition::new_with_easing(TransitionType::Fade, 1.0, EasingType::Bounce);
-        t.update(1.0);
-        assert!((t.progress_eased() - 1.0).abs() < 1e-4);
-    }
-
-    #[test]
-    fn progress_eased_back_has_overshoot() {
-        // Back easing overshoots slightly before 1.0 when t is near 1.0.
-        // But the exact midpoint should still be below 0.5 due to the accelerating cubic.
-        let eased_at_zero = EasingType::Back.apply(0.0);
-        let eased_at_one = EasingType::Back.apply(1.0);
-        assert!((eased_at_zero).abs() < 1e-5);
-        assert!((eased_at_one - 1.0).abs() < 1e-4);
-    }
-
-    // ── Is complete ──────────────────────────────────────────────────────────
-
-    #[test]
-    fn is_complete_before_duration_false() {
-        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
-        assert!(!t.is_complete());
-    }
-
-    #[test]
-    fn is_complete_after_full_update_true() {
-        let mut t = ActiveTransition::new(TransitionType::Fade, 0.5);
-        t.update(0.5);
-        assert!(t.is_complete());
-    }
-
-    // ── TransitionType parsing ────────────────────────────────────────────────
-
-    #[test]
-    fn from_lua_str_fade_correct() {
-        assert_eq!(TransitionType::from_lua_str("fade"), TransitionType::Fade);
-    }
-
-    #[test]
-    fn from_lua_str_unknown_returns_none_variant() {
-        assert_eq!(TransitionType::from_lua_str("xyz"), TransitionType::None);
-    }
-
-    #[test]
-    fn from_lua_str_slideleft() {
-        assert_eq!(
-            TransitionType::from_lua_str("slideleft"),
-            TransitionType::SlideLeft
-        );
-    }
-
-    #[test]
-    fn from_lua_str_wipe() {
-        assert_eq!(TransitionType::from_lua_str("wipe"), TransitionType::Wipe);
-    }
-
-    #[test]
-    fn from_lua_str_iris() {
-        assert_eq!(TransitionType::from_lua_str("iris"), TransitionType::Iris);
-    }
-
-    #[test]
-    fn from_lua_str_zoom() {
-        assert_eq!(TransitionType::from_lua_str("zoom"), TransitionType::Zoom);
-    }
-
-    #[test]
-    fn from_lua_str_crossfade() {
-        assert_eq!(
-            TransitionType::from_lua_str("crossfade"),
-            TransitionType::CrossFade
-        );
-    }
-
-    // ── EasingType parsing ────────────────────────────────────────────────────
-
-    #[test]
-    fn easing_from_lua_str_linear() {
-        assert_eq!(EasingType::from_lua_str("linear"), EasingType::Linear);
-    }
-
-    #[test]
-    fn easing_from_lua_str_ease_in() {
-        assert_eq!(EasingType::from_lua_str("ease_in"), EasingType::EaseIn);
-    }
-
-    #[test]
-    fn easing_from_lua_str_unknown_returns_linear() {
-        assert_eq!(EasingType::from_lua_str("xyz"), EasingType::Linear);
-    }
-}
-

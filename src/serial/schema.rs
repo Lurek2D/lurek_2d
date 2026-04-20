@@ -38,11 +38,7 @@ use crate::runtime::log_messages::{SR07_SCHEMA_PASS, SR08_SCHEMA_FAIL};
 /// - `value` — `&SerialValue`. The value to validate.
 /// - `schema` — `&SerialValue`. The schema map.
 /// - `path`   — `&str`. Dot-separated path used in error messages (pass `""` at root).
-fn validate_at(
-    value: &SerialValue,
-    schema: &SerialValue,
-    path: &str,
-) -> Result<(), String> {
+fn validate_at(value: &SerialValue, schema: &SerialValue, path: &str) -> Result<(), String> {
     let schema_map = match schema {
         SerialValue::Map(m) => m,
         _ => {
@@ -87,14 +83,16 @@ fn validate_at(
     // ── numeric range ─────────────────────────────────────────────────────────
     if let Some(min) = schema_map.get("min") {
         let min_f = to_f64(min).ok_or_else(|| format!("{path}: schema 'min' must be a number"))?;
-        let val_f = numeric_f64(value).ok_or_else(|| format!("{path}: 'min' requires a numeric value"))?;
+        let val_f =
+            numeric_f64(value).ok_or_else(|| format!("{path}: 'min' requires a numeric value"))?;
         if val_f < min_f {
             return Err(format!("{path}: value {val_f} is less than min {min_f}"));
         }
     }
     if let Some(max) = schema_map.get("max") {
         let max_f = to_f64(max).ok_or_else(|| format!("{path}: schema 'max' must be a number"))?;
-        let val_f = numeric_f64(value).ok_or_else(|| format!("{path}: 'max' requires a numeric value"))?;
+        let val_f =
+            numeric_f64(value).ok_or_else(|| format!("{path}: 'max' requires a numeric value"))?;
         if val_f > max_f {
             return Err(format!("{path}: value {val_f} is greater than max {max_f}"));
         }
@@ -102,17 +100,25 @@ fn validate_at(
 
     // ── string length ─────────────────────────────────────────────────────────
     if let Some(minlen) = schema_map.get("minlen") {
-        let min_n = to_usize(minlen).ok_or_else(|| format!("{path}: schema 'minlen' must be a non-negative integer"))?;
-        let len = string_len(value).ok_or_else(|| format!("{path}: 'minlen' requires a string value"))?;
+        let min_n = to_usize(minlen)
+            .ok_or_else(|| format!("{path}: schema 'minlen' must be a non-negative integer"))?;
+        let len =
+            string_len(value).ok_or_else(|| format!("{path}: 'minlen' requires a string value"))?;
         if len < min_n {
-            return Err(format!("{path}: string length {len} is less than minlen {min_n}"));
+            return Err(format!(
+                "{path}: string length {len} is less than minlen {min_n}"
+            ));
         }
     }
     if let Some(maxlen) = schema_map.get("maxlen") {
-        let max_n = to_usize(maxlen).ok_or_else(|| format!("{path}: schema 'maxlen' must be a non-negative integer"))?;
-        let len = string_len(value).ok_or_else(|| format!("{path}: 'maxlen' requires a string value"))?;
+        let max_n = to_usize(maxlen)
+            .ok_or_else(|| format!("{path}: schema 'maxlen' must be a non-negative integer"))?;
+        let len =
+            string_len(value).ok_or_else(|| format!("{path}: 'maxlen' requires a string value"))?;
         if len > max_n {
-            return Err(format!("{path}: string length {len} is greater than maxlen {max_n}"));
+            return Err(format!(
+                "{path}: string length {len} is greater than maxlen {max_n}"
+            ));
         }
     }
 
@@ -130,9 +136,7 @@ fn validate_at(
             } else {
                 format!("{path}.{field_name}")
             };
-            let child_val = val_map
-                .get(field_name)
-                .unwrap_or(&SerialValue::Null);
+            let child_val = val_map.get(field_name).unwrap_or(&SerialValue::Null);
             validate_at(child_val, field_schema, &child_path)?;
         }
     }

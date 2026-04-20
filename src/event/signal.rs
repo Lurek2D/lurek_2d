@@ -4,8 +4,8 @@
 //! name and receive a monotonically increasing handle ID for later removal.
 //! Callbacks fire in registration order.
 
-use crate::runtime::log_messages::{SG01, SG02};
 use crate::log_msg;
+use crate::runtime::log_messages::{SG01, SG02};
 use std::collections::HashMap;
 
 /// A single subscription entry in a [`Signal`].
@@ -253,4 +253,3 @@ fn glob_match(pattern: &str, name: &str) -> bool {
     }
     pi == p.len()
 }
-

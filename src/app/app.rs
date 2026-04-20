@@ -38,7 +38,6 @@ use gilrs::{
 #[allow(unused_imports)]
 use crate::log_msg;
 pub use crate::runtime::config::Config;
-pub use crate::runtime::shared_state::WindowState;
 use crate::runtime::log_messages::{
     L003_GAME_LOADED, L006_SPLASH_SCREEN, L007_NO_MAIN_LUA, L010_RENDER_ERROR, L011_LUA_ERROR,
     L016_LUA_VM_INIT_FAIL, L017_MAIN_LUA_READ_FAIL, L021_CLIPBOARD_FAIL, L023_GPU_TEX_TOO_SMALL,
@@ -50,6 +49,7 @@ use crate::runtime::log_messages::{
     L076_SCREENSHOT_ENCODE_FAIL, L077_DRAG_HOVER, L078_DRAG_HOVER_CANCEL, L079_DRAG_DROP_IGNORED,
     L080_GAME_DIR, L081_LOG_FILE, L082_LOG_FILE_FAIL, L083_DROP_ARCHIVE, L084_DROP_ARCHIVE_FAIL,
 };
+pub use crate::runtime::shared_state::WindowState;
 
 /// Recomputes viewport scale and offset based on game and window dimensions.
 ///
@@ -1490,8 +1490,8 @@ impl LunaApp {
             .map_err(|e| format!("Cannot open archive '{}': {}", archive_path.display(), e))?;
         let mut archive = zip::ZipArchive::new(file)
             .map_err(|e| format!("Invalid ZIP archive '{}': {}", archive_path.display(), e))?;
-        let temp_dir = tempfile::tempdir()
-            .map_err(|e| format!("Failed to create temp dir: {}", e))?;
+        let temp_dir =
+            tempfile::tempdir().map_err(|e| format!("Failed to create temp dir: {}", e))?;
 
         for i in 0..archive.len() {
             let mut entry = archive
@@ -2474,9 +2474,10 @@ impl ApplicationHandler for LunaApp {
                 if !self.has_game {
                     let main_lua = path.join("main.lua");
                     // Check for .lurek / .luna archive format first.
-                    let is_lurek_archive = path.extension().map(|e| {
-                        e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("luna")
-                    }).unwrap_or(false);
+                    let is_lurek_archive = path
+                        .extension()
+                        .map(|e| e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("luna"))
+                        .unwrap_or(false);
 
                     if is_lurek_archive {
                         log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());

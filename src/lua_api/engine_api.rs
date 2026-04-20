@@ -80,10 +80,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns the current measured frames-per-second.
     /// @return number
     let s = state.clone();
-    tbl.set(
-        "fps",
-        lua.create_function(move |_, ()| Ok(s.borrow().fps))?,
-    )?;
+    tbl.set("fps", lua.create_function(move |_, ()| Ok(s.borrow().fps))?)?;
 
     // -- frameCount --
     /// Returns the total number of frames processed since engine start.

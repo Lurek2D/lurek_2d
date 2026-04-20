@@ -11,9 +11,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
+use crate::log_msg;
 use crate::runtime::log_messages::{MS01, MS02};
 use crate::runtime::resource_keys::TextureKey;
-use crate::log_msg;
 
 /// Drawing mode for mesh geometry. Consult the module-level documentation for the broader usage context and preconditions.
 ///

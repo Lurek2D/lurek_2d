@@ -9,8 +9,8 @@ use super::atmosphere::{
 };
 use super::screen_effects::{FadeState, FlashState, ShakeState};
 use super::weather::{WeatherParticle, WeatherState, WeatherType};
-use crate::runtime::log_messages::{OV01, OV02, OV03};
 use crate::log_msg;
+use crate::runtime::log_messages::{OV01, OV02, OV03};
 
 /// Composable per-frame screen-effect overlay managing multiple visual subsystems.
 ///
@@ -519,14 +519,26 @@ impl Overlay {
         if flash_a > 0.0 {
             let [r, g, b, _] = self.flash.color;
             cmds.push(RenderCommand::SetColor(r, g, b, flash_a));
-            cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w, h });
+            cmds.push(RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w,
+                h,
+            });
         }
 
         // Fade: animated alpha stored in fade.color[3].
         if self.fade.active && self.fade.color[3] > 0.0 {
             let [r, g, b, a] = self.fade.color;
             cmds.push(RenderCommand::SetColor(r, g, b, a));
-            cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w, h });
+            cmds.push(RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w,
+                h,
+            });
         }
 
         // Lightning: hard flash distinct from the soft flash above.
@@ -534,14 +546,26 @@ impl Overlay {
         if lightning_a > 0.0 {
             let [r, g, b, _] = self.lightning.color;
             cmds.push(RenderCommand::SetColor(r, g, b, lightning_a));
-            cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w, h });
+            cmds.push(RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w,
+                h,
+            });
         }
 
         // Vignette: full-screen darkening rectangle (no color field — always dark).
         if self.vignette.enabled && self.vignette.strength > 0.0 {
             let a = (self.vignette.strength * 0.5).clamp(0.0, 1.0);
             cmds.push(RenderCommand::SetColor(0.0, 0.0, 0.0, a));
-            cmds.push(RenderCommand::Rectangle { mode: DrawMode::Fill, x: 0.0, y: 0.0, w, h });
+            cmds.push(RenderCommand::Rectangle {
+                mode: DrawMode::Fill,
+                x: 0.0,
+                y: 0.0,
+                w,
+                h,
+            });
         }
 
         cmds
@@ -572,7 +596,16 @@ impl Overlay {
         let fg = (self.flash.color[1] * 255.0) as u8;
         let fb = (self.flash.color[2] * 255.0) as u8;
         let bar_w = (flash_alpha * width as f32) as u32;
-        img.draw_rect(0, 0, bar_w, section_h, fr, fg, fb, (flash_alpha * 200.0) as u8);
+        img.draw_rect(
+            0,
+            0,
+            bar_w,
+            section_h,
+            fr,
+            fg,
+            fb,
+            (flash_alpha * 200.0) as u8,
+        );
         img.draw_label("FLASH", 4, 4, 220, 220, 230);
 
         // Shake state (middle third)
@@ -727,7 +760,11 @@ impl Overlay {
     ///
     /// # Returns
     /// `ImageData`.
-    pub fn draw_trigger_panel_to_image(&mut self, width: u32, height: u32) -> crate::image::ImageData {
+    pub fn draw_trigger_panel_to_image(
+        &mut self,
+        width: u32,
+        height: u32,
+    ) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(20, 18, 28, 255);
         let half_w = width / 2;
@@ -751,17 +788,43 @@ impl Overlay {
         // Panel 2: Shake (top-right)
         self.trigger_shake(15.0, 0.4);
         let (ox, oy) = self.get_shake_offset();
-        img.draw_rect(half_w as i32 + 2, 2, half_w - 4, half_h - 4, 10, 10, 40, 255);
+        img.draw_rect(
+            half_w as i32 + 2,
+            2,
+            half_w - 4,
+            half_h - 4,
+            10,
+            10,
+            40,
+            255,
+        );
         img.draw_label("SHAKE", half_w as i32 + 6, 6, 100, 100, 255);
         let scx = half_w as i32 + half_w as i32 / 2;
         let scy = half_h as i32 / 2;
         img.draw_circle(scx, scy, 20, 40, 40, 80, 255);
-        img.draw_circle(scx + (ox * 2.0) as i32, scy + (oy * 2.0) as i32, 4, 255, 100, 100, 255);
+        img.draw_circle(
+            scx + (ox * 2.0) as i32,
+            scy + (oy * 2.0) as i32,
+            4,
+            255,
+            100,
+            100,
+            255,
+        );
         self.clear();
 
         // Panel 3: Fade (bottom-left)
         self.trigger_fade(0.0, 0.0, 0.0, 0.7, 1.0);
-        img.draw_rect(2, half_h as i32 + 2, half_w - 4, half_h - 4, 10, 10, 10, 255);
+        img.draw_rect(
+            2,
+            half_h as i32 + 2,
+            half_w - 4,
+            half_h - 4,
+            10,
+            10,
+            10,
+            255,
+        );
         img.draw_label("FADE", 6, half_h as i32 + 6, 180, 180, 200);
         for dx in 0..(half_w - 10) {
             let t = dx as f32 / (half_w - 10) as f32;
@@ -774,12 +837,35 @@ impl Overlay {
 
         // Panel 4: Lightning (bottom-right)
         self.trigger_lightning();
-        img.draw_rect(half_w as i32 + 2, half_h as i32 + 2, half_w - 4, half_h - 4, 20, 20, 30, 255);
-        img.draw_label("LIGHTNING", half_w as i32 + 6, half_h as i32 + 6, 220, 220, 255);
+        img.draw_rect(
+            half_w as i32 + 2,
+            half_h as i32 + 2,
+            half_w - 4,
+            half_h - 4,
+            20,
+            20,
+            30,
+            255,
+        );
+        img.draw_label(
+            "LIGHTNING",
+            half_w as i32 + 6,
+            half_h as i32 + 6,
+            220,
+            220,
+            255,
+        );
         for dy in 0..(half_h - 30) {
             for dx in 0..(half_w - 10) {
                 let flash = 200u8.saturating_sub((dy * 2) as u8);
-                img.set_pixel(half_w + 5 + dx, half_h + 22 + dy, flash, flash, flash + 40, 180);
+                img.set_pixel(
+                    half_w + 5 + dx,
+                    half_h + 22 + dy,
+                    flash,
+                    flash,
+                    flash + 40,
+                    180,
+                );
             }
         }
         self.clear();

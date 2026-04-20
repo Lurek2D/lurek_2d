@@ -57,7 +57,9 @@ impl Throttle {
     /// # Returns
     /// `bool`.
     pub fn update(&mut self, dt: f64) -> bool {
-        if !self.enabled { return false; }
+        if !self.enabled {
+            return false;
+        }
         self.elapsed += dt;
         if self.elapsed >= self.interval {
             self.elapsed = 0.0;
@@ -78,7 +80,11 @@ impl Throttle {
     /// # Returns
     /// `f64`.
     pub fn progress(&self) -> f64 {
-        if self.interval <= 0.0 { 1.0 } else { (self.elapsed / self.interval).min(1.0) }
+        if self.interval <= 0.0 {
+            1.0
+        } else {
+            (self.elapsed / self.interval).min(1.0)
+        }
     }
 }
 
@@ -139,7 +145,9 @@ impl Debounce {
     /// # Returns
     /// `bool`.
     pub fn update(&mut self, dt: f64) -> bool {
-        if !self.enabled || !self.pending { return false; }
+        if !self.enabled || !self.pending {
+            return false;
+        }
         self.remaining -= dt;
         if self.remaining <= 0.0 {
             self.pending = false;

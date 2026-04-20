@@ -213,7 +213,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
-                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+                let eas = easing
+                    .as_deref()
+                    .map(EasingType::from_lua_str)
+                    .unwrap_or_default();
 
                 let mut s = st.borrow_mut();
                 let scene_id = s.stack.next_scene_id();
@@ -237,7 +240,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Ok(())
             },
         )?,
-    )?;;
+    )?;
 
     // -- pop --
     /// Pops the top scene from the stack with an optional transition and easing.
@@ -278,7 +281,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Ok(())
             },
         )?,
-    )?;;
+    )?;
 
     // -- switchTo --
     /// Replaces the top scene with a new one, calling leave and enter callbacks.
@@ -305,7 +308,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
-                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+                let eas = easing
+                    .as_deref()
+                    .map(EasingType::from_lua_str)
+                    .unwrap_or_default();
 
                 let mut s = st.borrow_mut();
                 let scene_id = s.stack.next_scene_id();
@@ -329,7 +335,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 Ok(())
             },
         )?,
-    )?;;
+    )?;
 
     // -- clear --
     /// Clears all scenes from the stack, calling leave on each.
@@ -426,7 +432,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             }
             Ok(())
         })?,
-    )?;;
+    )?;
 
     // -- processPhysics --
     /// Calls `scene:process_physics(dt)` on all active scenes (fixed timestep).
@@ -446,7 +452,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             }
             Ok(())
         })?,
-    )?;;
+    )?;
 
     // -- processLate --
     /// Calls `scene:process_late(dt)` on all active scenes (after process, before render).
@@ -755,16 +761,19 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a scene instance directly from a methods table.
     /// @param def : table?
     /// @return table
-    tbl.set("new", lua.create_function(|lua, def: Option<LuaTable>| {
-        let def = match def {
-            Some(t) => t,
-            None => lua.create_table()?,
-        };
-        def.set("__index", def.clone())?;
-        let instance: LuaTable = lua.create_table()?;
-        instance.set_metatable(Some(def));
-        Ok(instance)
-    })?)?;
+    tbl.set(
+        "new",
+        lua.create_function(|lua, def: Option<LuaTable>| {
+            let def = match def {
+                Some(t) => t,
+                None => lua.create_table()?,
+            };
+            def.set("__index", def.clone())?;
+            let instance: LuaTable = lua.create_table()?;
+            instance.set_metatable(Some(def));
+            Ok(instance)
+        })?,
+    )?;
 
     // `lurek.scene.define(def)` — creates a reusable scene class (callable constructor).
     // The definition table is stored in the Lua registry so the returned constructor
@@ -772,21 +781,24 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Creates a reusable scene class — returns a zero-argument constructor function.
     /// @param def : table?
     /// @return function
-    tbl.set("define", lua.create_function(|lua, def: Option<LuaTable>| {
-        let def = match def {
-            Some(t) => t,
-            None => lua.create_table()?,
-        };
-        def.set("__index", def.clone())?;
-        let key = lua.create_registry_value(def)?;
-        let ctor = lua.create_function(move |inner_lua, ()| {
-            let def: LuaTable = inner_lua.registry_value(&key)?;
-            let instance: LuaTable = inner_lua.create_table()?;
-            instance.set_metatable(Some(def));
-            Ok(instance)
-        })?;
-        Ok(ctor)
-    })?)?;
+    tbl.set(
+        "define",
+        lua.create_function(|lua, def: Option<LuaTable>| {
+            let def = match def {
+                Some(t) => t,
+                None => lua.create_table()?,
+            };
+            def.set("__index", def.clone())?;
+            let key = lua.create_registry_value(def)?;
+            let ctor = lua.create_function(move |inner_lua, ()| {
+                let def: LuaTable = inner_lua.registry_value(&key)?;
+                let instance: LuaTable = inner_lua.create_table()?;
+                instance.set_metatable(Some(def));
+                Ok(instance)
+            })?;
+            Ok(ctor)
+        })?,
+    )?;
 
     // ── Transition (eased) ───────────────────────────────────────────────
 
@@ -827,7 +839,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
-                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+                let eas = easing
+                    .as_deref()
+                    .map(EasingType::from_lua_str)
+                    .unwrap_or_default();
 
                 let mut s = st.borrow_mut();
                 let scene_id = s.stack.next_scene_id();
@@ -857,7 +872,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         "isOverlay",
         lua.create_function(move |_, ()| {
             let s = st.borrow();
-            let is_ov = s.stack.get_current().map(|id| s.stack.is_overlay(id)).unwrap_or(false);
+            let is_ov = s
+                .stack
+                .get_current()
+                .map(|id| s.stack.is_overlay(id))
+                .unwrap_or(false);
             Ok(is_ov)
         })?,
     )?;
@@ -940,7 +959,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     .map(TransitionType::from_lua_str)
                     .unwrap_or(TransitionType::None);
                 let dur = duration.unwrap_or(0.0);
-                let eas = easing.as_deref().map(EasingType::from_lua_str).unwrap_or_default();
+                let eas = easing
+                    .as_deref()
+                    .map(EasingType::from_lua_str)
+                    .unwrap_or_default();
                 let params_val = params.unwrap_or(LuaValue::Nil);
 
                 let mut s = st.borrow_mut();
@@ -984,8 +1006,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|lua, ()| {
             let tbl = lua.create_table()?;
             let types = [
-                "none", "fade", "left", "right", "up", "down",
-                "wipe", "iris", "zoom", "crossfade",
+                "none",
+                "fade",
+                "left",
+                "right",
+                "up",
+                "down",
+                "wipe",
+                "iris",
+                "zoom",
+                "crossfade",
             ];
             for (i, t) in types.iter().enumerate() {
                 tbl.set(i + 1, *t)?;

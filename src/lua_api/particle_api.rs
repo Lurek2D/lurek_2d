@@ -5,11 +5,11 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::particle::visualization as particle_vis;
 use crate::particle::{
     AreaDistribution, EmissionShape, InsertMode, ParticleConfig, ParticleShape, ParticleSystem,
     RelativeMode, Trail,
 };
-use crate::particle::visualization as particle_vis;
 use crate::runtime::resource_keys::ParticleKey;
 
 // -------------------------------------------------------------------------------
@@ -1098,9 +1098,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return nil
         methods.add_method_mut("warmUp", |_, this, seconds: f32| {
             let mut st = this.state.borrow_mut();
-            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
+            let ps = st
+                .particle_systems
+                .get_mut(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             ps.warm_up(seconds);
             Ok(())
         });
@@ -1130,9 +1131,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return nil
         methods.add_method_mut("clearAttractors", |_, this, ()| {
             let mut st = this.state.borrow_mut();
-            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
+            let ps = st
+                .particle_systems
+                .get_mut(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             ps.clear_attractors();
             Ok(())
         });
@@ -1142,9 +1144,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return integer
         methods.add_method("getAttractorCount", |_, this, ()| {
             let st = this.state.borrow();
-            let ps = st.particle_systems.get(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             Ok(ps.attractor_count() as u32)
         });
 
@@ -1175,9 +1178,10 @@ impl LuaUserData for LuaParticleSystem {
         /// @return nil
         methods.add_method_mut("clearBounds", |_, this, ()| {
             let mut st = this.state.borrow_mut();
-            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
+            let ps = st
+                .particle_systems
+                .get_mut(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             ps.clear_bounds();
             Ok(())
         });
@@ -1190,16 +1194,19 @@ impl LuaUserData for LuaParticleSystem {
         /// @param config_tbl : table
         /// @param burst_count : number?
         /// @return nil
-        methods.add_method_mut("addSubEmitter", |_, this, (config_tbl, burst_count): (LuaTable, Option<u32>)| {
-            let mut st = this.state.borrow_mut();
-            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
-            let sub_cfg = ParticleConfig::from_lua_opts(&config_tbl)?;
-            ps.config.death_emitter = Some(Box::new(sub_cfg));
-            ps.config.death_burst_count = burst_count.unwrap_or(1);
-            Ok(())
-        });
+        methods.add_method_mut(
+            "addSubEmitter",
+            |_, this, (config_tbl, burst_count): (LuaTable, Option<u32>)| {
+                let mut st = this.state.borrow_mut();
+                let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                    LuaError::runtime("ParticleSystem handle is invalid (released)")
+                })?;
+                let sub_cfg = ParticleConfig::from_lua_opts(&config_tbl)?;
+                ps.config.death_emitter = Some(Box::new(sub_cfg));
+                ps.config.death_burst_count = burst_count.unwrap_or(1);
+                Ok(())
+            },
+        );
 
         // -- setFlipbook --
         /// Configures sprite-sheet flipbook animation by dividing the texture into a grid.
@@ -1209,28 +1216,31 @@ impl LuaUserData for LuaParticleSystem {
         /// @param rows : number -- rows in the sprite sheet
         /// @param fps : number -- animation speed in frames per second
         /// @return nil
-        methods.add_method_mut("setFlipbook", |_, this, (cols, rows, fps): (u32, u32, f32)| {
-            if cols == 0 || rows == 0 {
-                return Err(LuaError::runtime("setFlipbook: cols and rows must be > 0"));
-            }
-            let mut st = this.state.borrow_mut();
-            let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
-            let cell_w = 1.0_f32 / cols as f32;
-            let cell_h = 1.0_f32 / rows as f32;
-            let total = (cols * rows) as usize;
-            let mut quads = Vec::with_capacity(total);
-            for row in 0..rows {
-                for col in 0..cols {
-                    quads.push([col as f32 * cell_w, row as f32 * cell_h, cell_w, cell_h]);
+        methods.add_method_mut(
+            "setFlipbook",
+            |_, this, (cols, rows, fps): (u32, u32, f32)| {
+                if cols == 0 || rows == 0 {
+                    return Err(LuaError::runtime("setFlipbook: cols and rows must be > 0"));
                 }
-            }
-            ps.config.quads = quads;
-            ps.config.animated_frames = (cols * rows) as u32;
-            ps.config.frame_rate = fps;
-            Ok(())
-        });
+                let mut st = this.state.borrow_mut();
+                let ps = st.particle_systems.get_mut(this.key).ok_or_else(|| {
+                    LuaError::runtime("ParticleSystem handle is invalid (released)")
+                })?;
+                let cell_w = 1.0_f32 / cols as f32;
+                let cell_h = 1.0_f32 / rows as f32;
+                let total = (cols * rows) as usize;
+                let mut quads = Vec::with_capacity(total);
+                for row in 0..rows {
+                    for col in 0..cols {
+                        quads.push([col as f32 * cell_w, row as f32 * cell_h, cell_w, cell_h]);
+                    }
+                }
+                ps.config.quads = quads;
+                ps.config.animated_frames = (cols * rows) as u32;
+                ps.config.frame_rate = fps;
+                Ok(())
+            },
+        );
 
         // -- getFlipbook --
         /// Returns the current flipbook configuration as `(cols, rows, fps)`, or `nil` if not set.
@@ -1238,16 +1248,21 @@ impl LuaUserData for LuaParticleSystem {
         /// @return nil
         methods.add_method("getFlipbook", |_, this, ()| {
             let st = this.state.borrow();
-            let ps = st.particle_systems.get(this.key).ok_or_else(|| {
-                LuaError::runtime("ParticleSystem handle is invalid (released)")
-            })?;
+            let ps = st
+                .particle_systems
+                .get(this.key)
+                .ok_or_else(|| LuaError::runtime("ParticleSystem handle is invalid (released)"))?;
             let total = ps.config.animated_frames as usize;
             if total == 0 || ps.config.quads.is_empty() {
                 return Ok((None::<i64>, None::<i64>, None::<f64>));
             }
             let cell_w = ps.config.quads[0][2];
             let cols = (1.0_f32 / cell_w).round() as u32;
-            let rows = if cols > 0 { (total as u32 + cols - 1) / cols } else { 1 };
+            let rows = if cols > 0 {
+                (total as u32 + cols - 1) / cols
+            } else {
+                1
+            };
             let fps = ps.config.frame_rate;
             Ok((Some(cols as i64), Some(rows as i64), Some(fps as f64)))
         });
@@ -1800,8 +1815,7 @@ impl ParticleConfig {
                     ParticleShape::Ray { aspect }
                 }
                 "ring" => {
-                    let thickness =
-                        t.get::<_, f32>("ringThickness").unwrap_or(c.ring_thickness);
+                    let thickness = t.get::<_, f32>("ringThickness").unwrap_or(c.ring_thickness);
                     ParticleShape::Ring { thickness }
                 }
                 _ => ParticleShape::Square,

@@ -181,4 +181,3 @@ impl RaycasterScene {
         self.quad_count() == 0
     }
 }
-

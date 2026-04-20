@@ -3,8 +3,8 @@
 //! Renders cellular automata grids, Voronoi regions, point sets, BSP dungeons,
 //! colored point fields, and Delaunay triangulations as CPU-side [`ImageData`].
 
-use crate::image::ImageData;
 use super::hsv_to_rgb_viz;
+use crate::image::ImageData;
 
 /// Render a cellular automata grid (1=alive, 0=dead) as a scaled image.
 ///

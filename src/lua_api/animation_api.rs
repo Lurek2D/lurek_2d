@@ -44,7 +44,9 @@ impl LuaUserData for LuaAnimation {
         /// @param start : integer
         /// @param count : integer
         /// @return integer
-        methods.add_method_mut("addFramesFromGrid", |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
+        methods.add_method_mut(
+            "addFramesFromGrid",
+            |_, this, (tw, th, fw, fh, start, count): (u32, u32, u32, u32, usize, usize)| {
                 Ok(this
                     .inner
                     .add_frames_from_grid(tw, th, fw, fh, start, count))
@@ -58,7 +60,9 @@ impl LuaUserData for LuaAnimation {
         /// @param fps : number
         /// @param looping : boolean
         /// @return nil
-        methods.add_method_mut("addClip", |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
+        methods.add_method_mut(
+            "addClip",
+            |_, this, (name, indices_tbl, fps, looping): (String, LuaTable, f32, bool)| {
                 let mut indices: Vec<usize> = Vec::new();
                 for v in indices_tbl.sequence_values::<usize>() {
                     indices.push(v?);
@@ -80,7 +84,21 @@ impl LuaUserData for LuaAnimation {
         /// @param fps : number
         /// @param looping : boolean
         /// @return nil
-        methods.add_method_mut("addClipFromGrid", |_, this, (name, tw, th, fw, fh, start, count, fps, looping): (String, u32, u32, u32, u32, usize, usize, f32, bool)| {
+        methods.add_method_mut(
+            "addClipFromGrid",
+            |_,
+             this,
+             (name, tw, th, fw, fh, start, count, fps, looping): (
+                String,
+                u32,
+                u32,
+                u32,
+                u32,
+                usize,
+                usize,
+                f32,
+                bool,
+            )| {
                 this.inner
                     .add_clip_from_grid(&name, tw, th, fw, fh, start, count, fps, looping);
                 Ok(())
@@ -263,13 +281,10 @@ impl LuaUserData for LuaAnimation {
         /// @param width : integer
         /// @param height : integer
         /// @return ImageData
-        methods.add_method(
-            "drawToImage",
-            |lua, this, (w, h): (u32, u32)| {
-                let img = this.inner.draw_to_image(w, h);
-                lua.create_userdata(LuaImageData { inner: img })
-            },
-        );
+        methods.add_method("drawToImage", |lua, this, (w, h): (u32, u32)| {
+            let img = this.inner.draw_to_image(w, h);
+            lua.create_userdata(LuaImageData { inner: img })
+        });
     }
 }
 
@@ -332,7 +347,8 @@ impl LuaUserData for LuaAnimStateMachine {
         methods.add_method_mut(
             "addTransition",
             |_, this, (from_state, to_state, condition): (String, String, String)| {
-                this.inner.add_transition(&from_state, &to_state, &condition);
+                this.inner
+                    .add_transition(&from_state, &to_state, &condition);
                 Ok(())
             },
         );
@@ -342,25 +358,24 @@ impl LuaUserData for LuaAnimStateMachine {
         /// @param name : string
         /// @param value : number|boolean
         /// @return nil
-        methods.add_method_mut(
-            "setParam",
-            |_, this, (name, value): (String, LuaValue)| {
-                let param = match value {
-                    LuaValue::Boolean(b) => AnimParamValue::Bool(b),
-                    LuaValue::Integer(i) => AnimParamValue::Int(i as i32),
-                    LuaValue::Number(f) => AnimParamValue::Float(f as f32),
-                    _ => return Err(LuaError::RuntimeError(
+        methods.add_method_mut("setParam", |_, this, (name, value): (String, LuaValue)| {
+            let param = match value {
+                LuaValue::Boolean(b) => AnimParamValue::Bool(b),
+                LuaValue::Integer(i) => AnimParamValue::Int(i as i32),
+                LuaValue::Number(f) => AnimParamValue::Float(f as f32),
+                _ => {
+                    return Err(LuaError::RuntimeError(
                         "setParam: value must be boolean, integer, or number".into(),
-                    )),
-                };
-                match param {
-                    AnimParamValue::Bool(b) => this.inner.set_param_bool(&name, b),
-                    AnimParamValue::Int(i) => this.inner.set_param_int(&name, i),
-                    AnimParamValue::Float(f) => this.inner.set_param_float(&name, f),
+                    ))
                 }
-                Ok(())
-            },
-        );
+            };
+            match param {
+                AnimParamValue::Bool(b) => this.inner.set_param_bool(&name, b),
+                AnimParamValue::Int(i) => this.inner.set_param_int(&name, i),
+                AnimParamValue::Float(f) => this.inner.set_param_float(&name, f),
+            }
+            Ok(())
+        });
 
         // -- getQuad --
         /// Returns the source quad for the current animation frame, or nil.
@@ -417,14 +432,7 @@ impl LuaUserData for LuaBlendLayerSet {
         /// @return boolean
         methods.add_method_mut(
             "addLayer",
-            |_,
-             this,
-             (name, clip_name, weight, bones): (
-                String,
-                String,
-                f32,
-                Option<LuaTable>,
-            )| {
+            |_, this, (name, clip_name, weight, bones): (String, String, f32, Option<LuaTable>)| {
                 let mask = if let Some(t) = bones {
                     let mut names: Vec<String> = Vec::new();
                     for pair in t.pairs::<LuaValue, String>() {
@@ -546,19 +554,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Animation?
     tbl.set(
         "fromAseprite",
-        lua.create_function(|lua, json_str: String| {
-            match load_aseprite_json(&json_str) {
+        lua.create_function(
+            |lua, json_str: String| match load_aseprite_json(&json_str) {
                 Ok(parsed) => {
                     let anim = Animation::load_from_aseprite(&parsed);
                     let ud = lua.create_userdata(LuaAnimation { inner: anim })?;
                     Ok(LuaValue::UserData(ud))
                 }
-                Err(e) => Err(LuaError::RuntimeError(format!(
-                    "fromAseprite: {}",
-                    e
-                ))),
-            }
-        })?,
+                Err(e) => Err(LuaError::RuntimeError(format!("fromAseprite: {}", e))),
+            },
+        )?,
     )?;
 
     // ── newStateMachine ───────────────────────────────────────────────────────

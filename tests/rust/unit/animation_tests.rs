@@ -1,5 +1,6 @@
 //! Tests for the animation module.
 
+use lurek2d::animation::aseprite::{load_aseprite_json, AsepriteDirection};
 use lurek2d::animation::blend::*;
 use lurek2d::animation::clip::AnimClip;
 use lurek2d::animation::controller::Animation;
@@ -7,9 +8,10 @@ use lurek2d::animation::curve::{AnimCurve, EasingKind};
 use lurek2d::animation::event::AnimEvent;
 use lurek2d::animation::frame::{AnimFrame, AnimationFrame};
 use lurek2d::animation::render::{quad_to_draw_command, AnimRenderParams};
-use lurek2d::animation::state_machine::{compare_nums, parse_condition, AnimStateMachine, ConditionOp};
+use lurek2d::animation::state_machine::{
+    compare_nums, parse_condition, AnimStateMachine, ConditionOp,
+};
 use lurek2d::animation::sync_group::AnimSyncGroup;
-use lurek2d::animation::aseprite::{load_aseprite_json, AsepriteDirection};
 use lurek2d::math::Rect;
 use lurek2d::render::renderer::RenderCommand;
 use lurek2d::runtime::resource_keys::TextureKey;
@@ -322,7 +324,18 @@ mod render_tests {
         let params = make_params();
         let cmd = anim.generate_render_command(&params);
         assert!(cmd.is_some());
-        if let Some(RenderCommand::DrawQuad { quad_x, quad_y, quad_w, quad_h, x, y, ox, oy, .. }) = cmd {
+        if let Some(RenderCommand::DrawQuad {
+            quad_x,
+            quad_y,
+            quad_w,
+            quad_h,
+            x,
+            y,
+            ox,
+            oy,
+            ..
+        }) = cmd
+        {
             assert!((quad_x).abs() < 1e-5);
             assert!((quad_y).abs() < 1e-5);
             assert!((quad_w - 32.0).abs() < 1e-5);
@@ -341,7 +354,14 @@ mod render_tests {
         let quad = Rect::new(64.0, 32.0, 16.0, 16.0);
         let params = make_params();
         let cmd = quad_to_draw_command(&quad, &params);
-        if let RenderCommand::DrawQuad { quad_x, quad_y, tex_w, tex_h, .. } = cmd {
+        if let RenderCommand::DrawQuad {
+            quad_x,
+            quad_y,
+            tex_w,
+            tex_h,
+            ..
+        } = cmd
+        {
             assert!((quad_x - 64.0).abs() < 1e-5);
             assert!((quad_y - 32.0).abs() < 1e-5);
             assert!((tex_w - 256.0).abs() < 1e-5);
@@ -522,7 +542,8 @@ mod blend_tests {
     fn layer_set_add_and_remove() {
         let mut set = BlendLayerSet::new();
         assert!(set.is_empty());
-        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all())).unwrap();
+        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all()))
+            .unwrap();
         assert_eq!(set.len(), 1);
         set.remove_layer("base").unwrap();
         assert!(set.is_empty());
@@ -531,14 +552,18 @@ mod blend_tests {
     #[test]
     fn layer_set_rejects_duplicate_name() {
         let mut set = BlendLayerSet::new();
-        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all())).unwrap();
-        assert!(set.add_layer(BlendLayer::new("base", "walk", 0.5, BlendMask::all())).is_err());
+        set.add_layer(BlendLayer::new("base", "idle", 1.0, BlendMask::all()))
+            .unwrap();
+        assert!(set
+            .add_layer(BlendLayer::new("base", "walk", 0.5, BlendMask::all()))
+            .is_err());
     }
 
     #[test]
     fn set_weight_clamps_and_reads_back() {
         let mut set = BlendLayerSet::new();
-        set.add_layer(BlendLayer::new("a", "idle", 0.5, BlendMask::all())).unwrap();
+        set.add_layer(BlendLayer::new("a", "idle", 0.5, BlendMask::all()))
+            .unwrap();
         set.set_weight("a", 0.8).unwrap();
         assert!((set.get_weight("a").unwrap() - 0.8).abs() < 1e-5);
     }

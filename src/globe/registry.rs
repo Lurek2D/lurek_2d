@@ -4,21 +4,20 @@
 //! `GlobeRegistry` keeps a named map of globes, matching the multi-scene
 //! pattern used elsewhere in Lurek2D.
 
-use std::collections::HashMap;
-use crate::globe::types::{
-    GlobeSpec, GlobeError, Province, ProvinceId, MAX_PROVINCES,
-    Arc as GlobeArc,
-};
-use crate::globe::projection::OrbitCamera;
-use crate::globe::topology::ProvinceGraph;
+use crate::globe::draw::emit_globe_frame;
 use crate::globe::fog::FogStore;
-use crate::globe::marker::MarkerStore;
 use crate::globe::label::LabelStore;
 use crate::globe::layer::LayerStore;
-use crate::globe::draw::emit_globe_frame;
+use crate::globe::marker::MarkerStore;
 use crate::globe::picking::{pick, PickResult};
+use crate::globe::projection::OrbitCamera;
+use crate::globe::topology::ProvinceGraph;
+use crate::globe::types::{
+    Arc as GlobeArc, GlobeError, GlobeSpec, Province, ProvinceId, MAX_PROVINCES,
+};
 use crate::render::renderer::RenderCommand;
 use crate::runtime::resource_keys::FontKey;
+use std::collections::HashMap;
 
 /// Owns all domain stores for one named globe simulation.
 #[derive(Debug, Default)]
@@ -68,7 +67,7 @@ impl Globe {
 
     /// Remove a province by ID. Returns the province if it existed.
     pub fn remove_province(&mut self, id: ProvinceId) -> Option<Province> {
-        self.graph.remove(id)  // topology::remove now returns Option<Province>
+        self.graph.remove(id) // topology::remove now returns Option<Province>
     }
 
     /// Get a shared reference to a province.
@@ -150,7 +149,8 @@ impl GlobeRegistry {
     /// If a globe with this name already exists it is replaced.
     pub fn create(&mut self, name: impl Into<String>, spec: GlobeSpec) -> &mut Globe {
         let name = name.into();
-        self.globes.insert(name.clone(), Globe::new(name.clone(), spec));
+        self.globes
+            .insert(name.clone(), Globe::new(name.clone(), spec));
         self.globes.get_mut(&name).expect("just inserted")
     }
 

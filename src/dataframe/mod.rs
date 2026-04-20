@@ -13,4 +13,3 @@ pub mod serial;
 pub mod sql;
 
 pub use frame::{CellValue, ColRef, DataFrame, Database};
-

@@ -1,4 +1,4 @@
-﻿//! Consolidated render-command interface for the particle module.
+//! Consolidated render-command interface for the particle module.
 //!
 //! Pure CPU â€” no wgpu, winit, or mlua imports.  Provides the standard
 //! `generate_render_commands()` wrapper on [`ParticleSystem`] and
@@ -39,4 +39,3 @@ impl Trail {
         self.build_render_commands()
     }
 }
-

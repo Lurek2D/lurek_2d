@@ -159,4 +159,3 @@ impl IKConstraint {
         bones[elbow_idx].local_rotation = elbow_rotation;
     }
 }
-

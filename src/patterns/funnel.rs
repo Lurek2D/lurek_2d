@@ -84,9 +84,13 @@ impl Funnel {
     pub fn push(&mut self, tag: &str, value: f64) -> (u64, bool) {
         let id = self.next_id;
         self.next_id += 1;
-        self.entries.push(FunnelEntry { id, tag: tag.to_string(), value });
-        let should_flush = self.window == 0.0
-            || (self.max_entries > 0 && self.entries.len() >= self.max_entries);
+        self.entries.push(FunnelEntry {
+            id,
+            tag: tag.to_string(),
+            value,
+        });
+        let should_flush =
+            self.window == 0.0 || (self.max_entries > 0 && self.entries.len() >= self.max_entries);
         (id, should_flush)
     }
 

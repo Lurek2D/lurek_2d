@@ -132,10 +132,7 @@ mod path_tests {
 
     #[test]
     fn camera_path_multi_segment() {
-        let mut p = CameraPath::new(
-            vec![[0.0, 0.0], [100.0, 0.0], [100.0, 100.0]],
-            2.0,
-        );
+        let mut p = CameraPath::new(vec![[0.0, 0.0], [100.0, 0.0], [100.0, 100.0]], 2.0);
         let pos = p.update(1.0).unwrap();
         assert!((pos.0 - 100.0).abs() < 1.0);
         assert!((pos.1).abs() < 1.0);

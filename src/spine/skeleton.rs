@@ -1,13 +1,13 @@
-﻿//! Skeleton container holding bones, slots, and Atlas data.
+//! Skeleton container holding bones, slots, and Atlas data.
 
 use std::collections::HashMap;
 
 use super::bone::Bone;
-use super::slot::Slot;
 use super::ik::IKConstraint;
+use super::slot::Slot;
 use super::timeline::SkeletonAnimation;
-use crate::runtime::log_messages::SP01_SKEL_LOADED;
 use crate::log_msg;
+use crate::runtime::log_messages::SP01_SKEL_LOADED;
 
 /// Parameters for creating and adding a bone in one call.
 ///
@@ -205,7 +205,13 @@ impl Skeleton {
     /// `Option<(f32, f32, f32, f32, f32)>` â€” `(x, y, rotation, scale_x, scale_y)` or `None`.
     pub fn bone_world_transform(&self, idx: usize) -> Option<(f32, f32, f32, f32, f32)> {
         self.bones.get(idx).map(|b| {
-            (b.world_x, b.world_y, b.world_rotation, b.world_scale_x, b.world_scale_y)
+            (
+                b.world_x,
+                b.world_y,
+                b.world_rotation,
+                b.world_scale_x,
+                b.world_scale_y,
+            )
         })
     }
 
@@ -531,7 +537,15 @@ impl Skeleton {
 
         // Draw joint circles at each bone
         for bone in &self.bones {
-            img.draw_circle(bone.world_x as i32, bone.world_y as i32, 4, 255, 120, 80, 255);
+            img.draw_circle(
+                bone.world_x as i32,
+                bone.world_y as i32,
+                4,
+                255,
+                120,
+                80,
+                255,
+            );
         }
 
         img
@@ -552,10 +566,18 @@ impl Skeleton {
 
         // Predefined palette for up to 12 bones
         let palette: [(u8, u8, u8); 12] = [
-            (255, 200, 80), (200, 100, 100), (255, 150, 100),
-            (100, 150, 255), (100, 150, 255), (100, 200, 100),
-            (100, 200, 100), (200, 100, 255), (200, 100, 255),
-            (180, 180, 80), (80, 180, 180), (180, 80, 180),
+            (255, 200, 80),
+            (200, 100, 100),
+            (255, 150, 100),
+            (100, 150, 255),
+            (100, 150, 255),
+            (100, 200, 100),
+            (100, 200, 100),
+            (200, 100, 255),
+            (200, 100, 255),
+            (180, 180, 80),
+            (80, 180, 180),
+            (180, 80, 180),
         ];
 
         // Draw bone connections
@@ -563,9 +585,14 @@ impl Skeleton {
             if let Some(pi) = bone.parent_index {
                 let parent = &self.bones[pi];
                 img.draw_line(
-                    parent.world_x as i32, parent.world_y as i32,
-                    bone.world_x as i32, bone.world_y as i32,
-                    180, 180, 200, 255,
+                    parent.world_x as i32,
+                    parent.world_y as i32,
+                    bone.world_x as i32,
+                    bone.world_y as i32,
+                    180,
+                    180,
+                    200,
+                    255,
                 );
             }
         }
@@ -575,13 +602,26 @@ impl Skeleton {
             let (r, g, b) = palette[i % palette.len()];
             img.draw_circle(bone.world_x as i32, bone.world_y as i32, 5, r, g, b, 255);
             let label = bone.name.to_uppercase();
-            img.draw_label(&label, bone.world_x as i32 + 8, bone.world_y as i32 - 3, r, g, b);
+            img.draw_label(
+                &label,
+                bone.world_x as i32 + 8,
+                bone.world_y as i32 - 3,
+                r,
+                g,
+                b,
+            );
         }
 
         let count_str = format!("{} BONES", self.bone_count());
         img.draw_label(&count_str, 10, (height - 15) as i32, 200, 200, 200);
-        img.draw_label("SPINE BONES OK", (width / 3) as i32, (height - 15) as i32, 100, 255, 100);
+        img.draw_label(
+            "SPINE BONES OK",
+            (width / 3) as i32,
+            (height - 15) as i32,
+            100,
+            255,
+            100,
+        );
         img
     }
-
 }

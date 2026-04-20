@@ -7,32 +7,37 @@
 //! that reference those frames by index. Call [`Animation::update`] each tick and
 //! inspect [`Animation::drain_events`] for playback notifications.
 
+/// Aseprite JSON export parser.
+pub mod aseprite;
+/// Blend-layer system for compositing multiple animation clips.
+pub mod blend;
 /// Named clip: frame index list, FPS, and looping flag.
 pub mod clip;
 /// [`Animation`] controller: frame pool, clip management, and update logic.
 pub mod controller;
+/// Keyframe-based animation curves with per-segment easing.
+pub mod curve;
 /// Playback events emitted by [`Animation::update`].
 pub mod event;
 /// Single animation frame: source quad and optional per-frame duration.
 pub mod frame;
 /// Render-command generation for sprite animations.
 pub mod render;
-/// Aseprite JSON export parser.
-pub mod aseprite;
 /// Finite-state machine for parameter-driven animation control.
 pub mod state_machine;
-/// Keyframe-based animation curves with per-segment easing.
-pub mod curve;
 /// Named animation synchronisation groups.
 pub mod sync_group;
-/// Blend-layer system for compositing multiple animation clips.
-pub mod blend;
 
-pub use clip::AnimClip;
+pub use aseprite::{
+    load_aseprite_json, AsepriteDirection, AsepriteFrameData, AsepriteParsed, AsepriteTagData,
+};
 pub use blend::{BlendLayer, BlendLayerSet, BlendMask};
+pub use clip::AnimClip;
 pub use controller::Animation;
 pub use event::AnimEvent;
 pub use frame::{AnimFrame, AnimationFrame};
 pub use render::AnimRenderParams;
-pub use aseprite::{load_aseprite_json, AsepriteParsed, AsepriteFrameData, AsepriteTagData, AsepriteDirection};
-pub use state_machine::{AnimStateMachine, AnimStateConfig, AnimTransition, AnimParamValue, TransitionCondition, ConditionOp, ConditionValue};
+pub use state_machine::{
+    AnimParamValue, AnimStateConfig, AnimStateMachine, AnimTransition, ConditionOp, ConditionValue,
+    TransitionCondition,
+};

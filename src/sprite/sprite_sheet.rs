@@ -5,9 +5,9 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{SS01, SS02};
 use crate::log_msg;
 use crate::math::Rect;
+use crate::runtime::log_messages::{SS01, SS02};
 
 /// Named frame group within the sprite sheet.
 ///
@@ -366,7 +366,12 @@ impl SpriteSheet {
     /// # Returns
     /// `SpriteSheet`.
     pub fn from_rpgmaker(texture_width: u32, texture_height: u32) -> Self {
-        let mut sheet = Self::new(texture_width, texture_height, texture_width / 3, texture_height / 4);
+        let mut sheet = Self::new(
+            texture_width,
+            texture_height,
+            texture_width / 3,
+            texture_height / 4,
+        );
         sheet.name_group("down", 0, 3);
         sheet.name_group("left", 3, 3);
         sheet.name_group("right", 6, 3);
@@ -393,7 +398,11 @@ impl SpriteSheet {
     ) -> Self {
         // Build a 1×N grid sheet as a container and then replace the frames.
         let count = atlas.entry_count().max(1);
-        let w = if count > 0 { sheet_width / count as u32 } else { sheet_width };
+        let w = if count > 0 {
+            sheet_width / count as u32
+        } else {
+            sheet_width
+        };
         let mut sheet = Self::new(sheet_width, sheet_height, w.max(1), sheet_height);
         // Clear auto-generated frames and replace with atlas entries.
         sheet.frames.clear();

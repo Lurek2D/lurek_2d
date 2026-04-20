@@ -46,7 +46,9 @@ impl LuaUserData for LuaProvinceGrid {
         // -- provinceCount --
         /// Returns the number of unique non-zero province IDs detected in the map.
         /// @return integer
-        methods.add_method("provinceCount", |_, this, ()| Ok(this.inner.province_count()));
+        methods.add_method("provinceCount", |_, this, ()| {
+            Ok(this.inner.province_count())
+        });
 
         // -- adjacencies --
         /// Returns an array of adjacency records. Each record is {province_a, province_b, border_pixels}.
@@ -895,11 +897,9 @@ impl mlua::UserData for ImageData {
         /// ImageData?
         methods.add_method(
             "getRegion",
-            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| {
-                match this.get_region(x, y, w, h) {
-                    Some(img) => Ok(LuaValue::UserData(lua.create_userdata(img)?)),
-                    None => Ok(LuaValue::Nil),
-                }
+            |lua, this, (x, y, w, h): (u32, u32, u32, u32)| match this.get_region(x, y, w, h) {
+                Some(img) => Ok(LuaValue::UserData(lua.create_userdata(img)?)),
+                None => Ok(LuaValue::Nil),
             },
         );
 
@@ -1000,9 +1000,7 @@ impl LuaUserData for LuaPaletteLUT {
         /// @return nil
         methods.add_method_mut(
             "setColor",
-            |_,
-             this,
-             (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
+            |_, this, (fr, fg, fb, fa, tr, tg, tb, ta): (u8, u8, u8, u8, u8, u8, u8, u8)| {
                 use crate::math::color::Color;
                 let from = Color {
                     r: fr as f32 / 255.0,
@@ -1038,4 +1036,3 @@ impl LuaUserData for LuaPaletteLUT {
         });
     }
 }
-

@@ -124,7 +124,11 @@ impl ScreenTransition {
         } else {
             (self.elapsed / self.duration).clamp(0.0, 1.0)
         };
-        if self.reversed { 1.0 - t } else { t }
+        if self.reversed {
+            1.0 - t
+        } else {
+            t
+        }
     }
 
     /// Returns `true` if the transition is currently running.

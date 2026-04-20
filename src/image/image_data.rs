@@ -12,8 +12,8 @@
 //! All public items are documented.  See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
 use crate::log_msg;
+use crate::runtime::log_messages::{IM01_IMAGE_LOADED, IM02_IMAGE_MISMATCH};
 
 /// CPU-side pixel buffer in RGBA8 format.
 ///

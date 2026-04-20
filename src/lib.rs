@@ -1,4 +1,4 @@
-﻿//! Lurek2D — a 2D game engine written in Rust that loads and executes Lua game scripts.
+//! Lurek2D — a 2D game engine written in Rust that loads and executes Lua game scripts.
 //!
 //! This crate is the engine library. It re-exports every subsystem through public submodules so
 //! that the `lurek2d` binary, integration tests, and tooling can all share the same code paths.
@@ -93,40 +93,40 @@ pub mod serial;
 // migration-state: pub mod economy; — now library/economy/init.lua
 /// App module — engine lifecycle, main loop, and application state.
 pub mod app;
+/// 2D camera system: viewport, scaling, zoom, smooth follow, dead-zone, and shake.
+pub mod camera;
 /// TCP debug bridge for connecting external tools to a running Lurek2D game.
 pub mod debugbridge;
 /// API documentation catalog and quality reporting for the lurek.* API surface.
 pub mod docs;
 /// Lightweight entity-component-system with ID recycling, bitmap tags, layers, blueprints, and systems.
 pub mod ecs;
+/// Visual effects pipeline: post-processing, overlays, weather, and atmosphere.
+pub mod effect;
 /// Event queue for polling system and custom events.
 pub mod event;
 /// Sandboxed game filesystem (GameFS).
 pub mod filesystem;
-/// Directed graph with item flow simulation, pathfinding, and supply/demand.
-pub mod graph;
 /// XCOM-style Geoscape globe — province topology, orbit camera, fog-of-war, markers.
 pub mod globe;
+/// Directed graph with item flow simulation, pathfinding, and supply/demand.
+pub mod graph;
 /// Multi-locale string catalog, variable interpolation, and CLDR plural rules.
 pub mod i18n;
 /// CPU-side pixel-level image manipulation.
 pub mod image;
 /// Keyboard, mouse, and gamepad input state.
 pub mod input;
+/// 2D lighting system: lights, shadows, occluders, and blend modes.
+pub mod light;
 /// Script log-level management — delegates to the `log` crate via `engine::log_messages`.
 pub mod log;
 /// 2D GPU rendering pipeline, draw commands, and graphics types.
 pub mod render;
-/// Sprite handling: individual sprites, sprite batches, sheets, nine-slice.
-pub mod sprite;
-/// 2D camera system: viewport, scaling, zoom, smooth follow, dead-zone, and shake.
-pub mod camera;
-/// Visual effects pipeline: post-processing, overlays, weather, and atmosphere.
-pub mod effect;
-/// 2D lighting system: lights, shadows, occluders, and blend modes.
-pub mod light;
 /// Core engine lifecycle, configuration, and error types.
 pub mod runtime;
+/// Sprite handling: individual sprites, sprite batches, sheets, nine-slice.
+pub mod sprite;
 /// Retained-mode widget UI system: buttons, panels, text fields, layouts.
 pub mod ui;
 // migration-state: pub mod inventory; — now library/inventory/init.lua

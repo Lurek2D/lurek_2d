@@ -3,8 +3,8 @@
 //! An isometric grid uses only the four cardinal directions (N, S, E, W)
 //! to match the diamond-shaped movement typical of isometric games.
 
-use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 /// A 2D isometric grid supporting A* pathfinding and LOS.
 ///
@@ -103,7 +103,10 @@ impl IsoGrid {
                     g_cost.insert(nb, new_g);
                     came_from.insert(nb, pos);
                     let h = manhattan(nb, to) as f32;
-                    open.push(Node { pos: nb, f: new_g + h });
+                    open.push(Node {
+                        pos: nb,
+                        f: new_g + h,
+                    });
                 }
             }
         }
@@ -201,12 +204,16 @@ struct Node {
 }
 
 impl PartialEq for Node {
-    fn eq(&self, other: &Self) -> bool { self.f == other.f }
+    fn eq(&self, other: &Self) -> bool {
+        self.f == other.f
+    }
 }
 impl Eq for Node {}
 
 impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for Node {
@@ -215,7 +222,10 @@ impl Ord for Node {
     }
 }
 
-fn reconstruct_path(came_from: &HashMap<(u32, u32), (u32, u32)>, mut current: (u32, u32)) -> Vec<(u32, u32)> {
+fn reconstruct_path(
+    came_from: &HashMap<(u32, u32), (u32, u32)>,
+    mut current: (u32, u32),
+) -> Vec<(u32, u32)> {
     let mut path = vec![current];
     while let Some(&prev) = came_from.get(&current) {
         path.push(prev);

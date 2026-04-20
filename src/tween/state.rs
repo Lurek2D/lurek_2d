@@ -186,4 +186,3 @@ pub fn builtin_easing_names() -> &'static [&'static str] {
         "backOut",
     ]
 }
-

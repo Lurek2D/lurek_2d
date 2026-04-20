@@ -270,10 +270,22 @@ pub fn perlin3d(x: f32, y: f32, z: f32, seed: u32) -> f32 {
     let bbb = hash3d(xi + 1, yi + 1, zi + 1, seed);
 
     let x1 = lerp_f32(grad3d(aaa, xf, yf, zf), grad3d(baa, xf - 1.0, yf, zf), u);
-    let x2 = lerp_f32(grad3d(aba, xf, yf - 1.0, zf), grad3d(bba, xf - 1.0, yf - 1.0, zf), u);
+    let x2 = lerp_f32(
+        grad3d(aba, xf, yf - 1.0, zf),
+        grad3d(bba, xf - 1.0, yf - 1.0, zf),
+        u,
+    );
     let y1 = lerp_f32(x1, x2, v);
-    let x3 = lerp_f32(grad3d(aab, xf, yf, zf - 1.0), grad3d(bab, xf - 1.0, yf, zf - 1.0), u);
-    let x4 = lerp_f32(grad3d(abb, xf, yf - 1.0, zf - 1.0), grad3d(bbb, xf - 1.0, yf - 1.0, zf - 1.0), u);
+    let x3 = lerp_f32(
+        grad3d(aab, xf, yf, zf - 1.0),
+        grad3d(bab, xf - 1.0, yf, zf - 1.0),
+        u,
+    );
+    let x4 = lerp_f32(
+        grad3d(abb, xf, yf - 1.0, zf - 1.0),
+        grad3d(bbb, xf - 1.0, yf - 1.0, zf - 1.0),
+        u,
+    );
     let y2 = lerp_f32(x3, x4, v);
     lerp_f32(y1, y2, w)
 }
@@ -306,15 +318,33 @@ pub fn perlin4d(x: f32, y: f32, z: f32, w: f32, seed: u32) -> f32 {
     let ft = fade(wf);
 
     let offsets: [(i32, i32, i32, i32); 16] = [
-        (0, 0, 0, 0), (1, 0, 0, 0), (0, 1, 0, 0), (1, 1, 0, 0),
-        (0, 0, 1, 0), (1, 0, 1, 0), (0, 1, 1, 0), (1, 1, 1, 0),
-        (0, 0, 0, 1), (1, 0, 0, 1), (0, 1, 0, 1), (1, 1, 0, 1),
-        (0, 0, 1, 1), (1, 0, 1, 1), (0, 1, 1, 1), (1, 1, 1, 1),
+        (0, 0, 0, 0),
+        (1, 0, 0, 0),
+        (0, 1, 0, 0),
+        (1, 1, 0, 0),
+        (0, 0, 1, 0),
+        (1, 0, 1, 0),
+        (0, 1, 1, 0),
+        (1, 1, 1, 0),
+        (0, 0, 0, 1),
+        (1, 0, 0, 1),
+        (0, 1, 0, 1),
+        (1, 1, 0, 1),
+        (0, 0, 1, 1),
+        (1, 0, 1, 1),
+        (0, 1, 1, 1),
+        (1, 1, 1, 1),
     ];
     let mut corners = [0.0f32; 16];
     for (idx, &(dx, dy, dz, dw)) in offsets.iter().enumerate() {
         let h = hash4d(xi + dx, yi + dy, zi + dz, wi + dw, seed);
-        corners[idx] = grad4d(h, xf - dx as f32, yf - dy as f32, zf - dz as f32, wf - dw as f32);
+        corners[idx] = grad4d(
+            h,
+            xf - dx as f32,
+            yf - dy as f32,
+            zf - dz as f32,
+            wf - dw as f32,
+        );
     }
 
     let x00 = lerp_f32(corners[0], corners[1], fu);
@@ -371,7 +401,9 @@ pub fn generate_noise_map_parallel(w: u32, h: u32, opts: &MapGenOptions) -> Vec<
             match fractal {
                 FractalType::Fbm => gen.fbm(nx, ny, octaves, lacunarity, persistence, kind),
                 FractalType::Ridged => gen.ridged(nx, ny, octaves, lacunarity, persistence, kind),
-                FractalType::Turbulence => gen.turbulence(nx, ny, octaves, lacunarity, persistence, kind),
+                FractalType::Turbulence => {
+                    gen.turbulence(nx, ny, octaves, lacunarity, persistence, kind)
+                }
             }
         })
         .collect()
@@ -475,14 +507,38 @@ fn hash4d(x: i32, y: i32, z: i32, w: i32, seed: u32) -> u8 {
 /// 4D gradient dot product.
 fn grad4d(hash: u8, x: f32, y: f32, z: f32, w: f32) -> f32 {
     match hash & 31 {
-        0 => x + y + z,    1 => -x + y + z,   2 => x - y + z,    3 => -x - y + z,
-        4 => x + y - z,    5 => -x + y - z,   6 => x - y - z,    7 => -x - y - z,
-        8 => x + y + w,    9 => -x + y + w,   10 => x - y + w,   11 => -x - y + w,
-        12 => x + y - w,   13 => -x + y - w,  14 => x - y - w,   15 => -x - y - w,
-        16 => x + z + w,   17 => -x + z + w,  18 => x - z + w,   19 => -x - z + w,
-        20 => x + z - w,   21 => -x + z - w,  22 => x - z - w,   23 => -x - z - w,
-        24 => y + z + w,   25 => -y + z + w,  26 => y - z + w,   27 => -y - z + w,
-        28 => y + z - w,   29 => -y + z - w,  30 => y - z - w,   31 => -y - z - w,
+        0 => x + y + z,
+        1 => -x + y + z,
+        2 => x - y + z,
+        3 => -x - y + z,
+        4 => x + y - z,
+        5 => -x + y - z,
+        6 => x - y - z,
+        7 => -x - y - z,
+        8 => x + y + w,
+        9 => -x + y + w,
+        10 => x - y + w,
+        11 => -x - y + w,
+        12 => x + y - w,
+        13 => -x + y - w,
+        14 => x - y - w,
+        15 => -x - y - w,
+        16 => x + z + w,
+        17 => -x + z + w,
+        18 => x - z + w,
+        19 => -x - z + w,
+        20 => x + z - w,
+        21 => -x + z - w,
+        22 => x - z - w,
+        23 => -x - z - w,
+        24 => y + z + w,
+        25 => -y + z + w,
+        26 => y - z + w,
+        27 => -y - z + w,
+        28 => y + z - w,
+        29 => -y + z - w,
+        30 => y - z - w,
+        31 => -y - z - w,
         _ => unreachable!(),
     }
 }
@@ -507,7 +563,10 @@ impl NoiseGenerator {
     /// # Returns
     /// `Self`.
     pub fn new(seed: u64) -> Self {
-        let mut gen = Self { seed, perm: [0; 512] };
+        let mut gen = Self {
+            seed,
+            perm: [0; 512],
+        };
         gen.build_perm();
         gen
     }
@@ -558,44 +617,88 @@ impl NoiseGenerator {
 
     #[inline]
     fn grad1(hash: u8, x: f64) -> f64 {
-        if hash & 1 == 0 { x } else { -x }
+        if hash & 1 == 0 {
+            x
+        } else {
+            -x
+        }
     }
 
     #[inline]
     fn grad2(hash: u8, x: f64, y: f64) -> f64 {
         match hash & 3 {
-            0 => x + y, 1 => -x + y, 2 => x - y, _ => -x - y,
+            0 => x + y,
+            1 => -x + y,
+            2 => x - y,
+            _ => -x - y,
         }
     }
 
     #[inline]
     fn grad3(hash: u8, x: f64, y: f64, z: f64) -> f64 {
         match hash % 12 {
-            0 => x + y, 1 => -x + y, 2 => x - y, 3 => -x - y,
-            4 => x + z, 5 => -x + z, 6 => x - z, 7 => -x - z,
-            8 => y + z, 9 => -y + z, 10 => y - z, _ => -y - z,
+            0 => x + y,
+            1 => -x + y,
+            2 => x - y,
+            3 => -x - y,
+            4 => x + z,
+            5 => -x + z,
+            6 => x - z,
+            7 => -x - z,
+            8 => y + z,
+            9 => -y + z,
+            10 => y - z,
+            _ => -y - z,
         }
     }
 
     #[inline]
     fn grad4(hash: u8, x: f64, y: f64, z: f64, w: f64) -> f64 {
         match hash & 31 {
-            0 => x + y + z,  1 => -x + y + z,  2 => x - y + z,  3 => -x - y + z,
-            4 => x + y - z,  5 => -x + y - z,  6 => x - y - z,  7 => -x - y - z,
-            8 => x + y + w,  9 => -x + y + w,  10 => x - y + w, 11 => -x - y + w,
-            12 => x + y - w, 13 => -x + y - w, 14 => x - y - w, 15 => -x - y - w,
-            16 => x + z + w, 17 => -x + z + w, 18 => x - z + w, 19 => -x - z + w,
-            20 => x + z - w, 21 => -x + z - w, 22 => x - z - w, 23 => -x - z - w,
-            24 => y + z + w, 25 => -y + z + w, 26 => y - z + w, 27 => -y - z + w,
-            28 => y + z - w, 29 => -y + z - w, 30 => y - z - w, _ => -y - z - w,
+            0 => x + y + z,
+            1 => -x + y + z,
+            2 => x - y + z,
+            3 => -x - y + z,
+            4 => x + y - z,
+            5 => -x + y - z,
+            6 => x - y - z,
+            7 => -x - y - z,
+            8 => x + y + w,
+            9 => -x + y + w,
+            10 => x - y + w,
+            11 => -x - y + w,
+            12 => x + y - w,
+            13 => -x + y - w,
+            14 => x - y - w,
+            15 => -x - y - w,
+            16 => x + z + w,
+            17 => -x + z + w,
+            18 => x - z + w,
+            19 => -x - z + w,
+            20 => x + z - w,
+            21 => -x + z - w,
+            22 => x - z - w,
+            23 => -x - z - w,
+            24 => y + z + w,
+            25 => -y + z + w,
+            26 => y - z + w,
+            27 => -y - z + w,
+            28 => y + z - w,
+            29 => -y + z - w,
+            30 => y - z - w,
+            _ => -y - z - w,
         }
     }
 
     fn cell_hash(&self, ix: i32, iy: i32, component: u32) -> f64 {
         let mut h = self.seed.wrapping_add(component as u64);
-        h = h.wrapping_add(ix as u64).wrapping_mul(6_364_136_223_846_793_005);
+        h = h
+            .wrapping_add(ix as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
         h ^= h >> 33;
-        h = h.wrapping_add(iy as u64).wrapping_mul(6_364_136_223_846_793_005);
+        h = h
+            .wrapping_add(iy as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
         h ^= h >> 33;
         h = h.wrapping_mul(0x4586_5521_0000_0001);
         h ^= h >> 33;
@@ -604,11 +707,17 @@ impl NoiseGenerator {
 
     fn cell_hash_3d(&self, ix: i32, iy: i32, iz: i32, component: u32) -> f64 {
         let mut h = self.seed.wrapping_add(component as u64);
-        h = h.wrapping_add(ix as u64).wrapping_mul(6_364_136_223_846_793_005);
+        h = h
+            .wrapping_add(ix as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
         h ^= h >> 33;
-        h = h.wrapping_add(iy as u64).wrapping_mul(6_364_136_223_846_793_005);
+        h = h
+            .wrapping_add(iy as u64)
+            .wrapping_mul(6_364_136_223_846_793_005);
         h ^= h >> 33;
-        h = h.wrapping_add(iz as u64).wrapping_mul(0x4586_5521_0000_0001);
+        h = h
+            .wrapping_add(iz as u64)
+            .wrapping_mul(0x4586_5521_0000_0001);
         h ^= h >> 33;
         h = h.wrapping_mul(6_364_136_223_846_793_005);
         h ^= h >> 33;
@@ -655,7 +764,11 @@ impl NoiseGenerator {
         let bb = self.p(self.p(xi + 1) as i32 + yi + 1);
 
         let x1 = Self::lerp(Self::grad2(aa, xf, yf), Self::grad2(ba, xf - 1.0, yf), u);
-        let x2 = Self::lerp(Self::grad2(ab, xf, yf - 1.0), Self::grad2(bb, xf - 1.0, yf - 1.0), u);
+        let x2 = Self::lerp(
+            Self::grad2(ab, xf, yf - 1.0),
+            Self::grad2(bb, xf - 1.0, yf - 1.0),
+            u,
+        );
         Self::lerp(x1, x2, v)
     }
 
@@ -688,11 +801,27 @@ impl NoiseGenerator {
         let bba = self.p(self.p(self.p(xi + 1) as i32 + yi + 1) as i32 + zi);
         let bbb = self.p(self.p(self.p(xi + 1) as i32 + yi + 1) as i32 + zi + 1);
 
-        let x1 = Self::lerp(Self::grad3(aaa, xf, yf, zf), Self::grad3(baa, xf - 1.0, yf, zf), u);
-        let x2 = Self::lerp(Self::grad3(aba, xf, yf - 1.0, zf), Self::grad3(bba, xf - 1.0, yf - 1.0, zf), u);
+        let x1 = Self::lerp(
+            Self::grad3(aaa, xf, yf, zf),
+            Self::grad3(baa, xf - 1.0, yf, zf),
+            u,
+        );
+        let x2 = Self::lerp(
+            Self::grad3(aba, xf, yf - 1.0, zf),
+            Self::grad3(bba, xf - 1.0, yf - 1.0, zf),
+            u,
+        );
         let y1 = Self::lerp(x1, x2, v);
-        let x3 = Self::lerp(Self::grad3(aab, xf, yf, zf - 1.0), Self::grad3(bab, xf - 1.0, yf, zf - 1.0), u);
-        let x4 = Self::lerp(Self::grad3(abb, xf, yf - 1.0, zf - 1.0), Self::grad3(bbb, xf - 1.0, yf - 1.0, zf - 1.0), u);
+        let x3 = Self::lerp(
+            Self::grad3(aab, xf, yf, zf - 1.0),
+            Self::grad3(bab, xf - 1.0, yf, zf - 1.0),
+            u,
+        );
+        let x4 = Self::lerp(
+            Self::grad3(abb, xf, yf - 1.0, zf - 1.0),
+            Self::grad3(bbb, xf - 1.0, yf - 1.0, zf - 1.0),
+            u,
+        );
         let y2 = Self::lerp(x3, x4, v);
         Self::lerp(y1, y2, w)
     }
@@ -730,7 +859,11 @@ impl NoiseGenerator {
 
         let contrib = |gi: u8, cx: f64, cy: f64| -> f64 {
             let t = 0.5 - cx * cx - cy * cy;
-            if t < 0.0 { 0.0 } else { t * t * t * t * Self::grad2(gi, cx, cy) }
+            if t < 0.0 {
+                0.0
+            } else {
+                t * t * t * t * Self::grad2(gi, cx, cy)
+            }
         };
         70.0 * (contrib(gi0, x0, y0) + contrib(gi1, x1, y1) + contrib(gi2, x2, y2))
     }
@@ -758,18 +891,32 @@ impl NoiseGenerator {
         let z0 = z - (k as f64 - t);
 
         let (i1, j1, k1, i2, j2, k2) = if x0 >= y0 {
-            if y0 >= z0 { (1, 0, 0, 1, 1, 0) }
-            else if x0 >= z0 { (1, 0, 0, 1, 0, 1) }
-            else { (0, 0, 1, 1, 0, 1) }
+            if y0 >= z0 {
+                (1, 0, 0, 1, 1, 0)
+            } else if x0 >= z0 {
+                (1, 0, 0, 1, 0, 1)
+            } else {
+                (0, 0, 1, 1, 0, 1)
+            }
         } else {
-            if y0 < z0 { (0, 0, 1, 0, 1, 1) }
-            else if x0 < z0 { (0, 1, 0, 0, 1, 1) }
-            else { (0, 1, 0, 1, 1, 0) }
+            if y0 < z0 {
+                (0, 0, 1, 0, 1, 1)
+            } else if x0 < z0 {
+                (0, 1, 0, 0, 1, 1)
+            } else {
+                (0, 1, 0, 1, 1, 0)
+            }
         };
 
-        let x1 = x0 - i1 as f64 + G3; let y1 = y0 - j1 as f64 + G3; let z1 = z0 - k1 as f64 + G3;
-        let x2 = x0 - i2 as f64 + 2.0 * G3; let y2 = y0 - j2 as f64 + 2.0 * G3; let z2 = z0 - k2 as f64 + 2.0 * G3;
-        let x3 = x0 - 1.0 + 3.0 * G3; let y3 = y0 - 1.0 + 3.0 * G3; let z3 = z0 - 1.0 + 3.0 * G3;
+        let x1 = x0 - i1 as f64 + G3;
+        let y1 = y0 - j1 as f64 + G3;
+        let z1 = z0 - k1 as f64 + G3;
+        let x2 = x0 - i2 as f64 + 2.0 * G3;
+        let y2 = y0 - j2 as f64 + 2.0 * G3;
+        let z2 = z0 - k2 as f64 + 2.0 * G3;
+        let x3 = x0 - 1.0 + 3.0 * G3;
+        let y3 = y0 - 1.0 + 3.0 * G3;
+        let z3 = z0 - 1.0 + 3.0 * G3;
 
         let gi0 = self.p(self.p(self.p(i) as i32 + j) as i32 + k);
         let gi1 = self.p(self.p(self.p(i + i1) as i32 + j + j1) as i32 + k + k1);
@@ -778,10 +925,16 @@ impl NoiseGenerator {
 
         let contrib = |gi: u8, cx: f64, cy: f64, cz: f64| -> f64 {
             let t = 0.6 - cx * cx - cy * cy - cz * cz;
-            if t < 0.0 { 0.0 } else { t * t * t * t * Self::grad3(gi, cx, cy, cz) }
+            if t < 0.0 {
+                0.0
+            } else {
+                t * t * t * t * Self::grad3(gi, cx, cy, cz)
+            }
         };
-        32.0 * (contrib(gi0, x0, y0, z0) + contrib(gi1, x1, y1, z1)
-            + contrib(gi2, x2, y2, z2) + contrib(gi3, x3, y3, z3))
+        32.0 * (contrib(gi0, x0, y0, z0)
+            + contrib(gi1, x1, y1, z1)
+            + contrib(gi2, x2, y2, z2)
+            + contrib(gi3, x3, y3, z3))
     }
 
     /// 4D Simplex noise. Returns a value in approximately `[-1, 1]`.
@@ -811,10 +964,18 @@ impl NoiseGenerator {
         let w0 = w - (l as f64 - t);
 
         // Simplified 4D simplex — rank-sort approach
-        let rank_x = (if x0 > y0 { 1 } else { 0 }) + (if x0 > z0 { 1 } else { 0 }) + (if x0 > w0 { 1 } else { 0 });
-        let rank_y = (if y0 >= x0 { 1 } else { 0 }) + (if y0 > z0 { 1 } else { 0 }) + (if y0 > w0 { 1 } else { 0 });
-        let rank_z = (if z0 >= x0 { 1 } else { 0 }) + (if z0 >= y0 { 1 } else { 0 }) + (if z0 > w0 { 1 } else { 0 });
-        let rank_w = (if w0 >= x0 { 1 } else { 0 }) + (if w0 >= y0 { 1 } else { 0 }) + (if w0 >= z0 { 1 } else { 0 });
+        let rank_x = (if x0 > y0 { 1 } else { 0 })
+            + (if x0 > z0 { 1 } else { 0 })
+            + (if x0 > w0 { 1 } else { 0 });
+        let rank_y = (if y0 >= x0 { 1 } else { 0 })
+            + (if y0 > z0 { 1 } else { 0 })
+            + (if y0 > w0 { 1 } else { 0 });
+        let rank_z = (if z0 >= x0 { 1 } else { 0 })
+            + (if z0 >= y0 { 1 } else { 0 })
+            + (if z0 > w0 { 1 } else { 0 });
+        let rank_w = (if w0 >= x0 { 1 } else { 0 })
+            + (if w0 >= y0 { 1 } else { 0 })
+            + (if w0 >= z0 { 1 } else { 0 });
 
         let i1 = if rank_x >= 3 { 1 } else { 0 };
         let j1 = if rank_y >= 3 { 1 } else { 0 };
@@ -830,7 +991,11 @@ impl NoiseGenerator {
         let l3 = if rank_w >= 1 { 1 } else { 0 };
 
         let offsets = [
-            (0, 0, 0, 0), (i1, j1, k1, l1), (i2, j2, k2, l2), (i3, j3, k3, l3), (1, 1, 1, 1),
+            (0, 0, 0, 0),
+            (i1, j1, k1, l1),
+            (i2, j2, k2, l2),
+            (i3, j3, k3, l3),
+            (1, 1, 1, 1),
         ];
         let g_factors = [0.0, G4, 2.0 * G4, 3.0 * G4, 4.0 * G4];
 
@@ -842,7 +1007,9 @@ impl NoiseGenerator {
             let cw = w0 - ol as f64 + g_factors[idx];
             let t2 = 0.6 - cx * cx - cy * cy - cz * cz - cw * cw;
             if t2 >= 0.0 {
-                let gi = self.p(self.p(self.p(self.p(i + oi) as i32 + j + oj) as i32 + k + ok) as i32 + l + ol);
+                let gi = self.p(
+                    self.p(self.p(self.p(i + oi) as i32 + j + oj) as i32 + k + ok) as i32 + l + ol,
+                );
                 n += t2 * t2 * t2 * t2 * Self::grad4(gi, cx, cy, cz, cw);
             }
         }
@@ -880,10 +1047,19 @@ impl NoiseGenerator {
                     DistType::Manhattan => (x - px).abs() + (y - py).abs(),
                     DistType::Chebyshev => (x - px).abs().max((y - py).abs()),
                 };
-                if d < min1 { min2 = min1; min1 = d; } else if d < min2 { min2 = d; }
+                if d < min1 {
+                    min2 = min1;
+                    min1 = d;
+                } else if d < min2 {
+                    min2 = d;
+                }
             }
         }
-        if f2 { min2 - min1 } else { min1 }
+        if f2 {
+            min2 - min1
+        } else {
+            min1
+        }
     }
 
     /// 3D Worley (cellular) noise. Returns distance to nearest feature point.
@@ -907,20 +1083,35 @@ impl NoiseGenerator {
         for dz in -1..=1 {
             for dy in -1..=1 {
                 for dx in -1..=1 {
-                    let cx = ix + dx; let cy = iy + dy; let cz = iz + dz;
+                    let cx = ix + dx;
+                    let cy = iy + dy;
+                    let cz = iz + dz;
                     let px = cx as f64 + self.cell_hash_3d(cx, cy, cz, 0);
                     let py = cy as f64 + self.cell_hash_3d(cx, cy, cz, 1);
                     let pz = cz as f64 + self.cell_hash_3d(cx, cy, cz, 2);
                     let d = match dist {
-                        DistType::Euclidean => ((x-px).powi(2)+(y-py).powi(2)+(z-pz).powi(2)).sqrt(),
-                        DistType::Manhattan => (x-px).abs()+(y-py).abs()+(z-pz).abs(),
-                        DistType::Chebyshev => (x-px).abs().max((y-py).abs()).max((z-pz).abs()),
+                        DistType::Euclidean => {
+                            ((x - px).powi(2) + (y - py).powi(2) + (z - pz).powi(2)).sqrt()
+                        }
+                        DistType::Manhattan => (x - px).abs() + (y - py).abs() + (z - pz).abs(),
+                        DistType::Chebyshev => {
+                            (x - px).abs().max((y - py).abs()).max((z - pz).abs())
+                        }
                     };
-                    if d < min1 { min2 = min1; min1 = d; } else if d < min2 { min2 = d; }
+                    if d < min1 {
+                        min2 = min1;
+                        min1 = d;
+                    } else if d < min2 {
+                        min2 = d;
+                    }
                 }
             }
         }
-        if f2 { min2 - min1 } else { min1 }
+        if f2 {
+            min2 - min1
+        } else {
+            min1
+        }
     }
 
     // ── Fractals ───────────────────────────────────────────────────────
@@ -955,7 +1146,11 @@ impl NoiseGenerator {
             frequency *= lac;
             amplitude *= pers;
         }
-        if max_amp > 0.0 { total / max_amp } else { 0.0 }
+        if max_amp > 0.0 {
+            total / max_amp
+        } else {
+            0.0
+        }
     }
 
     /// Ridged multi-fractal over a 2D point.
@@ -970,7 +1165,15 @@ impl NoiseGenerator {
     ///
     /// # Returns
     /// `f64`.
-    pub fn ridged(&self, x: f64, y: f64, octaves: u32, lac: f64, pers: f64, kind: NoiseKind) -> f64 {
+    pub fn ridged(
+        &self,
+        x: f64,
+        y: f64,
+        octaves: u32,
+        lac: f64,
+        pers: f64,
+        kind: NoiseKind,
+    ) -> f64 {
         let mut total = 0.0;
         let mut amplitude = 1.0;
         let mut frequency = 1.0;
@@ -982,7 +1185,11 @@ impl NoiseGenerator {
             frequency *= lac;
             amplitude *= pers;
         }
-        if max_amp > 0.0 { total / max_amp } else { 0.0 }
+        if max_amp > 0.0 {
+            total / max_amp
+        } else {
+            0.0
+        }
     }
 
     /// Turbulence noise over a 2D point.
@@ -997,7 +1204,15 @@ impl NoiseGenerator {
     ///
     /// # Returns
     /// `f64`.
-    pub fn turbulence(&self, x: f64, y: f64, octaves: u32, lac: f64, pers: f64, kind: NoiseKind) -> f64 {
+    pub fn turbulence(
+        &self,
+        x: f64,
+        y: f64,
+        octaves: u32,
+        lac: f64,
+        pers: f64,
+        kind: NoiseKind,
+    ) -> f64 {
         let mut total = 0.0;
         let mut amplitude = 1.0;
         let mut frequency = 1.0;
@@ -1009,7 +1224,11 @@ impl NoiseGenerator {
             frequency *= lac;
             amplitude *= pers;
         }
-        if max_amp > 0.0 { total / max_amp } else { 0.0 }
+        if max_amp > 0.0 {
+            total / max_amp
+        } else {
+            0.0
+        }
     }
 
     /// Domain warping — offsets input coordinates by noise for organic distortion.
@@ -1048,9 +1267,30 @@ impl NoiseGenerator {
                 let nx = (ix as f64 + opts.offset_x) * opts.scale_x;
                 let ny = (iy as f64 + opts.offset_y) * opts.scale_y;
                 let val = match opts.fractal {
-                    FractalType::Fbm => self.fbm(nx, ny, opts.octaves, opts.lacunarity, opts.persistence, opts.kind),
-                    FractalType::Ridged => self.ridged(nx, ny, opts.octaves, opts.lacunarity, opts.persistence, opts.kind),
-                    FractalType::Turbulence => self.turbulence(nx, ny, opts.octaves, opts.lacunarity, opts.persistence, opts.kind),
+                    FractalType::Fbm => self.fbm(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
+                    FractalType::Ridged => self.ridged(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
+                    FractalType::Turbulence => self.turbulence(
+                        nx,
+                        ny,
+                        opts.octaves,
+                        opts.lacunarity,
+                        opts.persistence,
+                        opts.kind,
+                    ),
                 };
                 map.push(val);
             }

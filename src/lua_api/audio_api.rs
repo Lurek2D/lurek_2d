@@ -2920,18 +2920,16 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "normalizeFile",
-        lua.create_function(
-            move |_, (input, output, target): (String, String, f32)| {
-                if input.contains("..") || output.contains("..") {
-                    return Err(LuaError::external("path traversal not allowed"));
-                }
-                let game_dir = s.borrow().game_dir.clone();
-                let input_path = game_dir.join(&input).to_string_lossy().into_owned();
-                let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-                crate::audio::offline::normalize_file(&input_path, &output_path, target)
-                    .map_err(LuaError::external)
-            },
-        )?,
+        lua.create_function(move |_, (input, output, target): (String, String, f32)| {
+            if input.contains("..") || output.contains("..") {
+                return Err(LuaError::external("path traversal not allowed"));
+            }
+            let game_dir = s.borrow().game_dir.clone();
+            let input_path = game_dir.join(&input).to_string_lossy().into_owned();
+            let output_path = game_dir.join(&output).to_string_lossy().into_owned();
+            crate::audio::offline::normalize_file(&input_path, &output_path, target)
+                .map_err(LuaError::external)
+        })?,
     )?;
 
     // ── waveformToPng ─────────────────────────────────────────────────────────
@@ -2952,13 +2950,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 let game_dir = s.borrow().game_dir.clone();
                 let input_path = game_dir.join(&input).to_string_lossy().into_owned();
                 let output_path = game_dir.join(&output).to_string_lossy().into_owned();
-                crate::audio::visualizer::waveform_to_png(
-                    &input_path,
-                    &output_path,
-                    width,
-                    height,
-                )
-                .map_err(LuaError::external)
+                crate::audio::visualizer::waveform_to_png(&input_path, &output_path, width, height)
+                    .map_err(LuaError::external)
             },
         )?,
     )?;
@@ -3078,7 +3071,3 @@ impl mlua::UserData for SoundData {
         });
     }
 }
-
-
-
-

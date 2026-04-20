@@ -223,8 +223,7 @@ impl ImageData {
                         .wrapping_mul(6_364_136_223_846_793_005)
                         .wrapping_add(1_442_695_040_888_963_407);
                     let offset = ((seed >> 33) as i32 % range) - amount as i32;
-                    pixels[idx + ch] =
-                        (pixels[idx + ch] as i32 + offset).clamp(0, 255) as u8;
+                    pixels[idx + ch] = (pixels[idx + ch] as i32 + offset).clamp(0, 255) as u8;
                 }
             }
         }
@@ -597,7 +596,8 @@ impl ImageData {
             let src_off = ((y + row) * self.width + x) as usize * 4;
             let dst_off = (row * w) as usize * 4;
             let len = w as usize * 4;
-            out.pixels[dst_off..dst_off + len].copy_from_slice(&self.pixels[src_off..src_off + len]);
+            out.pixels[dst_off..dst_off + len]
+                .copy_from_slice(&self.pixels[src_off..src_off + len]);
         }
         Some(out)
     }

@@ -1,4 +1,4 @@
-﻿//! Offline audio processing utilities.
+//! Offline audio processing utilities.
 //!
 //! Decodes a WAV file, threads samples through a chain of [`crate::audio::dsp`] effects, and
 //! writes the result back to disk as a 16-bit PCM WAV.  All work happens synchronously in the
@@ -116,10 +116,7 @@ pub fn normalize_file(
 
     let (mut samples, sample_rate, channels) = read_wav_f32(input_path)?;
 
-    let peak = samples
-        .iter()
-        .map(|s| s.abs())
-        .fold(0.0_f32, f32::max);
+    let peak = samples.iter().map(|s| s.abs()).fold(0.0_f32, f32::max);
 
     if peak > 0.0 {
         let scale = target_level / peak;
@@ -145,8 +142,8 @@ pub fn normalize_file(
 fn read_wav_f32(path: &str) -> Result<(Vec<f32>, u32, u16), String> {
     let file = File::open(path).map_err(|e| format!("file not found: {}: {}", path, e))?;
     let reader = BufReader::new(file);
-    let decoder = Decoder::new(reader)
-        .map_err(|e| format!("failed to decode WAV '{}': {}", path, e))?;
+    let decoder =
+        Decoder::new(reader).map_err(|e| format!("failed to decode WAV '{}': {}", path, e))?;
 
     let sample_rate = decoder.sample_rate();
     let channels = decoder.channels();
@@ -187,24 +184,34 @@ fn write_wav_i16(
 
     // RIFF header
     w.write_all(b"RIFF").map_err(|e| e.to_string())?;
-    w.write_all(&file_size.to_le_bytes()).map_err(|e| e.to_string())?;
+    w.write_all(&file_size.to_le_bytes())
+        .map_err(|e| e.to_string())?;
     w.write_all(b"WAVE").map_err(|e| e.to_string())?;
 
     // fmt chunk
     w.write_all(b"fmt ").map_err(|e| e.to_string())?;
-    w.write_all(&16u32.to_le_bytes()).map_err(|e| e.to_string())?; // chunk size
-    w.write_all(&1u16.to_le_bytes()).map_err(|e| e.to_string())?;  // PCM
-    w.write_all(&channels.to_le_bytes()).map_err(|e| e.to_string())?;
-    w.write_all(&sample_rate.to_le_bytes()).map_err(|e| e.to_string())?;
-    w.write_all(&byte_rate.to_le_bytes()).map_err(|e| e.to_string())?;
-    w.write_all(&block_align.to_le_bytes()).map_err(|e| e.to_string())?;
-    w.write_all(&bits_per_sample.to_le_bytes()).map_err(|e| e.to_string())?;
+    w.write_all(&16u32.to_le_bytes())
+        .map_err(|e| e.to_string())?; // chunk size
+    w.write_all(&1u16.to_le_bytes())
+        .map_err(|e| e.to_string())?; // PCM
+    w.write_all(&channels.to_le_bytes())
+        .map_err(|e| e.to_string())?;
+    w.write_all(&sample_rate.to_le_bytes())
+        .map_err(|e| e.to_string())?;
+    w.write_all(&byte_rate.to_le_bytes())
+        .map_err(|e| e.to_string())?;
+    w.write_all(&block_align.to_le_bytes())
+        .map_err(|e| e.to_string())?;
+    w.write_all(&bits_per_sample.to_le_bytes())
+        .map_err(|e| e.to_string())?;
 
     // data chunk
     w.write_all(b"data").map_err(|e| e.to_string())?;
-    w.write_all(&data_size.to_le_bytes()).map_err(|e| e.to_string())?;
+    w.write_all(&data_size.to_le_bytes())
+        .map_err(|e| e.to_string())?;
     for sample in &pcm {
-        w.write_all(&sample.to_le_bytes()).map_err(|e| e.to_string())?;
+        w.write_all(&sample.to_le_bytes())
+            .map_err(|e| e.to_string())?;
     }
 
     w.flush().map_err(|e| e.to_string())

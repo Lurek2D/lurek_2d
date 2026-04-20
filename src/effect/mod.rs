@@ -52,14 +52,14 @@ pub mod ambient;
 pub mod atmosphere;
 /// Main `Overlay` struct combining all screen-effect subsystems into one per-frame controller.
 pub mod overlay;
-/// One-shot screen effects: flash (colour burst), shake (jitter), fade (alpha transition).
-pub mod screen_effects;
-/// Weather simulation: rain, snow, hail, dust, leaves, ash, pollen particles.
-pub mod weather;
 /// Factory functions that build pre-configured [`PostFxStack`] + effect lists for common visual styles.
 pub mod presets;
+/// One-shot screen effects: flash (colour burst), shake (jitter), fade (alpha transition).
+pub mod screen_effects;
 /// Full-screen water surface overlay state driven by UV-distortion shader parameters.
 pub mod water_overlay;
+/// Weather simulation: rain, snow, hail, dust, leaves, ash, pollen particles.
+pub mod weather;
 
 // ── Re-exports ───────────────────────────────────────────────────────────────
 
@@ -73,10 +73,10 @@ pub use atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
 pub use overlay::Overlay;
+pub use presets::{build_preset, preset_names, EffectPreset};
 pub use screen_effects::{FadeState, FlashState, ShakeState};
-pub use weather::{WeatherParticle, WeatherState, WeatherType};
-pub use presets::{EffectPreset, build_preset, preset_names};
 pub use water_overlay::WaterOverlayState;
+pub use weather::{WeatherParticle, WeatherState, WeatherType};
 /// Screen-transition data model for `LuaScreenTransition`.
 pub mod transition;
 pub use transition::{ScreenTransition, TransitionKind};

@@ -284,7 +284,10 @@ mod dag_tests {
     #[test]
     fn error_mode_roundtrip() {
         assert_eq!(ErrorMode::from_str_lua("abort").unwrap(), ErrorMode::Abort);
-        assert_eq!(ErrorMode::from_str_lua("continue").unwrap(), ErrorMode::Continue);
+        assert_eq!(
+            ErrorMode::from_str_lua("continue").unwrap(),
+            ErrorMode::Continue
+        );
         assert!(ErrorMode::from_str_lua("unknown").is_err());
         assert_eq!(ErrorMode::Abort.as_str(), "abort");
         assert_eq!(ErrorMode::Continue.as_str(), "continue");
@@ -321,7 +324,8 @@ mod dag_tests {
         sub.add_step(PipelineStep::new("s1")).unwrap();
         sub.add_step(PipelineStep::new("s2")).unwrap();
 
-        main.add_sub_pipeline(sub, "child", vec!["setup".into()]).unwrap();
+        main.add_sub_pipeline(sub, "child", vec!["setup".into()])
+            .unwrap();
         assert!(main.get_step("child/s1").is_some());
         assert!(main.get_step("child/s2").is_some());
     }

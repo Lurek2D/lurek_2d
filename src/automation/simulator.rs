@@ -1,4 +1,4 @@
-﻿//! Playback engine for the automation simulation module.
+//! Playback engine for the automation simulation module.
 //!
 //! This module provides the [`Simulator`] struct and the private
 //! [`PlaybackState`] enum that drives it. The [`Simulator`] holds a named
@@ -23,8 +23,8 @@ use std::collections::HashMap;
 use crate::event::{Event, EventArg, EventQueue};
 
 use super::{Action, Script, Step};
-use crate::runtime::log_messages::{AT01_SIM_INIT, AT02_SCRIPT_LOAD};
 use crate::log_msg;
+use crate::runtime::log_messages::{AT01_SIM_INIT, AT02_SCRIPT_LOAD};
 
 /// Current playback state of the [`Simulator`].
 ///

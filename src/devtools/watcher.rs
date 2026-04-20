@@ -55,7 +55,10 @@ impl FileWatcher {
     /// # Returns
     /// `Vec<String>`.
     pub fn watched_paths(&self) -> Vec<String> {
-        self.paths.keys().map(|p| p.to_string_lossy().into_owned()).collect()
+        self.paths
+            .keys()
+            .map(|p| p.to_string_lossy().into_owned())
+            .collect()
     }
 
     /// Polls all watched paths and returns paths that have changed since the

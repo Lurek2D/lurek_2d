@@ -3,8 +3,8 @@
 //! Uses offset coordinates (odd-r) with flat-top or pointy-top hex layouts.
 //! A* is used for pathfinding; Dijkstra for range-of-movement.
 
-use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 /// Hex grid layout orientation.
 ///
@@ -133,7 +133,10 @@ impl HexGrid {
                     g_cost.insert(nb, new_g);
                     came_from.insert(nb, pos);
                     let h = self.distance(nb, to) as f32;
-                    open.push(AStarNode { pos: nb, f: new_g + h });
+                    open.push(AStarNode {
+                        pos: nb,
+                        f: new_g + h,
+                    });
                 }
             }
         }
@@ -196,11 +199,18 @@ impl HexGrid {
         let mut heap: BinaryHeap<AStarNode> = BinaryHeap::new();
 
         cost_map.insert(origin, 0.0);
-        heap.push(AStarNode { pos: origin, f: 0.0 });
+        heap.push(AStarNode {
+            pos: origin,
+            f: 0.0,
+        });
 
         let mut result = Vec::new();
 
-        while let Some(AStarNode { pos, f: current_cost }) = heap.pop() {
+        while let Some(AStarNode {
+            pos,
+            f: current_cost,
+        }) = heap.pop()
+        {
             if current_cost > *cost_map.get(&pos).unwrap_or(&f32::MAX) {
                 continue;
             }
@@ -211,7 +221,10 @@ impl HexGrid {
                 let new_cost = current_cost + self.cost[nb_idx];
                 if new_cost <= budget && new_cost < *cost_map.get(&nb).unwrap_or(&f32::MAX) {
                     cost_map.insert(nb, new_cost);
-                    heap.push(AStarNode { pos: nb, f: new_cost });
+                    heap.push(AStarNode {
+                        pos: nb,
+                        f: new_cost,
+                    });
                 }
             }
         }
@@ -310,9 +323,7 @@ impl HexGrid {
                     [(1, 0), (1, -1), (0, -1), (-1, 0), (0, 1), (1, 1)]
                 }
             }
-            HexLayout::FlatTop => {
-                [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)]
-            }
+            HexLayout::FlatTop => [(1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1)],
         }
     }
 
@@ -368,12 +379,16 @@ struct AStarNode {
 }
 
 impl PartialEq for AStarNode {
-    fn eq(&self, other: &Self) -> bool { self.f == other.f }
+    fn eq(&self, other: &Self) -> bool {
+        self.f == other.f
+    }
 }
 impl Eq for AStarNode {}
 
 impl PartialOrd for AStarNode {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for AStarNode {
@@ -382,7 +397,10 @@ impl Ord for AStarNode {
     }
 }
 
-fn reconstruct_path(came_from: &HashMap<(u32, u32), (u32, u32)>, mut current: (u32, u32)) -> Vec<(u32, u32)> {
+fn reconstruct_path(
+    came_from: &HashMap<(u32, u32), (u32, u32)>,
+    mut current: (u32, u32),
+) -> Vec<(u32, u32)> {
     let mut path = vec![current];
     while let Some(&prev) = came_from.get(&current) {
         path.push(prev);

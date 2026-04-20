@@ -1,7 +1,7 @@
 //! Tests for the input module.
 
-use lurek2d::input::*;
 use lurek2d::input::recorder::{InputEvent, InputRecorder, InputRecording, RecordedFrame};
+use lurek2d::input::*;
 
 // ── touch ─────────────────────────────────────────────────────────────────────
 
@@ -68,13 +68,19 @@ mod recorder_tests {
         assert!(rec.is_recording());
 
         rec.record_frame(
-            vec![InputEvent { kind: "down".into(), name: "space".into() }],
+            vec![InputEvent {
+                kind: "down".into(),
+                name: "space".into(),
+            }],
             Some(100.0),
             Some(200.0),
         );
         rec.record_frame(vec![], None, None); // empty frame skipped
         rec.record_frame(
-            vec![InputEvent { kind: "up".into(), name: "space".into() }],
+            vec![InputEvent {
+                kind: "up".into(),
+                name: "space".into(),
+            }],
             None,
             None,
         );
@@ -90,7 +96,10 @@ mod recorder_tests {
         let recording = InputRecording {
             frames: vec![RecordedFrame {
                 frame: 0,
-                key_events: vec![InputEvent { kind: "down".into(), name: "a".into() }],
+                key_events: vec![InputEvent {
+                    kind: "down".into(),
+                    name: "a".into(),
+                }],
                 mouse_x: None,
                 mouse_y: None,
             }],
@@ -107,13 +116,19 @@ mod recorder_tests {
             frames: vec![
                 RecordedFrame {
                     frame: 0,
-                    key_events: vec![InputEvent { kind: "down".into(), name: "a".into() }],
+                    key_events: vec![InputEvent {
+                        kind: "down".into(),
+                        name: "a".into(),
+                    }],
                     mouse_x: None,
                     mouse_y: None,
                 },
                 RecordedFrame {
                     frame: 2,
-                    key_events: vec![InputEvent { kind: "up".into(), name: "a".into() }],
+                    key_events: vec![InputEvent {
+                        kind: "up".into(),
+                        name: "a".into(),
+                    }],
                     mouse_x: None,
                     mouse_y: None,
                 },
@@ -439,7 +454,10 @@ mod gamepad_tests {
     fn mappings_store_and_retrieve() {
         let mut m = GamepadMappings::new();
         m.set_mapping("abc123", "abc123,Xbox,a:b0,b:b1");
-        assert_eq!(m.get_mapping_string("abc123"), Some("abc123,Xbox,a:b0,b:b1"));
+        assert_eq!(
+            m.get_mapping_string("abc123"),
+            Some("abc123,Xbox,a:b0,b:b1")
+        );
         assert!(m.get_mapping_string("unknown").is_none());
     }
 
@@ -462,9 +480,18 @@ mod combo_tests {
 
     fn make_steps() -> Vec<ComboStep> {
         vec![
-            ComboStep { key: "down".into(), max_gap_ms: 500 },
-            ComboStep { key: "right".into(), max_gap_ms: 500 },
-            ComboStep { key: "a".into(), max_gap_ms: 500 },
+            ComboStep {
+                key: "down".into(),
+                max_gap_ms: 500,
+            },
+            ComboStep {
+                key: "right".into(),
+                max_gap_ms: 500,
+            },
+            ComboStep {
+                key: "a".into(),
+                max_gap_ms: 500,
+            },
         ]
     }
 
@@ -478,8 +505,14 @@ mod combo_tests {
     #[test]
     fn full_sequence_completes() {
         let mut d = ComboDetector::new(make_steps(), 2000);
-        assert_eq!(d.feed("down", 0), ComboProgress::Advanced { step: 1, total: 3 });
-        assert_eq!(d.feed("right", 100), ComboProgress::Advanced { step: 2, total: 3 });
+        assert_eq!(
+            d.feed("down", 0),
+            ComboProgress::Advanced { step: 1, total: 3 }
+        );
+        assert_eq!(
+            d.feed("right", 100),
+            ComboProgress::Advanced { step: 2, total: 3 }
+        );
         assert_eq!(d.feed("a", 100), ComboProgress::Completed);
         // After completion, detector resets
         assert!(!d.is_in_progress());
@@ -488,7 +521,10 @@ mod combo_tests {
     #[test]
     fn wrong_key_mid_sequence_breaks() {
         let mut d = ComboDetector::new(make_steps(), 2000);
-        assert_eq!(d.feed("down", 0), ComboProgress::Advanced { step: 1, total: 3 });
+        assert_eq!(
+            d.feed("down", 0),
+            ComboProgress::Advanced { step: 1, total: 3 }
+        );
         assert_eq!(d.feed("wrong", 100), ComboProgress::Broken);
         assert!(!d.is_in_progress());
     }

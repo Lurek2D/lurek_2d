@@ -14,7 +14,10 @@ mod types_tests {
 
     #[test]
     fn color_mode_parse_political() {
-        assert_eq!(ColorMode::parse_mode("political"), Some(ColorMode::Political));
+        assert_eq!(
+            ColorMode::parse_mode("political"),
+            Some(ColorMode::Political)
+        );
     }
 
     #[test]
@@ -24,8 +27,14 @@ mod types_tests {
 
     #[test]
     fn color_mode_roundtrip() {
-        assert_eq!(ColorMode::parse_mode(ColorMode::Terrain.as_str()), Some(ColorMode::Terrain));
-        assert_eq!(ColorMode::parse_mode(ColorMode::Political.as_str()), Some(ColorMode::Political));
+        assert_eq!(
+            ColorMode::parse_mode(ColorMode::Terrain.as_str()),
+            Some(ColorMode::Terrain)
+        );
+        assert_eq!(
+            ColorMode::parse_mode(ColorMode::Political.as_str()),
+            Some(ColorMode::Political)
+        );
     }
 
     #[test]
@@ -320,7 +329,13 @@ mod minimap_data_tests {
     fn marker_animation_attach_clear() {
         let mut m = Minimap::new(4, 4, 100, 100);
         let id = m.add_marker(1.0, 1.0, "Alert".to_string(), [1.0, 0.0, 0.0, 1.0]);
-        m.set_marker_animation(id, MarkerAnimation::Blink { speed: 2.0, phase: 0.0 });
+        m.set_marker_animation(
+            id,
+            MarkerAnimation::Blink {
+                speed: 2.0,
+                phase: 0.0,
+            },
+        );
         m.update(0.25);
         m.clear_marker_animation(id);
         // No panic — animation removed gracefully

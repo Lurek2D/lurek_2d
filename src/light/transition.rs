@@ -82,7 +82,11 @@ impl LightTransition {
             lerp(self.from_color[2], self.to_color[2]),
             lerp(self.from_color[3], self.to_color[3]),
         ];
-        Some((color, lerp(self.from_intensity, self.to_intensity), lerp(self.from_radius, self.to_radius)))
+        Some((
+            color,
+            lerp(self.from_intensity, self.to_intensity),
+            lerp(self.from_radius, self.to_radius),
+        ))
     }
 
     /// Returns the fractional progress `[0, 1]` of the transition.

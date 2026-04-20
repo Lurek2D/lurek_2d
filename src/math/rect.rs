@@ -160,10 +160,18 @@ impl Rect {
         let mut max_x = f32::MIN;
         let mut max_y = f32::MIN;
         for &(px, py) in points {
-            if px < min_x { min_x = px; }
-            if py < min_y { min_y = py; }
-            if px > max_x { max_x = px; }
-            if py > max_y { max_y = py; }
+            if px < min_x {
+                min_x = px;
+            }
+            if py < min_y {
+                min_y = py;
+            }
+            if px > max_x {
+                max_x = px;
+            }
+            if py > max_y {
+                max_y = py;
+            }
         }
         Rect::new(min_x, min_y, max_x - min_x, max_y - min_y)
     }

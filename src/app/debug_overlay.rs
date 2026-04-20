@@ -1,10 +1,10 @@
-﻿//! Debug overlay for displaying FPS and draw call statistics.
+//! Debug overlay for displaying FPS and draw call statistics.
 //!
 //! Renders green text on a semi-transparent background in the top-right corner
 //! of the screen. Can be toggled at runtime via F12 or `lurek.platform.setDebugOverlay()`.
 
+use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::resource_keys::FontKey;
-use crate::render::renderer::{RenderCommand, DrawMode};
 
 /// Debug overlay showing FPS and render statistics.
 ///
@@ -38,7 +38,13 @@ impl DebugOverlay {
     ///
     /// # Returns
     /// A `Vec<RenderCommand>` to append after the main game rendering.
-    pub fn build_render_commands(&self, screen_w: u32, fps: f64, draw_calls: u32, font_key: Option<FontKey>) -> Vec<RenderCommand> {
+    pub fn build_render_commands(
+        &self,
+        screen_w: u32,
+        fps: f64,
+        draw_calls: u32,
+        font_key: Option<FontKey>,
+    ) -> Vec<RenderCommand> {
         if !self.enabled {
             return Vec::new();
         }

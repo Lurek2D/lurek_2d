@@ -214,4 +214,3 @@ pub fn event_to_lua_multi<'lua>(lua: &'lua Lua, event: &Event) -> LuaResult<LuaM
     }
     Ok(LuaMultiValue::from_vec(values))
 }
-

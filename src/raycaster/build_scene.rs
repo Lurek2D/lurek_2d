@@ -8,9 +8,7 @@ use crate::math::{Color, Vec2};
 use crate::raycaster::dda::Raycaster2D;
 use crate::raycaster::lighting::{compute_lighting, PointLight};
 use crate::raycaster::projection::{distance_shade, project_column};
-use crate::raycaster::scene::{
-    BillboardSprite, CeilingQuad, FloorQuad, RaycasterScene, WallQuad,
-};
+use crate::raycaster::scene::{BillboardSprite, CeilingQuad, FloorQuad, RaycasterScene, WallQuad};
 use crate::runtime::resource_keys::TextureKey;
 
 // ── Private helpers ───────────────────────────────────────────────────────────
@@ -52,7 +50,6 @@ fn wall_uvs(tex_u: f32) -> [Vec2; 4] {
 fn color_to_light(c: &Color) -> [f32; 4] {
     [c.r, c.g, c.b, c.a]
 }
-
 
 /// Parameters for building a raycaster scene.
 ///
@@ -167,8 +164,12 @@ impl RaycasterScene {
 
             if !hit.hit {
                 // No wall hit — draw full-height floor and ceiling
-                let floor_light =
-                    compute_lighting(params.player_x, params.player_y, params.ambient_light, lights);
+                let floor_light = compute_lighting(
+                    params.player_x,
+                    params.player_y,
+                    params.ambient_light,
+                    lights,
+                );
                 let floor_lc = Color::new(floor_light[0], floor_light[1], floor_light[2], 1.0);
 
                 scene.floors.push(FloorQuad {
@@ -192,7 +193,8 @@ impl RaycasterScene {
             let (_wall_height, draw_start, draw_end) =
                 project_column(hit.distance, params.fov, params.screen_height);
             let shade = distance_shade(hit.distance, params.shade_distance);
-            let wall_light_rgb = compute_lighting(hit.hit_x, hit.hit_y, params.ambient_light, lights);
+            let wall_light_rgb =
+                compute_lighting(hit.hit_x, hit.hit_y, params.ambient_light, lights);
             let wall_color = Color::new(
                 shade * wall_light_rgb[0],
                 shade * wall_light_rgb[1],
@@ -286,7 +288,8 @@ impl RaycasterScene {
                 params.screen_width / 2.0 + (angle_diff / half_fov) * (params.screen_width / 2.0);
             let projected_size = (ws.size / dist) * (params.screen_height / params.fov.tan());
 
-            let sprite_light = compute_lighting(ws.world_x, ws.world_y, params.ambient_light, lights);
+            let sprite_light =
+                compute_lighting(ws.world_x, ws.world_y, params.ambient_light, lights);
             let sprite_shade = distance_shade(dist, params.shade_distance);
             let sprite_color = Color::new(
                 sprite_shade * sprite_light[0],
@@ -310,9 +313,11 @@ impl RaycasterScene {
         }
 
         // Sort sprites back-to-front
-        scene
-            .sprites
-            .sort_by(|a, b| b.depth.partial_cmp(&a.depth).unwrap_or(std::cmp::Ordering::Equal));
+        scene.sprites.sort_by(|a, b| {
+            b.depth
+                .partial_cmp(&a.depth)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
 
         scene
     }

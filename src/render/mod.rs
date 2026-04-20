@@ -35,16 +35,14 @@ pub mod gpu_renderer;
 pub mod image_effect;
 /// Custom geometry mesh with per-vertex position, UV, and color data.
 pub mod mesh;
+/// GPU pipeline for post-processing effects: capture, ping-pong shader passes, and compositing.
+pub mod postfx_pipeline;
 /// RenderCommand queue, draw enums, and texture data types.
 pub mod renderer;
 /// Custom WGSL shader support with uniform variables.
 pub mod shader;
 /// Compound shape builder that accumulates vector primitives for batched drawing.
 pub mod shape;
-/// GPU pipeline for post-processing effects: capture, ping-pong shader passes, and compositing.
-pub mod postfx_pipeline;
-
-
 
 pub use canvas::Canvas;
 pub use decal_surface::DecalSurface;
@@ -53,10 +51,10 @@ pub use font::Font;
 pub use gpu_renderer::GpuRenderer;
 pub use image_effect::ShaderPassDescriptor;
 pub use mesh::{Mesh, MeshDrawMode, MeshVertex};
+pub use postfx_pipeline::PostFxPipeline;
 pub use renderer::{
     BlendMode, CompareMode, DepthMode, DrawMode, DrawableKind, RenderCommand, StencilAction,
     StencilMode, TextAlign, TextureData,
 };
 pub use shader::{Shader, UniformValue};
 pub use shape::{CompoundShape, ShapeCommand};
-pub use postfx_pipeline::PostFxPipeline;

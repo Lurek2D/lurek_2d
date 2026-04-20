@@ -399,4 +399,3 @@ pub fn dot(a: &NdArray, b: &NdArray) -> Result<f64, String> {
     }
     Ok(acc)
 }
-

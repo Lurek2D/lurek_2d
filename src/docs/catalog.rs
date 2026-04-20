@@ -16,7 +16,9 @@ impl Catalog {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
-        Self { entries: Vec::new() }
+        Self {
+            entries: Vec::new(),
+        }
     }
 
     /// Creates a catalog pre-populated from a slice of entries.
@@ -82,7 +84,9 @@ impl Catalog {
     /// # Returns
     /// `Option<&DocEntry>`.
     pub fn get_entry(&self, qualified_name: &str) -> Option<&DocEntry> {
-        self.entries.iter().find(|e| e.qualified_name == qualified_name)
+        self.entries
+            .iter()
+            .find(|e| e.qualified_name == qualified_name)
     }
 
     /// Returns the total number of entries in the catalog.

@@ -123,7 +123,9 @@ impl TcpConnectionManager {
                         } else {
                             let _ = resp_tx.send(NetworkResponse::TcpEvent {
                                 id,
-                                event: TcpEvent::Error(format!("no addresses found for: {address}")),
+                                event: TcpEvent::Error(format!(
+                                    "no addresses found for: {address}"
+                                )),
                             });
                         }
                     }
@@ -144,12 +146,7 @@ impl TcpConnectionManager {
     /// - `id` — Connection identifier.
     /// - `data` — Data bytes to send.
     /// - `resp_tx` — Channel for sending error events.
-    pub fn send(
-        &mut self,
-        id: u64,
-        data: &[u8],
-        resp_tx: &mpsc::Sender<NetworkResponse>,
-    ) {
+    pub fn send(&mut self, id: u64, data: &[u8], resp_tx: &mpsc::Sender<NetworkResponse>) {
         if let Some(stream) = self.connections.get_mut(&id) {
             if let Err(e) = stream.write_all(data) {
                 warn!("TCP send error on connection {}: {}", id, e);
@@ -172,11 +169,7 @@ impl TcpConnectionManager {
     /// # Parameters
     /// - `id` — Connection identifier.
     /// - `resp_tx` — Channel for sending the disconnected event.
-    pub fn close(
-        &mut self,
-        id: u64,
-        resp_tx: &mpsc::Sender<NetworkResponse>,
-    ) {
+    pub fn close(&mut self, id: u64, resp_tx: &mpsc::Sender<NetworkResponse>) {
         if self.connections.remove(&id).is_some() {
             let _ = resp_tx.send(NetworkResponse::TcpEvent {
                 id,

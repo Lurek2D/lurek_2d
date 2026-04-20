@@ -126,8 +126,7 @@ impl SpriteManager {
     /// # Returns
     /// `Vec<&WorldSprite>`.
     pub fn sort_by_distance(&self, cam_x: f32, cam_y: f32) -> Vec<&WorldSprite> {
-        let mut visible: Vec<&WorldSprite> =
-            self.sprites.iter().filter(|s| s.visible).collect();
+        let mut visible: Vec<&WorldSprite> = self.sprites.iter().filter(|s| s.visible).collect();
         visible.sort_by(|a, b| {
             let da = (a.x - cam_x) * (a.x - cam_x) + (a.y - cam_y) * (a.y - cam_y);
             let db = (b.x - cam_x) * (b.x - cam_x) + (b.y - cam_y) * (b.y - cam_y);

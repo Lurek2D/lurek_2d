@@ -1,4 +1,4 @@
-﻿//! Vfs implementation for the `filesystem` subsystem.
+//! Vfs implementation for the `filesystem` subsystem.
 //!
 //! This module is part of Lurek2D's `filesystem` subsystem and provides the implementation
 //! details for vfs-related operations and data management.
@@ -8,10 +8,10 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 //!
-use crate::runtime::error::{EngineError, EngineResult};
-use crate::runtime::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
 use crate::filesystem::file_handle::{FileHandle, FileMode};
 use crate::log_msg;
+use crate::runtime::error::{EngineError, EngineResult};
+use crate::runtime::log_messages::{FS01_GAMEFS_INIT, FS04_PATH_TRAVERSAL, FS05_VFS_MOUNT};
 use std::path::{Path, PathBuf};
 
 /// File metadata returned by `get_info()`.
@@ -784,11 +784,13 @@ impl GameFS {
         let src_path = self.resolve_read_path(src)?;
         let dst_path = self.resolve_save_path(dst)?;
         if let Some(parent) = dst_path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|e| EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e)))?;
+            std::fs::create_dir_all(parent).map_err(|e| {
+                EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e))
+            })?;
         }
-        std::fs::copy(&src_path, &dst_path)
-            .map_err(|e| EngineError::FileSystemError(format!("copy_file '{}' → '{}': {}", src, dst, e)))?;
+        std::fs::copy(&src_path, &dst_path).map_err(|e| {
+            EngineError::FileSystemError(format!("copy_file '{}' → '{}': {}", src, dst, e))
+        })?;
         Ok(())
     }
 
@@ -806,11 +808,13 @@ impl GameFS {
         let src_path = self.resolve_save_path(src)?;
         let dst_path = self.resolve_save_path(dst)?;
         if let Some(parent) = dst_path.parent() {
-            std::fs::create_dir_all(parent)
-                .map_err(|e| EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e)))?;
+            std::fs::create_dir_all(parent).map_err(|e| {
+                EngineError::FileSystemError(format!("Cannot create parent dirs: {}", e))
+            })?;
         }
-        std::fs::rename(&src_path, &dst_path)
-            .map_err(|e| EngineError::FileSystemError(format!("move_file '{}' → '{}': {}", src, dst, e)))
+        std::fs::rename(&src_path, &dst_path).map_err(|e| {
+            EngineError::FileSystemError(format!("move_file '{}' → '{}': {}", src, dst, e))
+        })
     }
 
     /// Recursively removes a directory and all its contents within the `save/` directory.
@@ -934,7 +938,13 @@ impl GameFS {
         let n = COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let safe_prefix = prefix
             .chars()
-            .map(|c| if c.is_alphanumeric() || c == '_' || c == '-' { c } else { '_' })
+            .map(|c| {
+                if c.is_alphanumeric() || c == '_' || c == '-' {
+                    c
+                } else {
+                    '_'
+                }
+            })
             .take(32)
             .collect::<String>();
         let filename = format!("{}{}_{}.tmp", safe_prefix, ts, n);

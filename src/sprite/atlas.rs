@@ -197,9 +197,9 @@ pub fn parse_texturepacker_json(json_str: &str) -> Result<SpriteAtlas, String> {
 
 /// Extracts an `AtlasEntry` from a single frame record (shared between array and hash formats).
 fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntry, String> {
-    let frame = item.get("frame").ok_or_else(|| {
-        format!("Frame '{}' missing 'frame' rect object", name)
-    })?;
+    let frame = item
+        .get("frame")
+        .ok_or_else(|| format!("Frame '{}' missing 'frame' rect object", name))?;
 
     let x = frame
         .get("x")
@@ -222,7 +222,16 @@ fn parse_frame_entry(name: String, item: &serde_json::Value) -> Result<AtlasEntr
         .and_then(|v| v.as_bool())
         .unwrap_or(false);
 
-    Ok(AtlasEntry { name, x, y, w, h, rotated, flip_x: false, flip_y: false })
+    Ok(AtlasEntry {
+        name,
+        x,
+        y,
+        w,
+        h,
+        rotated,
+        flip_x: false,
+        flip_y: false,
+    })
 }
 
 // -------------------------------------------------------------------------------
@@ -281,9 +290,9 @@ pub fn parse_aseprite_json(json_str: &str) -> Result<SpriteAtlas, String> {
 
 /// Extracts an [`AtlasEntry`] from a single Aseprite frame record.
 fn parse_aseprite_frame(name: String, item: &serde_json::Value) -> Result<AtlasEntry, String> {
-    let frame = item.get("frame").ok_or_else(|| {
-        format!("Aseprite frame '{}' missing 'frame' rect object", name)
-    })?;
+    let frame = item
+        .get("frame")
+        .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame' rect object", name))?;
 
     let x = frame
         .get("x")
@@ -303,7 +312,16 @@ fn parse_aseprite_frame(name: String, item: &serde_json::Value) -> Result<AtlasE
         .ok_or_else(|| format!("Aseprite frame '{}' missing 'frame.h'", name))? as u32;
 
     // Aseprite does not record rotation — always false.
-    Ok(AtlasEntry { name, x, y, w, h, rotated: false, flip_x: false, flip_y: false })
+    Ok(AtlasEntry {
+        name,
+        x,
+        y,
+        w,
+        h,
+        rotated: false,
+        flip_x: false,
+        flip_y: false,
+    })
 }
 
 // -------------------------------------------------------------------------------

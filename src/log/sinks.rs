@@ -138,17 +138,18 @@ impl RotatingFileSink {
     /// `Result<Self, String>`
     pub fn open(path: &str, max_bytes: u64, keep_files: usize) -> Result<Self, String> {
         let path_buf = PathBuf::from(path);
-        let effective_max = if max_bytes == 0 { 10 * 1024 * 1024 } else { max_bytes };
+        let effective_max = if max_bytes == 0 {
+            10 * 1024 * 1024
+        } else {
+            max_bytes
+        };
         let effective_keep = if keep_files == 0 { 3 } else { keep_files };
         let file = OpenOptions::new()
             .create(true)
             .append(true)
             .open(&path_buf)
             .map_err(|e| format!("cannot open rotating log '{path}': {e}"))?;
-        let current_size = file
-            .metadata()
-            .map(|m| m.len())
-            .unwrap_or(0);
+        let current_size = file.metadata().map(|m| m.len()).unwrap_or(0);
         Ok(Self {
             path: path_buf,
             max_bytes: effective_max,
@@ -168,7 +169,11 @@ impl RotatingFileSink {
     pub fn write_with_rotation(&mut self, message: &str) {
         // Lazy-open if the handle was closed during a previous rotation.
         if self.file.is_none() {
-            if let Ok(f) = OpenOptions::new().create(true).append(true).open(&self.path) {
+            if let Ok(f) = OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.path)
+            {
                 self.current_size = f.metadata().map(|m| m.len()).unwrap_or(0);
                 self.file = Some(f);
             } else {
@@ -223,7 +228,12 @@ impl RotatingFileSink {
 
         // 5. Open a fresh base file; `file` remains `None` on failure and will
         //    be retried lazily on the next `write_with_rotation` call.
-        match OpenOptions::new().create(true).write(true).truncate(true).open(&self.path) {
+        match OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&self.path)
+        {
             Ok(f) => {
                 self.file = Some(f);
                 self.current_size = 0;
@@ -342,7 +352,10 @@ impl Sink {
         Ok(Self {
             id,
             min_level,
-            kind: SinkKind::File { file: Mutex::new(file), path: path.to_string() },
+            kind: SinkKind::File {
+                file: Mutex::new(file),
+                path: path.to_string(),
+            },
         })
     }
 
@@ -592,7 +605,10 @@ impl SinkRegistry {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
-        Self { sinks: Vec::new(), next_id: 1 }
+        Self {
+            sinks: Vec::new(),
+            next_id: 1,
+        }
     }
 
     /// Adds a sink, returning its assigned id.

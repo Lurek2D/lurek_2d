@@ -3,8 +3,8 @@
 //! Side-by-side image comparisons, pixel-transform grids, and HSV colour
 //! wheels rendered as CPU-side [`ImageData`].
 
-use crate::image::ImageData;
 use super::hsv_to_rgb_viz;
+use crate::image::ImageData;
 
 /// Draw a side-by-side comparison of multiple images.
 ///

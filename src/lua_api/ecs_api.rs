@@ -28,13 +28,10 @@ pub struct LuaUniverse {
 
 impl LuaUserData for LuaUniverse {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- spawn --
         /// Creates a new entity and returns its packed ID.
         /// @return integer
-        methods.add_method("spawn", |_, this, ()| {
-            Ok(this.inner.borrow_mut().spawn())
-        });
+        methods.add_method("spawn", |_, this, ()| Ok(this.inner.borrow_mut().spawn()));
 
         // -- kill --
         /// Destroys the entity with the given ID, freeing its slot for reuse.
@@ -58,9 +55,12 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param value : table
         /// @return nil
-        methods.add_method("set", |lua, this, (id, name, value): (u32, String, LuaValue)| {
-            this.inner.borrow_mut().set_component(lua, id, &name, value)
-        });
+        methods.add_method(
+            "set",
+            |lua, this, (id, name, value): (u32, String, LuaValue)| {
+                this.inner.borrow_mut().set_component(lua, id, &name, value)
+            },
+        );
 
         // -- get --
         /// Returns the component value for an entity, or nil if missing.
@@ -117,9 +117,12 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param callback : function
         /// @return nil
-        methods.add_method("each", |lua, this, (name, callback): (String, LuaFunction)| {
-            this.inner.borrow().each(lua, &name, callback)
-        });
+        methods.add_method(
+            "each",
+            |lua, this, (name, callback): (String, LuaFunction)| {
+                this.inner.borrow().each(lua, &name, callback)
+            },
+        );
 
         // -- getEntities --
         /// Returns all alive entity IDs.
@@ -140,12 +143,15 @@ impl LuaUserData for LuaUniverse {
         /// @param system : table
         /// @param opts : table? — {priority: integer}
         /// @return nil
-        methods.add_method("addSystem", |lua, this, (system, opts): (LuaTable, Option<LuaTable>)| {
-            let priority = opts
-                .and_then(|o| o.get::<_, i32>("priority").ok())
-                .unwrap_or(0);
-            this.inner.borrow_mut().add_system(lua, system, priority)
-        });
+        methods.add_method(
+            "addSystem",
+            |lua, this, (system, opts): (LuaTable, Option<LuaTable>)| {
+                let priority = opts
+                    .and_then(|o| o.get::<_, i32>("priority").ok())
+                    .unwrap_or(0);
+                this.inner.borrow_mut().add_system(lua, system, priority)
+            },
+        );
 
         // -- removeSystem --
         /// Removes a system table from the universe.
@@ -190,7 +196,8 @@ impl LuaUserData for LuaUniverse {
             let world = this.clone();
             for i in order {
                 let system: LuaTable = store.get(i)?;
-                let func = system.get::<_, LuaFunction>("render")
+                let func = system
+                    .get::<_, LuaFunction>("render")
                     .or_else(|_| system.get::<_, LuaFunction>("draw"));
                 if let Ok(f) = func {
                     f.call::<_, ()>((system.clone(), world.clone()))?;
@@ -226,9 +233,7 @@ impl LuaUserData for LuaUniverse {
                 if let Ok(func) = system.get::<_, LuaFunction>(event.as_str()) {
                     let mut call_args = Vec::with_capacity(2 + extra_args.len());
                     call_args.push(LuaValue::Table(system.clone()));
-                    call_args.push(LuaValue::UserData(
-                        lua.create_userdata(world.clone())?,
-                    ));
+                    call_args.push(LuaValue::UserData(lua.create_userdata(world.clone())?));
                     call_args.extend(extra_args.iter().cloned());
                     func.call::<_, ()>(LuaMultiValue::from_vec(call_args))?;
                 }
@@ -246,9 +251,7 @@ impl LuaUserData for LuaUniverse {
         // -- clear --
         /// Removes all entities, components, tags, layers, and systems. Blueprints are preserved.
         /// @return nil
-        methods.add_method("clear", |lua, this, ()| {
-            this.inner.borrow_mut().clear(lua)
-        });
+        methods.add_method("clear", |lua, this, ()| this.inner.borrow_mut().clear(lua));
 
         // -- release --
         /// Releases all universe state, equivalent to clear.
@@ -417,7 +420,9 @@ impl LuaUserData for LuaUniverse {
         methods.add_method(
             "defineBlueprint",
             |lua, this, (name, components): (String, LuaTable)| {
-                this.inner.borrow_mut().define_blueprint(lua, &name, components)
+                this.inner
+                    .borrow_mut()
+                    .define_blueprint(lua, &name, components)
             },
         );
 
@@ -523,11 +528,20 @@ impl LuaUserData for LuaUniverse {
         /// @param with_table : table
         /// @param without_table : table
         /// @return table
-        methods.add_method("queryNot", |lua, this, (with_tbl, without_tbl): (LuaTable, LuaTable)| {
-            let with_names: Vec<String> = with_tbl.sequence_values::<String>().collect::<LuaResult<_>>()?;
-            let without_names: Vec<String> = without_tbl.sequence_values::<String>().collect::<LuaResult<_>>()?;
-            this.inner.borrow().query_not(lua, &with_names, &without_names)
-        });
+        methods.add_method(
+            "queryNot",
+            |lua, this, (with_tbl, without_tbl): (LuaTable, LuaTable)| {
+                let with_names: Vec<String> = with_tbl
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<_>>()?;
+                let without_names: Vec<String> = without_tbl
+                    .sequence_values::<String>()
+                    .collect::<LuaResult<_>>()?;
+                this.inner
+                    .borrow()
+                    .query_not(lua, &with_names, &without_names)
+            },
+        );
 
         // -- serialize --
         /// Serializes all alive entities to a Lua table snapshot.
@@ -542,7 +556,9 @@ impl LuaUserData for LuaUniverse {
         /// @param snapshot : table
         /// @return nil
         methods.add_method("deserialize", |lua, this, snapshot: LuaTable| {
-            this.inner.borrow_mut().deserialize_from_table(lua, snapshot)
+            this.inner
+                .borrow_mut()
+                .deserialize_from_table(lua, snapshot)
         });
 
         // -- onComponentAdded --
@@ -551,14 +567,18 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param callback : function
         /// @return nil
-        methods.add_method("onComponentAdded", |lua, this, (name, cb): (String, LuaFunction)| {
-            let key = lua.create_registry_value(cb)?;
-            this.add_observers.borrow_mut()
-                .entry(name)
-                .or_default()
-                .push(key);
-            Ok(())
-        });
+        methods.add_method(
+            "onComponentAdded",
+            |lua, this, (name, cb): (String, LuaFunction)| {
+                let key = lua.create_registry_value(cb)?;
+                this.add_observers
+                    .borrow_mut()
+                    .entry(name)
+                    .or_default()
+                    .push(key);
+                Ok(())
+            },
+        );
 
         // -- onComponentRemoved --
         /// Registers a callback to fire when a component is removed from any entity.
@@ -566,14 +586,18 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param callback : function
         /// @return nil
-        methods.add_method("onComponentRemoved", |lua, this, (name, cb): (String, LuaFunction)| {
-            let key = lua.create_registry_value(cb)?;
-            this.remove_observers.borrow_mut()
-                .entry(name)
-                .or_default()
-                .push(key);
-            Ok(())
-        });
+        methods.add_method(
+            "onComponentRemoved",
+            |lua, this, (name, cb): (String, LuaFunction)| {
+                let key = lua.create_registry_value(cb)?;
+                this.remove_observers
+                    .borrow_mut()
+                    .entry(name)
+                    .or_default()
+                    .push(key);
+                Ok(())
+            },
+        );
 
         // -- flushObservers --
         /// Dispatches all pending component-add and component-remove events to registered callbacks.
@@ -581,13 +605,20 @@ impl LuaUserData for LuaUniverse {
         methods.add_method("flushObservers", |lua, this, ()| {
             let (add_evs, remove_evs) = this.inner.borrow_mut().take_component_events();
             for (id, name) in &add_evs {
-                if let Some(keys) = this.add_observers.borrow().get(name.as_str()).map(|v| v.len()) {
+                if let Some(keys) = this
+                    .add_observers
+                    .borrow()
+                    .get(name.as_str())
+                    .map(|v| v.len())
+                {
                     let _ = keys; // avoid lint
                 }
                 let keys_opt: Option<Vec<LuaFunction>> = {
                     let obs = this.add_observers.borrow();
                     obs.get(name.as_str()).map(|keys| {
-                        keys.iter().filter_map(|k| lua.registry_value::<LuaFunction>(k).ok()).collect()
+                        keys.iter()
+                            .filter_map(|k| lua.registry_value::<LuaFunction>(k).ok())
+                            .collect()
                     })
                 };
                 if let Some(fns) = keys_opt {
@@ -600,7 +631,9 @@ impl LuaUserData for LuaUniverse {
                 let keys_opt: Option<Vec<LuaFunction>> = {
                     let obs = this.remove_observers.borrow();
                     obs.get(name.as_str()).map(|keys| {
-                        keys.iter().filter_map(|k| lua.registry_value::<LuaFunction>(k).ok()).collect()
+                        keys.iter()
+                            .filter_map(|k| lua.registry_value::<LuaFunction>(k).ok())
+                            .collect()
                     })
                 };
                 if let Some(fns) = keys_opt {
@@ -618,9 +651,14 @@ impl LuaUserData for LuaUniverse {
         /// @param count : integer
         /// @param overrides : table?
         /// @return table
-        methods.add_method("spawnBulk", |lua, this, (name, count, overrides): (String, usize, Option<LuaTable>)| {
-            this.inner.borrow_mut().spawn_bulk(lua, &name, count, overrides)
-        });
+        methods.add_method(
+            "spawnBulk",
+            |lua, this, (name, count, overrides): (String, usize, Option<LuaTable>)| {
+                this.inner
+                    .borrow_mut()
+                    .spawn_bulk(lua, &name, count, overrides)
+            },
+        );
 
         // -- addRelation --
         /// Adds a directed named relationship from entity `from` to entity `to`.
@@ -629,10 +667,16 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param to : integer
         /// @return nil
-        methods.add_method("addRelation", |_, this, (from, name, to): (u32, String, u32)| {
-            this.inner.borrow_mut().relationships.add_link(from, &name, to);
-            Ok(())
-        });
+        methods.add_method(
+            "addRelation",
+            |_, this, (from, name, to): (u32, String, u32)| {
+                this.inner
+                    .borrow_mut()
+                    .relationships
+                    .add_link(from, &name, to);
+                Ok(())
+            },
+        );
 
         // -- getRelated --
         /// Returns all entity IDs reachable from `from` via the named relationship.
@@ -655,10 +699,16 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param to : integer
         /// @return nil
-        methods.add_method("removeRelation", |_, this, (from, name, to): (u32, String, u32)| {
-            this.inner.borrow_mut().relationships.remove_link(from, &name, to);
-            Ok(())
-        });
+        methods.add_method(
+            "removeRelation",
+            |_, this, (from, name, to): (u32, String, u32)| {
+                this.inner
+                    .borrow_mut()
+                    .relationships
+                    .remove_link(from, &name, to);
+                Ok(())
+            },
+        );
 
         // -- clearRelations --
         /// Removes all directed named relationships of type `name` from entity `from`.
@@ -666,7 +716,10 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @return nil
         methods.add_method("clearRelations", |_, this, (from, name): (u32, String)| {
-            this.inner.borrow_mut().relationships.clear_links(from, &name);
+            this.inner
+                .borrow_mut()
+                .relationships
+                .clear_links(from, &name);
             Ok(())
         });
 
@@ -676,10 +729,12 @@ impl LuaUserData for LuaUniverse {
         /// @param name : string
         /// @param to : integer
         /// @return boolean
-        methods.add_method("hasRelation", |_, this, (from, name, to): (u32, String, u32)| {
-            Ok(this.inner.borrow().relationships.has_link(from, &name, to))
-        });
-
+        methods.add_method(
+            "hasRelation",
+            |_, this, (from, name, to): (u32, String, u32)| {
+                Ok(this.inner.borrow().relationships.has_link(from, &name, to))
+            },
+        );
     }
 }
 

@@ -9,11 +9,11 @@
 //!
 //! All public items are documented.  See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
+use crate::log_msg;
+use crate::render::renderer::TextureData;
 use crate::runtime::error::{EngineError, EngineResult};
 use crate::runtime::log_messages::TX01_TEX_DECODED;
 use crate::runtime::resource_keys::TextureKey;
-use crate::render::renderer::TextureData;
-use crate::log_msg;
 use slotmap::SlotMap;
 use std::path::Path;
 

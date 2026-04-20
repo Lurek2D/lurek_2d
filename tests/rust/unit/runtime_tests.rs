@@ -1,8 +1,8 @@
 //! Tests for the runtime module.
 
-use lurek2d::runtime::log_messages::*;
-use lurek2d::runtime::error::{EngineError, ErrorCategory};
 use lurek2d::runtime::config::Config;
+use lurek2d::runtime::error::{EngineError, ErrorCategory};
+use lurek2d::runtime::log_messages::*;
 
 // ── log_messages ─────────────────────────────────────────────────────────────
 
@@ -421,67 +421,67 @@ mod error_snapshot_tests {
 mod messages_tests {
     use lurek2d::runtime::messages::*;
 
-        fn built_catalog() -> MessageCatalog {
-            MessageCatalog::from_toml(CATALOG_TOML)
-        }
+    fn built_catalog() -> MessageCatalog {
+        MessageCatalog::from_toml(CATALOG_TOML)
+    }
 
-        #[test]
-        fn catalog_parses_without_error() {
-            let c = built_catalog();
-            assert!(!c.is_empty(), "catalog must not be empty after parsing");
-        }
+    #[test]
+    fn catalog_parses_without_error() {
+        let c = built_catalog();
+        assert!(!c.is_empty(), "catalog must not be empty after parsing");
+    }
 
-        #[test]
-        fn baseline_lifecycle_ids_present() {
-            let c = built_catalog();
-            for id in &["L001", "L002", "L003", "L004", "L005"] {
-                assert!(c.get(id).is_some(), "expected {id} in catalog");
-            }
+    #[test]
+    fn baseline_lifecycle_ids_present() {
+        let c = built_catalog();
+        for id in &["L001", "L002", "L003", "L004", "L005"] {
+            assert!(c.get(id).is_some(), "expected {id} in catalog");
         }
+    }
 
-        #[test]
-        fn error_ids_present() {
-            let c = built_catalog();
-            for id in &["L010", "L011", "L012", "L013", "L014", "L015"] {
-                assert!(c.get(id).is_some(), "expected {id} in catalog");
-            }
+    #[test]
+    fn error_ids_present() {
+        let c = built_catalog();
+        for id in &["L010", "L011", "L012", "L013", "L014", "L015"] {
+            assert!(c.get(id).is_some(), "expected {id} in catalog");
         }
+    }
 
-        #[test]
-        fn missing_id_returns_none() {
-            let c = built_catalog();
-            assert!(c.get("ZZZZ").is_none());
-        }
+    #[test]
+    fn missing_id_returns_none() {
+        let c = built_catalog();
+        assert!(c.get("ZZZZ").is_none());
+    }
 
-        #[test]
-        fn l001_has_correct_text() {
-            let c = built_catalog();
-            assert_eq!(c.get("L001"), Some("Lurek2D Engine starting"));
-        }
+    #[test]
+    fn l001_has_correct_text() {
+        let c = built_catalog();
+        assert_eq!(c.get("L001"), Some("Lurek2D Engine starting"));
+    }
 
-        #[test]
-        fn len_matches_registered_ids() {
-            let c = built_catalog();
-            // There are at least 30 entries in the baseline section.
-            assert!(c.len() >= 30, "expected >= 30 entries, got {}", c.len());
-        }
+    #[test]
+    fn len_matches_registered_ids() {
+        let c = built_catalog();
+        // There are at least 30 entries in the baseline section.
+        assert!(c.len() >= 30, "expected >= 30 entries, got {}", c.len());
+    }
 
-        #[test]
-        fn get_message_falls_back_to_id_when_uninitialised() {
-            // Do not call init() — test fallback path.
-            // (CATALOG may already be set from another test; skip if so.)
-            // The contract: returns either the text or the raw id.
-            let result = get_message("L001");
-            assert!(
-                result == "Lurek2D Engine starting" || result == "L001",
-                "unexpected result: {result}"
-            );
-        }
+    #[test]
+    fn get_message_falls_back_to_id_when_uninitialised() {
+        // Do not call init() — test fallback path.
+        // (CATALOG may already be set from another test; skip if so.)
+        // The contract: returns either the text or the raw id.
+        let result = get_message("L001");
+        assert!(
+            result == "Lurek2D Engine starting" || result == "L001",
+            "unexpected result: {result}"
+        );
+    }
 
-        #[test]
-        fn get_message_after_init_returns_text() {
-            init();
-            assert_eq!(get_message("L001"), "Lurek2D Engine starting");
-            assert_eq!(get_message("L003"), "Game loaded");
-        }
+    #[test]
+    fn get_message_after_init_returns_text() {
+        init();
+        assert_eq!(get_message("L001"), "Lurek2D Engine starting");
+        assert_eq!(get_message("L003"), "Game loaded");
+    }
 }

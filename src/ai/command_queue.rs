@@ -24,8 +24,8 @@
 
 use std::collections::VecDeque;
 
-use crate::runtime::log_messages::{CQ01, CQ02, CQ03};
 use crate::log_msg;
+use crate::runtime::log_messages::{CQ01, CQ02, CQ03};
 
 use mlua::RegistryKey;
 
@@ -201,7 +201,14 @@ impl CommandQueue {
         interruptible: bool,
         callback: RegistryKey,
     ) {
-        self.enqueue(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+        self.enqueue(Command {
+            kind,
+            target_x: tx,
+            target_y: ty,
+            priority,
+            interruptible,
+            callback,
+        });
     }
 
     /// Inserts at the front from raw parameters. Used by the Lua API.
@@ -222,7 +229,14 @@ impl CommandQueue {
         interruptible: bool,
         callback: RegistryKey,
     ) {
-        self.push_front(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+        self.push_front(Command {
+            kind,
+            target_x: tx,
+            target_y: ty,
+            priority,
+            interruptible,
+            callback,
+        });
     }
 
     /// Clears the queue and replaces with a single command from raw parameters. Used by the Lua API.
@@ -243,7 +257,14 @@ impl CommandQueue {
         interruptible: bool,
         callback: RegistryKey,
     ) {
-        self.replace(Command { kind, target_x: tx, target_y: ty, priority, interruptible, callback });
+        self.replace(Command {
+            kind,
+            target_x: tx,
+            target_y: ty,
+            priority,
+            interruptible,
+            callback,
+        });
     }
 }
 

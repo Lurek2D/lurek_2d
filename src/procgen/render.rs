@@ -54,7 +54,11 @@ impl NoiseGrid {
             }
         }
 
-        Self { width, height, cells }
+        Self {
+            width,
+            height,
+            cells,
+        }
     }
 
     /// Return a greyscale RGBA byte buffer (4 bytes per pixel, `width * height * 4` total).

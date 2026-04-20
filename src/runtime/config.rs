@@ -33,11 +33,11 @@
 //! power_preference = "high"
 //! ```
 
+#[allow(unused_imports)]
+use crate::log_msg;
 use crate::runtime::log_messages::{
     L050_MODULE_DEP_DISABLED, L051_CONF_READ_ERR, L052_CONF_PARSE_ERR,
 };
-#[allow(unused_imports)]
-use crate::log_msg;
 use mlua::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -275,7 +275,11 @@ impl ModulesConfig {
                 self.terminal = false;
             }
             if self.animation {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "animation requires graphics");
+                log_msg!(
+                    warn,
+                    L050_MODULE_DEP_DISABLED,
+                    "animation requires graphics"
+                );
                 self.animation = false;
             }
             if self.tilemap {
@@ -283,7 +287,11 @@ impl ModulesConfig {
                 self.tilemap = false;
             }
             if self.raycaster {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "raycaster requires graphics");
+                log_msg!(
+                    warn,
+                    L050_MODULE_DEP_DISABLED,
+                    "raycaster requires graphics"
+                );
                 self.raycaster = false;
             }
             if self.camera {

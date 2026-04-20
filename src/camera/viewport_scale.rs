@@ -181,5 +181,3 @@ impl ViewportScale {
         )
     }
 }
-
-

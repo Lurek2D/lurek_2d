@@ -32,11 +32,11 @@ impl PluralForm {
     /// `&'static str`.
     pub fn key(&self) -> &'static str {
         match self {
-            Self::Zero  => "zero",
-            Self::One   => "one",
-            Self::Two   => "two",
-            Self::Few   => "few",
-            Self::Many  => "many",
+            Self::Zero => "zero",
+            Self::One => "one",
+            Self::Two => "two",
+            Self::Few => "few",
+            Self::Many => "many",
             Self::Other => "other",
         }
     }
@@ -49,7 +49,11 @@ impl PluralForm {
     /// # Returns
     /// `PluralForm`.
     pub fn english(n: f64) -> Self {
-        if n == 1.0 { Self::One } else { Self::Other }
+        if n == 1.0 {
+            Self::One
+        } else {
+            Self::Other
+        }
     }
 
     /// Returns the `PluralForm` for a Slavic-style (one/few/many/other) count
@@ -81,11 +85,11 @@ impl PluralForm {
     /// `Option<PluralForm>`.
     pub fn from_key(s: &str) -> Option<Self> {
         match s {
-            "zero"  => Some(Self::Zero),
-            "one"   => Some(Self::One),
-            "two"   => Some(Self::Two),
-            "few"   => Some(Self::Few),
-            "many"  => Some(Self::Many),
+            "zero" => Some(Self::Zero),
+            "one" => Some(Self::One),
+            "two" => Some(Self::Two),
+            "few" => Some(Self::Few),
+            "many" => Some(Self::Many),
             "other" => Some(Self::Other),
             _ => None,
         }

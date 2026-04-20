@@ -9,9 +9,9 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::filesystem::{FileData, FileHandle, GameFS};
-use crate::filesystem::zip_mount::ZipMount;
 use crate::filesystem::watcher::FileWatcher;
+use crate::filesystem::zip_mount::ZipMount;
+use crate::filesystem::{FileData, FileHandle, GameFS};
 
 // -------------------------------------------------------------------------------
 // LuaFileData UserData
@@ -24,7 +24,6 @@ pub struct LuaFileData {
 
 impl LuaUserData for LuaFileData {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- getSize --
         /// Returns the file size in bytes.
         /// @return integer
@@ -41,7 +40,6 @@ impl LuaUserData for LuaFileData {
         /// Returns the virtual path this data was loaded from.
         /// @return string
         methods.add_method("getFilename", |_, this, ()| Ok(this.inner.path.clone()));
-
     }
 }
 
@@ -56,13 +54,16 @@ pub struct LuaFileHandle {
 
 impl LuaUserData for LuaFileHandle {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- read --
         /// Reads bytes from the file, returning them as a string.
         /// @param count : integer?
         /// @return string
         methods.add_method("read", |_, this, count: Option<usize>| {
-            let bytes = this.inner.borrow_mut().read(count).map_err(LuaError::external)?;
+            let bytes = this
+                .inner
+                .borrow_mut()
+                .read(count)
+                .map_err(LuaError::external)?;
             Ok(String::from_utf8_lossy(&bytes).to_string())
         });
 
@@ -70,7 +71,10 @@ impl LuaUserData for LuaFileHandle {
         /// Reads the next line from the file without the trailing newline.
         /// @return string?
         methods.add_method("readLine", |_, this, ()| {
-            this.inner.borrow_mut().read_line().map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .read_line()
+                .map_err(LuaError::external)
         });
 
         // -- write --
@@ -89,7 +93,10 @@ impl LuaUserData for LuaFileHandle {
         /// @param pos : integer
         /// @return integer
         methods.add_method("seek", |_, this, pos: u64| {
-            this.inner.borrow_mut().seek(pos).map_err(LuaError::external)
+            this.inner
+                .borrow_mut()
+                .seek(pos)
+                .map_err(LuaError::external)
         });
 
         // -- tell --
@@ -102,9 +109,7 @@ impl LuaUserData for LuaFileHandle {
         // -- getSize --
         /// Returns the size of the open file in bytes.
         /// @return integer
-        methods.add_method("getSize", |_, this, ()| {
-            Ok(this.inner.borrow().get_size())
-        });
+        methods.add_method("getSize", |_, this, ()| Ok(this.inner.borrow().get_size()));
 
         // -- getMode --
         /// Returns the access mode the file was opened with.
@@ -133,7 +138,6 @@ impl LuaUserData for LuaFileHandle {
         methods.add_method("isEOF", |_, this, ()| {
             this.inner.borrow_mut().is_eof().map_err(LuaError::external)
         });
-
     }
 }
 
@@ -209,8 +213,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "mountZip",
         lua.create_function(|lua, (archive_path, prefix): (String, String)| {
-            let mount = ZipMount::new(&archive_path, &prefix)
-                .map_err(LuaError::RuntimeError)?;
+            let mount = ZipMount::new(&archive_path, &prefix).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaZipMount { inner: mount })
         })?,
     )?;
@@ -323,7 +326,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "openFile",
         lua.create_function(move |_, (path, mode): (String, String)| {
-            let handle = s.borrow().fs.open_file(&path, &mode).map_err(LuaError::external)?;
+            let handle = s
+                .borrow()
+                .fs
+                .open_file(&path, &mode)
+                .map_err(LuaError::external)?;
             Ok(LuaFileHandle {
                 inner: RefCell::new(handle),
             })
@@ -399,8 +406,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "getInfo",
-        lua.create_function(move |lua, path: String| {
-            match s.borrow().fs.get_info(&path) {
+        lua.create_function(
+            move |lua, path: String| match s.borrow().fs.get_info(&path) {
                 Ok(info) => {
                     let t = lua.create_table()?;
                     t.set("type", info.file_type.as_str())?;
@@ -410,8 +417,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     Ok(Some(t))
                 }
                 Err(_) => Ok(None),
-            }
-        })?,
+            },
+        )?,
     )?;
 
     // -- getSource --
@@ -430,7 +437,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "getSaveDirectory",
         lua.create_function(move |_, ()| {
-            Ok(s.borrow().fs.get_save_directory().to_string_lossy().to_string())
+            Ok(s.borrow()
+                .fs
+                .get_save_directory()
+                .to_string_lossy()
+                .to_string())
         })?,
     )?;
 
@@ -439,7 +450,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return string
     tbl.set(
         "getWorkingDirectory",
-        lua.create_function(move |_, ()| GameFS::get_working_directory().map_err(LuaError::external))?,
+        lua.create_function(move |_, ()| {
+            GameFS::get_working_directory().map_err(LuaError::external)
+        })?,
     )?;
 
     // -- getUserDirectory --
@@ -480,7 +493,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "lines",
         lua.create_function(move |lua, path: String| {
-            let lines = s.borrow().fs.read_lines(&path).map_err(LuaError::external)?;
+            let lines = s
+                .borrow()
+                .fs
+                .read_lines(&path)
+                .map_err(LuaError::external)?;
             let iter = Rc::new(RefCell::new(lines.into_iter()));
             let iter_fn = lua.create_function(move |_, ()| Ok(iter.borrow_mut().next()))?;
             Ok(iter_fn)
@@ -509,9 +526,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// @return string|nil
     tbl.set(
         "pollAsync",
-        lua.create_function(move |_, handle_id: u64| {
-            Ok(s.borrow().poll_async_load(handle_id))
-        })?,
+        lua.create_function(move |_, handle_id: u64| Ok(s.borrow().poll_async_load(handle_id)))?,
     )?;
 
     // -- mount --
@@ -549,7 +564,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "load",
         lua.create_function(move |ctx, path: String| {
-            let bytes = s.borrow().fs.load_chunk(&path).map_err(LuaError::external)?;
+            let bytes = s
+                .borrow()
+                .fs
+                .load_chunk(&path)
+                .map_err(LuaError::external)?;
             ctx.load(&bytes[..]).into_function()
         })?,
     )?;
@@ -562,7 +581,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "newFileData",
         lua.create_function(move |_, path: String| {
-            let bytes = s.borrow().fs.load_chunk(&path).map_err(LuaError::external)?;
+            let bytes = s
+                .borrow()
+                .fs
+                .load_chunk(&path)
+                .map_err(LuaError::external)?;
             Ok(LuaFileData {
                 inner: FileData::new(path, bytes),
             })
@@ -581,7 +604,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "copy",
         lua.create_function(move |_, (src, dst): (String, String)| {
-            s.borrow().fs.copy_file(&src, &dst).map_err(LuaError::external)
+            s.borrow()
+                .fs
+                .copy_file(&src, &dst)
+                .map_err(LuaError::external)
         })?,
     )?;
 
@@ -597,7 +623,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "move",
         lua.create_function(move |_, (src, dst): (String, String)| {
-            s.borrow().fs.move_file(&src, &dst).map_err(LuaError::external)
+            s.borrow()
+                .fs
+                .move_file(&src, &dst)
+                .map_err(LuaError::external)
         })?,
     )?;
 
@@ -678,11 +707,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "stat",
         lua.create_function(move |lua, path: String| {
-            let (size, is_file, is_dir) = s
-                .borrow()
-                .fs
-                .stat(&path)
-                .map_err(LuaError::external)?;
+            let (size, is_file, is_dir) = s.borrow().fs.stat(&path).map_err(LuaError::external)?;
             let t = lua.create_table()?;
             t.set("size", size)?;
             t.set("isFile", is_file)?;

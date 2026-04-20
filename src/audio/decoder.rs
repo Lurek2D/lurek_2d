@@ -1,12 +1,12 @@
-﻿//! Streaming audio decoder for chunked PCM reading.
+//! Streaming audio decoder for chunked PCM reading.
 //!
 //! `Decoder` reads an audio file and returns PCM data in fixed-size buffer
 //! chunks, enabling streaming playback without loading the entire file into
 //! memory.
 
+use crate::log_msg;
 use crate::runtime::log_messages::AD01_AUDIO_DECODED;
 use crate::runtime::EngineError;
-use crate::log_msg;
 
 /// Streaming audio decoder that reads PCM in fixed-size chunks.
 ///

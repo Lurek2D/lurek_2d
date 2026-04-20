@@ -60,15 +60,9 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, St
     let tile_layer = layer_instances.iter().rev().find(|l| is_tile_layer(l));
     let (grid_size, map_width, map_height) = if let Some(tl) = tile_layer {
         (
-            tl.get("__gridSize")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(16) as u32,
-            tl.get("__cWid")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(0) as u32,
-            tl.get("__cHei")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(0) as u32,
+            tl.get("__gridSize").and_then(|v| v.as_u64()).unwrap_or(16) as u32,
+            tl.get("__cWid").and_then(|v| v.as_u64()).unwrap_or(0) as u32,
+            tl.get("__cHei").and_then(|v| v.as_u64()).unwrap_or(0) as u32,
         )
     } else {
         return Err("LDtk level contains no tile or auto-layer layers".into());
@@ -109,20 +103,28 @@ pub fn load_ldtk(json_str: &str, level_name: Option<&str>) -> Result<TileMap, St
         // Tileset columns derived from the LDtk tileset width if available.
         let tileset_w_px = layer
             .get("__tilesetRelPath")
-            .and_then(|_| layer.get("__tilesetDefUid").and_then(|_| {
-                // Try to find the tile-set definition in the project root.
-                root.get("defs")
-                    .and_then(|d| d.get("tilesets"))
-                    .and_then(|ts| ts.as_array())
-                    .and_then(|arr| {
-                        let uid = layer.get("__tilesetDefUid")?.as_u64()?;
-                        arr.iter().find(|ts| ts.get("uid").and_then(|v| v.as_u64()) == Some(uid))
-                    })
-                    .and_then(|ts| ts.get("pxWid").and_then(|v| v.as_u64()))
-            }))
-            .unwrap_or((max_tile_id + 1) as u64 * grid_size as u64) as u32;
+            .and_then(|_| {
+                layer.get("__tilesetDefUid").and_then(|_| {
+                    // Try to find the tile-set definition in the project root.
+                    root.get("defs")
+                        .and_then(|d| d.get("tilesets"))
+                        .and_then(|ts| ts.as_array())
+                        .and_then(|arr| {
+                            let uid = layer.get("__tilesetDefUid")?.as_u64()?;
+                            arr.iter()
+                                .find(|ts| ts.get("uid").and_then(|v| v.as_u64()) == Some(uid))
+                        })
+                        .and_then(|ts| ts.get("pxWid").and_then(|v| v.as_u64()))
+                })
+            })
+            .unwrap_or((max_tile_id + 1) as u64 * grid_size as u64)
+            as u32;
 
-        let columns = if grid_size > 0 { (tileset_w_px / grid_size).max(1) } else { 1 };
+        let columns = if grid_size > 0 {
+            (tileset_w_px / grid_size).max(1)
+        } else {
+            1
+        };
         let tile_count = max_tile_id + 1;
 
         let tileset = TileSet::new(1, tile_count.max(1), columns, grid_size, grid_size, 0, 0);

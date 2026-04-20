@@ -1,9 +1,9 @@
 //! Tests for the audio module.
 
-use lurek2d::audio::*;
 use lurek2d::audio::dsp::{AtomicParam, EffectParams, EffectType};
-use lurek2d::audio::pool::SoundPool;
 use lurek2d::audio::offline::OfflineEffect;
+use lurek2d::audio::pool::SoundPool;
+use lurek2d::audio::*;
 use lurek2d::runtime::resource_keys::SoundKey;
 use slotmap::SlotMap;
 
@@ -876,7 +876,7 @@ mod sound_data_tests {
 // ── visualizer tests ─────────────────────────────────────────────────────────
 
 mod visualizer_tests {
-    use lurek2d::audio::visualizer::{waveform_to_png, spectrogram_to_png};
+    use lurek2d::audio::visualizer::{spectrogram_to_png, waveform_to_png};
 
     #[test]
     fn waveform_to_png_missing_file() {

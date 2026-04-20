@@ -46,11 +46,7 @@ pub struct VoronoiCell {
 
 /// Circumcenter of triangle (ax,ay)–(bx,by)–(cx,cy).
 /// Returns `None` for degenerate (collinear) triangles.
-fn circumcenter(
-    ax: f32, ay: f32,
-    bx: f32, by: f32,
-    cx: f32, cy: f32,
-) -> Option<(f32, f32)> {
+fn circumcenter(ax: f32, ay: f32, bx: f32, by: f32, cx: f32, cy: f32) -> Option<(f32, f32)> {
     let d = 2.0 * ((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
     if d.abs() < 1e-10 {
         return None;
@@ -65,12 +61,7 @@ fn circumcenter(
 
 /// Return `true` if point `(px, py)` lies strictly inside the circumcircle
 /// of triangle `(ax,ay)–(bx,by)–(cx,cy)`.
-fn in_circumcircle(
-    ax: f32, ay: f32,
-    bx: f32, by: f32,
-    cx: f32, cy: f32,
-    px: f32, py: f32,
-) -> bool {
+fn in_circumcircle(ax: f32, ay: f32, bx: f32, by: f32, cx: f32, cy: f32, px: f32, py: f32) -> bool {
     let d = 2.0 * ((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
     if d.abs() < 1e-10 {
         return false;
@@ -107,7 +98,11 @@ impl Tri {
 
 /// Canonical (sorted) edge key for deduplication.
 fn edge_key(a: usize, b: usize) -> (usize, usize) {
-    if a < b { (a, b) } else { (b, a) }
+    if a < b {
+        (a, b)
+    } else {
+        (b, a)
+    }
 }
 
 /// Bowyer–Watson incremental Delaunay triangulation.
@@ -209,7 +204,10 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
     if n_real < 3 {
         return pts
             .iter()
-            .map(|&site| VoronoiCell { site, vertices: Vec::new() })
+            .map(|&site| VoronoiCell {
+                site,
+                vertices: Vec::new(),
+            })
             .collect();
     }
 
@@ -234,7 +232,10 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
 
     // Initialise one cell per real site.
     let mut cells: Vec<VoronoiCell> = (0..n_real)
-        .map(|i| VoronoiCell { site: pts[i], vertices: Vec::new() })
+        .map(|i| VoronoiCell {
+            site: pts[i],
+            vertices: Vec::new(),
+        })
         .collect();
 
     // For each Delaunay triangle, distribute its circumcenter to every real
@@ -260,7 +261,9 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
         cell.vertices.sort_by(|&(ax, ay), &(bx, by)| {
             let a_ang = (ay - sy).atan2(ax - sx);
             let b_ang = (by - sy).atan2(bx - sx);
-            a_ang.partial_cmp(&b_ang).unwrap_or(std::cmp::Ordering::Equal)
+            a_ang
+                .partial_cmp(&b_ang)
+                .unwrap_or(std::cmp::Ordering::Equal)
         });
         cell.vertices.dedup_by(|a, b| {
             let ddx = a.0 - b.0;
@@ -275,4 +278,3 @@ pub fn voronoi_from_points(points: &[(f32, f32)]) -> Vec<VoronoiCell> {
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
-

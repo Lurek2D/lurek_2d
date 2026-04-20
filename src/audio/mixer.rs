@@ -36,9 +36,9 @@ use std::io::BufReader;
 use std::path::Path;
 use std::sync::Arc;
 
-use crate::runtime::log_messages::{A003_AUDIO_OUTPUT_UNAVAIL, A004_AUDIO_PLAY_QUEUED};
 #[allow(unused_imports)]
 use crate::log_msg;
+use crate::runtime::log_messages::{A003_AUDIO_OUTPUT_UNAVAIL, A004_AUDIO_PLAY_QUEUED};
 use std::time::Instant;
 
 use rodio::Source;
@@ -870,7 +870,11 @@ impl Mixer {
                 count += 1;
             }
         }
-        if count == 0 { 0.0 } else { total / count as f32 }
+        if count == 0 {
+            0.0
+        } else {
+            total / count as f32
+        }
     }
 
     /// Creates a new named bus and returns its key.
@@ -1800,9 +1804,11 @@ impl Mixer {
         let keys: Vec<crate::runtime::resource_keys::SoundKey> = (0..voice_count)
             .map(|_| self.load_source(file_path, SourceType::Static))
             .collect();
-        Ok(crate::audio::pool::SoundPool::new(keys, file_path.to_string()))
+        Ok(crate::audio::pool::SoundPool::new(
+            keys,
+            file_path.to_string(),
+        ))
     }
 }
 
 // Tests migrated to tests/rust/unit/audio_tests.rs
-

@@ -1,4 +1,4 @@
-﻿//! Camera and viewport types for 2D rendering.
+//! Camera and viewport types for 2D rendering.
 //!
 //! This is a Tier 1 engine module. Imports only from `crate::math`.
 //!
@@ -17,21 +17,21 @@
 //! 2. Call `view_matrix()` to obtain the transform applied to draw calls.
 //! 3. Use [`Viewport`] or [`ViewportScale`] to map the fixed game resolution onto the window.
 
-/// Camera types: [`Camera`] (flat API) and [`Camera2D`] (smooth follow, shake, bounds).
-pub mod types;
 /// Cinematic camera effects: zoom pulse, sway, and breathing.
 pub mod effects;
+/// Camera path follower and smooth-zoom tween helpers for `LuaCamera2D`.
+pub mod path;
+/// Render-command generation for camera transforms.
+pub mod render;
+/// Camera types: [`Camera`] (flat API) and [`Camera2D`] (smooth follow, shake, bounds).
+pub mod types;
 /// Virtual-resolution viewport with letterbox / stretch / pixel-perfect scaling.
 pub mod viewport;
 /// Virtual-resolution viewport that also exposes scaled content dimensions for transform-stack integration.
 pub mod viewport_scale;
-/// Render-command generation for camera transforms.
-pub mod render;
-/// Camera path follower and smooth-zoom tween helpers for `LuaCamera2D`.
-pub mod path;
 
-pub use types::{Camera, Camera2D};
 pub use effects::{CameraBreathing, CameraSway, ZoomPulse};
 pub use path::{CameraPath, ZoomTween};
+pub use types::{Camera, Camera2D};
 pub use viewport::{ScaleMode, Viewport};
 pub use viewport_scale::ViewportScale;

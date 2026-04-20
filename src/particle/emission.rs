@@ -1,4 +1,4 @@
-﻿//! Particle spawn offset calculations for area distribution and emission shapes.
+//! Particle spawn offset calculations for area distribution and emission shapes.
 
 use super::config::{AreaDistribution, EmissionShape, ParticleConfig};
 use super::math::{rand_normal, rand_range};
@@ -155,4 +155,3 @@ pub fn emission_shape_offset(shape: &EmissionShape) -> (f32, f32) {
         }
     }
 }
-

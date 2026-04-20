@@ -29,25 +29,25 @@
 //! `draw`             | `emit_globe_frame` → `Vec<RenderCommand>` |
 //! `registry`         | `Globe` + `GlobeRegistry` |
 
-pub mod types;
-pub mod topology;
-pub mod projection;
-pub mod picking;
-pub mod lighting;
+pub mod draw;
 pub mod fog;
-pub mod loader;
-pub mod marker;
 pub mod label;
 pub mod layer;
-pub mod draw;
+pub mod lighting;
+pub mod loader;
+pub mod marker;
+pub mod picking;
+pub mod projection;
 pub mod registry;
+pub mod topology;
+pub mod types;
 
 // ── Re-exports ───────────────────────────────────────────────────────────────
+pub use fog::{FogMask, FogStore};
+pub use picking::PickResult;
+pub use projection::OrbitCamera;
 pub use registry::{Globe, GlobeRegistry};
 pub use types::{
-    Province, ProvinceId, GlobeSpec, GlobeError, LodTier, MAX_PROVINCES,
-    Marker, MarkerStyle, MarkerShape, Label, LabelStyle, Layer,
+    GlobeError, GlobeSpec, Label, LabelStyle, Layer, LodTier, Marker, MarkerShape, MarkerStyle,
+    Province, ProvinceId, MAX_PROVINCES,
 };
-pub use projection::OrbitCamera;
-pub use picking::PickResult;
-pub use fog::{FogMask, FogStore};

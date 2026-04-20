@@ -348,5 +348,3 @@ impl Default for CameraBreathing {
         Self::new()
     }
 }
-
-

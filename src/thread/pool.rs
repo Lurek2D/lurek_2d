@@ -127,4 +127,3 @@ impl ThreadPool {
         self.size
     }
 }
-

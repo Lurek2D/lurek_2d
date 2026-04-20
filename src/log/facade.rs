@@ -1,7 +1,7 @@
 //! Structured logging facade exposed to Lua through `lurek.log.*`.
 
-use std::collections::BTreeMap;
 use crate::runtime::log_messages;
+use std::collections::BTreeMap;
 
 /// Sorted map of structured key-value log fields.
 ///
@@ -34,8 +34,8 @@ pub fn log_structured(level: ::log::Level, tag: Option<&str>, msg: &str, fields:
     // Dispatch through the Rust `log` crate at the requested severity.
     match level {
         ::log::Level::Error => log::error!("[{}] {}", t, body),
-        ::log::Level::Warn  => log::warn!("[{}] {}", t, body),
-        ::log::Level::Info  => log::info!("[{}] {}", t, body),
+        ::log::Level::Warn => log::warn!("[{}] {}", t, body),
+        ::log::Level::Info => log::info!("[{}] {}", t, body),
         ::log::Level::Debug => log::debug!("[{}] {}", t, body),
         ::log::Level::Trace => log::trace!("[{}] {}", t, body),
     }

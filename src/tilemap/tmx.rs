@@ -17,8 +17,8 @@
 
 use std::io::Read;
 
-use crate::runtime::log_messages::{TL01, TL02};
 use crate::log_msg;
+use crate::runtime::log_messages::{TL01, TL02};
 use base64::Engine as _;
 use flate2::read::{GzDecoder, ZlibDecoder};
 

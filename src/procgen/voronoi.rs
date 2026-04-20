@@ -120,4 +120,3 @@ fn simple_hash_noise(x: f32, y: f32, seed: u64) -> f32 {
     let h = (h >> 13) ^ h;
     (h & 0xFFFF) as f32 / 65535.0 * 2.0 - 1.0
 }
-

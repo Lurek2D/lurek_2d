@@ -98,7 +98,12 @@ impl Ring {
         let id = self.next_id;
         self.next_id += 1;
         self.total_pushed += 1;
-        self.entries.push_back(RingEntry { id, value_f64: vf, value_str: vs, tag: tag.to_string() });
+        self.entries.push_back(RingEntry {
+            id,
+            value_f64: vf,
+            value_str: vs,
+            tag: tag.to_string(),
+        });
         id
     }
 
@@ -169,7 +174,11 @@ impl Ring {
     /// `f64`.
     pub fn average(&self) -> f64 {
         let nums: Vec<f64> = self.entries.iter().filter_map(|e| e.value_f64).collect();
-        if nums.is_empty() { 0.0 } else { nums.iter().sum::<f64>() / nums.len() as f64 }
+        if nums.is_empty() {
+            0.0
+        } else {
+            nums.iter().sum::<f64>() / nums.len() as f64
+        }
     }
 }
 

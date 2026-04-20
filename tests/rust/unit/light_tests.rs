@@ -290,7 +290,9 @@ mod light_world_tests {
     fn directional_light_hints_filters_enabled_directional() {
         let mut w = LightWorld::new();
         let k = w.add_light(Light2D::new(0.0, 0.0, 50.0));
-        w.get_light_mut(k).unwrap().set_light_type(LightType::Directional);
+        w.get_light_mut(k)
+            .unwrap()
+            .set_light_type(LightType::Directional);
         w.get_light_mut(k).unwrap().set_direction(1.5);
         let hints = w.directional_light_hints();
         assert_eq!(hints.len(), 1);
@@ -304,7 +306,11 @@ mod occluder_tests {
     use super::*;
 
     fn tri_verts() -> Vec<Vec2> {
-        vec![Vec2::new(0.0, 0.0), Vec2::new(10.0, 0.0), Vec2::new(5.0, 10.0)]
+        vec![
+            Vec2::new(0.0, 0.0),
+            Vec2::new(10.0, 0.0),
+            Vec2::new(5.0, 10.0),
+        ]
     }
 
     #[test]
@@ -382,8 +388,13 @@ mod transition_tests {
     #[test]
     fn new_starts_active() {
         let t = LightTransition::new(
-            [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 1.0],
-            1.0, 0.0, 100.0, 50.0, 2.0,
+            [1.0, 1.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+            1.0,
+            0.0,
+            100.0,
+            50.0,
+            2.0,
         );
         assert!(t.active);
         assert!((t.elapsed).abs() < 1e-6);
@@ -392,8 +403,13 @@ mod transition_tests {
     #[test]
     fn update_returns_interpolated_values() {
         let mut t = LightTransition::new(
-            [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 1.0],
-            1.0, 0.0, 100.0, 50.0, 2.0,
+            [1.0, 1.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+            1.0,
+            0.0,
+            100.0,
+            50.0,
+            2.0,
         );
         let result = t.update(1.0);
         assert!(result.is_some());
@@ -406,8 +422,13 @@ mod transition_tests {
     #[test]
     fn update_deactivates_after_duration() {
         let mut t = LightTransition::new(
-            [1.0, 0.0, 0.0, 1.0], [0.0, 1.0, 0.0, 1.0],
-            1.0, 0.5, 50.0, 100.0, 1.0,
+            [1.0, 0.0, 0.0, 1.0],
+            [0.0, 1.0, 0.0, 1.0],
+            1.0,
+            0.5,
+            50.0,
+            100.0,
+            1.0,
         );
         let r1 = t.update(1.5);
         assert!(r1.is_some());
@@ -418,17 +439,13 @@ mod transition_tests {
 
     #[test]
     fn progress_starts_at_zero() {
-        let t = LightTransition::new(
-            [0.0; 4], [1.0; 4], 1.0, 1.0, 10.0, 20.0, 5.0,
-        );
+        let t = LightTransition::new([0.0; 4], [1.0; 4], 1.0, 1.0, 10.0, 20.0, 5.0);
         assert!((t.progress()).abs() < 1e-6);
     }
 
     #[test]
     fn progress_clamps_to_one() {
-        let mut t = LightTransition::new(
-            [0.0; 4], [1.0; 4], 1.0, 1.0, 10.0, 20.0, 1.0,
-        );
+        let mut t = LightTransition::new([0.0; 4], [1.0; 4], 1.0, 1.0, 10.0, 20.0, 1.0);
         t.elapsed = 5.0;
         assert!((t.progress() - 1.0).abs() < 1e-6);
     }

@@ -767,19 +767,21 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     dt.set(
         "profilerReport",
         lua.create_function(move |lua, ()| {
-            let mut aggregated: std::collections::HashMap<
-                String,
-                (f64, u32, f64, f64, f64),
-            > = Default::default();
+            let mut aggregated: std::collections::HashMap<String, (f64, u32, f64, f64, f64)> =
+                Default::default();
             let st = s.borrow();
             for frame in &st.profiler.frames {
                 for zone in frame.iter() {
                     for z in zone.flatten() {
                         let dur = z.total_time() * 1000.0;
                         let self_dur = z.self_time() * 1000.0;
-                        let e = aggregated
-                            .entry(z.name.clone())
-                            .or_insert((0.0, 0, f64::MAX, 0.0_f64, 0.0));
+                        let e = aggregated.entry(z.name.clone()).or_insert((
+                            0.0,
+                            0,
+                            f64::MAX,
+                            0.0_f64,
+                            0.0,
+                        ));
                         e.0 += dur;
                         e.1 += 1;
                         e.2 = e.2.min(dur);
@@ -789,9 +791,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 }
             }
             let out = lua.create_table()?;
-            for (i, (name, (total, calls, min, max, self_ms))) in
-                aggregated.iter().enumerate()
-            {
+            for (i, (name, (total, calls, min, max, self_ms))) in aggregated.iter().enumerate() {
                 let row = lua.create_table()?;
                 row.set("name", name.clone())?;
                 row.set("calls", *calls)?;

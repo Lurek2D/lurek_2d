@@ -10,8 +10,8 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{GC01, GC02, GC03, GC04};
 use crate::log_msg;
+use crate::runtime::log_messages::{GC01, GC02, GC03, GC04};
 
 use super::edge::Edge;
 use super::item::{GraphItem, ItemPosition};
@@ -514,7 +514,11 @@ impl Graph {
     ///
     /// # Returns
     /// `Result<Vec<u64>, String>`.
-    pub fn get_edges_by_direction(&self, node_id: u64, direction: &str) -> Result<Vec<u64>, String> {
+    pub fn get_edges_by_direction(
+        &self,
+        node_id: u64,
+        direction: &str,
+    ) -> Result<Vec<u64>, String> {
         if !self.nodes.contains_key(&node_id) {
             return Err("node not found".into());
         }
@@ -568,15 +572,18 @@ impl Graph {
         // Compute circular positions
         let positions: Vec<(f32, f32)> = (0..n)
             .map(|i| {
-                let angle = i as f32 * std::f32::consts::PI * 2.0 / n as f32
-                    - std::f32::consts::FRAC_PI_2;
+                let angle =
+                    i as f32 * std::f32::consts::PI * 2.0 / n as f32 - std::f32::consts::FRAC_PI_2;
                 (cx + radius * angle.cos(), cy + radius * angle.sin())
             })
             .collect();
 
         // Build a map from node ID to index
-        let id_to_idx: std::collections::HashMap<u64, usize> =
-            node_ids.iter().enumerate().map(|(i, &id)| (id, i)).collect();
+        let id_to_idx: std::collections::HashMap<u64, usize> = node_ids
+            .iter()
+            .enumerate()
+            .map(|(i, &id)| (id, i))
+            .collect();
 
         // Draw edges
         for edge in self.edges.values() {
@@ -585,7 +592,9 @@ impl Graph {
             {
                 let (ax, ay) = positions[ai];
                 let (bx, by) = positions[bi];
-                img.draw_line(ax as i32, ay as i32, bx as i32, by as i32, 80, 120, 160, 200);
+                img.draw_line(
+                    ax as i32, ay as i32, bx as i32, by as i32, 80, 120, 160, 200,
+                );
             }
         }
 
@@ -615,16 +624,22 @@ impl Graph {
     pub fn serialize(&self) -> HashMap<String, serde_json::Value> {
         use serde_json::{json, Value};
 
-        let mut nodes_arr: Vec<Value> = self.nodes.values().map(|n| {
-            json!({ "id": n.id, "node_type": n.node_type, "capacity": n.capacity })
-        }).collect();
+        let mut nodes_arr: Vec<Value> = self
+            .nodes
+            .values()
+            .map(|n| json!({ "id": n.id, "node_type": n.node_type, "capacity": n.capacity }))
+            .collect();
         nodes_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
 
-        let mut edges_arr: Vec<Value> = self.edges.values().map(|e| {
-            json!({ "id": e.id, "from": e.from_node, "to": e.to_node,
+        let mut edges_arr: Vec<Value> = self
+            .edges
+            .values()
+            .map(|e| {
+                json!({ "id": e.id, "from": e.from_node, "to": e.to_node,
                     "weight": e.weight, "edge_type": e.edge_type,
                     "bidirectional": e.bidirectional })
-        }).collect();
+            })
+            .collect();
         edges_arr.sort_by_key(|v| v["id"].as_u64().unwrap_or(0));
 
         let mut map = HashMap::new();
@@ -657,12 +672,13 @@ impl Graph {
         if let Some(edges_val) = data.get("edges") {
             let arr = edges_val.as_array().ok_or("edges must be an array")?;
             for e in arr {
-                let from = e["from"].as_u64().ok_or("edge missing 'from'")? ;
+                let from = e["from"].as_u64().ok_or("edge missing 'from'")?;
                 let to = e["to"].as_u64().ok_or("edge missing 'to'")?;
                 let edge_type = e["edge_type"].as_str();
                 let weight = e["weight"].as_f64().unwrap_or(1.0);
                 let bidirectional = e["bidirectional"].as_bool().unwrap_or(false);
-                let eid = g.add_edge(from, to, edge_type)
+                let eid = g
+                    .add_edge(from, to, edge_type)
                     .map_err(|e| format!("add_edge error: {e}"))?;
                 if let Some(edge) = g.edges.get_mut(&eid) {
                     edge.weight = weight;
@@ -674,4 +690,3 @@ impl Graph {
         Ok(g)
     }
 }
-

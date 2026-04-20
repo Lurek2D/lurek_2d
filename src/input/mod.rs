@@ -26,10 +26,10 @@ pub mod gamepad;
 pub mod keyboard;
 /// Mouse position and button state management.
 pub mod mouse;
-/// Touch input state tracking for touchscreens.
-pub mod touch;
 /// Input event recording and deterministic playback.
 pub mod recorder;
+/// Touch input state tracking for touchscreens.
+pub mod touch;
 
 pub use combo::{ComboDetector, ComboProgress, ComboStep};
 pub use gamepad::gilrs_axis_to_string;

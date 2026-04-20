@@ -87,8 +87,21 @@ pub fn bsp_dungeon(opts: &BspOpts) -> BspDungeon {
     let mut rooms = Vec::new();
     let mut corridors = Vec::new();
 
-    let root = Partition { x: 0, y: 0, w: opts.width, h: opts.height };
-    split(root, opts.max_depth, opts.min_size, opts, &mut rng, &mut rooms, &mut corridors);
+    let root = Partition {
+        x: 0,
+        y: 0,
+        w: opts.width,
+        h: opts.height,
+    };
+    split(
+        root,
+        opts.max_depth,
+        opts.min_size,
+        opts,
+        &mut rng,
+        &mut rooms,
+        &mut corridors,
+    );
 
     BspDungeon { rooms, corridors }
 }
@@ -124,11 +137,22 @@ fn split(
         let pad = opts.padding;
         let max_rw = part.w.saturating_sub(pad * 2).max(min_size);
         let max_rh = part.h.saturating_sub(pad * 2).max(min_size);
-        let rw = min_size.max((rng.next() as u32) % (max_rw - min_size + 1).max(1) + min_size).min(max_rw);
-        let rh = min_size.max((rng.next() as u32) % (max_rh - min_size + 1).max(1) + min_size).min(max_rh);
-        let rx = part.x + pad + (rng.next() as u32) % (part.w.saturating_sub(rw + pad * 2) + 1).max(1);
-        let ry = part.y + pad + (rng.next() as u32) % (part.h.saturating_sub(rh + pad * 2) + 1).max(1);
-        rooms.push(BspRoom { x: rx.min(part.x + part.w.saturating_sub(rw)), y: ry.min(part.y + part.h.saturating_sub(rh)), w: rw, h: rh });
+        let rw = min_size
+            .max((rng.next() as u32) % (max_rw - min_size + 1).max(1) + min_size)
+            .min(max_rw);
+        let rh = min_size
+            .max((rng.next() as u32) % (max_rh - min_size + 1).max(1) + min_size)
+            .min(max_rh);
+        let rx =
+            part.x + pad + (rng.next() as u32) % (part.w.saturating_sub(rw + pad * 2) + 1).max(1);
+        let ry =
+            part.y + pad + (rng.next() as u32) % (part.h.saturating_sub(rh + pad * 2) + 1).max(1);
+        rooms.push(BspRoom {
+            x: rx.min(part.x + part.w.saturating_sub(rw)),
+            y: ry.min(part.y + part.h.saturating_sub(rh)),
+            w: rw,
+            h: rh,
+        });
         return part;
     }
 
@@ -141,13 +165,33 @@ fn split(
 
     let (left, right) = if split_horizontal {
         let split_at = min_size + (rng.next() as u32) % (part.w - min_size * 2).max(1);
-        let left = Partition { x: part.x, y: part.y, w: split_at, h: part.h };
-        let right = Partition { x: part.x + split_at, y: part.y, w: part.w - split_at, h: part.h };
+        let left = Partition {
+            x: part.x,
+            y: part.y,
+            w: split_at,
+            h: part.h,
+        };
+        let right = Partition {
+            x: part.x + split_at,
+            y: part.y,
+            w: part.w - split_at,
+            h: part.h,
+        };
         (left, right)
     } else {
         let split_at = min_size + (rng.next() as u32) % (part.h - min_size * 2).max(1);
-        let left = Partition { x: part.x, y: part.y, w: part.w, h: split_at };
-        let right = Partition { x: part.x, y: part.y + split_at, w: part.w, h: part.h - split_at };
+        let left = Partition {
+            x: part.x,
+            y: part.y,
+            w: part.w,
+            h: split_at,
+        };
+        let right = Partition {
+            x: part.x,
+            y: part.y + split_at,
+            w: part.w,
+            h: part.h - split_at,
+        };
         (left, right)
     };
 
@@ -161,5 +205,3 @@ fn split(
 
     part
 }
-
-

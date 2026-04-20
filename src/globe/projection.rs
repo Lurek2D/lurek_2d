@@ -13,11 +13,9 @@
 //!
 //! The resulting `Vec2` is in window pixels (top-left origin).
 
+use crate::globe::types::{GlobeSpec, LodTier, ProjectedProvince, Province};
+use crate::math::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_x, rot_y, Mat3x3};
 use crate::math::{Vec2, Vec3};
-use crate::math::sphere::{lat_lon_to_unit, rot_x, rot_y, axial_tilt_mat, Mat3x3};
-use crate::globe::types::{
-    GlobeSpec, LodTier, ProjectedProvince, Province,
-};
 
 /// Orbit camera controlling the viewpoint onto the globe.
 ///
@@ -190,12 +188,7 @@ pub fn project_point_with_z(
 /// Convert a screen delta `(dx, dy)` in pixels to a globe pan `(delta_lat, delta_lon)`.
 ///
 /// Approximation: 1 pixel = `pan_sensitivity / (radius * zoom)` degrees.
-pub fn screen_delta_to_pan(
-    dx: f32,
-    dy: f32,
-    spec: &GlobeSpec,
-    camera: &OrbitCamera,
-) -> (f32, f32) {
+pub fn screen_delta_to_pan(dx: f32, dy: f32, spec: &GlobeSpec, camera: &OrbitCamera) -> (f32, f32) {
     let r = (spec.radius * camera.zoom).max(1.0);
     let deg_per_px = 180.0 / (std::f32::consts::PI * r);
     // dx maps to longitude change, dy to latitude change (inverted Y).

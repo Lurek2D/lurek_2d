@@ -2,8 +2,8 @@
 //!
 //! All types are pure-data; no rendering, no Lua, no I/O.
 
-use std::collections::{HashMap, HashSet};
 use crate::math::Vec2;
+use std::collections::{HashMap, HashSet};
 
 // ── Province ──────────────────────────────────────────────────────────────────
 
@@ -48,7 +48,11 @@ pub struct Province {
 impl Province {
     /// Create a minimal province for unit tests.
     pub fn new(id: ProvinceId, vertices: Vec<(f32, f32)>) -> Self {
-        let (lat_sum, lon_sum) = vertices.iter().fold((0.0_f32, 0.0_f32), |(la, lo), (vla, vlo)| (la + vla, lo + vlo));
+        let (lat_sum, lon_sum) = vertices
+            .iter()
+            .fold((0.0_f32, 0.0_f32), |(la, lo), (vla, vlo)| {
+                (la + vla, lo + vlo)
+            });
         let n = vertices.len().max(1) as f32;
         Self {
             id,
@@ -376,7 +380,11 @@ impl std::fmt::Display for GlobeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             GlobeError::ProvinceNotFound(id) => write!(f, "province {} not found", id),
-            GlobeError::TooManyProvinces => write!(f, "province count exceeds MAX_PROVINCES ({})", MAX_PROVINCES),
+            GlobeError::TooManyProvinces => write!(
+                f,
+                "province count exceeds MAX_PROVINCES ({})",
+                MAX_PROVINCES
+            ),
             GlobeError::LoadError(s) => write!(f, "load error: {}", s),
             GlobeError::GlobeNotFound(s) => write!(f, "globe '{}' not registered", s),
             GlobeError::NoPath(a, b) => write!(f, "no path between {} and {}", a, b),

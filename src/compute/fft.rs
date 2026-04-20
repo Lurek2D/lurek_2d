@@ -109,7 +109,10 @@ pub fn next_power_of_two(n: usize) -> usize {
 /// - `inverse` — `true` for inverse transform (normalises by 1/N).
 fn fft_inplace(buf: &mut [Complex], inverse: bool) {
     let n = buf.len();
-    debug_assert!(n.is_power_of_two(), "fft_inplace requires a power-of-two length");
+    debug_assert!(
+        n.is_power_of_two(),
+        "fft_inplace requires a power-of-two length"
+    );
     let bits = n.trailing_zeros();
 
     // Bit-reversal permutation.
@@ -193,10 +196,7 @@ pub fn fft(data: &[f64]) -> Vec<(f64, f64)> {
 /// spectrum; rounding errors keep the imaginary part negligible.
 pub fn ifft(freqs: &[(f64, f64)]) -> Vec<f64> {
     let n = next_power_of_two(freqs.len().max(1));
-    let mut buf: Vec<Complex> = freqs
-        .iter()
-        .map(|&(re, im)| Complex::new(re, im))
-        .collect();
+    let mut buf: Vec<Complex> = freqs.iter().map(|&(re, im)| Complex::new(re, im)).collect();
     buf.resize(n, Complex::default());
     fft_inplace(&mut buf, true);
     buf.iter().map(|c| c.re).collect()
@@ -218,4 +218,3 @@ pub fn fft_magnitude(data: &[f64]) -> Vec<f64> {
         .map(|(re, im)| (re * re + im * im).sqrt())
         .collect()
 }
-

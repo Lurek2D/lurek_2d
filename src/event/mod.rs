@@ -21,5 +21,5 @@ mod event_queue;
 /// Handle-based pub-sub signal dispatcher with wildcard support.
 mod signal;
 
-pub use event_queue::{Event, EventArg, EventQueue, event_to_lua_multi};
+pub use event_queue::{event_to_lua_multi, Event, EventArg, EventQueue};
 pub use signal::Signal;

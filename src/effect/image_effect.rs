@@ -9,9 +9,9 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::effect::PostFxEffect;
-use crate::runtime::log_messages::{IE01, IE02, IE03};
-use crate::render::ShaderPassDescriptor;
 use crate::log_msg;
+use crate::render::ShaderPassDescriptor;
+use crate::runtime::log_messages::{IE01, IE02, IE03};
 
 /// An ordered shader-effect chain to apply when drawing a single image.
 ///

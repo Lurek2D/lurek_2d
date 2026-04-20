@@ -157,7 +157,12 @@ mod scene_tests {
     }
 
     fn unit_uvs() -> [Vec2; 4] {
-        [Vec2::new(0.0, 0.0), Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0), Vec2::new(0.0, 1.0)]
+        [
+            Vec2::new(0.0, 0.0),
+            Vec2::new(1.0, 0.0),
+            Vec2::new(1.0, 1.0),
+            Vec2::new(0.0, 1.0),
+        ]
     }
 
     #[test]
@@ -772,8 +777,8 @@ mod column_batch_tests {
         let mut batch = ColumnBatch::new(2, 320.0, 200.0);
         // 5 floats per ray: distance, cellValue, side, texU, hit
         let rays = vec![
-            2.0, 1.0, 0.0, 0.25, 1.0,  // ray 0
-            4.0, 2.0, 1.0, 0.75, 1.0,  // ray 1
+            2.0, 1.0, 0.0, 0.25, 1.0, // ray 0
+            4.0, 2.0, 1.0, 0.75, 1.0, // ray 1
         ];
         batch.update_from_ray_data(&rays, 1.0, Some(10.0));
         let c0 = batch.get_column(0).unwrap();
@@ -896,10 +901,7 @@ mod build_scene_tests {
         let scene = RaycasterScene::build(&rc, &params, &lights, &[], &|_| None);
         if let Some(wall) = scene.walls.first() {
             // With an orange light nearby, red channel should be higher than blue
-            assert!(
-                wall.light[0] > 0.0,
-                "Wall should receive some light"
-            );
+            assert!(wall.light[0] > 0.0, "Wall should receive some light");
         }
     }
 }
@@ -935,7 +937,7 @@ mod raycaster2d_tests {
     fn test_cast_ray_hits_wall() {
         let mut rc = Raycaster2D::new(8, 8);
         rc.set_cell(4, 2, 1); // wall at (4,2)
-        // Cast from (2.5, 2.5) to the right (angle=0)
+                              // Cast from (2.5, 2.5) to the right (angle=0)
         let hit = rc.cast_ray(2.5, 2.5, 0.0, 20.0);
         assert!(hit.is_some());
         let h = hit.unwrap();

@@ -1,4 +1,4 @@
-﻿//! Destructible terrain: a bitgrid-backed static collider system for Worms-style
+//! Destructible terrain: a bitgrid-backed static collider system for Worms-style
 //! and Tanks-style terrain deformation.
 //!
 //! [`TerrainMap`] represents the terrain as a flat `Vec<bool>` grid.  Cell changes
@@ -341,8 +341,8 @@ impl TerrainMap {
                 let below = self.cells[((cy + 1) * self.width + cx) as usize];
                 if !below {
                     let left = cx > 0 && self.cells[(cy * self.width + cx - 1) as usize];
-                    let right = cx + 1 < self.width
-                        && self.cells[(cy * self.width + cx + 1) as usize];
+                    let right =
+                        cx + 1 < self.width && self.cells[(cy * self.width + cx + 1) as usize];
                     if !left && !right {
                         self.cells[idx] = false;
                         self.mark_dirty(cx, cy);

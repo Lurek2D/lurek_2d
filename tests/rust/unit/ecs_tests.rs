@@ -1,7 +1,7 @@
 //! Tests for the ecs module.
 
-use lurek2d::ecs::universe::Universe;
 use lurek2d::ecs::relationships::{RelationType, RelationshipManager};
+use lurek2d::ecs::universe::Universe;
 
 // ── universe — generational ID packing ───────────────────────────────────────
 

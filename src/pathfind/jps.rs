@@ -3,8 +3,8 @@
 //! JPS prunes the search space by jumping over symmetric path segments,
 //! making it significantly faster than A* on open grids with sparse obstacles.
 
-use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 /// A uniform-cost grid optimised for JPS pathfinding.
 ///
@@ -30,7 +30,11 @@ impl JpsGrid {
     /// `Self`.
     pub fn new(width: u32, height: u32) -> Self {
         let n = (width * height) as usize;
-        Self { width, height, blocked: vec![false; n] }
+        Self {
+            width,
+            height,
+            blocked: vec![false; n],
+        }
     }
 
     /// Mark or unmark a cell as blocked.
@@ -84,7 +88,9 @@ impl JpsGrid {
         // Start: expand in all 8 directions
         for dx in -1i32..=1 {
             for dy in -1i32..=1 {
-                if dx == 0 && dy == 0 { continue; }
+                if dx == 0 && dy == 0 {
+                    continue;
+                }
                 let g = g_cost[&from] + diagonal_cost(dx, dy);
                 if let Some(jp) = self.jump(from.0 as i32, from.1 as i32, dx, dy, to) {
                     let jg = g_cost[&from] + self.dist_cost(from, jp);
@@ -112,7 +118,10 @@ impl JpsGrid {
                     g_cost.insert(jp, new_g);
                     came_from.insert(jp, pos);
                     let h = octile(jp, to);
-                    open.push(JpsNode { pos: jp, f: new_g + h });
+                    open.push(JpsNode {
+                        pos: jp,
+                        f: new_g + h,
+                    });
                 }
             }
         }
@@ -121,7 +130,12 @@ impl JpsGrid {
 
     // ── JPS core ──────────────────────────────────────────────────────
 
-    fn identify_successors(&self, pos: (u32, u32), came_from: &HashMap<(u32, u32), (u32, u32)>, goal: (u32, u32)) -> Vec<(u32, u32)> {
+    fn identify_successors(
+        &self,
+        pos: (u32, u32),
+        came_from: &HashMap<(u32, u32), (u32, u32)>,
+        goal: (u32, u32),
+    ) -> Vec<(u32, u32)> {
         let mut result = Vec::new();
         let neighbors = self.prune_neighbors(pos, came_from);
         for (nx, ny) in neighbors {
@@ -160,7 +174,8 @@ impl JpsGrid {
 
         // Diagonal: recurse on both cardinals
         if dx != 0 && dy != 0 {
-            if self.jump(nx, ny, dx, 0, goal).is_some() || self.jump(nx, ny, 0, dy, goal).is_some() {
+            if self.jump(nx, ny, dx, 0, goal).is_some() || self.jump(nx, ny, 0, dy, goal).is_some()
+            {
                 return Some(cur);
             }
             // Continue diagonally
@@ -193,7 +208,11 @@ impl JpsGrid {
     }
 
     /// Natural + forced neighbors, pruned for JPS.
-    fn prune_neighbors(&self, pos: (u32, u32), came_from: &HashMap<(u32, u32), (u32, u32)>) -> Vec<(u32, u32)> {
+    fn prune_neighbors(
+        &self,
+        pos: (u32, u32),
+        came_from: &HashMap<(u32, u32), (u32, u32)>,
+    ) -> Vec<(u32, u32)> {
         let parent = came_from.get(&pos);
         if parent.is_none() {
             // Start node: all 8 neighbors
@@ -209,9 +228,15 @@ impl JpsGrid {
 
         if dx != 0 && dy != 0 {
             // Diagonal move
-            if !self.is_blocked_i(x + dx, y) { neighbors.push((x + dx, y)); }
-            if !self.is_blocked_i(x, y + dy) { neighbors.push((x, y + dy)); }
-            if !self.is_blocked_i(x + dx, y + dy) { neighbors.push((x + dx, y + dy)); }
+            if !self.is_blocked_i(x + dx, y) {
+                neighbors.push((x + dx, y));
+            }
+            if !self.is_blocked_i(x, y + dy) {
+                neighbors.push((x, y + dy));
+            }
+            if !self.is_blocked_i(x + dx, y + dy) {
+                neighbors.push((x + dx, y + dy));
+            }
             if self.is_blocked_i(x - dx, y) && !self.is_blocked_i(x - dx, y + dy) {
                 neighbors.push((x - dx, y + dy));
             }
@@ -220,10 +245,15 @@ impl JpsGrid {
             }
         } else if dx != 0 {
             // Horizontal
-            if !self.is_blocked_i(x + dx, y) { neighbors.push((x + dx, y)); }
-            if self.is_blocked_i(x, y + 1) { /* blocked above */ } else if !self.is_blocked_i(x - dx, y + 1) {
+            if !self.is_blocked_i(x + dx, y) {
+                neighbors.push((x + dx, y));
+            }
+            if self.is_blocked_i(x, y + 1) { /* blocked above */
+            } else if !self.is_blocked_i(x - dx, y + 1) {
                 // no forced
-            } else { neighbors.push((x + dx, y + 1)); }
+            } else {
+                neighbors.push((x + dx, y + 1));
+            }
             if !self.is_blocked_i(x, y + 1) && self.is_blocked_i(x - dx, y + 1) {
                 neighbors.push((x + dx, y + 1));
             }
@@ -232,7 +262,9 @@ impl JpsGrid {
             }
         } else {
             // Vertical
-            if !self.is_blocked_i(x, y + dy) { neighbors.push((x, y + dy)); }
+            if !self.is_blocked_i(x, y + dy) {
+                neighbors.push((x, y + dy));
+            }
             if !self.is_blocked_i(x + 1, y) && self.is_blocked_i(x + 1, y - dy) {
                 neighbors.push((x + 1, y + dy));
             }
@@ -241,8 +273,11 @@ impl JpsGrid {
             }
         }
 
-        neighbors.into_iter()
-            .filter(|&(nx, ny)| nx >= 0 && ny >= 0 && nx < self.width as i32 && ny < self.height as i32)
+        neighbors
+            .into_iter()
+            .filter(|&(nx, ny)| {
+                nx >= 0 && ny >= 0 && nx < self.width as i32 && ny < self.height as i32
+            })
             .map(|(nx, ny)| (nx as u32, ny as u32))
             .collect()
     }
@@ -251,10 +286,17 @@ impl JpsGrid {
         let mut result = Vec::new();
         for dx in -1i32..=1 {
             for dy in -1i32..=1 {
-                if dx == 0 && dy == 0 { continue; }
-                let nx = x + dx; let ny = y + dy;
-                if nx >= 0 && ny >= 0 && nx < self.width as i32 && ny < self.height as i32
-                    && !self.is_blocked(nx as u32, ny as u32) {
+                if dx == 0 && dy == 0 {
+                    continue;
+                }
+                let nx = x + dx;
+                let ny = y + dy;
+                if nx >= 0
+                    && ny >= 0
+                    && nx < self.width as i32
+                    && ny < self.height as i32
+                    && !self.is_blocked(nx as u32, ny as u32)
+                {
                     result.push((nx as u32, ny as u32));
                 }
             }
@@ -287,7 +329,11 @@ impl JpsGrid {
 }
 
 fn diagonal_cost(dx: i32, dy: i32) -> f32 {
-    if dx != 0 && dy != 0 { std::f32::consts::SQRT_2 } else { 1.0 }
+    if dx != 0 && dy != 0 {
+        std::f32::consts::SQRT_2
+    } else {
+        1.0
+    }
 }
 
 fn octile(a: (u32, u32), b: (u32, u32)) -> f32 {
@@ -329,12 +375,16 @@ struct JpsNode {
 }
 
 impl PartialEq for JpsNode {
-    fn eq(&self, other: &Self) -> bool { self.f == other.f }
+    fn eq(&self, other: &Self) -> bool {
+        self.f == other.f
+    }
 }
 impl Eq for JpsNode {}
 
 impl PartialOrd for JpsNode {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> { Some(self.cmp(other)) }
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Ord for JpsNode {

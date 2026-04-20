@@ -26,8 +26,8 @@
 
 use std::collections::HashMap;
 
-use crate::runtime::log_messages::{IF01, IF02, IF03};
 use crate::log_msg;
+use crate::runtime::log_messages::{IF01, IF02, IF03};
 
 /// A multi-layer spatial float grid for influence mapping and strategic reasoning.
 ///
@@ -428,12 +428,18 @@ impl InfluenceMap {
                 let b = (ally.min(1.0) * 200.0) as u8 + 30;
                 for py in 0..cell_size {
                     for px in 0..cell_size {
-                        img.set_pixel(x as u32 * cell_size + px, y as u32 * cell_size + py, r, g, b, 255);
+                        img.set_pixel(
+                            x as u32 * cell_size + px,
+                            y as u32 * cell_size + py,
+                            r,
+                            g,
+                            b,
+                            255,
+                        );
                     }
                 }
             }
         }
         img
     }
-
 }

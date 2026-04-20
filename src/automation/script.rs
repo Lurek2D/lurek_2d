@@ -1,4 +1,4 @@
-﻿//! Script container for the automation simulation module.
+//! Script container for the automation simulation module.
 //!
 //! This module provides the [`Script`] struct â€” a named, time-sorted,
 //! capacity-capped collection of [`Step`] objects. Scripts are stored in the
@@ -183,10 +183,7 @@ impl Script {
                 .ok_or_else(|| "each step needs 'action'".to_string())?;
             let action = Action::parse_action(action_str)
                 .ok_or_else(|| format!("unknown action '{action_str}'"))?;
-            let time = sv
-                .get("time")
-                .and_then(|t| t.as_float())
-                .unwrap_or(0.0) as f32;
+            let time = sv.get("time").and_then(|t| t.as_float()).unwrap_or(0.0) as f32;
             let mut step = Step::new(time, action);
             step.key = sv.get("key").and_then(|v| v.as_str()).map(str::to_string);
             step.scancode = sv
@@ -201,10 +198,7 @@ impl Script {
                 .get("button")
                 .and_then(|v| v.as_integer())
                 .map(|n| n as u32);
-            step.text = sv
-                .get("text")
-                .and_then(|v| v.as_str())
-                .map(str::to_string);
+            step.text = sv.get("text").and_then(|v| v.as_str()).map(str::to_string);
             step.is_repeat = sv
                 .get("isRepeat")
                 .and_then(|v| v.as_bool())

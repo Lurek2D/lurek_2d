@@ -1,4 +1,4 @@
-﻿//! Trail renderer for fading ribbon effects.
+//! Trail renderer for fading ribbon effects.
 //!
 //! Stores a series of timestamped points that age out over a configurable
 //! lifetime, producing a tapered ribbon from head to tail.
@@ -237,15 +237,21 @@ impl Trail {
             commands.push(RenderCommand::SetColor(cr, cg, cb, ca));
             commands.push(RenderCommand::Triangle {
                 mode: DrawMode::Fill,
-                x1: ax1, y1: ay1,
-                x2: ax2, y2: ay2,
-                x3: bx1, y3: by1,
+                x1: ax1,
+                y1: ay1,
+                x2: ax2,
+                y2: ay2,
+                x3: bx1,
+                y3: by1,
             });
             commands.push(RenderCommand::Triangle {
                 mode: DrawMode::Fill,
-                x1: ax2, y1: ay2,
-                x2: bx2, y2: by2,
-                x3: bx1, y3: by1,
+                x1: ax2,
+                y1: ay2,
+                x2: bx2,
+                y2: by2,
+                x3: bx1,
+                y3: by1,
             });
         }
         commands
@@ -284,12 +290,9 @@ impl Trail {
             let blue = (hb + (tb - hb) * t) as u8;
             let alpha = ((1.0 - t) * 255.0) as u8;
             img.draw_line(
-                a.x as i32, a.y as i32,
-                b.x as i32, b.y as i32,
-                r, g, blue, alpha,
+                a.x as i32, a.y as i32, b.x as i32, b.y as i32, r, g, blue, alpha,
             );
         }
         img
     }
 }
-

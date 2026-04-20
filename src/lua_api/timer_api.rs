@@ -536,8 +536,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "afterReal",
         lua.create_function(move |lua, (delay, func): (f64, LuaFunction)| {
-            let deadline = std::time::Instant::now()
-                + std::time::Duration::from_secs_f64(delay.max(0.0));
+            let deadline =
+                std::time::Instant::now() + std::time::Duration::from_secs_f64(delay.max(0.0));
             let key = lua.create_registry_value(func)?;
             rt.borrow_mut().push((deadline, key));
             Ok(())
@@ -623,8 +623,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // Coroutine frame-wait list.
     // Each entry: (LuaRegistryKey holding the LuaThread, target frame_count)
-    let wait_frames: Rc<RefCell<Vec<(LuaRegistryKey, u64)>>> =
-        Rc::new(RefCell::new(Vec::new()));
+    let wait_frames: Rc<RefCell<Vec<(LuaRegistryKey, u64)>>> = Rc::new(RefCell::new(Vec::new()));
 
     // -- waitSeconds --
     /// Yields the current Lua coroutine for at least `seconds` wall-clock seconds.
@@ -638,8 +637,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "waitSeconds",
         lua.create_function(move |lua, seconds: f64| {
-            let deadline = std::time::Instant::now()
-                + std::time::Duration::from_secs_f64(seconds.max(0.0));
+            let deadline =
+                std::time::Instant::now() + std::time::Duration::from_secs_f64(seconds.max(0.0));
             let co_tbl: LuaTable = lua.globals().get("coroutine")?;
             let running_fn: LuaFunction = co_tbl.get("running")?;
             let thread_val: LuaValue = running_fn.call(())?;

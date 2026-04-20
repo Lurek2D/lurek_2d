@@ -1,4 +1,4 @@
-﻿//! Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM
+//! Software MIDI synthesizer: parses MIDI with `midly`, renders to PCM
 //! via sine-additive synthesis, and plays through a rodio `Sink`.
 //!
 //! This module is part of Lurek2D's `audio` subsystem and provides the implementation
@@ -15,8 +15,8 @@ use crate::runtime::resource_keys::BusKey;
 // To re-enable: restore midly = "0.5" in Cargo.toml and uncomment imports + restore fn bodies from git
 use rodio::Source;
 // use std::collections::HashSet; // only needed for MIDI load_data (disabled)
-use crate::runtime::log_messages::{A001_MIDI_READ_FAIL, A002_MIDI_DISABLED};
 use crate::log_msg;
+use crate::runtime::log_messages::{A001_MIDI_READ_FAIL, A002_MIDI_DISABLED};
 use std::path::Path;
 
 /// Pre-parsed MIDI metadata extracted during `load()`.
@@ -200,7 +200,8 @@ impl MidiPlayer {
             return;
         }
 
-        let buffer = rodio::buffer::SamplesBuffer::new(self.output_channels, self.output_sample_rate, pcm);
+        let buffer =
+            rodio::buffer::SamplesBuffer::new(self.output_channels, self.output_sample_rate, pcm);
 
         if let Ok(sink) = rodio::Sink::try_new(stream_handle) {
             sink.set_volume(self.volume);

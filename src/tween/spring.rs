@@ -72,7 +72,15 @@ impl SpringAxis {
     /// `Self`.
     pub fn new(position: f32, target: f32, stiffness: f32, damping: f32, precision: f32) -> Self {
         let settled = (position - target).abs() < precision;
-        Self { position, velocity: 0.0, target, stiffness, damping, precision, settled }
+        Self {
+            position,
+            velocity: 0.0,
+            target,
+            stiffness,
+            damping,
+            precision,
+            settled,
+        }
     }
 
     /// Advances the spring simulation by `dt` seconds.
@@ -165,7 +173,12 @@ impl SpringSystem {
     /// # Returns
     /// `Self`.
     pub fn new(stiffness: f32, damping: f32, precision: f32) -> Self {
-        Self { axes: HashMap::new(), stiffness, damping, precision }
+        Self {
+            axes: HashMap::new(),
+            stiffness,
+            damping,
+            precision,
+        }
     }
 
     /// Adds a named axis with the given starting position and target.
@@ -179,7 +192,13 @@ impl SpringSystem {
     pub fn add_axis(&mut self, key: String, position: f32, target: f32) {
         self.axes.insert(
             key,
-            SpringAxis::new(position, target, self.stiffness, self.damping, self.precision),
+            SpringAxis::new(
+                position,
+                target,
+                self.stiffness,
+                self.damping,
+                self.precision,
+            ),
         );
     }
 

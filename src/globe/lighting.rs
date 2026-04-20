@@ -7,9 +7,9 @@
 //! Lighting is constant per province (no per-vertex gradient), which is both
 //! visually appropriate for a geoscape-style map and efficient for 8k provinces.
 
-use crate::math::Vec3;
-use crate::math::sphere::{lat_lon_to_unit, axial_tilt_mat, rot_y};
 use crate::globe::types::GlobeSpec;
+use crate::math::sphere::{axial_tilt_mat, lat_lon_to_unit, rot_y};
+use crate::math::Vec3;
 
 /// Compute the sun direction as a world-space unit vector.
 ///

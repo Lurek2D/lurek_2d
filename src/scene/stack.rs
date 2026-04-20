@@ -1,4 +1,4 @@
-﻿//! LIFO scene stack with registry and inter-scene data store.
+//! LIFO scene stack with registry and inter-scene data store.
 //!
 //! This module is part of Lurek2D's `scene` subsystem and provides the implementation
 //! details for stack-related operations and data management.
@@ -10,10 +10,10 @@
 
 use std::collections::{HashMap, HashSet};
 
+use crate::log_msg;
 use crate::runtime::log_messages::{
     SC01_STACK_INIT, SC02_SCENE_PUSH, SC03_SCENE_POP, SC04_STACK_CLEAR,
 };
-use crate::log_msg;
 use crate::scene::transition::{ActiveTransition, EasingType, TransitionType};
 
 /// Unique identifier for a scene in the stack.
@@ -102,7 +102,11 @@ impl SceneStack {
         log_msg!(info, SC02_SCENE_PUSH);
         let prev = self.stack.last().copied();
         if transition_type != TransitionType::None && duration > 0.0 {
-            self.transition = Some(ActiveTransition::new_with_easing(transition_type, duration, easing));
+            self.transition = Some(ActiveTransition::new_with_easing(
+                transition_type,
+                duration,
+                easing,
+            ));
         }
         self.stack.push(scene_id);
         prev
@@ -139,7 +143,11 @@ impl SceneStack {
         self.overlay_ids.remove(&popped);
         let revealed = self.stack.last().copied();
         if transition_type != TransitionType::None && duration > 0.0 {
-            self.transition = Some(ActiveTransition::new_with_easing(transition_type, duration, easing));
+            self.transition = Some(ActiveTransition::new_with_easing(
+                transition_type,
+                duration,
+                easing,
+            ));
         }
         Ok((popped, revealed))
     }
@@ -172,7 +180,11 @@ impl SceneStack {
             None
         };
         if transition_type != TransitionType::None && duration > 0.0 {
-            self.transition = Some(ActiveTransition::new_with_easing(transition_type, duration, easing));
+            self.transition = Some(ActiveTransition::new_with_easing(
+                transition_type,
+                duration,
+                easing,
+            ));
         }
         self.stack.push(scene_id);
         old
@@ -335,7 +347,11 @@ impl SceneStack {
         let prev = self.stack.last().copied();
         self.overlay_ids.insert(scene_id);
         if transition_type != TransitionType::None && duration > 0.0 {
-            self.transition = Some(ActiveTransition::new_with_easing(transition_type, duration, easing));
+            self.transition = Some(ActiveTransition::new_with_easing(
+                transition_type,
+                duration,
+                easing,
+            ));
         }
         self.stack.push(scene_id);
         prev

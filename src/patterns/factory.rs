@@ -22,7 +22,9 @@ impl Factory {
     ///
     /// # Returns
     /// `Self`.
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Registers a type name.
     ///
@@ -72,7 +74,8 @@ impl Factory {
     /// - `alias` — `&str`.
     /// - `canonical` — `&str`.
     pub fn add_alias(&mut self, alias: &str, canonical: &str) {
-        self.aliases.insert(alias.to_string(), canonical.to_string());
+        self.aliases
+            .insert(alias.to_string(), canonical.to_string());
     }
 
     /// Returns all registered type names sorted alphabetically.

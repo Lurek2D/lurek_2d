@@ -1,7 +1,7 @@
 //! Terminal grid state and input handling.
 
-use crate::runtime::resource_keys::FontKey;
 use crate::render::renderer::RenderCommand;
+use crate::runtime::resource_keys::FontKey;
 
 use super::cell::{TCell, DEFAULT_FG};
 use super::widget::{BorderStyle, Widget, WidgetKind};

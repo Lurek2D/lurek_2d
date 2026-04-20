@@ -129,7 +129,11 @@ mod render_tests {
         let layer = ParallaxLayer::new(dummy_key(), 256.0, 256.0);
         let cmds = layer.generate_render_commands(0.0, 0.0, 800.0, 600.0);
         // Should have: SetColor + SetBlendMode + N DrawImageEx tiles
-        assert!(cmds.len() >= 3, "Expected at least 3 commands, got {}", cmds.len());
+        assert!(
+            cmds.len() >= 3,
+            "Expected at least 3 commands, got {}",
+            cmds.len()
+        );
         // First is SetColor
         assert!(matches!(cmds[0], RenderCommand::SetColor(..)));
         // Second is SetBlendMode

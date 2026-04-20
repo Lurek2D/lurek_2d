@@ -1,7 +1,7 @@
 //! Tests for the filesystem module.
 
-use lurek2d::filesystem::*;
 use lurek2d::filesystem::watcher::FileWatcher;
+use lurek2d::filesystem::*;
 use std::path::PathBuf;
 
 // ── watcher ───────────────────────────────────────────────────────────────────
@@ -32,7 +32,10 @@ mod watcher_tests {
         w.watch("does_not_exist_xyz_abc.lua");
         // Both polls see mtime=None → no change
         let changed = w.poll();
-        assert!(changed.is_empty(), "nonexistent file should not be 'changed'");
+        assert!(
+            changed.is_empty(),
+            "nonexistent file should not be 'changed'"
+        );
     }
 }
 
@@ -631,7 +634,10 @@ mod reject_traversal_tests {
     fn list_with_double_dotdot_returns_error() {
         let vfs = make_vfs();
         let result = vfs.list_recursive("save/../..");
-        assert!(result.is_err(), "list_recursive with 'save/../..' should error");
+        assert!(
+            result.is_err(),
+            "list_recursive with 'save/../..' should error"
+        );
     }
 
     #[test]
@@ -704,18 +710,18 @@ mod create_temp_file_tests {
 mod zip_mount_tests {
     use lurek2d::filesystem::zip_mount::*;
 
-        #[test]
-        fn normalise_collapses_slashes() {
-            assert_eq!(normalise("//foo//bar/"), "foo/bar");
-        }
+    #[test]
+    fn normalise_collapses_slashes() {
+        assert_eq!(normalise("//foo//bar/"), "foo/bar");
+    }
 
-        #[test]
-        fn is_traversal_detects_dotdot() {
-            assert!(is_traversal("../secret"));
-        }
+    #[test]
+    fn is_traversal_detects_dotdot() {
+        assert!(is_traversal("../secret"));
+    }
 
-        #[test]
-        fn is_traversal_allows_normal_path() {
-            assert!(!is_traversal("assets/images/hero.png"));
-        }
+    #[test]
+    fn is_traversal_allows_normal_path() {
+        assert!(!is_traversal("assets/images/hero.png"));
+    }
 }

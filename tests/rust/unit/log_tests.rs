@@ -82,8 +82,8 @@ mod log_mod_tests {
 // ── sinks ─────────────────────────────────────────────────────────────────────
 
 mod sinks_tests {
-    use std::collections::BTreeMap;
     use lurek2d::log::{Sink, SinkLevel, SinkRegistry};
+    use std::collections::BTreeMap;
 
     // ── SinkLevel ─────────────────────────────────────────────────────────
 

@@ -128,15 +128,13 @@ impl LuaUserData for LuaRingBuffer {
         // -- pop --
         /// Removes and returns the oldest element, or nil if the buffer is empty.
         /// @return table|nil
-        methods.add_method_mut("pop", |lua, this, ()| {
-            match this.inner.pop_front() {
-                Some(key) => {
-                    let v: LuaValue = lua.registry_value(&key)?;
-                    lua.remove_registry_value(key)?;
-                    Ok(v)
-                }
-                None => Ok(LuaValue::Nil),
+        methods.add_method_mut("pop", |lua, this, ()| match this.inner.pop_front() {
+            Some(key) => {
+                let v: LuaValue = lua.registry_value(&key)?;
+                lua.remove_registry_value(key)?;
+                Ok(v)
             }
+            None => Ok(LuaValue::Nil),
         });
 
         // -- peek --
@@ -173,9 +171,10 @@ impl LuaUserData for LuaRingBuffer {
         // -- isFull --
         /// Returns true if the buffer has reached its capacity.
         /// @return boolean
-        methods.add_method("isFull", |_, this, ()| {
-            Ok(this.inner.len() >= this.capacity)
-        });
+        methods.add_method(
+            "isFull",
+            |_, this, ()| Ok(this.inner.len() >= this.capacity),
+        );
 
         // -- clear --
         /// Removes all elements from the buffer, releasing their registry entries.
@@ -418,9 +417,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return integer        CRC-32 value in [0, 2^32).
     tbl.set(
         "crc32",
-        lua.create_function(|_, raw_data: LuaString| {
-            Ok(data::crc32(raw_data.as_bytes()))
-        })?,
+        lua.create_function(|_, raw_data: LuaString| Ok(data::crc32(raw_data.as_bytes())))?,
     )?;
 
     tbl.set(
@@ -558,11 +555,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "toMsgPack",
         lua.create_function(|lua, value: LuaValue| {
-            let serial =
-                crate::serial::lua_table::from_lua(&value).map_err(LuaError::external)?;
+            let serial = crate::serial::lua_table::from_lua(&value).map_err(LuaError::external)?;
             let json_val = serial_value_to_json(&serial);
-            let bytes = crate::data::msgpack::to_msgpack(&json_val)
-                .map_err(LuaError::RuntimeError)?;
+            let bytes =
+                crate::data::msgpack::to_msgpack(&json_val).map_err(LuaError::RuntimeError)?;
             lua.create_string(&bytes)
         })?,
     )?;
@@ -587,7 +583,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return DataWriter
     tbl.set(
         "newWriter",
-        lua.create_function(|lua, ()| lua.create_userdata(LuaDataWriter { inner: DataWriter::new() }))?,
+        lua.create_function(|lua, ()| {
+            lua.create_userdata(LuaDataWriter {
+                inner: DataWriter::new(),
+            })
+        })?,
     )?;
 
     luna.set("data", tbl)?;
@@ -852,7 +852,9 @@ impl LuaUserData for LuaDataWriter {
         // -- toBytes --
         /// Returns the buffer contents as a Lua string.
         /// @return string
-        methods.add_method("toBytes", |lua, this, ()| lua.create_string(this.inner.as_bytes()));
+        methods.add_method("toBytes", |lua, this, ()| {
+            lua.create_string(this.inner.as_bytes())
+        });
     }
 }
 

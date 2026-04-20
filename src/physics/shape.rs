@@ -114,30 +114,55 @@ impl Shape {
     pub fn from_parts(shape_type: &str, args: &[f32], closed: bool) -> Result<Self, String> {
         match shape_type {
             "rectangle" => {
-                if args.len() < 2 { return Err("rectangle requires w, h".into()); }
-                Ok(Shape::Rect { width: args[0], height: args[1] })
+                if args.len() < 2 {
+                    return Err("rectangle requires w, h".into());
+                }
+                Ok(Shape::Rect {
+                    width: args[0],
+                    height: args[1],
+                })
             }
             "circle" => {
-                if args.is_empty() { return Err("circle requires radius".into()); }
+                if args.is_empty() {
+                    return Err("circle requires radius".into());
+                }
                 Ok(Shape::Circle { radius: args[0] })
             }
             "polygon" => {
-                if args.len() < 6 { return Err("polygon requires at least 3 vertex pairs".into()); }
+                if args.len() < 6 {
+                    return Err("polygon requires at least 3 vertex pairs".into());
+                }
                 let mut verts = Vec::new();
                 let mut i = 0;
-                while i + 1 < args.len() { verts.push(Vec2::new(args[i], args[i + 1])); i += 2; }
+                while i + 1 < args.len() {
+                    verts.push(Vec2::new(args[i], args[i + 1]));
+                    i += 2;
+                }
                 Ok(Shape::Polygon { vertices: verts })
             }
             "edge" => {
-                if args.len() < 4 { return Err("edge requires x1,y1,x2,y2".into()); }
-                Ok(Shape::Edge { v1: Vec2::new(args[0], args[1]), v2: Vec2::new(args[2], args[3]) })
+                if args.len() < 4 {
+                    return Err("edge requires x1,y1,x2,y2".into());
+                }
+                Ok(Shape::Edge {
+                    v1: Vec2::new(args[0], args[1]),
+                    v2: Vec2::new(args[2], args[3]),
+                })
             }
             "chain" => {
-                if args.len() < 4 { return Err("chain requires at least 2 vertex pairs".into()); }
+                if args.len() < 4 {
+                    return Err("chain requires at least 2 vertex pairs".into());
+                }
                 let mut verts = Vec::new();
                 let mut i = 0;
-                while i + 1 < args.len() { verts.push(Vec2::new(args[i], args[i + 1])); i += 2; }
-                Ok(Shape::Chain { vertices: verts, closed })
+                while i + 1 < args.len() {
+                    verts.push(Vec2::new(args[i], args[i + 1]));
+                    i += 2;
+                }
+                Ok(Shape::Chain {
+                    vertices: verts,
+                    closed,
+                })
             }
             _ => Err(format!(
                 "invalid shape type '{}': expected rectangle, circle, polygon, edge, or chain",

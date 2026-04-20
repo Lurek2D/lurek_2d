@@ -41,9 +41,18 @@ mod frame_tests {
 
     #[test]
     fn cell_cmp_nil_sorts_last() {
-        assert_eq!(CellValue::Nil.cmp_for_sort(&CellValue::Nil), Ordering::Equal);
-        assert_eq!(CellValue::Nil.cmp_for_sort(&CellValue::Number(1.0)), Ordering::Greater);
-        assert_eq!(CellValue::Number(1.0).cmp_for_sort(&CellValue::Nil), Ordering::Less);
+        assert_eq!(
+            CellValue::Nil.cmp_for_sort(&CellValue::Nil),
+            Ordering::Equal
+        );
+        assert_eq!(
+            CellValue::Nil.cmp_for_sort(&CellValue::Number(1.0)),
+            Ordering::Greater
+        );
+        assert_eq!(
+            CellValue::Number(1.0).cmp_for_sort(&CellValue::Nil),
+            Ordering::Less
+        );
     }
 
     #[test]
@@ -132,10 +141,7 @@ mod frame_tests {
 
     #[test]
     fn add_row_and_get_value() {
-        let mut df = DataFrame::from_raw(
-            vec!["name".into(), "score".into()],
-            vec![vec![], vec![]],
-        );
+        let mut df = DataFrame::from_raw(vec!["name".into(), "score".into()], vec![vec![], vec![]]);
         let idx = df.add_row(&[
             ("name".into(), CellValue::Text("Alice".into())),
             ("score".into(), CellValue::Number(42.0)),
@@ -148,11 +154,9 @@ mod frame_tests {
 
     #[test]
     fn set_value_and_get_row() {
-        let mut df = DataFrame::from_raw(
-            vec!["a".into()],
-            vec![vec![CellValue::Number(1.0)]],
-        );
-        df.set_value(0, ColRef::Name("a".into()), CellValue::Number(99.0)).unwrap();
+        let mut df = DataFrame::from_raw(vec!["a".into()], vec![vec![CellValue::Number(1.0)]]);
+        df.set_value(0, ColRef::Name("a".into()), CellValue::Number(99.0))
+            .unwrap();
         let row = df.get_row(0).unwrap();
         assert_eq!(row[0].1, CellValue::Number(99.0));
     }
@@ -161,23 +165,30 @@ mod frame_tests {
     fn remove_row() {
         let mut df = DataFrame::from_raw(
             vec!["a".into()],
-            vec![vec![CellValue::Number(1.0), CellValue::Number(2.0), CellValue::Number(3.0)]],
+            vec![vec![
+                CellValue::Number(1.0),
+                CellValue::Number(2.0),
+                CellValue::Number(3.0),
+            ]],
         );
         df.remove_row(1).unwrap();
         assert_eq!(df.nrows(), 2);
-        assert_eq!(df.get_value(1, ColRef::Index(1)).unwrap(), CellValue::Number(3.0));
+        assert_eq!(
+            df.get_value(1, ColRef::Index(1)).unwrap(),
+            CellValue::Number(3.0)
+        );
         assert!(df.remove_row(10).is_err());
     }
 
     #[test]
     fn clone_df() {
-        let df = DataFrame::from_raw(
-            vec!["a".into()],
-            vec![vec![CellValue::Number(7.0)]],
-        );
+        let df = DataFrame::from_raw(vec!["a".into()], vec![vec![CellValue::Number(7.0)]]);
         let cloned = df.clone_df();
         assert_eq!(cloned.nrows(), 1);
-        assert_eq!(cloned.get_value(0, ColRef::Index(1)).unwrap(), CellValue::Number(7.0));
+        assert_eq!(
+            cloned.get_value(0, ColRef::Index(1)).unwrap(),
+            CellValue::Number(7.0)
+        );
     }
 
     // ── AggFn ──────────────────────────────────────────────────────────────
@@ -212,10 +223,7 @@ mod frame_tests {
 
     #[test]
     fn random_dataframe_dimensions() {
-        let defs = vec![
-            ("id".into(), "int".into()),
-            ("name".into(), "name".into()),
-        ];
+        let defs = vec![("id".into(), "int".into()), ("name".into(), "name".into())];
         let df = DataFrame::random(&defs, 10, Some(42));
         assert_eq!(df.nrows(), 10);
         assert_eq!(df.ncols(), 2);
@@ -267,11 +275,7 @@ mod query_tests {
     fn filter_gt() {
         let df = sample_df();
         let result = df
-            .filter(
-                ColRef::Name("score".into()),
-                ">",
-                &CellValue::Number(80.0),
-            )
+            .filter(ColRef::Name("score".into()), ">", &CellValue::Number(80.0))
             .unwrap();
         assert_eq!(result.nrows(), 2); // Alice=90, Charlie=85
     }

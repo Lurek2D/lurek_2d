@@ -5971,7 +5971,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let mut g = c.borrow_mut();
             for w in g.widgets.iter_mut() {
                 let key_opt = w.base().bind_key.clone();
-                let Some(key) = key_opt else { continue; };
+                let Some(key) = key_opt else {
+                    continue;
+                };
                 let val: mlua::Value = match data.get(key.as_str()) {
                     Ok(v) => v,
                     Err(_) => continue,
@@ -6038,8 +6040,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, def: mlua::Table| {
             let widget_def = lua_table_to_widget_def(&def)?;
             let mut g = c.borrow_mut();
-            let root_idx = crate::ui::load_layout_def(&mut g, &widget_def)
-                .map_err(mlua::Error::external)?;
+            let root_idx =
+                crate::ui::load_layout_def(&mut g, &widget_def).map_err(mlua::Error::external)?;
             g.add_child(0, root_idx);
             Ok(root_idx as u32)
         })?,
@@ -6065,11 +6067,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     tbl.set(
         "loadLayoutFile",
         lua.create_function(move |_, path: String| {
-            let src = std::fs::read_to_string(&path)
-                .map_err(|e| mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}")))?;
+            let src = std::fs::read_to_string(&path).map_err(|e| {
+                mlua::Error::external(format!("loadLayoutFile: cannot read '{path}': {e}"))
+            })?;
             let mut g = c.borrow_mut();
-            let root_idx = crate::ui::load_layout_toml(&mut g, &src)
-                .map_err(mlua::Error::external)?;
+            let root_idx =
+                crate::ui::load_layout_toml(&mut g, &src).map_err(mlua::Error::external)?;
             g.add_child(0, root_idx);
             Ok(root_idx as u32)
         })?,
@@ -6100,8 +6103,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "renderToImage",
         lua.create_function(move |_, (width, height, path): (u32, u32, String)| {
             let mut g = c.borrow_mut();
-            crate::ui::render_to_image(&mut g, width, height, &path)
-                .map_err(mlua::Error::external)
+            crate::ui::render_to_image(&mut g, width, height, &path).map_err(mlua::Error::external)
         })?,
     )?;
 

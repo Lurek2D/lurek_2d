@@ -1,4 +1,4 @@
-﻿//! Blend-layer system for compositing multiple animation clips on a single sprite.
+//! Blend-layer system for compositing multiple animation clips on a single sprite.
 //!
 //! A [`BlendLayerSet`] holds an ordered list of [`BlendLayer`] entries.  Each layer
 //! references a named clip, carries a normalised weight (`0.0`â€“`1.0`), and can be
@@ -26,7 +26,9 @@ impl BlendMask {
     /// # Returns
     /// `BlendMask`.
     pub fn all() -> Self {
-        Self { bone_names: Vec::new() }
+        Self {
+            bone_names: Vec::new(),
+        }
     }
 
     /// Creates a mask restricted to the given bone names.
@@ -141,13 +143,13 @@ impl BlendLayerSet {
     /// `Result<(), String>`.
     pub fn add_layer(&mut self, layer: BlendLayer) -> Result<(), String> {
         if self.layers.iter().any(|l| l.name == layer.name) {
-            return Err(format!(
-                "blend: layer '{}' already exists",
-                layer.name
-            ));
+            return Err(format!("blend: layer '{}' already exists", layer.name));
         }
         self.layers.push(layer);
-        log::debug!("animation: blend layer '{}' added", self.layers.last().unwrap().name);
+        log::debug!(
+            "animation: blend layer '{}' added",
+            self.layers.last().unwrap().name
+        );
         Ok(())
     }
 
@@ -197,7 +199,10 @@ impl BlendLayerSet {
     /// # Returns
     /// `Option<f32>`.
     pub fn get_weight(&self, name: &str) -> Option<f32> {
-        self.layers.iter().find(|l| l.name == name).map(|l| l.weight)
+        self.layers
+            .iter()
+            .find(|l| l.name == name)
+            .map(|l| l.weight)
     }
 
     /// Replaces the bone mask of a layer.  Returns `Err` if not found.

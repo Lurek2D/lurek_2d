@@ -200,9 +200,13 @@ pub fn hud_bars_to_image(width: u32, height: u32) -> ImageData {
                         a += 2.0 * std::f32::consts::PI;
                     }
                     if a <= end_angle
-                        && ix >= 0 && iy >= 0 && (ix as u32) < width && (iy as u32) < height {
-                            img.set_pixel(ix as u32, iy as u32, cr, cg, cb, 220);
-                        }
+                        && ix >= 0
+                        && iy >= 0
+                        && (ix as u32) < width
+                        && (iy as u32) < height
+                    {
+                        img.set_pixel(ix as u32, iy as u32, cr, cg, cb, 220);
+                    }
                 }
             }
         }

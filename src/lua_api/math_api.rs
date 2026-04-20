@@ -6,6 +6,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::SharedState;
+use crate::math::color::hsl_to_rgb;
 use crate::math::color::{gamma_to_linear, linear_to_gamma};
 use crate::math::easing;
 use crate::math::geometry;
@@ -22,9 +23,8 @@ use crate::math::Transform;
 use crate::math::Tween;
 use crate::math::Vec2;
 use crate::math::Vec3;
+use crate::math::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 use crate::math::{CatmullRomSpline, HermiteSpline};
-use crate::math::{lerp, remap, clamp, sign, smoothstep, inverse_lerp};
-use crate::math::color::hsl_to_rgb;
 use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 
 // -------------------------------------------------------------------------------
@@ -94,7 +94,9 @@ impl LuaUserData for LuaVec2 {
         /// Vec2
         /// @return nil
         methods.add_method("normalize", |lua, this, ()| {
-            lua.create_userdata(LuaVec2 { inner: this.inner.normalize() })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.normalize(),
+            })
         });
 
         // -- normalized --
@@ -102,7 +104,9 @@ impl LuaUserData for LuaVec2 {
         /// Vec2
         /// @return nil
         methods.add_method("normalized", |lua, this, ()| {
-            lua.create_userdata(LuaVec2 { inner: this.inner.normalize() })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.normalize(),
+            })
         });
 
         // -- lerp --
@@ -113,7 +117,9 @@ impl LuaUserData for LuaVec2 {
         /// Vec2
         methods.add_method("lerp", |lua, this, (other, t): (LuaAnyUserData, f64)| {
             let o = other.borrow::<LuaVec2>()?;
-            lua.create_userdata(LuaVec2 { inner: this.inner.lerp(o.inner, t as f32) })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.lerp(o.inner, t as f32),
+            })
         });
 
         // -- distance --
@@ -136,7 +142,9 @@ impl LuaUserData for LuaVec2 {
         /// @return nil
         /// Vec2
         methods.add_method("rotate", |lua, this, angle: f64| {
-            lua.create_userdata(LuaVec2 { inner: this.inner.rotate(angle as f32) })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.rotate(angle as f32),
+            })
         });
 
         // -- perpendicular --
@@ -144,7 +152,9 @@ impl LuaUserData for LuaVec2 {
         /// Vec2
         /// @return nil
         methods.add_method("perpendicular", |lua, this, ()| {
-            lua.create_userdata(LuaVec2 { inner: this.inner.perpendicular() })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.perpendicular(),
+            })
         });
 
         // -- cross --
@@ -161,7 +171,9 @@ impl LuaUserData for LuaVec2 {
         /// @param radians : number
         /// @return Vec2
         methods.add_function("fromAngle", |lua, radians: f64| {
-            lua.create_userdata(LuaVec2 { inner: Vec2::from_angle(radians as f32) })
+            lua.create_userdata(LuaVec2 {
+                inner: Vec2::from_angle(radians as f32),
+            })
         });
 
         // -- reflect --
@@ -170,20 +182,28 @@ impl LuaUserData for LuaVec2 {
         /// @return Vec2
         methods.add_method("reflect", |lua, this, normal: LuaAnyUserData| {
             let n = normal.borrow::<LuaVec2>()?;
-            lua.create_userdata(LuaVec2 { inner: this.inner.reflect(n.inner) })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner.reflect(n.inner),
+            })
         });
 
         // Metamethods
         methods.add_meta_method(LuaMetaMethod::Add, |lua, this, other: LuaAnyUserData| {
             let o = other.borrow::<LuaVec2>()?;
-            lua.create_userdata(LuaVec2 { inner: this.inner + o.inner })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner + o.inner,
+            })
         });
         methods.add_meta_method(LuaMetaMethod::Sub, |lua, this, other: LuaAnyUserData| {
             let o = other.borrow::<LuaVec2>()?;
-            lua.create_userdata(LuaVec2 { inner: this.inner - o.inner })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner - o.inner,
+            })
         });
         methods.add_meta_method(LuaMetaMethod::Mul, |lua, this, scalar: f64| {
-            lua.create_userdata(LuaVec2 { inner: this.inner * scalar as f32 })
+            lua.create_userdata(LuaVec2 {
+                inner: this.inner * scalar as f32,
+            })
         });
         methods.add_meta_method(LuaMetaMethod::Unm, |lua, this, ()| {
             lua.create_userdata(LuaVec2 { inner: -this.inner })
@@ -215,15 +235,24 @@ impl LuaUserData for LuaVec3 {
         // -- x --
         /// The X component of the vector.
         fields.add_field_method_get("x", |_, this| Ok(this.inner.x));
-        fields.add_field_method_set("x", |_, this, v: f32| { this.inner.x = v; Ok(()) });
+        fields.add_field_method_set("x", |_, this, v: f32| {
+            this.inner.x = v;
+            Ok(())
+        });
         // -- y --
         /// The Y component of the vector.
         fields.add_field_method_get("y", |_, this| Ok(this.inner.y));
-        fields.add_field_method_set("y", |_, this, v: f32| { this.inner.y = v; Ok(()) });
+        fields.add_field_method_set("y", |_, this, v: f32| {
+            this.inner.y = v;
+            Ok(())
+        });
         // -- z --
         /// The Z component of the vector.
         fields.add_field_method_get("z", |_, this| Ok(this.inner.z));
-        fields.add_field_method_set("z", |_, this, v: f32| { this.inner.z = v; Ok(()) });
+        fields.add_field_method_set("z", |_, this, v: f32| {
+            this.inner.z = v;
+            Ok(())
+        });
     }
 
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -235,14 +264,18 @@ impl LuaUserData for LuaVec3 {
         // -- lengthSquared --
         /// Returns the squared Euclidean length (avoids sqrt).
         /// @return number
-        methods.add_method("lengthSquared", |_, this, ()| Ok(this.inner.length_squared()));
+        methods.add_method("lengthSquared", |_, this, ()| {
+            Ok(this.inner.length_squared())
+        });
 
         // -- normalize --
         /// Returns a unit-length version of this vector.
         /// Vec3
         /// @return nil
         methods.add_method("normalize", |lua, this, ()| {
-            lua.create_userdata(LuaVec3 { inner: this.inner.normalize() })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner.normalize(),
+            })
         });
 
         // -- dot --
@@ -261,7 +294,9 @@ impl LuaUserData for LuaVec3 {
         /// Vec3
         methods.add_method("cross", |lua, this, other: LuaAnyUserData| {
             let v = other.borrow::<LuaVec3>()?;
-            lua.create_userdata(LuaVec3 { inner: this.inner.cross(v.inner) })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner.cross(v.inner),
+            })
         });
 
         // -- lerp --
@@ -272,7 +307,9 @@ impl LuaUserData for LuaVec3 {
         /// Vec3
         methods.add_method("lerp", |lua, this, (other, t): (LuaAnyUserData, f32)| {
             let v = other.borrow::<LuaVec3>()?;
-            lua.create_userdata(LuaVec3 { inner: this.inner.lerp(v.inner, t) })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner.lerp(v.inner, t),
+            })
         });
 
         // -- distance --
@@ -291,7 +328,9 @@ impl LuaUserData for LuaVec3 {
         /// Vec3
         methods.add_method("add", |lua, this, other: LuaAnyUserData| {
             let v = other.borrow::<LuaVec3>()?;
-            lua.create_userdata(LuaVec3 { inner: this.inner + v.inner })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner + v.inner,
+            })
         });
 
         // -- sub --
@@ -301,7 +340,9 @@ impl LuaUserData for LuaVec3 {
         /// Vec3
         methods.add_method("sub", |lua, this, other: LuaAnyUserData| {
             let v = other.borrow::<LuaVec3>()?;
-            lua.create_userdata(LuaVec3 { inner: this.inner - v.inner })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner - v.inner,
+            })
         });
 
         // -- scale --
@@ -310,7 +351,9 @@ impl LuaUserData for LuaVec3 {
         /// @return nil
         /// Vec3
         methods.add_method("scale", |lua, this, s: f32| {
-            lua.create_userdata(LuaVec3 { inner: this.inner * s })
+            lua.create_userdata(LuaVec3 {
+                inner: this.inner * s,
+            })
         });
 
         // -- splat --
@@ -318,7 +361,9 @@ impl LuaUserData for LuaVec3 {
         /// @param v : number
         /// @return Vec3
         methods.add_function("splat", |lua, v: f32| {
-            lua.create_userdata(LuaVec3 { inner: Vec3::splat(v) })
+            lua.create_userdata(LuaVec3 {
+                inner: Vec3::splat(v),
+            })
         });
     }
 }
@@ -372,7 +417,8 @@ impl LuaUserData for LuaCatmullRom {
         /// @param index : integer
         /// @return number, number
         methods.add_method_mut("removePoint", |_, this, idx: usize| {
-            this.inner.remove_point(idx)
+            this.inner
+                .remove_point(idx)
                 .map(|(x, y)| (x, y))
                 .ok_or_else(|| LuaError::RuntimeError("index out of bounds".into()))
         });
@@ -632,9 +678,7 @@ impl LuaUserData for LuaTransform {
         // -- decompose --
         /// Decomposes this transform into translation, rotation, and scale.
         /// @return number, number, number, number, number — x, y, angle, scaleX, scaleY
-        methods.add_method("decompose", |_, this, ()| {
-            Ok(this.inner.decompose())
-        });
+        methods.add_method("decompose", |_, this, ()| Ok(this.inner.decompose()));
     }
 }
 
@@ -2685,7 +2729,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "vec2",
         lua.create_function(|lua, (x, y): (f64, f64)| {
-            lua.create_userdata(LuaVec2 { inner: Vec2::new(x as f32, y as f32) })
+            lua.create_userdata(LuaVec2 {
+                inner: Vec2::new(x as f32, y as f32),
+            })
         })?,
     )?;
 
@@ -2697,7 +2743,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "Vec2",
         lua.create_function(|lua, (x, y): (f64, f64)| {
-            lua.create_userdata(LuaVec2 { inner: Vec2::new(x as f32, y as f32) })
+            lua.create_userdata(LuaVec2 {
+                inner: Vec2::new(x as f32, y as f32),
+            })
         })?,
     )?;
 
@@ -2710,7 +2758,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "vec3",
         lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
-            lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+            lua.create_userdata(LuaVec3 {
+                inner: Vec3::new(x, y, z),
+            })
         })?,
     )?;
 
@@ -2723,7 +2773,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "Vec3",
         lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
-            lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+            lua.create_userdata(LuaVec3 {
+                inner: Vec3::new(x, y, z),
+            })
         })?,
     )?;
 
@@ -2742,7 +2794,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 let y: f32 = t.get("y").or_else(|_| t.get(2)).unwrap_or(0.0);
                 pts.push((x, y));
             }
-            lua.create_userdata(LuaCatmullRom { inner: CatmullRomSpline::new(pts) })
+            lua.create_userdata(LuaCatmullRom {
+                inner: CatmullRomSpline::new(pts),
+            })
         })?,
     )?;
 
@@ -2786,9 +2840,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return number
     tbl.set(
         "remap",
-        lua.create_function(|_, (v, in_min, in_max, out_min, out_max): (f32, f32, f32, f32, f32)| {
-            Ok(remap(v, in_min, in_max, out_min, out_max))
-        })?,
+        lua.create_function(
+            |_, (v, in_min, in_max, out_min, out_max): (f32, f32, f32, f32, f32)| {
+                Ok(remap(v, in_min, in_max, out_min, out_max))
+            },
+        )?,
     )?;
 
     // -- clamp --
@@ -2806,10 +2862,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Returns -1, 0, or 1 depending on the sign of `v`.
     /// @param v : number
     /// @return number
-    tbl.set(
-        "sign",
-        lua.create_function(|_, v: f32| Ok(sign(v)))?,
-    )?;
+    tbl.set("sign", lua.create_function(|_, v: f32| Ok(sign(v)))?)?;
 
     // -- smoothstep --
     /// Hermite smoothstep between `edge0` and `edge1`.
@@ -2819,7 +2872,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return number
     tbl.set(
         "smoothstep",
-        lua.create_function(|_, (edge0, edge1, x): (f32, f32, f32)| Ok(smoothstep(edge0, edge1, x)))?,
+        lua.create_function(|_, (edge0, edge1, x): (f32, f32, f32)| {
+            Ok(smoothstep(edge0, edge1, x))
+        })?,
     )?;
 
     // -- inverseLerp --
@@ -2891,12 +2946,14 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return number, number, number, number
     tbl.set(
         "rectUnion",
-        lua.create_function(|_, (x1, y1, w1, h1, x2, y2, w2, h2): (f32, f32, f32, f32, f32, f32, f32, f32)| {
-            let a = Rect::new(x1, y1, w1, h1);
-            let b = Rect::new(x2, y2, w2, h2);
-            let u = a.union(&b);
-            Ok((u.x, u.y, u.width, u.height))
-        })?,
+        lua.create_function(
+            |_, (x1, y1, w1, h1, x2, y2, w2, h2): (f32, f32, f32, f32, f32, f32, f32, f32)| {
+                let a = Rect::new(x1, y1, w1, h1);
+                let b = Rect::new(x2, y2, w2, h2);
+                let u = a.union(&b);
+                Ok((u.x, u.y, u.width, u.height))
+            },
+        )?,
     )?;
 
     // -- rectFromCenter --
@@ -2932,7 +2989,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let len = pts.len()? as usize;
             if len % 2 != 0 {
                 return Err(LuaError::RuntimeError(
-                    "polygonClip: polygon table must contain an even number of values (x,y pairs)".into(),
+                    "polygonClip: polygon table must contain an even number of values (x,y pairs)"
+                        .into(),
                 ));
             }
             let mut verts: Vec<(f32, f32)> = Vec::with_capacity(len / 2);
@@ -2956,7 +3014,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return AabbTree
     tbl.set(
         "aabbTree",
-        lua.create_function(|lua, ()| lua.create_userdata(LuaAabbTree { inner: AabbTree::new() }))?,
+        lua.create_function(|lua, ()| {
+            lua.create_userdata(LuaAabbTree {
+                inner: AabbTree::new(),
+            })
+        })?,
     )?;
 
     // -- newCircle --
@@ -2968,7 +3030,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "newCircle",
         lua.create_function(|lua, (x, y, radius): (f32, f32, f32)| {
-            lua.create_userdata(LuaCircle { inner: Circle::new(x, y, radius) })
+            lua.create_userdata(LuaCircle {
+                inner: Circle::new(x, y, radius),
+            })
         })?,
     )?;
 

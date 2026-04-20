@@ -656,7 +656,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 let mut parts = s.splitn(3, '.');
                 let maj = parts.next()?.parse::<u32>().ok()?;
                 let min = parts.next()?.parse::<u32>().ok()?;
-                let pat = parts.next().and_then(|p| p.parse::<u32>().ok()).unwrap_or(0);
+                let pat = parts
+                    .next()
+                    .and_then(|p| p.parse::<u32>().ok())
+                    .unwrap_or(0);
                 Some((maj, min, pat))
             };
             let (req_maj, req_min, _) = match parse(&required) {
@@ -665,10 +668,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                     return Ok((
                         false,
                         LuaValue::String(
-                            lua.create_string(format!(
-                                "mod api_version '{}' is not a valid semver",
-                                required
-                            ).as_bytes())?,
+                            lua.create_string(
+                                format!("mod api_version '{}' is not a valid semver", required)
+                                    .as_bytes(),
+                            )?,
                         ),
                     ))
                 }
@@ -693,25 +696,29 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             if req_maj != host_maj {
                 return Ok((
                     false,
-                    LuaValue::String(lua.create_string(
-                        format!(
-                            "mod requires API {}.x but host provides {}.x",
-                            req_maj, host_maj
-                        )
-                        .as_bytes(),
-                    )?),
+                    LuaValue::String(
+                        lua.create_string(
+                            format!(
+                                "mod requires API {}.x but host provides {}.x",
+                                req_maj, host_maj
+                            )
+                            .as_bytes(),
+                        )?,
+                    ),
                 ));
             }
             if req_min > host_min {
                 return Ok((
                     false,
-                    LuaValue::String(lua.create_string(
-                        format!(
-                            "mod requires API {}.{}.x but host provides {}.{}.x",
-                            req_maj, req_min, host_maj, host_min
-                        )
-                        .as_bytes(),
-                    )?),
+                    LuaValue::String(
+                        lua.create_string(
+                            format!(
+                                "mod requires API {}.{}.x but host provides {}.{}.x",
+                                req_maj, req_min, host_maj, host_min
+                            )
+                            .as_bytes(),
+                        )?,
+                    ),
                 ));
             }
             Ok((true, LuaValue::Nil))

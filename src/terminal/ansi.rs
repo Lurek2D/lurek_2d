@@ -46,26 +46,74 @@ pub struct AnsiSpan {
 
 /// Standard 8-colour ANSI palette (index 0..=7).
 static PALETTE_STANDARD: &[AnsiColor] = &[
-    AnsiColor { r: 0,   g: 0,   b: 0   }, // 0 black
-    AnsiColor { r: 170, g: 0,   b: 0   }, // 1 red
-    AnsiColor { r: 0,   g: 170, b: 0   }, // 2 green
-    AnsiColor { r: 170, g: 85,  b: 0   }, // 3 yellow/brown
-    AnsiColor { r: 0,   g: 0,   b: 170 }, // 4 blue
-    AnsiColor { r: 170, g: 0,   b: 170 }, // 5 magenta
-    AnsiColor { r: 0,   g: 170, b: 170 }, // 6 cyan
-    AnsiColor { r: 170, g: 170, b: 170 }, // 7 white/light grey
+    AnsiColor { r: 0, g: 0, b: 0 },   // 0 black
+    AnsiColor { r: 170, g: 0, b: 0 }, // 1 red
+    AnsiColor { r: 0, g: 170, b: 0 }, // 2 green
+    AnsiColor {
+        r: 170,
+        g: 85,
+        b: 0,
+    }, // 3 yellow/brown
+    AnsiColor { r: 0, g: 0, b: 170 }, // 4 blue
+    AnsiColor {
+        r: 170,
+        g: 0,
+        b: 170,
+    }, // 5 magenta
+    AnsiColor {
+        r: 0,
+        g: 170,
+        b: 170,
+    }, // 6 cyan
+    AnsiColor {
+        r: 170,
+        g: 170,
+        b: 170,
+    }, // 7 white/light grey
 ];
 
 /// Bright 8-colour ANSI palette (index 0..=7, corresponding to codes 90–97 / 100–107).
 static PALETTE_BRIGHT: &[AnsiColor] = &[
-    AnsiColor { r: 85,  g: 85,  b: 85  }, // 0 bright black (dark grey)
-    AnsiColor { r: 255, g: 85,  b: 85  }, // 1 bright red
-    AnsiColor { r: 85,  g: 255, b: 85  }, // 2 bright green
-    AnsiColor { r: 255, g: 255, b: 85  }, // 3 bright yellow
-    AnsiColor { r: 85,  g: 85,  b: 255 }, // 4 bright blue
-    AnsiColor { r: 255, g: 85,  b: 255 }, // 5 bright magenta
-    AnsiColor { r: 85,  g: 255, b: 255 }, // 6 bright cyan
-    AnsiColor { r: 255, g: 255, b: 255 }, // 7 bright white
+    AnsiColor {
+        r: 85,
+        g: 85,
+        b: 85,
+    }, // 0 bright black (dark grey)
+    AnsiColor {
+        r: 255,
+        g: 85,
+        b: 85,
+    }, // 1 bright red
+    AnsiColor {
+        r: 85,
+        g: 255,
+        b: 85,
+    }, // 2 bright green
+    AnsiColor {
+        r: 255,
+        g: 255,
+        b: 85,
+    }, // 3 bright yellow
+    AnsiColor {
+        r: 85,
+        g: 85,
+        b: 255,
+    }, // 4 bright blue
+    AnsiColor {
+        r: 255,
+        g: 85,
+        b: 255,
+    }, // 5 bright magenta
+    AnsiColor {
+        r: 85,
+        g: 255,
+        b: 255,
+    }, // 6 bright cyan
+    AnsiColor {
+        r: 255,
+        g: 255,
+        b: 255,
+    }, // 7 bright white
 ];
 
 // -------------------------------------------------------------------------------
@@ -243,5 +291,3 @@ fn utf8_char_len(byte: u8) -> usize {
         4
     }
 }
-
-

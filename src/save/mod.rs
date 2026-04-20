@@ -12,7 +12,6 @@
 //!
 //! Lua bridge: `src/lua_api/save_api.rs` as `lurek.save.*`.
 
-
 mod save_manager;
 
-pub use save_manager::{SlotMeta, SaveManager, SaveValue, serialize_table, serialize_value};
+pub use save_manager::{serialize_table, serialize_value, SaveManager, SaveValue, SlotMeta};

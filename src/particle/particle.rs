@@ -1,4 +1,4 @@
-﻿//! Individual particle data structure.
+//! Individual particle data structure.
 
 /// A single particle managed by a `ParticleSystem`.
 ///
@@ -52,4 +52,3 @@ pub struct Particle {
     /// Set once at spawn and never mutated; ensures each particle has a stable polygon across frames.
     pub shape_seed: u32,
 }
-

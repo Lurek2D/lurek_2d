@@ -323,10 +323,13 @@ impl NetworkRuntime {
             url: url.to_string(),
             headers: headers.map(|h| h.to_vec()).unwrap_or_default(),
             body: body.map(|b| b.as_bytes().to_vec()),
-            timeout_secs: timeout_secs
-                .unwrap_or(super::constants::HTTP_TIMEOUT_SECS),
+            timeout_secs: timeout_secs.unwrap_or(super::constants::HTTP_TIMEOUT_SECS),
         });
-        if ok { Ok(id) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(id)
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Open a TCP connection on the network thread.
@@ -343,7 +346,11 @@ impl NetworkRuntime {
             address: address.to_string(),
             timeout_ms: 5000,
         });
-        if ok { Ok(id) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(id)
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Send data on a TCP connection.
@@ -359,7 +366,11 @@ impl NetworkRuntime {
             id,
             data: data.to_vec(),
         });
-        if ok { Ok(()) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(())
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Close a TCP connection.
@@ -371,7 +382,11 @@ impl NetworkRuntime {
     /// `Result<(), String>`.
     pub fn tcp_close(&mut self, id: u64) -> Result<(), String> {
         let ok = self.send(NetworkRequest::TcpClose { id });
-        if ok { Ok(()) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(())
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Open a WebSocket connection on the network thread.
@@ -388,7 +403,11 @@ impl NetworkRuntime {
             url: url.to_string(),
             protocols: Vec::new(),
         });
-        if ok { Ok(id) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(id)
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Send a text message on a WebSocket connection.
@@ -405,7 +424,11 @@ impl NetworkRuntime {
             data: data.as_bytes().to_vec(),
             is_text: true,
         });
-        if ok { Ok(()) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(())
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// Close a WebSocket connection.
@@ -421,17 +444,18 @@ impl NetworkRuntime {
             code: 1000,
             reason: String::new(),
         });
-        if ok { Ok(()) } else { Err("network thread not running".to_string()) }
+        if ok {
+            Ok(())
+        } else {
+            Err("network thread not running".to_string())
+        }
     }
 
     /// The main loop of the background network thread.
     ///
     /// Blocks on the request channel, processes each request, and sends
     /// responses back. Exits on `Shutdown` or when the channel closes.
-    fn thread_main(
-        req_rx: mpsc::Receiver<NetworkRequest>,
-        resp_tx: mpsc::Sender<NetworkResponse>,
-    ) {
+    fn thread_main(req_rx: mpsc::Receiver<NetworkRequest>, resp_tx: mpsc::Sender<NetworkResponse>) {
         let mut tcp_manager = TcpConnectionManager::new();
         let mut ws_manager = WebSocketManager::new();
 
@@ -477,7 +501,8 @@ impl NetworkRuntime {
                 body,
                 timeout_secs,
             } => {
-                let response = http::execute_request(&method, &url, &headers, body.as_deref(), timeout_secs);
+                let response =
+                    http::execute_request(&method, &url, &headers, body.as_deref(), timeout_secs);
                 let _ = resp_tx.send(NetworkResponse::HttpResponse {
                     id,
                     status: response.status,

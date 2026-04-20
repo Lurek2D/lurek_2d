@@ -188,10 +188,7 @@ impl Catalog {
     /// # Returns
     /// `usize`.
     pub fn key_count(&self) -> usize {
-        self.tables
-            .get(&self.locale)
-            .map(|t| t.len())
-            .unwrap_or(0)
+        self.tables.get(&self.locale).map(|t| t.len()).unwrap_or(0)
     }
 
     /// Returns the unique first path-segments of all keys in the active locale.

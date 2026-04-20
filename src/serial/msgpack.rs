@@ -85,8 +85,7 @@ fn msg_to_serial(val: MsgValue) -> SerialValue {
 /// `Result<Vec<u8>, String>`.
 pub fn encode(val: &SerialValue) -> Result<Vec<u8>, String> {
     let mv = serial_to_msg(val);
-    let bytes =
-        rmps::to_vec_named(&mv).map_err(|e| format!("MessagePack encode error: {e}"))?;
+    let bytes = rmps::to_vec_named(&mv).map_err(|e| format!("MessagePack encode error: {e}"))?;
     log_msg!(debug, SR05_MSGPACK_ENC);
     Ok(bytes)
 }

@@ -4,9 +4,9 @@
 //! including the error title, message, traceback, and instructions
 //! to quit or restart.
 
+use crate::render::renderer::{DrawMode, RenderCommand};
 use crate::runtime::error::EngineError;
 use crate::runtime::resource_keys::FontKey;
-use crate::render::renderer::{RenderCommand, DrawMode};
 
 /// Blue error screen background color.
 const ERROR_BG: [f32; 4] = [0.11, 0.22, 0.53, 1.0];

@@ -4,8 +4,8 @@
 //! (city, base, UFO, fleet, etc.) are user-defined via the `marker_type` string.
 //! The engine provides the storage and lifecycle primitives only.
 
-use std::collections::HashMap;
 use crate::globe::types::{Marker, MarkerStyle};
+use std::collections::HashMap;
 
 /// Store and lifecycle manager for globe markers.
 ///
@@ -33,16 +33,19 @@ impl MarkerStore {
     ) -> u32 {
         let id = self.next_id;
         self.next_id += 1;
-        self.markers.insert(id, Marker {
+        self.markers.insert(
             id,
-            marker_type: marker_type.into(),
-            lat_deg,
-            lon_deg,
-            label,
-            visible: true,
-            style,
-            attrs: HashMap::new(),
-        });
+            Marker {
+                id,
+                marker_type: marker_type.into(),
+                lat_deg,
+                lon_deg,
+                label,
+                visible: true,
+                style,
+                attrs: HashMap::new(),
+            },
+        );
         id
     }
 
@@ -109,7 +112,10 @@ impl MarkerStore {
 
     /// All markers of a given type.
     pub fn by_type(&self, marker_type: &str) -> Vec<&Marker> {
-        self.markers.values().filter(|m| m.marker_type == marker_type).collect()
+        self.markers
+            .values()
+            .filter(|m| m.marker_type == marker_type)
+            .collect()
     }
 
     /// Number of markers.

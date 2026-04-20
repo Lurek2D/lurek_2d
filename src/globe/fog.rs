@@ -7,8 +7,8 @@
 //! The store exposes simple get/set/reveal/hide operations and is serializable as a
 //! flat list of visible province IDs (compatible with `lurek.save.*` primitives).
 
-use std::collections::HashMap;
 use crate::globe::types::{ProvinceId, MAX_PROVINCES};
+use std::collections::HashMap;
 
 /// Per-faction visibility bit-vector.
 ///
@@ -22,7 +22,9 @@ impl FogMask {
     /// Create a new fog mask with all provinces hidden.
     pub fn all_hidden() -> Self {
         let words = (MAX_PROVINCES + 63) / 64;
-        Self { bits: vec![0u64; words] }
+        Self {
+            bits: vec![0u64; words],
+        }
     }
 
     /// Create a new fog mask with all provinces visible.
@@ -162,7 +164,8 @@ impl FogStore {
 
     /// Load visible IDs from save data.
     pub fn load(&mut self, viewer: &str, ids: &[ProvinceId]) {
-        self.masks.insert(viewer.to_string(), FogMask::from_visible_ids(ids));
+        self.masks
+            .insert(viewer.to_string(), FogMask::from_visible_ids(ids));
     }
 
     /// Remove a viewer's fog mask.

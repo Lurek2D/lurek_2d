@@ -3,8 +3,8 @@
 //! Layers sit above the base province map and can carry per-province color overrides,
 //! visibility flags, and opacity. All layer semantics are user-defined.
 
-use std::collections::HashMap;
 use crate::globe::types::{Layer, ProvinceId};
+use std::collections::HashMap;
 
 /// Registry and lifecycle manager for globe layers.
 ///
@@ -82,9 +82,7 @@ impl LayerStore {
     /// Layers are blended in z_order, with higher z_order on top.
     /// Returns `None` if no layer has a color for this province.
     pub fn effective_color(&self, id: ProvinceId) -> Option<[f32; 4]> {
-        let mut sorted: Vec<&Layer> = self.layers.values()
-            .filter(|l| l.visible)
-            .collect();
+        let mut sorted: Vec<&Layer> = self.layers.values().filter(|l| l.visible).collect();
         sorted.sort_by_key(|l| l.z_order);
 
         let mut result: Option<[f32; 4]> = None;
@@ -99,9 +97,7 @@ impl LayerStore {
 
     /// Return all visible layers sorted by z_order.
     pub fn visible_sorted(&self) -> Vec<&Layer> {
-        let mut sorted: Vec<&Layer> = self.layers.values()
-            .filter(|l| l.visible)
-            .collect();
+        let mut sorted: Vec<&Layer> = self.layers.values().filter(|l| l.visible).collect();
         sorted.sort_by_key(|l| l.z_order);
         sorted
     }

@@ -285,11 +285,14 @@ mod schema_tests {
     #[test]
     fn required_field_missing() {
         let mut schema = Schema::new("test");
-        schema.add_rule("name", FieldRule {
-            field_type: FieldType::String,
-            required: true,
-            ..Default::default()
-        });
+        schema.add_rule(
+            "name",
+            FieldRule {
+                field_type: FieldType::String,
+                required: true,
+                ..Default::default()
+            },
+        );
         let result = schema.validate_pairs(&[]);
         assert!(!result.ok);
         assert_eq!(result.errors.len(), 1);
@@ -299,11 +302,14 @@ mod schema_tests {
     #[test]
     fn type_mismatch() {
         let mut schema = Schema::new("test");
-        schema.add_rule("age", FieldRule {
-            field_type: FieldType::Number,
-            required: true,
-            ..Default::default()
-        });
+        schema.add_rule(
+            "age",
+            FieldRule {
+                field_type: FieldType::Number,
+                required: true,
+                ..Default::default()
+            },
+        );
         let fields = vec![("age".to_string(), "string", "hello".to_string())];
         let result = schema.validate_pairs(&fields);
         assert!(!result.ok);
@@ -313,13 +319,16 @@ mod schema_tests {
     #[test]
     fn numeric_bounds() {
         let mut schema = Schema::new("test");
-        schema.add_rule("level", FieldRule {
-            field_type: FieldType::Integer,
-            required: true,
-            min: Some(1.0),
-            max: Some(100.0),
-            ..Default::default()
-        });
+        schema.add_rule(
+            "level",
+            FieldRule {
+                field_type: FieldType::Integer,
+                required: true,
+                min: Some(1.0),
+                max: Some(100.0),
+                ..Default::default()
+            },
+        );
         let fields = vec![("level".to_string(), "number", "150".to_string())];
         let result = schema.validate_pairs(&fields);
         assert!(!result.ok);
@@ -329,12 +338,15 @@ mod schema_tests {
     #[test]
     fn enum_validation() {
         let mut schema = Schema::new("test");
-        schema.add_rule("class", FieldRule {
-            field_type: FieldType::String,
-            required: true,
-            enum_values: vec!["warrior".into(), "mage".into()],
-            ..Default::default()
-        });
+        schema.add_rule(
+            "class",
+            FieldRule {
+                field_type: FieldType::String,
+                required: true,
+                enum_values: vec!["warrior".into(), "mage".into()],
+                ..Default::default()
+            },
+        );
         let fields = vec![("class".to_string(), "string", "rogue".to_string())];
         let result = schema.validate_pairs(&fields);
         assert!(!result.ok);
@@ -354,18 +366,24 @@ mod schema_tests {
     #[test]
     fn valid_data_passes() {
         let mut schema = Schema::new("player");
-        schema.add_rule("name", FieldRule {
-            field_type: FieldType::String,
-            required: true,
-            ..Default::default()
-        });
-        schema.add_rule("level", FieldRule {
-            field_type: FieldType::Integer,
-            required: true,
-            min: Some(1.0),
-            max: Some(100.0),
-            ..Default::default()
-        });
+        schema.add_rule(
+            "name",
+            FieldRule {
+                field_type: FieldType::String,
+                required: true,
+                ..Default::default()
+            },
+        );
+        schema.add_rule(
+            "level",
+            FieldRule {
+                field_type: FieldType::Integer,
+                required: true,
+                min: Some(1.0),
+                max: Some(100.0),
+                ..Default::default()
+            },
+        );
         let fields = vec![
             ("name".to_string(), "string", "Hero".to_string()),
             ("level".to_string(), "number", "50".to_string()),

@@ -78,8 +78,12 @@ impl Attenuation {
         let plot_w = width.saturating_sub(20);
 
         let colors: [(u8, u8, u8); 6] = [
-            (230, 80, 80), (80, 230, 80), (80, 80, 230),
-            (230, 230, 80), (230, 80, 230), (80, 230, 230),
+            (230, 80, 80),
+            (80, 230, 80),
+            (80, 80, 230),
+            (230, 230, 80),
+            (230, 80, 230),
+            (80, 230, 230),
         ];
 
         for (i, (atten, label)) in configs.iter().enumerate() {
@@ -93,16 +97,28 @@ impl Attenuation {
                 let bar_h = (factor * bar_max as f32) as i32;
                 if bar_h > 0 {
                     img.draw_line(
-                        x as i32 + 10, oy + bar_max,
-                        x as i32 + 10, oy + bar_max - bar_h,
-                        r, g, b, 200,
+                        x as i32 + 10,
+                        oy + bar_max,
+                        x as i32 + 10,
+                        oy + bar_max - bar_h,
+                        r,
+                        g,
+                        b,
+                        200,
                     );
                 }
             }
             img.draw_label(label, 10, oy, 200, 200, 200);
         }
 
-        img.draw_label("ATTENUATION CURVES", (width / 3) as i32, (height - 10) as i32, 100, 255, 100);
+        img.draw_label(
+            "ATTENUATION CURVES",
+            (width / 3) as i32,
+            (height - 10) as i32,
+            100,
+            255,
+            100,
+        );
         img
     }
 }

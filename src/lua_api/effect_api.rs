@@ -10,7 +10,8 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::effect::{    presets::build_preset, ImageEffect, Overlay, PostFxEffect, PostFxEffectType, PostFxStack,
+use crate::effect::{
+    presets::build_preset, ImageEffect, Overlay, PostFxEffect, PostFxEffectType, PostFxStack,
     WeatherType,
 };
 use crate::render::renderer::{PostFxPass, RenderCommand};
@@ -534,7 +535,6 @@ impl LuaUserData for LuaPostFxStack {
             this.feedback_factor = 0.0;
             Ok(())
         });
-
     }
 }
 
@@ -1554,29 +1554,30 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "newPresetStack",
-        lua.create_function(move |lua, (name, w, h): (String, Option<u32>, Option<u32>)| {
-            let (default_w, default_h) = {
-                let borrow = s.borrow();
-                (borrow.window_width, borrow.window_height)
-            };
-            let w = w.unwrap_or(default_w);
-            let h = h.unwrap_or(default_h);
-            let preset = build_preset(&name, w, h).ok_or_else(|| {
-                LuaError::RuntimeError(format!("unknown preset '{}'", name))
-            })?;
-            let effects: Vec<Rc<RefCell<PostFxEffect>>> = preset
-                .effects
-                .into_iter()
-                .map(|e| Rc::new(RefCell::new(e)))
-                .collect();
-            lua.create_userdata(LuaPostFxStack {
-                inner: preset.stack,
-                effects,
-                stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
-                state: Rc::clone(&s),
-                feedback_factor: 0.0,
-            })
-        })?,
+        lua.create_function(
+            move |lua, (name, w, h): (String, Option<u32>, Option<u32>)| {
+                let (default_w, default_h) = {
+                    let borrow = s.borrow();
+                    (borrow.window_width, borrow.window_height)
+                };
+                let w = w.unwrap_or(default_w);
+                let h = h.unwrap_or(default_h);
+                let preset = build_preset(&name, w, h)
+                    .ok_or_else(|| LuaError::RuntimeError(format!("unknown preset '{}'", name)))?;
+                let effects: Vec<Rc<RefCell<PostFxEffect>>> = preset
+                    .effects
+                    .into_iter()
+                    .map(|e| Rc::new(RefCell::new(e)))
+                    .collect();
+                lua.create_userdata(LuaPostFxStack {
+                    inner: preset.stack,
+                    effects,
+                    stack_id: NEXT_STACK_ID.fetch_add(1, Ordering::Relaxed),
+                    state: Rc::clone(&s),
+                    feedback_factor: 0.0,
+                })
+            },
+        )?,
     )?;
 
     // -- newPass --

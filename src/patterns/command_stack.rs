@@ -74,7 +74,11 @@ impl CommandStack {
         self.entries.truncate(self.cursor);
         let id = self.next_id;
         self.next_id += 1;
-        self.entries.push(CommandEntry { id, name: name.to_string(), has_undo });
+        self.entries.push(CommandEntry {
+            id,
+            name: name.to_string(),
+            has_undo,
+        });
         self.cursor = self.entries.len();
         // Enforce max size
         if self.max_size > 0 && self.entries.len() > self.max_size {
@@ -93,7 +97,9 @@ impl CommandStack {
     /// # Returns
     /// `Option<u64>`.
     pub fn peek_undo(&self) -> Option<u64> {
-        if self.cursor == 0 { return None; }
+        if self.cursor == 0 {
+            return None;
+        }
         self.entries.get(self.cursor - 1).map(|e| e.id)
     }
 
@@ -110,7 +116,9 @@ impl CommandStack {
     /// # Returns
     /// `Option<u64>` — ID of the command to undo.
     pub fn step_undo(&mut self) -> Option<u64> {
-        if self.cursor == 0 { return None; }
+        if self.cursor == 0 {
+            return None;
+        }
         self.cursor -= 1;
         self.entries.get(self.cursor).map(|e| e.id)
     }
@@ -120,7 +128,9 @@ impl CommandStack {
     /// # Returns
     /// `Option<u64>` — ID of the command to redo.
     pub fn step_redo(&mut self) -> Option<u64> {
-        if self.cursor >= self.entries.len() { return None; }
+        if self.cursor >= self.entries.len() {
+            return None;
+        }
         let id = self.entries[self.cursor].id;
         self.cursor += 1;
         Some(id)
@@ -137,13 +147,17 @@ impl CommandStack {
     ///
     /// # Returns
     /// `usize`.
-    pub fn undo_count(&self) -> usize { self.cursor }
+    pub fn undo_count(&self) -> usize {
+        self.cursor
+    }
 
     /// Number of redoable steps from the current cursor.
     ///
     /// # Returns
     /// `usize`.
-    pub fn redo_count(&self) -> usize { self.entries.len() - self.cursor }
+    pub fn redo_count(&self) -> usize {
+        self.entries.len() - self.cursor
+    }
 
     /// Lookup entry metadata by ID.
     ///
@@ -166,7 +180,9 @@ impl CommandStack {
     /// # Returns
     /// `Option<Vec<u64>>`.
     pub fn end_batch(&mut self) -> Option<Vec<u64>> {
-        if self.batch_depth == 0 { return None; }
+        if self.batch_depth == 0 {
+            return None;
+        }
         self.batch_depth -= 1;
         if self.batch_depth == 0 {
             let ids = std::mem::take(&mut self.batch_buf);

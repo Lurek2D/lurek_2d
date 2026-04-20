@@ -5,11 +5,11 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use std::collections::HashMap;
-use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use crate::data::compress::{compress, decompress, CompressFormat};
 use crate::filesystem::vfs::GameFS;
 use crate::save::{serialize_table, SaveManager, SaveValue};
+use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
+use std::collections::HashMap;
 
 // -------------------------------------------------------------------------------
 // Helpers
@@ -128,11 +128,7 @@ impl LuaSaveManager {
     }
 
     /// Restores data from a Lua table, applying migrations and calling restorers
-    fn restore_from_table<'a>(
-        &mut self,
-        lua: &'a Lua,
-        data: LuaTable<'a>,
-    ) -> LuaResult<()> {
+    fn restore_from_table<'a>(&mut self, lua: &'a Lua, data: LuaTable<'a>) -> LuaResult<()> {
         let saved_ver: i32 = data.get("__schema_version").unwrap_or(0);
         let data = self.apply_migrations(lua, data, saved_ver)?;
         self.call_restorers(lua, &data)?;
@@ -163,8 +159,8 @@ impl LuaSaveManager {
         let plain = self.serialize_collected(lua)?;
         let content = if self.compress {
             let bytes = plain.as_bytes();
-            let compressed = compress(bytes, CompressFormat::Lz4, 1)
-                .map_err(LuaError::RuntimeError)?;
+            let compressed =
+                compress(bytes, CompressFormat::Lz4, 1).map_err(LuaError::RuntimeError)?;
             let encoded = BASE64.encode(&compressed);
             format!("--[[COMPRESSED]]\nreturn \"{}\"\n", encoded)
         } else {
@@ -200,7 +196,10 @@ impl LuaSaveManager {
             let compressed = match BASE64.decode(encoded) {
                 Ok(b) => b,
                 Err(e) => {
-                    return Ok((false, Some(format!("lurek.savegame:load: base64 decode: {}", e))))
+                    return Ok((
+                        false,
+                        Some(format!("lurek.savegame:load: base64 decode: {}", e)),
+                    ))
                 }
             };
             match decompress(&compressed, CompressFormat::Lz4) {
@@ -210,7 +209,12 @@ impl LuaSaveManager {
                         return Ok((false, Some(format!("lurek.savegame:load: utf8: {}", e))))
                     }
                 },
-                Err(e) => return Ok((false, Some(format!("lurek.savegame:load: decompress: {}", e)))),
+                Err(e) => {
+                    return Ok((
+                        false,
+                        Some(format!("lurek.savegame:load: decompress: {}", e)),
+                    ))
+                }
             }
         } else {
             raw
@@ -251,11 +255,7 @@ impl LuaSaveManager {
     }
 
     /// Reads metadata from a slot file without full restore
-    fn read_slot_meta<'a>(
-        &self,
-        lua: &'a Lua,
-        slot: &str,
-    ) -> LuaResult<Option<LuaTable<'a>>> {
+    fn read_slot_meta<'a>(&self, lua: &'a Lua, slot: &str) -> LuaResult<Option<LuaTable<'a>>> {
         let path = SaveManager::slot_path(slot);
         let content = {
             let game_dir = self.state.borrow().game_dir.clone();
@@ -309,7 +309,6 @@ impl LuaSaveManager {
 
 impl LuaUserData for LuaSaveManager {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- register --
         /// Registers a named module with collector and restorer callbacks
         /// @param name : string
@@ -384,9 +383,7 @@ impl LuaUserData for LuaSaveManager {
         /// Collect.
         ///
         /// @return table
-        methods.add_method("collect", |lua, this, ()| {
-            this.collect_data(lua)
-        });
+        methods.add_method("collect", |lua, this, ()| this.collect_data(lua));
 
         // -- restore --
         /// Restores data from a table, applying migrations and calling restorers
@@ -413,9 +410,7 @@ impl LuaUserData for LuaSaveManager {
         /// Returns true if dirty.
         ///
         /// @return boolean
-        methods.add_method("isDirty", |_, this, ()| {
-            Ok(this.manager.is_dirty())
-        });
+        methods.add_method("isDirty", |_, this, ()| Ok(this.manager.is_dirty()));
 
         // -- enableAutoSave --
         /// Enables auto-save with a given interval and target slot
@@ -444,9 +439,7 @@ impl LuaUserData for LuaSaveManager {
         ///
         /// @param dt : number
         /// @return string?
-        methods.add_method_mut("update", |_, this, dt: f64| {
-            Ok(this.manager.update(dt))
-        });
+        methods.add_method_mut("update", |_, this, dt: f64| Ok(this.manager.update(dt)));
 
         // -- setSummary --
         /// Sets the summary string included in save metadata
@@ -567,24 +560,21 @@ impl LuaUserData for LuaSaveManager {
         /// Deletes a save file for the given slot.
         /// @param slot : string
         /// @return nil
-        methods.add_method("delete", |_, this, slot: String| {
-            this.delete_slot(&slot)
-        });
+        methods.add_method("delete", |_, this, slot: String| this.delete_slot(&slot));
 
         // -- exists --
         /// Returns whether a save file exists for the given slot.
         /// @param slot : string
         /// @return boolean
-        methods.add_method("exists", |_, this, slot: String| {
-            Ok(this.slot_exists(&slot))
-        });
+        methods.add_method(
+            "exists",
+            |_, this, slot: String| Ok(this.slot_exists(&slot)),
+        );
 
         // -- getSlots --
         /// Returns a list of all save slots with metadata.
         /// @return table
-        methods.add_method("getSlots", |lua, this, ()| {
-            this.list_slots(lua)
-        });
+        methods.add_method("getSlots", |lua, this, ()| this.list_slots(lua));
 
         // -- getSlotInfo --
         /// Returns metadata for a single slot, or nil if not found.
@@ -596,7 +586,6 @@ impl LuaUserData for LuaSaveManager {
                 None => Ok(LuaValue::Nil),
             }
         });
-
     }
 }
 
@@ -619,9 +608,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     tbl.set(
         "newSaveManager",
-        lua.create_function(move |lua, ()| {
-            lua.create_userdata(LuaSaveManager::new(s.clone()))
-        })?,
+        lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
     )?;
 
     luna.set("savegame", tbl)?;

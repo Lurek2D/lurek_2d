@@ -461,5 +461,3 @@ impl Default for GraphRenderer {
 }
 
 // ── Unit tests ──────────────────────────────────────────────────────────
-
-

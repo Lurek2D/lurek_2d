@@ -7,7 +7,9 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
-use crate::thread::channel::{channel_value_to_lua, lua_to_channel_value, Channel, ChannelValue, LuaChannel};
+use crate::thread::channel::{
+    channel_value_to_lua, lua_to_channel_value, Channel, ChannelValue, LuaChannel,
+};
 use crate::thread::pool::ThreadPool;
 use crate::thread::promise::Promise;
 use crate::thread::worker::LuaThread;
@@ -143,7 +145,9 @@ impl LuaUserData for LuaThreadPool {
         /// @return Channel
         methods.add_method("getInputChannel", |_, this, ()| {
             let pool = this.inner.lock().unwrap();
-            Ok(LuaChannel { inner: pool.input.clone() })
+            Ok(LuaChannel {
+                inner: pool.input.clone(),
+            })
         });
 
         // -- getOutputChannel --
@@ -151,7 +155,9 @@ impl LuaUserData for LuaThreadPool {
         /// @return Channel
         methods.add_method("getOutputChannel", |_, this, ()| {
             let pool = this.inner.lock().unwrap();
-            Ok(LuaChannel { inner: pool.output.clone() })
+            Ok(LuaChannel {
+                inner: pool.output.clone(),
+            })
         });
     }
 }
@@ -184,7 +190,9 @@ impl LuaUserData for LuaPromise {
         // -- isDone --
         /// Returns true if the promise has a result or has errored (non-blocking).
         /// @return boolean
-        methods.add_method("isDone", |_, this, ()| Ok(this.inner.lock().unwrap().is_done()));
+        methods.add_method("isDone", |_, this, ()| {
+            Ok(this.inner.lock().unwrap().is_done())
+        });
 
         // -- result --
         /// Pops and returns the promise result, or nil if not yet ready.

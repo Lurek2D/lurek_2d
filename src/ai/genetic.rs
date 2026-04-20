@@ -50,7 +50,11 @@ impl Chromosome {
     /// # Returns
     /// `Self`.
     pub fn new(gene_count: usize, id: u64) -> Self {
-        Self { genes: vec![0.0; gene_count], fitness: 0.0, id }
+        Self {
+            genes: vec![0.0; gene_count],
+            fitness: 0.0,
+            id,
+        }
     }
 }
 
@@ -140,7 +144,9 @@ impl GeneticAlgorithm {
     /// # Returns
     /// `Option<&Chromosome>`.
     pub fn best(&self) -> Option<&Chromosome> {
-        self.population.iter().max_by(|a, b| a.fitness.partial_cmp(&b.fitness).unwrap())
+        self.population
+            .iter()
+            .max_by(|a, b| a.fitness.partial_cmp(&b.fitness).unwrap())
     }
 
     /// Runs one generation: tournament selection, crossover, mutation, elitism.
@@ -153,7 +159,10 @@ impl GeneticAlgorithm {
         // Elitism: carry over best unchanged
         let mut sorted: Vec<usize> = (0..pop_size).collect();
         sorted.sort_by(|&a, &b| {
-            self.population[b].fitness.partial_cmp(&self.population[a].fitness).unwrap()
+            self.population[b]
+                .fitness
+                .partial_cmp(&self.population[a].fitness)
+                .unwrap()
         });
         for &i in sorted.iter().take(self.elitism) {
             next_gen.push(self.population[i].clone());
@@ -163,7 +172,8 @@ impl GeneticAlgorithm {
         while next_gen.len() < pop_size {
             let p1 = self.tournament_select(pop_size);
             let p2 = self.tournament_select(pop_size);
-            let mut child = self.crossover(&self.population[p1].clone(), &self.population[p2].clone());
+            let mut child =
+                self.crossover(&self.population[p1].clone(), &self.population[p2].clone());
             self.mutate(&mut child);
             child.id = self.next_id;
             self.next_id += 1;
@@ -193,7 +203,11 @@ impl GeneticAlgorithm {
     fn crossover(&mut self, p1: &Chromosome, p2: &Chromosome) -> Chromosome {
         let mut child = Chromosome::new(self.gene_count, 0);
         for i in 0..self.gene_count {
-            child.genes[i] = if self.rand_bool() { p1.genes[i] } else { p2.genes[i] };
+            child.genes[i] = if self.rand_bool() {
+                p1.genes[i]
+            } else {
+                p2.genes[i]
+            };
         }
         child
     }

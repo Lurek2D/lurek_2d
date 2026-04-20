@@ -148,7 +148,11 @@ impl EmotionModel {
     /// # Returns
     /// `f32`.
     pub fn get(&self, name: &str) -> f32 {
-        self.emotions.iter().find(|e| e.name == name).map(|e| e.value).unwrap_or(0.0)
+        self.emotions
+            .iter()
+            .find(|e| e.name == name)
+            .map(|e| e.value)
+            .unwrap_or(0.0)
     }
 
     /// Triggers a named emotion by adding `amount` to its current value.
@@ -179,7 +183,9 @@ impl EmotionModel {
     /// # Parameters
     /// - `dt` — `f32`.
     pub fn update(&mut self, dt: f32) {
-        for e in &mut self.emotions { e.update(dt); }
+        for e in &mut self.emotions {
+            e.update(dt);
+        }
     }
 
     /// Returns the name of the dominant (highest active) emotion, or `None`
@@ -188,7 +194,8 @@ impl EmotionModel {
     /// # Returns
     /// `Option<&str>`.
     pub fn dominant(&self) -> Option<&str> {
-        self.emotions.iter()
+        self.emotions
+            .iter()
             .filter(|e| e.is_active())
             .max_by(|a, b| a.value.partial_cmp(&b.value).unwrap())
             .map(|e| e.name.as_str())
@@ -202,7 +209,11 @@ impl EmotionModel {
     /// # Returns
     /// `bool`.
     pub fn is_active(&self, name: &str) -> bool {
-        self.emotions.iter().find(|e| e.name == name).map(|e| e.is_active()).unwrap_or(false)
+        self.emotions
+            .iter()
+            .find(|e| e.name == name)
+            .map(|e| e.is_active())
+            .unwrap_or(false)
     }
 
     /// Returns the names of all emotions currently active (above `min_visible`).
@@ -210,7 +221,11 @@ impl EmotionModel {
     /// # Returns
     /// `Vec<&str>`.
     pub fn active_names(&self) -> Vec<&str> {
-        self.emotions.iter().filter(|e| e.is_active()).map(|e| e.name.as_str()).collect()
+        self.emotions
+            .iter()
+            .filter(|e| e.is_active())
+            .map(|e| e.name.as_str())
+            .collect()
     }
 
     /// Returns the number of emotions registered in this model.
@@ -223,6 +238,8 @@ impl EmotionModel {
 
     /// Resets all emotions to their resting levels.
     pub fn reset(&mut self) {
-        for e in &mut self.emotions { e.value = e.resting_level; }
+        for e in &mut self.emotions {
+            e.value = e.resting_level;
+        }
     }
 }

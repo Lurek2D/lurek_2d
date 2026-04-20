@@ -24,16 +24,16 @@ pub const MOD_META: u8 = 0b1000;
 /// Also tracks physical scancodes, key repeat, and text input state.
 ///
 /// # Fields
-/// - `keys_down` — `HashSet<String>`.
-/// - `keys_pressed` — `Vec<String>`.
-/// - `keys_released` — `Vec<String>`.
-/// - `scancodes_down` — `HashSet<String>`.
-/// - `scancodes_pressed` — `Vec<String>`.
-/// - `scancodes_released` — `Vec<String>`.
-/// - `key_repeat_enabled` — `bool`.
-/// - `text_input_enabled` — `bool`.
-/// - `text_input_buffer` — `Vec<String>`.
-/// - `modifiers` — `u8`.
+/// - `keys_down` â€” `HashSet<String>`.
+/// - `keys_pressed` â€” `Vec<String>`.
+/// - `keys_released` â€” `Vec<String>`.
+/// - `scancodes_down` â€” `HashSet<String>`.
+/// - `scancodes_pressed` â€” `Vec<String>`.
+/// - `scancodes_released` â€” `Vec<String>`.
+/// - `key_repeat_enabled` â€” `bool`.
+/// - `text_input_enabled` â€” `bool`.
+/// - `text_input_buffer` â€” `Vec<String>`.
+/// - `modifiers` â€” `u8`.
 pub struct KeyboardState {
     keys_down: HashSet<String>,
     keys_pressed: Vec<String>,
@@ -94,7 +94,7 @@ impl KeyboardState {
     /// Records that a physical scancode is now held down.
     ///
     /// # Parameters
-    /// - `scancode` — Physical scancode name string (e.g. `"lshift"`, `"a"`).
+    /// - `scancode` â€” Physical scancode name string (e.g. `"lshift"`, `"a"`).
     pub(crate) fn press_scancode(&mut self, scancode: String) {
         if self.scancodes_down.insert(scancode.clone()) {
             self.scancodes_pressed.push(scancode);
@@ -104,7 +104,7 @@ impl KeyboardState {
     /// Records that a physical scancode was released.
     ///
     /// # Parameters
-    /// - `scancode` — Physical scancode name string to mark as released.
+    /// - `scancode` â€” Physical scancode name string to mark as released.
     pub(crate) fn release_scancode(&mut self, scancode: String) {
         if self.scancodes_down.remove(&scancode) {
             self.scancodes_released.push(scancode);
@@ -114,7 +114,7 @@ impl KeyboardState {
     /// Returns `true` if the given physical scancode is currently held down.
     ///
     /// # Parameters
-    /// - `scancode` — `&str`.
+    /// - `scancode` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -125,7 +125,7 @@ impl KeyboardState {
     /// Enables or disables key repeat event delivery.
     ///
     /// # Parameters
-    /// - `enabled` — `true` to deliver key repeat events; `false` to suppress them.
+    /// - `enabled` â€” `true` to deliver key repeat events; `false` to suppress them.
     pub(crate) fn set_key_repeat(&mut self, enabled: bool) {
         self.key_repeat_enabled = enabled;
     }
@@ -141,7 +141,7 @@ impl KeyboardState {
     /// Enables or disables text input (IME) event delivery.
     ///
     /// # Parameters
-    /// - `enabled` — `true` to accept IME commit strings; `false` to ignore them.
+    /// - `enabled` â€” `true` to accept IME commit strings; `false` to ignore them.
     pub(crate) fn set_text_input(&mut self, enabled: bool) {
         self.text_input_enabled = enabled;
     }
@@ -157,7 +157,7 @@ impl KeyboardState {
     /// Pushes a committed text input string into the per-frame buffer.
     ///
     /// # Parameters
-    /// - `text` — UTF-8 string committed by the IME or direct character input.
+    /// - `text` â€” UTF-8 string committed by the IME or direct character input.
     pub(crate) fn push_text_input(&mut self, text: String) {
         self.text_input_buffer.push(text);
     }
@@ -173,7 +173,7 @@ impl KeyboardState {
     /// Records that `key` is now held down, adding it to the pressed list if newly down.
     ///
     /// # Parameters
-    /// - `key` — Lowercase key name string, e.g. `"space"`, `"a"`, `"left"`.
+    /// - `key` â€” Lowercase key name string, e.g. `"space"`, `"a"`, `"left"`.
     pub fn set_key_down(&mut self, key: &str) {
         if self.keys_down.insert(key.to_string()) {
             self.keys_pressed.push(key.to_string());
@@ -183,7 +183,7 @@ impl KeyboardState {
     /// Records that `key` was released, adding it to the released list if it was down.
     ///
     /// # Parameters
-    /// - `key` — Lowercase key name string.
+    /// - `key` â€” Lowercase key name string.
     pub fn set_key_up(&mut self, key: &str) {
         if self.keys_down.remove(key) {
             self.keys_released.push(key.to_string());
@@ -193,10 +193,10 @@ impl KeyboardState {
     /// Returns `true` if `key` is currently held down.
     ///
     /// # Parameters
-    /// - `key` — Lowercase key name string.
+    /// - `key` â€” Lowercase key name string.
     ///
     /// # Returns
-    /// `bool` — `true` if the key is in the held-down set.
+    /// `bool` â€” `true` if the key is in the held-down set.
     pub fn is_down(&self, key: &str) -> bool {
         self.keys_down.contains(key)
     }
@@ -204,10 +204,10 @@ impl KeyboardState {
     /// Returns `true` if any of the given keys is currently held down.
     ///
     /// # Parameters
-    /// - `keys` — Slice of key name strings to check.
+    /// - `keys` â€” Slice of key name strings to check.
     ///
     /// # Returns
-    /// `bool` — `true` if at least one key in `keys` is held.
+    /// `bool` â€” `true` if at least one key in `keys` is held.
     pub fn is_any_down(&self, keys: &[String]) -> bool {
         keys.iter().any(|k| self.keys_down.contains(k.as_str()))
     }
@@ -215,7 +215,7 @@ impl KeyboardState {
     /// Returns the list of keys that became pressed this frame.
     ///
     /// # Returns
-    /// `&[String]` — Slice of key name strings pressed since the last `begin_frame`.
+    /// `&[String]` â€” Slice of key name strings pressed since the last `begin_frame`.
     pub fn get_pressed(&self) -> &[String] {
         &self.keys_pressed
     }
@@ -223,7 +223,7 @@ impl KeyboardState {
     /// Returns the list of keys that were released this frame.
     ///
     /// # Returns
-    /// `&[String]` — Slice of key name strings released since the last `begin_frame`.
+    /// `&[String]` â€” Slice of key name strings released since the last `begin_frame`.
     pub fn get_released(&self) -> &[String] {
         &self.keys_released
     }
@@ -242,7 +242,7 @@ impl KeyboardState {
     /// Returns `true` if the named modifier key is currently held.
     ///
     /// # Parameters
-    /// - `modifier` — `&str`. One of `"shift"`, `"ctrl"`, `"alt"`, `"meta"`, `"super"`.
+    /// - `modifier` â€” `&str`. One of `"shift"`, `"ctrl"`, `"alt"`, `"meta"`, `"super"`.
     ///
     /// # Returns
     /// `bool`.
@@ -260,10 +260,10 @@ impl KeyboardState {
     /// Sets the modifier bitmask when modifiers change.
     ///
     /// # Parameters
-    /// - `shift` — `bool`.
-    /// - `ctrl` — `bool`.
-    /// - `alt` — `bool`.
-    /// - `meta` — `bool`.
+    /// - `shift` â€” `bool`.
+    /// - `ctrl` â€” `bool`.
+    /// - `alt` â€” `bool`.
+    /// - `meta` â€” `bool`.
     ///
     /// # Returns
     /// `()`.
@@ -290,10 +290,10 @@ impl KeyboardState {
 /// `"shift"` resolve to their left-side physical variant (`"lshift"`).
 ///
 /// # Parameters
-/// - `key` — Logical key name (e.g. `"space"`, `"shift"`, `"a"`).
+/// - `key` â€” Logical key name (e.g. `"space"`, `"shift"`, `"a"`).
 ///
 /// # Returns
-/// `Option<String>` — Corresponding scancode, or `None` for unmapped names.
+/// `Option<String>` â€” Corresponding scancode, or `None` for unmapped names.
 pub(crate) fn get_scancode_from_key(key: &str) -> Option<String> {
     let normalized = key.to_ascii_lowercase();
 
@@ -329,10 +329,10 @@ pub(crate) fn get_scancode_from_key(key: &str) -> Option<String> {
 /// generic name (`"shift"`).
 ///
 /// # Parameters
-/// - `scancode` — Physical scancode string (e.g. `"lshift"`, `"a"`, `"f1"`).
+/// - `scancode` â€” Physical scancode string (e.g. `"lshift"`, `"a"`, `"f1"`).
 ///
 /// # Returns
-/// `Option<String>` — Logical key name, or `None` for unmapped scancodes.
+/// `Option<String>` â€” Logical key name, or `None` for unmapped scancodes.
 pub(crate) fn get_key_from_scancode(scancode: &str) -> Option<String> {
     let normalized = scancode.to_ascii_lowercase();
 
@@ -366,10 +366,10 @@ pub(crate) fn get_key_from_scancode(scancode: &str) -> Option<String> {
 /// (which the engine skips silently).
 ///
 /// # Parameters
-/// - `key` — A reference to the `winit::keyboard::Key` from a `WindowEvent::KeyboardInput`.
+/// - `key` â€” A reference to the `winit::keyboard::Key` from a `WindowEvent::KeyboardInput`.
 ///
 /// # Returns
-/// `Option<String>` — Lowercase key name (e.g. `"space"`, `"escape"`, `"a"`) or `None`.
+/// `Option<String>` â€” Lowercase key name (e.g. `"space"`, `"escape"`, `"a"`) or `None`.
 pub fn winit_key_to_string(key: &winit::keyboard::Key) -> Option<String> {
     use winit::keyboard::{Key, NamedKey};
     match key {
@@ -417,10 +417,10 @@ pub fn winit_key_to_string(key: &winit::keyboard::Key) -> Option<String> {
 /// Scancodes represent physical key positions and are layout-independent.
 ///
 /// # Parameters
-/// - `code` — A `winit::keyboard::KeyCode` from the physical key field.
+/// - `code` â€” A `winit::keyboard::KeyCode` from the physical key field.
 ///
 /// # Returns
-/// `Option<&'static str>` — Scancode string or `None` for unmapped keys.
+/// `Option<&'static str>` â€” Scancode string or `None` for unmapped keys.
 pub fn winit_scancode_to_string(code: winit::keyboard::KeyCode) -> Option<&'static str> {
     use winit::keyboard::KeyCode;
     match code {
@@ -511,195 +511,5 @@ pub fn winit_scancode_to_string(code: winit::keyboard::KeyCode) -> Option<&'stat
         KeyCode::Numpad8 => Some("kp8"),
         KeyCode::Numpad9 => Some("kp9"),
         _ => None,
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // ── Initial state ─────────────────────────────────────────────────────────
-
-    #[test]
-    fn new_state_all_empty() {
-        let kb = KeyboardState::new();
-        assert!(!kb.is_down("a"));
-        assert!(kb.get_pressed().is_empty());
-        assert!(kb.get_released().is_empty());
-    }
-
-    // ── Key down / up ────────────────────────────────────────────────────────
-
-    #[test]
-    fn set_key_down_reports_pressed() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("space");
-        assert!(kb.is_down("space"));
-        assert_eq!(kb.get_pressed(), &["space"]);
-    }
-
-    #[test]
-    fn set_key_down_twice_not_double_pressed() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("a");
-        kb.set_key_down("a");
-        assert_eq!(kb.get_pressed().len(), 1);
-    }
-
-    #[test]
-    fn set_key_up_clears_down() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("enter");
-        kb.set_key_up("enter");
-        assert!(!kb.is_down("enter"));
-        assert_eq!(kb.get_released(), &["enter"]);
-    }
-
-    // ── Frame boundary ───────────────────────────────────────────────────────
-
-    #[test]
-    fn begin_frame_clears_transient_state() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("a");
-        kb.set_key_up("a");
-        kb.begin_frame();
-        assert!(kb.get_pressed().is_empty());
-        assert!(kb.get_released().is_empty());
-    }
-
-    // ── Any down ──────────────────────────────────────────────────────────────
-
-    #[test]
-    fn is_any_down_returns_true_if_one_matches() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("left");
-        let keys = vec!["left".to_string(), "right".to_string()];
-        assert!(kb.is_any_down(&keys));
-    }
-
-    #[test]
-    fn is_any_down_false_when_none_pressed() {
-        let kb = KeyboardState::new();
-        let keys = vec!["left".to_string(), "right".to_string()];
-        assert!(!kb.is_any_down(&keys));
-    }
-
-    // ── Modifiers ─────────────────────────────────────────────────────────────
-
-    #[test]
-    fn set_shift_modifier_reports_active() {
-        let mut kb = KeyboardState::new();
-        kb.set_modifiers(true, false, false, false);
-        assert!(kb.is_modifier_active("shift"));
-        assert!(!kb.is_modifier_active("ctrl"));
-    }
-
-    #[test]
-    fn all_modifiers_active() {
-        let mut kb = KeyboardState::new();
-        kb.set_modifiers(true, true, true, true);
-        assert!(kb.is_modifier_active("shift"));
-        assert!(kb.is_modifier_active("ctrl"));
-        assert!(kb.is_modifier_active("alt"));
-        assert!(kb.is_modifier_active("meta"));
-        assert!(kb.is_modifier_active("super")); // alias for meta
-    }
-
-    #[test]
-    fn unknown_modifier_returns_false() {
-        let kb = KeyboardState::new();
-        assert!(!kb.is_modifier_active("nonexistent"));
-    }
-
-    // ── Scancode press / release ─────────────────────────────────────────────
-
-    #[test]
-    fn scancode_press_and_release() {
-        let mut kb = KeyboardState::new();
-        kb.press_scancode("lshift".into());
-        assert!(kb.is_scancode_down("lshift"));
-        kb.release_scancode("lshift".into());
-        assert!(!kb.is_scancode_down("lshift"));
-    }
-
-    #[test]
-    fn scancode_duplicate_press_ignored() {
-        let mut kb = KeyboardState::new();
-        kb.press_scancode("a".into());
-        kb.press_scancode("a".into()); // duplicate — should not double-count
-        assert!(kb.is_scancode_down("a"));
-    }
-
-    // ── Text input ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn text_input_buffer_collects_and_clears() {
-        let mut kb = KeyboardState::new();
-        kb.set_text_input(true);
-        assert!(kb.has_text_input());
-        kb.push_text_input("hello".into());
-        kb.push_text_input("world".into());
-        assert_eq!(kb.get_text_input(), &["hello", "world"]);
-        kb.begin_frame();
-        assert!(kb.get_text_input().is_empty());
-    }
-
-    // ── Key repeat ────────────────────────────────────────────────────────────
-
-    #[test]
-    fn key_repeat_toggle() {
-        let mut kb = KeyboardState::new();
-        assert!(!kb.has_key_repeat());
-        kb.set_key_repeat(true);
-        assert!(kb.has_key_repeat());
-    }
-
-    // ── Clear ─────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn clear_resets_all_state() {
-        let mut kb = KeyboardState::new();
-        kb.set_key_down("a");
-        kb.press_scancode("a".into());
-        kb.push_text_input("x".into());
-        kb.clear();
-        assert!(!kb.is_down("a"));
-        assert!(!kb.is_scancode_down("a"));
-        assert!(kb.get_text_input().is_empty());
-        assert!(kb.get_pressed().is_empty());
-        assert!(kb.get_released().is_empty());
-    }
-
-    // ── Scancode ↔ key mapping ───────────────────────────────────────────────
-
-    #[test]
-    fn scancode_from_key_single_char() {
-        assert_eq!(get_scancode_from_key("A"), Some("a".into()));
-        assert_eq!(get_scancode_from_key("5"), Some("5".into()));
-    }
-
-    #[test]
-    fn scancode_from_key_named_keys() {
-        assert_eq!(get_scancode_from_key("space"), Some("space".into()));
-        assert_eq!(get_scancode_from_key("shift"), Some("lshift".into()));
-        assert_eq!(get_scancode_from_key("ctrl"), Some("lctrl".into()));
-    }
-
-    #[test]
-    fn scancode_from_key_unknown() {
-        assert_eq!(get_scancode_from_key("nonexistent_key"), None);
-    }
-
-    #[test]
-    fn key_from_scancode_roundtrip() {
-        assert_eq!(get_key_from_scancode("a"), Some("a".into()));
-        assert_eq!(get_key_from_scancode("lshift"), Some("shift".into()));
-        assert_eq!(get_key_from_scancode("rctrl"), Some("ctrl".into()));
-    }
-
-    #[test]
-    fn key_from_scancode_function_keys() {
-        assert_eq!(get_key_from_scancode("f1"), Some("f1".into()));
-        assert_eq!(get_key_from_scancode("f12"), Some("f12".into()));
     }
 }

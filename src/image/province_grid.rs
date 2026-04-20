@@ -178,11 +178,7 @@ impl ProvinceGrid {
     /// Only the RIGHT `(x+1, y)` and BOTTOM `(x, y+1)` neighbors are checked per pixel
     /// to avoid double-counting. Pairs are stored as `(min, max)` to keep the map
     /// canonical and avoid duplicate keys.
-    fn detect_adjacencies_internal(
-        ids: &[u32],
-        width: u32,
-        height: u32,
-    ) -> Vec<(u32, u32, u32)> {
+    fn detect_adjacencies_internal(ids: &[u32], width: u32, height: u32) -> Vec<(u32, u32, u32)> {
         let mut counts: HashMap<(u32, u32), u32> = HashMap::new();
 
         for y in 0..height {

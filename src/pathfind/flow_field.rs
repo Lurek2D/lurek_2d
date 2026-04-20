@@ -12,9 +12,9 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use crate::runtime::log_messages::{FF01, FF02, FF03};
 use crate::log_msg;
 use crate::pathfind::nav_grid::NavGrid;
+use crate::runtime::log_messages::{FF01, FF02, FF03};
 
 /// A pre-computed flow field that stores a direction vector and integrated cost
 /// for every cell, guiding any unit toward one or more target cells.
@@ -326,7 +326,14 @@ impl FlowField {
                     if g.is_blocked(x, y) {
                         for py in 0..cell_size {
                             for px in 0..cell_size {
-                                img.set_pixel(x * cell_size + px, y * cell_size + py, 90, 40, 40, 255);
+                                img.set_pixel(
+                                    x * cell_size + px,
+                                    y * cell_size + py,
+                                    90,
+                                    40,
+                                    40,
+                                    255,
+                                );
                             }
                         }
                     }
@@ -353,10 +360,13 @@ impl FlowField {
             img.draw_circle(
                 (tx * cell_size + cell_size / 2) as i32,
                 (ty * cell_size + cell_size / 2) as i32,
-                5, 255, 80, 80, 255,
+                5,
+                255,
+                80,
+                80,
+                255,
             );
         }
         img
     }
-
 }

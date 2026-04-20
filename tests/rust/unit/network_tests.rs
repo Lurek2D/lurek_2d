@@ -5,7 +5,7 @@ use lurek2d::network::error::NetworkError;
 use lurek2d::network::host::{HostRole, PeerStats};
 use lurek2d::network::http::HttpResponse;
 use lurek2d::network::lobby::{LobbyInfo, LOBBY_PORT};
-use lurek2d::network::message::{NetValue, pack, unpack, estimate_size};
+use lurek2d::network::message::{estimate_size, pack, unpack, NetValue};
 use lurek2d::network::net_thread::NetworkRuntime;
 use std::net::{Ipv4Addr, SocketAddr};
 
@@ -335,10 +335,7 @@ mod message_tests {
             ("y".to_string(), NetValue::Float(200.0)),
             (
                 "nested".to_string(),
-                NetValue::Map(vec![(
-                    "deep".to_string(),
-                    NetValue::Integer(42),
-                )]),
+                NetValue::Map(vec![("deep".to_string(), NetValue::Integer(42))]),
             ),
         ]);
         let packed = pack(&val).unwrap();

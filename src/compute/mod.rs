@@ -1,4 +1,4 @@
-﻿//! Dense N-dimensional numerical arrays with NumPy-style operations.
+//! Dense N-dimensional numerical arrays with NumPy-style operations.
 //!
 //! Provides [`array::NdArray`] for 1D/2D/3D row-major arrays with `f32`, `f64`,
 //! and `i32` element types. Used by the `lurek.gpu` Lua module. Despite the GPU namespace,
@@ -15,19 +15,18 @@
 //!
 //! Lua bridge: `src/lua_api/compute_api.rs` as `lurek.gpu.*`.
 
-
+/// Statistical analytics, signal processing, and normalisation.
+pub mod analytics;
 /// N-dimensional array storage with typed element access.
 pub mod array;
+/// Fast Fourier Transform and inverse FFT (iterative Cooley-Tukey radix-2).
+pub mod fft;
+/// Linear algebra: solvers, kernels, transforms, Sobel, LU decomp, eigenvalue.
+pub mod linalg;
 /// Element-wise and reduction operations on NdArray.
 pub mod ops;
 /// Spatial operations: convolution, pooling, distance transforms.
 pub mod spatial;
-/// Statistical analytics, signal processing, and normalisation.
-pub mod analytics;
-/// Linear algebra: solvers, kernels, transforms, Sobel, LU decomp, eigenvalue.
-pub mod linalg;
-/// Fast Fourier Transform and inverse FFT (iterative Cooley-Tukey radix-2).
-pub mod fft;
 
 pub use array::{DataType, NdArray};
 pub use fft::{fft, fft_magnitude, ifft};

@@ -8,8 +8,8 @@ use std::collections::HashMap;
 
 use super::ray_hit::RayHit;
 use super::sprite_projection::SpriteProjection;
-use crate::runtime::log_messages::RC01;
 use crate::log_msg;
+use crate::runtime::log_messages::RC01;
 
 /// 2D grid-based raycaster using DDA traversal.
 ///
@@ -285,8 +285,16 @@ impl Raycaster2D {
         let mut map_x = ox.floor() as i32;
         let mut map_y = oy.floor() as i32;
 
-        let delta_dist_x = if dir_x.abs() < 1e-10 { f32::MAX } else { (1.0 / dir_x).abs() };
-        let delta_dist_y = if dir_y.abs() < 1e-10 { f32::MAX } else { (1.0 / dir_y).abs() };
+        let delta_dist_x = if dir_x.abs() < 1e-10 {
+            f32::MAX
+        } else {
+            (1.0 / dir_x).abs()
+        };
+        let delta_dist_y = if dir_y.abs() < 1e-10 {
+            f32::MAX
+        } else {
+            (1.0 / dir_y).abs()
+        };
 
         let (step_x, mut side_dist_x) = if dir_x < 0.0 {
             (-1, (ox - map_x as f32) * delta_dist_x)
@@ -304,33 +312,71 @@ impl Raycaster2D {
                 side_dist_x += delta_dist_x;
                 map_x += step_x;
                 let perp_dist = side_dist_x - delta_dist_x;
-                if perp_dist > max_dist { break; }
-                if map_x < 0 || map_x >= self.width as i32
-                    || map_y < 0 || map_y >= self.height as i32 { break; }
+                if perp_dist > max_dist {
+                    break;
+                }
+                if map_x < 0
+                    || map_x >= self.width as i32
+                    || map_y < 0
+                    || map_y >= self.height as i32
+                {
+                    break;
+                }
                 let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
                 if cell > 0 {
                     let alpha = self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0);
                     let hit_x = ox + dir_x * perp_dist;
                     let hit_y = oy + dir_y * perp_dist;
                     let tex_u = (hit_y - hit_y.floor()).abs();
-                    hits.push(RayHit { distance: perp_dist, raw_distance: perp_dist, cell_value: cell, alpha, side: 0, tex_u, hit_x, hit_y, hit: true });
-                    if alpha >= 1.0 || hits.len() >= cap { break; }
+                    hits.push(RayHit {
+                        distance: perp_dist,
+                        raw_distance: perp_dist,
+                        cell_value: cell,
+                        alpha,
+                        side: 0,
+                        tex_u,
+                        hit_x,
+                        hit_y,
+                        hit: true,
+                    });
+                    if alpha >= 1.0 || hits.len() >= cap {
+                        break;
+                    }
                 }
             } else {
                 side_dist_y += delta_dist_y;
                 map_y += step_y;
                 let perp_dist = side_dist_y - delta_dist_y;
-                if perp_dist > max_dist { break; }
-                if map_y < 0 || map_y >= self.height as i32
-                    || map_x < 0 || map_x >= self.width as i32 { break; }
+                if perp_dist > max_dist {
+                    break;
+                }
+                if map_y < 0
+                    || map_y >= self.height as i32
+                    || map_x < 0
+                    || map_x >= self.width as i32
+                {
+                    break;
+                }
                 let cell = self.cells[(map_y as u32 * self.width + map_x as u32) as usize];
                 if cell > 0 {
                     let alpha = self.wall_alphas.get(&(cell as u8)).copied().unwrap_or(1.0);
                     let hit_x = ox + dir_x * perp_dist;
                     let hit_y = oy + dir_y * perp_dist;
                     let tex_u = (hit_x - hit_x.floor()).abs();
-                    hits.push(RayHit { distance: perp_dist, raw_distance: perp_dist, cell_value: cell, alpha, side: 1, tex_u, hit_x, hit_y, hit: true });
-                    if alpha >= 1.0 || hits.len() >= cap { break; }
+                    hits.push(RayHit {
+                        distance: perp_dist,
+                        raw_distance: perp_dist,
+                        cell_value: cell,
+                        alpha,
+                        side: 1,
+                        tex_u,
+                        hit_x,
+                        hit_y,
+                        hit: true,
+                    });
+                    if alpha >= 1.0 || hits.len() >= cap {
+                        break;
+                    }
                 }
             }
         }
@@ -636,7 +682,10 @@ impl Raycaster2D {
             floor_y += floor_step_y;
             result.push((tx, ty));
         }
-        log::debug!("raycaster: cast_floor_row row={row} → {} samples", result.len());
+        log::debug!(
+            "raycaster: cast_floor_row row={row} → {} samples",
+            result.len()
+        );
         result
     }
 }

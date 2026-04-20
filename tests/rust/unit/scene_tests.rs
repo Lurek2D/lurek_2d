@@ -279,3 +279,215 @@ mod render_tests {
         }
     }
 }
+
+//  depth_sorter (migrated from src/scene/depth_sorter.rs per TST-02) 
+//
+// NOTE: dropped 5 internal-only tests from src/scene/depth_sorter.rs
+// (dirty_flag_set_on_add, dirty_flag_set_on_add_object, dirty_flag_cleared_after_sort,
+//  sorted_entries_no_op_when_not_dirty, clear_resets_dirty_flag)  the `dirty`
+// field is a private implementation detail; its behaviour is indirectly covered
+// by the sort-correctness tests below and by tests/lua/unit/test_scene.lua.
+
+mod depth_sorter_tests {
+    use lurek2d::scene::depth_sorter::DepthSorter;
+
+    const RADIX_THRESHOLD: usize = 256;
+
+    //  Sorting (comparison path) 
+
+    #[test]
+    fn sort_ascending_depth_order() {
+        let mut ds = DepthSorter::new();
+        ds.add(0, 3.0);
+        ds.add(1, 1.0);
+        ds.sort();
+        let entries = ds.sorted_entries();
+        assert!((entries[0].depth - 1.0).abs() < 1e-5);
+        assert!((entries[1].depth - 3.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn equal_depths_no_panic() {
+        let mut ds = DepthSorter::new();
+        ds.add(0, 1.0);
+        ds.add(1, 1.0);
+        ds.sort();
+        assert_eq!(ds.get_count(), 2);
+    }
+
+    //  Stable sort 
+
+    #[test]
+    fn stable_sort_preserves_insertion_order_for_equal_depths() {
+        let mut ds = DepthSorter::new();
+        ds.set_stable(true);
+        ds.add(0, 5.0);
+        ds.add(1, 5.0);
+        ds.add(2, 5.0);
+        let entries = ds.sorted_entries();
+        assert_eq!(entries[0].callback_index, 0);
+        assert_eq!(entries[1].callback_index, 1);
+        assert_eq!(entries[2].callback_index, 2);
+    }
+
+    #[test]
+    fn set_stable_is_stable_round_trip() {
+        let mut ds = DepthSorter::new();
+        assert!(!ds.is_stable());
+        ds.set_stable(true);
+        assert!(ds.is_stable());
+        ds.set_stable(false);
+        assert!(!ds.is_stable());
+    }
+
+    //  Radix sort 
+
+    #[test]
+    fn sort_radix_gives_ascending_order() {
+        let mut ds = DepthSorter::new();
+        for i in (0..RADIX_THRESHOLD).rev() {
+            ds.add(i, i as f32);
+        }
+        let took_radix = ds.sort_radix();
+        assert!(took_radix, "radix path should be taken for 256 integral-depth entries");
+        let entries = ds.sorted_entries();
+        for (i, e) in entries.iter().enumerate() {
+            assert!((e.depth - i as f32).abs() < 1e-4, "entry {i} out of order");
+        }
+    }
+
+    #[test]
+    fn sort_radix_handles_negative_depths() {
+        let mut ds = DepthSorter::new();
+        for i in (0..RADIX_THRESHOLD).rev() {
+            let depth = i as f32 - (RADIX_THRESHOLD / 2) as f32;
+            ds.add(i, depth);
+        }
+        let took_radix = ds.sort_radix();
+        assert!(took_radix);
+        let entries = ds.sorted_entries();
+        for i in 1..entries.len() {
+            assert!(
+                entries[i - 1].depth <= entries[i].depth,
+                "depth order violated at index {i}"
+            );
+        }
+    }
+
+    #[test]
+    fn sort_radix_fallback_for_small_input() {
+        let mut ds = DepthSorter::new();
+        for i in 0..10 {
+            ds.add(i, (10 - i) as f32);
+        }
+        let took_radix = ds.sort_radix();
+        assert!(!took_radix);
+        let entries = ds.sorted_entries();
+        for i in 1..entries.len() {
+            assert!(entries[i - 1].depth <= entries[i].depth);
+        }
+    }
+
+    //  Mixed add / add_object 
+
+    #[test]
+    fn add_object_marks_is_object_true() {
+        let mut ds = DepthSorter::new();
+        ds.add_object(42, 2.0);
+        let entries = ds.sorted_entries();
+        assert!(entries[0].is_object);
+        assert_eq!(entries[0].callback_index, 42);
+    }
+
+    #[test]
+    fn add_marks_is_object_false() {
+        let mut ds = DepthSorter::new();
+        ds.add(7, 1.0);
+        let entries = ds.sorted_entries();
+        assert!(!entries[0].is_object);
+    }
+
+    //  Clear 
+
+    #[test]
+    fn clear_after_sort_empties() {
+        let mut ds = DepthSorter::new();
+        ds.add(0, 1.0);
+        ds.sort();
+        ds.clear();
+        assert_eq!(ds.get_count(), 0);
+    }
+}
+
+//  transition (additional tests migrated from src/scene/transition.rs) 
+//
+// The `progress_eased` behavioural tests were previously migrated to
+// tests/lua/unit/test_scene.lua (observable via lurek.scene.getTransitionProgressEased()).
+// These tests cover the remaining public-API behaviour on ActiveTransition that
+// was still inline in src/scene/transition.rs.
+
+mod active_transition_tests {
+    use lurek2d::scene::transition::{ActiveTransition, EasingType, TransitionType};
+
+    #[test]
+    fn new_starts_at_zero_elapsed() {
+        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
+        assert!(t.elapsed.abs() < 1e-5);
+    }
+
+    #[test]
+    fn set_easing_updates_field() {
+        let mut t = ActiveTransition::new(TransitionType::Fade, 1.0);
+        t.set_easing(EasingType::Bounce);
+        assert_eq!(t.get_easing(), EasingType::Bounce);
+    }
+
+    #[test]
+    fn progress_at_start_is_zero() {
+        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
+        assert!(t.progress().abs() < 1e-5);
+    }
+
+    #[test]
+    fn progress_after_half_duration_is_half() {
+        let mut t = ActiveTransition::new(TransitionType::Fade, 2.0);
+        t.update(1.0);
+        assert!((t.progress() - 0.5).abs() < 1e-5);
+    }
+
+    #[test]
+    fn progress_clamped_at_one() {
+        let mut t = ActiveTransition::new(TransitionType::Fade, 1.0);
+        t.update(10.0);
+        assert!((t.progress() - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn zero_duration_progress_is_one() {
+        let t = ActiveTransition::new(TransitionType::None, 0.0);
+        assert!((t.progress() - 1.0).abs() < 1e-5);
+    }
+
+    #[test]
+    fn is_complete_before_duration_false() {
+        let t = ActiveTransition::new(TransitionType::Fade, 1.0);
+        assert!(!t.is_complete());
+    }
+
+    #[test]
+    fn is_complete_after_full_update_true() {
+        let mut t = ActiveTransition::new(TransitionType::Fade, 0.5);
+        t.update(0.5);
+        assert!(t.is_complete());
+    }
+
+    #[test]
+    fn transition_type_from_lua_str_fade() {
+        assert_eq!(TransitionType::from_lua_str("fade"), TransitionType::Fade);
+    }
+
+    #[test]
+    fn transition_type_from_lua_str_unknown_returns_none_variant() {
+        assert_eq!(TransitionType::from_lua_str("xyz"), TransitionType::None);
+    }
+}

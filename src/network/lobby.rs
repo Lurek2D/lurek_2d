@@ -108,8 +108,7 @@ impl LobbyInfo {
 /// # Returns
 /// `Result<(), String>`.
 pub fn broadcast_lobby(info: &LobbyInfo) -> Result<(), String> {
-    let socket =
-        UdpSocket::bind("0.0.0.0:0").map_err(|e| format!("lobby broadcast bind: {e}"))?;
+    let socket = UdpSocket::bind("0.0.0.0:0").map_err(|e| format!("lobby broadcast bind: {e}"))?;
     socket
         .set_broadcast(true)
         .map_err(|e| format!("lobby broadcast SO_BROADCAST: {e}"))?;
@@ -142,7 +141,10 @@ pub fn discover_lobbies(timeout_ms: u64) -> Vec<LobbyInfo> {
     else {
         return Vec::new();
     };
-    if socket.set_read_timeout(Some(Duration::from_millis(50))).is_err() {
+    if socket
+        .set_read_timeout(Some(Duration::from_millis(50)))
+        .is_err()
+    {
         return Vec::new();
     }
 

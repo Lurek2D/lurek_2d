@@ -1,4 +1,4 @@
-﻿//! Main tile map container with layers, tiles, viewport, collision, and autotile support.
+//! Main tile map container with layers, tiles, viewport, collision, and autotile support.
 //!
 //! This module is part of Lurek2D's `tilemap` subsystem and provides the implementation
 //! details for tilemap-related operations and data management.
@@ -1193,9 +1193,7 @@ impl TileMap {
     /// # Returns
     /// `Vec<Vec<bool>>`.
     pub fn to_nav_grid(&self, layer: usize, walkable_gids: &[u32]) -> Vec<Vec<bool>> {
-        let (width, height) = self
-            .get_layer_dimensions(layer)
-            .unwrap_or((0, 0));
+        let (width, height) = self.get_layer_dimensions(layer).unwrap_or((0, 0));
         let mut grid: Vec<Vec<bool>> = Vec::with_capacity(height as usize);
         for y in 0..height {
             let mut row: Vec<bool> = Vec::with_capacity(width as usize);

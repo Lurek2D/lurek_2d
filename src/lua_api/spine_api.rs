@@ -233,8 +233,7 @@ impl LuaUserData for LuaSkeleton {
                 for v in chain_tbl.sequence_values::<usize>() {
                     chain.push(v?);
                 }
-                let constraint =
-                    IKConstraint::new(&name, chain, bend_positive.unwrap_or(true));
+                let constraint = IKConstraint::new(&name, chain, bend_positive.unwrap_or(true));
                 Ok(this.inner.add_ik_constraint(constraint))
             },
         );
@@ -247,9 +246,7 @@ impl LuaUserData for LuaSkeleton {
         /// @return boolean
         methods.add_method_mut(
             "setIKTarget",
-            |_, this, (name, x, y): (String, f32, f32)| {
-                Ok(this.inner.set_ik_target(&name, x, y))
-            },
+            |_, this, (name, x, y): (String, f32, f32)| Ok(this.inner.set_ik_target(&name, x, y)),
         );
 
         // -- addSkin --
@@ -306,9 +303,13 @@ impl LuaUserData for LuaSkeleton {
         methods.add_method_mut(
             "blendAnimation",
             |_, this, (anim_ud, time, blend_weight): (mlua::AnyUserData, f32, Option<f32>)| {
-                let anim_ref = anim_ud.borrow::<LuaSkeletonAnimation>().map_err(mlua::Error::external)?;
+                let anim_ref = anim_ud
+                    .borrow::<LuaSkeletonAnimation>()
+                    .map_err(mlua::Error::external)?;
                 let w = blend_weight.unwrap_or(1.0);
-                anim_ref.inner.apply_to_skeleton_blended(&mut this.inner, time, w);
+                anim_ref
+                    .inner
+                    .apply_to_skeleton_blended(&mut this.inner, time, w);
                 Ok(())
             },
         );
@@ -338,16 +339,27 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @return nil
         methods.add_method_mut(
             "addKeyframe",
-            |_, this, (bone_idx, prop_str, time, value, easing_str): (usize, String, f32, f32, Option<String>)| {
+            |_,
+             this,
+             (bone_idx, prop_str, time, value, easing_str): (
+                usize,
+                String,
+                f32,
+                f32,
+                Option<String>,
+            )| {
                 let property = match prop_str.as_str() {
                     "x" => BoneProperty::X,
                     "y" => BoneProperty::Y,
                     "rotation" => BoneProperty::Rotation,
                     "scale_x" => BoneProperty::ScaleX,
                     "scale_y" => BoneProperty::ScaleY,
-                    other => return Err(LuaError::RuntimeError(format!(
-                        "addKeyframe: unknown property '{}'", other
-                    ))),
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "addKeyframe: unknown property '{}'",
+                            other
+                        )))
+                    }
                 };
                 let easing = match easing_str.as_deref().unwrap_or("linear") {
                     "linear" => EasingType::Linear,
@@ -355,15 +367,24 @@ impl LuaUserData for LuaSkeletonAnimation {
                     "ease_out" => EasingType::EaseOut,
                     "ease_in_out" => EasingType::EaseInOut,
                     "step" => EasingType::Step,
-                    other => return Err(LuaError::RuntimeError(format!(
-                        "addKeyframe: unknown easing '{}'", other
-                    ))),
+                    other => {
+                        return Err(LuaError::RuntimeError(format!(
+                            "addKeyframe: unknown easing '{}'",
+                            other
+                        )))
+                    }
                 };
-                let keyframe = Keyframe { time, value, easing };
+                let keyframe = Keyframe {
+                    time,
+                    value,
+                    easing,
+                };
                 // Find or create the timeline for this (bone_idx, property) pair.
-                let existing = this.inner.timelines.iter_mut().find(|tl| {
-                    tl.bone_idx == bone_idx && tl.property == property
-                });
+                let existing = this
+                    .inner
+                    .timelines
+                    .iter_mut()
+                    .find(|tl| tl.bone_idx == bone_idx && tl.property == property);
                 if let Some(tl) = existing {
                     tl.keys.push(keyframe);
                 } else {
@@ -407,20 +428,17 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param to : number
         /// @return nil
         /// table  — Array of `{name: string, value: number}` tables.
-        methods.add_method(
-            "getEvents",
-            |lua, this, (from, to): (f32, f32)| {
-                let pairs = this.inner.collect_events(from, to);
-                let tbl = lua.create_table()?;
-                for (i, (name, value)) in pairs.into_iter().enumerate() {
-                    let entry = lua.create_table()?;
-                    entry.set("name", name)?;
-                    entry.set("value", value)?;
-                    tbl.set(i + 1, entry)?;
-                }
-                Ok(tbl)
-            },
-        );
+        methods.add_method("getEvents", |lua, this, (from, to): (f32, f32)| {
+            let pairs = this.inner.collect_events(from, to);
+            let tbl = lua.create_table()?;
+            for (i, (name, value)) in pairs.into_iter().enumerate() {
+                let entry = lua.create_table()?;
+                entry.set("name", name)?;
+                entry.set("value", value)?;
+                tbl.set(i + 1, entry)?;
+            }
+            Ok(tbl)
+        });
 
         // -- getTimelineCount --
         /// Returns the number of bone timelines in this animation.

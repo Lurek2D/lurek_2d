@@ -23,9 +23,9 @@
 
 /// Lock-free inter-VM message channel for cross-thread Lua communication.
 pub mod channel;
-/// Sandboxed LuaJIT worker thread that runs a Lua script in isolation.
-pub mod worker;
 /// Thread pool that queues and executes tasks across multiple worker threads.
 pub mod pool;
 /// Promise / future for one-shot background computation.
 pub mod promise;
+/// Sandboxed LuaJIT worker thread that runs a Lua script in isolation.
+pub mod worker;

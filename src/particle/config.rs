@@ -1,4 +1,4 @@
-﻿//! Particle emitter configuration types and enums.
+//! Particle emitter configuration types and enums.
 
 use super::shapes::ParticleShape;
 use crate::runtime::resource_keys::TextureKey;
@@ -406,4 +406,3 @@ impl Default for ParticleConfig {
         }
     }
 }
-

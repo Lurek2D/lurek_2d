@@ -3,8 +3,8 @@
 //! Useful for overworld maps, province graphs, and strategic layer navigation.
 //! Provides A* pathfinding, reachability, Kruskal's MST, and procedural generation.
 
-use std::collections::{BinaryHeap, HashMap};
 use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashMap};
 
 use crate::procgen::lcg::Lcg;
 
@@ -84,7 +84,13 @@ impl WorldGraph {
     pub fn add_region(&mut self, name: &str, x: f32, y: f32) -> u32 {
         let id = self.next_id;
         self.next_id += 1;
-        self.regions.push(WorldRegion { id, name: name.to_string(), x, y, tags: Vec::new() });
+        self.regions.push(WorldRegion {
+            id,
+            name: name.to_string(),
+            x,
+            y,
+            tags: Vec::new(),
+        });
         id
     }
 
@@ -96,7 +102,12 @@ impl WorldGraph {
     /// - `cost` — `f32`.
     /// - `bidirectional` — `bool`.
     pub fn add_edge(&mut self, from: u32, to: u32, cost: f32, bidirectional: bool) {
-        self.edges.push(WorldEdge { from, to, cost, bidirectional });
+        self.edges.push(WorldEdge {
+            from,
+            to,
+            cost,
+            bidirectional,
+        });
     }
 
     /// A* pathfinding using Euclidean distance as the heuristic.
@@ -110,8 +121,11 @@ impl WorldGraph {
     ///
     /// Returns the ordered list of region IDs from `from` to `to`, or `None` if unreachable.
     pub fn find_path(&self, from: u32, to: u32) -> Option<Vec<u32>> {
-        if from == to { return Some(vec![from]); }
-        let pos: HashMap<u32, (f32, f32)> = self.regions.iter().map(|r| (r.id, (r.x, r.y))).collect();
+        if from == to {
+            return Some(vec![from]);
+        }
+        let pos: HashMap<u32, (f32, f32)> =
+            self.regions.iter().map(|r| (r.id, (r.x, r.y))).collect();
         let goal_pos = pos.get(&to).copied().unwrap_or((0.0, 0.0));
 
         let heuristic = |a: u32| -> f32 {
@@ -124,7 +138,10 @@ impl WorldGraph {
         let mut open: BinaryHeap<WNode> = BinaryHeap::new();
 
         g_cost.insert(from, 0.0);
-        open.push(WNode { id: from, f: heuristic(from) });
+        open.push(WNode {
+            id: from,
+            f: heuristic(from),
+        });
 
         while let Some(WNode { id, .. }) = open.pop() {
             if id == to {
@@ -133,15 +150,22 @@ impl WorldGraph {
             let cur_g = *g_cost.get(&id).unwrap_or(&f32::MAX);
 
             for edge in self.edges.iter() {
-                let neighbor = if edge.from == id { edge.to }
-                    else if edge.bidirectional && edge.to == id { edge.from }
-                    else { continue };
+                let neighbor = if edge.from == id {
+                    edge.to
+                } else if edge.bidirectional && edge.to == id {
+                    edge.from
+                } else {
+                    continue;
+                };
 
                 let new_g = cur_g + edge.cost.max(0.0);
                 if new_g < *g_cost.get(&neighbor).unwrap_or(&f32::MAX) {
                     g_cost.insert(neighbor, new_g);
                     came_from.insert(neighbor, id);
-                    open.push(WNode { id: neighbor, f: new_g + heuristic(neighbor) });
+                    open.push(WNode {
+                        id: neighbor,
+                        f: new_g + heuristic(neighbor),
+                    });
                 }
             }
         }
@@ -164,16 +188,25 @@ impl WorldGraph {
         let mut result = Vec::new();
 
         while let Some(WNode { id, f: cost }) = heap.pop() {
-            if cost > *dist.get(&id).unwrap_or(&f32::MAX) { continue; }
+            if cost > *dist.get(&id).unwrap_or(&f32::MAX) {
+                continue;
+            }
             result.push(id);
             for edge in self.edges.iter() {
-                let nb = if edge.from == id { edge.to }
-                    else if edge.bidirectional && edge.to == id { edge.from }
-                    else { continue };
+                let nb = if edge.from == id {
+                    edge.to
+                } else if edge.bidirectional && edge.to == id {
+                    edge.from
+                } else {
+                    continue;
+                };
                 let new_cost = cost + edge.cost.max(0.0);
                 if new_cost <= max_cost && new_cost < *dist.get(&nb).unwrap_or(&f32::MAX) {
                     dist.insert(nb, new_cost);
-                    heap.push(WNode { id: nb, f: new_cost });
+                    heap.push(WNode {
+                        id: nb,
+                        f: new_cost,
+                    });
                 }
             }
         }
@@ -260,7 +293,8 @@ pub fn generate_world_graph(width: f32, height: f32, region_count: u32, seed: u6
     let k = 3usize;
     let ids: Vec<u32> = positions.iter().map(|p| p.0).collect();
     for &(id, x, y) in &positions {
-        let mut dists: Vec<(u32, f32)> = ids.iter()
+        let mut dists: Vec<(u32, f32)> = ids
+            .iter()
             .filter(|&&other| other != id)
             .map(|&other| {
                 let (_, ox, oy) = positions[other as usize];
@@ -277,13 +311,22 @@ pub fn generate_world_graph(width: f32, height: f32, region_count: u32, seed: u6
 }
 
 #[derive(Clone)]
-struct WNode { id: u32, f: f32 }
+struct WNode {
+    id: u32,
+    f: f32,
+}
 
-impl PartialEq for WNode { fn eq(&self, o: &Self) -> bool { self.f == o.f } }
+impl PartialEq for WNode {
+    fn eq(&self, o: &Self) -> bool {
+        self.f == o.f
+    }
+}
 impl Eq for WNode {}
 
 impl PartialOrd for WNode {
-    fn partial_cmp(&self, o: &Self) -> Option<Ordering> { Some(self.cmp(o)) }
+    fn partial_cmp(&self, o: &Self) -> Option<Ordering> {
+        Some(self.cmp(o))
+    }
 }
 
 impl Ord for WNode {

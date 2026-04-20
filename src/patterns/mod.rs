@@ -38,8 +38,12 @@
 //! | `ring.rs` | [`Ring`], [`RingEntry`] |
 //! | `funnel.rs` | [`Funnel`], [`FunnelEntry`] |
 
+/// Bidirectional key–value map for two-way lookups.
+pub mod bimap;
 /// Shared typed key-value store for AI and game system coordination.
 pub mod blackboard;
+/// Fundamental ordered-collection and set ADTs (Stack, Queue metadata).
+pub mod collections;
 /// Undo/redo command history with batching support.
 pub mod command_stack;
 /// Named-event pub/sub bus with priority ordering.
@@ -48,6 +52,8 @@ pub mod event_bus;
 pub mod factory;
 /// Time-windowed event aggregator and batch collector.
 pub mod funnel;
+/// Named-channel message broker for decoupled communication.
+pub mod mediator;
 /// Slot-tracking pool to recycle Lua objects without GC pressure.
 pub mod object_pool;
 /// Reactive property subscriptions for per-key change watchers.
@@ -62,16 +68,10 @@ pub mod service_locator;
 pub mod simple_state;
 /// Finite-state machine with transition validation and history.
 pub mod state_machine;
-/// Rate-limiter (throttle) and trailing-edge delay (debounce) for callbacks.
-pub mod throttle;
-/// Named-channel message broker for decoupled communication.
-pub mod mediator;
 /// Registry of named, swappable behaviours with a single active selection.
 pub mod strategy;
-/// Fundamental ordered-collection and set ADTs (Stack, Queue metadata).
-pub mod collections;
-/// Bidirectional key–value map for two-way lookups.
-pub mod bimap;
+/// Rate-limiter (throttle) and trailing-edge delay (debounce) for callbacks.
+pub mod throttle;
 /// String prefix-index trie for autocomplete and tag filtering.
 pub mod trie;
 

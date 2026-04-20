@@ -9,8 +9,8 @@ use rodio::Source;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, RwLock};
 
-use crate::runtime::log_messages::{DP01, DP02, DP03};
 use crate::log_msg;
+use crate::runtime::log_messages::{DP01, DP02, DP03};
 
 /// Thread-safe atomic `f32` parameter backed by an `AtomicU32` bit-cast.
 ///
@@ -488,9 +488,14 @@ impl ActiveEffect {
 
                 let (b0, b1, b2, a0, a1, a2) = if typ == EffectType::LowShelf {
                     (
-                        a_gain * ((a_gain + 1.0) - (a_gain - 1.0) * cos_w0 + 2.0 * a_gain.sqrt() * alpha),
+                        a_gain
+                            * ((a_gain + 1.0) - (a_gain - 1.0) * cos_w0
+                                + 2.0 * a_gain.sqrt() * alpha),
                         2.0 * a_gain * ((a_gain - 1.0) - (a_gain + 1.0) * cos_w0),
-                        a_gain * ((a_gain + 1.0) - (a_gain - 1.0) * cos_w0 - 2.0 * a_gain.sqrt() * alpha),
+                        a_gain
+                            * ((a_gain + 1.0)
+                                - (a_gain - 1.0) * cos_w0
+                                - 2.0 * a_gain.sqrt() * alpha),
                         (a_gain + 1.0) + (a_gain - 1.0) * cos_w0 + 2.0 * a_gain.sqrt() * alpha,
                         -2.0 * ((a_gain - 1.0) + (a_gain + 1.0) * cos_w0),
                         (a_gain + 1.0) + (a_gain - 1.0) * cos_w0 - 2.0 * a_gain.sqrt() * alpha,
@@ -498,9 +503,14 @@ impl ActiveEffect {
                 } else {
                     // HighShelf
                     (
-                        a_gain * ((a_gain + 1.0) + (a_gain - 1.0) * cos_w0 + 2.0 * a_gain.sqrt() * alpha),
+                        a_gain
+                            * ((a_gain + 1.0)
+                                + (a_gain - 1.0) * cos_w0
+                                + 2.0 * a_gain.sqrt() * alpha),
                         -2.0 * a_gain * ((a_gain - 1.0) + (a_gain + 1.0) * cos_w0),
-                        a_gain * ((a_gain + 1.0) + (a_gain - 1.0) * cos_w0 - 2.0 * a_gain.sqrt() * alpha),
+                        a_gain
+                            * ((a_gain + 1.0) + (a_gain - 1.0) * cos_w0
+                                - 2.0 * a_gain.sqrt() * alpha),
                         (a_gain + 1.0) - (a_gain - 1.0) * cos_w0 + 2.0 * a_gain.sqrt() * alpha,
                         2.0 * ((a_gain - 1.0) - (a_gain + 1.0) * cos_w0),
                         (a_gain + 1.0) - (a_gain - 1.0) * cos_w0 - 2.0 * a_gain.sqrt() * alpha,
@@ -565,12 +575,7 @@ impl ActiveEffect {
 
                 let buf_len = self.comb_buf.len().max(1);
                 // Four evenly-spaced taps across the buffer for a richer tail
-                let tap_offsets = [
-                    buf_len / 4,
-                    buf_len / 3,
-                    buf_len / 2,
-                    (buf_len * 2) / 3,
-                ];
+                let tap_offsets = [buf_len / 4, buf_len / 3, buf_len / 2, (buf_len * 2) / 3];
 
                 let mut wet = 0.0_f32;
                 for offset in tap_offsets {
@@ -603,7 +608,8 @@ impl ActiveEffect {
                 // modulate delay position within the buffer
                 let lfo_val = (self.lfo_phase.sin() + 1.0) * 0.5; // 0..1
                 let delay_samps = ((buf_len - 1) as f32 * depth * lfo_val) as usize;
-                let tap_pos = (self.comb_pos + buf_len - delay_samps.clamp(0, buf_len - 1)) % buf_len;
+                let tap_pos =
+                    (self.comb_pos + buf_len - delay_samps.clamp(0, buf_len - 1)) % buf_len;
                 let delayed = self.comb_buf[tap_pos];
 
                 self.comb_buf[self.comb_pos] = sample;
@@ -626,7 +632,8 @@ impl ActiveEffect {
 
                 let lfo_val = (self.lfo_phase.sin() + 1.0) * 0.5;
                 let delay_samps = ((buf_len - 1) as f32 * depth * lfo_val) as usize;
-                let tap_pos = (self.comb_pos + buf_len - delay_samps.clamp(0, buf_len - 1)) % buf_len;
+                let tap_pos =
+                    (self.comb_pos + buf_len - delay_samps.clamp(0, buf_len - 1)) % buf_len;
                 let delayed = self.comb_buf[tap_pos];
 
                 self.comb_buf[self.comb_pos] = sample;

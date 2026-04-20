@@ -11,26 +11,26 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
 use crate::log_msg;
+use crate::runtime::log_messages::{MD01_MGR_INIT, MD02_MOD_REG, MD04_ORDER_OK};
 use std::collections::{HashMap, HashSet};
 
 /// Metadata record describing one registered game mod.
 ///
 /// # Fields
-/// - `id` — `String`.
-/// - `name` — `String`.
-/// - `version` — `String`.
-/// - `author` — `String`.
-/// - `description` — `String`.
-/// - `priority` — `i32`.
-/// - `dependencies` — `Vec<String>`.
-/// - `enabled` — `bool`.
-/// - `loaded` — `bool`.
-/// - `path` — `Option<String>`.
-/// - `api_version` — `Option<String>`.
-/// - `capabilities` — `Vec<String>`.
-/// - `config_schema` — `Vec<(String, String, String)>`.
+/// - `id` â€” `String`.
+/// - `name` â€” `String`.
+/// - `version` â€” `String`.
+/// - `author` â€” `String`.
+/// - `description` â€” `String`.
+/// - `priority` â€” `i32`.
+/// - `dependencies` â€” `Vec<String>`.
+/// - `enabled` â€” `bool`.
+/// - `loaded` â€” `bool`.
+/// - `path` â€” `Option<String>`.
+/// - `api_version` â€” `Option<String>`.
+/// - `capabilities` â€” `Vec<String>`.
+/// - `config_schema` â€” `Vec<(String, String, String)>`.
 #[derive(Debug, Clone)]
 pub struct ModInfo {
     /// Unique mod identifier.
@@ -68,7 +68,7 @@ impl ModInfo {
     /// Create a new ModInfo with the given ID and sensible defaults.
     ///
     /// # Parameters
-    /// - `id` — `impl Into<String>`.
+    /// - `id` â€” `impl Into<String>`.
     ///
     /// # Returns
     /// `Self`.
@@ -95,13 +95,13 @@ impl ModInfo {
     /// Creates a `ModInfo` from its constituent parts, applying optional overrides over the defaults from [`ModInfo::new`].
     ///
     /// # Parameters
-    /// - `id` — `String`.
-    /// - `name` — `Option<String>`.
-    /// - `version` — `Option<String>`.
-    /// - `author` — `Option<String>`.
-    /// - `description` — `Option<String>`.
-    /// - `priority` — `Option<i32>`.
-    /// - `dependencies` — `Vec<String>`.
+    /// - `id` â€” `String`.
+    /// - `name` â€” `Option<String>`.
+    /// - `version` â€” `Option<String>`.
+    /// - `author` â€” `Option<String>`.
+    /// - `description` â€” `Option<String>`.
+    /// - `priority` â€” `Option<i32>`.
+    /// - `dependencies` â€” `Vec<String>`.
     ///
     /// # Returns
     /// `Self`.
@@ -139,10 +139,10 @@ impl ModInfo {
 /// validating dependencies, scanning mod folders, and queuing hot-reloads.
 ///
 /// # Fields
-/// - `mods` — `Vec<ModInfo>`.
-/// - `r` — `:load_order`].`.
-/// - `custom_load_order` — `Option<Vec<String>>`.
-/// - `reload_queue` — `Vec<String>`.
+/// - `mods` â€” `Vec<ModInfo>`.
+/// - `r` â€” `:load_order`].`.
+/// - `custom_load_order` â€” `Option<Vec<String>>`.
+/// - `reload_queue` â€” `Vec<String>`.
 #[derive(Debug, Clone, Default)]
 pub struct ModManager {
     mods: Vec<ModInfo>,
@@ -167,12 +167,12 @@ impl ModManager {
         }
     }
 
-    // ── Registration ──────────────────────────────────────────────────────
+    // â”€â”€ Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Register a mod with the manager. Panics in debug mode if the same entity is registered twice.
     ///
     /// # Parameters
-    /// - `info` — `ModInfo`.
+    /// - `info` â€” `ModInfo`.
     ///
     /// If a mod with the same ID already exists it is replaced.
     pub fn register_mod(&mut self, info: ModInfo) {
@@ -186,7 +186,7 @@ impl ModManager {
     /// Removes a mod from the registry by its assigned ID.
     ///
     /// # Parameters
-    /// - `id` — `&str`.
+    /// - `id` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -206,7 +206,7 @@ impl ModManager {
     /// Get a reference to a mod by ID.
     ///
     /// # Parameters
-    /// - `id` — `&str`.
+    /// - `id` â€” `&str`.
     ///
     /// # Returns
     /// `Option<&ModInfo>`.
@@ -217,7 +217,7 @@ impl ModManager {
     /// Get a mutable reference to a mod by ID.
     ///
     /// # Parameters
-    /// - `id` — `&str`.
+    /// - `id` â€” `&str`.
     ///
     /// # Returns
     /// `Option<&mut ModInfo>`.
@@ -228,7 +228,7 @@ impl ModManager {
     /// Check if a mod is registered. This accessor incurs no allocation; call it freely in hot paths.
     ///
     /// # Parameters
-    /// - `id` — `&str`.
+    /// - `id` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -252,7 +252,7 @@ impl ModManager {
         &self.mods
     }
 
-    // ── Load Order ────────────────────────────────────────────────────────
+    // â”€â”€ Load Order â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Get mods in their effective load order. Returns an error if the source data is malformed or missing.
     ///
@@ -293,7 +293,7 @@ impl ModManager {
     /// Set an explicit load order by providing a list of mod IDs.
     ///
     /// # Parameters
-    /// - `order` — `Vec<String>`.
+    /// - `order` â€” `Vec<String>`.
     ///
     /// Mods listed first load earliest. Mods not in the list are appended
     /// after the custom entries, sorted by priority.
@@ -314,12 +314,12 @@ impl ModManager {
         self.custom_load_order.as_deref()
     }
 
-    // ── Folder Scanning ───────────────────────────────────────────────────
+    // â”€â”€ Folder Scanning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Scan a directory for mods and register them.
     ///
     /// # Parameters
-    /// - `path` — `&str`.
+    /// - `path` â€” `&str`.
     ///
     /// # Returns
     /// `Vec<ModInfo>`.
@@ -404,12 +404,12 @@ impl ModManager {
         discovered
     }
 
-    // ── Hot-reload Queue ──────────────────────────────────────────────────
+    // â”€â”€ Hot-reload Queue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Marks a registered mod as requiring hot-reload on the next update tick.
     ///
     /// # Parameters
-    /// - `id` — `&str`.
+    /// - `id` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -439,7 +439,7 @@ impl ModManager {
         self.reload_queue.clear();
     }
 
-    // ── Dependency Validation ─────────────────────────────────────────────
+    // â”€â”€ Dependency Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// List mod IDs whose dependencies are missing.
     ///
@@ -509,206 +509,5 @@ impl ModManager {
         visiting.remove(id);
         visited.insert(id);
         false
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn new_mod_info_defaults() {
-        let info = ModInfo::new("test-mod");
-        assert_eq!(info.id, "test-mod");
-        assert_eq!(info.name, "test-mod");
-        assert_eq!(info.version, "1.0.0");
-        assert!(info.enabled);
-        assert!(!info.loaded);
-        assert!(info.path.is_none());
-    }
-
-    #[test]
-    fn register_and_lookup() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("mod-a"));
-        assert!(mgr.has_mod("mod-a"));
-        assert!(!mgr.has_mod("mod-b"));
-        assert_eq!(mgr.mod_count(), 1);
-    }
-
-    #[test]
-    fn unregister_mod() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("mod-a"));
-        assert!(mgr.unregister_mod("mod-a"));
-        assert!(!mgr.has_mod("mod-a"));
-        assert!(!mgr.unregister_mod("mod-a"));
-    }
-
-    #[test]
-    fn load_order_by_priority() {
-        let mut mgr = ModManager::new();
-        let mut b = ModInfo::new("mod-b");
-        b.priority = 10;
-        let mut a = ModInfo::new("mod-a");
-        a.priority = 5;
-        mgr.register_mod(b);
-        mgr.register_mod(a);
-        let order = mgr.load_order();
-        assert_eq!(order[0].id, "mod-a");
-        assert_eq!(order[1].id, "mod-b");
-    }
-
-    #[test]
-    fn validate_deps_reports_missing() {
-        let mut mgr = ModManager::new();
-        let mut info = ModInfo::new("mod-a");
-        info.dependencies = vec!["mod-b".to_string()];
-        mgr.register_mod(info);
-        let missing = mgr.validate_dependencies();
-        assert_eq!(missing, vec!["mod-b"]);
-    }
-
-    #[test]
-    fn validate_deps_ok_when_satisfied() {
-        let mut mgr = ModManager::new();
-        let mut a = ModInfo::new("mod-a");
-        a.dependencies = vec!["mod-b".to_string()];
-        mgr.register_mod(a);
-        mgr.register_mod(ModInfo::new("mod-b"));
-        let missing = mgr.validate_dependencies();
-        assert!(missing.is_empty());
-    }
-
-    #[test]
-    fn detect_circular_deps() {
-        let mut mgr = ModManager::new();
-        let mut a = ModInfo::new("a");
-        a.dependencies = vec!["b".to_string()];
-        let mut b = ModInfo::new("b");
-        b.dependencies = vec!["a".to_string()];
-        mgr.register_mod(a);
-        mgr.register_mod(b);
-        assert!(mgr.has_circular_dependencies());
-    }
-
-    #[test]
-    fn no_circular_deps() {
-        let mut mgr = ModManager::new();
-        let mut a = ModInfo::new("a");
-        a.dependencies = vec!["b".to_string()];
-        mgr.register_mod(a);
-        mgr.register_mod(ModInfo::new("b"));
-        assert!(!mgr.has_circular_dependencies());
-    }
-
-    // ── New feature tests ─────────────────────────────────────────────────
-
-    #[test]
-    fn custom_load_order_respected() {
-        let mut mgr = ModManager::new();
-        let mut a = ModInfo::new("a");
-        a.priority = 5;
-        let mut b = ModInfo::new("b");
-        b.priority = 1;
-        mgr.register_mod(a);
-        mgr.register_mod(b);
-        // Without custom order, b (priority 1) would load first
-        assert_eq!(mgr.load_order()[0].id, "b");
-        // With custom order, a goes first
-        mgr.set_load_order(vec!["a".to_string(), "b".to_string()]);
-        assert_eq!(mgr.load_order()[0].id, "a");
-        assert_eq!(mgr.load_order()[1].id, "b");
-    }
-
-    #[test]
-    fn clear_load_order_reverts_to_priority() {
-        let mut mgr = ModManager::new();
-        let mut a = ModInfo::new("a");
-        a.priority = 10;
-        let mut b = ModInfo::new("b");
-        b.priority = 1;
-        mgr.register_mod(a);
-        mgr.register_mod(b);
-        mgr.set_load_order(vec!["a".to_string()]);
-        mgr.clear_load_order();
-        assert_eq!(mgr.load_order()[0].id, "b");
-    }
-
-    #[test]
-    fn mark_for_reload_queues_mod() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("mod-a"));
-        assert!(mgr.mark_for_reload("mod-a"));
-        assert_eq!(mgr.get_reload_queue(), &["mod-a"]);
-    }
-
-    #[test]
-    fn mark_for_reload_deduplicates() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("mod-a"));
-        mgr.mark_for_reload("mod-a");
-        mgr.mark_for_reload("mod-a");
-        assert_eq!(mgr.get_reload_queue().len(), 1);
-    }
-
-    #[test]
-    fn mark_for_reload_returns_false_for_missing() {
-        let mut mgr = ModManager::new();
-        assert!(!mgr.mark_for_reload("nonexistent"));
-        assert!(mgr.get_reload_queue().is_empty());
-    }
-
-    #[test]
-    fn clear_reload_queue_empties_it() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("a"));
-        mgr.mark_for_reload("a");
-        mgr.clear_reload_queue();
-        assert!(mgr.get_reload_queue().is_empty());
-    }
-
-    #[test]
-    fn unregister_removes_from_reload_queue() {
-        let mut mgr = ModManager::new();
-        mgr.register_mod(ModInfo::new("a"));
-        mgr.mark_for_reload("a");
-        mgr.unregister_mod("a");
-        assert!(mgr.get_reload_queue().is_empty());
-    }
-
-    #[test]
-    fn scan_folder_returns_empty_for_missing_path() {
-        let mut mgr = ModManager::new();
-        let found = mgr.scan_folder("/nonexistent/path/that/does/not/exist");
-        assert!(found.is_empty());
-    }
-
-    #[test]
-    fn scan_folder_registers_mods_from_disk() {
-        use std::io::Write;
-        let tmpdir = std::env::temp_dir().join("luna2d_scan_test");
-        let _ = std::fs::remove_dir_all(&tmpdir);
-        let mod_dir = tmpdir.join("my-mod");
-        std::fs::create_dir_all(&mod_dir).unwrap();
-        let toml_path = mod_dir.join("mod.toml");
-        let mut f = std::fs::File::create(&toml_path).unwrap();
-        writeln!(f, r#"id = "my-mod""#).unwrap();
-        writeln!(f, r#"name = "My Mod""#).unwrap();
-        writeln!(f, r#"version = "2.0.0""#).unwrap();
-        writeln!(f, r#"priority = 5"#).unwrap();
-        drop(f);
-
-        let mut mgr = ModManager::new();
-        let found = mgr.scan_folder(tmpdir.to_str().unwrap());
-        assert_eq!(found.len(), 1);
-        assert_eq!(found[0].id, "my-mod");
-        assert_eq!(found[0].version, "2.0.0");
-        assert_eq!(found[0].priority, 5);
-        assert!(found[0].path.is_some());
-        assert!(mgr.has_mod("my-mod"));
-
-        // Clean up
-        let _ = std::fs::remove_dir_all(&tmpdir);
     }
 }

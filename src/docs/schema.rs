@@ -171,7 +171,10 @@ impl SchemaResult {
     /// # Returns
     /// `Self`.
     pub fn pass() -> Self {
-        Self { ok: true, errors: Vec::new() }
+        Self {
+            ok: true,
+            errors: Vec::new(),
+        }
     }
 }
 
@@ -202,7 +205,11 @@ impl Schema {
     /// # Returns
     /// `Self`.
     pub fn new(name: impl Into<String>) -> Self {
-        Self { name: name.into(), rules: HashMap::new(), strict: false }
+        Self {
+            name: name.into(),
+            rules: HashMap::new(),
+            strict: false,
+        }
     }
 
     /// Adds a field rule.
@@ -227,10 +234,7 @@ impl Schema {
     ///
     /// # Returns
     /// `SchemaResult`.
-    pub fn validate_pairs(
-        &self,
-        fields: &[(String, &'static str, String)],
-    ) -> SchemaResult {
+    pub fn validate_pairs(&self, fields: &[(String, &'static str, String)]) -> SchemaResult {
         let mut errors = Vec::new();
         let field_map: HashMap<&str, (&'static str, &str)> = fields
             .iter()
@@ -348,6 +352,9 @@ impl Schema {
             }
         }
 
-        SchemaResult { ok: errors.is_empty(), errors }
+        SchemaResult {
+            ok: errors.is_empty(),
+            errors,
+        }
     }
 }

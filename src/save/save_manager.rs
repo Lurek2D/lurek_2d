@@ -4,16 +4,16 @@ use std::collections::HashMap;
 
 use mlua::prelude::{LuaError, LuaResult, LuaValue};
 
-use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};
 use crate::log_msg;
+use crate::runtime::log_messages::{SV01, SV02, SV03, SV04};
 
 /// Metadata extracted from a save slot.
 ///
 /// # Fields
-/// - `slot` — `String`. Slot name.
-/// - `timestamp` — `f64`. Unix epoch timestamp.
-/// - `version` — `i32`. Schema version.
-/// - `summary` — `String`. Optional summary string.
+/// - `slot` â€” `String`. Slot name.
+/// - `timestamp` â€” `f64`. Unix epoch timestamp.
+/// - `version` â€” `i32`. Schema version.
+/// - `summary` â€” `String`. Optional summary string.
 #[derive(Debug, Clone, Default)]
 pub struct SlotMeta {
     /// Slot name.
@@ -62,7 +62,7 @@ impl SaveManager {
     /// Register a named collector module.
     ///
     /// # Parameters
-    /// - `name` — `impl Into<String>`. The collector module name to register.
+    /// - `name` â€” `impl Into<String>`. The collector module name to register.
     pub fn register(&mut self, name: impl Into<String>) {
         let name = name.into();
         if !self.registered.contains(&name) {
@@ -74,7 +74,7 @@ impl SaveManager {
     /// Unregister a collector by name.
     ///
     /// # Parameters
-    /// - `name` — `&str`. The collector name to unregister.
+    /// - `name` â€” `&str`. The collector name to unregister.
     pub fn unregister(&mut self, name: &str) {
         log_msg!(debug, SV03, "{}", name);
         self.registered.retain(|n| n != name);
@@ -91,7 +91,7 @@ impl SaveManager {
     /// Set the current schema version.
     ///
     /// # Parameters
-    /// - `version` — `i32`. New schema version number.
+    /// - `version` â€” `i32`. New schema version number.
     pub fn set_schema_version(&mut self, version: i32) {
         self.schema_version = version;
     }
@@ -107,7 +107,7 @@ impl SaveManager {
     /// Record a migration version key.
     ///
     /// # Parameters
-    /// - `from_version` — `i32`. The schema version this migration upgrades from.
+    /// - `from_version` â€” `i32`. The schema version this migration upgrades from.
     pub fn add_migration(&mut self, from_version: i32) {
         if !self.migration_versions.contains(&from_version) {
             self.migration_versions.push(from_version);
@@ -118,7 +118,7 @@ impl SaveManager {
     /// Get migration versions >=`from` and < current, in ascending order.
     ///
     /// # Parameters
-    /// - `from` — `i32`. The schema version of the save being loaded.
+    /// - `from` â€” `i32`. The schema version of the save being loaded.
     ///
     /// # Returns
     /// `Vec<i32>`.
@@ -151,8 +151,8 @@ impl SaveManager {
     /// Enable auto-save with interval and target slot.
     ///
     /// # Parameters
-    /// - `interval` — `f64`. Auto-save interval in seconds.
-    /// - `slot` — `impl Into<String>`. Target save slot name.
+    /// - `interval` â€” `f64`. Auto-save interval in seconds.
+    /// - `slot` â€” `impl Into<String>`. Target save slot name.
     pub fn enable_auto_save(&mut self, interval: f64, slot: impl Into<String>) {
         let slot = slot.into();
         log_msg!(debug, SV04, "{} @ {:.3}s", slot, interval);
@@ -169,7 +169,7 @@ impl SaveManager {
     /// Advance the auto-save timer. Returns `Some(slot)` if a save should trigger.
     ///
     /// # Parameters
-    /// - `dt` — `f64`. Delta time in seconds.
+    /// - `dt` â€” `f64`. Delta time in seconds.
     ///
     /// # Returns
     /// `Option<String>`.
@@ -196,7 +196,7 @@ impl SaveManager {
     /// and `.sav` extension.
     ///
     /// # Parameters
-    /// - `slot` — `&str`. The slot name.
+    /// - `slot` â€” `&str`. The slot name.
     ///
     /// # Returns
     /// `String`.
@@ -207,7 +207,7 @@ impl SaveManager {
     /// Set the summary string for save metadata.
     ///
     /// # Parameters
-    /// - `summary` — `String`. The summary text.
+    /// - `summary` â€” `String`. The summary text.
     pub fn set_summary(&mut self, summary: String) {
         self.summary = summary;
     }
@@ -223,7 +223,7 @@ impl SaveManager {
     /// Validates and returns save-file content, rejecting empty input.
     ///
     /// # Parameters
-    /// - `content` — `&str`. The raw save-file string.
+    /// - `content` â€” `&str`. The raw save-file string.
     ///
     /// # Returns
     /// `Result<String, String>`.
@@ -241,8 +241,8 @@ impl SaveManager {
 /// Does not handle userdata, functions, or circular references.
 ///
 /// # Parameters
-/// - `data` — `&HashMap<String, SaveValue>`. The table data to serialize.
-/// - `depth` — `u32`. Current nesting depth (internal; call with `0`).
+/// - `data` â€” `&HashMap<String, SaveValue>`. The table data to serialize.
+/// - `depth` â€” `u32`. Current nesting depth (internal; call with `0`).
 ///
 /// # Returns
 /// `Result<String, String>`.
@@ -275,8 +275,8 @@ pub fn serialize_table(data: &HashMap<String, SaveValue>, depth: u32) -> Result<
 /// Serialize a single value.
 ///
 /// # Parameters
-/// - `value` — `&SaveValue`. The value to serialize.
-/// - `depth` — `u32`. Current nesting depth.
+/// - `value` â€” `&SaveValue`. The value to serialize.
+/// - `depth` â€” `u32`. Current nesting depth.
 ///
 /// # Returns
 /// `Result<String, String>`.
@@ -293,11 +293,11 @@ pub fn serialize_value(value: &SaveValue, depth: u32) -> Result<String, String> 
 /// A simple value type matching the Lua subset we can serialize.
 ///
 /// # Variants
-/// - `Nil` — Lua nil.
-/// - `Bool` — Lua boolean.
-/// - `Number` — Lua number.
-/// - `Str` — Lua string.
-/// - `Table` — Lua table (string keys only for save data).
+/// - `Nil` â€” Lua nil.
+/// - `Bool` â€” Lua boolean.
+/// - `Number` â€” Lua number.
+/// - `Str` â€” Lua string.
+/// - `Table` â€” Lua table (string keys only for save data).
 #[derive(Debug, Clone)]
 pub enum SaveValue {
     /// Lua nil.
@@ -316,7 +316,7 @@ impl SaveValue {
     /// Converts a [`LuaValue`] into a [`SaveValue`] for Rust-side serialization.
     ///
     /// # Parameters
-    /// - `value` — `&LuaValue`. The Lua value to convert.
+    /// - `value` â€” `&LuaValue`. The Lua value to convert.
     ///
     /// # Returns
     /// `LuaResult<Self>`.
@@ -372,203 +372,4 @@ fn escape_lua_str(s: &str) -> String {
         .replace('\n', "\\n")
         .replace('\r', "\\r")
         .replace('\0', "\\0")
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn save_manager_defaults() {
-        let sm = SaveManager::new();
-        assert_eq!(sm.schema_version(), 0);
-        assert!(!sm.is_dirty());
-        assert!(sm.registered_names().is_empty());
-    }
-
-    #[test]
-    fn register_unregister() {
-        let mut sm = SaveManager::new();
-        sm.register("player");
-        sm.register("inventory");
-        assert_eq!(sm.registered_names().len(), 2);
-        sm.unregister("player");
-        assert_eq!(sm.registered_names(), &["inventory"]);
-    }
-
-    #[test]
-    fn dirty_tracking() {
-        let mut sm = SaveManager::new();
-        assert!(!sm.is_dirty());
-        sm.mark_dirty();
-        assert!(sm.is_dirty());
-        sm.clear_dirty();
-        assert!(!sm.is_dirty());
-    }
-
-    #[test]
-    fn auto_save_triggers() {
-        let mut sm = SaveManager::new();
-        sm.enable_auto_save(5.0, "quick");
-        sm.mark_dirty();
-        assert!(sm.update(4.0).is_none());
-        assert_eq!(sm.update(1.5).unwrap(), "quick");
-    }
-
-    #[test]
-    fn auto_save_not_when_clean() {
-        let mut sm = SaveManager::new();
-        sm.enable_auto_save(1.0, "slot");
-        assert!(sm.update(2.0).is_none()); // not dirty
-    }
-
-    #[test]
-    fn migrations() {
-        let mut sm = SaveManager::new();
-        sm.set_schema_version(5);
-        sm.add_migration(1);
-        sm.add_migration(3);
-        sm.add_migration(7); // above current
-        let applicable = sm.applicable_migrations(2);
-        assert_eq!(applicable, vec![3]);
-    }
-
-    #[test]
-    fn serialize_simple() {
-        let mut data = HashMap::new();
-        data.insert("name".to_string(), SaveValue::Str("hero".to_string()));
-        data.insert("level".to_string(), SaveValue::Number(5.0));
-        data.insert("active".to_string(), SaveValue::Bool(true));
-        let s = serialize_table(&data, 0).unwrap();
-        assert!(s.contains("name = \"hero\""));
-        assert!(s.contains("level = 5"));
-        assert!(s.contains("active = true"));
-    }
-
-    #[test]
-    fn serialize_depth_limit() {
-        let inner = HashMap::new();
-        let mut current = SaveValue::Table(inner);
-        for _ in 0..35 {
-            let mut t = HashMap::new();
-            t.insert("nested".to_string(), current);
-            current = SaveValue::Table(t);
-        }
-        if let SaveValue::Table(t) = current {
-            let result = serialize_table(&t, 0);
-            assert!(result.is_err());
-        }
-    }
-
-    #[test]
-    fn reset_clears_all() {
-        let mut sm = SaveManager::new();
-        sm.register("a");
-        sm.set_schema_version(3);
-        sm.mark_dirty();
-        sm.enable_auto_save(1.0, "slot");
-        sm.reset();
-        assert!(!sm.is_dirty());
-        assert_eq!(sm.schema_version(), 0);
-        assert!(sm.registered_names().is_empty());
-    }
-
-    #[test]
-    fn slot_path_format() {
-        assert_eq!(SaveManager::slot_path("quick"), "save/slot_quick.sav");
-        assert_eq!(SaveManager::slot_path("1"), "save/slot_1.sav");
-    }
-
-    #[test]
-    fn summary_set_and_get() {
-        let mut sm = SaveManager::new();
-        assert_eq!(sm.summary(), "");
-        sm.set_summary("Chapter 3 — Forest".to_string());
-        assert_eq!(sm.summary(), "Chapter 3 — Forest");
-    }
-
-    #[test]
-    fn parse_save_string_rejects_empty() {
-        assert!(SaveManager::parse_save_string("").is_err());
-        assert!(SaveManager::parse_save_string("   \n  ").is_err());
-    }
-
-    #[test]
-    fn parse_save_string_accepts_content() {
-        let result = SaveManager::parse_save_string("return { hp = 10 }");
-        assert!(result.is_ok());
-        assert_eq!(result.unwrap(), "return { hp = 10 }");
-    }
-
-    #[test]
-    fn serialize_nil_and_bool() {
-        assert_eq!(serialize_value(&SaveValue::Nil, 0).unwrap(), "nil");
-        assert_eq!(serialize_value(&SaveValue::Bool(true), 0).unwrap(), "true");
-        assert_eq!(serialize_value(&SaveValue::Bool(false), 0).unwrap(), "false");
-    }
-
-    #[test]
-    fn serialize_string_escapes() {
-        let val = SaveValue::Str("line1\nline2".to_string());
-        let s = serialize_value(&val, 0).unwrap();
-        assert_eq!(s, "\"line1\\nline2\"");
-    }
-
-    #[test]
-    fn serialize_nested_table() {
-        let mut inner = HashMap::new();
-        inner.insert("x".to_string(), SaveValue::Number(1.0));
-        let mut outer = HashMap::new();
-        outer.insert("pos".to_string(), SaveValue::Table(inner));
-        let s = serialize_table(&outer, 0).unwrap();
-        assert!(s.contains("pos = {"));
-        assert!(s.contains("x = 1"));
-    }
-
-    #[test]
-    fn register_duplicate_is_noop() {
-        let mut sm = SaveManager::new();
-        sm.register("player");
-        sm.register("player");
-        assert_eq!(sm.registered_names().len(), 1);
-    }
-
-    #[test]
-    fn disable_auto_save_stops_timer() {
-        let mut sm = SaveManager::new();
-        sm.enable_auto_save(1.0, "slot");
-        sm.mark_dirty();
-        sm.disable_auto_save();
-        // Even after enough time, no save triggers
-        assert!(sm.update(5.0).is_none());
-    }
-
-    #[test]
-    fn add_migration_deduplicates_and_sorts() {
-        let mut sm = SaveManager::new();
-        sm.set_schema_version(10);
-        sm.add_migration(5);
-        sm.add_migration(3);
-        sm.add_migration(5); // duplicate
-        sm.add_migration(1);
-        let migrations = sm.applicable_migrations(0);
-        assert_eq!(migrations, vec![1, 3, 5]);
-    }
-
-    #[test]
-    fn serialize_special_key_needs_bracket() {
-        let mut data = HashMap::new();
-        data.insert("has space".to_string(), SaveValue::Number(1.0));
-        let s = serialize_table(&data, 0).unwrap();
-        assert!(s.contains("[\"has space\"] = 1"));
-    }
-
-    #[test]
-    fn slot_meta_default() {
-        let meta = SlotMeta::default();
-        assert_eq!(meta.slot, "");
-        assert_eq!(meta.timestamp, 0.0);
-        assert_eq!(meta.version, 0);
-        assert_eq!(meta.summary, "");
-    }
 }

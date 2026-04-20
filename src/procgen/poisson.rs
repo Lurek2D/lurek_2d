@@ -111,4 +111,3 @@ pub fn poisson_disk(
 
     points
 }
-

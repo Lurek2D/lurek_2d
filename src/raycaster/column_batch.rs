@@ -11,9 +11,9 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::{CB01, CB02};
 use crate::log_msg;
 use crate::math::Color;
+use crate::runtime::log_messages::{CB01, CB02};
 
 /// Per-column rendering state produced by a raycaster.
 ///

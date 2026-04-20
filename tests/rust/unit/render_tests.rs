@@ -341,8 +341,16 @@ mod mesh_tests {
     #[test]
     fn from_vertices_preserves_data() {
         let verts = vec![
-            MeshVertex { x: 10.0, y: 20.0, ..Default::default() },
-            MeshVertex { x: 30.0, y: 40.0, ..Default::default() },
+            MeshVertex {
+                x: 10.0,
+                y: 20.0,
+                ..Default::default()
+            },
+            MeshVertex {
+                x: 30.0,
+                y: 40.0,
+                ..Default::default()
+            },
         ];
         let m = Mesh::from_vertices(verts, MeshDrawMode::Fan);
         assert_eq!(m.vertex_count(), 2);
@@ -364,7 +372,14 @@ mod mesh_tests {
     #[test]
     fn set_vertex_updates_position() {
         let mut m = Mesh::new(2, MeshDrawMode::Triangles);
-        m.set_vertex(1, MeshVertex { x: 99.0, y: 88.0, ..Default::default() });
+        m.set_vertex(
+            1,
+            MeshVertex {
+                x: 99.0,
+                y: 88.0,
+                ..Default::default()
+            },
+        );
         assert_eq!(m.get_vertex(1).unwrap().x, 99.0);
     }
 
@@ -484,7 +499,10 @@ mod shape_tests {
     fn clone_produces_independent_copy() {
         let mut original = CompoundShape::new();
         original.push_command(ShapeCommand::Line {
-            x1: 0.0, y1: 0.0, x2: 10.0, y2: 10.0,
+            x1: 0.0,
+            y1: 0.0,
+            x2: 10.0,
+            y2: 10.0,
         });
         let mut cloned = original.clone();
         cloned.push_command(ShapeCommand::SetColor(1.0, 0.0, 0.0, 1.0));
@@ -615,3 +633,18 @@ mod postfx_pipeline_tests {
         }
     }
 }
+
+//  dropped inline tests (per TST-02)
+//
+// NOTE: dropped 17 internal-only tests from src/render/shader.rs  they
+// exercise private WGSL-parsing helpers (validate_wgsl, prepare_fragment_source_for_wrapper,
+// split_top_level_commas, find_matching_paren, consume_attribute, strip_leading_attributes,
+// build_custom_color_shader_source, build_custom_texture_shader_source). User-visible
+// shader behaviour is covered by tests/lua/unit/test_postfx.lua and the content/examples/
+// shader examples exercised by tests/lua/content/.
+//
+// NOTE: dropped 9 internal-only tests from src/render/gpu_renderer.rs  they
+// exercise private wgpu-pipeline helpers (normalize_scissor, color_write_mask_bits,
+// parse_filter_mode, uniform_bytes, depth_stencil_state). User-visible rendering
+// behaviour is covered by tests/rust/golden/ frame-capture tests and the
+// lurek.graphic.* Lua tests in tests/lua/unit/test_rendering.lua.

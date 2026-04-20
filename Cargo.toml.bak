@@ -119,7 +119,7 @@ indexmap = "2"
 toml = "0.8"
 
 # Platform-specific directories (save data, config paths)
-directories = "6"
+directories = "5"
 
 # Cross-platform system info (CPU count, memory size)
 sysinfo = { version = "0.30", default-features = false }
@@ -131,7 +131,7 @@ sys-locale = "0.3"
 arboard = "3"
 
 # Cross-platform native file/message dialogs
-rfd = "0.17.2"
+rfd = "0.14"
 
 # Zip archive reading for .lurek game packages
 zip = { version = "2", default-features = false, features = ["deflate"] }
@@ -191,7 +191,7 @@ opt-level = 3
 opt-level = "z"
 lto = true
 codegen-units = 1
-strip = true
+strip = "symbols"
 panic = "abort"
 overflow-checks = false
 debug = false

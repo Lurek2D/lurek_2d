@@ -9,8 +9,8 @@ use mlua::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::compute::array::{DataType, NdArray};
 use crate::compute::analytics;
+use crate::compute::array::{DataType, NdArray};
 use crate::compute::linalg;
 use crate::compute::ops;
 use crate::compute::spatial;
@@ -661,8 +661,8 @@ impl LuaUserData for LuaArray {
         /// @param order : integer?
         /// @return Array
         methods.add_method("diff", |lua, this, order: Option<usize>| {
-            let r = analytics::diff(&this.inner, order.unwrap_or(1))
-                .map_err(LuaError::RuntimeError)?;
+            let r =
+                analytics::diff(&this.inner, order.unwrap_or(1)).map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaArray { inner: r })
         });
 
@@ -791,8 +791,8 @@ impl LuaUserData for LuaArray {
         /// @return Array
         methods.add_method("transformPoints", |lua, this, pts: LuaAnyUserData| {
             let pts = pts.borrow::<LuaArray>()?;
-            let r =
-                linalg::transform_points(&this.inner, &pts.inner).map_err(LuaError::RuntimeError)?;
+            let r = linalg::transform_points(&this.inner, &pts.inner)
+                .map_err(LuaError::RuntimeError)?;
             lua.create_userdata(LuaArray { inner: r })
         });
 
@@ -1026,10 +1026,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return Array
     tbl.set(
         "affine2d",
-        lua.create_function(|lua, (tx, ty, angle_rad, sx, sy): (f64, f64, f64, f64, f64)| {
-            let m = linalg::affine2d(tx, ty, angle_rad, sx, sy).map_err(LuaError::RuntimeError)?;
-            lua.create_userdata(LuaArray { inner: m })
-        })?,
+        lua.create_function(
+            |lua, (tx, ty, angle_rad, sx, sy): (f64, f64, f64, f64, f64)| {
+                let m =
+                    linalg::affine2d(tx, ty, angle_rad, sx, sy).map_err(LuaError::RuntimeError)?;
+                lua.create_userdata(LuaArray { inner: m })
+            },
+        )?,
     )?;
 
     // -- fft --

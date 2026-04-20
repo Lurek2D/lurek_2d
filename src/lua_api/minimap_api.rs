@@ -805,7 +805,14 @@ impl LuaUserData for LuaMinimap {
                 }
                 let w = this.inner.grid_width();
                 let h = this.inner.grid_height();
-                this.inner.set_layer_data(layer, LayerData { cells, width: w, height: h });
+                this.inner.set_layer_data(
+                    layer,
+                    LayerData {
+                        cells,
+                        width: w,
+                        height: h,
+                    },
+                );
                 Ok(())
             },
         );

@@ -1,6 +1,8 @@
 //! Particle emitter struct and update/draw logic.
 
-use super::config::{Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig};
+use super::config::{
+    Attractor, BounceBounds, EmissionShape, EmitterState, InsertMode, ParticleConfig,
+};
 use super::emission::{emission_offset, emission_shape_offset};
 use super::math::{
     interpolate_alphas, interpolate_colors, interpolate_sizes, rand_normal, rand_range,
@@ -495,14 +497,15 @@ impl ParticleSystem {
                 ParticleShape::Triangle => ParticleRenderShape::Triangle,
                 ParticleShape::Spark => ParticleRenderShape::Spark,
                 ParticleShape::Diamond => ParticleRenderShape::Diamond,
-                ParticleShape::Shrapnel { edges } => {
-                    ParticleRenderShape::Shrapnel { edges: *edges, seed: p.shape_seed }
-                }
+                ParticleShape::Shrapnel { edges } => ParticleRenderShape::Shrapnel {
+                    edges: *edges,
+                    seed: p.shape_seed,
+                },
                 ParticleShape::Ray { aspect } => ParticleRenderShape::Ray { aspect: *aspect },
                 ParticleShape::Puff => ParticleRenderShape::Puff,
-                ParticleShape::Ring { thickness } => {
-                    ParticleRenderShape::Ring { thickness: *thickness }
-                }
+                ParticleShape::Ring { thickness } => ParticleRenderShape::Ring {
+                    thickness: *thickness,
+                },
                 ParticleShape::Capsule => ParticleRenderShape::Capsule,
             };
 
@@ -544,7 +547,9 @@ impl ParticleSystem {
             });
         }
 
-        let mut all_cmds = vec![RenderCommand::DrawParticleSystem { particles: instances }];
+        let mut all_cmds = vec![RenderCommand::DrawParticleSystem {
+            particles: instances,
+        }];
         for sub in &self.sub_systems {
             all_cmds.extend(sub.build_render_commands(ox, oy));
         }
@@ -581,7 +586,12 @@ impl ParticleSystem {
     /// - `strength` — `f32`. Force magnitude in pixels/s². Positive = attraction, negative = repulsion.
     /// - `radius` — `f32`. Influence radius in pixels. Particles beyond this distance are unaffected.
     pub fn add_attractor(&mut self, x: f32, y: f32, strength: f32, radius: f32) {
-        self.attractors.push(Attractor { x, y, strength, radius });
+        self.attractors.push(Attractor {
+            x,
+            y,
+            strength,
+            radius,
+        });
     }
 
     /// Removes all attractors from this system.
@@ -623,4 +633,3 @@ impl ParticleSystem {
         self.bounce_bounds = None;
     }
 }
-

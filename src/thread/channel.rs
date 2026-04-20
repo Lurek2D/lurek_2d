@@ -10,8 +10,8 @@ use std::sync::{Arc, Condvar, Mutex};
 
 use mlua::prelude::*;
 
-use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};
 use crate::log_msg;
+use crate::runtime::log_messages::{CH01, CH02, CH03, CH04};
 
 /// Serializable values that can be sent between threads.
 ///
@@ -284,4 +284,3 @@ pub fn channel_value_to_lua(lua: &Lua, value: ChannelValue) -> LuaResult<LuaValu
         ChannelValue::Bytes(b) => Ok(LuaValue::String(lua.create_string(&b)?)),
     }
 }
-

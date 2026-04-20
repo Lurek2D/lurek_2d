@@ -79,5 +79,3 @@ pub fn flood_fill(
 
     result
 }
-
-

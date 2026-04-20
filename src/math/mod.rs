@@ -23,15 +23,21 @@ pub mod geometry;
 
 /// 3x3 column-major matrix for 2D transforms (translate, rotate, scale).
 pub mod mat3;
-/// 3D floating-point vector with arithmetic operators and common helpers.
-pub mod vec3;
-/// Interpolating and approximating splines: Catmull-Rom and Hermite.
-pub mod spline;
 /// Polygon utilities: ear-clipping triangulation and convexity testing.
 pub mod polygon;
+/// Interpolating and approximating splines: Catmull-Rom and Hermite.
+pub mod spline;
+/// 3D floating-point vector with arithmetic operators and common helpers.
+pub mod vec3;
 
 /// Dynamic AABB tree for efficient broad-phase overlap queries.
 pub mod aabb_tree;
+/// Scalar math free functions: `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, `inverse_lerp`.
+pub mod facade;
+/// Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.
+pub mod noise_functions;
+/// Seeded procedural noise generator with fractal and map-generation helpers.
+pub mod noise_generator;
 /// Seedable random number generator for reproducible sequences.
 pub mod random;
 /// Axis-aligned rectangle with intersection and containment queries.
@@ -48,27 +54,21 @@ pub mod tween;
 pub mod vec2;
 /// Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).
 pub mod voronoi;
-/// Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.
-pub mod noise_functions;
-/// Seeded procedural noise generator with fractal and map-generation helpers.
-pub mod noise_generator;
-/// Scalar math free functions: `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, `inverse_lerp`.
-pub mod facade;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;
 pub use circle::Circle;
 pub use color::{gamma_to_linear, linear_to_gamma, Color};
+pub use facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 pub use geometry::*;
 pub use mat3::Mat3;
-pub use vec3::Vec3;
-pub use spline::{CatmullRomSpline, HermiteSpline};
+pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
 pub use random::RandomGenerator;
 pub use rect::Rect;
 pub use spatial_hash::SpatialHash;
+pub use spline::{CatmullRomSpline, HermiteSpline};
 pub use transform::Transform;
 pub use tween::{Tween, TweenValue};
 pub use vec2::Vec2;
-pub use voronoi::{VoronoiCell, voronoi_from_points};
-pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
-pub use facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
+pub use vec3::Vec3;
+pub use voronoi::{voronoi_from_points, VoronoiCell};

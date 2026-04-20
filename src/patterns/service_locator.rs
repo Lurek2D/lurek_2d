@@ -20,7 +20,9 @@ impl ServiceLocator {
     ///
     /// # Returns
     /// `Self`.
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Registers a service name.
     ///

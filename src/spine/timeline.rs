@@ -1,4 +1,4 @@
-﻿//! Keyframe timelines and skeleton animation playback for the spine module.
+//! Keyframe timelines and skeleton animation playback for the spine module.
 //!
 //! A [`SkeletonAnimation`] contains one or more [`BoneTimeline`]s. Each timeline
 //! animates a single property of a single bone over time. Call
@@ -123,7 +123,11 @@ impl BoneTimeline {
     /// # Returns
     /// `Self`.
     pub fn new(bone_idx: usize, property: BoneProperty) -> Self {
-        Self { bone_idx, property, keys: Vec::new() }
+        Self {
+            bone_idx,
+            property,
+            keys: Vec::new(),
+        }
     }
 
     /// Appends a keyframe at `time` with `value` and the given easing.
@@ -135,7 +139,11 @@ impl BoneTimeline {
     /// - `value` â€” `f32`. Target value.
     /// - `easing` â€” [`EasingType`].
     pub fn add_key(&mut self, time: f32, value: f32, easing: EasingType) {
-        let kf = Keyframe { time, value, easing };
+        let kf = Keyframe {
+            time,
+            value,
+            easing,
+        };
         // Insert in sorted position
         let pos = self.keys.partition_point(|k| k.time <= time);
         self.keys.insert(pos, kf);
@@ -219,7 +227,11 @@ impl EventKeyframe {
     /// # Returns
     /// `Self`.
     pub fn new(time: f32, name: impl Into<String>, value: f32) -> Self {
-        Self { time, name: name.into(), value }
+        Self {
+            time,
+            name: name.into(),
+            value,
+        }
     }
 }
 
@@ -255,7 +267,12 @@ impl SkeletonAnimation {
     /// # Returns
     /// `Self`.
     pub fn new(name: impl Into<String>, duration: f32) -> Self {
-        Self { name: name.into(), duration, timelines: Vec::new(), events: Vec::new() }
+        Self {
+            name: name.into(),
+            duration,
+            timelines: Vec::new(),
+            events: Vec::new(),
+        }
     }
 
     /// Appends a bone timeline.
@@ -277,7 +294,11 @@ impl SkeletonAnimation {
     /// - `value` â€” `f32`. Numeric payload (pass `0.0` if unused).
     pub fn add_event_key(&mut self, time: f32, name: impl Into<String>, value: f32) {
         self.events.push(EventKeyframe::new(time, name, value));
-        self.events.sort_by(|a, b| a.time.partial_cmp(&b.time).unwrap_or(std::cmp::Ordering::Equal));
+        self.events.sort_by(|a, b| {
+            a.time
+                .partial_cmp(&b.time)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
     }
 
     /// Returns the names of all events whose timestamps fall in `(from, to]`.

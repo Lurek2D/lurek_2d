@@ -101,5 +101,3 @@ pub fn cellular_automata(width: u32, height: u32, opts: &CellularOpts) -> Vec<u8
 
     grid
 }
-
-

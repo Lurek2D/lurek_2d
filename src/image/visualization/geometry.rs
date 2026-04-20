@@ -3,8 +3,8 @@
 //! Renders polygon galleries, spirals, filled primitives, convex hulls,
 //! Bresenham lines, and intersection tests as CPU-side [`ImageData`].
 
-use crate::image::ImageData;
 use super::hsv_to_rgb_viz;
+use crate::image::ImageData;
 
 /// Render a gallery of regular polygons (triangle→dodecagon), a five-pointed
 /// star, and an arrow shape using `draw_line`.
@@ -147,7 +147,7 @@ pub fn filled_primitives_to_image(width: u32, height: u32) -> ImageData {
         for col in 0u32..16 {
             let x = 20 + col * 22;
             let y = 200 + row * 12;
-            let brightness = (((row * 16 + col)) * 255 / 255).min(255) as u8;
+            let brightness = ((row * 16 + col) * 255 / 255).min(255) as u8;
             img.set_pixel(x, y, brightness, brightness, brightness, 255);
             img.set_pixel(x + 1, y, brightness, brightness, brightness, 255);
             img.set_pixel(x, y + 1, brightness, brightness, brightness, 255);

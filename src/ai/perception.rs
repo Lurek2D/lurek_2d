@@ -178,7 +178,10 @@ impl StimulusWorld {
     /// # Returns
     /// `Self`.
     pub fn new() -> Self {
-        Self { stimuli: Vec::new(), next_id: 0 }
+        Self {
+            stimuli: Vec::new(),
+            next_id: 0,
+        }
     }
 
     /// Registers a new stimulus in the world. Returns its assigned ID.
@@ -208,7 +211,14 @@ impl StimulusWorld {
     ///
     /// # Returns
     /// `u64`.
-    pub fn add_visual(&mut self, x: f32, y: f32, intensity: f32, radius: f32, tag: Option<String>) -> u64 {
+    pub fn add_visual(
+        &mut self,
+        x: f32,
+        y: f32,
+        intensity: f32,
+        radius: f32,
+        tag: Option<String>,
+    ) -> u64 {
         self.add(Stimulus {
             id: 0,
             stimulus_type: StimulusType::Visual,
@@ -233,7 +243,15 @@ impl StimulusWorld {
     ///
     /// # Returns
     /// `u64`.
-    pub fn add_auditory(&mut self, x: f32, y: f32, intensity: f32, radius: f32, decay_rate: f32, tag: Option<String>) -> u64 {
+    pub fn add_auditory(
+        &mut self,
+        x: f32,
+        y: f32,
+        intensity: f32,
+        radius: f32,
+        decay_rate: f32,
+        tag: Option<String>,
+    ) -> u64 {
         self.add(Stimulus {
             id: 0,
             stimulus_type: StimulusType::Auditory,
@@ -259,7 +277,16 @@ impl StimulusWorld {
     ///
     /// # Returns
     /// `u64`.
-    pub fn add_custom(&mut self, sense_type: &str, x: f32, y: f32, intensity: f32, radius: f32, decay_rate: f32, tag: Option<String>) -> u64 {
+    pub fn add_custom(
+        &mut self,
+        sense_type: &str,
+        x: f32,
+        y: f32,
+        intensity: f32,
+        radius: f32,
+        decay_rate: f32,
+        tag: Option<String>,
+    ) -> u64 {
         self.add(Stimulus {
             id: 0,
             stimulus_type: StimulusType::Custom(sense_type.to_string()),

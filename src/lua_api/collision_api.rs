@@ -36,8 +36,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set(
         "testAABB",
         lua.create_function(
-            |_,
-             (ax, ay, aw, ah, bx, by, bw, bh): (f32, f32, f32, f32, f32, f32, f32, f32)| {
+            |_, (ax, ay, aw, ah, bx, by, bw, bh): (f32, f32, f32, f32, f32, f32, f32, f32)| {
                 Ok(crate::physics::collision_helpers::test_aabb(
                     ax, ay, aw, ah, bx, by, bw, bh,
                 ))

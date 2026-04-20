@@ -205,11 +205,7 @@ pub fn percentile(a: &NdArray, p: f64) -> Result<f64, String> {
 pub fn covariance(a: &NdArray, b: &NdArray) -> Result<f64, String> {
     let n = a.size();
     if n != b.size() {
-        return Err(format!(
-            "covariance: size mismatch {} vs {}",
-            n,
-            b.size()
-        ));
+        return Err(format!("covariance: size mismatch {} vs {}", n, b.size()));
     }
     if n == 0 {
         return Err("covariance: empty arrays".to_string());
@@ -236,11 +232,7 @@ pub fn covariance(a: &NdArray, b: &NdArray) -> Result<f64, String> {
 pub fn pearson_corr(a: &NdArray, b: &NdArray) -> Result<f64, String> {
     let n = a.size();
     if n != b.size() {
-        return Err(format!(
-            "pearson_corr: size mismatch {} vs {}",
-            n,
-            b.size()
-        ));
+        return Err(format!("pearson_corr: size mismatch {} vs {}", n, b.size()));
     }
     if n < 2 {
         return Err("pearson_corr: need at least 2 elements".to_string());
@@ -435,4 +427,3 @@ pub fn correlate1d(signal: &NdArray, template: &NdArray) -> Result<NdArray, Stri
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
-

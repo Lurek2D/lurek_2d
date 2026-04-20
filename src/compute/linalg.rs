@@ -126,11 +126,7 @@ pub fn rotate2d_matrix(angle_rad: f64) -> Result<NdArray, String> {
 /// `Result<NdArray, String>`.
 pub fn affine2d(tx: f64, ty: f64, angle_rad: f64, sx: f64, sy: f64) -> Result<NdArray, String> {
     let (s, c) = angle_rad.sin_cos();
-    let vals = [
-        sx * c, -sy * s, tx,
-        sx * s,  sy * c, ty,
-        0.0,     0.0,    1.0,
-    ];
+    let vals = [sx * c, -sy * s, tx, sx * s, sy * c, ty, 0.0, 0.0, 1.0];
     NdArray::from_slice(&vals, &[3, 3], DataType::Float64)
 }
 
@@ -221,9 +217,7 @@ pub fn gaussian_kernel(size: usize, sigma: f64) -> Result<NdArray, String> {
         return Err("gaussian_kernel: size must be ≥ 1".to_string());
     }
     if size % 2 == 0 {
-        return Err(format!(
-            "gaussian_kernel: size must be odd, got {size}"
-        ));
+        return Err(format!("gaussian_kernel: size must be odd, got {size}"));
     }
     if sigma <= 0.0 {
         return Err(format!(
@@ -264,10 +258,7 @@ pub fn gaussian_kernel(size: usize, sigma: f64) -> Result<NdArray, String> {
 /// `Result<(NdArray, NdArray), String>`.
 pub fn sobel(input: &NdArray) -> Result<(NdArray, NdArray), String> {
     if input.ndim() != 2 {
-        return Err(format!(
-            "sobel: expected 2D array, got {}D",
-            input.ndim()
-        ));
+        return Err(format!("sobel: expected 2D array, got {}D", input.ndim()));
     }
     let rows = input.shape()[0];
     let cols = input.shape()[1];
@@ -290,8 +281,8 @@ pub fn sobel(input: &NdArray) -> Result<(NdArray, NdArray), String> {
                     let row = r as isize + kr as isize - 1;
                     let col = c as isize + kc as isize - 1;
                     if row >= 0 && row < rows as isize && col >= 0 && col < cols as isize {
-                        let v = input
-                            .get_f64(input.flat_index(&[row as usize, col as usize]).unwrap());
+                        let v =
+                            input.get_f64(input.flat_index(&[row as usize, col as usize]).unwrap());
                         sx += v * kx[kr][kc];
                         sy += v * ky[kr][kc];
                     }
@@ -525,11 +516,7 @@ pub fn lu_decompose(a: &NdArray) -> Result<LuDecomp, String> {
 /// game AI influence maps and graph centrality — which rarely need more
 /// than the dominant mode. The caller controls iteration budget via
 /// `max_iter` and `tol`.
-pub fn eigenvalue_power(
-    a: &NdArray,
-    max_iter: u32,
-    tol: f64,
-) -> Result<(f64, Vec<f64>), String> {
+pub fn eigenvalue_power(a: &NdArray, max_iter: u32, tol: f64) -> Result<(f64, Vec<f64>), String> {
     let shape = a.shape();
     if shape.len() != 2 || shape[0] != shape[1] {
         return Err(format!(
@@ -581,5 +568,3 @@ pub fn eigenvalue_power(
 
     Ok((eigenvalue, v))
 }
-
-

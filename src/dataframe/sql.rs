@@ -1075,4 +1075,3 @@ fn agg_col_name(func: &AggFunc, arg: &AggArg) -> String {
     };
     format!("{func_name}({arg_name})")
 }
-

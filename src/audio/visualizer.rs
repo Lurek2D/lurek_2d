@@ -1,4 +1,4 @@
-﻿//! Audio visualisation utilities â€” waveform and spectrogram PNG export.
+//! Audio visualisation utilities â€” waveform and spectrogram PNG export.
 //!
 //! Decodes a WAV file to f32 samples and renders one of two visualisations:
 //!
@@ -123,7 +123,8 @@ pub fn spectrogram_to_png(
 
         // Apply a Hann window
         for (k, s) in window.iter_mut().enumerate() {
-            let hann = 0.5 * (1.0 - (2.0 * std::f32::consts::PI * k as f32 / (WIN - 1) as f32).cos());
+            let hann =
+                0.5 * (1.0 - (2.0 * std::f32::consts::PI * k as f32 / (WIN - 1) as f32).cos());
             *s *= hann;
         }
 
@@ -203,7 +204,10 @@ fn read_mono_f32(path: &str) -> Result<Vec<f32>, String> {
 
     // Downmix multi-channel to mono
     let inv = 1.0 / channels as f32;
-    let mono: Vec<f32> = raw.chunks(channels).map(|c| c.iter().sum::<f32>() * inv).collect();
+    let mono: Vec<f32> = raw
+        .chunks(channels)
+        .map(|c| c.iter().sum::<f32>() * inv)
+        .collect();
     Ok(mono)
 }
 
@@ -232,10 +236,5 @@ fn heat_colour(t: f32) -> Rgba<u8> {
         (1.0, 1.0, u)
     };
 
-    Rgba([
-        (r * 255.0) as u8,
-        (g * 255.0) as u8,
-        (b * 255.0) as u8,
-        255,
-    ])
+    Rgba([(r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8, 255])
 }

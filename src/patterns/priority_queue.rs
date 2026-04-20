@@ -75,11 +75,16 @@ impl PriorityQueue {
         self.next_id += 1;
         let seq = self.next_seq;
         self.next_seq += 1;
-        let item = PriorityItem { id, priority, label: label.to_string(), seq };
+        let item = PriorityItem {
+            id,
+            priority,
+            label: label.to_string(),
+            seq,
+        };
         // Find insertion position to keep descending priority order (stable).
-        let pos = self.items.partition_point(|x| {
-            x.priority > priority || (x.priority == priority && x.seq < seq)
-        });
+        let pos = self
+            .items
+            .partition_point(|x| x.priority > priority || (x.priority == priority && x.seq < seq));
         self.items.insert(pos, item);
         id
     }
@@ -97,7 +102,9 @@ impl PriorityQueue {
     /// # Returns
     /// `Option<(u64, i64)>`.
     pub fn pop(&mut self) -> Option<(u64, i64)> {
-        if self.items.is_empty() { return None; }
+        if self.items.is_empty() {
+            return None;
+        }
         let item = self.items.remove(0);
         Some((item.id, item.priority))
     }

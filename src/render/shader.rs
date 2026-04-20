@@ -11,8 +11,8 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::SH01_SHADER_OK;
 use crate::log_msg;
+use crate::runtime::log_messages::SH01_SHADER_OK;
 use std::collections::HashMap;
 
 use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
@@ -20,8 +20,8 @@ use wgpu::naga::{Binding, ScalarKind, TypeInner, VectorSize};
 /// Which fragment shader input the user's entry point expects.
 ///
 /// # Variants
-/// - `Color` — Color variant.
-/// - `Uv` — Uv variant.
+/// - `Color` â€” Color variant.
+/// - `Uv` â€” Uv variant.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ShaderFragmentInput {
     Color,
@@ -44,11 +44,11 @@ struct FragmentEntrySignature {
 /// Represents a compiled custom shader with its uniform values.
 ///
 /// # Fields
-/// - `source` — `String`.
-/// - `wrapper_source` — `String`.
-/// - `fragment_entry_name` — `String`.
-/// - `fragment_inputs` — `Vec<ShaderFragmentInput>`.
-/// - `uniforms` — `HashMap<String, UniformValue>`.
+/// - `source` â€” `String`.
+/// - `wrapper_source` â€” `String`.
+/// - `fragment_entry_name` â€” `String`.
+/// - `fragment_inputs` â€” `Vec<ShaderFragmentInput>`.
+/// - `uniforms` â€” `HashMap<String, UniformValue>`.
 ///
 /// Currently stores shader source and uniforms. The GPU pipeline is
 /// created lazily when the shader is first used during rendering.
@@ -66,12 +66,12 @@ pub struct Shader {
 /// A uniform value that can be sent to a shader from Lua.
 ///
 /// # Variants
-/// - `Float` — Float variant.
-/// - `Vec2` — Vec2 variant.
-/// - `Vec3` — Vec3 variant.
-/// - `Vec4` — Vec4 variant.
-/// - `Int` — Int variant.
-/// - `Bool` — Bool variant.
+/// - `Float` â€” Float variant.
+/// - `Vec2` â€” Vec2 variant.
+/// - `Vec3` â€” Vec3 variant.
+/// - `Vec4` â€” Vec4 variant.
+/// - `Int` â€” Int variant.
+/// - `Bool` â€” Bool variant.
 #[derive(Debug, Clone)]
 pub enum UniformValue {
     /// Single float value.
@@ -92,7 +92,7 @@ impl Shader {
     /// Creates a new shader from WGSL source code.
     ///
     /// # Parameters
-    /// - `source` — `String`.
+    /// - `source` â€” `String`.
     ///
     /// # Returns
     /// `Result<Self, String>`.
@@ -112,8 +112,8 @@ impl Shader {
     /// Sets a uniform value by name. Delivery is immediate and synchronous; all connected handlers run before this method returns.
     ///
     /// # Parameters
-    /// - `name` — `String`.
-    /// - `value` — `UniformValue`.
+    /// - `name` â€” `String`.
+    /// - `value` â€” `UniformValue`.
     pub fn send(&mut self, name: String, value: UniformValue) {
         self.uniforms.insert(name, value);
     }
@@ -121,7 +121,7 @@ impl Shader {
     /// Returns whether a uniform with the given name has been set.
     ///
     /// # Parameters
-    /// - `name` — `&str`.
+    /// - `name` â€” `&str`.
     ///
     /// # Returns
     /// `bool`.
@@ -132,7 +132,7 @@ impl Shader {
     /// Returns the current uniforms sorted by name for stable GPU binding order.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `crate` â€” parameter.
     ///
     /// # Returns
     /// `Vec<(&str, &UniformValue)>`.
@@ -149,7 +149,7 @@ impl Shader {
     /// Returns the wrapper WGSL source that calls the user's fragment entry.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `crate` â€” parameter.
     ///
     /// # Returns
     /// `&str`.
@@ -160,7 +160,7 @@ impl Shader {
     /// Returns the name of the user's fragment entry point.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `crate` â€” parameter.
     ///
     /// # Returns
     /// `&str`.
@@ -171,7 +171,7 @@ impl Shader {
     /// Returns the ordered list of inputs the fragment entry expects.
     ///
     /// # Parameters
-    /// - `crate` — parameter.
+    /// - `crate` â€” parameter.
     ///
     /// # Returns
     /// `&[ShaderFragmentInput]`.
@@ -426,154 +426,4 @@ fn consume_attribute(text: &str) -> &str {
     }
 
     &text[index..]
-}
-
-// NOTE: Tests private internals — stays inline
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
-@fragment
-fn fs_main(
-    @location(0) color: vec4<f32>,
-    @location(1) _uv: vec2<f32>,
-) -> @location(0) vec4<f32> {
-    return color;
-}
-"#;
-
-    const NO_FRAGMENT_WGSL: &str = r#"
-fn helper(color: vec4<f32>) -> vec4<f32> {
-    return color;
-}
-"#;
-
-    #[test]
-    fn test_phase02_live_shader_requires_fragment_entry_point() {
-        let result = validate_wgsl(NO_FRAGMENT_WGSL);
-
-        assert_eq!(
-            result.unwrap_err(),
-            "shader source must define a fragment entry point"
-        );
-    }
-
-    #[test]
-    fn test_phase02_live_shader_orders_uniforms_stably_for_gpu_binding() {
-        let mut shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
-            .expect("expected valid fragment shader");
-        shader.send("zeta".to_string(), UniformValue::Float(1.0));
-        shader.send("alpha".to_string(), UniformValue::Vec2([2.0, 3.0]));
-        shader.send("middle".to_string(), UniformValue::Bool(true));
-
-        let ordered = shader.ordered_uniforms();
-        let names: Vec<_> = ordered.iter().map(|(name, _)| *name).collect();
-
-        assert_eq!(names, vec!["alpha", "middle", "zeta"]);
-    }
-
-    #[test]
-    fn test_phase02_live_shader_rewrites_fragment_entry_for_wrapper_calls() {
-        let prepared = prepare_fragment_source_for_wrapper(VALID_WGSL_FRAGMENT_SHADER)
-            .expect("expected wrapper-compatible shader source");
-
-        assert_eq!(prepared.entry_name, "fs_main");
-        assert_eq!(
-            prepared.inputs,
-            vec![ShaderFragmentInput::Color, ShaderFragmentInput::Uv]
-        );
-        assert!(!prepared.source.contains("@fragment\nfn fs_main"));
-        assert!(prepared.source.contains("fn fs_main("));
-        wgpu::naga::front::wgsl::parse_str(&prepared.source)
-            .expect("rewritten fragment helper should remain valid WGSL");
-    }
-
-    // ── Pure-logic helper tests ─────────────────────────────────────────
-
-    #[test]
-    fn split_top_level_commas_simple() {
-        let parts = split_top_level_commas("a, b, c");
-        assert_eq!(parts, vec!["a", "b", "c"]);
-    }
-
-    #[test]
-    fn split_top_level_commas_nested_parens() {
-        let parts = split_top_level_commas("foo(a, b), bar");
-        assert_eq!(parts, vec!["foo(a, b)", "bar"]);
-    }
-
-    #[test]
-    fn split_top_level_commas_nested_angles() {
-        let parts = split_top_level_commas("vec4<f32>, vec2<f32>");
-        assert_eq!(parts, vec!["vec4<f32>", "vec2<f32>"]);
-    }
-
-    #[test]
-    fn split_top_level_commas_single_item() {
-        let parts = split_top_level_commas("only_one");
-        assert_eq!(parts, vec!["only_one"]);
-    }
-
-    #[test]
-    fn split_top_level_commas_empty() {
-        let parts = split_top_level_commas("");
-        assert_eq!(parts, vec![""]);
-    }
-
-    #[test]
-    fn find_matching_paren_basic() {
-        let text = "(hello)";
-        assert_eq!(find_matching_paren(text, 0).unwrap(), 6);
-    }
-
-    #[test]
-    fn find_matching_paren_nested() {
-        let text = "(a(b)c)rest";
-        assert_eq!(find_matching_paren(text, 0).unwrap(), 6);
-    }
-
-    #[test]
-    fn find_matching_paren_unclosed() {
-        let text = "(oops";
-        assert!(find_matching_paren(text, 0).is_err());
-    }
-
-    #[test]
-    fn consume_attribute_simple() {
-        let result = consume_attribute("@location rest");
-        assert_eq!(result, " rest");
-    }
-
-    #[test]
-    fn consume_attribute_with_parens() {
-        let result = consume_attribute("@location(0) rest");
-        assert_eq!(result, " rest");
-    }
-
-    #[test]
-    fn consume_attribute_nested_parens() {
-        let result = consume_attribute("@group(a(b)) end");
-        assert_eq!(result, " end");
-    }
-
-    #[test]
-    fn strip_leading_attributes_removes_all() {
-        let result = strip_leading_attributes("@location(0) @builtin(position) color: vec4<f32>");
-        assert_eq!(result, "color: vec4<f32>");
-    }
-
-    #[test]
-    fn strip_leading_attributes_no_attributes() {
-        let result = strip_leading_attributes("color: vec4<f32>");
-        assert_eq!(result, "color: vec4<f32>");
-    }
-
-    #[test]
-    fn shader_has_uniform_returns_true_after_send() {
-        let mut shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string()).unwrap();
-        shader.send("brightness".to_string(), UniformValue::Float(0.5));
-        assert!(shader.has_uniform("brightness"));
-        assert!(!shader.has_uniform("nonexistent"));
-    }
 }

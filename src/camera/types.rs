@@ -617,5 +617,3 @@ impl Default for Camera2D {
         Self::new(800.0, 600.0)
     }
 }
-
-

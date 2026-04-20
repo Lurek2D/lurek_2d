@@ -8,11 +8,11 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
-use crate::runtime::log_messages::{EN01_UNIVERSE_INIT, EN02_ENTITY_SPAWN};
+use super::relationships::RelationshipManager;
 use crate::log_msg;
+use crate::runtime::log_messages::{EN01_UNIVERSE_INIT, EN02_ENTITY_SPAWN};
 use mlua::{Function, Lua, RegistryKey, Result as LuaResult, Table, Value as LuaValue};
 use std::collections::{HashMap, HashSet};
-use super::relationships::RelationshipManager;
 
 /// Maximum number of bitmap tag definitions per Universe.
 const MAX_BITMAP_TAGS: usize = 63;
@@ -1356,12 +1356,18 @@ impl Universe {
             entry.set("layer", self.layers.get(&slot).copied().unwrap_or(0))?;
 
             // Bitmap mask
-            entry.set("bitmap", self.bitmap_masks.get(&slot).copied().unwrap_or(0u64) as i64)?;
+            entry.set(
+                "bitmap",
+                self.bitmap_masks.get(&slot).copied().unwrap_or(0u64) as i64,
+            )?;
 
             // Parent (pack as valid ID)
             if let Some(&parent_slot) = self.parents.get(&slot) {
                 if self.alive.contains(&parent_slot) {
-                    entry.set("parent", Self::pack_id(parent_slot, self.current_gen(parent_slot)))?;
+                    entry.set(
+                        "parent",
+                        Self::pack_id(parent_slot, self.current_gen(parent_slot)),
+                    )?;
                 }
             }
 
@@ -1488,7 +1494,10 @@ impl Universe {
             let parent_slot = Self::unpack_slot(parent_id);
             if self.alive.contains(&parent_slot) {
                 self.parents.insert(child_slot, parent_slot);
-                self.children.entry(parent_slot).or_default().push(child_slot);
+                self.children
+                    .entry(parent_slot)
+                    .or_default()
+                    .push(child_slot);
             }
         }
 

@@ -13,17 +13,16 @@
 //!
 //! Lua bridge: `src/lua_api/sprite_api.rs` as `lurek.sprite.*`.
 
-
 /// TexturePacker JSON atlas importer and named region lookup.
 pub mod atlas;
+/// Nine-slice scalable sprite for UI panels and borders.
+pub mod nine_slice;
 /// Individual sprite with position, scale, rotation, and color.
 pub mod sprite;
 /// Batched sprite renderer for efficient multi-sprite drawing.
 pub mod sprite_batch;
 /// Sprite sheet with named frame regions.
 pub mod sprite_sheet;
-/// Nine-slice scalable sprite for UI panels and borders.
-pub mod nine_slice;
 
 pub use atlas::{parse_texturepacker_json, AtlasEntry, SpriteAtlas};
 pub use nine_slice::NineSlice;

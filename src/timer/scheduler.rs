@@ -14,8 +14,8 @@
 //! sched.cancel(rid);
 //! ```
 
-use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};
 use crate::log_msg;
+use crate::runtime::log_messages::{TI01, TI02, TI03, TI04};
 /// A single scheduled event with optional name and pause state.
 ///
 /// # Fields
@@ -652,4 +652,3 @@ impl Scheduler {
         self.events.is_empty() && self.frame_events.is_empty()
     }
 }
-

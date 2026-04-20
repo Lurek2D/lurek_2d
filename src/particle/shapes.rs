@@ -1,4 +1,4 @@
-﻿//! Particle shape enum defining the geometric primitive used to render untextured particles.
+//! Particle shape enum defining the geometric primitive used to render untextured particles.
 
 /// Geometric shape used when drawing untextured particles.
 ///
@@ -53,4 +53,3 @@ pub enum ParticleShape {
     /// Filled capsule (rectangle + two hemispherical caps), oriented along `particle.rotation`.
     Capsule,
 }
-

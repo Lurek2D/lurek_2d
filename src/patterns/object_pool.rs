@@ -118,19 +118,25 @@ impl ObjectPool {
     ///
     /// # Returns
     /// `usize`.
-    pub fn idle_count(&self) -> usize { self.idle.len() }
+    pub fn idle_count(&self) -> usize {
+        self.idle.len()
+    }
 
     /// Number of active (in-use) slots.
     ///
     /// # Returns
     /// `usize`.
-    pub fn active_count(&self) -> usize { self.active.len() }
+    pub fn active_count(&self) -> usize {
+        self.active.len()
+    }
 
     /// Total slots tracked (idle + active).
     ///
     /// # Returns
     /// `usize`.
-    pub fn total_count(&self) -> usize { self.idle.len() + self.active.len() }
+    pub fn total_count(&self) -> usize {
+        self.idle.len() + self.active.len()
+    }
 
     /// Whether a handle is currently active.
     ///
@@ -139,7 +145,9 @@ impl ObjectPool {
     ///
     /// # Returns
     /// `bool`.
-    pub fn is_active(&self, id: u64) -> bool { self.active.contains(&id) }
+    pub fn is_active(&self, id: u64) -> bool {
+        self.active.contains(&id)
+    }
 }
 
 // Tests migrated to tests/rust/unit/patterns_tests.rs

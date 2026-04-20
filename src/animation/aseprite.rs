@@ -1,4 +1,4 @@
-﻿//! Aseprite JSON export parser for sprite animation data.
+//! Aseprite JSON export parser for sprite animation data.
 //!
 //! Parses the JSON exported by Aseprite (File â†’ Export Sprite Sheet â†’ Output â†’ JSON Data)
 //! and converts frame and tag data into types that [`Animation::load_from_aseprite`] can consume.
@@ -92,13 +92,11 @@ pub struct AsepriteParsed {
 /// # Returns
 /// `Result<AsepriteParsed, String>` â€” parsed data, or an error description.
 pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
-    let root: Value = serde_json::from_str(json_str)
-        .map_err(|e| format!("aseprite: JSON parse error: {}", e))?;
+    let root: Value =
+        serde_json::from_str(json_str).map_err(|e| format!("aseprite: JSON parse error: {}", e))?;
 
     // â”€â”€ frames â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    let frames_val = root
-        .get("frames")
-        .ok_or("aseprite: missing 'frames' key")?;
+    let frames_val = root.get("frames").ok_or("aseprite: missing 'frames' key")?;
 
     let mut frames: Vec<AsepriteFrameData> = Vec::new();
 
@@ -126,13 +124,9 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
     }
 
     // â”€â”€ meta â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    let meta = root
-        .get("meta")
-        .ok_or("aseprite: missing 'meta' key")?;
+    let meta = root.get("meta").ok_or("aseprite: missing 'meta' key")?;
 
-    let size = meta
-        .get("size")
-        .ok_or("aseprite: missing 'meta.size'")?;
+    let size = meta.get("size").ok_or("aseprite: missing 'meta.size'")?;
 
     let sheet_width = size
         .get("w")
@@ -161,17 +155,30 @@ pub fn load_aseprite_json(json_str: &str) -> Result<AsepriteParsed, String> {
                 .get("to")
                 .and_then(Value::as_u64)
                 .ok_or("aseprite: tag missing 'to'")? as usize;
-            let direction =
-                match tag_val.get("direction").and_then(Value::as_str).unwrap_or("forward") {
-                    "reverse" => AsepriteDirection::Reverse,
-                    "pingpong" => AsepriteDirection::PingPong,
-                    _ => AsepriteDirection::Forward,
-                };
-            tags.push(AsepriteTagData { name, from, to, direction });
+            let direction = match tag_val
+                .get("direction")
+                .and_then(Value::as_str)
+                .unwrap_or("forward")
+            {
+                "reverse" => AsepriteDirection::Reverse,
+                "pingpong" => AsepriteDirection::PingPong,
+                _ => AsepriteDirection::Forward,
+            };
+            tags.push(AsepriteTagData {
+                name,
+                from,
+                to,
+                direction,
+            });
         }
     }
 
-    Ok(AsepriteParsed { frames, tags, sheet_width, sheet_height })
+    Ok(AsepriteParsed {
+        frames,
+        tags,
+        sheet_width,
+        sheet_height,
+    })
 }
 
 /// Parses a single frame entry from either array or hash format.
@@ -196,10 +203,13 @@ fn parse_frame_entry(entry: &Value) -> Result<AsepriteFrameData, String> {
         .get("h")
         .and_then(Value::as_u64)
         .ok_or("aseprite: frame missing 'h'")? as u32;
-    let duration_ms = entry
-        .get("duration")
-        .and_then(Value::as_u64)
-        .unwrap_or(100) as u32;
+    let duration_ms = entry.get("duration").and_then(Value::as_u64).unwrap_or(100) as u32;
 
-    Ok(AsepriteFrameData { x, y, w, h, duration_ms })
+    Ok(AsepriteFrameData {
+        x,
+        y,
+        w,
+        h,
+        duration_ms,
+    })
 }

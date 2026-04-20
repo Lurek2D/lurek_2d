@@ -13,8 +13,8 @@ use std::path::PathBuf;
 use std::rc::Weak;
 use std::sync::Arc;
 
-use slotmap::SlotMap;
 use slotmap::Key as SlotmapKey;
+use slotmap::SlotMap;
 use winit::window::Window;
 
 use crate::audio::midi::MidiState;

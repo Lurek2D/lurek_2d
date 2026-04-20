@@ -7,8 +7,8 @@
 //!
 //! Both loaders produce a `Vec<Province>` that can be inserted into a `ProvinceGraph`.
 
-use std::collections::HashMap;
 use crate::globe::types::{Province, ProvinceId};
+use std::collections::HashMap;
 
 // ── TOML province list ──────────────────────────────────────────────────────
 
@@ -58,8 +58,8 @@ pub fn load_from_toml_str(src: &str) -> Result<Vec<Province>, String> {
 
 /// Load province data from the filesystem (synchronous).
 pub fn load_from_toml_file(path: &str) -> Result<Vec<Province>, String> {
-    let src = std::fs::read_to_string(path)
-        .map_err(|e| format!("cannot read '{}': {}", path, e))?;
+    let src =
+        std::fs::read_to_string(path).map_err(|e| format!("cannot read '{}': {}", path, e))?;
     load_from_toml_str(&src)
 }
 
@@ -105,7 +105,9 @@ fn parse_toml_province_list(src: &str) -> Result<Vec<TomlProvince>, String> {
         }
         if let Some(b) = current.as_mut() {
             if in_attrs {
-                parse_kv_string(line, |k, v| { b.attrs.insert(k, v); });
+                parse_kv_string(line, |k, v| {
+                    b.attrs.insert(k, v);
+                });
             } else {
                 parse_field(line, b).map_err(|e| format!("line {}: {}", line_no, e))?;
             }
@@ -143,16 +145,30 @@ impl TomlProvinceBuilder {
 }
 
 fn parse_field(line: &str, b: &mut TomlProvinceBuilder) -> Result<(), String> {
-    let eq = line.find('=').ok_or_else(|| format!("no '=' in '{}'", line))?;
+    let eq = line
+        .find('=')
+        .ok_or_else(|| format!("no '=' in '{}'", line))?;
     let key = line[..eq].trim();
     let val = line[eq + 1..].trim();
     match key {
-        "id" => { b.id = Some(parse_u32(val)?); }
-        "centroid" => { b.centroid = Some(parse_f32_pair(val)?); }
-        "vertices" => { b.vertices = parse_f32_pair_array(val)?; }
-        "neighbors" => { b.neighbors = parse_u32_array(val)?; }
-        "base_color" => { b.base_color = Some(parse_f32_4(val)?); }
-        "texture" => { b.texture = Some(strip_quotes(val).to_string()); }
+        "id" => {
+            b.id = Some(parse_u32(val)?);
+        }
+        "centroid" => {
+            b.centroid = Some(parse_f32_pair(val)?);
+        }
+        "vertices" => {
+            b.vertices = parse_f32_pair_array(val)?;
+        }
+        "neighbors" => {
+            b.neighbors = parse_u32_array(val)?;
+        }
+        "base_color" => {
+            b.base_color = Some(parse_f32_4(val)?);
+        }
+        "texture" => {
+            b.texture = Some(strip_quotes(val).to_string());
+        }
         _ => {} // Unknown keys are silently ignored.
     }
     Ok(())
@@ -177,8 +193,14 @@ fn parse_f32_pair(s: &str) -> Result<[f32; 2], String> {
         return Err(format!("expected [f, f], got '{}'", s));
     }
     Ok([
-        parts[0].trim().parse().map_err(|_| format!("bad f32 '{}'", parts[0]))?,
-        parts[1].trim().parse().map_err(|_| format!("bad f32 '{}'", parts[1]))?,
+        parts[0]
+            .trim()
+            .parse()
+            .map_err(|_| format!("bad f32 '{}'", parts[0]))?,
+        parts[1]
+            .trim()
+            .parse()
+            .map_err(|_| format!("bad f32 '{}'", parts[1]))?,
     ])
 }
 
@@ -204,7 +226,9 @@ fn parse_f32_pair_array(s: &str) -> Result<Vec<[f32; 2]>, String> {
     for (i, c) in s.char_indices() {
         match c {
             '[' => {
-                if depth == 0 { start = i; }
+                if depth == 0 {
+                    start = i;
+                }
                 depth += 1;
             }
             ']' => {
@@ -224,7 +248,8 @@ fn parse_u32_array(s: &str) -> Result<Vec<u32>, String> {
     if inner.trim().is_empty() {
         return Ok(Vec::new());
     }
-    inner.split(',')
+    inner
+        .split(',')
         .map(|p| p.trim().parse().map_err(|_| format!("bad u32 '{}'", p)))
         .collect()
 }
@@ -255,8 +280,3 @@ pub fn load_from_png_file(_path: &str) -> Result<Vec<Province>, String> {
     // analysis per color, convex-hull or bounding-polygon extraction, lat/lon mapping.
     Ok(Vec::new())
 }
-
-
-
-
-

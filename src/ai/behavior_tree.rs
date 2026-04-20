@@ -324,8 +324,7 @@ fn count_bt_nodes(node: &BTNode) -> usize {
         BTNode::Selector { children, .. }
         | BTNode::Sequence { children, .. }
         | BTNode::Parallel { children, .. } => children.iter().map(count_bt_nodes).sum(),
-        BTNode::Inverter { child }
-        | BTNode::Succeeder { child } => count_bt_nodes(child),
+        BTNode::Inverter { child } | BTNode::Succeeder { child } => count_bt_nodes(child),
         BTNode::Repeater { child, .. } => count_bt_nodes(child),
         BTNode::Action { .. } | BTNode::Condition { .. } => 0,
     }

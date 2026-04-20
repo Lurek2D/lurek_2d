@@ -29,7 +29,6 @@ pub struct LuaCamera2D {
 
 impl LuaUserData for LuaCamera2D {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- setPosition --
         /// Sets the camera's world-space position.
         /// @param x : number
@@ -59,9 +58,7 @@ impl LuaUserData for LuaCamera2D {
         // -- getZoom --
         /// Returns the current zoom factor.
         /// @return number
-        methods.add_method("getZoom", |_, this, ()| {
-            Ok(this.inner.borrow().get_zoom())
-        });
+        methods.add_method("getZoom", |_, this, ()| Ok(this.inner.borrow().get_zoom()));
 
         // -- setRotation --
         /// Sets the rotation in radians.
@@ -86,10 +83,13 @@ impl LuaUserData for LuaCamera2D {
         /// @param w : number
         /// @param h : number
         /// @return nil
-        methods.add_method("setViewport", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
-            this.inner.borrow_mut().set_viewport(x, y, w, h);
-            Ok(())
-        });
+        methods.add_method(
+            "setViewport",
+            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+                this.inner.borrow_mut().set_viewport(x, y, w, h);
+                Ok(())
+            },
+        );
 
         // -- getViewport --
         /// Returns the current viewport as x, y, w, h.
@@ -105,10 +105,13 @@ impl LuaUserData for LuaCamera2D {
         /// @param w : number
         /// @param h : number
         /// @return nil
-        methods.add_method("setBounds", |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
-            this.inner.borrow_mut().set_bounds(x, y, w, h);
-            Ok(())
-        });
+        methods.add_method(
+            "setBounds",
+            |_, this, (x, y, w, h): (f32, f32, f32, f32)| {
+                this.inner.borrow_mut().set_bounds(x, y, w, h);
+                Ok(())
+            },
+        );
 
         // -- removeBounds --
         /// Removes previously set world-space bounds.
@@ -236,17 +239,20 @@ impl LuaUserData for LuaCamera2D {
         /// @param points : table
         /// @param duration : number
         /// @return nil
-        methods.add_method("followPath", |_, this, (points, duration): (LuaTable, f32)| {
-            let mut waypoints: Vec<[f32; 2]> = Vec::new();
-            for pair in points.sequence_values::<LuaTable>() {
-                let pair = pair?;
-                let x: f32 = pair.get(1).unwrap_or(0.0);
-                let y: f32 = pair.get(2).unwrap_or(0.0);
-                waypoints.push([x, y]);
-            }
-            *this.path.borrow_mut() = Some(CameraPath::new(waypoints, duration));
-            Ok(())
-        });
+        methods.add_method(
+            "followPath",
+            |_, this, (points, duration): (LuaTable, f32)| {
+                let mut waypoints: Vec<[f32; 2]> = Vec::new();
+                for pair in points.sequence_values::<LuaTable>() {
+                    let pair = pair?;
+                    let x: f32 = pair.get(1).unwrap_or(0.0);
+                    let y: f32 = pair.get(2).unwrap_or(0.0);
+                    waypoints.push([x, y]);
+                }
+                *this.path.borrow_mut() = Some(CameraPath::new(waypoints, duration));
+                Ok(())
+            },
+        );
 
         // -- stopPath --
         /// Cancels the active camera path animation.
@@ -277,7 +283,12 @@ impl LuaUserData for LuaCamera2D {
         /// `1` if no path is running.
         /// @return number
         methods.add_method("pathProgress", |_, this, ()| {
-            Ok(this.path.borrow().as_ref().map(|p| p.progress()).unwrap_or(1.0))
+            Ok(this
+                .path
+                .borrow()
+                .as_ref()
+                .map(|p| p.progress())
+                .unwrap_or(1.0))
         });
 
         // -- zoomTo --
@@ -307,7 +318,11 @@ impl LuaUserData for LuaCamera2D {
         /// @param dt : number
         /// @return boolean
         methods.add_method("updateZoom", |_, this, dt: f32| {
-            let zoom = this.zoom_tween.borrow_mut().as_mut().and_then(|z| z.update(dt));
+            let zoom = this
+                .zoom_tween
+                .borrow_mut()
+                .as_mut()
+                .and_then(|z| z.update(dt));
             if let Some(z) = zoom {
                 this.inner.borrow_mut().set_zoom(z);
                 Ok(true)
@@ -323,10 +338,13 @@ impl LuaUserData for LuaCamera2D {
         /// @param layer : string
         /// @param factor : number
         /// @return nil
-        methods.add_method("setParallaxFactor", |_, this, (layer, factor): (String, f32)| {
-            this.parallax.borrow_mut().insert(layer, factor);
-            Ok(())
-        });
+        methods.add_method(
+            "setParallaxFactor",
+            |_, this, (layer, factor): (String, f32)| {
+                this.parallax.borrow_mut().insert(layer, factor);
+                Ok(())
+            },
+        );
 
         // -- getParallaxFactor --
         /// Returns the parallax factor for the named layer, or `1.0` if unset.
@@ -353,7 +371,10 @@ impl LuaUserData for LuaCamera2D {
         /// @param duration : number
         /// @return nil
         methods.add_method("zoomPulse", |_, this, (amplitude, duration): (f32, f32)| {
-            this.inner.borrow_mut().zoom_pulse.trigger(amplitude, duration);
+            this.inner
+                .borrow_mut()
+                .zoom_pulse
+                .trigger(amplitude, duration);
             Ok(())
         });
 
@@ -396,12 +417,15 @@ impl LuaUserData for LuaCamera2D {
         /// @param amplitude : number?
         /// @param rate : number?
         /// @return nil
-        methods.add_method("startBreathing", |_, this, (amplitude, rate): (Option<f32>, Option<f32>)| {
-            let amplitude = amplitude.unwrap_or(0.005);
-            let rate = rate.unwrap_or(0.2);
-            this.inner.borrow_mut().breathing.start(amplitude, rate);
-            Ok(())
-        });
+        methods.add_method(
+            "startBreathing",
+            |_, this, (amplitude, rate): (Option<f32>, Option<f32>)| {
+                let amplitude = amplitude.unwrap_or(0.005);
+                let rate = rate.unwrap_or(0.2);
+                this.inner.borrow_mut().breathing.start(amplitude, rate);
+                Ok(())
+            },
+        );
 
         // -- stopBreathing --
         /// Stops the active breathing effect.
@@ -431,7 +455,6 @@ impl LuaUserData for LuaCamera2D {
         methods.add_method("getEffectOffset", |_, this, ()| {
             Ok(this.inner.borrow().effect_offset())
         });
-
     }
 }
 

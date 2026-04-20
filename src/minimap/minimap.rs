@@ -759,8 +759,13 @@ impl Minimap {
     /// - `y2` — `f32`.
     /// - `color` — `[u8; 4]`.
     pub fn draw_line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, color: [u8; 4]) {
-        self.overlay_shapes
-            .push(OverlayShape::Line { x1, y1, x2, y2, color });
+        self.overlay_shapes.push(OverlayShape::Line {
+            x1,
+            y1,
+            x2,
+            y2,
+            color,
+        });
     }
 
     /// Push a rectangle onto the overlay layer.
@@ -1238,5 +1243,3 @@ impl Minimap {
         cmds
     }
 }
-
-

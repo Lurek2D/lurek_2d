@@ -999,9 +999,12 @@ impl DataFrame {
 
         // Collect groups preserving insertion order
         let mut key_order: Vec<String> = Vec::new();
-        let mut groups: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-        let mut first_vals: std::collections::HashMap<String, CellValue> = std::collections::HashMap::new();
-        let mut last_vals: std::collections::HashMap<String, CellValue> = std::collections::HashMap::new();
+        let mut groups: std::collections::HashMap<String, Vec<f64>> =
+            std::collections::HashMap::new();
+        let mut first_vals: std::collections::HashMap<String, CellValue> =
+            std::collections::HashMap::new();
+        let mut last_vals: std::collections::HashMap<String, CellValue> =
+            std::collections::HashMap::new();
         let mut counts: std::collections::HashMap<String, u64> = std::collections::HashMap::new();
 
         for i in 0..n {
@@ -1038,13 +1041,17 @@ impl DataFrame {
                 AggFn::Min => nums
                     .iter()
                     .copied()
-                    .fold(None, |acc: Option<f64>, v| Some(acc.map_or(v, |a| a.min(v))))
+                    .fold(None, |acc: Option<f64>, v| {
+                        Some(acc.map_or(v, |a| a.min(v)))
+                    })
                     .map(CellValue::Number)
                     .unwrap_or(CellValue::Nil),
                 AggFn::Max => nums
                     .iter()
                     .copied()
-                    .fold(None, |acc: Option<f64>, v| Some(acc.map_or(v, |a| a.max(v))))
+                    .fold(None, |acc: Option<f64>, v| {
+                        Some(acc.map_or(v, |a| a.max(v)))
+                    })
                     .map(CellValue::Number)
                     .unwrap_or(CellValue::Nil),
                 AggFn::Count => CellValue::Number(*counts.get(key).unwrap_or(&0) as f64),
@@ -1104,15 +1111,19 @@ impl DataFrame {
             if !col_keys.contains(&ck) {
                 col_keys.push(ck.clone());
             }
-            cells.entry((rk, ck)).or_insert_with(|| data[vci][i].clone());
+            cells
+                .entry((rk, ck))
+                .or_insert_with(|| data[vci][i].clone());
         }
 
         // Build output columns
         let mut col_names: Vec<String> = vec![self.columns()[rci].clone()];
         col_names.extend(col_keys.iter().cloned());
 
-        let row_data: Vec<CellValue> =
-            row_keys.iter().map(|k| CellValue::Text(k.clone())).collect();
+        let row_data: Vec<CellValue> = row_keys
+            .iter()
+            .map(|k| CellValue::Text(k.clone()))
+            .collect();
         let mut out_data: Vec<Vec<CellValue>> = vec![row_data];
 
         for ck in &col_keys {
@@ -1152,10 +1163,12 @@ impl DataFrame {
         let n = self.nrows();
 
         let pairs: Vec<(f64, f64)> = (0..n)
-            .filter_map(|i| match (data[cia][i].as_number(), data[cib][i].as_number()) {
-                (Some(a), Some(b)) => Some((a, b)),
-                _ => None,
-            })
+            .filter_map(
+                |i| match (data[cia][i].as_number(), data[cib][i].as_number()) {
+                    (Some(a), Some(b)) => Some((a, b)),
+                    _ => None,
+                },
+            )
             .collect();
 
         let k = pairs.len();
@@ -1434,9 +1447,7 @@ impl DataFrame {
             entry.1 += 1;
         }
         let best = order.iter().max_by_key(|k| counts[*k].1);
-        Ok(best
-            .map(|k| counts[k].0.clone())
-            .unwrap_or(CellValue::Nil))
+        Ok(best.map(|k| counts[k].0.clone()).unwrap_or(CellValue::Nil))
     }
 
     /// Shannon entropy (bits) of the value distribution in a column.
@@ -1456,8 +1467,7 @@ impl DataFrame {
         if total == 0.0 {
             return Ok(0.0);
         }
-        let mut counts: std::collections::HashMap<String, usize> =
-            std::collections::HashMap::new();
+        let mut counts: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
         for cell in &data[ci] {
             *counts.entry(format!("{cell}")).or_insert(0) += 1;
         }

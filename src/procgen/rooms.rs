@@ -106,14 +106,25 @@ pub fn rooms_dungeon(opts: &RoomsOpts) -> RoomsDungeon {
 
     // Attempt to place rooms
     for _ in 0..opts.max_rooms * 4 {
-        if rooms.len() as u32 >= opts.max_rooms { break; }
+        if rooms.len() as u32 >= opts.max_rooms {
+            break;
+        }
         let rw = opts.min_room_size + (rng.next() as u32) % size_range.max(1);
         let rh = opts.min_room_size + (rng.next() as u32) % size_range.max(1);
-        if opts.width <= rw + 2 || opts.height <= rh + 2 { continue; }
+        if opts.width <= rw + 2 || opts.height <= rh + 2 {
+            continue;
+        }
         let rx = 1 + (rng.next() as u32) % (opts.width - rw - 2).max(1);
         let ry = 1 + (rng.next() as u32) % (opts.height - rh - 2).max(1);
-        let candidate = Room { x: rx, y: ry, w: rw, h: rh };
-        if rooms.iter().any(|r| r.overlaps(&candidate)) { continue; }
+        let candidate = Room {
+            x: rx,
+            y: ry,
+            w: rw,
+            h: rh,
+        };
+        if rooms.iter().any(|r| r.overlaps(&candidate)) {
+            continue;
+        }
 
         // Carve room into grid
         for dy in 0..rh {
@@ -149,5 +160,9 @@ pub fn rooms_dungeon(opts: &RoomsOpts) -> RoomsDungeon {
         }
     }
 
-    RoomsDungeon { rooms, corridors, grid }
+    RoomsDungeon {
+        rooms,
+        corridors,
+        grid,
+    }
 }

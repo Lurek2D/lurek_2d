@@ -52,7 +52,8 @@ impl Neuroevolution {
         let ga = GeneticAlgorithm::new(pop_size, gene_count, seed);
         Self {
             ga,
-            template_layer_spec: layer_spec.into_iter()
+            template_layer_spec: layer_spec
+                .into_iter()
                 .map(|(i, o, a)| (i, o, a.to_string()))
                 .collect(),
             generation: 0,
@@ -68,7 +69,9 @@ impl Neuroevolution {
     ///
     /// # Returns
     /// `usize`.
-    pub fn pop_size(&self) -> usize { self.ga.pop_size() }
+    pub fn pop_size(&self) -> usize {
+        self.ga.pop_size()
+    }
 
     /// Builds a `NeuralNet` from the weight chromosome at index `i`.
     ///

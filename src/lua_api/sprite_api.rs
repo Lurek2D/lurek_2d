@@ -7,7 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::math::Rect;
-use crate::sprite::atlas::{parse_texturepacker_json, parse_aseprite_json, SpriteAtlas};
+use crate::sprite::atlas::{parse_aseprite_json, parse_texturepacker_json, SpriteAtlas};
 use crate::sprite::sprite_sheet::SpriteSheet;
 
 // -------------------------------------------------------------------------------
@@ -183,9 +183,7 @@ impl LuaUserData for LuaSpriteAtlas {
         // -- entryCount --
         /// Returns the total number of named regions in the atlas.
         /// @return integer
-        methods.add_method("entryCount", |_, this, ()| {
-            Ok(this.inner.entry_count())
-        });
+        methods.add_method("entryCount", |_, this, ()| Ok(this.inner.entry_count()));
 
         // -- entryNames --
         /// Returns a sequential table of all region names.
@@ -208,23 +206,24 @@ impl LuaUserData for LuaSpriteAtlas {
         /// @return table?
         methods.add_method(
             "getFlipped",
-            |lua, this, (name, flip_x, flip_y): (String, bool, bool)| {
-                match this.inner.get_entry(&name) {
-                    Some(e) => {
-                        let flipped = e.get_flipped(flip_x, flip_y);
-                        let t = lua.create_table()?;
-                        t.set("name", flipped.name.as_str())?;
-                        t.set("x", flipped.x)?;
-                        t.set("y", flipped.y)?;
-                        t.set("w", flipped.w)?;
-                        t.set("h", flipped.h)?;
-                        t.set("rotated", flipped.rotated)?;
-                        t.set("flip_x", flipped.flip_x)?;
-                        t.set("flip_y", flipped.flip_y)?;
-                        Ok(LuaValue::Table(t))
-                    }
-                    None => Ok(LuaValue::Nil),
+            |lua, this, (name, flip_x, flip_y): (String, bool, bool)| match this
+                .inner
+                .get_entry(&name)
+            {
+                Some(e) => {
+                    let flipped = e.get_flipped(flip_x, flip_y);
+                    let t = lua.create_table()?;
+                    t.set("name", flipped.name.as_str())?;
+                    t.set("x", flipped.x)?;
+                    t.set("y", flipped.y)?;
+                    t.set("w", flipped.w)?;
+                    t.set("h", flipped.h)?;
+                    t.set("rotated", flipped.rotated)?;
+                    t.set("flip_x", flipped.flip_x)?;
+                    t.set("flip_y", flipped.flip_y)?;
+                    Ok(LuaValue::Table(t))
                 }
+                None => Ok(LuaValue::Nil),
             },
         );
     }
@@ -257,13 +256,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return SpriteSheet
     tbl.set(
         "newSheet",
-        lua.create_function(
-            |lua, (tw, th, fw, fh): (u32, u32, u32, u32)| {
-                lua.create_userdata(LuaSpriteSheet {
-                    inner: SpriteSheet::new(tw, th, fw, fh),
-                })
-            },
-        )?,
+        lua.create_function(|lua, (tw, th, fw, fh): (u32, u32, u32, u32)| {
+            lua.create_userdata(LuaSpriteSheet {
+                inner: SpriteSheet::new(tw, th, fw, fh),
+            })
+        })?,
     )?;
 
     // ── newRPGMakerSheet ─────────────────────────────────────────────────────
@@ -286,15 +283,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return SpriteAtlas
     tbl.set(
         "parseAtlas",
-        lua.create_function(|lua, json_str: String| {
-            match parse_texturepacker_json(&json_str) {
+        lua.create_function(
+            |lua, json_str: String| match parse_texturepacker_json(&json_str) {
                 Ok(atlas) => {
                     let ud = lua.create_userdata(LuaSpriteAtlas { inner: atlas })?;
                     Ok(LuaValue::UserData(ud))
                 }
                 Err(e) => Err(LuaError::RuntimeError(format!("parseAtlas: {}", e))),
-            }
-        })?,
+            },
+        )?,
     )?;
 
     // ── newAtlasSheet ─────────────────────────────────────────────────────────
@@ -306,14 +303,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return SpriteSheet
     tbl.set(
         "newAtlasSheet",
-        lua.create_function(
-            |lua, (atlas_ud, sw, sh): (LuaAnyUserData, u32, u32)| {
-                let atlas = atlas_ud.borrow::<LuaSpriteAtlas>()?;
-                lua.create_userdata(LuaSpriteSheet {
-                    inner: SpriteSheet::from_atlas(&atlas.inner, sw, sh),
-                })
-            },
-        )?,
+        lua.create_function(|lua, (atlas_ud, sw, sh): (LuaAnyUserData, u32, u32)| {
+            let atlas = atlas_ud.borrow::<LuaSpriteAtlas>()?;
+            lua.create_userdata(LuaSpriteSheet {
+                inner: SpriteSheet::from_atlas(&atlas.inner, sw, sh),
+            })
+        })?,
     )?;
 
     // ── parseAsepriteAtlas ───────────────────────────────────────────────────

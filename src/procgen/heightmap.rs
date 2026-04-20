@@ -92,7 +92,11 @@ impl Heightmap {
         let raw = gen.generate_map(opts.width, opts.height, &map_opts);
         let cells: Vec<f32> = raw.iter().map(|&v| v as f32).collect();
 
-        let mut hm = Self { width: opts.width, height: opts.height, cells };
+        let mut hm = Self {
+            width: opts.width,
+            height: opts.height,
+            cells,
+        };
         hm.normalize();
         if opts.erosion_passes > 0 {
             hm.erode(opts.erosion_passes);
@@ -147,7 +151,7 @@ impl Heightmap {
                 for x in 0..w {
                     let center = self.get(x, y);
                     // Find the lowest of 4-directional neighbours
-                    let dirs: [(i32, i32); 4] = [(1,0),(-1,0),(0,1),(0,-1)];
+                    let dirs: [(i32, i32); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
                     let mut lowest_val = center;
                     let mut lowest_dir: Option<(u32, u32)> = None;
                     for (dx, dy) in dirs {
@@ -189,5 +193,3 @@ impl Heightmap {
         out
     }
 }
-
-

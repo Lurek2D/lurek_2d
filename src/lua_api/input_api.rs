@@ -22,7 +22,6 @@ pub struct LuaCursor {
 
 impl LuaUserData for LuaCursor {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- release --
         /// Releases the cursor resource (no-op on desktop).
         /// @return nil
@@ -37,7 +36,6 @@ impl LuaUserData for LuaCursor {
                 CursorKind::Custom { .. } => "custom",
             })
         });
-
     }
 }
 
@@ -55,7 +53,6 @@ struct LuaCombo {
 
 impl LuaUserData for LuaCombo {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-
         // -- feed --
         /// Feed a key-press event into the combo detector.
         /// Time elapsed since the last `feed` or `tick` call is taken from the internal clock.
@@ -104,16 +101,15 @@ impl LuaUserData for LuaCombo {
         // -- progress --
         /// Returns the number of steps matched so far (0 when idle).
         /// @return integer
-        methods.add_method("progress", |_, this, ()| {
-            Ok(this.detector.progress() as i64)
-        });
+        methods.add_method(
+            "progress",
+            |_, this, ()| Ok(this.detector.progress() as i64),
+        );
 
         // -- totalSteps --
         /// Returns the total number of steps in the combo sequence.
         /// @return integer
-        methods.add_method("totalSteps", |_, this, ()| {
-            Ok(this.detector.len() as i64)
-        });
+        methods.add_method("totalSteps", |_, this, ()| Ok(this.detector.len() as i64));
 
         // -- isInProgress --
         /// Returns true if the detector is currently mid-sequence.
@@ -137,7 +133,6 @@ impl LuaUserData for LuaCombo {
             tbl.set("gap_ms", step.max_gap_ms)?;
             Ok(LuaValue::Table(tbl))
         });
-
     }
 }
 
@@ -189,7 +184,6 @@ impl LuaUserData for LuaInputRecording {
 /// @param state : Rc<RefCell<SharedState>>
 ///
 pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
-
     // ── lurek.keyboard ─────────────────────────────────────────────────────────
 
     let keyboard = lua.create_table()?;
@@ -513,9 +507,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let s = state.clone();
     mouse.set(
         "getCursor",
-        lua.create_function(move |_, ()| {
-            Ok(s.borrow().mouse.get_cursor().as_str().to_string())
-        })?,
+        lua.create_function(move |_, ()| Ok(s.borrow().mouse.get_cursor().as_str().to_string()))?,
     )?;
 
     // -- getWheelDelta --
@@ -617,7 +609,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     gamepad.set(
         "getButtonCount",
         lua.create_function(move |_, id: usize| {
-            Ok(s.borrow().gamepads.get(id).map_or(0, |gp| gp.get_button_count()))
+            Ok(s.borrow()
+                .gamepads
+                .get(id)
+                .map_or(0, |gp| gp.get_button_count()))
         })?,
     )?;
 
@@ -629,7 +624,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     gamepad.set(
         "getAxisCount",
         lua.create_function(move |_, id: usize| {
-            Ok(s.borrow().gamepads.get(id).map_or(0, |gp| gp.get_axis_count()))
+            Ok(s.borrow()
+                .gamepads
+                .get(id)
+                .map_or(0, |gp| gp.get_axis_count()))
         })?,
     )?;
 
@@ -874,10 +872,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "getPosition",
         lua.create_function(move |_, id: u64| {
             let st = s.borrow();
-            let (x, y) = st
-                .touch
-                .get_touch(id)
-                .map_or((0.0, 0.0), |tp| (tp.x, tp.y));
+            let (x, y) = st.touch.get_touch(id).map_or((0.0, 0.0), |tp| (tp.x, tp.y));
             Ok((x, y))
         })?,
     )?;
@@ -1121,7 +1116,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                             .to_str()
                             .map_err(|e| LuaError::RuntimeError(e.to_string()))?
                             .to_string();
-                        steps.push(ComboStep { key, max_gap_ms: 500 });
+                        steps.push(ComboStep {
+                            key,
+                            max_gap_ms: 500,
+                        });
                     }
                     LuaValue::Table(t) => {
                         let key: String = t.get("key").map_err(|_| {
@@ -1130,7 +1128,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                             )
                         })?;
                         let gap: u64 = t.get::<_, Option<u64>>("gap")?.unwrap_or(500);
-                        steps.push(ComboStep { key, max_gap_ms: gap });
+                        steps.push(ComboStep {
+                            key,
+                            max_gap_ms: gap,
+                        });
                     }
                     _ => {
                         return Err(LuaError::RuntimeError(
@@ -1174,13 +1175,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// InputRecording|nil
     input_tbl.set(
         "stopRecording",
-        lua.create_function(move |lua, ()| {
-            match rc.borrow_mut().stop_recording() {
-                Some(rec) => Ok(LuaValue::UserData(
-                    lua.create_userdata(LuaInputRecording { inner: rec })?,
-                )),
-                None => Ok(LuaValue::Nil),
-            }
+        lua.create_function(move |lua, ()| match rc.borrow_mut().stop_recording() {
+            Some(rec) => Ok(LuaValue::UserData(
+                lua.create_userdata(LuaInputRecording { inner: rec })?,
+            )),
+            None => Ok(LuaValue::Nil),
         })?,
     )?;
 

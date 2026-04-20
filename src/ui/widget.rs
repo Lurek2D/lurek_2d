@@ -514,5 +514,3 @@ impl Default for WidgetBase {
         Self::new(WidgetType::Panel)
     }
 }
-
-
