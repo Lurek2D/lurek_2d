@@ -4,6 +4,10 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.0] — 2026-04-18
 
+- **fix(globe-compliance): `globe_api.rs` — removed `panic!()` in production path, split multi-param `@param` lines to one per line, normalized function header comments to `// -- methodName --`.** Eliminates the one forbidden `panic!` in `addProvince` (now returns `LuaError::RuntimeError`) and fixes all 30 multi-param `@param` doc lines to comply with the lua-rust-bridge skill rule.
+- **test(globe-compliance): `test_globe.lua` — add full `@description`/`@covers` annotations and `test_summary()`.** Added `-- @description` before every `describe()` and every `it()` (66 total) and `-- @covers` markers inside each describe block. Added required `test_summary()` as last line. Test file now fully complies with the testing-rust skill annotation standard.
+- **content(globe-compliance): `content/examples/globe.lua` — add file path comment as first line.**
+
 ### Globe Module — XCOM-style Geoscape Sphere
 - **feat(globe): new `src/globe/` module — XCOM UFO Defense Geoscape-style province sphere.** Adds `ProvinceGraph` (adjacency, A\* path-finding via `pathfind::graph_path`, reachability flood-fill), `OrbitCamera` (lat/lon pan, zoom, LOD tiers), day/night `lighting` (sun direction, per-province intensity, soft terminator), per-faction `FogMask` bit-vector fog-of-war, `MarkerStore`, `LabelStore`, `LayerStore` (per-province color overrides, effective-color blending), `GlobeArc` great-circle route rendering, hand-rolled TOML `[[province]]` loader, `Globe` container struct, and `GlobeRegistry` multi-globe manager. All rendering emits 2D `RenderCommand` variants (A-03 compliant).
 - **feat(render): add `DrawConvexFan` render command.** New `RenderCommand::DrawConvexFan { vertices: Vec<Vec2>, uvs: Vec<Vec2>, texture_key: Option<TextureKey>, tint: [f32;4], blend: BlendMode }` for UV-mapped convex polygon fills needed by the globe province renderer.

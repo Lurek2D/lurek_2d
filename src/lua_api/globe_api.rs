@@ -69,9 +69,10 @@ impl LuaUserData for LuaGlobe {
             let id: u32 = p.get("id")?;
             let ct: LuaTable = p.get("centroid")?;
             let centroid = (ct.get::<_, f32>(1)?, ct.get::<_, f32>(2)?);
-            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices").unwrap_or_else(|_| {
-                panic!("vertices missing for province {id}")
-            });
+            let verts_tbl: LuaTable = p.get::<_, LuaTable>("vertices")
+                .map_err(|_| mlua::Error::RuntimeError(
+                    format!("province {id}: 'vertices' field is required")
+                ))?;
             let mut vertices = Vec::new();
             for vt in verts_tbl.sequence_values::<LuaTable>() {
                 let vt = vt?;
@@ -143,7 +144,9 @@ impl LuaUserData for LuaGlobe {
 
         // -- setProvinceAttr --
         /// Sets a string attribute on a province.
-        /// @param id : integer, key : string, value : string
+        /// @param id : integer
+        /// @param key : string
+        /// @param value : string
         methods.add_method_mut("setProvinceAttr", |_, this, (id, key, val): (u32, String, String)| {
             this.with_mut(|g| {
                 if let Some(p) = g.get_province_mut(id) {
@@ -157,7 +160,8 @@ impl LuaUserData for LuaGlobe {
 
         // -- getProvinceAttr --
         /// Gets a string attribute from a province.
-        /// @param id : integer, key : string
+        /// @param id : integer
+        /// @param key : string
         /// @return string?
         methods.add_method("getProvinceAttr", |_, this, (id, key): (u32, String)| {
             this.with(|g| {
@@ -170,7 +174,8 @@ impl LuaUserData for LuaGlobe {
 
         // -- pan --
         /// Pan the orbit camera by delta-latitude and delta-longitude (degrees).
-        /// @param dlat : number, dlon : number
+        /// @param dlat : number
+        /// @param dlon : number
         methods.add_method_mut("pan", |_, this, (dlat, dlon): (f32, f32)| {
             this.with_mut(|g| g.camera.pan(dlat, dlon))
         });
@@ -184,7 +189,9 @@ impl LuaUserData for LuaGlobe {
 
         // -- setCamera --
         /// Set the camera position directly.
-        /// @param lat : number, lon : number, zoom : number
+        /// @param lat : number
+        /// @param lon : number
+        /// @param zoom : number
         methods.add_method_mut("setCamera", |_, this, (lat, lon, z): (f32, f32, f32)| {
             this.with_mut(|g| {
                 g.camera.lat_deg = lat;
@@ -216,7 +223,8 @@ impl LuaUserData for LuaGlobe {
 
         // -- pick --
         /// Returns the province ID under screen coordinates, or nil.
-        /// @param sx : number, sy : number
+        /// @param sx : number
+        /// @param sy : number
         /// @return integer?
         methods.add_method("pick", |_, this, (sx, sy): (f32, f32)| {
             this.with(|g| {
@@ -226,8 +234,10 @@ impl LuaUserData for LuaGlobe {
 
         // -- pickLatLon --
         /// Returns (lat, lon) of the screen point on the globe surface, or nil.
-        /// @param sx : number, sy : number
-        /// @return number?, number?
+        /// @param sx : number
+        /// @param sy : number
+        /// @return number?
+        /// @return number?
         methods.add_method("pickLatLon", |_, this, (sx, sy): (f32, f32)| {
             this.with(|g| {
                 g.pick_screen(sx, sy).map(|r| (r.lat_deg, r.lon_deg))
@@ -245,21 +255,24 @@ impl LuaUserData for LuaGlobe {
 
         // -- revealProvince --
         /// Reveal a province for a viewer.
-        /// @param viewer : string, id : integer
+        /// @param viewer : string
+        /// @param id : integer
         methods.add_method_mut("revealProvince", |_, this, (viewer, id): (String, u32)| {
             this.with_mut(|g| g.fog.reveal(&viewer, id))
         });
 
         // -- hideProvince --
         /// Hide a province for a viewer.
-        /// @param viewer : string, id : integer
+        /// @param viewer : string
+        /// @param id : integer
         methods.add_method_mut("hideProvince", |_, this, (viewer, id): (String, u32)| {
             this.with_mut(|g| g.fog.hide(&viewer, id))
         });
 
         // -- isVisible --
         /// Returns true if the province is visible to the viewer.
-        /// @param viewer : string, id : integer
+        /// @param viewer : string
+        /// @param id : integer
         /// @return boolean
         methods.add_method("isVisible", |_, this, (viewer, id): (String, u32)| {
             this.with(|g| g.fog.is_visible(&viewer, id))
@@ -279,7 +292,10 @@ impl LuaUserData for LuaGlobe {
 
         // -- addMarker --
         /// Add a marker. Returns marker ID.
-        /// @param mtype : string, lat : number, lon : number, label : string?
+        /// @param mtype : string
+        /// @param lat : number
+        /// @param lon : number
+        /// @param label : string?
         /// @return integer
         methods.add_method_mut("addMarker", |_, this, (mtype, lat, lon, label): (String, f32, f32, Option<String>)| {
             this.with_mut(|g| {
@@ -297,28 +313,34 @@ impl LuaUserData for LuaGlobe {
 
         // -- moveMarker --
         /// Move a marker to a new lat/lon.
-        /// @param id : integer, lat : number, lon : number
+        /// @param id : integer
+        /// @param lat : number
+        /// @param lon : number
         methods.add_method_mut("moveMarker", |_, this, (id, lat, lon): (u32, f32, f32)| {
             this.with_mut(|g| g.markers.move_to(id, lat, lon))
         });
 
         // -- setMarkerVisible --
         /// Set marker visibility.
-        /// @param id : integer, visible : boolean
+        /// @param id : integer
+        /// @param visible : boolean
         methods.add_method_mut("setMarkerVisible", |_, this, (id, vis): (u32, bool)| {
             this.with_mut(|g| g.markers.set_visible(id, vis))
         });
 
         // -- setMarkerAttr --
         /// Set a string attribute on a marker.
-        /// @param id : integer, key : string, value : string
+        /// @param id : integer
+        /// @param key : string
+        /// @param value : string
         methods.add_method_mut("setMarkerAttr", |_, this, (id, key, val): (u32, String, String)| {
             this.with_mut(|g| g.markers.set_attr(id, key, val))
         });
 
         // -- getMarkerAttr --
         /// Get a string attribute from a marker.
-        /// @param id : integer, key : string
+        /// @param id : integer
+        /// @param key : string
         /// @return string?
         methods.add_method("getMarkerAttr", |_, this, (id, key): (u32, String)| {
             this.with(|g| g.markers.get_attr(id, &key))
@@ -328,7 +350,10 @@ impl LuaUserData for LuaGlobe {
 
         // -- addLabel --
         /// Add a text label. Returns label ID.
-        /// @param ltype : string, lat : number, lon : number, text : string
+        /// @param ltype : string
+        /// @param lat : number
+        /// @param lon : number
+        /// @param text : string
         /// @return integer
         methods.add_method_mut("addLabel", |_, this, (ltype, lat, lon, text): (String, f32, f32, String)| {
             this.with_mut(|g| {
@@ -338,14 +363,16 @@ impl LuaUserData for LuaGlobe {
 
         // -- setLabelText --
         /// Update label text.
-        /// @param id : integer, text : string
+        /// @param id : integer
+        /// @param text : string
         methods.add_method_mut("setLabelText", |_, this, (id, text): (u32, String)| {
             this.with_mut(|g| g.labels.set_text(id, text))
         });
 
         // -- setLabelVisible --
         /// Set label visibility.
-        /// @param id : integer, visible : boolean
+        /// @param id : integer
+        /// @param visible : boolean
         methods.add_method_mut("setLabelVisible", |_, this, (id, vis): (u32, bool)| {
             this.with_mut(|g| g.labels.set_visible(id, vis))
         });
@@ -361,7 +388,8 @@ impl LuaUserData for LuaGlobe {
 
         // -- addLayer --
         /// Add or replace a named thematic layer.
-        /// @param name : string, z_order : integer?
+        /// @param name : string
+        /// @param z_order : integer?
         methods.add_method_mut("addLayer", |_, this, (name, z_order): (String, Option<i32>)| {
             this.with_mut(|g| {
                 g.layers.add(Layer {
@@ -384,21 +412,28 @@ impl LuaUserData for LuaGlobe {
 
         // -- setLayerColor --
         /// Set a per-province color override on a layer.
-        /// @param layer : string, province_id : integer, r, g, b, a : number
+        /// @param layer : string
+        /// @param province_id : integer
+        /// @param r : number
+        /// @param g : number
+        /// @param b : number
+        /// @param a : number
         methods.add_method_mut("setLayerColor", |_, this, (layer, id, r, g, b, a): (String, u32, f32, f32, f32, f32)| {
             this.with_mut(|g| g.layers.set_province_color(&layer, id, [r, g, b, a]))
         });
 
         // -- setLayerVisible --
         /// Set layer visibility.
-        /// @param name : string, visible : boolean
+        /// @param name : string
+        /// @param visible : boolean
         methods.add_method_mut("setLayerVisible", |_, this, (name, vis): (String, bool)| {
             this.with_mut(|g| g.layers.set_visible(&name, vis))
         });
 
         // -- setLayerAlpha --
         /// Set layer opacity (0.0–1.0).
-        /// @param name : string, alpha : number
+        /// @param name : string
+        /// @param alpha : number
         methods.add_method_mut("setLayerAlpha", |_, this, (name, alpha): (String, f32)| {
             this.with_mut(|g| g.layers.set_alpha(&name, alpha))
         });
@@ -444,8 +479,9 @@ impl LuaUserData for LuaGlobe {
 
         // -- findPath --
         /// Find the shortest province path from `from_id` to `to_id`.
-        /// @param from_id : integer, to_id : integer
-        /// @return table<integer>? — ordered province IDs, or nil if no path
+        /// @param from_id : integer
+        /// @param to_id : integer
+        /// @return table<integer>?
         methods.add_method("findPath", |lua, this, (from_id, to_id): (u32, u32)| {
             let path_opt = this.with(|g| {
                 g.graph.find_path_default(from_id, to_id)
@@ -464,8 +500,9 @@ impl LuaUserData for LuaGlobe {
 
         // -- reachable --
         /// Return all provinces reachable within `max_cost` steps from `start_id`.
-        /// @param start_id : integer, max_cost : number
-        /// @return table<integer, number> — map of province_id -> cost
+        /// @param start_id : integer
+        /// @param max_cost : number
+        /// @return table<integer, number>
         methods.add_method("reachable", |lua, this, (start_id, max_cost): (u32, f64)| {
             let reached = this.with(|g| {
                 g.graph.reachable_default(start_id, max_cost)
@@ -481,9 +518,12 @@ impl LuaUserData for LuaGlobe {
 
         // -- addArc --
         /// Add an arc (great-circle path between two lat/lon points).
-        /// @param lat1 : number, lon1 : number, lat2 : number, lon2 : number
+        /// @param lat1 : number
+        /// @param lon1 : number
+        /// @param lat2 : number
+        /// @param lon2 : number
         /// @param steps : integer?
-        /// @return integer — arc ID
+        /// @return integer
         methods.add_method_mut("addArc", |_, this, (lat1, lon1, lat2, lon2, steps): (f32, f32, f32, f32, Option<u32>)| {
             let steps = steps.unwrap_or(24);
             this.with_mut(|g| {
@@ -629,7 +669,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     let tbl = lua.create_table()?;
     let registry = Arc::new(Mutex::new(GlobeRegistry::new()));
 
-    // -- globe.new(name, spec?) --
+    // -- new --
     /// Create a new globe.
     /// @param name : string
     /// @param spec : table?
@@ -652,7 +692,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?;
     }
 
-    // -- globe.get(name) --
+    // -- get --
     /// Get an existing globe by name, or nil.
     /// @param name : string
     /// @return Globe?
@@ -677,9 +717,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?;
     }
 
-    // -- globe.loadFromTOML(name, toml_src, spec?) --
+    // -- loadFromTOML --
     /// Load provinces from a TOML string and create a globe.
-    /// @param name : string, toml_src : string, spec : table?
+    /// @param name : string
+    /// @param toml_src : string
+    /// @param spec : table?
     /// @return Globe
     {
         let reg = registry.clone();
@@ -704,9 +746,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?;
     }
 
-    // -- globe.greatCircleDistance(lat1, lon1, lat2, lon2) --
+    // -- greatCircleDistance --
     /// Great-circle distance between two lat/lon points (in unit-sphere radians).
-    /// @param lat1 : number, lon1 : number, lat2 : number, lon2 : number
+    /// @param lat1 : number
+    /// @param lon1 : number
+    /// @param lat2 : number
+    /// @param lon2 : number
     /// @return number
     tbl.set(
         "greatCircleDistance",
@@ -715,9 +760,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // -- globe.greatCirclePath(lat1, lon1, lat2, lon2, steps) --
+    // -- greatCirclePath --
     /// Great-circle path as a table of {lat, lon} pairs.
-    /// @param lat1, lon1, lat2, lon2 : number, steps : integer
+    /// @param lat1 : number
+    /// @param lon1 : number
+    /// @param lat2 : number
+    /// @param lon2 : number
+    /// @param steps : integer
     /// @return table<{number, number}>
     tbl.set(
         "greatCirclePath",
@@ -734,10 +783,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // -- globe.latLonToUnit(lat, lon) --
+    // -- latLonToUnit --
     /// Convert lat/lon (degrees) to a unit-sphere Cartesian vector {x, y, z}.
-    /// @param lat : number, lon : number
-    /// @return {number, number, number}
+    /// @param lat : number
+    /// @param lon : number
+    /// @return table
     tbl.set(
         "latLonToUnit",
         lua.create_function(|lua, (lat, lon): (f32, f32)| {

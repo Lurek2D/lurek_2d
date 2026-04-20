@@ -1,3 +1,4 @@
+-- content/examples/globe.lua
 -- XCOM-style Geoscape Globe Example
 -- Demonstrates the lurek.globe.* API: province management, camera,
 -- fog of war, markers, labels, layers, path-finding, and arcs.
