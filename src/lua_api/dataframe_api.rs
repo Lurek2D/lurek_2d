@@ -84,15 +84,37 @@ impl LuaUserData for LuaDataFrame {
         /// @return integer
         methods.add_method("nrows", |_, this, ()| Ok(this.inner.borrow().nrows()));
 
+        // -- rowCount --
+        /// Returns the number of rows (alias for nrows).
+        /// @return integer
+        methods.add_method("rowCount", |_, this, ()| Ok(this.inner.borrow().nrows()));
+
         // -- ncols --
         /// Returns the number of columns.
         /// @return integer
         methods.add_method("ncols", |_, this, ()| Ok(this.inner.borrow().ncols()));
 
+        // -- columnCount --
+        /// Returns the number of columns (alias for ncols).
+        /// @return integer
+        methods.add_method("columnCount", |_, this, ()| Ok(this.inner.borrow().ncols()));
+
         // -- columns --
         /// Returns a table of column names.
         /// @return table
         methods.add_method("columns", |lua, this, ()| {
+            let df = this.inner.borrow();
+            let tbl = lua.create_table()?;
+            for (i, name) in df.columns().iter().enumerate() {
+                tbl.set(i + 1, name.as_str())?;
+            }
+            Ok(tbl)
+        });
+
+        // -- columnNames --
+        /// Returns a table of column names (alias for columns).
+        /// @return table
+        methods.add_method("columnNames", |lua, this, ()| {
             let df = this.inner.borrow();
             let tbl = lua.create_table()?;
             for (i, name) in df.columns().iter().enumerate() {
@@ -1023,8 +1045,14 @@ impl LuaUserData for LuaDataFrame {
             "rollingMean",
             |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
-                let out_name = result_col.unwrap_or_else(|| "rolling_mean".to_string());
                 let df = this.inner.borrow();
+                let out_name = match result_col {
+                    Some(s) => s,
+                    None => {
+                        let ci = df.resolve_col(cr.clone()).map_err(LuaError::RuntimeError)?;
+                        format!("{}_rolling_mean", df.columns()[ci])
+                    }
+                };
                 let result = df
                     .rolling_mean(cr, window, &out_name)
                     .map_err(LuaError::RuntimeError)?;
@@ -1036,7 +1064,7 @@ impl LuaUserData for LuaDataFrame {
         /// Returns a new DataFrame with a rolling sum column appended.
         ///
         /// Each row value is the sum of the current and up to `window - 1`
-        /// preceding rows. Partial windows at the start use available data.
+        /// preceding rows. Rows with fewer than `window` predecessors get `nil`.
         /// Non-numeric cells contribute 0; all-non-numeric windows produce `nil`.
         ///
         /// # Usage
@@ -1051,8 +1079,14 @@ impl LuaUserData for LuaDataFrame {
             "rollingSum",
             |_, this, (col, window, result_col): (LuaValue, usize, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
-                let out_name = result_col.unwrap_or_else(|| "rolling_sum".to_string());
                 let df = this.inner.borrow();
+                let out_name = match result_col {
+                    Some(s) => s,
+                    None => {
+                        let ci = df.resolve_col(cr.clone()).map_err(LuaError::RuntimeError)?;
+                        format!("{}_rolling_sum", df.columns()[ci])
+                    }
+                };
                 let result = df
                     .rolling_sum(cr, window, &out_name)
                     .map_err(LuaError::RuntimeError)?;
@@ -1079,8 +1113,14 @@ impl LuaUserData for LuaDataFrame {
             |_, this, (col, order, result_col): (LuaValue, Option<String>, Option<String>)| {
                 let cr = lua_to_col_ref(col)?;
                 let ord = order.as_deref().unwrap_or("asc");
-                let out_name = result_col.unwrap_or_else(|| "rank".to_string());
                 let df = this.inner.borrow();
+                let out_name = match result_col {
+                    Some(s) => s,
+                    None => {
+                        let ci = df.resolve_col(cr.clone()).map_err(LuaError::RuntimeError)?;
+                        format!("{}_rank", df.columns()[ci])
+                    }
+                };
                 let result = df
                     .rank_column(cr, ord, &out_name)
                     .map_err(LuaError::RuntimeError)?;

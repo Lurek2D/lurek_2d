@@ -2,6 +2,23 @@
 
 All notable changes to Lurek2D are recorded here.
 
+## [0.20.4] — 2026-04-22
+
+### Test coverage sweep — Phase 2 (session test-coverage-sweep-20260421)
+
+- **fix(math): expose Vec3/Transform/CatmullRomSpline as namespace tables** — `lurek.math.Vec3.new(x,y,z)`, `Vec3.splat(v)`, `Vec3.zero()`, `Vec3(x,y,z)` (via `__call`); `Transform.new()` for identity transform; `CatmullRomSpline.new()` for empty mutable spline. All namespace tables registered in `src/lua_api/math_api.rs`.
+- **fix(math): add querySegment and queryCircle to LuaAabbTree** — `src/lua_api/math_api.rs` `LuaAabbTree` now exposes `querySegment(x1,y1,x2,y2)` and `queryCircle(cx,cy,r)` methods matching the underlying `AabbTree::query_segment` / `query_circle` Rust API.
+- **fix(math): CatmullRomSpline count() and safe removePoint** — Added `count()` method via `.len()`; `removePoint(idx)` now uses 1-based Lua indexing and is safe (no error on out-of-range).
+- **fix(math): fromHex returns nil for invalid input** — Changed from raising a `RuntimeError` to returning a single `nil` multi-value via `LuaMultiValue`.
+- **fix(runtime): add fps, frameCount, isDebug stubs** — `lurek.runtime.fps()` → 0.0, `frameCount()` → 0, `isDebug()` → `cfg!(debug_assertions)` registered in `src/lua_api/system_api.rs`.
+- **fix(dataframe): add rowCount, columnCount, columnNames aliases** — `rowCount()`, `columnCount()`, `columnNames()` registered in `src/lua_api/dataframe_api.rs` as aliases for `nrows`, `ncols`, `columns`.
+- **fix(dataframe): fix rollingMean/rollingSum/rank default column naming** — Output column names now use `<source>_rolling_mean`, `<source>_rolling_sum`, `<source>_rank` format instead of bare `rolling_mean`, `rolling_sum`, `rank`.
+- **fix(dataframe): rolling window returns nil for insufficient history** — `rolling_mean` and `rolling_sum` in `src/dataframe/frame.rs` now emit `CellValue::Nil` for rows where `i + 1 < window` rather than partial-window values.
+- **fix(serial): empty Lua table accepted as vacuous-truth empty sequence** — `src/serial/schema.rs` `validate_at` now accepts `SerialValue::Map(empty)` as a valid empty sequence when the schema has an `items` constraint.
+- **test(math): fix lerp tolerance and inOutBounce test** — Lerp property test tolerance raised to `1e-3` (f32 precision for range [-1000,1000]); `inOutBounce` test changed from monotone-check to symmetry-check (bounce curves are not monotone by design).
+- **test(integration): 5 new cross-module integration tests** — `test_serial_filesystem.lua` (4 tests), `test_timer_event.lua` (4 tests), `test_math_physics.lua` (3 tests), `test_image_dataframe.lua` (3 tests), `test_animation_tween.lua` (3 tests). All registered in `tests/lua/harness.rs`.
+- **test(stress): pathfind stress test** — `tests/lua/stress/test_pathfind_stress.lua` (3 tests: 64×64 A* × 20, FlowField 32×32 × 10, blocking cells 16×16).
+
 ## [0.20.3] — 2026-04-22
 
 ### Globe example and showcase demo (session doc-writer-20260421)

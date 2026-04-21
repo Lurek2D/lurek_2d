@@ -1367,8 +1367,9 @@ describe("property: lerp interpolation", function()
             local b = vals[i + 50]
             local at0 = lurek.math.lerp(a, b, 0)
             local at1 = lurek.math.lerp(a, b, 1)
-            expect_near(a, at0, 1e-10, "lerp(a,b,0) = a")
-            expect_near(b, at1, 1e-10, "lerp(a,b,1) = b")
+            -- lerp uses f32 internally; tolerance matches f32 relative precision over range [-1000, 1000]
+            expect_near(a, at0, 1e-3, "lerp(a,b,0) = a")
+            expect_near(b, at1, 1e-3, "lerp(a,b,1) = b")
         end
     end)
 
@@ -1768,13 +1769,14 @@ describe("lurek.math easing inOut variants", function()
     expect_near(1.0, lurek.math.inOutBounce(1), 1e-5)
   end)
   -- @covers lurek.math.inOutBounce
-  -- @description inOutBounce is monotonically non-decreasing.
-  it("inOutBounce is non-decreasing", function()
-    local prev = lurek.math.inOutBounce(0)
-    for i = 1, 10 do
-      local cur = lurek.math.inOutBounce(i / 10)
-      expect_true(cur >= prev - 1e-6, "inOutBounce non-decreasing at t=" .. (i/10))
-      prev = cur
+  -- @description inOutBounce has the expected symmetry: f(1-t) ~= 1 - f(t).
+  -- Note: bounce easings are NOT monotone by design — they bounce back.
+  it("inOutBounce is symmetric", function()
+    for i = 1, 9 do
+      local t = i / 10
+      local ft = lurek.math.inOutBounce(t)
+      local f1t = lurek.math.inOutBounce(1 - t)
+      expect_near(1 - ft, f1t, 1e-5, "inOutBounce symmetric at t=" .. t)
     end
   end)
   -- @covers lurek.math.inOutBack
@@ -1886,15 +1888,15 @@ end)
 describe("lurek.math AabbTree querySegment", function()
   it("querySegment returns ids crossed by segment", function()
     local t = lurek.math.aabbTree()
-    t:insert("box", 0, 0, 4, 4)
+    t:insert(42, 0, 0, 4, 4)
     local hits = t:querySegment(2, -1, 2, 5)
     expect_equal(1, #hits)
-    expect_equal("box", hits[1])
+    expect_equal(42, hits[1])
   end)
 
   it("querySegment misses non-intersecting AABB", function()
     local t = lurek.math.aabbTree()
-    t:insert("box", 10, 10, 20, 20)
+    t:insert(42, 10, 10, 20, 20)
     local hits = t:querySegment(0, 0, 5, 5)
     expect_equal(0, #hits)
   end)

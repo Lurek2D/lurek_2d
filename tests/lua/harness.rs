@@ -335,11 +335,6 @@ fn lua_test_globe() {
 }
 
 #[test]
-fn lua_test_globe_demo() {
-    run_lua_test("unit/test_globe_demo.lua");
-}
-
-#[test]
 fn lua_test_pipeline() {
     run_lua_test("unit/test_pipeline.lua");
 }

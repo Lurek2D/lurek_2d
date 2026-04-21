@@ -143,15 +143,19 @@ fn validate_at(value: &SerialValue, schema: &SerialValue, path: &str) -> Result<
 
     // ── sequence items ────────────────────────────────────────────────────────
     if let Some(item_schema) = schema_map.get("items") {
-        let seq = match value {
-            SerialValue::Seq(s) => s,
+        match value {
+            SerialValue::Seq(s) => {
+                for (i, item) in s.iter().enumerate() {
+                    let item_path = format!("{path}[{i}]");
+                    validate_at(item, item_schema, &item_path)?;
+                }
+            }
+            // An empty Lua table `{}` is serialised as Map({}); treat it as an
+            // empty sequence that vacuously satisfies the items constraint.
+            SerialValue::Map(m) if m.is_empty() => {}
             _ => {
                 return Err(format!("{path}: 'items' requires a sequence (array) value"));
             }
-        };
-        for (i, item) in seq.iter().enumerate() {
-            let item_path = format!("{path}[{i}]");
-            validate_at(item, item_schema, &item_path)?;
         }
     }
 

@@ -777,6 +777,11 @@ impl DataFrame {
         let src = &self.data[ci];
         let mut new_col: Vec<CellValue> = Vec::with_capacity(n);
         for i in 0..n {
+            // Rows before the window fills produce nil (insufficient history).
+            if i + 1 < window {
+                new_col.push(CellValue::Nil);
+                continue;
+            }
             let start = i.saturating_sub(window - 1);
             let nums: Vec<f64> = (start..=i)
                 .filter_map(|j| {
@@ -835,6 +840,11 @@ impl DataFrame {
         let src = &self.data[ci];
         let mut new_col: Vec<CellValue> = Vec::with_capacity(n);
         for i in 0..n {
+            // Rows before the window fills produce nil (insufficient history).
+            if i + 1 < window {
+                new_col.push(CellValue::Nil);
+                continue;
+            }
             let start = i.saturating_sub(window - 1);
             let mut sum = 0.0f64;
             let mut has_any = false;

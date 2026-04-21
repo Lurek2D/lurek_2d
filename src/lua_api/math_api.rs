@@ -413,15 +413,21 @@ impl LuaUserData for LuaCatmullRom {
         });
 
         // -- removePoint --
-        /// Removes the control point at `index` (0-based) and returns it.
+        /// Removes the control point at `index` (1-based Lua index). Safe: does nothing if out
+        /// of range.
         /// @param index : integer
-        /// @return number, number
+        /// @return nil
         methods.add_method_mut("removePoint", |_, this, idx: usize| {
-            this.inner
-                .remove_point(idx)
-                .map(|(x, y)| (x, y))
-                .ok_or_else(|| LuaError::RuntimeError("index out of bounds".into()))
+            if idx >= 1 {
+                this.inner.remove_point(idx - 1);
+            }
+            Ok(())
         });
+
+        // -- count --
+        /// Returns the number of control points in the spline.
+        /// @return integer
+        methods.add_method("count", |_, this, ()| Ok(this.inner.len()));
     }
 }
 
@@ -1557,6 +1563,43 @@ impl LuaUserData for LuaAabbTree {
         /// Returns true if the tree contains no entries.
         /// @return boolean
         methods.add_method("isEmpty", |_, this, ()| Ok(this.inner.is_empty()));
+
+        // -- querySegment --
+        /// Returns ids of all entries whose AABBs are intersected by the line segment.
+        /// @param x1 : number
+        /// @param y1 : number
+        /// @param x2 : number
+        /// @param y2 : number
+        /// @return table
+        methods.add_method(
+            "querySegment",
+            |lua, this, (x1, y1, x2, y2): (f32, f32, f32, f32)| {
+                let ids = this.inner.query_segment(x1, y1, x2, y2);
+                let t = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    t.set(i + 1, *id)?;
+                }
+                Ok(t)
+            },
+        );
+
+        // -- queryCircle --
+        /// Returns ids of all entries whose AABBs overlap the given circle.
+        /// @param cx : number
+        /// @param cy : number
+        /// @param radius : number
+        /// @return table
+        methods.add_method(
+            "queryCircle",
+            |lua, this, (cx, cy, radius): (f32, f32, f32)| {
+                let ids = this.inner.query_circle(cx, cy, radius);
+                let t = lua.create_table()?;
+                for (i, id) in ids.iter().enumerate() {
+                    t.set(i + 1, *id)?;
+                }
+                Ok(t)
+            },
+        );
 
         // -- clear --
         /// Removes all entries from the tree.
@@ -2803,20 +2846,40 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // -- Vec3 --
-    /// Compatibility alias for `vec3`.
-    /// @param x : number
-    /// @param y : number
-    /// @param z : number
-    /// Vec3
-    tbl.set(
-        "Vec3",
-        lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
-            lua.create_userdata(LuaVec3 {
-                inner: Vec3::new(x, y, z),
-            })
-        })?,
-    )?;
+    // -- Vec3 namespace table --
+    /// Namespace table for Vec3 constructors.
+    /// Callable as `lurek.math.Vec3(x,y,z)` (via __call), or use `.new(x,y,z)` / `.splat(v)`.
+    {
+        let ns = lua.create_table()?;
+        ns.set(
+            "new",
+            lua.create_function(|lua, (x, y, z): (f32, f32, f32)| {
+                lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+            })?,
+        )?;
+        ns.set(
+            "splat",
+            lua.create_function(|lua, v: f32| {
+                lua.create_userdata(LuaVec3 { inner: Vec3::splat(v) })
+            })?,
+        )?;
+        ns.set(
+            "zero",
+            lua.create_function(|lua, ()| {
+                lua.create_userdata(LuaVec3 { inner: Vec3::splat(0.0) })
+            })?,
+        )?;
+        // __call: Vec3(x,y,z) still works
+        let mt = lua.create_table()?;
+        mt.set(
+            "__call",
+            lua.create_function(|lua, (_self, x, y, z): (LuaValue, f32, f32, f32)| {
+                lua.create_userdata(LuaVec3 { inner: Vec3::new(x, y, z) })
+            })?,
+        )?;
+        ns.set_metatable(Some(mt));
+        tbl.set("Vec3", ns)?;
+    }
 
     // -- catmullRom --
     /// Creates a Catmull-Rom spline through the given control points.
@@ -2838,6 +2901,38 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             })
         })?,
     )?;
+
+    // -- CatmullRomSpline namespace table --
+    /// Namespace table for CatmullRomSpline constructors.
+    /// Use `CatmullRomSpline.new()` to create an empty spline, then `:addPoint(x,y)`.
+    {
+        let ns = lua.create_table()?;
+        ns.set(
+            "new",
+            lua.create_function(|lua, ()| {
+                lua.create_userdata(LuaCatmullRom {
+                    inner: CatmullRomSpline::new(vec![]),
+                })
+            })?,
+        )?;
+        tbl.set("CatmullRomSpline", ns)?;
+    }
+
+    // -- Transform namespace table --
+    /// Namespace table for Transform constructors.
+    /// Use `Transform.new()` to create an identity transform.
+    {
+        let ns = lua.create_table()?;
+        ns.set(
+            "new",
+            lua.create_function(|lua, ()| {
+                lua.create_userdata(LuaTransform {
+                    inner: Transform::new(),
+                })
+            })?,
+        )?;
+        tbl.set("Transform", ns)?;
+    }
 
     // -- hermite --
     /// Creates a Hermite spline defined by two endpoints and tangents.
@@ -2943,15 +3038,22 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- fromHex --
     /// Parses a hex color string (#RRGGBB or #RRGGBBAA) into (r, g, b, a) floats.
+    /// Returns nil for invalid input (does NOT raise an error).
     /// @param hex : string
-    /// @return number, number, number, number
+    /// @return number?, number?, number?, number?
     tbl.set(
         "fromHex",
-        lua.create_function(|_, hex: String| {
+        lua.create_function(|lua, hex: String| -> LuaResult<LuaMultiValue> {
             use crate::math::Color;
-            Color::from_hex(&hex)
-                .map(|c| (c.r, c.g, c.b, c.a))
-                .ok_or_else(|| LuaError::RuntimeError(format!("invalid hex color: {}", hex)))
+            match Color::from_hex(&hex) {
+                Some(c) => Ok(LuaMultiValue::from_vec(vec![
+                    LuaValue::Number(c.r as f64),
+                    LuaValue::Number(c.g as f64),
+                    LuaValue::Number(c.b as f64),
+                    LuaValue::Number(c.a as f64),
+                ])),
+                None => Ok(LuaMultiValue::from_vec(vec![LuaValue::Nil])),
+            }
         })?,
     )?;
 

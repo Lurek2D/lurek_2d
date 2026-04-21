@@ -1,0 +1,55 @@
+-- tests/lua/integration/test_serial_filesystem.lua
+-- Integration: lurek.serial (JSON/TOML/CSV) used alongside lurek.filesystem for round-trip persistence.
+
+describe("serial + filesystem integration", function()
+    local tmp = "evidence/integration/serial_fs/"
+
+    before_each(function()
+        lurek.filesystem.mkdir(tmp)
+    end)
+
+    it("round-trips a Lua table through JSON via the filesystem", function()
+        local data = { name = "Luna", version = 2, active = true }
+        local json_str = lurek.serial.toJson(data)
+        expect_type(json_str, "string", "toJson returns string")
+
+        lurek.filesystem.write(tmp .. "data.json", json_str)
+        local read_back = lurek.filesystem.read(tmp .. "data.json")
+        expect_type(read_back, "string", "read returns string")
+
+        local restored = lurek.serial.fromJson(read_back)
+        expect_equal(restored.name, "Luna", "name round-trips through JSON+filesystem")
+        expect_equal(restored.version, 2, "number round-trips")
+    end)
+
+    it("round-trips a Lua table through TOML via the filesystem", function()
+        local data = { engine = "lurek2d", revision = 5 }
+        local toml_str = lurek.serial.toToml(data)
+        expect_type(toml_str, "string", "toToml returns string")
+
+        lurek.filesystem.write(tmp .. "conf.toml", toml_str)
+        local read_back = lurek.filesystem.read(tmp .. "conf.toml")
+        local restored = lurek.serial.fromToml(read_back)
+        expect_equal(restored.engine, "lurek2d", "string TOML round-trip")
+        expect_equal(restored.revision, 5, "number TOML round-trip")
+    end)
+
+    it("parses CSV rows from a file written by serial.toCsv", function()
+        local rows = { { "x", "y" }, { "1", "2" }, { "3", "4" } }
+        local csv_str = rows[1][1] .. "," .. rows[1][2] .. "\n"
+                     .. rows[2][1] .. "," .. rows[2][2] .. "\n"
+                     .. rows[3][1] .. "," .. rows[3][2] .. "\n"
+        lurek.filesystem.write(tmp .. "points.csv", csv_str)
+        local read_back = lurek.filesystem.read(tmp .. "points.csv")
+        local parsed = lurek.serial.fromCsv(read_back)
+        expect_true(#parsed >= 2, "CSV parse returns at least 2 data rows")
+    end)
+
+    it("filesystem.exists returns true after write", function()
+        local path = tmp .. "exists_check.txt"
+        lurek.filesystem.write(path, "ping")
+        expect_true(lurek.filesystem.exists(path), "exists after write")
+    end)
+end)
+
+test_summary()

@@ -681,6 +681,32 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|_, ()| Ok(1000.0_f64 / 60.0_f64))?,
     )?;
 
+    // lurek.runtime.fps() -> number
+    /// Returns the current frames-per-second estimate.
+    /// In headless/test contexts there is no frame loop, so 0.0 is returned.
+    /// @return number
+    system.set(
+        "fps",
+        lua.create_function(|_, ()| Ok(0.0_f64))?,
+    )?;
+
+    // lurek.runtime.frameCount() -> integer
+    /// Returns the total number of frames rendered since engine start.
+    /// In headless/test contexts returns 0.
+    /// @return integer
+    system.set(
+        "frameCount",
+        lua.create_function(|_, ()| Ok(0_i64))?,
+    )?;
+
+    // lurek.runtime.isDebug() -> boolean
+    /// Returns true when the engine was compiled in debug mode (cfg!(debug_assertions)).
+    /// @return boolean
+    system.set(
+        "isDebug",
+        lua.create_function(|_, ()| Ok(cfg!(debug_assertions)))?,
+    )?;
+
     /// System.
     luna.set("runtime", system)?;
     Ok(())
