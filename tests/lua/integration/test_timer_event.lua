@@ -3,7 +3,7 @@
 
 describe("timer + event integration", function()
     it("timer fires once after update accumulates enough dt", function()
-        local sched = lurek.timer.new()
+        local sched = lurek.timer.newScheduler()
         local fired = false
 
         sched:after(0.1, function()
@@ -18,7 +18,7 @@ describe("timer + event integration", function()
     end)
 
     it("timer count decrements after firing once", function()
-        local sched = lurek.timer.new()
+        local sched = lurek.timer.newScheduler()
         sched:after(0.01, function() end)
         expect_equal(sched:getCount(), 1, "1 scheduled timer")
         sched:update(0.02)
@@ -38,7 +38,7 @@ describe("timer + event integration", function()
     end)
 
     it("timer callback can emit a signal", function()
-        local sched = lurek.timer.new()
+        local sched = lurek.timer.newScheduler()
         local sig = lurek.event.newSignal()
         local received = nil
 
