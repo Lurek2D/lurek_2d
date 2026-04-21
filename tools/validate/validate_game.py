@@ -32,7 +32,7 @@ EXAMPLES_DIR = WORKSPACE_ROOT / "content" / "examples"
 
 def _build_api_manifest() -> Dict[str, Set[str]]:
     """Build a manifest of known lurek.* API functions from gen_lua_api.py."""
-    sys.path.insert(0, str(WORKSPACE_ROOT / "tools"))
+    sys.path.insert(0, str(WORKSPACE_ROOT / "tools" / "docs"))
     import gen_lua_api
 
     all_fns = gen_lua_api.collect_all_functions(WORKSPACE_ROOT / "src" / "lua_api")
