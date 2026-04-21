@@ -15,7 +15,7 @@ print("=== lurek.ui — Widget-Based GUI System ===\n")
 -- Image_Widget is the root GUI manager that creates all widgets and handles
 -- input routing, focus management, themes, and rendering.
 
--- Assume `gui` is the Image_Widget instance provided by the engine.
+-- Assume `ui` is the Image_Widget instance provided by the engine.
 -- In a real game this comes from lurek.ui.new() or similar factory.
 local gui = lurek.ui.new(800, 600)
 

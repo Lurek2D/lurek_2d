@@ -1,19 +1,19 @@
 {
   "meta": {
-    "generated": "2026-04-21T10:17:09.268330+00:00",
+    "generated": "2026-04-21T18:55:55.536716+00:00",
     "generator": "tools/gen_rust_api_data.py",
     "version": "0.20.0",
     "stats": {
-      "rust_items": 1856,
+      "rust_items": 1859,
       "rust_modules": 449,
       "rust_tests": 0,
-      "lua_tests": 270
+      "lua_tests": 252
     }
   },
   "rust_api": {
     "summary": {
-      "total_items": 1856,
-      "documented": 1830,
+      "total_items": 1859,
+      "documented": 1833,
       "modules": 449
     },
     "modules": {
@@ -53,14 +53,14 @@
             "kind": "enum",
             "description": "Arm selection algorithm for a [`Bandit`].  # Variants - `EpsilonGreedy` — EpsilonGreedy variant. - `UCB1` — UCB1 variant. - `ThompsonSampling` — ThompsonSampling variant.",
             "file": "src/ai/bandit.rs",
-            "line": 80
+            "line": 76
           },
           {
             "name": "Bandit",
             "kind": "struct",
             "description": "Multi-armed bandit with configurable exploration strategy.  # Fields - `arms` — `Vec<BanditArm>`. - `strategy` — `BanditStrategy`. - `total_pulls` — `u64`.",
             "file": "src/ai/bandit.rs",
-            "line": 102
+            "line": 98
           }
         ]
       },
@@ -101,7 +101,7 @@
             "kind": "struct",
             "description": "A snapshot of a [`BehaviorTree`]'s current diagnostic state.  Returned by [`BehaviorTree::debug_state`] and exposed to Lua via `bt:getDebugState()`.  # Fields - `node_count` — Total number of nodes in the tree (0 for an empty tree). - `last_status` — The status string returned by the most recent tick.",
             "file": "src/ai/behavior_tree.rs",
-            "line": 341
+            "line": 342
           }
         ]
       },
@@ -262,7 +262,7 @@
             "kind": "struct",
             "description": "Simple generational genetic algorithm.  Uses tournament selection, uniform crossover, and Gaussian mutation. The population is replaced each generation; the best chromosome is always carried over (elitism).  # Fields - `population` — `Vec<Chromosome>`. - `gene_count` — `usize`. - `mutation_rate` — `f32`. - `mutation_std` — `f32`. - `tournament_size` — `usize`. - `elitism` — `usize`. - `generation` — `usize`.",
             "file": "src/ai/genetic.rs",
-            "line": 79
+            "line": 75
           }
         ]
       },
@@ -316,21 +316,21 @@
             "kind": "struct",
             "description": "One decomposition pathway for a compound task.  A method applies when all of its precondition keys are `>= 0.5` in the current world state. Its `sub_tasks` list replaces the compound task in the planning stack.  # Fields - `name` — `String`. - `preconditions` — `Vec<String>`. - `sub_tasks` — `Vec<String>`.",
             "file": "src/ai/htn.rs",
-            "line": 147
+            "line": 138
           },
           {
             "name": "HTNDomain",
             "kind": "struct",
             "description": "Registry of all HTN tasks for an agent archetype.  One domain per agent type. Tasks are registered at game startup; planning queries the domain at runtime without mutating it.  # Fields - `tasks` — `HashMap<String, HTNTask>`.",
             "file": "src/ai/htn.rs",
-            "line": 216
+            "line": 205
           },
           {
             "name": "HTNPlanner",
             "kind": "struct",
             "description": "Stateless HTN planner. Executes planning via recursive decomposition.  Planning is purely functional: it takes a domain, a root task name, and a world-state snapshot; it returns a flat `Vec<String>` of primitive task names (in execution order) or `None` if no valid plan was found.  The planner clones the world-state before each `Primitive` task to simulate effects without modifying the caller's state. A depth limit of 128 prevents infinite decomposition on cyclic compound tasks.",
             "file": "src/ai/htn.rs",
-            "line": 304
+            "line": 287
           }
         ]
       },
@@ -370,12 +370,12 @@
             "kind": "struct",
             "description": "MCTS engine with arena-allocated node tree.  Resets the tree on every `search` call so intermediate state never leaks between decisions. The arena grows as needed and is cleared at the start of each search.  # Fields - `config` — `MCTSConfig`. - `arena` — `Vec<MCTSNode>`. - `rng` — `u64`.",
             "file": "src/ai/mcts.rs",
-            "line": 135
+            "line": 128
           }
         ]
       },
       "ai": {
-        "module_doc": "# AI Module — Game AI Toolkit (Tier 2)  Provides a comprehensive suite of decoupled game AI subsystems for Lurek2D. Each subsystem can be used independently or composed together through the [`Agent`] / [`AIWorld`] framework.  ## Architecture Overview  The AI module is a **Tier 2 Engine Extension**. It may import `math`, `engine`, and Tier 1 modules (primarily `pathfinding` for grid and flow-field re-exports). It must not import other Tier 2 modules or any Tier 3 modules.  All AI computation is **pure CPU math** — no GPU, audio, or window access. This means every subsystem can run headlessly in tests without a graphics context.  ## Subsystems  | Subsystem | Description | |-----------|-------------| | [`fsm`] | Finite state machine with priority-ordered guarded transitions | | [`behavior_tree`] | Hierarchical behavior tree with composites, decorators, and leaf callbacks | | [`steering`] | Reynolds-style steering behaviors (seek, flee, arrive, wander, pursue, evade, flock) | | [`goap`] | Goal-Oriented Action Planning using A★ over boolean world state | | [`utility_ai`] | Multi-axis utility scorer with response curves for action selection | | [`qlearner`] | Tabular epsilon-greedy Q-learning for reinforcement learning | | [`influence_map`] | Multi-layer spatial float grid for strategic area analysis | | [`squad`] | Squad coordination with formation offset computation | | [`command_queue`] | RTS-style ordered command queue with interrupt and cancel | | [`blackboard`] | Hierarchical key-value store for inter-agent data sharing |  ## Agent–World Model  [`AIWorld`] owns all [`Agent`] instances. Each agent carries kinematic state (position, velocity, max speed/force), a [`DecisionModel`] that selects which subsystems are ticked, and a local [`Blackboard`] that chains to the world's global blackboard for hierarchical lookup.  The world ticks agents in descending priority order during `update(dt)`. FSM transitions, BT ticks, and steering force calculations all happen during this pass. The Lua API layer (`lurek.ai.*`) wraps these Rust types.  ## Dependencies  - `FlowField`, `Cell`, and `PathGrid` are re-exported directly from   `crate::pathfinding` so `lurek.ai.*` has a unified surface. - All Lua callbacks are stored as `mlua::RegistryKey` references. - No heap allocation happens per-frame in steady state; vectors are grown at   agent/behavior creation time.",
+        "module_doc": "# AI Module — Game AI Toolkit (Tier 2)  Provides a comprehensive suite of decoupled game AI subsystems for Lurek2D. Each subsystem can be used independently or composed together through the [`Agent`] / [`AIWorld`] framework.  ## Architecture Overview  The AI module is a **Tier 2 Engine Extension**. It may import `math`, `engine`, and Tier 1 modules (primarily `pathfind` for grid and flow-field re-exports). It must not import other Tier 2 modules or any Tier 3 modules.  All AI computation is **pure CPU math** — no GPU, audio, or window access. This means every subsystem can run headlessly in tests without a graphics context.  ## Subsystems  | Subsystem | Description | |-----------|-------------| | [`fsm`] | Finite state machine with priority-ordered guarded transitions | | [`behavior_tree`] | Hierarchical behavior tree with composites, decorators, and leaf callbacks | | [`steering`] | Reynolds-style steering behaviors (seek, flee, arrive, wander, pursue, evade, flock) | | [`goap`] | Goal-Oriented Action Planning using A★ over boolean world state | | [`utility_ai`] | Multi-axis utility scorer with response curves for action selection | | [`qlearner`] | Tabular epsilon-greedy Q-learning for reinforcement learning | | [`influence_map`] | Multi-layer spatial float grid for strategic area analysis | | [`squad`] | Squad coordination with formation offset computation | | [`command_queue`] | RTS-style ordered command queue with interrupt and cancel | | [`blackboard`] | Hierarchical key-value store for inter-agent data sharing |  ## Agent–World Model  [`AIWorld`] owns all [`Agent`] instances. Each agent carries kinematic state (position, velocity, max speed/force), a [`DecisionModel`] that selects which subsystems are ticked, and a local [`Blackboard`] that chains to the world's global blackboard for hierarchical lookup.  The world ticks agents in descending priority order during `update(dt)`. FSM transitions, BT ticks, and steering force calculations all happen during this pass. The Lua API layer (`lurek.ai.*`) wraps these Rust types.  ## Dependencies  - `FlowField`, `Cell`, and `PathGrid` are re-exported directly from   `crate::pathfind` so `lurek.ai.*` has a unified surface. - All Lua callbacks are stored as `mlua::RegistryKey` references. - No heap allocation happens per-frame in steady state; vectors are grown at   agent/behavior creation time.",
         "source_file": "src/ai/mod.rs",
         "items": [
           {
@@ -585,14 +585,14 @@
             "kind": "struct",
             "description": "A world-space announcement that an object or location can satisfy a need.  Game code creates advertisements for beds (satisfy `\"rest\"`), food sources (satisfy `\"hunger\"`), safe rooms (satisfy `\"safety\"`), etc. Agents rank advertisements by need urgency, satisfaction amount, and distance.  # Fields - `need_name` — `String`. - `satisfaction` — `f32`. - `position` — `(f32, f32)`. - `advertiser_name` — `String`. - `cooldown` — `f32`. - `remaining_cooldown` — `f32`.",
             "file": "src/ai/needs.rs",
-            "line": 145
+            "line": 143
           },
           {
             "name": "NeedSystem",
             "kind": "struct",
             "description": "Collection of [`Need`]s for a single agent.  Owns all needs, applies per-frame decay, and provides urgency queries.  # Fields - `needs` — `Vec<Need>`.",
             "file": "src/ai/needs.rs",
-            "line": 242
+            "line": 238
           }
         ]
       },
@@ -612,14 +612,14 @@
             "kind": "struct",
             "description": "A single fully-connected layer in a neural network.  Weights are stored in row-major order: `weights[output * inputs + input]`.  # Fields - `inputs` — `usize`. - `outputs` — `usize`. - `weights` — `Vec<f32>`. - `biases` — `Vec<f32>`. - `activation` — `Activation`.",
             "file": "src/ai/neural_net.rs",
-            "line": 131
+            "line": 115
           },
           {
             "name": "NeuralNet",
             "kind": "struct",
             "description": "Feedforward neural network stack.  Layers are added sequentially; `forward` propagates input through them all. Weights across all layers are flattened to a single `f32` vector for use with evolutionary algorithms.  # Fields - `layers` — `Vec<NeuralLayer>`.",
             "file": "src/ai/neural_net.rs",
-            "line": 206
+            "line": 190
           }
         ]
       },
@@ -693,7 +693,7 @@
             "kind": "struct",
             "description": "Agent-level sensing configuration and awareness state.  A `Sensor` is attached to one agent. Each frame, call `detect` to query nearby stimuli and `update_awareness` to evolve the awareness level based on how many stimuli were found. The awareness level drives alert detection with hysteresis to avoid rapid flickering.  ## Sight Cone  The sight cone extends `sight_range` world units ahead of the agent. The cone is symmetric with a half-angle of `sight_angle / 2` degrees measured from the `facing` direction in radians. A `sight_angle` of 360 means the agent sees all around.  ## Hearing  Auditory stimuli are detected if their position is within `hearing_range` world units, regardless of facing direction.  ## Custom Senses  Additional sense channels can be registered with per-channel ranges in `custom_ranges`. A custom stimulus is detected if its type label matches a registered range and the distance is within that range.  # Fields - `sight_range` — `f32`. - `sight_angle` — `f32`. - `hearing_range` — `f32`. - `facing` — `f32`. - `awareness` — `f32`. - `awareness_rise` — `f32`. - `awareness_decay` — `f32`. - `alert_threshold` — `f32`. - `custom_ranges` — `HashMap<String, f32>`.",
             "file": "src/ai/perception.rs",
-            "line": 396
+            "line": 369
           }
         ]
       },
@@ -792,7 +792,7 @@
             "kind": "struct",
             "description": "Throttled strategic goal evaluator.  Re-evaluates after `update_interval` seconds have elapsed or after a `force_evaluate` call. Outside scoring closures provide the actual utility estimate so the engine module stays game-agnostic.  # Fields - `goals` — `Vec<StrategicGoal>`. - `update_interval` — `f32`. - `timer` — `f32`. - `active_goal` — `Option<String>`. - `active_tags` — `Vec<String>`. - `total_evaluations` — `u32`.",
             "file": "src/ai/strategy.rs",
-            "line": 111
+            "line": 108
           }
         ]
       },
@@ -819,7 +819,7 @@
             "kind": "struct",
             "description": "Registry of named archetypal trait profiles used for agent instantiation.  Archetypes are immutable templates. Game code registers archetypes once during initialisation (e.g. `\"berserker\"`, `\"tactician\"`, `\"guard\"`) and then agents are created via `TraitProfile::from_archetype`.  # Fields - `archetypes` — `HashMap<String, HashMap<String, f32>>`.",
             "file": "src/ai/traits.rs",
-            "line": 320
+            "line": 307
           }
         ]
       },
@@ -1120,65 +1120,51 @@
           {
             "name": "AnimParamValue",
             "kind": "enum",
-            "description": "Value held by an animation parameter.  # Variants - `Bool` â€” `bool` flag. - `Float` â€” `f32` continuous value. - `Int` â€” `i32` integer value.",
+            "description": "Value held by an animation parameter.  # Variants - `Bool` — `bool` flag. - `Float` — `f32` continuous value. - `Int` — `i32` integer value.",
             "file": "src/animation/state_machine.rs",
             "line": 19
           },
           {
             "name": "ConditionOp",
             "kind": "enum",
-            "description": "Comparison operator for a transition condition.  # Variants - `Gt`, `Lt`, `Gte`, `Lte`, `Eq`, `Neq` â€” comparison operators.",
+            "description": "Comparison operator for a transition condition.  # Variants - `Gt`, `Lt`, `Gte`, `Lte`, `Eq`, `Neq` — comparison operators.",
             "file": "src/animation/state_machine.rs",
             "line": 35
           },
           {
             "name": "ConditionValue",
             "kind": "enum",
-            "description": "Right-hand side value for a transition condition.  # Variants - `Number` â€” `f32` numeric threshold. - `Bool` â€” `bool` flag.",
+            "description": "Right-hand side value for a transition condition.  # Variants - `Number` — `f32` numeric threshold. - `Bool` — `bool` flag.",
             "file": "src/animation/state_machine.rs",
             "line": 56
           },
           {
             "name": "TransitionCondition",
             "kind": "struct",
-            "description": "A single condition on one named parameter.  # Fields - `param` â€” `String`. Parameter name. - `op` â€” [`ConditionOp`]. Comparison operator. - `value` â€” [`ConditionValue`]. Threshold to compare against.",
+            "description": "A single condition on one named parameter.  # Fields - `param` — `String`. Parameter name. - `op` — [`ConditionOp`]. Comparison operator. - `value` — [`ConditionValue`]. Threshold to compare against.",
             "file": "src/animation/state_machine.rs",
             "line": 70
           },
           {
             "name": "AnimTransition",
             "kind": "struct",
-            "description": "A directed state transition with a single condition.  # Fields - `from` â€” `String`. Source state name. - `to` â€” `String`. Target state name. - `condition` â€” [`TransitionCondition`].",
+            "description": "A directed state transition with a single condition.  # Fields - `from` — `String`. Source state name. - `to` — `String`. Target state name. - `condition` — [`TransitionCondition`].",
             "file": "src/animation/state_machine.rs",
             "line": 88
           },
           {
             "name": "AnimStateConfig",
             "kind": "struct",
-            "description": "Configuration for a single state in the state machine.  # Fields - `clip` â€” `String`. Animation clip name to play in this state. - `looping` â€” `bool`. Whether the clip loops.",
+            "description": "Configuration for a single state in the state machine.  # Fields - `clip` — `String`. Animation clip name to play in this state. - `looping` — `bool`. Whether the clip loops.",
             "file": "src/animation/state_machine.rs",
             "line": 105
           },
           {
             "name": "AnimStateMachine",
             "kind": "struct",
-            "description": "Parameter-driven finite-state machine for animation control.  Owns an [`Animation`] controller. On each [`update`](Self::update) call the machine advances the animation by `dt` seconds, then checks registered transitions to see if the current state should change.  # Fields - `states` â€” `HashMap<String, AnimStateConfig>`. - `transitions` â€” `Vec<AnimTransition>`. - `current` â€” `String`. Active state name. - `params` â€” `HashMap<String, AnimParamValue>`. - `animation` â€” [`Animation`].",
+            "description": "Parameter-driven finite-state machine for animation control.  Owns an [`Animation`] controller. On each [`update`](Self::update) call the machine advances the animation by `dt` seconds, then checks registered transitions to see if the current state should change.  # Fields - `states` — `HashMap<String, AnimStateConfig>`. - `transitions` — `Vec<AnimTransition>`. - `current` — `String`. Active state name. - `params` — `HashMap<String, AnimParamValue>`. - `animation` — [`Animation`].",
             "file": "src/animation/state_machine.rs",
             "line": 126
-          },
-          {
-            "name": "compare_nums",
-            "kind": "fn",
-            "description": "Applies a comparison operator to two `f32` values.",
-            "file": "src/animation/state_machine.rs",
-            "line": 363
-          },
-          {
-            "name": "parse_condition",
-            "kind": "fn",
-            "description": "Parses a condition string such as `\"speed > 0.1\"` or `\"jumping == true\"`.  Multi-character operators (`>=`, `<=`, `!=`) are tried before single-character ones.  # Parameters - `s` â€” `&str`. Condition expression.  # Returns `Result<TransitionCondition, String>`.",
-            "file": "src/animation/state_machine.rs",
-            "line": 383
           }
         ]
       },
@@ -1196,13 +1182,13 @@
         ]
       },
       "app::app": {
-        "module_doc": "Lurek2D application lifecycle using winit 0.30 + wgpu GPU rendering.  Uses a `winit` event loop with `GpuRenderer` for hardware-accelerated rendering. The game loop structure (callbacks, SharedState, Lua VM) follows the standard pattern.",
+        "module_doc": "Uses a `winit` event loop with `GpuRenderer` for hardware-accelerated rendering. The game loop structure (callbacks, SharedState, Lua VM) follows the standard pattern.",
         "source_file": "src/app/app.rs",
         "items": [
           {
             "name": "recompute_viewport",
             "kind": "fn",
-            "description": "Recomputes viewport scale and offset based on game and window dimensions.  Updates `viewport_scale_x`, `viewport_scale_y`, `viewport_offset_x`, and `viewport_offset_y` on the provided `WindowState` given the current physical window size.  # Parameters - `ws` — Mutable reference to the window state to update. - `win_w` — Physical window width in pixels. - `win_h` — Physical window height in pixels.",
+            "description": "Recomputes viewport scale and offset based on game and window dimensions.  Updates `viewport_scale_x`, `viewport_scale_y`, `viewport_offset_x`, and `viewport_offset_y` on the provided `WindowState` given the current physical window size.  # Parameters - `ws` â€” Mutable reference to the window state to update. - `win_w` â€” Physical window width in pixels. - `win_h` â€” Physical window height in pixels.",
             "file": "src/app/app.rs",
             "line": 63
           },
@@ -1223,12 +1209,12 @@
           {
             "name": "fit_contain_size",
             "kind": "fn",
-            "description": "Computes the largest size that fits `src` inside `max` while preserving aspect ratio.  # Parameters - `src_w` — Source width in pixels. - `src_h` — Source height in pixels. - `max_w` — Maximum width of the bounding box. - `max_h` — Maximum height of the bounding box.  # Returns `(f32, f32)` — Scaled width and height that fit within the bounding box.",
+            "description": "Computes the largest size that fits `src` inside `max` while preserving aspect ratio.  # Parameters - `src_w` â€” Source width in pixels. - `src_h` â€” Source height in pixels. - `max_w` â€” Maximum width of the bounding box. - `max_h` â€” Maximum height of the bounding box.  # Returns `(f32, f32)` â€” Scaled width and height that fit within the bounding box.",
             "file": "src/app/app.rs",
             "line": 143
           },
           {
-            "name": "LunaApp",
+            "name": "LurekApp",
             "kind": "struct",
             "description": "Lurek2D application state managed by the winit event loop.",
             "file": "src/app/app.rs",
@@ -1237,9 +1223,9 @@
           {
             "name": "App",
             "kind": "struct",
-            "description": "Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.  # Fields - `config` — `Config`. - `conf_error` — `Option<String>`.",
+            "description": "Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.  # Fields - `config` â€” `Config`. - `conf_error` â€” `Option<String>`.",
             "file": "src/app/app.rs",
-            "line": 2562
+            "line": 2565
           }
         ]
       },
@@ -1675,7 +1661,7 @@
         ]
       },
       "automation": {
-        "module_doc": "Automated input simulation via timed step scripts.  The `automation` module provides the [`Simulator`] engine for loading and playing back named [`Script`] objects. Each script contains an ordered sequence of timed [`Step`] records that inject synthetic input events (key presses, mouse movements, text input, etc.) into the Lurek2D [`EventQueue`](crate::event::EventQueue) during game updates.  Primary use-cases are headless integration tests, QA regression replay, speedrun verification, and recorded developer input sessions.  ## Module structure  | Sub-module | Exported types | Purpose | |---|---|---| | `step` | [`Action`], [`Step`] | Enum of 8 action kinds; per-step record with 12 fields | | `script` | [`Script`] | Named, time-sorted, MAX_STEPS-capped step container | | `simulator` | [`Simulator`] | Playback engine driven by the `lurek.automation.*` Lua API |  ## Quick-start (Lua)  ```lua -- Load and start a script local steps = {     { time = 0.1, action = \"keypress\", key = \"space\" },     { time = 0.5, action = \"mousepress\", x = 100, y = 200 }, } lurek.automation.load(\"demo\", steps) lurek.automation.start(\"demo\")  -- Advance playback each frame function lurek.update(dt)     lurek.automation.update(dt)     if lurek.automation.isComplete() then         lurek.automation.stop()     end end ```  ## Tier  `automation` is a **Tier 2 — Engine Extension** module. It may import `math`, `engine`, and all Tier 1 modules (`event`, `input`, etc.). It must not import other Tier 2 modules.",
+        "module_doc": "Automated input simulation via timed step scripts.  The `automation` module provides the [`Simulator`] engine for loading and playing back named [`Script`] objects. Each script contains an ordered sequence of timed [`Step`] records that inject synthetic input events (key presses, mouse movements, text input, etc.) into the Lurek2D [`EventQueue`](crate::event::EventQueue) during game updates.  Primary use-cases are headless integration tests, QA regression replay, speedrun verification, and recorded developer input sessions.  ## Module structure  | Sub-module | Exported types | Purpose | |---|---|---| | `step` | [`Action`], [`Step`] | Enum of 8 action kinds; per-step record with 12 fields | | `script` | [`Script`] | Named, time-sorted, MAX_STEPS-capped step container | | `simulator` | [`Simulator`] | Playback engine driven by the `lurek.simulator.*` Lua API |  ## Quick-start (Lua)  ```lua -- Load and start a script local steps = {     { time = 0.1, action = \"keypress\", key = \"space\" },     { time = 0.5, action = \"mousepress\", x = 100, y = 200 }, } lurek.simulator.load(\"demo\", steps) lurek.simulator.start(\"demo\")  -- Advance playback each frame function lurek.update(dt)     lurek.simulator.update(dt)     if lurek.simulator.isComplete() then         lurek.simulator.stop()     end end ```  ## Tier  `automation` is a **Tier 2 — Engine Extension** module. It may import `math`, `engine`, and all Tier 1 modules (`event`, `input`, etc.). It must not import other Tier 2 modules.",
         "source_file": "src/automation/mod.rs",
         "items": [
           {
@@ -2966,7 +2952,7 @@
             "kind": "enum",
             "description": "Aggregation function variants for group-by and pivot operations.  # Variants - `Mean`  — Arithmetic mean of numeric values. - `Sum`   — Sum of numeric values. - `Min`   — Minimum numeric value. - `Max`   — Maximum numeric value. - `Count` — Count of non-nil values. - `First` — First encountered value. - `Last`  — Last encountered value.",
             "file": "src/dataframe/frame.rs",
-            "line": 1227
+            "line": 1179
           }
         ]
       },
@@ -3462,7 +3448,7 @@
         ]
       },
       "ecs": {
-        "module_doc": "Entity/ECS module — lightweight entity-component-system with ID recycling, bitmap tags, layers, blueprints, and system dispatch.  This module is part of Lurek2D's `entity` subsystem and provides the implementation details for mod-related operations and data management.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Entity/ECS module — lightweight entity-component-system with ID recycling, bitmap tags, layers, blueprints, and system dispatch.  This module is part of Lurek2D's `ecs` subsystem and provides the implementation details for mod-related operations and data management.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/ecs/mod.rs",
         "items": [
           {
@@ -3482,7 +3468,7 @@
         ]
       },
       "ecs::relationships": {
-        "module_doc": "Generic relationship system for entities.  Stores symmetric numeric relations and named-state levels between entity pairs. Entity IDs are `u32` to match [`Universe`](super::Universe).  This module is part of Lurek2D's `entity` subsystem and provides the implementation details for relationships-related operations and data management. Key types exported from this module: `RelationType`, `Relationship`, `RelationshipManager`. Primary functions: `new()`, `has_level()`, `new()`, `define_type()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Generic relationship system for entities.  Stores symmetric numeric relations and named-state levels between entity pairs. Entity IDs are `u32` to match [`Universe`](super::Universe).  This module is part of Lurek2D's `ecs` subsystem and provides the implementation details for relationships-related operations and data management. Key types exported from this module: `RelationType`, `Relationship`, `RelationshipManager`. Primary functions: `new()`, `has_level()`, `new()`, `define_type()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/ecs/relationships.rs",
         "items": [
           {
@@ -3509,7 +3495,7 @@
         ]
       },
       "ecs::universe": {
-        "module_doc": "Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `entity` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.  This module is part of Lurek2D's `ecs` subsystem and provides the implementation details for universe-related operations and data management. Key types exported from this module: `Universe`. Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/ecs/universe.rs",
         "items": [
           {
@@ -3542,7 +3528,7 @@
         ]
       },
       "effect::atmosphere": {
-        "module_doc": "Atmospheric visual effects data models.  Contains data-only structs for clouds, fog, vignette, lightning, film grain, and heat haze — all consumed by the overlay renderer.",
+        "module_doc": "Atmospheric visual effects data models.  Contains data-only structs for clouds, fog, vignette, lightning, film grain, and heat haze — all consumed by the effect renderer.",
         "source_file": "src/effect/atmosphere.rs",
         "items": [
           {
@@ -3555,7 +3541,7 @@
           {
             "name": "FogState",
             "kind": "struct",
-            "description": "Atmospheric fog state.  Renders a uniform translucent colour rectangle over the entire scene, simulating thick atmospheric haze. The `density` field maps linearly to the overlay opacity — a `density` of 1.0 fills the screen with the solid `color`; 0.0 is invisible. This is a simple per-frame alpha blend and does not perform any distance-based depth fog calculation. For a subtler ground-level effect, pair it with a low opacity and a grey-blue tint.  # Fields - `enabled` — `bool` — Whether fog is active. - `density` — `f32` — Fog opacity (0.0–1.0); maps directly to blend alpha. - `color` — `[f32; 4]` — Fog tint colour (RGBA).",
+            "description": "Atmospheric fog state.  Renders a uniform translucent colour rectangle over the entire scene, simulating thick atmospheric haze. The `density` field maps linearly to the effect opacity — a `density` of 1.0 fills the screen with the solid `color`; 0.0 is invisible. This is a simple per-frame alpha blend and does not perform any distance-based depth fog calculation. For a subtler ground-level effect, pair it with a low opacity and a grey-blue tint.  # Fields - `enabled` — `bool` — Whether fog is active. - `density` — `f32` — Fog opacity (0.0–1.0); maps directly to blend alpha. - `color` — `[f32; 4]` — Fog tint colour (RGBA).",
             "file": "src/effect/atmosphere.rs",
             "line": 66
           },
@@ -3634,7 +3620,7 @@
         ]
       },
       "effect": {
-        "module_doc": "Composable visual effects layer — Tier 2 Engine Extension.  The `fx` module provides two families of visual effects as pure CPU data models. GPU application is handled in `lua_api`. All files are flat in this folder.  ## Post-processing effects (image-space pipeline)  | File | Types | |---|---| | `effect_type` | `PostFxEffectType` — enum of all built-in effect kinds | | `effect` | `PostFxEffect` — per-effect parameter bag | | `stack` | `PostFxStack` — ordered pipeline of post-processing passes | | `image_effect` | `ImageEffect` — lightweight per-image effect chain |  ## Screen overlays (world-simulation effects)  | File | Types | |---|---| | `ambient` | `AmbientState` — time-of-day colour cycling | | `atmosphere` | `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, `LightningState` | | `screen_effects` | `FlashState`, `ShakeState`, `FadeState` — one-shot screen effects | | `overlay` | `Overlay` — main struct combining all screen subsystems | | `weather` | `WeatherState`, `WeatherParticle`, `WeatherType` — weather simulation | | `presets` | `EffectPreset`, `build_preset`, `preset_names` — named effect stack factories | | `water_overlay` | `WaterOverlayState` — water surface UV-distortion state |  ## Tier  `fx` is a **Tier 2 — Engine Extension** module. It may import `math`, `engine`, and any Tier 1 module. It must not import other Tier 2 modules.",
+        "module_doc": "Composable visual effects layer — Tier 2 Engine Extension.  The `fx` module provides two families of visual effects as pure CPU data models. GPU application is handled in `lua_api`. All files are flat in this folder.  ## Post-processing effects (image-space pipeline)  | File | Types | |---|---| | `effect_type` | `PostFxEffectType` — enum of all built-in effect kinds | | `effect` | `PostFxEffect` — per-effect parameter bag | | `stack` | `PostFxStack` — ordered pipeline of post-processing passes | | `image_effect` | `ImageEffect` — lightweight per-image effect chain |  ## Screen overlays (world-simulation effects)  | File | Types | |---|---| | `ambient` | `AmbientState` — time-of-day colour cycling | | `atmosphere` | `CloudState`, `FogState`, `HeatHazeState`, `VignetteState`, `FilmGrainState`, `LightningState` | | `screen_effects` | `FlashState`, `ShakeState`, `FadeState` — one-shot screen effects | | `effect` | `Overlay` — main struct combining all screen subsystems | | `weather` | `WeatherState`, `WeatherParticle`, `WeatherType` — weather simulation | | `presets` | `EffectPreset`, `build_preset`, `preset_names` — named effect stack factories | | `water_overlay` | `WaterOverlayState` — water surface UV-distortion state |  ## Tier  `fx` is a **Tier 2 — Engine Extension** module. It may import `math`, `engine`, and any Tier 1 module. It must not import other Tier 2 modules.",
         "source_file": "src/effect/mod.rs",
         "items": [
           {
@@ -3862,14 +3848,14 @@
           {
             "name": "WeatherType",
             "kind": "enum",
-            "description": "Weather particle types supported by the overlay system.  Each variant changes the visual character of spawned particles: their fall speed, size, and opacity are all tuned per type inside `Overlay::spawn_particle`. The `None` variant disables the spawner without clearing existing particles — call `Overlay::clear` to purge everything at once.  # Variants - `None` — No weather active; spawner is disabled. - `Rain` — Fast, narrow, semi-transparent streaks. - `Snow` — Slow, large, high-opacity dots with gentle drift. - `Hail` — Very fast, opaque, medium-sized pellets. - `Dust` — Very slow, small, low-opacity motes. - `Leaves` — Medium speed, large, high-opacity irregular blobs. - `Ash` — Slow, small, medium-opacity flakes. - `Pollen` — Extremely slow, tiny, low-opacity specks.",
+            "description": "Weather particle types supported by the effect system.  Each variant changes the visual character of spawned particles: their fall speed, size, and opacity are all tuned per type inside `Overlay::spawn_particle`. The `None` variant disables the spawner without clearing existing particles — call `Overlay::clear` to purge everything at once.  # Variants - `None` — No weather active; spawner is disabled. - `Rain` — Fast, narrow, semi-transparent streaks. - `Snow` — Slow, large, high-opacity dots with gentle drift. - `Hail` — Very fast, opaque, medium-sized pellets. - `Dust` — Very slow, small, low-opacity motes. - `Leaves` — Medium speed, large, high-opacity irregular blobs. - `Ash` — Slow, small, medium-opacity flakes. - `Pollen` — Extremely slow, tiny, low-opacity specks.",
             "file": "src/effect/weather.rs",
             "line": 24
           },
           {
             "name": "WeatherParticle",
             "kind": "struct",
-            "description": "A single weather particle in the overlay's weather system.  Particles are created by `Overlay::spawn_particle` and stored in `WeatherState::particles`. Each frame `Overlay::update_weather` moves every particle by its velocity plus the current wind contribution, then removes any that have scrolled off the screen bounds. Particles are never explicitly recycled — they are simply dropped and re-spawned at the top edge.  # Fields - `x` — `f32` — Horizontal position in screen pixels. - `y` — `f32` — Vertical position in screen pixels. - `vx` — `f32` — Horizontal velocity in pixels per second (base, before wind). - `vy` — `f32` — Vertical velocity in pixels per second (base, before wind). - `size` — `f32` — Particle radius/size in pixels. - `alpha` — `f32` — Particle opacity (0.0–1.0).",
+            "description": "A single weather particle in the effect's weather system.  Particles are created by `Overlay::spawn_particle` and stored in `WeatherState::particles`. Each frame `Overlay::update_weather` moves every particle by its velocity plus the current wind contribution, then removes any that have scrolled off the screen bounds. Particles are never explicitly recycled — they are simply dropped and re-spawned at the top edge.  # Fields - `x` — `f32` — Horizontal position in screen pixels. - `y` — `f32` — Vertical position in screen pixels. - `vx` — `f32` — Horizontal velocity in pixels per second (base, before wind). - `vy` — `f32` — Vertical velocity in pixels per second (base, before wind). - `size` — `f32` — Particle radius/size in pixels. - `alpha` — `f32` — Particle opacity (0.0–1.0).",
             "file": "src/effect/weather.rs",
             "line": 101
           },
@@ -4009,7 +3995,7 @@
         ]
       },
       "filesystem": {
-        "module_doc": "Sandboxed virtual filesystem for Lurek2D.  Provides [`vfs::GameFS`] — the central filesystem abstraction that sandboxes all file I/O to the game's base directory. Every path is checked against a canonical path traversal guard before the OS is asked to open the file, preventing Lua scripts from escaping the sandbox via `..`, absolute paths, or symbolic links.  ## Subsystem inventory - [`vfs`] — [`GameFS`]: sandboxed read/write with virtual mount-point overlay - [`file_handle`] — [`FileHandle`]: open-file session with cursored read/write - [`async_loader`] — background asset-loading worker (off main thread) - [`file_data`] — [`FileData`]: raw byte buffer returned from VFS reads  ## Sandbox rules - Reads: base game folder + all mounted mod layers - Writes: save-data directory only (configured separately from the read-only game folder) - Any path that resolves outside the base after canonicalization → `EngineError::FsPathTraversal`  All public items are documented. Lua bridge: `src/lua_api/filesystem_api.rs`.",
+        "module_doc": "Provides [`vfs::GameFS`] â€” the central filesystem abstraction that sandboxes all file I/O to the game's base directory. Every path is checked against a canonical path traversal guard before the OS is asked to open the file, preventing Lua scripts from escaping the sandbox via `..`, absolute paths, or symbolic links.  ## Subsystem inventory - [`vfs`] â€” [`GameFS`]: sandboxed read/write with virtual mount-point overlay - [`file_handle`] â€” [`FileHandle`]: open-file session with cursored read/write - [`async_loader`] â€” background asset-loading worker (off main thread) - [`file_data`] â€” [`FileData`]: raw byte buffer returned from VFS reads  ## Sandbox rules - Reads: base game folder + all mounted mod layers - Writes: save-data directory only (configured separately from the read-only game folder) - Any path that resolves outside the base after canonicalization â†’ `EngineError::FsPathTraversal`  All public items are documented. Lua bridge: `src/lua_api/filesystem_api.rs`.",
         "source_file": "src/filesystem/mod.rs",
         "items": [
           {
@@ -4043,7 +4029,7 @@
           {
             "name": "zip_mount",
             "kind": "mod",
-            "description": "Read-only ZIP archive mounting for `.luna` bundles and mod archives.",
+            "description": "Read-only ZIP archive mounting for `.lurek` bundles and mod archives.",
             "file": "src/filesystem/mod.rs",
             "line": 34
           },
@@ -4146,7 +4132,7 @@
             "kind": "fn",
             "description": "Pre-project a great-circle arc into a flat screenspace point list.  Returns `[x0, y0, x1, y1, …]`. May return fewer points if the arc is entirely on the back of the globe.",
             "file": "src/globe/draw.rs",
-            "line": 176
+            "line": 196
           }
         ]
       },
@@ -5090,7 +5076,7 @@
         "items": []
       },
       "image::serial": {
-        "module_doc": "Binary serialization for [`ImageData`] and [`LayeredImage`] using the `.lim` format.  # LIMG Format  Luna Image (LIMG) is a compact, self-describing binary format for both flat RGBA8 images and multi-layer compositing stacks.  Pixel data is compressed with zlib (deflate) using the [`flate2`] crate.  ## File layout  | Offset | Size | Description | |--------|------|-------------| | 0      | 4    | Magic: `LIMG` (ASCII) | | 4      | 1    | Version: `1` | | 5      | 1    | Type: `0` = flat image, `1` = layered image | | 6      | …    | Payload (varies by type) |  ### Flat image payload (type=0)  | Field  | Size | Description | |--------|------|-------------| | width  | 4    | `u32` little-endian | | height | 4    | `u32` little-endian | | pixels | rest | zlib-compressed RGBA8 bytes |  ### Layered image payload (type=1)  | Field        | Size | Description | |--------------|------|-------------| | canvas_w     | 4    | `u32` little-endian | | canvas_h     | 4    | `u32` little-endian | | layer_count  | 4    | `u32` little-endian | | per-layer… | —    | see below |  #### Per-layer record  | Field     | Size           | Description | |-----------|----------------|-------------| | name_len  | 2              | `u16` little-endian byte length of UTF-8 name | | name      | name_len       | UTF-8 bytes (no NUL terminator) | | opacity   | 4              | `f32` little-endian | | visible   | 1              | `0` = hidden, `1` = visible | | pixels    | rest of record | zlib-compressed RGBA8 bytes |  The compressed pixel block for each layer is prefixed with a 4-byte `u32` (little-endian) giving the **compressed byte count** so the reader can extract each record without seeking.  All public items are documented.  See the parent module for architectural context.",
+        "module_doc": "Binary serialization for [`ImageData`] and [`LayeredImage`] using the `.lim` format.  # LIMG Format  Lurek Image (LIMG) is a compact, self-describing binary format for both flat RGBA8 images and multi-layer compositing stacks.  Pixel data is compressed with zlib (deflate) using the [`flate2`] crate.  ## File layout  | Offset | Size | Description | |--------|------|-------------| | 0      | 4    | Magic: `LIMG` (ASCII) | | 4      | 1    | Version: `1` | | 5      | 1    | Type: `0` = flat image, `1` = layered image | | 6      | …    | Payload (varies by type) |  ### Flat image payload (type=0)  | Field  | Size | Description | |--------|------|-------------| | width  | 4    | `u32` little-endian | | height | 4    | `u32` little-endian | | pixels | rest | zlib-compressed RGBA8 bytes |  ### Layered image payload (type=1)  | Field        | Size | Description | |--------------|------|-------------| | canvas_w     | 4    | `u32` little-endian | | canvas_h     | 4    | `u32` little-endian | | layer_count  | 4    | `u32` little-endian | | per-layer… | —    | see below |  #### Per-layer record  | Field     | Size           | Description | |-----------|----------------|-------------| | name_len  | 2              | `u16` little-endian byte length of UTF-8 name | | name      | name_len       | UTF-8 bytes (no NUL terminator) | | opacity   | 4              | `f32` little-endian | | visible   | 1              | `0` = hidden, `1` = visible | | pixels    | rest of record | zlib-compressed RGBA8 bytes |  The compressed pixel block for each layer is prefixed with a 4-byte `u32` (little-endian) giving the **compressed byte count** so the reader can extract each record without seeking.  All public items are documented.  See the parent module for architectural context.",
         "source_file": "src/image/serial.rs",
         "items": [
           {
@@ -5193,21 +5179,21 @@
             "kind": "fn",
             "description": "Render an animation playback strip as snapshot columns.  Draws `snapshots.len()` side-by-side panels, each showing a frame index highlighted in the sequence. The panel columns are colored to indicate which frame was active at that step.  # Parameters - `snapshots` — `&[usize]`. Frame index active at each step. - `total_frames` — `usize`. Total frame count. - `panel_w` — `u32`. Width of each step panel. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 77
+            "line": 84
           },
           {
             "name": "animation_playback_control_to_image",
             "kind": "fn",
             "description": "Render an animation playback-control timeline diagram.  Draws a run-frame bar, idle-frame bar, optional quad annotation, and a summary footer showing total frame and clip counts.  # Parameters - `run_frames` — `&[usize]`. Frame index active at each run step. - `idle_frames` — `&[usize]`. Frame index active at each idle step. - `total_frames` — `usize`. Total frame count in the animation. - `quad_str` — `Option<&str>`. Optional quad coordinate annotation. - `summary` — `&str`. Footer summary text. - `width` — `u32`. - `height` — `u32`.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 131
+            "line": 138
           },
           {
             "name": "draw_animation_to_image",
             "kind": "fn",
             "description": "Render an animation as a CPU image for headless testing.  Delegates to [`draw_animation_frame_grid_to_image`] with cell dimensions derived from the requested output size and frame count.  # Parameters - `anim` — `&Animation`. Animation controller to render. - `width` — `u32`. Output image width in pixels. - `height` — `u32`. Output image height in pixels.  # Returns `ImageData`.",
             "file": "src/image/visualization/animation.rs",
-            "line": 208
+            "line": 215
           }
         ]
       },
@@ -5943,7 +5929,7 @@
         ]
       },
       "root": {
-        "module_doc": "Lurek2D engine binary entry point.  This crate is a thin wrapper around the `lurek2d` library crate. Its only job is to call [`lurek2d::lurek_run`], which installs the panic hook, parses the command-line game-directory argument, loads `conf.lua`, and enters the main engine loop.  Two binary crates share the same source via `Cargo.toml` feature flags:   - `luna`   — console-attached binary (default, used during development)   - `lurekc`  — no-console binary (Windows release build, no terminal window)  To run a game pass the path to the game directory as the first CLI argument:  ```text luna path/to/my_game ```  If no argument is given, the engine looks for `main.lua` in the current working directory and falls back to the splash screen if none is found.",
+        "module_doc": "This crate is a thin wrapper around the `lurek2d` library crate. Its only job is to call [`lurek2d::lurek_run`], which installs the panic hook, parses the command-line game-directory argument, loads `conf.lua`, and enters the main engine loop.  Two binary crates share the same source via `Cargo.toml` feature flags:   - `lurek`   â€” console-attached binary (default, used during development)   - `lurekc`  â€” no-console binary (Windows release build, no terminal window)  To run a game pass the path to the game directory as the first CLI argument:  ```text lurek path/to/my_game ```  If no argument is given, the engine looks for `main.lua` in the current working directory and falls back to the splash screen if none is found.",
         "source_file": "src/main.rs",
         "items": []
       },
@@ -6749,9 +6735,9 @@
             "line": 25
           },
           {
-            "name": "polygon",
+            "name": "vec3",
             "kind": "mod",
-            "description": "Polygon utilities: ear-clipping triangulation and convexity testing.",
+            "description": "3D floating-point vector with arithmetic operators and common helpers.",
             "file": "src/math/mod.rs",
             "line": 27
           },
@@ -6763,9 +6749,9 @@
             "line": 29
           },
           {
-            "name": "vec3",
+            "name": "polygon",
             "kind": "mod",
-            "description": "3D floating-point vector with arithmetic operators and common helpers.",
+            "description": "Polygon utilities: ear-clipping triangulation and convexity testing.",
             "file": "src/math/mod.rs",
             "line": 31
           },
@@ -6777,81 +6763,116 @@
             "line": 34
           },
           {
-            "name": "facade",
-            "kind": "mod",
-            "description": "Scalar math free functions: `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, `inverse_lerp`.",
-            "file": "src/math/mod.rs",
-            "line": 36
-          },
-          {
-            "name": "noise_functions",
-            "kind": "mod",
-            "description": "Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.",
-            "file": "src/math/mod.rs",
-            "line": 38
-          },
-          {
-            "name": "noise_generator",
-            "kind": "mod",
-            "description": "Seeded procedural noise generator with fractal and map-generation helpers.",
-            "file": "src/math/mod.rs",
-            "line": 40
-          },
-          {
             "name": "random",
             "kind": "mod",
             "description": "Seedable random number generator for reproducible sequences.",
             "file": "src/math/mod.rs",
-            "line": 42
+            "line": 36
           },
           {
             "name": "rect",
             "kind": "mod",
             "description": "Axis-aligned rectangle with intersection and containment queries.",
             "file": "src/math/mod.rs",
-            "line": 44
+            "line": 38
           },
           {
             "name": "spatial_hash",
             "kind": "mod",
             "description": "Spatial hash for efficient broad-phase AABB collision queries.",
             "file": "src/math/mod.rs",
-            "line": 46
+            "line": 40
           },
           {
             "name": "sphere",
             "kind": "mod",
             "description": "Spherical math helpers (lat/lon, ray-sphere, great-circle, axial tilt).",
             "file": "src/math/mod.rs",
-            "line": 48
+            "line": 42
           },
           {
             "name": "transform",
             "kind": "mod",
             "description": "2D affine transform with chainable methods wrapping Mat3.",
             "file": "src/math/mod.rs",
-            "line": 50
+            "line": 44
           },
           {
             "name": "tween",
             "kind": "mod",
             "description": "Value interpolator with easing curves.",
             "file": "src/math/mod.rs",
-            "line": 52
+            "line": 46
           },
           {
             "name": "vec2",
             "kind": "mod",
             "description": "2D floating-point vector with arithmetic operators and common helpers.",
             "file": "src/math/mod.rs",
-            "line": 54
+            "line": 48
           },
           {
             "name": "voronoi",
             "kind": "mod",
             "description": "Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).",
             "file": "src/math/mod.rs",
-            "line": 56
+            "line": 50
+          },
+          {
+            "name": "noise_functions",
+            "kind": "mod",
+            "description": "Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.",
+            "file": "src/math/mod.rs",
+            "line": 52
+          },
+          {
+            "name": "noise_generator",
+            "kind": "mod",
+            "description": "Seeded procedural noise generator with fractal and map-generation helpers.",
+            "file": "src/math/mod.rs",
+            "line": 54
+          },
+          {
+            "name": "lerp",
+            "kind": "fn",
+            "description": "Linear interpolation between `a` and `b` by factor `t` in [0, 1].  # Parameters - `a` — `f32`. - `b` — `f32`. - `t` — `f32`.  # Returns `f32`.",
+            "file": "src/math/mod.rs",
+            "line": 82
+          },
+          {
+            "name": "remap",
+            "kind": "fn",
+            "description": "Remap `v` from `[in_min, in_max]` to `[out_min, out_max]`.  # Parameters - `v` — `f32`. - `in_min` — `f32`. - `in_max` — `f32`. - `out_min` — `f32`. - `out_max` — `f32`.  # Returns `f32`.",
+            "file": "src/math/mod.rs",
+            "line": 97
+          },
+          {
+            "name": "clamp",
+            "kind": "fn",
+            "description": "Clamp `v` to the range `[min, max]`.  # Parameters - `v` — Value to clamp. - `min` — Lower bound. - `max` — Upper bound.  # Returns `f32` — `v` clamped to `[min, max]`.",
+            "file": "src/math/mod.rs",
+            "line": 112
+          },
+          {
+            "name": "sign",
+            "kind": "fn",
+            "description": "Returns the sign of `v`: `1.0` if positive, `-1.0` if negative, `0.0` if zero.  # Parameters - `v` — `f32`.  # Returns `f32` — `-1.0`, `0.0`, or `1.0`.",
+            "file": "src/math/mod.rs",
+            "line": 129
+          },
+          {
+            "name": "smoothstep",
+            "kind": "fn",
+            "description": "Hermite smooth interpolation between 0 and 1 when `x` is in `[edge0, edge1]`.  Returns 0 if `x <= edge0`, 1 if `x >= edge1`, and a smooth cubic curve in between.  # Parameters - `edge0` — Lower edge of the transition. - `edge1` — Upper edge of the transition. - `x` — Input value.  # Returns `f32` — Smoothly interpolated value in `[0, 1]`.",
+            "file": "src/math/mod.rs",
+            "line": 150
+          },
+          {
+            "name": "inverse_lerp",
+            "kind": "fn",
+            "description": "Inverse linear interpolation: returns the `t` factor such that `lerp(a, b, t) ≈ v`.  # Parameters - `a` — Start value. - `b` — End value. - `v` — Value between `a` and `b`.  # Returns `f32` — Interpolation factor; `0.0` if `a ≈ b`.",
+            "file": "src/math/mod.rs",
+            "line": 164
           }
         ]
       },
@@ -6995,14 +7016,14 @@
             "kind": "fn",
             "description": "Returns an approximation of the union of two convex polygons by computing the convex hull of all their vertices.  This is exact when both polygons are convex and overlapping; it over-approximates when used with concave polygons or disjoint convex polygons.  # Parameters - `a` — `&[(f32, f32)]`. First polygon vertices. - `b` — `&[(f32, f32)]`. Second polygon vertices.  # Returns `Vec<(f32, f32)>` — the convex hull of all combined vertices (CCW winding).",
             "file": "src/math/polygon.rs",
-            "line": 260
+            "line": 263
           },
           {
             "name": "polygon_difference",
             "kind": "fn",
             "description": "Returns an approximation of the difference `A - B` by clipping `A` against the **reversed** edges of `B` (i.e. the complement of `B`).  Works correctly when `B` is convex and fully overlaps with a region of `A`. The result may be concave or empty.  # Parameters - `a` — `&[(f32, f32)]`. Subject polygon. - `b` — `&[(f32, f32)]`. Clip polygon whose interior is subtracted from `A`.  # Returns `Vec<(f32, f32)>` — the remaining part of `A` after removing the overlap with `B`.",
             "file": "src/math/polygon.rs",
-            "line": 277
+            "line": 280
           }
         ]
       },
@@ -7349,7 +7370,7 @@
         ]
       },
       "mods": {
-        "module_doc": "Mod management framework.  Provides `ModInfo` for mod metadata and `ModManager` for registration, dependency resolution, load ordering, folder scanning, and hot-reload queuing.  This module is part of Lurek2D's `modding` subsystem and provides the implementation details for mod-related operations and data management.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Mod management framework.  Provides `ModInfo` for mod metadata and `ModManager` for registration, dependency resolution, load ordering, folder scanning, and hot-reload queuing.  This module is part of Lurek2D's `mods` subsystem and provides the implementation details for mod-related operations and data management.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/mods/mod.rs",
         "items": [
           {
@@ -7362,7 +7383,7 @@
         ]
       },
       "mods::mod_manager": {
-        "module_doc": "Mod management framework.  Provides `ModInfo` for mod metadata and `ModManager` for registration, dependency resolution, load ordering, folder scanning, and hot-reload queuing.  This module is part of Lurek2D's `modding` subsystem and provides the implementation details for mod manager-related operations and data management. Key types exported from this module: `ModInfo`, `ModManager`. Primary functions: `new()`, `new()`, `register_mod()`, `unregister_mod()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Mod management framework.  Provides `ModInfo` for mod metadata and `ModManager` for registration, dependency resolution, load ordering, folder scanning, and hot-reload queuing.  This module is part of Lurek2D's `mods` subsystem and provides the implementation details for mod manager-related operations and data management. Key types exported from this module: `ModInfo`, `ModManager`. Primary functions: `new()`, `new()`, `register_mod()`, `unregister_mod()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/mods/mod_manager.rs",
         "items": [
           {
@@ -8097,7 +8118,7 @@
         ]
       },
       "pathfind::astar": {
-        "module_doc": "A★ search with octile/Manhattan heuristic and Theta★ path smoothing.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for astar-related operations and data management. Primary functions: `astar()`, `line_of_sight()`, `smooth_path()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "A★ search with octile/Manhattan heuristic and Theta★ path smoothing.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for astar-related operations and data management. Primary functions: `astar()`, `line_of_sight()`, `smooth_path()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/astar.rs",
         "items": [
           {
@@ -8124,7 +8145,7 @@
         ]
       },
       "pathfind::async_pool": {
-        "module_doc": "Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Thread pool for asynchronous path computation.  Pathfinding requests are submitted with an ID and processed on worker threads. Results are collected via non-blocking [`PathThreadPool::poll`].  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for async pool-related operations and data management. Key types exported from this module: `PathThreadPool`. Primary functions: `new()`, `submit()`, `poll()`, `cancel()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/async_pool.rs",
         "items": [
           {
@@ -8152,12 +8173,12 @@
             "kind": "fn",
             "description": "Run bidirectional A★ search on `grid` from `start` to `goal`.  Alternates node expansions between a forward search (start → goal) and a backward search (goal → start). When the expanding wave from one direction reaches a node already closed by the other direction, a meeting point is established and the two partial paths are spliced together into one route.  # Parameters - `grid` — `&NavGrid`. - `start` — `(u32, u32)` start cell (0-based). - `goal` — `(u32, u32)` goal cell (0-based). - `unit_size` — `u32` NxN footprint; 1 for single-cell units. - `max_nodes` — `u32` node expansion budget; 0 = unlimited.  # Returns `(Option<Vec<(u32, u32)>>, bool)`.  Returns `(Some(path), true)` when the goal is reached, `(Some(partial), false)` when `max_nodes` is exceeded before the meeting point, and `(None, false)` when start or goal is not walkable or no path exists.",
             "file": "src/pathfind/bidir.rs",
-            "line": 177
+            "line": 169
           }
         ]
       },
       "pathfind::flow_field": {
-        "module_doc": "Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Flow field pathfinding for steering many units toward one or more targets.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for flow field-related operations and data management. Key types exported from this module: `FlowField`. Primary functions: `new()`, `calculate()`, `calculate_multi()`, `get_direction()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/flow_field.rs",
         "items": [
           {
@@ -8185,7 +8206,7 @@
             "kind": "fn",
             "description": "Find all nodes within `max_cost` from `start` using Dijkstra.  # Parameters - `graph` — `&Graph`. - `start` — `u64`. - `max_cost` — `f32`.  # Returns `Vec<(u64, f32)>`.  Returns a list of `(node_id, path_cost)` pairs for all reachable nodes within budget.",
             "file": "src/pathfind/graph_nav.rs",
-            "line": 97
+            "line": 90
           }
         ]
       },
@@ -8224,7 +8245,7 @@
         ]
       },
       "pathfind::grid": {
-        "module_doc": "2D pathfinding grid with A*, Dijkstra, BFS, and flow field generation.  Cells are addressed with 0-based `(x, y)` coordinates. The Lua layer converts to/from 1-based indices.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for grid-related operations and data management. Key types exported from this module: `Grid`. Primary functions: `new()`, `width()`, `height()`, `set_walkable()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "2D pathfinding grid with A*, Dijkstra, BFS, and flow field generation.  Cells are addressed with 0-based `(x, y)` coordinates. The Lua layer converts to/from 1-based indices.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for grid-related operations and data management. Key types exported from this module: `Grid`. Primary functions: `new()`, `width()`, `height()`, `set_walkable()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/grid.rs",
         "items": [
           {
@@ -8483,7 +8504,7 @@
         ]
       },
       "pathfind::nav_grid": {
-        "module_doc": "Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Navigation grid with per-cell traversal costs and diagonal movement modes.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for nav grid-related operations and data management. Key types exported from this module: `DiagonalMode`, `NavGrid`. Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/nav_grid.rs",
         "items": [
           {
@@ -8503,7 +8524,7 @@
         ]
       },
       "pathfind::pathgrid": {
-        "module_doc": "Weighted grid pathfinding (A*, Dijkstra) with obstacle support. Moved from `ai/pathgrid`; used by the Lua `lurek.ai.newPathGrid` API.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for pathgrid-related operations and data management. Key types exported from this module: `Cell`, `PathGrid`. Primary functions: `new()`, `in_bounds()`, `set_walkable()`, `is_walkable()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Weighted grid pathfinding (A*, Dijkstra) with obstacle support. Moved from `ai/pathgrid`; used by the Lua `lurek.ai.newPathGrid` API.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for pathgrid-related operations and data management. Key types exported from this module: `Cell`, `PathGrid`. Primary functions: `new()`, `in_bounds()`, `set_walkable()`, `is_walkable()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/pathgrid.rs",
         "items": [
           {
@@ -8541,7 +8562,7 @@
         "items": []
       },
       "pathfind::unit_pathfinder": {
-        "module_doc": "Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Unit-aware pathfinder with result caching and convenience methods.  This module is part of Lurek2D's `pathfind` subsystem and provides the implementation details for unit pathfinder-related operations and data management. Key types exported from this module: `Waypoint`, `UnitPathfinder`. Primary functions: `new()`, `find_path()`, `find_path_smooth()`, `get_path_length()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/pathfind/unit_pathfinder.rs",
         "items": [
           {
@@ -9220,35 +9241,35 @@
             "kind": "struct",
             "description": "Collision event generated by `World::step` when two bodies start overlapping.  Contains stable integer body IDs for the two bodies involved.  # Fields - `body_a` — Index of the first body. - `body_b` — Index of the second body.",
             "file": "src/physics/world.rs",
-            "line": 82
+            "line": 75
           },
           {
             "name": "RaycastHit",
             "kind": "struct",
             "description": "Result of a `World::raycast` query.  # Fields - `body_id` — Integer body ID that was hit. - `point` — World-space hit point `(x, y)`. - `normal` — World-space surface normal `(nx, ny)`. - `toi` — Distance along the ray to the hit point.",
             "file": "src/physics/world.rs",
-            "line": 97
+            "line": 90
           },
           {
             "name": "ContactInfo",
             "kind": "struct",
             "description": "Contact information between two bodies from the narrow phase.  # Fields - `body_a` — Index of the first body. - `body_b` — Index of the second body. - `normal_x` — Contact normal X component. - `normal_y` — Contact normal Y component. - `is_touching` — Whether the bodies are currently touching.",
             "file": "src/physics/world.rs",
-            "line": 117
+            "line": 110
           },
           {
             "name": "PhysicsShapeSnapshot",
             "kind": "struct",
             "description": "Geometry snapshot of a single physics body for GPU debug rendering.  Returned by [`World::extract_shape_snapshots`] without depending on the render module. The Lua API layer converts this to a `PhysicsDebugShape`.  # Fields - `x` — `f32`. Body centre X in world space. - `y` — `f32`. Body centre Y in world space. - `half_w` — `f32`. Half-width (box) or radius (circle). - `half_h` — `f32`. Half-height (box); equals `half_w` for circles. - `angle` — `f32`. Rotation in radians. - `is_static` — `bool`. True for Static / Kinematic bodies. - `is_sensor` — `bool`. True for Sensor bodies. - `is_circle` — `bool`. True when the shape is a circle. - `hull_verts` — `Vec<[f32; 2]>`. Local-space polygon vertices (empty for box/circle).",
             "file": "src/physics/world.rs",
-            "line": 147
+            "line": 140
           },
           {
             "name": "World",
             "kind": "struct",
             "description": "Simulates a 2D physics world using rapier2d.  Bodies are stored as a `Vec<Body>` for backward-API compatibility. Each `step()` syncs mutations into rapier, runs the pipeline, then reads back positions/velocities for Dynamic bodies.  # Fields - `bodies` — `Vec<Body>`. - `body_handles` — `Vec<RigidBodyHandle>`. - `collider_handles` — `Vec<ColliderHandle>`. - `extra_collider_handles` — `Vec<Vec<ColliderHandle>>`. - `collider_to_body` — `HashMap<ColliderHandle`. - `cached_shapes` — `Vec<BodyShape>`. - `cached_restitutions` — `Vec<f32>`. - `cached_layers` — `Vec<(u32`. - `cached_frictions` — `Vec<f32>`. - `pipeline` — `PhysicsPipeline`. - `gravity` — `Vector`. - `params` — `IntegrationParameters`. - `islands` — `IslandManager`. - `broad_phase` — `BroadPhaseBvh`. - `narrow_phase` — `NarrowPhase`. - `rbodies` — `RigidBodySet`. - `rcolliders` — `ColliderSet`. - `impulse_joints` — `ImpulseJointSet`. - `multibody_joints` — `MultibodyJointSet`. - `ccd_solver` — `CCDSolver`. - `joint_handles` — `Vec<ImpulseJointHandle>`. - `collision_events` — `Vec<BodyContact>`. - `begin_contact_events` — `Vec<(usize`. - `end_contact_events` — `Vec<(usize`. - `joint_types` — `Vec<&'static str>`. - `mouse_joint_anchors` — `HashMap<usize`. - `pixels_per_meter` — `f32`.",
             "file": "src/physics/world.rs",
-            "line": 206
+            "line": 199
           }
         ]
       },
@@ -10465,22 +10486,22 @@
         ]
       },
       "render::gpu_renderer": {
-        "module_doc": "GPU-accelerated 2D renderer for Lurek2D, backed by wgpu.  Processes a `RenderCommand` queue each frame, tessellates geometry on the CPU, uploads vertex / index data to GPU buffers, and issues a single render pass.  # Design - Two render pipelines: *color* (solid + gradient shapes) and *texture* (images, sprites). - Transform stack maintained during command processing â€” standard `push/pop` transform stack semantics. - Colored geometry is batched in one draw call; each distinct texture source is one draw call. - Draw order: colored shapes first (in submission order), textured images second.",
+        "module_doc": "GPU-accelerated 2D renderer for Lurek2D, backed by wgpu.  Processes a `RenderCommand` queue each frame, tessellates geometry on the CPU, uploads vertex / index data to GPU buffers, and issues a single render pass.  # Design - Two render pipelines: *color* (solid + gradient shapes) and *texture* (images, sprites). - Transform stack maintained during command processing — standard `push/pop` transform stack semantics. - Colored geometry is batched in one draw call; each distinct texture source is one draw call. - Draw order: colored shapes first (in submission order), textured images second.",
         "source_file": "src/render/gpu_renderer.rs",
         "items": [
           {
             "name": "RenderStats",
             "kind": "struct",
-            "description": "Per-frame rendering statistics.  # Fields - `draw_calls` â€” `u32`. - `texture_switches` â€” `u32`. - `canvas_switches` â€” `u32`. - `shader_switches` â€” `u32`. - `batched_draws` â€” `u32`.",
+            "description": "Per-frame rendering statistics.  # Fields - `draw_calls` — `u32`. - `texture_switches` — `u32`. - `canvas_switches` — `u32`. - `shader_switches` — `u32`. - `batched_draws` — `u32`.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 136
+            "line": 135
           },
           {
             "name": "GpuRenderer",
             "kind": "struct",
-            "description": "GPU-accelerated renderer that processes `RenderCommand` queues via wgpu.  # Fields - `device` â€” `wgpu::Device`. - `queue` â€” `wgpu::Queue`. - `width` â€” `u32`. - `height` â€” `u32`. - `render_stats` â€” `RenderStats`.  Owns the wgpu `Device` and `Queue`. The caller (App) owns the `Surface` and configuration; `render_frame` receives a shared reference each frame.",
+            "description": "GPU-accelerated renderer that processes `RenderCommand` queues via wgpu.  # Fields - `device` — `wgpu::Device`. - `queue` — `wgpu::Queue`. - `width` — `u32`. - `height` — `u32`. - `render_stats` — `RenderStats`.  Owns the wgpu `Device` and `Queue`. The caller (App) owns the `Surface` and configuration; `render_frame` receives a shared reference each frame.",
             "file": "src/render/gpu_renderer.rs",
-            "line": 464
+            "line": 463
           }
         ]
       },
@@ -10641,14 +10662,14 @@
           {
             "name": "CompareMode",
             "kind": "enum",
-            "description": "Stencil comparison mode for `lurek.render.setStencilTest`.  # Variants - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant. - `Always` — Always variant. - `Never` — Never variant.",
+            "description": "Stencil comparison mode for `lurek.graphic.setStencilTest`.  # Variants - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant. - `Always` — Always variant. - `Never` — Never variant.",
             "file": "src/render/renderer.rs",
             "line": 30
           },
           {
             "name": "StencilAction",
             "kind": "enum",
-            "description": "Stencil write action for `lurek.render.stencil` and `lurek.render.setStencilMode`.  # Variants - `Keep` — Keep variant. - `Zero` — Zero variant. - `Replace` — Replace variant. - `Increment` — Increment variant. - `Decrement` — Decrement variant. - `IncrementWrap` — IncrementWrap variant. - `DecrementWrap` — DecrementWrap variant. - `Invert` — Invert variant.",
+            "description": "Stencil write action for `lurek.graphic.stencil` and `lurek.graphic.setStencilMode`.  # Variants - `Keep` — Keep variant. - `Zero` — Zero variant. - `Replace` — Replace variant. - `Increment` — Increment variant. - `Decrement` — Decrement variant. - `IncrementWrap` — IncrementWrap variant. - `DecrementWrap` — DecrementWrap variant. - `Invert` — Invert variant.",
             "file": "src/render/renderer.rs",
             "line": 61
           },
@@ -10662,7 +10683,7 @@
           {
             "name": "DepthMode",
             "kind": "enum",
-            "description": "Depth test comparison mode for `lurek.render.setDepthMode`.  # Variants - `Always` — Always variant. - `Never` — Never variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant.",
+            "description": "Depth test comparison mode for `lurek.graphic.setDepthMode`.  # Variants - `Always` — Always variant. - `Never` — Never variant. - `Less` — Less variant. - `LessEqual` — LessEqual variant. - `Equal` — Equal variant. - `NotEqual` — NotEqual variant. - `Greater` — Greater variant. - `GreaterEqual` — GreaterEqual variant.",
             "file": "src/render/renderer.rs",
             "line": 123
           },
@@ -10706,84 +10727,84 @@
             "kind": "enum",
             "description": "Enqueues a typed draw or state command into the per-frame GPU render queue.",
             "file": "src/render/renderer.rs",
-            "line": 362
+            "line": 355
           },
           {
             "name": "TextureData",
             "kind": "struct",
             "description": "Raw RGBA pixel data for a loaded texture, stored in the renderer's texture atlas.  # Fields - `pixels` — Raw RGBA byte data in RGBA format. - `width` — Texture width in pixels. - `height` — Texture height in pixels.",
             "file": "src/render/renderer.rs",
-            "line": 1044
+            "line": 1037
           },
           {
             "name": "ParticleRenderShape",
             "kind": "enum",
             "description": "Geometric shape used when rendering a single untextured particle via `DrawParticleSystem`.  This mirrors `particle::ParticleShape` one-for-one. The particle module converts `ParticleShape` -> `ParticleRenderShape` when building the `DrawParticleSystem` command, keeping the Tier-1 `graphics` module free of an upward Tier-2 import.  # Variants - `Square` — Axis-aligned filled square. - `Circle` — Filled circle. - `Triangle` — Filled equilateral triangle. - `Spark` — Thin line segment along velocity. - `Diamond` — Filled diamond (square rotated 45°). - `Shrapnel` — Random jagged polygon (deterministic per particle). `edges` = vertex count; `seed` = per-particle RNG seed. - `Ray` — Elongated filled rectangle. `aspect` = length-to-width ratio. - `Puff` — Soft filled circle (more tessellation segments than `Circle`). - `Ring` — Hollow ring (annulus). `thickness` = band width as fraction of size. - `Capsule` — Filled capsule (rectangle + hemispherical caps).",
             "file": "src/render/renderer.rs",
-            "line": 1068
+            "line": 1061
           },
           {
             "name": "ParticleInstance",
             "kind": "struct",
             "description": "Per-particle render data for a single frame.  Produced by `ParticleSystem::build_render_commands()` and consumed by the GPU renderer's `DrawParticleSystem` arm. All positions are in world space.  # Fields - `x` — `f32`. - `y` — `f32`. - `r` — `f32`. - `g` — `f32`. - `b` — `f32`. - `a` — `f32`. - `rotation` — `f32`. - `size` — `f32`. - `shape` — `ParticleRenderShape`. - `texture_key` — `Option<TextureKey>`. - `quad` — `Option<[f32; 4]>`. - `quad_tex_dims` — `Option<(f32, f32)>`.",
             "file": "src/render/renderer.rs",
-            "line": 1123
+            "line": 1116
           },
           {
             "name": "DrawableKind",
             "kind": "enum",
-            "description": "Type discriminator for resources that can be passed to lurek.render.draw.  Used to dispatch the polymorphic draw(drawable, ...) Lua API to the correct RenderCommand variant based on resource type.  # Variants - Image(TextureKey) — A loaded texture (Image). - Canvas(CanvasKey) — An off-screen render target. - SpriteBatch(SpriteBatchKey) — A batched sprite collection. - Mesh(MeshKey) — A custom geometry mesh.",
+            "description": "Type discriminator for resources that can be passed to lurek.graphic.draw.  Used to dispatch the polymorphic draw(drawable, ...) Lua API to the correct RenderCommand variant based on resource type.  # Variants - Image(TextureKey) — A loaded texture (Image). - Canvas(CanvasKey) — An off-screen render target. - SpriteBatch(SpriteBatchKey) — A batched sprite collection. - Mesh(MeshKey) — A custom geometry mesh.",
             "file": "src/render/renderer.rs",
-            "line": 1163
+            "line": 1156
           },
           {
             "name": "PathSegment",
             "kind": "enum",
             "description": "A single segment of a vector path, used with `RenderCommand::DrawPath`.  # Variants - `MoveTo` — Move the pen to an absolute position without drawing. - `LineTo` — Draw a straight line to the given position. - `QuadTo` — Draw a quadratic Bézier curve: one control point, one end point. - `CubicTo` — Draw a cubic Bézier curve: two control points, one end point.",
             "file": "src/render/renderer.rs",
-            "line": 1182
+            "line": 1175
           },
           {
             "name": "GradientDirection",
             "kind": "enum",
             "description": "Direction for a two-stop linear or radial gradient.  # Variants - `Horizontal` — Gradient flows left → right. - `Vertical` — Gradient flows top → bottom. - `DiagDown` — Gradient flows top-left → bottom-right. - `DiagUp` — Gradient flows bottom-left → top-right. - `Radial` — Radial gradient expanding from the rectangle centre outward.",
             "file": "src/render/renderer.rs",
-            "line": 1209
+            "line": 1195
           },
           {
             "name": "HexOrientation",
             "kind": "enum",
             "description": "Orientation for a hexagonal tile cell.  # Variants - `PointyTop` — Pointy-top hexagon (flat sides left/right). - `FlatTop` — Flat-top hexagon (flat sides top/bottom).",
             "file": "src/render/renderer.rs",
-            "line": 1228
+            "line": 1214
           },
           {
             "name": "BevelStyle",
             "kind": "enum",
             "description": "Visual style for a bevelled rectangle.  # Variants - `Raised` — Raised 3-D appearance (highlight top-left, shadow bottom-right). - `Sunken` — Sunken 3-D appearance (shadow top-left, highlight bottom-right). - `Ridge` — Double ridge border on all sides. - `Groove` — Double groove border on all sides. - `Flat` — Flat border (same colour all sides).",
             "file": "src/render/renderer.rs",
-            "line": 1244
+            "line": 1230
           },
           {
             "name": "PhysicsDebugShape",
             "kind": "struct",
             "description": "Per-collider geometry snapshot extracted from the physics world for GPU debug rendering.  Produced by `physics::World::extract_debug_shapes()` and consumed by `RenderCommand::DrawPhysicsDebug`. Keeping geometry data in this struct prevents the renderer from importing the physics crate.  # Fields - `x` — `f32`. AABB centre or circle/capsule origin in world space (X axis). - `y` — `f32`. AABB centre or circle/capsule origin in world space (Y axis). - `half_w` — `f32`. Half-width (box) or radius (circle) in world units. - `half_h` — `f32`. Half-height (box) in world units; equal to `half_w` for circles. - `angle` — `f32`. Body rotation in radians. - `is_static` — `bool`. True when the collider belongs to a static body. - `is_sleeping` — `bool`. True when the body is sleeping. - `is_sensor` — `bool`. True when the collider is a sensor (trigger volume). - `hull_verts` — `Vec<[f32; 2]>`. Convex hull vertices in body-local space (empty for box/circle). - `is_circle` — `bool`. True when the shape is a circle (use `half_w` as radius).",
             "file": "src/render/renderer.rs",
-            "line": 1275
+            "line": 1261
           },
           {
             "name": "PhysicsDebugConfig",
             "kind": "struct",
             "description": "Appearance parameters for `RenderCommand::DrawPhysicsDebug`.  # Fields - `body_color` — `[f32; 4]`. Colour for dynamic bodies. - `static_color` — `[f32; 4]`. Colour for static bodies. - `sleep_color` — `[f32; 4]`. Colour for sleeping bodies. - `sensor_color` — `[f32; 4]`. Colour for sensor colliders. - `line_width` — `f32`. Stroke width in screen pixels.",
             "file": "src/render/renderer.rs",
-            "line": 1309
+            "line": 1295
           },
           {
             "name": "SpineSlotDraw",
             "kind": "struct",
             "description": "One textured slot from a Spine skeleton for GPU rendering.  Produced by the spine CPU module and consumed by `RenderCommand::DrawSpineSkeleton`. Keeps the renderer free of a spine-crate import.  # Fields - `texture_key` — `TextureKey`. Texture atlas key for this slot's attachment. - `corners` — `[Vec2; 4]`. Four screen-space corner positions: top-left, top-right, bottom-right, bottom-left. - `uvs` — `[Vec2; 4]`. Normalised UV coordinates in the same winding order as `corners`. - `color` — `[f32; 4]`. RGBA tint for this slot. - `blend_mode` — `BlendMode`. Blend mode for this slot.",
             "file": "src/render/renderer.rs",
-            "line": 1346
+            "line": 1332
           }
         ]
       },
@@ -10835,43 +10856,43 @@
         ]
       },
       "runtime::config": {
-        "module_doc": "Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).  When the engine starts it looks for `conf.toml` first; if absent it falls back to `conf.lua` for backward compatibility.  Missing fields fall back to built-in defaults so authors only need to specify the settings they actually want to change.  # Structure  [`Config`] is the top-level container and contains five nested structs: - [`WindowConfig`] — window geometry, title, display placement, and decoration options. - [`GraphicsConfig`] — GPU backend selection and power preference, resolved at startup. - [`ModulesConfig`] — boolean feature-flags for optional engine subsystems (audio,   physics, graphics, etc.).  Disabling a module avoids the startup cost and prevents   the matching `lurek.*` API calls from being registered. - [`PerformanceConfig`] — target frame-rate cap (`fps_cap`).  The `identity` field sets the name of the per-user save directory returned by `lurek.filesystem.getSaveDirectory()`.  If unset, the engine uses the game directory name as a fallback.  # Example `conf.toml`  ```toml [window] title  = \"My Game\" width  = 1280 height = 720 vsync  = true  # GPU backend: \"auto\" | \"dx12\" | \"vulkan\" | \"metal\" [graphics] backend = \"auto\" power_preference = \"high\" ```",
+        "module_doc": "Engine configuration loaded from `conf.toml`.  When the engine starts it looks for `conf.toml`; if absent it uses built-in defaults.  Missing fields also fall back to built-in defaults so authors only need to specify the settings they actually want to change.  # Structure  [`Config`] is the top-level container and contains five nested structs: - [`WindowConfig`] — window geometry, title, display placement, and decoration options. - [`RenderConfig`] — GPU backend selection and power preference, resolved at startup. - [`ModulesConfig`] — boolean feature-flags for optional engine subsystems (audio,   physics, render, etc.).  Disabling a module avoids the startup cost and prevents   the matching `lurek.*` API calls from being registered. - [`PerformanceConfig`] — target frame-rate cap (`fps_cap`).  The `identity` field sets the name of the per-user save directory returned by `lurek.filesystem.getSaveDirectory()`.  If unset, the engine uses the game directory name as a fallback.  # Example `conf.toml`  ```toml [window] title  = \"My Game\" width  = 1280 height = 720 vsync  = true  # GPU backend: \"auto\" | \"dx12\" | \"vulkan\" | \"metal\" [render] backend = \"auto\" power_preference = \"high\" ```",
         "source_file": "src/runtime/config.rs",
         "items": [
           {
             "name": "Config",
             "kind": "struct",
-            "description": "Top-level engine configuration.  Can be populated from `conf.lua` or constructed with defaults.  # Fields - `window` — Window dimensions, title, vsync, fullscreen, and resize settings. - `graphics` — GPU backend selection and power preference (resolved at engine startup). - `modules` — Flags enabling optional subsystems (audio, physics, graphics, etc.). - `performance` — Frame rate cap. - `identity` — Save directory name (used for persistent game data). - `version` — Target engine version string. - `log_file` — Path to the log file, relative to the game directory. - `log_append` — If `true`, appends to an existing log file instead of truncating it. - `log_level` — Minimum log level written to both stderr and the log file (`\"error\"`, `\"warn\"`, `\"info\"`, `\"debug\"`, `\"trace\"`). Overrides the build-mode default when set.",
+            "description": "Top-level engine configuration.  Loaded from `conf.toml` or constructed with defaults.  # Fields - `window` — Window dimensions, title, vsync, fullscreen, and resize settings. - `render` — GPU backend selection and power preference (resolved at engine startup). - `modules` — Flags enabling optional subsystems (audio, physics, render, etc.). - `performance` — Frame rate cap. - `identity` — Save directory name (used for persistent game data). - `version` — Target engine version string. - `log_file` — Path to the log file, relative to the game directory. - `log_append` — If `true`, appends to an existing log file instead of truncating it. - `log_level` — Minimum log level written to both stderr and the log file (`\"error\"`, `\"warn\"`, `\"info\"`, `\"debug\"`, `\"trace\"`). Overrides the build-mode default when set.",
             "file": "src/runtime/config.rs",
-            "line": 60
+            "line": 59
           },
           {
-            "name": "GraphicsConfig",
+            "name": "RenderConfig",
             "kind": "struct",
-            "description": "GPU backend and power-preference settings resolved once at engine startup.  These values are read from `t.graphics` in `conf.lua` and translate directly into [`wgpu::Backends`] and [`wgpu::PowerPreference`] passed to [`wgpu::Instance::new`] and [`wgpu::Instance::request_adapter`] respectively.  Changing these fields after the GPU has been initialised has no effect.  # Fields - `backend` — Which graphics API to use. `\"auto\"` lets wgpu choose the best available   backend for the current platform (DX12 on Windows, Metal on macOS, Vulkan on Linux).   Valid values: `\"auto\"`, `\"dx12\"`, `\"vulkan\"`, `\"metal\"`. - `power_preference` — Hint for which physical adapter to prefer when multiple GPUs are   present. `\"high\"` requests the discrete GPU, `\"low\"` requests the integrated GPU,   `\"none\"` expresses no preference and lets the driver decide.   Valid values: `\"high\"`, `\"low\"`, `\"none\"`.",
+            "description": "GPU backend and power-preference settings resolved once at engine startup.  These values are read from `[render]` in `conf.toml` and translate directly into [`wgpu::Backends`] and [`wgpu::PowerPreference`] passed to [`wgpu::Instance::new`] and [`wgpu::Instance::request_adapter`] respectively.  Changing these fields after the GPU has been initialised has no effect.  # Fields - `backend` — Which graphics API to use. `\"auto\"` lets wgpu choose the best available   backend for the current platform (DX12 on Windows, Metal on macOS, Vulkan on Linux).   Valid values: `\"auto\"`, `\"dx12\"`, `\"vulkan\"`, `\"metal\"`. - `power_preference` — Hint for which physical adapter to prefer when multiple GPUs are   present. `\"high\"` requests the discrete GPU, `\"low\"` requests the integrated GPU,   `\"none\"` expresses no preference and lets the driver decide.   Valid values: `\"high\"`, `\"low\"`, `\"none\"`.",
             "file": "src/runtime/config.rs",
-            "line": 94
+            "line": 93
           },
           {
             "name": "WindowConfig",
             "kind": "struct",
             "description": "Window dimensions, title, vsync, fullscreen, and resize settings.  # Fields - `width` — Window width in pixels. - `height` — Window height in pixels. - `title` — Title bar string. - `vsync` — Enable vertical sync. - `fullscreen` — Launch in fullscreen mode. - `resizable` — Allow the user to resize the window. - `min_width` — Minimum window width (optional). - `min_height` — Minimum window height (optional). - `borderless` — Remove window decorations (title bar, borders). - `icon` — Path to a window icon image, resolved relative to the game directory and applied during startup. - `display_index` — Monitor index for window placement (0 = primary). - `scale_mode` — Viewport scaling mode: `\"none\"`, `\"letterbox\"`, `\"stretch\"`, or `\"pixel\"`. Default: `\"none\"`. - `game_width` — Logical game resolution width in virtual pixels. `None` means match window width. - `game_height` — Logical game resolution height in virtual pixels. `None` means match window height. - `maximized` — Start the window maximized. Default: `false`.",
             "file": "src/runtime/config.rs",
-            "line": 118
+            "line": 117
           },
           {
             "name": "ModulesConfig",
             "kind": "struct",
-            "description": "Flags to enable or disable optional engine subsystems.  All flags default to `true` (all systems on) except `debug`, which defaults to `true` only in debug builds.  Set a flag to `false` in `conf.lua` to skip registering the matching `lurek.*` namespace entirely.  # Fields - `audio` — rodio audio subsystem (`lurek.audio`). - `physics` — rapier2d physics world (`lurek.physics`). - `graphics` — GPU render pipeline (`lurek.renderphic`, `lurek.font`, `lurek.sprite`). - `input` — keyboard / mouse / gamepad input (`lurek.input`). - `timer` — frame timer and scheduled callbacks (`lurek.timer`). - `filesystem` — sandboxed game filesystem (`lurek.filesystem`). - `window` — window state queries (`lurek.window`). - `particle` — 2D particle emitters (`lurek.particle`). - `image` — CPU-side image manipulation (`lurek.image`). - `gui` — retained-mode GUI widgets (`lurek.ui`). - `overlay` — fullscreen overlay and post-processing effects (`lurek.effect`, `lurek.effect`). - `tilemap` — tile maps, tile sets, and map generation (`lurek.tilemap`). - `scene` — scene stack and transition management (`lurek.scene`). - `savegame` — save/load orchestration and schema versioning (`lurek.save`). - `entity` — lightweight ECS primitives (`lurek.ecs`). - `ai` — FSMs, behaviour trees, and steering (`lurek.ai`, `lurek.steering`). - `pathfinding` — A★ and flow-field navigation grids (`lurek.pathfind`). - `thread` — background Rust threads and `Channel` objects (`lurek.thread`). - `graph` — directed graphs and flow simulation (`lurek.graph`). - `data` — binary data helpers, encoding/compression, and serial (`lurek.data`, `lurek.serial`). - `compute` — dense numerical arrays and `DataFrame` (`lurek.compute`, `lurek.dataframe`). - `minimap` — minimap extraction and FOV masking (`lurek.minimap`). - `modding` — mod discovery and load ordering (`lurek.mods`). - `pipeline` — data transformation pipelines and pattern helpers (`lurek.pipeline`, `lurek.patterns`). - `system` — system information queries (`lurek.runtime`). - `localization` — string localisation tables (`lurek.i18n`). - `debug` — debug bridge, doc server, and automation helpers (`lurek.debug`, `lurek.debugbridge`, `lurek.docs`, `lurek.automation`). # Fields - `graphics` — See field documentation. - `physics` — See field documentation. - `audio` — See field documentation. - `input` — See field documentation. - `timer` — See field documentation. - `filesystem` — See field documentation. - `gui` — See field documentation. - `scene` — See field documentation.",
+            "description": "Flags to enable or disable optional engine subsystems.  All flags default to `true` (all systems on) except `debug`, which defaults to `true` only in debug builds.  Set a flag to `false` in `conf.toml` to skip registering the matching `lurek.*` namespace entirely.  # Fields - `audio` — rodio audio subsystem (`lurek.audio`). - `physics` — rapier2d physics world (`lurek.physics`). - `render` — GPU render pipeline (`lurek.render`, `lurek.font`, `lurek.sprite`). - `input` — keyboard / mouse / gamepad input (`lurek.input`). - `timer` — frame timer and scheduled callbacks (`lurek.timer`). - `filesystem` — sandboxed game filesystem (`lurek.filesystem`). - `window` — window state queries (`lurek.window`). - `particle` — 2D particle emitters (`lurek.particle`). - `image` — CPU-side image manipulation (`lurek.image`). - `ui` — retained-mode GUI widgets (`lurek.ui`). - `effect` — fullscreen overlay and post-processing effects (`lurek.effect`). - `tilemap` — tile maps, tile sets, and map generation (`lurek.tilemap`). - `scene` — scene stack and transition management (`lurek.scene`). - `save` — save/load orchestration and schema versioning (`lurek.save`). - `ecs` — lightweight ECS primitives (`lurek.ecs`). - `ai` — FSMs, behaviour trees, and steering (`lurek.ai`, `lurek.steering`). - `pathfind` — A★ and flow-field navigation grids (`lurek.pathfind`). - `thread` — background Rust threads and `Channel` objects (`lurek.thread`). - `graph` — directed graphs and flow simulation (`lurek.graph`). - `data` — binary data helpers, encoding/compression, and serial (`lurek.data`, `lurek.serial`). - `compute` — dense numerical arrays and `DataFrame` (`lurek.compute`, `lurek.dataframe`). - `minimap` — minimap extraction and FOV masking (`lurek.minimap`). - `mods` — mod discovery and load ordering (`lurek.mods`). - `pipeline` — data transformation pipelines and pattern helpers (`lurek.pipeline`, `lurek.patterns`). - `runtime` — system information queries (`lurek.runtime`). - `i18n` — string localisation tables (`lurek.i18n`). - `debug` — debug bridge, doc server, and automation helpers (`lurek.debug`, `lurek.debugbridge`, `lurek.docs`, `lurek.automation`). # Fields - `render` — See field documentation. - `physics` — See field documentation. - `audio` — See field documentation. - `input` — See field documentation. - `timer` — See field documentation. - `filesystem` — See field documentation. - `ui` — See field documentation. - `scene` — See field documentation.",
             "file": "src/runtime/config.rs",
-            "line": 184
+            "line": 183
           },
           {
             "name": "PerformanceConfig",
             "kind": "struct",
             "description": "Frame rate cap and other performance tuning options.  # Fields - `target_fps` — Desired frames per second for the game loop. - `physics_tick_rate` — Fixed tick rate for `process_physics` callback (Hz, default 60). - `fixed_update_tick_rate` — Optional fixed tick rate for the `fixedUpdate` Lua callback (Hz).  `None` disables fixed update. - `frame_budget_warn_ms` — If set, emit a `warn!` log when a frame exceeds this many milliseconds.",
             "file": "src/runtime/config.rs",
-            "line": 327
+            "line": 318
           }
         ]
       },
@@ -10889,7 +10910,7 @@
           {
             "name": "EngineError",
             "kind": "enum",
-            "description": "All possible error conditions that can occur in the Lurek2D engine.  Each variant carries a stable error code (`E1001`–`E1012`) and belongs to an [`ErrorCategory`] for structured error reporting.  # Variants - `InitializationError` — Engine startup failure (window, renderer, Lua VM). - `RenderError` — Error during frame rendering. - `InputError` — Error reading or processing input state. - `AudioError` — Failure in the audio subsystem. - `PhysicsError` — Error in the physics world or body simulation. - `FileSystemError` — Sandboxed I/O failure. - `LuaError` — Lua script execution or binding error. - `WindowError` — Window creation or event loop failure. - `ConfigError` — `conf.lua` parse error. - `ResourceNotFound` — A requested asset was not found in the game directory. - `ResourceNotLoaded` — A resource was released but a stale handle was accessed. - `IoError` — Low-level I/O error (from `std::io::Error`).",
+            "description": "All possible error conditions that can occur in the Lurek2D engine.  Each variant carries a stable error code (`E1001`–`E1012`) and belongs to an [`ErrorCategory`] for structured error reporting.  # Variants - `InitializationError` — Engine startup failure (window, renderer, Lua VM). - `RenderError` — Error during frame rendering. - `InputError` — Error reading or processing input state. - `AudioError` — Failure in the audio subsystem. - `PhysicsError` — Error in the physics world or body simulation. - `FileSystemError` — Sandboxed I/O failure. - `LuaError` — Lua script execution or binding error. - `WindowError` — Window creation or event loop failure. - `ConfigError` — `conf.toml` parse error. - `ResourceNotFound` — A requested asset was not found in the game directory. - `ResourceNotLoaded` — A resource was released but a stale handle was accessed. - `IoError` — Low-level I/O error (from `std::io::Error`).",
             "file": "src/runtime/error.rs",
             "line": 83
           },
@@ -10958,7 +10979,7 @@
           {
             "name": "L005_CONF_LOADED",
             "kind": "const",
-            "description": "Log message: conf.lua loaded.",
+            "description": "Log message: conf.toml loaded.",
             "file": "src/runtime/log_messages.rs",
             "line": 70
           },
@@ -11098,21 +11119,21 @@
           {
             "name": "L051_CONF_READ_ERR",
             "kind": "const",
-            "description": "Log message: error reading conf.lua from disk.",
+            "description": "Log message: error reading conf.toml from disk.",
             "file": "src/runtime/log_messages.rs",
             "line": 125
           },
           {
             "name": "L052_CONF_PARSE_ERR",
             "kind": "const",
-            "description": "Log message: Lua parse error in conf.lua.",
+            "description": "Log message: TOML parse error in conf.toml.",
             "file": "src/runtime/log_messages.rs",
             "line": 127
           },
           {
             "name": "L053_CONF_CALLBACK_ERR",
             "kind": "const",
-            "description": "Log message: error returned from `lurek.conf()` callback.",
+            "description": "Log message: reserved (formerly conf callback error — conf.lua removed).",
             "file": "src/runtime/log_messages.rs",
             "line": 129
           },
@@ -11441,14 +11462,14 @@
           {
             "name": "L083_DROP_ARCHIVE",
             "kind": "const",
-            "description": "Log message: a `.lurek` / `.luna` archive was dropped — extracting and loading.",
+            "description": "Log message: a `.lurek` / `.lurek` archive was dropped — extracting and loading.",
             "file": "src/runtime/log_messages.rs",
             "line": 330
           },
           {
             "name": "L084_DROP_ARCHIVE_FAIL",
             "kind": "const",
-            "description": "Log message: failed to extract a dropped `.lurek` / `.luna` archive.",
+            "description": "Log message: failed to extract a dropped `.lurek` / `.lurek` archive.",
             "file": "src/runtime/log_messages.rs",
             "line": 332
           },
@@ -12927,7 +12948,7 @@
           {
             "name": "SharedState",
             "kind": "struct",
-            "description": "Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.  # Fields - `render_commands` — Queue of pending `RenderCommand` values, flushed each frame. - `current_color` — Active RGBA draw color `[r, g, b, a]`. - `background_color` — Screen clear color set by `lurek.render.setBackgroundColor`. - `textures` — Loaded texture pixel data, indexed by `Texture::id`. - `keys_down` — Set of currently held key name strings. - `mouse` — Mouse cursor position, button state, scroll, and cursor settings. - `delta_time` — Elapsed time for the current frame in seconds. - `total_time` — Accumulated time since engine start in seconds. - `fps` — Rolling frames-per-second measurement. - `window_width` — Current window width in pixels. - `window_height` — Current window height in pixels. - `window_title` — Current window title string. - `mixer` — The rodio audio mixer managing all sound sources. - `game_dir` — Absolute path to the game directory. - `quit_requested` — Set to `true` by `lurek.event.quit()` to end the game loop. - `exit_code` — Exit code to return when `quit_requested` is `true`. - `restart_requested` — Set to `true` by `lurek.event.restart()` to trigger engine restart. - `line_width` — Current stroke width for outline draw commands. - `blend_mode` — Current blend mode for draw operations. - `fonts` — Loaded TTF fonts for text rendering. - `active_font` — Index of the currently active font (`None` = use bitmap fallback). - `canvases` — Off-screen render targets (canvases) for compositing. - `gamepads` — Connected gamepad state instances. - `fs` — Persistent sandboxed `GameFS` instance with mount layer support. - `shapes` — Stores all compound shape instances.  # Fields Shared mutable state accessible by both the engine loop and Lua closures.",
+            "description": "Shared mutable state passed via `Rc<RefCell<SharedState>>` to all Lua API closures and the engine loop.  # Fields - `render_commands` — Queue of pending `RenderCommand` values, flushed each frame. - `current_color` — Active RGBA draw color `[r, g, b, a]`. - `background_color` — Screen clear color set by `lurek.graphic.setBackgroundColor`. - `textures` — Loaded texture pixel data, indexed by `Texture::id`. - `keys_down` — Set of currently held key name strings. - `mouse` — Mouse cursor position, button state, scroll, and cursor settings. - `delta_time` — Elapsed time for the current frame in seconds. - `total_time` — Accumulated time since engine start in seconds. - `fps` — Rolling frames-per-second measurement. - `window_width` — Current window width in pixels. - `window_height` — Current window height in pixels. - `window_title` — Current window title string. - `mixer` — The rodio audio mixer managing all sound sources. - `game_dir` — Absolute path to the game directory. - `quit_requested` — Set to `true` by `lurek.signal.quit()` to end the game loop. - `exit_code` — Exit code to return when `quit_requested` is `true`. - `restart_requested` — Set to `true` by `lurek.signal.restart()` to trigger engine restart. - `line_width` — Current stroke width for outline draw commands. - `blend_mode` — Current blend mode for draw operations. - `fonts` — Loaded TTF fonts for text rendering. - `active_font` — Index of the currently active font (`None` = use bitmap fallback). - `canvases` — Off-screen render targets (canvases) for compositing. - `gamepads` — Connected gamepad state instances. - `fs` — Persistent sandboxed `GameFS` instance with mount layer support. - `shapes` — Stores all compound shape instances.  # Fields Shared mutable state accessible by both the engine loop and Lua closures.",
             "file": "src/runtime/shared_state.rs",
             "line": 260
           },
@@ -12946,7 +12967,7 @@
         "items": []
       },
       "save::save_data": {
-        "module_doc": "Save/load slot system with collectors, schema versioning, dirty tracking, and auto-save.  **NOTE**: This file is NOT declared in `mod.rs` and is therefore dead code. The canonical implementations of [`SaveManager`], [`SaveValue`], [`serialize_table`], and [`serialize_value`] live in `save_manager.rs`. This file appears to be an earlier copy retained during refactoring. See `TODO(dedup)` in `IDEA.md`.  This module is part of Lurek2D's `savegame` subsystem and provides the implementation details for save data-related operations and data management. Key types exported from this module: `SlotMeta`, `SaveManager`, `SaveValue`. Primary functions: `new()`, `register()`, `unregister()`, `registered_names()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
+        "module_doc": "Save/load slot system with collectors, schema versioning, dirty tracking, and auto-save.  **NOTE**: This file is NOT declared in `mod.rs` and is therefore dead code. The canonical implementations of [`SaveManager`], [`SaveValue`], [`serialize_table`], and [`serialize_value`] live in `save_manager.rs`. This file appears to be an earlier copy retained during refactoring. See `TODO(dedup)` in `IDEA.md`.  This module is part of Lurek2D's `save` subsystem and provides the implementation details for save data-related operations and data management. Key types exported from this module: `SlotMeta`, `SaveManager`, `SaveValue`. Primary functions: `new()`, `register()`, `unregister()`, `registered_names()`.  All public items are documented. See the parent module for architectural context and the `lurek.*` Lua API for the scripting interface.",
         "source_file": "src/save/save_data.rs",
         "items": [
           {
@@ -13100,7 +13121,7 @@
           {
             "name": "SceneStack",
             "kind": "struct",
-            "description": "The scene stack manages a LIFO stack of scene references.  Scenes are identified by `SceneId` values. The Lua API layer maps these to `mlua::RegistryKey` references for actual Lua table access.  **Overlay mode**: when scenes are pushed with `push_overlay`, they are stored in `overlay_ids`.  Every scene below the current top stays active â€” its `process`, `process_physics`, and `render` callbacks continue firing each frame.  Calling `pop()` on an overlay removes only the overlay; the background scene is unaffected.  # Fields - `stack` â€” `Vec<SceneId>`. LIFO scene stack, bottom-to-top. - `registry` â€” `HashMap<String, SceneId>`. Named scene registry. - `data_keys` â€” `HashMap<String, SceneId>`. Inter-scene data store. - `transition` â€” `Option<ActiveTransition>`. Active visual transition, if any. - `next_id` â€” `u64`. Next available scene ID counter. - `overlay_ids` â€” `HashSet<SceneId>`. IDs pushed via `push_overlay`.",
+            "description": "The scene stack manages a LIFO stack of scene references.  Scenes are identified by `SceneId` values. The Lua API layer maps these to `mlua::RegistryKey` references for actual Lua table access.  **Overlay mode**: when scenes are pushed with `push_overlay`, they are stored in `overlay_ids`.  Every scene below the current top stays active â€” its `process`, `process_physics`, and `render` callbacks continue firing each frame.  Calling `pop()` on an overlay removes only the effect; the background scene is unaffected.  # Fields - `stack` â€” `Vec<SceneId>`. LIFO scene stack, bottom-to-top. - `registry` â€” `HashMap<String, SceneId>`. Named scene registry. - `data_keys` â€” `HashMap<String, SceneId>`. Inter-scene data store. - `transition` â€” `Option<ActiveTransition>`. Active visual transition, if any. - `next_id` â€” `u64`. Next available scene ID counter. - `overlay_ids` â€” `HashSet<SceneId>`. IDs pushed via `push_overlay`.",
             "file": "src/scene/stack.rs",
             "line": 39
           }
@@ -13298,7 +13319,7 @@
             "kind": "fn",
             "description": "Validate a `SerialValue` tree against a schema.  Returns `Ok(())` when the value conforms to the schema, or `Err(description)` with a human-readable error including the field path.  # Parameters - `value`  — `&SerialValue`. The value to validate. - `schema` — `&SerialValue`. Declarative schema (must be a `SerialValue::Map`).  # Returns `Result<(), String>`.",
             "file": "src/serial/schema.rs",
-            "line": 217
+            "line": 221
           }
         ]
       },
@@ -13756,25 +13777,25 @@
         "source_file": "src/terminal/mod.rs",
         "items": [
           {
+            "name": "render",
+            "kind": "mod",
+            "description": "Render-command generation and CPU drawing for the terminal module.",
+            "file": "src/terminal/mod.rs",
+            "line": 17
+          },
+          {
             "name": "ansi",
             "kind": "mod",
             "description": "ANSI escape code parser for colour/style extraction.",
             "file": "src/terminal/mod.rs",
-            "line": 16
+            "line": 21
           },
           {
             "name": "completion",
             "kind": "mod",
             "description": "Tab-completion engine for TextBox inputs.",
             "file": "src/terminal/mod.rs",
-            "line": 19
-          },
-          {
-            "name": "render",
-            "kind": "mod",
-            "description": "Render-command generation and CPU drawing for the terminal module.",
-            "file": "src/terminal/mod.rs",
-            "line": 21
+            "line": 23
           }
         ]
       },
@@ -13960,20 +13981,20 @@
         ]
       },
       "thread::worker": {
-        "module_doc": "Background Lua thread with independent VM.  Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance. Communication with the main thread happens exclusively through [`Channel`] objects — no Lua state is shared across threads (design constraint **B-04**).  ## Worker sandbox Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`, `lurek.filesystem.read(path)` (read-only, no `..` traversal), and the `arg` global table. Graphics, audio, window, input, physics, and any module touching `SharedState` are deliberately excluded.",
+        "module_doc": "Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance. Communication with the main thread happens exclusively through [`Channel`] objects â€” no Lua state is shared across threads (design constraint **B-04**).  ## Worker sandbox Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`, `lurek.filesystem.read(path)` (read-only, no `..` traversal), and the `arg` global table. Graphics, audio, window, input, physics, and any module touching `SharedState` are deliberately excluded.",
         "source_file": "src/thread/worker.rs",
         "items": [
           {
             "name": "ThreadState",
             "kind": "enum",
-            "description": "Execution state of a background Lua thread.  # Variants - `Pending` — Pending variant. - `Running` — Running variant. - `Completed` — Completed variant. - `Error` — Error variant.",
+            "description": "Execution state of a background Lua thread.  # Variants - `Pending` â€” Pending variant. - `Running` â€” Running variant. - `Completed` â€” Completed variant. - `Error` â€” Error variant.",
             "file": "src/thread/worker.rs",
             "line": 29
           },
           {
             "name": "LuaThread",
             "kind": "struct",
-            "description": "A background Lua thread running its own VM.  Created via `lurek.thread.newThread(code)`. Call `start()` to spawn the OS thread and `wait()` to block until completion. Errors are captured in `ThreadState::Error` and retrievable via `get_error()`.  # Fields - `code` — `String`. - `state` — `Arc<Mutex<ThreadState>>`. - `handle` — `Option<thread::JoinHandle<()>>`. - `channels` — `Arc<Mutex<HashMap<String`.",
+            "description": "A background Lua thread running its own VM.  Created via `lurek.thread.newThread(code)`. Call `start()` to spawn the OS thread and `wait()` to block until completion. Errors are captured in `ThreadState::Error` and retrievable via `get_error()`.  # Fields - `code` â€” `String`. - `state` â€” `Arc<Mutex<ThreadState>>`. - `handle` â€” `Option<thread::JoinHandle<()>>`. - `channels` â€” `Arc<Mutex<HashMap<String`.",
             "file": "src/thread/worker.rs",
             "line": 51
           }
@@ -15237,7 +15258,7 @@
         ]
       },
       "ui": {
-        "module_doc": "Retained-mode 2D widget system for building in-game menus, HUDs, dialog boxes, and inventory screens.  The `gui` module provides a tree of widgets rooted at an invisible `Panel` returned by `getRoot()`.  Concrete widget types — `Button`, `Label`, `TextInput`, `CheckBox`, `Slider`, `ProgressBar`, `ListBox`, `ComboBox`, `ScrollPanel`, `NinePatch`, `Panel`, `Toast`, and many more — inherit shared base properties (position, size, visibility, padding, margin, z-order, anchor constraints, and flexbox layout settings) from `WidgetBase`.  A `Theme` maps `(WidgetType, WidgetState)` pairs to `WidgetStyle` records containing colours, font size, border width, and corner radius.  Input events are forwarded manually from `lurek.mousepressed` / `lurek.keypressed` etc., giving scripts full control over which GUI instance is active.  ## Sub-modules  | Sub-module | Exported types | Purpose | |---|---|---| | `widget` | [`WidgetBase`], [`WidgetState`], [`WidgetType`] | Shared base fields, state enum, type tag | | `theme` | [`Theme`], [`WidgetStyle`] | Per-widget-type per-state styling | | `containers` | [`Panel`], [`Layout`], [`ScrollPanel`], [`NinePatch`] | Layout containers and nine-patch slicer | | `controls` | [`Button`], [`Label`], [`TextInput`], [`CheckBox`], [`Slider`], [`ProgressBar`], [`ComboBox`], [`ListBox`], [`TabBar`], [`SpinBox`], [`Switch`] | Interactive and display controls | | `extras` | [`Toast`], [`Separator`], [`Spacer`], [`TreeNode`], [`TreeView`], [`Badge`] | Utility widgets: notifications, separators, tree views, badges | | `context` | [`GuiContext`] | Root widget tree, focus tracking, toast queue, input routing |  ## Tier  `gui` is a **Tier 2 — Engine Extension** module.  It may import `math`, `engine`, and all Tier 1 modules.  It must not import other Tier 2 modules.",
+        "module_doc": "Retained-mode 2D widget system for building in-game menus, HUDs, dialog boxes, and inventory screens.  The `ui` module provides a tree of widgets rooted at an invisible `Panel` returned by `getRoot()`.  Concrete widget types — `Button`, `Label`, `TextInput`, `CheckBox`, `Slider`, `ProgressBar`, `ListBox`, `ComboBox`, `ScrollPanel`, `NinePatch`, `Panel`, `Toast`, and many more — inherit shared base properties (position, size, visibility, padding, margin, z-order, anchor constraints, and flexbox layout settings) from `WidgetBase`.  A `Theme` maps `(WidgetType, WidgetState)` pairs to `WidgetStyle` records containing colours, font size, border width, and corner radius.  Input events are forwarded manually from `lurek.mousepressed` / `lurek.keypressed` etc., giving scripts full control over which GUI instance is active.  ## Sub-modules  | Sub-module | Exported types | Purpose | |---|---|---| | `widget` | [`WidgetBase`], [`WidgetState`], [`WidgetType`] | Shared base fields, state enum, type tag | | `theme` | [`Theme`], [`WidgetStyle`] | Per-widget-type per-state styling | | `containers` | [`Panel`], [`Layout`], [`ScrollPanel`], [`NinePatch`] | Layout containers and nine-patch slicer | | `controls` | [`Button`], [`Label`], [`TextInput`], [`CheckBox`], [`Slider`], [`ProgressBar`], [`ComboBox`], [`ListBox`], [`TabBar`], [`SpinBox`], [`Switch`] | Interactive and display controls | | `extras` | [`Toast`], [`Separator`], [`Spacer`], [`TreeNode`], [`TreeView`], [`Badge`] | Utility widgets: notifications, separators, tree views, badges | | `context` | [`GuiContext`] | Root widget tree, focus tracking, toast queue, input routing |  ## Tier  `ui` is a **Tier 2 — Engine Extension** module.  It may import `math`, `engine`, and all Tier 1 modules.  It must not import other Tier 2 modules.",
         "source_file": "src/ui/mod.rs",
         "items": [
           {
@@ -15687,381 +15708,360 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/config/test_runtime_config_fallback.lua",
-        "module": "test_runtime_config_fallback",
-        "name": "test_runtime_config_fallback",
-        "description": "tests/lua/config/test_runtime_config_fallback.lua",
+        "file": "tests/lua/demos/_common_checks.lua",
+        "module": "_common_checks",
+        "name": "_common_checks",
+        "description": "tests/lua/content/demos/_common_checks.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_animation.lua",
-        "module": "test_evidence_animation",
-        "name": "test_evidence_animation",
+        "file": "tests/lua/demos/test_asteroids.lua",
+        "module": "test_asteroids",
+        "name": "test_asteroids",
+        "description": "tests/lua/content/demos/test_asteroids.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_brick_breaker.lua",
+        "module": "test_brick_breaker",
+        "name": "test_brick_breaker",
+        "description": "tests/lua/content/demos/test_brick_breaker.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_demo_game.lua",
+        "module": "test_demo_game",
+        "name": "test_demo_game",
+        "description": "tests/lua/content/demos/test_demo_game.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_globe_demo.lua",
+        "module": "test_globe_demo",
+        "name": "test_globe_demo",
+        "description": "tests/lua/content/demos/test_globe_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_hello_world.lua",
+        "module": "test_hello_world",
+        "name": "test_hello_world",
+        "description": "tests/lua/content/demos/test_hello_world.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_light_demo.lua",
+        "module": "test_light_demo",
+        "name": "test_light_demo",
+        "description": "tests/lua/content/demos/test_light_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_minimap_demo.lua",
+        "module": "test_minimap_demo",
+        "name": "test_minimap_demo",
+        "description": "tests/lua/content/demos/test_minimap_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_pac_man.lua",
+        "module": "test_pac_man",
+        "name": "test_pac_man",
+        "description": "tests/lua/content/demos/test_pac_man.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_particles_demo.lua",
+        "module": "test_particles_demo",
+        "name": "test_particles_demo",
+        "description": "tests/lua/content/demos/test_particles_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_physics_demo.lua",
+        "module": "test_physics_demo",
+        "name": "test_physics_demo",
+        "description": "tests/lua/content/demos/test_physics_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_physics_sandbox.lua",
+        "module": "test_physics_sandbox",
+        "name": "test_physics_sandbox",
+        "description": "tests/lua/content/demos/test_physics_sandbox.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_platformer.lua",
+        "module": "test_platformer",
+        "name": "test_platformer",
+        "description": "tests/lua/content/demos/test_platformer.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_pong.lua",
+        "module": "test_pong",
+        "name": "test_pong",
+        "description": "tests/lua/content/demos/test_pong.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_postfx_demo.lua",
+        "module": "test_postfx_demo",
+        "name": "test_postfx_demo",
+        "description": "tests/lua/content/demos/test_postfx_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_scene_demo.lua",
+        "module": "test_scene_demo",
+        "name": "test_scene_demo",
+        "description": "tests/lua/content/demos/test_scene_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_snake.lua",
+        "module": "test_snake",
+        "name": "test_snake",
+        "description": "tests/lua/content/demos/test_snake.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_sprites.lua",
+        "module": "test_sprites",
+        "name": "test_sprites",
+        "description": "tests/lua/content/demos/test_sprites.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_tetris.lua",
+        "module": "test_tetris",
+        "name": "test_tetris",
+        "description": "tests/lua/content/demos/test_tetris.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_tower_defense.lua",
+        "module": "test_tower_defense",
+        "name": "test_tower_defense",
+        "description": "tests/lua/content/demos/test_tower_defense.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/demos/test_tween_demo.lua",
+        "module": "test_tween_demo",
+        "name": "test_tween_demo",
+        "description": "tests/lua/content/demos/test_tween_demo.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/evidence/test_animation_evidence.lua",
+        "module": "test_animation_evidence",
+        "name": "test_animation_evidence",
         "description": "test_evidence_animation.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_audio.lua",
-        "module": "test_evidence_audio",
-        "name": "test_evidence_audio",
+        "file": "tests/lua/evidence/test_audio_evidence.lua",
+        "module": "test_audio_evidence",
+        "name": "test_audio_evidence",
         "description": "test_evidence_audio.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_audio_bus.lua",
-        "module": "test_evidence_audio_bus",
-        "name": "test_evidence_audio_bus",
-        "description": "test_evidence_audio_bus.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_audio_dsp.lua",
-        "module": "test_evidence_audio_dsp",
-        "name": "test_evidence_audio_dsp",
-        "description": "test_evidence_audio_dsp.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_audio_offline.lua",
-        "module": "test_evidence_audio_offline",
-        "name": "test_evidence_audio_offline",
-        "description": "Evidence test: proves lurek.audio.processOffline and lurek.audio.normalizeFile",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_audio_visualizer.lua",
-        "module": "test_evidence_audio_visualizer",
-        "name": "test_evidence_audio_visualizer",
-        "description": "Evidence test: proves lurek.audio.waveformToPng and lurek.audio.spectrogramToPng",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_audio_waves.lua",
-        "module": "test_evidence_audio_waves",
-        "name": "test_evidence_audio_waves",
-        "description": "test_evidence_audio_waves.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_bezier.lua",
-        "module": "test_evidence_bezier",
-        "name": "test_evidence_bezier",
+        "file": "tests/lua/evidence/test_bezier_evidence.lua",
+        "module": "test_bezier_evidence",
+        "name": "test_bezier_evidence",
         "description": "test_evidence_bezier.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_camera.lua",
-        "module": "test_evidence_camera",
-        "name": "test_evidence_camera",
+        "file": "tests/lua/evidence/test_camera_evidence.lua",
+        "module": "test_camera_evidence",
+        "name": "test_camera_evidence",
         "description": "test_evidence_camera.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_canvas.lua",
-        "module": "test_evidence_canvas",
-        "name": "test_evidence_canvas",
+        "file": "tests/lua/evidence/test_canvas_evidence.lua",
+        "module": "test_canvas_evidence",
+        "name": "test_canvas_evidence",
         "description": "test_evidence_canvas.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_cellular_sand.lua",
-        "module": "test_evidence_cellular_sand",
-        "name": "test_evidence_cellular_sand",
+        "file": "tests/lua/evidence/test_cellular_sand_evidence.lua",
+        "module": "test_cellular_sand_evidence",
+        "name": "test_cellular_sand_evidence",
         "description": "Evidence test: cellular sand falling simulation",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_charts.lua",
-        "module": "test_evidence_charts",
-        "name": "test_evidence_charts",
+        "file": "tests/lua/evidence/test_charts_evidence.lua",
+        "module": "test_charts_evidence",
+        "name": "test_charts_evidence",
         "description": "test_evidence_charts.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_combined.lua",
-        "module": "test_evidence_combined",
-        "name": "test_evidence_combined",
-        "description": "test_evidence_combined.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_easing.lua",
-        "module": "test_evidence_easing",
-        "name": "test_evidence_easing",
+        "file": "tests/lua/evidence/test_easing_evidence.lua",
+        "module": "test_easing_evidence",
+        "name": "test_easing_evidence",
         "description": "test_evidence_easing.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_effect_overlay.lua",
-        "module": "test_evidence_effect_overlay",
-        "name": "test_evidence_effect_overlay",
-        "description": "test_evidence_effect_overlay.lua",
+        "file": "tests/lua/evidence/test_effect_evidence.lua",
+        "module": "test_effect_evidence",
+        "name": "test_effect_evidence",
+        "description": "test_effect_evidence.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_effect_postfx.lua",
-        "module": "test_evidence_effect_postfx",
-        "name": "test_evidence_effect_postfx",
-        "description": "test_evidence_effect_postfx.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_effect_types.lua",
-        "module": "test_evidence_effect_types",
-        "name": "test_evidence_effect_types",
-        "description": "test_evidence_effect_types.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_geometry.lua",
-        "module": "test_evidence_geometry",
-        "name": "test_evidence_geometry",
+        "file": "tests/lua/evidence/test_geometry_evidence.lua",
+        "module": "test_geometry_evidence",
+        "name": "test_geometry_evidence",
         "description": "test_evidence_geometry.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_golden_text_outputs.lua",
-        "module": "test_evidence_golden_text_outputs",
-        "name": "test_evidence_golden_text_outputs",
-        "description": "Evidence test: deterministic text and binary outputs consumed by Lua golden suites.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_graph.lua",
-        "module": "test_evidence_graph",
-        "name": "test_evidence_graph",
+        "file": "tests/lua/evidence/test_graph_evidence.lua",
+        "module": "test_graph_evidence",
+        "name": "test_graph_evidence",
         "description": "test_evidence_graph.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_gui.lua",
-        "module": "test_evidence_gui",
-        "name": "test_evidence_gui",
+        "file": "tests/lua/evidence/test_gui_evidence.lua",
+        "module": "test_gui_evidence",
+        "name": "test_gui_evidence",
         "description": "test_evidence_gui.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_image.lua",
-        "module": "test_evidence_image",
-        "name": "test_evidence_image",
+        "file": "tests/lua/evidence/test_image_evidence.lua",
+        "module": "test_image_evidence",
+        "name": "test_image_evidence",
         "description": "Placeholder evidence suite for migrated image-adjacent artifacts.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_image_drawing.lua",
-        "module": "test_evidence_image_drawing",
-        "name": "test_evidence_image_drawing",
-        "description": "test_evidence_image_drawing.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_image_effects.lua",
-        "module": "test_evidence_image_effects",
-        "name": "test_evidence_image_effects",
-        "description": "test_evidence_image_effects.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_imagedata.lua",
-        "module": "test_evidence_imagedata",
-        "name": "test_evidence_imagedata",
+        "file": "tests/lua/evidence/test_imagedata_evidence.lua",
+        "module": "test_imagedata_evidence",
+        "name": "test_imagedata_evidence",
         "description": "Evidence test: ImageData pixel creation, manipulation, and PNG save",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_imagedata_effects.lua",
-        "module": "test_evidence_imagedata_effects",
-        "name": "test_evidence_imagedata_effects",
-        "description": "Evidence test: ImageData filter/effect methods produce PNG evidence",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_layers.lua",
-        "module": "test_evidence_layers",
-        "name": "test_evidence_layers",
+        "file": "tests/lua/evidence/test_layers_evidence.lua",
+        "module": "test_layers_evidence",
+        "name": "test_layers_evidence",
         "description": "test_evidence_layers.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_light.lua",
-        "module": "test_evidence_light",
-        "name": "test_evidence_light",
+        "file": "tests/lua/evidence/test_light_evidence.lua",
+        "module": "test_light_evidence",
+        "name": "test_light_evidence",
         "description": "test_evidence_light.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_math.lua",
-        "module": "test_evidence_math",
-        "name": "test_evidence_math",
+        "file": "tests/lua/evidence/test_math_evidence.lua",
+        "module": "test_math_evidence",
+        "name": "test_math_evidence",
         "description": "Placeholder evidence suite for migrated math artifacts.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_migrated_15.lua",
-        "module": "test_evidence_migrated_15",
-        "name": "test_evidence_migrated_15",
-        "description": "Migrated 15 tests from Rust evidence",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_migrated_20.lua",
-        "module": "test_evidence_migrated_20",
-        "name": "test_evidence_migrated_20",
-        "description": "Migrated evidence suite 20.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_minimap.lua",
-        "module": "test_evidence_minimap",
-        "name": "test_evidence_minimap",
+        "file": "tests/lua/evidence/test_minimap_evidence.lua",
+        "module": "test_minimap_evidence",
+        "name": "test_minimap_evidence",
         "description": "test_evidence_minimap.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_misc.lua",
-        "module": "test_evidence_misc",
-        "name": "test_evidence_misc",
-        "description": "Placeholder evidence suite for migrated image-effect artifacts.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_noise.lua",
-        "module": "test_evidence_noise",
-        "name": "test_evidence_noise",
+        "file": "tests/lua/evidence/test_noise_evidence.lua",
+        "module": "test_noise_evidence",
+        "name": "test_noise_evidence",
         "description": "test_evidence_noise.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_particle.lua",
-        "module": "test_evidence_particle",
-        "name": "test_evidence_particle",
+        "file": "tests/lua/evidence/test_particle_evidence.lua",
+        "module": "test_particle_evidence",
+        "name": "test_particle_evidence",
         "description": "test_evidence_particle.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_pathfind.lua",
-        "module": "test_evidence_pathfind",
-        "name": "test_evidence_pathfind",
+        "file": "tests/lua/evidence/test_pathfind_evidence.lua",
+        "module": "test_pathfind_evidence",
+        "name": "test_pathfind_evidence",
         "description": "Placeholder evidence suite for migrated pathfinding artifacts.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_pathfind_extended.lua",
-        "module": "test_evidence_pathfind_extended",
-        "name": "test_evidence_pathfind_extended",
-        "description": "test_evidence_pathfind_extended.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_physics.lua",
-        "module": "test_evidence_physics",
-        "name": "test_evidence_physics",
+        "file": "tests/lua/evidence/test_physics_evidence.lua",
+        "module": "test_physics_evidence",
+        "name": "test_physics_evidence",
         "description": "Evidence test: physics simulation â€” body positions after stepping",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_physics_debug_gpu.lua",
-        "module": "test_evidence_physics_debug_gpu",
-        "name": "test_evidence_physics_debug_gpu",
-        "description": "test_evidence_physics_debug_gpu.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_physics_ext.lua",
-        "module": "test_evidence_physics_ext",
-        "name": "test_evidence_physics_ext",
-        "description": "Evidence test for Lurek2D physics extension APIs",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_physics_zone_debug.lua",
-        "module": "test_evidence_physics_zone_debug",
-        "name": "test_evidence_physics_zone_debug",
-        "description": "Evidence test: physics zone event tracking",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_procgen.lua",
-        "module": "test_evidence_procgen",
-        "name": "test_evidence_procgen",
+        "file": "tests/lua/evidence/test_procgen_evidence.lua",
+        "module": "test_procgen_evidence",
+        "name": "test_procgen_evidence",
         "description": "test_evidence_procgen.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_raycaster.lua",
-        "module": "test_evidence_raycaster",
-        "name": "test_evidence_raycaster",
+        "file": "tests/lua/evidence/test_raycaster_evidence.lua",
+        "module": "test_raycaster_evidence",
+        "name": "test_raycaster_evidence",
         "description": "test_evidence_raycaster.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_raycaster_ext.lua",
-        "module": "test_evidence_raycaster_ext",
-        "name": "test_evidence_raycaster_ext",
-        "description": "test_evidence_raycaster_ext.lua",
+        "file": "tests/lua/evidence/test_render_evidence.lua",
+        "module": "test_render_evidence",
+        "name": "test_render_evidence",
+        "description": "test_render_evidence.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_render_draw_cmds.lua",
-        "module": "test_evidence_render_draw_cmds",
-        "name": "test_evidence_render_draw_cmds",
-        "description": "test_evidence_render_draw_cmds.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_render_drawing.lua",
-        "module": "test_evidence_render_drawing",
-        "name": "test_evidence_render_drawing",
-        "description": "test_evidence_render_drawing.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_render_graphics.lua",
-        "module": "test_evidence_render_graphics",
-        "name": "test_evidence_render_graphics",
-        "description": "Placeholder evidence suite for migrated graphics/image fixtures.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_scene.lua",
-        "module": "test_evidence_scene",
-        "name": "test_evidence_scene",
+        "file": "tests/lua/evidence/test_scene_evidence.lua",
+        "module": "test_scene_evidence",
+        "name": "test_scene_evidence",
         "description": "test_evidence_scene.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_shapes.lua",
-        "module": "test_evidence_shapes",
-        "name": "test_evidence_shapes",
+        "file": "tests/lua/evidence/test_shapes_evidence.lua",
+        "module": "test_shapes_evidence",
+        "name": "test_shapes_evidence",
         "description": "test_evidence_shapes.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_spine.lua",
-        "module": "test_evidence_spine",
-        "name": "test_evidence_spine",
+        "file": "tests/lua/evidence/test_spine_evidence.lua",
+        "module": "test_spine_evidence",
+        "name": "test_spine_evidence",
         "description": "test_evidence_spine.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_terrain_render.lua",
-        "module": "test_evidence_terrain_render",
-        "name": "test_evidence_terrain_render",
-        "description": "Evidence test: terrain render",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/evidence/test_evidence_tilemap.lua",
-        "module": "test_evidence_tilemap",
-        "name": "test_evidence_tilemap",
+        "file": "tests/lua/evidence/test_tilemap_evidence.lua",
+        "module": "test_tilemap_evidence",
+        "name": "test_tilemap_evidence",
         "description": "test_evidence_tilemap.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/evidence/test_evidence_ui_layout_render.lua",
-        "module": "test_evidence_ui_layout_render",
-        "name": "test_evidence_ui_layout_render",
-        "description": "test_evidence_ui_layout_render.lua",
+        "file": "tests/lua/evidence/test_ui_evidence.lua",
+        "module": "test_ui_evidence",
+        "name": "test_ui_evidence",
+        "description": "test_ui_evidence.lua",
         "kind": "lua"
       },
       {
@@ -16128,27 +16128,6 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/golden/test_migrated_15_golden.lua",
-        "module": "test_migrated_15_golden",
-        "name": "test_migrated_15_golden",
-        "description": "Golden test: migrated 15",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/golden/test_migrated_20_golden.lua",
-        "module": "test_migrated_20_golden",
-        "name": "test_migrated_20_golden",
-        "description": "Compare-only golden suite for migrated_20 artifacts.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/golden/test_migrated_rust_golden.lua",
-        "module": "test_migrated_rust_golden",
-        "name": "test_migrated_rust_golden",
-        "description": "Golden test: migrated Rust text and binary baselines now compared from the Lua golden layer only.",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/golden/test_minimap_golden.lua",
         "module": "test_minimap_golden",
         "name": "test_minimap_golden",
@@ -16156,24 +16135,10 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/golden/test_misc_golden.lua",
-        "module": "test_misc_golden",
-        "name": "test_misc_golden",
-        "description": "Placeholder golden suite for migrated image-effect fixtures.",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/golden/test_pathfind_golden.lua",
         "module": "test_pathfind_golden",
         "name": "test_pathfind_golden",
         "description": "Golden test: pathfind",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/golden/test_pathfind_golden_grid.lua",
-        "module": "test_pathfind_golden_grid",
-        "name": "test_pathfind_golden_grid",
-        "description": "Golden test: pathfinding â€” compare evidence output against golden samples",
         "kind": "lua"
       },
       {
@@ -16268,10 +16233,45 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_audio_scene.lua",
+        "module": "test_audio_scene",
+        "name": "test_audio_scene",
+        "description": "tests/lua/integration/test_audio_scene.lua",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_audio_timer.lua",
         "module": "test_audio_timer",
         "name": "test_audio_timer",
         "description": "Lurek2D Integration Test: Audio + Timer",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_automation_event.lua",
+        "module": "test_automation_event",
+        "name": "test_automation_event",
+        "description": "tests/lua/integration/test_automation_event.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_camera_tilemap_scroll.lua",
+        "module": "test_camera_tilemap_scroll",
+        "name": "test_camera_tilemap_scroll",
+        "description": "tests/lua/integration/test_camera_tilemap_scroll.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_cardgame_tween_integration.lua",
+        "module": "test_cardgame_tween_integration",
+        "name": "test_cardgame_tween_integration",
+        "description": "Integration test: library.cardgame × lurek.tween.",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_combat_physics_integration.lua",
+        "module": "test_combat_physics_integration",
+        "name": "test_combat_physics_integration",
+        "description": "Integration test: library.combat × lurek.physics.",
         "kind": "lua"
       },
       {
@@ -16317,6 +16317,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_dialog_event_integration.lua",
+        "module": "test_dialog_event_integration",
+        "name": "test_dialog_event_integration",
+        "description": "Integration test: library.dialog × lurek.event (runtime name for \"lurek.event\").",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_docs.lua",
         "module": "test_docs",
         "name": "test_docs",
@@ -16352,6 +16359,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_effect_camera.lua",
+        "module": "test_effect_camera",
+        "name": "test_effect_camera",
+        "description": "tests/lua/integration/test_effect_camera.lua",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_event_entity.lua",
         "module": "test_event_entity",
         "name": "test_event_entity",
@@ -16363,6 +16377,13 @@
         "module": "test_graph_pathfind",
         "name": "test_graph_pathfind",
         "description": "tests/lua/integration/test_graph_pathfind.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_i18n_dialog.lua",
+        "module": "test_i18n_dialog",
+        "name": "test_i18n_dialog",
+        "description": "tests/lua/integration/test_i18n_dialog.lua",
         "kind": "lua"
       },
       {
@@ -16387,38 +16408,17 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/integration/test_integration_cardgame_tween.lua",
-        "module": "test_integration_cardgame_tween",
-        "name": "test_integration_cardgame_tween",
-        "description": "Integration test: library.cardgame × lurek.tween.",
+        "file": "tests/lua/integration/test_input_ui.lua",
+        "module": "test_input_ui",
+        "name": "test_input_ui",
+        "description": "tests/lua/integration/test_input_ui.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/integration/test_integration_combat_physics.lua",
-        "module": "test_integration_combat_physics",
-        "name": "test_integration_combat_physics",
-        "description": "Integration test: library.combat × lurek.physics.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/integration/test_integration_dialog_event.lua",
-        "module": "test_integration_dialog_event",
-        "name": "test_integration_dialog_event",
-        "description": "Integration test: library.dialog × lurek.event (runtime name for \"lurek.event\").",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/integration/test_integration_inventory_save.lua",
-        "module": "test_integration_inventory_save",
-        "name": "test_integration_inventory_save",
+        "file": "tests/lua/integration/test_inventory_save_integration.lua",
+        "module": "test_inventory_save_integration",
+        "name": "test_inventory_save_integration",
         "description": "Integration test: library.inventory × lurek.serial (runtime name for \"lurek.serial\").",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/integration/test_integration_quest_time.lua",
-        "module": "test_integration_quest_time",
-        "name": "test_integration_quest_time",
-        "description": "Integration test: library.quest × lurek.timer.Scheduler.",
         "kind": "lua"
       },
       {
@@ -16450,10 +16450,31 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_minimap_pathfind.lua",
+        "module": "test_minimap_pathfind",
+        "name": "test_minimap_pathfind",
+        "description": "tests/lua/integration/test_minimap_pathfind.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_network_save.lua",
+        "module": "test_network_save",
+        "name": "test_network_save",
+        "description": "tests/lua/integration/test_network_save.lua",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_parallax_camera.lua",
         "module": "test_parallax_camera",
         "name": "test_parallax_camera",
         "description": "Lurek2D Parallax + Camera Integration Tests",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_particle_render.lua",
+        "module": "test_particle_render",
+        "name": "test_particle_render",
+        "description": "tests/lua/integration/test_particle_render.lua",
         "kind": "lua"
       },
       {
@@ -16548,6 +16569,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/integration/test_quest_time_integration.lua",
+        "module": "test_quest_time_integration",
+        "name": "test_quest_time_integration",
+        "description": "Integration test: library.quest × lurek.timer.Scheduler.",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/integration/test_render_animation.lua",
         "module": "test_render_animation",
         "name": "test_render_animation",
@@ -16607,7 +16635,14 @@
         "file": "tests/lua/integration/test_serial_filesystem.lua",
         "module": "test_serial_filesystem",
         "name": "test_serial_filesystem",
-        "description": "tests/lua/integration/test_serial_filesystem.lua",
+        "description": "tests/lua/integration/test_serial_fileapp.lua",
+        "kind": "lua"
+      },
+      {
+        "file": "tests/lua/integration/test_terminal_input.lua",
+        "module": "test_terminal_input",
+        "name": "test_terminal_input",
+        "description": "tests/lua/integration/test_terminal_input.lua",
         "kind": "lua"
       },
       {
@@ -16814,6 +16849,13 @@
         "kind": "lua"
       },
       {
+        "file": "tests/lua/library/test_library_scheduler.lua",
+        "module": "test_library_scheduler",
+        "name": "test_library_scheduler",
+        "description": "Lurek2D Library Scheduler Tests",
+        "kind": "lua"
+      },
+      {
         "file": "tests/lua/library/test_library_stats.lua",
         "module": "test_library_stats",
         "name": "test_library_stats",
@@ -16821,59 +16863,38 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/security/test_api_fuzz.lua",
-        "module": "test_api_fuzz",
-        "name": "test_api_fuzz",
-        "description": "Lurek2D Security Test: API Fuzz / Nil Spam",
+        "file": "tests/lua/security/test_filesystem.lua",
+        "module": "test_filesystem",
+        "name": "test_filesystem",
+        "description": "test_filesystem.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/security/test_fuzz_boundary.lua",
-        "module": "test_fuzz_boundary",
-        "name": "test_fuzz_boundary",
-        "description": "Lurek2D Fuzz Tests (Sandbox Boundary)",
+        "file": "tests/lua/security/test_network.lua",
+        "module": "test_network",
+        "name": "test_network",
+        "description": "test_network.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/security/test_invalid_args.lua",
-        "module": "test_invalid_args",
-        "name": "test_invalid_args",
-        "description": "Lurek2D Validation Test: Invalid API Arguments",
+        "file": "tests/lua/security/test_render.lua",
+        "module": "test_render",
+        "name": "test_render",
+        "description": "test_render.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/security/test_mount_traversal.lua",
-        "module": "test_mount_traversal",
-        "name": "test_mount_traversal",
-        "description": "Lurek2D Security Test: Mount traversal rejection.",
+        "file": "tests/lua/security/test_runtime.lua",
+        "module": "test_runtime",
+        "name": "test_runtime",
+        "description": "test_runtime.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/security/test_network_security.lua",
-        "module": "test_network_security",
-        "name": "test_network_security",
-        "description": "",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/security/test_sandbox.lua",
-        "module": "test_sandbox",
-        "name": "test_sandbox",
-        "description": "Lurek2D Security Test: Lua Sandbox Isolation",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/security/test_save_validation.lua",
-        "module": "test_save_validation",
-        "name": "test_save_validation",
-        "description": "Lurek2D Validation Test: SaveManager Edge Cases",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/security/test_toml_validation.lua",
-        "module": "test_toml_validation",
-        "name": "test_toml_validation",
-        "description": "Lurek2D Validation Test: Corrupted and Malformed TOML",
+        "file": "tests/lua/security/test_save.lua",
+        "module": "test_save",
+        "name": "test_save",
+        "description": "test_save.lua",
         "kind": "lua"
       },
       {
@@ -16905,13 +16926,6 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/stress/test_data_compression_stress.lua",
-        "module": "test_data_compression_stress",
-        "name": "test_data_compression_stress",
-        "description": "Lurek2D Stress Test: Data Compression, Hash, and Encoding Throughput",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/stress/test_data_stress.lua",
         "module": "test_data_stress",
         "name": "test_data_stress",
@@ -16923,13 +16937,6 @@
         "module": "test_dataframe_stress",
         "name": "test_dataframe_stress",
         "description": "Lurek2D Stress Test: DataFrame Bulk Operations",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/stress/test_ecs_bulk_spawn.lua",
-        "module": "test_ecs_bulk_spawn",
-        "name": "test_ecs_bulk_spawn",
-        "description": "Lurek2D Lua stress test for lurek.ecs spawnBulk",
         "kind": "lua"
       },
       {
@@ -17003,13 +17010,6 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/stress/test_physics_collision_stress.lua",
-        "module": "test_physics_collision_stress",
-        "name": "test_physics_collision_stress",
-        "description": "Lurek2D Stress Test: Physics Collision Storm",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/stress/test_physics_stress.lua",
         "module": "test_physics_stress",
         "name": "test_physics_stress",
@@ -17038,13 +17038,6 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/stress/test_scene_depth_sort.lua",
-        "module": "test_scene_depth_sort",
-        "name": "test_scene_depth_sort",
-        "description": "Lurek2D Lua stress test for lurek.scene DepthSorter with large item count",
-        "kind": "lua"
-      },
-      {
         "file": "tests/lua/stress/test_scene_stress.lua",
         "module": "test_scene_stress",
         "name": "test_scene_stress",
@@ -17056,27 +17049,6 @@
         "module": "test_serial_stress",
         "name": "test_serial_stress",
         "description": "Lurek2D Stress Test: Serial Module",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/stress/test_stress_physics_cellular.lua",
-        "module": "test_stress_physics_cellular",
-        "name": "test_stress_physics_cellular",
-        "description": "Stress test: large cellular world simulation",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/stress/test_stress_physics_terrain.lua",
-        "module": "test_stress_physics_terrain",
-        "name": "test_stress_physics_terrain",
-        "description": "Stress test: large terrain fill/dig/flush cycle",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/stress/test_stress_physics_zones.lua",
-        "module": "test_stress_physics_zones",
-        "name": "test_stress_physics_zones",
-        "description": "Stress test: physics zones with many bodies",
         "kind": "lua"
       },
       {
@@ -17108,464 +17080,387 @@
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_ai.lua",
-        "module": "test_ai",
-        "name": "test_ai",
+        "file": "tests/lua/unit/test_ai_unit.lua",
+        "module": "test_ai_unit",
+        "name": "test_ai_unit",
         "description": "Lurek2D AI API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_animation.lua",
-        "module": "test_animation",
-        "name": "test_animation",
+        "file": "tests/lua/unit/test_animation_unit.lua",
+        "module": "test_animation_unit",
+        "name": "test_animation_unit",
         "description": "Lurek2D Lua BDD tests for lurek.animation",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_audio.lua",
-        "module": "test_audio",
-        "name": "test_audio",
+        "file": "tests/lua/unit/test_audio_unit.lua",
+        "module": "test_audio_unit",
+        "name": "test_audio_unit",
         "description": "Lurek2D Audio API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_automation.lua",
-        "module": "test_automation",
-        "name": "test_automation",
+        "file": "tests/lua/unit/test_automation_unit.lua",
+        "module": "test_automation_unit",
+        "name": "test_automation_unit",
         "description": "Lua BDD tests for lurek.automation (automation module)",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_battle.lua",
-        "module": "test_battle",
-        "name": "test_battle",
+        "file": "tests/lua/unit/test_battle_unit.lua",
+        "module": "test_battle_unit",
+        "name": "test_battle_unit",
         "description": "Lurek2D battle API tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_camera.lua",
-        "module": "test_camera",
-        "name": "test_camera",
+        "file": "tests/lua/unit/test_camera_unit.lua",
+        "module": "test_camera_unit",
+        "name": "test_camera_unit",
         "description": "Lurek2D Lua BDD tests for lurek.camera",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_compute.lua",
-        "module": "test_compute",
-        "name": "test_compute",
+        "file": "tests/lua/unit/test_compute_unit.lua",
+        "module": "test_compute_unit",
+        "name": "test_compute_unit",
         "description": "Lurek2D Compute Array Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_crafting.lua",
-        "module": "test_crafting",
-        "name": "test_crafting",
+        "file": "tests/lua/unit/test_crafting_unit.lua",
+        "module": "test_crafting_unit",
+        "name": "test_crafting_unit",
         "description": "Lua BDD tests for lurek.crafting.*",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_data.lua",
-        "module": "test_data",
-        "name": "test_data",
+        "file": "tests/lua/unit/test_data_unit.lua",
+        "module": "test_data_unit",
+        "name": "test_data_unit",
         "description": "tests/lua/unit/test_data.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_dataframe.lua",
-        "module": "test_dataframe",
-        "name": "test_dataframe",
+        "file": "tests/lua/unit/test_dataframe_unit.lua",
+        "module": "test_dataframe_unit",
+        "name": "test_dataframe_unit",
         "description": "Lurek2D DataFrame Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_debugbridge.lua",
-        "module": "test_debugbridge",
-        "name": "test_debugbridge",
+        "file": "tests/lua/unit/test_debugbridge_unit.lua",
+        "module": "test_debugbridge_unit",
+        "name": "test_debugbridge_unit",
         "description": "DebugBridge Lua Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_devtools.lua",
-        "module": "test_devtools",
-        "name": "test_devtools",
+        "file": "tests/lua/unit/test_devtools_unit.lua",
+        "module": "test_devtools_unit",
+        "name": "test_devtools_unit",
         "description": "tests/lua/test_devtools.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_dialog.lua",
-        "module": "test_dialog",
-        "name": "test_dialog",
+        "file": "tests/lua/unit/test_dialog_unit.lua",
+        "module": "test_dialog_unit",
+        "name": "test_dialog_unit",
         "description": "Dialog API integration tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_docs.lua",
-        "module": "test_docs",
-        "name": "test_docs",
+        "file": "tests/lua/unit/test_docs_unit.lua",
+        "module": "test_docs_unit",
+        "name": "test_docs_unit",
         "description": "tests/lua/test_docs.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_drawlayer.lua",
-        "module": "test_drawlayer",
-        "name": "test_drawlayer",
+        "file": "tests/lua/unit/test_drawlayer_unit.lua",
+        "module": "test_drawlayer_unit",
+        "name": "test_drawlayer_unit",
         "description": "tests/lua/unit/test_drawlayer.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_ecs.lua",
-        "module": "test_ecs",
-        "name": "test_ecs",
+        "file": "tests/lua/unit/test_ecs_unit.lua",
+        "module": "test_ecs_unit",
+        "name": "test_ecs_unit",
         "description": "Entity module Lua tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_ecs_regress_relationship_default.lua",
-        "module": "test_ecs_regress_relationship_default",
-        "name": "test_ecs_regress_relationship_default",
-        "description": "Regression: RelationshipManager:defineType must not panic when the optional",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_effect.lua",
-        "module": "test_effect",
-        "name": "test_effect",
+        "file": "tests/lua/unit/test_effect_unit.lua",
+        "module": "test_effect_unit",
+        "name": "test_effect_unit",
         "description": "Lurek2D Effect API Unit Tests (consolidated)",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_effect_api.lua",
-        "module": "test_effect_api",
-        "name": "test_effect_api",
-        "description": "tests/lua/unit/test_effect_api.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_effect_overlay.lua",
-        "module": "test_effect_overlay",
-        "name": "test_effect_overlay",
-        "description": "tests/lua/unit/test_effect_overlay.lua",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_effect_postfx.lua",
-        "module": "test_effect_postfx",
-        "name": "test_effect_postfx",
-        "description": "Lurek2D PostFX API Tests â€” covers lurek.effect post-processing effects (headless)",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_event.lua",
-        "module": "test_event",
-        "name": "test_event",
+        "file": "tests/lua/unit/test_event_unit.lua",
+        "module": "test_event_unit",
+        "name": "test_event_unit",
         "description": "tests/lua/unit/test_event.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_event_signal.lua",
-        "module": "test_event_signal",
-        "name": "test_event_signal",
-        "description": "Signal module Lua tests.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_filesystem.lua",
-        "module": "test_filesystem",
-        "name": "test_filesystem",
+        "file": "tests/lua/unit/test_filesystem_unit.lua",
+        "module": "test_filesystem_unit",
+        "name": "test_filesystem_unit",
         "description": "Lurek2D filesystem API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_font.lua",
-        "module": "test_font",
-        "name": "test_font",
+        "file": "tests/lua/unit/test_font_unit.lua",
+        "module": "test_font_unit",
+        "name": "test_font_unit",
         "description": "Lurek2D font tests for lurek.render font functions.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_globe.lua",
-        "module": "test_globe",
-        "name": "test_globe",
+        "file": "tests/lua/unit/test_globe_unit.lua",
+        "module": "test_globe_unit",
+        "name": "test_globe_unit",
         "description": "tests/lua/unit/test_globe.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_graph.lua",
-        "module": "test_graph",
-        "name": "test_graph",
+        "file": "tests/lua/unit/test_graph_unit.lua",
+        "module": "test_graph_unit",
+        "name": "test_graph_unit",
         "description": "Lurek2D Graph API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_gui.lua",
-        "module": "test_gui",
-        "name": "test_gui",
-        "description": "Covers widget construction, focus and input routing, theme access, toast helpers, and headless-safe UI tree management through lurek.ui.",
+        "file": "tests/lua/unit/test_gui_unit.lua",
+        "module": "test_gui_unit",
+        "name": "test_gui_unit",
+        "description": "Lurek2D UI widget API tests.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_i18n.lua",
-        "module": "test_i18n",
-        "name": "test_i18n",
+        "file": "tests/lua/unit/test_i18n_unit.lua",
+        "module": "test_i18n_unit",
+        "name": "test_i18n_unit",
         "description": "Lurek2D localization (i18n) API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_image.lua",
-        "module": "test_image",
-        "name": "test_image",
+        "file": "tests/lua/unit/test_image_unit.lua",
+        "module": "test_image_unit",
+        "name": "test_image_unit",
         "description": "tests/lua/unit/test_image.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_input.lua",
-        "module": "test_input",
-        "name": "test_input",
+        "file": "tests/lua/unit/test_input_unit.lua",
+        "module": "test_input_unit",
+        "name": "test_input_unit",
         "description": "Lurek2D Input API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_light.lua",
-        "module": "test_light",
-        "name": "test_light",
+        "file": "tests/lua/unit/test_light_unit.lua",
+        "module": "test_light_unit",
+        "name": "test_light_unit",
         "description": "Lurek2D lurek.light.* API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_log.lua",
-        "module": "test_log",
-        "name": "test_log",
+        "file": "tests/lua/unit/test_log_unit.lua",
+        "module": "test_log_unit",
+        "name": "test_log_unit",
         "description": "Lurek2D logging API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_math.lua",
-        "module": "test_math",
-        "name": "test_math",
+        "file": "tests/lua/unit/test_math_unit.lua",
+        "module": "test_math_unit",
+        "name": "test_math_unit",
         "description": "Lurek2D Math API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_minimap.lua",
-        "module": "test_minimap",
-        "name": "test_minimap",
+        "file": "tests/lua/unit/test_minimap_unit.lua",
+        "module": "test_minimap_unit",
+        "name": "test_minimap_unit",
         "description": "Lurek2D minimap API tests.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_mods.lua",
-        "module": "test_mods",
-        "name": "test_mods",
-        "description": "Lurek2D modding API unit tests",
+        "file": "tests/lua/unit/test_mods_unit.lua",
+        "module": "test_mods_unit",
+        "name": "test_mods_unit",
+        "description": "Lurek2D mods API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_network.lua",
-        "module": "test_network",
-        "name": "test_network",
+        "file": "tests/lua/unit/test_network_unit.lua",
+        "module": "test_network_unit",
+        "name": "test_network_unit",
         "description": "tests/lua/unit/test_network.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_parallax.lua",
-        "module": "test_parallax",
-        "name": "test_parallax",
+        "file": "tests/lua/unit/test_parallax_unit.lua",
+        "module": "test_parallax_unit",
+        "name": "test_parallax_unit",
         "description": "Lurek2D Parallax API Unit Tests (headless)",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_particle.lua",
-        "module": "test_particle",
-        "name": "test_particle",
+        "file": "tests/lua/unit/test_particle_unit.lua",
+        "module": "test_particle_unit",
+        "name": "test_particle_unit",
         "description": "Lurek2D particle system API tests.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_pathfind.lua",
-        "module": "test_pathfind",
-        "name": "test_pathfind",
+        "file": "tests/lua/unit/test_pathfind_unit.lua",
+        "module": "test_pathfind_unit",
+        "name": "test_pathfind_unit",
         "description": "Pathfinding module Lua tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_pathfind_regress_zero_index.lua",
-        "module": "test_pathfind_regress_zero_index",
-        "name": "test_pathfind_regress_zero_index",
-        "description": "Regression: UnitPathfinder:findPath / :findPathSmooth must not panic when a",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_patterns.lua",
-        "module": "test_patterns",
-        "name": "test_patterns",
+        "file": "tests/lua/unit/test_patterns_unit.lua",
+        "module": "test_patterns_unit",
+        "name": "test_patterns_unit",
         "description": "tests/lua/test_patterns.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_patterns_regress_acquire_borrow.lua",
-        "module": "test_patterns_regress_acquire_borrow",
-        "name": "test_patterns_regress_acquire_borrow",
-        "description": "Regression: ObjectPool:acquire must not trigger a RefCell double-borrow.",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_physics.lua",
-        "module": "test_physics",
-        "name": "test_physics",
+        "file": "tests/lua/unit/test_physics_unit.lua",
+        "module": "test_physics_unit",
+        "name": "test_physics_unit",
         "description": "Lurek2D Physics API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_physics_collision.lua",
-        "module": "test_physics_collision",
-        "name": "test_physics_collision",
-        "description": "@module lurek.physics",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_pipeline.lua",
-        "module": "test_pipeline",
-        "name": "test_pipeline",
+        "file": "tests/lua/unit/test_pipeline_unit.lua",
+        "module": "test_pipeline_unit",
+        "name": "test_pipeline_unit",
         "description": "BDD tests for lurek.pipeline DAG pipeline orchestrator",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_procgen.lua",
-        "module": "test_procgen",
-        "name": "test_procgen",
+        "file": "tests/lua/unit/test_procgen_unit.lua",
+        "module": "test_procgen_unit",
+        "name": "test_procgen_unit",
         "description": "Lurek2D Lua BDD tests for lurek.procgen",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_raycaster.lua",
-        "module": "test_raycaster",
-        "name": "test_raycaster",
+        "file": "tests/lua/unit/test_raycaster_unit.lua",
+        "module": "test_raycaster_unit",
+        "name": "test_raycaster_unit",
         "description": "Lurek2D Lua BDD tests for lurek.raycaster",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_render.lua",
-        "module": "test_render",
-        "name": "test_render",
+        "file": "tests/lua/unit/test_render_unit.lua",
+        "module": "test_render_unit",
+        "name": "test_render_unit",
         "description": "Lurek2D Graphics API Tests (headless â€” tests lurek.render API existence and behaviour)",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_render_pipeline.lua",
-        "module": "test_render_pipeline",
-        "name": "test_render_pipeline",
-        "description": "Target rendering/drawing contract acceptance tests.",
+        "file": "tests/lua/unit/test_runtime_unit.lua",
+        "module": "test_runtime_unit",
+        "name": "test_runtime_unit",
+        "description": "Lurek2D Runtime Unit Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_runtime.lua",
-        "module": "test_runtime",
-        "name": "test_runtime",
-        "description": "@testCategory unit",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_runtime_platform.lua",
-        "module": "test_runtime_platform",
-        "name": "test_runtime_platform",
-        "description": "Lurek2D system / platform API tests",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_save.lua",
-        "module": "test_save",
-        "name": "test_save",
+        "file": "tests/lua/unit/test_save_unit.lua",
+        "module": "test_save_unit",
+        "name": "test_save_unit",
         "description": "lurek.save API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_scene.lua",
-        "module": "test_scene",
-        "name": "test_scene",
+        "file": "tests/lua/unit/test_scene_unit.lua",
+        "module": "test_scene_unit",
+        "name": "test_scene_unit",
         "description": "Scene module Lua tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_serial.lua",
-        "module": "test_serial",
-        "name": "test_serial",
+        "file": "tests/lua/unit/test_serial_unit.lua",
+        "module": "test_serial_unit",
+        "name": "test_serial_unit",
         "description": "lurek.serial API unit tests.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_shape.lua",
-        "module": "test_shape",
-        "name": "test_shape",
+        "file": "tests/lua/unit/test_shape_unit.lua",
+        "module": "test_shape_unit",
+        "name": "test_shape_unit",
         "description": "tests/lua/unit/test_shape.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_spine.lua",
-        "module": "test_spine",
-        "name": "test_spine",
+        "file": "tests/lua/unit/test_spine_unit.lua",
+        "module": "test_spine_unit",
+        "name": "test_spine_unit",
         "description": "Lurek2D Lua BDD tests for lurek.spine",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_sprite.lua",
-        "module": "test_sprite",
-        "name": "test_sprite",
+        "file": "tests/lua/unit/test_sprite_unit.lua",
+        "module": "test_sprite_unit",
+        "name": "test_sprite_unit",
         "description": "Lurek2D Lua BDD tests for lurek.sprite",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_terminal.lua",
-        "module": "test_terminal",
-        "name": "test_terminal",
+        "file": "tests/lua/unit/test_terminal_unit.lua",
+        "module": "test_terminal_unit",
+        "name": "test_terminal_unit",
         "description": "tests/lua/unit/test_terminal.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_thread.lua",
-        "module": "test_thread",
-        "name": "test_thread",
+        "file": "tests/lua/unit/test_thread_unit.lua",
+        "module": "test_thread_unit",
+        "name": "test_thread_unit",
         "description": "lurek.thread API unit tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_tilemap.lua",
-        "module": "test_tilemap",
-        "name": "test_tilemap",
+        "file": "tests/lua/unit/test_tilemap_unit.lua",
+        "module": "test_tilemap_unit",
+        "name": "test_tilemap_unit",
         "description": "Lurek2D Tilemap API Tests",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_tilemap_regress_zero_index.lua",
-        "module": "test_tilemap_regress_zero_index",
-        "name": "test_tilemap_regress_zero_index",
-        "description": "Regression: IsoMap:setTilePart / :getTilePart / :setLevelVisible must not",
-        "kind": "lua"
-      },
-      {
-        "file": "tests/lua/unit/test_timer.lua",
-        "module": "test_timer",
-        "name": "test_timer",
+        "file": "tests/lua/unit/test_timer_unit.lua",
+        "module": "test_timer_unit",
+        "name": "test_timer_unit",
         "description": "Lurek2D timer API tests.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_tween.lua",
-        "module": "test_tween",
-        "name": "test_tween",
+        "file": "tests/lua/unit/test_tween_unit.lua",
+        "module": "test_tween_unit",
+        "name": "test_tween_unit",
         "description": "Lurek2D Lua BDD tests for lurek.tween.",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_ui.lua",
-        "module": "test_ui",
-        "name": "test_ui",
+        "file": "tests/lua/unit/test_ui_unit.lua",
+        "module": "test_ui_unit",
+        "name": "test_ui_unit",
         "description": "test_ui_layout.lua",
         "kind": "lua"
       },
       {
-        "file": "tests/lua/unit/test_window.lua",
-        "module": "test_window",
-        "name": "test_window",
+        "file": "tests/lua/unit/test_window_unit.lua",
+        "module": "test_window_unit",
+        "name": "test_window_unit",
         "description": "Lurek2D Window API Tests",
         "kind": "lua"
       }

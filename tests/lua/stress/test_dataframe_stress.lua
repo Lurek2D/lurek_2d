@@ -107,4 +107,5 @@ describe("dataframe stress: column operations", function()
         expect_equal(1, df:ncols(), "only base column remains")
     end)
 end)
+
 test_summary()

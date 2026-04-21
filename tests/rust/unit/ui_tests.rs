@@ -285,7 +285,7 @@ mod extras_tests {
 // ── context ───────────────────────────────────────────────────────────────────
 
 mod context_tests {
-    use lurek2d::ui::context::GuiContext;
+    use lurek2d::ui::context::{GuiContext, WidgetKind};
 
     #[test]
     fn new_context_has_root_panel() {

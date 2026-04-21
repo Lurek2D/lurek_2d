@@ -61,7 +61,7 @@ impl Globe {
         if self.graph.len() >= MAX_PROVINCES {
             return Err(GlobeError::TooManyProvinces);
         }
-        self.graph.insert(province);
+        self.graph.insert(province)?;
         Ok(())
     }
 

@@ -92,4 +92,5 @@ describe("savegame + entity + scene integration", function()
         expect_true(v >= 0, "schema version is non-negative")
     end)
 end)
+
 test_summary()

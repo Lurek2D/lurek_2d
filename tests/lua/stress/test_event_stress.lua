@@ -81,4 +81,5 @@ describe("stress: signal emit to many listeners", function()
         expect_equal(N_SIGS * N_LISTEN * N_EMITS, total, "all dispatches fired")
     end)
 end)
+
 test_summary()

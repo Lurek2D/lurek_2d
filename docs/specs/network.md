@@ -7,7 +7,7 @@
 - Lua API path(s): `src/lua_api/network_api.rs`
 - Primary Lua namespace: `lurek.network`
 - Rust test path(s): tests/rust/unit/network_tests.rs
-- Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtime.lua, tests/lua/security/test_network_security.lua
+- Lua test path(s): tests/lua/unit/test_network.lua, tests/lua/unit/test_network_constants.lua, tests/lua/unit/test_network_pack_unpack.lua, tests/lua/unit/test_network_roles.lua, tests/lua/unit/test_network_runtimer.lua, tests/lua/security/test_network_security.lua
 
 ## Summary
 

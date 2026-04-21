@@ -654,7 +654,7 @@ extraction of CPU-only types from `src/render/`:
    top-level tables (C-01)
 2. **One register function per module** with standard signature (C-02):
    ```rust
-   pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>
+   pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>
    ```
 3. **Sensible defaults** — never require params a beginner would always pass
    the same value (C-03)

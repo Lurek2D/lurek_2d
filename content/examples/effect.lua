@@ -676,7 +676,7 @@ print("fading: " .. tostring(overlay:isFading()))
 
 -- ---- Stub: Overlay:render -------------------------------------------------
 --@api-stub: Overlay:render
--- Draw the overlay on top of the game scene. Call in lurek.render_ui().
+-- Draw the effect on top of the game scene. Call in lurek.render_ui().
 overlay:render()
 print("overlay rendered to screen")
 
@@ -687,7 +687,7 @@ print("overlay exported to PNG")
 
 -- ---- Stub: Overlay:setCustomShader ----------------------------------------
 --@api-stub: Overlay:setCustomShader
--- Replace the overlay's fragment shader with a custom one.
+-- Replace the effect's fragment shader with a custom one.
 overlay:setCustomShader("assets/shaders/custom_overlay.wgsl")
 print("custom overlay shader loaded")
 

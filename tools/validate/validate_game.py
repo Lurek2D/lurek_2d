@@ -65,7 +65,7 @@ KNOWN_CALLBACKS = {
     "lurek.quit", "lurek.errhand",
 }
 
-# Known top-level luna properties (not functions)
+# Known top-level lurek properties (not functions)
 KNOWN_PROPERTIES = {
     "lurek.renders", "lurek.audio", "lurek.physics", "lurek.input",
     "lurek.timer", "lurek.filesystem", "lurek.math", "lurek.window",
@@ -91,9 +91,9 @@ def validate_lua_file(
     issues = []
 
     # Pattern: lurek.module.function( or lurek.module:method(
-    call_re = re.compile(r'(luna\.\w+(?:\.\w+)*)\s*[(:=]')
+    call_re = re.compile(r'(lurek\.\w+(?:\.\w+)*)\s*[(:=]')
     # Pattern for function assignment: lurek.callback = function
-    assign_re = re.compile(r'(luna\.\w+)\s*=\s*function')
+    assign_re = re.compile(r'(lurek\.\w+)\s*=\s*function')
 
     full_names = manifest.get("_full", set())
 

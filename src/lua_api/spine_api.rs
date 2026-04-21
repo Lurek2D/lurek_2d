@@ -1,4 +1,4 @@
-//! `lurek.spine` — Skeletal animation: bone hierarchies, slots, world-transform propagation,
+﻿//! `lurek.spine` â€” Skeletal animation: bone hierarchies, slots, world-transform propagation,
 //! keyframe timelines, IK constraints, and skins.
 
 use super::render_api::LuaImageData;
@@ -427,7 +427,7 @@ impl LuaUserData for LuaSkeletonAnimation {
         /// @param from : number
         /// @param to : number
         /// @return nil
-        /// table  — Array of `{name: string, value: number}` tables.
+        /// table  â€” Array of `{name: string, value: number}` tables.
         methods.add_method("getEvents", |lua, this, (from, to): (f32, f32)| {
             let pairs = this.inner.collect_events(from, to);
             let tbl = lua.create_table()?;
@@ -456,10 +456,10 @@ impl LuaUserData for LuaSkeletonAnimation {
 /// Registers the `lurek.spine` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newSkeleton --
@@ -494,6 +494,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("spine", tbl)?;
+    lurek.set("spine", tbl)?;
     Ok(())
 }

@@ -100,4 +100,5 @@ describe("graph stress: simulation ticks", function()
         expect_true(true, "100 ticks completed without error")
     end)
 end)
+
 test_summary()

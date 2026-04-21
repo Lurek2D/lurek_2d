@@ -836,7 +836,7 @@
 - `SharedState::poll_async_load` in `src/engine/shared_state.rs:498`
 - `SharedState::compute_stats` in `src/engine/shared_state.rs:541`
 
-### `entity` — 59/67 (88.1%)
+### `ecs` — 59/67 (88.1%)
 
 **Test functions:**
 
@@ -1437,7 +1437,7 @@
 - `LightWorld::get_occluder_mut` in `src/light/light_world.rs:143`
 - `Occluder::from_flat_coords` in `src/light/occluder.rs:83`
 
-### `localization` — 21/25 (84.0%)
+### `i18n` — 21/25 (84.0%)
 
 **Test functions:**
 
@@ -1680,7 +1680,7 @@
 - `Minimap::clear_viewport_rect` in `src/minimap/minimap.rs:546`
 - *...and 15 more*
 
-### `modding` — 9/20 (45.0%)
+### `mods` — 9/20 (45.0%)
 
 **Test functions:**
 
@@ -1868,7 +1868,7 @@
 - `rand_range` in `src/particle/math.rs:118`
 - `rand_normal` in `src/particle/math.rs:129`
 
-### `pathfinding` — 93/107 (86.9%)
+### `pathfind` — 93/107 (86.9%)
 
 **Test functions:**
 
@@ -2226,7 +2226,7 @@
 
 - `lurek_run` in `src/lib.rs:187`
 
-### `savegame` — 28/39 (71.8%)
+### `save` — 28/39 (71.8%)
 
 **Test functions:**
 
@@ -2900,7 +2900,7 @@
 - `lurek.effect.ImageEffect:removeByName`
 - `lurek.effect.lurek.effect.newCustomEffect`
 
-### `entity` — 42/45 (93.3%)
+### `ecs` — 42/45 (93.3%)
 
 **Uncovered Lua API functions** (3):
 
@@ -2975,7 +2975,7 @@
 
 ### `light` — 75/75 (100.0%)
 
-### `localization` — 15/27 (55.6%)
+### `i18n` — 15/27 (55.6%)
 
 **Uncovered Lua API functions** (12):
 
@@ -3031,7 +3031,7 @@
 
 ### `minimap` — 49/49 (100.0%)
 
-### `modding` — 18/33 (54.5%)
+### `mods` — 18/33 (54.5%)
 
 **Uncovered Lua API functions** (15):
 
@@ -3086,7 +3086,7 @@
 - `lurek.particle.Trail:setMinDistance`
 - `lurek.particle.Trail:getPointCount`
 
-### `pathfinding` — 46/59 (78.0%)
+### `pathfind` — 46/59 (78.0%)
 
 **Uncovered Lua API functions** (13):
 
@@ -3172,7 +3172,7 @@
 
 ### `raycaster` — 9/9 (100.0%)
 
-### `savegame` — 18/19 (94.7%)
+### `save` — 18/19 (94.7%)
 
 **Uncovered Lua API functions** (1):
 

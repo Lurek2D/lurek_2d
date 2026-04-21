@@ -1,22 +1,22 @@
 -- Lurek2D Integration Test: Audio + Event System
--- Tests audio playback triggered by event dispatching
+-- Tests audio playback triggered by event dispatching.
+-- Rewritten: lurek.event.newDispatcher does not exist; uses newSignal instead.
 
 -- @description Covers suite: audio + event integration.
 describe("audio + event integration", function()
     -- @covers lurek.audio.setMasterVolume
-    -- @covers lurek.event.Dispatcher.emit
-    -- @covers lurek.event.newDispatcher
-    -- @description Verifies emitting a mute event invokes the registered handler and drives the audio master volume to zero.
+    -- @covers lurek.event.newSignal
+    -- @description Verifies emitting a mute signal invokes the registered handler and drives the audio master volume to zero.
     it("event triggers volume change", function()
-        local dispatcher = lurek.event.newDispatcher()
+        local mute_sig  = lurek.event.newSignal()
         local volume_set = false
 
-        dispatcher:on("mute", function(data)
+        mute_sig:connect("mute", function()
             lurek.audio.setMasterVolume(0.0)
             volume_set = true
         end)
 
-        dispatcher:emit("mute", {})
+        mute_sig:emit("mute")
         expect_true(volume_set, "mute handler was called")
         expect_near(0.0, lurek.audio.getMasterVolume(), 0.01, "volume is 0")
 
@@ -25,18 +25,18 @@ describe("audio + event integration", function()
     end)
 
     -- @covers lurek.audio.getMasterVolume
-    -- @covers lurek.event.Dispatcher.emit
+    -- @covers lurek.event.newSignal
     -- @description Verifies an event callback can restore a previously saved audio volume after the system has been muted.
     it("unmute event restores volume", function()
-        local dispatcher = lurek.event.newDispatcher()
         local saved_volume = 0.8
+        local unmute_sig  = lurek.event.newSignal()
 
-        dispatcher:on("unmute", function(data)
+        unmute_sig:connect("unmute", function()
             lurek.audio.setMasterVolume(saved_volume)
         end)
 
         lurek.audio.setMasterVolume(0.0)
-        dispatcher:emit("unmute", {})
+        unmute_sig:emit("unmute")
         expect_near(saved_volume, lurek.audio.getMasterVolume(), 0.01, "volume restored")
 
         -- Reset
@@ -44,36 +44,35 @@ describe("audio + event integration", function()
     end)
 
     -- @covers lurek.audio.setMasterVolume
-    -- @covers lurek.event.Dispatcher.on
-    -- @description Verifies event payload data flows into the audio API so a slider-style event can set the requested volume level.
+    -- @covers lurek.event.newSignal
+    -- @description Verifies signal data flows into the audio API so a slider-style event can set the requested volume level.
     it("volume slider event applies value from data", function()
-        local dispatcher = lurek.event.newDispatcher()
+        local vol_sig = lurek.event.newSignal()
 
-        dispatcher:on("volume_change", function(data)
-            if data and data.level then
-                lurek.audio.setMasterVolume(data.level)
-            end
+        vol_sig:connect("volume", function(level)
+            lurek.audio.setMasterVolume(level)
         end)
 
-        dispatcher:emit("volume_change", { level = 0.42 })
-        expect_near(0.42, lurek.audio.getMasterVolume(), 0.01, "volume set from event data")
+        vol_sig:emit("volume", 0.42)
+        expect_near(0.42, lurek.audio.getMasterVolume(), 0.01, "volume set from signal data")
 
         -- Reset
         lurek.audio.setMasterVolume(1.0)
     end)
 
     -- @covers lurek.audio
-    -- @covers lurek.event.Dispatcher.on
-    -- @description Verifies multiple listeners registered on the same event are all invoked for a single audio-related dispatch.
+    -- @covers lurek.event.newSignal
+    -- @description Verifies multiple listeners connected to the same signal are all invoked on a single emit.
     it("multiple event listeners on same event", function()
-        local dispatcher = lurek.event.newDispatcher()
+        local sfx_sig   = lurek.event.newSignal()
         local call_count = 0
 
-        dispatcher:on("sfx", function(data) call_count = call_count + 1 end)
-        dispatcher:on("sfx", function(data) call_count = call_count + 1 end)
+        sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
+        sfx_sig:connect("sfx", function() call_count = call_count + 1 end)
 
-        dispatcher:emit("sfx", {})
+        sfx_sig:emit("sfx")
         expect_equal(2, call_count, "both listeners called")
     end)
 end)
+
 test_summary()

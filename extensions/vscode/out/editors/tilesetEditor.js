@@ -7,7 +7,7 @@ class TilesetEditor extends shared_js_1.WebviewEditor {
         return new TilesetEditor(context);
     }
     constructor(context) {
-        super(context, "luna.tilesetEditor", "Tileset");
+        super(context, "lurek.tilesetEditor", "Tileset");
     }
     handleMessage(msg) {
         switch (msg.type) {

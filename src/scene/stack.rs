@@ -27,7 +27,7 @@ pub type SceneId = u64;
 /// **Overlay mode**: when scenes are pushed with `push_overlay`, they are stored in
 /// `overlay_ids`.  Every scene below the current top stays active â€” its `process`,
 /// `process_physics`, and `render` callbacks continue firing each frame.  Calling
-/// `pop()` on an overlay removes only the overlay; the background scene is unaffected.
+/// `pop()` on an overlay removes only the effect; the background scene is unaffected.
 ///
 /// # Fields
 /// - `stack` â€” `Vec<SceneId>`. LIFO scene stack, bottom-to-top.
@@ -139,7 +139,7 @@ impl SceneStack {
         }
         log_msg!(info, SC03_SCENE_POP);
         let popped = self.stack.pop().unwrap();
-        // Clear the overlay flag if this scene was pushed as an overlay.
+        // Clear the effect flag if this scene was pushed as an overlay.
         self.overlay_ids.remove(&popped);
         let revealed = self.stack.last().copied();
         if transition_type != TransitionType::None && duration > 0.0 {
@@ -322,11 +322,11 @@ impl SceneStack {
 
     /// Push a scene as a non-pausing overlay over the current top scene.
     ///
-    /// Unlike `push()`, the current scene below the overlay continues to receive
+    /// Unlike `push()`, the current scene below the effect continues to receive
     /// `process` and `render` calls every frame.  Neither `pause()` nor `resume()`
     /// is called on the underlying scene.
     ///
-    /// On `pop()` the overlay flag for the removed scene is cleared.
+    /// On `pop()` the effect flag for the removed scene is cleared.
     ///
     /// # Parameters
     /// - `scene_id` â€” `SceneId`. The scene to push on top as an overlay.

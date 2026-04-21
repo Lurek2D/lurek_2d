@@ -1,6 +1,6 @@
 //! Universe — a self-contained ECS world. Entities are u32 IDs starting at 1.
 //!
-//! This module is part of Lurek2D's `entity` subsystem and provides the implementation
+//! This module is part of Lurek2D's `ecs` subsystem and provides the implementation
 //! details for universe-related operations and data management.
 //! Key types exported from this module: `Universe`.
 //! Primary functions: `new()`, `get_system_store()`, `spawn()`, `kill()`.
@@ -259,10 +259,10 @@ impl Universe {
         Ok(())
     }
 
-    /// Sets or clears the parent of `entity`. Pass `Some(parent_id)` to attach, `None` to detach.
+    /// Sets or clears the parent of `ecs`. Pass `Some(parent_id)` to attach, `None` to detach.
     ///
     /// # Parameters
-    /// - `entity` — `u32`.
+    /// - `ecs` — `u32`.
     /// - `parent` — `Option<u32>`.
     pub fn set_parent(&mut self, entity: u32, parent: Option<u32>) {
         let entity_slot = Self::unpack_slot(entity);
@@ -283,10 +283,10 @@ impl Universe {
         }
     }
 
-    /// Returns the parent of `entity`, or `None` if unparented.
+    /// Returns the parent of `ecs`, or `None` if unparented.
     ///
     /// # Parameters
-    /// - `entity` — `u32`.
+    /// - `ecs` — `u32`.
     ///
     /// # Returns
     /// `Option<u32>`.
@@ -298,10 +298,10 @@ impl Universe {
             .map(|parent_slot| Self::pack_id(parent_slot, self.current_gen(parent_slot)))
     }
 
-    /// Returns the direct children of `entity`. Returns an empty `Vec` if none.
+    /// Returns the direct children of `ecs`. Returns an empty `Vec` if none.
     ///
     /// # Parameters
-    /// - `entity` — `u32`.
+    /// - `ecs` — `u32`.
     ///
     /// # Returns
     /// `Vec<u32>`.
@@ -1079,7 +1079,7 @@ impl Universe {
     ///
     /// # Parameters
     /// - `lua` — `&Lua`.
-    /// - `system` — `Table`.
+    /// - `runtime` — `Table`.
     /// - `priority` — `i32`.
     ///
     /// # Returns
@@ -1108,7 +1108,7 @@ impl Universe {
     ///
     /// # Parameters
     /// - `lua` — `&Lua`.
-    /// - `system` — `Table`.
+    /// - `runtime` — `Table`.
     ///
     /// # Returns
     /// `LuaResult<()>`.

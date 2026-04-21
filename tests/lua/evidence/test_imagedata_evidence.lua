@@ -1,0 +1,572 @@
+-- Evidence test: ImageData pixel creation, manipulation, and PNG save
+-- Produces: imagedata_basic.png, imagedata_fill.png, imagedata_mapped.png,
+--           imagedata_cropped.png, imagedata_resized.png, imagedata_flipped.png,
+--           imagedata_rotated.png
+
+-- @description Covers suite: evidence: imagedata creation and manipulation.
+describe("evidence: imagedata creation and manipulation", function()
+    local OUT
+
+    before_each(function()
+        ensure_evidence_dir("image")
+        OUT = evidence_output_dir("image")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:setPixel
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Paints a handful of explicit pixels and saves the result to prove direct pixel writes persist into PNG output.
+    it("creates basic pixel-painted image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:setPixel(0,  0,  255, 0,   0,   255)
+        img:setPixel(1,  0,  0,   255, 0,   255)
+        img:setPixel(2,  0,  0,   0,   255, 255)
+        img:setPixel(15, 15, 128, 64,  32,  200)
+        local path = OUT .. "imagedata_basic.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Fills an image with one solid color and writes the result as basic fill evidence.
+    it("creates fill image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(100, 150, 200, 255)
+        local path = OUT .. "imagedata_fill.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:mapPixel
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a per-pixel inversion callback through mapPixel and writes the transformed image to disk.
+    it("creates mapPixel inverted image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(50, 100, 150, 255)
+        img:mapPixel(function(x, y, r, g, b, a)
+            return 255 - r, 255 - g, 255 - b, a
+        end)
+        local path = OUT .. "imagedata_mapped.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:crop
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Crops a sub-region from a solid image and saves the resulting child image as evidence.
+    it("creates cropped sub-image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(200, 100, 50, 255)
+        local sub = img:crop(4, 4, 6, 6)
+        local path = OUT .. "imagedata_cropped.png"
+        lurek.image.savePNG(sub, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:resizeNearest
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Upscales a tiny image with nearest-neighbor sampling and saves the enlarged result.
+    it("creates resized image", function()
+        local img = lurek.image.newImageData(4, 4)
+        img:fill(255, 0, 0, 255)
+        local big = img:resizeNearest(16, 16)
+        local path = OUT .. "imagedata_resized.png"
+        lurek.image.savePNG(big, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:setPixel
+    -- @covers ImageData:flipHorizontal
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Builds a two-color split image, flips it horizontally, and writes the mirrored result.
+    it("creates horizontally flipped image", function()
+        local img = lurek.image.newImageData(8, 8)
+        img:fill(0, 0, 0, 255)
+        -- left half red, right half blue
+        for y = 0, 7 do
+            for x = 0, 3 do img:setPixel(x, y, 255, 0, 0, 255) end
+            for x = 4, 7 do img:setPixel(x, y, 0, 0, 255, 255) end
+        end
+        img:flipHorizontal()
+        local path = OUT .. "imagedata_flipped.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:rotate90cw
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Rotates a non-square image clockwise and saves the rotated output.
+    it("creates rotated image", function()
+        local img = lurek.image.newImageData(4, 8)
+        img:fill(255, 128, 0, 255)
+        local rotated = img:rotate90cw()
+        local path = OUT .. "imagedata_rotated.png"
+        lurek.image.savePNG(rotated, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+-- ================================================================
+-- Merged from: test_imagedata_effects_evidence.lua
+-- ================================================================
+
+-- Evidence test: ImageData filter/effect methods produce PNG evidence
+-- Produces: effect_grayscale.png, effect_inverted.png, effect_sepia.png,
+--           effect_bright.png, effect_threshold.png, effect_blur.png,
+--           effect_sharpen.png, effect_noise.png, effect_posterize.png, effect_tint.png
+-- @evidence file
+-- @covers ImageData:grayscale
+-- @covers ImageData:invert
+-- @covers ImageData:sepia
+-- @covers ImageData:brightness
+-- @covers ImageData:threshold
+-- @covers ImageData:posterize
+-- @covers ImageData:tint
+-- @covers ImageData:noise
+-- @covers ImageData:blur
+-- @covers ImageData:sharpen
+
+local function solid(w, h, r, g, b, a)
+    local img = lurek.image.newImageData(w, h)
+    img:fill(r, g, b, a)
+    return img
+end
+
+-- @description Covers suite: evidence: imagedata effect filters.
+describe("evidence: imagedata effect filters", function()
+    local OUT
+
+    before_each(function()
+        ensure_evidence_dir("image")
+        OUT = evidence_output_dir("image")
+    end)
+
+    -- @covers ImageData:grayscale
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies grayscale to a solid-color image and saves the result as filter evidence.
+    it("creates grayscale effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        img:grayscale()
+        local path = OUT .. "effect_grayscale.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:invert
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies inversion to a solid-color image and writes the transformed output.
+    it("creates inverted effect PNG", function()
+        local img = solid(32, 32, 100, 150, 200, 255)
+        img:invert()
+        local path = OUT .. "effect_inverted.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:sepia
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies sepia toning to a neutral image and saves the result.
+    it("creates sepia effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:sepia()
+        local path = OUT .. "effect_sepia.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:brightness
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Increases brightness on a solid image and saves the brighter variant.
+    it("creates brightness effect PNG", function()
+        local img = solid(32, 32, 100, 100, 100, 255)
+        img:brightness(1.5)
+        local path = OUT .. "effect_bright.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:threshold
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a binary threshold to a solid image and writes the thresholded result.
+    it("creates threshold effect PNG", function()
+        local img = solid(32, 32, 179, 134, 89, 255)
+        img:threshold(128)
+        local path = OUT .. "effect_threshold.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:posterize
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Posterizes a solid image to four levels and saves the reduced-color result.
+    it("creates posterize effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:posterize(4)
+        local path = OUT .. "effect_posterize.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:tint
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a semi-transparent red tint to a solid image and saves the tinted output.
+    it("creates tint effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:tint(255, 0, 0, 0.5)
+        local path = OUT .. "effect_tint.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:noise
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Injects random noise into a solid image and saves the noisy result.
+    it("creates noise effect PNG", function()
+        local img = solid(32, 32, 128, 128, 128, 255)
+        img:noise(30)
+        local path = OUT .. "effect_noise.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:blur
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies blur to a solid image and saves the returned blurred image.
+    it("creates blur effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        local blurred = img:blur(2)
+        local path = OUT .. "effect_blur.png"
+        lurek.image.savePNG(blurred, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:sharpen
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies sharpening to a solid image and saves the returned sharpened image.
+    it("creates sharpen effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        local sharpened = img:sharpen()
+        local path = OUT .. "effect_sharpen.png"
+        lurek.image.savePNG(sharpened, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+-- ================================================================
+-- Merged from: test_evidence_imagedata.lua
+-- ================================================================
+
+-- Evidence test: ImageData pixel creation, manipulation, and PNG save
+-- Produces: imagedata_basic.png, imagedata_fill.png, imagedata_mapped.png,
+--           imagedata_cropped.png, imagedata_resized.png, imagedata_flipped.png,
+--           imagedata_rotated.png
+
+-- @description Covers suite: evidence: imagedata creation and manipulation.
+describe("evidence: imagedata creation and manipulation", function()
+    local OUT
+
+    before_each(function()
+        ensure_evidence_dir("image")
+        OUT = evidence_output_dir("image")
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:setPixel
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Paints a handful of explicit pixels and saves the result to prove direct pixel writes persist into PNG output.
+    it("creates basic pixel-painted image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:setPixel(0,  0,  255, 0,   0,   255)
+        img:setPixel(1,  0,  0,   255, 0,   255)
+        img:setPixel(2,  0,  0,   0,   255, 255)
+        img:setPixel(15, 15, 128, 64,  32,  200)
+        local path = OUT .. "imagedata_basic.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Fills an image with one solid color and writes the result as basic fill evidence.
+    it("creates fill image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(100, 150, 200, 255)
+        local path = OUT .. "imagedata_fill.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:mapPixel
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a per-pixel inversion callback through mapPixel and writes the transformed image to disk.
+    it("creates mapPixel inverted image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(50, 100, 150, 255)
+        img:mapPixel(function(x, y, r, g, b, a)
+            return 255 - r, 255 - g, 255 - b, a
+        end)
+        local path = OUT .. "imagedata_mapped.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:crop
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Crops a sub-region from a solid image and saves the resulting child image as evidence.
+    it("creates cropped sub-image", function()
+        local img = lurek.image.newImageData(16, 16)
+        img:fill(200, 100, 50, 255)
+        local sub = img:crop(4, 4, 6, 6)
+        local path = OUT .. "imagedata_cropped.png"
+        lurek.image.savePNG(sub, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:resizeNearest
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Upscales a tiny image with nearest-neighbor sampling and saves the enlarged result.
+    it("creates resized image", function()
+        local img = lurek.image.newImageData(4, 4)
+        img:fill(255, 0, 0, 255)
+        local big = img:resizeNearest(16, 16)
+        local path = OUT .. "imagedata_resized.png"
+        lurek.image.savePNG(big, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:setPixel
+    -- @covers ImageData:flipHorizontal
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Builds a two-color split image, flips it horizontally, and writes the mirrored result.
+    it("creates horizontally flipped image", function()
+        local img = lurek.image.newImageData(8, 8)
+        img:fill(0, 0, 0, 255)
+        -- left half red, right half blue
+        for y = 0, 7 do
+            for x = 0, 3 do img:setPixel(x, y, 255, 0, 0, 255) end
+            for x = 4, 7 do img:setPixel(x, y, 0, 0, 255, 255) end
+        end
+        img:flipHorizontal()
+        local path = OUT .. "imagedata_flipped.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers lurek.image.newImageData
+    -- @covers ImageData:fill
+    -- @covers ImageData:rotate90cw
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Rotates a non-square image clockwise and saves the rotated output.
+    it("creates rotated image", function()
+        local img = lurek.image.newImageData(4, 8)
+        img:fill(255, 128, 0, 255)
+        local rotated = img:rotate90cw()
+        local path = OUT .. "imagedata_rotated.png"
+        lurek.image.savePNG(rotated, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+-- ================================================================
+-- Merged from: test_evidence_imagedata_effects.lua
+-- ================================================================
+
+-- Evidence test: ImageData filter/effect methods produce PNG evidence
+-- Produces: effect_grayscale.png, effect_inverted.png, effect_sepia.png,
+--           effect_bright.png, effect_threshold.png, effect_blur.png,
+--           effect_sharpen.png, effect_noise.png, effect_posterize.png, effect_tint.png
+-- @evidence file
+-- @covers ImageData:grayscale
+-- @covers ImageData:invert
+-- @covers ImageData:sepia
+-- @covers ImageData:brightness
+-- @covers ImageData:threshold
+-- @covers ImageData:posterize
+-- @covers ImageData:tint
+-- @covers ImageData:noise
+-- @covers ImageData:blur
+-- @covers ImageData:sharpen
+
+local function solid(w, h, r, g, b, a)
+    local img = lurek.image.newImageData(w, h)
+    img:fill(r, g, b, a)
+    return img
+end
+
+-- @description Covers suite: evidence: imagedata effect filters.
+describe("evidence: imagedata effect filters", function()
+    local OUT
+
+    before_each(function()
+        ensure_evidence_dir("image")
+        OUT = evidence_output_dir("image")
+    end)
+
+    -- @covers ImageData:grayscale
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies grayscale to a solid-color image and saves the result as filter evidence.
+    it("creates grayscale effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        img:grayscale()
+        local path = OUT .. "effect_grayscale.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:invert
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies inversion to a solid-color image and writes the transformed output.
+    it("creates inverted effect PNG", function()
+        local img = solid(32, 32, 100, 150, 200, 255)
+        img:invert()
+        local path = OUT .. "effect_inverted.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:sepia
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies sepia toning to a neutral image and saves the result.
+    it("creates sepia effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:sepia()
+        local path = OUT .. "effect_sepia.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:brightness
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Increases brightness on a solid image and saves the brighter variant.
+    it("creates brightness effect PNG", function()
+        local img = solid(32, 32, 100, 100, 100, 255)
+        img:brightness(1.5)
+        local path = OUT .. "effect_bright.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:threshold
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a binary threshold to a solid image and writes the thresholded result.
+    it("creates threshold effect PNG", function()
+        local img = solid(32, 32, 179, 134, 89, 255)
+        img:threshold(128)
+        local path = OUT .. "effect_threshold.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:posterize
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Posterizes a solid image to four levels and saves the reduced-color result.
+    it("creates posterize effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:posterize(4)
+        local path = OUT .. "effect_posterize.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:tint
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies a semi-transparent red tint to a solid image and saves the tinted output.
+    it("creates tint effect PNG", function()
+        local img = solid(32, 32, 200, 200, 200, 255)
+        img:tint(255, 0, 0, 0.5)
+        local path = OUT .. "effect_tint.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:noise
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Injects random noise into a solid image and saves the noisy result.
+    it("creates noise effect PNG", function()
+        local img = solid(32, 32, 128, 128, 128, 255)
+        img:noise(30)
+        local path = OUT .. "effect_noise.png"
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:blur
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies blur to a solid image and saves the returned blurred image.
+    it("creates blur effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        local blurred = img:blur(2)
+        local path = OUT .. "effect_blur.png"
+        lurek.image.savePNG(blurred, path)
+        expect_evidence_created(path)
+    end)
+
+    -- @covers ImageData:sharpen
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Applies sharpening to a solid image and saves the returned sharpened image.
+    it("creates sharpen effect PNG", function()
+        local img = solid(32, 32, 200, 100, 50, 255)
+        local sharpened = img:sharpen()
+        local path = OUT .. "effect_sharpen.png"
+        lurek.image.savePNG(sharpened, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+test_summary()

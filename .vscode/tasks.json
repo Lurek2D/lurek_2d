@@ -323,28 +323,28 @@
             "label": "Run (Installed): Hello World",
             "detail": "🌙 Run content/demos/hello_world with the installed lurek2d binary (no recompile). Run 'Install: Local (Windows)' first.",
             "type": "shell",
-            "command": "luna content/demos/hello_world",
+            "command": "lurek content/demos/hello_world",
             "problemMatcher": []
         },
         {
             "label": "Run (Installed): Physics Demo",
             "detail": "🌙 Run content/demos/physics_demo with the installed lurek2d binary (no recompile).",
             "type": "shell",
-            "command": "luna content/demos/physics_demo",
+            "command": "lurek content/demos/physics_demo",
             "problemMatcher": []
         },
         {
             "label": "Run (Installed): Sprites",
             "detail": "🌙 Run content/demos/sprites with the installed lurek2d binary (no recompile).",
             "type": "shell",
-            "command": "luna content/demos/sprites",
+            "command": "lurek content/demos/sprites",
             "problemMatcher": []
         },
         {
             "label": "Run (Installed): Splash Screen",
             "detail": "🌙 Launch the installed lurek2d binary with no game argument — displays the Lurek2D splash screen.",
             "type": "shell",
-            "command": "luna",
+            "command": "lurek",
             "problemMatcher": []
         },
         {

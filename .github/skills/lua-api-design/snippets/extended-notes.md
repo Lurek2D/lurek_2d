@@ -55,7 +55,7 @@ Clean up: `lua.remove_registry_value(key)?` in a `cancel`/`destroy` method.
 
 > See [examples/6-register-section.rs](examples/6-register-section.rs) for the example.
 
-- Signature is FIXED: `(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>`
+- Signature is FIXED: `(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()>`
 - Table variable is ALWAYS named `tbl`.
 - Last two lines: `lurek.set("<module>", tbl)?;` then `Ok(())`.
 

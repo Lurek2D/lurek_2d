@@ -76,7 +76,7 @@ _STRUCT_RE = re.compile(r"^\s*pub\s+struct\s+(Lua\w+)")
 _IMPL_RE = re.compile(r"^\s*impl(?:<[^>]+>)?\s+LuaUserData\s+for\s+(Lua\w+)")
 
 # //! `lurek.timer` — description   (module header)
-_MOD_HEADER_RE = re.compile(r"^//!\s*`luna\.(\w+)`\s*[-\u2013\u2014]\s*(.+)", re.UNICODE)
+_MOD_HEADER_RE = re.compile(r"^//!\s*`lurek\.(\w+)`\s*[-\u2013\u2014]\s*(.+)", re.UNICODE)
 
 # /// @param name : type
 _PARAM_RE = re.compile(r"@param\s+(\w+)\s*:\s*(\S+)")

@@ -18,7 +18,7 @@ c = Path("docs/API/coverage_gaps.md").read_text(encoding="utf-8")
 mods = Counter()
 for line in c.splitlines():
     line = line.strip()
-    m = re.match(r"\| (luna\.\w+)\.\w+", line)
+    m = re.match(r"\| (lurek\.\w+)\.\w+", line)
     if m:
         mods[m.group(1)] += 1
 

@@ -424,7 +424,7 @@ For API reference code (not runnable games), see [`content/examples/`](../conten
 ```bash
 cargo run -- content/demos/<category>/<name>          # debug build
 cargo run --release -- content/demos/<category>/<name>  # release build
-luna content/demos/<category>/<name>                  # installed binary
+lurek content/demos/<category>/<name>                  # installed binary
 ```
 
 ---

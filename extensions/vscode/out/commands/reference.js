@@ -42,7 +42,7 @@ const vscode = __importStar(require("vscode"));
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 /**
- * Browse the API via quick-pick. Shows known luna.* functions from
+ * Browse the API via quick-pick. Shows known lurek.* functions from
  * the generated API reference if available.
  */
 async function browseApi() {
@@ -101,12 +101,12 @@ async function openApiDocs() {
     await vscode.window.showTextDocument(doc);
 }
 /**
- * Opens API docs for the luna.* symbol under the cursor, or browses
+ * Opens API docs for the lurek.* symbol under the cursor, or browses
  * the full reference if no symbol is found.
  */
 async function openWiki() {
     const editor = vscode.window.activeTextEditor;
-    const wordRange = editor?.document.getWordRangeAtPosition(editor.selection.active, /luna\.[a-zA-Z0-9_.]+/);
+    const wordRange = editor?.document.getWordRangeAtPosition(editor.selection.active, /lurek\.[a-zA-Z0-9_.]+/);
     const symbol = wordRange ? editor.document.getText(wordRange) : undefined;
     const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (!root) {
@@ -121,7 +121,7 @@ async function openWiki() {
         const lines = content.split("\n");
         if (symbol) {
             // Find the line with the symbol heading
-            const bare = symbol.replace(/^luna\./, "");
+            const bare = symbol.replace(/^lurek\./, "");
             const lineIndex = lines.findIndex((l) => l.startsWith("##") && (l.includes(symbol) || l.includes(bare)));
             const doc = await vscode.workspace.openTextDocument(docPath);
             const editorDoc = await vscode.window.showTextDocument(doc);
@@ -149,7 +149,7 @@ async function openWiki() {
  */
 function depGraph(context) {
     const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    const panel = vscode.window.createWebviewPanel("luna.depGraph", "Luna2D Module Dependency Graph", vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
+    const panel = vscode.window.createWebviewPanel("lurek.depGraph", "Luna2D Module Dependency Graph", vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
     const nodes = [];
     const edges = [];
     const tiers = {

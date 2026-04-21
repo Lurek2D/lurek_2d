@@ -75,4 +75,5 @@ describe("audio + timer integration", function()
         lurek.audio.setMasterVolume(1.0)
     end)
 end)
+
 test_summary()

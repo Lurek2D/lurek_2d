@@ -134,4 +134,5 @@ describe("integration: data encoding pipeline", function()
         expect_equal(64, #hash1, "SHA-256 produces 64 hex chars")
     end)
 end)
+
 test_summary()

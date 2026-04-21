@@ -1,4 +1,4 @@
--- content/examples/physics_collision.lua
+-- content/examples/physics_physics.lua
 -- Lurek2D lurek.physics API Reference
 -- Run with: cargo run -- content/examples/collision
 

@@ -66,23 +66,15 @@ fn neighbours(grid: &NavGrid, x: u32, y: u32, unit_size: u32) -> Vec<(u32, u32)>
     let mode = grid.get_diagonal_mode();
     let mut result = Vec::with_capacity(8);
 
-    let can_up = y > 0 && grid.is_walkable(x, y - 1, unit_size);
-    let can_down = y + unit_size < h && grid.is_walkable(x, y + 1, unit_size);
-    let can_left = x > 0 && grid.is_walkable(x - 1, y, unit_size);
+    let can_up    = y > 0 && grid.is_walkable(x, y - 1, unit_size);
+    let can_down  = y + unit_size < h && grid.is_walkable(x, y + 1, unit_size);
+    let can_left  = x > 0 && grid.is_walkable(x - 1, y, unit_size);
     let can_right = x + unit_size < w && grid.is_walkable(x + 1, y, unit_size);
 
-    if can_up {
-        result.push((x, y - 1));
-    }
-    if can_down {
-        result.push((x, y + 1));
-    }
-    if can_left {
-        result.push((x - 1, y));
-    }
-    if can_right {
-        result.push((x + 1, y));
-    }
+    if can_up    { result.push((x, y - 1)); }
+    if can_down  { result.push((x, y + 1)); }
+    if can_left  { result.push((x - 1, y)); }
+    if can_right { result.push((x + 1, y)); }
 
     match mode {
         DiagonalMode::None => {}
@@ -191,10 +183,7 @@ pub fn bidirectional_astar(
             warn,
             BI01,
             "({},{}) -> ({},{})",
-            start.0,
-            start.1,
-            goal.0,
-            goal.1
+            start.0, start.1, goal.0, goal.1
         );
         return (None, false);
     }
@@ -206,20 +195,20 @@ pub fn bidirectional_astar(
 
     let allows_diag = grid.get_diagonal_mode() != DiagonalMode::None;
     let start_idx = (start.1 * w + start.0) as usize;
-    let goal_idx = (goal.1 * w + goal.0) as usize;
+    let goal_idx  = (goal.1  * w + goal.0)  as usize;
 
     // ── Forward search state (start → goal) ───────────────────────────────
-    let mut fwd_g = vec![f32::INFINITY; size];
-    let mut fwd_came = vec![u32::MAX; size];
+    let mut fwd_g      = vec![f32::INFINITY; size];
+    let mut fwd_came   = vec![u32::MAX; size];
     let mut fwd_closed = vec![false; size];
 
     // ── Backward search state (goal → start) ──────────────────────────────
-    let mut bwd_g = vec![f32::INFINITY; size];
-    let mut bwd_came = vec![u32::MAX; size];
+    let mut bwd_g      = vec![f32::INFINITY; size];
+    let mut bwd_came   = vec![u32::MAX; size];
     let mut bwd_closed = vec![false; size];
 
     fwd_g[start_idx] = 0.0;
-    bwd_g[goal_idx] = 0.0;
+    bwd_g[goal_idx]  = 0.0;
 
     let mut fwd_open: BinaryHeap<BNode> = BinaryHeap::new();
     let mut bwd_open: BinaryHeap<BNode> = BinaryHeap::new();
@@ -251,14 +240,9 @@ pub fn bidirectional_astar(
 
         if expand_fwd {
             // ── Expand one forward node ────────────────────────────────────
-            let cur = match fwd_open.pop() {
-                Some(n) => n,
-                None => break,
-            };
+            let cur = match fwd_open.pop() { Some(n) => n, None => break };
             let cur_idx = (cur.y * w + cur.x) as usize;
-            if fwd_closed[cur_idx] {
-                continue;
-            }
+            if fwd_closed[cur_idx] { continue; }
             fwd_closed[cur_idx] = true;
             expanded += 1;
 
@@ -283,9 +267,7 @@ pub fn bidirectional_astar(
 
             for (nx, ny) in neighbours(grid, cur.x, cur.y, us) {
                 let n_idx = (ny * w + nx) as usize;
-                if fwd_closed[n_idx] {
-                    continue;
-                }
+                if fwd_closed[n_idx] { continue; }
                 let is_diag = nx != cur.x && ny != cur.y;
                 let step = (if is_diag { SQRT2 } else { 1.0 }) * grid.get_cost(nx, ny) as f32;
                 let tg = cur.g + step;
@@ -302,14 +284,9 @@ pub fn bidirectional_astar(
             }
         } else {
             // ── Expand one backward node ───────────────────────────────────
-            let cur = match bwd_open.pop() {
-                Some(n) => n,
-                None => break,
-            };
+            let cur = match bwd_open.pop() { Some(n) => n, None => break };
             let cur_idx = (cur.y * w + cur.x) as usize;
-            if bwd_closed[cur_idx] {
-                continue;
-            }
+            if bwd_closed[cur_idx] { continue; }
             bwd_closed[cur_idx] = true;
             expanded += 1;
 
@@ -332,9 +309,7 @@ pub fn bidirectional_astar(
 
             for (nx, ny) in neighbours(grid, cur.x, cur.y, us) {
                 let n_idx = (ny * w + nx) as usize;
-                if bwd_closed[n_idx] {
-                    continue;
-                }
+                if bwd_closed[n_idx] { continue; }
                 let is_diag = nx != cur.x && ny != cur.y;
                 let step = (if is_diag { SQRT2 } else { 1.0 }) * grid.get_cost(nx, ny) as f32;
                 let tg = cur.g + step;
@@ -353,4 +328,44 @@ pub fn bidirectional_astar(
     }
 
     (None, false)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pathfind::nav_grid::NavGrid;
+
+    #[test]
+    fn same_cell_returns_trivial_path() {
+        let g = NavGrid::new(5, 5);
+        let (p, _) = bidirectional_astar(&g, (2, 2), (2, 2), 1, 10000);
+        assert!(p.is_some());
+    }
+
+    #[test]
+    fn straight_line_path() {
+        let g = NavGrid::new(10, 1);
+        let (p, _) = bidirectional_astar(&g, (0, 0), (9, 0), 1, 10000);
+        assert!(p.is_some());
+        let path = p.unwrap();
+        assert_eq!(*path.first().unwrap(), (0, 0));
+        assert_eq!(*path.last().unwrap(), (9, 0));
+    }
+
+    #[test]
+    fn wall_blocks_path() {
+        let mut g = NavGrid::new(5, 5);
+        for y in 0..5 { g.set_blocked(2, y, true); }
+        let (p, _) = bidirectional_astar(&g, (0, 2), (4, 2), 1, 10000);
+        assert!(p.is_none());
+    }
+
+    #[test]
+    fn iteration_limit_triggers_flag() {
+        let g = NavGrid::new(50, 50);
+        // Second bool is true only when the meeting point is found (complete path).
+        // With only 5 expansions on a 50×50 grid, the search cannot complete.
+        let (_, is_complete) = bidirectional_astar(&g, (0, 0), (49, 49), 1, 5);
+        assert!(!is_complete);
+    }
 }

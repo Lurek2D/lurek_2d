@@ -39,7 +39,7 @@ const LUA_SELECTOR = { scheme: 'file', language: 'lua' };
 /** Color-related function names to detect. */
 const COLOR_FUNCTIONS = ['setColor', 'setBackgroundColor', 'clear', 'newColor'];
 /**
- * Registers the color provider for luna.graphics color calls.
+ * Registers the color provider for lurek.graphics color calls.
  * Detects 0-1 range RGBA values and shows the VS Code color picker.
  */
 function register(context, apiData) {
@@ -64,7 +64,7 @@ function register(context, apiData) {
     context.subscriptions.push(provider);
 }
 /** Build regex pattern for all color functions. */
-const COLOR_CALL_PATTERN = new RegExp(`luna\\.graphics\\.(?:${COLOR_FUNCTIONS.join('|')})` +
+const COLOR_CALL_PATTERN = new RegExp(`lurek\\.graphics\\.(?:${COLOR_FUNCTIONS.join('|')})` +
     `\\s*\\(\\s*([\\d.]+)\\s*,\\s*([\\d.]+)\\s*,\\s*([\\d.]+)(?:\\s*,\\s*([\\d.]+))?\\s*\\)`, 'g');
 function detectColors(document) {
     const colors = [];

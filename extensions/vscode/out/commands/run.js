@@ -51,7 +51,7 @@ async function runGame(lunaProcess) {
     }
     // Determine game directory
     const srcDir = vscode.workspace
-        .getConfiguration("luna")
+        .getConfiguration("lurek")
         .get("srcDir", "");
     const gameDir = srcDir ? path.join(root, srcDir) : root;
     try {
@@ -90,7 +90,7 @@ async function runWithArgs(lunaProcess) {
         return;
     }
     const srcDir = vscode.workspace
-        .getConfiguration("luna")
+        .getConfiguration("lurek")
         .get("srcDir", "");
     const gameDir = srcDir ? path.join(root, srcDir) : root;
     try {

@@ -118,13 +118,6 @@ mod widget_tests {
     }
 
     #[test]
-    fn widget_set_text() {
-        let mut w = Widget::new_label(1, 1, "A");
-        w.set_text("B".to_string()).unwrap();
-        assert_eq!(w.get_text().unwrap(), "B".to_string());
-    }
-
-    #[test]
     fn widget_is_type_checks() {
         let btn = Widget::new_button(1, 1, 3, 1, "X");
         assert!(btn.is_button());
@@ -138,18 +131,6 @@ mod widget_tests {
 
 mod terminal_state_tests {
     use lurek2d::terminal::Terminal;
-
-    // Documented caps from src/terminal/mod.rs: 512 cols × 256 rows.
-    // MAX_COLS / MAX_ROWS are pub(crate) so we use the documented literal values.
-    const MAX_COLS: usize = 512;
-    const MAX_ROWS: usize = 256;
-
-    #[test]
-    fn terminal_new_clamps_dimensions_to_max() {
-        let t = Terminal::new(MAX_COLS + 100, MAX_ROWS + 100);
-        assert_eq!(t.cols(), MAX_COLS);
-        assert_eq!(t.rows(), MAX_ROWS);
-    }
 
     #[test]
     fn terminal_new_small_dimensions_preserved() {

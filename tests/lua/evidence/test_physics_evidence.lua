@@ -1,0 +1,564 @@
+-- Evidence test: physics simulation â€” body positions after stepping
+-- Produces: physics_sim.png showing colored dots at body positions
+
+-- @description Covers suite: evidence: physics simulation.
+describe("evidence: physics simulation", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers World:newBody
+    -- @covers lurek.physics.newRectangleShape
+    -- @covers lurek.physics.newCircleShape
+    -- @covers lurek.physics.attachShape
+    -- @covers World:step
+    -- @covers Body:getPosition
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Simulates a small physics scene for one second and saves a PNG showing the final body positions.
+    it("simulates bodies and writes position evidence image", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "physics_sim.png"
+
+        local world = lurek.physics.newWorld(0, 50)
+
+        -- ground (static)
+        local ground = world:newBody(128, 200, "static")
+        local rect = lurek.physics.newRectangleShape(200, 20)
+        lurek.physics.attachShape(ground, rect)
+
+        -- circle (dynamic â€” should fall under gravity)
+        local ball = world:newBody(100, 20, "dynamic")
+        local circle = lurek.physics.newCircleShape(10)
+        circle:setRestitution(0.5)
+        lurek.physics.attachShape(ball, circle)
+
+        -- box (dynamic)
+        local box = world:newBody(160, 20, "dynamic")
+        local box_shape = lurek.physics.newRectangleShape(16, 16)
+        box_shape:setRestitution(0.2)
+        lurek.physics.attachShape(box, box_shape)
+
+        -- run physics for 60 steps at 1/60 s each (1 second of sim)
+        for i = 1, 60 do
+            world:step(1/60)
+        end
+
+        -- paint evidence image from body positions
+        local img = lurek.image.newImageData(256, 256)
+        img:fill(20, 20, 40, 255)
+
+        -- ground â€” white bar
+        for px = 28, 228 do
+            for py = 190, 210 do
+                img:setPixel(px, py, 200, 200, 200, 255)
+            end
+        end
+
+        -- ball position (yellow dot)
+        local bx, by = ball:getPosition()
+        bx = math.floor(bx); by = math.floor(by)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx + dx; local py = by + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 255, 220, 0, 255)
+                end
+            end
+        end
+
+        -- box position (cyan dot)
+        local bx2, by2 = box:getPosition()
+        bx2 = math.floor(bx2); by2 = math.floor(by2)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx2 + dx; local py = by2 + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 0, 220, 255, 255)
+                end
+            end
+        end
+
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_physics_debug_gpu_evidence.lua
+-- ================================================================
+
+-- test_evidence_physics_debug_render.lua
+-- Evidence test: lurek.physics.drawDebugGpu queues a GPU physics debug render command.
+
+-- @description Covers suite: Evidence: lurek.physics.drawDebugGpu.
+describe("Evidence: lurek.physics.drawDebugGpu", function()
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        local ok, err = pcall(function()
+            lurek.physics.drawDebugGpu(world)
+        end)
+        expect_equal(ok, true)
+    end)
+
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_physics_ext_evidence.lua
+-- ================================================================
+
+-- Evidence test for Lurek2D physics extension APIs
+-- Proves the extension API works by writing a report to file.
+-- Follows the evidence test contract: all output is produced by
+-- calling the domain-module API, not by hand-drawing.
+
+local out = {}
+local function log(s) out[#out+1] = s end
+
+-- ── Create world ──────────────────────────────────────────────────────────
+local world = lurek.physics.newWorld(0, 9.81)
+
+-- ── Solver iterations ─────────────────────────────────────────────────────
+log("solver_iterations_default=" .. tostring(world:getSolverIterations()))
+world:setSolverIterations(8)
+log("solver_iterations_after_set=" .. tostring(world:getSolverIterations()))
+world:setSolverIterations(0)
+log("solver_iterations_clamped=" .. tostring(world:getSolverIterations()))
+
+-- ── One-way platform ──────────────────────────────────────────────────────
+local platform = lurek.physics.newBody(world, 200, 400, "static")
+world:setBodyOneWay(platform, 0, -1)
+local nx, ny = world:getBodyOneWay(platform)
+log("one_way_nx=" .. tostring(nx) .. " one_way_ny=" .. tostring(ny))
+world:clearBodyOneWay(platform)
+local nx2, ny2 = world:getBodyOneWay(platform)
+log("one_way_cleared=" .. tostring(nx2) .. "," .. tostring(ny2))
+
+-- ── Body sleeping ─────────────────────────────────────────────────────────
+local dyn = lurek.physics.newBody(world, 0, 0, "dynamic")
+world:sleepBody(dyn)
+log("after_sleep=" .. tostring(world:isBodySleeping(dyn)))
+world:wakeUpBody(dyn)
+log("after_wake=" .. tostring(world:isBodySleeping(dyn)))
+
+-- ── CCD ───────────────────────────────────────────────────────────────────
+local bullet = lurek.physics.newBody(world, 500, 0, "dynamic")
+world:setBodyCCD(bullet, true)
+log("ccd_enabled=" .. tostring(world:getBodyCCD(bullet)))
+world:setBodyCCD(bullet, false)
+log("ccd_disabled=" .. tostring(world:getBodyCCD(bullet)))
+
+-- ── Breakable joints ──────────────────────────────────────────────────────
+local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
+local b2 = lurek.physics.newBody(world, 60, 0, "dynamic")
+local jid = lurek.physics.newJoint(world, b1, b2, "distance")
+world:setJointBreakForce(jid, 50.0)
+log("joint_break_force=" .. tostring(world:getJointBreakForce(jid)))
+
+-- ── Contact callbacks registered ─────────────────────────────────────────
+local begin_fired = 0
+local end_fired   = 0
+world:setBeginContact(function(a, b) begin_fired = begin_fired + 1 end)
+world:setEndContact  (function(a, b) end_fired   = end_fired   + 1 end)
+world:step(1/60)
+log("callbacks_registered=true")
+world:clearBeginContact()
+world:clearEndContact()
+log("callbacks_cleared=true")
+
+-- ── Batch body creation ───────────────────────────────────────────────────
+local ids = world:newBodies({
+    {0, 100, "dynamic"},
+    {100, 100, "static"},
+    {200, 100, "kinematic"},
+})
+log("batch_count=" .. tostring(#ids))
+for i, id in ipairs(ids) do
+    log("batch_id[" .. i .. "]=" .. type(id))
+end
+
+-- ── Body sleeping via userdata ─────────────────────────────────────────────
+local body_u = lurek.physics.newBody(world, 999, 999, "dynamic")
+body_u:sleep()
+log("body_userdata_sleep=" .. tostring(body_u:isSleeping()))
+body_u:wakeUp()
+log("body_userdata_wake=" .. tostring(body_u:isSleeping()))
+
+-- ── Write evidence file ───────────────────────────────────────────────────
+local path = "tests/lua/evidence/physics_ext_report.txt"
+local f, err = io.open(path, "w")
+if f then
+    f:write(table.concat(out, "\n") .. "\n")
+    f:close()
+    print("[evidence] Written: " .. path)
+else
+    print("[evidence] WARN: could not write " .. path .. ": " .. tostring(err))
+    -- Print to stdout so the test still passes in read-only environments.
+    print(table.concat(out, "\n"))
+end
+
+-- ── Minimal BDD assertions ────────────────────────────────────────────────
+describe("lurek.physics extension evidence", function()
+end)
+
+
+
+
+-- ================================================================
+-- Merged from: test_physics_zone_debug_evidence.lua
+-- ================================================================
+
+-- Evidence test: physics zone event tracking
+-- Produces: zone_events.txt proving that zone enter/leave events are emitted.
+-- If this module's code was deleted, the output file would contain no events.
+
+-- @description Covers suite: evidence: physics zone event tracking.
+describe("evidence: physics zone event tracking", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers World:addZone
+    -- @covers LuaZone:setGravityZero
+    -- @covers World:step
+    -- @covers World:getZoneEvents
+    -- @evidence file
+    -- @description Creates a world with a zero-g zone, drops a rigid body into it,
+    --              steps the simulation, and writes all zone events to a text
+    --              file that proves the event system works.
+    it("zone events are recorded and written to evidence file", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "zone_events.txt"
+
+        local world = lurek.physics.newWorld(0, 0)  -- no gravity
+        local zone = world:addZone(-500, -500, 1000, 1000)
+        zone:setGravityZero()
+
+        -- Add a body inside the zone.
+        world:newBody(0, 0, 10, 10, "dynamic")
+
+        -- Step to trigger enter events.
+        world:step(1/60)
+        local events = world:getZoneEvents()
+
+        -- Write evidence.
+        local lines = {}
+        table.insert(lines, string.format("steps: 1  event_count: %d", #events))
+        for i, ev in ipairs(events) do
+            table.insert(lines, string.format(
+                "event[%d]: zone_id=%d  body_id=%d  kind=%s",
+                i, ev.zone_id, ev.body_id, ev.kind
+            ))
+        end
+
+        -- Step more and collect leave events (destroy zone).
+        zone:destroy()
+        world:step(1/60)
+        local events2 = world:getZoneEvents()
+        table.insert(lines, string.format("after_destroy_event_count: %d", #events2))
+
+        -- Write to evidence file.
+        local content = table.concat(lines, "\n") .. "\n"
+        local f = io.open(path, "w")
+        expect_true(f ~= nil, "could not open evidence file for writing")
+        f:write(content)
+        f:close()
+
+        -- Verify at least one enter event was produced.
+        expect_true(#events >= 1, "expected at least one zone enter event")
+        expect_evidence_created(path)
+    end)
+end)
+
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_physics.lua
+-- ================================================================
+
+-- Evidence test: physics simulation â€” body positions after stepping
+-- Produces: physics_sim.png showing colored dots at body positions
+
+-- @description Covers suite: evidence: physics simulation.
+describe("evidence: physics simulation", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers World:newBody
+    -- @covers lurek.physics.newRectangleShape
+    -- @covers lurek.physics.newCircleShape
+    -- @covers lurek.physics.attachShape
+    -- @covers World:step
+    -- @covers Body:getPosition
+    -- @covers lurek.image.savePNG
+    -- @evidence file
+    -- @description Simulates a small physics scene for one second and saves a PNG showing the final body positions.
+    it("simulates bodies and writes position evidence image", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "physics_sim.png"
+
+        local world = lurek.physics.newWorld(0, 50)
+
+        -- ground (static)
+        local ground = world:newBody(128, 200, "static")
+        local rect = lurek.physics.newRectangleShape(200, 20)
+        lurek.physics.attachShape(ground, rect)
+
+        -- circle (dynamic â€” should fall under gravity)
+        local ball = world:newBody(100, 20, "dynamic")
+        local circle = lurek.physics.newCircleShape(10)
+        circle:setRestitution(0.5)
+        lurek.physics.attachShape(ball, circle)
+
+        -- box (dynamic)
+        local box = world:newBody(160, 20, "dynamic")
+        local box_shape = lurek.physics.newRectangleShape(16, 16)
+        box_shape:setRestitution(0.2)
+        lurek.physics.attachShape(box, box_shape)
+
+        -- run physics for 60 steps at 1/60 s each (1 second of sim)
+        for i = 1, 60 do
+            world:step(1/60)
+        end
+
+        -- paint evidence image from body positions
+        local img = lurek.image.newImageData(256, 256)
+        img:fill(20, 20, 40, 255)
+
+        -- ground â€” white bar
+        for px = 28, 228 do
+            for py = 190, 210 do
+                img:setPixel(px, py, 200, 200, 200, 255)
+            end
+        end
+
+        -- ball position (yellow dot)
+        local bx, by = ball:getPosition()
+        bx = math.floor(bx); by = math.floor(by)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx + dx; local py = by + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 255, 220, 0, 255)
+                end
+            end
+        end
+
+        -- box position (cyan dot)
+        local bx2, by2 = box:getPosition()
+        bx2 = math.floor(bx2); by2 = math.floor(by2)
+        for dx = -4, 4 do
+            for dy = -4, 4 do
+                local px = bx2 + dx; local py = by2 + dy
+                if px >= 0 and px < 256 and py >= 0 and py < 256 then
+                    img:setPixel(px, py, 0, 220, 255, 255)
+                end
+            end
+        end
+
+        lurek.image.savePNG(img, path)
+        expect_evidence_created(path)
+    end)
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_physics_debug_gpu.lua
+-- ================================================================
+
+-- test_evidence_physics_debug_gpu.lua
+-- Evidence test: lurek.physics.drawDebugGpu queues a GPU physics debug render command.
+
+-- @description Covers suite: Evidence: lurek.physics.drawDebugGpu.
+describe("Evidence: lurek.physics.drawDebugGpu", function()
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        expect_equal(ok, true)
+    end)
+        local ok, err = pcall(function()
+            lurek.physics.drawDebugGpu(world)
+        end)
+        expect_equal(ok, true)
+    end)
+
+end)
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_physics_ext.lua
+-- ================================================================
+
+-- Evidence test for Lurek2D physics extension APIs
+-- Proves the extension API works by writing a report to file.
+-- Follows the evidence test contract: all output is produced by
+-- calling the domain-module API, not by hand-drawing.
+
+local out = {}
+local function log(s) out[#out+1] = s end
+
+-- ── Create world ──────────────────────────────────────────────────────────
+local world = lurek.physics.newWorld(0, 9.81)
+
+-- ── Solver iterations ─────────────────────────────────────────────────────
+log("solver_iterations_default=" .. tostring(world:getSolverIterations()))
+world:setSolverIterations(8)
+log("solver_iterations_after_set=" .. tostring(world:getSolverIterations()))
+world:setSolverIterations(0)
+log("solver_iterations_clamped=" .. tostring(world:getSolverIterations()))
+
+-- ── One-way platform ──────────────────────────────────────────────────────
+local platform = lurek.physics.newBody(world, 200, 400, "static")
+world:setBodyOneWay(platform, 0, -1)
+local nx, ny = world:getBodyOneWay(platform)
+log("one_way_nx=" .. tostring(nx) .. " one_way_ny=" .. tostring(ny))
+world:clearBodyOneWay(platform)
+local nx2, ny2 = world:getBodyOneWay(platform)
+log("one_way_cleared=" .. tostring(nx2) .. "," .. tostring(ny2))
+
+-- ── Body sleeping ─────────────────────────────────────────────────────────
+local dyn = lurek.physics.newBody(world, 0, 0, "dynamic")
+world:sleepBody(dyn)
+log("after_sleep=" .. tostring(world:isBodySleeping(dyn)))
+world:wakeUpBody(dyn)
+log("after_wake=" .. tostring(world:isBodySleeping(dyn)))
+
+-- ── CCD ───────────────────────────────────────────────────────────────────
+local bullet = lurek.physics.newBody(world, 500, 0, "dynamic")
+world:setBodyCCD(bullet, true)
+log("ccd_enabled=" .. tostring(world:getBodyCCD(bullet)))
+world:setBodyCCD(bullet, false)
+log("ccd_disabled=" .. tostring(world:getBodyCCD(bullet)))
+
+-- ── Breakable joints ──────────────────────────────────────────────────────
+local b1 = lurek.physics.newBody(world, 0, 0, "dynamic")
+local b2 = lurek.physics.newBody(world, 60, 0, "dynamic")
+local jid = lurek.physics.newJoint(world, b1, b2, "distance")
+world:setJointBreakForce(jid, 50.0)
+log("joint_break_force=" .. tostring(world:getJointBreakForce(jid)))
+
+-- ── Contact callbacks registered ─────────────────────────────────────────
+local begin_fired = 0
+local end_fired   = 0
+world:setBeginContact(function(a, b) begin_fired = begin_fired + 1 end)
+world:setEndContact  (function(a, b) end_fired   = end_fired   + 1 end)
+world:step(1/60)
+log("callbacks_registered=true")
+world:clearBeginContact()
+world:clearEndContact()
+log("callbacks_cleared=true")
+
+-- ── Batch body creation ───────────────────────────────────────────────────
+local ids = world:newBodies({
+    {0, 100, "dynamic"},
+    {100, 100, "static"},
+    {200, 100, "kinematic"},
+})
+log("batch_count=" .. tostring(#ids))
+for i, id in ipairs(ids) do
+    log("batch_id[" .. i .. "]=" .. type(id))
+end
+
+-- ── Body sleeping via userdata ─────────────────────────────────────────────
+local body_u = lurek.physics.newBody(world, 999, 999, "dynamic")
+body_u:sleep()
+log("body_userdata_sleep=" .. tostring(body_u:isSleeping()))
+body_u:wakeUp()
+log("body_userdata_wake=" .. tostring(body_u:isSleeping()))
+
+-- ── Write evidence file ───────────────────────────────────────────────────
+local path = "tests/lua/evidence/physics_ext_report.txt"
+local f, err = io.open(path, "w")
+if f then
+    f:write(table.concat(out, "\n") .. "\n")
+    f:close()
+    print("[evidence] Written: " .. path)
+else
+    print("[evidence] WARN: could not write " .. path .. ": " .. tostring(err))
+    -- Print to stdout so the test still passes in read-only environments.
+    print(table.concat(out, "\n"))
+end
+
+-- ── Minimal BDD assertions ────────────────────────────────────────────────
+describe("lurek.physics extension evidence", function()
+end)
+
+
+
+
+-- ================================================================
+-- Merged from: test_evidence_physics_zone_debug.lua
+-- ================================================================
+
+-- Evidence test: physics zone event tracking
+-- Produces: zone_events.txt proving that zone enter/leave events are emitted.
+-- If this module's code was deleted, the output file would contain no events.
+
+-- @description Covers suite: evidence: physics zone event tracking.
+describe("evidence: physics zone event tracking", function()
+    -- @covers lurek.physics.newWorld
+    -- @covers World:addZone
+    -- @covers LuaZone:setGravityZero
+    -- @covers World:step
+    -- @covers World:getZoneEvents
+    -- @evidence file
+    -- @description Creates a world with a zero-g zone, drops a rigid body into it,
+    --              steps the simulation, and writes all zone events to a text
+    --              file that proves the event system works.
+    it("zone events are recorded and written to evidence file", function()
+        ensure_evidence_dir("physics")
+        local path = evidence_output_dir("physics") .. "zone_events.txt"
+
+        local world = lurek.physics.newWorld(0, 0)  -- no gravity
+        local zone = world:addZone(-500, -500, 1000, 1000)
+        zone:setGravityZero()
+
+        -- Add a body inside the zone.
+        world:newBody(0, 0, 10, 10, "dynamic")
+
+        -- Step to trigger enter events.
+        world:step(1/60)
+        local events = world:getZoneEvents()
+
+        -- Write evidence.
+        local lines = {}
+        table.insert(lines, string.format("steps: 1  event_count: %d", #events))
+        for i, ev in ipairs(events) do
+            table.insert(lines, string.format(
+                "event[%d]: zone_id=%d  body_id=%d  kind=%s",
+                i, ev.zone_id, ev.body_id, ev.kind
+            ))
+        end
+
+        -- Step more and collect leave events (destroy zone).
+        zone:destroy()
+        world:step(1/60)
+        local events2 = world:getZoneEvents()
+        table.insert(lines, string.format("after_destroy_event_count: %d", #events2))
+
+        -- Write to evidence file.
+        local content = table.concat(lines, "\n") .. "\n"
+        local f = io.open(path, "w")
+        expect_true(f ~= nil, "could not open evidence file for writing")
+        f:write(content)
+        f:close()
+
+        -- Verify at least one enter event was produced.
+        expect_true(#events >= 1, "expected at least one zone enter event")
+        expect_evidence_created(path)
+    end)
+end)
+
+test_summary()

@@ -1,4 +1,4 @@
-//! Registers the `lurek.debugbridge.*` TCP debug server API.
+﻿//! Registers the `lurek.debugbridge.*` TCP debug server API.
 //!
 //! Embeds a JSON-over-TCP server (127.0.0.1 only) inside the running game.
 //! External tools (VS Code extension, MCP server) connect to inspect and
@@ -20,9 +20,9 @@ use crate::debugbridge::{server_thread, BridgeShared, PendingRequest, PendingRes
 /// Registers the `lurek.debugbridge` namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 ///
-pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     let db = lua.create_table()?;
 
     // Shared state between Lua closures and the TCP thread
@@ -112,15 +112,15 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     /// Poll for pending Lua-dependent requests from TCP clients.
     /// Must be called each frame from lurek.update(). Automatically records
     /// the current frame delta from `lurek.timer.getDelta()` into the performance
-    /// buffer — no manual `recordFrame()` call is needed.
+    /// buffer â€” no manual `recordFrame()` call is needed.
     let sh = shared.clone();
     /// @return table|nil
     db.set(
         "poll",
         lua.create_function(move |lua, ()| {
-            // Auto-record frame time from lurek.timer.getDelta — no manual call needed.
-            if let Ok(luna_tbl) = lua.globals().get::<_, LuaTable>("luna") {
-                if let Ok(time_tbl) = luna_tbl.get::<_, LuaTable>("time") {
+            // Auto-record frame time from lurek.timer.getDelta â€” no manual call needed.
+            if let Ok(lurek_tbl) = lua.globals().get::<_, LuaTable>("lurek") {
+                if let Ok(time_tbl) = lurek_tbl.get::<_, LuaTable>("time") {
                     if let Ok(get_delta) = time_tbl.get::<_, LuaFunction>("getDelta") {
                         let dt: f64 = get_delta.call(()).unwrap_or(0.0);
                         if dt > 0.0 {
@@ -147,7 +147,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
                             .and_then(|v| v.as_str())
                             .unwrap_or("");
                         // LUA-EVAL-JUSTIFIED: lua.load() here is the core feature of the debug-bridge
-                        // eval endpoint — it executes user-supplied Lua code from the connected
+                        // eval endpoint â€” it executes user-supplied Lua code from the connected
                         // debug client.  This cannot be expressed as a Rust tbl.set() call
                         // because the code string is dynamic and unknown at registration time.
                         match lua.load(code).eval::<LuaMultiValue>() {
@@ -437,7 +437,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     )?;
 
     // -- debugbridge namespace --
-    luna.set("debugbridge", db)?;
+    lurek.set("debugbridge", db)?;
     Ok(())
 }
 

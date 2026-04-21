@@ -7,7 +7,7 @@ class WorldMapEditor extends shared_js_1.WebviewEditor {
         return new WorldMapEditor(context);
     }
     constructor(context) {
-        super(context, "luna.worldMapEditor", "World Map");
+        super(context, "lurek.worldMapEditor", "World Map");
     }
     handleMessage(msg) {
         switch (msg.type) {

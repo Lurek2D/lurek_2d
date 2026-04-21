@@ -39,7 +39,7 @@ const path = __importStar(require("path"));
 const luaParser_js_1 = require("../services/luaParser.js");
 const LUA_SELECTOR = { scheme: "file", language: "lua" };
 const analyzer = new luaParser_js_1.LuaDocumentAnalyzer();
-const LUNA_API_SCHEME = "luna-api";
+const LUNA_API_SCHEME = "lurek-api";
 const analysisCache = new Map();
 function getCachedAnalysis(document) {
     const key = document.uri.toString();
@@ -50,7 +50,7 @@ function getCachedAnalysis(document) {
     analysisCache.set(key, { version: document.version, info });
     return info;
 }
-// ── Virtual document provider for luna.* API definitions ─────
+// ── Virtual document provider for lurek.* API definitions ─────
 class LunaApiDocumentProvider {
     apiData;
     constructor(apiData) {
@@ -63,7 +63,7 @@ class LunaApiDocumentProvider {
             return this.renderFunction(fn);
         }
         // Try as module
-        const modName = fullPath.replace("luna.", "");
+        const modName = fullPath.replace("lurek.", "");
         const mod = this.apiData.getModule(modName);
         if (mod) {
             return this.renderModule(mod);
@@ -214,7 +214,7 @@ function findLocalDefinition(document, word, cursorLine) {
 }
 // ── Provider registration ────────────────────────────────────
 function register(context, apiData) {
-    // Register virtual document provider for luna.* API definitions
+    // Register virtual document provider for lurek.* API definitions
     const docProvider = new LunaApiDocumentProvider(apiData);
     context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(LUNA_API_SCHEME, docProvider));
     const provider = vscode.languages.registerDefinitionProvider(LUA_SELECTOR, {
@@ -230,8 +230,8 @@ function register(context, apiData) {
                     return resolveRequire(document, reqPath);
                 }
             }
-            // ── luna.module.func → virtual API document ──
-            const lunaRange = document.getWordRangeAtPosition(position, /luna\.\w+\.\w+/);
+            // ── lurek.module.func → virtual API document ──
+            const lunaRange = document.getWordRangeAtPosition(position, /lurek\.\w+\.\w+/);
             if (lunaRange) {
                 const fullPath = document.getText(lunaRange);
                 const fn = apiData.getFunction(fullPath);
@@ -245,9 +245,9 @@ function register(context, apiData) {
             if (!wordRange)
                 return undefined;
             const word = document.getText(wordRange);
-            // Skip luna.* prefix situations
+            // Skip lurek.* prefix situations
             const beforeWord = lineText.substring(0, wordRange.start.character);
-            if (beforeWord.endsWith("luna.") || beforeWord.match(/luna\.\w+\.$/)) {
+            if (beforeWord.endsWith("lurek.") || beforeWord.match(/lurek\.\w+\.$/)) {
                 return undefined;
             }
             return findLocalDefinition(document, word, position.line);

@@ -78,4 +78,5 @@ describe("integration: entity tags with AI agents", function()
         expect_equal(3, #allies, "3 allies tagged")
     end)
 end)
+
 test_summary()

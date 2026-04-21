@@ -1,4 +1,4 @@
-//! `lurek.procgen` — Stateless procedural generation utilities.
+﻿//! `lurek.procgen` â€” Stateless procedural generation utilities.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -23,10 +23,10 @@ use crate::procgen::{
 /// Registers the `lurek.procgen` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- cellularAutomata --
@@ -1192,7 +1192,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, (x, y, z): (f32, f32, f32)| Ok(simplex_noise_3d(x, y, z)))?,
     )?;
 
-    luna.set("procgen", tbl)?;
+    lurek.set("procgen", tbl)?;
     Ok(())
 }
 

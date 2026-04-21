@@ -1,7 +1,7 @@
 //! Atmospheric visual effects data models.
 //!
 //! Contains data-only structs for clouds, fog, vignette, lightning,
-//! film grain, and heat haze — all consumed by the overlay renderer.
+//! film grain, and heat haze — all consumed by the effect renderer.
 
 /// Cloud shadow overlay state.
 ///
@@ -52,7 +52,7 @@ impl Default for CloudState {
 ///
 /// Renders a uniform translucent colour rectangle over the entire scene,
 /// simulating thick atmospheric haze. The `density` field maps linearly
-/// to the overlay opacity — a `density` of 1.0 fills the screen with
+/// to the effect opacity — a `density` of 1.0 fills the screen with
 /// the solid `color`; 0.0 is invisible. This is a simple per-frame alpha
 /// blend and does not perform any distance-based depth fog calculation.
 /// For a subtler ground-level effect, pair it with a low opacity and a

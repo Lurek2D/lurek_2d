@@ -69,4 +69,5 @@ describe("integration: scene camera viewport operations", function()
         expect_near(0.5, r, 0.001, "camera rotation stored")
     end)
 end)
+
 test_summary()

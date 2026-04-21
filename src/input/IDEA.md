@@ -87,7 +87,7 @@ TODO(dedup): window::management — cursor show/hide lives in both window and mo
 
 ```text
 TODO(helper): input_action_map — action→key binding pattern repeated in every game script — citation: content/library/input/init.lua:1
-TODO(helper): virtual_dpad — touch-screen D-pad emulation repeated in mobile-style games — citation: content/examples/touch.lua:1
+TODO(helper): virtual_dpad — touch-screen D-pad emulation repeated in mobile-style games — citation: content/examples/input.lua:1
 ```
 
 ## 10. TODO(plugin): Plugin Candidacy Proposal

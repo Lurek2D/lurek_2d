@@ -82,7 +82,7 @@ function doPrepareRename(document, position, apiData) {
     if (LUA_KEYWORDS.has(word.text)) {
         return undefined;
     }
-    // Don't rename luna.* API names
+    // Don't rename lurek.* API names
     if (isLunaApiName(document, position, word.text, apiData)) {
         return undefined;
     }
@@ -157,16 +157,16 @@ function getWordAt(document, position) {
 function isLunaApiName(document, position, word, apiData) {
     const lineText = document.lineAt(position.line).text;
     const wordStart = position.character;
-    // Check if preceded by `luna.` or `luna.xxx.`
+    // Check if preceded by `lurek.` or `lurek.xxx.`
     const beforeWord = lineText.substring(0, wordStart);
-    if (/luna\.\w*\.?$/.test(beforeWord)) {
+    if (/lurek\.\w*\.?$/.test(beforeWord)) {
         // Check if it's a known API function
         const fn = apiData.getAllFunctions().find(f => f.name === word);
         if (fn)
             return true;
     }
-    // `luna` itself
-    if (word === 'luna') {
+    // `lurek` itself
+    if (word === 'lurek') {
         return true;
     }
     return false;

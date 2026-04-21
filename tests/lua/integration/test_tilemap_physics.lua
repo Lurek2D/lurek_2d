@@ -107,4 +107,5 @@ describe("integration: tilemap + pathfinding from solid tiles", function()
         expect_true(#path > 0, "path has waypoints")
     end)
 end)
+
 test_summary()

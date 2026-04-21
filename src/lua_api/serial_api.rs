@@ -1,4 +1,4 @@
-//! `lurek.serial` — Format-agnostic string serialization: JSON, TOML, and CSV.
+﻿//! `lurek.serial` â€” Format-agnostic string serialization: JSON, TOML, and CSV.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -25,10 +25,10 @@ fn parse_delimiter(delim: Option<String>) -> u8 {
 /// Registers the `lurek.serial` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- fromJson --
@@ -185,6 +185,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("serial", tbl)?;
+    lurek.set("serial", tbl)?;
     Ok(())
 }

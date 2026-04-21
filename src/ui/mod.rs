@@ -1,7 +1,7 @@
 //! Retained-mode 2D widget system for building in-game menus, HUDs, dialog
 //! boxes, and inventory screens.
 //!
-//! The `gui` module provides a tree of widgets rooted at an invisible `Panel`
+//! The `ui` module provides a tree of widgets rooted at an invisible `Panel`
 //! returned by `getRoot()`.  Concrete widget types — `Button`, `Label`,
 //! `TextInput`, `CheckBox`, `Slider`, `ProgressBar`, `ListBox`, `ComboBox`,
 //! `ScrollPanel`, `NinePatch`, `Panel`, `Toast`, and many more — inherit
@@ -26,7 +26,7 @@
 //!
 //! ## Tier
 //!
-//! `gui` is a **Tier 2 — Engine Extension** module.  It may import `math`,
+//! `ui` is a **Tier 2 — Engine Extension** module.  It may import `math`,
 //! `engine`, and all Tier 1 modules.  It must not import other Tier 2 modules.
 
 /// Layout primitives: panels, dock, scroll, window, nine-slice, split, and grid containers.

@@ -4,7 +4,7 @@
 use mlua::prelude::*;
 
 // ============================================================
-// LunaType trait
+// LurekType trait
 // ============================================================
 
 /// Marker trait that every Lua UserData type in Lurek2D must implement.
@@ -12,7 +12,7 @@ use mlua::prelude::*;
 /// Provides the canonical `TYPE_NAME` string and `TYPE_HIERARCHY` slice used
 /// by the `type()`, `typeOf()`, and `__tostring` Lua methods added by
 /// [`add_type_methods`].
-pub trait LunaType {
+pub trait LurekType {
     /// The primary type name returned by `obj:type()`.
     const TYPE_NAME: &'static str;
 
@@ -42,7 +42,7 @@ pub trait LunaType {
 /// ```
 pub fn add_type_methods<'lua, T, M>(methods: &mut M)
 where
-    T: LunaType + LuaUserData,
+    T: LurekType + LuaUserData,
     M: LuaUserDataMethods<'lua, T>,
 {
     // -- type() -> string

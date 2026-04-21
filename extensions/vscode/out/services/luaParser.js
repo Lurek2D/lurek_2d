@@ -395,7 +395,7 @@ class LuaDocumentAnalyzer {
                     let fullName = nameTok.value;
                     let isMethod = false;
                     let objectType;
-                    // function luna.update(dt) or function Class:method()
+                    // function lurek.update(dt) or function Class:method()
                     while (true) {
                         if (match(TokenType.Punctuation, ".")) {
                             advance();
@@ -434,8 +434,8 @@ class LuaDocumentAnalyzer {
                         description: getPrecedingComment(funcTok.line),
                     };
                     symbols.push(sym);
-                    // Check for luna.* callbacks
-                    if (fullName.startsWith("luna.") && LUNA_CALLBACKS.has(shortName)) {
+                    // Check for lurek.* callbacks
+                    if (fullName.startsWith("lurek.") && LUNA_CALLBACKS.has(shortName)) {
                         callbacks.push(sym);
                     }
                     // Add parameters
@@ -461,7 +461,7 @@ class LuaDocumentAnalyzer {
                 }
                 continue;
             }
-            // ── Assignment patterns: luna.update = function(...) ──
+            // ── Assignment patterns: lurek.update = function(...) ──
             if (cur.type === TokenType.Identifier) {
                 // Look for patterns like: name.name.name = function | table = {} | Class.__index = Class
                 const startIdx = i;
@@ -486,7 +486,7 @@ class LuaDocumentAnalyzer {
                 if (tempI < toks.length && toks[tempI]?.value === "=") {
                     const eqIdx = tempI;
                     const afterEq = toks[eqIdx + 1];
-                    // luna.update = function(dt)
+                    // lurek.update = function(dt)
                     if (afterEq?.type === TokenType.Keyword && afterEq.value === "function") {
                         i = eqIdx + 2; // past '=' and 'function'
                         const params = this.parseParamList(toks, i);
@@ -503,7 +503,7 @@ class LuaDocumentAnalyzer {
                             description: getPrecedingComment(cur.line),
                         };
                         symbols.push(sym);
-                        if (fullName.startsWith("luna.") && LUNA_CALLBACKS.has(shortName)) {
+                        if (fullName.startsWith("lurek.") && LUNA_CALLBACKS.has(shortName)) {
                             callbacks.push(sym);
                         }
                         for (const pName of params.names) {
@@ -673,7 +673,7 @@ class LuaDocumentAnalyzer {
             start--;
         while (end < lineText.length && isIdentPart(lineText[end]))
             end++;
-        // Extend left through dots/colons for luna.graphics.draw style
+        // Extend left through dots/colons for lurek.graphics.draw style
         while (start > 0 && (lineText[start - 1] === "." || lineText[start - 1] === ":")) {
             start--;
             while (start > 0 && isIdentPart(lineText[start - 1]))

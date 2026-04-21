@@ -31,7 +31,7 @@ use crate::runtime::config::Config;
 // ─── Lurek2D Application handler ──────────────────────────────────────────────
 
 /// Lurek2D application state managed by the winit event loop.
-struct LunaApp {
+struct LurekApp {
     config: Config,
     game_dir: PathBuf,
 
@@ -61,9 +61,9 @@ struct LunaApp {
     quit: bool,
 }
 
-impl LunaApp {
+impl LurekApp {
     fn new(config: Config, game_dir: PathBuf) -> Self {
-        LunaApp {
+        LurekApp {
             config,
             game_dir,
             window: None,
@@ -295,7 +295,7 @@ impl LunaApp {
     }
 }
 
-impl ApplicationHandler for LunaApp {
+impl ApplicationHandler for LurekApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         if self.window.is_some() {
             return;
@@ -480,7 +480,7 @@ impl App {
         let event_loop = EventLoop::new().expect("Failed to create event loop");
         event_loop.set_control_flow(ControlFlow::Poll);
 
-        let mut app = LunaApp::new(self.config, game_dir);
+        let mut app = LurekApp::new(self.config, game_dir);
         event_loop.run_app(&mut app).expect("Event loop error");
 
         log::info!("Lurek2D Engine shut down.");
@@ -490,10 +490,10 @@ impl App {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 fn call_lua_callback<'a, A: IntoLuaMulti<'a>>(lua: &'a Lua, name: &str, args: A) {
-    if let Ok(luna) = lua.globals().get::<_, LuaTable>("luna") {
-        if let Ok(func) = luna.get::<_, LuaFunction>(name) {
+    if let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") {
+        if let Ok(func) = lurek.get::<_, LuaFunction>(name) {
             if let Err(e) = func.call::<_, ()>(args) {
-                log::error!("Lua error in luna.{}(): {}", name, e);
+                log::error!("Lua error in lurek.{}(): {}", name, e);
             }
         }
     }

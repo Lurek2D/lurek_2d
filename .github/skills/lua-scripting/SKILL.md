@@ -39,7 +39,7 @@ description: "Load this skill when writing or reviewing Lua game scripts for Lur
 - **Entry point**: Every game has a `main.lua` in its directory
 - **Callbacks**: Define `lurek.init()`, `lurek.ready()`, `lurek.process(dt)`, `lurek.process_physics(dt)`, `lurek.process_late(dt)`, `lurek.render()`, `lurek.render_ui()` as the game structure (all optional — see engine-architecture.md § Callback Contract)
 - **API prefix**: Always `lurek.*` — never external engine prefixes or globals
-- **Local variables**: Use `local` for all variables — avoid globals except luna callbacks
+- **Local variables**: Use `local` for all variables — avoid globals except lurek callbacks
 - **Table patterns**: Use tables for game objects: `local player = {x = 100, y = 200, speed = 150}`
 - **Delta time**: Always multiply movement by `dt` for frame-rate independence
 - **Directory layout**: Each game in its own directory: `content/demos/hello_world/main.lua`

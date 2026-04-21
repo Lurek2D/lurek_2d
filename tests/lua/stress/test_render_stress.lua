@@ -67,4 +67,5 @@ describe("graphics stress: mixed draw commands", function()
         expect_true(true, "5000 mixed draw commands")
     end)
 end)
+
 test_summary()

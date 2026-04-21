@@ -1,6 +1,6 @@
 pub fn register(
     lua: &Lua,
-    luna: &LuaTable,
+    lurek: &LuaTable,
     state: Rc<RefCell<SharedState>>,
 ) -> LuaResult<()> {
     let tbl = lua.create_table()?;

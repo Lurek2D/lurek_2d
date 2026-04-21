@@ -223,15 +223,51 @@ impl WebSocketManager {
             let _ = socket.close(None);
         }
     }
-
-    /// Returns `true` if there are no active WebSocket connections.
-    pub fn is_empty(&self) -> bool {
-        self.connections.is_empty()
-    }
 }
 
 impl Default for WebSocketManager {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_manager_has_no_connections() {
+        let mgr = WebSocketManager::new();
+        assert!(mgr.connections.is_empty());
+    }
+
+    #[test]
+    fn default_matches_new() {
+        let mgr = WebSocketManager::default();
+        assert!(mgr.connections.is_empty());
+    }
+
+    #[test]
+    fn close_all_on_empty_is_noop() {
+        let mut mgr = WebSocketManager::new();
+        mgr.close_all();
+        assert!(mgr.connections.is_empty());
+    }
+
+    #[test]
+    fn send_to_nonexistent_sends_error() {
+        let mut mgr = WebSocketManager::new();
+        let (tx, rx) = mpsc::channel();
+        mgr.send(77, b"msg", true, &tx);
+        let resp = rx.try_recv().unwrap();
+        if let NetworkResponse::WebSocketEvent { id, event } = resp {
+            assert_eq!(id, 77);
+            match event {
+                WsEvent::Error(msg) => assert!(msg.contains("not found")),
+                other => panic!("expected Error, got {:?}", other),
+            }
+        } else {
+            panic!("expected WebSocketEvent");
+        }
     }
 }

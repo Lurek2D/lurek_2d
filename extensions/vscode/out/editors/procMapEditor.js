@@ -7,7 +7,7 @@ class ProcMapEditor extends shared_js_1.WebviewEditor {
         return new ProcMapEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.procMap", "Procedural Map Generator");
+        super(context, "lurek.editor.procMap", "Procedural Map Generator");
     }
     handleMessage(msg) {
         switch (msg.type) {

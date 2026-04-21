@@ -113,4 +113,5 @@ describe("integration: TOML config for entities", function()
         end
     end)
 end)
+
 test_summary()

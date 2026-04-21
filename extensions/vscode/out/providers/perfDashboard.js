@@ -46,7 +46,7 @@ function openPerfDashboard(context) {
         _panel.reveal(vscode.ViewColumn.Two);
         return;
     }
-    _panel = vscode.window.createWebviewPanel("luna.perfDashboard", "Luna2D Performance", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
+    _panel = vscode.window.createWebviewPanel("lurek.perfDashboard", "Luna2D Performance", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
     _panel.webview.html = buildHtml();
     _panel.onDidDispose(() => { _panel = undefined; }, null, context.subscriptions);
     // Re-render on messages from the webview (future: interactive controls)
@@ -109,7 +109,7 @@ function buildHtml() {
 <p class="chart-label">Frame time (ms)</p>
 <canvas id="msChart" width="600" height="120"></canvas>
 
-<div id="empty" class="empty">No data yet — run your game with luna.debug.connect() to stream performance data.</div>
+<div id="empty" class="empty">No data yet — run your game with lurek.debug.connect() to stream performance data.</div>
 
 <button onclick="clearData()">Clear History</button>
 

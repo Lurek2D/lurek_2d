@@ -77,4 +77,5 @@ describe("stress: mixed light operations", function()
         expect_true(elapsed < 5.0, "light full-config budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

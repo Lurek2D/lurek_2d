@@ -80,4 +80,5 @@ describe("integration: entity position drives draw coordinates", function()
         end)
     end)
 end)
+
 test_summary()

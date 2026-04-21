@@ -54,7 +54,7 @@ Lurek2D ships 46 Rust modules organized in four tiers. All are MIT-licensed firs
 
 | Module | Description |
 |---|---|
-| `graphics` | GPU rendering via wgpu (Vulkan / DX12 / Metal): sprites, batches, meshes, canvases, WGSL shaders, blend modes, stencils, transform stack |
+| `render` | GPU rendering via wgpu (Vulkan / DX12 / Metal): sprites, batches, meshes, canvases, WGSL shaders, blend modes, stencils, transform stack |
 | `audio` | Sound loading and playback (WAV / OGG / MP3 / FLAC), streaming, buses, volume / pitch / pan |
 | `sound` | Audio source types and lifecycle management |
 | `physics` | 2D rigid-body simulation via rapier2d: bodies, shapes, 11 joint types, raycasting, collision events |
@@ -68,7 +68,7 @@ Lurek2D ships 46 Rust modules organized in four tiers. All are MIT-licensed firs
 | `data` | Binary buffers, compression (deflate / gzip / lz4 / zlib), hashing (MD5 / SHA-1 / SHA-256), encoding (base64 / hex) |
 | `serial` | Serialization to TOML, JSON, and binary formats |
 | `event` | Typed event queue and signal bus |
-| `entity` | Lightweight ECS: bitmap-tag queries, blueprint instantiation |
+| `ecs` | Lightweight ECS: bitmap-tag queries, blueprint instantiation |
 | `thread` | Background Rust workers, typed MPMC channels, isolated per-thread Lua VMs |
 | `compute` | GPU compute shaders via wgpu |
 | `automation` | Lua-scriptable task runners and build automation |
@@ -81,15 +81,15 @@ Lurek2D ships 46 Rust modules organized in four tiers. All are MIT-licensed firs
 | `particle` | Configurable emitter system: 35+ parameters, keyframed size / color |
 | `tilemap` | Tile layers, tilesets, procedural map generation, coordinate helpers |
 | `scene` | Scene stack with push / pop / replace and transition hooks |
-| `savegame` | Slot-based save / load with versioning |
-| `modding` | Mod loader with sandboxed per-mod Lua VMs |
+| `save` | Slot-based save / load with versioning |
+| `mods` | Mod loader with sandboxed per-mod Lua VMs |
 | `graph` | General graph data structures and traversal algorithms |
-| `pathfinding` | Navigation grids, A★, HPA★, flow fields |
+| `pathfind` | Navigation grids, A★, HPA★, flow fields |
 | `ai` | FSMs, behaviour trees, GOAP planner, steering behaviours, influence maps, shared blackboard |
 | `dataframe` | Tabular data structure, CSV I/O, column-oriented query API |
-| `gui` | Immediate-mode UI widget toolkit |
+| `ui` | Immediate-mode UI widget toolkit |
 | `minimap` | Minimap rendering from world state |
-| `overlay` | Screen-space HUD layer |
+| `effect` | Screen-space HUD layer |
 | `fx` | Pre-built visual effects (trails, screen-shake, flash) |
 | `postfx` | Full-screen post-processing: bloom, blur, colour-grade, distortion, CRT |
 | `light` | Dynamic 2D lighting and shadow casting |
@@ -99,7 +99,7 @@ Lurek2D ships 46 Rust modules organized in four tiers. All are MIT-licensed firs
 | `network` | Networking via ENet: UDP sessions, channels, packet types |
 | `procgen` | Procedural content generation (dungeons, noise maps, L-systems) |
 | `patterns` | Reusable game-design pattern implementations |
-| `localization` | String-table i18n with plural rules and locale detection |
+| `i18n` | String-table i18n with plural rules and locale detection |
 | `tween` | Tween / timeline system: chained, parallel, and looping sequences |
 | `terminal` | In-game developer console / REPL with widget toolkit |
 | `devtools` | In-engine performance overlay and inspector |
@@ -116,7 +116,7 @@ lurek.input.keyboard  lurek.input.mouse      lurek.input.gamepad   lurek.input.t
 lurek.anim      lurek.particle   lurek.tilemap   lurek.scene      lurek.ai
 lurek.path      lurek.ecs     lurek.thread    lurek.event      lurek.event
 lurek.filesystem        lurek.data       lurek.serial    lurek.image        lurek.compute
-lurek.math      lurek.timer       lurek.window    lurek.tween      lurek.gui
+lurek.math      lurek.timer       lurek.window    lurek.tween      lurek.ui
 lurek.terminal  lurek.effect    lurek.light     lurek.effect     lurek.fx
 lurek.minimap   lurek.network    lurek.mods   lurek.save   lurek.procgen
 lurek.runtime  lurek.locale     lurek.patterns  lurek.devtools   lurek.log

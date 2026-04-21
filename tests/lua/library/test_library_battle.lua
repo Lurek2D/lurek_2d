@@ -891,3 +891,5 @@ describe("getWinner auto-detect", function()
         expect_equal(b:isOver(), false)
     end)
 end)test_summary()
+
+test_summary()

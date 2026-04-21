@@ -73,7 +73,7 @@ The `runtime` module is the dependency tree's root — every other Rust module i
 - **[P1][TEST-RUST]** Add Rust unit tests for `EngineError` code/category/hint mapping — DONE in this session.
 - **[P1][TEST-RUST]** Add Rust unit tests for `log_messages` ID format and `get_log_level` — DONE in this session.
 - **[P2][TEST-RUST]** Add Rust unit tests for `Config::load_from_conf_toml` TOML merge logic (non-Lua-reachable internal).
-- ~~**[P3][TEST-LUA]** Add Lua BDD tests for `lurek.runtime.setLogLevel` / `getLogLevel`.~~ ✅ **DONE** — Tests present in `tests/lua/unit/test_runtime_platform.lua`.
+- ~~**[P3][TEST-LUA]** Add Lua BDD tests for `lurek.runtime.setLogLevel` / `getLogLevel`.~~ ✅ **DONE** — Tests present in `tests/lua/unit/test_runtime_window.lua`.
 
 ## 8. TODO(dedup): Cross-Module Overlap
 

@@ -7,7 +7,7 @@ class PhysicsMaterialsEditor extends shared_js_1.WebviewEditor {
         return new PhysicsMaterialsEditor(context);
     }
     constructor(context) {
-        super(context, "luna.physicsMaterialsEditor", "Physics Materials");
+        super(context, "lurek.physicsMaterialsEditor", "Physics Materials");
     }
     handleMessage(msg) {
         switch (msg.type) {

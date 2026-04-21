@@ -1,4 +1,4 @@
--- content/examples/runtime.lua
+-- content/examples/runtimer.lua
 -- Lurek2D lurek.runtime API Reference
 -- Run with: cargo run -- content/examples/engine
 
@@ -73,7 +73,7 @@ print(string.format("session length: %d min %d sec", minutes, seconds))
 -- ---- Stub: lurek.runtime.fps ----------------------------------------------
 --@api-stub: lurek.runtime.fps
 -- Display a live FPS counter in the debug overlay.  When FPS drops below 30
--- the overlay turns red to alert the developer.
+-- the effect turns red to alert the developer.
 local current_fps = lurek.runtime.fps()
 print("current FPS: " .. string.format("%.1f", current_fps))
 if current_fps < 30 then
@@ -143,7 +143,7 @@ if stats.texture_bytes and gpu_budget then
         print(string.format("  WARNING: %.0f%% of texture budget used", pct))
     end
 end
--- content/examples/runtime.lua
+-- content/examples/runtimer.lua
 -- Lurek2D lurek.runtime API Reference
 -- Run with: cargo run -- content/examples/engine
 

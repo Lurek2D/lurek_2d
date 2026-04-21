@@ -1,8 +1,8 @@
-//! Background Lua thread with independent VM.
+﻿//! Background Lua thread with independent VM.
 //!
 //! Each [`LuaThread`] spawns an OS thread running its own `mlua::Lua` instance.
 //! Communication with the main thread happens exclusively through [`Channel`]
-//! objects — no Lua state is shared across threads (design constraint **B-04**).
+//! objects â€” no Lua state is shared across threads (design constraint **B-04**).
 //!
 //! ## Worker sandbox
 //! Workers receive a minimal `lurek.*` API surface: `lurek.thread.getChannel(name)`,
@@ -21,10 +21,10 @@ use crate::thread::channel::{channel_value_to_lua, Channel, ChannelValue, LuaCha
 /// Execution state of a background Lua thread.
 ///
 /// # Variants
-/// - `Pending` — Pending variant.
-/// - `Running` — Running variant.
-/// - `Completed` — Completed variant.
-/// - `Error` — Error variant.
+/// - `Pending` â€” Pending variant.
+/// - `Running` â€” Running variant.
+/// - `Completed` â€” Completed variant.
+/// - `Error` â€” Error variant.
 #[derive(Debug, Clone, PartialEq)]
 pub enum ThreadState {
     /// Created but not yet started.
@@ -44,10 +44,10 @@ pub enum ThreadState {
 /// in `ThreadState::Error` and retrievable via `get_error()`.
 ///
 /// # Fields
-/// - `code` — `String`.
-/// - `state` — `Arc<Mutex<ThreadState>>`.
-/// - `handle` — `Option<thread::JoinHandle<()>>`.
-/// - `channels` — `Arc<Mutex<HashMap<String`.
+/// - `code` â€” `String`.
+/// - `state` â€” `Arc<Mutex<ThreadState>>`.
+/// - `handle` â€” `Option<thread::JoinHandle<()>>`.
+/// - `channels` â€” `Arc<Mutex<HashMap<String`.
 pub struct LuaThread {
     /// The Lua source code to execute.
     code: String,
@@ -63,8 +63,8 @@ impl LuaThread {
     /// Create a new thread that will execute the given Lua code.
     ///
     /// # Parameters
-    /// - `code` — `String`.
-    /// - `channels` — `Arc<Mutex<HashMap<String, Arc<Channel>>>>`.
+    /// - `code` â€” `String`.
+    /// - `channels` â€” `Arc<Mutex<HashMap<String, Arc<Channel>>>>`.
     ///
     /// # Returns
     /// `Self`.
@@ -84,7 +84,7 @@ impl LuaThread {
     /// Start the thread, spawning a new OS thread with its own Lua VM.
     ///
     /// # Parameters
-    /// - `args` — `Vec<ChannelValue>`.
+    /// - `args` â€” `Vec<ChannelValue>`.
     ///
     /// # Returns
     /// `Result<(), String>`.
@@ -107,7 +107,7 @@ impl LuaThread {
         log_msg!(info, TH02_WORKER_START);
 
         let handle = thread::spawn(move || {
-            // Each worker gets a fresh Lua VM — no state shared with main thread.
+            // Each worker gets a fresh Lua VM â€” no state shared with main thread.
             let lua = mlua::Lua::new();
 
             // Register the sandboxed subset of lurek.* API (channel access, fs.read, arg table).
@@ -167,8 +167,8 @@ impl LuaThread {
 /// Register only thread-safe modules in a worker Lua VM.
 ///
 /// Worker threads get:
-/// - `lurek.thread.getChannel(name)` — access to named channels
-/// - `arg` — table of arguments passed to `thread:start(...)`
+/// - `lurek.thread.getChannel(name)` â€” access to named channels
+/// - `arg` â€” table of arguments passed to `thread:start(...)`
 ///
 /// Worker threads do NOT get: `lurek.render`, `lurek.audio`, `lurek.window`,
 /// `lurek.input`, `lurek.physics`, `lurek.particle`, or any module that
@@ -178,7 +178,7 @@ fn register_thread_safe_modules(
     channels: &Arc<Mutex<HashMap<String, Arc<Channel>>>>,
     args: &[ChannelValue],
 ) -> mlua::Result<()> {
-    let luna = lua.create_table()?;
+    let lurek = lua.create_table()?;
 
     // lurek.thread.getChannel(name)
     let thread_table = lua.create_table()?;
@@ -196,9 +196,9 @@ fn register_thread_safe_modules(
             }
         })?,
     )?;
-    luna.set("thread", thread_table)?;
+    lurek.set("thread", thread_table)?;
 
-    // ── lurek.filesystem (read-only, workers only) ──────────────────────────────────
+    // â”€â”€ lurek.filesystem (read-only, workers only) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Workers get a minimal filesystem API limited to reading files.
     // Path traversal via ".." is blocked. Full GameFS sandbox is not available
     // in worker threads; paths are resolved relative to the process working dir.
@@ -217,11 +217,11 @@ fn register_thread_safe_modules(
             }
         })?,
     )?;
-    luna.set("fs", fs_table)?;
+    lurek.set("fs", fs_table)?;
 
-    lua.globals().set("lurek", luna)?;
+    lua.globals().set("lurek", lurek)?;
 
-    // ── package.path — module search path for require() ─────────────────────
+    // â”€â”€ package.path â€” module search path for require() â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Workers can require Lua modules relative to the process working directory.
     // The game path is not injected here; pass it through channel args if needed.
     if let Ok(package) = lua.globals().get::<_, mlua::Table>("package") {

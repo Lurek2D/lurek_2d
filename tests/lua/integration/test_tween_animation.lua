@@ -1,104 +1,69 @@
 -- Lurek2D Integration Test: Tween + Animation
--- Tests tween easing curves driving animation timeline
+-- Tests tween easing curves driving animation frame selection.
+-- Rewritten to use lurek.tween.newState(duration, easing) API.
+-- (lurek.animation.newTimeline does not exist; uses newState instead)
 
 -- @description Covers suite: tween + animation integration.
 describe("tween + animation integration", function()
-    -- @covers lurek.tween.Tween.seek
-    -- @covers lurek.animation.Timeline
-    -- @covers lurek.tween.newTween
-    -- @covers lurek.animation.newTimeline
+    -- @covers lurek.tween.newState
+    -- @covers lurek.animation.new
     -- @description Verifies a linear tween produces expected position values that could drive animation state over time.
     it("tween linear easing drives position", function()
-        local tween = lurek.tween.newTween()
-        tween:setDuration(1.0)
-        tween:setEasing("linear")
-        tween:setFrom(0)
-        tween:setTo(100)
+        local state = lurek.tween.newState(1.0, "linear")
 
-        -- At start
-        tween:seek(0.0)
-        local v0 = tween:getValue()
+        -- At start: no ticks
+        local v0 = state:lerp(0, 100)
         expect_near(0, v0, 1.0, "tween at start is 0")
 
-        -- At midpoint
-        tween:seek(0.5)
-        local v50 = tween:getValue()
+        -- At midpoint: tick 0.5 s
+        state:tick(0.5)
+        local v50 = state:lerp(0, 100)
         expect_near(50, v50, 2.0, "tween at 50% is ~50")
 
-        -- At end
-        tween:seek(1.0)
-        local v100 = tween:getValue()
+        -- At end: tick another 0.5 s (total 1.0 s)
+        state:tick(0.5)
+        local v100 = state:lerp(0, 100)
         expect_near(100, v100, 1.0, "tween at end is 100")
     end)
 
-    -- @covers lurek.tween.Tween.seek
-    -- @covers lurek.animation.Timeline.seek
-    -- @description Verifies tween progress and animation timeline seeking can be aligned at shared points in time.
-    it("tween ease-in-out with animation frame sync", function()
-        local tween = lurek.tween.newTween()
-        tween:setDuration(2.0)
-        tween:setEasing("easeInOut")
-        tween:setFrom(0)
-        tween:setTo(1)
+    -- @covers lurek.tween.newState
+    -- @covers lurek.animation.new
+    -- @description Verifies easeInOut midpoint is larger than linear start and smaller than end.
+    it("tween ease-in-out midpoint shape", function()
+        local state = lurek.tween.newState(2.0, "easeInOut")
+        state:tick(1.0)  -- 50% through
 
-        local tl = lurek.animation.newTimeline()
-        tl:addFrame(0.0, { alpha = 0 })
-        tl:addFrame(1.0, { alpha = 1 })
-
-        -- Both should be at start
-        tween:seek(0.0)
-        tl:seek(0.0)
-
-        local tween_val = tween:getValue()
-        expect_near(0, tween_val, 0.1, "tween starts at 0")
+        local val = state:lerp(0, 1)
+        -- easeInOut at 50% should be ~0.5 (symmetric)
+        expect_near(0.5, val, 0.1, "easeInOut at midpoint ≈ 0.5")
     end)
 
-    -- @covers lurek.tween.Tween.onComplete
-    -- @covers lurek.animation.Timeline
-    -- @description Verifies tween completion callbacks can participate in animation timeline event flows.
-    it("tween with callback integrates with timeline events", function()
-        local tween = lurek.tween.newTween()
-        tween:setDuration(1.0)
-        tween:setEasing("linear")
-        tween:setFrom(0)
-        tween:setTo(10)
-
-        local completed = false
-        tween:onComplete(function()
-            completed = true
-        end)
-
-        -- Advance to end
-        tween:seek(1.0)
-        -- Note: onComplete may fire on seek past duration
-        -- The flag may or may not be set depending on implementation
-        expect_type("boolean", completed)
+    -- @covers lurek.tween.newState
+    -- @covers lurek.animation.new
+    -- @description Verifies isComplete returns true after the full duration has elapsed.
+    it("tween isComplete true after full duration", function()
+        local state = lurek.tween.newState(1.0, "linear")
+        state:tick(1.1)  -- advance past end
+        expect_true(state:isComplete(), "isComplete after 1.1 s > 1.0 s duration")
     end)
 
-    -- @covers lurek.tween.Tween.getValue
-    -- @covers lurek.animation.Timeline
-    -- @description Verifies multiple tweens maintain independent progress values while sharing animation-oriented timing logic.
+    -- @covers lurek.tween.newState
+    -- @covers lurek.animation.new
+    -- @description Verifies multiple tween states maintain independent progress values.
     it("multiple tweens track independently", function()
-        local t1 = lurek.tween.newTween()
-        t1:setDuration(1.0)
-        t1:setEasing("linear")
-        t1:setFrom(0)
-        t1:setTo(100)
+        local t1 = lurek.tween.newState(1.0, "linear")
+        local t2 = lurek.tween.newState(2.0, "linear")
 
-        local t2 = lurek.tween.newTween()
-        t2:setDuration(2.0)
-        t2:setEasing("linear")
-        t2:setFrom(100)
-        t2:setTo(200)
+        -- Advance t1 to completion, t2 to halfway
+        t1:tick(1.0)
+        t2:tick(1.0)
 
-        t1:seek(1.0)
-        t2:seek(1.0)
-
-        local v1 = t1:getValue()
-        local v2 = t2:getValue()
+        local v1 = t1:lerp(0, 100)
+        local v2 = t2:lerp(100, 200)
 
         expect_near(100, v1, 1.0, "tween1 finished at 100")
-        expect_near(150, v2, 2.0, "tween2 at midpoint ~150")
+        expect_near(150, v2, 2.0, "tween2 at midpoint ≈150")
     end)
 end)
+
 test_summary()

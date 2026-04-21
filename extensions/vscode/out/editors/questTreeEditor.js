@@ -7,7 +7,7 @@ class QuestTreeEditor extends shared_js_1.WebviewEditor {
         return new QuestTreeEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.questTree", "Quest / Tech Tree Editor");
+        super(context, "lurek.editor.questTree", "Quest / Tech Tree Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

@@ -5,7 +5,7 @@
 //!
 //! # Design
 //! - Two render pipelines: *color* (solid + gradient shapes) and *texture* (images, sprites).
-//! - Transform stack maintained during command processing â€” standard `push/pop` transform stack semantics.
+//! - Transform stack maintained during command processing — standard `push/pop` transform stack semantics.
 //! - Colored geometry is batched in one draw call; each distinct texture source is one draw call.
 //! - Draw order: colored shapes first (in submission order), textured images second.
 
@@ -19,9 +19,8 @@ use crate::log_msg;
 use crate::math::{Mat3, Vec2};
 use crate::render::mesh::Mesh;
 use crate::render::renderer::{
-    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, ParticleRenderShape,
-    PathSegment, RenderCommand, TextAlign,
-    TextureData,
+    BevelStyle, BlendMode, DrawMode, GradientDirection, HexOrientation, PathSegment,
+    ParticleRenderShape, RenderCommand, TextAlign, TextureData,
 };
 use crate::render::shader::{Shader, ShaderFragmentInput, UniformValue};
 use crate::runtime::log_messages::{
@@ -33,7 +32,7 @@ use crate::runtime::resource_keys::{
 };
 use slotmap::{SlotMap, SparseSecondaryMap};
 
-// â”€â”€â”€ Vertex types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Vertex types ────────────────────────────────────────────────────────────
 
 /// Vertex for solid-color geometry.
 #[repr(C)]
@@ -59,7 +58,7 @@ struct LightVertex {
     position: [f32; 2],
     uv: [f32; 2],
     color: [f32; 4],
-    /// Normalized V coordinate into the shadow atlas (â’1.0 = no shadow map).
+    /// Normalized V coordinate into the shadow atlas (−1.0 = no shadow map).
     shadow_v: f32,
     _pad: [f32; 3],
 }
@@ -82,7 +81,7 @@ struct ViewportUniform {
     view_col2: [f32; 4],
 }
 
-// â”€â”€â”€ GPU texture wrapper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GPU texture wrapper ──────────────────────────────────────────────────────
 
 struct GpuTexture {
     _texture: wgpu::Texture,
@@ -115,7 +114,7 @@ enum TexRef {
     FontAtlas(FontKey),
 }
 
-// â”€â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const MAX_COLOR_VERTS: u64 = 1 << 17; // 131 072 vertices
 const MAX_COLOR_IDXS: u64 = 1 << 19; // 524 288 indices
@@ -127,11 +126,11 @@ const MAX_LIGHT_QUADS: usize = 128;
 /// Per-frame rendering statistics.
 ///
 /// # Fields
-/// - `draw_calls` â€” `u32`.
-/// - `texture_switches` â€” `u32`.
-/// - `canvas_switches` â€” `u32`.
-/// - `shader_switches` â€” `u32`.
-/// - `batched_draws` â€” `u32`.
+/// - `draw_calls` — `u32`.
+/// - `texture_switches` — `u32`.
+/// - `canvas_switches` — `u32`.
+/// - `shader_switches` — `u32`.
+/// - `batched_draws` — `u32`.
 #[derive(Debug, Default, Clone)]
 pub struct RenderStats {
     /// Number of draw calls issued this frame.
@@ -273,7 +272,7 @@ fn blend_state_for(mode: BlendMode) -> wgpu::BlendState {
     }
 }
 
-// â”€â”€â”€ WGSL shaders (embedded inline) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── WGSL shaders (embedded inline) ─────────────────────────────────────────
 
 const COLOR_SHADER: &str = r#"
 struct VertexInput {
@@ -417,7 +416,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     // Shadow attenuation.
     var shadow = 1.0;
     if in.shadow_v >= 0.0 {
-        let angle = atan2(delta.y, delta.x);                     // [-Ď€, Ď€]
+        let angle = atan2(delta.y, delta.x);                     // [-π, π]
         let u     = (angle + 3.14159265) / (2.0 * 3.14159265);  // [0, 1]
         let shadow_dist = textureSample(shadow_atlas, shadow_sampler, vec2<f32>(u, in.shadow_v)).r;
         let frag_dist   = dist * 0.5;                            // normalised to radius
@@ -430,7 +429,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
 }
 "#;
 
-// â”€â”€â”€ GpuRenderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GpuRenderer ─────────────────────────────────────────────────────────────
 
 struct LightGpuState {
     #[allow(dead_code)]
@@ -453,11 +452,11 @@ struct LightGpuState {
 /// GPU-accelerated renderer that processes `RenderCommand` queues via wgpu.
 ///
 /// # Fields
-/// - `device` â€” `wgpu::Device`.
-/// - `queue` â€” `wgpu::Queue`.
-/// - `width` â€” `u32`.
-/// - `height` â€” `u32`.
-/// - `render_stats` â€” `RenderStats`.
+/// - `device` — `wgpu::Device`.
+/// - `queue` — `wgpu::Queue`.
+/// - `width` — `u32`.
+/// - `height` — `u32`.
+/// - `render_stats` — `RenderStats`.
 ///
 /// Owns the wgpu `Device` and `Queue`. The caller (App) owns the `Surface`
 /// and configuration; `render_frame` receives a shared reference each frame.
@@ -487,7 +486,7 @@ pub struct GpuRenderer {
 
     gpu_textures: SparseSecondaryMap<TextureKey, GpuTexture>,
 
-    /// Maps font key â†’ GPU texture for font atlas textures.
+    /// Maps font key → GPU texture for font atlas textures.
     font_atlas_textures: SparseSecondaryMap<FontKey, GpuTexture>,
 
     /// GPU canvas textures (off-screen render targets).
@@ -511,7 +510,7 @@ pub struct GpuRenderer {
     /// Lazily-created GPU resources for the 2D lighting pass.
     light_gpu: Option<LightGpuState>,
 
-    /// Lazily-created post-FX pipeline â€” `None` until the first `BeginPostFx` command.
+    /// Lazily-created post-FX pipeline — `None` until the first `BeginPostFx` command.
     postfx_pipeline: Option<crate::render::postfx_pipeline::PostFxPipeline>,
     /// Per-stack off-screen capture textures keyed by stack_id.
     postfx_capture: HashMap<u64, crate::render::postfx_pipeline::PostFxTexture>,
@@ -521,7 +520,7 @@ pub struct GpuRenderer {
 ///
 /// For each angular sample the function casts a ray from the light centre and
 /// finds the nearest occluder edge.  The result is a `Vec<f32>` of length
-/// `SHADOW_MAP_RES` where each element is the **normalised** distance (0â€“1
+/// `SHADOW_MAP_RES` where each element is the **normalised** distance (0–1
 /// relative to `light_radius`) to the closest occluder at that angle.  A value
 /// of 1.0 means no occluder is closer than the light radius.
 fn compute_1d_shadow_map(
@@ -535,7 +534,7 @@ fn compute_1d_shadow_map(
     let inv_res = 1.0 / SHADOW_MAP_RES as f32;
 
     // Pre-collect all occluder edges in light-local space so the inner loop
-    // iterates a flat Vec instead of nested iterators (occluders Ă— edges Ă— resolution).
+    // iterates a flat Vec instead of nested iterators (occluders × edges × resolution).
     struct Edge {
         ax: f32,
         ay: f32,
@@ -581,20 +580,20 @@ fn compute_1d_shadow_map(
     let inv_radius = 1.0 / light_radius;
 
     for i in 0..SHADOW_MAP_RES {
-        // Map angular slot to a ray direction in [-Ď€, Ď€] covering the full circle.
+        // Map angular slot to a ray direction in [-π, π] covering the full circle.
         let angle = (i as f32 * inv_res) * std::f32::consts::TAU - PI;
         let dir_x = angle.cos();
         let dir_y = angle.sin();
         let mut min_dist = 1.0f32;
 
         for e in &edges {
-            // 2D rayâ€“segment intersection via the parametric cross-product form:
+            // 2D ray–segment intersection via the parametric cross-product form:
             //   Ray:     P = t * (dir_x, dir_y)          for t > 0
-            //   Segment: Q = (ax, ay) + u * (sx, sy)     for u â [0, 1]
-            // Solving simultaneously yields t and u from the 2Ă—2 system.
+            //   Segment: Q = (ax, ay) + u * (sx, sy)     for u ∈ [0, 1]
+            // Solving simultaneously yields t and u from the 2×2 system.
             let cross_ds = dir_x * e.sy - dir_y * e.sx;
             if cross_ds.abs() < 1e-8 {
-                continue; // Ray is parallel to this edge â€” skip.
+                continue; // Ray is parallel to this edge — skip.
             }
             let inv_cross = 1.0 / cross_ds;
             let t = (e.ax * e.sy - e.ay * e.sx) * inv_cross;
@@ -618,11 +617,11 @@ impl GpuRenderer {
     /// Creates a new `GpuRenderer` from an already-created wgpu device and queue.
     ///
     /// # Parameters
-    /// - `device` â€” `wgpu::Device`.
-    /// - `queue` â€” `wgpu::Queue`.
-    /// - `surface_format` â€” `wgpu::TextureFormat`.
-    /// - `width` â€” `u32`.
-    /// - `height` â€” `u32`.
+    /// - `device` — `wgpu::Device`.
+    /// - `queue` — `wgpu::Queue`.
+    /// - `surface_format` — `wgpu::TextureFormat`.
+    /// - `width` — `u32`.
+    /// - `height` — `u32`.
     ///
     /// # Returns
     /// `Self`.
@@ -635,7 +634,7 @@ impl GpuRenderer {
         width: u32,
         height: u32,
     ) -> Self {
-        // â”€â”€ Viewport uniform â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Viewport uniform ──────────────────────────────────────────────
         let viewport_data = ViewportUniform {
             size: [width as f32, height as f32],
             time: 0.0,
@@ -652,7 +651,7 @@ impl GpuRenderer {
         });
         queue.write_buffer(&viewport_buffer, 0, bytemuck::bytes_of(&viewport_data));
 
-        // â”€â”€ Bind group layouts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Bind group layouts ────────────────────────────────────────────
         let viewport_bgl = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
             label: Some("viewport_bgl"),
             entries: &[wgpu::BindGroupLayoutEntry {
@@ -688,7 +687,7 @@ impl GpuRenderer {
             ],
         });
 
-        // â”€â”€ Viewport bind group â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Viewport bind group ────────────────────────────────────────────
         let viewport_bg = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("viewport_bg"),
             layout: &viewport_bgl,
@@ -698,7 +697,7 @@ impl GpuRenderer {
             }],
         });
 
-        // â”€â”€ Default shaders and layouts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Default shaders and layouts ───────────────────────────────────
         let color_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("color_shader"),
             source: wgpu::ShaderSource::Wgsl(COLOR_SHADER.into()),
@@ -719,7 +718,7 @@ impl GpuRenderer {
             push_constant_ranges: &[],
         });
 
-        // â”€â”€ Vertex / index buffers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Vertex / index buffers ────────────────────────────────────────
         let color_vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("color_vbo"),
             size: MAX_COLOR_VERTS * std::mem::size_of::<ColorVertex>() as u64,
@@ -782,8 +781,8 @@ impl GpuRenderer {
     /// Updates the viewport uniform after a window resize.
     ///
     /// # Parameters
-    /// - `width` â€” `u32`.
-    /// - `height` â€” `u32`.
+    /// - `width` — `u32`.
+    /// - `height` — `u32`.
     ///
     /// Surface reconfiguration is the caller's responsibility (see `App::handle_resize`).
     pub fn resize(&mut self, width: u32, height: u32) {
@@ -899,11 +898,11 @@ impl GpuRenderer {
     /// Uploads raw RGBA8 pixel data as a new GPU texture stored under the given key.
     ///
     /// # Parameters
-    /// - `key` â€” `TextureKey`.
-    /// - `pixels` â€” `&[u8]`.
-    /// - `width` â€” `u32`.
-    /// - `height` â€” `u32`.
-    /// - `default_filter` â€” `&(String, String, u32)`.
+    /// - `key` — `TextureKey`.
+    /// - `pixels` — `&[u8]`.
+    /// - `width` — `u32`.
+    /// - `height` — `u32`.
+    /// - `default_filter` — `&(String, String, u32)`.
     pub fn upload_texture(
         &mut self,
         key: TextureKey,
@@ -937,10 +936,10 @@ impl GpuRenderer {
     /// Creates an off-screen GPU canvas texture stored under the given key.
     ///
     /// # Parameters
-    /// - `key` â€” `CanvasKey`.
-    /// - `width` â€” `u32`.
-    /// - `height` â€” `u32`.
-    /// - `default_filter` â€” `&(String, String, u32)`.
+    /// - `key` — `CanvasKey`.
+    /// - `width` — `u32`.
+    /// - `height` — `u32`.
+    /// - `default_filter` — `&(String, String, u32)`.
     ///
     /// The texture is created with `RENDER_ATTACHMENT | TEXTURE_BINDING` so it can
     /// be rendered to and then sampled as a regular image.
@@ -1102,7 +1101,7 @@ impl GpuRenderer {
         let w = self.width;
         let h = self.height;
 
-        // â”€â”€ Light accumulation texture (screen-sized) â”€â”€
+        // ── Light accumulation texture (screen-sized) ──
         let accum_texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("light_accum_texture"),
             size: wgpu::Extent3d {
@@ -1126,7 +1125,7 @@ impl GpuRenderer {
         let accum_bind_group =
             self.create_texture_bind_group(&accum_view, &sampler, "light_accum_bg");
 
-        // â”€â”€ Shadow atlas texture (SHADOW_MAP_RES Ă— MAX_SHADOW_LIGHTS, R32Float) â”€â”€
+        // ── Shadow atlas texture (SHADOW_MAP_RES × MAX_SHADOW_LIGHTS, R32Float) ──
         let shadow_atlas_texture = self.device.create_texture(&wgpu::TextureDescriptor {
             label: Some("shadow_atlas_texture"),
             size: wgpu::Extent3d {
@@ -1144,7 +1143,7 @@ impl GpuRenderer {
         let shadow_atlas_view =
             shadow_atlas_texture.create_view(&wgpu::TextureViewDescriptor::default());
 
-        // Shadow atlas bind group layout â€” unfilterable R32Float.
+        // Shadow atlas bind group layout — unfilterable R32Float.
         let shadow_bgl = self
             .device
             .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
@@ -1188,7 +1187,7 @@ impl GpuRenderer {
             ],
         });
 
-        // â”€â”€ Light pipeline layout: viewport + shadow atlas â”€â”€
+        // ── Light pipeline layout: viewport + shadow atlas ──
         let light_pipeline_layout =
             self.device
                 .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
@@ -1197,7 +1196,7 @@ impl GpuRenderer {
                     push_constant_ranges: &[],
                 });
 
-        // â”€â”€ Light radial-falloff shader â”€â”€
+        // ── Light radial-falloff shader ──
         let light_module = self
             .device
             .create_shader_module(wgpu::ShaderModuleDescriptor {
@@ -1205,7 +1204,7 @@ impl GpuRenderer {
                 source: wgpu::ShaderSource::Wgsl(LIGHT_SHADER.into()),
             });
 
-        // Additive pipeline â€” renders light quads onto the accumulation texture.
+        // Additive pipeline — renders light quads onto the accumulation texture.
         // Uses LightVertex with shadow_v attribute.
         let additive_pipeline =
             self.device
@@ -1247,7 +1246,7 @@ impl GpuRenderer {
                     cache: None,
                 });
 
-        // Composite pipeline â€” draws the accumulation texture over the scene
+        // Composite pipeline — draws the accumulation texture over the scene
         // with multiply blending. Needs depth/stencil to match the screen target.
         let composite_pipeline = create_render_pipeline(
             &self.device,
@@ -1263,7 +1262,7 @@ impl GpuRenderer {
             "fs_main",
         );
 
-        // â”€â”€ Vertex / index buffers for light quads + composite quad â”€â”€
+        // ── Vertex / index buffers for light quads + composite quad ──
         let max_verts = (MAX_LIGHT_QUADS + 1) * 4;
         let max_idxs = (MAX_LIGHT_QUADS + 1) * 6;
         let vertex_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
@@ -1298,24 +1297,24 @@ impl GpuRenderer {
     /// Processes a frame: uploads new textures, tessellates commands, renders to surface, presents.
     ///
     /// # Parameters
-    /// - `surface` â€” `&wgpu::Surface<'static>`.
-    /// - `commands` â€” `&[RenderCommand]`.
-    /// - `textures` â€” `&SlotMap<TextureKey, TextureData>`.
-    /// - `fonts` â€” `&mut SlotMap<FontKey, crate::render::Font>`.
-    /// - `sprite_batches` â€” `&SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>`.
-    /// - `canvases` â€” `&SlotMap<CanvasKey, crate::render::Canvas>`.
-    /// - `meshes` â€” `&SlotMap<MeshKey, Mesh>`.
-    /// - `shaders` â€” `&SlotMap<ShaderKey, Shader>`.
-    /// - `default_filter` â€” `&(String, String, u32)`.
-    /// - `background_color` â€” `[f32`.
-    /// - `capture_screenshot` â€” `bool`.
+    /// - `surface` — `&wgpu::Surface<'static>`.
+    /// - `commands` — `&[RenderCommand]`.
+    /// - `textures` — `&SlotMap<TextureKey, TextureData>`.
+    /// - `fonts` — `&mut SlotMap<FontKey, crate::render::Font>`.
+    /// - `sprite_batches` — `&SlotMap<SpriteBatchKey, crate::sprite::SpriteBatch>`.
+    /// - `canvases` — `&SlotMap<CanvasKey, crate::render::Canvas>`.
+    /// - `meshes` — `&SlotMap<MeshKey, Mesh>`.
+    /// - `shaders` — `&SlotMap<ShaderKey, Shader>`.
+    /// - `default_filter` — `&(String, String, u32)`.
+    /// - `background_color` — `[f32`.
+    /// - `capture_screenshot` — `bool`.
     ///
     /// Returns `Err(wgpu::SurfaceError)` on transient errors; the caller should reconfigure on
     /// `SurfaceError::Lost`. When `capture_screenshot` is `true`, a successful frame may also
     /// return `Ok(Some((width, height, rgba_pixels)))` containing the presented screen image.
 
     /// Returns `true` when the AABB of a primitive is within the visible viewport after the
-    /// full modelâ†’camera transform is applied.
+    /// full model→camera transform is applied.
     ///
     /// Used for CPU-side viewport culling before tessellation.  Adds a generous `margin` of
     /// 4 pixels to avoid popping artefacts on primitives that are barely outside the viewport.
@@ -1323,12 +1322,12 @@ impl GpuRenderer {
     /// Only applied when rendering to the screen target; canvas-to-canvas draws always proceed.
     ///
     /// # Parameters
-    /// - `x`, `y` â€” top-left of the primitive's AABB in model space.
-    /// - `w`, `h` â€” width and height of the AABB.  For shapes centred on (x, y), pass the
+    /// - `x`, `y` — top-left of the primitive's AABB in model space.
+    /// - `w`, `h` — width and height of the AABB.  For shapes centred on (x, y), pass the
     ///   full extent (e.g. `w = 2.0 * radius`).
-    /// - `model` â€” current CPU-side model matrix (top of the transform stack).
-    /// - `camera` â€” camera-view matrix (same one uploaded as `view_col*` uniform).
-    /// - `vp_w`, `vp_h` â€” viewport dimensions in logical pixels.
+    /// - `model` — current CPU-side model matrix (top of the transform stack).
+    /// - `camera` — camera-view matrix (same one uploaded as `view_col*` uniform).
+    /// - `vp_w`, `vp_h` — viewport dimensions in logical pixels.
     #[inline]
     fn aabb_visible_2d(
         x: f32,
@@ -1369,7 +1368,10 @@ impl GpuRenderer {
             }
         }
         const MARGIN: f32 = 4.0;
-        max_x >= -MARGIN && min_x <= vp_w + MARGIN && max_y >= -MARGIN && min_y <= vp_h + MARGIN
+        max_x >= -MARGIN
+            && min_x <= vp_w + MARGIN
+            && max_y >= -MARGIN
+            && min_y <= vp_h + MARGIN
     }
 
     /// Executes one complete GPU render pass, processing the full `RenderCommand` queue into the wgpu surface.
@@ -1448,7 +1450,7 @@ impl GpuRenderer {
                     line_width = *w;
                 }
 
-                // â”€â”€ Transform stack â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                // ── Transform stack ──────────────────────────────────────
                 RenderCommand::PushTransform => {
                     let top = *transform_stack.last().unwrap();
                     transform_stack.push(top);
@@ -1494,14 +1496,8 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the rect is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            *x,
-                            *y,
-                            *w,
-                            *h,
-                            t,
-                            camera_matrix,
-                            self.width as f32,
-                            self.height as f32,
+                            *x, *y, *w, *h, t, camera_matrix,
+                            self.width as f32, self.height as f32,
                         )
                     {
                         continue;
@@ -1551,14 +1547,8 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the rounded rect is off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            *x,
-                            *y,
-                            *w,
-                            *h,
-                            t,
-                            camera_matrix,
-                            self.width as f32,
-                            self.height as f32,
+                            *x, *y, *w, *h, t, camera_matrix,
+                            self.width as f32, self.height as f32,
                         )
                     {
                         continue;
@@ -1602,14 +1592,8 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the circle is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            x - r,
-                            y - r,
-                            r * 2.0,
-                            r * 2.0,
-                            t,
-                            camera_matrix,
-                            self.width as f32,
-                            self.height as f32,
+                            x - r, y - r, r * 2.0, r * 2.0, t, camera_matrix,
+                            self.width as f32, self.height as f32,
                         )
                     {
                         continue;
@@ -1652,14 +1636,8 @@ impl GpuRenderer {
                     // Viewport culling: skip tessellation when the ellipse is entirely off-screen.
                     if current_target == RenderTargetId::Screen
                         && !Self::aabb_visible_2d(
-                            x - rx,
-                            y - ry,
-                            rx * 2.0,
-                            ry * 2.0,
-                            t,
-                            camera_matrix,
-                            self.width as f32,
-                            self.height as f32,
+                            x - rx, y - ry, rx * 2.0, ry * 2.0, t, camera_matrix,
+                            self.width as f32, self.height as f32,
                         )
                     {
                         continue;
@@ -1976,14 +1954,8 @@ impl GpuRenderer {
                         // Viewport culling: skip tessellation when the image is entirely off-screen.
                         if current_target == RenderTargetId::Screen
                             && !Self::aabb_visible_2d(
-                                *x,
-                                *y,
-                                w,
-                                h,
-                                t,
-                                camera_matrix,
-                                self.width as f32,
-                                self.height as f32,
+                                *x, *y, w, h, t, camera_matrix,
+                                self.width as f32, self.height as f32,
                             )
                         {
                             continue;
@@ -2047,14 +2019,10 @@ impl GpuRenderer {
                         // Scale the AABB by |sx|/|sy| to account for applied scaling.
                         if current_target == RenderTargetId::Screen
                             && !Self::aabb_visible_2d(
-                                *x - *ox * sx.abs(),
-                                *y - *oy * sy.abs(),
-                                w * sx.abs(),
-                                h * sy.abs(),
-                                t,
-                                camera_matrix,
-                                self.width as f32,
-                                self.height as f32,
+                                *x - *ox * sx.abs(), *y - *oy * sy.abs(),
+                                w * sx.abs(), h * sy.abs(),
+                                t, camera_matrix,
+                                self.width as f32, self.height as f32,
                             )
                         {
                             continue;
@@ -2654,18 +2622,24 @@ impl GpuRenderer {
                     let (target_width, target_height) =
                         self.target_dimensions(current_target, canvases);
                     let scissor = normalize_scissor(current_scissor, target_width, target_height);
-                    let mut pverts: Vec<ColorVertex> = Vec::with_capacity(particles.len() * 6);
+                    let mut pverts: Vec<ColorVertex> =
+                        Vec::with_capacity(particles.len() * 6);
                     let mut pidxs: Vec<u32> = Vec::with_capacity(particles.len() * 12);
                     use std::f32::consts::PI;
                     for inst in particles {
                         let color = [inst.r, inst.g, inst.b, inst.a];
                         let half = inst.size * 0.5;
                         match &inst.shape {
-                            ParticleRenderShape::Square | ParticleRenderShape::Diamond => {
+                            ParticleRenderShape::Square
+                            | ParticleRenderShape::Diamond => {
                                 let cos_r = inst.rotation.cos();
                                 let sin_r = inst.rotation.sin();
-                                let corners =
-                                    [(-half, -half), (half, -half), (half, half), (-half, half)];
+                                let corners = [
+                                    (-half, -half),
+                                    (half, -half),
+                                    (half, half),
+                                    (-half, half),
+                                ];
                                 let base = pverts.len() as u32;
                                 for (lx, ly) in corners {
                                     let (sx, sy) = apply(
@@ -2679,12 +2653,7 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base,
-                                    base + 1,
-                                    base + 2,
-                                    base,
-                                    base + 2,
-                                    base + 3,
+                                    base, base + 1, base + 2, base, base + 2, base + 3,
                                 ]);
                             }
                             ParticleRenderShape::Circle => {
@@ -2720,9 +2689,13 @@ impl GpuRenderer {
                             ParticleRenderShape::Triangle => {
                                 let base = pverts.len() as u32;
                                 for i in 0..3u32 {
-                                    let a = inst.rotation - PI * 0.5 + i as f32 * (2.0 * PI / 3.0);
-                                    let (sx, sy) =
-                                        apply(t, inst.x + a.cos() * half, inst.y + a.sin() * half);
+                                    let a = inst.rotation - PI * 0.5
+                                        + i as f32 * (2.0 * PI / 3.0);
+                                    let (sx, sy) = apply(
+                                        t,
+                                        inst.x + a.cos() * half,
+                                        inst.y + a.sin() * half,
+                                    );
                                     pverts.push(ColorVertex {
                                         position: [sx, sy],
                                         color,
@@ -2756,17 +2729,22 @@ impl GpuRenderer {
                                 });
                                 let mut rng = u64::from(*seed);
                                 for i in 0..n {
-                                    let base_angle =
-                                        inst.rotation + i as f32 * (2.0 * PI / n as f32);
+                                    let base_angle = inst.rotation
+                                        + i as f32 * (2.0 * PI / n as f32);
                                     rng = rng
                                         .wrapping_mul(6_364_136_223_846_793_005)
                                         .wrapping_add(1_442_695_040_888_963_407);
-                                    let jitter_a = (rng >> 33) as f32 / u32::MAX as f32 * 0.4 - 0.2;
+                                    let jitter_a = (rng >> 33) as f32
+                                        / u32::MAX as f32
+                                        * 0.4
+                                        - 0.2;
                                     rng = rng
                                         .wrapping_mul(6_364_136_223_846_793_005)
                                         .wrapping_add(1_442_695_040_888_963_407);
-                                    let jitter_r = 0.5 + (rng >> 33) as f32 / u32::MAX as f32 * 0.5;
-                                    let angle = base_angle + jitter_a * (2.0 * PI / n as f32);
+                                    let jitter_r = 0.5
+                                        + (rng >> 33) as f32 / u32::MAX as f32 * 0.5;
+                                    let angle = base_angle
+                                        + jitter_a * (2.0 * PI / n as f32);
                                     let (sx, sy) = apply(
                                         t,
                                         inst.x + angle.cos() * half * jitter_r,
@@ -2808,17 +2786,13 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base,
-                                    base + 1,
-                                    base + 2,
-                                    base,
-                                    base + 2,
-                                    base + 3,
+                                    base, base + 1, base + 2, base, base + 2, base + 3,
                                 ]);
                             }
                             ParticleRenderShape::Ring { thickness } => {
                                 let outer = half;
-                                let inner = outer * (1.0 - (*thickness).clamp(0.05, 1.0));
+                                let inner =
+                                    outer * (1.0 - (*thickness).clamp(0.05, 1.0));
                                 const N: usize = 20;
                                 let base = pverts.len() as u32;
                                 for i in 0..N {
@@ -2848,7 +2822,9 @@ impl GpuRenderer {
                                     let i0 = base + i * 2 + 1;
                                     let o1 = base + j * 2;
                                     let i1 = base + j * 2 + 1;
-                                    pidxs.extend_from_slice(&[o0, o1, i0, i0, o1, i1]);
+                                    pidxs.extend_from_slice(&[
+                                        o0, o1, i0, i0, o1, i1,
+                                    ]);
                                 }
                             }
                             ParticleRenderShape::Capsule => {
@@ -2876,12 +2852,7 @@ impl GpuRenderer {
                                     });
                                 }
                                 pidxs.extend_from_slice(&[
-                                    base,
-                                    base + 1,
-                                    base + 2,
-                                    base,
-                                    base + 2,
-                                    base + 3,
+                                    base, base + 1, base + 2, base, base + 2, base + 3,
                                 ]);
                                 // Half-circle caps at each end
                                 const N: usize = 8;
@@ -2936,7 +2907,8 @@ impl GpuRenderer {
                         );
                     }
                 }
-                // â”€â”€ Extended RenderCommand variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                // ── Extended RenderCommand variants ─────────────────────────
+
                 RenderCommand::DrawQuadBezier {
                     start,
                     control,
@@ -2951,8 +2923,10 @@ impl GpuRenderer {
                     for i in 1..=n {
                         let tv = i as f32 / n as f32;
                         let mt = 1.0 - tv;
-                        let nx = mt * mt * start.x + 2.0 * mt * tv * control.x + tv * tv * end.x;
-                        let ny = mt * mt * start.y + 2.0 * mt * tv * control.y + tv * tv * end.y;
+                        let nx =
+                            mt * mt * start.x + 2.0 * mt * tv * control.x + tv * tv * end.x;
+                        let ny =
+                            mt * mt * start.y + 2.0 * mt * tv * control.y + tv * tv * end.y;
                         push_thick_line(
                             &mut verts,
                             &mut idxs,
@@ -3203,7 +3177,12 @@ impl GpuRenderer {
                         GradientDirection::Radial => [*color1, *color1, *color2, *color2],
                     };
                     let t = transform_stack.last().unwrap();
-                    let corner_pts = [(*x, *y), (*x + w, *y), (*x + w, *y + h), (*x, *y + h)];
+                    let corner_pts = [
+                        (*x, *y),
+                        (*x + w, *y),
+                        (*x + w, *y + h),
+                        (*x, *y + h),
+                    ];
                     let mut verts: Vec<ColorVertex> = Vec::with_capacity(4);
                     let mut idxs: Vec<u32> = Vec::with_capacity(6);
                     let base = verts.len() as u32;
@@ -3246,7 +3225,8 @@ impl GpuRenderer {
                             DrawMode::Fill => {
                                 let base = verts.len() as u32;
                                 for i in 0..n {
-                                    let (sx, sy) = apply(t, vertices[i * 2], vertices[i * 2 + 1]);
+                                    let (sx, sy) =
+                                        apply(t, vertices[i * 2], vertices[i * 2 + 1]);
                                     verts.push(ColorVertex {
                                         position: [sx, sy],
                                         color: colors[i],
@@ -3336,7 +3316,7 @@ impl GpuRenderer {
                     ];
                     let (tw, th) = self.target_dimensions(current_target, canvases);
                     let scissor = normalize_scissor(current_scissor, tw, th);
-                    // Draw each face â€” textured if a key is provided, else colored polygon.
+                    // Draw each face — textured if a key is provided, else colored polygon.
                     for (corners, color, tex_opt) in [
                         (&top_corners, top_color, top_texture),
                         (&left_corners, left_color, left_texture),
@@ -3346,9 +3326,7 @@ impl GpuRenderer {
                             if self.gpu_textures.contains_key(*key) {
                                 let mut tv: Vec<TexVertex> = Vec::with_capacity(4);
                                 let mut ti: Vec<u32> = Vec::with_capacity(6);
-                                push_tex_quad_corners(
-                                    &mut tv, &mut ti, t, *color, corners, &full_uvs,
-                                );
+                                push_tex_quad_corners(&mut tv, &mut ti, t, *color, corners, &full_uvs);
                                 append_tex_draw(
                                     &mut draws,
                                     &mut all_tex_verts,
@@ -3366,7 +3344,8 @@ impl GpuRenderer {
                                 );
                             }
                         } else {
-                            let flat: Vec<f32> = corners.iter().flat_map(|v| [v.x, v.y]).collect();
+                            let flat: Vec<f32> =
+                                corners.iter().flat_map(|v| [v.x, v.y]).collect();
                             let mut cv: Vec<ColorVertex> = Vec::new();
                             let mut ci: Vec<u32> = Vec::new();
                             self.tess_polygon(
@@ -3442,7 +3421,7 @@ impl GpuRenderer {
                     );
                 }
 
-                // State-machine stubs â€” sort group tracking is NYI in the GPU renderer.
+                // State-machine stubs — sort group tracking is NYI in the GPU renderer.
                 RenderCommand::BeginSortGroup { .. } => {}
                 RenderCommand::PushSortKey(_) => {}
                 RenderCommand::FlushSortGroup { .. } => {}
@@ -3644,7 +3623,7 @@ impl GpuRenderer {
                                 base + 3,
                             ]);
                         };
-                    // Top bevel strip (outer-top-left â†’ outer-top-right â†’ inner-top-right â†’ inner-top-left)
+                    // Top bevel strip (outer-top-left → outer-top-right → inner-top-right → inner-top-left)
                     push_bevel_quad(
                         &mut verts,
                         &mut idxs,
@@ -3706,22 +3685,19 @@ impl GpuRenderer {
                 // Post-FX capture and apply.
                 RenderCommand::BeginPostFx { stack_id } => {
                     if self.postfx_pipeline.is_none() {
-                        self.postfx_pipeline =
-                            Some(crate::render::postfx_pipeline::PostFxPipeline::new(
+                        self.postfx_pipeline = Some(
+                            crate::render::postfx_pipeline::PostFxPipeline::new(
                                 &self.device,
                                 self.surface_format,
-                            ));
+                            ),
+                        );
                     }
                     let (w, h) = (self.width, self.height);
                     let fmt = self.surface_format;
                     let dev = &self.device;
                     self.postfx_capture.entry(*stack_id).or_insert_with(|| {
                         crate::render::postfx_pipeline::PostFxTexture::new(
-                            dev,
-                            w,
-                            h,
-                            "postfx_capture",
-                            fmt,
+                            dev, w, h, "postfx_capture", fmt,
                         )
                     });
                 }
@@ -3737,13 +3713,49 @@ impl GpuRenderer {
                 RenderCommand::DrawRichText { .. } => {
                     // Rich text rendering: not yet implemented in GPU renderer.
                 }
-                RenderCommand::DrawConvexFan { .. } => {
-                    // Convex fan rendering: not yet implemented in GPU renderer.
+                RenderCommand::DrawConvexFan {
+                    vertices,
+                    tint,
+                    blend,
+                    ..
+                } => {
+                    if vertices.len() < 3 {
+                        continue;
+                    }
+                    let t = transform_stack.last().unwrap();
+                    let mut verts = Vec::with_capacity(vertices.len());
+                    for v in vertices {
+                        let (px, py) = apply(t, v.x, v.y);
+                        verts.push(ColorVertex {
+                            position: [px, py],
+                            color: *tint,
+                        });
+                    }
+                    let mut idxs = Vec::with_capacity((vertices.len() - 2) * 3);
+                    for i in 1..(vertices.len() as u32 - 1) {
+                        idxs.extend_from_slice(&[0, i, i + 1]);
+                    }
+                    let (target_width, target_height) =
+                        self.target_dimensions(current_target, canvases);
+                    append_color_draw(
+                        &mut draws,
+                        &mut all_color_verts,
+                        &mut all_color_idxs,
+                        current_target,
+                        *blend,
+                        normalize_scissor(current_scissor, target_width, target_height),
+                        color_mask_bits,
+                        active_shader.filter(|key| shaders.contains_key(*key)),
+                        stencil_mode,
+                        stencil_reference,
+                        verts,
+                        idxs,
+                    );
                 }
             }
         }
 
-        // â”€â”€ Draw-call coalescing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Draw-call coalescing ─────────────────────────────────────────────
         // Merge adjacent PreparedDraw entries that share identical GPU state
         // and have contiguous index ranges.  This reduces the number of draw
         // calls dispatched per frame without altering draw order.
@@ -3777,33 +3789,33 @@ impl GpuRenderer {
             draws = merged;
         }
 
-        // â”€â”€ Buffer saturation diagnostics (warn at â‰Ą90% capacity) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Buffer saturation diagnostics (warn at ≥90% capacity) ───────────────────────────────
         {
             let color_v_pct = all_color_verts.len() * 100 / MAX_COLOR_VERTS as usize;
             if color_v_pct >= 90 {
                 log::warn!(
-                    "[G003] color vertex buffer at {}% capacity ({}/{}) â€” consider reducing draw calls or increasing MAX_COLOR_VERTS",
+                    "[G003] color vertex buffer at {}% capacity ({}/{}) — consider reducing draw calls or increasing MAX_COLOR_VERTS",
                     color_v_pct, all_color_verts.len(), MAX_COLOR_VERTS
                 );
             }
             let color_i_pct = all_color_idxs.len() * 100 / MAX_COLOR_IDXS as usize;
             if color_i_pct >= 90 {
                 log::warn!(
-                    "[G003] color index buffer at {}% capacity ({}/{}) â€” consider reducing draw calls or increasing MAX_COLOR_IDXS",
+                    "[G003] color index buffer at {}% capacity ({}/{}) — consider reducing draw calls or increasing MAX_COLOR_IDXS",
                     color_i_pct, all_color_idxs.len(), MAX_COLOR_IDXS
                 );
             }
             let tex_v_pct = all_tex_verts.len() * 100 / MAX_TEX_VERTS as usize;
             if tex_v_pct >= 90 {
                 log::warn!(
-                    "[G003] tex vertex buffer at {}% capacity ({}/{}) â€” consider reducing sprite draws or increasing MAX_TEX_VERTS",
+                    "[G003] tex vertex buffer at {}% capacity ({}/{}) — consider reducing sprite draws or increasing MAX_TEX_VERTS",
                     tex_v_pct, all_tex_verts.len(), MAX_TEX_VERTS
                 );
             }
             let tex_i_pct = all_tex_idxs.len() * 100 / MAX_TEX_IDXS as usize;
             if tex_i_pct >= 90 {
                 log::warn!(
-                    "[G003] tex index buffer at {}% capacity ({}/{}) â€” consider reducing sprite draws or increasing MAX_TEX_IDXS",
+                    "[G003] tex index buffer at {}% capacity ({}/{}) — consider reducing sprite draws or increasing MAX_TEX_IDXS",
                     tex_i_pct, all_tex_idxs.len(), MAX_TEX_IDXS
                 );
             }
@@ -4001,13 +4013,13 @@ impl GpuRenderer {
         if light_world.enabled && !light_world.lights.is_empty() {
             self.ensure_light_resources();
 
-            // â”€â”€ Compute 1D shadow maps for shadow-enabled lights â”€â”€
+            // ── Compute 1D shadow maps for shadow-enabled lights ──
             let mut shadow_row = 0usize;
             // Pre-collect occluders to avoid borrow issues.
             let occluder_list: Vec<&crate::light::occluder::Occluder> =
                 light_world.occluders.values().collect();
 
-            // Map from light SlotMap index â†’ shadow atlas row (None = no shadow).
+            // Map from light SlotMap index → shadow atlas row (None = no shadow).
             let mut light_shadow_rows: Vec<Option<usize>> = Vec::new();
             // CPU shadow data rows to upload.
             let mut shadow_rows_data: Vec<(usize, Vec<f32>)> = Vec::new();
@@ -4062,7 +4074,7 @@ impl GpuRenderer {
                 }
             }
 
-            // â”€â”€ Tessellate one quad per enabled light â”€â”€
+            // ── Tessellate one quad per enabled light ──
             let mut light_verts: Vec<LightVertex> = Vec::new();
             let mut light_idxs: Vec<u32> = Vec::new();
             let mut light_count = 0usize;
@@ -4125,7 +4137,7 @@ impl GpuRenderer {
                 light_count += 1;
             }
 
-            // â”€â”€ Composite full-screen quad (screen-space) â”€â”€
+            // ── Composite full-screen quad (screen-space) ──
             let composite_base = light_verts.len() as u32;
             let sw = self.width as f32;
             let sh = self.height as f32;
@@ -4167,7 +4179,7 @@ impl GpuRenderer {
             ]);
             let composite_idx_start = (light_count * 6) as u32;
 
-            // â”€â”€ Upload light geometry â”€â”€
+            // ── Upload light geometry ──
             {
                 let lg = self.light_gpu.as_ref().unwrap();
                 self.queue
@@ -4176,8 +4188,8 @@ impl GpuRenderer {
                     .write_buffer(&lg.index_buffer, 0, bytemuck::cast_slice(&light_idxs));
             }
 
-            // â”€â”€ Pass 1: Accumulate lights onto the light buffer â”€â”€
-            // Light positions are in world space â€” the camera matrix transforms
+            // ── Pass 1: Accumulate lights onto the light buffer ──
+            // Light positions are in world space — the camera matrix transforms
             // them to screen space in the vertex shader, just like scene geometry.
             self.update_viewport_uniform(self.width, self.height, camera_matrix, frame_time);
             {
@@ -4212,7 +4224,7 @@ impl GpuRenderer {
                 }
             }
 
-            // â”€â”€ Pass 2: Composite light buffer over scene (multiply blend) â”€â”€
+            // ── Pass 2: Composite light buffer over scene (multiply blend) ──
             // Use identity camera so the full-screen quad maps 1:1 to pixels.
             self.update_viewport_uniform(self.width, self.height, &Mat3::identity(), frame_time);
             {
@@ -4260,7 +4272,7 @@ impl GpuRenderer {
             None
         };
 
-        // â”€â”€ Post-processing passes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Post-processing passes ───────────────────────────────────────────
         // Apply all deferred PostFxStack passes now that the full scene is composited.
         for (stack_id, passes, w, h) in &pending_postfx {
             if let (Some(pipeline), Some(capture)) =
@@ -4683,7 +4695,7 @@ impl GpuRenderer {
                         &cache.color_module,
                         geometry,
                         key,
-                        "luna_fragment_main",
+                        "lurek_fragment_main",
                     ),
                     GeometryKind::Texture => create_render_pipeline(
                         &self.device,
@@ -4692,7 +4704,7 @@ impl GpuRenderer {
                         &cache.texture_module,
                         geometry,
                         key,
-                        "luna_fragment_main",
+                        "lurek_fragment_main",
                     ),
                 }
             };
@@ -4846,7 +4858,7 @@ impl GpuRenderer {
         true
     }
 
-    // â”€â”€ Tessellation helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Tessellation helpers ──────────────────────────────────────────────────
 
     #[allow(clippy::too_many_arguments)]
     fn tess_rect(
@@ -5119,7 +5131,7 @@ impl GpuRenderer {
     }
 }
 
-// â”€â”€â”€ Free helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Free helpers ─────────────────────────────────────────────────────────────
 
 #[allow(clippy::too_many_arguments)]
 fn append_color_draw(
@@ -5359,30 +5371,30 @@ struct VertexOutput {{
     @location(1) uv: vec2<f32>,
 }}
 
-struct LunaGlobals {{
-    luna_ScreenSize: vec2<f32>,
-    luna_Time: f32,
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
     _pad: f32,
     view_col0: vec4<f32>,
     view_col1: vec4<f32>,
     view_col2: vec4<f32>,
 }}
 
-@group(0) @binding(0) var<uniform> luna: LunaGlobals;
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
 {uniform_decls}
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {{
     var out: VertexOutput;
     let view = mat3x3<f32>(
-        luna.view_col0.xyz,
-        luna.view_col1.xyz,
-        luna.view_col2.xyz,
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
     );
     let cam_pos = view * vec3<f32>(in.position, 1.0);
     out.clip_position = vec4<f32>(
-        (cam_pos.x / luna.luna_ScreenSize.x) * 2.0 - 1.0,
-        1.0 - (cam_pos.y / luna.luna_ScreenSize.y) * 2.0,
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
         0.0,
         1.0
     );
@@ -5394,7 +5406,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
 {user_source}
 
 @fragment
-fn luna_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
     return {fragment_entry}({fragment_call_args});
 }}
 "#,
@@ -5425,16 +5437,16 @@ struct VertexOutput {{
     @location(1) uv: vec2<f32>,
 }}
 
-struct LunaGlobals {{
-    luna_ScreenSize: vec2<f32>,
-    luna_Time: f32,
+struct LurekGlobals {{
+    lurek_ScreenSize: vec2<f32>,
+    lurek_Time: f32,
     _pad: f32,
     view_col0: vec4<f32>,
     view_col1: vec4<f32>,
     view_col2: vec4<f32>,
 }}
 
-@group(0) @binding(0) var<uniform> luna: LunaGlobals;
+@group(0) @binding(0) var<uniform> lurek: LurekGlobals;
 @group(1) @binding(0) var t_diffuse: texture_2d<f32>;
 @group(1) @binding(1) var s_diffuse: sampler;
 {uniform_decls}
@@ -5443,14 +5455,14 @@ struct LunaGlobals {{
 fn vs_main(in: VertexInput) -> VertexOutput {{
     var out: VertexOutput;
     let view = mat3x3<f32>(
-        luna.view_col0.xyz,
-        luna.view_col1.xyz,
-        luna.view_col2.xyz,
+        lurek.view_col0.xyz,
+        lurek.view_col1.xyz,
+        lurek.view_col2.xyz,
     );
     let cam_pos = view * vec3<f32>(in.position, 1.0);
     out.clip_position = vec4<f32>(
-        (cam_pos.x / luna.luna_ScreenSize.x) * 2.0 - 1.0,
-        1.0 - (cam_pos.y / luna.luna_ScreenSize.y) * 2.0,
+        (cam_pos.x / lurek.lurek_ScreenSize.x) * 2.0 - 1.0,
+        1.0 - (cam_pos.y / lurek.lurek_ScreenSize.y) * 2.0,
         0.0,
         1.0
     );
@@ -5462,7 +5474,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {{
 {user_source}
 
 @fragment
-fn luna_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
+fn lurek_fragment_main(in: VertexOutput) -> @location(0) vec4<f32> {{
     let sampled = textureSample(t_diffuse, s_diffuse, in.uv) * in.color;
     return {fragment_entry}({fragment_call_args});
 }}
@@ -5749,8 +5761,8 @@ fn build_rounded_rect_path(
 
 /// Push a textured quad with full affine transform support.
 ///
-/// `w`, `h` â€” display size of the quad before scale.
-/// `u0`, `v0`, `u1`, `v1` â€” normalised UV coordinates inside the texture.
+/// `w`, `h` — display size of the quad before scale.
+/// `u0`, `v0`, `u1`, `v1` — normalised UV coordinates inside the texture.
 #[allow(clippy::too_many_arguments)]
 fn push_tex_quad(
     tv: &mut Vec<TexVertex>,
@@ -5798,7 +5810,7 @@ fn push_tex_quad(
 /// Push a textured quad with four arbitrary screen-space corners and per-corner UVs.
 ///
 /// Unlike [`push_tex_quad`], this function accepts pre-projected corner positions
-/// directly â€” no SRT decomposition. This supports perspective-correct quads
+/// directly — no SRT decomposition. This supports perspective-correct quads
 /// (e.g. raycaster wall faces) where the four corners are not axis-aligned.
 /// The current world transform `t` is still applied to each corner.
 fn push_tex_quad_corners(
@@ -5821,11 +5833,11 @@ fn push_tex_quad_corners(
     ti.extend_from_slice(&[base, base + 1, base + 2, base, base + 2, base + 3]);
 }
 
-// â”€â”€ Bitmap debug font â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Zero-dependency 5Ă—7 pixel font for debug/error overlays.
+// ── Bitmap debug font ────────────────────────────────────────
+// Zero-dependency 5×7 pixel font for debug/error overlays.
 // Ported from src/graphic/gpu_renderer.rs.
 
-/// Returns a 5Ă—7 bitmap pattern for the given character.
+/// Returns a 5×7 bitmap pattern for the given character.
 /// Each byte represents one row; bits 4..0 are pixels left-to-right.
 #[allow(dead_code)]
 fn bitmap_char(ch: char) -> [u8; 7] {
@@ -5962,8 +5974,8 @@ fn bitmap_char(ch: char) -> [u8; 7] {
     }
 }
 
-/// Renders debug text using the built-in 5Ă—7 bitmap font.
-/// Pushes colored quads into the vertex/index buffers â€” no font texture needed.
+/// Renders debug text using the built-in 5×7 bitmap font.
+/// Pushes colored quads into the vertex/index buffers — no font texture needed.
 #[allow(dead_code)]
 fn render_text(
     cv: &mut Vec<ColorVertex>,
@@ -5999,5 +6011,144 @@ fn render_text(
                 }
             }
         }
+    }
+}
+
+// NOTE: Tests private internals — stays inline
+#[cfg(test)]
+mod tests {
+    use std::convert::TryInto;
+
+    use super::*;
+    use crate::render::renderer::{CompareMode, StencilAction};
+
+    const VALID_WGSL_FRAGMENT_SHADER: &str = r#"
+@fragment
+fn fs_main(
+    @location(0) color: vec4<f32>,
+    @location(1) uv: vec2<f32>,
+) -> @location(0) vec4<f32> {
+    return color + vec4<f32>(uv, 0.0, 0.0);
+}
+"#;
+
+    #[test]
+    fn test_phase02_live_scissor_normalization_clamps_to_target_bounds() {
+        assert_eq!(
+            normalize_scissor(Some((-1.2, 2.8, 20.1, 100.0)), 10, 8),
+            Some((0, 2, 10, 6))
+        );
+    }
+
+    #[test]
+    fn test_phase02_live_scissor_normalization_discards_fully_offscreen_rects() {
+        assert_eq!(normalize_scissor(Some((11.0, 0.0, 2.0, 2.0)), 10, 8), None);
+    }
+
+    #[test]
+    fn test_phase02_live_color_mask_bits_round_trip_selected_channels() {
+        let bits = color_write_mask_bits((true, false, true, false));
+        let mask = color_write_mask_from_bits(bits);
+
+        assert_eq!(mask, wgpu::ColorWrites::RED | wgpu::ColorWrites::BLUE);
+    }
+
+    #[test]
+    fn test_phase02_live_filter_mode_maps_linear_and_defaults_to_nearest() {
+        assert_eq!(parse_filter_mode("linear"), wgpu::FilterMode::Linear);
+        assert_eq!(parse_filter_mode("nearest"), wgpu::FilterMode::Nearest);
+        assert_eq!(parse_filter_mode("unsupported"), wgpu::FilterMode::Nearest);
+    }
+
+    #[test]
+    fn test_phase02_live_uniform_bytes_pack_bool_and_vec4_values() {
+        let bool_bytes = uniform_bytes(&UniformValue::Bool(true));
+        let vec4_bytes = uniform_bytes(&UniformValue::Vec4([1.0, 2.0, 3.0, 4.0]));
+
+        assert_eq!(u32::from_ne_bytes(bool_bytes[..4].try_into().unwrap()), 1);
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[0..4].try_into().unwrap()),
+            1.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[4..8].try_into().unwrap()),
+            2.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[8..12].try_into().unwrap()),
+            3.0
+        );
+        assert_eq!(
+            f32::from_ne_bytes(vec4_bytes[12..16].try_into().unwrap()),
+            4.0
+        );
+    }
+
+    #[test]
+    fn test_phase02_live_custom_color_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![
+            ("tint".to_string(), ShaderUniformKind::Vec4),
+            ("time_scale".to_string(), ShaderUniformKind::Float),
+        ];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_color_shader_source(&shader, &uniform_signature);
+
+        assert!(source.contains("@group(1) @binding(0) var<uniform> tint: vec4<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var<uniform> time_scale: f32;"));
+        assert!(source.contains("fn lurek_fragment_main"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped color shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn test_phase02_live_custom_texture_shader_source_is_parseable_with_uniforms() {
+        let uniform_signature = vec![("uv_scale".to_string(), ShaderUniformKind::Vec2)];
+        let shader = Shader::new(VALID_WGSL_FRAGMENT_SHADER.to_string())
+            .expect("expected valid fragment shader");
+        let source = build_custom_texture_shader_source(&shader, &uniform_signature);
+
+        assert!(source.contains("@group(1) @binding(0) var t_diffuse: texture_2d<f32>;"));
+        assert!(source.contains("@group(1) @binding(1) var s_diffuse: sampler;"));
+        assert!(source.contains("@group(2) @binding(0) var<uniform> uv_scale: vec2<f32>;"));
+        assert!(source.contains("textureSample(t_diffuse, s_diffuse, in.uv) * in.color"));
+        wgpu::naga::front::wgsl::parse_str(&source)
+            .expect("wrapped texture shader source should remain valid WGSL");
+    }
+
+    #[test]
+    fn test_phase02_live_stencil_write_depth_state_enables_writes_and_action() {
+        let state = depth_stencil_state(StencilMode::Write(StencilAction::IncrementWrap));
+
+        assert_eq!(state.format, wgpu::TextureFormat::Depth24PlusStencil8);
+        assert_eq!(state.depth_compare, wgpu::CompareFunction::Always);
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0xFF);
+        assert_eq!(state.stencil.front.compare, wgpu::CompareFunction::Always);
+        assert_eq!(
+            state.stencil.front.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+        assert_eq!(
+            state.stencil.back.pass_op,
+            wgpu::StencilOperation::IncrementWrap
+        );
+    }
+
+    #[test]
+    fn test_phase02_live_stencil_test_depth_state_reads_without_writing() {
+        let state = depth_stencil_state(StencilMode::Test(CompareMode::GreaterEqual));
+
+        assert_eq!(state.stencil.read_mask, 0xFF);
+        assert_eq!(state.stencil.write_mask, 0);
+        assert_eq!(
+            state.stencil.front.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
+        assert_eq!(state.stencil.front.pass_op, wgpu::StencilOperation::Keep);
+        assert_eq!(
+            state.stencil.back.compare,
+            wgpu::CompareFunction::GreaterEqual
+        );
     }
 }

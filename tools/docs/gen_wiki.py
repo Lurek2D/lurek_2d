@@ -156,7 +156,7 @@ def write_page(filename: str, content: str, dry_run: bool = False,
 # ── Per-module see-also map ────────────────────────────────────────────────────
 
 _SEE_ALSO: dict[str, list[str]] = {
-    "graphics":    ["Shader-Patterns", "Camera-API", "Particle-API",
+    "render":    ["Shader-Patterns", "Camera-API", "Particle-API",
                     "FX-API", "Animation-API"],
     "audio":       ["Event-API"],
     "physics":     ["Math-API", "Entity-API"],
@@ -165,16 +165,16 @@ _SEE_ALSO: dict[str, list[str]] = {
     "timer":       ["Callbacks"],
     "window":      ["Configuration", "Input-API"],
     "filesystem":  ["Savegame-API", "Modding-API"],
-    "entity":      ["Scene-API", "Physics-API"],
+    "ecs":      ["Scene-API", "Physics-API"],
     "scene":       ["Entity-API", "Tilemap-API", "Camera-API"],
     "tilemap":     ["Pathfinding-API", "Scene-API", "Procgen-API"],
-    "pathfinding": ["AI-API", "Tilemap-API"],
+    "pathfind": ["AI-API", "Tilemap-API"],
     "ai":          ["Pathfinding-API", "Entity-API"],
     "thread":      ["Event-API", "Network-API"],
     "particle":    ["Graphics-API", "FX-API"],
     "animation":   ["Graphics-API", "Tilemap-API"],
     "camera":      ["Graphics-API", "Scene-API"],
-    "gui":         ["Terminal-API", "Event-API"],
+    "ui":         ["Terminal-API", "Event-API"],
     "terminal":    ["GUI-API"],
     "fx":          ["Graphics-API", "Shader-Patterns"],
     "pipeline":    ["Graphics-API", "FX-API"],
@@ -187,8 +187,8 @@ _SEE_ALSO: dict[str, list[str]] = {
     "serial":      ["Data-APIs", "Filesystem-API"],
     "image":       ["Graphics-API"],
     "network":     ["Threading", "Filesystem-API"],
-    "savegame":    ["Filesystem-API", "Data-APIs"],
-    "modding":     ["Filesystem-API", "Lunasome"],
+    "save":    ["Filesystem-API", "Data-APIs"],
+    "mods":     ["Filesystem-API", "Lunasome"],
     "minimap":     ["Tilemap-API", "Camera-API"],
     "light":       ["Graphics-API", "Shader-Patterns"],
     "procgen":     ["Tilemap-API", "Math-API"],
@@ -384,7 +384,7 @@ def gen_home() -> str:
     ### UI & Terminal
     | Page | What it covers |
     |------|----------------|
-    | [[GUI-API]] | `lurek.gui` — retained-mode widget system, 32 widget types |
+    | [[GUI-API]] | `lurek.ui` — retained-mode widget system, 32 widget types |
     | [[Terminal-API]] | `lurek.terminal` — grid-based character terminal emulator |
 
     ### Data & Scripting
@@ -438,8 +438,8 @@ def gen_home() -> str:
     | Layer | Modules |
     |-------|---------|
     | **Baseline** | `math` |
-    | **Tier 1** | `graphics` · `audio` · `physics` · `input` · `timer` · `window` · `filesystem` · `entity` · `event` · `image` · `data` · `thread` · `camera` · `animation` · `automation` · `compute` · `sound` |
-    | **Tier 2** | `gui` · `scene` · `tilemap` · `particle` · `pathfinding` · `ai` · `fx` · `pipeline` · `terminal` · `minimap` · `modding` · `network` · `savegame` · `dataframe` · `graph` · `serial` · `spine` · `light` · `raycaster` · `procgen` |
+    | **Tier 1** | `render` · `audio` · `physics` · `input` · `timer` · `window` · `filesystem` · `ecs` · `event` · `image` · `data` · `thread` · `camera` · `animation` · `automation` · `compute` · `sound` |
+    | **Tier 2** | `ui` · `scene` · `tilemap` · `particle` · `pathfind` · `ai` · `fx` · `pipeline` · `terminal` · `minimap` · `mods` · `network` · `save` · `dataframe` · `graph` · `serial` · `spine` · `light` · `raycaster` · `procgen` |
     | **Bridge** | `lua_api` — registers every `lurek.*` binding |
     | **Tier 3** | Lunasome — pure-Lua game libraries |
     | **Games** | `content/demos/` · user `main.lua` |
@@ -482,11 +482,11 @@ def gen_getting_started() -> str:
     bash tools/dist/install.sh
     ```
 
-    After installation, you can use `luna` from anywhere:
+    After installation, you can use `lurek` from anywhere:
 
     ```bash
-    luna content/demos/showcase/hello_world
-    luna path/to/my_game
+    lurek content/demos/showcase/hello_world
+    lurek path/to/my_game
     ```
 
     ---
@@ -521,7 +521,7 @@ def gen_getting_started() -> str:
     ```bash
     cargo run -- path/to/my_game
     # or if installed:
-    luna path/to/my_game
+    lurek path/to/my_game
     ```
 
     ---
@@ -850,7 +850,7 @@ def gen_project_structure() -> str:
     ```bash
     cargo run -- path/to/my_game
     # or if installed:
-    luna path/to/my_game
+    lurek path/to/my_game
     ```
 
     ---
@@ -889,10 +889,10 @@ def gen_configuration() -> str:
         -- Modules (set false to disable)
         t.modules.physics   = true
         t.modules.audio     = true
-        t.modules.gui       = true
+        t.modules.ui       = true
         t.modules.terminal  = true
         t.modules.network   = false
-        t.modules.modding   = false
+        t.modules.mods   = false
 
         -- Debug
         t.debug.show_fps    = false
@@ -936,10 +936,10 @@ def gen_configuration() -> str:
     | `identity` | string | `""` | App identity for save directory |
     | `modules.physics` | bool | `true` | Enable physics module |
     | `modules.audio` | bool | `true` | Enable audio module |
-    | `modules.gui` | bool | `true` | Enable GUI module |
+    | `modules.ui` | bool | `true` | Enable GUI module |
     | `modules.terminal` | bool | `true` | Enable terminal module |
     | `modules.network` | bool | `false` | Enable network module |
-    | `modules.modding` | bool | `false` | Enable modding module |
+    | `modules.mods` | bool | `false` | Enable mods module |
     | `debug.show_fps` | bool | `false` | Show FPS counter overlay |
 
     ---
@@ -1551,7 +1551,7 @@ def gen_examples() -> str:
 
     Or with the installed binary:
     ```bash
-    luna content/examples/timer.lua
+    lurek content/examples/timer.lua
     ```
 
     ---
@@ -1599,7 +1599,7 @@ def gen_demos() -> str:
 
     ```bash
     cargo run -- content/demos/<category>/<name>
-    luna content/demos/<category>/<name>
+    lurek content/demos/<category>/<name>
     ```
 
     ---
@@ -2673,10 +2673,10 @@ def gen_build_system() -> str:
     bash tools/dist/install.sh
     ```
 
-    After installation, use `luna` from anywhere:
+    After installation, use `lurek` from anywhere:
     ```bash
-    luna content/demos/showcase/hello_world
-    luna path/to/my_game
+    lurek content/demos/showcase/hello_world
+    lurek path/to/my_game
     ```
 
     ---
@@ -3035,7 +3035,7 @@ PAGES: dict[str, tuple[str, callable, bool]] = {
 
     # ── Section 4: Core Module APIs ───────────────────────────────────
     "Graphics-API":         ("Graphics-API.md",
-                             lambda: gen_module_page("graphics", "Graphics API"), False),
+                             lambda: gen_module_page("render", "Graphics API"), False),
     "Audio-API":            ("Audio-API.md",
                              lambda: gen_module_page("audio", "Audio API"), False),
     "Physics-API":          ("Physics-API.md",
@@ -3067,17 +3067,17 @@ PAGES: dict[str, tuple[str, callable, bool]] = {
     "Scene-API":            ("Scene-API.md",
                              lambda: gen_module_page("scene", "Scene API"), False),
     "Entity-API":           ("Entity-API.md",
-                             lambda: gen_module_page("entity", "Entity API"), False),
+                             lambda: gen_module_page("ecs", "Entity API"), False),
     "Pathfinding-API":      ("Pathfinding-API.md",
-                             lambda: gen_module_page("pathfinding", "Pathfinding API"), False),
+                             lambda: gen_module_page("pathfind", "Pathfinding API"), False),
     "AI-API":               ("AI-API.md",
                              lambda: gen_module_page("ai", "AI API"), False),
     "Savegame-API":         ("Savegame-API.md",
-                             lambda: gen_module_page("savegame", "Savegame API"), False),
+                             lambda: gen_module_page("save", "Savegame API"), False),
 
     # ── Section 7: UI ─────────────────────────────────────────────────
     "GUI-API":              ("GUI-API.md",
-                             lambda: gen_module_page("gui", "GUI API"), False),
+                             lambda: gen_module_page("ui", "GUI API"), False),
     "Terminal-API":         ("Terminal-API.md",
                              lambda: gen_module_page("terminal", "Terminal API"), False),
 
@@ -3094,7 +3094,7 @@ PAGES: dict[str, tuple[str, callable, bool]] = {
 
     # ── Section 9: Effects & Extras ───────────────────────────────────
     "Modding-API":          ("Modding-API.md",
-                             lambda: gen_module_page("modding", "Modding API"), False),
+                             lambda: gen_module_page("mods", "Modding API"), False),
     "Procgen-API":          ("Procgen-API.md",
                              lambda: gen_module_page("procgen", "Procedural Generation API"), False),
     "Advanced-APIs":        ("Advanced-APIs.md",      gen_advanced_apis,       False),

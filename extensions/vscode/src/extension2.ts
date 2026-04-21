@@ -177,10 +177,10 @@ export function activate(context: vscode.ExtensionContext): void {
   // Rust module tests
   const rustModules = [
     "ai", "audio", "cardgame", "combat", "compute", "config", "crafting",
-    "data", "dataframe", "dialog", "engine", "entity", "event", "filesystem",
-    "graph", "graphics", "graphics_ext", "image", "input", "inventory",
-    "math", "math_ext", "minimap", "modding", "particle", "pathfinding",
-    "physics", "postfx", "quest", "resource", "savegame", "scene", "sound",
+    "data", "dataframe", "dialog", "engine", "ecs", "event", "filesystem",
+    "graph", "render", "graphics_ext", "image", "input", "inventory",
+    "math", "math_ext", "minimap", "mods", "particle", "pathfind",
+    "physics", "postfx", "quest", "resource", "save", "scene", "sound",
     "stats", "thread", "tilemap", "timer",
   ];
   for (const mod of rustModules) {

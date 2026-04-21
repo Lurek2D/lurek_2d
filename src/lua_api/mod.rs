@@ -105,7 +105,7 @@ pub mod ai_api;
 /// Registers the `lurek.audio.*` audio playback, mixing, and MIDI API.
 pub mod audio_api;
 
-/// Registers the `lurek.effect.*` post-processing and screen overlay API.
+/// Registers the `lurek.effect.*` post-processing and screen effect API.
 pub mod effect_api;
 
 /// Registers the `lurek.particle.*` particle system and trail API.

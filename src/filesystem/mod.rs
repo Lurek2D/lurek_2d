@@ -1,20 +1,20 @@
-//! Sandboxed virtual filesystem for Lurek2D.
+﻿//! Sandboxed virtual filesystem for Lurek2D.
 //!
-//! Provides [`vfs::GameFS`] — the central filesystem abstraction that sandboxes all
+//! Provides [`vfs::GameFS`] â€” the central filesystem abstraction that sandboxes all
 //! file I/O to the game's base directory. Every path is checked against a canonical path
 //! traversal guard before the OS is asked to open the file, preventing Lua scripts from
 //! escaping the sandbox via `..`, absolute paths, or symbolic links.
 //!
 //! ## Subsystem inventory
-//! - [`vfs`] — [`GameFS`]: sandboxed read/write with virtual mount-point overlay
-//! - [`file_handle`] — [`FileHandle`]: open-file session with cursored read/write
-//! - [`async_loader`] — background asset-loading worker (off main thread)
-//! - [`file_data`] — [`FileData`]: raw byte buffer returned from VFS reads
+//! - [`vfs`] â€” [`GameFS`]: sandboxed read/write with virtual mount-point overlay
+//! - [`file_handle`] â€” [`FileHandle`]: open-file session with cursored read/write
+//! - [`async_loader`] â€” background asset-loading worker (off main thread)
+//! - [`file_data`] â€” [`FileData`]: raw byte buffer returned from VFS reads
 //!
 //! ## Sandbox rules
 //! - Reads: base game folder + all mounted mod layers
 //! - Writes: save-data directory only (configured separately from the read-only game folder)
-//! - Any path that resolves outside the base after canonicalization → `EngineError::FsPathTraversal`
+//! - Any path that resolves outside the base after canonicalization â†’ `EngineError::FsPathTraversal`
 //!
 //! All public items are documented. Lua bridge: `src/lua_api/filesystem_api.rs`.
 
@@ -30,7 +30,7 @@ pub mod async_loader;
 /// Raw file data buffer loaded from the VFS.
 pub mod file_data;
 
-/// Read-only ZIP archive mounting for `.luna` bundles and mod archives.
+/// Read-only ZIP archive mounting for `.lurek` bundles and mod archives.
 pub mod zip_mount;
 
 /// Polling-based file watcher for development hot-reload workflows.

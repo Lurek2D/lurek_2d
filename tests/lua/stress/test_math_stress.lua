@@ -108,4 +108,5 @@ describe("math stress: vector operations", function()
         expect_equal(10000, count, "all vectors normalized correctly")
     end)
 end)
+
 test_summary()

@@ -17,12 +17,12 @@
 | test_math_render.lua | math + graphics | Good |
 | test_physics_timer.lua | physics + timer | Good |
 | test_timer_math.lua | timer + math | Good |
-| test_runtime_system.lua | system (single module) | **Misplaced** — should be unit test |
+| test_runtime_app.lua | system (single module) | **Misplaced** — should be unit test |
 | test_devtools.lua | devtools (single module) | **Misplaced** — should be unit test |
 | test_debugbridge.lua | debugbridge (single module) | **Misplaced** — should be unit test |
 | test_docs.lua | docs (single module) | **Misplaced** — should be unit test |
 | test_drawlayer.lua | graphics draw layers | `#[ignore]` — pending sprite module |
-| test_data_system.lua | data + system | Good |
+| test_data_app.lua | data + system | Good |
 
 **Issues found**: 4 tests are misplaced single-module tests. True integration count: **11**.
 
@@ -137,7 +137,7 @@ Tests: animation frame advances with delta time, pause timer pauses animation, s
 
 ### Priority 2 — Data & Persistence (5 tests)
 
-#### test_data_filesystem.lua
+#### test_data_fileapp.lua
 ```
 Modules: data + filesystem
 Scenario: Serialize data to JSON → write to file → read back → deserialize → verify
@@ -151,7 +151,7 @@ Scenario: Create tilemap → modify tiles → save → clear → load → verify
 Tests: tile data persistence, layer state persistence, tilemap properties round-trip
 ```
 
-#### test_event_entity.lua
+#### test_event_ecs.lua
 ```
 Modules: signal + entity
 Scenario: Entity emits events → signal handlers respond
@@ -217,7 +217,7 @@ Move the following from `integration/` to `unit/` (or merge into existing unit t
 
 | Current File | Action |
 |-------------|--------|
-| test_runtime_system.lua | Merge into test_runtime_system.lua unit test |
+| test_runtime_app.lua | Merge into test_runtime_app.lua unit test |
 | test_devtools.lua | Merge into test_devtools.lua unit test |
 | test_debugbridge.lua | Merge into test_debugbridge.lua unit test |
 | test_docs.lua | Merge into test_docs.lua unit test |
@@ -288,7 +288,7 @@ Tests: tile draw region matches camera viewport, tile spacing correct in pixel s
 Evidence: Canvas pixel readback verifies tile grid alternating pixels
 ```
 
-#### test_canvas_postfx.lua
+#### test_canvas_effect.lua
 ```
 Modules: graphics (canvas) + postfx
 Scenario: Canvas is used as render-to-texture target, PostFX reads from it
@@ -340,7 +340,7 @@ Scenario: Audio metadata/playlist stored and restored via data module
 Tests: build playlist table → toJSON → fromJSON → recreate same source list; metadata round-trip
 ```
 
-#### test_audio_filesystem.lua
+#### test_audio_fileapp.lua
 ```
 Modules: audio + filesystem
 Scenario: Audio sources loaded from GameFS sandbox
@@ -359,7 +359,7 @@ Scenario: AI agents are entities in a scene, AI drives entity transform
 Tests: AI FSM state → entity position updates; scene query returns only agent entities; parent removes AI too
 ```
 
-#### test_ai_signal.lua
+#### test_ai_event.lua
 ```
 Modules: ai + signal
 Scenario: AI agents broadcast state changes as signals
@@ -375,7 +375,7 @@ Tests: entity has path component → moves along waypoints each frame; entity re
 Tests: path recomputed when blocked entity moves
 ```
 
-#### test_pathfinding_tilemap_entity.lua
+#### test_pathfinding_tilemap_ecs.lua
 ```
 Modules: pathfinding + tilemap + entity (3-way)
 Scenario: Tilemap defines walkable grid, entity uses pathfinding to navigate it
@@ -417,7 +417,7 @@ Scenario: GPU compute results serialized to data for persistence
 Tests: compute → get results → toJSON → fromJSON → values match; large result sets round-trip cleanly
 ```
 
-#### test_thread_filesystem.lua
+#### test_thread_fileapp.lua
 ```
 Modules: thread + filesystem
 Scenario: Background thread reads/writes files without blocking main VM
@@ -425,7 +425,7 @@ Tests: spawn thread → thread writes file → main VM reads it back; channel co
 Tests: concurrent file writes from multiple threads (serialized by OS — no corruption)
 ```
 
-#### test_savegame_modding.lua
+#### test_savegame_mods.lua
 ```
 Modules: savegame + modding
 Scenario: Mod-added data is preserved in save files (forward compatibility)
@@ -480,7 +480,7 @@ Tests: dungeon generate → tile IDs match expected room/corridor structure (see
 Tests: tilemap dimensions match procgen output size
 ```
 
-#### test_procgen_entity.lua
+#### test_procgen_ecs.lua
 ```
 Modules: procgen + entity
 Scenario: Procedural generation spawns entities at generated positions
@@ -529,26 +529,26 @@ Tests: solid tiles → ray hits; open tiles → ray passes through; render colum
 #[test] fn lua_integration_graphics_animation() { run_lua_test("integration/test_render_animation.lua"); }
 #[test] fn lua_integration_graphics_particle() { run_lua_test("integration/test_graphics_particle.lua"); }
 #[test] fn lua_integration_graphics_tilemap() { run_lua_test("integration/test_graphics_tilemap.lua"); }
-#[test] fn lua_integration_canvas_postfx() { run_lua_test("integration/test_canvas_postfx.lua"); }
+#[test] fn lua_integration_canvas_postfx() { run_lua_test("integration/test_canvas_effect.lua"); }
 #[test] fn lua_integration_image_graphics() { run_lua_test("integration/test_image_graphics.lua"); }
 #[test] fn lua_integration_spine_animation() { run_lua_test("integration/test_spine_animation.lua"); }
 // Group B: Audio
 #[test] fn lua_integration_audio_timer() { run_lua_test("integration/test_audio_timer.lua"); }
 #[test] fn lua_integration_audio_event() { run_lua_test("integration/test_audio_event.lua"); }
 #[test] fn lua_integration_audio_data() { run_lua_test("integration/test_audio_data.lua"); }
-#[test] fn lua_integration_audio_filesystem() { run_lua_test("integration/test_audio_filesystem.lua"); }
+#[test] fn lua_integration_audio_filesystem() { run_lua_test("integration/test_audio_fileapp.lua"); }
 // Group C: AI
 #[test] fn lua_integration_ai_entity_scene() { run_lua_test("integration/test_ai_ecs_scene.lua"); }
-#[test] fn lua_integration_ai_signal() { run_lua_test("integration/test_ai_signal.lua"); }
+#[test] fn lua_integration_ai_signal() { run_lua_test("integration/test_ai_event.lua"); }
 #[test] fn lua_integration_pathfinding_entity() { run_lua_test("integration/test_pathfind_ecs.lua"); }
-#[test] fn lua_integration_pathfinding_tilemap_entity() { run_lua_test("integration/test_pathfinding_tilemap_entity.lua"); }
+#[test] fn lua_integration_pathfinding_tilemap_entity() { run_lua_test("integration/test_pathfinding_tilemap_ecs.lua"); }
 #[test] fn lua_integration_ai_scene_camera() { run_lua_test("integration/test_ai_scene_camera.lua"); }
 // Group D: Persistence
 #[test] fn lua_integration_savegame_entity_scene() { run_lua_test("integration/test_save_ecs_scene.lua"); }
 #[test] fn lua_integration_savegame_animation() { run_lua_test("integration/test_savegame_animation.lua"); }
 #[test] fn lua_integration_data_compute() { run_lua_test("integration/test_data_compute.lua"); }
-#[test] fn lua_integration_thread_filesystem() { run_lua_test("integration/test_thread_filesystem.lua"); }
-#[test] fn lua_integration_savegame_modding() { run_lua_test("integration/test_savegame_modding.lua"); }
+#[test] fn lua_integration_thread_filesystem() { run_lua_test("integration/test_thread_fileapp.lua"); }
+#[test] fn lua_integration_savegame_modding() { run_lua_test("integration/test_savegame_mods.lua"); }
 // Group E: UI & Input
 #[test] fn lua_integration_ui_input() { run_lua_test("integration/test_ui_input.lua"); }
 #[test] fn lua_integration_ui_localization_data() { run_lua_test("integration/test_ui_localization_data.lua"); }
@@ -556,7 +556,7 @@ Tests: solid tiles → ray hits; open tiles → ray passes through; render colum
 #[test] fn lua_integration_input_tween() { run_lua_test("integration/test_input_tween.lua"); }
 // Group F: Procedural & Rendering
 #[test] fn lua_integration_procgen_tilemap() { run_lua_test("integration/test_procgen_tilemap.lua"); }
-#[test] fn lua_integration_procgen_entity() { run_lua_test("integration/test_procgen_entity.lua"); }
+#[test] fn lua_integration_procgen_entity() { run_lua_test("integration/test_procgen_ecs.lua"); }
 #[test] fn lua_integration_tween_animation() { run_lua_test("integration/test_tween_animation.lua"); }
 #[test] fn lua_integration_postfx_camera() { run_lua_test("integration/test_postfx_camera.lua"); }
 #[test] fn lua_integration_minimap_tilemap_camera() { run_lua_test("integration/test_minimap_tilemap_camera.lua"); }

@@ -34,4 +34,5 @@ describe('Golden graphics', function()
     -- @description Placeholder stub: this test body is empty and currently does not compare evidence_image_paste_composite against any golden artifact.
     it('matches evidence_image_paste_composite', function() end)
 end)
+
 test_summary()

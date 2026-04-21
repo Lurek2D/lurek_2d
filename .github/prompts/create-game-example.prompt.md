@@ -19,7 +19,7 @@ Create a new Lua game example that demonstrates specific Lurek2D features.
 2. Create directory `content/examples/<name>/`
 3. Write `content/examples/<name>/main.lua` with `lurek.load()`, `lurek.update(dt)`, `lurek.draw()`
 4. Use only `lurek.*` API functions (never external engine prefixes)
-5. Use `local` for all variables (no globals except luna callbacks)
+5. Use `local` for all variables (no globals except lurek callbacks)
 6. Multiply movement by `dt` for frame-rate independence
 7. Add comments explaining key concepts
 8. Test with `cargo run -- content/examples/<name>`

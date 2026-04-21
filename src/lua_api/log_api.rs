@@ -1,4 +1,4 @@
-//! Structured game-level logging API (`lurek.log.*`).
+﻿//! Structured game-level logging API (`lurek.log.*`).
 //!
 //! Exposes convenience logging functions so Lua scripts can emit messages at
 //! specific severity levels and query or change the active log level at
@@ -51,18 +51,18 @@ fn lua_table_to_fields(tbl: LuaTable) -> LuaResult<BTreeMap<String, String>> {
     Ok(fields)
 }
 
-/// Registers the `lurek.log.*` namespace into the shared `luna` table.
+/// Registers the `lurek.log.*` namespace into the shared `lurek` table.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 ///
-pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable) -> LuaResult<()> {
     let log_table = lua.create_table()?;
 
-    // Shared sinks registry for this VM – lives as long as the Lua closures do.
+    // Shared sinks registry for this VM â€“ lives as long as the Lua closures do.
     let sinks: Rc<RefCell<SinkRegistry>> = Rc::new(RefCell::new(SinkRegistry::new()));
 
-    // ── debug ────────────────────────────────────────────────────────────
+    // â”€â”€ debug â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a debug-severity log message. Also dispatches to configured sinks.
     /// @param message : string
     /// @param tag : string?
@@ -78,7 +78,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── info ─────────────────────────────────────────────────────────────
+    // â”€â”€ info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits an info-severity log message. Also dispatches to configured sinks.
     /// @param message : string
     /// @param tag : string?
@@ -94,7 +94,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── warn ─────────────────────────────────────────────────────────────
+    // â”€â”€ warn â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a warn-severity log message. Also dispatches to configured sinks.
     /// @param message : string
     /// @param tag : string?
@@ -110,7 +110,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── error ────────────────────────────────────────────────────────────
+    // â”€â”€ error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits an error-severity log message. Also dispatches to configured sinks.
     /// @param message : string
     /// @param tag : string?
@@ -126,7 +126,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── print ────────────────────────────────────────────────────────────
+    // â”€â”€ print â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a log message at the specified level. Also dispatches to sinks.
     /// @param level : string
     /// @param message : string
@@ -166,7 +166,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         )?,
     )?;
 
-    // ── setLevel ────────────────────────────────────────────────────────
+    // â”€â”€ setLevel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Sets the minimum severity level for the default log channel.
     /// Accepted values: "error", "warn", "info", "debug", "trace", "off".
     /// Returns a LuaError when an unrecognised level is supplied.
@@ -184,7 +184,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         }
     })?)?;
 
-    // ── getLevel ────────────────────────────────────────────────────────
+    // â”€â”€ getLevel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns the name of the currently active minimum log level.
     /// @return string
     log_table.set(
@@ -192,7 +192,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         lua.create_function(|_, ()| Ok(log_domain::get_level()))?,
     )?;
 
-    // ── addSink ──────────────────────────────────────────────────────────
+    // â”€â”€ addSink â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Registers a new output sink. Returns its numeric id.
     ///
     /// Config fields:
@@ -244,7 +244,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── removeSink ───────────────────────────────────────────────────────
+    // â”€â”€ removeSink â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Removes a sink by id. Returns true if one was removed.
     /// @param id : integer
     let s = sinks.clone();
@@ -254,7 +254,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         lua.create_function(move |_, id: u64| Ok(s.borrow_mut().remove(id)))?,
     )?;
 
-    // ── clearSinks ───────────────────────────────────────────────────────
+    // â”€â”€ clearSinks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Removes all registered sinks (the default stderr channel is unaffected).
     let s = sinks.clone();
     /// @return nil
@@ -266,7 +266,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── listSinks ────────────────────────────────────────────────────────
+    // â”€â”€ listSinks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns a table describing all registered sinks.
     let s = sinks.clone();
     /// @return table
@@ -288,7 +288,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── readMemory ───────────────────────────────────────────────────────
+    // â”€â”€ readMemory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Reads entries from a memory sink. If drain=true the buffer is cleared.
     /// Returns an array of {level, tag, message} tables. Returns nil if id not found or wrong type.
     /// @param id : integer
@@ -328,7 +328,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── flushFile ────────────────────────────────────────────────────────
+    // â”€â”€ flushFile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Flushes the OS write buffer for a file sink.
     /// @param id : integer
     let s = sinks.clone();
@@ -343,7 +343,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── struct ────────────────────────────────────────────────────────────
+    // â”€â”€ struct â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a structured log message with key-value fields.
     /// `fields_table` values are converted to strings (string/number/bool/nil supported).
     /// @param level : string
@@ -371,7 +371,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         )?,
     )?;
 
-    // ── debug_fields ──────────────────────────────────────────────────────
+    // â”€â”€ debug_fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a debug structured log message. Shorthand for `struct("debug", ...)`.
     /// @param message : string
     /// @param fields_table : table
@@ -388,7 +388,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── info_fields ───────────────────────────────────────────────────────
+    // â”€â”€ info_fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits an info structured log message. Shorthand for `struct("info", ...)`.
     /// @param message : string
     /// @param fields_table : table
@@ -405,7 +405,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── warn_fields ───────────────────────────────────────────────────────
+    // â”€â”€ warn_fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits a warn structured log message. Shorthand for `struct("warn", ...)`.
     /// @param message : string
     /// @param fields_table : table
@@ -422,7 +422,7 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── error_fields ──────────────────────────────────────────────────────
+    // â”€â”€ error_fields â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Emits an error structured log message. Shorthand for `struct("error", ...)`.
     /// @param message : string
     /// @param fields_table : table
@@ -440,6 +440,6 @@ pub fn register(lua: &Lua, luna: &LuaTable) -> LuaResult<()> {
     )?;
 
     // -- log namespace --
-    luna.set("log", log_table)?;
+    lurek.set("log", log_table)?;
     Ok(())
 }

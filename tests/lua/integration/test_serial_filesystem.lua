@@ -1,8 +1,8 @@
--- tests/lua/integration/test_serial_filesystem.lua
+-- tests/lua/integration/test_serial_fileapp.lua
 -- Integration: lurek.serial (JSON/TOML/CSV) used alongside lurek.filesystem for round-trip persistence.
 
 describe("serial + filesystem integration", function()
-    local tmp = "evidence/integration/serial_fs/"
+    local tmp = "save/integration_serial_fs/"
 
     before_each(function()
         lurek.filesystem.mkdir(tmp)
@@ -11,11 +11,11 @@ describe("serial + filesystem integration", function()
     it("round-trips a Lua table through JSON via the filesystem", function()
         local data = { name = "Luna", version = 2, active = true }
         local json_str = lurek.serial.toJson(data)
-        expect_type(json_str, "string", "toJson returns string")
+        expect_type("string", json_str, "toJson returns string")
 
         lurek.filesystem.write(tmp .. "data.json", json_str)
         local read_back = lurek.filesystem.read(tmp .. "data.json")
-        expect_type(read_back, "string", "read returns string")
+        expect_type("string", read_back, "read returns string")
 
         local restored = lurek.serial.fromJson(read_back)
         expect_equal(restored.name, "Luna", "name round-trips through JSON+filesystem")
@@ -25,7 +25,7 @@ describe("serial + filesystem integration", function()
     it("round-trips a Lua table through TOML via the filesystem", function()
         local data = { engine = "lurek2d", revision = 5 }
         local toml_str = lurek.serial.toToml(data)
-        expect_type(toml_str, "string", "toToml returns string")
+        expect_type("string", toml_str, "toToml returns string")
 
         lurek.filesystem.write(tmp .. "conf.toml", toml_str)
         local read_back = lurek.filesystem.read(tmp .. "conf.toml")

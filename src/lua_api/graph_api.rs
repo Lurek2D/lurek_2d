@@ -1,4 +1,4 @@
-//! `lurek.graph` — Directed graph with item-flow simulation.
+﻿//! `lurek.graph` â€” Directed graph with item-flow simulation.
 //!
 //! Provides a node/edge graph model with typed item transport, overflow policies,
 //! conversion rules, demand/supply links, and event callbacks (`itemEnter`,
@@ -15,7 +15,7 @@ use crate::graph::pathfinding::PathResult;
 use crate::graph::{ConversionRule, FlowMode, Graph, GraphEvent, ItemPosition, OverflowPolicy};
 use crate::runtime::SharedState;
 
-// ── Constants ───────────────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Valid callback event names for `LuaGraph:on()`.
 const VALID_EVENTS: &[&str] = &[
@@ -32,7 +32,7 @@ const VALID_EVENTS: &[&str] = &[
     "itemDequeued",
 ];
 
-// ── Wrapper Types ───────────────────────────────────────────────────────
+// â”€â”€ Wrapper Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper around a directed `Graph` with event callback registry.
 #[derive(Clone)]
@@ -62,7 +62,7 @@ struct LuaGraphItem {
     id: u64,
 }
 
-// ── Helper Macros ───────────────────────────────────────────────────────
+// â”€â”€ Helper Macros â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Borrow graph immutably, look up node by id, return error if missing.
 macro_rules! with_node {
@@ -136,7 +136,7 @@ macro_rules! with_item_mut {
     }};
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 fn path_result_to_lua<'lua>(
     lua: &'lua Lua,
@@ -170,7 +170,7 @@ fn path_result_to_lua<'lua>(
     Ok(table)
 }
 
-// ── GraphItem UserData ──────────────────────────────────────────────────
+// â”€â”€ GraphItem UserData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 impl LuaUserData for LuaGraphItem {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -305,7 +305,7 @@ impl LuaUserData for LuaGraphItem {
     }
 }
 
-// ── Edge UserData ───────────────────────────────────────────────────────
+// â”€â”€ Edge UserData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 impl LuaUserData for LuaEdge {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -588,7 +588,7 @@ impl LuaUserData for LuaEdge {
     }
 }
 
-// ── Node UserData ───────────────────────────────────────────────────────
+// â”€â”€ Node UserData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 impl LuaUserData for LuaNode {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1116,7 +1116,7 @@ impl LuaUserData for LuaNode {
     }
 }
 
-// ── Graph UserData ──────────────────────────────────────────────────────
+// â”€â”€ Graph UserData â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 impl LuaUserData for LuaGraph {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
@@ -1133,7 +1133,7 @@ impl LuaUserData for LuaGraph {
             ))
         });
 
-        // ── Node management ─────────────────────────────────────────
+        // â”€â”€ Node management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- addNode --
         /// Adds a node and returns its handle.
@@ -1197,7 +1197,7 @@ impl LuaUserData for LuaGraph {
             Ok(this.inner.borrow().get_node_count())
         });
 
-        // ── Edge management ─────────────────────────────────────────
+        // â”€â”€ Edge management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- addEdge --
         /// Adds a directed edge between two nodes and returns its handle.
@@ -1288,7 +1288,7 @@ impl LuaUserData for LuaGraph {
             },
         );
 
-        // ── Item management ─────────────────────────────────────────
+        // â”€â”€ Item management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- createItem --
         /// Creates a new unplaced item and returns its handle.
@@ -1386,7 +1386,7 @@ impl LuaUserData for LuaGraph {
             },
         );
 
-        // ── Simulation ──────────────────────────────────────────────
+        // â”€â”€ Simulation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- update --
         /// Advances simulation by dt seconds and fires event callbacks.
@@ -1427,7 +1427,7 @@ impl LuaUserData for LuaGraph {
             dispatch_events(lua, &this.inner, &cbs, events)
         });
 
-        // ── Pathfinding ─────────────────────────────────────────────
+        // â”€â”€ Pathfinding â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- findPath --
         /// Finds the shortest path between two nodes using Dijkstra.
@@ -1527,7 +1527,7 @@ impl LuaUserData for LuaGraph {
             Ok(table)
         });
 
-        // ── Algorithms ──────────────────────────────────────────────
+        // â”€â”€ Algorithms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- getComponents --
         /// Returns weakly connected components as a table of tables of Node handles.
@@ -1582,7 +1582,7 @@ impl LuaUserData for LuaGraph {
             }
         });
 
-        // ── Supply / Demand ─────────────────────────────────────────
+        // â”€â”€ Supply / Demand â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- mst --
         /// Returns edge IDs forming a minimum spanning tree (Kruskal, undirected view).
@@ -1646,7 +1646,7 @@ impl LuaUserData for LuaGraph {
             },
         );
 
-        // ── Supply / Demand ─────────────────────────────────────────
+        // â”€â”€ Supply / Demand â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- processDemand --
         /// Processes all supply/demand declarations and fires event callbacks.
@@ -1657,7 +1657,7 @@ impl LuaUserData for LuaGraph {
             dispatch_events(lua, &this.inner, &cbs, events)
         });
 
-        // ── Stats ───────────────────────────────────────────────────
+        // â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- getStats --
         /// Returns a statistics snapshot table.
@@ -1678,7 +1678,7 @@ impl LuaUserData for LuaGraph {
             Ok(table)
         });
 
-        // ── Callbacks ───────────────────────────────────────────────
+        // â”€â”€ Callbacks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- on --
         /// Registers a callback for a graph simulation event.
@@ -1716,7 +1716,7 @@ impl LuaUserData for LuaGraph {
     }
 }
 
-// ── Event Dispatch ──────────────────────────────────────────────────────
+// â”€â”€ Event Dispatch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Dispatches a batch of simulation events to registered Lua callbacks.
 fn dispatch_events(
@@ -1899,18 +1899,18 @@ fn dispatch_events(
     Ok(())
 }
 
-// ── Registration ────────────────────────────────────────────────────────
+// â”€â”€ Registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Registers the `lurek.graph` API namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── newGraph ─────────────────────────────────────────────
+    // â”€â”€ newGraph â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new empty directed graph for item flow simulation.
     /// @return Graph
     tbl.set(
@@ -1923,6 +1923,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("graph", tbl)?;
+    lurek.set("graph", tbl)?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-//! `lurek.animation` — Sprite animation: frame pools, named clips, speed control, playback events,
+﻿//! `lurek.animation` â€” Sprite animation: frame pools, named clips, speed control, playback events,
 //! crossfade blending, stat-machine FSMs, and Aseprite JSON import.
 
 use super::render_api::LuaImageData;
@@ -403,7 +403,7 @@ impl LuaUserData for LuaAnimStateMachine {
 /// Registers the `lurek.animation` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
 // -------------------------------------------------------------------------------
@@ -456,7 +456,7 @@ impl LuaUserData for LuaBlendLayerSet {
         /// @param name : string
         /// @return boolean
         methods.add_method_mut("removeLayer", |_, this, name: String| {
-            // Silently ignore "not found" — resilient scripting.
+            // Silently ignore "not found" â€” resilient scripting.
             let _ = this.inner.remove_layer(&name);
             Ok(true)
         });
@@ -530,10 +530,10 @@ impl LuaUserData for LuaBlendLayerSet {
 // -------------------------------------------------------------------------------
 
 /// Registers the `lurek.animation` Lua API table into the engine namespace.
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── new ──────────────────────────────────────────────────────────────────
+    // â”€â”€ new â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new, empty Animation controller.
     /// @return Animation
     tbl.set(
@@ -545,7 +545,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── fromAseprite ─────────────────────────────────────────────────────────
+    // â”€â”€ fromAseprite â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Parses an Aseprite JSON export string and builds an Animation with clips and frames.
     /// @return table|nil
     /// Returns nil and an error message on parse failure.
@@ -565,7 +565,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── newStateMachine ───────────────────────────────────────────────────────
+    // â”€â”€ newStateMachine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates an animation FSM from an Animation controller and an initial state name.
     /// @param anim : Animation
     /// @param initial_state : string
@@ -636,7 +636,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("animation", tbl)?;
+    lurek.set("animation", tbl)?;
     Ok(())
 }
 
@@ -690,7 +690,7 @@ impl LuaUserData for LuaAnimCurve {
                 "ease_in_out" => EasingKind::EaseInOut,
                 other => {
                     return Err(LuaError::RuntimeError(format!(
-                        "unknown easing mode '{other}' — expected step|linear|ease_in|ease_out|ease_in_out"
+                        "unknown easing mode '{other}' â€” expected step|linear|ease_in|ease_out|ease_in_out"
                     )));
                 }
             };
@@ -727,7 +727,7 @@ impl LuaUserData for LuaAnimCurve {
 /// to advance every member animation by the same delta.
 ///
 /// **Important**: do **not** call `group:tick(dt)` if the engine is already
-/// advancing the same animations via the sprite update loop — that would double-tick them.
+/// advancing the same animations via the sprite update loop â€” that would double-tick them.
 pub struct LuaAnimSyncGroup {
     inner: crate::animation::sync_group::AnimSyncGroup,
 }

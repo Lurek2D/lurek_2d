@@ -54,4 +54,5 @@ describe("stress: AI FSM evaluation throughput", function()
         expect_true(elapsed < 10.0, "multi-agent FSM budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

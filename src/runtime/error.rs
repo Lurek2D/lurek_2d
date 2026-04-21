@@ -75,7 +75,7 @@ impl ErrorCategory {
 /// - `FileSystemError` — Sandboxed I/O failure.
 /// - `LuaError` — Lua script execution or binding error.
 /// - `WindowError` — Window creation or event loop failure.
-/// - `ConfigError` — `conf.lua` parse error.
+/// - `ConfigError` — `conf.toml` parse error.
 /// - `ResourceNotFound` — A requested asset was not found in the game directory.
 /// - `ResourceNotLoaded` — A resource was released but a stale handle was accessed.
 /// - `IoError` — Low-level I/O error (from `std::io::Error`).
@@ -178,7 +178,7 @@ impl EngineError {
             }
             Self::LuaError(_) => "Check the Lua script for syntax errors or undefined variables.",
             Self::WindowError(_) => "Try running with a different display backend.",
-            Self::ConfigError(_) => "Review conf.lua for syntax errors or invalid values.",
+            Self::ConfigError(_) => "Review conf.toml for syntax errors or invalid values.",
             Self::ResourceNotFound(_) => {
                 "Verify the file exists in the game directory and the path is spelled correctly."
             }

@@ -1,4 +1,4 @@
-//! `lurek.light` — 2D lighting, shadow occluders, and ambient control.
+﻿//! `lurek.light` â€” 2D lighting, shadow occluders, and ambient control.
 //!
 //! Manages `Light` handles (point / directional / spot) and `Occluder` handles
 //! (line-segment shadow casters) within the engine's `LightWorld`. Supports
@@ -19,7 +19,7 @@ use crate::math::{Color, Vec2};
 use crate::runtime::resource_keys::{LightKey, OccluderKey};
 
 // -------------------------------------------------------------------------------
-// String ↔ Enum helpers
+// String â†” Enum helpers
 // -------------------------------------------------------------------------------
 
 /// Parses a blend mode string into `LightBlendMode`.
@@ -817,11 +817,11 @@ impl LuaUserData for LuaLight {
         // -- addFlicker --
         /// Convenience method to set a flicker effect using amplitude range and
         /// frequency. `min` and `max` are multipliers for the base intensity
-        /// (e.g. `0.8, 1.2` = ±20%). `hz` is the oscillation frequency in
+        /// (e.g. `0.8, 1.2` = Â±20%). `hz` is the oscillation frequency in
         /// cycles per second.
-        /// @param min : number  — lower intensity multiplier
-        /// @param max : number  — upper intensity multiplier
-        /// @param hz  : number  — oscillation frequency (cycles/s)
+        /// @param min : number  â€” lower intensity multiplier
+        /// @param max : number  â€” upper intensity multiplier
+        /// @param hz  : number  â€” oscillation frequency (cycles/s)
         /// @return nil
         methods.add_method("addFlicker", |_, this, (min, max, hz): (f32, f32, f32)| {
             let strength = ((max - min) / 2.0).abs();
@@ -1037,7 +1037,7 @@ impl LuaUserData for LuaOccluder {
         });
 
         // -- setOpacity --
-        /// Sets the shadow opacity (0.0–1.0).
+        /// Sets the shadow opacity (0.0â€“1.0).
         /// @param opacity : number
         /// @return nil
         methods.add_method("setOpacity", |_, this, o: f32| {
@@ -1157,10 +1157,10 @@ impl LuaUserData for LuaOccluder {
 /// Registers the `lurek.light` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newLight --
@@ -1290,7 +1290,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- setMaxLights --
-    /// Sets the maximum number of lights processed per frame (clamped 1–256).
+    /// Sets the maximum number of lights processed per frame (clamped 1â€“256).
     /// @param n : integer
     /// @return nil
     let s = state.clone();
@@ -1448,6 +1448,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("light", tbl)?;
+    lurek.set("light", tbl)?;
     Ok(())
 }

@@ -56,4 +56,5 @@ describe("stress: savegame collect cycles", function()
         expect_true(elapsed < 5.0, "summary r/w budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

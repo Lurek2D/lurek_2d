@@ -5296,7 +5296,7 @@ Compute world-transform draw list sorted by drawOrder. Each entry: {socketName, 
 
 #### `draw()` *(deprecated)*
 
-Deprecated convenience draw shim — retained only as a no-op. The original implementation referenced an undefined global (`luna`) and a non-existent namespace (`lurek.render`), so the call chain was a silent no-op in every build. Library code must not call rendering APIs directly (per `library.*` conventions), so the correct path now is for the caller to iterate `Doll:getDrawList()` and dispatch the entries to `lurek.render` (or any other renderer) themselves. This method emits a one-time warning on first invocation and then returns immediately. It will be removed in a future major bump.
+Deprecated convenience draw shim — retained only as a no-op. The original implementation referenced an undefined global (`lurek`) and a non-existent namespace (`lurek.render`), so the call chain was a silent no-op in every build. Library code must not call rendering APIs directly (per `library.*` conventions), so the correct path now is for the caller to iterate `Doll:getDrawList()` and dispatch the entries to `lurek.render` (or any other renderer) themselves. This method emits a one-time warning on first invocation and then returns immediately. It will be removed in a future major bump.
 
 See: [`lurek.render`](lua-api.md#lurekgraphic)
 

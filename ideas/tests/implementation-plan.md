@@ -35,12 +35,12 @@
 ### 2.1 Unit Tests (Batch 1 — Lowest Coverage)
 | File | Functions to annotate | Est. effort |
 |------|----------------------|-------------|
-| `test_runtime_system.lua` | 22 | Small |
+| `test_runtime_app.lua` | 22 | Small |
 | `test_math.lua` | 66 (Vec2/Vec3/Mat3/trig/noise) | Medium |
 | `test_log.lua` | 13 | Small |
 | `test_i18n.lua` | 27 | Small |
 | `test_physics.lua` | 50 (Body/Joint/World/Shape) | Medium |
-| `test_filesystem.lua` | 25 | Small |
+| `test_fileapp.lua` | 25 | Small |
 | `test_mods.lua` | 22 | Small |
 | `test_network.lua` | 20 | Small |
 
@@ -91,9 +91,9 @@ All remaining unit test files — add markers to verify 100% marker coverage for
 | `test_ai_pathfind.lua` | ai + pathfinding | AI agent follows computed path |
 | `test_input_camera.lua` | input + camera | Screen-to-world coordinate transform |
 | `test_animation_timer.lua` | animation + timer | Timer-driven animation playback |
-| `test_data_filesystem.lua` | data + filesystem | Save JSON to file, load it back |
+| `test_data_fileapp.lua` | data + filesystem | Save JSON to file, load it back |
 | `test_save_tilemap.lua` | savegame + tilemap | Save map state, restore it |
-| `test_event_entity.lua` | signal + entity | Entities emit/receive signals |
+| `test_event_ecs.lua` | signal + entity | Entities emit/receive signals |
 | `test_tilemap_pathfind.lua` | tilemap + pathfinding | Grid from tilemap, pathfind on it |
 | `test_thread_data.lua` | thread + data | Cross-thread data via Channel |
 | `test_tween_camera.lua` | tween + camera | Smooth camera pan/zoom |

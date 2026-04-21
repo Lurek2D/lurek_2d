@@ -133,4 +133,5 @@ describe("pathfinding stress: flow field", function()
         expect_type("number", dy)
     end)
 end)
+
 test_summary()

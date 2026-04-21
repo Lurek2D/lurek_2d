@@ -32,7 +32,7 @@ describe("lurek.docs", function()
     -- @covers lurek.test.w1
     -- @covers lurek.test.w2
     -- @description Verifies the docs module can scan the lurek namespace and return an API catalog; despite the folder placement this is a single-module docs test.
-    it("should scan the luna namespace", function()
+    it("should scan the lurek namespace", function()
         local catalog = lurek.docs.scan()
         expect_not_nil(catalog, "scan() should return an ApiCatalog")
     end)
@@ -53,9 +53,9 @@ describe("lurek.docs", function()
     -- @description Verifies the docs scan can retrieve entries for a specific module.
     it("scan should find lurek.render functions", function()
         local catalog = lurek.docs.scan()
-        local entries = catalog:getEntries("graphics")
-        expect_not_nil(entries, "getEntries('graphics') should return a table")
-        expect_true(#entries > 0, "graphics should have entries")
+        local entries = catalog:getEntries("render")
+        expect_not_nil(entries, "getEntries('render') should return a table")
+        expect_true(#entries > 0, "render should have entries")
     end)
 
     -- ============= scanModule =============
@@ -64,7 +64,7 @@ describe("lurek.docs", function()
     -- @covers lurek.docs.ApiCatalog.entryCount
     -- @description Verifies scanning a single module returns a populated docs catalog for that module.
     it("should scan a single module", function()
-        local catalog = lurek.docs.scanModule("graphics")
+        local catalog = lurek.docs.scanModule("render")
         expect_not_nil(catalog, "scanModule should return a catalog")
         local count = catalog:entryCount()
         expect_true(count > 0, "graphics module should have entries")
@@ -167,10 +167,10 @@ describe("lurek.docs", function()
     -- @description Verifies docs catalogs support searching entries by name text.
     it("catalog should support search", function()
         local catalog = lurek.docs.scan()
-        local results = catalog:search("graphics")
+        local results = catalog:search("render")
         expect_not_nil(results, "search should return results")
-        -- At least lurek.render.* functions contain 'graphics' in qualified name
-        expect_true(#results > 0, "should find graphics entries")
+        -- At least lurek.render.* functions contain 'render' in qualified name
+        expect_true(#results > 0, "should find render entries")
     end)
 
     -- @covers lurek.docs.ApiCatalog.toTable
@@ -385,4 +385,5 @@ describe("lurek.docs", function()
     end)
 
 end)
+
 test_summary()

@@ -410,7 +410,7 @@ function M.newDoll(template)
 
     --- Deprecated convenience draw shim — retained only as a no-op.
     --
-    -- The original implementation referenced an undefined global (`luna`)
+    -- The original implementation referenced an undefined global (`lurek`)
     -- and a non-existent namespace (`lurek.render`), so the call chain was a
     -- silent no-op in every build. Library code must not call rendering
     -- APIs directly (per `library.*` conventions), so the correct path

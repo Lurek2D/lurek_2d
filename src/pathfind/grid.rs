@@ -3,7 +3,7 @@
 //! Cells are addressed with 0-based `(x, y)` coordinates. The Lua layer
 //! converts to/from 1-based indices.
 //!
-//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
 //! details for grid-related operations and data management.
 //! Key types exported from this module: `Grid`.
 //! Primary functions: `new()`, `width()`, `height()`, `set_walkable()`.

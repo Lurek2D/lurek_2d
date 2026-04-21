@@ -54,7 +54,7 @@ EXAMPLES_DIR = ROOT / "content" / "examples"
 # Lines to remove entirely
 _REMOVE_PATTERNS: list[re.Pattern] = [
     re.compile(r"^\s*--\s+This file is documentation code, not a runnable game\.\s*$"),
-    re.compile(r"^\s*--\s+All luna\.\w+ API methods demonstrated with code and comments\.\s*$"),
+    re.compile(r"^\s*--\s+All lurek\.\w+ API methods demonstrated with code and comments\.\s*$"),
     re.compile(r"^\s*--\s+Includes all \d+ \w+.*added in.*\.\s*$"),
 ]
 
@@ -182,7 +182,7 @@ def transform_line(line: str) -> str | None:
 
     # ── `-- lurek.xxx.yyy(...)` patterns ──────────────────────────────────── #
     m_luna = re.match(
-        r"^(luna\.\w+[\.\:]\w+)\s*\(([^)]*)\)(.*)", content
+        r"^(lurek\.\w+[\.\:]\w+)\s*\(([^)]*)\)(.*)", content
     )
     if m_luna:
         call_base = m_luna.group(1)       # e.g. `lurek.automation.pause`

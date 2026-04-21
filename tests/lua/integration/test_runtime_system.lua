@@ -165,4 +165,5 @@ describe("lurek.runtime.clipboard stubs", function()
         expect_type("string", text)
     end)
 end)
+
 test_summary()

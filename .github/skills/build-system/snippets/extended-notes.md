@@ -37,7 +37,7 @@ Output: `dist/lurek2d-<version>-setup.exe`
 
 > See [snippets/local-install-uninstall-2.sh](snippets/local-install-uninstall-2.sh) for the example.
 
-After install: `luna content/demos/hello_world` works from any directory.
+After install: `lurek content/demos/hello_world` works from any directory.
 
 ---
 

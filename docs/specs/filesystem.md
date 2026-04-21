@@ -7,7 +7,7 @@
 - Lua API path(s): `src/lua_api/filesystem_api.rs`
 - Primary Lua namespace: `lurek.filesystem`
 - Rust test path(s): tests/rust/unit/filesystem_tests.rs, plus inline unit coverage in src/filesystem/async_loader.rs
-- Lua test path(s): tests/lua/unit/test_filesystem.lua, tests/lua/stress/test_filesystem_stress.lua, tests/lua/integration/test_data_filesystem.lua
+- Lua test path(s): tests/lua/unit/test_fileapp.lua, tests/lua/stress/test_filesystem_stress.lua, tests/lua/integration/test_data_fileapp.lua
 
 ## Summary
 

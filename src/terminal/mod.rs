@@ -12,15 +12,15 @@
 //! `terminal` is a Tier 2 engine extension. It may depend on `math`,
 //! `engine`, and Tier 1 modules. It must not import other Tier 2 modules.
 
-/// ANSI escape code parser for colour/style extraction.
-pub mod ansi;
 mod cell;
-/// Tab-completion engine for TextBox inputs.
-pub mod completion;
 /// Render-command generation and CPU drawing for the terminal module.
 pub mod render;
 mod terminal_state;
 mod widget;
+/// ANSI escape code parser for colour/style extraction.
+pub mod ansi;
+/// Tab-completion engine for TextBox inputs.
+pub mod completion;
 
 pub use cell::TCell;
 pub use terminal_state::Terminal;

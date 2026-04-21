@@ -1,4 +1,4 @@
-//! `lurek.pipeline` — DAG-based pipeline orchestrator for composing multi-step workflows.
+﻿//! `lurek.pipeline` â€” DAG-based pipeline orchestrator for composing multi-step workflows.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -17,10 +17,10 @@ use crate::runtime::log_messages::LA02_PIPELINE_CALLBACK_FAIL;
 /// Lua-side wrapper around a single [`PipelineStep`], plus Lua callback registry keys.
 ///
 /// # Fields
-/// - `inner` — `Rc<RefCell<PipelineStep>>`.
-/// - `callback_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `condition_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `on_error_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `inner` â€” `Rc<RefCell<PipelineStep>>`.
+/// - `callback_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `condition_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `on_error_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
 ///
 #[derive(Clone)]
 pub struct LuaStep {
@@ -423,14 +423,14 @@ impl LuaUserData for LuaStep {
 
 /// Lua-side wrapper around a [`Pipeline`] DAG with scheduler and Lua callback registry.
 /// # Fields
-/// - `inner` — `Rc<RefCell<Pipeline>>`.
-/// - `scheduler` — `Rc<RefCell<PipelineScheduler>>`.
-/// - `step_wrappers` — `Rc<RefCell<HashMap<String, LuaStep>>>`.
-/// - `on_complete_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `on_step_complete_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `on_step_error_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `context_key` — `Rc<RefCell<Option<LuaRegistryKey>>>`.
-/// - `is_async` — `Rc<RefCell<bool>>`.
+/// - `inner` â€” `Rc<RefCell<Pipeline>>`.
+/// - `scheduler` â€” `Rc<RefCell<PipelineScheduler>>`.
+/// - `step_wrappers` â€” `Rc<RefCell<HashMap<String, LuaStep>>>`.
+/// - `on_complete_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `on_step_complete_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `on_step_error_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `context_key` â€” `Rc<RefCell<Option<LuaRegistryKey>>>`.
+/// - `is_async` â€” `Rc<RefCell<bool>>`.
 ///
 #[derive(Clone)]
 pub struct LuaPipeline {
@@ -1207,7 +1207,7 @@ impl LuaUserData for LuaPipeline {
         /// ```
         /// @param sub_pipeline : Pipeline
         /// @param alias : string
-        /// @param outer_deps : table?  — Array of step names in this pipeline to depend on.
+        /// @param outer_deps : table?  â€” Array of step names in this pipeline to depend on.
         /// @return nil
         methods.add_method(
             "addSubPipeline",
@@ -1247,10 +1247,10 @@ impl LuaUserData for LuaPipeline {
 /// Registers the `lurek.pipeline` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newStep --
@@ -1349,6 +1349,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("pipeline", tbl)?;
+    lurek.set("pipeline", tbl)?;
     Ok(())
 }

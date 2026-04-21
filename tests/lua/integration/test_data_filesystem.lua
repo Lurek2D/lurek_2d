@@ -1,76 +1,83 @@
 -- Lurek2D Integration Test: Data + Filesystem
 -- Tests saving JSON data to a file and reading it back.
+-- Uses lurek.serial.toJson/fromJson (not lurek.data.encode which is binary-only).
 
 -- @description Covers suite: integration: data serialization with filesystem I/O.
 describe("integration: data serialization with filesystem I/O", function()
-    local TMP_PATH = "test_data_fs_tmp.json"
+    local TMP_PATH = "save/test_data_fs_tmp.json"
 
-    -- @covers lurek.data.encode
+    -- @covers lurek.serial.toJson
     -- @covers lurek.filesystem.write
-    -- @covers lurek.data.decode
     -- @covers lurek.filesystem.read
+    -- @covers lurek.serial.fromJson
     -- @covers lurek.filesystem.exists
     -- @covers lurek.filesystem.remove
-    -- @description Verifies JSON-encoded table data can be written to the filesystem without raising an I/O error.
-    it("encodes table to JSON and writes to file", function()
+    -- @description Verifies JSON-encoded table data can be written and read back in the same test.
+    it("encodes table to JSON, writes, and reads back", function()
         local record = {
             name  = "player1",
             score = 9999,
             level = 7,
-            tags  = {"fast", "bold"},
         }
 
-        local json_str = lurek.data.encode("json", record)
+        local json_str = lurek.serial.toJson(record)
         expect_type("string", json_str, "encoded to JSON string")
         expect_true(#json_str > 0, "JSON string is non-empty")
 
+        -- Write, read back, and decode in the same it-block so the file persists
         expect_no_error(function()
             lurek.filesystem.write(TMP_PATH, json_str)
         end)
-    end)
 
-    -- @covers lurek.data.decode
-    -- @covers lurek.filesystem.read
-    -- @description Verifies persisted JSON can be read back from disk and decoded into the original table fields.
-    it("reads file back and decodes JSON to original table", function()
         local exists = lurek.filesystem.exists(TMP_PATH)
         expect_true(exists, "temp file exists after write")
 
         local content = lurek.filesystem.read(TMP_PATH)
         expect_type("string", content, "file content is string")
 
-        local decoded = lurek.data.decode("json", content)
+        local decoded = lurek.serial.fromJson(content)
         expect_equal("player1", decoded.name,  "name round-tripped")
         expect_equal(9999,      decoded.score, "score round-tripped")
         expect_equal(7,         decoded.level, "level round-tripped")
-    end)
 
-    -- @covers lurek.data
-    -- @covers lurek.filesystem.remove
-    -- @description Verifies the temporary artifact created for data round-tripping can be removed cleanly from the filesystem.
-    it("cleans up temporary file", function()
+        -- Cleanup
         if lurek.filesystem.exists(TMP_PATH) then
-            expect_no_error(function()
-                lurek.filesystem.remove(TMP_PATH)
-            end)
+            pcall(lurek.filesystem.remove, TMP_PATH)
         end
-        expect_true(true, "cleanup done")
     end)
 
-    -- @covers lurek.data.decode
-    -- @covers lurek.filesystem
-    -- @description Verifies nested table data survives a serialization cycle that mirrors filesystem persistence.
+    -- @covers lurek.serial.toJson
+    -- @covers lurek.serial.fromJson
+    -- @description Verifies nested table data survives a serialization round-trip via JSON.
     it("round-trips nested data correctly", function()
         local nested = {
             meta = { version = 2, engine = "lurek" },
-            data = { {x=1,y=2}, {x=3,y=4} },
+            data = { {x=1, y=2}, {x=3, y=4} },
         }
 
-        local encoded = lurek.data.encode("json", nested)
-        local decoded = lurek.data.decode("json", encoded)
+        local encoded = lurek.serial.toJson(nested)
+        local decoded = lurek.serial.fromJson(encoded)
 
         expect_equal(2, decoded.meta.version, "nested version")
         expect_equal("lurek", decoded.meta.engine, "nested engine")
     end)
+
+    -- @covers lurek.serial.toJson
+    -- @covers lurek.serial.fromJson
+    -- @description Verifies large JSON payloads survive serialization round-trips so bulk data can be restored intact.
+    it("large table serialization stress", function()
+        local big = {}
+        for i = 1, 200 do
+            big[i] = { x = i * 0.1, y = i * 0.2, name = "item_" .. i }
+        end
+
+        local encoded = lurek.serial.toJson(big)
+        expect_true(#encoded > 100, "encoded has content")
+
+        local decoded = lurek.serial.fromJson(encoded)
+        expect_equal(200, #decoded, "200 items decoded")
+        expect_near(20.0, decoded[200].x, 0.1, "last item x correct")
+    end)
 end)
+
 test_summary()

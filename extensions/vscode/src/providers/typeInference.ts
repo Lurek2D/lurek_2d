@@ -440,12 +440,12 @@ export const FACTORY_TYPES: Record<string, TypeInfo> = {
 
 // ── Known lurek sub-modules (for alias detection) ─────────
 const LUREK_MODULES = [
-  "graphics", "audio", "physics", "input", "timer", "filesystem",
-  "compute", "data", "image", "entity", "window", "thread",
+  "render", "audio", "physics", "input", "timer", "filesystem",
+  "compute", "data", "image", "ecs", "window", "thread",
   "animation", "camera", "automation", "event", "math",
-  "particle", "tilemap", "scene", "savegame", "modding",
-  "graph", "pathfinding", "ai", "dataframe", "gui", "minimap",
-  "overlay", "postfx", "terminal", "cardgame", "tween",
+  "particle", "tilemap", "scene", "save", "mods",
+  "graph", "pathfind", "ai", "dataframe", "ui", "minimap",
+  "effect", "postfx", "terminal", "cardgame", "tween",
 ];
 
 // ── Variable → Type tracking ──────────────────────────────

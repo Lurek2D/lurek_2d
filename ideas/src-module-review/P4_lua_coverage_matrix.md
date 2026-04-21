@@ -98,7 +98,7 @@ Per repo convention, `tests/lua/harness.rs` registers each Lua test file MANUALL
 
 ### 4.1 — Files on disk but NOT registered in harness (orphan tests — never run)
 
-- `tests/lua/unit/test_runtime.lua`
+- `tests/lua/unit/test_runtimer.lua`
 
 ### 4.2 — Harness references to files that DO NOT exist (broken `run_lua_test()` paths)
 

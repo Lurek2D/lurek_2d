@@ -7,7 +7,7 @@ class SceneFlowEditor extends shared_js_1.WebviewEditor {
         return new SceneFlowEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.sceneFlow", "Scene Flow Editor");
+        super(context, "lurek.editor.sceneFlow", "Scene Flow Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

@@ -1,4 +1,4 @@
-//! `lurek.dataframe` — Column-major tabular data with query, analytics, and SQL.
+﻿//! `lurek.dataframe` â€” Column-major tabular data with query, analytics, and SQL.
 //!
 //! Exposes `DataFrame` (column-oriented table with filter, sort, group, join, pivot)
 //! and `Database` (named collection of DataFrames with SQL query support). Supports
@@ -631,7 +631,7 @@ impl LuaUserData for LuaDataFrame {
             Ok(LuaDataFrame::new(this.inner.borrow().clone_df()))
         });
 
-        // ── Analytics ──────────────────────────────────────────────────
+        // â”€â”€ Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- withRollingMean --
         /// Add a rolling mean column. Rows with insufficient history get nil.
@@ -910,7 +910,7 @@ impl LuaUserData for LuaDataFrame {
         });
 
         // -- getColumnAsF64 --
-        /// Return a numeric column as a Lua array of numbers (nils → 0/nan).
+        /// Return a numeric column as a Lua array of numbers (nils â†’ 0/nan).
         /// @param col : string|integer
         /// @return table
         methods.add_method("getColumnAsF64", |lua, this, col: LuaValue| {
@@ -1264,10 +1264,10 @@ impl LuaUserData for LuaDatabase {
 /// Registers the `lurek.dataframe` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newDataFrame --
@@ -1383,6 +1383,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("dataframe", tbl)?;
+    lurek.set("dataframe", tbl)?;
     Ok(())
 }

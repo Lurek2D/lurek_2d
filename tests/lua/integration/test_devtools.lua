@@ -361,4 +361,5 @@ describe("lurek.devtools console", function()
         expect_equal(true, lurek.devtools.isConsoleOpen())
     end)
 end)
+
 test_summary()

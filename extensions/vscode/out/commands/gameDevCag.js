@@ -213,6 +213,6 @@ async function updateCag(context) {
 }
 // ─── Registration ─────────────────────────────────────────
 function registerGameDevCagCommands(context) {
-    context.subscriptions.push(vscode.commands.registerCommand("luna.cag.deploy", () => deployCag(context)), vscode.commands.registerCommand("luna.cag.scaffold", () => scaffoldFromTemplate(context)), vscode.commands.registerCommand("luna.cag.updateGameDev", () => updateCag(context)));
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.cag.deploy", () => deployCag(context)), vscode.commands.registerCommand("lurek.cag.scaffold", () => scaffoldFromTemplate(context)), vscode.commands.registerCommand("lurek.cag.updateGameDev", () => updateCag(context)));
 }
 //# sourceMappingURL=gameDevCag.js.map

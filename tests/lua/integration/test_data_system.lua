@@ -107,4 +107,5 @@ describe("system info integration", function()
         end
     end)
 end)
+
 test_summary()

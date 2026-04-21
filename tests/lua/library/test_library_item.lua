@@ -1362,4 +1362,5 @@ describe("Input validation", function()
         end)
     end)
 end)
+
 test_summary()

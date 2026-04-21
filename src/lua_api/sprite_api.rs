@@ -1,4 +1,4 @@
-//! `lurek.sprite` — Sprite-sheet UV layout, named frame groups, atlas parsing,
+﻿//! `lurek.sprite` â€” Sprite-sheet UV layout, named frame groups, atlas parsing,
 //! and RPGMaker character-sheet helpers.
 
 use super::SharedState;
@@ -236,19 +236,19 @@ impl LuaUserData for LuaSpriteAtlas {
 /// Registers the `lurek.sprite.*` Lua namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
 /// Factory functions:
-/// - `lurek.sprite.newSheet(tw, th, fw, fh)` → SpriteSheet
-/// - `lurek.sprite.newRPGMakerSheet(tw, th)` → SpriteSheet
-/// - `lurek.sprite.parseAtlas(json_str)` → SpriteAtlas
-/// - `lurek.sprite.newAtlasSheet(atlas, sheet_w, sheet_h)` → SpriteSheet
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+/// - `lurek.sprite.newSheet(tw, th, fw, fh)` â†’ SpriteSheet
+/// - `lurek.sprite.newRPGMakerSheet(tw, th)` â†’ SpriteSheet
+/// - `lurek.sprite.parseAtlas(json_str)` â†’ SpriteAtlas
+/// - `lurek.sprite.newAtlasSheet(atlas, sheet_w, sheet_h)` â†’ SpriteSheet
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── newSheet ─────────────────────────────────────────────────────────────
-    /// Creates a sprite sheet with a uniform grid of `frame_w × frame_h` frames.
+    // â”€â”€ newSheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    /// Creates a sprite sheet with a uniform grid of `frame_w Ă— frame_h` frames.
     /// @param texture_width : integer
     /// @param texture_height : integer
     /// @param frame_width : integer
@@ -263,8 +263,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newRPGMakerSheet ─────────────────────────────────────────────────────
-    /// Creates an RPGMaker VX/Ace character sheet (3 cols × 4 rows) with "down", "left", "right", "up" groups.
+    // â”€â”€ newRPGMakerSheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    /// Creates an RPGMaker VX/Ace character sheet (3 cols Ă— 4 rows) with "down", "left", "right", "up" groups.
     /// @param texture_width : integer
     /// @param texture_height : integer
     /// @return SpriteSheet
@@ -277,7 +277,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── parseAtlas ────────────────────────────────────────────────────────────
+    // â”€â”€ parseAtlas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Parses a TexturePacker JSON string (hash or array format) and returns a SpriteAtlas.
     /// @param json_str : string
     /// @return SpriteAtlas
@@ -294,7 +294,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── newAtlasSheet ─────────────────────────────────────────────────────────
+    // â”€â”€ newAtlasSheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Builds a SpriteSheet whose frames come from named entries in a SpriteAtlas.
     /// Each atlas region becomes a frame; regions are also registered as single-frame named groups.
     /// @param atlas : SpriteAtlas
@@ -311,7 +311,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── parseAsepriteAtlas ───────────────────────────────────────────────────
+    // â”€â”€ parseAsepriteAtlas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Parses an Aseprite JSON export string and returns a `SpriteAtlas`.
     /// Supports both array and hash Aseprite export formats.
     /// @param json_str : string
@@ -324,7 +324,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("sprite", tbl)?;
+    lurek.set("sprite", tbl)?;
     Ok(())
 }
 

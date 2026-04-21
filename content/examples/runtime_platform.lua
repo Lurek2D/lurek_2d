@@ -1,4 +1,4 @@
--- content/examples/runtime_platform.lua
+-- content/examples/runtime_window.lua
 -- Lurek2D lurek.runtime API Reference
 -- Run with: cargo run -- content/examples/system
 
@@ -156,7 +156,7 @@ print("debug overlay enabled -- shows FPS, draw calls, memory")
 
 -- ---- Stub: lurek.runtime.getDebugOverlay ----------------------------------
 --@api-stub: lurek.runtime.getDebugOverlay
--- Read the overlay state to update a checkbox in the options menu.
+-- Read the effect state to update a checkbox in the options menu.
 local overlay_on = lurek.runtime.getDebugOverlay()
 print("debug overlay active: " .. tostring(overlay_on))
 

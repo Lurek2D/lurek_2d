@@ -7,7 +7,7 @@ class TileMapEditor extends shared_js_1.WebviewEditor {
         return new TileMapEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.tileMap", "Tile Map Editor");
+        super(context, "lurek.editor.tileMap", "Tile Map Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

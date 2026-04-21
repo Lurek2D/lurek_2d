@@ -15,7 +15,7 @@ The `app` module is Lurek2D's application entry-point and engine lifecycle orche
 
 `App::run()` is where everything starts: it creates the OS window via winit, initialises the wgpu renderer, constructs `SharedState`, creates the Lua VM via `lua_api::create_lua_vm()`, and then enters the winit event loop. The internal `LunaApp` struct implements winit's `ApplicationHandler` trait with a `RunState` state machine (Running → Error → Restarting). Each frame the loop dispatches OS events, calls the Lua callback sequence (`ready` → `process_physics` (fixed timestep) → `fixedUpdate` (optional fixed timestep) → `process(dt)` → `process_late(dt)` → `render()`), auto-collects parallax / tilemap / raycaster / UI render commands, then calls `GpuRenderer::render_frame()` to process the accumulated `RenderCommand` queue.
 
-Special startup modes are handled here: if no game is provided, a branded splash screen is rendered; Lua and engine errors transition to a blue `ErrorScreen` with traceback, recovery hints, clipboard copy (Ctrl+C), and restart (R key). `debug_overlay.rs` provides the lightweight in-engine FPS and draw-call counter overlay toggled via F12. Gamepad discovery and hot-plug events are routed through the gilrs library. File drag-and-drop events (folders and `.lurek`/`.luna` archives) and screenshot requests (including auto-screenshot for CI) are also handled at this layer. Viewport scaling supports `letterbox`, `stretch`, `pixel`, and `none` modes via `recompute_viewport()`.
+Special startup modes are handled here: if no game is provided, a branded splash screen is rendered; Lua and engine errors transition to a blue `ErrorScreen` with traceback, recovery hints, clipboard copy (Ctrl+C), and restart (R key). `debug_overlay.rs` provides the lightweight in-engine FPS and draw-call counter overlay toggled via F12. Gamepad discovery and hot-plug events are routed through the gilrs library. File drag-and-drop events (folders and `.lurek`/`.lurek` archives) and screenshot requests (including auto-screenshot for CI) are also handled at this layer. Viewport scaling supports `letterbox`, `stretch`, `pixel`, and `none` modes via `recompute_viewport()`.
 
 Because `App` imports from virtually every other module (render, audio, input, lua_api, filesystem, etc.) it is deliberately kept thin — orchestration only, no domain logic. All subsystem behaviour lives in their own modules; `App` just wires them up and drives the frame cycle.
 
@@ -43,7 +43,7 @@ Because `App` imports from virtually every other module (render, audio, input, l
 - `App::new` (`app_winit.rs`): Creates a new `App` with the given `Config`.
 - `App::run` (`app_winit.rs`): Initialises the GPU, window, Lua VM, and runs the event loop until the game exits.
 - `DebugOverlay::new` (`debug_overlay.rs`): Creates a new disabled debug overlay.
-- `DebugOverlay::build_render_commands` (`debug_overlay.rs`): Generates draw commands for the overlay.
+- `DebugOverlay::build_render_commands` (`debug_overlay.rs`): Generates draw commands for the effect.
 - `ErrorScreen::from_error` (`error_screen.rs`): Creates an `ErrorScreen` from a plain error message string.
 - `ErrorScreen::from_lua_error` (`error_screen.rs`): Creates an `ErrorScreen` from an `mlua::Error`.
 - `ErrorScreen::from_engine_error` (`error_screen.rs`): Creates an `ErrorScreen` from an `EngineError`.

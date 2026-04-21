@@ -46,7 +46,7 @@ exports.LuaDebugAdapterFactory = LuaDebugAdapterFactory;
 class LuaDebugConfigurationProvider {
     resolveDebugConfiguration(_folder, config, _token) {
         if (!config.type) {
-            config.type = "luna";
+            config.type = "lurek";
         }
         if (!config.request) {
             config.request = "launch";
@@ -59,7 +59,7 @@ class LuaDebugConfigurationProvider {
         }
         if (!config.luaVersion) {
             config.luaVersion = vscode.workspace
-                .getConfiguration("luna")
+                .getConfiguration("lurek")
                 .get("luaVersion", "luajit");
         }
         if (config.stopOnEntry === undefined) {
@@ -73,14 +73,14 @@ class LuaDebugConfigurationProvider {
     provideDebugConfigurations(_folder) {
         return [
             {
-                type: "luna",
+                type: "lurek",
                 request: "launch",
                 name: "Luna2D: Debug Game",
                 program: "${workspaceFolder}",
                 stopOnEntry: false,
             },
             {
-                type: "luna",
+                type: "lurek",
                 request: "attach",
                 name: "Luna2D: Attach to Running",
                 debugPort: 8172,
@@ -92,6 +92,6 @@ exports.LuaDebugConfigurationProvider = LuaDebugConfigurationProvider;
 function register(context) {
     const factory = new LuaDebugAdapterFactory();
     const configProvider = new LuaDebugConfigurationProvider();
-    context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("luna", factory), vscode.debug.registerDebugConfigurationProvider("luna", configProvider));
+    context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("lurek", factory), vscode.debug.registerDebugConfigurationProvider("lurek", configProvider));
 }
 //# sourceMappingURL=luaDebugAdapter.js.map

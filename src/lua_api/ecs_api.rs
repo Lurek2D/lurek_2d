@@ -1,4 +1,4 @@
-//! `lurek.ecs` — Lightweight ECS with entity lifecycle, components, tags, layers, and blueprints.
+﻿//! `lurek.ecs` â€” Lightweight ECS with entity lifecycle, components, tags, layers, and blueprints.
 //!
 //! Wraps [`crate::ecs::Universe`] as `LuaUniverse` userdata. Supports spawn/kill,
 //! per-entity component CRUD, tag flags, named layers, queries, blueprints, and
@@ -141,7 +141,7 @@ impl LuaUserData for LuaUniverse {
         // -- addSystem --
         /// Adds a system table to the universe with an optional priority (lower = earlier).
         /// @param system : table
-        /// @param opts : table? — {priority: integer}
+        /// @param opts : table? â€” {priority: integer}
         /// @return nil
         methods.add_method(
             "addSystem",
@@ -745,10 +745,10 @@ impl LuaUserData for LuaUniverse {
 /// Registers the `lurek.ecs` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newUniverse --
@@ -765,6 +765,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("ecs", tbl)?;
+    lurek.set("ecs", tbl)?;
     Ok(())
 }

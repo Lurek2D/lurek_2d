@@ -460,7 +460,7 @@ def check_spec_file(module: str) -> List[Check]:
         if lua_api_section and bound_fns:
             spec_api_text = lua_api_section.group(1)
             # Look for function name patterns in the spec: `lurek.module.funcName`
-            spec_fn_names = set(re.findall(r"`luna\.\w+\.(\w+)\s*\(", spec_api_text))
+            spec_fn_names = set(re.findall(r"`lurek\.\w+\.(\w+)\s*\(", spec_api_text))
             if spec_fn_names:
                 code_fn_set = set(bound_fns)
                 stale_fns = [fn for fn in spec_fn_names if fn not in code_fn_set]

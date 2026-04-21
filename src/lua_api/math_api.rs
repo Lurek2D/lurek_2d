@@ -1,4 +1,4 @@
-//! `lurek.math` — Math utilities: random generators, transforms, Bezier curves, tweening,
+﻿//! `lurek.math` â€” Math utilities: random generators, transforms, Bezier curves, tweening,
 //! spatial hashing, noise, easing, polygon triangulation, and color-space conversion.
 
 use mlua::prelude::*;
@@ -34,7 +34,7 @@ use crate::math::{DistType, FractalType, MapGenOptions, NoiseKind};
 /// Lua-side wrapper around a [`Vec2`] value type.
 ///
 /// # Fields
-/// - `inner` — `Vec2`.
+/// - `inner` â€” `Vec2`.
 pub struct LuaVec2 {
     pub inner: Vec2,
 }
@@ -225,7 +225,7 @@ impl LuaUserData for LuaVec2 {
 /// Lua-side wrapper around a [`Vec3`] value type.
 ///
 /// # Fields
-/// - `inner` — `Vec3`.
+/// - `inner` â€” `Vec3`.
 pub struct LuaVec3 {
     pub inner: Vec3,
 }
@@ -683,7 +683,7 @@ impl LuaUserData for LuaTransform {
 
         // -- decompose --
         /// Decomposes this transform into translation, rotation, and scale.
-        /// @return number, number, number, number, number — x, y, angle, scaleX, scaleY
+        /// @return number, number, number, number, number â€” x, y, angle, scaleX, scaleY
         methods.add_method("decompose", |_, this, ()| Ok(this.inner.decompose()));
     }
 }
@@ -1409,12 +1409,12 @@ pub struct LuaCircle {
 impl LuaUserData for LuaCircle {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- area --
-        /// Returns the area of the circle (π r²).
+        /// Returns the area of the circle (Ď€ rÂ˛).
         /// @return number
         methods.add_method("area", |_, this, ()| Ok(this.inner.area()));
 
         // -- perimeter --
-        /// Returns the circumference of the circle (2 π r).
+        /// Returns the circumference of the circle (2 Ď€ r).
         /// @return number
         methods.add_method("perimeter", |_, this, ()| Ok(this.inner.perimeter()));
 
@@ -1468,7 +1468,7 @@ impl LuaUserData for LuaCircle {
 /// Lua-side wrapper around an [`AabbTree`].
 ///
 /// # Fields
-/// - `inner` — The underlying AABB tree.
+/// - `inner` â€” The underlying AABB tree.
 pub struct LuaAabbTree {
     inner: AabbTree,
 }
@@ -1614,14 +1614,14 @@ impl LuaUserData for LuaAabbTree {
 /// Registers the `lurek.math` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
 #[allow(clippy::type_complexity)]
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── Factory functions ────────────────────────────────────────────
+    // â”€â”€ Factory functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- newRandomGenerator --
     /// Creates a new random number generator with an optional seed.
@@ -1752,7 +1752,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Free noise functions ─────────────────────────────────────────
+    // â”€â”€ Free noise functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- perlin2d --
     /// Returns 2D Perlin noise at (x, y) with the given seed.
@@ -1866,7 +1866,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── Easing functions ─────────────────────────────────────────────
+    // â”€â”€ Easing functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- applyEasing --
     /// Applies a named easing function to progress value t.
@@ -1891,7 +1891,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inQuad --
-    /// Quadratic ease-in — acceleration that starts at zero and increases.
+    /// Quadratic ease-in â€” acceleration that starts at zero and increases.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1900,7 +1900,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outQuad --
-    /// Quadratic ease-out — deceleration that starts fast and ends at zero.
+    /// Quadratic ease-out â€” deceleration that starts fast and ends at zero.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1909,7 +1909,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutQuad --
-    /// Quadratic ease-in-out — slow start, fast middle, slow end.
+    /// Quadratic ease-in-out â€” slow start, fast middle, slow end.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1918,7 +1918,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inCubic --
-    /// Cubic ease-in — acceleration starts slowly then increases sharply.
+    /// Cubic ease-in â€” acceleration starts slowly then increases sharply.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1927,7 +1927,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outCubic --
-    /// Cubic ease-out — rapid deceleration using a cubic power curve.
+    /// Cubic ease-out â€” rapid deceleration using a cubic power curve.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1936,7 +1936,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutCubic --
-    /// Cubic ease-in-out — slow start and end with fast cubic middle.
+    /// Cubic ease-in-out â€” slow start and end with fast cubic middle.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1945,7 +1945,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inQuart --
-    /// Quartic ease-in — strongly delayed acceleration using a power-of-4 curve.
+    /// Quartic ease-in â€” strongly delayed acceleration using a power-of-4 curve.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1954,7 +1954,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outQuart --
-    /// Quartic ease-out — rapid deceleration using a power-of-4 curve.
+    /// Quartic ease-out â€” rapid deceleration using a power-of-4 curve.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1963,7 +1963,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutQuart --
-    /// Quartic ease-in-out — very slow start and end with a sharp middle peak.
+    /// Quartic ease-in-out â€” very slow start and end with a sharp middle peak.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1972,7 +1972,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inSine --
-    /// Sinusoidal ease-in — gentle acceleration based on a sine curve.
+    /// Sinusoidal ease-in â€” gentle acceleration based on a sine curve.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1981,7 +1981,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outSine --
-    /// Sinusoidal ease-out — gentle deceleration based on a cosine curve.
+    /// Sinusoidal ease-out â€” gentle deceleration based on a cosine curve.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1990,7 +1990,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutSine --
-    /// Sinusoidal ease-in-out — smooth S-curve based on cosine interpolation.
+    /// Sinusoidal ease-in-out â€” smooth S-curve based on cosine interpolation.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -1999,7 +1999,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inExpo --
-    /// Exponential ease-in — very slow start that accelerates sharply near the end.
+    /// Exponential ease-in â€” very slow start that accelerates sharply near the end.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2008,7 +2008,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outExpo --
-    /// Exponential ease-out — sharp initial speed that decelerates exponentially.
+    /// Exponential ease-out â€” sharp initial speed that decelerates exponentially.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2017,7 +2017,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutExpo --
-    /// Exponential ease-in-out — very slow start and end with an exponential surge.
+    /// Exponential ease-in-out â€” very slow start and end with an exponential surge.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2026,7 +2026,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inElastic --
-    /// Elastic ease-in — spring-like overshoot at the beginning of the motion.
+    /// Elastic ease-in â€” spring-like overshoot at the beginning of the motion.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2035,7 +2035,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outElastic --
-    /// Elastic ease-out — spring-like oscillation that settles at the target.
+    /// Elastic ease-out â€” spring-like oscillation that settles at the target.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2044,7 +2044,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outBounce --
-    /// Bounce ease-out — simulates a ball bouncing against the target value.
+    /// Bounce ease-out â€” simulates a ball bouncing against the target value.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2053,7 +2053,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inBounce --
-    /// Bounce ease-in — reverse bounce effect that accelerates into the motion.
+    /// Bounce ease-in â€” reverse bounce effect that accelerates into the motion.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2062,7 +2062,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inBack --
-    /// Back ease-in — overshoots slightly before settling at the target.
+    /// Back ease-in â€” overshoots slightly before settling at the target.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2071,7 +2071,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- outBack --
-    /// Back ease-out — overshoots the target then snaps back into place.
+    /// Back ease-out â€” overshoots the target then snaps back into place.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2080,7 +2080,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutElastic --
-    /// Elastic ease-in-out — spring-like oscillation on both ends.
+    /// Elastic ease-in-out â€” spring-like oscillation on both ends.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2089,7 +2089,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutBounce --
-    /// Bounce ease-in-out — bouncing motion on both ends.
+    /// Bounce ease-in-out â€” bouncing motion on both ends.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2098,7 +2098,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- inOutBack --
-    /// Back ease-in-out — overshoot on both ends.
+    /// Back ease-in-out â€” overshoot on both ends.
     /// @param t : number
     /// @return number
     tbl.set(
@@ -2106,7 +2106,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, t: f32| Ok(easing::ease_in_out_back(t)))?,
     )?;
 
-    // ── Geometry ─────────────────────────────────────────────────────
+    // â”€â”€ Geometry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- triangulate --
     /// Triangulates a simple polygon given as a flat table {x1,y1, x2,y2, ...}.
@@ -2165,7 +2165,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Color space ──────────────────────────────────────────────────
+    // â”€â”€ Color space â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- gammaToLinear --
     /// Converts a gamma-encoded sRGB value to linear space.
@@ -2185,7 +2185,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(|_, c: f32| Ok(linear_to_gamma(c)))?,
     )?;
 
-    // ── Geometry ────────────────────────────────────────────────────
+    // â”€â”€ Geometry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- angleBetween --
     /// Returns the angle in radians from (x1, y1) to (x2, y2).
@@ -2481,15 +2481,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Basic math functions (delegates to Lua built-in math.*) ─────────
+    // â”€â”€ Basic math functions (delegates to Lua built-in math.*) â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- pi --
-    /// The mathematical constant π ≈ 3.14159265358979.
+    /// The mathematical constant Ď€ â‰ 3.14159265358979.
     /// @return number
     tbl.set("pi", std::f64::consts::PI)?;
 
     // -- tau --
-    /// The mathematical constant τ = 2π ≈ 6.28318530717959.
+    /// The mathematical constant Ď„ = 2Ď€ â‰ 6.28318530717959.
     /// @return number
     tbl.set("tau", std::f64::consts::TAU)?;
 
@@ -2584,13 +2584,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     tbl.set("abs", lua.create_function(|_, x: f64| Ok(x.abs()))?)?;
 
     // -- floor --
-    /// Returns the largest integer ≤ x.
+    /// Returns the largest integer â‰¤ x.
     /// @param x : number
     /// @return number
     tbl.set("floor", lua.create_function(|_, x: f64| Ok(x.floor()))?)?;
 
     // -- ceil --
-    /// Returns the smallest integer ≥ x.
+    /// Returns the smallest integer â‰Ą x.
     /// @param x : number
     /// @return number
     tbl.set("ceil", lua.create_function(|_, x: f64| Ok(x.ceil()))?)?;
@@ -2878,6 +2878,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             })?,
         )?;
         ns.set_metatable(Some(mt));
+        /// Namespace table for Vec3 constructors: `Vec3.new(x,y,z)`, callable as `Vec3(x,y,z)`.
         tbl.set("Vec3", ns)?;
     }
 
@@ -2915,6 +2916,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 })
             })?,
         )?;
+        /// Namespace table for CatmullRomSpline constructors: `CatmullRomSpline.new()` creates an empty spline.
         tbl.set("CatmullRomSpline", ns)?;
     }
 
@@ -2931,6 +2933,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
                 })
             })?,
         )?;
+        /// Namespace table for Transform constructors: `Transform.new()` creates an identity transform.
         tbl.set("Transform", ns)?;
     }
 
@@ -3043,7 +3046,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return number?, number?, number?, number?
     tbl.set(
         "fromHex",
-        lua.create_function(|lua, hex: String| -> LuaResult<LuaMultiValue> {
+        lua.create_function(|_lua, hex: String| -> LuaResult<LuaMultiValue> {
             use crate::math::Color;
             match Color::from_hex(&hex) {
                 Some(c) => Ok(LuaMultiValue::from_vec(vec![
@@ -3072,7 +3075,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Rect utilities ──────────────────────────────────────────────
+    // â”€â”€ Rect utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- rectUnion --
     /// Returns the union (bounding box) of two rectangles.
@@ -3177,7 +3180,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Boolean polygon operations ────────────────────────────────────────────
+    // â”€â”€ Boolean polygon operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Computes the intersection of two convex polygons using the Sutherland-Hodgman
     /// algorithm.  Each polygon is a sequential table of `{x, y}` tables.
@@ -3234,12 +3237,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return table
     ///
     /// Each cell in the result has `site = {x, y}` (the input point) and
-    /// `vertices = {{x, y}, …}` (circumcenters of adjacent Delaunay triangles,
+    /// `vertices = {{x, y}, â€¦}` (circumcenters of adjacent Delaunay triangles,
     /// ordered CCW by angle around the site).  Cells on the convex hull are
     /// open (no infinite rays).
     ///
     /// @param points : table -- array of `{x, y}` tables
-    /// table -- array of `{site={x,y}, vertices={{x,y},…}}` tables
+    /// table -- array of `{site={x,y}, vertices={{x,y},â€¦}}` tables
     tbl.set(
         "voronoi",
         lua.create_function(|lua, points: LuaTable| {
@@ -3268,7 +3271,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("math", tbl)?;
+    lurek.set("math", tbl)?;
     Ok(())
 }
 

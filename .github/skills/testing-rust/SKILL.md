@@ -34,10 +34,13 @@ Full text: [philosophy.md § Testing Constraints](../../../docs/architecture/phi
 - **TST-02** Inline `#[cfg(test)] mod tests` blocks in `src/**/*.rs` are **banned**. All Rust unit tests live in `tests/rust/unit/<module>_tests.rs` (centralised, one file per `src/` module).
 - **TST-03** `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and conversions. Business logic lives in `src/<module>/` and is tested there.
 - **TST-04** `mod.rs` is declarations only; helpers, types, and impls go in sibling files and are tested by module name.
+- **TST-06** Every Lua test layer has exactly **one file per module** (`test_<module>_<layer>.lua`). Applies to `unit/`, `evidence/`, `golden/`, `stress/`, `security/`, and `config/`. No split per-sub-feature files. Merge into the single canonical file.
 
 ### Placement decision tree
 
-1. Is the behaviour reachable through any `lurek.*` API? Yes -> **Lua test** in `tests/lua/{unit,integration,stress,evidence,golden,security}/test_<...>.lua`.
+1. Is the behaviour reachable through any `lurek.*` API? Yes -> **Lua test** in `tests/lua/{unit,integration,stress,evidence,golden,security,config}/test_<module>_<layer>.lua`.
+   - ONE file per module per layer (TST-06). Never create `test_effect_overlay_evidence.lua` alongside `test_effect_evidence.lua`.
+   - Evidence artefact output goes to `tests/output/`; golden baselines live in `tests/samples/`.
 2. Otherwise, is it a public or `pub(crate)` Rust symbol with internal-only callers? Yes -> **Rust unit test** in `tests/rust/unit/<module>_tests.rs`.
 3. Cross-module / end-to-end Rust behaviour? -> `tests/rust/ext/` or a registered `[[test]]` binary under `tests/rust/`.
 
@@ -70,6 +73,8 @@ See [snippets/1-test-architecture-overview.txt](snippets/1-test-architecture-ove
 - Rust integration tests that exercise `lurek.*` behaviour reachable from Lua — **TST-01** violation; rewrite as a Lua BDD test.
 - Adding logic (math, branching, loops) to a `src/lua_api/*_api.rs` closure solely to make it testable — **TST-03** violation; extract to `src/<module>/` first, then test the domain function.
 - Registering tests against symbols defined inside `mod.rs` — **TST-04** violation; move the definition into a sibling file first.
+- Creating a second Lua test file for a module layer that already has one — **TST-06** violation. E.g. do NOT create `test_audio_effects_evidence.lua` if `test_audio_evidence.lua` exists. Merge content instead.
+- Referencing `conf.lua` in tests or scripts — `conf.lua` support has been removed; use `conf.toml` only.
 
 See [snippets/extended-notes.md](snippets/extended-notes.md) for extended guidance on naming, float comparison, evidence vs golden contracts, and coverage tooling.
 

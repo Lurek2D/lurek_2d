@@ -281,18 +281,6 @@ pub fn render_to_image(
         fill_rect(&mut pixels, width, height, &rect, color);
     }
 
-    if let Some(parent) = std::path::Path::new(path).parent() {
-        if !parent.as_os_str().is_empty() && !parent.exists() {
-            std::fs::create_dir_all(parent).map_err(|e| {
-                format!(
-                    "render_to_image: cannot create output directory '{}': {}",
-                    parent.display(),
-                    e
-                )
-            })?;
-        }
-    }
-
     image::save_buffer(path, &pixels, width, height, image::ColorType::Rgba8)
         .map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
 }
@@ -431,12 +419,12 @@ fn apply_base_props(ctx: &mut GuiContext, idx: usize, def: &WidgetDef) {
     match ctx.widgets.get_mut(idx) {
         Some(WidgetKind::Slider(sl)) => {
             if let Some(v) = def.value {
-                sl.value = v;
+                sl.value = v as f64;
             }
         }
         Some(WidgetKind::ProgressBar(pb)) => {
             if let Some(v) = def.value {
-                pb.value = v;
+                pb.value = v as f64;
             }
         }
         Some(WidgetKind::SpinBox(sb)) => {
@@ -558,7 +546,8 @@ fn fill_rect(
                 continue;
             }
             let dst_a = 255u32 - src_a;
-            pixels[off] = ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
+            pixels[off] =
+                ((color[0] as u32 * src_a + pixels[off] as u32 * dst_a) / 255) as u8;
             pixels[off + 1] =
                 ((color[1] as u32 * src_a + pixels[off + 1] as u32 * dst_a) / 255) as u8;
             pixels[off + 2] =
@@ -567,3 +556,5 @@ fn fill_rect(
         }
     }
 }
+
+

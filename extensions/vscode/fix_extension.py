@@ -21,11 +21,11 @@ print("\n=== Fixing extension2.ts ===")
 ext2 = os.path.join(BASE, 'src', 'extension2.ts')
 content = read(ext2)
 
-# Replace "luna. string literals → "lurek.
-before = content.count('"luna.')
-content = re.sub(r'"luna\.', '"lurek.', content)
+# Replace "lurek. string literals → "lurek.
+before = content.count('"lurek.')
+content = re.sub(r'"lurek\.', '"lurek.', content)
 after_str = content.count('"lurek.')
-print(f'  String literal "luna. → "lurek.: {before} replacements')
+print(f'  String literal "lurek. → "lurek.: {before} replacements')
 
 # Fix bad dynamic import path: ./debug/debugBridge → ./services/debugBridge
 old_import = 'import("./debug/debugBridge")'
@@ -42,15 +42,15 @@ print("\n=== Fixing apiData.ts ===")
 api_file = os.path.join(BASE, 'src', 'services', 'apiData.ts')
 content = read(api_file)
 
-# Replace "luna. string literals → "lurek.
-n1 = content.count('"luna.')
-content = re.sub(r'"luna\.', '"lurek.', content)
-print(f'  String literal "luna. → "lurek.: {n1} replacements')
+# Replace "lurek. string literals → "lurek.
+n1 = content.count('"lurek.')
+content = re.sub(r'"lurek\.', '"lurek.', content)
+print(f'  String literal "lurek. → "lurek.: {n1} replacements')
 
-# Replace template literal `luna. → `lurek.
-n2 = content.count('`luna.')
-content = re.sub(r'`luna\.', '`lurek.', content)
-print(f'  Template literal `luna. → `lurek.: {n2} replacements')
+# Replace template literal `lurek. → `lurek.
+n2 = content.count('`lurek.')
+content = re.sub(r'`lurek\.', '`lurek.', content)
+print(f'  Template literal `lurek. → `lurek.: {n2} replacements')
 
 # Fix Priority 3 md path: lua_api_reference_generated.md → lua-api.md  (ALSO change method call)
 old_p3 = '      const mdPath = path.join(wsRoot, "docs", "API", "lua_api_reference_generated.md");\n      if (fs.existsSync(mdPath)) {\n        try {\n          const md = fs.readFileSync(mdPath, "utf-8");\n          this.loadFromMarkdown(md);'

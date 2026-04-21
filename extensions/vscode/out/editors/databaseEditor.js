@@ -41,7 +41,7 @@ class DatabaseEditor extends shared_js_1.WebviewEditor {
         return new DatabaseEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.database", "Database Browser");
+        super(context, "lurek.editor.database", "Database Browser");
     }
     handleMessage(msg) {
         switch (msg.type) {

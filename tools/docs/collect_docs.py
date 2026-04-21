@@ -763,11 +763,11 @@ def _has_explicit_params(sig: str) -> bool:
         # Skip unit-tuple args: _: () → normalised to _: __UNIT__
         if p == "_: __UNIT__":
             continue
-        # Skip Lua registration plumbing: luna: &Table/&mlua::Table
+        # Skip Lua registration plumbing: lurek: &Table/&mlua::Table
         if re.match(r"^_?\w+\s*:\s*&\s*(mut\s+)?(?:mlua::)?Table\b", p):
             continue
         # Skip shared-state plumbing: _state: Rc<...>, Arc<...>
-        # Skip Lua registration plumbing: luna: &Table/&mlua::Table
+        # Skip Lua registration plumbing: lurek: &Table/&mlua::Table
         if re.match(r"^_?\w+\s*:\s*&\s*(mut\s+)?(?:mlua::)?Table\b", p):
             continue
         # Skip shared-state plumbing: _state: Rc<...>, Arc<...>

@@ -47,7 +47,7 @@ class ApiCoverageEditor extends shared_js_1.WebviewEditor {
         return new ApiCoverageEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.apiCoverage", "API Test Coverage");
+        super(context, "lurek.editor.apiCoverage", "API Test Coverage");
         this.loadReport();
     }
     // ── Message handler ─────────────────────────────────────────────────────────

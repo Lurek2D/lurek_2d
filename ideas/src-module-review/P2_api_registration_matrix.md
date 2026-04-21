@@ -43,12 +43,12 @@
 | debugbridge | 9 | 4 | 0 | debugbridge_api.rs | 5 | 0 | 0 | 5 | `modules.debug` | OK. |
 | devtools | 34 | 8 | 1 | devtools_api.rs | 48 | 8 | 0 | 56 | `modules.debug` | `lua_set` (48) > `pub_fn` (34) — wrapper exposes per-instance helpers built locally; acceptable. |
 | docs | 32 | 10 | 1 | docs_api.rs | 38 | 50 | 0 | 88 | **always** | OK; thin-wrapper offences flagged separately. |
-| ecs | 75 | 4 | 0 | ecs_api.rs | 1 | 60 | 0 | 61 | `modules.entity` | OK. |
-| effect | 89 | 19 | 3 | effect_api.rs | 15 | 144 | 0 | 159 | `modules.overlay` | OK; large userdata surface. Consider verifying every `pub struct` listed in `docs/specs/effect.md` has a matching userdata. |
+| ecs | 75 | 4 | 0 | ecs_api.rs | 1 | 60 | 0 | 61 | `modules.ecs` | OK. |
+| effect | 89 | 19 | 3 | effect_api.rs | 15 | 144 | 0 | 159 | `modules.effect` | OK; large userdata surface. Consider verifying every `pub struct` listed in `docs/specs/effect.md` has a matching userdata. |
 | event | 22 | 4 | 1 | event_api.rs | 3 | 12 | 0 | 15 | **always (mandatory)** | Confirmed mandatory in `mod.rs:198`. |
 | filesystem | 68 | 9 | 4 | filesystem_api.rs | 5 | 17 | 0 | 22 | `modules.filesystem` | OK. |
 | graph | 120 | 12 | 4 | graph_api.rs | 14 | 125 | 0 | 139 | `modules.graph` | OK. |
-| i18n | 25 | 1 | 2 | i18n_api.rs | 34 | 0 | 0 | 34 | `modules.localization` | Free-fn only; OK. |
+| i18n | 25 | 1 | 2 | i18n_api.rs | 34 | 0 | 0 | 34 | `modules.i18n` | Free-fn only; OK. |
 | image | 145 | 10 | 1 | image_api.rs | 4 | 68 | 0 | 72 | `modules.image` | OK; thin-wrapper offences flagged. |
 | input | 83 | 13 | 3 | input_api.rs | 13 | 12 | 0 | 25 | `modules.input` | **Heuristic gap**: `pub_fn=83` ≫ `lua_total=25`. Confirm whether the four sub-namespaces (`keyboard`, `mouse`, `gamepad`, `touch`) are split via additional `lua.create_table`s registered through `set` — many calls may be inside helper closures. |
 | light | 89 | 6 | 4 | light_api.rs | 4 | 68 | 0 | 72 | **always** | Always-on per `mod.rs:288`. |
@@ -59,7 +59,7 @@
 | network | 64 | 7 | 8 | network_api.rs | 63 | 38 | 0 | 101 | `modules.network` | OK; large free-fn footprint matches. |
 | parallax | 12 | 2 | 0 | parallax_api.rs | 1 | 42 | 0 | 43 | `modules.parallax` | OK. |
 | particle | 50 | 7 | 6 | particle_api.rs | 1 | 91 | 0 | 92 | `modules.particle` | OK. |
-| pathfind | 144 | 20 | 2 | pathfind_api.rs | 25 | 79 | 0 | 104 | `modules.pathfinding` | OK. |
+| pathfind | 144 | 20 | 2 | pathfind_api.rs | 25 | 79 | 0 | 104 | `modules.pathfind` | OK. |
 | patterns | 161 | 27 | 1 | patterns_api.rs | 11 | 150 | 0 | 161 | `modules.pipeline` | **Suspect gating**: `mod.rs:333` registers `patterns_api` only when `modules.pipeline` is true — should likely have its own `modules.patterns` flag (or be `always`). Not P2's call to fix; flag for P5. |
 | physics | 162 | 14 | 7 | physics_api.rs | 38 | 170 | 0 | 208 | `modules.physics` | OK. |
 | pipeline | 29 | 4 | 4 | pipeline_api.rs | 21 | 59 | 0 | 80 | `modules.pipeline` | OK. |
@@ -67,7 +67,7 @@
 | raycaster | 75 | 20 | 2 | raycaster_api.rs | 26 | 51 | 0 | 77 | `modules.raycaster` | OK. |
 | render | 57 | 23 | 16 | render_api.rs | 11 | 82 | 0 | 93 | `modules.graphics` | OK. **Verify enum exposure**: 16 `pub enum`s suggests several blend/wrap/format enums; confirm Lua-side strings cover all variants. |
 | runtime | 29 | 25 | 3 | (engine_api.rs) | 6 | 0 | 0 | 6 | **always** | `engine_api` registers `lurek.runtime.*`. `WindowState`/`SharedState` are infrastructure only. |
-| save | 39 | 4 | 2 | save_api.rs | 8 | 25 | 0 | 33 | **always (`savegame`)** | Always registered (`mod.rs:255`); `modules.savegame` field exists but is unused at registration time. |
+| save | 39 | 4 | 2 | save_api.rs | 8 | 25 | 0 | 33 | **always (`save`)** | Always registered (`mod.rs:255`); `modules.save` field exists but is unused at registration time. |
 | scene | 57 | 5 | 3 | scene_api.rs | 16 | 8 | 0 | 24 | `modules.scene` | OK. |
 | serial | 14 | 1 | 1 | serial_api.rs | 1 | 0 | 0 | 1 | **always (`codec`)** | One free-fn registration; verify all codecs (LIMG, LSND, etc.) are reachable through that single `set` (likely sub-table). |
 | spine | 46 | 9 | 2 | spine_api.rs | 8 | 28 | 0 | 36 | `modules.spine` | OK. |
@@ -77,7 +77,7 @@
 | tilemap | 255 | 27 | 11 | tilemap_api.rs | 25 | 136 | 0 | 161 | `modules.tilemap` | **Heuristic gap**: pub_fn=255 ≫ lua_total=161. Largest delta (94). Most likely internal layer-render/serialise helpers, but worth a per-spec verify in P3-E. |
 | timer | 34 | 3 | 0 | timer_api.rs | 1 | 23 | 0 | 24 | `modules.timer` | OK. |
 | tween | 31 | 8 | 1 | tween_api.rs | 1 | 36 | 2 | 39 | `modules.tween` | OK. |
-| ui | 215 | 57 | 6 | ui_api.rs | 18 | 17 | 0 | 35 | `modules.gui` | **Heuristic gap**: pub_fn=215 vs lua_total=35 (delta 180!). UI `add_method` count is misleading — most widget methods live in inline closures behind `set` calls (e.g. `add_methods` blocks for each `LuaWidget*` type). True surface is much larger; recommend an exhaustive cross-check in P3-F (per-widget completeness). |
+| ui | 215 | 57 | 6 | ui_api.rs | 18 | 17 | 0 | 35 | `modules.ui` | **Heuristic gap**: pub_fn=215 vs lua_total=35 (delta 180!). UI `add_method` count is misleading — most widget methods live in inline closures behind `set` calls (e.g. `add_methods` blocks for each `LuaWidget*` type). True surface is much larger; recommend an exhaustive cross-check in P3-F (per-widget completeness). |
 | window | 36 | 2 | 0 | window_api.rs | 15 | 0 | 0 | 15 | `modules.window` | OK. |
 
 ## Summary

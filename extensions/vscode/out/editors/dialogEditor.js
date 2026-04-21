@@ -7,7 +7,7 @@ class DialogEditor extends shared_js_1.WebviewEditor {
         return new DialogEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.dialog", "Dialog Editor");
+        super(context, "lurek.editor.dialog", "Dialog Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

@@ -60,4 +60,5 @@ describe("serial stress: data encode throughput", function()
         expect_true(true, "100 compress cycles completed")
     end)
 end)
+
 test_summary()

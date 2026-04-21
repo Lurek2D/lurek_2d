@@ -66,7 +66,7 @@ pub const L002_ENGINE_STOP: &str = "L002";
 pub const L003_GAME_LOADED: &str = "L003";
 /// Log message: game restarted.
 pub const L004_GAME_RESTART: &str = "L004";
-/// Log message: conf.lua loaded.
+/// Log message: conf.toml loaded.
 pub const L005_CONF_LOADED: &str = "L005";
 /// Log message: splash screen shown — no game was provided.
 pub const L006_SPLASH_SCREEN: &str = "L006";
@@ -121,11 +121,11 @@ pub const L023_GPU_TEX_TOO_SMALL: &str = "L023";
 pub const L024_SURFACE_LOST: &str = "L024";
 /// Log message: a module was disabled because its graphics dependency is absent.
 pub const L050_MODULE_DEP_DISABLED: &str = "L050";
-/// Log message: error reading conf.lua from disk.
+/// Log message: error reading conf.toml from disk.
 pub const L051_CONF_READ_ERR: &str = "L051";
-/// Log message: Lua parse error in conf.lua.
+/// Log message: TOML parse error in conf.toml.
 pub const L052_CONF_PARSE_ERR: &str = "L052";
-/// Log message: error returned from `lurek.conf()` callback.
+/// Log message: reserved (formerly conf callback error — conf.lua removed).
 pub const L053_CONF_CALLBACK_ERR: &str = "L053";
 
 // ---------------------------------------------------------------------------
@@ -326,9 +326,9 @@ pub const L080_GAME_DIR: &str = "L080";
 pub const L081_LOG_FILE: &str = "L081";
 /// Log message: could not create log file; logging falls back to stderr.
 pub const L082_LOG_FILE_FAIL: &str = "L082";
-/// Log message: a `.lurek` / `.luna` archive was dropped — extracting and loading.
+/// Log message: a `.lurek` / `.lurek` archive was dropped — extracting and loading.
 pub const L083_DROP_ARCHIVE: &str = "L083";
-/// Log message: failed to extract a dropped `.lurek` / `.luna` archive.
+/// Log message: failed to extract a dropped `.lurek` / `.lurek` archive.
 pub const L084_DROP_ARCHIVE_FAIL: &str = "L084";
 
 // ---------------------------------------------------------------------------

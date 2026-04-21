@@ -66,7 +66,7 @@ NS_TO_FILE: dict[str, str] = {
     "lurek.camera": "camera.lua",
     "lurek.devtools": "devtools.lua",
     "lurek.fx": "fx.lua",
-    "lurek.gui": "gui.lua",
+    "lurek.ui": "gui.lua",
     "lurek.light": "light.lua",
     "lurek.network": "network.lua",
     "lurek.pipeline": "pipeline.lua",
@@ -206,9 +206,9 @@ class FnEntry:
 #  API doc parser                                                               #
 # ──────────────────────────────────────────────────────────────────────────── #
 
-_SECTION_RE = re.compile(r'^##\s+`(luna\.\w+)`', re.IGNORECASE)
+_SECTION_RE = re.compile(r'^##\s+`(lurek\.\w+)`', re.IGNORECASE)
 _CLASS_RE = re.compile(r'^###\s+`(\w+)`')
-_MODULE_FN_RE = re.compile(r'^\s*(luna\.\w+)\.(\w+)\s*\((.*)$')
+_MODULE_FN_RE = re.compile(r'^\s*(lurek\.\w+)\.(\w+)\s*\((.*)$')
 _METHOD_FN_RE = re.compile(r'^\s*(\w+):(\w+)\s*\((.*)$')
 _COMMENT_RE = re.compile(r'--\s*(.+)$')
 
@@ -290,7 +290,7 @@ def is_covered(fn: FnEntry, text: str) -> bool:
         return bool(re.search(rf':{re.escape(fn.name)}\s*\(', live_text))
     else:
         return bool(re.search(
-            rf'(?:luna\.\w+)\.{re.escape(fn.name)}\s*\(', live_text
+            rf'(?:lurek\.\w+)\.{re.escape(fn.name)}\s*\(', live_text
         ))
 
 

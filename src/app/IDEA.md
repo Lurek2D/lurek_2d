@@ -28,7 +28,7 @@ The `app` module is the engine's lifecycle orchestrator and sits at the Edge/Int
 - **Clean event-loop structure**: `ApplicationHandler` trait impl with well-separated `resumed`, `window_event`, `about_to_wait` handlers.
 - **Robust error recovery**: `RunState` state machine (Running → Error → Restarting) with `ErrorScreen` that supports Lua error extraction, traceback formatting, clipboard copy (Ctrl+C), and restart (R key).
 - **Flexible vsync and present-mode negotiation**: `resolve_present_mode()` cascades through Mailbox → Immediate → Fifo → Auto*, handling GPU capability variance gracefully.
-- **Drag-and-drop game loading**: Drop a folder or `.lurek`/`.luna` archive onto the splash screen to load it — polished end-user discovery workflow.
+- **Drag-and-drop game loading**: Drop a folder or `.lurek`/`.lurek` archive onto the splash screen to load it — polished end-user discovery workflow.
 - **Auto-screenshot mode**: `--screenshot` CLI flag renders N frames then saves PNG and exits — enables automated visual regression testing.
 - **Viewport scaling**: `recompute_viewport()` supports `letterbox`, `stretch`, `pixel`, and `none` modes with correct centering.
 

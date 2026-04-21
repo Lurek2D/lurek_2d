@@ -94,7 +94,7 @@ A plugin exposes the same registration shape required by **C-02**:
 ```rust
 pub fn register(
     lua: &Lua,
-    luna: &LuaTable,
+    lurek: &LuaTable,
     state: Rc<RefCell<SharedState>>,
 ) -> LuaResult<()>;
 ```
@@ -234,7 +234,7 @@ pub trait LurekPlugin: Send {
     fn register_lua(
         &self,
         lua: &Lua,
-        luna: &LuaTable,
+        lurek: &LuaTable,
         state: Rc<RefCell<SharedState>>,
     ) -> LuaResult<()>;
 

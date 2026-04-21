@@ -87,4 +87,5 @@ describe("stress: many active tweens updated simultaneously", function()
         expect_equal(TWEENS, finished, "all onComplete callbacks fired")
     end)
 end)
+
 test_summary()

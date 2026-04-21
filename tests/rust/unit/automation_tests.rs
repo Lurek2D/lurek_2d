@@ -12,10 +12,7 @@ mod step_tests {
         assert_eq!(Action::parse_action("keyrelease"), Some(Action::KeyRelease));
         assert_eq!(Action::parse_action("mousemove"), Some(Action::MouseMove));
         assert_eq!(Action::parse_action("mousepress"), Some(Action::MousePress));
-        assert_eq!(
-            Action::parse_action("mouserelease"),
-            Some(Action::MouseRelease)
-        );
+        assert_eq!(Action::parse_action("mouserelease"), Some(Action::MouseRelease));
         assert_eq!(Action::parse_action("mousewheel"), Some(Action::MouseWheel));
         assert_eq!(Action::parse_action("textinput"), Some(Action::TextInput));
         assert_eq!(Action::parse_action("wait"), Some(Action::Wait));
@@ -43,9 +40,7 @@ mod script_tests {
     use super::*;
 
     fn make_steps(n: usize) -> Vec<Step> {
-        (0..n)
-            .map(|i| Step::new(i as f32 * 0.1, Action::Wait))
-            .collect()
+        (0..n).map(|i| Step::new(i as f32 * 0.1, Action::Wait)).collect()
     }
 
     #[test]

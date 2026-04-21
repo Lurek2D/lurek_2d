@@ -25,7 +25,7 @@ cargo run -- content/examples/<name>.lua
 | `ecs.lua` | `lurek.ecs` | Entity-Component-System |
 | `effect.lua` | `lurek.effect` | Post-process effect pipeline |
 | `event.lua` | `lurek.event` | Custom event bus |
-| `filesystem.lua` | `lurek.fs` | Sandboxed file I/O |
+| `fileapp.lua` | `lurek.filesystem` | Sandboxed file I/O |
 | `globe.lua` | `lurek.globe` | XCOM-style province globe — all 53 API calls |
 | `graph.lua` | `lurek.graph` | Directed/undirected graph |
 | `i18n.lua` | `lurek.i18n` | Localisation strings |
@@ -42,13 +42,13 @@ cargo run -- content/examples/<name>.lua
 | `pathfind.lua` | `lurek.pathfind` | A\*, Dijkstra, navmesh |
 | `patterns.lua` | `lurek.patterns` | Tileable pattern generation |
 | `physics.lua` | `lurek.physics` | Rigid bodies, joints |
-| `physics_collision.lua` | `lurek.physics` | Collision events and filtering |
+| `physics_physics.lua` | `lurek.physics` | Collision events and filtering |
 | `pipeline.lua` | `lurek.pipeline` | Render pipeline composition |
 | `procgen.lua` | `lurek.procgen` | Procedural map generation |
 | `raycaster.lua` | `lurek.raycaster` | Textured-quad 2.5D raycasting |
 | `render.lua` | `lurek.render` | Shapes, sprites, canvas, blend modes |
-| `runtime.lua` | `lurek.runtime` | Engine lifecycle, config |
-| `runtime_platform.lua` | `lurek.runtime` | Platform queries |
+| `runtimer.lua` | `lurek.runtime` | Engine lifecycle, config |
+| `runtime_window.lua` | `lurek.runtime` | Platform queries |
 | `save.lua` | `lurek.save` | Save/load game state |
 | `scene.lua` | `lurek.scene` | Scene graph, transitions |
 | `serial.lua` | `lurek.serial` | Serialisation (TOML/JSON/binary) |

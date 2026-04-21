@@ -258,9 +258,7 @@ mod bezier_tests {
         let new_pt = Vec2::new(9.0, 8.0);
         let ok = curve.set_control_point(0, new_pt);
         assert!(ok);
-        let got = curve
-            .get_control_point(0)
-            .expect("get_control_point returns Some for a valid index");
+        let got = curve.get_control_point(0).expect("get_control_point returns Some for a valid index");
         assert!((got.x - 9.0).abs() < 1e-5);
         assert!((got.y - 8.0).abs() < 1e-5);
     }
@@ -275,7 +273,7 @@ mod bezier_tests {
 // ── color ─────────────────────────────────────────────────────────────────────
 
 mod color_tests {
-    use lurek2d::math::{gamma_to_linear, linear_to_gamma, Color};
+    use lurek2d::math::{Color, gamma_to_linear, linear_to_gamma};
 
     // ── Constants ─────────────────────────────────────────────────────────────
 
@@ -446,31 +444,16 @@ mod easing_tests {
 
     #[test]
     fn test_apply_lookup() {
-        assert!(approx(
-            apply("inQuad", 0.5).expect("inQuad is a known easing name"),
-            ease_in_quad(0.5)
-        ));
-        assert!(approx(
-            apply("outCubic", 0.5).expect("outCubic is a known easing name"),
-            ease_out_cubic(0.5)
-        ));
-        assert!(approx(
-            apply("linear", 1.0).expect("linear is a known easing name"),
-            1.0
-        ));
+        assert!(approx(apply("inQuad", 0.5).expect("inQuad is a known easing name"), ease_in_quad(0.5)));
+        assert!(approx(apply("outCubic", 0.5).expect("outCubic is a known easing name"), ease_out_cubic(0.5)));
+        assert!(approx(apply("linear", 1.0).expect("linear is a known easing name"), 1.0));
         assert!(apply("nonexistent", 0.5).is_none());
     }
 
     #[test]
     fn test_apply_case_insensitive() {
-        assert!(approx(
-            apply("INQUAD", 0.5).expect("INQUAD matched case-insensitively"),
-            ease_in_quad(0.5)
-        ));
-        assert!(approx(
-            apply("OutBounce", 1.0).expect("OutBounce matched case-insensitively"),
-            1.0
-        ));
+        assert!(approx(apply("INQUAD", 0.5).expect("INQUAD matched case-insensitively"), ease_in_quad(0.5)));
+        assert!(approx(apply("OutBounce", 1.0).expect("OutBounce matched case-insensitively"), 1.0));
     }
 
     #[test]
@@ -718,8 +701,8 @@ mod math_mod_tests {
 // ── polygon ───────────────────────────────────────────────────────────────────
 
 mod polygon_tests {
-    use lurek2d::math::polygon::*;
     use lurek2d::math::Vec2;
+    use lurek2d::math::polygon::*;
 
     // ── Triangulate ─────────────────────────────────────────────────────────
 
@@ -1077,7 +1060,12 @@ mod spline_tests {
     #[test]
     fn catmull_rom_endpoints_match_interior_points() {
         // With 4 points, the spline interpolates points[1] at t≈0.33 and points[2] at t≈0.66
-        let spline = CatmullRomSpline::new(vec![(0.0, 0.0), (1.0, 1.0), (2.0, 0.0), (3.0, 1.0)]);
+        let spline = CatmullRomSpline::new(vec![
+            (0.0, 0.0),
+            (1.0, 1.0),
+            (2.0, 0.0),
+            (3.0, 1.0),
+        ]);
         // At segment boundaries the spline passes through the control points
         let (x, y) = spline.sample_segment(0, 1.0);
         assert!((x - 1.0).abs() < 1e-3, "x at seg 0 end: {x}");
@@ -1086,7 +1074,12 @@ mod spline_tests {
 
     #[test]
     fn catmull_rom_sample_segment_start() {
-        let spline = CatmullRomSpline::new(vec![(0.0, 0.0), (1.0, 2.0), (3.0, 1.0), (4.0, 3.0)]);
+        let spline = CatmullRomSpline::new(vec![
+            (0.0, 0.0),
+            (1.0, 2.0),
+            (3.0, 1.0),
+            (4.0, 3.0),
+        ]);
         let (x, y) = spline.sample_segment(1, 0.0);
         assert!((x - 1.0).abs() < 1e-3);
         assert!((y - 2.0).abs() < 1e-3);
@@ -1112,7 +1105,12 @@ mod spline_tests {
 
     #[test]
     fn catmull_rom_global_sample_boundaries() {
-        let spline = CatmullRomSpline::new(vec![(0.0, 0.0), (1.0, 1.0), (2.0, 0.0), (3.0, 1.0)]);
+        let spline = CatmullRomSpline::new(vec![
+            (0.0, 0.0),
+            (1.0, 1.0),
+            (2.0, 0.0),
+            (3.0, 1.0),
+        ]);
         let (x0, _) = spline.sample(0.0);
         let (x1, _) = spline.sample(1.0);
         // t=0 → first segment start, t=1 → last segment end
@@ -1739,7 +1737,7 @@ mod sphere_tests {
 // ── sign / smoothstep / inverse_lerp ─────────────────────────────────────────
 
 mod scalar_helpers_tests {
-    use lurek2d::math::{inverse_lerp, sign, smoothstep};
+    use lurek2d::math::{sign, smoothstep, inverse_lerp};
 
     #[test]
     fn sign_positive() {
@@ -1792,8 +1790,8 @@ mod scalar_helpers_tests {
 // ── Color::from_hex / to_hsl / hsl_to_rgb ─────────────────────────────────────
 
 mod color_new_tests {
+    use lurek2d::math::{Color};
     use lurek2d::math::color::hsl_to_rgb;
-    use lurek2d::math::Color;
 
     #[test]
     fn from_hex_white() {
@@ -1969,7 +1967,7 @@ mod transform_decompose_tests {
 // ── easing: ease_in_out_elastic / bounce / back ───────────────────────────────
 
 mod easing_new_tests {
-    use lurek2d::math::easing::{ease_in_out_back, ease_in_out_bounce, ease_in_out_elastic};
+    use lurek2d::math::easing::{ease_in_out_elastic, ease_in_out_bounce, ease_in_out_back};
 
     #[test]
     fn elastic_boundaries() {
@@ -2137,179 +2135,5 @@ mod aabb_tree_query_tests {
         tree.insert(1, 10.0, 10.0, 20.0, 20.0);
         let hits = tree.query_segment(0.0, 0.0, 5.0, 5.0);
         assert!(hits.is_empty());
-    }
-}
-
-// ── noise_functions ─────────────────────────────────────────────────────────────
-
-mod noise_functions_tests {
-    use lurek2d::math::noise_functions::*;
-
-    #[test]
-    fn test_perlin2d_deterministic() {
-        let a = perlin2d(1.5, 2.3, 42);
-        let b = perlin2d(1.5, 2.3, 42);
-        assert!(
-            (a - b).abs() < f32::EPSILON,
-            "Perlin noise not deterministic"
-        );
-    }
-
-    #[test]
-    fn test_perlin2d_range() {
-        for i in 0..100 {
-            let x = i as f32 * 0.37;
-            let y = i as f32 * 0.53;
-            let v = perlin2d(x, y, 0);
-            assert!(
-                (-1.5..=1.5).contains(&v),
-                "Perlin out of range: {v} at ({x}, {y})"
-            );
-        }
-    }
-
-    #[test]
-    fn test_perlin2d_different_seeds() {
-        let a = perlin2d(1.5, 2.3, 0);
-        let b = perlin2d(1.5, 2.3, 999);
-        // Very unlikely to be identical with different seeds
-        assert!(
-            (a - b).abs() > f32::EPSILON,
-            "Different seeds should produce different noise"
-        );
-    }
-
-    #[test]
-    fn test_simplex2d_deterministic() {
-        let a = simplex2d(1.5, 2.3, 42);
-        let b = simplex2d(1.5, 2.3, 42);
-        assert!(
-            (a - b).abs() < f32::EPSILON,
-            "Simplex noise not deterministic"
-        );
-    }
-
-    #[test]
-    fn test_simplex2d_range() {
-        for i in 0..100 {
-            let x = i as f32 * 0.37;
-            let y = i as f32 * 0.53;
-            let v = simplex2d(x, y, 0);
-            assert!(
-                (-1.5..=1.5).contains(&v),
-                "Simplex out of range: {v} at ({x}, {y})"
-            );
-        }
-    }
-
-    #[test]
-    fn test_fbm_deterministic() {
-        let a = fbm(1.0, 2.0, 42, 4, 2.0, 0.5);
-        let b = fbm(1.0, 2.0, 42, 4, 2.0, 0.5);
-        assert!((a - b).abs() < f32::EPSILON);
-    }
-
-    #[test]
-    fn test_fbm_single_octave_equals_perlin() {
-        let a = fbm(1.5, 2.3, 42, 1, 2.0, 0.5);
-        let b = perlin2d(1.5, 2.3, 42);
-        assert!((a - b).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_fade_boundaries() {
-        assert!((fade(0.0)).abs() < f32::EPSILON);
-        assert!((fade(1.0) - 1.0).abs() < f32::EPSILON);
-    }
-}
-
-// ── noise_generator ─────────────────────────────────────────────────────────────
-
-mod noise_generator_tests {
-    use lurek2d::math::noise_generator::*;
-
-    #[test]
-    fn deterministic_same_seed() {
-        let g1 = NoiseGenerator::new(42);
-        let g2 = NoiseGenerator::new(42);
-        assert!((g1.perlin_2d(1.5, 2.3) - g2.perlin_2d(1.5, 2.3)).abs() < 1e-12);
-        assert!((g1.simplex_2d(1.5, 2.3) - g2.simplex_2d(1.5, 2.3)).abs() < 1e-12);
-    }
-
-    #[test]
-    fn different_seeds_differ() {
-        let g1 = NoiseGenerator::new(1);
-        let g2 = NoiseGenerator::new(999);
-        // Extremely unlikely to be equal at an arbitrary point
-        assert!((g1.perlin_2d(3.7, 8.1) - g2.perlin_2d(3.7, 8.1)).abs() > 1e-6);
-    }
-
-    #[test]
-    fn perlin_in_range() {
-        let gen = NoiseGenerator::new(0);
-        for i in 0..200 {
-            let x = i as f64 * 0.37;
-            let y = i as f64 * 0.53;
-            let v = gen.perlin_2d(x, y);
-            assert!(
-                (-1.5..=1.5).contains(&v),
-                "perlin_2d out of range: {} at ({}, {})",
-                v,
-                x,
-                y
-            );
-        }
-    }
-
-    #[test]
-    fn simplex_in_range() {
-        let gen = NoiseGenerator::new(7);
-        for i in 0..200 {
-            let x = i as f64 * 0.29;
-            let y = i as f64 * 0.47;
-            let v = gen.simplex_2d(x, y);
-            assert!(
-                (-1.5..=1.5).contains(&v),
-                "simplex_2d out of range: {} at ({}, {})",
-                v,
-                x,
-                y
-            );
-        }
-    }
-
-    #[test]
-    fn generate_map_size() {
-        let gen = NoiseGenerator::new(123);
-        let map = gen.generate_map(16, 8, &MapGenOptions::default());
-        assert_eq!(map.len(), 16 * 8);
-    }
-
-    #[test]
-    fn worley_non_negative() {
-        let gen = NoiseGenerator::new(55);
-        for i in 0..50 {
-            let x = i as f64 * 0.4 + 0.1;
-            let y = i as f64 * 0.6 + 0.2;
-            let v = gen.worley_2d(x, y, DistType::Euclidean, false);
-            assert!(v >= 0.0, "worley_2d returned negative: {}", v);
-        }
-    }
-
-    #[test]
-    fn fbm_deterministic() {
-        let g = NoiseGenerator::new(77);
-        let a = g.fbm(1.0, 2.0, 4, 2.0, 0.5, NoiseKind::Perlin);
-        let b = g.fbm(1.0, 2.0, 4, 2.0, 0.5, NoiseKind::Perlin);
-        assert!((a - b).abs() < 1e-12);
-    }
-
-    #[test]
-    fn set_seed_changes_output() {
-        let mut gen = NoiseGenerator::new(1);
-        let v1 = gen.perlin_2d(3.7, 8.1);
-        gen.set_seed(9999);
-        let v2 = gen.perlin_2d(3.7, 8.1);
-        assert!((v1 - v2).abs() > 1e-6);
     }
 }

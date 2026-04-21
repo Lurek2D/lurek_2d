@@ -53,8 +53,8 @@ VALID_STATUS = {"full", "partial", "stub", "proxy"}
 # ``@see`` targets that point at a namespace that does not exist.
 LUREK_NAMESPACES = {
     # P1 runtime-name shifts
-    "img", "codec", "savegame", "time", "entity", "modding", "fs",
-    "pathfinding", "postfx", "particles", "graphic", "localization",
+    "img", "codec", "save", "time", "ecs", "mods", "fs",
+    "pathfind", "postfx", "particles", "graphic", "i18n",
     "platform",
     # already-stable namespaces
     "audio", "window", "input", "math", "physics", "signal", "thread",

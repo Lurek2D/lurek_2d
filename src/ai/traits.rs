@@ -159,9 +159,7 @@ impl TraitProfile {
             } else {
                 0.0
             };
-            profile
-                .base_values
-                .insert(trait_name.clone(), (value + jitter).clamp(0.0, 1.0));
+            profile.base_values.insert(trait_name.clone(), (value + jitter).clamp(0.0, 1.0));
         }
         Some(profile)
     }
@@ -172,8 +170,7 @@ impl TraitProfile {
     /// - `name` — `&str`.
     /// - `value` — `f32`.
     pub fn set(&mut self, name: &str, value: f32) {
-        self.base_values
-            .insert(name.to_string(), value.clamp(0.0, 1.0));
+        self.base_values.insert(name.to_string(), value.clamp(0.0, 1.0));
     }
 
     /// Returns the effective trait value (base + all active modifier deltas),
@@ -186,9 +183,7 @@ impl TraitProfile {
     /// `f32`.
     pub fn get(&self, name: &str) -> f32 {
         let base = self.base_values.get(name).copied().unwrap_or(0.0);
-        let delta: f32 = self
-            .modifiers
-            .iter()
+        let delta: f32 = self.modifiers.iter()
             .filter(|m| m.trait_name == name && !m.is_expired())
             .map(|m| m.delta)
             .sum();
@@ -219,15 +214,8 @@ impl TraitProfile {
     /// - `delta` — `f32`.
     /// - `duration` — `Option<f32>`.
     /// - `source` — `&str`.
-    pub fn add_modifier(
-        &mut self,
-        trait_name: &str,
-        delta: f32,
-        duration: Option<f32>,
-        source: &str,
-    ) {
-        self.modifiers
-            .push(TraitModifier::new(trait_name, delta, duration, source));
+    pub fn add_modifier(&mut self, trait_name: &str, delta: f32, duration: Option<f32>, source: &str) {
+        self.modifiers.push(TraitModifier::new(trait_name, delta, duration, source));
     }
 
     /// Removes all modifiers whose `source` field matches the given string.
@@ -290,8 +278,7 @@ impl TraitProfile {
         let t = t.clamp(0.0, 1.0);
         for (name, &target) in &other.base_values {
             let current = self.base_values.get(name).copied().unwrap_or(0.0);
-            self.base_values
-                .insert(name.clone(), current + (target - current) * t);
+            self.base_values.insert(name.clone(), current + (target - current) * t);
         }
     }
 
@@ -339,8 +326,7 @@ impl TraitArchetypes {
     /// - `name` — `&str`.
     /// - `traits` — `HashMap<String, f32>`.
     pub fn register(&mut self, name: &str, traits: HashMap<String, f32>) {
-        let clamped: HashMap<String, f32> = traits
-            .into_iter()
+        let clamped: HashMap<String, f32> = traits.into_iter()
             .map(|(k, v)| (k, v.clamp(0.0, 1.0)))
             .collect();
         self.archetypes.insert(name.to_string(), clamped);
@@ -387,4 +373,51 @@ fn simple_hash(s: &str) -> u64 {
         h = h.wrapping_mul(0x100000001b3);
     }
     h
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn profile_set_get_clamped() {
+        let mut p = TraitProfile::new();
+        p.set("aggression", 0.5);
+        assert!((p.get("aggression") - 0.5).abs() < 1e-6);
+        p.set("aggression", 1.5);
+        assert!((p.get("aggression") - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn modifier_affects_effective_value() {
+        let mut p = TraitProfile::new();
+        p.set("caution", 0.3);
+        p.add_modifier("caution", 0.4, None, "buff");
+        assert!((p.get("caution") - 0.7).abs() < 1e-6);
+    }
+
+    #[test]
+    fn expired_modifier_ignored() {
+        let mut p = TraitProfile::new();
+        p.set("loyalty", 0.5);
+        p.add_modifier("loyalty", 0.3, Some(1.0), "temp");
+        p.update(2.0);
+        assert!((p.get("loyalty") - 0.5).abs() < 1e-6);
+    }
+
+    #[test]
+    fn unknown_trait_returns_zero() {
+        let p = TraitProfile::new();
+        assert_eq!(p.get("nonexistent"), 0.0);
+    }
+
+    #[test]
+    fn archetype_creates_profile() {
+        let mut arch = TraitArchetypes::new();
+        let mut base = HashMap::new();
+        base.insert("aggression".to_string(), 0.8);
+        arch.register("berserker", base);
+        let p = TraitProfile::from_archetype(&arch, "berserker", 0.0).unwrap();
+        assert!((p.get("aggression") - 0.8).abs() < 1e-6);
+    }
 }

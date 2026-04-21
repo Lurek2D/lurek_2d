@@ -40,7 +40,7 @@ Reviewer enforces Lurek2D conventions across diffs for the EngDev and GameDev pe
 2. Confirm preconditions: `cargo build` succeeds, `cargo clippy -- -D warnings` is clean, `cargo fmt --check` passes, `cargo test` passes. Tool-detectable issues are preconditions, not findings.
 3. Run [tool: doc_coverage](tools/audit/doc_coverage.py) and [tool: test_coverage](tools/audit/test_coverage.py) to gather doc/test gaps; run [tool: cag_validate](tools/validate/cag_validate.py) if `.github/` is in scope.
 4. Walk the safety checklist (no `unsafe` without `// SAFETY:`, no `.unwrap()` in production paths) then the architecture checklist (import direction, visibility, resource keys via `new_key_type!`).
-5. Walk the Lua API checklist: `lurek.*` namespace, `register(lua, luna, state)` signature, `Rc` cloned per closure, no `RefCell` borrow held across a Lua callback, lowercase key names, at least one Lua test per new `lurek.*` function.
+5. Walk the Lua API checklist: `lurek.*` namespace, `register(lua, lurek, state)` signature, `Rc` cloned per closure, no `RefCell` borrow held across a Lua callback, lowercase key names, at least one Lua test per new `lurek.*` function.
 6. Write findings; classify strictly (BLOCKER blocks merge, WARNING should be fixed, NOTE optional).
 7. Reviewer produces no commit. Hand off to `Developer` (changes), `Tester` (missing tests), `Security` (sandbox concerns), or `Architect` (structural concern). If `.github/` was touched, route final review to `CAG-Architect`.
 8. **Confirm branch**: run `git rev-parse --abbrev-ref HEAD` and verify it matches the working branch before staging anything.

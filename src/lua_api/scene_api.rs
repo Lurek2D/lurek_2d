@@ -1,4 +1,4 @@
-//! `lurek.scene` — Scene stack management, transitions, registry, and depth-sorted rendering.
+﻿//! `lurek.scene` â€” Scene stack management, transitions, registry, and depth-sorted rendering.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -24,7 +24,7 @@ struct SceneState {
     data_refs: HashMap<String, LuaRegistryKey>,
     /// Scenes whose `ready` callback has not yet fired (fires on first process tick).
     scene_ready_pending: HashSet<SceneId>,
-    /// Pending preload listeners: scene name → loader function registry key.
+    /// Pending preload listeners: scene name â†’ loader function registry key.
     preload_callbacks: HashMap<String, LuaRegistryKey>,
     /// Names of scenes that have been successfully preloaded.
     preloaded_names: HashSet<String>,
@@ -171,10 +171,10 @@ impl LuaUserData for LuaDepthSorter {
 /// Registers the `lurek.scene` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     let state = Rc::new(RefCell::new(SceneState {
@@ -186,7 +186,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         preloaded_names: HashSet::new(),
     }));
 
-    // ── Stack operations ─────────────────────────────────────────────────
+    // â”€â”€ Stack operations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- push --
     /// Pushes a scene table onto the stack with an optional transition and easing.
@@ -537,7 +537,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Stack query ──────────────────────────────────────────────────────
+    // â”€â”€ Stack query â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- getStackSize --
     /// Returns the number of scenes on the stack.
@@ -585,7 +585,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Transitions ──────────────────────────────────────────────────────
+    // â”€â”€ Transitions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- isTransitioning --
     /// Returns true if a scene transition is currently active.
@@ -605,7 +605,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress()))?,
     )?;
 
-    // ── Registry ─────────────────────────────────────────────────────────
+    // â”€â”€ Registry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- registerScene --
     /// Registers a scene table by name for later retrieval.
@@ -676,7 +676,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_registered_names()))?,
     )?;
 
-    // ── Data store ───────────────────────────────────────────────────────
+    // â”€â”€ Data store â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- setData --
     /// Stores a value in the inter-scene data store under the given key.
@@ -738,7 +738,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Factory ──────────────────────────────────────────────────────────
+    // â”€â”€ Factory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- newDepthSorter --
     /// Creates a new DepthSorter for z-ordered draw batching.
@@ -753,9 +753,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Scene helpers ─────────────────────────────────────────────────────
+    // â”€â”€ Scene helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    // `lurek.scene.new(def)` — creates a scene instance directly from a methods table.
+    // `lurek.scene.new(def)` â€” creates a scene instance directly from a methods table.
     // Implemented as a Rust closure using mlua set_metatable instead of setmetatable,
     // keeping no embedded Lua strings in the api file.
     /// Creates a scene instance directly from a methods table.
@@ -775,7 +775,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // `lurek.scene.newScene(def)` — alias for `new`.
+    // `lurek.scene.newScene(def)` â€” alias for `new`.
     /// Alias for `lurek.scene.new`. Creates a scene instance from a methods table.
     /// @param def : table?
     /// @return table
@@ -793,10 +793,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // `lurek.scene.define(def)` — creates a reusable scene class (callable constructor).
+    // `lurek.scene.define(def)` â€” creates a reusable scene class (callable constructor).
     // The definition table is stored in the Lua registry so the returned constructor
     // closure can access it across multiple calls without holding a borrow.
-    /// Creates a reusable scene class — returns a zero-argument constructor function.
+    /// Creates a reusable scene class â€” returns a zero-argument constructor function.
     /// @param def : table?
     /// @return function
     tbl.set(
@@ -818,7 +818,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Transition (eased) ───────────────────────────────────────────────
+    // â”€â”€ Transition (eased) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- getTransitionProgressEased --
     /// Returns the easing-adjusted transition progress from 0.0 to 1.0.
@@ -829,7 +829,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(st.borrow().stack.get_transition_progress_eased()))?,
     )?;
 
-    // ── Overlay ──────────────────────────────────────────────────────────
+    // â”€â”€ Overlay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- pushOverlay --
     /// Pushes a scene as a non-pausing overlay over the current top scene.
@@ -920,7 +920,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Preload ──────────────────────────────────────────────────────────
+    // â”€â”€ Preload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- preload --
     /// Registers a loader function for a named scene. The loader is called
@@ -1014,7 +1014,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    luna.set("scene", tbl.clone())?;
+    lurek.set("scene", tbl.clone())?;
 
     // -- getTransitionTypes --
     /// Returns a table listing all supported transition type strings.
@@ -1052,7 +1052,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
             let s = st.borrow();
             let snap = lua.create_table()?;
 
-            // Scene name stack — build id→name reverse map from registry
+            // Scene name stack â€” build idâ†’name reverse map from registry
             let stack_names = lua.create_table()?;
             let mut id_to_name: std::collections::HashMap<crate::scene::stack::SceneId, String> =
                 std::collections::HashMap::new();
@@ -1109,7 +1109,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Built-in Transition Library ──────────────────────────────────────────────
+    // â”€â”€ Built-in Transition Library â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- transitions --
     /// Pre-built named transition factory functions.  Each function accepts optional
@@ -1121,11 +1121,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     ///   lurek.scene.push(myScene, cfg.type, cfg.duration)
     let trans_tbl = lua.create_table()?;
 
-    // transitions.fade(duration?) → {type="fade", duration=0.5}
+    // transitions.fade(duration?) â†’ {type="fade", duration=0.5}
     /// Returns a fade cross-dissolve transition config table.
     /// @return table|nil
-    /// @param duration : number?  — default 0.5
-    /// table  — { type : string, duration : number }
+    /// @param duration : number?  â€” default 0.5
+    /// table  â€” { type : string, duration : number }
     trans_tbl.set(
         "fade",
         lua.create_function(|lua, duration: Option<f32>| {
@@ -1136,12 +1136,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // transitions.slide(direction?, duration?) → {type=direction, duration=0.4}
+    // transitions.slide(direction?, duration?) â†’ {type=direction, duration=0.4}
     /// Returns a directional slide transition config table.
     /// @return table|nil
-    /// @param direction : string?  — "left" | "right" | "up" | "down" (default "left")
-    /// @param duration  : number?  — default 0.4
-    /// table  — { type : string, duration : number }
+    /// @param direction : string?  â€” "left" | "right" | "up" | "down" (default "left")
+    /// @param duration  : number?  â€” default 0.4
+    /// table  â€” { type : string, duration : number }
     trans_tbl.set(
         "slide",
         lua.create_function(
@@ -1155,11 +1155,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // transitions.wipe(duration?) → {type="wipe", duration=0.5}
+    // transitions.wipe(duration?) â†’ {type="wipe", duration=0.5}
     /// Returns a wipe/curtain transition config table.
     /// @return table|nil
-    /// @param duration : number?  — default 0.5
-    /// table  — { type : string, duration : number }
+    /// @param duration : number?  â€” default 0.5
+    /// table  â€” { type : string, duration : number }
     trans_tbl.set(
         "wipe",
         lua.create_function(|lua, duration: Option<f32>| {
@@ -1170,11 +1170,11 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // transitions.iris(duration?) → {type="iris", duration=0.6}
+    // transitions.iris(duration?) â†’ {type="iris", duration=0.6}
     /// Returns an iris in/out (circular reveal) transition config table.
     /// @return table|nil
-    /// @param duration : number?  — default 0.6
-    /// table  — { type : string, duration : number }
+    /// @param duration : number?  â€” default 0.6
+    /// table  â€” { type : string, duration : number }
     trans_tbl.set(
         "iris",
         lua.create_function(|lua, duration: Option<f32>| {

@@ -1,4 +1,4 @@
-//! Registers the `lurek.devtools.*` runtime diagnostics and developer-tools API.
+﻿//! Registers the `lurek.devtools.*` runtime diagnostics and developer-tools API.
 //!
 //! Thin Lua bridge that delegates to the [`devtools`][crate::devtools] domain module.
 //! All state management happens in [`crate::devtools`]; this file only converts
@@ -16,7 +16,7 @@ use crate::runtime::SharedState;
 // Bridge state
 // ---------------------------------------------------------------------------
 
-/// A named live watch — calls a getter function to sample a value at any time.
+/// A named live watch â€” calls a getter function to sample a value at any time.
 struct WatchEntry {
     /// Display name for this watch.
     name: String,
@@ -85,12 +85,12 @@ fn zone_to_table<'a>(lua: &'a Lua, zone: &ProfileZone) -> LuaResult<LuaTable<'a>
 /// Registers `lurek.devtools.*`.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
 
 // ---------------------------------------------------------------------------
-// LuaFileWatcher — standalone per-path file-change watcher userdata
+// LuaFileWatcher â€” standalone per-path file-change watcher userdata
 // ---------------------------------------------------------------------------
 
 /// Lua-side handle for a per-path file watcher.
@@ -156,11 +156,11 @@ impl LuaUserData for LuaFileWatcher {
 }
 
 /// Registers the `lurek.devtools` Lua API table into the engine namespace.
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let dt = lua.create_table()?;
     let shared = Rc::new(RefCell::new(DevtoolsShared::new()));
 
-    // ── Logger ──────────────────────────────────────────────────────────────
+    // â”€â”€ Logger â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Logs a message at the given level.
     /// @param level : string
@@ -289,7 +289,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Profiler ─────────────────────────────────────────────────────────────
+    // â”€â”€ Profiler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Enables or disables the profiler.
     /// @param enabled : boolean
@@ -384,7 +384,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Frame Statistics ─────────────────────────────────────────────────────
+    // â”€â”€ Frame Statistics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Records a frame-time sample (call each frame with delta time in seconds).
     /// @param dt : number
@@ -454,7 +454,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(s.borrow().frame_stats.capacity))?,
     )?;
 
-    // ── File Watcher ─────────────────────────────────────────────────────────
+    // â”€â”€ File Watcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Adds a file path to the watch list. Returns false if already watched.
     /// @param path : string
@@ -545,7 +545,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── Lua Debug Bridge ─────────────────────────────────────────────────────
+    // â”€â”€ Lua Debug Bridge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Returns the Lua call stack as a table of frames.
     /// @param max_depth : integer?
@@ -571,7 +571,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
               }\n\
             end\n\
             return frames";
-            // LUA-EVAL-JUSTIFIED: calls lua.load() above — debug.getinfo requires the Lua VM's debug state.
+            // LUA-EVAL-JUSTIFIED: calls lua.load() above â€” debug.getinfo requires the Lua VM's debug state.
             let frames: LuaTable = lua.load(code).call(max)?;
             Ok(frames)
         })?,
@@ -583,7 +583,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     dt.set(
         "eval",
         lua.create_function(
-            // LUA-EVAL-JUSTIFIED: lua.load() here IS the feature — devtools.eval() evaluates
+            // LUA-EVAL-JUSTIFIED: lua.load() here IS the feature â€” devtools.eval() evaluates
             // arbitrary Lua code supplied by the developer at runtime.
             |lua, code: String| match lua.load(&code).eval::<LuaMultiValue>() {
                 Ok(vals) => {
@@ -599,7 +599,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── Console ────────────────────────────────────────────────────────────────
+    // â”€â”€ Console â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Opens the console window (updates the console flag; returns true).
     let s = shared.clone();
@@ -620,7 +620,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         lua.create_function(move |_, ()| Ok(s.borrow().console_open))?,
     )?;
 
-    // ── Live Watch / Snapshot ─────────────────────────────────────────────
+    // â”€â”€ Live Watch / Snapshot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Registers a named live watch. The getter function is called on demand to sample a value.
     /// Returns an integer id that can be passed to removeWatch.
@@ -818,9 +818,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// to poll for changes.
     ///
     /// Methods on the returned userdata:
-    /// - `onChanged(fn)` — register a no-arg callback fired when the file changes
-    /// - `check()` → boolean — polls and fires callback if changed; returns `true` if changed
-    /// - `cancel()` — removes the stored callback
+    /// - `onChanged(fn)` â€” register a no-arg callback fired when the file changes
+    /// - `check()` â†’ boolean â€” polls and fires callback if changed; returns `true` if changed
+    /// - `cancel()` â€” removes the stored callback
     /// @param path : string   file or directory path to watch
     /// @return FileWatcher
     dt.set(
@@ -843,10 +843,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// keeps a scrollable input history.  Useful for in-game debug consoles.
     ///
     /// Methods on the returned userdata:
-    /// - `eval(code)` → string  — runs `code`, returns result or error text
-    /// - `history()` → table    — ordered array of past inputs (oldest first)
-    /// - `clear()` — wipes the history buffer
-    /// - `len()` → integer      — number of history entries
+    /// - `eval(code)` â†’ string  â€” runs `code`, returns result or error text
+    /// - `history()` â†’ table    â€” ordered array of past inputs (oldest first)
+    /// - `clear()` â€” wipes the history buffer
+    /// - `len()` â†’ integer      â€” number of history entries
     ///
     /// # Usage
     /// ```lua
@@ -865,7 +865,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- devtools namespace --
-    luna.set("devtools", dt)?;
+    lurek.set("devtools", dt)?;
     Ok(())
 }
 

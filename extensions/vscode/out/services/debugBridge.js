@@ -64,7 +64,7 @@ class DebugBridge {
             this.outputChannel.appendLine("[debug] Already connected.");
             return true;
         }
-        const targetPort = port ?? vscode.workspace.getConfiguration("luna.debugBridge").get("port", DEFAULT_PORT);
+        const targetPort = port ?? vscode.workspace.getConfiguration("lurek.debugBridge").get("port", DEFAULT_PORT);
         return new Promise((resolve) => {
             const socket = new net.Socket();
             const timeout = setTimeout(() => {
@@ -203,7 +203,7 @@ class DebugBridge {
     getStatusInfo() {
         return {
             connected: this.connected,
-            port: vscode.workspace.getConfiguration("luna.debugBridge").get("port", DEFAULT_PORT),
+            port: vscode.workspace.getConfiguration("lurek.debugBridge").get("port", DEFAULT_PORT),
         };
     }
     /** Show a persistent status bar item with live engine stats. */

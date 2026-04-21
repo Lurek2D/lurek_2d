@@ -60,4 +60,5 @@ describe("stress: timer query throughput", function()
         expect_true(elapsed < 10.0, "mixed timer budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

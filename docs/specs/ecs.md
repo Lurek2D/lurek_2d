@@ -69,9 +69,9 @@ Additional query and filter methods have been added to `Universe`, expanding the
 - `Universe::unpack_gen` (`universe.rs`): Extracts the generation counter from a packed entity ID.
 - `Universe::spawn` (`universe.rs`): Spawns a new entity and returns its ID.
 - `Universe::kill` (`universe.rs`): Kills an entity, cleaning up all associated data and recycling the ID.
-- `Universe::set_parent` (`universe.rs`): Sets or clears the parent of `entity`.
-- `Universe::get_parent` (`universe.rs`): Returns the parent of `entity`, or `None` if unparented.
-- `Universe::get_children` (`universe.rs`): Returns the direct children of `entity`.
+- `Universe::set_parent` (`universe.rs`): Sets or clears the parent of `ecs`.
+- `Universe::get_parent` (`universe.rs`): Returns the parent of `ecs`, or `None` if unparented.
+- `Universe::get_children` (`universe.rs`): Returns the direct children of `ecs`.
 - `Universe::kill_recursive` (`universe.rs`): Kills `root` and all of its descendants recursively.
 - `Universe::is_alive` (`universe.rs`): Returns whether an entity ID is currently alive.
 - `Universe::get_entity_count` (`universe.rs`): Returns the number of alive entities.

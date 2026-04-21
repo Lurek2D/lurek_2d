@@ -1,4 +1,4 @@
-//! `lurek.network` — Full networking toolkit for multiplayer games.
+﻿//! `lurek.network` â€” Full networking toolkit for multiplayer games.
 //!
 //! Provides ENet UDP, HTTP, TCP, WebSocket, and MessagePack serialization
 //! through the `lurek.network` Lua namespace.
@@ -496,9 +496,9 @@ impl LuaUserData for LuaNetworkRuntime {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- httpRequest --
         /// Sends an HTTP request asynchronously. Poll with `poll()` for the response.
-        /// @param opts : table — { method, url, headers?, body?, timeout? }
+        /// @param opts : table â€” { method, url, headers?, body?, timeout? }
         /// @return nil
-        /// integer — request ID
+        /// integer â€” request ID
         methods.add_method("httpRequest", |_, this, opts: LuaTable| {
             let method: String = opts.get("method").unwrap_or_else(|_| "GET".into());
             let url: String = opts.get("url").map_err(|_| {
@@ -528,7 +528,7 @@ impl LuaUserData for LuaNetworkRuntime {
         /// @param url : string
         /// @param headers : table?
         /// @return nil
-        /// integer — request ID
+        /// integer â€” request ID
         methods.add_method(
             "httpGet",
             |_, this, (url, headers): (String, Option<LuaTable>)| {
@@ -552,7 +552,7 @@ impl LuaUserData for LuaNetworkRuntime {
         /// @param body : string
         /// @param headers : table?
         /// @return nil
-        /// integer — request ID
+        /// integer â€” request ID
         methods.add_method(
             "httpPost",
             |_, this, (url, body, headers): (String, String, Option<LuaTable>)| {
@@ -572,9 +572,9 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- tcpConnect --
         /// Opens a TCP connection to a remote address.
-        /// @param addr : string — "host:port"
+        /// @param addr : string â€” "host:port"
         /// @return nil
-        /// integer — connection ID
+        /// integer â€” connection ID
         methods.add_method("tcpConnect", |_, this, addr: String| {
             let id = this
                 .inner
@@ -586,7 +586,7 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- tcpSend --
         /// Sends data over a TCP connection.
-        /// @param id : integer — connection ID
+        /// @param id : integer â€” connection ID
         /// @param data : string
         /// @return nil
         methods.add_method("tcpSend", |_, this, (id, data): (u64, LuaString)| {
@@ -598,7 +598,7 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- tcpClose --
         /// Closes the TCP connection identified by the given connection handle.
-        /// @param id : integer — connection ID
+        /// @param id : integer â€” connection ID
         /// @return nil
         methods.add_method("tcpClose", |_, this, id: u64| {
             this.inner
@@ -609,9 +609,9 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- wsConnect --
         /// Opens a WebSocket connection.
-        /// @param url : string — "ws://host:port/path" or "wss://..."
+        /// @param url : string â€” "ws://host:port/path" or "wss://..."
         /// @return nil
-        /// integer — connection ID
+        /// integer â€” connection ID
         methods.add_method("wsConnect", |_, this, url: String| {
             let id = this
                 .inner
@@ -623,7 +623,7 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- wsSend --
         /// Sends a text message over a WebSocket connection.
-        /// @param id : integer — connection ID
+        /// @param id : integer â€” connection ID
         /// @param data : string
         /// @return nil
         methods.add_method("wsSend", |_, this, (id, data): (u64, String)| {
@@ -635,7 +635,7 @@ impl LuaUserData for LuaNetworkRuntime {
 
         // -- wsClose --
         /// Closes a WebSocket connection.
-        /// @param id : integer — connection ID
+        /// @param id : integer â€” connection ID
         /// @return nil
         methods.add_method("wsClose", |_, this, id: u64| {
             this.inner
@@ -755,10 +755,10 @@ impl LuaUserData for LuaNetworkRuntime {
 /// Registers the `lurek.network` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- MAX_PEERS constant --
@@ -782,7 +782,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     ///
     /// Accepts `maxPeers` (preferred) or `peers` (legacy alias) to set the peer limit.
     /// Valid range is `[1, MAX_PEERS]`. Defaults to `DEFAULT_PEERS` when omitted.
-    /// @param opts : table — { addr?, maxPeers?, peers?, channels?, inBandwidth?, outBandwidth? }
+    /// @param opts : table â€” { addr?, maxPeers?, peers?, channels?, inBandwidth?, outBandwidth? }
     /// @return NetworkHost
     tbl.set(
         "newHost",
@@ -815,7 +815,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     ///
     /// Accepts `maxPeers` (preferred) or `peers` (legacy alias) to set the peer limit.
     /// Valid range is `[1, MAX_PEERS]`. Defaults to `DEFAULT_PEERS` when omitted.
-    /// @param opts : table — { port, maxPeers?, peers?, channels? }
+    /// @param opts : table â€” { port, maxPeers?, peers?, channels? }
     /// @return NetworkHost
     tbl.set(
         "newServer",
@@ -838,7 +838,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
 
     // -- newClient --
     /// Creates a client host that connects to a remote server.
-    /// @param opts : table — { addr, channels?, data? }
+    /// @param opts : table â€” { addr, channels?, data? }
     /// @return NetworkHost
     tbl.set(
         "newClient",
@@ -999,6 +999,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    luna.set("network", tbl)?;
+    lurek.set("network", tbl)?;
     Ok(())
 }

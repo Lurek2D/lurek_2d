@@ -8,12 +8,13 @@ describe("procgen + tilemap integration", function()
     -- @covers lurek.tilemap.newTilemap
     -- @description Verifies procedural noise can be thresholded into tile IDs and written into a tilemap.
     it("noise2d generates tile terrain", function()
-        local map = lurek.tilemap.newTilemap(16, 16, 32, 32)
+        local map = lurek.tilemap.newTileMap(32, 32)
+        map:addLayer("tiles", 16, 16)
 
         -- Use procgen noise to assign tile types
         for y = 0, 15 do
             for x = 0, 15 do
-                local n = lurek.procgen.noise2d(x * 0.1, y * 0.1)
+                local n = lurek.procgen.perlinNoise(x * 0.1, y * 0.1, 1, 1)
                 local tile_id
                 if n < -0.2 then
                     tile_id = 0  -- water
@@ -22,12 +23,12 @@ describe("procgen + tilemap integration", function()
                 else
                     tile_id = 2  -- mountain
                 end
-                map:setTile(x, y, tile_id)
+                map:setTile(1, x + 1, y + 1, tile_id)
             end
         end
 
         -- Verify tiles were set
-        local center_tile = map:getTile(8, 8)
+        local center_tile = map:getTile(1, 9, 9)
         expect_type("number", center_tile)
         expect_true(center_tile >= 0 and center_tile <= 2, "tile in valid range")
     end)
@@ -37,12 +38,13 @@ describe("procgen + tilemap integration", function()
     -- @description Verifies the same procedural seed offset produces identical tile placement.
     it("seeded noise produces same tilemap", function()
         local function generate_map(seed)
-            local map = lurek.tilemap.newTilemap(8, 8, 32, 32)
+            local map = lurek.tilemap.newTileMap(32, 32)
+            map:addLayer("tiles", 8, 8)
             for y = 0, 7 do
                 for x = 0, 7 do
-                    local n = lurek.procgen.noise2d(x * 0.1 + seed, y * 0.1 + seed)
+                    local n = lurek.procgen.perlinNoise(x * 0.1 + seed, y * 0.1 + seed, 1, 1)
                     local tile_id = n < 0 and 0 or 1
-                    map:setTile(x, y, tile_id)
+                    map:setTile(1, x + 1, y + 1, tile_id)
                 end
             end
             return map
@@ -51,11 +53,11 @@ describe("procgen + tilemap integration", function()
         local map1 = generate_map(42.0)
         local map2 = generate_map(42.0)
 
-        -- Same seed â†’ same tiles
+        -- Same seed Ă˘â€ â€™ same tiles
         for y = 0, 7 do
             for x = 0, 7 do
-                local t1 = map1:getTile(x, y)
-                local t2 = map2:getTile(x, y)
+                local t1 = map1:getTile(1, x + 1, y + 1)
+                local t2 = map2:getTile(1, x + 1, y + 1)
                 expect_equal(t1, t2, "tile(" .. x .. "," .. y .. ") matches")
             end
         end
@@ -70,8 +72,8 @@ describe("procgen + tilemap integration", function()
 
         for y = 0, 3 do
             for x = 0, 3 do
-                local n1 = lurek.procgen.noise2d(x * 0.1, y * 0.1)
-                local n2 = lurek.procgen.noise2d(x * 0.1 + 1000, y * 0.1 + 1000)
+                local n1 = lurek.procgen.perlinNoise(x * 0.1, y * 0.1, 1, 1)
+                local n2 = lurek.procgen.perlinNoise(x * 0.1 + 3.7, y * 0.1 + 5.3, 1, 1)
                 table.insert(map1_tiles, n1)
                 table.insert(map2_tiles, n2)
             end
@@ -89,10 +91,10 @@ describe("procgen + tilemap integration", function()
     end)
 end)
 
--- ─────────────────────────────────────────────
--- BSP Dungeon → Tilemap passability
--- ─────────────────────────────────────────────
-describe("bspDungeon → tilemap grid passability", function()
+-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+-- BSP Dungeon â†’ Tilemap passability
+-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+describe("bspDungeon â†’ tilemap grid passability", function()
 
     it("BSP rooms can map to walkable tile IDs", function()
         local d = lurek.procgen.bspDungeon({ width = 40, height = 30, seed = 42 })

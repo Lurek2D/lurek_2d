@@ -1,6 +1,6 @@
 //! Navigation grid with per-cell traversal costs and diagonal movement modes.
 //!
-//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
 //! details for nav grid-related operations and data management.
 //! Key types exported from this module: `DiagonalMode`, `NavGrid`.
 //! Primary functions: `from_lua_str()`, `new()`, `from_costs()`, `get_width()`.

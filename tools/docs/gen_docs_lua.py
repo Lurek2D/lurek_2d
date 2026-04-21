@@ -18,11 +18,11 @@ INPUT_FILE  = WORKSPACE_ROOT / "docs" / "logs" / "lua_api_data.json"
 OUTPUT_FILE = WORKSPACE_ROOT / "docs" / "API" / "lua-api.md"
 
 _MODULE_ORDER = [
-    "graphics","graphics_ext","window","input","timer","math","math_ext",
+    "render","graphics_ext","window","input","timer","math","math_ext",
     "audio","physics","filesystem","particle","event","system","thread",
     "ai","compute","dataframe","data","image","sound","graph","tilemap",
-    "dialog","entity","scene","pathfinding","postfx",
-    "minimap","savegame","modding","localization",
+    "dialog","ecs","scene","pathfind","postfx",
+    "minimap","save","mods","i18n",
     "stats","inventory","crafting","cardgame","combat",
     "log","debug","battle","debugbridge","docs","item","patterns","quest","resource",
 ]

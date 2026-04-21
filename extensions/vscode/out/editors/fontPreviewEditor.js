@@ -7,7 +7,7 @@ class FontPreviewEditor extends shared_js_1.WebviewEditor {
         return new FontPreviewEditor(context);
     }
     constructor(context) {
-        super(context, "luna.fontPreviewEditor", "Font Preview");
+        super(context, "lurek.fontPreviewEditor", "Font Preview");
     }
     handleMessage(msg) {
         switch (msg.type) {
@@ -255,7 +255,7 @@ class FontPreviewEditor extends shared_js_1.WebviewEditor {
 
       document.getElementById('btnExport').addEventListener('click', () => {
         let lua = '-- Font configuration for Luna2D\\n';
-        lua += 'local font = luna.graphics.newFont("' + fontFamily + '", ' + fontSize + ')\\n';
+        lua += 'local font = lurek.graphics.newFont("' + fontFamily + '", ' + fontSize + ')\\n';
         lua += '-- Style: ' + (bold ? 'bold ' : '') + (italic ? 'italic' : 'normal') + '\\n';
         lua += '-- Color: { ' + parseInt(textColor.slice(1,3),16) + ', ' + parseInt(textColor.slice(3,5),16) + ', ' + parseInt(textColor.slice(5,7),16) + ' }\\n';
         lua += '-- Line height: ' + lineHeight.toFixed(1) + '\\n';

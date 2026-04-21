@@ -117,4 +117,5 @@ describe("compute stress: reductions", function()
         expect_near(1.0, mean, 0.001, "mean of ones")
     end)
 end)
+
 test_summary()

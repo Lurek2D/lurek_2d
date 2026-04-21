@@ -605,9 +605,9 @@ export class LuaDebugSession extends LoggingDebugSession {
     // Provide lurek.* namespace completions
     if (text.startsWith("lurek.")) {
       const lurekModules = [
-        "graphics", "audio", "timer", "keyboard", "mouse", "gamepad",
+        "render", "audio", "timer", "keyboard", "mouse", "gamepad",
         "touch", "window", "filesystem", "math", "physics", "system",
-        "data", "event", "thread", "scene", "entity", "particle",
+        "data", "event", "thread", "scene", "ecs", "particle",
       ];
       for (const mod of lurekModules) {
         if (mod.startsWith(text.slice(5))) {

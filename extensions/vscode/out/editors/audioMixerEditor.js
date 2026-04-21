@@ -7,7 +7,7 @@ class AudioMixerEditor extends shared_js_1.WebviewEditor {
         return new AudioMixerEditor(context);
     }
     constructor(context) {
-        super(context, "luna.audioMixerEditor", "Audio Mixer");
+        super(context, "lurek.audioMixerEditor", "Audio Mixer");
     }
     handleMessage(msg) {
         switch (msg.type) {

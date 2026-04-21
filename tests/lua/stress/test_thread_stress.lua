@@ -103,4 +103,5 @@ describe("thread stress: multi-channel fanout", function()
         end
     end)
 end)
+
 test_summary()

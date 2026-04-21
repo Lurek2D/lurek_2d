@@ -55,7 +55,14 @@ pub fn draw_animation_frame_grid_to_image(anim: &Animation, cell_w: u32, cell_h:
         img.draw_rect((px + cell_w - 1) as i32, py as i32, 1, cell_h, r, g, b, 255);
         let label = format!("{}", i);
         let label_y = py.saturating_add(cell_h / 2).saturating_sub(4);
-        img.draw_label(&label, (px + 4) as i32, label_y as i32, r, g, b);
+        img.draw_label(
+            &label,
+            (px + 4) as i32,
+            label_y as i32,
+            r,
+            g,
+            b,
+        );
     }
     img
 }

@@ -1,4 +1,4 @@
-﻿//! `luna.time` — Frame timing and scheduled callback API.
+﻿//! `lurek.time` — Frame timing and scheduled callback API.
 //!
 //! Provides delta time, total elapsed time, FPS tracking, and a Scheduler
 //! object for delayed and repeating Lua callbacks.
@@ -93,7 +93,7 @@ impl LuaUserData for LuaScheduler {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Registers the `lurek.timer` API table with the Lua VM.
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- getDelta --
@@ -161,6 +161,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("time", tbl)?;
+    lurek.set("time", tbl)?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-//! `lurek.filesystem` — Sandboxed file I/O, directory queries, and async asset loading.
+﻿//! `lurek.filesystem` â€” Sandboxed file I/O, directory queries, and async asset loading.
 //!
 //! All paths are resolved through the game's [`GameFS`] sandbox. Supports file
 //! read/write via `FileHandle`, bulk-data via `FileData`, ZIP archive mounting,
@@ -197,13 +197,13 @@ impl LuaUserData for LuaZipMount {
 /// Registers the `lurek.filesystem` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── ZIP mounting ────────────────────────────────────────────────────────────
+    // â”€â”€ ZIP mounting â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Mounts a ZIP archive at a virtual path prefix, making its contents readable
     /// via the returned `ZipMount` userdata.  Returns a `ZipMount` handle.
@@ -218,7 +218,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── File watcher ────────────────────────────────────────────────────────────
+    // â”€â”€ File watcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let watcher_rc = Rc::new(RefCell::new(FileWatcher::new()));
 
@@ -695,9 +695,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns lightweight file statistics for the given path.
     ///
     /// Returns a table with fields:
-    /// - `size`   (integer) — File size in bytes (0 for directories).
-    /// - `isFile` (boolean) — `true` if the path is a regular file.
-    /// - `isDir`  (boolean) — `true` if the path is a directory.
+    /// - `size`   (integer) â€” File size in bytes (0 for directories).
+    /// - `isFile` (boolean) â€” `true` if the path is a regular file.
+    /// - `isDir`  (boolean) â€” `true` if the path is a directory.
     ///
     /// Raises a Lua error if the path is inaccessible or outside the sandbox.
     ///
@@ -767,6 +767,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("filesystem", tbl)?;
+    lurek.set("filesystem", tbl)?;
     Ok(())
 }

@@ -52,7 +52,7 @@ _PUB_ITEM_RE = re.compile(
 #   functions (tbl, graphics, keyboard, mouse, gamepad, touch, overlay_tbl, system).
 #   This avoids false positives from local return-table builders like t.set("x", ...)
 #   or stats.set("drawcalls", ...) inside method closures.
-_LUA_SET_RE = re.compile(r'luna\.set\s*\(\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*,')
+_LUA_SET_RE = re.compile(r'lurek\.set\s*\(\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*,')
 _LUA_SET2_RE = re.compile(
     r'\b(?:tbl|graphics|keyboard|mouse|gamepad|touch|overlay_tbl|system)'
     r'\.set\s*\(\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*,'
@@ -61,7 +61,7 @@ _LUA_SET2_RE = re.compile(
 # mounts, not individual function registrations, and need no per-function doc.
 # Handles: bare variable names (tbl, parallax, ...)  AND `.clone()` variants (tbl.clone()).
 _LUA_MOUNT_RE = re.compile(
-    r'luna\.set\s*\(\s*"[^"]+"\s*,\s*'
+    r'lurek\.set\s*\(\s*"[^"]+"\s*,\s*'
     r'[A-Za-z_][A-Za-z0-9_]*(?:\.clone\(\))?\s*\)'
 )
 

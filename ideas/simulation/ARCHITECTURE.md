@@ -233,13 +233,13 @@ Lua table ──build──▶      │  (model.rs) │
 
 ## 7. Engine Config Integration
 
-The module will be guarded by a `modules.blocksim` flag in `src/engine/config.rs`, consistent with how `modules.gui`, `modules.terminal`, `modules.graph`, etc. are handled.
+The module will be guarded by a `modules.blocksim` flag in `src/engine/config.rs`, consistent with how `modules.ui`, `modules.terminal`, `modules.graph`, etc. are handled.
 
 ```toml
 # conf.toml
 [modules]
 blocksim = true   # enables lurek.sim.* namespace
-gui      = true   # optional: enables dashboard surface
+ui = true   # optional: enables dashboard surface
 terminal = true   # optional: enables text mode inspector
 ```
 

@@ -39,14 +39,14 @@ const luaParser_js_1 = require("../services/luaParser.js");
 const LUA_SELECTOR = { scheme: 'file', language: 'lua' };
 const analyzer = new luaParser_js_1.LuaDocumentAnalyzer();
 /**
- * Registers the inlay hints provider for luna.* function calls.
+ * Registers the inlay hints provider for lurek.* function calls.
  * Shows parameter name hints at call sites.
  */
 function register(context, apiData) {
     const provider = vscode.languages.registerInlayHintsProvider(LUA_SELECTOR, {
         provideInlayHints(document, range) {
             try {
-                const config = vscode.workspace.getConfiguration('luna');
+                const config = vscode.workspace.getConfiguration('lurek');
                 if (config.get('inlayHints.enabled') === false)
                     return [];
                 return getInlayHints(document, range, apiData);
@@ -62,8 +62,8 @@ function getInlayHints(document, range, apiData) {
     const hints = [];
     const text = document.getText(range);
     const offset = document.offsetAt(range.start);
-    // Match luna.module.func(...) calls — handle nested parens by finding the call then parsing args
-    const callPattern = /(luna\.\w+\.\w+)\s*\(/g;
+    // Match lurek.module.func(...) calls — handle nested parens by finding the call then parsing args
+    const callPattern = /(lurek\.\w+\.\w+)\s*\(/g;
     let callMatch;
     while ((callMatch = callPattern.exec(text)) !== null) {
         const fullPath = callMatch[1];

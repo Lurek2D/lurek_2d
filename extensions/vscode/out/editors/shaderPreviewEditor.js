@@ -7,7 +7,7 @@ class ShaderPreviewEditor extends shared_js_1.WebviewEditor {
         return new ShaderPreviewEditor(context);
     }
     constructor(context) {
-        super(context, "luna.shaderPreviewEditor", "Shader Preview");
+        super(context, "lurek.shaderPreviewEditor", "Shader Preview");
     }
     handleMessage(msg) {
         switch (msg.type) {
@@ -109,7 +109,7 @@ class ShaderPreviewEditor extends shared_js_1.WebviewEditor {
           params: [{ name: 'size', min: 1, max: 32, value: 8 }],
         },
         wave: {
-          code: '-- Wave Distortion Shader\\n-- Uniforms: amplitude, frequency, speed\\n\\nfunction effect(pixel, x, y, uniforms)\\n  local amp = (uniforms.amplitude or 10)\\n  local freq = (uniforms.frequency or 20) / 100\\n  local t = luna.timer.getTime()\\n  local offset = math.sin(y * freq + t) * amp\\n  return getPixel(x + offset, y)\\nend',
+          code: '-- Wave Distortion Shader\\n-- Uniforms: amplitude, frequency, speed\\n\\nfunction effect(pixel, x, y, uniforms)\\n  local amp = (uniforms.amplitude or 10)\\n  local freq = (uniforms.frequency or 20) / 100\\n  local t = lurek.timer.getTime()\\n  local offset = math.sin(y * freq + t) * amp\\n  return getPixel(x + offset, y)\\nend',
           params: [{ name: 'amplitude', min: 0, max: 50, value: 10 }, { name: 'frequency', min: 1, max: 100, value: 20 }, { name: 'speed', min: 1, max: 100, value: 50 }],
         },
         custom: {

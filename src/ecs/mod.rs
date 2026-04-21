@@ -1,7 +1,7 @@
 //! Entity/ECS module — lightweight entity-component-system with ID recycling,
 //! bitmap tags, layers, blueprints, and system dispatch.
 //!
-//! This module is part of Lurek2D's `entity` subsystem and provides the implementation
+//! This module is part of Lurek2D's `ecs` subsystem and provides the implementation
 //! details for mod-related operations and data management.
 //!
 //! All public items are documented. See the parent module for architectural context

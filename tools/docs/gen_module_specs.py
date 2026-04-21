@@ -128,7 +128,7 @@ IMPL_RE = re.compile(
     r'(?:(?:[A-Za-z_][A-Za-z0-9_:<>]+)\s+for\s+)?'
     r'([A-Za-z_][A-Za-z0-9_:<>]*)'
 )
-SET_RE = re.compile(r'\b(?:luna|lurek)\.set\(\s*"([^\"]+)"')
+SET_RE = re.compile(r'\b(?:lurek|lurek)\.set\(\s*"([^\"]+)"')
 
 
 def load_lua_parser():

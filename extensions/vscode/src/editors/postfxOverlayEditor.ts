@@ -55,7 +55,7 @@ export class PostFxOverlayEditor extends WebviewEditor {
         <button class="tab" data-tab="timeofday">Time of Day</button>
         <button class="tab" data-tab="screen">Screen Effects</button>
         <button class="tab" data-tab="shake">Camera Shake</button>
-        <button class="tab" data-tab="overlay">Overlay Presets</button>
+        <button class="tab" data-tab="effect">Overlay Presets</button>
       </div>
       <div class="layout">
         <div>

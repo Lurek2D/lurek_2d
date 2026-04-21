@@ -15,18 +15,19 @@ describe("pathfinding + entity integration", function()
         universe:set(entity, "y", 0)
 
         -- Create pathfinding grid
-        local grid = lurek.pathfind.newGrid(10, 10)
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf   = lurek.pathfind.newPathfinder(grid)
 
-        -- Find path from (0,0) to (9,9)
-        local path = grid:findPath(0, 0, 9, 9)
+        -- Find path from (1,1) to (10,10) in 1-based coords
+        local path = pf:findPath(1, 1, 10, 10)
         expect_true(path ~= nil, "path found")
 
         if path then
-            local steps = path:getLength()
+            local steps = #path
             expect_true(steps > 0, "path has steps: " .. steps)
 
             -- Move entity along first step
-            local px, py = path:getPoint(0)
+            local px, py = path[1].x, path[1].y
             universe:set(entity, "x", px)
             universe:set(entity, "y", py)
 
@@ -39,18 +40,19 @@ describe("pathfinding + entity integration", function()
     -- @covers lurek.ecs
     -- @description Verifies blocked cells force the computed route used by entities to take a longer detour.
     it("blocked cells force path around obstacle", function()
-        local grid = lurek.pathfind.newGrid(10, 10)
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf   = lurek.pathfind.newPathfinder(grid)
 
-        -- Block a wall
-        for y = 0, 8 do
-            grid:setWalkable(5, y, false)
+        -- Block a wall at column 6 (1-based), rows 1-9
+        for y = 1, 9 do
+            grid:setBlocked(6, y, true)
         end
 
-        local path = grid:findPath(0, 5, 9, 5)
+        local path = pf:findPath(1, 6, 10, 6)
         expect_true(path ~= nil, "path found around wall")
 
         if path then
-            local len = path:getLength()
+            local len = #path
             -- Path around wall should be longer than direct
             expect_true(len > 9, "path is longer due to obstacle: " .. len)
         end
@@ -60,15 +62,16 @@ describe("pathfinding + entity integration", function()
     -- @covers lurek.ecs
     -- @description Verifies an unreachable goal returns no path instead of producing invalid movement data for entities.
     it("no path returns nil for unreachable goal", function()
-        local grid = lurek.pathfind.newGrid(10, 10)
+        local grid = lurek.pathfind.newNavGrid(10, 10)
+        local pf   = lurek.pathfind.newPathfinder(grid)
 
-        -- Create enclosed area
-        for x = 0, 9 do
-            grid:setWalkable(x, 5, false)
+        -- Block all of row 2 so (1,1) is trapped in row 1 and cannot reach (1,10)
+        for x = 1, 10 do
+            grid:setBlocked(x, 2, true)
         end
 
-        local path = grid:findPath(0, 0, 0, 9)
-        expect_true(path == nil, "no path to unreachable goal")
+        local path = pf:findPath(1, 1, 1, 10)
+        expect_true(path == nil, "no path to unreachable goal (got " .. tostring(path) .. ")")
     end)
 
     -- @covers lurek.pathfind.Path.getPoint
@@ -80,13 +83,14 @@ describe("pathfinding + entity integration", function()
         universe:set(entity, "x", 0)
         universe:set(entity, "y", 0)
 
-        local grid = lurek.pathfind.newGrid(5, 5)
-        local path = grid:findPath(0, 0, 4, 4)
+        local grid = lurek.pathfind.newNavGrid(5, 5)
+        local pf   = lurek.pathfind.newPathfinder(grid)
+        local path = pf:findPath(1, 1, 5, 5)
 
         if path then
             -- Walk entire path
-            for i = 0, path:getLength() - 1 do
-                local px, py = path:getPoint(i)
+            for i = 1, #path do
+                local px, py = path[i].x, path[i].y
                 universe:set(entity, "x", px)
                 universe:set(entity, "y", py)
             end
@@ -94,11 +98,12 @@ describe("pathfinding + entity integration", function()
             -- Entity should be at destination
             local fx = universe:get(entity, "x")
             local fy = universe:get(entity, "y")
-            expect_equal(4, fx, "entity reached x=4")
-            expect_equal(4, fy, "entity reached y=4")
+            expect_equal(5, fx, "entity reached x=5")
+            expect_equal(5, fy, "entity reached y=5")
         end
 
         expect_true(universe:isAlive(entity), "entity survived path walk")
     end)
 end)
+
 test_summary()

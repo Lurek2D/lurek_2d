@@ -14,7 +14,7 @@ use crate::runtime::resource_keys::FontKey;
 /// Generates `RenderCommand` sequences for rendering performance info in the
 /// top-right corner of the screen.
 pub struct DebugOverlay {
-    /// Whether the overlay is currently visible.
+    /// Whether the effect is currently visible.
     pub enabled: bool,
 }
 
@@ -27,7 +27,7 @@ impl DebugOverlay {
         Self { enabled: false }
     }
 
-    /// Generates draw commands for the overlay.
+    /// Generates draw commands for the effect.
     ///
     /// Shows FPS and draw call count as green text on a dark semi-transparent background.
     ///

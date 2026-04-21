@@ -389,7 +389,7 @@ print("Terrain layer now active; political layer hidden")
 g:setLayerAlpha("terrain", 0.30)
 print("Terrain layer at 30% alpha for subtle shading")
 
--- removeLayer destroys the overlay entirely — use when unloading
+-- removeLayer destroys the effect entirely — use when unloading
 -- a scenario that had its own thematic data.
 local layer_ok = g:removeLayer("terrain")
 print("Terrain layer removed:", layer_ok)   --> true

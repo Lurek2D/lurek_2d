@@ -7,7 +7,7 @@ class TilemapScriptEditor extends shared_js_1.WebviewEditor {
         return new TilemapScriptEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.tilemapScript", "Tilemap Script Editor");
+        super(context, "lurek.editor.tilemapScript", "Tilemap Script Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

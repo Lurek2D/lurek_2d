@@ -106,4 +106,5 @@ describe("physics multi-body + math", function()
         lurek.physics.destroyWorld(world_id)
     end)
 end)
+
 test_summary()

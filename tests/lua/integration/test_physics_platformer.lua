@@ -14,7 +14,7 @@ describe("one-way platform integration", function()
         floor  = lurek.physics.newBody(world, 400, 500, "static")
         -- Mark the floor as one-way: normal points upward (0, -1)
         -- so bodies approaching from above are blocked.
-        world:setBodyOneWay(floor, 0, -1)
+        world:setBodyOneWay(floor:getId(), 0, -1)
         -- A dynamic player above the floor.
         player = lurek.physics.newBody(world, 400, 100, "dynamic")
     end)
@@ -23,7 +23,7 @@ describe("one-way platform integration", function()
     -- @covers lurek.physics.World:getBodyOneWay
     -- @description Verifies the floor has the expected one-way normal.
     it("floor has correct one-way normal", function()
-        local nx, ny = world:getBodyOneWay(floor)
+        local nx, ny = world:getBodyOneWay(floor:getId())
         expect_near(0,  nx, 1e-5)
         expect_near(-1, ny, 1e-5)
     end)
@@ -88,8 +88,8 @@ describe("contact callbacks and sleeping integration", function()
     -- @description Verifies callback + sleep + wake round-trip works cleanly.
     it("sleep then wake then step does not error", function()
         local b = lurek.physics.newBody(world, 0, 0, "dynamic")
-        world:sleepBody(b)
-        world:wakeUpBody(b)
+        world:sleepBody(b:getId())
+        world:wakeUpBody(b:getId())
         expect_no_error(function()
             world:step(1/60)
         end)

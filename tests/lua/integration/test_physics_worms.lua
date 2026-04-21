@@ -23,7 +23,7 @@ describe("worms terrain + physics integration", function()
         terrain:flush()
 
         -- Drop a body from above the solid region.
-        local body = world:newBody(256, 0, 12, 12, "dynamic")
+        local body = world:newBody(256, 0, "dynamic")
 
         -- Step enough for the body to fall and settle.
         for _ = 1, 120 do

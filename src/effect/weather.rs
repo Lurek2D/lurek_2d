@@ -3,7 +3,7 @@
 //! Defines [`WeatherType`], [`WeatherParticle`], and [`WeatherState`]
 //! for rain, snow, and dust particle overlays.
 
-/// Weather particle types supported by the overlay system.
+/// Weather particle types supported by the effect system.
 ///
 /// Each variant changes the visual character of spawned particles: their
 /// fall speed, size, and opacity are all tuned per type inside
@@ -81,7 +81,7 @@ impl WeatherType {
     }
 }
 
-/// A single weather particle in the overlay's weather system.
+/// A single weather particle in the effect's weather system.
 ///
 /// Particles are created by `Overlay::spawn_particle` and stored in
 /// `WeatherState::particles`. Each frame `Overlay::update_weather` moves

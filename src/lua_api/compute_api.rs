@@ -1,4 +1,4 @@
-//! `lurek.compute` — Dense N-dimensional numerical arrays with NumPy-style operations.
+﻿//! `lurek.compute` â€” Dense N-dimensional numerical arrays with NumPy-style operations.
 //!
 //! Wraps [`NdArray`] as `Array` userdata supporting element-wise arithmetic, broadcasting,
 //! reshape/transpose/slice, reduction (sum, mean, min, max), linear algebra (matmul, dot,
@@ -295,7 +295,7 @@ impl LuaUserData for LuaArray {
         });
 
         // -- neg --
-        /// Returns a new Array with every element negated (multiplied by −1).
+        /// Returns a new Array with every element negated (multiplied by â’1).
         /// @return Array
         methods.add_method("neg", |lua, this, ()| {
             let result = ops::neg(&this.inner).map_err(LuaError::RuntimeError)?;
@@ -646,7 +646,7 @@ impl LuaUserData for LuaArray {
             Ok(this.inner.display_string())
         });
 
-        // ── Analytics ──────────────────────────────────────────────────
+        // â”€â”€ Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- cumsum --
         /// Cumulative sum of all elements (flattened).
@@ -690,7 +690,7 @@ impl LuaUserData for LuaArray {
         );
 
         // -- percentile --
-        /// Compute the p-th percentile (0–100).
+        /// Compute the p-th percentile (0â€“100).
         /// @param p : number
         /// @return number
         methods.add_method("percentile", |_, this, p: f64| {
@@ -756,7 +756,7 @@ impl LuaUserData for LuaArray {
             lua.create_userdata(LuaArray { inner: r })
         });
 
-        // ── Linear algebra ──────────────────────────────────────────────
+        // â”€â”€ Linear algebra â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- normalizeVec --
         /// L2-normalise a 1D vector.
@@ -767,7 +767,7 @@ impl LuaUserData for LuaArray {
         });
 
         // -- outer --
-        /// Outer product of two 1D vectors → 2D array [m, n].
+        /// Outer product of two 1D vectors â†’ 2D array [m, n].
         /// @param other : Array
         /// @return Array
         methods.add_method("outer", |lua, this, other: LuaAnyUserData| {
@@ -786,7 +786,7 @@ impl LuaUserData for LuaArray {
         });
 
         // -- transformPoints --
-        /// Apply this 2×2 or 3×3 matrix to an [N,2] points array.
+        /// Apply this 2Ă—2 or 3Ă—3 matrix to an [N,2] points array.
         /// @param points : Array
         /// @return Array
         methods.add_method("transformPoints", |lua, this, pts: LuaAnyUserData| {
@@ -808,7 +808,7 @@ impl LuaUserData for LuaArray {
         });
 
         // -- linsolve --
-        /// Solve A·x = b where this array is A (square [n,n]) and b is a 1D vector.
+        /// Solve AÂ·x = b where this array is A (square [n,n]) and b is a 1D vector.
         /// @param b : Array
         /// @return Array
         methods.add_method("linsolve", |lua, this, b: LuaAnyUserData| {
@@ -872,7 +872,7 @@ impl LuaUserData for LuaArray {
             },
         );
 
-        // ── Identity ─────────────────────────────────────────────────────
+        // â”€â”€ Identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- type --
         /// Returns the type name "Array".
@@ -895,10 +895,10 @@ impl LuaUserData for LuaArray {
 /// Registers the `lurek.compute` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newArray --
@@ -992,7 +992,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- gaussianKernel --
-    /// Creates a size×size Gaussian kernel array.
+    /// Creates a sizeĂ—size Gaussian kernel array.
     /// @param size : integer
     /// @param sigma : number
     /// @return Array
@@ -1005,7 +1005,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- rotate2dMatrix --
-    /// Creates a 2×2 rotation matrix for the given angle in radians.
+    /// Creates a 2Ă—2 rotation matrix for the given angle in radians.
     /// @param angle_rad : number
     /// @return Array
     tbl.set(
@@ -1017,7 +1017,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     )?;
 
     // -- affine2d --
-    /// Creates a 3×3 homogeneous affine matrix.
+    /// Creates a 3Ă—3 homogeneous affine matrix.
     /// @param tx : number
     /// @param ty : number
     /// @param angle_rad : number
@@ -1039,7 +1039,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// Computes the discrete Fourier transform of a 1D real-valued sample array.
     ///
     /// The input is zero-padded to the next power of two. Returns an array of
-    /// `{re = number, im = number}` tables — one per frequency bin.
+    /// `{re = number, im = number}` tables â€” one per frequency bin.
     ///
     /// @param samples : table
     /// @return table
@@ -1109,6 +1109,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("compute", tbl)?;
+    lurek.set("compute", tbl)?;
     Ok(())
 }

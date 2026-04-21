@@ -324,7 +324,8 @@ fn count_bt_nodes(node: &BTNode) -> usize {
         BTNode::Selector { children, .. }
         | BTNode::Sequence { children, .. }
         | BTNode::Parallel { children, .. } => children.iter().map(count_bt_nodes).sum(),
-        BTNode::Inverter { child } | BTNode::Succeeder { child } => count_bt_nodes(child),
+        BTNode::Inverter { child }
+        | BTNode::Succeeder { child } => count_bt_nodes(child),
         BTNode::Repeater { child, .. } => count_bt_nodes(child),
         BTNode::Action { .. } | BTNode::Condition { .. } => 0,
     }
@@ -363,5 +364,32 @@ impl BehaviorTree {
             node_count,
             last_status: self.last_status.as_str().to_string(),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bt_status_conversions() {
+        assert_eq!(BTStatus::Success.as_str(), "success");
+        assert_eq!(BTStatus::Failure.as_str(), "failure");
+        assert_eq!(BTStatus::Running.as_str(), "running");
+    }
+
+    #[test]
+    fn parallel_policy_parse() {
+        assert_eq!(ParallelPolicy::parse_str("requireAll"), ParallelPolicy::RequireAll);
+        assert_eq!(ParallelPolicy::parse_str("requireOne"), ParallelPolicy::RequireOne);
+        assert_eq!(ParallelPolicy::parse_str("unknown"), ParallelPolicy::RequireOne);
+    }
+
+    #[test]
+    fn new_tree_has_no_root() {
+        let bt = BehaviorTree::new();
+        assert!(bt.root.is_none());
+        let state = bt.debug_state();
+        assert_eq!(state.node_count, 0);
     }
 }

@@ -1,4 +1,4 @@
-//! `lurek.save` - Slot-based save/load system with collectors, schema versioning, and auto-save.
+﻿//! `lurek.save` - Slot-based save/load system with collectors, schema versioning, and auto-save.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -15,7 +15,7 @@ use std::collections::HashMap;
 // Helpers
 // -------------------------------------------------------------------------------
 
-/// Extracts a slot name from a save filename (e.g. `"slot_quick.sav"` → `"quick"`).
+/// Extracts a slot name from a save filename (e.g. `"slot_quick.sav"` â†’ `"quick"`).
 fn slot_name_from_filename(filename: &str) -> Option<&str> {
     filename
         .strip_prefix("slot_")
@@ -596,10 +596,10 @@ impl LuaUserData for LuaSaveManager {
 /// Registers the `lurek.save` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newSaveManager --
@@ -611,6 +611,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |lua, ()| lua.create_userdata(LuaSaveManager::new(s.clone())))?,
     )?;
 
-    luna.set("save", tbl)?;
+    lurek.set("save", tbl)?;
     Ok(())
 }

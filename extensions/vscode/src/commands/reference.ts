@@ -217,14 +217,14 @@ export function depGraph(context: vscode.ExtensionContext): void {
       nodes.push({ id, tier });
     }
     const archEdges: EdgeDef[] = [
-      { from: "engine", to: "math" }, { from: "graphics", to: "math" },
+      { from: "engine", to: "math" }, { from: "render", to: "math" },
       { from: "physics", to: "math" }, { from: "audio", to: "math" },
       { from: "input", to: "math" }, { from: "timer", to: "math" },
-      { from: "lua_api", to: "engine" }, { from: "lua_api", to: "graphics" },
+      { from: "lua_api", to: "engine" }, { from: "lua_api", to: "render" },
       { from: "lua_api", to: "physics" }, { from: "lua_api", to: "audio" },
       { from: "lua_api", to: "input" }, { from: "lua_api", to: "timer" },
       { from: "lua_api", to: "filesystem" }, { from: "lua_api", to: "tilemap" },
-      { from: "lua_api", to: "ai" }, { from: "lua_api", to: "entity" },
+      { from: "lua_api", to: "ai" }, { from: "lua_api", to: "ecs" },
       { from: "lua_api", to: "scene" }, { from: "lua_api", to: "particle" },
     ];
     edges.push(...archEdges);

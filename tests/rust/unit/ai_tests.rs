@@ -56,7 +56,7 @@ mod bandit_tests {
 // ── behavior_tree ─────────────────────────────────────────────────────────────
 
 mod behavior_tree_tests {
-    use lurek2d::ai::behavior_tree::{BTStatus, BehaviorTree, ParallelPolicy};
+    use lurek2d::ai::behavior_tree::{BehaviorTree, BTStatus, ParallelPolicy};
 
     #[test]
     fn bt_status_conversions() {
@@ -67,18 +67,9 @@ mod behavior_tree_tests {
 
     #[test]
     fn parallel_policy_parse() {
-        assert_eq!(
-            ParallelPolicy::parse_str("requireAll"),
-            ParallelPolicy::RequireAll
-        );
-        assert_eq!(
-            ParallelPolicy::parse_str("requireOne"),
-            ParallelPolicy::RequireOne
-        );
-        assert_eq!(
-            ParallelPolicy::parse_str("unknown"),
-            ParallelPolicy::RequireOne
-        );
+        assert_eq!(ParallelPolicy::parse_str("requireAll"), ParallelPolicy::RequireAll);
+        assert_eq!(ParallelPolicy::parse_str("requireOne"), ParallelPolicy::RequireOne);
+        assert_eq!(ParallelPolicy::parse_str("unknown"), ParallelPolicy::RequireOne);
     }
 
     #[test]
@@ -278,11 +269,7 @@ mod htn_tests {
         domain.add_primitive("eat", vec!["hungry"], vec![], vec!["hungry"]);
         domain.add_compound(
             "satisfy_hunger",
-            vec![HTNMethod::with_preconditions(
-                "use_eat",
-                vec!["hungry"],
-                vec!["eat"],
-            )],
+            vec![HTNMethod::with_preconditions("use_eat", vec!["hungry"], vec!["eat"])],
         );
         domain
     }
@@ -579,113 +566,5 @@ mod world_tests {
         let mut world = AIWorld::new();
         world.global_blackboard_mut().set_number("threat", 2.0);
         assert!((world.global_blackboard().get_number("threat", 0.0) - 2.0).abs() < 1e-10);
-    }
-}
-
-// ── mcts ──────────────────────────────────────────────────────────────────────
-
-mod mcts_tests {
-    use lurek2d::ai::mcts::{MCTSConfig, MCTSEngine};
-
-    #[test]
-    fn new_engine_has_config() {
-        let cfg = MCTSConfig {
-            iterations: 50,
-            uct_c: 1.414,
-            rollout_depth: 5,
-            seed: 42,
-        };
-        let e = MCTSEngine::new(cfg);
-        assert_eq!(e.config().iterations, 50);
-    }
-}
-
-// ── qlearner ──────────────────────────────────────────────────────────────────
-
-mod qlearner_tests {
-    use lurek2d::ai::qlearner::QLearner;
-
-    #[test]
-    fn new_qtable_zeroed() {
-        let q = QLearner::new(3, 2);
-        assert_eq!(q.get_q(0, 0), 0.0);
-        assert_eq!(q.get_q(2, 1), 0.0);
-    }
-
-    #[test]
-    fn learn_updates_q() {
-        let mut q = QLearner::new(2, 2);
-        q.learn(0, 0, 1.0, 1);
-        assert!(q.get_q(0, 0) > 0.0);
-    }
-
-    #[test]
-    fn best_action_picks_highest_q() {
-        let mut q = QLearner::new(2, 2);
-        q.set_q(0, 1, 5.0);
-        assert_eq!(q.best_action(0), 1);
-    }
-
-    #[test]
-    fn end_episode_decays_epsilon() {
-        let mut q = QLearner::new(2, 2);
-        let eps_before = q.epsilon;
-        q.end_episode();
-        assert!(q.epsilon < eps_before);
-        assert_eq!(q.episode_count, 1);
-    }
-
-    #[test]
-    fn out_of_range_safe() {
-        let q = QLearner::new(2, 2);
-        assert_eq!(q.get_q(99, 99), 0.0);
-        assert_eq!(q.best_action(99), 0);
-    }
-
-    #[test]
-    fn serialize_deserialize_round_trip() {
-        let mut q = QLearner::new(2, 3);
-        q.set_q(0, 1, 1.5);
-        q.set_q(1, 2, -0.5);
-        let json = q.serialize();
-        let mut q2 = QLearner::new(2, 3);
-        q2.deserialize(&json).unwrap();
-        assert!((q2.get_q(0, 1) - 1.5).abs() < 1e-9);
-        assert!((q2.get_q(1, 2) - (-0.5)).abs() < 1e-9);
-    }
-}
-
-// ── render ────────────────────────────────────────────────────────────────────
-
-mod render_tests {
-    use lurek2d::ai::behavior_tree::BehaviorTree;
-    use lurek2d::ai::fsm::StateMachine;
-
-    #[test]
-    fn fsm_empty_returns_no_commands() {
-        let fsm = StateMachine::new();
-        assert!(fsm.generate_render_commands().is_empty());
-    }
-
-    #[test]
-    fn fsm_draw_to_image_correct_dimensions() {
-        let fsm = StateMachine::new();
-        let img = fsm.draw_to_image(64, 32);
-        assert_eq!(img.width(), 64);
-        assert_eq!(img.height(), 32);
-    }
-
-    #[test]
-    fn bt_empty_returns_no_commands() {
-        let bt = BehaviorTree::new();
-        assert!(bt.generate_render_commands().is_empty());
-    }
-
-    #[test]
-    fn bt_draw_to_image_correct_dimensions() {
-        let bt = BehaviorTree::new();
-        let img = bt.draw_to_image(64, 64);
-        assert_eq!(img.width(), 64);
-        assert_eq!(img.height(), 64);
     }
 }

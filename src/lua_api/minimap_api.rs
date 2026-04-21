@@ -1,4 +1,4 @@
-//! `lurek.minimap` — Grid-based minimap with terrain, fog of war, objects, pings, and markers.
+﻿//! `lurek.minimap` â€” Grid-based minimap with terrain, fog of war, objects, pings, and markers.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -11,7 +11,7 @@ use crate::minimap::{ColorMode, FogLevel, LayerData, MarkerAnimation, Minimap};
 // Helpers
 // -------------------------------------------------------------------------------
 
-/// Parse a Lua table `{r, g, b, a}` (integers 0–255) into a `[u8; 4]` color array.
+/// Parse a Lua table `{r, g, b, a}` (integers 0â€“255) into a `[u8; 4]` color array.
 ///
 /// Missing channels default to 255.
 fn parse_color_table(tbl: LuaTable) -> LuaResult<[u8; 4]> {
@@ -34,7 +34,7 @@ pub struct LuaMinimap {
 
 impl LuaUserData for LuaMinimap {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── Grid queries ──
+        // â”€â”€ Grid queries â”€â”€
 
         // -- getGridWidth --
         /// Returns the grid width in cells.
@@ -53,7 +53,7 @@ impl LuaUserData for LuaMinimap {
             Ok((this.inner.grid_width(), this.inner.grid_height()))
         });
 
-        // ── Display dimensions ──
+        // â”€â”€ Display dimensions â”€â”€
 
         // -- getDisplayWidth --
         /// Returns the display width in pixels.
@@ -86,7 +86,7 @@ impl LuaUserData for LuaMinimap {
             Ok(())
         });
 
-        // ── Terrain ──
+        // â”€â”€ Terrain â”€â”€
 
         // -- setTerrain --
         /// Sets the terrain type at a 1-based grid position.
@@ -162,7 +162,7 @@ impl LuaUserData for LuaMinimap {
             Ok((c[0], c[1], c[2], c[3]))
         });
 
-        // ── Tile descriptions ──
+        // â”€â”€ Tile descriptions â”€â”€
 
         // -- setTileDescription --
         /// Sets a hover tooltip string for a terrain type ID.
@@ -188,7 +188,7 @@ impl LuaUserData for LuaMinimap {
                 .map(|s| s.to_string()))
         });
 
-        // ── Fog of war ──
+        // â”€â”€ Fog of war â”€â”€
 
         // -- setFogEnabled --
         /// Enables or disables fog of war.
@@ -273,7 +273,7 @@ impl LuaUserData for LuaMinimap {
             Ok(())
         });
 
-        // ── Object types ──
+        // â”€â”€ Object types â”€â”€
 
         // -- addObjectType --
         /// Registers a new object type and returns its 1-based index.
@@ -331,7 +331,7 @@ impl LuaUserData for LuaMinimap {
             Ok(this.inner.object_type_count())
         });
 
-        // ── Objects ──
+        // â”€â”€ Objects â”€â”€
 
         // -- setObject --
         /// Sets or updates a tracked object on the minimap.
@@ -378,7 +378,7 @@ impl LuaUserData for LuaMinimap {
             Ok(this.inner.object_count())
         });
 
-        // ── Owner colors ──
+        // â”€â”€ Owner colors â”€â”€
 
         // -- setOwnerColor --
         /// Sets the display color for an owner/faction.
@@ -406,7 +406,7 @@ impl LuaUserData for LuaMinimap {
             Ok((c[0], c[1], c[2], c[3]))
         });
 
-        // ── Color mode ──
+        // â”€â”€ Color mode â”€â”€
 
         // -- setColorMode --
         /// Sets the color mode ("terrain" or "political").
@@ -430,7 +430,7 @@ impl LuaUserData for LuaMinimap {
             Ok(this.inner.color_mode().as_str())
         });
 
-        // ── Zoom and pan ──
+        // â”€â”€ Zoom and pan â”€â”€
 
         // -- setZoom --
         /// Sets the zoom level (minimum 0.1).
@@ -473,7 +473,7 @@ impl LuaUserData for LuaMinimap {
         /// @return number
         methods.add_method("getCenterY", |_, this, ()| Ok(this.inner.center_y()));
 
-        // ── Viewport rectangle ──
+        // â”€â”€ Viewport rectangle â”€â”€
 
         // -- setViewportRect --
         /// Sets the viewport rectangle overlay in grid coordinates.
@@ -548,7 +548,7 @@ impl LuaUserData for LuaMinimap {
             Ok((c[0], c[1], c[2], c[3]))
         });
 
-        // ── Pings ──
+        // â”€â”€ Pings â”€â”€
 
         // -- addPing --
         /// Adds an animated ping at grid coordinates with a duration and optional color.
@@ -590,7 +590,7 @@ impl LuaUserData for LuaMinimap {
         /// @return integer
         methods.add_method("getPingCount", |_, this, ()| Ok(this.inner.ping_count()));
 
-        // ── Markers ──
+        // â”€â”€ Markers â”€â”€
 
         // -- addMarker --
         /// Adds a persistent marker and returns its auto-assigned ID.
@@ -658,7 +658,7 @@ impl LuaUserData for LuaMinimap {
             Ok(this.inner.marker_count())
         });
 
-        // ── Marker animation ──
+        // â”€â”€ Marker animation â”€â”€
 
         // -- setMarkerAnimation --
         /// Attaches an animation to a marker. Does nothing if the ID does not exist.
@@ -695,7 +695,7 @@ impl LuaUserData for LuaMinimap {
             Ok(())
         });
 
-        // ── Geometry overlay ──
+        // â”€â”€ Geometry overlay â”€â”€
 
         // -- drawLine --
         /// Draws a custom line segment on the minimap overlay.
@@ -739,7 +739,7 @@ impl LuaUserData for LuaMinimap {
             Ok(())
         });
 
-        // ── Path overlay ──
+        // â”€â”€ Path overlay â”€â”€
 
         // -- showPath --
         /// Displays a pathfinding route on the minimap and returns its path ID.
@@ -773,7 +773,7 @@ impl LuaUserData for LuaMinimap {
             Ok(())
         });
 
-        // ── Multi-layer ──
+        // â”€â”€ Multi-layer â”€â”€
 
         // -- setLayer --
         /// Switches the minimap's active render layer (0-based index).
@@ -817,7 +817,7 @@ impl LuaUserData for LuaMinimap {
             },
         );
 
-        // ── Rendering options ──
+        // â”€â”€ Rendering options â”€â”€
 
         // -- setAntiAlias --
         /// Sets whether anti-aliasing is enabled.
@@ -847,7 +847,7 @@ impl LuaUserData for LuaMinimap {
         /// @return boolean
         methods.add_method("isClickable", |_, this, ()| Ok(this.inner.is_clickable()));
 
-        // ── Hover info ──
+        // â”€â”€ Hover info â”€â”€
 
         // -- getHoverInfo --
         /// Returns hover tooltip text for the element under screen coordinates, or nil.
@@ -866,7 +866,7 @@ impl LuaUserData for LuaMinimap {
             },
         );
 
-        // ── Coordinate conversion ──
+        // â”€â”€ Coordinate conversion â”€â”€
 
         // -- screenToGrid --
         /// Converts screen coordinates to grid coordinates.
@@ -896,7 +896,7 @@ impl LuaUserData for LuaMinimap {
             },
         );
 
-        // ── Update ──
+        // â”€â”€ Update â”€â”€
 
         // -- update --
         /// Advances time-based effects by dt seconds (expires pings).
@@ -920,7 +920,7 @@ impl LuaUserData for LuaMinimap {
             Ok(name == "Minimap" || name == "Object")
         });
 
-        // ── Rendering ──
+        // â”€â”€ Rendering â”€â”€
 
         // -- render --
         /// Renders the minimap to the screen at the given position.
@@ -953,10 +953,10 @@ impl LuaUserData for LuaMinimap {
 /// Registers the `lurek.minimap` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newMinimap --
@@ -981,6 +981,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
-    luna.set("minimap", tbl)?;
+    lurek.set("minimap", tbl)?;
     Ok(())
 }

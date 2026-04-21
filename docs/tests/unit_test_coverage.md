@@ -28,30 +28,30 @@
 | `debugbridge` | 14 | 13 | 1 | 92.9% | 1 | 0 |
 | `devtools` | 37 | 31 | 0 | 83.8% | 6 | 6 |
 | `docs` | 75 | 47 | 0 | 62.7% | 28 | 28 |
-| `entity` | 45 | 41 | 0 | 91.1% | 4 | 4 |
+| `ecs` | 45 | 41 | 0 | 91.1% | 4 | 4 |
 | `event` | 17 | 8 | 0 | 47.1% | 9 | 9 |
 | `filesystem` | 37 | 14 | 0 | 37.8% | 23 | 23 |
 | `fx` | 118 | 105 | 0 | 89.0% | 13 | 13 |
 | `graph` | 107 | 106 | 0 | 99.1% | 1 | 1 |
-| `graphics` | 143 | 52 | 0 | 36.4% | 91 | 91 |
-| `gui` | 302 | 67 | 0 | 22.2% | 235 | 235 |
+| `render` | 143 | 52 | 0 | 36.4% | 91 | 91 |
+| `ui` | 302 | 67 | 0 | 22.2% | 235 | 235 |
 | `image` | 26 | 23 | 0 | 88.5% | 3 | 3 |
 | `input` | 52 | 2 | 0 | 3.9% | 50 | 50 |
 | `light` | 75 | 75 | 0 | 100.0% | 0 | 0 |
-| `localization` | 27 | 9 | 0 | 33.3% | 18 | 18 |
+| `i18n` | 27 | 9 | 0 | 33.3% | 18 | 18 |
 | `log` | 13 | 7 | 0 | 53.9% | 6 | 6 |
 | `math` | 132 | 25 | 0 | 18.9% | 107 | 107 |
 | `minimap` | 49 | 49 | 0 | 100.0% | 0 | 0 |
-| `modding` | 33 | 18 | 0 | 54.5% | 15 | 15 |
+| `mods` | 33 | 18 | 0 | 54.5% | 15 | 15 |
 | `network` | 20 | 5 | 0 | 25.0% | 15 | 15 |
 | `particle` | 78 | 32 | 0 | 41.0% | 46 | 46 |
-| `pathfinding` | 59 | 46 | 0 | 78.0% | 13 | 13 |
+| `pathfind` | 59 | 46 | 0 | 78.0% | 13 | 13 |
 | `patterns` | 103 | 69 | 3 | 67.0% | 34 | 31 |
 | `physics` | 91 | 37 | 0 | 40.7% | 54 | 54 |
 | `pipeline` | 57 | 42 | 0 | 73.7% | 15 | 15 |
 | `procgen` | 5 | 5 | 0 | 100.0% | 0 | 0 |
 | `raycaster` | 9 | 7 | 0 | 77.8% | 2 | 2 |
-| `savegame` | 19 | 12 | 0 | 63.2% | 7 | 7 |
+| `save` | 19 | 12 | 0 | 63.2% | 7 | 7 |
 | `scene` | 33 | 31 | 0 | 93.9% | 2 | 2 |
 | `serial` | 6 | 6 | 0 | 100.0% | 0 | 0 |
 | `spine` | 9 | 9 | 0 | 100.0% | 0 | 0 |
@@ -67,46 +67,46 @@
 
 > These APIs still need an explicit `-- @tests ...` annotation in at least one unit-test `it()` block.
 
-### `lurek.gui` — 235 still need `@tests`
+### `lurek.ui` — 235 still need `@tests`
 
-- `lurek.gui.setPosition`
-- `lurek.gui.getPosition`
-- `lurek.gui.setSize`
-- `lurek.gui.getSize`
-- `lurek.gui.setVisible`
-- `lurek.gui.isVisible`
-- `lurek.gui.setEnabled`
-- `lurek.gui.isEnabled`
-- `lurek.gui.setId`
-- `lurek.gui.getId`
-- `lurek.gui.setTooltip`
-- `lurek.gui.getTooltip`
-- `lurek.gui.getState`
-- `lurek.gui.addChild`
-- `lurek.gui.removeChild`
-- `lurek.gui.getChildCount`
-- `lurek.gui.findById`
-- `lurek.gui.setOnClick`
-- `lurek.gui.setOnChange`
-- `lurek.gui.setOnDraw`
-- `lurek.gui.containsPoint`
-- `lurek.gui.setPadding`
-- `lurek.gui.getPadding`
-- `lurek.gui.setMargin`
-- `lurek.gui.getMargin`
-- `lurek.gui.setZOrder`
-- `lurek.gui.getZOrder`
-- `lurek.gui.setMinSize`
-- `lurek.gui.getMinSize`
-- `lurek.gui.setMaxSize`
-- `lurek.gui.getMaxSize`
-- `lurek.gui.setAnchor`
-- `lurek.gui.setAnchorCenter`
-- `lurek.gui.clearAnchor`
-- `lurek.gui.setFlexGrow`
-- `lurek.gui.getFlexGrow`
-- `lurek.gui.setFlexShrink`
-- `lurek.gui.getFlexShrink`
+- `lurek.ui.setPosition`
+- `lurek.ui.getPosition`
+- `lurek.ui.setSize`
+- `lurek.ui.getSize`
+- `lurek.ui.setVisible`
+- `lurek.ui.isVisible`
+- `lurek.ui.setEnabled`
+- `lurek.ui.isEnabled`
+- `lurek.ui.setId`
+- `lurek.ui.getId`
+- `lurek.ui.setTooltip`
+- `lurek.ui.getTooltip`
+- `lurek.ui.getState`
+- `lurek.ui.addChild`
+- `lurek.ui.removeChild`
+- `lurek.ui.getChildCount`
+- `lurek.ui.findById`
+- `lurek.ui.setOnClick`
+- `lurek.ui.setOnChange`
+- `lurek.ui.setOnDraw`
+- `lurek.ui.containsPoint`
+- `lurek.ui.setPadding`
+- `lurek.ui.getPadding`
+- `lurek.ui.setMargin`
+- `lurek.ui.getMargin`
+- `lurek.ui.setZOrder`
+- `lurek.ui.getZOrder`
+- `lurek.ui.setMinSize`
+- `lurek.ui.getMinSize`
+- `lurek.ui.setMaxSize`
+- `lurek.ui.getMaxSize`
+- `lurek.ui.setAnchor`
+- `lurek.ui.setAnchorCenter`
+- `lurek.ui.clearAnchor`
+- `lurek.ui.setFlexGrow`
+- `lurek.ui.getFlexGrow`
+- `lurek.ui.setFlexShrink`
+- `lurek.ui.getFlexShrink`
 - `Text_Input:setPlaceholder`  *(method on Text_Input)*
 - `Text_Input:getPlaceholder`  *(method on Text_Input)*
 - `Text_Input:isFocused`  *(method on Text_Input)*
@@ -829,38 +829,38 @@
 
 > These APIs are neither explicitly annotated nor referenced heuristically in unit tests.
 
-### `lurek.gui` — 235 zero-evidence
+### `lurek.ui` — 235 zero-evidence
 
-- `lurek.gui.setPosition`
-- `lurek.gui.getPosition`
-- `lurek.gui.setSize`
-- `lurek.gui.getSize`
-- `lurek.gui.setVisible`
-- `lurek.gui.isVisible`
-- `lurek.gui.setEnabled`
-- `lurek.gui.isEnabled`
-- `lurek.gui.setId`
-- `lurek.gui.getId`
-- `lurek.gui.setTooltip`
-- `lurek.gui.getTooltip`
-- `lurek.gui.getState`
-- `lurek.gui.addChild`
-- `lurek.gui.removeChild`
-- `lurek.gui.getChildCount`
-- `lurek.gui.findById`
-- `lurek.gui.setOnClick`
-- `lurek.gui.setOnChange`
-- `lurek.gui.setOnDraw`
-- `lurek.gui.containsPoint`
-- `lurek.gui.setPadding`
-- `lurek.gui.getPadding`
-- `lurek.gui.setMargin`
-- `lurek.gui.getMargin`
-- `lurek.gui.setZOrder`
-- `lurek.gui.getZOrder`
-- `lurek.gui.setMinSize`
-- `lurek.gui.getMinSize`
-- `lurek.gui.setMaxSize`
+- `lurek.ui.setPosition`
+- `lurek.ui.getPosition`
+- `lurek.ui.setSize`
+- `lurek.ui.getSize`
+- `lurek.ui.setVisible`
+- `lurek.ui.isVisible`
+- `lurek.ui.setEnabled`
+- `lurek.ui.isEnabled`
+- `lurek.ui.setId`
+- `lurek.ui.getId`
+- `lurek.ui.setTooltip`
+- `lurek.ui.getTooltip`
+- `lurek.ui.getState`
+- `lurek.ui.addChild`
+- `lurek.ui.removeChild`
+- `lurek.ui.getChildCount`
+- `lurek.ui.findById`
+- `lurek.ui.setOnClick`
+- `lurek.ui.setOnChange`
+- `lurek.ui.setOnDraw`
+- `lurek.ui.containsPoint`
+- `lurek.ui.setPadding`
+- `lurek.ui.getPadding`
+- `lurek.ui.setMargin`
+- `lurek.ui.getMargin`
+- `lurek.ui.setZOrder`
+- `lurek.ui.getZOrder`
+- `lurek.ui.setMinSize`
+- `lurek.ui.getMinSize`
+- `lurek.ui.setMaxSize`
   *(… 205 more)*
 
 ### `lurek.math` — 107 zero-evidence

@@ -3,7 +3,7 @@
 //! Stores symmetric numeric relations and named-state levels between entity pairs.
 //! Entity IDs are `u32` to match [`Universe`](super::Universe).
 //!
-//! This module is part of Lurek2D's `entity` subsystem and provides the implementation
+//! This module is part of Lurek2D's `ecs` subsystem and provides the implementation
 //! details for relationships-related operations and data management.
 //! Key types exported from this module: `RelationType`, `Relationship`, `RelationshipManager`.
 //! Primary functions: `new()`, `has_level()`, `new()`, `define_type()`.

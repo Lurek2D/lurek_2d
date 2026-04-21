@@ -7,7 +7,7 @@
 //! This file appears to be an earlier copy retained during refactoring.
 //! See `TODO(dedup)` in `IDEA.md`.
 //!
-//! This module is part of Lurek2D's `savegame` subsystem and provides the implementation
+//! This module is part of Lurek2D's `save` subsystem and provides the implementation
 //! details for save data-related operations and data management.
 //! Key types exported from this module: `SlotMeta`, `SaveManager`, `SaveValue`.
 //! Primary functions: `new()`, `register()`, `unregister()`, `registered_names()`.

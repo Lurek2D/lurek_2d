@@ -79,7 +79,7 @@ impl AsyncLoader {
         let results_clone = Arc::clone(&results);
 
         let worker = thread::Builder::new()
-            .name("luna-async-loader".into())
+            .name("lurek-async-loader".into())
             .spawn(move || {
                 Self::worker_loop(rx, results_clone);
             })

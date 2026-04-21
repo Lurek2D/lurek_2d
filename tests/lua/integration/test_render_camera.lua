@@ -74,4 +74,5 @@ describe("graphics + camera integration", function()
         end
     end)
 end)
+
 test_summary()

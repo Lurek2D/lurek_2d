@@ -112,7 +112,7 @@ Sampled 20 "covered" functions across 5 modules and manually verified whether th
 1. **system module** (22 APIs, 36.4%): Most functions are pure getters — trivially testable headless
 2. **log module** (13 APIs, 53.8%): All logging functions testable headless
 3. **math module** (132 APIs, 40.9%): 53 Vec2/Mat3 methods need systematic tests
-4. **localization module** (27 APIs, 55.6%): String formatting testable headless
+4. **i18n module** (27 APIs, 55.6%): String formatting testable headless
 
 ### Short-Term (Medium Impact)
 

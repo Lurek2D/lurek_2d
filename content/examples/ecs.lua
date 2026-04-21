@@ -48,7 +48,7 @@ print("temp entity alive:", world:isAlive(temp))
 -- Guard update logic with an alive check so a system does not process
 -- an entity that was killed earlier in the same frame.
 if world:isAlive(e) then
-    print("entity", e, "is alive -- processing OK")
+    print("ecs", e, "is alive -- processing OK")
 end
 
 -- ---- Stub: Universe:set --------------------------------------------------
@@ -394,7 +394,7 @@ print("universe restored, entities:", world:getEntityCount())
 -- Register a hook so the audio system plays a sound every time
 -- a "burning" component is added anywhere in the universe.
 world:onComponentAdded("burning", function(id)
-    print("entity", id, "caught fire -- play sizzle sound")
+    print("ecs", id, "caught fire -- play sizzle sound")
 end)
 
 -- ---- Stub: Universe:onComponentRemoved -----------------------------------
@@ -402,7 +402,7 @@ end)
 -- Register a hook so the particle system stops the fire emitter as
 -- soon as the "burning" component is removed.
 world:onComponentRemoved("burning", function(id)
-    print("entity", id, "fire extinguished -- stop particles")
+    print("ecs", id, "fire extinguished -- stop particles")
 end)
 
 -- ---- Stub: Universe:flushObservers ---------------------------------------

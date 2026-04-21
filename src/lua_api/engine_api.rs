@@ -1,4 +1,4 @@
-//! `lurek.runtime` — Runtime engine metadata and introspection.
+﻿//! `lurek.runtime` â€” Runtime engine metadata and introspection.
 //!
 //! Exposes read-only properties about the running engine: version, target
 //! frame budget, memory usage, host platform, and total uptime.
@@ -11,9 +11,9 @@ use std::rc::Rc;
 /// Registers the `lurek.runtime.*` namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- getVersion --
@@ -25,7 +25,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- getFrameBudget --
-    /// Returns the target frame budget in milliseconds (default: 1000 / 60 ≈ 16.667 ms).
+    /// Returns the target frame budget in milliseconds (default: 1000 / 60 â‰ 16.667 ms).
     /// @return number
     tbl.set(
         "getFrameBudget",
@@ -76,10 +76,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(s.borrow().total_time))?,
     )?;
 
+    let s = state.clone();
     // -- fps --
     /// Returns the current measured frames-per-second.
     /// @return number
-    let s = state.clone();
     tbl.set("fps", lua.create_function(move |_, ()| Ok(s.borrow().fps))?)?;
 
     // -- frameCount --
@@ -120,9 +120,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Returns a table with resident resource memory statistics.
     ///
     /// Fields:
-    /// - `texture_bytes` — Total pixel data in memory (width × height × 4 per texture).
-    /// - `budget_bytes`  — Configured budget; `0` means unlimited.
-    /// - `texture_count` — Number of loaded textures.
+    /// - `texture_bytes` â€” Total pixel data in memory (width Ă— height Ă— 4 per texture).
+    /// - `budget_bytes`  â€” Configured budget; `0` means unlimited.
+    /// - `texture_count` â€” Number of loaded textures.
     ///
     /// @return table
     let s = state.clone();
@@ -139,6 +139,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("engine", tbl)?;
+    lurek.set("engine", tbl)?;
     Ok(())
 }

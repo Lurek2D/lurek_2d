@@ -65,13 +65,13 @@ function getCodeActions(document, range, actionContext) {
     // ── Diagnostic-driven quick fixes ──
     for (const diag of actionContext.diagnostics) {
         switch (diag.code) {
-            case 'luna.unusedRequire':
+            case 'lurek.unusedRequire':
                 actions.push(...createRemoveUnusedRequire(document, diag));
                 break;
-            case 'luna.missingCallback':
+            case 'lurek.missingCallback':
                 actions.push(...createGenerateCallbacks(document, diag));
                 break;
-            case 'luna.colorRange':
+            case 'lurek.colorRange':
                 actions.push(...createConvertColorRange(document, diag));
                 break;
         }
@@ -89,7 +89,7 @@ function getCodeActions(document, range, actionContext) {
         && !lineText.trimStart().startsWith('local ')
         && !lineText.trimStart().startsWith('function ')
         && !lineText.trimStart().startsWith('--')
-        && !lineText.includes('luna.')
+        && !lineText.includes('lurek.')
         && !lineText.includes('.')
         && !lineText.includes(':')) {
         actions.push(createConvertToLocal(document, range.start.line, globalMatch));
@@ -139,13 +139,13 @@ function createRemoveUnusedRequire(document, diag) {
 function createGenerateCallbacks(document, diag) {
     const text = document.getText();
     const missing = [];
-    if (!/function\s+luna\.load\s*\(/.test(text) && !/luna\.load\s*=\s*function/.test(text)) {
+    if (!/function\s+lurek\.load\s*\(/.test(text) && !/lurek\.load\s*=\s*function/.test(text)) {
         missing.push('load');
     }
-    if (!/function\s+luna\.update\s*\(/.test(text) && !/luna\.update\s*=\s*function/.test(text)) {
+    if (!/function\s+lurek\.update\s*\(/.test(text) && !/lurek\.update\s*=\s*function/.test(text)) {
         missing.push('update');
     }
-    if (!/function\s+luna\.draw\s*\(/.test(text) && !/luna\.draw\s*=\s*function/.test(text)) {
+    if (!/function\s+lurek\.draw\s*\(/.test(text) && !/lurek\.draw\s*=\s*function/.test(text)) {
         missing.push('draw');
     }
     if (missing.length === 0)
@@ -154,13 +154,13 @@ function createGenerateCallbacks(document, diag) {
     action.edit = new vscode.WorkspaceEdit();
     const stubs = [];
     if (missing.includes('load')) {
-        stubs.push('function luna.load()\n    -- Initialize game\nend');
+        stubs.push('function lurek.load()\n    -- Initialize game\nend');
     }
     if (missing.includes('update')) {
-        stubs.push('function luna.update(dt)\n    -- Update game logic\nend');
+        stubs.push('function lurek.update(dt)\n    -- Update game logic\nend');
     }
     if (missing.includes('draw')) {
-        stubs.push('function luna.draw()\n    -- Draw game objects\nend');
+        stubs.push('function lurek.draw()\n    -- Draw game objects\nend');
     }
     const endPos = document.lineAt(document.lineCount - 1).range.end;
     action.edit.insert(document.uri, endPos, '\n\n' + stubs.join('\n\n') + '\n');
@@ -170,7 +170,7 @@ function createGenerateCallbacks(document, diag) {
 // ── Action 3: Convert 0-255 color to 0-1 ─────────────────────
 function createConvertColorRange(document, diag) {
     const text = document.getText(diag.range);
-    const match = text.match(/(luna\.graphics\.(?:setColor|setBackgroundColor|clear))\s*\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/);
+    const match = text.match(/(lurek\.graphics\.(?:setColor|setBackgroundColor|clear))\s*\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/);
     if (!match)
         return [];
     const func = match[1];
@@ -256,7 +256,7 @@ function createWrapRequirePcall(document, line) {
 function createExtractToFileModule(document, range) {
     const action = new vscode.CodeAction('Extract selection to new module file', vscode.CodeActionKind.RefactorExtract);
     action.command = {
-        command: 'luna.extractToModuleFile',
+        command: 'lurek.extractToModuleFile',
         title: 'Extract to new module file',
         arguments: [document.uri, range],
     };

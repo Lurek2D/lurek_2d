@@ -1,4 +1,4 @@
-﻿-- content/examples/filesystem.lua
+﻿-- content/examples/fileapp.lua
 -- Lurek2D lurek.filesystem API Reference
 -- Run with: cargo run -- content/examples/filesystem
 

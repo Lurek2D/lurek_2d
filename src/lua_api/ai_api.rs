@@ -1,4 +1,4 @@
-//! `lurek.ai` — Game AI toolkit: worlds, agents, FSM, behavior trees, steering, Q-learning, utility AI, GOAP, squads, and command queues.
+﻿//! `lurek.ai` â€” Game AI toolkit: worlds, agents, FSM, behavior trees, steering, Q-learning, utility AI, GOAP, squads, and command queues.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -2031,7 +2031,7 @@ impl LuaUserData for LuaCommandQueue {
 
 // -------------------------------------------------------------------------------
 // Register
-// ── TraitProfile ────────────────────────────────────────────────────────────
+// â”€â”€ TraitProfile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::traits::TraitProfile`].
 #[derive(Clone)]
@@ -2117,7 +2117,7 @@ impl LuaUserData for LuaTraitProfile {
     }
 }
 
-// ── StimulusWorld ────────────────────────────────────────────────────────────
+// â”€â”€ StimulusWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::perception::StimulusWorld`].
 #[derive(Clone)]
@@ -2203,7 +2203,7 @@ impl LuaUserData for LuaStimulusWorld {
     }
 }
 
-// ── ContextSteering ──────────────────────────────────────────────────────────
+// â”€â”€ ContextSteering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::context_steering::ContextSteering`].
 #[derive(Clone)]
@@ -2299,7 +2299,7 @@ impl LuaUserData for LuaContextSteering {
     }
 }
 
-// ── NeedSystem ────────────────────────────────────────────────────────────────
+// â”€â”€ NeedSystem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::needs::NeedSystem`].
 #[derive(Clone)]
@@ -2352,7 +2352,7 @@ impl LuaUserData for LuaNeedSystem {
     }
 }
 
-// ── AIDirector ────────────────────────────────────────────────────────────────
+// â”€â”€ AIDirector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::director::AIDirector`].
 #[derive(Clone)]
@@ -2406,7 +2406,7 @@ impl LuaUserData for LuaAIDirector {
             Ok(this.inner.borrow().ambient_intensity())
         });
 
-        /// Sets the global narrative tension level (0–1 scale).
+        /// Sets the global narrative tension level (0â€“1 scale).
         /// @param value : number
         /// @return nil
         methods.add_method_mut("setTension", |_, this, value: f32| {
@@ -2423,7 +2423,7 @@ impl LuaUserData for LuaAIDirector {
     }
 }
 
-// ── HTNDomain ────────────────────────────────────────────────────────────────
+// â”€â”€ HTNDomain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::htn::HTNDomain`].
 #[derive(Clone)]
@@ -2511,7 +2511,7 @@ impl LuaUserData for LuaHTNDomain {
     }
 }
 
-// ── MCTSEngine ────────────────────────────────────────────────────────────────
+// â”€â”€ MCTSEngine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::mcts::MCTSEngine`].
 #[derive(Clone)]
@@ -2557,7 +2557,7 @@ impl LuaUserData for LuaMCTSEngine {
     }
 }
 
-// ── EmotionModel ─────────────────────────────────────────────────────────────
+// â”€â”€ EmotionModel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::emotion::EmotionModel`].
 #[derive(Clone)]
@@ -2629,7 +2629,7 @@ impl LuaUserData for LuaEmotionModel {
     }
 }
 
-// ── ORCASolver ────────────────────────────────────────────────────────────────
+// â”€â”€ ORCASolver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::orca::ORCASolver`].
 #[derive(Clone)]
@@ -2711,7 +2711,7 @@ impl LuaUserData for LuaORCASolver {
     }
 }
 
-// ── NeuralNet ────────────────────────────────────────────────────────────────
+// â”€â”€ NeuralNet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::neural_net::NeuralNet`].
 #[derive(Clone)]
@@ -2779,7 +2779,7 @@ impl LuaUserData for LuaNeuralNet {
     }
 }
 
-// ── GeneticAlgorithm ─────────────────────────────────────────────────────────
+// â”€â”€ GeneticAlgorithm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::genetic::GeneticAlgorithm`].
 #[derive(Clone)]
@@ -2848,7 +2848,7 @@ impl LuaUserData for LuaGeneticAlgorithm {
     }
 }
 
-// ── Bandit ────────────────────────────────────────────────────────────────────
+// â”€â”€ Bandit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::bandit::Bandit`].
 #[derive(Clone)]
@@ -2900,7 +2900,7 @@ impl LuaUserData for LuaBandit {
     }
 }
 
-// ── Neuroevolution ───────────────────────────────────────────────────────────
+// â”€â”€ Neuroevolution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::neuroevolution::Neuroevolution`].
 #[derive(Clone)]
@@ -2967,7 +2967,7 @@ impl LuaUserData for LuaNeuroevolution {
     }
 }
 
-// ── StrategyAI ────────────────────────────────────────────────────────────────
+// â”€â”€ StrategyAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::strategy::StrategyAI`].
 #[derive(Clone)]
@@ -3036,7 +3036,7 @@ impl LuaUserData for LuaStrategyAI {
     }
 }
 
-// ── AILod ─────────────────────────────────────────────────────────────────────
+// â”€â”€ AILod â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for [`crate::ai::lod::AILod`].
 #[derive(Clone)]
@@ -3087,13 +3087,13 @@ impl LuaUserData for LuaAILod {
 /// Registers the `lurek.ai` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── newWorld ─────────────────────────────────────────────────────────────
+    // â”€â”€ newWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI world container.
     /// @return AIWorld
     tbl.set(
@@ -3105,7 +3105,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newBlackboard ────────────────────────────────────────────────────────
+    // â”€â”€ newBlackboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new standalone blackboard.
     /// @return Blackboard
     tbl.set(
@@ -3117,7 +3117,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newStateMachine ──────────────────────────────────────────────────────
+    // â”€â”€ newStateMachine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new finite state machine.
     /// @return StateMachine
     tbl.set(
@@ -3129,7 +3129,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newBehaviorTree ──────────────────────────────────────────────────────
+    // â”€â”€ newBehaviorTree â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new behavior tree.
     /// @return BehaviorTree
     tbl.set(
@@ -3141,7 +3141,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newSelector ──────────────────────────────────────────────────────────
+    // â”€â”€ newSelector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT selector node.
     /// @return BTNode
     tbl.set(
@@ -3156,7 +3156,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newSequence ──────────────────────────────────────────────────────────
+    // â”€â”€ newSequence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT sequence node.
     /// @return BTNode
     tbl.set(
@@ -3171,7 +3171,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newParallel ──────────────────────────────────────────────────────────
+    // â”€â”€ newParallel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT parallel node with optional policies.
     /// @param successPolicy : string?
     /// @param failurePolicy : string?
@@ -3193,7 +3193,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newInverter ──────────────────────────────────────────────────────────
+    // â”€â”€ newInverter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT inverter decorator.
     /// @return BTNode
     tbl.set(
@@ -3210,7 +3210,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newRepeater ──────────────────────────────────────────────────────────
+    // â”€â”€ newRepeater â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT repeater decorator.
     /// @param count : integer?
     /// @return BTNode
@@ -3230,7 +3230,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newSucceeder ─────────────────────────────────────────────────────────
+    // â”€â”€ newSucceeder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT succeeder decorator.
     /// @return BTNode
     tbl.set(
@@ -3247,7 +3247,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newAction ────────────────────────────────────────────────────────────
+    // â”€â”€ newAction â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT action leaf with a Lua callback.
     /// @param callback : function
     /// @return BTNode
@@ -3261,7 +3261,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newCondition ─────────────────────────────────────────────────────────
+    // â”€â”€ newCondition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a BT condition leaf with a Lua predicate.
     /// @param callback : function
     /// @return BTNode
@@ -3275,7 +3275,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newSteeringManager ───────────────────────────────────────────────────
+    // â”€â”€ newSteeringManager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new steering behavior manager.
     /// @return SteeringManager
     tbl.set(
@@ -3287,7 +3287,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newQLearner ──────────────────────────────────────────────────────────
+    // â”€â”€ newQLearner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a tabular Q-learner.
     /// @param stateCount : integer
     /// @param actionCount : integer
@@ -3301,7 +3301,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newUtilityAI ─────────────────────────────────────────────────────────
+    // â”€â”€ newUtilityAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new utility AI evaluator.
     /// @return UtilityAI
     tbl.set(
@@ -3313,7 +3313,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newGOAPPlanner ───────────────────────────────────────────────────────
+    // â”€â”€ newGOAPPlanner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new GOAP planning solver.
     /// @return GOAPPlanner
     tbl.set(
@@ -3325,7 +3325,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newInfluenceMap ──────────────────────────────────────────────────────
+    // â”€â”€ newInfluenceMap â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a multi-layer influence map grid.
     /// @param width : integer
     /// @param height : integer
@@ -3340,7 +3340,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newSquad ─────────────────────────────────────────────────────────────
+    // â”€â”€ newSquad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a named squad for formation positioning.
     /// @param name : string
     /// @return Squad
@@ -3353,7 +3353,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newCommandQueue ──────────────────────────────────────────────────────
+    // â”€â”€ newCommandQueue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates an RTS-style command queue.
     /// @return CommandQueue
     tbl.set(
@@ -3365,7 +3365,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newTraitProfile ──────────────────────────────────────────────────────
+    // â”€â”€ newTraitProfile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new personality trait profile.
     /// @return TraitProfile
     tbl.set(
@@ -3377,7 +3377,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newStimulusWorld ─────────────────────────────────────────────────────
+    // â”€â”€ newStimulusWorld â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new stimulus perception world.
     /// @return StimulusWorld
     tbl.set(
@@ -3389,7 +3389,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newContextSteering ───────────────────────────────────────────────────
+    // â”€â”€ newContextSteering â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new context steering controller.
     /// @param slots : integer
     /// @return ContextSteering
@@ -3403,7 +3403,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newNeedSystem ────────────────────────────────────────────────────────
+    // â”€â”€ newNeedSystem â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new motivational need system.
     /// @return NeedSystem
     tbl.set(
@@ -3415,7 +3415,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newAIDirector ────────────────────────────────────────────────────────
+    // â”€â”€ newAIDirector â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI pacing director with default config.
     /// @return AIDirector
     tbl.set(
@@ -3427,7 +3427,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newHTNDomain ─────────────────────────────────────────────────────────
+    // â”€â”€ newHTNDomain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new Hierarchical Task Network domain.
     /// @return HTNDomain
     tbl.set(
@@ -3439,7 +3439,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newMCTSEngine ────────────────────────────────────────────────────────
+    // â”€â”€ newMCTSEngine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new Monte Carlo Tree Search engine.
     /// @param iterations : integer
     /// @param uct_c : number
@@ -3461,7 +3461,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newEmotionModel ──────────────────────────────────────────────────────
+    // â”€â”€ newEmotionModel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new affective emotion model.
     /// @return EmotionModel
     tbl.set(
@@ -3473,7 +3473,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newORCASolver ────────────────────────────────────────────────────────
+    // â”€â”€ newORCASolver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new ORCA crowd avoidance solver.
     /// @param time_horizon : number
     /// @return ORCASolver
@@ -3486,7 +3486,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newNeuralNet ─────────────────────────────────────────────────────────
+    // â”€â”€ newNeuralNet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new feedforward neural network (inference only).
     /// @return NeuralNet
     tbl.set(
@@ -3498,7 +3498,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newGeneticAlgorithm ──────────────────────────────────────────────────
+    // â”€â”€ newGeneticAlgorithm â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new genetic algorithm.
     /// @param pop_size : integer
     /// @param gene_count : integer
@@ -3515,7 +3515,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newBandit ────────────────────────────────────────────────────────────
+    // â”€â”€ newBandit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new multi-armed bandit.
     /// @param arm_count : integer
     /// @param strategy : string  -- "epsilon_greedy", "ucb1", or "thompson"
@@ -3540,7 +3540,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── newNeuroevolution ────────────────────────────────────────────────────
+    // â”€â”€ newNeuroevolution â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a neuroevolution trainer (GA for neural network weights).
     /// @param layer_spec : table  -- array of {inputs, outputs, activation}
     /// @param pop_size : integer
@@ -3573,7 +3573,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newStrategyAI ────────────────────────────────────────────────────────
+    // â”€â”€ newStrategyAI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new throttled strategy AI.
     /// @param update_interval : number  -- seconds between re-evaluations
     /// @return StrategyAI
@@ -3586,7 +3586,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // ── newAILod ─────────────────────────────────────────────────────────────
+    // â”€â”€ newAILod â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a new AI LOD controller with default 3-tier config.
     /// @return AILod
     tbl.set(
@@ -3598,6 +3598,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("ai", tbl)?;
+    lurek.set("ai", tbl)?;
     Ok(())
 }

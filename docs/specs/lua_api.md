@@ -13,7 +13,7 @@
 
 The `lua_api` module is the Lua scripting bridge for Lurek2D. Its only responsibility is binding: collecting all `lurek.*` API sub-modules, creating the `lurek` global table, sandboxing the Lua environment, and registering every sub-API when the VM boots. It sits at the Edge/Integration tier — nothing in the engine may import from `lua_api`.
 
-The primary entry point is `create_lua_vm(state, modules)`, which constructs a fresh LuaJIT VM, creates the `lurek` global table, removes dangerous standard library functions (`load`, `loadfile`, `dofile`, `debug`, `os.execute`, `os.getenv`, `io.open`, `io.popen`) from the sandbox, and then calls each sub-API module's `register(lua, luna, state)` function in sequence. Sub-APIs are gated by `ModulesConfig` flags from `conf.toml`, except for the mandatory group (`event`, `timer`, `math`, `log`) which is always registered.
+The primary entry point is `create_lua_vm(state, modules)`, which constructs a fresh LuaJIT VM, creates the `lurek` global table, removes dangerous standard library functions (`load`, `loadfile`, `dofile`, `debug`, `os.execute`, `os.getenv`, `io.open`, `io.popen`) from the sandbox, and then calls each sub-API module's `register(lua, lurek, state)` function in sequence. Sub-APIs are gated by `ModulesConfig` flags from `conf.toml`, except for the mandatory group (`event`, `timer`, `math`, `log`) which is always registered.
 
 Every sub-API file under `src/lua_api/` follows the Thin Wrapper Rule: `pub fn register()` + Lua wrapper structs + `impl LuaUserData` with `add_method` / `add_method_mut` calls. Domain modules in `src/<module>/` contain only pure-Rust types. From the engine's perspective, `SharedState` and `WindowState` are re-exported here from `crate::runtime` for sub-module convenience, meaning all binding code imports from `lua_api` rather than from `runtime` directly.
 
@@ -41,7 +41,7 @@ Every sub-API file under `src/lua_api/` follows the Thin Wrapper Rule: `pub fn r
 - `event_api.rs`: Registers lurek.event and exposes event queue and signal-style communication helpers.
 - `filesystem_api.rs`: Registers lurek.filesystem and enforces sandboxed file-system operations at the Lua boundary.
 - `graph_api.rs`: Registers lurek.graph and bridges graph construction and traversal features.
-- `i18n_api.rs`: Registers localization APIs for translated string catalogs and language lookup.
+- `i18n_api.rs`: Registers i18n APIs for translated string catalogs and language lookup.
 - `image_api.rs`: Registers lurek.image and wraps CPU-side image-data operations.
 - `input_api.rs`: Registers keyboard, mouse, gamepad, and touch input namespaces from the engine input state.
 - `light_api.rs`: Registers lurek.light and exposes the lighting system to Lua.

@@ -1,4 +1,4 @@
-//! Registers the `lurek.docs.*` documentation management API.
+﻿//! Registers the `lurek.docs.*` documentation management API.
 //!
 //! Provides engine-integrated documentation management: scanning runtime bindings,
 //! loading TOML doc catalogs, validating completeness, computing quality metrics,
@@ -759,9 +759,9 @@ fn scan_table(
 /// Registers the `lurek.docs` namespace.
 ///
 /// @param lua : &Lua
-/// @param luna_table : &LuaTable
+/// @param lurek_table : &LuaTable
 ///
-pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek_table: &LuaTable) -> LuaResult<()> {
     let docs_tbl = lua.create_table()?;
     let state = Rc::new(RefCell::new(DocsState::new()));
 
@@ -777,7 +777,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut entries = Vec::new();
-            scan_table(lua, &luna_tbl, "luna", "luna", &mut entries, 0)?;
+            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut entries, 0)?;
             Ok(ApiCatalog(entries))
         })?,
     )?;
@@ -1007,7 +1007,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live_entries = Vec::new();
-            scan_table(lua, &luna_tbl, "luna", "luna", &mut live_entries, 0)?;
+            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut live_entries, 0)?;
             let live_names: std::collections::HashSet<String> = live_entries
                 .iter()
                 .map(|e| e.qualified_name.clone())
@@ -1173,7 +1173,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
             let globals = lua.globals();
             let luna_tbl: LuaTable = globals.get("lurek")?;
             let mut live = Vec::new();
-            scan_table(lua, &luna_tbl, "luna", "luna", &mut live, 0)?;
+            scan_table(lua, &luna_tbl, "lurek", "lurek", &mut live, 0)?;
             let total = live.len();
             let documented = match catalog_ud {
                 Some(ud) => ud.borrow::<ApiCatalog>()?.0.len(),
@@ -1346,7 +1346,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── schema ────────────────────────────────────────────────────────────
+    // â”€â”€ schema â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Creates a Schema validator from a rules table.
     ///
     /// Each key is a field name; the value is a rule table with keys:
@@ -1401,7 +1401,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── reflectLive ───────────────────────────────────────────────────────
+    // â”€â”€ reflectLive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Walks the live lurek.* Lua table and returns a structured reflection of all
     /// registered namespaces, function names, arity, and value types.
     ///
@@ -1462,7 +1462,7 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    // ── reflectTable ──────────────────────────────────────────────────────
+    // â”€â”€ reflectTable â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Reflects any Lua table, returning a structure describing its keys,
     /// value types, and arity for functions.
     ///
@@ -1529,6 +1529,6 @@ pub fn register(lua: &Lua, luna_table: &LuaTable) -> LuaResult<()> {
         })?,
     )?;
 
-    luna_table.set("docs", docs_tbl)?;
+    lurek_table.set("docs", docs_tbl)?;
     Ok(())
 }

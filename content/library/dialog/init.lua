@@ -93,7 +93,8 @@ function M.newSequencer()
         -- subscribed via seq:getEventBus() also receive the event. Failures
         -- are silently demoted (the canonical _handlers path is unaffected).
         if _bus and _bus.emit then
-            pcall(function() _bus:emit(event, ...) end)
+            local args = {...}   -- capture varargs for LuaJIT closure (cannot use ... inside nested fn)
+            pcall(function() _bus:emit(event, unpack(args)) end)
         end
     end
 

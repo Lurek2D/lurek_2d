@@ -1,4 +1,4 @@
-//! `lurek.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.
+﻿//! `lurek.timer` - Frame timing, FPS tracking, and scheduled Lua callbacks.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -107,10 +107,10 @@ impl LuaUserData for LuaScheduler {
 
         // -- everyFrames --
         /// Schedules a callback to fire every `n` frames.
-        /// @param n : integer — frame interval
-        /// @param func : function — callback
-        /// @param count : integer? — repetitions (-1 = infinite, default)
-        /// @return integer — event ID
+        /// @param n : integer â€” frame interval
+        /// @param func : function â€” callback
+        /// @param count : integer? â€” repetitions (-1 = infinite, default)
+        /// @return integer â€” event ID
         methods.add_method_mut(
             "everyFrames",
             |lua, this, (n, func, count): (u64, LuaFunction, Option<i32>)| {
@@ -326,7 +326,7 @@ impl LuaUserData for LuaScheduler {
         // -- updateFrames --
         /// Advances frame-based events by one frame, firing due callbacks.
         /// Call once per frame from the game loop.
-        /// @return integer — number of callbacks fired
+        /// @return integer â€” number of callbacks fired
         methods.add_method_mut("updateFrames", |lua, this, ()| {
             let fired_ids = this.scheduler.update_frames();
             let fired_count = fired_ids.len() as u32;
@@ -360,10 +360,10 @@ impl LuaUserData for LuaScheduler {
 /// Registers the `lurek.timer` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- getDelta --
@@ -463,7 +463,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- setPhysicsMaxSteps --
-    /// Sets the maximum number of physics sub-steps allowed per frame (clamped 1–64).
+    /// Sets the maximum number of physics sub-steps allowed per frame (clamped 1â€“64).
     /// @param n : integer
     let s = state.clone();
     tbl.set(
@@ -575,7 +575,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // Smoothed-delta state — exponential moving average of frame deltas.
+    // Smoothed-delta state â€” exponential moving average of frame deltas.
     let smoothed: Rc<RefCell<f64>> = Rc::new(RefCell::new(0.0));
     let smooth_alpha: Rc<RefCell<f64>> = Rc::new(RefCell::new(0.1));
 
@@ -751,15 +751,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
+    let wait_fn: LuaValue = tbl.get("waitSeconds")?;
     // -- delay --
     /// Coroutine-based yield-for-duration sugar.  Call from within a coroutine to pause
     /// execution for `seconds` engine-time seconds.  Requires `tickWaits()` to be called
     /// each frame to resume suspended coroutines.  Semantic alias for `waitSeconds`.
     /// @param seconds : number
     /// @return nil
-    let wait_fn: LuaValue = tbl.get("waitSeconds")?;
     tbl.set("delay", wait_fn)?;
 
-    luna.set("timer", tbl)?;
+    lurek.set("timer", tbl)?;
     Ok(())
 }

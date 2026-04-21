@@ -101,6 +101,6 @@ const EDITORS = [
  * Registers all editor commands and returns the disposables.
  */
 function registerEditorCommands(context) {
-    return EDITORS.map((entry) => vscode.commands.registerCommand(`luna.editor.${entry.id}`, () => entry.open(context)));
+    return EDITORS.map((entry) => vscode.commands.registerCommand(`lurek.editor.${entry.id}`, () => entry.open(context)));
 }
 //# sourceMappingURL=editors.js.map

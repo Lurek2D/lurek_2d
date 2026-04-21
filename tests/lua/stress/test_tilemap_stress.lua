@@ -145,4 +145,5 @@ describe("tilemap stress: fill operations", function()
         expect_equal(42, cm:getTile(5, 5), "chunk tile preserved")
     end)
 end)
+
 test_summary()

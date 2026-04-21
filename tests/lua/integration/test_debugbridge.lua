@@ -229,4 +229,5 @@ describe("lurek.debugbridge poll", function()
     end)
 
 end)
+
 test_summary()

@@ -78,4 +78,5 @@ describe("integration: AI pathfinding with navgrid", function()
         expect_false(crosses_wall, "path avoids wall")
     end)
 end)
+
 test_summary()

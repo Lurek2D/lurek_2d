@@ -377,9 +377,9 @@ end
 
 --- Returns the standard evidence output directory for a category.
 --- @param category : string  — e.g. "physics", "animation"
---- @return string path like "tests/lua/evidence/output/physics/"
+--- @return string path like "tests/output/physics/"
 function evidence_output_dir(category)
-    return "tests/lua/evidence/output/" .. category .. "/"
+    return "tests/output/" .. category .. "/"
 end
 
 --- Ensures the evidence output directory exists for a category.

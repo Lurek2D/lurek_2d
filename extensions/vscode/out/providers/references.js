@@ -48,7 +48,7 @@ function register(context, apiData) {
             const word = document.getText(wordRange);
             if (!word || word.length < 2)
                 return [];
-            // For dotted paths like luna.graphics.draw, search the full path
+            // For dotted paths like lurek.graphics.draw, search the full path
             // For simple identifiers, search just the word
             const searchTerm = word.includes(".") ? word : word;
             const locations = [];

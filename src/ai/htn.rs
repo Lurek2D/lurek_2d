@@ -101,9 +101,9 @@ impl HTNTask {
     /// `bool`.
     pub fn preconditions_met(&self, state: &WorldState) -> bool {
         match self {
-            Self::Primitive { preconditions, .. } => preconditions
-                .iter()
-                .all(|k| state.get(k).copied().unwrap_or(0.0) >= 0.5),
+            Self::Primitive { preconditions, .. } => {
+                preconditions.iter().all(|k| state.get(k).copied().unwrap_or(0.0) >= 0.5)
+            }
             Self::Compound { .. } => true,
         }
     }
@@ -114,18 +114,9 @@ impl HTNTask {
     /// # Parameters
     /// - `state` — `&mut WorldState`.
     pub fn apply_effects(&self, state: &mut WorldState) {
-        if let Self::Primitive {
-            effects,
-            effects_clear,
-            ..
-        } = self
-        {
-            for k in effects {
-                state.insert(k.clone(), 1.0);
-            }
-            for k in effects_clear {
-                state.insert(k.clone(), 0.0);
-            }
+        if let Self::Primitive { effects, effects_clear, .. } = self {
+            for k in effects       { state.insert(k.clone(), 1.0); }
+            for k in effects_clear { state.insert(k.clone(), 0.0); }
         }
     }
 }
@@ -195,9 +186,7 @@ impl HTNMethod {
     /// # Returns
     /// `bool`.
     pub fn is_applicable(&self, state: &WorldState) -> bool {
-        self.preconditions
-            .iter()
-            .all(|k| state.get(k).copied().unwrap_or(0.0) >= 0.5)
+        self.preconditions.iter().all(|k| state.get(k).copied().unwrap_or(0.0) >= 0.5)
     }
 }
 
@@ -241,13 +230,7 @@ impl HTNDomain {
     /// - `preconditions` — `Vec<&str>`.
     /// - `effects` — `Vec<&str>`.
     /// - `effects_clear` — `Vec<&str>`.
-    pub fn add_primitive(
-        &mut self,
-        name: &str,
-        preconditions: Vec<&str>,
-        effects: Vec<&str>,
-        effects_clear: Vec<&str>,
-    ) {
+    pub fn add_primitive(&mut self, name: &str, preconditions: Vec<&str>, effects: Vec<&str>, effects_clear: Vec<&str>) {
         self.register(HTNTask::Primitive {
             name: name.to_string(),
             preconditions: preconditions.into_iter().map(|s| s.to_string()).collect(),
@@ -315,11 +298,7 @@ impl HTNPlanner {
     ///
     /// # Returns
     /// `Option<Vec<String>>`.
-    pub fn plan(
-        domain: &HTNDomain,
-        root_task: &str,
-        initial_state: &WorldState,
-    ) -> Option<Vec<String>> {
+    pub fn plan(domain: &HTNDomain, root_task: &str, initial_state: &WorldState) -> Option<Vec<String>> {
         let mut plan = Vec::new();
         let mut state = initial_state.clone();
         let stack: Vec<String> = vec![root_task.to_string()];
@@ -338,9 +317,7 @@ impl HTNPlanner {
         plan: &mut Vec<String>,
         depth: usize,
     ) -> bool {
-        if depth > 128 {
-            return false;
-        }
+        if depth > 128 { return false; }
         while let Some(task_name) = stack.last().cloned() {
             stack.pop();
             let task = match domain.get(&task_name) {
@@ -357,11 +334,8 @@ impl HTNPlanner {
                     plan.push(task.name().to_string());
                 }
                 HTNTask::Compound { methods, .. } => {
-                    let applicable: &HTNMethod =
-                        match methods.iter().find(|m| m.is_applicable(state)) {
-                            Some(m) => m,
-                            None => return false,
-                        };
+                    let applicable: &HTNMethod = match methods.iter()
+                        .find(|m| m.is_applicable(state)) { Some(m) => m, None => return false };
                     // Push sub-tasks in reverse so the stack pops them left-to-right
                     let mut subtasks: Vec<String> = applicable.sub_tasks.clone();
                     subtasks.reverse();
@@ -372,5 +346,57 @@ impl HTNPlanner {
             }
         }
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_domain() -> HTNDomain {
+        let mut d = HTNDomain::new();
+        d.register(HTNTask::Primitive {
+            name: "eat".into(),
+            preconditions: vec!["hungry".into()],
+            effects: vec!["fed".into()],
+            effects_clear: vec!["hungry".into()],
+        });
+        d.register(HTNTask::Compound {
+            name: "satisfy_hunger".into(),
+            methods: vec![HTNMethod {
+                name: "use_eat".into(),
+                preconditions: vec!["hungry".into()],
+                sub_tasks: vec!["eat".into()],
+            }],
+        });
+        d
+    }
+
+    #[test]
+    fn decompose_single_primitive() {
+        let d = sample_domain();
+        let mut state = HashMap::new();
+        state.insert("hungry".to_string(), 1.0_f32);
+        let plan = HTNPlanner::plan(&d, "eat", &state);
+        assert!(plan.is_some());
+        assert_eq!(plan.unwrap(), vec!["eat"]);
+    }
+
+    #[test]
+    fn decompose_compound_task() {
+        let d = sample_domain();
+        let mut state = HashMap::new();
+        state.insert("hungry".to_string(), 1.0_f32);
+        let plan = HTNPlanner::plan(&d, "satisfy_hunger", &state);
+        assert!(plan.is_some());
+        assert_eq!(plan.unwrap(), vec!["eat"]);
+    }
+
+    #[test]
+    fn precondition_not_met_returns_none() {
+        let d = sample_domain();
+        let state = HashMap::new(); // hungry not set
+        let plan = HTNPlanner::plan(&d, "eat", &state);
+        assert!(plan.is_none());
     }
 }

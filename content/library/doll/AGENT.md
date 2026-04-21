@@ -8,7 +8,7 @@
 ## P7 batch B note
 
 The legacy `Doll:draw()` method previously dereferenced an undefined global
-`luna` and a non-existent namespace `lurek.render` (init.lua line 405). It is
+`lurek` and a non-existent namespace `lurek.render` (init.lua line 405). It is
 now a deprecated one-time-warning no-op. Library code does not call render
 APIs directly — callers must iterate `Doll:getDrawList()` and dispatch the
 entries to `lurek.render` (or any other renderer) themselves.

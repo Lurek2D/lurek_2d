@@ -7,7 +7,7 @@ class LocalizationEditor extends shared_js_1.WebviewEditor {
         return new LocalizationEditor(context);
     }
     constructor(context) {
-        super(context, "luna.localizationEditor", "Localization");
+        super(context, "lurek.localizationEditor", "Localization");
     }
     handleMessage(msg) {
         switch (msg.type) {

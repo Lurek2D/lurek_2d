@@ -59,7 +59,7 @@ function activate(context) {
     statusBarItem.show();
     context.subscriptions.push(statusBarItem);
     // Register commands
-    context.subscriptions.push(vscode.commands.registerCommand("luna2d.runExample", runExampleCommand), vscode.commands.registerCommand("luna2d.listExamples", listExamplesCommand), vscode.commands.registerCommand("luna2d.checkBuild", checkBuildCommand), vscode.commands.registerCommand("luna2d.getApiDoc", getApiDocCommand), vscode.commands.registerCommand("luna.editor.apiCoverage", () => apiCoverageEditor_1.ApiCoverageEditor.open(context)));
+    context.subscriptions.push(vscode.commands.registerCommand("luna2d.runExample", runExampleCommand), vscode.commands.registerCommand("luna2d.listExamples", listExamplesCommand), vscode.commands.registerCommand("luna2d.checkBuild", checkBuildCommand), vscode.commands.registerCommand("luna2d.getApiDoc", getApiDocCommand), vscode.commands.registerCommand("lurek.editor.apiCoverage", () => apiCoverageEditor_1.ApiCoverageEditor.open(context)));
     // Start MCP server
     const workspaceRoot = getWorkspaceRoot();
     if (workspaceRoot) {
@@ -174,7 +174,7 @@ async function checkBuildCommand() {
  */
 async function getApiDocCommand() {
     const query = await vscode.window.showInputBox({
-        placeHolder: "e.g. luna.graphics.draw",
+        placeHolder: "e.g. lurek.graphics.draw",
         prompt: "Search Luna2D API documentation",
     });
     if (!query) {

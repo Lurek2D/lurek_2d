@@ -104,7 +104,7 @@ function openWatchersPanel(context) {
         _panel.reveal(vscode.ViewColumn.Two);
         return;
     }
-    _panel = vscode.window.createWebviewPanel("luna.debugWatchers", "Luna2D Watchers", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
+    _panel = vscode.window.createWebviewPanel("lurek.debugWatchers", "Luna2D Watchers", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
     _panel.webview.html = buildHtml();
     _panel.onDidDispose(() => { _panel = undefined; stopAutoRefresh(); }, null, context.subscriptions);
     _panel.webview.onDidReceiveMessage(async (msg) => {

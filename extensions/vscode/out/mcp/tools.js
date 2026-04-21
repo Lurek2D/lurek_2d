@@ -70,7 +70,7 @@ function getToolDefinitions() {
                 properties: {
                     query: {
                         type: "string",
-                        description: 'Search query (e.g. "luna.graphics.draw" or "physics").',
+                        description: 'Search query (e.g. "lurek.graphics.draw" or "physics").',
                     },
                 },
                 required: ["query"],

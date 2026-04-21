@@ -69,4 +69,5 @@ describe("animation stress: many keyframes", function()
         expect_true(tl:getCurrentFrame() ~= nil, "frame near end")
     end)
 end)
+
 test_summary()

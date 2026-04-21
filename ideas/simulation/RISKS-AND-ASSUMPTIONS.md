@@ -149,7 +149,7 @@ These statements must be true for the architecture described in the other files 
 
 ### R-11 — Scope expansion pulls in the dashboard layer too early
 
-If a reviewer or maintainer adds `lurek.gui` references into the `src/blocksim` kernel (e.g., "just for a debug panel"), the headless guarantee breaks immediately.
+If a reviewer or maintainer adds `lurek.ui` references into the `src/blocksim` kernel (e.g., "just for a debug panel"), the headless guarantee breaks immediately.
 
 **Mitigation:** The `mod.rs` doc for `src/blocksim` must explicitly state "NO graphics, audio, or UI imports in this module." Add a CI lint or at minimum a clippy.toml deny rule for wgpu imports inside `src/blocksim/`.
 

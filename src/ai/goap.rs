@@ -32,8 +32,8 @@
 use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
-use crate::log_msg;
 use crate::runtime::log_messages::{GP01, GP02, GP03};
+use crate::log_msg;
 use mlua::RegistryKey;
 
 /// A single GOAP action with boolean preconditions and effects.
@@ -373,5 +373,23 @@ impl GOAPPlanner {
 impl Default for GOAPPlanner {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[ignore = "action_count() is not in the public API"]
+    fn new_planner_defaults() {
+        // Ignored: action_count() is not in the public API
+    }
+
+    #[test]
+    fn set_max_iterations() {
+        let mut p = GOAPPlanner::new();
+        p.set_max_iterations(500);
+        assert_eq!(p.max_iterations, 500);
     }
 }

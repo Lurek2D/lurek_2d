@@ -1,4 +1,4 @@
-//! `lurek.ui` — Retained-mode widget UI system.
+﻿//! `lurek.ui` â€” Retained-mode widget UI system.
 
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -13,7 +13,7 @@ use crate::ui::theme::{Theme, WidgetStyle};
 use crate::ui::widget::{WidgetState, WidgetType};
 
 // -------------------------------------------------------------------------------
-// GuiCallbacks — per-widget Lua callback registry
+// GuiCallbacks â€” per-widget Lua callback registry
 // -------------------------------------------------------------------------------
 
 /// Stores registered Lua callbacks keyed by widget index.
@@ -33,7 +33,7 @@ struct GuiCallbacks {
 }
 
 // -------------------------------------------------------------------------------
-// create_widget_table — shared base methods for every widget
+// create_widget_table â€” shared base methods for every widget
 // -------------------------------------------------------------------------------
 
 /// Builds a Lua table with common base-widget methods bound to `idx`.
@@ -765,7 +765,7 @@ fn create_widget_table<'a>(
     /// -- Later:
     /// lurek.ui.update_bindings({ ["player.health"] = 80 })
     /// ```
-    /// @param key : string  — Data key to observe.
+    /// @param key : string  â€” Data key to observe.
     let c = ctx.clone();
     t.set(
         "bind",
@@ -860,8 +860,8 @@ fn create_widget_table<'a>(
     /// Instantly moves the widget to `(x, y)` and makes it visible.
     ///
     /// For animated slides, interpolate position each frame via `lurek.process`.
-    /// @param x : number  — Target X position.
-    /// @param y : number  — Target Y position.
+    /// @param x : number  â€” Target X position.
+    /// @param y : number  â€” Target Y position.
     let c = ctx.clone();
     t.set(
         "slideIn",
@@ -878,8 +878,8 @@ fn create_widget_table<'a>(
 
     // -- slideOut --
     /// Instantly moves the widget to the off-screen position `(x, y)` and hides it.
-    /// @param x : number  — Off-screen X position.
-    /// @param y : number  — Off-screen Y position.
+    /// @param x : number  â€” Off-screen X position.
+    /// @param y : number  â€” Off-screen Y position.
     let c = ctx.clone();
     t.set(
         "slideOut",
@@ -4702,10 +4702,10 @@ fn parse_widget_style(t: &LuaTable) -> LuaResult<WidgetStyle> {
 /// Registers the `lurek.ui` API table.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let ctx = Rc::new(RefCell::new(GuiContext::new()));
     let callbacks = Rc::new(RefCell::new(GuiCallbacks::default()));
@@ -5614,7 +5614,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(c.borrow().widget_count()))?,
     )?;
 
-    // ── drawToImage ───────────────────────────────
+    // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Renders the UI widget tree to a CPU ImageData at the given resolution.
     /// @param w : integer
     /// @param h : integer
@@ -5955,8 +5955,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     ///
     /// For each entry in `data`, any widget whose binding key matches will have
     /// its value/text updated automatically:
-    /// - Number → `Slider` value, `ProgressBar` value
-    /// - String → `Label` text, `Button` text
+    /// - Number â†’ `Slider` value, `ProgressBar` value
+    /// - String â†’ `Label` text, `Button` text
     ///
     /// # Usage
     /// ```lua
@@ -6006,7 +6006,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Layout definition loader ────────────────────────────────────────
+    // â”€â”€ Layout definition loader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- loadLayout --
     /// Load a widget tree from a Lua table definition and attach it to the UI
@@ -6085,7 +6085,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// computed bounding rectangle in a representative colour onto an RGBA
     /// pixel buffer. The result is saved as a PNG file at `path`.
     ///
-    /// This call is **headless-safe** — no GPU or window required — and is
+    /// This call is **headless-safe** â€” no GPU or window required â€” and is
     /// intended for evidence and golden tests.
     ///
     /// # Usage
@@ -6107,12 +6107,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("ui", tbl)?;
+    lurek.set("ui", tbl)?;
     Ok(())
 }
 
-// ── Layout loader helpers ─────────────────────────────────────────────────────
-// ── Layout loader helpers ─────────────────────────────────────────────────────
+// â”€â”€ Layout loader helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ Layout loader helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Recursively convert a Lua definition table into a `crate::ui::WidgetDef`.
 ///
@@ -6121,9 +6121,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 /// of nested definition tables which are each converted recursively.
 ///
 ///
-/// - `table` — `&mlua::Table`. Lua definition table.
+/// - `table` â€” `&mlua::Table`. Lua definition table.
 ///
-/// `LuaResult<WidgetDef>` — the converted definition, or a `LuaError` if a
+/// `LuaResult<WidgetDef>` â€” the converted definition, or a `LuaError` if a
 /// child table cannot be read.
 /// Reads the `children` field of a widget-def Lua table (if present) and
 /// recursively converts each entry to a [`crate::ui::WidgetDef`].
@@ -6172,13 +6172,13 @@ fn lua_table_to_widget_def(table: &mlua::Table) -> mlua::Result<crate::ui::Widge
     })
 }
 
+// Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬ LuaLineChart Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬Ă˘â€ťâ‚¬
 // â”€â”€ LuaLineChart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// ── LuaLineChart ───────────────────────────────
 
 /// Lua wrapper for a line chart renderer.
 ///
 /// # Fields
-/// - `inner` — `crate::ui::chart::LineChart`.
+/// - `inner` â€” `crate::ui::chart::LineChart`.
 pub struct LuaLineChart {
     /// Inner Rust `LineChart` instance.
     pub inner: crate::ui::chart::LineChart,
@@ -6186,7 +6186,7 @@ pub struct LuaLineChart {
 
 impl LuaUserData for LuaLineChart {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── addSeries ──────────────────────
+        // â”€â”€ addSeries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a named data series to the chart.
         /// @param name : string
         /// @param points : table  array of {x, y} pairs
@@ -6209,7 +6209,7 @@ impl LuaUserData for LuaLineChart {
                 Ok(())
             },
         );
-        // ── setYMax ────────────────────────
+        // â”€â”€ setYMax â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Sets the maximum Y value for axis scaling.
         /// @param v : number
         /// @return nil
@@ -6217,7 +6217,7 @@ impl LuaUserData for LuaLineChart {
             this.inner.y_max = v;
             Ok(())
         });
-        // ── setXMax ────────────────────────
+        // â”€â”€ setXMax â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Sets the maximum X value for axis scaling.
         /// @param v : number
         /// @return nil
@@ -6225,7 +6225,7 @@ impl LuaUserData for LuaLineChart {
             this.inner.x_max = v;
             Ok(())
         });
-        // ── drawToImage ─────────────────────
+        // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Renders the line chart into an existing ImageData.
         /// @param target : ImageData
         /// @return nil
@@ -6237,12 +6237,12 @@ impl LuaUserData for LuaLineChart {
     }
 }
 
-// ── LuaBarChart ───────────────────────────────
+// â”€â”€ LuaBarChart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for a grouped bar chart renderer.
 ///
 /// # Fields
-/// - `inner` — `crate::ui::chart::BarChart`.
+/// - `inner` â€” `crate::ui::chart::BarChart`.
 pub struct LuaBarChart {
     /// Inner Rust `BarChart` instance.
     pub inner: crate::ui::chart::BarChart,
@@ -6250,7 +6250,7 @@ pub struct LuaBarChart {
 
 impl LuaUserData for LuaBarChart {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── addSeries ──────────────────────
+        // â”€â”€ addSeries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a bar series with a name and colour.
         /// @param name : string
         /// @param r : number  Red 0-1
@@ -6265,7 +6265,7 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
-        // ── addCategory ────────────────────
+        // â”€â”€ addCategory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a category group with per-series values.
         /// @param label : string
         /// @param values : table  array of numbers (one per series)
@@ -6281,7 +6281,7 @@ impl LuaUserData for LuaBarChart {
                 Ok(())
             },
         );
-        // ── drawToImage ─────────────────────
+        // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Renders the bar chart into an existing ImageData.
         /// @param target : ImageData
         /// @return nil
@@ -6293,12 +6293,12 @@ impl LuaUserData for LuaBarChart {
     }
 }
 
-// ── LuaScatterPlot ────────────────────────────
+// â”€â”€ LuaScatterPlot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for a scatter plot renderer.
 ///
 /// # Fields
-/// - `inner` — `crate::ui::chart::ScatterPlot`.
+/// - `inner` â€” `crate::ui::chart::ScatterPlot`.
 pub struct LuaScatterPlot {
     /// Inner Rust `ScatterPlot` instance.
     pub inner: crate::ui::chart::ScatterPlot,
@@ -6306,7 +6306,7 @@ pub struct LuaScatterPlot {
 
 impl LuaUserData for LuaScatterPlot {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── addSeries ──────────────────────
+        // â”€â”€ addSeries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a named data series.
         /// @param name : string
         /// @param points : table  array of {x, y} pairs
@@ -6329,7 +6329,7 @@ impl LuaUserData for LuaScatterPlot {
                 Ok(())
             },
         );
-        // ── setXRange ──────────────────────
+        // â”€â”€ setXRange â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Sets the X-axis data range.
         /// @param min : number
         /// @param max : number
@@ -6338,7 +6338,7 @@ impl LuaUserData for LuaScatterPlot {
             this.inner.x_range = (mn, mx);
             Ok(())
         });
-        // ── setYRange ──────────────────────
+        // â”€â”€ setYRange â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Sets the Y-axis data range.
         /// @param min : number
         /// @param max : number
@@ -6347,7 +6347,7 @@ impl LuaUserData for LuaScatterPlot {
             this.inner.y_range = (mn, mx);
             Ok(())
         });
-        // ── drawToImage ─────────────────────
+        // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Renders the scatter plot into an existing ImageData.
         /// @param target : ImageData
         /// @return nil
@@ -6359,12 +6359,12 @@ impl LuaUserData for LuaScatterPlot {
     }
 }
 
-// ── LuaPieChart ───────────────────────────────
+// â”€â”€ LuaPieChart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for a pie chart renderer.
 ///
 /// # Fields
-/// - `inner` — `crate::ui::chart::PieChart`.
+/// - `inner` â€” `crate::ui::chart::PieChart`.
 pub struct LuaPieChart {
     /// Inner Rust `PieChart` instance.
     pub inner: crate::ui::chart::PieChart,
@@ -6372,7 +6372,7 @@ pub struct LuaPieChart {
 
 impl LuaUserData for LuaPieChart {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── addSegment ─────────────────────
+        // â”€â”€ addSegment â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a labelled pie segment.
         /// @param label : string
         /// @param value : number
@@ -6388,7 +6388,7 @@ impl LuaUserData for LuaPieChart {
                 Ok(())
             },
         );
-        // ── drawToImage ─────────────────────
+        // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Renders the pie chart into an existing ImageData.
         /// @param target : ImageData
         /// @return nil
@@ -6400,12 +6400,12 @@ impl LuaUserData for LuaPieChart {
     }
 }
 
-// ── LuaAreaChart ──────────────────────────────
+// â”€â”€ LuaAreaChart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua wrapper for a stacked area chart renderer.
 ///
 /// # Fields
-/// - `inner` — `crate::ui::chart::AreaChart`.
+/// - `inner` â€” `crate::ui::chart::AreaChart`.
 pub struct LuaAreaChart {
     /// Inner Rust `AreaChart` instance.
     pub inner: crate::ui::chart::AreaChart,
@@ -6413,7 +6413,7 @@ pub struct LuaAreaChart {
 
 impl LuaUserData for LuaAreaChart {
     fn add_methods<'lua, M: mlua::UserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── addLayer ───────────────────────
+        // â”€â”€ addLayer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Adds a stacked layer with values and colour.
         /// @param name : string
         /// @param values : table  array of numbers (one per X sample)
@@ -6433,7 +6433,7 @@ impl LuaUserData for LuaAreaChart {
                 Ok(())
             },
         );
-        // ── setYMax ────────────────────────
+        // â”€â”€ setYMax â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Sets the maximum Y value for axis scaling.
         /// @param v : number
         /// @return nil
@@ -6441,7 +6441,7 @@ impl LuaUserData for LuaAreaChart {
             this.inner.y_max = v;
             Ok(())
         });
-        // ── drawToImage ─────────────────────
+        // â”€â”€ drawToImage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Renders the area chart into an existing ImageData.
         /// @param target : ImageData
         /// @return nil

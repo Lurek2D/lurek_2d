@@ -1,4 +1,4 @@
-//! `lurek.raycaster` - DDA grid raycasting for retro FPS and dungeon-crawler games.
+﻿//! `lurek.raycaster` - DDA grid raycasting for retro FPS and dungeon-crawler games.
 
 use super::render_api::LuaImageData;
 use super::SharedState;
@@ -46,12 +46,12 @@ impl LuaUserData for LuaDoorManager {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- addDoor --
         /// Registers a door at grid position (x, y).
-        /// @param x         : integer        — Grid X.
-        /// @param y         : integer        — Grid Y.
-        /// @param direction : string         — "horizontal" or "vertical".
-        /// @param speed     : number         — Animation speed (units/s).
+        /// @param x         : integer        â€” Grid X.
+        /// @param y         : integer        â€” Grid Y.
+        /// @param direction : string         â€” "horizontal" or "vertical".
+        /// @param speed     : number         â€” Animation speed (units/s).
         /// @return nil
-        /// integer  — Door index for open/close calls.
+        /// integer  â€” Door index for open/close calls.
         methods.add_method_mut(
             "addDoor",
             |_, this, (x, y, dir_str, speed): (u32, u32, String, f32)| {
@@ -94,7 +94,7 @@ impl LuaUserData for LuaDoorManager {
         /// Returns the state table for door at index, or nil if out of range.
         /// @param index : integer
         /// @return nil
-        /// table|nil  — {x, y, openAmount, state} or nil.
+        /// table|nil  â€” {x, y, openAmount, state} or nil.
         methods.add_method("getDoor", |lua, this, index: usize| {
             let mgr = this.inner.borrow();
             if let Some(door) = mgr.doors().get(index) {
@@ -240,9 +240,9 @@ impl LuaUserData for LuaPointLight {
         /// Updates all light properties at once.
         /// @param x         : number
         /// @param y         : number
-        /// @param r         : number  — Red   [0,1]
-        /// @param g         : number  — Green [0,1]
-        /// @param b         : number  — Blue  [0,1]
+        /// @param r         : number  â€” Red   [0,1]
+        /// @param g         : number  â€” Green [0,1]
+        /// @param b         : number  â€” Blue  [0,1]
         /// @param radius    : number
         /// @param intensity : number
         /// @return nil
@@ -432,7 +432,7 @@ impl LuaUserData for LuaRaycaster {
         /// @param oy       : number
         /// @param angle    : number
         /// @param max_dist : number
-        /// @param max_hits : integer  — layers to collect (default 4, max 8)
+        /// @param max_hits : integer  â€” layers to collect (default 4, max 8)
         /// @return table
         methods.add_method(
             "castRayMulti",
@@ -631,12 +631,12 @@ impl LuaUserData for LuaRaycaster {
 
         // -- buildScene --
         /// Builds a raycaster scene and stores it in SharedState for GPU rendering.
-        /// @param params : table — { px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_color?, ceiling_color? }
-        /// @param lights : table|nil — array of { x, y, radius, r, g, b, intensity }
-        /// @param sprites : table|nil — array of { x, y, texture, size }
-        /// @param wall_textures : table|nil — { [cell_value] = TextureKey }
+        /// @param params : table â€” { px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_color?, ceiling_color? }
+        /// @param lights : table|nil â€” array of { x, y, radius, r, g, b, intensity }
+        /// @param sprites : table|nil â€” array of { x, y, texture, size }
+        /// @param wall_textures : table|nil â€” { [cell_value] = TextureKey }
         /// @return nil
-        /// integer — quad count
+        /// integer â€” quad count
         methods.add_method(
             "buildScene",
             |_,
@@ -864,10 +864,10 @@ impl LuaUserData for LuaSpriteManager {
 /// Registers the `lurek.raycaster` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- new --
@@ -955,13 +955,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     // -- newPointLight --
     /// Creates a point light for use in raycaster scene lighting.
-    /// @param x         : number   — World-space X.
-    /// @param y         : number   — World-space Y.
-    /// @param r         : number   — Red   [0,1].
-    /// @param g         : number   — Green [0,1].
-    /// @param b         : number   — Blue  [0,1].
-    /// @param radius    : number   — Maximum illumination radius.
-    /// @param intensity : number   — Brightness multiplier.
+    /// @param x         : number   â€” World-space X.
+    /// @param y         : number   â€” World-space Y.
+    /// @param r         : number   â€” Red   [0,1].
+    /// @param g         : number   â€” Green [0,1].
+    /// @param b         : number   â€” Blue  [0,1].
+    /// @param radius    : number   â€” Maximum illumination radius.
+    /// @param intensity : number   â€” Brightness multiplier.
     /// @return PointLight
     tbl.set(
         "newPointLight",
@@ -992,6 +992,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("raycaster", tbl)?;
+    lurek.set("raycaster", tbl)?;
     Ok(())
 }

@@ -1,4 +1,4 @@
-//! `lurek.particle` — Emitter-based 2D particle systems and trail ribbons.
+﻿//! `lurek.particle` â€” Emitter-based 2D particle systems and trail ribbons.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -13,7 +13,7 @@ use crate::particle::{
 use crate::runtime::resource_keys::ParticleKey;
 
 // -------------------------------------------------------------------------------
-// Config table → ParticleConfig marshalling
+// Config table â†’ ParticleConfig marshalling
 // -------------------------------------------------------------------------------
 
 // -------------------------------------------------------------------------------
@@ -23,8 +23,8 @@ use crate::runtime::resource_keys::ParticleKey;
 /// Lua-side handle to a particle system stored in SharedState.
 ///
 /// # Fields
-/// - `state` — `Rc<RefCell<SharedState>>`.
-/// - `key` — `ParticleKey`.
+/// - `state` â€” `Rc<RefCell<SharedState>>`.
+/// - `key` â€” `ParticleKey`.
 /// Fields: state (Rc<RefCell<SharedState>>), key (ParticleKey).
 #[derive(Clone)]
 pub struct LuaParticleSystem {
@@ -572,7 +572,7 @@ impl LuaUserData for LuaParticleSystem {
         });
 
         // -- setSizeVariation --
-        /// Sets size variation (0–1).
+        /// Sets size variation (0â€“1).
         /// @param v : number
         /// @return nil
         methods.add_method("setSizeVariation", |_, this, v: f32| {
@@ -651,7 +651,7 @@ impl LuaUserData for LuaParticleSystem {
         });
 
         // -- setSpinVariation --
-        /// Sets spin variation (0–1).
+        /// Sets spin variation (0â€“1).
         /// @param v : number
         /// @return nil
         methods.add_method("setSpinVariation", |_, this, v: f32| {
@@ -1403,13 +1403,13 @@ impl LuaUserData for LuaTrail {
 /// Registers the `lurek.particle` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 /// @return LuaResult<()>
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newSystem --
@@ -1541,7 +1541,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?;
     }
 
-    luna.set("particle", tbl)?;
+    lurek.set("particle", tbl)?;
     Ok(())
 }
 
@@ -1728,7 +1728,7 @@ impl ParticleConfig {
             }
         }
 
-        // areaDistribution: string → enum
+        // areaDistribution: string â†’ enum
         if let Ok(v) = t.get::<_, String>("areaDistribution") {
             c.area_distribution = match v.as_str() {
                 "uniform" => AreaDistribution::Uniform,
@@ -1740,7 +1740,7 @@ impl ParticleConfig {
             };
         }
 
-        // insertMode: string → enum
+        // insertMode: string â†’ enum
         if let Ok(v) = t.get::<_, String>("insertMode") {
             c.insert_mode = match v.as_str() {
                 "top" => InsertMode::Top,
@@ -1750,7 +1750,7 @@ impl ParticleConfig {
             };
         }
 
-        // emissionShape: string → enum
+        // emissionShape: string â†’ enum
         if let Ok(v) = t.get::<_, String>("emissionShape") {
             c.emission_shape = match v.as_str() {
                 "point" => EmissionShape::Point,
@@ -1788,7 +1788,7 @@ impl ParticleConfig {
             };
         }
 
-        // relativeMode: string → enum
+        // relativeMode: string â†’ enum
         if let Ok(v) = t.get::<_, String>("relativeMode") {
             c.relative_mode = match v.as_str() {
                 "attached" => RelativeMode::Attached,
@@ -1796,7 +1796,7 @@ impl ParticleConfig {
             };
         }
 
-        // shape: string → ParticleShape
+        // shape: string â†’ ParticleShape
         if let Ok(v) = t.get::<_, String>("shape") {
             c.shape = match v.as_str() {
                 "square" => ParticleShape::Square,
@@ -1836,7 +1836,7 @@ impl ParticleConfig {
             c.death_burst_count = v;
         }
 
-        // deathEmitter: table → sub-emitter config (recursive)
+        // deathEmitter: table â†’ sub-emitter config (recursive)
         if let Ok(sub_tbl) = t.get::<_, LuaTable>("deathEmitter") {
             c.death_emitter = Some(Box::new(ParticleConfig::from_lua_opts(&sub_tbl)?));
         }

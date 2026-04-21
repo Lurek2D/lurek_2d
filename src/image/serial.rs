@@ -2,7 +2,7 @@
 //!
 //! # LIMG Format
 //!
-//! Luna Image (LIMG) is a compact, self-describing binary format for both flat
+//! Lurek Image (LIMG) is a compact, self-describing binary format for both flat
 //! RGBA8 images and multi-layer compositing stacks.  Pixel data is compressed
 //! with zlib (deflate) using the [`flate2`] crate.
 //!

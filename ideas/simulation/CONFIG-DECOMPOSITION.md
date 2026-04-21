@@ -359,7 +359,7 @@ target  = 0.85
 blocksim = true
 ```
 
-Default: `false` (module is opt-in, consistent with `gui`, `terminal`, etc.).
+Default: `false` (module is opt-in, consistent with `ui`, `terminal`, etc.).
 
 When `false`: `lurek.sim` is nil; scripts using it get a clear nil-check error message from the bridge.
 

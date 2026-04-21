@@ -74,4 +74,5 @@ describe("integration: scene + entity hierarchy", function()
         expect_true(true, "bulk create + kill did not crash")
     end)
 end)
+
 test_summary()

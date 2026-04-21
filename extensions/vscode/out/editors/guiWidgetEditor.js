@@ -7,7 +7,7 @@ class GuiWidgetEditor extends shared_js_1.WebviewEditor {
         return new GuiWidgetEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.guiWidget", "GUI Widget Editor");
+        super(context, "lurek.editor.guiWidget", "GUI Widget Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

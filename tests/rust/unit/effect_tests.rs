@@ -4,10 +4,12 @@ use lurek2d::effect::ambient::AmbientState;
 use lurek2d::effect::atmosphere::{
     CloudState, FilmGrainState, FogState, HeatHazeState, LightningState, VignetteState,
 };
+use lurek2d::effect::draw;
 use lurek2d::effect::effect::PostFxEffect;
 use lurek2d::effect::effect_type::PostFxEffectType;
 use lurek2d::effect::overlay::Overlay;
 use lurek2d::effect::presets::{build_preset, preset_names};
+use lurek2d::effect::render;
 use lurek2d::effect::screen_effects::{FadeState, FlashState, ShakeState};
 use lurek2d::effect::stack::PostFxStack;
 use lurek2d::effect::transition::{ScreenTransition, TransitionKind};
@@ -212,29 +214,11 @@ mod effect_type_tests {
     #[test]
     fn from_name_round_trips_all_built_ins() {
         let names = [
-            "bloom",
-            "blur",
-            "crt",
-            "godrays",
-            "vignette",
-            "colourgrade",
-            "chromatic",
-            "pixelate",
-            "sepia",
-            "grayscale",
-            "invert",
-            "scanlines",
-            "edgedetect",
-            "hueshift",
-            "noise",
-            "depthoffield",
-            "motionblur",
-            "paletteswap",
-            "colorlut",
-            "waterdistort",
-            "sharpen",
-            "dither",
-            "outline",
+            "bloom", "blur", "crt", "godrays", "vignette", "colourgrade",
+            "chromatic", "pixelate", "sepia", "grayscale", "invert",
+            "scanlines", "edgedetect", "hueshift", "noise", "depthoffield",
+            "motionblur", "paletteswap", "colorlut", "waterdistort",
+            "sharpen", "dither", "outline",
         ];
         for n in names {
             let t = PostFxEffectType::from_name(n);
@@ -477,10 +461,7 @@ mod screen_effects_tests {
         o.trigger_shake(10.0, 0.5);
         o.update(0.1);
         let (x, y) = o.get_shake_offset();
-        assert!(
-            x.abs() > 0.0 || y.abs() > 0.0,
-            "shake should produce offset"
-        );
+        assert!(x.abs() > 0.0 || y.abs() > 0.0, "shake should produce offset");
     }
 
     #[test]
@@ -604,12 +585,7 @@ mod transition_tests {
 
     #[test]
     fn transition_kind_round_trips() {
-        for kind in [
-            TransitionKind::Fade,
-            TransitionKind::Wipe,
-            TransitionKind::IrisWipe,
-            TransitionKind::Dissolve,
-        ] {
+        for kind in [TransitionKind::Fade, TransitionKind::Wipe, TransitionKind::IrisWipe, TransitionKind::Dissolve] {
             let name = kind.name();
             let parsed = TransitionKind::from_str(name);
             assert_eq!(parsed, kind);
@@ -698,9 +674,7 @@ mod weather_tests {
 
     #[test]
     fn weather_type_from_name_round_trips() {
-        for name in [
-            "none", "rain", "snow", "hail", "dust", "leaves", "ash", "pollen",
-        ] {
+        for name in ["none", "rain", "snow", "hail", "dust", "leaves", "ash", "pollen"] {
             let wt = WeatherType::from_name(name).unwrap();
             assert_eq!(wt.name(), name);
         }
@@ -722,12 +696,7 @@ mod weather_tests {
     #[test]
     fn weather_particle_fields_accessible() {
         let p = WeatherParticle {
-            x: 10.0,
-            y: 20.0,
-            vx: 1.0,
-            vy: 5.0,
-            size: 2.0,
-            alpha: 0.8,
+            x: 10.0, y: 20.0, vx: 1.0, vy: 5.0, size: 2.0, alpha: 0.8,
         };
         assert!((p.alpha - 0.8).abs() < 1e-6);
     }

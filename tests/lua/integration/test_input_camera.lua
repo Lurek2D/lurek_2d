@@ -68,10 +68,11 @@ describe("integration: input coordinates mapped through camera", function()
     -- @description Verifies mouse coordinates are returned as numeric values for camera-space mapping code.
     it("getMousePosition returns two numbers", function()
         expect_no_error(function()
-            local mx, my = lurek.input.getMousePosition()
+            local mx, my = lurek.input.mouse.getPosition()
             expect_type("number", mx, "mouse x is number")
             expect_type("number", my, "mouse y is number")
         end)
     end)
 end)
+
 test_summary()

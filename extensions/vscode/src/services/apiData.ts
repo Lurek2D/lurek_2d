@@ -1228,7 +1228,7 @@ export class ApiDataService {
   private loadFallback(): void {
     const mods: [string, string, [string, string, string[]][]][] = [
       [
-        "graphics",
+        "render",
         "Drawing and rendering functions",
         [
           ["draw", "Draws a drawable object at the specified position", ["drawable", "x", "y", "r", "sx", "sy", "ox", "oy"]],

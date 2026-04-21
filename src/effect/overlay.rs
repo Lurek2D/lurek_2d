@@ -422,7 +422,7 @@ impl Overlay {
         self.custom_shader = None;
     }
 
-    /// Resizes the overlay canvas dimensions.
+    /// Resizes the effect canvas dimensions.
     ///
     /// Updates the internal width and height used by the weather particle
     /// spawner to determine screen bounds for culling. Call this whenever
@@ -438,7 +438,7 @@ impl Overlay {
         self.height = height;
     }
 
-    /// Returns the overlay canvas width in pixels.
+    /// Returns the effect canvas width in pixels.
     ///
     /// Reflects the value passed to `new` or the most recent `resize` call.
     ///
@@ -448,7 +448,7 @@ impl Overlay {
         self.width
     }
 
-    /// Returns the overlay canvas height in pixels.
+    /// Returns the effect canvas height in pixels.
     ///
     /// Reflects the value passed to `new` or the most recent `resize` call.
     ///

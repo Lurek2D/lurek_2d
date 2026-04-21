@@ -80,7 +80,7 @@ LUNA_TO_REFERENCE_MAP = {
                    "notes": "Sandboxed file I/O."},
     "graph": {"reference_modules": [], "status": "luna_only",
               "notes": "Graph data structures."},
-    "graphics": {"reference_modules": ["graphics", "font", "video"], "status": "superset",
+    "render": {"reference_modules": ["render", "font", "video"], "status": "superset",
                  "notes": "Graphics, text, and video support."},
     "image": {"reference_modules": ["image"], "status": "aligned",
               "notes": "Image loading and decoding."},

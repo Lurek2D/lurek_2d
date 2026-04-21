@@ -40,7 +40,7 @@ const fs = __importStar(require("fs"));
 function detectLunaCalls(text) {
     const calls = [];
     const seen = new Set();
-    const regex = /luna\.(\w+)\.(\w+)\s*\(/g;
+    const regex = /lurek\.(\w+)\.(\w+)\s*\(/g;
     for (const [lineIdx, line] of text.split("\n").entries()) {
         let match;
         regex.lastIndex = 0;
@@ -118,9 +118,9 @@ function generateTestContent(sourceFileName, calls) {
         modules.set(call.module, list);
     }
     for (const [mod, modCalls] of modules) {
-        lines.push(`-- Tests for luna.${mod}`, "");
+        lines.push(`-- Tests for lurek.${mod}`, "");
         for (const call of modCalls) {
-            lines.push(`test("luna.${mod}.${call.func} works", function()`, `  -- Source line ${call.line}: ${call.text}`, `  -- TODO: Add proper test assertion`, `  local result = luna.${mod}.${call.func}()`, `  assert(result ~= nil, "luna.${mod}.${call.func} should return a value")`, `end)`, "");
+            lines.push(`test("lurek.${mod}.${call.func} works", function()`, `  -- Source line ${call.line}: ${call.text}`, `  -- TODO: Add proper test assertion`, `  local result = lurek.${mod}.${call.func}()`, `  assert(result ~= nil, "lurek.${mod}.${call.func} should return a value")`, `end)`, "");
         }
     }
     lines.push(`-- Summary`, `print(string.format("\\n%d/%d tests passed (%d failed)", passed, total, failed))`, `if failed > 0 then`, `  error(string.format("%d tests failed", failed))`, `end`, "");
@@ -165,7 +165,7 @@ function generateFunctionTestContent(sourceFileName, funcName, funcBody) {
     if (calls.length > 0) {
         lines.push(`-- API dependency tests`);
         for (const call of calls) {
-            lines.push(`test("${funcName} uses luna.${call.module}.${call.func}", function()`, `  -- Verify luna.${call.module}.${call.func} is available`, `  assert(type(luna.${call.module}.${call.func}) == "function",`, `    "luna.${call.module}.${call.func} should be available")`, `end)`, "");
+            lines.push(`test("${funcName} uses lurek.${call.module}.${call.func}", function()`, `  -- Verify lurek.${call.module}.${call.func} is available`, `  assert(type(lurek.${call.module}.${call.func}) == "function",`, `    "lurek.${call.module}.${call.func} should be available")`, `end)`, "");
         }
     }
     lines.push(`-- Summary`, `print(string.format("\\n%d/%d tests passed (%d failed)", passed, total, failed))`, `if failed > 0 then`, `  error(string.format("%d tests failed", failed))`, `end`, "");
@@ -188,8 +188,8 @@ function getGameRoot(filePath) {
     return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 }
 function registerTestCommands(context) {
-    // ── luna.test.generateForFile ────────────────────────────
-    context.subscriptions.push(vscode.commands.registerCommand("luna.test.generateForFile", async () => {
+    // ── lurek.test.generateForFile ────────────────────────────
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.test.generateForFile", async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor || editor.document.languageId !== "lua") {
             vscode.window.showWarningMessage("Open a Lua file first.");
@@ -199,7 +199,7 @@ function registerTestCommands(context) {
         const text = doc.getText();
         const calls = detectLunaCalls(text);
         if (calls.length === 0) {
-            vscode.window.showInformationMessage("No luna.* API calls detected in this file.");
+            vscode.window.showInformationMessage("No lurek.* API calls detected in this file.");
             return;
         }
         const sourceFileName = path.basename(doc.fileName);
@@ -220,8 +220,8 @@ function registerTestCommands(context) {
         await vscode.window.showTextDocument(testDoc);
         vscode.window.showInformationMessage(`Generated test file: tests/${testFileName} (${calls.length} API calls detected)`);
     }));
-    // ── luna.test.generateForFunction ────────────────────────
-    context.subscriptions.push(vscode.commands.registerCommand("luna.test.generateForFunction", async () => {
+    // ── lurek.test.generateForFunction ────────────────────────
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.test.generateForFunction", async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor || editor.document.languageId !== "lua") {
             vscode.window.showWarningMessage("Open a Lua file first.");
@@ -256,8 +256,8 @@ function registerTestCommands(context) {
         await vscode.window.showTextDocument(testDoc);
         vscode.window.showInformationMessage(`Generated test file: tests/${testFileName} for ${target.name}()`);
     }));
-    // ── luna.test.runCurrent ─────────────────────────────────
-    context.subscriptions.push(vscode.commands.registerCommand("luna.test.runCurrent", async () => {
+    // ── lurek.test.runCurrent ─────────────────────────────────
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.test.runCurrent", async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor || editor.document.languageId !== "lua") {
             vscode.window.showWarningMessage("Open a Lua test file first.");
@@ -269,14 +269,14 @@ function registerTestCommands(context) {
             vscode.window.showErrorMessage("Could not determine game root directory.");
             return;
         }
-        const lunaPath = vscode.workspace.getConfiguration("luna").get("lunaPath", "luna");
+        const lunaPath = vscode.workspace.getConfiguration("lurek").get("lunaPath", "lurek");
         const terminal = getOrCreateTerminal("Luna Tests");
         terminal.show();
         const relPath = path.relative(gameRoot, filePath).replace(/\\/g, "/");
         terminal.sendText(`cd "${gameRoot}" && "${lunaPath}" --test "${relPath}"`);
     }));
-    // ── luna.test.runAll ─────────────────────────────────────
-    context.subscriptions.push(vscode.commands.registerCommand("luna.test.runAll", async () => {
+    // ── lurek.test.runAll ─────────────────────────────────────
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.test.runAll", async () => {
         const editor = vscode.window.activeTextEditor;
         const gameRoot = editor
             ? getGameRoot(editor.document.fileName)
@@ -299,7 +299,7 @@ function registerTestCommands(context) {
         outputChannel.show();
         outputChannel.appendLine(`Running ${testFiles.length} test file(s)...`);
         outputChannel.appendLine("─".repeat(50));
-        const lunaPath = vscode.workspace.getConfiguration("luna").get("lunaPath", "luna");
+        const lunaPath = vscode.workspace.getConfiguration("lurek").get("lunaPath", "lurek");
         const terminal = getOrCreateTerminal("Luna Tests");
         terminal.show();
         for (const testFile of testFiles) {
@@ -309,8 +309,8 @@ function registerTestCommands(context) {
         outputChannel.appendLine("\n" + "─".repeat(50));
         outputChannel.appendLine(`Queued ${testFiles.length} test files.`);
     }));
-    // ── luna.test.coverage ───────────────────────────────────
-    context.subscriptions.push(vscode.commands.registerCommand("luna.test.coverage", async () => {
+    // ── lurek.test.coverage ───────────────────────────────────
+    context.subscriptions.push(vscode.commands.registerCommand("lurek.test.coverage", async () => {
         const editor = vscode.window.activeTextEditor;
         const gameRoot = editor
             ? getGameRoot(editor.document.fileName)
@@ -319,7 +319,7 @@ function registerTestCommands(context) {
             vscode.window.showErrorMessage("No game project found.");
             return;
         }
-        // Scan all .lua files in the project for luna.* API usage
+        // Scan all .lua files in the project for lurek.* API usage
         const luaFiles = findLuaFiles(gameRoot);
         const allCalls = new Set();
         const testedCalls = new Set();
@@ -328,7 +328,7 @@ function registerTestCommands(context) {
             const calls = detectLunaCalls(content);
             const isTest = file.includes(`${path.sep}tests${path.sep}`) || path.basename(file).startsWith("test_");
             for (const call of calls) {
-                const key = `luna.${call.module}.${call.func}`;
+                const key = `lurek.${call.module}.${call.func}`;
                 allCalls.add(key);
                 if (isTest) {
                     testedCalls.add(key);

@@ -6,8 +6,9 @@ describe("golden: dataframe DataFrame deterministic statistics", function()
     -- @description Compares dataframe_golden.txt from the evidence layer against the committed DataFrame sample.
     it("matches golden sample", function()
         local evidence = "save/golden_text/dataframe/dataframe_golden.txt"
-        local golden = "tests/lua/golden/samples/dataframe/dataframe_golden.txt"
+        local golden = "tests/samples/dataframe/dataframe_golden.txt"
         expect_golden_text_match(evidence, golden)
     end)
 end)
+
 test_summary()

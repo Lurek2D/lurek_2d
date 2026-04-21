@@ -1,5 +1,5 @@
 {
-  "_comment": "Documentation overlay for luna.* functions that cannot be documented via standard /// docstrings (e.g., functions registered inside closure bodies). Format: { 'module.funcName': { 'description': '...', 'params': [...], 'returns': '...' } }",
+  "_comment": "Documentation overlay for lurek.* functions that cannot be documented via standard /// docstrings (e.g., functions registered inside closure bodies). Format: { 'module.funcName': { 'description': '...', 'params': [...], 'returns': '...' } }",
   "particle.setSpread": {
     "description": "Sets the emission spread angle for new particles.",
     "params": [
@@ -168,7 +168,7 @@
     "description": "Assigns a texture to use when rendering particles.",
     "params": [
       { "name": "ps", "type": "ParticleSystem", "desc": "Particle system handle." },
-      { "name": "texId", "type": "integer", "desc": "Handle returned by luna.graphics.newImage." }
+      { "name": "texId", "type": "integer", "desc": "Handle returned by lurek.graphics.newImage." }
     ],
     "returns": null
   },

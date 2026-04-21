@@ -948,4 +948,5 @@ describe("Input validation", function()
         expect_error(function() eco.newConversionRule("a", "", 1) end)
     end)
 end)
+
 test_summary()

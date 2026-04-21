@@ -56,7 +56,7 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
     debugPort = DEFAULT_DEBUG_PORT;
     loadedSources = [];
     constructor() {
-        super("luna-debug.log");
+        super("lurek-debug.log");
         this.setDebuggerLinesStartAt1(true);
         this.setDebuggerColumnsStartAt1(true);
     }
@@ -104,7 +104,7 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
         const stopOnEntry = args.stopOnEntry ?? false;
         const engineBinary = this.findEngineBinary(args.enginePath);
         if (!engineBinary) {
-            this.sendErrorResponse(response, 1001, "Luna2D engine not found. Set 'luna.lunaPath' in settings or ensure luna2d is on PATH.");
+            this.sendErrorResponse(response, 1001, "Luna2D engine not found. Set 'lurek.lunaPath' in settings or ensure luna2d is on PATH.");
             return;
         }
         const spawnArgs = [
@@ -433,8 +433,8 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
     completionsRequest(response, args) {
         const text = args.text;
         const targets = [];
-        // Provide luna.* namespace completions
-        if (text.startsWith("luna.")) {
+        // Provide lurek.* namespace completions
+        if (text.startsWith("lurek.")) {
             const lunaModules = [
                 "graphics", "audio", "timer", "keyboard", "mouse", "gamepad",
                 "touch", "window", "filesystem", "math", "physics", "system",
@@ -635,7 +635,7 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
         const settingsPath = 
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         require("vscode").workspace
-            .getConfiguration("luna")
+            .getConfiguration("lurek")
             .get("lunaPath", "");
         if (settingsPath && fs.existsSync(settingsPath)) {
             return settingsPath;
@@ -643,9 +643,9 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
         // 3. Common install locations (Windows)
         const homeDir = process.env.USERPROFILE ?? process.env.HOME ?? "";
         const candidates = [
-            path.join(homeDir, "bin", "luna.exe"),
+            path.join(homeDir, "bin", "lurek.exe"),
             path.join(homeDir, "bin", "luna2d.exe"),
-            path.join(homeDir, "bin", "luna"),
+            path.join(homeDir, "bin", "lurek"),
             path.join(homeDir, "bin", "luna2d"),
         ];
         for (const candidate of candidates) {
@@ -654,7 +654,7 @@ class LuaDebugSession extends debugadapter_1.LoggingDebugSession {
             }
         }
         // 4. Rely on PATH
-        const pathExe = process.platform === "win32" ? "luna.exe" : "luna2d";
+        const pathExe = process.platform === "win32" ? "lurek.exe" : "luna2d";
         const pathDirs = (process.env.PATH ?? "").split(path.delimiter);
         for (const dir of pathDirs) {
             const fullPath = path.join(dir, pathExe);

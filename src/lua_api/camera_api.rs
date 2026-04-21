@@ -1,8 +1,8 @@
-//! `lurek.camera` — Camera2D creation and manipulation for 2D viewport control.
+﻿//! `lurek.camera` â€” Camera2D creation and manipulation for 2D viewport control.
 //!
 //! Each `Camera2D` has position, zoom, rotation, viewport bounds, optional world-space
 //! clamping, waypoint path following, smooth zoom tweening, per-layer parallax factors,
-//! and screen↔world coordinate transforms.
+//! and screenâ†”world coordinate transforms.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -23,7 +23,7 @@ pub struct LuaCamera2D {
     path: RefCell<Option<CameraPath>>,
     /// Active smooth-zoom tween, if any.
     zoom_tween: RefCell<Option<ZoomTween>>,
-    /// Per-layer parallax scale factors (`layer_name → factor`).
+    /// Per-layer parallax scale factors (`layer_name â†’ factor`).
     parallax: RefCell<HashMap<String, f32>>,
 }
 
@@ -362,7 +362,7 @@ impl LuaUserData for LuaCamera2D {
             Ok(())
         });
 
-        // ── Camera effects ──────────────────────────────────────────────
+        // â”€â”€ Camera effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- zoomPulse --
         /// Triggers a momentary zoom-in that decays back via a sine envelope.
@@ -465,10 +465,10 @@ impl LuaUserData for LuaCamera2D {
 /// Registers the `lurek.camera` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- new --
@@ -488,7 +488,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    // -- newCamera -- (alias for `new`, default 800×600 if called with no args)
+    // -- newCamera -- (alias for `new`, default 800Ă—600 if called with no args)
     tbl.set(
         "newCamera",
         lua.create_function(|lua, (vw, vh): (Option<f32>, Option<f32>)| {
@@ -503,6 +503,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("camera", tbl)?;
+    lurek.set("camera", tbl)?;
     Ok(())
 }

@@ -59,4 +59,5 @@ describe("stress: filesystem write/read throughput", function()
         expect_true(elapsed < 5.0, "exists check budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

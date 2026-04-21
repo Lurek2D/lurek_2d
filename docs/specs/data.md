@@ -7,7 +7,7 @@
 - Lua API path(s): `src/lua_api/data_api.rs`
 - Primary Lua namespace: `lurek.data`
 - Rust test path(s): tests/rust/unit/data_tests.rs; tests/rust/stress/data_stress_tests.rs; inline tests in src/data/byte_data.rs, src/data/encode.rs, src/data/hash.rs
-- Lua test path(s): tests/lua/unit/test_data.lua; tests/lua/stress/test_data_stress.lua; tests/lua/stress/test_data_compression_stress.lua; tests/lua/integration/test_data_system.lua; tests/lua/integration/test_data_filesystem.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_thread_data.lua; tests/lua/golden/test_data_golden.lua
+- Lua test path(s): tests/lua/unit/test_data.lua; tests/lua/stress/test_data_stress.lua; tests/lua/stress/test_data_compression_stress.lua; tests/lua/integration/test_data_app.lua; tests/lua/integration/test_data_fileapp.lua; tests/lua/integration/test_data_compute.lua; tests/lua/integration/test_thread_data.lua; tests/lua/golden/test_data_golden.lua
 
 ## Summary
 

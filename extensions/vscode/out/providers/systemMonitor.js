@@ -71,7 +71,7 @@ async function collectWindows(sample) {
 $ErrorActionPreference = 'SilentlyContinue'
 $mem = Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory, TotalVisibleMemorySize
 $cpu = (Get-CimInstance -ClassName Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
-$lunaProc = Get-Process -Name 'luna*','luna2d' -ErrorAction SilentlyContinue | Sort-Object CPU -Descending | Select-Object -First 1
+$lunaProc = Get-Process -Name 'lurek*','luna2d' -ErrorAction SilentlyContinue | Sort-Object CPU -Descending | Select-Object -First 1
 $disk = Get-CimInstance Win32_PerfFormattedData_PerfDisk_LogicalDisk -Filter "Name='_Total'" | Select-Object DiskReadBytesPersec, DiskWriteBytesPersec
 $net = Get-CimInstance Win32_PerfFormattedData_Tcpip_NetworkInterface | Measure-Object -Property BytesSentPersec,BytesReceivedPersec -Sum
 [PSCustomObject]@{
@@ -166,7 +166,7 @@ function openSystemMonitor(context) {
         _panel.reveal(vscode.ViewColumn.Two);
         return;
     }
-    _panel = vscode.window.createWebviewPanel("luna.systemMonitor", "Luna2D System Monitor", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
+    _panel = vscode.window.createWebviewPanel("lurek.systemMonitor", "Luna2D System Monitor", vscode.ViewColumn.Two, { enableScripts: true, retainContextWhenHidden: true });
     _panel.webview.html = buildHtml();
     _panel.onDidDispose(() => {
         _panel = undefined;
@@ -201,7 +201,7 @@ function buildHtml() {
   .big { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 2px; }
   .sub { font-size: 11px; opacity: 0.6; margin-bottom: 6px; }
   canvas { display: block; width: 100%; height: 60px; }
-  .luna-card { grid-column: 1 / -1; }
+  .lurek-card { grid-column: 1 / -1; }
   .row { display: flex; gap: 24px; }
   .row .stat { }
   .row .stat .big { font-size: 20px; }
@@ -265,7 +265,7 @@ function buildHtml() {
   </div>
 
   <!-- Luna2D process -->
-  <div class="card luna-card">
+  <div class="card lurek-card">
     <div class="card-title">Luna2D Process</div>
     <div class="row">
       <div class="stat"><div class="big" id="lunaCpu">–</div><div class="sub">CPU %</div></div>
@@ -288,7 +288,7 @@ const COLOR = {
   diskR: '#9cdcfe',
   diskW: '#ce9178',
   net:   '#c586c0',
-  luna:  '#f48771',
+  lurek:  '#f48771',
 };
 
 function drawLine(canvasId, values, color, maxVal) {
@@ -360,7 +360,7 @@ function updateUI() {
   document.getElementById('lunaCpu').textContent = last.lunaProcessCpu;
   document.getElementById('lunaRam').textContent = last.lunaProcessRamMb;
   document.getElementById('lunaCpu').style.color = last.lunaProcessCpu > 50 ? '#f44747' : 'inherit';
-  drawLine('lunaChart', _samples.map(s => s.lunaProcessCpu), COLOR.luna, 100);
+  drawLine('lunaChart', _samples.map(s => s.lunaProcessCpu), COLOR.lurek, 100);
 }
 
 window.addEventListener('resize', updateUI);

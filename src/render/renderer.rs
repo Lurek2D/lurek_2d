@@ -7,15 +7,15 @@
 //! All public items are documented. See the parent module for architectural context
 //! and the `lurek.*` Lua API for the scripting interface.
 
+use std::collections::HashMap;
 use crate::math::Vec2;
-use crate::render::image_effect::ShaderPassDescriptor;
-use crate::render::mesh::Mesh;
 use crate::runtime::resource_keys::{
     CanvasKey, FontKey, MeshKey, ShaderKey, ShapeKey, SpriteBatchKey, TextureKey,
 };
-use std::collections::HashMap;
+use crate::render::image_effect::ShaderPassDescriptor;
+use crate::render::mesh::Mesh;
 
-/// Stencil comparison mode for `lurek.render.setStencilTest`.
+/// Stencil comparison mode for `lurek.graphic.setStencilTest`.
 ///
 /// # Variants
 /// - `Equal` — Equal variant.
@@ -46,7 +46,7 @@ pub enum CompareMode {
     Never,
 }
 
-/// Stencil write action for `lurek.render.stencil` and `lurek.render.setStencilMode`.
+/// Stencil write action for `lurek.graphic.stencil` and `lurek.graphic.setStencilMode`.
 ///
 /// # Variants
 /// - `Keep` — Keep variant.
@@ -108,7 +108,7 @@ impl Default for StencilMode {
     }
 }
 
-/// Depth test comparison mode for `lurek.render.setDepthMode`.
+/// Depth test comparison mode for `lurek.graphic.setDepthMode`.
 ///
 /// # Variants
 /// - `Always` — Always variant.
@@ -346,14 +346,7 @@ impl TextSpan {
     /// # Returns
     /// `Self`.
     pub fn new(text: impl Into<String>, r: u8, g: u8, b: u8, a: u8, scale: f32) -> Self {
-        Self {
-            text: text.into(),
-            r,
-            g,
-            b,
-            a,
-            scale,
-        }
+        Self { text: text.into(), r, g, b, a, scale }
     }
 }
 
@@ -1149,7 +1142,7 @@ pub struct ParticleInstance {
     pub quad_tex_dims: Option<(f32, f32)>,
 }
 
-/// Type discriminator for resources that can be passed to lurek.render.draw.
+/// Type discriminator for resources that can be passed to lurek.graphic.draw.
 ///
 /// Used to dispatch the polymorphic draw(drawable, ...) Lua API to the
 /// correct RenderCommand variant based on resource type.
@@ -1187,14 +1180,7 @@ pub enum PathSegment {
     /// Draw a quadratic Bézier curve: one control point, one end point.
     QuadTo { cx: f32, cy: f32, x: f32, y: f32 },
     /// Draw a cubic Bézier curve: two control points, one end point.
-    CubicTo {
-        cx1: f32,
-        cy1: f32,
-        cx2: f32,
-        cy2: f32,
-        x: f32,
-        y: f32,
-    },
+    CubicTo { cx1: f32, cy1: f32, cx2: f32, cy2: f32, x: f32, y: f32 },
 }
 
 /// Direction for a two-stop linear or radial gradient.
@@ -1322,11 +1308,11 @@ pub struct PhysicsDebugConfig {
 impl Default for PhysicsDebugConfig {
     fn default() -> Self {
         Self {
-            body_color: [0.0, 1.0, 0.0, 0.8],
+            body_color:   [0.0, 1.0, 0.0, 0.8],
             static_color: [0.8, 0.8, 0.8, 0.8],
-            sleep_color: [0.2, 0.6, 1.0, 0.6],
+            sleep_color:  [0.2, 0.6, 1.0, 0.6],
             sensor_color: [1.0, 0.8, 0.0, 0.6],
-            line_width: 1.0,
+            line_width:   1.0,
         }
     }
 }

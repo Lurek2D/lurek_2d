@@ -7,7 +7,7 @@ class PixelArtEditor extends shared_js_1.WebviewEditor {
         return new PixelArtEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.pixelArt", "Pixel Art Editor");
+        super(context, "lurek.editor.pixelArt", "Pixel Art Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

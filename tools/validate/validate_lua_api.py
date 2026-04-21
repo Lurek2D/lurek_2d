@@ -76,17 +76,17 @@ def check_module_registration(content: str) -> None:
     """lurek.set("module", var) must appear at the end of register().
 
     Handles:
-    - ``luna.set("name", tbl)`` — standard form (Rust param is named ``luna``)
-    - ``luna.set("name", tbl.clone())`` — clone variant
+    - ``lurek.set("name", tbl)`` — standard form (Rust param is named ``lurek``)
+    - ``lurek.set("name", tbl.clone())`` — clone variant
     - ``luna_table.set("name", ...)`` — alternate parameter name
     """
-    # Match any identifier (possibly named luna_table, luna, etc.) calling .set("name", expr)
+    # Match any identifier (possibly named luna_table, lurek, etc.) calling .set("name", expr)
     # where expr is an identifier with an optional .clone() call.
     if not re.search(
         r'\bluna(?:_\w+)?\s*\.\s*set\s*\(\s*"[\w]+"\s*,\s*\w+(?:\.clone\(\))?\s*\)',
         content,
     ):
-        _err(0, 'No `luna.set("module", tbl)?;` found -- module is not registered in the lurek global table')
+        _err(0, 'No `lurek.set("module", tbl)?;` found -- module is not registered in the lurek global table')
 
 
 def check_no_rustdoc_sections(lines: list[str]) -> None:

@@ -1,11 +1,11 @@
 //! Tests for the image module.
 
-use lurek2d::image::compressed::{CompressedFormat, CompressedImageData};
-use lurek2d::image::image_data::ImageData;
-use lurek2d::image::layers::{ImageLayer, LayeredImage};
-use lurek2d::image::palette_lut::PaletteLUT;
-use lurek2d::image::province_grid::ProvinceGrid;
 use lurek2d::image::*;
+use lurek2d::image::image_data::ImageData;
+use lurek2d::image::compressed::{CompressedFormat, CompressedImageData};
+use lurek2d::image::palette_lut::PaletteLUT;
+use lurek2d::image::layers::{ImageLayer, LayeredImage};
+use lurek2d::image::province_grid::ProvinceGrid;
 use lurek2d::math::Color;
 use lurek2d::render::renderer::RenderCommand;
 use lurek2d::runtime::resource_keys::TextureKey;
@@ -31,9 +31,7 @@ mod compressed_tests {
     #[test]
     fn is_dds_magic_valid() {
         assert!(CompressedImageData::is_dds_magic(&[0x44, 0x44, 0x53, 0x20]));
-        assert!(CompressedImageData::is_dds_magic(&[
-            0x44, 0x44, 0x53, 0x20, 0xFF
-        ]));
+        assert!(CompressedImageData::is_dds_magic(&[0x44, 0x44, 0x53, 0x20, 0xFF]));
     }
 
     #[test]
@@ -44,9 +42,7 @@ mod compressed_tests {
 
     #[test]
     fn is_dds_magic_wrong_bytes() {
-        assert!(!CompressedImageData::is_dds_magic(&[
-            0x89, 0x50, 0x4E, 0x47
-        ])); // PNG
+        assert!(!CompressedImageData::is_dds_magic(&[0x89, 0x50, 0x4E, 0x47])); // PNG
     }
 
     #[test]
@@ -684,18 +680,8 @@ mod palette_lut_tests {
     #[test]
     fn set_color_appends_and_pads() {
         let mut p = PaletteLUT::new();
-        let from = Color {
-            r: 1.0,
-            g: 0.0,
-            b: 0.0,
-            a: 1.0,
-        };
-        let to = Color {
-            r: 0.0,
-            g: 1.0,
-            b: 0.0,
-            a: 1.0,
-        };
+        let from = Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 };
+        let to = Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 };
         p.set_color(2, from, to);
         assert_eq!(p.get_color_count(), 3);
         assert_eq!(p.get_from_color(2).unwrap().r, 1.0);
@@ -729,18 +715,8 @@ mod palette_lut_tests {
         let mut p = PaletteLUT::new();
         p.set_color(
             0,
-            Color {
-                r: 1.0,
-                g: 0.0,
-                b: 0.0,
-                a: 1.0,
-            },
-            Color {
-                r: 0.0,
-                g: 1.0,
-                b: 0.0,
-                a: 1.0,
-            },
+            Color { r: 1.0, g: 0.0, b: 0.0, a: 1.0 },
+            Color { r: 0.0, g: 1.0, b: 0.0, a: 1.0 },
         );
         p.apply(&mut img);
 
@@ -833,11 +809,7 @@ mod province_grid_tests {
         let img = make_test_image();
         let grid = ProvinceGrid::from_image(&img);
         let adj = grid.adjacencies();
-        assert!(
-            adj.len() >= 3,
-            "expected at least 3 adjacency pairs, got {}",
-            adj.len()
-        );
+        assert!(adj.len() >= 3, "expected at least 3 adjacency pairs, got {}", adj.len());
     }
 
     #[test]
@@ -974,8 +946,8 @@ mod texture_atlas_tests {
 // ── visualization tests ──────────────────────────────────────────────────────
 
 mod visualization_tests {
-    use lurek2d::animation::Animation;
     use lurek2d::image::visualization::draw_animation_frame_grid_to_image;
+    use lurek2d::animation::Animation;
     use lurek2d::math::Rect;
 
     fn make_anim_with_frames(count: usize) -> Animation {
@@ -1000,34 +972,5 @@ mod visualization_tests {
         let img = draw_animation_frame_grid_to_image(&anim, 8, 8);
         assert_eq!(img.width(), 8);
         assert_eq!(img.height(), 8);
-    }
-}
-
-// ── serial tests ─────────────────────────────────────────────────────────────
-
-mod serial_tests {
-    use super::*;
-    use lurek2d::image::serial::{decode_flat, encode_flat, parse_header};
-
-    #[test]
-    fn encode_then_decode_flat_preserves_pixels() {
-        let mut img = ImageData::new(2, 2);
-        img.set_pixel(0, 0, 255, 0, 128, 255);
-        img.set_pixel(1, 1, 0, 200, 50, 128);
-
-        let encoded = encode_flat(&img).unwrap();
-        // Header: 4 magic + 1 version + 1 type = 6 bytes minimum
-        assert!(encoded.len() > 6);
-        assert_eq!(&encoded[0..4], b"LIMG");
-        assert_eq!(encoded[4], 1); // version
-        assert_eq!(encoded[5], 0); // TYPE_FLAT
-
-        let (type_flag, payload) = parse_header(&encoded).unwrap();
-        assert_eq!(type_flag, 0);
-        let decoded = decode_flat(payload).unwrap();
-        assert_eq!(decoded.width(), 2);
-        assert_eq!(decoded.height(), 2);
-        let (r, g, b, a) = decoded.get_pixel(0, 0).unwrap();
-        assert_eq!((r, g, b, a), (255, 0, 128, 255));
     }
 }

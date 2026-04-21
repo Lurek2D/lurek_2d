@@ -1,10 +1,11 @@
-//! `lurek.image` — CPU-side pixel-level image manipulation.
+﻿//! `lurek.image` â€” CPU-side pixel-level image manipulation.
 //!
 //! Exposes `ImageData` (RGBA pixel buffers), `CompressedImageData` (DXT/BC/ETC),
 //! `LayeredImage` (multi-layer compositing), `ProvinceGrid` (colour-keyed region maps),
 //! and `PaletteLUT` (palette-swap look-up tables). All operations run on the CPU;
 //! upload to GPU is handled by the render layer.
 
+use super::render_api::LuaImageData;
 use super::SharedState;
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -319,10 +320,10 @@ impl LuaUserData for LuaCompressedImageData {
 /// Registers the `lurek.image` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newImageData --
@@ -445,10 +446,15 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "savePNG",
         lua.create_function(move |_, (img_ud, filename): (LuaAnyUserData, String)| {
             let path = s.borrow().game_dir.join(&filename);
-            let img = img_ud
-                .borrow::<ImageData>()
-                .map_err(|_| LuaError::RuntimeError("argument must be an ImageData".into()))?;
-            let bytes = img.encode_png().map_err(LuaError::RuntimeError)?;
+            // Accept both LuaImageData (from render/spine) and raw ImageData (from image module).
+            let bytes = if let Ok(wrapper) = img_ud.borrow::<LuaImageData>() {
+                wrapper.inner.encode_png().map_err(LuaError::RuntimeError)?
+            } else {
+                let raw = img_ud
+                    .borrow::<ImageData>()
+                    .map_err(|_| LuaError::RuntimeError("argument must be an ImageData".into()))?;
+                raw.encode_png().map_err(LuaError::RuntimeError)?
+            };
             if let Some(parent) = path.parent() {
                 std::fs::create_dir_all(parent).map_err(LuaError::external)?;
             }
@@ -502,7 +508,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             })
         })?,
     )?;
-    // ── newProvinceGrid ───────────────────────────────────────────────
+    // â”€â”€ newProvinceGrid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Loads a province map PNG and builds an O(1) spatial index with adjacency data.
     /// Each unique RGB color in the PNG is assigned a sequential province ID (1..n).
     /// Black pixels (0,0,0) are treated as background and return ID 0.
@@ -520,7 +526,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             lua.create_userdata(LuaProvinceGrid { inner: grid })
         })?,
     )?;
-    luna.set("image", tbl)?;
+    lurek.set("image", tbl)?;
     Ok(())
 }
 
@@ -1014,7 +1020,7 @@ pub struct LuaPaletteLUT {
 impl LuaUserData for LuaPaletteLUT {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         /// Appends a colour mapping entry to the palette: when a pixel exactly matching
-        /// `from_r, from_g, from_b, from_a` (0–255) is encountered it is replaced by
+        /// `from_r, from_g, from_b, from_a` (0â€“255) is encountered it is replaced by
         /// `to_r, to_g, to_b, to_a`.
         ///
         /// @param from_r : integer   0-255

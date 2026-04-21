@@ -67,7 +67,7 @@ Test placement is governed by binding constraints **TST-01** through **TST-06**.
 | **TST-03** | `src/lua_api/*_api.rs` holds only `impl LuaUserData`, registration, and conversions. |
 | **TST-04** | `mod.rs` holds only `pub mod`, `pub use`, attributes, and doc comments. |
 | **TST-05** | Demo/game tests: headless Lua tests live in `tests/lua/content/demos/` (one file per demo, name `test_<name>.lua`); binary screenshot tests live in `tests/demo_smoke_tests.rs` (`#[ignore]`). Never put demo tests in `tests/lua/unit/`. |
-| **TST-06** | `tests/lua/unit/` has exactly **one file per Rust module**. No split files per sub-feature (`test_event_signal.lua`, `test_effect_overlay.lua`, etc. are all banned). |
+| **TST-06** | Every Lua test layer has exactly **one file per module** (`test_<module>.lua` or `test_<modA>_<modB>.lua` for integration). This applies to `unit/`, `evidence/`, `golden/`, `stress/`, `security/`, and `config/`. No split per-sub-feature files (e.g. `test_effect_overlay.lua` alongside `test_effect_evidence.lua`). Merge into the single module file. |
 
 > **Migration note (2026-04-20).** This project previously tolerated inline `#[cfg(test)] mod tests` blocks inside `src/**/*.rs` for private-helper coverage. That recommendation is **superseded by TST-02**, effective 2026-04-20. Existing inline blocks are tracked for relocation under session [`testing-cleanup-20260420`](../../work/testing-cleanup-20260420/reports/plan.md); no new inline blocks are accepted.
 
@@ -95,7 +95,7 @@ The following are rejected at code review and by the audit scripts below:
 - **`fn`, `struct`, `enum`, `trait`, or `impl` definitions in any `mod.rs`** — violates **TST-04**. Move to a sibling file (`facade.rs`, `register.rs`, `types.rs`, or similar). `mod.rs` keeps only `pub mod X;`, `pub use X::*;`, module-level `#![...]` attributes, and doc comments.
 - **Duplicating a `lurek.*`-reachable test in Rust** — violates **TST-01**. Delete the Rust duplicate; keep the Lua test as the source of truth.
 - **Demo tests in `tests/lua/unit/`** — violates **TST-05**. Demo tests belong in `tests/lua/content/demos/`.
-- **Split per-sub-feature test files** (e.g. `test_effect_overlay.lua` alongside `test_effect.lua`) — violates **TST-06**. Merge into the single canonical `test_<module>.lua` file.
+- **Split per-sub-feature test files across any layer** (e.g. `test_effect_overlay_evidence.lua` alongside `test_effect_evidence.lua`, or `test_terrain_render_evidence.lua` alongside `test_render_evidence.lua`) — violates **TST-06**. Merge into the single canonical `test_<module>_<layer>.lua` file. One file per module per layer.
 
 ### Enforcement — audit scripts
 
@@ -155,6 +155,8 @@ cargo test
 ```
 tests/
 ├── fixtures/                        Shared test assets (images, audio, data files)
+├── output/                          Evidence test artefact output (git-ignored)
+├── samples/                         Golden comparison baseline files (committed)
 │
 ├── rust/                            Rust test binaries (all registered in Cargo.toml)
 │   ├── unit/                        One file per engine module — Rust struct invariants
@@ -224,8 +226,8 @@ tests/
     │   ├── test_audio.lua
     │   ├── test_physics.lua
     │   ├── test_input.lua
-    │   ├── test_time.lua
-    │   ├── test_filesystem.lua
+    │   ├── test_timer.lua
+    │   ├── test_fileapp.lua
     │   ├── test_data.lua
     │   ├── test_image.lua
     │   ├── test_sound.lua
@@ -278,9 +280,9 @@ tests/
     │   └── test_toml_validation.lua
     │
     ├── golden/                      Deterministic output Lua tests
-    │   └── test_math_golden.lua
+    │   └── test_<module>_golden.lua  Compares against tests/samples/ baseline files
     │
-    ├── config/                      Configuration loading tests
+    ├── config/                      Configuration loading tests (conf.toml only)
     │   └── test_config.lua
     │
     └── content/demos/                       One test file per demo in content/games/
@@ -433,7 +435,7 @@ All Lua tests use a custom BDD framework defined in `tests/lua/init.lua`. This f
 | **Stress** | `tests/lua/stress/` | Throughput + allocation from Lua | High iteration counts, timing checks |
 | **Security** | `tests/lua/security/` | Sandboxing + input validation | Nil spam, path traversal, bad types |
 | **Golden** | `tests/lua/golden/` | Deterministic output comparison | Compare against saved reference data |
-| **Config** | `tests/lua/config/` | Configuration loading | TOML keys, defaults, missing fields |
+| **Config** | `tests/lua/config/` | Configuration loading | `conf.toml` keys, defaults, missing fields, invalid TOML |
 | **Demos** | `tests/lua/content/demos/` | One file per demo in `content/games/` | Name: `test_<name>.lua`; shared: `_common_checks.lua` |
 
 ### Framework API
@@ -616,7 +618,7 @@ Every folder in `content/demos/` must have exactly one corresponding `test_demo_
 
 describe("hello_world demo", function()
     it("should load without error", function()
-        expect_not_nil(luna)
+        expect_not_nil(lurek)
         -- load callback runs cleanly
         dofile("content/demos/hello_world/main.lua")
     end)
@@ -1184,8 +1186,8 @@ production render path.
 ### Priority Modules for Evidence Testing
 
 - **P0**: `gfx` (shapes, colors), `light` (illumination), `particle` (emission), `raycaster` (2.5D scene)
-- **P1**: `camera` (viewport), `tilemap` (tile rendering), `entity` (draw components)
-- **P2**: `animation` (frame display), `postfx` (shader effects), `gui` (widget rendering)
+- **P1**: `camera` (viewport), `tilemap` (tile rendering), `ecs` (draw components)
+- **P2**: `animation` (frame display), `postfx` (shader effects), `ui` (widget rendering)
 
 ---
 

@@ -1,4 +1,4 @@
-//! `lurek.mods` - Mod discovery, dependency resolution, load ordering, and hot-reload.
+﻿//! `lurek.mods` - Mod discovery, dependency resolution, load ordering, and hot-reload.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -12,16 +12,21 @@ use std::collections::HashMap;
 // Helpers
 // -------------------------------------------------------------------------------
 
-/// Extracts a Lua string-array field (like `dependencies` or `capabilities`).
-fn read_string_array(tbl: &LuaTable, field: &str) -> Vec<String> {
-    tbl.get::<_, LuaTable>(field)
-        .map(|t| t.sequence_values::<String>().flatten().collect())
-        .unwrap_or_default()
-}
-
-/// Extracts a `config_schema` table into `(key, type_hint, default)` triples.
-fn read_config_schema(tbl: &LuaTable) -> Vec<(String, String, String)> {
-    tbl.get::<_, LuaTable>("config_schema")
+/// Reads a Lua info table into a [`ModInfo`].
+fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
+    let id: String = tbl
+        .get::<_, String>("id")
+        .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
+    let dependencies = tbl
+        .get::<_, LuaTable>("dependencies")
+        .map(|deps| deps.sequence_values::<String>().flatten().collect())
+        .unwrap_or_default();
+    let capabilities = tbl
+        .get::<_, LuaTable>("capabilities")
+        .map(|caps| caps.sequence_values::<String>().flatten().collect())
+        .unwrap_or_default();
+    let config_schema = tbl
+        .get::<_, LuaTable>("config_schema")
         .map(|schema| {
             schema
                 .sequence_values::<LuaTable>()
@@ -34,14 +39,7 @@ fn read_config_schema(tbl: &LuaTable) -> Vec<(String, String, String)> {
                 })
                 .collect()
         })
-        .unwrap_or_default()
-}
-
-/// Reads a Lua info table into a [`ModInfo`].
-fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
-    let id: String = tbl
-        .get::<_, String>("id")
-        .map_err(|_| LuaError::RuntimeError("newMod requires 'id' field".into()))?;
+        .unwrap_or_default();
     let mut info = ModInfo::from_parts(
         id,
         tbl.get::<_, String>("name").ok(),
@@ -49,11 +47,11 @@ fn mod_info_from_table(tbl: &LuaTable) -> LuaResult<ModInfo> {
         tbl.get::<_, String>("author").ok(),
         tbl.get::<_, String>("description").ok(),
         tbl.get::<_, i32>("priority").ok(),
-        read_string_array(tbl, "dependencies"),
+        dependencies,
     );
     info.api_version = tbl.get::<_, String>("api_version").ok();
-    info.capabilities = read_string_array(tbl, "capabilities");
-    info.config_schema = read_config_schema(tbl);
+    info.capabilities = capabilities;
+    info.config_schema = config_schema;
     Ok(info)
 }
 
@@ -130,7 +128,7 @@ fn string_slice_to_table<'a>(lua: &'a Lua, items: &[String]) -> LuaResult<LuaTab
 /// Lua-side wrapper around [`ModInfo`] with per-mod hook and config storage.
 ///
 /// # Fields
-/// - `inner` — `ModInfo`.
+/// - `inner` â€” `ModInfo`.
 ///
 pub struct LuaMod {
     pub(super) inner: ModInfo,
@@ -603,10 +601,10 @@ impl LuaUserData for LuaModManager {
 
 /// Registers the `lurek.mods` API table with the Lua VM.
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newMod --
@@ -634,7 +632,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
     /// @return table|nil
     ///
     /// Both version strings must be of the form "MAJOR.MINOR.PATCH". A mod is
-    /// compatible when its MAJOR equals the host MAJOR and its MINOR ≤ the host
+    /// compatible when its MAJOR equals the host MAJOR and its MINOR â‰¤ the host
     /// MINOR. Returns `true` if compatible, `false` otherwise. Always returns
     /// `true` when the mod has no `api_version` set.
     ///
@@ -725,6 +723,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("mods", tbl)?;
+    lurek.set("mods", tbl)?;
     Ok(())
 }

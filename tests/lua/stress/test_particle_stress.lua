@@ -79,4 +79,5 @@ describe("particle stress: burst emission", function()
         expect_equal(0, sys:getCount(), "all particles cleared after reset")
     end)
 end)
+
 test_summary()

@@ -56,27 +56,27 @@ const BUILTIN_ENUMS = {
 };
 // ── Callback definitions ─────────────────────────────────────
 const CALLBACK_DEFS = [
-    { name: "load", signature: "luna.load()", description: "Called once after the script is loaded.", params: [] },
-    { name: "update", signature: "luna.update(dt)", description: "Called every frame; `dt` is elapsed seconds.", params: [{ name: "dt", type: "number", description: "Delta time in seconds", optional: false }] },
-    { name: "draw", signature: "luna.draw()", description: "Called every frame for rendering.", params: [] },
-    { name: "keypressed", signature: "luna.keypressed(key)", description: "Called when a keyboard key is pressed.", params: [{ name: "key", type: "string", description: "Key name", optional: false }] },
-    { name: "keyreleased", signature: "luna.keyreleased(key)", description: "Called when a keyboard key is released.", params: [{ name: "key", type: "string", description: "Key name", optional: false }] },
-    { name: "textinput", signature: "luna.textinput(text)", description: "Called on text input.", params: [{ name: "text", type: "string", description: "Input character(s)", optional: false }] },
-    { name: "mousepressed", signature: "luna.mousepressed(x, y, button)", description: "Called when a mouse button is pressed.", params: [{ name: "x", type: "number", description: "Mouse X", optional: false }, { name: "y", type: "number", description: "Mouse Y", optional: false }, { name: "button", type: "number", description: "Button index", optional: false }] },
-    { name: "mousereleased", signature: "luna.mousereleased(x, y, button)", description: "Called when a mouse button is released.", params: [{ name: "x", type: "number", description: "Mouse X", optional: false }, { name: "y", type: "number", description: "Mouse Y", optional: false }, { name: "button", type: "number", description: "Button index", optional: false }] },
-    { name: "wheelmoved", signature: "luna.wheelmoved(x, y)", description: "Called on mouse wheel movement.", params: [{ name: "x", type: "number", description: "Horizontal scroll", optional: false }, { name: "y", type: "number", description: "Vertical scroll", optional: false }] },
-    { name: "gamepadpressed", signature: "luna.gamepadpressed(id, button)", description: "Called on gamepad button press.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "button", type: "string", description: "Button name", optional: false }] },
-    { name: "gamepadreleased", signature: "luna.gamepadreleased(id, button)", description: "Called on gamepad button release.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "button", type: "string", description: "Button name", optional: false }] },
-    { name: "gamepadaxis", signature: "luna.gamepadaxis(id, axis, value)", description: "Called on gamepad axis change.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "axis", type: "string", description: "Axis name", optional: false }, { name: "value", type: "number", description: "Axis value", optional: false }] },
-    { name: "joystickadded", signature: "luna.joystickadded(id)", description: "Called when a gamepad is connected.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }] },
-    { name: "joystickremoved", signature: "luna.joystickremoved(id)", description: "Called when a gamepad is disconnected.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }] },
-    { name: "touchpressed", signature: "luna.touchpressed(id, x, y, dx, dy, pressure)", description: "Called on touch start.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
-    { name: "touchmoved", signature: "luna.touchmoved(id, x, y, dx, dy, pressure)", description: "Called on touch move.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
-    { name: "touchreleased", signature: "luna.touchreleased(id, x, y, dx, dy, pressure)", description: "Called on touch end.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
-    { name: "focus", signature: "luna.focus(has_focus)", description: "Called when window gains or loses focus.", params: [{ name: "has_focus", type: "boolean", description: "Whether window has focus", optional: false }] },
-    { name: "visible", signature: "luna.visible(is_visible)", description: "Called when window visibility changes.", params: [{ name: "is_visible", type: "boolean", description: "Whether window is visible", optional: false }] },
-    { name: "resize", signature: "luna.resize(w, h)", description: "Called when the window is resized.", params: [{ name: "w", type: "number", description: "New width", optional: false }, { name: "h", type: "number", description: "New height", optional: false }] },
-    { name: "quit", signature: "luna.quit()", description: "Called when the window is closed.", params: [] },
+    { name: "load", signature: "lurek.load()", description: "Called once after the script is loaded.", params: [] },
+    { name: "update", signature: "lurek.update(dt)", description: "Called every frame; `dt` is elapsed seconds.", params: [{ name: "dt", type: "number", description: "Delta time in seconds", optional: false }] },
+    { name: "draw", signature: "lurek.draw()", description: "Called every frame for rendering.", params: [] },
+    { name: "keypressed", signature: "lurek.keypressed(key)", description: "Called when a keyboard key is pressed.", params: [{ name: "key", type: "string", description: "Key name", optional: false }] },
+    { name: "keyreleased", signature: "lurek.keyreleased(key)", description: "Called when a keyboard key is released.", params: [{ name: "key", type: "string", description: "Key name", optional: false }] },
+    { name: "textinput", signature: "lurek.textinput(text)", description: "Called on text input.", params: [{ name: "text", type: "string", description: "Input character(s)", optional: false }] },
+    { name: "mousepressed", signature: "lurek.mousepressed(x, y, button)", description: "Called when a mouse button is pressed.", params: [{ name: "x", type: "number", description: "Mouse X", optional: false }, { name: "y", type: "number", description: "Mouse Y", optional: false }, { name: "button", type: "number", description: "Button index", optional: false }] },
+    { name: "mousereleased", signature: "lurek.mousereleased(x, y, button)", description: "Called when a mouse button is released.", params: [{ name: "x", type: "number", description: "Mouse X", optional: false }, { name: "y", type: "number", description: "Mouse Y", optional: false }, { name: "button", type: "number", description: "Button index", optional: false }] },
+    { name: "wheelmoved", signature: "lurek.wheelmoved(x, y)", description: "Called on mouse wheel movement.", params: [{ name: "x", type: "number", description: "Horizontal scroll", optional: false }, { name: "y", type: "number", description: "Vertical scroll", optional: false }] },
+    { name: "gamepadpressed", signature: "lurek.gamepadpressed(id, button)", description: "Called on gamepad button press.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "button", type: "string", description: "Button name", optional: false }] },
+    { name: "gamepadreleased", signature: "lurek.gamepadreleased(id, button)", description: "Called on gamepad button release.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "button", type: "string", description: "Button name", optional: false }] },
+    { name: "gamepadaxis", signature: "lurek.gamepadaxis(id, axis, value)", description: "Called on gamepad axis change.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }, { name: "axis", type: "string", description: "Axis name", optional: false }, { name: "value", type: "number", description: "Axis value", optional: false }] },
+    { name: "joystickadded", signature: "lurek.joystickadded(id)", description: "Called when a gamepad is connected.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }] },
+    { name: "joystickremoved", signature: "lurek.joystickremoved(id)", description: "Called when a gamepad is disconnected.", params: [{ name: "id", type: "number", description: "Gamepad ID", optional: false }] },
+    { name: "touchpressed", signature: "lurek.touchpressed(id, x, y, dx, dy, pressure)", description: "Called on touch start.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
+    { name: "touchmoved", signature: "lurek.touchmoved(id, x, y, dx, dy, pressure)", description: "Called on touch move.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
+    { name: "touchreleased", signature: "lurek.touchreleased(id, x, y, dx, dy, pressure)", description: "Called on touch end.", params: [{ name: "id", type: "number", description: "Touch ID", optional: false }, { name: "x", type: "number", description: "X position", optional: false }, { name: "y", type: "number", description: "Y position", optional: false }, { name: "dx", type: "number", description: "X delta", optional: false }, { name: "dy", type: "number", description: "Y delta", optional: false }, { name: "pressure", type: "number", description: "Touch pressure", optional: false }] },
+    { name: "focus", signature: "lurek.focus(has_focus)", description: "Called when window gains or loses focus.", params: [{ name: "has_focus", type: "boolean", description: "Whether window has focus", optional: false }] },
+    { name: "visible", signature: "lurek.visible(is_visible)", description: "Called when window visibility changes.", params: [{ name: "is_visible", type: "boolean", description: "Whether window is visible", optional: false }] },
+    { name: "resize", signature: "lurek.resize(w, h)", description: "Called when the window is resized.", params: [{ name: "w", type: "number", description: "New width", optional: false }, { name: "h", type: "number", description: "New height", optional: false }] },
+    { name: "quit", signature: "lurek.quit()", description: "Called when the window is closed.", params: [] },
 ];
 const LUA_STDLIB = {
     string: {
@@ -414,7 +414,7 @@ class ApiDataService {
                 const modName = String(raw.name ?? "");
                 const mod = {
                     name: modName,
-                    fullPath: `luna.${modName}`,
+                    fullPath: `lurek.${modName}`,
                     description: String(raw.description ?? ""),
                     functions: [],
                     methods: [],
@@ -450,7 +450,7 @@ class ApiDataService {
     }
     rawToApiFunction(modName, raw) {
         const name = String(raw.name ?? "");
-        const fullPath = String(raw.fullPath ?? `luna.${modName}.${name}`);
+        const fullPath = String(raw.fullPath ?? `lurek.${modName}.${name}`);
         const params = Array.isArray(raw.parameters)
             ? raw.parameters.map(p => ({
                 name: String(p.name ?? ""),
@@ -496,7 +496,7 @@ class ApiDataService {
             const fn = {
                 module: currentModule.name,
                 name: currentFunc.name,
-                fullPath: currentFunc.fullPath ?? `luna.${currentModule.name}.${currentFunc.name}`,
+                fullPath: currentFunc.fullPath ?? `lurek.${currentModule.name}.${currentFunc.name}`,
                 signature: currentFunc.signature ?? "",
                 description: desc,
                 parameters: currentFunc.parameters ?? [],
@@ -527,8 +527,8 @@ class ApiDataService {
         };
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            // ── Module header: ## luna.graphics ──
-            const modMatch = line.match(/^## (?:luna\.)?(\w+)/);
+            // ── Module header: ## lurek.graphics ──
+            const modMatch = line.match(/^## (?:lurek\.)?(\w+)/);
             if (modMatch && !line.startsWith("## Contents") && !line.startsWith("## Callbacks")) {
                 flushFunc();
                 if (currentModule) {
@@ -540,7 +540,7 @@ class ApiDataService {
                 const modName = modMatch[1].toLowerCase().replace(/-/g, "_");
                 currentModule = {
                     name: modName,
-                    fullPath: `luna.${modName}`,
+                    fullPath: `lurek.${modName}`,
                     description: "",
                     functions: [],
                     methods: [],
@@ -577,8 +577,8 @@ class ApiDataService {
                 currentObjectType = null;
                 continue;
             }
-            // ── Function header: #### `luna.graphics.arc(mode, x, y, ...)` ──
-            const funcMatch = line.match(/^#{3,4}\s+`?luna\.(\w+)\.(\w+)(?:\(([^)]*)\))?`?/);
+            // ── Function header: #### `lurek.graphics.arc(mode, x, y, ...)` ──
+            const funcMatch = line.match(/^#{3,4}\s+`?lurek\.(\w+)\.(\w+)(?:\(([^)]*)\))?`?/);
             if (funcMatch && currentModule) {
                 flushFunc();
                 const [, , funcName, argStr] = funcMatch;
@@ -587,8 +587,8 @@ class ApiDataService {
                     : [];
                 currentFunc = {
                     name: funcName,
-                    fullPath: `luna.${currentModule.name}.${funcName}`,
-                    signature: `luna.${currentModule.name}.${funcName}(${argStr ?? ""})`,
+                    fullPath: `lurek.${currentModule.name}.${funcName}`,
+                    signature: `lurek.${currentModule.name}.${funcName}(${argStr ?? ""})`,
                     description: "",
                     parameters: paramNames.map(n => ({
                         name: n,
@@ -611,7 +611,7 @@ class ApiDataService {
                 currentObjectType = objType;
                 currentFunc = {
                     name: methName,
-                    fullPath: `luna.${currentModule.name}.${objType}:${methName}`,
+                    fullPath: `lurek.${currentModule.name}.${objType}:${methName}`,
                     signature: `${objType}:${methName}(${argStr ?? ""})`,
                     description: "",
                     parameters: paramNames.map(n => ({
@@ -780,7 +780,7 @@ class ApiDataService {
         this.callbackList = CALLBACK_DEFS.map(cb => ({
             module: "",
             name: cb.name,
-            fullPath: `luna.${cb.name}`,
+            fullPath: `lurek.${cb.name}`,
             signature: cb.signature,
             description: cb.description,
             parameters: cb.params,
@@ -946,7 +946,7 @@ class ApiDataService {
         for (const [modName, modDesc, funcs] of mods) {
             const mod = {
                 name: modName,
-                fullPath: `luna.${modName}`,
+                fullPath: `lurek.${modName}`,
                 description: modDesc,
                 functions: [],
                 methods: [],
@@ -957,8 +957,8 @@ class ApiDataService {
                 const fn = {
                     module: modName,
                     name,
-                    fullPath: `luna.${modName}.${name}`,
-                    signature: `luna.${modName}.${name}(${params.join(", ")})`,
+                    fullPath: `lurek.${modName}.${name}`,
+                    signature: `lurek.${modName}.${name}(${params.join(", ")})`,
                     description: desc,
                     parameters: params.map(p => ({
                         name: p,

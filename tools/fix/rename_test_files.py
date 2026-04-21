@@ -90,7 +90,7 @@ HARNESS_FN_RENAMES = [
     ("savegame_validation",    "save_validation"),
     ("savegame_tilemap",       "save_tilemap"),
     ("savegame_stress",        "save_stress"),
-    ("savegame",               "save"),
+    ("save",               "save"),
     ("signal_entity",          "event_entity"),
     ("signal_stress",          "event_stress"),
     ("signal",                 "event_signal"),  # standalone signal â†’ event_signal
@@ -105,18 +105,18 @@ HARNESS_FN_RENAMES = [
     ("entity_observers",       "ecs_observers"),
     ("entity_relationships",   "ecs_relationships"),
     ("entity_graphics",        "ecs_render"),
-    ("entity",                 "ecs"),            # standalone entity
+    ("ecs",                 "ecs"),            # standalone entity
     ("pathfinding_entity",     "pathfind_ecs"),
     ("tilemap_pathfinding",    "tilemap_pathfind"),
     ("ai_pathfinding",         "ai_pathfind"),
     ("pathfinding_stress",     "pathfind_stress"),
     ("pathfinding_golden",     "pathfind_golden_grid"),
-    ("pathfinding",            "pathfind"),       # standalone pathfinding
+    ("pathfind",            "pathfind"),       # standalone pathfinding
     ("graphics_animation",     "render_animation"),
     ("graphics_camera",        "render_camera"),
     ("graphics_stress",        "render_stress"),
     ("graphics_golden",        "render_golden"),
-    ("graphics",               "render"),         # standalone graphics
+    ("render",               "render"),         # standalone graphics
     ("graphic_draw_cmds",      "render_draw_cmds"),
     ("graphic_drawing",        "render_drawing"),
     ("light_graphics",         "light_render"),
@@ -125,11 +125,11 @@ HARNESS_FN_RENAMES = [
     ("postfx_stack",           "effect_stack"),
     ("postfx",                 "effect_postfx"),  # standalone postfx
     ("overlay_water",          "effect_overlay_water"),
-    ("overlay",                "effect_overlay"), # standalone overlay
+    ("effect",                "effect_overlay"), # standalone overlay
     ("_fx",                    "_effect_api"),    # test_effect_api â†’ test_effect_api
     ("localization_ui",        "i18n_ui"),
-    ("localization",           "i18n"),
-    ("modding",                "mods"),
+    ("i18n",           "i18n"),
+    ("mods",                "mods"),
     ("collision_helpers",      "physics_collision_helpers"),
     ("collision",              "physics_collision"),
     ("rendering_drawing",      "render_pipeline_drawing"),

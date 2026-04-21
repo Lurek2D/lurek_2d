@@ -7,7 +7,7 @@ class TimelineEditor extends shared_js_1.WebviewEditor {
         return new TimelineEditor(context);
     }
     constructor(context) {
-        super(context, "luna.timelineEditor", "Timeline");
+        super(context, "lurek.timelineEditor", "Timeline");
     }
     handleMessage(msg) {
         switch (msg.type) {

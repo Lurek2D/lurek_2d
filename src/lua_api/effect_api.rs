@@ -1,4 +1,4 @@
-//! `lurek.effect` — Composable visual effects: post-processing pipeline and screen overlays.
+﻿//! `lurek.effect` â€” Composable visual effects: post-processing pipeline and screen overlays.
 //!
 //! Exposes `PostFxEffect` (individual shader passes), `PostFxStack` (ordered chains),
 //! `ImageEffect` (named preset bundles), `Overlay` (screen-space weather/vignette),
@@ -221,7 +221,7 @@ pub struct LuaPostFxStack {
     stack_id: u64,
     /// Shared engine state for pushing render commands.
     state: Rc<RefCell<SharedState>>,
-    /// Feedback loop intensity `[0, 1]` — blends the previous frame into the
+    /// Feedback loop intensity `[0, 1]` â€” blends the previous frame into the
     /// current frame before post-processing, creating motion-trail effects.
     /// `0.0` = no feedback (default), `1.0` = full persistence.
     feedback_factor: f32,
@@ -654,7 +654,7 @@ impl LuaUserData for LuaImageEffect {
             Ok(name == "ImageEffect" || name == "Object")
         });
 
-        // ── Legacy pass-through methods ────────────────────────────────────
+        // â”€â”€ Legacy pass-through methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- removeByIndex --
         /// Removes the effect at the given 0-based index from the chain.
@@ -687,7 +687,7 @@ pub struct LuaOverlay {
 impl LuaUserData for LuaOverlay {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- update --
-        /// Advances all overlay subsystems by the given delta time.
+        /// Advances all effect subsystems by the given delta time.
         /// @param dt : number
         /// @return nil
         methods.add_method_mut("update", |_, this, dt: f32| {
@@ -756,12 +756,12 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- isActive --
-        /// Returns true if any overlay subsystem is currently active.
+        /// Returns true if any effect subsystem is currently active.
         /// @return boolean
         methods.add_method("isActive", |_, this, ()| Ok(this.inner.is_active()));
 
         // -- clear --
-        /// Resets all overlay subsystems to their default inactive state.
+        /// Resets all effect subsystems to their default inactive state.
         /// @return nil
         methods.add_method_mut("clear", |_, this, ()| {
             this.inner.clear();
@@ -769,7 +769,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- resize --
-        /// Resizes the overlay to match new window dimensions.
+        /// Resizes the effect to match new window dimensions.
         /// @param width : integer
         /// @param height : integer
         /// @return nil
@@ -779,17 +779,17 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- getWidth --
-        /// Returns the overlay width.
+        /// Returns the effect width.
         /// @return integer
         methods.add_method("getWidth", |_, this, ()| Ok(this.inner.get_width()));
 
         // -- getHeight --
-        /// Returns the overlay height.
+        /// Returns the effect height.
         /// @return integer
         methods.add_method("getHeight", |_, this, ()| Ok(this.inner.get_height()));
 
         // -- getDimensions --
-        /// Returns the overlay width and height.
+        /// Returns the effect width and height.
         /// @return integer, integer
         methods.add_method("getDimensions", |_, this, ()| {
             Ok(this.inner.get_dimensions())
@@ -809,7 +809,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.get_lightning_alpha())
         });
 
-        // ── Ambient ──────────────────────────────────────────────────────────
+        // â”€â”€ Ambient â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setAmbientEnabled --
         /// Enables or disables the ambient light layer.
@@ -851,7 +851,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setTimeOfDay --
-        /// Sets the simulated time-of-day (0–24) which drives ambient colour.
+        /// Sets the simulated time-of-day (0â€“24) which drives ambient colour.
         /// @param hour : number
         /// @return nil
         methods.add_method_mut("setTimeOfDay", |_, this, v: f32| {
@@ -860,13 +860,13 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- getTimeOfDay --
-        /// Returns the current simulated time-of-day (0–24).
+        /// Returns the current simulated time-of-day (0â€“24).
         /// @return number
         methods.add_method("getTimeOfDay", |_, this, ()| {
             Ok(this.inner.ambient.time_of_day)
         });
 
-        // ── Fog ──────────────────────────────────────────────────────────────
+        // â”€â”€ Fog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setFogEnabled --
         /// Enables or disables the fog layer.
@@ -919,7 +919,7 @@ impl LuaUserData for LuaOverlay {
             Ok((c[0], c[1], c[2], c[3]))
         });
 
-        // ── Heat haze ────────────────────────────────────────────────────────
+        // â”€â”€ Heat haze â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setHeatHazeEnabled --
         /// Enables or disables the heat-haze distortion layer.
@@ -938,7 +938,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setHeatHazeIntensity --
-        /// Sets the heat-haze distortion intensity (0.0–1.0).
+        /// Sets the heat-haze distortion intensity (0.0â€“1.0).
         /// @param intensity : number
         /// @return nil
         methods.add_method_mut("setHeatHazeIntensity", |_, this, v: f32| {
@@ -953,7 +953,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.heat_haze.intensity)
         });
 
-        // ── Vignette ─────────────────────────────────────────────────────────
+        // â”€â”€ Vignette â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setVignetteEnabled --
         /// Enables or disables the screen-edge vignette layer.
@@ -972,7 +972,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setVignetteStrength --
-        /// Sets the vignette darkening strength (0.0–1.0).
+        /// Sets the vignette darkening strength (0.0â€“1.0).
         /// @param strength : number
         /// @return nil
         methods.add_method_mut("setVignetteStrength", |_, this, v: f32| {
@@ -987,7 +987,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.vignette.strength)
         });
 
-        // ── Film grain ───────────────────────────────────────────────────────
+        // â”€â”€ Film grain â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setFilmGrainEnabled --
         /// Enables or disables the film-grain noise layer.
@@ -1006,7 +1006,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setFilmGrainIntensity --
-        /// Sets the film-grain noise intensity (0.0–1.0).
+        /// Sets the film-grain noise intensity (0.0â€“1.0).
         /// @param intensity : number
         /// @return nil
         methods.add_method_mut("setFilmGrainIntensity", |_, this, v: f32| {
@@ -1021,7 +1021,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.film_grain.intensity)
         });
 
-        // ── Cloud shadows ────────────────────────────────────────────────────
+        // â”€â”€ Cloud shadows â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setCloudShadows --
         /// Enables or disables scrolling cloud-shadow projection.
@@ -1097,7 +1097,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.clouds.opacity)
         });
 
-        // ── Weather ──────────────────────────────────────────────────────────
+        // â”€â”€ Weather â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setWeatherEnabled --
         /// Enables or disables the weather particle system.
@@ -1133,7 +1133,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setWeatherIntensity --
-        /// Sets the particle spawn rate multiplier (0.0–1.0).
+        /// Sets the particle spawn rate multiplier (0.0â€“1.0).
         /// @param intensity : number
         /// @return nil
         methods.add_method_mut("setWeatherIntensity", |_, this, v: f32| {
@@ -1149,7 +1149,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- setWindDirection --
-        /// Sets the wind direction in radians (0 = right, π/2 = down).
+        /// Sets the wind direction in radians (0 = right, Ď€/2 = down).
         /// @param radians : number
         /// @return nil
         methods.add_method_mut("setWindDirection", |_, this, v: f32| {
@@ -1180,7 +1180,7 @@ impl LuaUserData for LuaOverlay {
             Ok(this.inner.weather.wind_speed)
         });
 
-        // ── Lightning color ──────────────────────────────────────────────────
+        // â”€â”€ Lightning color â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setLightningColor --
         /// Sets the lightning flash tint colour; alpha defaults to 1.0.
@@ -1205,7 +1205,7 @@ impl LuaUserData for LuaOverlay {
             Ok((c[0], c[1], c[2], c[3]))
         });
 
-        // ── Shorthand screen-effects ─────────────────────────────────────────
+        // â”€â”€ Shorthand screen-effects â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- flash --
         /// Triggers a full-screen colour flash; alpha defaults to 1.0, duration to 0.2 s.
@@ -1266,7 +1266,7 @@ impl LuaUserData for LuaOverlay {
         /// @return boolean
         methods.add_method("isFading", |_, this, ()| Ok(this.inner.fade.active));
 
-        // ── Misc ─────────────────────────────────────────────────────────────
+        // â”€â”€ Misc â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- render --
         /// Emits GPU render commands for all active overlay effects (flash, fade, lightning, vignette).
@@ -1283,7 +1283,7 @@ impl LuaUserData for LuaOverlay {
         });
 
         // -- drawToImage --
-        /// Renders the overlay state (flash, fade, effects) to a CPU ImageData.
+        /// Renders the effect state (flash, fade, effects) to a CPU ImageData.
         /// @param width : integer
         /// @param height : integer
         /// @return ImageData
@@ -1295,9 +1295,9 @@ impl LuaUserData for LuaOverlay {
         // -- setWater --
         /// Enables the water UV-distortion overlay and sets its wave parameters.
         ///
-        /// @param amplitude : number  — Wave displacement intensity (default 0.02).
-        /// @param frequency : number  — Wave spatial frequency in cycles/unit (default 3.0).
-        /// @param speed : number      — Wave animation speed in cycles/second (default 1.0).
+        /// @param amplitude : number  â€” Wave displacement intensity (default 0.02).
+        /// @param frequency : number  â€” Wave spatial frequency in cycles/unit (default 3.0).
+        /// @param speed : number      â€” Wave animation speed in cycles/second (default 1.0).
         /// @return nil
         methods.add_method_mut(
             "setWater",
@@ -1313,10 +1313,10 @@ impl LuaUserData for LuaOverlay {
         // -- setWaterTint --
         /// Sets the water tint colour and blend strength.
         ///
-        /// @param r : number       — Red channel [0.0, 1.0].
-        /// @param g : number       — Green channel [0.0, 1.0].
-        /// @param b : number       — Blue channel [0.0, 1.0].
-        /// @param strength : number — Tint blend factor [0.0, 1.0].
+        /// @param r : number       â€” Red channel [0.0, 1.0].
+        /// @param g : number       â€” Green channel [0.0, 1.0].
+        /// @param b : number       â€” Blue channel [0.0, 1.0].
+        /// @param strength : number â€” Tint blend factor [0.0, 1.0].
         /// @return nil
         methods.add_method_mut(
             "setWaterTint",
@@ -1330,9 +1330,9 @@ impl LuaUserData for LuaOverlay {
         );
 
         // -- setCustomShader --
-        /// Assigns a custom shader name to the overlay, or clears it when `nil` is passed.
+        /// Assigns a custom shader name to the effect, or clears it when `nil` is passed.
         ///
-        /// @param name : string?  — Shader name registered via `lurek.render`, or nil to clear.
+        /// @param name : string?  â€” Shader name registered via `lurek.render`, or nil to clear.
         /// @return nil
         methods.add_method_mut("setCustomShader", |_, this, name: Option<String>| {
             this.inner.custom_shader = name;
@@ -1387,11 +1387,11 @@ impl LuaUserData for LuaOverlay {
 /// Registers the `lurek.effect` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
 
-// ── LuaScreenTransition ─────────────────────────────────────────────────────
+// â”€â”€ LuaScreenTransition â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side wrapper around a [`crate::effect::ScreenTransition`].
 ///
@@ -1484,7 +1484,7 @@ impl mlua::UserData for LuaScreenTransition {
 }
 
 /// Registers the `lurek.effect` Lua API table into the engine namespace.
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newEffect --
@@ -1629,10 +1629,10 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     // -- newImageEffect --
     /// Creates a new per-image effect chain. Accepts:
     /// @param args : MultiValue
-    ///   - no args  → empty chain
-    ///   - "name"   → single effect
-    ///   - "name", {params}  → single effect with parameters
-    ///   - {{type="name",...}, ...}  → effect chain
+    ///   - no args  â†’ empty chain
+    ///   - "name"   â†’ single effect
+    ///   - "name", {params}  â†’ single effect with parameters
+    ///   - {{type="name",...}, ...}  â†’ effect chain
     /// @return ImageEffect
     tbl.set(
         "newImageEffect",
@@ -1704,7 +1704,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── ScreenTransition API ─────────────────────────────────────────────────
+    // â”€â”€ ScreenTransition API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- newTransition --
     /// Creates a new screen-transition controller. `kind` is one of:
@@ -1713,7 +1713,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// (default black).
     /// @param kind     : string?
     /// @param duration : number?
-    /// @param color    : table?  — `{r, g, b, a?}` in 0..1
+    /// @param color    : table?  â€” `{r, g, b, a?}` in 0..1
     /// @return ScreenTransition
     tbl.set(
         "newTransition",
@@ -1738,12 +1738,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Shader error display (dev diagnostics) ────────────────────────────────
+    // â”€â”€ Shader error display (dev diagnostics) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let shader_err_display = Rc::new(RefCell::new(false));
 
     let sed = shader_err_display.clone();
-    /// Enables or disables the overlay that renders shader compile errors as red text
+    /// Enables or disables the effect that renders shader compile errors as red text
     /// in the top-left corner of the screen.  Intended for dev builds only.
     /// @param enabled : boolean
     /// @return nil
@@ -1763,7 +1763,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(move |_, ()| Ok(*sed.borrow()))?,
     )?;
 
-    luna.set("effect", tbl)?;
+    lurek.set("effect", tbl)?;
 
     Ok(())
 }

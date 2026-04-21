@@ -7,7 +7,7 @@ class GraphEditor extends shared_js_1.WebviewEditor {
         return new GraphEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.graph", "Graph / Node Editor");
+        super(context, "lurek.editor.graph", "Graph / Node Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

@@ -186,8 +186,10 @@ impl Graph {
         }
 
         // Collect and sort edges by weight (ascending)
-        let mut sorted_edges: Vec<(&u64, f64)> =
-            self.edges.iter().map(|(id, e)| (id, e.weight)).collect();
+        let mut sorted_edges: Vec<(&u64, f64)> = self.edges
+            .iter()
+            .map(|(id, e)| (id, e.weight))
+            .collect();
         sorted_edges.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
 
         // Union-find with path compression
@@ -315,25 +317,15 @@ impl Graph {
         use std::collections::BinaryHeap;
 
         #[derive(Clone)]
-        struct ANode {
-            id: u64,
-            f: f32,
-        }
-        impl PartialEq for ANode {
-            fn eq(&self, o: &Self) -> bool {
-                self.f == o.f
-            }
-        }
+        struct ANode { id: u64, f: f32 }
+        impl PartialEq for ANode { fn eq(&self, o: &Self) -> bool { self.f == o.f } }
         impl Eq for ANode {}
         impl PartialOrd for ANode {
-            fn partial_cmp(&self, o: &Self) -> Option<std::cmp::Ordering> {
-                Some(self.cmp(o))
-            }
+            fn partial_cmp(&self, o: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(o)) }
         }
         impl Ord for ANode {
             fn cmp(&self, o: &Self) -> std::cmp::Ordering {
-                o.f.partial_cmp(&self.f)
-                    .unwrap_or(std::cmp::Ordering::Equal)
+                o.f.partial_cmp(&self.f).unwrap_or(std::cmp::Ordering::Equal)
             }
         }
 
@@ -358,10 +350,7 @@ impl Graph {
         let mut open: BinaryHeap<ANode> = BinaryHeap::new();
 
         g_cost.insert(from, 0.0);
-        open.push(ANode {
-            id: from,
-            f: heuristic(from),
-        });
+        open.push(ANode { id: from, f: heuristic(from) });
 
         while let Some(ANode { id, .. }) = open.pop() {
             if id == to {
@@ -377,31 +366,21 @@ impl Graph {
             let cur_g = *g_cost.get(&id).unwrap_or(&f32::MAX);
 
             for edge in self.edges.values() {
-                if !edge.active {
-                    continue;
-                }
-                let nb = if edge.from_node == id {
-                    edge.to_node
-                } else if edge.bidirectional && edge.to_node == id {
-                    edge.from_node
-                } else {
-                    continue;
-                };
-                if !self.nodes.contains_key(&nb) {
-                    continue;
-                }
+                if !edge.active { continue; }
+                let nb = if edge.from_node == id { edge.to_node }
+                    else if edge.bidirectional && edge.to_node == id { edge.from_node }
+                    else { continue };
+                if !self.nodes.contains_key(&nb) { continue; }
 
                 let new_g = cur_g + edge.weight.max(0.0) as f32;
                 if new_g < *g_cost.get(&nb).unwrap_or(&f32::MAX) {
                     g_cost.insert(nb, new_g);
                     came_from.insert(nb, id);
-                    open.push(ANode {
-                        id: nb,
-                        f: new_g + heuristic(nb),
-                    });
+                    open.push(ANode { id: nb, f: new_g + heuristic(nb) });
                 }
             }
         }
         None
     }
 }
+

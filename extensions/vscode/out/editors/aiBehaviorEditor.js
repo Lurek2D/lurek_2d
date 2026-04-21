@@ -7,7 +7,7 @@ class AiBehaviorEditor extends shared_js_1.WebviewEditor {
         return new AiBehaviorEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.aiBehavior", "AI Behavior Tree");
+        super(context, "lurek.editor.aiBehavior", "AI Behavior Tree");
     }
     handleMessage(msg) {
         switch (msg.type) {

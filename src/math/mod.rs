@@ -23,21 +23,15 @@ pub mod geometry;
 
 /// 3x3 column-major matrix for 2D transforms (translate, rotate, scale).
 pub mod mat3;
-/// Polygon utilities: ear-clipping triangulation and convexity testing.
-pub mod polygon;
-/// Interpolating and approximating splines: Catmull-Rom and Hermite.
-pub mod spline;
 /// 3D floating-point vector with arithmetic operators and common helpers.
 pub mod vec3;
+/// Interpolating and approximating splines: Catmull-Rom and Hermite.
+pub mod spline;
+/// Polygon utilities: ear-clipping triangulation and convexity testing.
+pub mod polygon;
 
 /// Dynamic AABB tree for efficient broad-phase overlap queries.
 pub mod aabb_tree;
-/// Scalar math free functions: `lerp`, `remap`, `clamp`, `sign`, `smoothstep`, `inverse_lerp`.
-pub mod facade;
-/// Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.
-pub mod noise_functions;
-/// Seeded procedural noise generator with fractal and map-generation helpers.
-pub mod noise_generator;
 /// Seedable random number generator for reproducible sequences.
 pub mod random;
 /// Axis-aligned rectangle with intersection and containment queries.
@@ -54,21 +48,123 @@ pub mod tween;
 pub mod vec2;
 /// Voronoi tessellation (Bowyer–Watson Delaunay → Voronoi dual).
 pub mod voronoi;
+/// Noise sampling functions: raw Perlin/Simplex/Value/Worley noise primitives.
+pub mod noise_functions;
+/// Seeded procedural noise generator with fractal and map-generation helpers.
+pub mod noise_generator;
 
 pub use aabb_tree::AabbTree;
 pub use bezier::BezierCurve;
 pub use circle::Circle;
 pub use color::{gamma_to_linear, linear_to_gamma, Color};
-pub use facade::{clamp, inverse_lerp, lerp, remap, sign, smoothstep};
 pub use geometry::*;
 pub use mat3::Mat3;
-pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
+pub use vec3::Vec3;
+pub use spline::{CatmullRomSpline, HermiteSpline};
 pub use random::RandomGenerator;
 pub use rect::Rect;
 pub use spatial_hash::SpatialHash;
-pub use spline::{CatmullRomSpline, HermiteSpline};
 pub use transform::Transform;
 pub use tween::{Tween, TweenValue};
 pub use vec2::Vec2;
-pub use vec3::Vec3;
-pub use voronoi::{voronoi_from_points, VoronoiCell};
+pub use voronoi::{VoronoiCell, voronoi_from_points};
+pub use noise_generator::{DistType, FractalType, MapGenOptions, NoiseGenerator, NoiseKind};
+
+/// Linear interpolation between `a` and `b` by factor `t` in [0, 1].
+///
+/// # Parameters
+/// - `a` — `f32`.
+/// - `b` — `f32`.
+/// - `t` — `f32`.
+///
+/// # Returns
+/// `f32`.
+pub fn lerp(a: f32, b: f32, t: f32) -> f32 {
+    a + t * (b - a)
+}
+
+/// Remap `v` from `[in_min, in_max]` to `[out_min, out_max]`.
+///
+/// # Parameters
+/// - `v` — `f32`.
+/// - `in_min` — `f32`.
+/// - `in_max` — `f32`.
+/// - `out_min` — `f32`.
+/// - `out_max` — `f32`.
+///
+/// # Returns
+/// `f32`.
+pub fn remap(v: f32, in_min: f32, in_max: f32, out_min: f32, out_max: f32) -> f32 {
+    // Guard against near-zero input range to avoid division by zero
+    let t = if (in_max - in_min).abs() < 1e-7 { 0.0 } else { (v - in_min) / (in_max - in_min) };
+    out_min + t * (out_max - out_min)
+}
+
+/// Clamp `v` to the range `[min, max]`.
+///
+/// # Parameters
+/// - `v` — Value to clamp.
+/// - `min` — Lower bound.
+/// - `max` — Upper bound.
+///
+/// # Returns
+/// `f32` — `v` clamped to `[min, max]`.
+pub fn clamp(v: f32, min: f32, max: f32) -> f32 {
+    if v < min {
+        min
+    } else if v > max {
+        max
+    } else {
+        v
+    }
+}
+
+/// Returns the sign of `v`: `1.0` if positive, `-1.0` if negative, `0.0` if zero.
+///
+/// # Parameters
+/// - `v` — `f32`.
+///
+/// # Returns
+/// `f32` — `-1.0`, `0.0`, or `1.0`.
+pub fn sign(v: f32) -> f32 {
+    if v > 0.0 {
+        1.0
+    } else if v < 0.0 {
+        -1.0
+    } else {
+        0.0
+    }
+}
+
+/// Hermite smooth interpolation between 0 and 1 when `x` is in `[edge0, edge1]`.
+///
+/// Returns 0 if `x <= edge0`, 1 if `x >= edge1`, and a smooth cubic curve in between.
+///
+/// # Parameters
+/// - `edge0` — Lower edge of the transition.
+/// - `edge1` — Upper edge of the transition.
+/// - `x` — Input value.
+///
+/// # Returns
+/// `f32` — Smoothly interpolated value in `[0, 1]`.
+pub fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
+    let t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+/// Inverse linear interpolation: returns the `t` factor such that `lerp(a, b, t) ≈ v`.
+///
+/// # Parameters
+/// - `a` — Start value.
+/// - `b` — End value.
+/// - `v` — Value between `a` and `b`.
+///
+/// # Returns
+/// `f32` — Interpolation factor; `0.0` if `a ≈ b`.
+pub fn inverse_lerp(a: f32, b: f32, v: f32) -> f32 {
+    if (b - a).abs() < 1e-7 {
+        0.0
+    } else {
+        (v - a) / (b - a)
+    }
+}

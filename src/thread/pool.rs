@@ -43,7 +43,9 @@ pub struct ThreadPool {
     /// Shared result output channel (workers → main).
     pub output: Arc<Channel>,
     /// Named channels accessible to every worker in this pool.
+    #[allow(dead_code)]
     named_channels: Arc<Mutex<HashMap<String, Arc<Channel>>>>,
+
 }
 
 impl ThreadPool {

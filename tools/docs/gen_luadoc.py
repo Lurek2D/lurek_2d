@@ -216,7 +216,7 @@ def main():
     out.append("---@meta")
     out.append("--- Auto-generated Lurek2D API documentation for LuaCATS.")
     out.append("")
-    out.append("luna = {}")
+    out.append("lurek = {}")
     out.append("")
 
     for mod_name in sorted(lua_api.keys()):

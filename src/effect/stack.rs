@@ -3,8 +3,8 @@
 //! [`PostFxStack`] manages an ordered chain of effects that captures and
 //! processes the rendered scene each frame.
 
-use crate::log_msg;
 use crate::runtime::log_messages::{FX01, FX02};
+use crate::log_msg;
 /// An ordered chain of effects that captures and processes the rendered scene.
 ///
 /// The full lifecycle every draw frame is:
@@ -321,16 +321,7 @@ impl PostFxStack {
             };
 
             // Box background
-            img.draw_rect(
-                bx as i32,
-                box_y as i32,
-                box_w,
-                box_h,
-                r / 3,
-                g / 3,
-                b / 3,
-                200,
-            );
+            img.draw_rect(bx as i32, box_y as i32, box_w, box_h, r / 3, g / 3, b / 3, 200);
             // Top/bottom borders
             img.draw_rect(bx as i32, box_y as i32, box_w, 2, r, g, b, 255);
             img.draw_rect(
@@ -407,16 +398,7 @@ impl PostFxStack {
             } else {
                 (200u8, 80u8, 80u8)
             };
-            img.draw_rect(
-                10,
-                y,
-                (width - 20).min(300),
-                18,
-                cr / 5,
-                cg / 5,
-                cb / 5,
-                255,
-            );
+            img.draw_rect(10, y, (width - 20).min(300), 18, cr / 5, cg / 5, cb / 5, 255);
             let label = labels.get(i).copied().unwrap_or("FX");
             let text = format!("{} - {}", label, if enabled { "ON" } else { "OFF" });
             img.draw_label(&text, 14, y + 4, cr, cg, cb);
@@ -460,14 +442,9 @@ impl PostFxStack {
             let px = col * cell_w;
             let py = 20 + row * cell_h;
             img.draw_rect(
-                (px + 2) as i32,
-                (py + 2) as i32,
-                cell_w - 4,
-                cell_h - 4,
-                cr / 5,
-                cg / 5,
-                cb / 5,
-                200,
+                (px + 2) as i32, (py + 2) as i32,
+                cell_w - 4, cell_h - 4,
+                cr / 5, cg / 5, cb / 5, 200,
             );
             img.draw_label(label, (px + 4) as i32, (py + 4) as i32, cr, cg, cb);
         }
@@ -535,20 +512,9 @@ impl PostFxStack {
     ) -> crate::image::ImageData {
         let mut img = crate::image::ImageData::new(width, height);
         img.fill(25, 25, 35, 255);
-        img.draw_label(
-            "POSTFX EFFECT TYPES",
-            (width / 2).saturating_sub(60) as i32,
-            4,
-            200,
-            180,
-            255,
-        );
+        img.draw_label("POSTFX EFFECT TYPES", (width / 2).saturating_sub(60) as i32, 4, 200, 180, 255);
 
-        let row_h = if entries.is_empty() {
-            height
-        } else {
-            (height - 20) / entries.len() as u32
-        };
+        let row_h = if entries.is_empty() { height } else { (height - 20) / entries.len() as u32 };
 
         for (i, &(label, (cr, cg, cb), param_count)) in entries.iter().enumerate() {
             let y_base = (20 + i as u32 * row_h) as i32;
@@ -584,14 +550,8 @@ impl PostFxStack {
         height: u32,
     ) -> crate::image::ImageData {
         let palette: &[(u8, u8, u8)] = &[
-            (180, 80, 80),
-            (80, 180, 80),
-            (80, 80, 180),
-            (180, 180, 80),
-            (180, 80, 180),
-            (80, 180, 180),
-            (200, 130, 60),
-            (130, 60, 200),
+            (180, 80, 80), (80, 180, 80), (80, 80, 180), (180, 180, 80),
+            (180, 80, 180), (80, 180, 180), (200, 130, 60), (130, 60, 200),
         ];
         let entries: Vec<(&str, (u8, u8, u8), usize)> = types
             .iter()
@@ -630,5 +590,105 @@ impl PostFxStack {
             })
             .collect();
         Self::draw_effect_type_bars_to_image(&entries, width, height)
+    }
+
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_stack_is_empty() {
+        let s = PostFxStack::new(800, 600);
+        assert!(s.is_empty());
+        assert_eq!(s.len(), 0);
+        assert!(!s.capturing);
+    }
+
+    #[test]
+    fn add_and_len() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(0);
+        s.add(1);
+        assert_eq!(s.len(), 2);
+        assert!(!s.is_empty());
+    }
+
+    #[test]
+    fn remove_returns_true_when_present() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(5);
+        assert!(s.remove(5));
+        assert!(s.is_empty());
+    }
+
+    #[test]
+    fn remove_returns_false_when_absent() {
+        let mut s = PostFxStack::new(800, 600);
+        assert!(!s.remove(99));
+    }
+
+    #[test]
+    fn insert_at_front() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(10);
+        s.insert(1, 20); // position 1 = front
+        assert_eq!(s.get_effect(1), Some(20));
+        assert_eq!(s.get_effect(2), Some(10));
+    }
+
+    #[test]
+    fn set_enabled_toggles() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(0);
+        assert!(s.is_enabled(0));
+        s.set_enabled(0, false);
+        assert!(!s.is_enabled(0));
+    }
+
+    #[test]
+    fn enabled_effects_filters_disabled() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(0);
+        s.add(1);
+        s.set_enabled(0, false);
+        let enabled = s.enabled_effects();
+        assert_eq!(enabled, vec![1]);
+    }
+
+    #[test]
+    fn resize_updates_dimensions() {
+        let mut s = PostFxStack::new(800, 600);
+        s.resize(1920, 1080);
+        assert_eq!(s.get_dimensions(), (1920, 1080));
+    }
+
+    #[test]
+    fn clear_empties_chain() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(0);
+        s.add(1);
+        s.clear();
+        assert!(s.is_empty());
+    }
+
+    #[test]
+    fn dedup_indices_removes_duplicates() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(0);
+        s.add(1);
+        s.add(0);
+        let removed = s.dedup_indices();
+        assert_eq!(removed, 1);
+        assert_eq!(s.len(), 2);
+    }
+
+    #[test]
+    fn get_effect_is_one_based() {
+        let mut s = PostFxStack::new(800, 600);
+        s.add(42);
+        assert_eq!(s.get_effect(1), Some(42));
+        assert_eq!(s.get_effect(0), None);
     }
 }

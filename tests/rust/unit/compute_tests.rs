@@ -1,7 +1,7 @@
 //! Tests for the compute module.
 
-use lurek2d::compute::analytics::*;
 use lurek2d::compute::array::{DataType, NdArray};
+use lurek2d::compute::analytics::*;
 use lurek2d::compute::fft::*;
 use lurek2d::compute::linalg::*;
 use lurek2d::compute::ops::*;
@@ -117,11 +117,7 @@ mod fft_tests {
         let out = fft(&data);
         // DC bin should have magnitude ≈ 8, all others ≈ 0.
         let (re0, im0) = out[0];
-        assert!(
-            (re0 - 8.0).abs() < 1e-9,
-            "DC bin re should be 8.0, got {}",
-            re0
-        );
+        assert!((re0 - 8.0).abs() < 1e-9, "DC bin re should be 8.0, got {}", re0);
         assert!(im0.abs() < 1e-9);
         for (re, im) in out.iter().skip(1) {
             assert!((re * re + im * im).sqrt() < 1e-9);

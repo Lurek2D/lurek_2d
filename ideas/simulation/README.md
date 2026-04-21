@@ -19,7 +19,7 @@ The goal is to port the core of a declarative, graph-based process-flow simulato
 | Python monitor engine | Rust end-of-tick monitor stream |
 | Flask REST API | `lurek.sim.*` Lua API (synchronous from script) |
 | DuckDB analytics | `lurek.dataframe` post-run analytics in Lua |
-| React dashboard | `lurek.gui` / `lurek.terminal` or external frontend |
+| React dashboard | `lurek.ui` / `lurek.terminal` or external frontend |
 
 The library is intended to be **reusable across projects**, not tightly coupled to one game. Any Lua frontend, wrapper, or external tool can sit above the Rust core.
 

@@ -502,7 +502,7 @@ Lurek2D has no UI library. In-game UI (health bars, buttons, menus) is built man
 
 | Crate | Downloads/mo | Stars | Notes |
 |-------|-------------|-------|-------|
-| `pathfinding` 4.15.0 | 218K | 1,044 | A*, Dijkstra, BFS, DFS, Fringe |
+| `pathfind` 4.15.0 | 218K | 1,044 | A*, Dijkstra, BFS, DFS, Fringe |
 | `bonsai-bt` 0.11.0 | 6.9K | 439 | Behavior trees |
 | `big-brain` 0.22.0 | 1.9K | 1,291 | Utility AI (Engine D-specific) |
 | `navmesh` 0.12.1 | 1.1K | 53 | Nav meshes + path following |
@@ -513,7 +513,7 @@ No AI subsystem exists. Game AI logic is implemented in Lua scripts.
 
 **What to add:**
 
-1. **Pathfinding** � The `pathfinding` crate's `astar` is pure Rust, no external dependencies, framework-independent. Exposing it to Lua as `lurek.pathfind.astar(grid, start, goal)` would be high value for top-down RPGs, tower defense, etc.
+1. **Pathfinding** � The `pathfind` crate's `astar` is pure Rust, no external dependencies, framework-independent. Exposing it to Lua as `lurek.pathfind.astar(grid, start, goal)` would be high value for top-down RPGs, tower defense, etc.
    - Input: a Lua table as 2D grid, start/goal as {x, y} tables
    - Output: a Lua array of {x, y} waypoints
    - Estimated implementation: 80 lines of Rust binding code
@@ -522,7 +522,7 @@ No AI subsystem exists. Game AI logic is implemented in Lua scripts.
 
 3. **Steering behaviors** � Seek, flee, arrive, wander, avoid � pure Rust math on `Vec2`. Simple to implement natively in ~200 lines without any crate. Expose as `lurek.ai.seek(position, target, speed)` � `Vec2`.
 
-**Recommendation:** Add pathfinding first via `pathfinding` crate (A*). Steering behaviors should be implemented natively. Behavior trees are optional tooling.
+**Recommendation:** Add pathfinding first via `pathfind` crate (A*). Steering behaviors should be implemented natively. Behavior trees are optional tooling.
 
 ---
 
@@ -650,7 +650,7 @@ The following is a prioritized backlog of features to add to Lurek2D, ordered by
 | Feature | Effort | Impact | Module | Crate/Approach |
 |---------|--------|--------|--------|---------------|
 | pixel art tools loader | 2 days | Medium | Graphics | `aseprite` crate |
-| Pathfinding (A*) | 2 days | Medium | AI | `pathfinding` crate, Lua grid API |
+| Pathfinding (A*) | 2 days | Medium | AI | `pathfind` crate, Lua grid API |
 | kira audio upgrade | 1 week | High | Audio | Replace rodio with kira for richer audio |
 | Spring animation | 1 day | Medium | Math | Port `natura` spring model |
 | Asset hot reload | 3 days | High | Filesystem | `assets_manager` crate |
@@ -681,7 +681,7 @@ These crates have clear integration paths and would meaningfully close current g
 | `keyframe` | 1.1 | Easing curves | Clean API, produces `f32` outputs directly usable in Lua |
 | `tiled` | 0.15 | Tiled .tmx loader | Level design standard format |
 | `aseprite` | 0.1 | pixel art tools sprite loader | Pixel artist's standard tool |
-| `pathfinding` | 4.15 | A* + graph algorithms | No_std, pure Rust, composable |
+| `pathfind` | 4.15 | A* + graph algorithms | No_std, pure Rust, composable |
 | `rapier2d` | 0.32 | Full physics engine | Pure Rust, replaces custom AABB |
 | `kira` | 0.12 | Expressive game audio | Supersedes rodio for game use cases |
 | `profiling` | 1.0 | Performance profiling | Thin abstraction, zero overhead in release |

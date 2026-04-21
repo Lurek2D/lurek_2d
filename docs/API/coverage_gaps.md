@@ -10,15 +10,10 @@ This report identifies three categories of coverage issues:
 
 ---
 
-## 1. Rust→Lua Gaps (85 items)
+## 1. Rust→Lua Gaps (83 items)
 
 These public Rust functions are **not exposed** to the `lurek.*` Lua API.
 This may be intentional (engine internals) or an oversight.
-
-### `animation::state_machine`
-
-- `compare_nums` — Applies a comparison operator to two `f32` values. `src/animation/state_machine.rs:363`
-- `parse_condition` — Parses a condition string such as `"speed > 0.1"` or `"jumpi `src/animation/state_machine.rs:383`
 
 ### `app::app`
 
@@ -34,7 +29,7 @@ This may be intentional (engine internals) or an oversight.
 ### `globe::draw`
 
 - `emit_globe_frame` — Emit all render commands for one globe frame.  `default_font `src/globe/draw.rs:23`
-- `project_arc` — Pre-project a great-circle arc into a flat screenspace point `src/globe/draw.rs:176`
+- `project_arc` — Pre-project a great-circle arc into a flat screenspace point `src/globe/draw.rs:196`
 
 ### `globe::lighting`
 
@@ -60,10 +55,10 @@ This may be intentional (engine internals) or an oversight.
 
 ### `image::visualization::animation`
 
-- `animation_playback_control_to_image` — Render an animation playback-control timeline diagram.  Draw `src/image/visualization/animation.rs:131`
+- `animation_playback_control_to_image` — Render an animation playback-control timeline diagram.  Draw `src/image/visualization/animation.rs:138`
 - `draw_animation_frame_grid_to_image` — Render an animation's frame grid as a strip of numbered cell `src/image/visualization/animation.rs:21`
-- `draw_animation_playback_to_image` — Render an animation playback strip as snapshot columns.  Dra `src/image/visualization/animation.rs:77`
-- `draw_animation_to_image` — Render an animation as a CPU image for headless testing.  De `src/image/visualization/animation.rs:208`
+- `draw_animation_playback_to_image` — Render an animation playback strip as snapshot columns.  Dra `src/image/visualization/animation.rs:84`
+- `draw_animation_to_image` — Render an animation as a CPU image for headless testing.  De `src/image/visualization/animation.rs:215`
 
 ### `image::visualization::audio`
 
@@ -193,10 +188,18 @@ These appear as `// (undocumented)` in `docs/API/rust-api.md`.
 
 ---
 
-## 3. Lua Docstring Issues (15 items)
+## 3. Lua Docstring Issues (41 items)
 
 Lua API items with missing or very short descriptions (< 25 chars).
 These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
+
+### `ai`
+
+- `module` **`lurek.ai`** — *(no description)*
+
+### `automation`
+
+- `module` **`lurek.automation`** — *(no description)*
 
 ### `camera`
 
@@ -221,9 +224,87 @@ These appear without documentation in `docs/API/lua-api.md` and IntelliSense.
 - `method` **`Globe:setMarkerVisible`** — *"Set marker visibility."* (too short)
 - `method` **`GlobeRegistry:remove`** — *"Remove a globe by name."* (too short)
 
+### `input`
+
+- `module` **`lurek.input`** — *(no description)*
+
+### `math`
+
+- `function` **`lurek.math.__call`** — *(no description)*
+- `function` **`lurek.math.new`** — *(no description)*
+- `function` **`lurek.math.new`** — *(no description)*
+- `function` **`lurek.math.new`** — *(no description)*
+- `function` **`lurek.math.splat`** — *(no description)*
+- `function` **`lurek.math.zero`** — *(no description)*
+
+### `minimap`
+
+- `module` **`lurek.minimap`** — *(no description)*
+
 ### `mods`
 
 - `method` **`Mod:getName`** — *"Returns the display name"* (too short)
+- `module` **`lurek.mods`** — *(no description)*
+
+### `particle`
+
+- `module` **`lurek.particle`** — *(no description)*
+
+### `physics`
+
+- `module` **`lurek.physics`** — *(no description)*
+
+### `pipeline`
+
+- `module` **`lurek.pipeline`** — *(no description)*
+
+### `procgen`
+
+- `module` **`lurek.procgen`** — *(no description)*
+
+### `raycaster`
+
+- `module` **`lurek.raycaster`** — *(no description)*
+
+### `render`
+
+- `module` **`lurek.render`** — *(no description)*
+
+### `save`
+
+- `module` **`lurek.save`** — *(no description)*
+
+### `scene`
+
+- `module` **`lurek.scene`** — *(no description)*
+
+### `serial`
+
+- `module` **`lurek.serial`** — *(no description)*
+
+### `terminal`
+
+- `module` **`lurek.terminal`** — *(no description)*
+
+### `thread`
+
+- `module` **`lurek.thread`** — *(no description)*
+
+### `tilemap`
+
+- `module` **`lurek.tilemap`** — *(no description)*
+
+### `timer`
+
+- `module` **`lurek.timer`** — *(no description)*
+
+### `ui`
+
+- `module` **`lurek.ui`** — *(no description)*
+
+### `window`
+
+- `module` **`lurek.window`** — *(no description)*
 
 ---
 

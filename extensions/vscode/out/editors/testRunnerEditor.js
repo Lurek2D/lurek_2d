@@ -51,7 +51,7 @@ class TestRunnerEditor extends shared_js_1.WebviewEditor {
         return new TestRunnerEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.testRunner", "Test Runner");
+        super(context, "lurek.editor.testRunner", "Test Runner");
         // Push discovered suites as soon as the panel is ready
         setTimeout(() => this.pushDiscoveredSuites(), 300);
     }

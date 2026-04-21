@@ -750,7 +750,7 @@ impl Minimap {
 
     // ── Geometry overlay ──
 
-    /// Push a line segment onto the overlay layer.
+    /// Push a line segment onto the effect layer.
     ///
     /// # Parameters
     /// - `x1` — `f32`.
@@ -768,7 +768,7 @@ impl Minimap {
         });
     }
 
-    /// Push a rectangle onto the overlay layer.
+    /// Push a rectangle onto the effect layer.
     ///
     /// # Parameters
     /// - `x` — `f32`.
@@ -781,7 +781,7 @@ impl Minimap {
             .push(OverlayShape::Rect { x, y, w, h, color });
     }
 
-    /// Remove all custom geometry from the overlay layer.
+    /// Remove all custom geometry from the effect layer.
     pub fn clear_overlay(&mut self) {
         self.overlay_shapes.clear();
     }

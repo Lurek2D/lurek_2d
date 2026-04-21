@@ -10,7 +10,7 @@
 
 - [ ] **R-02** — Dependency direction: shared_state: Core Runtime imports audio(Platform Services); shared_state: Core Runtime imports audio(Platform Services); shared_state: Core Runtime imports camera(Platform Services); shared_state: Core Runtime imports input(Platform Services); shared_state: Core Runtime imports light(Platform Services)
 - [ ] **T-01** — Rust test file: No test file found for module 'runtime'
-- [ ] **W-01** — Example file exists: content/examples/runtime.lua not found — create it
+- [ ] **W-01** — Example file exists: content/examples/runtimer.lua not found — create it
 - [ ] **W-02** — API surface coverage: Skipped — no example file
 
 ### 🟡 Warnings — Should Fix
@@ -92,9 +92,9 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **W-01** Example file exists | ❌ ERROR | content/examples/runtime.lua not found — create it |
+| **W-01** Example file exists | ❌ ERROR | content/examples/runtimer.lua not found — create it |
 | **W-02** API surface coverage | ❌ ERROR | Skipped — no example file |
-| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/runtime.lua has realistic one-line comments per call |
+| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/runtimer.lua has realistic one-line comments per call |
 | **W-04** Example–spec sync | ✅ PASS | No Lua API — skip |
 | **W-05** Wiki page | ✅ PASS | Module has no Lua API — skip |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |

@@ -7,7 +7,7 @@ class InputMapperEditor extends shared_js_1.WebviewEditor {
         return new InputMapperEditor(context);
     }
     constructor(context) {
-        super(context, "luna.inputMapperEditor", "Input Mapper");
+        super(context, "lurek.inputMapperEditor", "Input Mapper");
     }
     handleMessage(msg) {
         switch (msg.type) {

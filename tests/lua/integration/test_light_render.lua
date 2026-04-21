@@ -13,18 +13,14 @@ describe("integration: light placement alongside scene geometry", function()
     -- @description Verifies light setup and scene geometry draw commands can be issued together without error.
     it("creates lights and draws geometry to same scene", function()
         expect_no_error(function()
-            -- Create lights
-            local light1 = lurek.light.newLight("point")
-            lurek.light.setPosition(light1, 200, 200)
-            lurek.light.setRadius(light1, 150)
-            lurek.light.setColor(light1, 1.0, 0.9, 0.7, 1.0)
-            lurek.light.setIntensity(light1, 0.8)
+            -- Create lights with correct API: newLight(x, y, radius)
+            local light1 = lurek.light.newLight(200, 200, 150)
+            light1:setColor(1.0, 0.9, 0.7, 1.0)
+            light1:setIntensity(0.8)
 
-            local light2 = lurek.light.newLight("point")
-            lurek.light.setPosition(light2, 600, 300)
-            lurek.light.setRadius(light2, 100)
-            lurek.light.setColor(light2, 0.5, 0.5, 1.0, 1.0)
-            lurek.light.setIntensity(light2, 1.0)
+            local light2 = lurek.light.newLight(600, 300, 100)
+            light2:setColor(0.5, 0.5, 1.0, 1.0)
+            light2:setIntensity(1.0)
 
             -- Draw scene geometry (walls, floors)
             lurek.render.setColor(0.3, 0.3, 0.3, 1.0)
@@ -39,11 +35,11 @@ describe("integration: light placement alongside scene geometry", function()
     -- @covers lurek.render
     -- @description Verifies point light intensity accepts boundary values while remaining compatible with the graphics scene setup.
     it("light intensity range is clamped correctly", function()
-        local light = lurek.light.newLight("point")
-        lurek.light.setIntensity(light, 0.5)
+        local light = lurek.light.newLight(100, 100, 50)
+        light:setIntensity(0.5)
         expect_no_error(function()
-            lurek.light.setIntensity(light, 0.0)  -- min
-            lurek.light.setIntensity(light, 1.0)  -- max
+            light:setIntensity(0.0)  -- min
+            light:setIntensity(1.0)  -- max
         end)
     end)
 
@@ -52,10 +48,10 @@ describe("integration: light placement alongside scene geometry", function()
     -- @description Verifies multiple light types can coexist alongside graphics usage without raising errors.
     it("multiple lights of different types created without error", function()
         expect_no_error(function()
-            local types = {"point", "ambient"}
-            for _, t in ipairs(types) do
-                local l = lurek.light.newLight(t)
-                lurek.light.setIntensity(l, 0.5)
+            -- Create multiple lights of different positions/sizes
+            for i = 1, 3 do
+                local l = lurek.light.newLight(i * 100, i * 100, i * 30)
+                l:setIntensity(0.5)
             end
         end)
     end)
@@ -64,12 +60,13 @@ describe("integration: light placement alongside scene geometry", function()
     -- @covers lurek.render
     -- @description Verifies normalized light color values are accepted while used in the same rendering context as graphics commands.
     it("light color components are in 0..1 range", function()
-        local light = lurek.light.newLight("point")
+        local light = lurek.light.newLight(100, 100, 50)
         expect_no_error(function()
-            lurek.light.setColor(light, 0.0, 0.0, 0.0, 1.0)   -- black
-            lurek.light.setColor(light, 1.0, 1.0, 1.0, 1.0)   -- white
-            lurek.light.setColor(light, 1.0, 0.0, 0.0, 0.5)   -- red, half alpha
+            light:setColor(0.0, 0.0, 0.0, 1.0)   -- black
+            light:setColor(1.0, 1.0, 1.0, 1.0)   -- white
+            light:setColor(1.0, 0.0, 0.0, 0.5)   -- red, half alpha
         end)
     end)
 end)
+
 test_summary()

@@ -52,8 +52,7 @@ impl Neuroevolution {
         let ga = GeneticAlgorithm::new(pop_size, gene_count, seed);
         Self {
             ga,
-            template_layer_spec: layer_spec
-                .into_iter()
+            template_layer_spec: layer_spec.into_iter()
                 .map(|(i, o, a)| (i, o, a.to_string()))
                 .collect(),
             generation: 0,
@@ -69,9 +68,7 @@ impl Neuroevolution {
     ///
     /// # Returns
     /// `usize`.
-    pub fn pop_size(&self) -> usize {
-        self.ga.pop_size()
-    }
+    pub fn pop_size(&self) -> usize { self.ga.pop_size() }
 
     /// Builds a `NeuralNet` from the weight chromosome at index `i`.
     ///
@@ -144,5 +141,26 @@ impl Neuroevolution {
             net.add_layer(*inputs, *outputs, act);
         }
         net
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_pool_creates_population() {
+        let ne = Neuroevolution::new(vec![(2, 3, "relu"), (3, 1, "sigmoid")], 10, 42);
+        assert_eq!(ne.pop_size(), 10);
+    }
+
+    #[test]
+    fn evaluate_and_evolve_preserves_size() {
+        let mut ne = Neuroevolution::new(vec![(2, 1, "sigmoid")], 6, 42);
+        for i in 0..6 {
+            ne.set_fitness(i, i as f32);
+        }
+        ne.evolve();
+        assert_eq!(ne.pop_size(), 6);
     }
 }

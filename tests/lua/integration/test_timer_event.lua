@@ -29,11 +29,12 @@ describe("timer + event integration", function()
         local sig = lurek.event.newSignal()
         local received = nil
 
-        sig:connect(function(v)
+        -- connect(event_name, fn) — name is required
+        sig:connect("value", function(v)
             received = v
         end)
 
-        sig:emit(42)
+        sig:emit("value", 42)
         expect_equal(received, 42, "signal delivers value to listener")
     end)
 
@@ -42,10 +43,10 @@ describe("timer + event integration", function()
         local sig = lurek.event.newSignal()
         local received = nil
 
-        sig:connect(function(v) received = v end)
+        sig:connect("msg", function(v) received = v end)
 
         sched:after(0.01, function()
-            sig:emit("hello")
+            sig:emit("msg", "hello")
         end)
 
         sched:update(0.02)

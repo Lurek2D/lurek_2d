@@ -22,7 +22,7 @@ Verbatim from `docs/architecture/philosophy.md`. Do not propose changes without 
 - **TST-03** `src/lua_api/<module>_api.rs` holds only `impl LuaUserData`, registration, and conversions — business logic lives in `src/<module>/`.
 - **TST-04** Every `mod.rs` holds only `pub mod`, `pub use`, attributes, and doc comments — definitions live in sibling files.
 - **TST-05** Demo/game tests: headless Lua static-analysis tests live in `tests/lua/content/demos/test_<name>.lua` (one file per demo); binary screenshot tests live in `tests/demo_smoke_tests.rs` (`#[ignore]`). Never put demo tests in `tests/lua/unit/`.
-- **TST-06** `tests/lua/unit/` has exactly **one file per Rust module** (`test_<module>.lua`). No split per-sub-feature files (e.g. `test_effect_overlay.lua` alongside `test_effect.lua`). Merge into the single module file.
+- **TST-06** Every Lua test layer has exactly **one file per module** (`test_<module>_<layer>.lua` — e.g. `test_audio_unit.lua`, `test_audio_evidence.lua`). This rule applies to `unit/`, `evidence/`, `golden/`, `stress/`, `security/`, and `config/`. No split per-sub-feature files (e.g. `test_effect_overlay.lua` alongside `test_effect.lua`). Merge into the single module file.
 
 ## Cross-Artifact Sync
 

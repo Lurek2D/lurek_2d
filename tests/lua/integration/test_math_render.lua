@@ -165,4 +165,5 @@ describe("math geometry utilities", function()
         expect_near(5, iy, 0.001, "intersection y")
     end)
 end)
+
 test_summary()

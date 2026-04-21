@@ -69,4 +69,5 @@ describe("integration: entity + physics body lifecycle", function()
         expect_true(true, "kill + destroy did not crash")
     end)
 end)
+
 test_summary()

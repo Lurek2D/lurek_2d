@@ -7,7 +7,7 @@ class ParticleEditor extends shared_js_1.WebviewEditor {
         return new ParticleEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.particle", "Particle Designer");
+        super(context, "lurek.editor.particle", "Particle Designer");
     }
     handleMessage(msg) {
         switch (msg.type) {

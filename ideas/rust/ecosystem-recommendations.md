@@ -207,7 +207,7 @@ directories = "6"
 - arboard/rfd (clipboard/dialogs � Tier 2)
 - sysinfo (system info � Tier 2)
 - midly (MIDI � Tier 2)
-- Any tilemap, scene, pathfinding, AI, graph, compute, dataframe, entity modules
+- Any tilemap, scene, pathfinding, AI, graph, compute, dataframe, ecs modules
 
 ### Tier 1 Physics Strategy
 
@@ -785,7 +785,7 @@ The user needs logging that serves two purposes:
 
 - **Structured log format**: Implement a custom `log` backend (or wrap `env_logger`) that outputs JSON-structured log lines when `LUNA_LOG_FORMAT=json` is set. Format: `{"ts":"ISO8601","level":"INFO","module":"physics","msg":"step complete","dt_ms":16.2}`.
 - **Log levels**: Use standard `log` crate levels (`error`, `warn`, `info`, `debug`, `trace`).
-- **Log categories/tags**: Add a `target` field to all engine log calls. Categories: `engine`, `graphics`, `audio`, `physics`, `input`, `lua`, `timer`, `filesystem`, `ai`, `scene`, `entity`, `tilemap`.
+- **Log categories/tags**: Add a `target` field to all engine log calls. Categories: `engine`, `graphics`, `audio`, `physics`, `input`, `lua`, `timer`, `filesystem`, `ai`, `scene`, `ecs`, `tilemap`.
 - **Lua-side logging**: `lurek.log.info(msg)`, `lurek.log.warn(msg)`, `lurek.log.error(msg)`, `lurek.log.debug(msg)` � game scripts can write to the same log stream.
 - **Log file output**: `lurek.log.setFile(path)` � redirect log output to a file for post-mortem analysis. Append mode, with session start marker.
 - **Performance logging**: `lurek.log.perf(label, fn)` � time a function and log the duration. For profiling specific game operations.

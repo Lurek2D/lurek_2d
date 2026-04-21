@@ -428,13 +428,13 @@ Runtime smoke tests for GPU-required effects (blur, bloom, chromatic aberration)
 - Render white circle on black → apply blur → sample pixels near edge → verify they are gray (blur spread)
 - Apply bloom → bright areas spill light → sample just outside bright circle → non-zero
 
-#### gui/ui — Canvas + Input Simulation Evidence
+#### ui/ui — Canvas + Input Simulation Evidence
 
 ```lua
 -- Widget renders non-empty content
 local canvas = lurek.render.newCanvas(200, 50)
 canvas:renderTo(function()
-    lurek.gui.button("Click Me", 10, 10, 180, 30)
+    lurek.ui.button("Click Me", 10, 10, 180, 30)
 end)
 local hasPixels = false
 for x = 10, 190, 5 do
@@ -682,13 +682,13 @@ Runtime smoke tests for GPU-required effects (blur, bloom, chromatic aberration)
 - Render white circle on black → apply blur → sample pixels near edge → verify they are gray (blur spread)
 - Apply bloom → bright areas spill light → sample just outside bright circle → non-zero
 
-#### gui/ui — Canvas + Input Simulation Evidence
+#### ui/ui — Canvas + Input Simulation Evidence
 
 ```lua
 -- Widget renders non-empty content
 local canvas = lurek.render.newCanvas(200, 50)
 canvas:renderTo(function()
-    lurek.gui.button("Click Me", 10, 10, 180, 30)
+    lurek.ui.button("Click Me", 10, 10, 180, 30)
 end)
 local hasPixels = false
 for x = 10, 190, 5 do

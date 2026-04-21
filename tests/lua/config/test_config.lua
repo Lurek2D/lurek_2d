@@ -162,4 +162,5 @@ describe("lurek.conf call-time safety", function()
         expect_equal(true, true)
     end)
 end)
+
 test_summary()

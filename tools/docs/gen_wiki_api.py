@@ -35,18 +35,18 @@ OUTPUT_FILE = WORKSPACE_ROOT / "docs" / "wiki" / "API-Reference.md"
 
 # Canonical module display order
 _MODULE_ORDER = [
-    "graphics", "graphics_ext", "audio", "keyboard", "mouse", "gamepad",
+    "render", "graphics_ext", "audio", "keyboard", "mouse", "gamepad",
     "touch", "timer", "math", "math_ext", "physics", "filesystem", "window",
-    "event", "system", "thread", "particle", "tilemap", "scene", "entity",
-    "pathfinding", "ai", "data", "image", "sound", "compute", "dataframe",
-    "graph", "dialog", "postfx", "minimap", "savegame", "log", "modding",
-    "localization", "debug", "stats", "inventory", "crafting", "cardgame",
+    "event", "system", "thread", "particle", "tilemap", "scene", "ecs",
+    "pathfind", "ai", "data", "image", "sound", "compute", "dataframe",
+    "graph", "dialog", "postfx", "minimap", "save", "log", "mods",
+    "i18n", "debug", "stats", "inventory", "crafting", "cardgame",
     "combat", "input",
 ]
 
 # Module descriptions used when the module doc from source is missing/thin
 _MODULE_FALLBACK_DESC: dict = {
-    "graphics": "Immediate-mode 2D rendering: images, shapes, text, canvas, shaders, blend modes, transforms.",
+    "render": "Immediate-mode 2D rendering: images, shapes, text, canvas, shaders, blend modes, transforms.",
     "graphics_ext": "Extended graphics: lights, texture atlases, viewports, sprite sheets, draw layers.",
     "audio": "Sound playback: load audio files, play/pause/stop, volume, pitch, looping, panning.",
     "keyboard": "Keyboard state: key held/pressed/released queries.",
@@ -65,8 +65,8 @@ _MODULE_FALLBACK_DESC: dict = {
     "particle": "CPU particle system: emitters, modifiers, rendering.",
     "tilemap": "Tile maps: chunk loading, tile queries, navigation grid.",
     "scene": "Depth-sorted scene management for 2D layers.",
-    "entity": "Lightweight entity/component system with universe, tags, and blueprints.",
-    "pathfinding": "Grid-based A* and flow-field pathfinding.",
+    "ecs": "Lightweight entity/component system with universe, tags, and blueprints.",
+    "pathfind": "Grid-based A* and flow-field pathfinding.",
     "ai": "AI subsystems: FSM, behavior tree, steering, Q-learning, squad, utility AI, GOAP.",
     "data": "Data utilities: TOML/JSON parsing, encoding, hashing, compression.",
     "image": "CPU-side image manipulation: pixel read/write, procedural generation.",
@@ -77,10 +77,10 @@ _MODULE_FALLBACK_DESC: dict = {
     "dialog": "Branching dialog system: trees, choices, variables, scripted events.",
     "postfx": "Post-processing effects: screen-space filters applied after draw.",
     "minimap": "Minimap rendering from tile data.",
-    "savegame": "Save/load game state: named slots, versioned tables, autosave.",
+    "save": "Save/load game state: named slots, versioned tables, autosave.",
     "log": "Structured game logging: levels, sinks, log file output.",
-    "modding": "Mod loading: folder scanning, dependency resolution, hot-reload.",
-    "localization": "Localisation: string lookup, locale switching, plural forms.",
+    "mods": "Mod loading: folder scanning, dependency resolution, hot-reload.",
+    "i18n": "Localisation: string lookup, locale switching, plural forms.",
     "debug": "Debug overlays, draw calls inspection, performance display.",
     "stats": "Game statistics tracking and reporting.",
     "inventory": "Inventory system: items, stacks, slots, containers.",

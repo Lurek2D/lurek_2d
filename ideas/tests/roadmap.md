@@ -24,18 +24,18 @@
 
 ### 1.1 Add @covers Markers to Existing Tests
 Priority order (lowest coverage first):
-1. `test_runtime_system.lua` — add markers for all 22 system functions
+1. `test_runtime_app.lua` — add markers for all 22 system functions
 2. `test_math.lua` — add markers for Vec2, Mat3, trig, noise functions
 3. `test_log.lua` — add markers for all 13 log functions
 4. `test_i18n.lua` — add markers for 27 functions
 5. `test_physics.lua` — add markers for Body, Joint, World methods
-6. `test_filesystem.lua` — add markers for File object methods
+6. `test_fileapp.lua` — add markers for File object methods
 7. `test_mods.lua` — add markers for ModManager methods
 8. All remaining unit test files — add markers incrementally
 
 ### 1.2 Fill Coverage Gaps
 Write new tests for functions with 0% marker coverage:
-1. `test_runtime_system.lua` — add tests for `getOS`, `getArch`, `getCPUCount`, `getClipboard`, etc.
+1. `test_runtime_app.lua` — add tests for `getOS`, `getArch`, `getCPUCount`, `getClipboard`, etc.
 2. `test_math.lua` — add tests for Vec2/Vec3 methods, Mat3 operations, noise functions
 3. `test_log.lua` — add tests for `setLevel`, `setFile`, `trace`, `warn`, `error`
 4. `test_network.lua` — add tests for HttpClient methods (mock if needed)
@@ -86,7 +86,7 @@ Add `describe("error handling", ...)` blocks to:
 
 ### 4.1 Fix Misplaced Tests
 Move 4 single-module tests from integration/ to unit/:
-- test_runtime_system.lua, test_devtools.lua, test_debugbridge.lua, test_docs.lua
+- test_runtime_app.lua, test_devtools.lua, test_debugbridge.lua, test_docs.lua
 
 ### 4.2 New Integration Tests (Priority 1)
 1. test_ecs_physics.lua
@@ -99,9 +99,9 @@ Move 4 single-module tests from integration/ to unit/:
 8. test_animation_timer.lua
 
 ### 4.3 New Integration Tests (Priority 2)
-9. test_data_filesystem.lua
+9. test_data_fileapp.lua
 10. test_save_tilemap.lua
-11. test_event_entity.lua
+11. test_event_ecs.lua
 12. test_tilemap_pathfind.lua
 13. test_thread_data.lua
 

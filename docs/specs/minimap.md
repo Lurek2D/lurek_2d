@@ -104,9 +104,9 @@ New overlay management methods have been added to `Minimap`, expanding the surfa
 - `Minimap::marker_count` (`minimap.rs`): Get the number of markers.
 - `Minimap::set_marker_animation` (`minimap.rs`): Attach an animation to a marker.
 - `Minimap::clear_marker_animation` (`minimap.rs`): Remove the animation from a marker, reverting it to static.
-- `Minimap::draw_line` (`minimap.rs`): Push a line segment onto the overlay layer.
-- `Minimap::draw_rect` (`minimap.rs`): Push a rectangle onto the overlay layer.
-- `Minimap::clear_overlay` (`minimap.rs`): Remove all custom geometry from the overlay layer.
+- `Minimap::draw_line` (`minimap.rs`): Push a line segment onto the effect layer.
+- `Minimap::draw_rect` (`minimap.rs`): Push a rectangle onto the effect layer.
+- `Minimap::clear_overlay` (`minimap.rs`): Remove all custom geometry from the effect layer.
 - `Minimap::overlay_shapes` (`minimap.rs`): Return a slice of all overlay shapes for the current frame.
 - `Minimap::show_path` (`minimap.rs`): Display a pathfinding route on the minimap and return its auto-assigned ID.
 - `Minimap::clear_path` (`minimap.rs`): Remove a displayed path.

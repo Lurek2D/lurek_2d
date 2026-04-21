@@ -64,8 +64,8 @@ Three new source files add dedicated post-processing presets as first-class type
 - `TransitionKind` (`enum`, `transition.rs`): The visual style of a screen transition.
 - `ScreenTransition` (`struct`, `transition.rs`): Frame-by-frame state machine for a screen transition.
 - `WaterOverlayState` (`struct`, `water_overlay.rs`): Full-screen water-surface overlay state.
-- `WeatherType` (`enum`, `weather.rs`): Weather particle types supported by the overlay system.
-- `WeatherParticle` (`struct`, `weather.rs`): A single weather particle in the overlay's weather system.
+- `WeatherType` (`enum`, `weather.rs`): Weather particle types supported by the effect system.
+- `WeatherParticle` (`struct`, `weather.rs`): A single weather particle in the effect's weather system.
 - `WeatherState` (`struct`, `weather.rs`): Weather particle simulation state including type, wind, intensity, and live particles.
 
 ## Functions
@@ -105,9 +105,9 @@ Three new source files add dedicated post-processing presets as first-class type
 - `Overlay::get_shake_offset` (`overlay.rs`): Returns the current shake pixel offset.
 - `Overlay::is_active` (`overlay.rs`): Returns whether any effect is currently active.
 - `Overlay::clear` (`overlay.rs`): Resets all effects to their inactive defaults.
-- `Overlay::resize` (`overlay.rs`): Resizes the overlay canvas dimensions.
-- `Overlay::get_width` (`overlay.rs`): Returns the overlay canvas width in pixels.
-- `Overlay::get_height` (`overlay.rs`): Returns the overlay canvas height in pixels.
+- `Overlay::resize` (`overlay.rs`): Resizes the effect canvas dimensions.
+- `Overlay::get_width` (`overlay.rs`): Returns the effect canvas width in pixels.
+- `Overlay::get_height` (`overlay.rs`): Returns the effect canvas height in pixels.
 - `Overlay::get_dimensions` (`overlay.rs`): Returns both overlay canvas dimensions as `(width, height)`.
 - `Overlay::get_flash_alpha` (`overlay.rs`): Returns the current flash overlay alpha (0.0 when inactive).
 - `Overlay::get_lightning_alpha` (`overlay.rs`): Returns the current lightning overlay alpha (0.0 when inactive).
@@ -177,7 +177,7 @@ Three new source files add dedicated post-processing presets as first-class type
 - `lurek.effect.newImageEffect`: Creates a new per-image effect chain. Accepts:
 - `lurek.effect.newOverlay`: Creates a new screen overlay controller for weather, flash, shake, and fade effects.
 - `lurek.effect.newTransition`: Creates a new screen-transition controller. `kind` is one of:
-- `lurek.effect.setShaderErrorDisplay`: Enables or disables the overlay that renders shader compile errors as red text
+- `lurek.effect.setShaderErrorDisplay`: Enables or disables the effect that renders shader compile errors as red text
 - `lurek.effect.getShaderErrorDisplay`: Returns whether shader error display is currently enabled.
 
 ### `ImageEffect` Methods
@@ -196,15 +196,15 @@ Three new source files add dedicated post-processing presets as first-class type
 - `ImageEffect:removeByName`: Removes the first effect matching the given type name.
 
 ### `Overlay` Methods
-- `Overlay:update`: Advances all overlay subsystems by the given delta time.
+- `Overlay:update`: Advances all effect subsystems by the given delta time.
 - `Overlay:triggerLightning`: Triggers a lightning flash effect.
 - `Overlay:getShakeOffset`: Returns the current shake displacement as x, y.
-- `Overlay:isActive`: Returns true if any overlay subsystem is currently active.
-- `Overlay:clear`: Resets all overlay subsystems to their default inactive state.
-- `Overlay:resize`: Resizes the overlay to match new window dimensions.
-- `Overlay:getWidth`: Returns the overlay width.
-- `Overlay:getHeight`: Returns the overlay height.
-- `Overlay:getDimensions`: Returns the overlay width and height.
+- `Overlay:isActive`: Returns true if any effect subsystem is currently active.
+- `Overlay:clear`: Resets all effect subsystems to their default inactive state.
+- `Overlay:resize`: Resizes the effect to match new window dimensions.
+- `Overlay:getWidth`: Returns the effect width.
+- `Overlay:getHeight`: Returns the effect height.
+- `Overlay:getDimensions`: Returns the effect width and height.
 - `Overlay:getFlashAlpha`: Returns the current flash overlay alpha value.
 - `Overlay:getLightningAlpha`: Returns the current lightning overlay alpha value.
 - `Overlay:setAmbientEnabled`: Enables or disables the ambient light layer.
@@ -255,8 +255,8 @@ Three new source files add dedicated post-processing presets as first-class type
 - `Overlay:isShaking`: Returns true while a shake effect is in progress.
 - `Overlay:isFading`: Returns true while a fade effect is in progress.
 - `Overlay:render`: Emits GPU render commands for all active overlay effects (flash, fade, lightning, vignette).
-- `Overlay:drawToImage`: Renders the overlay state (flash, fade, effects) to a CPU ImageData.
-- `Overlay:setCustomShader`: Assigns a custom shader name to the overlay, or clears it when `nil` is passed.
+- `Overlay:drawToImage`: Renders the effect state (flash, fade, effects) to a CPU ImageData.
+- `Overlay:setCustomShader`: Assigns a custom shader name to the effect, or clears it when `nil` is passed.
 - `Overlay:getWater`: Returns a table describing the current water overlay state.
 - `Overlay:type`: Returns the type name of this object ("Overlay").
 - `Overlay:typeOf`: Returns true if this object is of the given type ("Object" or "Overlay").

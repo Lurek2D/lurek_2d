@@ -81,4 +81,5 @@ describe("stress: patterns state machine throughput", function()
         expect_true(elapsed < 10.0, "SM transition budget: " .. elapsed .. "s")
     end)
 end)
+
 test_summary()

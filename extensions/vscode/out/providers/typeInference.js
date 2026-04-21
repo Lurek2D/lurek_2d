@@ -41,7 +41,7 @@ const LUA_SELECTOR = {
 };
 /** Known factory functions → return type mappings. */
 const FACTORY_TYPES = {
-    "luna.graphics.newImage": {
+    "lurek.graphics.newImage": {
         typeName: "Image",
         methods: [
             { name: "getDimensions", sig: ":getDimensions()", desc: "Returns width, height" },
@@ -55,7 +55,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Image'" },
         ],
     },
-    "luna.graphics.newCanvas": {
+    "lurek.graphics.newCanvas": {
         typeName: "Canvas",
         methods: [
             { name: "getDimensions", sig: ":getDimensions()", desc: "Returns width, height" },
@@ -68,7 +68,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Canvas'" },
         ],
     },
-    "luna.graphics.newFont": {
+    "lurek.graphics.newFont": {
         typeName: "Font",
         methods: [
             { name: "getWidth", sig: ":getWidth(text)", desc: "Width of text in pixels" },
@@ -82,7 +82,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Font'" },
         ],
     },
-    "luna.graphics.newShader": {
+    "lurek.graphics.newShader": {
         typeName: "Shader",
         methods: [
             { name: "send", sig: ":send(name, value)", desc: "Set uniform value" },
@@ -91,7 +91,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Shader'" },
         ],
     },
-    "luna.graphics.newMesh": {
+    "lurek.graphics.newMesh": {
         typeName: "Mesh",
         methods: [
             { name: "setVertices", sig: ":setVertices(verts)", desc: "Set vertex data" },
@@ -101,7 +101,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Mesh'" },
         ],
     },
-    "luna.graphics.newSpriteBatch": {
+    "lurek.graphics.newSpriteBatch": {
         typeName: "SpriteBatch",
         methods: [
             { name: "add", sig: ":add(quad, x, y, r, sx, sy)", desc: "Add sprite to batch" },
@@ -113,7 +113,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'SpriteBatch'" },
         ],
     },
-    "luna.graphics.newQuad": {
+    "lurek.graphics.newQuad": {
         typeName: "Quad",
         methods: [
             { name: "getViewport", sig: ":getViewport()", desc: "Returns x, y, w, h" },
@@ -122,7 +122,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Quad'" },
         ],
     },
-    "luna.audio.newSource": {
+    "lurek.audio.newSource": {
         typeName: "Source",
         methods: [
             { name: "play", sig: ":play()", desc: "Start or resume playback" },
@@ -142,7 +142,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Source'" },
         ],
     },
-    "luna.physics.newWorld": {
+    "lurek.physics.newWorld": {
         typeName: "World",
         methods: [
             { name: "update", sig: ":update(dt)", desc: "Step the simulation" },
@@ -156,7 +156,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'World'" },
         ],
     },
-    "luna.physics.newBody": {
+    "lurek.physics.newBody": {
         typeName: "Body",
         methods: [
             { name: "getPosition", sig: ":getPosition()", desc: "Returns x, y" },
@@ -176,7 +176,7 @@ const FACTORY_TYPES = {
             { name: "type", sig: ":type()", desc: "Returns 'Body'" },
         ],
     },
-    "luna.graphics.newParticleSystem": {
+    "lurek.graphics.newParticleSystem": {
         typeName: "ParticleSystem",
         methods: [
             { name: "emit", sig: ":emit(count)", desc: "Emit particles" },
@@ -197,8 +197,8 @@ const FACTORY_TYPES = {
         ],
     },
     // ── cardgame types ────────────────────────────────────────
-    // luna.cardgame.clone is an alias — it clones a Card from another (advanced use)
-    "luna.cardgame.clone": {
+    // lurek.cardgame.clone is an alias — it clones a Card from another (advanced use)
+    "lurek.cardgame.clone": {
         typeName: "Card",
         fields: [
             { name: "card_type", type: "string", desc: "The registered card type name" },
@@ -224,7 +224,7 @@ const FACTORY_TYPES = {
             { name: "setMeta", sig: ":setMeta(key, value)", desc: "Set metadata value" },
         ],
     },
-    "luna.cardgame.newCard": {
+    "lurek.cardgame.newCard": {
         typeName: "Card",
         fields: [
             { name: "card_type", type: "string", desc: "The registered card type name" },
@@ -252,7 +252,7 @@ const FACTORY_TYPES = {
             { name: "getAllCounters", sig: ":getAllCounters()", desc: "Returns all (kind, count) counter pairs" },
         ],
     },
-    "luna.cardgame.newDeck": {
+    "lurek.cardgame.newDeck": {
         typeName: "Deck",
         fields: [
             { name: "name", type: "string", desc: "Deck display name" },
@@ -276,7 +276,7 @@ const FACTORY_TYPES = {
             { name: "reset", sig: ":reset()", desc: "Reset to original state" },
         ],
     },
-    "luna.cardgame.newDeckBuilder": {
+    "lurek.cardgame.newDeckBuilder": {
         typeName: "DeckBuilder",
         fields: [
             { name: "min_cards", type: "integer", desc: "Minimum total cards required" },
@@ -287,7 +287,7 @@ const FACTORY_TYPES = {
             { name: "validate", sig: ":validate(deck)", desc: "Validate a deck, returns list of violation messages" },
         ],
     },
-    "luna.cardgame.newStackManager": {
+    "lurek.cardgame.newStackManager": {
         typeName: "StackManager",
         methods: [
             { name: "push", sig: ":push(entry)", desc: "Push an entry onto the stack" },
@@ -299,7 +299,7 @@ const FACTORY_TYPES = {
             { name: "findByKind", sig: ":findByKind(kind)", desc: "Find first entry matching a kind" },
         ],
     },
-    "luna.cardgame.newZone": {
+    "lurek.cardgame.newZone": {
         typeName: "Zone",
         fields: [
             { name: "name", type: "string", desc: "Zone name" },
@@ -316,7 +316,7 @@ const FACTORY_TYPES = {
             { name: "getAllTypes", sig: ":getAllTypes()", desc: "Return type strings of all cards" },
         ],
     },
-    "luna.cardgame.newCardPool": {
+    "lurek.cardgame.newCardPool": {
         typeName: "CardPool",
         fields: [
             { name: "name", type: "string", desc: "Pool name" },
@@ -332,7 +332,7 @@ const FACTORY_TYPES = {
     },
 };
 /**
- * Scan document for `local var = luna.*.new*()` patterns and OOP classes.
+ * Scan document for `local var = lurek.*.new*()` patterns and OOP classes.
  */
 function scanDocument(document) {
     const varTypes = [];
@@ -342,8 +342,8 @@ function scanDocument(document) {
     const lines = text.split("\n");
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // Match: local var = luna.module.anyFunction(...)
-        const factoryMatch = line.match(/\blocal\s+(\w+)\s*=\s*(luna\.\w+\.\w+)\s*\(/);
+        // Match: local var = lurek.module.anyFunction(...)
+        const factoryMatch = line.match(/\blocal\s+(\w+)\s*=\s*(lurek\.\w+\.\w+)\s*\(/);
         if (factoryMatch) {
             const [, varName, factoryCall] = factoryMatch;
             const typeInfo = FACTORY_TYPES[factoryCall];
@@ -471,13 +471,13 @@ function register(context, _apiData) {
         provideCompletionItems(document, position) {
             const lineText = document.lineAt(position).text;
             const before = lineText.substring(0, position.character);
-            // Trigger on varName. but NOT luna. module paths (e.g. luna.graphics.)
+            // Trigger on varName. but NOT lurek. module paths (e.g. lurek.graphics.)
             const dotMatch = before.match(/\b(\w+)\.(\w*)$/);
             if (!dotMatch)
                 return undefined;
             const varName = dotMatch[1];
-            // Skip luna.* module calls — those are handled by the main completion provider
-            if (varName === "luna")
+            // Skip lurek.* module calls — those are handled by the main completion provider
+            if (varName === "lurek")
                 return undefined;
             const partial = dotMatch[2].toLowerCase();
             const { varTypes } = scanDocument(document);

@@ -1,7 +1,7 @@
 //! Weighted grid pathfinding (A*, Dijkstra) with obstacle support.
 //! Moved from `ai/pathgrid`; used by the Lua `lurek.ai.newPathGrid` API.
 //!
-//! This module is part of Lurek2D's `pathfinding` subsystem and provides the implementation
+//! This module is part of Lurek2D's `pathfind` subsystem and provides the implementation
 //! details for pathgrid-related operations and data management.
 //! Key types exported from this module: `Cell`, `PathGrid`.
 //! Primary functions: `new()`, `in_bounds()`, `set_walkable()`, `is_walkable()`.

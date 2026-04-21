@@ -10,15 +10,15 @@ describe("graph.mst", function()
 
     local function build_simple_graph()
         local g = lurek.graph.newGraph({ directed = false })
-        local n1 = g:addNode({ label = "A" })
-        local n2 = g:addNode({ label = "B" })
-        local n3 = g:addNode({ label = "C" })
-        local n4 = g:addNode({ label = "D" })
-        g:addEdge(n1, n2, { weight = 1.0 })
-        g:addEdge(n2, n3, { weight = 4.0 })
-        g:addEdge(n1, n3, { weight = 3.0 })
-        g:addEdge(n3, n4, { weight = 2.0 })
-        g:addEdge(n2, n4, { weight = 5.0 })
+        local n1 = g:addNode("A")
+        local n2 = g:addNode("B")
+        local n3 = g:addNode("C")
+        local n4 = g:addNode("D")
+        g:addEdge(n1, n2)
+        g:addEdge(n2, n3)
+        g:addEdge(n1, n3)
+        g:addEdge(n3, n4)
+        g:addEdge(n2, n4)
         return g, n1, n2, n3, n4
     end
 
@@ -45,16 +45,16 @@ describe("graph.mst", function()
 
     it("two-node graph has one MST edge", function()
         local g = lurek.graph.newGraph({ directed = false })
-        local a = g:addNode({})
-        local b = g:addNode({})
-        g:addEdge(a, b, { weight = 1.5 })
+        local a = g:addNode()
+        local b = g:addNode()
+        g:addEdge(a, b)
         local tree = g:mst()
         expect_equal(1, #tree)
     end)
 
     it("single node graph has empty MST", function()
         local g = lurek.graph.newGraph({ directed = false })
-        g:addNode({})
+        g:addNode()
         local tree = g:mst()
         expect_equal(0, #tree)
     end)
@@ -69,10 +69,10 @@ describe("graph.astar", function()
         local g = lurek.graph.newGraph({ directed = false })
         local nodes = {}
         for i = 1, n do
-            nodes[i] = g:addNode({ label = "N" .. i })
+            nodes[i] = g:addNode("N" .. i)
         end
         for i = 1, n - 1 do
-            g:addEdge(nodes[i], nodes[i + 1], { weight = 1.0 })
+            g:addEdge(nodes[i], nodes[i + 1])
         end
         return g, nodes
     end
@@ -93,8 +93,8 @@ describe("graph.astar", function()
 
     it("returns nil when no path exists", function()
         local g = lurek.graph.newGraph({ directed = false })
-        local a = g:addNode({})
-        local b = g:addNode({})
+        local a = g:addNode()
+        local b = g:addNode()
         -- No edge between a and b
         local path = g:astar(a, b)
         expect_equal(nil, path)
@@ -102,11 +102,11 @@ describe("graph.astar", function()
 
     it("astar path starts and ends at expected nodes", function()
         local g = lurek.graph.newGraph({ directed = false })
-        local a = g:addNode({ label = "start" })
-        local mid = g:addNode({ label = "mid" })
-        local b = g:addNode({ label = "end" })
-        g:addEdge(a, mid, { weight = 2.0 })
-        g:addEdge(mid, b, { weight = 3.0 })
+        local a   = g:addNode("start")
+        local mid = g:addNode("mid")
+        local b   = g:addNode("end")
+        g:addEdge(a, mid)
+        g:addEdge(mid, b)
         local path = g:astar(a, b)
         if path then
             -- Path should be a table of node userdatas
@@ -116,7 +116,7 @@ describe("graph.astar", function()
 
     it("same-node astar path has length 1", function()
         local g = lurek.graph.newGraph({ directed = false })
-        local a = g:addNode({})
+        local a = g:addNode()
         local path = g:astar(a, a)
         -- A path from a node to itself should be [a] or nil depending on impl
         expect_true(path == nil or #path == 1, "path to self should be length 1 or nil")
@@ -143,11 +143,11 @@ describe("graph + JPS integration", function()
         local g = lurek.graph.newGraph({ directed = false })
         local node_map = {}
         for _, r in ipairs(wg.regions) do
-            node_map[r.id] = g:addNode({ label = r.name })
+            node_map[r.id] = g:addNode(r.name)
         end
         for _, e in ipairs(wg.edges) do
             if node_map[e.from] and node_map[e.to] then
-                g:addEdge(node_map[e.from], node_map[e.to], { weight = e.cost })
+                g:addEdge(node_map[e.from], node_map[e.to])
             end
         end
 

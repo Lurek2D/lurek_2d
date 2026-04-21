@@ -1,4 +1,4 @@
-//! `lurek.tilemap` — Tile-based map authoring, chunk streaming, isometric and hex coordinate helpers.
+﻿//! `lurek.tilemap` â€” Tile-based map authoring, chunk streaming, isometric and hex coordinate helpers.
 
 use super::render_api::LuaImageData;
 use super::SharedState;
@@ -116,7 +116,7 @@ impl LuaUserData for LuaTileSet {
                 ));
             }
             let r = this.inner.borrow().get_quad(tile_id - 1);
-            // @return table — Quad source rect: {x, y, width, height}
+            // @return table â€” Quad source rect: {x, y, width, height}
             let tbl = lua.create_table()?;
             tbl.set("x", r.x)?;
             tbl.set("y", r.y)?;
@@ -175,7 +175,7 @@ impl LuaUserData for LuaTileSet {
                 Some(frames) => {
                     let tbl = lua.create_table()?;
                     for (i, f) in frames.iter().enumerate() {
-                        // @return table — Animation frame: {tileid, duration}
+                        // @return table â€” Animation frame: {tileid, duration}
                         let entry = lua.create_table()?;
                         entry.set("tileid", f.tile_id + 1)?;
                         entry.set("duration", f.duration_ms)?;
@@ -298,7 +298,7 @@ impl LuaUserData for LuaTileSet {
 /// Lua-side wrapper around a [`TileMap`].
 ///
 /// # Fields
-/// - `inner` — `Rc<RefCell<TileMap>>`.
+/// - `inner` â€” `Rc<RefCell<TileMap>>`.
 ///
 #[derive(Clone)]
 pub struct LuaTileMap {
@@ -695,7 +695,7 @@ impl LuaUserData for LuaTileMap {
 
         // -- sweepRect --
         /// Performs a swept AABB collision test against solid tiles on layer (1-based).
-        /// Returns (ox, oy, nx, ny, hx, hy) — final position, normal, and hit tile coords.
+        /// Returns (ox, oy, nx, ny, hx, hy) â€” final position, normal, and hit tile coords.
         /// When no obstacle is hit, ox = x+dx, oy = y+dy and normal/hit are zero.
         /// @param layer : integer
         /// @param x : number
@@ -779,7 +779,7 @@ impl LuaUserData for LuaTileMap {
             },
         );
 
-        // ── Rendering ──
+        // â”€â”€ Rendering â”€â”€
 
         // -- render --
         /// Renders the tile map to the screen at the given offset.
@@ -1130,7 +1130,7 @@ impl LuaUserData for LuaChunkMap {
 /// Lua-side wrapper around a [`LargeMapRenderer`] for chunk-level occlusion culling on large worlds.
 ///
 /// # Fields
-/// - `inner` — `Rc<RefCell<LargeMapRenderer>>`.
+/// - `inner` â€” `Rc<RefCell<LargeMapRenderer>>`.
 #[derive(Clone)]
 pub struct LuaLargeMapRenderer {
     inner: Rc<RefCell<LargeMapRenderer>>,
@@ -1139,7 +1139,7 @@ pub struct LuaLargeMapRenderer {
 impl LuaUserData for LuaLargeMapRenderer {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
         // -- setMapData --
-        /// Loads a flat array of tile IDs (row-major) covering width × height tiles.
+        /// Loads a flat array of tile IDs (row-major) covering width Ă— height tiles.
         /// Use 0 for empty tiles.
         /// @param data : table
         /// @param width : integer
@@ -1855,13 +1855,13 @@ impl LuaUserData for LuaMapGen {
 /// Registers the `lurek.tilemap` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── Factory functions ───────────────────────────────────────────────
+    // â”€â”€ Factory functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- newTileSet --
     /// Creates a new TileSet with the given atlas layout parameters.
@@ -2040,7 +2040,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Coordinate helper functions ─────────────────────────────────────
+    // â”€â”€ Coordinate helper functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- toScreenIso --
     /// Converts tile coordinates to screen position using diamond isometric projection.
@@ -2299,7 +2299,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- IsoMap layer constants --
-    // @return integer — IsoMap layer index constant
+    // @return integer â€” IsoMap layer index constant
     /// IsoMap floor layer index (1).
     tbl.set("FLOOR", 1u32)?;
     /// IsoMap north-wall layer index (2).
@@ -2395,7 +2395,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                     } else {
                         1
                     };
-                    // Use a Custom variant by creating MapGen directly with w×h
+                    // Use a Custom variant by creating MapGen directly with wĂ—h
                     let mut gen = MapGen::new(MapSize::Small, seg);
                     gen.set_grid_dimensions(w, h);
                     return Ok(LuaMapGen {
@@ -2452,7 +2452,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Parses a TMX XML string and returns a table with map metadata and layers.
     /// @return table|nil
     /// @param xml : string
-    /// table, string?  — (result_table, nil) on success; (nil, error_message) on failure
+    /// table, string?  â€” (result_table, nil) on success; (nil, error_message) on failure
     tbl.set(
         "loadTMX",
         lua.create_function(|lua, xml: String| {
@@ -2462,7 +2462,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             result.set("height", tmx.height)?;
             result.set("tileWidth", tmx.tile_width)?;
             result.set("tileHeight", tmx.tile_height)?;
-            // @return table — TMX map data: {width, height, tileWidth, tileHeight, orientation, layers}
+            // @return table â€” TMX map data: {width, height, tileWidth, tileHeight, orientation, layers}
             let orient_str = match tmx.orientation {
                 crate::tilemap::tmx::TmxOrientation::Orthogonal => "orthogonal",
                 crate::tilemap::tmx::TmxOrientation::Isometric => "isometric",
@@ -2473,7 +2473,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             let layers_tbl = lua.create_table()?;
             let mut layer_idx = 1usize;
             for layer in &tmx.layers {
-                // @return table — Layer entry: {type, name, width?, height?}
+                // @return table â€” Layer entry: {type, name, width?, height?}
                 let entry = lua.create_table()?;
                 match layer {
                     crate::tilemap::tmx::TmxLayer::Tile(t) => {
@@ -2483,7 +2483,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                         entry.set("height", t.height)?;
                     }
                     crate::tilemap::tmx::TmxLayer::Object(o) => {
-                        // @return table — Object layer entry: {type, name}
+                        // @return table â€” Object layer entry: {type, name}
                         entry.set("type", "object")?;
                         entry.set("name", o.name.as_str())?;
                     }
@@ -2491,13 +2491,13 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 layers_tbl.set(layer_idx, entry)?;
                 layer_idx += 1;
             }
-            // @return table — full TMX result with layers list
+            // @return table â€” full TMX result with layers list
             result.set("layers", layers_tbl)?;
             Ok(result)
         })?,
     )?;
 
-    // ── fromLDtk ──────────────────────────────────────────────────────────────
+    // â”€â”€ fromLDtk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Parses an LDtk JSON export string and returns a TileMap.
     /// Pass an optional `level_name` to select a specific level; defaults to the first.
     /// @param json_str : string
@@ -2524,8 +2524,8 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── newLargeMapRenderer ───────────────────────────────────────────────────
-    /// Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200×200 tiles.
+    // â”€â”€ newLargeMapRenderer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    /// Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200Ă—200 tiles.
     /// `tileW` and `tileH` specify the pixel dimensions of a single tile.
     /// @param tileW : integer
     /// @param tileH : integer
@@ -2546,7 +2546,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // @param tbl : table — tilemap module registration
-    luna.set("tilemap", tbl)?;
+    // @param tbl : table â€” tilemap module registration
+    lurek.set("tilemap", tbl)?;
     Ok(())
 }

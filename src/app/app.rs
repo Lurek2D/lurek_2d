@@ -1,4 +1,4 @@
-//! Lurek2D application lifecycle using winit 0.30 + wgpu GPU rendering.
+﻿//! Lurek2D application lifecycle using winit 0.30 + wgpu GPU rendering.
 //!
 //! Uses a `winit` event loop with `GpuRenderer` for hardware-accelerated rendering.
 //! The game loop structure (callbacks, SharedState, Lua VM) follows the standard pattern.
@@ -57,9 +57,9 @@ pub use crate::runtime::shared_state::WindowState;
 /// on the provided `WindowState` given the current physical window size.
 ///
 /// # Parameters
-/// - `ws` — Mutable reference to the window state to update.
-/// - `win_w` — Physical window width in pixels.
-/// - `win_h` — Physical window height in pixels.
+/// - `ws` â€” Mutable reference to the window state to update.
+/// - `win_w` â€” Physical window width in pixels.
+/// - `win_h` â€” Physical window height in pixels.
 pub fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
     // Clamp game dimensions to at least 1 to prevent division by zero.
     let gw = ws.game_width.max(1.0);
@@ -91,7 +91,7 @@ pub fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
             ws.viewport_offset_y = (win_h as f32 - gh * s) * 0.5;
         }
         _ => {
-            // "none" — pass-through, no scaling
+            // "none" â€” pass-through, no scaling
             ws.viewport_scale_x = 1.0;
             ws.viewport_scale_y = 1.0;
             ws.viewport_offset_x = 0.0;
@@ -100,7 +100,7 @@ pub fn recompute_viewport(ws: &mut WindowState, win_w: u32, win_h: u32) {
     }
 }
 
-// ─── Run state machine ──────────────────────────────────────────────────────
+// â”€â”€â”€ Run state machine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Tracks whether the engine is running normally, showing an error, or shutting down.
 pub enum RunState {
@@ -133,13 +133,13 @@ pub fn splash_window_title(base_title: &str) -> String {
 /// Computes the largest size that fits `src` inside `max` while preserving aspect ratio.
 ///
 /// # Parameters
-/// - `src_w` — Source width in pixels.
-/// - `src_h` — Source height in pixels.
-/// - `max_w` — Maximum width of the bounding box.
-/// - `max_h` — Maximum height of the bounding box.
+/// - `src_w` â€” Source width in pixels.
+/// - `src_h` â€” Source height in pixels.
+/// - `max_w` â€” Maximum width of the bounding box.
+/// - `max_h` â€” Maximum height of the bounding box.
 ///
 /// # Returns
-/// `(f32, f32)` — Scaled width and height that fit within the bounding box.
+/// `(f32, f32)` â€” Scaled width and height that fit within the bounding box.
 pub fn fit_contain_size(src_w: u32, src_h: u32, max_w: f32, max_h: f32) -> (f32, f32) {
     // Clamp to at least 1 to avoid division by zero.
     let src_w = src_w.max(1) as f32;
@@ -149,10 +149,10 @@ pub fn fit_contain_size(src_w: u32, src_h: u32, max_w: f32, max_h: f32) -> (f32,
     (src_w * scale, src_h * scale)
 }
 
-// ─── Lurek2D Application handler ──────────────────────────────────────────────
+// â”€â”€â”€ Lurek2D Application handler â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lurek2D application state managed by the winit event loop.
-pub struct LunaApp {
+pub struct LurekApp {
     config: Config,
     game_dir: PathBuf,
 
@@ -199,7 +199,7 @@ pub struct LunaApp {
     /// Debug overlay showing FPS and draw call count.
     debug_overlay: DebugOverlay,
 
-    /// Error message from conf.lua loading, displayed after window opens.
+    /// Error message from conf.toml loading, displayed after window opens.
     conf_error: Option<String>,
 
     /// True when the game_dir was explicitly passed as a CLI argument.
@@ -249,14 +249,15 @@ pub struct LunaApp {
     /// Wall-clock time when the first game frame started (used as a safety-exit deadline).
     auto_screenshot_start: Option<Instant>,
 
-    /// Keeps a drag-dropped `.lurek` / `.luna` archive's temporary extraction directory alive.
+    /// Keeps a drag-dropped `.lurek` / `.lurek` archive's temporary extraction directory alive.
     ///
     /// `TempDir` deletes the directory when dropped; this field extends its lifetime to match
     /// the running game session.  Replaced on every new drag-drop load.
     lurek_temp_dir: Option<tempfile::TempDir>,
 }
 
-impl LunaApp {
+impl LurekApp {
+    /// Creates a new [`LurekApp`] from the given configuration and game-folder path.
     pub fn new(
         config: Config,
         game_dir: PathBuf,
@@ -267,7 +268,7 @@ impl LunaApp {
     ) -> Self {
         let window_vsync_mode = if config.window.vsync { 1 } else { 0 };
 
-        LunaApp {
+        LurekApp {
             config,
             game_dir,
             window: None,
@@ -323,6 +324,7 @@ impl LunaApp {
         }
     }
 
+    /// Selects the best available [`wgpu::PresentMode`] for the given `requested_mode` integer.
     pub fn resolve_present_mode(
         available_modes: &[wgpu::PresentMode],
         requested_mode: i32,
@@ -372,8 +374,8 @@ impl LunaApp {
     /// Clamps surface dimensions to the GPU's maximum texture size, ensuring wgpu never panics.
     ///
     /// # Parameters
-    /// - `w` — Requested width in physical pixels.
-    /// - `h` — Requested height in physical pixels.
+    /// - `w` â€” Requested width in physical pixels.
+    /// - `h` â€” Requested height in physical pixels.
     ///
     /// # Returns
     /// `(u32, u32)` clamped width and height, each at least 1.
@@ -415,10 +417,10 @@ impl LunaApp {
         let width = self.config.window.width;
         let height = self.config.window.height;
 
-        // Resolve graphics backend from conf.lua (t.graphics.backend).
+        // Resolve graphics backend from conf.toml ([graphics].backend).
         // Falls back to WGPU_BACKEND env var, then to the platform-native primary backend.
         let backends = wgpu::util::backend_bits_from_env().unwrap_or(
-            match self.config.graphics.backend.as_str() {
+            match self.config.render.backend.as_str() {
                 "dx12" => wgpu::Backends::DX12,
                 "vulkan" => wgpu::Backends::VULKAN,
                 "metal" => wgpu::Backends::METAL,
@@ -426,8 +428,8 @@ impl LunaApp {
             },
         );
 
-        // Resolve power preference from conf.lua (t.graphics.power_preference).
-        let power_preference = match self.config.graphics.power_preference.as_str() {
+        // Resolve power preference from conf.toml ([graphics].power_preference).
+        let power_preference = match self.config.render.power_preference.as_str() {
             "low" => wgpu::PowerPreference::LowPower,
             "none" => wgpu::PowerPreference::None,
             _ => wgpu::PowerPreference::HighPerformance, // "high" or any unrecognised value
@@ -458,8 +460,8 @@ impl LunaApp {
             adapter_info.name,
             adapter_info.backend,
             adapter_info.device_type,
-            self.config.graphics.backend,
-            self.config.graphics.power_preference,
+            self.config.render.backend,
+            self.config.render.power_preference,
         );
 
         let (device, queue) = pollster::block_on(adapter.request_device(
@@ -529,13 +531,14 @@ impl LunaApp {
         );
     }
 
+    /// Re-initialises the Lua VM and per-game pipeline state for a new game session.
     pub fn init_lua(&mut self) {
         // Reset per-game pipeline state.
         self.ready_fired = false;
         self.physics_accumulator = 0.0;
         self.fixed_update_accumulator = 0.0;
 
-        // Show conf.lua error if present
+        // Show conf.toml error if present
         if let Some(conf_err) = self.conf_error.take() {
             self.run_state = RunState::Error(ErrorScreen::from_error(&format!(
                 "Configuration Error\n{}",
@@ -586,7 +589,7 @@ impl LunaApp {
 
         let state = Rc::new(RefCell::new(shared_state));
 
-        // Load the embedded bitmap default fonts before Lua starts — all lurek.render.print()
+        // Load the embedded bitmap default fonts before Lua starts â€” all lurek.render.print()
         // calls without an active font will use these instead of the bitmap fallback.
         state.borrow_mut().load_default_fonts();
 
@@ -852,7 +855,7 @@ impl LunaApp {
             self.auto_screenshot_frame_count += 1;
         }
 
-        // ── 1. ready (fires once, before first process) ─────────────────
+        // â”€â”€ 1. ready (fires once, before first process) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if !self.ready_fired {
             self.ready_fired = true;
             if let Err(e) = call_lua_callback_checked(lua, "ready", ()) {
@@ -863,7 +866,7 @@ impl LunaApp {
 
         let dt = state.borrow().clock.delta();
 
-        // ── 2. process_physics (fixed timestep, may fire 0..N times) ────
+        // â”€â”€ 2. process_physics (fixed timestep, may fire 0..N times) â”€â”€â”€â”€
         {
             let fixed_dt = state.borrow().physics_fixed_dt;
             self.physics_accumulator += dt;
@@ -880,7 +883,7 @@ impl LunaApp {
             }
         }
 
-        // ── 2b. fixedUpdate (independent fixed timestep, may fire 0..N times) ──
+        // â”€â”€ 2b. fixedUpdate (independent fixed timestep, may fire 0..N times) â”€â”€
         {
             let fixed_dt = state.borrow().fixed_update_dt;
             if fixed_dt > 0.0 {
@@ -899,26 +902,26 @@ impl LunaApp {
             }
         }
 
-        // ── 3. process(dt) (variable timestep, once per frame) ──────────
+        // â”€â”€ 3. process(dt) (variable timestep, once per frame) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if let Err(e) = call_lua_callback_checked(lua, "process", dt) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }
 
-        // ── 4. process_late(dt) (after process, before render) ──────────
+        // â”€â”€ 4. process_late(dt) (after process, before render) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if let Err(e) = call_lua_callback_checked(lua, "process_late", dt) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }
 
-        // ── 5. render (main draw pass) ──────────────────────────────────
+        // â”€â”€ 5. render (main draw pass) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         {
             let mut s = state.borrow_mut();
             s.render_commands.clear();
             s.raycaster_output = None;
         }
 
-        // ── 5a. Auto-collect: parallax layers (draw order 2 — before game world) ──
+        // â”€â”€ 5a. Auto-collect: parallax layers (draw order 2 â€” before game world) â”€â”€
         {
             let s = state.borrow();
             let cam_x = s.camera.position.x;
@@ -945,7 +948,7 @@ impl LunaApp {
                 .retain(|w| w.upgrade().is_some());
         }
 
-        // ── 5b. Auto-collect: tilemaps (draw order 3 — background layers) ──
+        // â”€â”€ 5b. Auto-collect: tilemaps (draw order 3 â€” background layers) â”€â”€
         {
             let s = state.borrow();
             let cam_x = s.camera.position.x;
@@ -967,13 +970,13 @@ impl LunaApp {
                 .retain(|w| w.upgrade().is_some());
         }
 
-        // ── 5c. Lua render callback (draw order 4 — game world) ──────────
+        // â”€â”€ 5c. Lua render callback (draw order 4 â€” game world) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if let Err(e) = call_lua_callback_checked(lua, "render", ()) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }
 
-        // ── 5d. Auto-collect: raycaster scene (draw order 5 — 3D FPS view) ──
+        // â”€â”€ 5d. Auto-collect: raycaster scene (draw order 5 â€” 3D FPS view) â”€â”€
         // Converts RaycasterScene quads to DrawTexturedQuad commands, depth-sorted
         // back-to-front so the painter's algorithm renders correctly.
         {
@@ -1051,7 +1054,7 @@ impl LunaApp {
             }
         }
 
-        // ── 5e. Auto-collect: particle systems (draw order 6 — after game world) ─
+        // â”€â”€ 5e. Auto-collect: particle systems (draw order 6 â€” after game world) â”€
         // NOTE: Scripts that manually call `system:render()` inside `lurek.render()`
         // will have their particles rendered twice (once by Lua, once here).  Use
         // one approach per particle system: either manual Lua render OR auto-collect.
@@ -1066,13 +1069,13 @@ impl LunaApp {
             state.borrow_mut().render_commands.extend(particle_cmds);
         }
 
-        // ── 6. render_ui (UI/HUD overlay pass) ──────────────────────────
+        // â”€â”€ 6. render_ui (UI/HUD overlay pass) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if let Err(e) = call_lua_callback_checked(lua, "render_ui", ()) {
             self.run_state = RunState::Error(try_errorhandler_or_screen(lua, &e));
             return;
         }
 
-        // ── 6a. Auto-collect: GUI context (draw order 9 — after render_ui) ──
+        // â”€â”€ 6a. Auto-collect: GUI context (draw order 9 â€” after render_ui) â”€â”€
         {
             let ui_cmds: Vec<_> = state
                 .borrow()
@@ -1309,7 +1312,7 @@ impl LunaApp {
             }
         }
 
-        // ── Frame budget warning ─────────────────────────────────────────
+        // â”€â”€ Frame budget warning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         if let Some(budget_ms) = self.config.performance.frame_budget_warn_ms {
             let elapsed_ms = self.last_frame.elapsed().as_secs_f64() * 1000.0;
             if elapsed_ms > budget_ms as f64 {
@@ -1471,14 +1474,14 @@ impl LunaApp {
         }
     }
 
-    /// Extracts a `.lurek` or `.luna` archive into a fresh temp directory.
+    /// Extracts a `.lurek` or `.lurek` archive into a fresh temp directory.
     ///
     /// Returns the extracted directory path and a `TempDir` handle (which must be kept alive
     /// for the duration of the game session).  Rejects zip-slip paths with `..` or absolute
     /// components before writing any entry to disk.
     ///
     /// # Parameters
-    /// - `archive_path` — Path to the `.lurek` or `.luna` file on disk.
+    /// - `archive_path` â€” Path to the `.lurek` or `.lurek` file on disk.
     ///
     /// # Returns
     /// `Ok((PathBuf, TempDir))` on success, or a descriptive error string on failure.
@@ -1506,7 +1509,7 @@ impl LunaApp {
                     std::path::Component::Normal(_) | std::path::Component::CurDir => {}
                     _ => {
                         return Err(format!(
-                            "Unsafe path in archive: '{}' — extraction rejected",
+                            "Unsafe path in archive: '{}' â€” extraction rejected",
                             entry_name
                         ));
                     }
@@ -1760,7 +1763,7 @@ fn system_cursor_to_winit_cursor(cursor: SystemCursor) -> CursorIcon {
 
 /// Loads the embedded engine icon PNG and converts it to a [`winit::window::Icon`].
 ///
-/// Used as the default window icon when the game's `conf.lua` does not supply a
+/// Used as the default window icon when the game's `conf.toml` does not supply a
 /// custom icon path. Returns `None` if the embedded bytes cannot be decoded.
 fn load_embedded_icon() -> Option<winit::window::Icon> {
     static ICON_BYTES: &[u8] = include_bytes!("../../assets/icon.png");
@@ -1912,7 +1915,7 @@ fn center_window_on_monitor(
     window.set_outer_position(winit::dpi::PhysicalPosition::new(x, y));
 }
 
-impl ApplicationHandler for LunaApp {
+impl ApplicationHandler for LurekApp {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         if self.window.is_some() {
             return;
@@ -1963,7 +1966,7 @@ impl ApplicationHandler for LunaApp {
                 window.set_window_icon(Some(icon));
             }
         } else {
-            // No icon configured — fall back to the embedded engine icon.
+            // No icon configured â€” fall back to the embedded engine icon.
             if let Some(icon) = load_embedded_icon() {
                 window.set_window_icon(Some(icon));
             }
@@ -2463,7 +2466,7 @@ impl ApplicationHandler for LunaApp {
             }
 
             WindowEvent::DroppedFile(path) => {
-                log::debug!("[luna2d drag-drop] DroppedFile: {}", path.display());
+                log::debug!("[lurek drag-drop] DroppedFile: {}", path.display());
                 log_msg!(info, L043_DROP_FILE, "{}", path.display());
                 if self.drag_hover {
                     self.drag_hover = false;
@@ -2473,15 +2476,15 @@ impl ApplicationHandler for LunaApp {
                 }
                 if !self.has_game {
                     let main_lua = path.join("main.lua");
-                    // Check for .lurek / .luna archive format first.
+                    // Check for .lurek archive format first.
                     let is_lurek_archive = path
                         .extension()
-                        .map(|e| e.eq_ignore_ascii_case("lurek") || e.eq_ignore_ascii_case("luna"))
+                        .map(|e| e.eq_ignore_ascii_case("lurek"))
                         .unwrap_or(false);
 
                     if is_lurek_archive {
                         log_msg!(info, L083_DROP_ARCHIVE, "{}", path.display());
-                        match LunaApp::extract_lurek_archive(&path) {
+                        match LurekApp::extract_lurek_archive(&path) {
                             Ok((dir, td)) => {
                                 self.lurek_temp_dir = Some(td);
                                 self.game_dir = dir;
@@ -2552,25 +2555,25 @@ impl ApplicationHandler for LunaApp {
     }
 }
 
-// ─── App entry point (public API) ────────────────────────────────────────────
+// â”€â”€â”€ App entry point (public API) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Entry point for the Lurek2D engine. Owns the game loop, GPU renderer, and Lua VM lifecycle.
 ///
 /// # Fields
-/// - `config` — `Config`.
-/// - `conf_error` — `Option<String>`.
+/// - `config` â€” `Config`.
+/// - `conf_error` â€” `Option<String>`.
 pub struct App {
     config: Config,
-    /// Error message from conf.lua loading, propagated to the error screen.
+    /// Error message from conf.toml loading, propagated to the error screen.
     conf_error: Option<String>,
 }
 
 impl App {
-    /// Creates a new `App` with the given `Config` and an optional conf.lua error.
+    /// Creates a new `App` with the given `Config` and an optional conf.toml error.
     ///
     /// # Parameters
-    /// - `config` — `Config`.
-    /// - `conf_error` — `Option<String>`.
+    /// - `config` â€” `Config`.
+    /// - `conf_error` â€” `Option<String>`.
     ///
     /// # Returns
     /// `Self`.
@@ -2581,10 +2584,10 @@ impl App {
     /// Initialises the GPU, window, Lua VM, and runs the event loop until the game exits.
     ///
     /// # Parameters
-    /// - `game_dir` — Path to the game directory.
-    /// - `explicit_game_dir` — `true` when the user explicitly passed a path argument.
-    /// - `screenshot_path` — If `Some`, take a screenshot at this absolute path and quit.
-    /// - `screenshot_frames` — Minimum rendered game frames before capturing (default 3).
+    /// - `game_dir` â€” Path to the game directory.
+    /// - `explicit_game_dir` â€” `true` when the user explicitly passed a path argument.
+    /// - `screenshot_path` â€” If `Some`, take a screenshot at this absolute path and quit.
+    /// - `screenshot_frames` â€” Minimum rendered game frames before capturing (default 3).
     pub fn run(
         self,
         game_dir: PathBuf,
@@ -2613,7 +2616,7 @@ impl App {
         // possible. about_to_wait() switches to WaitUntil after that.
         event_loop.set_control_flow(ControlFlow::Poll);
 
-        let mut app = LunaApp::new(
+        let mut app = LurekApp::new(
             self.config,
             game_dir,
             self.conf_error,
@@ -2627,14 +2630,14 @@ impl App {
     }
 }
 
-// ─── Logging ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Initialises logging to both stderr and a log file.
 ///
 /// `log_file` is a path relative to `game_dir` (or absolute). When `None`,
 /// the file is placed at `cwd/lurek2d.log`.  When `log_append` is `true` the
 /// file is opened in append mode instead of being truncated.
-/// `log_level` overrides the build-mode default level when `Some` — valid values:
+/// `log_level` overrides the build-mode default level when `Some` â€” valid values:
 /// `"error"`, `"warn"`, `"info"`, `"debug"`, `"trace"`.
 fn init_logging(
     game_dir: &Path,
@@ -2655,7 +2658,7 @@ fn init_logging(
     } else {
         std::env::current_dir()
             .unwrap_or_else(|_| std::path::PathBuf::from("."))
-            .join("luna2d.log")
+            .join("lurek.log")
     };
 
     // Open or create the log file, respecting the append flag.
@@ -2672,7 +2675,7 @@ fn init_logging(
             .open(&log_path)
     };
 
-    // Use explicit log_level from conf.lua if provided; otherwise fall back to
+    // Use explicit log_level from conf.toml if provided; otherwise fall back to
     // build-mode default (debug builds: Debug, release builds: Error).
     let level = match log_level {
         Some("error") => log::LevelFilter::Error,
@@ -2749,7 +2752,7 @@ fn init_logging(
     }
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 fn call_lua_callback<'a, A: IntoLuaMulti<'a>>(lua: &'a Lua, name: &str, args: A) {
     if let Ok(lurek) = lua.globals().get::<_, LuaTable>("lurek") {
@@ -2785,14 +2788,14 @@ fn try_errorhandler_or_screen(lua: &Lua, err: &mlua::Error) -> ErrorScreen {
         if let Ok(handler) = lurek.get::<_, LuaFunction>("errorhandler") {
             match handler.call::<_, ()>(msg.clone()) {
                 Ok(()) => {
-                    // Handler ran successfully — still show error screen since
+                    // Handler ran successfully â€” still show error screen since
                     // the game state is likely corrupt.
                     return ErrorScreen::from_lua_error(err);
                 }
                 Err(handler_err) => {
                     // Handler itself errored. Show both errors.
                     let combined = format!(
-                        "Error in luna.errorhandler\nOriginal error: {}\n\nHandler error: {}",
+                        "Error in lurek.errorhandler\nOriginal error: {}\n\nHandler error: {}",
                         msg, handler_err
                     );
                     return ErrorScreen::from_error(&combined);
@@ -2878,7 +2881,7 @@ fn make_splash_commands(
         });
     }
 
-    // ── Drop hint (bottom of screen) ─────────────────────────────────────────
+    // â”€â”€ Drop hint (bottom of screen) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if drag_hover {
         cmds.push(RenderCommand::SetColor(0.40, 0.80, 0.40, 0.15));
         cmds.push(RenderCommand::Rectangle {
@@ -2904,4 +2907,4 @@ fn make_splash_commands(
 }
 
 // NOTE: Tests private internals (recompute_viewport, fit_contain_size,
-// splash_window_title, resolve_present_mode, init_lua) — stays inline
+// splash_window_title, resolve_present_mode, init_lua) â€” stays inline

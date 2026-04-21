@@ -1,4 +1,4 @@
-//! `lurek.window` - Window management, fullscreen, DPI, display queries, and viewport scaling.
+﻿//! `lurek.window` - Window management, fullscreen, DPI, display queries, and viewport scaling.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -14,10 +14,10 @@ use rfd;
 /// Registers the `lurek.window` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- setTitle --
@@ -630,7 +630,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ─── onDpiChange ──────────────────────────────────────────────────────
+    // â”€â”€â”€ onDpiChange â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // DPI-change callback stored locally keyed to this register() call.
     let dpi_callback: Rc<RefCell<Option<LuaRegistryKey>>> = Rc::new(RefCell::new(None));
     let prev_dpi: Rc<RefCell<f64>> = Rc::new(RefCell::new(1.0));
@@ -679,7 +679,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ─── openFileDialog ───────────────────────────────────────────────────
+    // â”€â”€â”€ openFileDialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Opens a blocking native file-open dialog. Returns the chosen path string
     /// @return string|nil
     /// or `nil` if the user cancelled.
@@ -747,6 +747,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("window", tbl)?;
+    lurek.set("window", tbl)?;
     Ok(())
 }

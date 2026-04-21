@@ -37,7 +37,7 @@ interface EditorEntry {
 const EDITORS: EditorEntry[] = [
   { id: "tileMap", open: (ctx) => TileMapEditor.open(ctx) },
   { id: "sceneFlow", open: (ctx) => SceneFlowEditor.open(ctx) },
-  { id: "entity", open: (ctx) => EntityEditor.open(ctx) },
+  { id: "ecs", open: (ctx) => EntityEditor.open(ctx) },
   { id: "pixelArt", open: (ctx) => PixelArtEditor.open(ctx) },
   { id: "particle", open: (ctx) => ParticleEditor.open(ctx) },
   { id: "dialog", open: (ctx) => DialogEditor.open(ctx) },
@@ -61,7 +61,7 @@ const EDITORS: EditorEntry[] = [
   { id: "timeline", open: (ctx) => TimelineEditor.open(ctx) },
   { id: "shaderPreview", open: (ctx) => ShaderPreviewEditor.open(ctx) },
   { id: "fontPreview", open: (ctx) => FontPreviewEditor.open(ctx) },
-  { id: "localization", open: (ctx) => LocalizationEditor.open(ctx) },
+  { id: "i18n", open: (ctx) => LocalizationEditor.open(ctx) },
   { id: "physicsMaterials", open: (ctx) => PhysicsMaterialsEditor.open(ctx) },
   { id: "worldMap", open: (ctx) => WorldMapEditor.open(ctx) },
 ];

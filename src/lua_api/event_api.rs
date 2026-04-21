@@ -1,4 +1,4 @@
-//! `lurek.event` — Event queue polling and pub-sub signal dispatching.
+﻿//! `lurek.signal` â€” Event queue polling and pub-sub signal dispatching.
 //!
 //! Provides `Signal` userdata for named-event pub-sub with once-fire handles,
 //! per-handle filter predicates, wildcard subscriptions, and integration with the
@@ -254,13 +254,13 @@ impl LuaUserData for LuaSignal {
 // Register
 // -------------------------------------------------------------------------------
 
-/// Registers the `lurek.event` API table with the Lua VM.
+/// Registers the `lurek.signal` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- exit --
@@ -286,10 +286,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         "poll",
         lua.create_function(move |lua, ()| {
             let s2 = s.clone();
-            lua.create_function(move |lua, ()| match s2.borrow_mut().event_queue.poll() {
-                Some(event) => event_to_lua_multi(lua, &event),
-                None => Ok(LuaMultiValue::new()),
-            })
+            lua.create_function(
+                move |lua, ()| match s2.borrow_mut().event_queue.poll() {
+                    Some(event) => event_to_lua_multi(lua, &event),
+                    None => Ok(LuaMultiValue::new()),
+                },
+            )
         })?,
     )?;
 
@@ -361,7 +363,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     )?;
 
     // -- quit --
-    /// Alias for `exit()` — requests the engine to stop at the end of the current frame.
+    /// Alias for `exit()` â€” requests the engine to stop at the end of the current frame.
     /// @return nil
     let s = state.clone();
     tbl.set(
@@ -374,7 +376,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // Deferred event queue — events pushed via pushDeferred are batched and
+    // Deferred event queue â€” events pushed via pushDeferred are batched and
     // only dispatched to the main queue when flushDeferred is called.
     let deferred_queue: Rc<RefCell<Vec<(String, Vec<EventArg>)>>> =
         Rc::new(RefCell::new(Vec::new()));
@@ -428,7 +430,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // History ring-buffer — stores the last N emitted events when history is enabled.
+    // History ring-buffer â€” stores the last N emitted events when history is enabled.
     let history_buf: Rc<RefCell<VecDeque<(String, Vec<EventArg>)>>> =
         Rc::new(RefCell::new(VecDeque::new()));
     let history_cap: Rc<RefCell<usize>> = Rc::new(RefCell::new(0));
@@ -523,9 +525,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
             for val in iter {
                 event_args.push(EventArg::from_lua_val(&val)?);
             }
-            s.borrow_mut()
-                .event_queue
-                .push_event(&name, event_args.clone());
+            s.borrow_mut().event_queue.push_event(&name, event_args.clone());
             let cap_val = *cap_p.borrow();
             if cap_val > 0 {
                 let mut buf = hist_p.borrow_mut();
@@ -538,6 +538,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("event", tbl)?;
+    lurek.set("event", tbl)?;
     Ok(())
 }

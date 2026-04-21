@@ -10515,7 +10515,7 @@
           "lua_name": "lurek.docs.scan",
           "coverage": "explicit",
           "locations": [
-            "test_docs.lua:should scan the luna namespace",
+            "test_docs.lua:should scan the lurek namespace",
             "test_docs.lua:scan should return catalog with getModules",
             "test_docs.lua:scan should find lurek.render functions",
             "test_docs.lua:catalog should support search",
@@ -10950,7 +10950,7 @@
           "lua_name": "lurek.docs.scan",
           "coverage": "explicit",
           "locations": [
-            "test_docs.lua:should scan the luna namespace",
+            "test_docs.lua:should scan the lurek namespace",
             "test_docs.lua:scan should return catalog with getModules",
             "test_docs.lua:scan should find lurek.render functions",
             "test_docs.lua:catalog should support search",

@@ -7,7 +7,7 @@ class VoxelEditor extends shared_js_1.WebviewEditor {
         return new VoxelEditor(context);
     }
     constructor(context) {
-        super(context, "luna.editor.voxel", "Voxel Editor");
+        super(context, "lurek.editor.voxel", "Voxel Editor");
     }
     handleMessage(msg) {
         switch (msg.type) {

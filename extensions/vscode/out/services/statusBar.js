@@ -49,21 +49,21 @@ class StatusBarService {
     setRunning() {
         this.item.text = "$(play) Luna2D: Running";
         this.item.tooltip = "Luna2D game is running — click to stop";
-        this.item.command = "luna.stopGame";
+        this.item.command = "lurek.stopGame";
         this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
     }
     /** Show default idle state. */
     setStopped() {
         this.item.text = "$(rocket) Luna2D";
         this.item.tooltip = "Luna Toolkit — click to run game";
-        this.item.command = "luna.runGame";
+        this.item.command = "lurek.runGame";
         this.item.backgroundColor = undefined;
     }
     /** Show debug-connected state. */
     setDebugConnected() {
         this.item.text = "$(debug-alt) Luna2D: Debug";
         this.item.tooltip = "Luna2D debug bridge connected";
-        this.item.command = "luna.debug.status";
+        this.item.command = "lurek.debug.status";
         this.item.backgroundColor = new vscode.ThemeColor("statusBarItem.prominentBackground");
     }
     dispose() {

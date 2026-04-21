@@ -1,4 +1,4 @@
-//! `lurek.terminal` — Grid-based character-cell terminal emulator and widget toolkit.
+﻿//! `lurek.terminal` â€” Grid-based character-cell terminal emulator and widget toolkit.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -1288,10 +1288,10 @@ impl LuaUserData for LuaWidget {
 /// Registers the `lurek.terminal` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newTerminal --
@@ -1442,7 +1442,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
-    // ── Scrollback ────────────────────────────────────────────────────────────
+    // â”€â”€ Scrollback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- pushScrollback --
     /// Appends a line to this terminal's scrollback buffer.
@@ -1532,7 +1532,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Command history ───────────────────────────────────────────────────────
+    // â”€â”€ Command history â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- pushCmdHistory --
     /// Appends a command string to this terminal's history.
@@ -1616,7 +1616,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Colour themes ─────────────────────────────────────────────────────────
+    // â”€â”€ Colour themes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // -- applyTheme --
     /// Applies a named colour theme to a terminal, recolouring all existing cells.
@@ -1639,7 +1639,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 "nord" => (236, 239, 244, 46, 52, 64),
                 other => {
                     return Err(LuaError::RuntimeError(format!(
-                        "unknown theme '{other}' — available: solarized_dark, solarized_light, monokai, dracula, nord"
+                        "unknown theme '{other}' â€” available: solarized_dark, solarized_light, monokai, dracula, nord"
                     )));
                 }
             };
@@ -1655,9 +1655,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Prints text at 1-based `(col, row)` with per-keyword colour highlighting.
     ///
     /// `rules` is an array of tables, each with:
-    /// - `pattern` — `string` — plain substring to match (case-sensitive).
-    /// - `fg`      — `{r, g, b}` table with 0-255 integer values.
-    /// - `bg`      — `{r, g, b}` (optional) background colour.
+    /// - `pattern` â€” `string` â€” plain substring to match (case-sensitive).
+    /// - `fg`      â€” `{r, g, b}` table with 0-255 integer values.
+    /// - `bg`      â€” `{r, g, b}` (optional) background colour.
     ///
     /// Rules are checked left-to-right; the first match wins per token.
     /// Unmatched text is printed with white (1,1,1,1) foreground and unchanged background.
@@ -1760,7 +1760,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
-    // ── ANSI escape code support ──────────────────────────────────────────────
+    // â”€â”€ ANSI escape code support â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Strips all ANSI escape codes from `text` and returns the plain string.
     /// @param text : string
@@ -1858,7 +1858,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
-    // ── Tab completion ────────────────────────────────────────────────────────
+    // â”€â”€ Tab completion â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let comp_rc = Rc::new(RefCell::new(CompletionEngine::new()));
 
@@ -1952,6 +1952,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         lua.create_function(|_, ()| Ok(crate::terminal::MAX_ROWS as u32))?,
     )?;
 
-    luna.set("terminal", tbl)?;
+    lurek.set("terminal", tbl)?;
     Ok(())
 }

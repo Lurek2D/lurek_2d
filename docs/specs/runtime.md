@@ -15,7 +15,7 @@ The `runtime` module is the foundational layer of Lurek2D — every other Rust m
 
 `SharedState` is the engine's central mutable context, passed as `Rc<RefCell<SharedState>>` to every subsystem and Lua binding. It holds: the `EventQueue` for the current frame, all input state objects (`KeyboardState`, `MouseState`, `GamepadState`, `TouchState`), the active `Camera`, `LightWorld`, audio `Mixer`, `Clock`, `GameFS`, `GuiContext`, active `ParticleSystem`s, `TileMap`s, and the pending `Vec<RenderCommand>` for the frame. `WindowState` tracks window dimensions, fullscreen mode, and deferred window-management commands. `FullscreenType` discriminates borderless vs exclusive fullscreen. `RendererStats` carries per-frame draw call counts and timing.
 
-`Config` is loaded from `conf.toml` (preferred) or `conf.lua` (legacy fallback) at boot and covers window settings (`width`, `height`, `fps_cap`, `vsync`), graphics backend selection, performance tuning (`physics_tick_rate`, `fixed_update_tick_rate`, `frame_budget_warn_ms`), and `ModulesConfig` — per-module feature flags that gate which `lurek.*` sub-APIs are registered. `ModulesConfig::validate_and_fix()` enforces dependency constraints (e.g. `minimap` requires `graphics`). `EngineError` is a flat enum covering config, filesystem, Lua, rendering, audio, and physics error categories, each with a stable four-digit code and recovery hint. `EngineResult<T>` is the global `Result<T, EngineError>` alias used across all modules.
+`Config` is loaded from `conf.toml` at boot and covers window settings (`width`, `height`, `fps_cap`, `vsync`), graphics backend selection, performance tuning (`physics_tick_rate`, `fixed_update_tick_rate`, `frame_budget_warn_ms`), and `ModulesConfig` — per-module feature flags that gate which `lurek.*` sub-APIs are registered. `ModulesConfig::validate_and_fix()` enforces dependency constraints (e.g. `minimap` requires `graphics`). `EngineError` is a flat enum covering config, filesystem, Lua, rendering, audio, and physics error categories, each with a stable four-digit code and recovery hint. `EngineResult<T>` is the global `Result<T, EngineError>` alias used across all modules.
 
 Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`, `SpriteBatchKey`, `ParticleKey`, `SoundKey`) are newtyped `slotmap::DefaultKey` values for typed SlotMap pools. Log message IDs are stable four-character codes defined in `log_messages.rs`.
 
@@ -23,7 +23,7 @@ Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`
 
 ## Files
 
-- `config.rs`: Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).
+- `config.rs`: Engine configuration loaded from `conf.toml`.
 - `error.rs`: Structured error types and result alias for the Lurek2D engine.
 - `log_messages.rs`: Structured logging with stable message IDs for the Lurek2D engine.
 - `messages.rs`: TOML-backed message catalog for stable, human-readable engine log messages.
@@ -65,10 +65,9 @@ Resource key types (`TextureKey`, `FontKey`, `ShaderKey`, `MeshKey`, `CanvasKey`
 
 ## Functions
 
-- `ModulesConfig::validate_and_fix` (`config.rs`): Enforces dependency constraints so that a partially-disabled config is never internally inconsistent. Current rules: `minimap`, `particle`, `gui`, `overlay`, `parallax`, `terminal`, `animation`, `tilemap`, `raycaster`, `camera`, `globe`, and `spine` all require `graphics`; `spine` additionally requires `animation`.
-- `Config::load` (`config.rs`): Loads engine configuration from the game directory.
+- `ModulesConfig::validate_and_fix` (`config.rs`): Enforces dependency constraints so that a partially-disabled config is never internally inconsistent. Current rules: `minimap`, `particle`, `ui`, `effect`, `parallax`, `terminal`, `animation`, `tilemap`, `raycaster`, `camera`, `globe`, and `spine` all require `graphics`; `spine` additionally requires `animation`.
+- `Config::load` (`config.rs`): Loads engine configuration from the game directory. Tries `conf.toml`; returns defaults if absent.
 - `Config::load_from_conf_toml` (`config.rs`): Loads engine configuration from `conf.toml` in the game directory.
-- `Config::load_from_conf_lua` (`config.rs`): Loads engine configuration from `conf.lua` in the game directory.
 - `ErrorCategory::as_str` (`error.rs`): Returns the category name as a lowercase string.
 - `EngineError::code` (`error.rs`): Returns the stable error code for this variant.
 - `EngineError::category` (`error.rs`): Returns the error category for this variant.
@@ -133,4 +132,4 @@ Lua: `lurek.runtime.errorSnapshot(message)` — wraps `message` as a `LuaError`,
 - Keep this module reference synchronized with `src/runtime/` and any matching Lua bindings.
 - Summary paragraphs are manual prose. The collected Files, Types, Functions, Lua API Reference, and References sections can be regenerated when the source changes.
 - This module has no dedicated direct `lurek.*` namespace and is usually consumed through higher integration layers.
-- **conf.lua parse-error fallback (implemented 2026-04-16)**: `Config::load_from_conf_lua` handles Lua parse and eval errors by logging `L052` with the suffix "Using default config." and returning `Config::default()`. The engine always reaches the error screen rather than crashing before it exists. Tested in `tests/lua/config/test_runtime_config_fallback.lua`.
+- **conf.toml only (updated 2026-04-21)**: `conf.lua` support has been removed. `Config::load` tries `conf.toml` and returns `Config::default()` if absent. `load_from_conf_lua`, `build_config_table`, and `read_config_table` have been deleted. Configuration is TOML-only.

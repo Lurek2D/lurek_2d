@@ -75,7 +75,7 @@
 | Check | Verdict | Details |
 |-------|---------|---------|
 | **T-01** Rust test file | ✅ PASS | Found: tests\rust\unit\filesystem_tests.rs |
-| **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_filesystem.lua registered in harness |
+| **T-02** Lua test file | ✅ PASS | tests/lua/unit/test_fileapp.lua registered in harness |
 | **T-03** Test naming | ✅ PASS | Test names follow convention |
 | **T-04** Float comparisons | ✅ PASS | No float assert_eq! found |
 | **T-05** Test adequacy | ✅ PASS | 31 tests / 53 pub methods (58%) |
@@ -86,9 +86,9 @@
 
 | Check | Verdict | Details |
 |-------|---------|---------|
-| **W-01** Example file exists | ✅ PASS | content/examples/filesystem.lua present |
+| **W-01** Example file exists | ✅ PASS | content/examples/fileapp.lua present |
 | **W-02** API surface coverage | ✅ PASS | All 24 bound functions in example |
-| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/filesystem.lua has realistic one-line comments per call |
+| **W-03** Example comments | 🔵 MANUAL | Verify content/examples/fileapp.lua has realistic one-line comments per call |
 | **W-04** Example–spec sync | ✅ PASS | All 24 functions consistent across spec and example |
 | **W-05** Wiki page | ✅ PASS | docs\wiki\Filesystem-API.md |
 | **W-06** Changelog entry | 🔵 MANUAL | Verify recent API changes have docs/CHANGELOG.md entries |

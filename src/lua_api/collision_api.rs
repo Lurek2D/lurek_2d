@@ -1,10 +1,10 @@
-//! `lurek.physics` — Lightweight stateless geometric collision helpers.
+﻿//! `lurek.physics` â€” Lightweight stateless geometric collision helpers.
 //!
 //! These pure-math functions perform fast overlap detection without requiring a
 //! full physics world. Suitable for RPG, puzzle, or visual-novel games that only
 //! need simple overlap detection, not rigid-body simulation.
 //!
-//! All functions are pure and stateless — the `_state` parameter is accepted only
+//! All functions are pure and stateless â€” the `_state` parameter is accepted only
 //! to match the standard `register()` contract.
 
 use mlua::prelude::*;
@@ -16,13 +16,13 @@ use super::SharedState;
 /// Registers the `lurek.physics` namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 /// @return LuaResult<()>
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
-    // ── testAABB ─────────────────────────────────────────────────────────────
+    // â”€â”€ testAABB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns true when two axis-aligned bounding boxes overlap.
     /// @param ax : number  -- left edge of box A
     /// @param ay : number  -- top edge of box A
@@ -44,7 +44,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── testCircles ───────────────────────────────────────────────────────────
+    // â”€â”€ testCircles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns true when two circles overlap.
     /// @param ax : number  -- centre X of circle A
     /// @param ay : number  -- centre Y of circle A
@@ -64,7 +64,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── testPoint ────────────────────────────────────────────────────────────
+    // â”€â”€ testPoint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns true when point (px, py) lies inside the AABB.
     /// @param px : number  -- point X
     /// @param py : number  -- point Y
@@ -84,7 +84,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    // ── testCircleAABB ────────────────────────────────────────────────────────
+    // â”€â”€ testCircleAABB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Returns true when a circle overlaps an AABB.
     /// @param cx : number  -- circle centre X
     /// @param cy : number  -- circle centre Y
@@ -105,6 +105,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         )?,
     )?;
 
-    luna.set("collision", tbl)?;
+    lurek.set("collision", tbl)?;
     Ok(())
 }

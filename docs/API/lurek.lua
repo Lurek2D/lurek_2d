@@ -1,7 +1,7 @@
 ---@meta
 --- Auto-generated Lurek2D API documentation for LuaCATS.
 
-luna = {}
+lurek = {}
 
 ---@class lurek.ai
 lurek.ai = {}
@@ -31,7 +31,7 @@ function AIDirector:pushEvent(intensity) end
 ---@return nil
 function AIDirector:reset() end
 
---- Sets the global narrative tension level (0–1 scale).
+--- Sets the global narrative tension level (0â€“1 scale).
 ---@param value any
 ---@return nil
 function AIDirector:setTension(value) end
@@ -1708,7 +1708,7 @@ function MidiPlayer:setChannelMuted(ch, muted) end
 ---@return nil
 function MidiPlayer:setChannelVolume(ch, vol) end
 
---- Sets the PCM output channel count (clamped 1–2).
+--- Sets the PCM output channel count (clamped 1â€“2).
 ---@param channels any
 ---@return nil
 function MidiPlayer:setChannels(channels) end
@@ -1733,7 +1733,7 @@ function MidiPlayer:setOnNoteOff(cb) end
 ---@return nil
 function MidiPlayer:setOnNoteOn(cb) end
 
---- Sets the PCM output sample rate in Hz (clamped 8000–192000).
+--- Sets the PCM output sample rate in Hz (clamped 8000â€“192000).
 ---@param rate any
 ---@return nil
 function MidiPlayer:setSampleRate(rate) end
@@ -2414,7 +2414,7 @@ function lurek.audio.setLowpass(id_val, cutoff_hz) end
 ---@return nil
 function lurek.audio.setMasterVolume(vol) end
 
---- Sets the master peak meter level (0.0–1.0).
+--- Sets the master peak meter level (0.0â€“1.0).
 ---@param level any
 ---@return nil
 function lurek.audio.setMeter(level) end
@@ -3055,7 +3055,7 @@ function Array:getSize() end
 ---@return boolean
 function Array:isOnGPU() end
 
---- Solve A·x = b where this array is A (square [n,n]) and b is a 1D vector.
+--- Solve AÂ·x = b where this array is A (square [n,n]) and b is a 1D vector.
 ---@param b any
 ---@return Array
 function Array:linsolve(b) end
@@ -3084,7 +3084,7 @@ function Array:mean(axis) end
 ---@return nil
 function Array:min(axis) end
 
---- Returns a new Array with every element negated (multiplied by −1).
+--- Returns a new Array with every element negated (multiplied by â’1).
 ---@return Array
 function Array:neg() end
 
@@ -3098,7 +3098,7 @@ function Array:normalizeRange(lo, hi) end
 ---@return Array
 function Array:normalizeVec() end
 
---- Outer product of two 1D vectors → 2D array [m, n].
+--- Outer product of two 1D vectors â†’ 2D array [m, n].
 ---@param other any
 ---@return Array
 function Array:outer(other) end
@@ -3108,7 +3108,7 @@ function Array:outer(other) end
 ---@return number
 function Array:pearsonCorr(other) end
 
---- Compute the p-th percentile (0–100).
+--- Compute the p-th percentile (0â€“100).
 ---@param p any
 ---@return number
 function Array:percentile(p) end
@@ -3150,7 +3150,7 @@ function Array:threshold(val) end
 ---@return table
 function Array:toTable() end
 
---- Apply this 2×2 or 3×3 matrix to an [N,2] points array.
+--- Apply this 2Ă—2 or 3Ă—3 matrix to an [N,2] points array.
 ---@param pts any
 ---@return Array
 function Array:transformPoints(pts) end
@@ -3172,7 +3172,7 @@ function Array:typeOf(name) end
 ---@return Array
 function Array:zscore() end
 
---- Creates a 3×3 homogeneous affine matrix.
+--- Creates a 3Ă—3 homogeneous affine matrix.
 ---@param tx any
 ---@param ty any
 ---@param angle_rad any
@@ -3198,7 +3198,7 @@ function lurek.compute.fftMagnitude(samples) end
 ---@return Array
 function lurek.compute.fromTable(data, shape, dtype) end
 
---- Creates a size×size Gaussian kernel array.
+--- Creates a sizeĂ—size Gaussian kernel array.
 ---@param size any
 ---@param sigma any
 ---@return Array
@@ -3229,7 +3229,7 @@ function lurek.compute.ones(shape, dtype) end
 ---@return Array
 function lurek.compute.range(start, stop, step, dtype) end
 
---- Creates a 2×2 rotation matrix for the given angle in radians.
+--- Creates a 2Ă—2 rotation matrix for the given angle in radians.
 ---@param angle_rad any
 ---@return Array
 function lurek.compute.rotate2dMatrix(angle_rad) end
@@ -3555,6 +3555,14 @@ function DataFrame:addRowBatch(rows) end
 ---@return DataFrame
 function DataFrame:clone() end
 
+--- Returns the number of columns (alias for ncols).
+---@return integer
+function DataFrame:columnCount() end
+
+--- Returns a table of column names (alias for columns).
+---@return table
+function DataFrame:columnNames() end
+
 --- Returns a table of column names.
 ---@return table
 function DataFrame:columns() end
@@ -3603,7 +3611,7 @@ function DataFrame:fillNil(col, val) end
 ---@return table
 function DataFrame:getColumn(col) end
 
---- Return a numeric column as a Lua array of numbers (nils → 0/nan).
+--- Return a numeric column as a Lua array of numbers (nils â†’ 0/nan).
 ---@param col any
 ---@return table
 function DataFrame:getColumnAsF64(col) end
@@ -3687,6 +3695,10 @@ function DataFrame:removeRow(row) end
 ---@param new_name any
 ---@return nil
 function DataFrame:rename(col, new_name) end
+
+--- Returns the number of rows (alias for nrows).
+---@return integer
+function DataFrame:rowCount() end
 
 --- Returns a random sample of n rows.
 ---@param n any
@@ -4829,11 +4841,11 @@ function ImageEffect:typeOf(name) end
 ---@class Overlay
 local Overlay = {}
 
---- Resets all overlay subsystems to their default inactive state.
+--- Resets all effect subsystems to their default inactive state.
 ---@return nil
 function Overlay:clear() end
 
---- Renders the overlay state (flash, fade, effects) to a CPU ImageData.
+--- Renders the effect state (flash, fade, effects) to a CPU ImageData.
 ---@param w any
 ---@param h any
 ---@return ImageData
@@ -4859,7 +4871,7 @@ function Overlay:getCloudScale() end
 ---@return number
 function Overlay:getCloudSpeed() end
 
---- Returns the overlay width and height.
+--- Returns the effect width and height.
 ---@return integer
 function Overlay:getDimensions() end
 
@@ -4883,7 +4895,7 @@ function Overlay:getFogDensity() end
 ---@return number
 function Overlay:getHeatHazeIntensity() end
 
---- Returns the overlay height.
+--- Returns the effect height.
 ---@return integer
 function Overlay:getHeight() end
 
@@ -4899,7 +4911,7 @@ function Overlay:getLightningColor() end
 ---@return number
 function Overlay:getShakeOffset() end
 
---- Returns the current simulated time-of-day (0–24).
+--- Returns the current simulated time-of-day (0â€“24).
 ---@return number
 function Overlay:getTimeOfDay() end
 
@@ -4919,7 +4931,7 @@ function Overlay:getWeather() end
 ---@return number
 function Overlay:getWeatherIntensity() end
 
---- Returns the overlay width.
+--- Returns the effect width.
 ---@return integer
 function Overlay:getWidth() end
 
@@ -4931,7 +4943,7 @@ function Overlay:getWindDirection() end
 ---@return number
 function Overlay:getWindSpeed() end
 
---- Returns true if any overlay subsystem is currently active.
+--- Returns true if any effect subsystem is currently active.
 ---@return boolean
 function Overlay:isActive() end
 
@@ -4979,7 +4991,7 @@ function Overlay:isWeatherEnabled() end
 ---@return nil
 function Overlay:render() end
 
---- Resizes the overlay to match new window dimensions.
+--- Resizes the effect to match new window dimensions.
 ---@param w any
 ---@param h any
 ---@return nil
@@ -5015,7 +5027,7 @@ function Overlay:setCloudShadows(v) end
 ---@return nil
 function Overlay:setCloudSpeed(v) end
 
---- Assigns a custom shader name to the overlay, or clears it when `nil` is passed.
+--- Assigns a custom shader name to the effect, or clears it when `nil` is passed.
 ---@param name? any (optional)
 ---@return nil
 function Overlay:setCustomShader(name) end
@@ -5025,7 +5037,7 @@ function Overlay:setCustomShader(name) end
 ---@return nil
 function Overlay:setFilmGrainEnabled(v) end
 
---- Sets the film-grain noise intensity (0.0–1.0).
+--- Sets the film-grain noise intensity (0.0â€“1.0).
 ---@param v any
 ---@return nil
 function Overlay:setFilmGrainIntensity(v) end
@@ -5045,12 +5057,12 @@ function Overlay:setFogEnabled(v) end
 ---@return nil
 function Overlay:setHeatHazeEnabled(v) end
 
---- Sets the heat-haze distortion intensity (0.0–1.0).
+--- Sets the heat-haze distortion intensity (0.0â€“1.0).
 ---@param v any
 ---@return nil
 function Overlay:setHeatHazeIntensity(v) end
 
---- Sets the simulated time-of-day (0–24) which drives ambient colour.
+--- Sets the simulated time-of-day (0â€“24) which drives ambient colour.
 ---@param v any
 ---@return nil
 function Overlay:setTimeOfDay(v) end
@@ -5060,7 +5072,7 @@ function Overlay:setTimeOfDay(v) end
 ---@return nil
 function Overlay:setVignetteEnabled(v) end
 
---- Sets the vignette darkening strength (0.0–1.0).
+--- Sets the vignette darkening strength (0.0â€“1.0).
 ---@param v any
 ---@return nil
 function Overlay:setVignetteStrength(v) end
@@ -5075,12 +5087,12 @@ function Overlay:setWeather(name) end
 ---@return nil
 function Overlay:setWeatherEnabled(v) end
 
---- Sets the particle spawn rate multiplier (0.0–1.0).
+--- Sets the particle spawn rate multiplier (0.0â€“1.0).
 ---@param v any
 ---@return nil
 function Overlay:setWeatherIntensity(v) end
 
---- Sets the wind direction in radians (0 = right, π/2 = down).
+--- Sets the wind direction in radians (0 = right, Ď€/2 = down).
 ---@param v any
 ---@return nil
 function Overlay:setWindDirection(v) end
@@ -5109,7 +5121,7 @@ function Overlay:type() end
 ---@return boolean
 function Overlay:typeOf(name) end
 
---- Advances all overlay subsystems by the given delta time.
+--- Advances all effect subsystems by the given delta time.
 ---@param dt any
 ---@return nil
 function Overlay:update(dt) end
@@ -5420,7 +5432,7 @@ function lurek.effect.newStack(w, h) end
 ---@return ScreenTransition
 function lurek.effect.newTransition(kind, duration, color_tbl) end
 
---- Enables or disables the overlay that renders shader compile errors as red text
+--- Enables or disables the effect that renders shader compile errors as red text
 ---@param enabled any
 ---@return nil
 function lurek.effect.setShaderErrorDisplay(enabled) end
@@ -5436,7 +5448,7 @@ function lurek.engine.fps() end
 ---@return integer
 function lurek.engine.frameCount() end
 
---- Returns the target frame budget in milliseconds (default: 1000 / 60 ≈ 16.667 ms).
+--- Returns the target frame budget in milliseconds (default: 1000 / 60 â‰ 16.667 ms).
 ---@return number
 function lurek.engine.getFrameBudget() end
 
@@ -5559,7 +5571,7 @@ function lurek.signal.push(args) end
 ---@return nil
 function lurek.signal.pushDeferred(args) end
 
---- Alias for `exit()` — requests the engine to stop at the end of the current frame.
+--- Alias for `exit()` â€” requests the engine to stop at the end of the current frame.
 ---@return nil
 function lurek.signal.quit() end
 
@@ -5858,6 +5870,11 @@ local Globe = {}
 ---@return boolean
 function Globe:addProvince(p) end
 
+--- Emits render commands for the globe and pushes them to the render queue.
+---@param font table|nil
+---@return table
+function Globe:emitFrame(font) end
+
 --- Find the shortest province path from `from_id` to `to_id`.
 ---@param from_id any
 ---@param to_id any
@@ -5990,7 +6007,7 @@ function Globe:setLabelText(id, text) end
 ---@param vis any
 function Globe:setLabelVisible(id, vis) end
 
---- Set layer opacity (0.0–1.0).
+--- Set layer opacity (0.0â€“1.0).
 ---@param name any
 ---@param alpha any
 function Globe:setLayerAlpha(name, alpha) end
@@ -6009,7 +6026,7 @@ function Globe:setMarkerVisible(id, vis) end
 ---@param deg any
 function Globe:setRotation(deg) end
 
---- Set time of day (0.0–24.0 hours).
+--- Set time of day (0.0â€“24.0 hours).
 ---@param t any
 function Globe:setTimeOfDay(t) end
 
@@ -6594,7 +6611,7 @@ function lurek.graph.newGraph() end
 ---@class lurek.i18n
 lurek.i18n = {}
 
---- Builds an inverted word index for the active locale. Returns index as {word → {keys}}.
+--- Builds an inverted word index for the active locale. Returns index as {word â†’ {keys}}.
 ---@return table
 function lurek.i18n.buildIndex() end
 
@@ -6673,7 +6690,7 @@ function lurek.i18n.keysInCategory(category) end
 ---@return nil
 function lurek.i18n.loadTable(locale, tbl) end
 
---- Merges a flat key→value table into an existing locale without replacing the whole table.
+--- Merges a flat keyâ†’value table into an existing locale without replacing the whole table.
 ---@param locale any
 ---@param entries any
 ---@return nil
@@ -7790,7 +7807,7 @@ function Occluder:setEnabled(b) end
 ---@return nil
 function Occluder:setLightMask(mask) end
 
---- Sets the shadow opacity (0.0–1.0).
+--- Sets the shadow opacity (0.0â€“1.0).
 ---@param o any
 ---@return nil
 function Occluder:setOpacity(o) end
@@ -7892,7 +7909,7 @@ function lurek.light.setGroupEnabled(group_id, enabled) end
 ---@return nil
 function lurek.light.setGroupIntensity(group_id, intensity) end
 
---- Sets the maximum number of lights processed per frame (clamped 1–256).
+--- Sets the maximum number of lights processed per frame (clamped 1â€“256).
 ---@param n any
 ---@return nil
 function lurek.light.setMaxLights(n) end
@@ -8104,13 +8121,17 @@ local CatmullRom = {}
 ---@param y any
 function CatmullRom:addPoint(x, y) end
 
+--- Returns the number of control points in the spline.
+---@return integer
+function CatmullRom:count() end
+
 --- Number of control points.
 ---@return integer
 function CatmullRom:len() end
 
---- Removes the control point at `index` (0-based) and returns it.
+--- Removes the control point at `index` (1-based Lua index). Safe: does nothing if out
 ---@param idx any
----@return number
+---@return nil
 function CatmullRom:removePoint(idx) end
 
 --- Sample the spline at global t in [0, 1].
@@ -8132,7 +8153,7 @@ local Circle = {}
 ---@return number
 function Circle:aabb() end
 
---- Returns the area of the circle (π r²).
+--- Returns the area of the circle (Ď€ rÂ˛).
 ---@return number
 function Circle:area() end
 
@@ -8147,7 +8168,7 @@ function Circle:contains(px, py) end
 ---@return boolean
 function Circle:intersects(other) end
 
---- Returns the circumference of the circle (2 π r).
+--- Returns the circumference of the circle (2 Ď€ r).
 ---@return number
 function Circle:perimeter() end
 
@@ -8533,11 +8554,11 @@ function Vec3:sub(other) end
 ---@param y any
 function lurek.math.Vec2(x, y) end
 
---- Compatibility alias for `vec3`.
+---@param self any
 ---@param x any
 ---@param y any
 ---@param z any
-function lurek.math.Vec3(x, y, z) end
+function lurek.math.__call(self, x, y, z) end
 
 --- Creates a new empty AABB tree for efficient broad-phase overlap queries.
 ---@return AabbTree
@@ -8597,7 +8618,7 @@ function lurek.math.bresenham(x1, y1, x2, y2) end
 ---@return CatmullRomSpline
 function lurek.math.catmullRom(points) end
 
---- Returns the smallest integer ≥ x.
+--- Returns the smallest integer â‰Ą x.
 ---@param x any
 ---@return number
 function lurek.math.ceil(x) end
@@ -8718,7 +8739,7 @@ function lurek.math.exp(x) end
 ---@return number
 function lurek.math.fbm(x, y, seed, octaves, lacunarity, gain) end
 
---- Returns the largest integer ≤ x.
+--- Returns the largest integer â‰¤ x.
 ---@param x any
 ---@return number
 function lurek.math.floor(x) end
@@ -8731,7 +8752,7 @@ function lurek.math.fmod(x, y) end
 
 --- Parses a hex color string (#RRGGBB or #RRGGBBAA) into (r, g, b, a) floats.
 ---@param hex any
----@return number
+---@return number?
 function lurek.math.fromHex(hex) end
 
 --- Converts a gamma-encoded sRGB value to linear space.
@@ -8758,82 +8779,82 @@ function lurek.math.hermite(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y) end
 ---@return number
 function lurek.math.hslToRgb(h, s, l) end
 
---- Back ease-in — overshoots slightly before settling at the target.
+--- Back ease-in â€” overshoots slightly before settling at the target.
 ---@param t any
 ---@return number
 function lurek.math.inBack(t) end
 
---- Bounce ease-in — reverse bounce effect that accelerates into the motion.
+--- Bounce ease-in â€” reverse bounce effect that accelerates into the motion.
 ---@param t any
 ---@return number
 function lurek.math.inBounce(t) end
 
---- Cubic ease-in — acceleration starts slowly then increases sharply.
+--- Cubic ease-in â€” acceleration starts slowly then increases sharply.
 ---@param t any
 ---@return number
 function lurek.math.inCubic(t) end
 
---- Elastic ease-in — spring-like overshoot at the beginning of the motion.
+--- Elastic ease-in â€” spring-like overshoot at the beginning of the motion.
 ---@param t any
 ---@return number
 function lurek.math.inElastic(t) end
 
---- Exponential ease-in — very slow start that accelerates sharply near the end.
+--- Exponential ease-in â€” very slow start that accelerates sharply near the end.
 ---@param t any
 ---@return number
 function lurek.math.inExpo(t) end
 
---- Back ease-in-out — overshoot on both ends.
+--- Back ease-in-out â€” overshoot on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutBack(t) end
 
---- Bounce ease-in-out — bouncing motion on both ends.
+--- Bounce ease-in-out â€” bouncing motion on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutBounce(t) end
 
---- Cubic ease-in-out — slow start and end with fast cubic middle.
+--- Cubic ease-in-out â€” slow start and end with fast cubic middle.
 ---@param t any
 ---@return number
 function lurek.math.inOutCubic(t) end
 
---- Elastic ease-in-out — spring-like oscillation on both ends.
+--- Elastic ease-in-out â€” spring-like oscillation on both ends.
 ---@param t any
 ---@return number
 function lurek.math.inOutElastic(t) end
 
---- Exponential ease-in-out — very slow start and end with an exponential surge.
+--- Exponential ease-in-out â€” very slow start and end with an exponential surge.
 ---@param t any
 ---@return number
 function lurek.math.inOutExpo(t) end
 
---- Quadratic ease-in-out — slow start, fast middle, slow end.
+--- Quadratic ease-in-out â€” slow start, fast middle, slow end.
 ---@param t any
 ---@return number
 function lurek.math.inOutQuad(t) end
 
---- Quartic ease-in-out — very slow start and end with a sharp middle peak.
+--- Quartic ease-in-out â€” very slow start and end with a sharp middle peak.
 ---@param t any
 ---@return number
 function lurek.math.inOutQuart(t) end
 
---- Sinusoidal ease-in-out — smooth S-curve based on cosine interpolation.
+--- Sinusoidal ease-in-out â€” smooth S-curve based on cosine interpolation.
 ---@param t any
 ---@return number
 function lurek.math.inOutSine(t) end
 
---- Quadratic ease-in — acceleration that starts at zero and increases.
+--- Quadratic ease-in â€” acceleration that starts at zero and increases.
 ---@param t any
 ---@return number
 function lurek.math.inQuad(t) end
 
---- Quartic ease-in — strongly delayed acceleration using a power-of-4 curve.
+--- Quartic ease-in â€” strongly delayed acceleration using a power-of-4 curve.
 ---@param t any
 ---@return number
 function lurek.math.inQuart(t) end
 
---- Sinusoidal ease-in — gentle acceleration based on a sine curve.
+--- Sinusoidal ease-in â€” gentle acceleration based on a sine curve.
 ---@param t any
 ---@return number
 function lurek.math.inSine(t) end
@@ -8900,6 +8921,15 @@ function lurek.math.max() end
 ---@return number
 function lurek.math.min() end
 
+---@param x any
+---@param y any
+---@param z any
+function lurek.math.new(x, y, z) end
+
+function lurek.math.new() end
+
+function lurek.math.new() end
+
 --- Creates a new BezierCurve from a flat table of coordinates {x1,y1, x2,y2, ...}.
 ---@param points any
 ---@return BezierCurve
@@ -8946,42 +8976,42 @@ function lurek.math.newTransform(x, y, angle, sx, sy, ox, oy, kx, ky) end
 ---@return Tween
 function lurek.math.newTween(duration, easing_name) end
 
---- Back ease-out — overshoots the target then snaps back into place.
+--- Back ease-out â€” overshoots the target then snaps back into place.
 ---@param t any
 ---@return number
 function lurek.math.outBack(t) end
 
---- Bounce ease-out — simulates a ball bouncing against the target value.
+--- Bounce ease-out â€” simulates a ball bouncing against the target value.
 ---@param t any
 ---@return number
 function lurek.math.outBounce(t) end
 
---- Cubic ease-out — rapid deceleration using a cubic power curve.
+--- Cubic ease-out â€” rapid deceleration using a cubic power curve.
 ---@param t any
 ---@return number
 function lurek.math.outCubic(t) end
 
---- Elastic ease-out — spring-like oscillation that settles at the target.
+--- Elastic ease-out â€” spring-like oscillation that settles at the target.
 ---@param t any
 ---@return number
 function lurek.math.outElastic(t) end
 
---- Exponential ease-out — sharp initial speed that decelerates exponentially.
+--- Exponential ease-out â€” sharp initial speed that decelerates exponentially.
 ---@param t any
 ---@return number
 function lurek.math.outExpo(t) end
 
---- Quadratic ease-out — deceleration that starts fast and ends at zero.
+--- Quadratic ease-out â€” deceleration that starts fast and ends at zero.
 ---@param t any
 ---@return number
 function lurek.math.outQuad(t) end
 
---- Quartic ease-out — rapid deceleration using a power-of-4 curve.
+--- Quartic ease-out â€” rapid deceleration using a power-of-4 curve.
 ---@param t any
 ---@return number
 function lurek.math.outQuart(t) end
 
---- Sinusoidal ease-out — gentle deceleration based on a cosine curve.
+--- Sinusoidal ease-out â€” gentle deceleration based on a cosine curve.
 ---@param t any
 ---@return number
 function lurek.math.outSine(t) end
@@ -9177,6 +9207,9 @@ function lurek.math.sin(x) end
 ---@return number
 function lurek.math.smoothstep(edge0, edge1, x) end
 
+---@param v any
+function lurek.math.splat(v) end
+
 --- Returns the square root of x.
 ---@param x any
 ---@return number
@@ -9207,6 +9240,8 @@ function lurek.math.vec3(x, y, z) end
 ---@param points any
 ---@return table
 function lurek.math.voronoi(points) end
+
+function lurek.math.zero() end
 
 ---@class lurek.minimap
 lurek.minimap = {}
@@ -10352,7 +10387,7 @@ function ParticleSystem:setRotation(min, max) end
 ---@return nil
 function ParticleSystem:setShape(shape) end
 
---- Sets size variation (0–1).
+--- Sets size variation (0â€“1).
 ---@param v any
 ---@return nil
 function ParticleSystem:setSizeVariation(v) end
@@ -10374,7 +10409,7 @@ function ParticleSystem:setSpeed(min, max) end
 ---@return nil
 function ParticleSystem:setSpin(min, max) end
 
---- Sets spin variation (0–1).
+--- Sets spin variation (0â€“1).
 ---@param v any
 ---@return nil
 function ParticleSystem:setSpinVariation(v) end
@@ -10883,7 +10918,7 @@ function Blackboard:keys() end
 ---@return nil
 function Blackboard:set(key, value) end
 
---- Returns all facts as a flat key→value table.
+--- Returns all facts as a flat keyâ†’value table.
 ---@return table
 function Blackboard:snapshot() end
 
@@ -10891,6 +10926,12 @@ function Blackboard:snapshot() end
 ---@param id any
 ---@return nil
 function Blackboard:unwatch(id) end
+
+--- Subscribes to changes on a specific key (or "*" for all changes).
+---@param key any
+---@param callback any
+---@return integer
+function Blackboard:watch(key, callback) end
 
 --- Lua wrapper for the CommandStack pattern.
 ---@class CommandStack
@@ -10907,6 +10948,13 @@ function CommandStack:canUndo() end
 --- Clears all command history, releasing Lua registry values.
 ---@return nil
 function CommandStack:clearAll() end
+
+--- Executes a named command and records it in undo/redo history.
+---@param name any
+---@param exec_fn any
+---@param undo_fn? any (optional)
+---@return nil
+function CommandStack:execute(name, exec_fn, undo_fn) end
 
 --- Returns the name of the most recently executed command, or nil.
 ---@return string?
@@ -10986,9 +11034,22 @@ function EventBus:getListenerCount(event) end
 ---@return nil
 function EventBus:off(id) end
 
+--- Registers a listener callback for an event.
+---@param event any
+---@param callback any
+---@param priority? any (optional)
+---@return integer
+function EventBus:on(event, callback, priority) end
+
 --- Lua wrapper for the Factory pattern.
 ---@class Factory
 local Factory = {}
+
+--- Registers an alias pointing to an existing canonical type name.
+---@param alias any
+---@param canonical any
+---@return nil
+function Factory:alias(alias, canonical) end
 
 --- Removes all registered type constructors and aliases.
 ---@return nil
@@ -11007,6 +11068,12 @@ function Factory:getTypes() end
 ---@param type_name any
 ---@return boolean
 function Factory:has(type_name) end
+
+--- Registers a named type constructor function.
+---@param type_name any
+---@param ctor any
+---@return nil
+function Factory:register(type_name, ctor) end
 
 --- Unregisters a type constructor (and any aliases pointing to it).
 ---@param type_name any
@@ -11123,6 +11190,12 @@ function Mediator:handlerCount(channel) end
 ---@return nil
 function Mediator:off(channel, id) end
 
+--- Registers a handler callback on a channel; returns handler ID.
+---@param channel any
+---@param callback any
+---@return integer
+function Mediator:on(channel, callback) end
+
 --- Removes a channel and all its handlers.
 ---@param channel any
 ---@return nil
@@ -11186,6 +11259,13 @@ function Observer:getCount() end
 ---@return nil
 function Observer:set(key, new_val) end
 
+--- Subscribes to changes on a property key (or "*" for all).
+---@param key any
+---@param callback any
+---@param once? any (optional)
+---@return integer
+function Observer:subscribe(key, callback, once) end
+
 --- Removes a subscription by id.
 ---@param id any
 ---@return nil
@@ -11214,6 +11294,13 @@ function PriorityQueue:peek() end
 --- Removes and returns the highest-priority item, or nil if empty.
 ---@return string|number|boolean|table|nil
 function PriorityQueue:pop() end
+
+--- Inserts an item with a priority. Higher priorities are dequeued first.
+---@param priority any
+---@param value any
+---@param label? any (optional)
+---@return integer
+function PriorityQueue:push(priority, value, label) end
 
 --- Lua wrapper for a FIFO queue.
 ---@class Queue
@@ -11263,6 +11350,20 @@ local RelationshipManager = {}
 ---@return nil
 function RelationshipManager:adjustValue(a, b, delta) end
 
+--- Defines a relationship type with ordered levels.
+---@param name any
+---@param levels any
+---@param default_level? any (optional)
+---@return nil
+function RelationshipManager:defineType(name, levels, default_level) end
+
+--- Returns the named level for a typed relationship, or nil.
+---@param a any
+---@param b any
+---@param type_name any
+---@return string?
+function RelationshipManager:getLevel(a, b, type_name) end
+
 --- Returns the numeric relationship value between two entities (default 0.0).
 ---@param a any
 ---@param b any
@@ -11283,6 +11384,14 @@ function RelationshipManager:removePair(a, b) end
 ---@param name any
 ---@return nil
 function RelationshipManager:removeType(name) end
+
+--- Sets a named level for a typed relationship between two entities.
+---@param a any
+---@param b any
+---@param type_name any
+---@param level any
+---@return boolean
+function RelationshipManager:setLevel(a, b, type_name, level) end
 
 --- Sets the numeric relationship value between two entities.
 ---@param a any
@@ -11318,6 +11427,12 @@ function Ring:latest() end
 --- Returns the number of entries currently in the ring.
 ---@return integer
 function Ring:len() end
+
+--- Pushes a value (number or string) with an optional tag. Overwrites oldest on overflow.
+---@param value any
+---@param tag? any (optional)
+---@return integer
+function Ring:push(value, tag) end
 
 --- Returns the sum of all numeric values in the ring.
 ---@return number
@@ -11409,6 +11524,12 @@ function Set:union(other) end
 ---@class SimpleState
 local SimpleState = {}
 
+--- Registers a named state with optional enter, exit, and update callbacks.
+---@param name any
+---@param callbacks? any (optional)
+---@return nil
+function SimpleState:addState(name, callbacks) end
+
 --- Removes all states and callbacks from this state machine.
 ---@return nil
 function SimpleState:clearAll() end
@@ -11498,6 +11619,12 @@ function Strategy:has(name) end
 --- Returns all registered strategy names.
 ---@return table
 function Strategy:names() end
+
+--- Registers a named strategy function.
+---@param name any
+---@param callback any
+---@return nil
+function Strategy:register(name, callback) end
 
 --- Removes a strategy by name.
 ---@param name any
@@ -13519,14 +13646,14 @@ function lurek.render.draw(args) end
 function lurek.render.drawBevelRect(x, y, w, h, bevelW, style, opts) end
 
 --- Queues a beveled border rectangle.
----@param x number
----@param y number
----@param w number
----@param h number
----@param bevelW? number? (optional)
----@param style? string? (optional)
----@param opts? table? (optional)
-function lurek.render.drawBevelRect(x, y, w, h, bevelW, style, opts) end
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+---@param bevel_w? any (optional)
+---@param style? any (optional)
+---@param opts? any (optional)
+function lurek.render.drawBevelRect(x, y, w, h, bevel_w, style, opts) end
 
 --- Queues a convex polygon with per-vertex colours.
 ---@param vertices any
@@ -13540,7 +13667,7 @@ function lurek.render.drawColoredPolygon(vertices, colors, mode) end
 ---@param mode? any (optional)
 function lurek.render.drawColoredPolygon(vertices, colors, mode) end
 
---- Queues a cubic Bézier curve from (x1,y1) to (x2,y2) with two control points.
+--- Queues a cubic BĂ©zier curve from (x1,y1) to (x2,y2) with two control points.
 ---@param x1 number
 ---@param y1 number
 ---@param cx1 number
@@ -13552,16 +13679,16 @@ function lurek.render.drawColoredPolygon(vertices, colors, mode) end
 ---@param segments? integer? (optional)
 function lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments) end
 
---- Queues a cubic Bézier curve from (x1,y1) to (x2,y2) with two control points.
----@param x1 number
----@param y1 number
----@param cx1 number
----@param cy1 number
----@param cx2 number
----@param cy2 number
----@param x2 number
----@param y2 number
----@param segments? integer? (optional)
+--- Queues a cubic BĂ©zier curve from (x1,y1) to (x2,y2) with two control points.
+---@param x1 any
+---@param y1 any
+---@param cx1 any
+---@param cy1 any
+---@param cx2 any
+---@param cy2 any
+---@param x2 any
+---@param y2 any
+---@param segments? any (optional)
 function lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segments) end
 
 --- Queues a gradient-filled rectangle. color1/color2 are {r,g,b,a} tables.
@@ -13575,14 +13702,14 @@ function lurek.render.drawCubicBezier(x1, y1, cx1, cy1, cx2, cy2, x2, y2, segmen
 function lurek.render.drawGradientRect(x, y, w, h, color1, color2, direction) end
 
 --- Queues a gradient-filled rectangle. Both colors are RGBA tables {r,g,b,a} or positional {[1]=r,[2]=g,[3]=b,[4]=a}.
----@param x number
----@param y number
----@param w number
----@param h number
----@param color1 table
----@param color2 table
----@param direction? string? (optional)
-function lurek.render.drawGradientRect(x, y, w, h, color1, color2, direction) end
+---@param x any
+---@param y any
+---@param w any
+---@param h any
+---@param c1 any
+---@param c2 any
+---@param dir? any (optional)
+function lurek.render.drawGradientRect(x, y, w, h, c1, c2, dir) end
 
 --- Queues a hexagonal tile at centre (cx, cy) with given circumradius.
 ---@param cx number
@@ -13593,20 +13720,20 @@ function lurek.render.drawGradientRect(x, y, w, h, color1, color2, direction) en
 function lurek.render.drawHexTile(cx, cy, size, orientation, mode) end
 
 --- Queues a hexagonal tile at centre (cx, cy) with given circumradius.
----@param cx number
----@param cy number
----@param size number
----@param orientation? string? (optional)
----@param mode? string? (optional)
+---@param cx any
+---@param cy any
+---@param size any
+---@param orientation? any (optional)
+---@param mode? any (optional)
 function lurek.render.drawHexTile(cx, cy, size, orientation, mode) end
 
 --- Queues a three-face isometric cube tile at screen position (sx, sy).
----@param sx any
----@param sy any
----@param half_w any
----@param half_h any
----@param opts? any (optional)
-function lurek.render.drawIsoCubeTile(sx, sy, half_w, half_h, opts) end
+---@param sx number
+---@param sy number
+---@param halfW number
+---@param halfH number
+---@param opts? table? (optional)
+function lurek.render.drawIsoCubeTile(sx, sy, halfW, halfH, opts) end
 
 --- Queues a three-face isometric cube tile at screen position (sx, sy).
 ---@param sx any
@@ -13637,7 +13764,7 @@ function lurek.render.drawPath(path, mode, close) end
 ---@param close? any (optional)
 function lurek.render.drawPath(path, mode, close) end
 
---- Queues a quadratic Bézier curve from (x1,y1) to (x2,y2) with one control point.
+--- Queues a quadratic BĂ©zier curve from (x1,y1) to (x2,y2) with one control point.
 ---@param x1 number
 ---@param y1 number
 ---@param cx number
@@ -13648,13 +13775,13 @@ function lurek.render.drawPath(path, mode, close) end
 function lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments) end
 
 --- Must be called inside lurek.render or lurek.render_ui.
----@param x1 number
----@param y1 number
----@param cx number
----@param cy number
----@param x2 number
----@param y2 number
----@param segments? integer? (optional)
+---@param x1 any
+---@param y1 any
+---@param cx any
+---@param cy any
+---@param x2 any
+---@param y2 any
+---@param segments? any (optional)
 function lurek.render.drawQuadBezier(x1, y1, cx, cy, x2, y2, segments) end
 
 --- Draws a portion of an image defined by a Quad.
@@ -14023,7 +14150,7 @@ function lurek.render.setDepthMode(mode, write) end
 ---@param ud any
 function lurek.render.setFont(ud) end
 
---- Sets the line height of the given font (stub — returns nil; fonts are immutable in headless mode).
+--- Sets the line height of the given font (stub â€” returns nil; fonts are immutable in headless mode).
 ---@param font any
 ---@param lh any
 ---@return nil
@@ -14256,7 +14383,7 @@ function DepthSorter:sort() end
 ---@return nil
 function lurek.scene.clear() end
 
---- Creates a reusable scene class — returns a zero-argument constructor function.
+--- Creates a reusable scene class â€” returns a zero-argument constructor function.
 ---@param def? any (optional)
 ---@return function
 function lurek.scene.define(def) end
@@ -14725,13 +14852,13 @@ function SpriteSheet:getRow(row) end
 ---@return SpriteSheet
 function lurek.sprite.newAtlasSheet(atlas_ud, sw, sh) end
 
---- Creates an RPGMaker VX/Ace character sheet (3 cols × 4 rows) with "down", "left", "right", "up" groups.
+--- Creates an RPGMaker VX/Ace character sheet (3 cols Ă— 4 rows) with "down", "left", "right", "up" groups.
 ---@param tw any
 ---@param th any
 ---@return SpriteSheet
 function lurek.sprite.newRPGMakerSheet(tw, th) end
 
---- Creates a sprite sheet with a uniform grid of `frame_w × frame_h` frames.
+--- Creates a sprite sheet with a uniform grid of `frame_w Ă— frame_h` frames.
 ---@param tw any
 ---@param th any
 ---@param fw any
@@ -14780,10 +14907,6 @@ function lurek.system.getDebugOverlay() end
 --- Returns the value of an environment variable, or nil if not set.
 ---@param name any
 function lurek.system.getEnv(name) end
-
---- Returns the target frame budget in milliseconds (1000 / target_fps).
----@return number
-function lurek.system.getFrameBudget() end
 
 --- Returns a table of system information including OS name, CPU model, and installed RAM.
 ---@return table
@@ -14839,10 +14962,6 @@ function lurek.system.hasMessage(id) end
 ---@param message any
 function lurek.system.log(level, message) end
 
---- Returns the current Lua heap memory usage.
----@return table
-function lurek.system.memoryUsage() end
-
 --- Opens a URL in the system's default browser.
 ---@param url any
 ---@return boolean
@@ -14852,10 +14971,6 @@ function lurek.system.openURL(url) end
 ---@param args? any (optional)
 ---@return table
 function lurek.system.parseArgs(args) end
-
---- Returns the host operating-system identifier: "windows", "linux", "macos", or "unknown".
----@return string
-function lurek.system.platform() end
 
 --- Runs a list of shell commands in parallel and returns immediately without blocking.
 ---@param tasks any
@@ -14874,10 +14989,6 @@ function lurek.system.setDebugOverlay(enabled) end
 --- Sets the minimum severity level for runtime log messages.
 ---@param level any
 function lurek.system.setLogLevel(level) end
-
---- Returns the total engine wall-clock elapsed time in seconds (0 in headless test VMs).
----@return number
-function lurek.system.uptime() end
 
 ---@class lurek.terminal
 lurek.terminal = {}
@@ -15436,11 +15547,11 @@ local ThreadPool = {}
 ---@return table|nil
 function ThreadPool:collect() end
 
---- Returns the shared input Channel (main → workers).
+--- Returns the shared input Channel (main â†’ workers).
 ---@return Channel
 function ThreadPool:getInputChannel() end
 
---- Returns the shared output Channel (workers → main).
+--- Returns the shared output Channel (workers â†’ main).
 ---@return Channel
 function ThreadPool:getOutputChannel() end
 
@@ -16178,7 +16289,7 @@ function lurek.tilemap.newChunkMap(chunk_size) end
 ---@return IsoMap
 function lurek.tilemap.newIsoMap(width, height, tileW, tileH, levelHeight, partCount) end
 
---- Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200×200 tiles.
+--- Creates a LargeMapRenderer for chunk-level occlusion culling on maps > 200Ă—200 tiles.
 ---@param tile_w any
 ---@param tile_h any
 ---@return LargeMapRenderer
@@ -16412,7 +16523,7 @@ function lurek.time.newScheduler() end
 ---@return nil
 function lurek.time.setPhysicsDelta(dt) end
 
---- Sets the maximum number of physics sub-steps allowed per frame (clamped 1–64).
+--- Sets the maximum number of physics sub-steps allowed per frame (clamped 1â€“64).
 ---@param n any
 function lurek.time.setPhysicsMaxSteps(n) end
 
@@ -16618,7 +16729,7 @@ function lurek.tween.sequence() end
 ---@return Spring
 function lurek.tween.spring(target_tbl, fields_tbl, opts) end
 
---- Sugar for `tween()` with `target` first — natural read order.
+--- Sugar for `tween()` with `target` first â€” natural read order.
 ---@param target table
 ---@param fields table
 ---@param duration number

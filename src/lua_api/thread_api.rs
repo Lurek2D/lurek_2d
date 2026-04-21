@@ -1,4 +1,4 @@
-//! `lurek.thread` — Background threads and inter-thread channel communication.
+﻿//! `lurek.thread` â€” Background threads and inter-thread channel communication.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -141,7 +141,7 @@ impl LuaUserData for LuaThreadPool {
         });
 
         // -- getInputChannel --
-        /// Returns the shared input Channel (main → workers).
+        /// Returns the shared input Channel (main â†’ workers).
         /// @return Channel
         methods.add_method("getInputChannel", |_, this, ()| {
             let pool = this.inner.lock().unwrap();
@@ -151,7 +151,7 @@ impl LuaUserData for LuaThreadPool {
         });
 
         // -- getOutputChannel --
-        /// Returns the shared output Channel (workers → main).
+        /// Returns the shared output Channel (workers â†’ main).
         /// @return Channel
         methods.add_method("getOutputChannel", |_, this, ()| {
             let pool = this.inner.lock().unwrap();
@@ -220,10 +220,10 @@ impl LuaUserData for LuaPromise {
 /// Registers the `lurek.thread` API table with the Lua VM.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param _state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
     let named_channels: Arc<Mutex<HashMap<String, Arc<Channel>>>> =
         Arc::new(Mutex::new(HashMap::new()));
@@ -307,7 +307,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, _state: Rc<RefCell<SharedState>>) ->
         })?,
     )?;
 
-    luna.set("thread", tbl)?;
+    lurek.set("thread", tbl)?;
     Ok(())
 }
 

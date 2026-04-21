@@ -99,4 +99,5 @@ describe("timer + math easing", function()
         expect_near(0.5, eased, 0.001, "ease-in-out at midpoint")
     end)
 end)
+
 test_summary()

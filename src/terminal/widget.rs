@@ -711,3 +711,68 @@ impl Widget {
         matches!(self.kind, WidgetKind::Panel { .. })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn border_style_roundtrip() {
+        for name in &["single", "double", "ascii"] {
+            let bs = BorderStyle::from_str_name(name).unwrap();
+            assert_eq!(bs.as_str(), *name);
+        }
+    }
+
+    #[test]
+    fn border_style_unknown_returns_none() {
+        assert!(BorderStyle::from_str_name("dashed").is_none());
+    }
+
+    #[test]
+    fn widget_base_position_1based_roundtrip() {
+        let mut base = WidgetBase::new(4, 9, 20, 15);
+        assert_eq!(base.position_1based(), (5, 10));
+        base.set_position_1based(3, 7);
+        assert_eq!(base.x, 2);
+        assert_eq!(base.y, 6);
+    }
+
+    #[test]
+    fn widget_new_label() {
+        let w = Widget::new_label(1, 1, "Hello");
+        assert!(matches!(w.kind, WidgetKind::Label { .. }));
+        assert_eq!(w.get_text().unwrap(), "Hello".to_string());
+    }
+
+    #[test]
+    fn widget_new_button() {
+        let w = Widget::new_button(1, 1, 5, 1, "OK");
+        assert!(w.is_button());
+    }
+
+    #[test]
+    fn widget_set_text() {
+        let mut w = Widget::new_label(1, 1, "A");
+        w.set_text("B".to_string()).unwrap();
+        assert_eq!(w.get_text().unwrap(), "B".to_string());
+    }
+
+    #[test]
+    fn widget_list_add_and_count() {
+        let mut w = Widget::new_list(1, 1, 10, 5);
+        w.add_item("alpha".to_string()).unwrap();
+        w.add_item("beta".to_string()).unwrap();
+        assert_eq!(w.get_item_count().unwrap(), 2);
+        assert_eq!(w.get_item_1based(1).unwrap(), "alpha".to_string());
+    }
+
+    #[test]
+    fn widget_is_type_checks() {
+        let btn = Widget::new_button(1, 1, 5, 1, "X");
+        assert!(btn.is_button());
+        assert!(!btn.is_textbox());
+        assert!(!btn.is_list());
+        assert!(!btn.is_panel());
+    }
+}

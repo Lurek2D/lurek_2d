@@ -1,4 +1,4 @@
-//! `lurek.physics` — Rigid-body physics simulation, collision detection, joints, and raycasting.
+﻿//! `lurek.physics` â€” Rigid-body physics simulation, collision detection, joints, and raycasting.
 
 use mlua::prelude::*;
 use std::cell::RefCell;
@@ -77,7 +77,7 @@ fn shape_from_lua(lua: &Lua, shape_type: &str, args: LuaMultiValue) -> LuaResult
 // -------------------------------------------------------------------------------
 
 fn raycast_hit_to_table<'lua>(lua: &'lua Lua, hit: &RaycastHit) -> LuaResult<LuaTable<'lua>> {
-    // @return table — Raycast hit result: {bodyId, x, y, normalX, normalY, toi}
+    // @return table â€” Raycast hit result: {bodyId, x, y, normalX, normalY, toi}
     let tbl = lua.create_table()?;
     tbl.set("bodyId", hit.body_id)?;
     tbl.set("x", hit.point.0)?;
@@ -106,7 +106,7 @@ pub struct LuaWorld {
 
 impl LuaUserData for LuaWorld {
     fn add_methods<'lua, M: LuaUserDataMethods<'lua, Self>>(methods: &mut M) {
-        // ── drawDebug ──────────────────────────────────────────────────────────
+        // â”€â”€ drawDebug â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         /// Draws physics objects for debugging
         /// @param target : ImageData
         /// @param r : number (optional) [default=0]
@@ -451,7 +451,7 @@ impl LuaUserData for LuaWorld {
             },
         );
 
-        // ── Joint creation ────────────────────────────────────────────────
+        // â”€â”€ Joint creation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- addRevoluteJoint --
         /// Creates a revolute (pin) joint between two bodies.
@@ -611,7 +611,7 @@ impl LuaUserData for LuaWorld {
         );
 
         // -- addPulleyJoint --
-        /// Creates a pulley joint (stub — falls back to weld joint).
+        /// Creates a pulley joint (stub â€” falls back to weld joint).
         /// @param bodyA : integer
         /// @param bodyB : integer
         /// @param anchorX : number
@@ -625,7 +625,7 @@ impl LuaUserData for LuaWorld {
         );
 
         // -- addGearJoint --
-        /// Creates a gear joint (stub — falls back to weld joint).
+        /// Creates a gear joint (stub â€” falls back to weld joint).
         /// @param bodyA : integer
         /// @param bodyB : integer
         /// @param anchorX : number
@@ -638,7 +638,7 @@ impl LuaUserData for LuaWorld {
             },
         );
 
-        // ── Joint management ──────────────────────────────────────────────
+        // â”€â”€ Joint management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- jointCount --
         /// Returns the total number of joints.
@@ -754,7 +754,7 @@ impl LuaUserData for LuaWorld {
             },
         );
 
-        // ── Raycast and spatial queries ───────────────────────────────────
+        // â”€â”€ Raycast and spatial queries â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- raycast --
         /// Casts a ray and returns the nearest hit, or nil.
@@ -838,7 +838,7 @@ impl LuaUserData for LuaWorld {
             Ok(this.world.borrow().get_body_at_point(x, y))
         });
 
-        // ── Collision events ──────────────────────────────────────────────
+        // â”€â”€ Collision events â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- getCollisionEvents --
         /// Returns collision events from the last step.
@@ -944,7 +944,7 @@ impl LuaUserData for LuaWorld {
             Ok(this.world.borrow().get_body_type_str(id).to_string())
         });
 
-        // ── Phase A/B/C extension methods ──────────────────────────────────────
+        // â”€â”€ Phase A/B/C extension methods â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         // -- setBeginContact --
         /// Registers a Lua function called with (bodyIdA, bodyIdB) when two
@@ -1226,9 +1226,9 @@ impl LuaUserData for LuaWorld {
     }
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // LuaZone UserData
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle to a [`PhysicsZone`] living inside a [`World`].
 #[derive(Clone)]
@@ -1317,7 +1317,7 @@ impl LuaUserData for LuaZone {
         ///
         /// @param cx : number  -- attractor centre X
         /// @param cy : number  -- attractor centre Y
-        /// @param strength : number  -- force constant k (F = k / r²)
+        /// @param strength : number  -- force constant k (F = k / rÂ˛)
         /// @return nil
         methods.add_method(
             "setGravityPoint",
@@ -1335,7 +1335,7 @@ impl LuaUserData for LuaZone {
         ///
         /// @param cx : number  -- repulsor centre X
         /// @param cy : number  -- repulsor centre Y
-        /// @param strength : number  -- force constant k (F = k / r²)
+        /// @param strength : number  -- force constant k (F = k / rÂ˛)
         /// @return nil
         methods.add_method(
             "setGravityRepulsor",
@@ -1404,9 +1404,9 @@ impl LuaUserData for LuaZone {
     }
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // LuaTerrain UserData
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle to a destructible [`TerrainMap`].
 #[derive(Clone)]
@@ -1576,7 +1576,7 @@ impl LuaUserData for LuaTerrain {
         /// @param eg : integer  -- empty G
         /// @param eb : integer  -- empty B
         /// @return nil
-        /// string  -- RGBA bytes (width × height × 4)
+        /// string  -- RGBA bytes (width Ă— height Ă— 4)
         methods.add_method(
             "toImageData",
             |lua, this, (sr, sg, sb, er, eg, eb): (u8, u8, u8, u8, u8, u8)| {
@@ -1610,9 +1610,9 @@ impl LuaUserData for LuaTerrain {
     }
 }
 
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // LuaCellular UserData
-// ───────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Lua-side handle to a falling-sand [`CellularWorld`].
 #[derive(Clone)]
@@ -1627,7 +1627,7 @@ impl LuaUserData for LuaCellular {
         ///
         /// @param cx : integer  -- column
         /// @param cy : integer  -- row
-        /// @param cell_type : integer  -- lurek.physics.CELL_AIR … CELL_GAS
+        /// @param cell_type : integer  -- lurek.physics.CELL_AIR â€¦ CELL_GAS
         /// @return nil
         methods.add_method_mut("setCell", |_, this, (cx, cy, t): (u32, u32, u8)| {
             this.sim.borrow_mut().set_cell(cx, cy, CellType::from_u8(t));
@@ -1703,7 +1703,7 @@ impl LuaUserData for LuaCellular {
         // -- toImageData --
         /// Returns the full grid as an RGBA byte string using the default colour palette.
         ///
-        /// string  -- RGBA bytes (width × height × 4)
+        /// string  -- RGBA bytes (width Ă— height Ă— 4)
         /// @return nil
         methods.add_method("toImageData", |lua, this, ()| {
             let buf = this
@@ -1721,7 +1721,7 @@ impl LuaUserData for LuaCellular {
         /// @param cw : integer  -- region width
         /// @param ch : integer  -- region height
         /// @return nil
-        /// string  -- RGBA bytes (cw × ch × 4)
+        /// string  -- RGBA bytes (cw Ă— ch Ă— 4)
         methods.add_method(
             "toImageDataRegion",
             |lua, this, (cx0, cy0, cw, ch): (u32, u32, u32, u32)| {
@@ -2357,7 +2357,7 @@ impl LuaUserData for LuaPhysicsShape {
 // Registration
 // -------------------------------------------------------------------------------
 
-// ── Type adapter ─────────────────────────────────────────────────────────────
+// â”€â”€ Type adapter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // `PhysicsShapeSnapshot` (physics domain) and `PhysicsDebugShape` (render
 // domain) cannot know about each other without creating a circular dependency.
 // The lua_api boundary layer is the correct home for this conversion.
@@ -2381,10 +2381,10 @@ impl From<crate::physics::PhysicsShapeSnapshot> for crate::render::renderer::Phy
 /// Registers the `lurek.physics` API namespace.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
     let tbl = lua.create_table()?;
 
     // -- newWorld --
@@ -2661,7 +2661,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── debugDraw ──────────────────────────────────
+    // â”€â”€ debugDraw â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Enables or disables the physics debug overlay (AABB boxes and velocity vectors).
     /// @param enable : boolean
     /// @return nil
@@ -2674,12 +2674,12 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── drawDebugGpu ───────────────────────────────────────────────────────────
+    // â”€â”€ drawDebugGpu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     /// Extracts collider geometry from a World and queues a GPU physics debug
     /// draw command for the current frame.  Call from `lurek.render` or
     /// `lurek.render_ui`; the command is consumed by GpuRenderer each frame.
-    /// @param world   : World       — The physics world to visualise.
-    /// @param config  : table|nil   — Optional appearance overrides:
+    /// @param world   : World       â€” The physics world to visualise.
+    /// @param config  : table|nil   â€” Optional appearance overrides:
     ///   bodyColor   [f32;4]  dynamic body colour  (default green)
     ///   staticColor [f32;4]  static body colour   (default grey)
     ///   sleepColor  [f32;4]  sleeping body colour (default dark green)
@@ -2750,7 +2750,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         )?,
     )?;
 
-    // ── Terrain factory ──────────────────────────────────────────────────────
+    // â”€â”€ Terrain factory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Creates a destructible terrain grid.
     ///
@@ -2773,7 +2773,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Cellular factory ─────────────────────────────────────────────────────
+    // â”€â”€ Cellular factory â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     /// Creates a falling-sand cellular automaton grid.
     ///
@@ -2789,7 +2789,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Cell-type constants ───────────────────────────────────────────────────
+    // â”€â”€ Cell-type constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     tbl.set("CELL_AIR", CellType::Air as u8)?;
     /// Sand cell type constant for the cellular automaton simulation.
     tbl.set("CELL_SAND", CellType::Sand as u8)?;
@@ -2802,6 +2802,6 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Gas cell type constant; rises and disperses across the simulation grid.
     tbl.set("CELL_GAS", CellType::Gas as u8)?;
 
-    luna.set("physics", tbl)?;
+    lurek.set("physics", tbl)?;
     Ok(())
 }

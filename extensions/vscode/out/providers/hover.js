@@ -76,7 +76,7 @@ const LUA_KEYWORD_DOCS = {
 // ── Easing function charts ───────────────────────────────────
 // ── Math constant hover docs ─────────────────────────────────
 const MATH_CONSTANT_DOCS = {
-    "math.pi": "**`math.pi`** = `3.141592653589793` (π)\n\nRatio of a circle's circumference to its diameter.\n\n*Tip: `luna.math.pi` is also available as a constant.*",
+    "math.pi": "**`math.pi`** = `3.141592653589793` (π)\n\nRatio of a circle's circumference to its diameter.\n\n*Tip: `lurek.math.pi` is also available as a constant.*",
     "math.huge": "**`math.huge`** = `+∞` (positive infinity overflow sentinel)\n\nUsed as a sentinel for unbounded ranges, e.g. `math.min(math.huge, x)` always returns `x`.",
     "math.maxinteger": "**`math.maxinteger`** = `2^63 - 1` (max 64-bit signed integer, Lua 5.3+/LuaJIT)",
     "math.mininteger": "**`math.mininteger`** = `-2^63` (min 64-bit signed integer, Lua 5.3+/LuaJIT)",
@@ -198,7 +198,7 @@ function buildRichHover(fn) {
         md.appendMarkdown(`\n*Since ${fn.since}*\n`);
     if (fn.deprecated)
         md.appendMarkdown(`\n⚠️ **Deprecated:** ${fn.deprecated}\n`);
-    const source = fn.module ? `luna.${fn.module}` : "";
+    const source = fn.module ? `lurek.${fn.module}` : "";
     if (source)
         md.appendMarkdown(`\n*${source}*`);
     md.isTrusted = true;
@@ -209,19 +209,19 @@ function register(context, apiData) {
     // ── Main API hover provider ──
     const apiHover = vscode.languages.registerHoverProvider(LUA_SELECTOR, {
         provideHover(document, position) {
-            // ── A: Luna2D API functions (luna.module.func) ──
-            const funcRange = document.getWordRangeAtPosition(position, /luna\.\w+\.\w+/);
+            // ── A: Luna2D API functions (lurek.module.func) ──
+            const funcRange = document.getWordRangeAtPosition(position, /lurek\.\w+\.\w+/);
             if (funcRange) {
                 const word = document.getText(funcRange);
                 const fn = apiData.getFunction(word);
                 if (fn)
                     return new vscode.Hover(buildRichHover(fn), funcRange);
             }
-            // ── D: Luna callbacks (luna.callback) ──
-            const cbRange = document.getWordRangeAtPosition(position, /luna\.\w+/);
+            // ── D: Luna callbacks (lurek.callback) ──
+            const cbRange = document.getWordRangeAtPosition(position, /lurek\.\w+/);
             if (cbRange) {
                 const word = document.getText(cbRange);
-                // Don't match luna.graphics etc. (already handled above or is a module)
+                // Don't match lurek.graphics etc. (already handled above or is a module)
                 if (!word.includes(".", 5)) {
                     for (const cb of apiData.getCallbacks()) {
                         if (cb.fullPath === word) {
@@ -241,11 +241,11 @@ function register(context, apiData) {
                     }
                 }
                 // Module hover
-                const modName = word.replace("luna.", "");
+                const modName = word.replace("lurek.", "");
                 const mod = apiData.getModule(modName);
                 if (mod) {
                     const md = new vscode.MarkdownString();
-                    md.appendMarkdown(`**luna.${mod.name}**\n\n`);
+                    md.appendMarkdown(`**lurek.${mod.name}**\n\n`);
                     if (mod.description)
                         md.appendMarkdown(mod.description + "\n\n");
                     md.appendMarkdown(`*${mod.functions.length} functions, ${mod.methods.length} methods*`);
@@ -266,7 +266,7 @@ function register(context, apiData) {
             const wordRange = document.getWordRangeAtPosition(position, /\w+/);
             if (wordRange) {
                 const word = document.getText(wordRange);
-                // Skip if part of a luna.* or stdlib expression
+                // Skip if part of a lurek.* or stdlib expression
                 const lineText = document.lineAt(position).text;
                 const charBefore = wordRange.start.character > 0 ? lineText[wordRange.start.character - 1] : "";
                 if (charBefore === ".")
@@ -376,7 +376,7 @@ function register(context, apiData) {
     // Map: callback name → parameter name → {type, description}
     const CALLBACK_PARAM_DOCS = {
         update: {
-            dt: { type: "number", desc: "Delta time in seconds since the last frame. Use this to make movement frame-rate-independent.\n\n```lua\nfunction luna.update(dt)\n  x = x + speed * dt\nend\n```" },
+            dt: { type: "number", desc: "Delta time in seconds since the last frame. Use this to make movement frame-rate-independent.\n\n```lua\nfunction lurek.update(dt)\n  x = x + speed * dt\nend\n```" },
         },
         keypressed: {
             key: { type: "string", desc: 'Name of the key that was pressed (e.g. `"space"`, `"a"`, `"left"`, `"escape"`).' },
@@ -415,7 +415,7 @@ function register(context, apiData) {
             v: { type: "boolean", desc: "`true` if the window became visible, `false` if minimized/hidden." },
         },
         textinput: {
-            t: { type: "string", desc: "The UTF-8 encoded character(s) that were typed. Use this for text field input rather than `luna.keypressed`." },
+            t: { type: "string", desc: "The UTF-8 encoded character(s) that were typed. Use this for text field input rather than `lurek.keypressed`." },
         },
         gamepadpressed: {
             joystick: { type: "Joystick", desc: "The joystick/gamepad object that reported the event." },
@@ -466,7 +466,7 @@ function register(context, apiData) {
             if (!(word in Object.values(CALLBACK_PARAM_DOCS).reduce((acc, p) => ({ ...acc, ...p }), {}))) {
                 return undefined;
             }
-            // Walk backwards from current line to find the enclosing luna callback
+            // Walk backwards from current line to find the enclosing lurek callback
             const lines = document.getText().split("\n");
             let callbackName;
             let depth = 0;
@@ -476,7 +476,7 @@ function register(context, apiData) {
                 const startCount = (line.match(/\b(?:function|do|then|repeat)\b/g) ?? []).length;
                 depth += endCount - startCount;
                 if (depth >= 0) {
-                    const cbMatch = line.match(/luna\.(\w+)\s*=\s*function/);
+                    const cbMatch = line.match(/lurek\.(\w+)\s*=\s*function/);
                     if (cbMatch) {
                         callbackName = cbMatch[1];
                         break;
@@ -491,7 +491,7 @@ function register(context, apiData) {
             const { type, desc } = paramDocs[word];
             const md = new vscode.MarkdownString();
             md.appendCodeblock(`(parameter) ${word}: ${type}`, "typescript");
-            md.appendMarkdown(`\n${desc}\n\n*Parameter of \`luna.${callbackName}\`*`);
+            md.appendMarkdown(`\n${desc}\n\n*Parameter of \`lurek.${callbackName}\`*`);
             md.isTrusted = true;
             return new vscode.Hover(md, wordRange);
         },
@@ -500,8 +500,8 @@ function register(context, apiData) {
     const physicsGravityHover = vscode.languages.registerHoverProvider(LUA_SELECTOR, {
         provideHover(document, position) {
             const line = document.lineAt(position).text;
-            // Only trigger near luna.physics.newWorld calls
-            if (!/luna\.physics\.newWorld/.test(line))
+            // Only trigger near lurek.physics.newWorld calls
+            if (!/lurek\.physics\.newWorld/.test(line))
                 return undefined;
             const wordRange = document.getWordRangeAtPosition(position, /[-\d]+\.?\d*/);
             if (!wordRange)

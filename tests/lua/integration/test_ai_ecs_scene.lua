@@ -89,4 +89,5 @@ describe("ai + entity + scene integration", function()
         expect_equal(5, universe:getEntityCount(), "5 guards alive")
     end)
 end)
+
 test_summary()

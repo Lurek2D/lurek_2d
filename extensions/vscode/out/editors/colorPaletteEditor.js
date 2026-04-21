@@ -7,7 +7,7 @@ class ColorPaletteEditor extends shared_js_1.WebviewEditor {
         return new ColorPaletteEditor(context);
     }
     constructor(context) {
-        super(context, "luna.colorPaletteEditor", "Color Palette");
+        super(context, "lurek.colorPaletteEditor", "Color Palette");
     }
     handleMessage(msg) {
         switch (msg.type) {

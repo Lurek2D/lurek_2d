@@ -1,4 +1,4 @@
-//! `lurek.input.keyboard` / `lurek.input.mouse` / `lurek.input.gamepad` / `lurek.input.touch` — Input state queries and cursor management.
+﻿//! `lurek.input.keyboard` / `lurek.input.mouse` / `lurek.input.gamepad` / `lurek.input.touch` â€” Input state queries and cursor management.
 
 use super::SharedState;
 use mlua::prelude::*;
@@ -137,7 +137,7 @@ impl LuaUserData for LuaCombo {
 }
 
 // -------------------------------------------------------------------------------
-// LuaInputRecording — userdata returned by stopRecording()
+// LuaInputRecording â€” userdata returned by stopRecording()
 // -------------------------------------------------------------------------------
 
 /// Lua userdata wrapper for a completed [`crate::input::recorder::InputRecording`].
@@ -180,15 +180,15 @@ impl LuaUserData for LuaInputRecording {
 /// Registers the `lurek.input.keyboard`, `lurek.input.mouse`, `lurek.input.gamepad`, and `lurek.input.touch` API tables.
 ///
 /// @param lua : &Lua
-/// @param luna : &LuaTable
+/// @param lurek : &LuaTable
 /// @param state : Rc<RefCell<SharedState>>
 ///
-pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
-    // lurek.input — parent table that nests keyboard, mouse, gamepad, touch
+pub fn register(lua: &Lua, lurek: &LuaTable, state: Rc<RefCell<SharedState>>) -> LuaResult<()> {
+    // lurek.input â€” parent table that nests keyboard, mouse, gamepad, touch
     // plus action-mapping and recorder APIs.
     let input_tbl = lua.create_table()?;
 
-    // ── lurek.input.keyboard ─────────────────────────────────────────────────────────
+    // â”€â”€ lurek.input.keyboard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let keyboard = lua.create_table()?;
 
@@ -292,7 +292,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     input_tbl.set("keyboard", keyboard)?;
 
-    // ── lurek.input.mouse ────────────────────────────────────────────────────────────
+    // â”€â”€ lurek.input.mouse â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let mouse = lua.create_table()?;
 
@@ -525,7 +525,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     input_tbl.set("mouse", mouse)?;
 
-    // ── lurek.input.gamepad ──────────────────────────────────────────────────────────
+    // â”€â”€ lurek.input.gamepad â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let gamepad = lua.create_table()?;
 
@@ -684,9 +684,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// Requests haptic vibration on a gamepad.
     ///
     /// Parameters map to the standard dual-motor model used by most controllers:
-    /// - `low_freq`  — intensity of the low-frequency (rumble) motor `[0.0, 1.0]`
-    /// - `high_freq` — intensity of the high-frequency (buzz) motor `[0.0, 1.0]`
-    /// - `duration_ms` — how long to vibrate in milliseconds
+    /// - `low_freq`  â€” intensity of the low-frequency (rumble) motor `[0.0, 1.0]`
+    /// - `high_freq` â€” intensity of the high-frequency (buzz) motor `[0.0, 1.0]`
+    /// - `duration_ms` â€” how long to vibrate in milliseconds
     ///
     /// Returns `false` because winit 0.30 does not expose a haptics API. The call is
     /// logged at `debug` level so it is visible in test recordings even on unsupported
@@ -708,7 +708,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 log::debug!(
                     "gamepad::vibrate id={id} low_freq={low_freq:.3} \
                      high_freq={high_freq:.3} duration_ms={duration_ms:.1} \
-                     (platform stub — winit 0.30 has no haptics API)"
+                     (platform stub â€” winit 0.30 has no haptics API)"
                 );
                 Ok(false)
             },
@@ -841,7 +841,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     input_tbl.set("gamepad", gamepad)?;
 
-    // ── lurek.input.touch ────────────────────────────────────────────────────────────
+    // â”€â”€ lurek.input.touch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let touch = lua.create_table()?;
 
@@ -904,9 +904,9 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
 
     input_tbl.set("touch", touch)?;
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // lurek.input  — Action-mapping layer on top of keyboard/mouse/gamepad state
-    // ─────────────────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // lurek.input  â€” Action-mapping layer on top of keyboard/mouse/gamepad state
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // action_map: action_name -> list of key/button names
     let action_map: Rc<RefCell<HashMap<String, Vec<String>>>> =
@@ -1097,7 +1097,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
     /// When a plain string is given, the per-step gap defaults to 500 ms.
     ///
     /// `opts` is an optional table that may contain:
-    ///   `total_gap` (integer, ms) — budget for the entire sequence (default 2000 ms).
+    ///   `total_gap` (integer, ms) â€” budget for the entire sequence (default 2000 ms).
     ///
     /// @param steps : table   array of strings or `{key,gap}` tables
     /// @param opts  : table?  `{total_gap=integer?}`
@@ -1157,7 +1157,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    // ── Recording / Playback ──────────────────────────────────────────────────
+    // â”€â”€ Recording / Playback â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     let rec_rc = Rc::new(RefCell::new(crate::input::recorder::InputRecorder::new()));
 
@@ -1265,7 +1265,7 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
         })?,
     )?;
 
-    luna.set("input", input_tbl)?;
+    lurek.set("input", input_tbl)?;
 
     Ok(())
 }

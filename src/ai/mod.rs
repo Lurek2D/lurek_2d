@@ -7,7 +7,7 @@
 //! ## Architecture Overview
 //!
 //! The AI module is a **Tier 2 Engine Extension**. It may import `math`, `engine`,
-//! and Tier 1 modules (primarily `pathfinding` for grid and flow-field re-exports).
+//! and Tier 1 modules (primarily `pathfind` for grid and flow-field re-exports).
 //! It must not import other Tier 2 modules or any Tier 3 modules.
 //!
 //! All AI computation is **pure CPU math** — no GPU, audio, or window access.
@@ -42,7 +42,7 @@
 //! ## Dependencies
 //!
 //! - `FlowField`, `Cell`, and `PathGrid` are re-exported directly from
-//!   `crate::pathfinding` so `lurek.ai.*` has a unified surface.
+//!   `crate::pathfind` so `lurek.ai.*` has a unified surface.
 //! - All Lua callbacks are stored as `mlua::RegistryKey` references.
 //! - No heap allocation happens per-frame in steady state; vectors are grown at
 //!   agent/behavior creation time.

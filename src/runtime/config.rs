@@ -1,16 +1,16 @@
-//! Engine configuration loaded from `conf.toml` (preferred) or `conf.lua` (legacy).
+//! Engine configuration loaded from `conf.toml`.
 //!
-//! When the engine starts it looks for `conf.toml` first; if absent it falls back to
-//! `conf.lua` for backward compatibility.  Missing fields fall back to built-in
-//! defaults so authors only need to specify the settings they actually want to change.
+//! When the engine starts it looks for `conf.toml`; if absent it uses built-in
+//! defaults.  Missing fields also fall back to built-in defaults so authors only
+//! need to specify the settings they actually want to change.
 //!
 //! # Structure
 //!
 //! [`Config`] is the top-level container and contains five nested structs:
 //! - [`WindowConfig`] — window geometry, title, display placement, and decoration options.
-//! - [`GraphicsConfig`] — GPU backend selection and power preference, resolved at startup.
+//! - [`RenderConfig`] — GPU backend selection and power preference, resolved at startup.
 //! - [`ModulesConfig`] — boolean feature-flags for optional engine subsystems (audio,
-//!   physics, graphics, etc.).  Disabling a module avoids the startup cost and prevents
+//!   physics, render, etc.).  Disabling a module avoids the startup cost and prevents
 //!   the matching `lurek.*` API calls from being registered.
 //! - [`PerformanceConfig`] — target frame-rate cap (`fps_cap`).
 //!
@@ -28,7 +28,7 @@
 //! vsync  = true
 //!
 //! # GPU backend: "auto" | "dx12" | "vulkan" | "metal"
-//! [graphics]
+//! [render]
 //! backend = "auto"
 //! power_preference = "high"
 //! ```
@@ -38,18 +38,17 @@ use crate::log_msg;
 use crate::runtime::log_messages::{
     L050_MODULE_DEP_DISABLED, L051_CONF_READ_ERR, L052_CONF_PARSE_ERR,
 };
-use mlua::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 /// Top-level engine configuration.
 ///
-/// Can be populated from `conf.lua` or constructed with defaults.
+/// Loaded from `conf.toml` or constructed with defaults.
 ///
 /// # Fields
 /// - `window` — Window dimensions, title, vsync, fullscreen, and resize settings.
-/// - `graphics` — GPU backend selection and power preference (resolved at engine startup).
-/// - `modules` — Flags enabling optional subsystems (audio, physics, graphics, etc.).
+/// - `render` — GPU backend selection and power preference (resolved at engine startup).
+/// - `modules` — Flags enabling optional subsystems (audio, physics, render, etc.).
 /// - `performance` — Frame rate cap.
 /// - `identity` — Save directory name (used for persistent game data).
 /// - `version` — Target engine version string.
@@ -59,7 +58,7 @@ use std::path::Path;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub window: WindowConfig,
-    pub graphics: GraphicsConfig,
+    pub render: RenderConfig,
     pub modules: ModulesConfig,
     pub performance: PerformanceConfig,
     pub identity: Option<String>,
@@ -76,7 +75,7 @@ pub struct Config {
 
 /// GPU backend and power-preference settings resolved once at engine startup.
 ///
-/// These values are read from `t.graphics` in `conf.lua` and translate directly into
+/// These values are read from `[render]` in `conf.toml` and translate directly into
 /// [`wgpu::Backends`] and [`wgpu::PowerPreference`] passed to [`wgpu::Instance::new`] and
 /// [`wgpu::Instance::request_adapter`] respectively.
 ///
@@ -91,7 +90,7 @@ pub struct Config {
 ///   `"none"` expresses no preference and lets the driver decide.
 ///   Valid values: `"high"`, `"low"`, `"none"`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct GraphicsConfig {
+pub struct RenderConfig {
     pub backend: String,
     pub power_preference: String,
 }
@@ -140,74 +139,74 @@ pub struct WindowConfig {
 /// Flags to enable or disable optional engine subsystems.
 ///
 /// All flags default to `true` (all systems on) except `debug`, which defaults to
-/// `true` only in debug builds.  Set a flag to `false` in `conf.lua` to skip
+/// `true` only in debug builds.  Set a flag to `false` in `conf.toml` to skip
 /// registering the matching `lurek.*` namespace entirely.
 ///
 /// # Fields
 /// - `audio` — rodio audio subsystem (`lurek.audio`).
 /// - `physics` — rapier2d physics world (`lurek.physics`).
-/// - `graphics` — GPU render pipeline (`lurek.renderphic`, `lurek.font`, `lurek.sprite`).
+/// - `render` — GPU render pipeline (`lurek.render`, `lurek.font`, `lurek.sprite`).
 /// - `input` — keyboard / mouse / gamepad input (`lurek.input`).
 /// - `timer` — frame timer and scheduled callbacks (`lurek.timer`).
 /// - `filesystem` — sandboxed game filesystem (`lurek.filesystem`).
 /// - `window` — window state queries (`lurek.window`).
 /// - `particle` — 2D particle emitters (`lurek.particle`).
 /// - `image` — CPU-side image manipulation (`lurek.image`).
-/// - `gui` — retained-mode GUI widgets (`lurek.ui`).
-/// - `overlay` — fullscreen overlay and post-processing effects (`lurek.effect`, `lurek.effect`).
+/// - `ui` — retained-mode GUI widgets (`lurek.ui`).
+/// - `effect` — fullscreen overlay and post-processing effects (`lurek.effect`).
 /// - `tilemap` — tile maps, tile sets, and map generation (`lurek.tilemap`).
 /// - `scene` — scene stack and transition management (`lurek.scene`).
-/// - `savegame` — save/load orchestration and schema versioning (`lurek.save`).
-/// - `entity` — lightweight ECS primitives (`lurek.ecs`).
+/// - `save` — save/load orchestration and schema versioning (`lurek.save`).
+/// - `ecs` — lightweight ECS primitives (`lurek.ecs`).
 /// - `ai` — FSMs, behaviour trees, and steering (`lurek.ai`, `lurek.steering`).
-/// - `pathfinding` — A★ and flow-field navigation grids (`lurek.pathfind`).
+/// - `pathfind` — A★ and flow-field navigation grids (`lurek.pathfind`).
 /// - `thread` — background Rust threads and `Channel` objects (`lurek.thread`).
 /// - `graph` — directed graphs and flow simulation (`lurek.graph`).
 /// - `data` — binary data helpers, encoding/compression, and serial (`lurek.data`, `lurek.serial`).
 /// - `compute` — dense numerical arrays and `DataFrame` (`lurek.compute`, `lurek.dataframe`).
 /// - `minimap` — minimap extraction and FOV masking (`lurek.minimap`).
-/// - `modding` — mod discovery and load ordering (`lurek.mods`).
+/// - `mods` — mod discovery and load ordering (`lurek.mods`).
 /// - `pipeline` — data transformation pipelines and pattern helpers (`lurek.pipeline`, `lurek.patterns`).
-/// - `system` — system information queries (`lurek.runtime`).
-/// - `localization` — string localisation tables (`lurek.i18n`).
+/// - `runtime` — system information queries (`lurek.runtime`).
+/// - `i18n` — string localisation tables (`lurek.i18n`).
 /// - `debug` — debug bridge, doc server, and automation helpers (`lurek.debug`, `lurek.debugbridge`, `lurek.docs`, `lurek.automation`).
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// # Fields
-/// - `graphics` — See field documentation.
+/// - `render` — See field documentation.
 /// - `physics` — See field documentation.
 /// - `audio` — See field documentation.
 /// - `input` — See field documentation.
 /// - `timer` — See field documentation.
 /// - `filesystem` — See field documentation.
-/// - `gui` — See field documentation.
+/// - `ui` — See field documentation.
 /// - `scene` — See field documentation.
 pub struct ModulesConfig {
     pub audio: bool,
     pub physics: bool,
-    pub graphics: bool,
+    pub render: bool,
     pub input: bool,
     pub timer: bool,
     pub filesystem: bool,
     pub window: bool,
     pub particle: bool,
     pub image: bool,
-    pub gui: bool,
-    pub overlay: bool,
+    pub ui: bool,
+    pub effect: bool,
     pub tilemap: bool,
     pub scene: bool,
-    pub savegame: bool,
-    pub entity: bool,
+    pub save: bool,
+    pub ecs: bool,
     pub ai: bool,
-    pub pathfinding: bool,
+    pub pathfind: bool,
     pub thread: bool,
     pub graph: bool,
     pub data: bool,
     pub compute: bool,
     pub minimap: bool,
-    pub modding: bool,
+    pub mods: bool,
     pub pipeline: bool,
-    pub system: bool,
-    pub localization: bool,
+    pub runtime: bool,
+    pub i18n: bool,
     pub debug: bool,
     /// Enable lurek.animation sprite animation API (frame clips, named animations).
     pub animation: bool,
@@ -233,82 +232,74 @@ pub struct ModulesConfig {
 
 impl ModulesConfig {
     /// Enforces dependency constraints so that a partially-disabled config is never
-    /// internally inconsistent.  Call this after reading `conf.lua`.
+    /// internally inconsistent.  Call this after loading `conf.toml`.
     ///
     /// Current rules:
-    /// - `minimap` requires `graphics` (the minimap samples the render output).
-    /// - `particle` requires `graphics` (particles are draw calls).
-    /// - `gui` requires `graphics` (widgets render to the GPU surface).
-    /// - `overlay` requires `graphics` (overlay and postfx are render passes).
-    /// - `parallax` requires `graphics` (layer scrolling renders to the GPU surface).
-    /// - `terminal` requires `graphics` (text-mode terminal renders via the GPU surface).
-    /// - `animation` requires `graphics` (frame clips are GPU draw calls).
-    /// - `tilemap` requires `graphics` (tile layers are batched GPU draw calls).
-    /// - `raycaster` requires `graphics` (DDA output is rendered to a GPU texture).
-    /// - `camera` requires `graphics` (Camera2D transforms are applied at the GPU level).
-    /// - `globe` requires `graphics` (province sphere renders to the GPU surface).
+    /// - `minimap` requires `render` (the minimap samples the render output).
+    /// - `particle` requires `render` (particles are draw calls).
+    /// - `ui` requires `render` (widgets render to the GPU surface).
+    /// - `effect` requires `render` (overlay and postfx are render passes).
+    /// - `parallax` requires `render` (layer scrolling renders to the GPU surface).
+    /// - `terminal` requires `render` (text-mode terminal renders via the GPU surface).
+    /// - `animation` requires `render` (frame clips are GPU draw calls).
+    /// - `tilemap` requires `render` (tile layers are batched GPU draw calls).
+    /// - `raycaster` requires `render` (DDA output is rendered to a GPU texture).
+    /// - `camera` requires `render` (Camera2D transforms are applied at the GPU level).
+    /// - `globe` requires `render` (province sphere renders to the GPU surface).
     /// - `spine` requires `animation` (skeletal animation builds on the animation subsystem).
     pub fn validate_and_fix(&mut self) {
-        if !self.graphics {
+        if !self.render {
             if self.minimap {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "minimap requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "minimap requires render");
                 self.minimap = false;
             }
             if self.particle {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "particle requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "particle requires render");
                 self.particle = false;
             }
-            if self.gui {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "gui requires graphics");
-                self.gui = false;
+            if self.ui {
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "ui requires render");
+                self.ui = false;
             }
-            if self.overlay {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "overlay requires graphics");
-                self.overlay = false;
+            if self.effect {
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "effect requires render");
+                self.effect = false;
             }
             if self.parallax {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "parallax requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "parallax requires render");
                 self.parallax = false;
             }
             if self.terminal {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "terminal requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "terminal requires render");
                 self.terminal = false;
             }
             if self.animation {
-                log_msg!(
-                    warn,
-                    L050_MODULE_DEP_DISABLED,
-                    "animation requires graphics"
-                );
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "animation requires render");
                 self.animation = false;
             }
             if self.tilemap {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "tilemap requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "tilemap requires render");
                 self.tilemap = false;
             }
             if self.raycaster {
-                log_msg!(
-                    warn,
-                    L050_MODULE_DEP_DISABLED,
-                    "raycaster requires graphics"
-                );
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "raycaster requires render");
                 self.raycaster = false;
             }
             if self.camera {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "camera requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "camera requires render");
                 self.camera = false;
             }
             if self.globe {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "globe requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "globe requires render");
                 self.globe = false;
             }
             if self.spine {
-                log_msg!(warn, L050_MODULE_DEP_DISABLED, "spine requires graphics");
+                log_msg!(warn, L050_MODULE_DEP_DISABLED, "spine requires render");
                 self.spine = false;
             }
         }
-        // spine also requires animation (checked after the graphics block so that
-        // the graphics-disabled path above already cleared both animation and spine).
+        // spine also requires animation (checked after the render block so that
+        // the render-disabled path above already cleared both animation and spine).
         if !self.animation && self.spine {
             log_msg!(warn, L050_MODULE_DEP_DISABLED, "spine requires animation");
             self.spine = false;
@@ -360,37 +351,37 @@ impl Default for Config {
                 game_height: None,
                 maximized: false,
             },
-            graphics: GraphicsConfig {
+            render: RenderConfig {
                 backend: "auto".to_string(),
                 power_preference: "high".to_string(),
             },
             modules: ModulesConfig {
                 audio: true,
                 physics: true,
-                graphics: true,
+                render: true,
                 input: true,
                 timer: true,
                 filesystem: true,
                 window: true,
                 particle: true,
                 image: true,
-                gui: true,
-                overlay: true,
+                ui: true,
+                effect: true,
                 tilemap: true,
                 scene: true,
-                savegame: true,
-                entity: true,
+                save: true,
+                ecs: true,
                 ai: true,
-                pathfinding: true,
+                pathfind: true,
                 thread: true,
                 graph: true,
                 data: true,
                 compute: true,
                 minimap: true,
-                modding: true,
+                mods: true,
                 pipeline: true,
-                system: true,
-                localization: true,
+                runtime: true,
+                i18n: true,
                 debug: cfg!(debug_assertions),
                 animation: true,
                 tween: true,
@@ -421,8 +412,7 @@ impl Default for Config {
 impl Config {
     /// Loads engine configuration from the game directory.
     ///
-    /// Tries `conf.toml` first (preferred TOML format), then falls back to `conf.lua`
-    /// for backward compatibility.  If neither file exists, returns `Config::default()`.
+    /// Tries `conf.toml`; if absent returns `Config::default()`.
     ///
     /// # Parameters
     /// - `game_dir` — Absolute path to the directory containing the game files.
@@ -435,7 +425,7 @@ impl Config {
         if toml_path.exists() {
             return Self::load_from_conf_toml(game_dir);
         }
-        Self::load_from_conf_lua(game_dir)
+        (Config::default(), None)
     }
 
     /// Loads engine configuration from `conf.toml` in the game directory.
@@ -506,382 +496,6 @@ impl Config {
                 (default, Some(format!("Error in conf.toml: {}", e)))
             }
         }
-    }
-
-    /// Loads engine configuration from `conf.lua` in the game directory.
-    ///
-    /// If `conf.lua` is absent or contains errors, returns `Config::default()` silently.
-    /// Prefer `conf.toml` for new games — this loader exists for backward compatibility.
-    ///
-    /// # Parameters
-    /// - `game_dir` — Absolute path to the directory containing `conf.lua` (and `main.lua`).
-    ///
-    /// # Returns
-    /// A tuple of `(Config, Option<String>)`. The second element is `Some(msg)` if
-    /// `conf.lua` had errors; the returned `Config` still holds usable defaults.
-    pub fn load_from_conf_lua(game_dir: &Path) -> (Self, Option<String>) {
-        let conf_path = game_dir.join("conf.lua");
-        let config = Config::default();
-
-        if !conf_path.exists() {
-            return (config, None);
-        }
-
-        let code = match std::fs::read_to_string(&conf_path) {
-            Ok(c) => c,
-            Err(e) => {
-                log_msg!(warn, L051_CONF_READ_ERR, "{}", e);
-                return (config, Some(format!("Failed to read conf.lua: {}", e)));
-            }
-        };
-
-        let lua = Lua::new();
-
-        // Set up the `lurek` global so conf.lua can define `function lurek.conf(t)`.
-        let lurek_table = match lua.create_table() {
-            Ok(t) => t,
-            Err(e) => return (config, Some(format!("Lua table creation failed: {e}"))),
-        };
-        if let Err(e) = lua.globals().set("lurek", lurek_table.clone()) {
-            return (config, Some(format!("Failed to set lurek global: {e}")));
-        }
-
-        // Execute conf.lua — it either defines `lurek.conf(t)` or returns a table.
-        let eval_result = lua.load(&code).set_name("conf.lua").eval::<LuaValue>();
-
-        // Strategy 1: conf.lua returned a table directly → read it.
-        if let Ok(LuaValue::Table(t)) = &eval_result {
-            return (Self::read_config_table(t, config), None);
-        }
-
-        // If eval failed because conf.lua defines a function (no return), try exec.
-        // A genuine parse error will also fail here; log a clear fallback notice and
-        // continue with defaults so the engine can still reach the error screen.
-        if eval_result.is_err() {
-            if let Err(e) = lua.load(&code).set_name("conf.lua").exec() {
-                log_msg!(warn, L052_CONF_PARSE_ERR, "{}. Using default config.", e);
-                return (config, Some(format!("Error in conf.lua: {e}")));
-            }
-        }
-
-        // Strategy 2: conf.lua defined `function lurek.conf(t)` — call it.
-        if let Ok(conf_fn) = lurek_table.get::<_, mlua::Function>("conf") {
-            let config_table = match Self::build_config_table(&lua, &config) {
-                Ok(t) => t,
-                Err(e) => return (config, Some(format!("Failed to build config table: {e}"))),
-            };
-            if let Err(e) = conf_fn.call::<_, ()>(config_table.clone()) {
-                log_msg!(warn, L052_CONF_PARSE_ERR, "{}", e);
-                return (config, Some(format!("Error calling lurek.conf: {e}")));
-            }
-            return (Self::read_config_table(&config_table, config), None);
-        }
-
-        // conf.lua evaluated without error but returned nothing and defined no callback.
-        (config, None)
-    }
-
-    /// Build a Lua table pre-populated with the current config defaults,
-    /// suitable for passing to `lurek.conf(t)`.
-    fn build_config_table<'a>(lua: &'a Lua, config: &Config) -> mlua::Result<LuaTable<'a>> {
-        let t = lua.create_table()?;
-
-        // window sub-table
-        let window = lua.create_table()?;
-        window.set("title", config.window.title.as_str())?;
-        window.set("width", config.window.width)?;
-        window.set("height", config.window.height)?;
-        window.set("vsync", config.window.vsync)?;
-        window.set("fullscreen", config.window.fullscreen)?;
-        window.set("resizable", config.window.resizable)?;
-        window.set("minwidth", config.window.min_width.unwrap_or(0))?;
-        window.set("minheight", config.window.min_height.unwrap_or(0))?;
-        window.set("borderless", config.window.borderless)?;
-        window.set("icon", config.window.icon.as_deref().unwrap_or(""))?;
-        window.set("displayindex", config.window.display_index)?;
-        window.set("scalemode", config.window.scale_mode.as_str())?;
-        window.set("gamewidth", config.window.game_width.unwrap_or(0))?;
-        window.set("gameheight", config.window.game_height.unwrap_or(0))?;
-        window.set("maximized", config.window.maximized)?;
-        t.set("window", window)?;
-
-        // graphics sub-table
-        let graphics = lua.create_table()?;
-        graphics.set("backend", config.graphics.backend.as_str())?;
-        graphics.set(
-            "power_preference",
-            config.graphics.power_preference.as_str(),
-        )?;
-        t.set("graphics", graphics)?;
-
-        // modules sub-table
-        let modules = lua.create_table()?;
-        modules.set("audio", config.modules.audio)?;
-        modules.set("physics", config.modules.physics)?;
-        modules.set("graphics", config.modules.graphics)?;
-        modules.set("input", config.modules.input)?;
-        modules.set("timer", config.modules.timer)?;
-        modules.set("filesystem", config.modules.filesystem)?;
-        modules.set("window", config.modules.window)?;
-        modules.set("particle", config.modules.particle)?;
-        modules.set("image", config.modules.image)?;
-        modules.set("gui", config.modules.gui)?;
-        modules.set("overlay", config.modules.overlay)?;
-        modules.set("tilemap", config.modules.tilemap)?;
-        modules.set("scene", config.modules.scene)?;
-        modules.set("savegame", config.modules.savegame)?;
-        modules.set("entity", config.modules.entity)?;
-        modules.set("ai", config.modules.ai)?;
-        modules.set("pathfinding", config.modules.pathfinding)?;
-        modules.set("thread", config.modules.thread)?;
-        modules.set("graph", config.modules.graph)?;
-        modules.set("data", config.modules.data)?;
-        modules.set("compute", config.modules.compute)?;
-        modules.set("minimap", config.modules.minimap)?;
-        modules.set("modding", config.modules.modding)?;
-        modules.set("pipeline", config.modules.pipeline)?;
-        modules.set("system", config.modules.system)?;
-        modules.set("localization", config.modules.localization)?;
-        modules.set("debug", config.modules.debug)?;
-        modules.set("animation", config.modules.animation)?;
-        modules.set("tween", config.modules.tween)?;
-        modules.set("camera", config.modules.camera)?;
-        modules.set("network", config.modules.network)?;
-        modules.set("procgen", config.modules.procgen)?;
-        modules.set("raycaster", config.modules.raycaster)?;
-        modules.set("spine", config.modules.spine)?;
-        modules.set("terminal", config.modules.terminal)?;
-        t.set("modules", modules)?;
-
-        // performance sub-table
-        let performance = lua.create_table()?;
-        performance.set("target_fps", config.performance.target_fps)?;
-        performance.set("physics_tick_rate", config.performance.physics_tick_rate)?;
-        t.set("performance", performance)?;
-
-        // top-level fields
-        t.set("identity", config.identity.as_deref().unwrap_or(""))?;
-        t.set("version", config.version.as_deref().unwrap_or(""))?;
-
-        // log sub-table
-        let log_tbl = lua.create_table()?;
-        log_tbl.set("file", config.log_file.as_deref().unwrap_or(""))?;
-        log_tbl.set("append", config.log_append)?;
-        log_tbl.set("level", config.log_level.as_deref().unwrap_or(""))?;
-        t.set("log", log_tbl)?;
-
-        Ok(t)
-    }
-
-    fn read_config_table(t: &LuaTable, default: Config) -> Config {
-        let mut config = default;
-
-        if let Ok(window) = t.get::<_, LuaTable>("window") {
-            if let Ok(v) = window.get::<_, String>("title") {
-                config.window.title = v;
-            }
-            if let Ok(v) = window.get::<_, u32>("width") {
-                config.window.width = v;
-            }
-            if let Ok(v) = window.get::<_, u32>("height") {
-                config.window.height = v;
-            }
-            if let Ok(v) = window.get::<_, bool>("vsync") {
-                config.window.vsync = v;
-            }
-            if let Ok(v) = window.get::<_, bool>("fullscreen") {
-                config.window.fullscreen = v;
-            }
-            if let Ok(v) = window.get::<_, bool>("resizable") {
-                config.window.resizable = v;
-            }
-            if let Ok(v) = window.get::<_, u32>("minwidth") {
-                config.window.min_width = if v > 0 { Some(v) } else { None };
-            }
-            if let Ok(v) = window.get::<_, u32>("minheight") {
-                config.window.min_height = if v > 0 { Some(v) } else { None };
-            }
-            if let Ok(v) = window.get::<_, bool>("borderless") {
-                config.window.borderless = v;
-            }
-            if let Ok(v) = window.get::<_, String>("icon") {
-                config.window.icon = if v.is_empty() { None } else { Some(v) };
-            }
-            if let Ok(v) = window.get::<_, u32>("displayindex") {
-                config.window.display_index = v;
-            }
-            if let Ok(v) = window.get::<_, String>("scalemode") {
-                let v = v.to_lowercase();
-                if matches!(v.as_str(), "none" | "letterbox" | "stretch" | "pixel") {
-                    config.window.scale_mode = v;
-                }
-            }
-            if let Ok(v) = window.get::<_, u32>("gamewidth") {
-                config.window.game_width = if v > 0 { Some(v) } else { None };
-            }
-            if let Ok(v) = window.get::<_, u32>("gameheight") {
-                config.window.game_height = if v > 0 { Some(v) } else { None };
-            }
-            if let Ok(v) = window.get::<_, bool>("maximized") {
-                config.window.maximized = v;
-            }
-        }
-
-        if let Ok(graphics) = t.get::<_, LuaTable>("graphics") {
-            if let Ok(v) = graphics.get::<_, String>("backend") {
-                let v = v.to_lowercase();
-                if matches!(v.as_str(), "auto" | "dx12" | "vulkan" | "metal") {
-                    config.graphics.backend = v;
-                }
-            }
-            if let Ok(v) = graphics.get::<_, String>("power_preference") {
-                let v = v.to_lowercase();
-                if matches!(v.as_str(), "high" | "low" | "none") {
-                    config.graphics.power_preference = v;
-                }
-            }
-        }
-
-        if let Ok(modules) = t.get::<_, LuaTable>("modules") {
-            if let Ok(v) = modules.get::<_, bool>("audio") {
-                config.modules.audio = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("physics") {
-                config.modules.physics = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("graphics") {
-                config.modules.graphics = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("input") {
-                config.modules.input = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("timer") {
-                config.modules.timer = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("filesystem") {
-                config.modules.filesystem = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("window") {
-                config.modules.window = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("particle") {
-                config.modules.particle = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("image") {
-                config.modules.image = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("gui") {
-                config.modules.gui = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("overlay") {
-                config.modules.overlay = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("tilemap") {
-                config.modules.tilemap = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("scene") {
-                config.modules.scene = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("savegame") {
-                config.modules.savegame = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("entity") {
-                config.modules.entity = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("ai") {
-                config.modules.ai = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("pathfinding") {
-                config.modules.pathfinding = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("thread") {
-                config.modules.thread = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("graph") {
-                config.modules.graph = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("data") {
-                config.modules.data = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("compute") {
-                config.modules.compute = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("minimap") {
-                config.modules.minimap = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("modding") {
-                config.modules.modding = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("pipeline") {
-                config.modules.pipeline = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("system") {
-                config.modules.system = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("localization") {
-                config.modules.localization = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("debug") {
-                config.modules.debug = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("animation") {
-                config.modules.animation = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("tween") {
-                config.modules.tween = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("camera") {
-                config.modules.camera = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("network") {
-                config.modules.network = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("procgen") {
-                config.modules.procgen = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("raycaster") {
-                config.modules.raycaster = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("spine") {
-                config.modules.spine = v;
-            }
-            if let Ok(v) = modules.get::<_, bool>("terminal") {
-                config.modules.terminal = v;
-            }
-        }
-
-        if let Ok(perf) = t.get::<_, LuaTable>("performance") {
-            if let Ok(v) = perf.get::<_, u32>("target_fps") {
-                config.performance.target_fps = v;
-            }
-            if let Ok(v) = perf.get::<_, u32>("physics_tick_rate") {
-                if v > 0 {
-                    config.performance.physics_tick_rate = v;
-                }
-            }
-        }
-
-        if let Ok(v) = t.get::<_, String>("identity") {
-            config.identity = if v.is_empty() { None } else { Some(v) };
-        }
-        if let Ok(v) = t.get::<_, String>("version") {
-            config.version = if v.is_empty() { None } else { Some(v) };
-        }
-
-        if let Ok(log_tbl) = t.get::<_, LuaTable>("log") {
-            if let Ok(v) = log_tbl.get::<_, String>("file") {
-                config.log_file = if v.is_empty() { None } else { Some(v) };
-            }
-            if let Ok(v) = log_tbl.get::<_, bool>("append") {
-                config.log_append = v;
-            }
-            if let Ok(v) = log_tbl.get::<_, String>("level") {
-                let v = v.to_lowercase();
-                config.log_level = if v.is_empty() { None } else { Some(v) };
-            }
-        }
-
-        config
     }
 }
 

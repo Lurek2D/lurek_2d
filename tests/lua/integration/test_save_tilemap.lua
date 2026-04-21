@@ -12,21 +12,22 @@ describe("integration: savegame collects and restores tilemap state", function()
     -- @description Verifies a savegame handler can collect the non-empty tile state from a tilemap.
     it("registers tilemap handler and collects tile data", function()
         local sm = lurek.save.newSaveManager()
-        local tm = lurek.tilemap.newTilemap(5, 5, 16, 16)
+        local tm = lurek.tilemap.newTileMap(16, 16)
+        tm:addLayer("tiles", 5, 5)
 
         -- Set some tiles
-        tm:setTile(0, 0, 1)
-        tm:setTile(1, 0, 2)
-        tm:setTile(2, 2, 3)
+        tm:setTile(1, 1, 1, 1)
+        tm:setTile(1, 2, 1, 2)
+        tm:setTile(1, 3, 3, 3)
 
         local saved_tiles = nil
 
         sm:register("tilemap", function()
             -- Collect: snapshot the relevant tiles
             local tiles = {}
-            for y = 0, 4 do
-                for x = 0, 4 do
-                    local id = tm:getTile(x, y)
+            for y = 1, 5 do
+                for x = 1, 5 do
+                    local id = tm:getTile(1, x, y)
                     if id and id ~= 0 then
                         tiles[#tiles + 1] = {x = x, y = y, id = id}
                     end
@@ -38,7 +39,7 @@ describe("integration: savegame collects and restores tilemap state", function()
             -- Restore: apply tiles back
             if data then
                 for _, entry in ipairs(data) do
-                    tm:setTile(entry.x, entry.y, entry.id)
+                    tm:setTile(1, entry.x, entry.y, entry.id)
                 end
             end
         end)
@@ -54,8 +55,8 @@ describe("integration: savegame collects and restores tilemap state", function()
     -- @description Verifies save summaries can retain tilemap metadata such as the map name.
     it("save summary contains tilemap metadata", function()
         local sm = lurek.save.newSaveManager()
-        sm:setSummary("map_name", "level_01")
-        local summary = sm:getSummary("map_name")
+        sm:setSummary("level_01")
+        local summary = sm:getSummary()
         expect_equal("level_01", summary, "summary stores map name")
     end)
 
@@ -69,4 +70,5 @@ describe("integration: savegame collects and restores tilemap state", function()
         expect_true(ver >= 0, "schema version >= 0")
     end)
 end)
+
 test_summary()

@@ -7,7 +7,7 @@ class SpriteAnimEditor extends shared_js_1.WebviewEditor {
         return new SpriteAnimEditor(context);
     }
     constructor(context) {
-        super(context, "luna.spriteAnimEditor", "Sprite Animation");
+        super(context, "lurek.spriteAnimEditor", "Sprite Animation");
     }
     handleMessage(msg) {
         switch (msg.type) {

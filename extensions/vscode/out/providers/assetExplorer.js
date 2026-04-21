@@ -206,7 +206,7 @@ async function findMissingAssets() {
         return;
     }
     const luaFiles = await vscode.workspace.findFiles("**/*.lua", "**/node_modules/**");
-    const assetPattern = /luna\.(?:graphics\.newImage|audio\.newSource)\s*\(\s*["']([^"']+)["']/g;
+    const assetPattern = /lurek\.(?:graphics\.newImage|audio\.newSource)\s*\(\s*["']([^"']+)["']/g;
     const missing = [];
     for (const uri of luaFiles) {
         let text;

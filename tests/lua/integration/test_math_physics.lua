@@ -121,4 +121,5 @@ describe("math trigonometry for physics angles", function()
         expect_near(10, vy, 0.001, "vy at 90 degrees")
     end)
 end)
+
 test_summary()

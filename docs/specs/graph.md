@@ -19,7 +19,7 @@ Simulation is step-driven: `Graph::step(dt)` applies item decay (all items lose 
 
 `Item` and `ItemType` describe the cargo: `ItemType` is a user-defined string tag; `Item` carries a type and a quantity float. `FlowResult` reports the per-step simulation outcome (items moved, conversions fired, overflow events).
 
-Graph algorithms from the `algorithms` submodule cover: connected component analysis, cycle detection, topological sort. `pathfinding` submodule provides Dijkstra shortest-path. The `render` submodule outputs `RenderCommand` entries for debug visualization of node/edge state.
+Graph algorithms from the `algorithms` submodule cover: connected component analysis, cycle detection, topological sort. `pathfind` submodule provides Dijkstra shortest-path. The `render` submodule outputs `RenderCommand` entries for debug visualization of node/edge state.
 
 The graph traversal surface has been enriched with explicit BFS and DFS iteration methods on `Graph`, allowing scripts to walk the node topology in breadth-first or depth-first order without extracting an adjacency list first. Lua callers can now drive custom graph traversals directly through `lurek.graph.*` methods, simplifying dialogue tree walks, dependency resolution, and flow-network analysis.
 

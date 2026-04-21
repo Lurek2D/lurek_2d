@@ -3,75 +3,79 @@
 
 -- @description Covers suite: graphics + animation integration.
 describe("graphics + animation integration", function()
-    -- @covers lurek.animation.Timeline.getCurrentFrame
+    -- @covers lurek.animation.new
+    -- @covers lurek.animation.addClip
+    -- @covers lurek.animation.play
     -- @covers lurek.render
-    -- @covers lurek.render.rectangle
-    -- @covers lurek.animation.newTimeline
-    -- @description Verifies timeline seeking exposes frame data that graphics code can use to choose the active animation frame.
-    it("animation timeline controls frame index", function()
-        local tl = lurek.animation.newTimeline()
-        tl:addFrame(0.0, { x = 0, y = 0 })
-        tl:addFrame(0.5, { x = 100, y = 0 })
-        tl:addFrame(1.0, { x = 100, y = 100 })
+    -- @description Verifies that animation clip playback returns a valid frame index.
+    it("animation clip current frame advances with time", function()
+        local anim = lurek.animation.new()
+        anim:addFramesFromGrid(128, 16, 16, 16, 0, 4)
+        anim:addClip("run", {0, 1, 2, 3}, 10.0, false)
+        anim:play("run")
 
-        -- At t=0 we should get the first frame data
-        tl:seek(0.0)
-        local frame = tl:getCurrentFrame()
-        expect_true(frame ~= nil, "frame is not nil at t=0")
+        local f0 = anim:getCurrentFrame()
+        expect_true(f0 >= 0, "frame is >= 0 at start")
+
+        anim:update(0.15)
+        local f1 = anim:getCurrentFrame()
+        expect_true(f1 >= 0, "frame is valid after 0.15s")
     end)
 
-    -- @covers lurek.animation.Timeline.getCurrentFrame
+    -- @covers lurek.animation.getCurrentFrame
     -- @covers lurek.render.rectangle
-    -- @description Verifies animation frame payload data can be fed directly into graphics draw parameters.
+    -- @description Verifies animation frame index can drive graphics parameters.
     it("animation frame drives sprite draw parameters", function()
-        local tl = lurek.animation.newTimeline()
-        tl:addFrame(0.0, { width = 32, height = 32 })
-        tl:addFrame(1.0, { width = 64, height = 64 })
+        local anim = lurek.animation.new()
+        anim:addFramesFromGrid(64, 16, 16, 16, 0, 4)
+        anim:addClip("walk", {0, 1, 2, 3}, 8.0, false)
+        anim:play("walk")
 
-        -- Advance animation
-        tl:seek(0.0)
-        local frame = tl:getCurrentFrame()
+        anim:update(0.125)  -- advance one frame at 8fps
+        local frame_idx = anim:getCurrentFrame()
 
         -- Use frame data for drawing
         expect_no_error(function()
             lurek.render.setColor(1, 1, 1, 1)
-            lurek.render.rectangle("fill", 0, 0, frame.width or 32, frame.height or 32)
+            -- Use frame_idx to offset source x in a hypothetical draw
+            local src_x = frame_idx * 16
+            lurek.render.rectangle("fill", src_x, 0, 16, 16)
         end)
     end)
 
-    -- @covers lurek.animation.Timeline.setLooping
-    -- @covers lurek.render
-    -- @description Verifies a looping animation can advance beyond its end and remain in a valid state for rendering.
-    it("looping animation resets frame index", function()
-        local tl = lurek.animation.newTimeline()
-        tl:setLooping(true)
-        tl:addFrame(0.0, { idx = 1 })
-        tl:addFrame(0.5, { idx = 2 })
-        tl:addFrame(1.0, { idx = 3 })
+    -- @covers lurek.animation.addClip
+    -- @covers lurek.animation.isLooping
+    -- @description Verifies a looping animation clip reports isLooping correctly.
+    it("looping animation clip isLooping is true", function()
+        local anim = lurek.animation.new()
+        anim:addFramesFromGrid(48, 16, 16, 16, 0, 3)
+        anim:addClip("idle", {0, 1, 2}, 5.0, true)
+        anim:play("idle")
 
-        -- Advance past the end
-        tl:seek(1.5)
+        expect_true(anim:isLooping(), "looping clip reports isLooping = true")
 
-        -- Should have looped back
-        local state = tl:getState()
-        expect_true(state ~= nil, "timeline state exists after loop")
+        -- Advance past the clip end
+        anim:update(1.0)
+        expect_true(anim:isPlaying(), "still playing after looping past end")
     end)
 
-    -- @covers lurek.animation.Timeline.pause
-    -- @covers lurek.render
-    -- @description Verifies pausing the animation prevents elapsed time changes that would otherwise drive graphics frame changes.
+    -- @covers lurek.animation.pause
+    -- @covers lurek.animation.resume
+    -- @description Verifies pausing the animation prevents frame progression.
     it("paused animation does not advance frames", function()
-        local tl = lurek.animation.newTimeline()
-        tl:addFrame(0.0, { idx = 1 })
-        tl:addFrame(1.0, { idx = 2 })
+        local anim = lurek.animation.new()
+        anim:addFramesFromGrid(32, 16, 16, 16, 0, 2)
+        anim:addClip("seq", {0, 1}, 5.0, false)
+        anim:play("seq")
 
-        tl:pause()
-        local before = tl:getElapsed()
-        tl:update(0.5)
-        local after = tl:getElapsed()
+        anim:pause()
+        local before = anim:getCurrentFrame()
+        anim:update(0.5)
+        local after = anim:getCurrentFrame()
 
-        -- Paused timeline should not advance
-        expect_near(before, after, 0.001, "paused timeline does not advance")
+        -- Paused animation should not advance
+        expect_equal(before, after, "paused animation frame does not change")
     end)
 end)
+
 test_summary()

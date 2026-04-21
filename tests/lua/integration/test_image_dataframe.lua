@@ -29,8 +29,8 @@ describe("image + dataframe integration", function()
 
     it("ImageData width/height round-trips", function()
         local img = lurek.image.newImageData(32, 16)
-        expect_equal(img:width(), 32, "width is 32")
-        expect_equal(img:height(), 16, "height is 16")
+        expect_equal(img:getWidth(), 32, "width is 32")
+        expect_equal(img:getHeight(), 16, "height is 16")
     end)
 
     it("DataFrame can hold numeric pixel data without overflow", function()
