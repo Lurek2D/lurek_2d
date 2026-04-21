@@ -4,6 +4,13 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.3] — 2026-04-22
 
+### Globe example and showcase demo (session doc-writer-20260421)
+
+- **content(globe): extend `content/examples/globe.lua` to cover all 53 API calls** — Added sections 14–32 demonstrating the 20 previously missing `lurek.globe.*` calls (`globe.get`, `globe.loadFromTOML`, `globe.greatCirclePath`, `globe.MAX_PROVINCES`, `globe.LOD_FAR/MID/NEAR`, `g:removeProvince`, `g:hideProvince`, `g:revealAll`, `g:setMarkerVisible`, `g:setLabelVisible`, `g:removeLabel`, `g:removeLayer`, `g:setLayerVisible`, `g:setLayerAlpha`, `g:removeArc`, `g:pick`, `g:pickLatLon`, `g:setRotation`, `g:setBorders`, `g:getName`) plus 6 previously unlisted calls (`g:pan`, `g:zoom`, `g:getNeighbors`, `g:removeMarker`, `g:setTimeOfDay`, `g:emitFrame`). Closes coverage gap; file now prints "All 53 globe API calls exercised." at end.
+- **content(globe-demo): add `content/games/showcase/globe_demo/`** — New 420-line playable showcase game: ~200 procedurally generated provinces across 7 continental grid regions, drag-pan camera, mouse-wheel zoom, 15 capital-city markers, 7 continent labels, political colour layer, day/night simulation (24 min/cycle), province hover highlight, click-select with great-circle arc and popup HUD, and a space background. Files: `main.lua` (420 lines), `conf.toml`, `README.md`.
+- **content(showcase): create `content/games/showcase/README.md`** — Directory index listing all showcase demos with key APIs demonstrated.
+- **content(examples): create `content/examples/README.md`** — Full index of all 50 single-API example scripts including `globe.lua`.
+
 ### Lua namespace alignment (session test-coverage-sweep-20260421)
 
 - **refactor(lurek): align Lua namespaces with module folder names** — Workspace-wide rename so each Lua namespace matches its `src/` folder: `lurek.signal`→`lurek.event`, `lurek.time`→`lurek.timer`, `lurek.img`→`lurek.image`, `lurek.simulator`→`lurek.automation`, `lurek.localization`→`lurek.i18n`, `lurek.keyboard|mouse|gamepad|touch`→`lurek.input.*`, `lurek.savegame`→`lurek.save`, `lurek.modding`→`lurek.mods`, `lurek.codec`→`lurek.serial`, `lurek.fs`→`lurek.filesystem`, `lurek.entity`→`lurek.ecs`, `lurek.graphic`→`lurek.render`, plus `lurek.pathfinding`→`lurek.pathfind`, `lurek.particles`→`lurek.particle`, `lurek.platform`→`lurek.runtime`, `lurek.gpu`→`lurek.compute`, `lurek.postfx`→`lurek.effect`. Touches 656 files across `src/lua_api/`, `tests/`, `content/`, `docs/`, `.github/`. `cargo check --tests` passes.
