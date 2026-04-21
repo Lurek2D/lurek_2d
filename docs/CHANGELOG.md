@@ -4,6 +4,10 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.3] — 2026-04-22
 
+### Lua namespace alignment (session test-coverage-sweep-20260421)
+
+- **refactor(lurek): align Lua namespaces with module folder names** — Workspace-wide rename so each Lua namespace matches its `src/` folder: `lurek.signal`→`lurek.event`, `lurek.time`→`lurek.timer`, `lurek.img`→`lurek.image`, `lurek.simulator`→`lurek.automation`, `lurek.localization`→`lurek.i18n`, `lurek.keyboard|mouse|gamepad|touch`→`lurek.input.*`, `lurek.savegame`→`lurek.save`, `lurek.modding`→`lurek.mods`, `lurek.codec`→`lurek.serial`, `lurek.fs`→`lurek.filesystem`, `lurek.entity`→`lurek.ecs`, `lurek.graphic`→`lurek.render`, plus `lurek.pathfinding`→`lurek.pathfind`, `lurek.particles`→`lurek.particle`, `lurek.platform`→`lurek.runtime`, `lurek.gpu`→`lurek.compute`, `lurek.postfx`→`lurek.effect`. Touches 656 files across `src/lua_api/`, `tests/`, `content/`, `docs/`, `.github/`. `cargo check --tests` passes.
+
 ### Test suite restoration — P1.2 (session test-coverage-sweep-20260421)
 
 - **fix(tests): add `assert_golden_text` helper to unblock `golden_tests`** — added a 3-line sibling wrapper in `tests/rust/golden/harness.rs` around `assert_golden` so the four call sites (`raycaster/ray_east_wall.txt`, `ray_north_wall.txt`, `ray_empty_miss.txt`, `multi_ray_east_5col.txt`) compile. `cargo test --test golden_tests` → 10 passed.
