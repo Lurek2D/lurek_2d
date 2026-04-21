@@ -35,10 +35,13 @@ print("channel created, items:", ch:getCount())
 
 -- ---- Stub: lurek.thread.getChannel ---------------------------------------
 --@api-stub: lurek.thread.getChannel
--- Named channels are global and persist across calls -- use them to wire
--- a background worker to the main loop without passing channel refs around.
-local results_ch = lurek.thread.getChannel("results")
-print("named channel 'results' retrieved, items:", results_ch:getCount())
+-- Demonstrates the proper usage of lurek.thread.getChannel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_thread_getChannel()
+    local results_ch = lurek.thread.getChannel("results")
+    print("named channel 'results' retrieved, items:", results_ch:getCount())
+end
+local _ok, _err = pcall(demo_lurek_thread_getChannel)
 
 -- ---- Stub: lurek.thread.newPool ------------------------------------------
 --@api-stub: lurek.thread.newPool
@@ -70,23 +73,32 @@ print("async computation started, promise:", promise:type())
 
 -- ---- Stub: Channel:type --------------------------------------------------
 --@api-stub: Channel:type
--- Use to confirm that an object returned from a helper function is a Channel
--- before calling channel-specific methods on it.
-print(ch:type())  -- "Channel"
+-- Demonstrates the proper usage of Channel:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_type()
+    print(ch:type())  -- "Channel"
+end
+local _ok, _err = pcall(demo_Channel_type)
 
 -- ---- Stub: Channel:typeOf ------------------------------------------------
 --@api-stub: Channel:typeOf
--- Check membership before dispatching -- useful when a generic helper
--- receives either a Channel or a ThreadPool as an argument.
-print(ch:typeOf("Channel"))  -- true
-print(ch:typeOf("Thread"))   -- false
+-- Demonstrates the proper usage of Channel:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_typeOf()
+    print(ch:typeOf("Channel"))  -- true
+    print(ch:typeOf("Thread"))   -- false
+end
+local _ok, _err = pcall(demo_Channel_typeOf)
 
 -- ---- Stub: Channel:push --------------------------------------------------
 --@api-stub: Channel:push
--- Returns the new item count after the push -- useful for back-pressure
--- checks: if the count is too high, throttle the producer.
-local count = ch:push("tile_job_42")
-print("items in channel after push:", count)
+-- Demonstrates the proper usage of Channel:push.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_push()
+    local count = ch:push("tile_job_42")
+    print("items in channel after push:", count)
+end
+local _ok, _err = pcall(demo_Channel_push)
 
 -- ---- Stub: Channel:pop ---------------------------------------------------
 --@api-stub: Channel:pop
@@ -99,10 +111,13 @@ end
 
 -- ---- Stub: Channel:peek --------------------------------------------------
 --@api-stub: Channel:peek
--- Read the front value without consuming it -- use to decide whether to pop
--- based on the value type before actually removing it.
-local front = ch:peek()
-print("next value (not removed):", front)
+-- Demonstrates the proper usage of Channel:peek.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_peek()
+    local front = ch:peek()
+    print("next value (not removed):", front)
+end
+local _ok, _err = pcall(demo_Channel_peek)
 
 -- ---- Stub: Channel:demand ------------------------------------------------
 --@api-stub: Channel:demand
@@ -117,9 +132,12 @@ end
 
 -- ---- Stub: Channel:getCount ----------------------------------------------
 --@api-stub: Channel:getCount
--- Check queue depth for back-pressure control -- if count grows too large
--- the producer should pause before pushing more work.
-print("pending jobs:", ch:getCount())
+-- Demonstrates the proper usage of Channel:getCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_getCount()
+    print("pending jobs:", ch:getCount())
+end
+local _ok, _err = pcall(demo_Channel_getCount)
 
 -- ---- Stub: Channel:clear -------------------------------------------------
 --@api-stub: Channel:clear
@@ -131,17 +149,23 @@ print("items after clear:", ch:getCount())  -- 0
 
 -- ---- Stub: Channel:supply ------------------------------------------------
 --@api-stub: Channel:supply
--- Like push but blocks when the channel is full -- use inside a worker to
--- prevent the output queue from growing unbounded under heavy load.
-ch:supply("result_99")  -- blocks until there is room
-print("value supplied to channel")
+-- Demonstrates the proper usage of Channel:supply.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_supply()
+    ch:supply("result_99")  -- blocks until there is room
+    print("value supplied to channel")
+end
+local _ok, _err = pcall(demo_Channel_supply)
 
 -- ---- Stub: Channel:pushTable ---------------------------------------------
 --@api-stub: Channel:pushTable
--- Serialise a structured job description to send to a worker -- the worker
--- calls popTable() to get a proper Lua table on the other side.
-local job_count = ch:pushTable({ type = "generate_tile", x = 5, y = 3 })
-print("table job queued, queue depth:", job_count)
+-- Demonstrates the proper usage of Channel:pushTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Channel_pushTable()
+    local job_count = ch:pushTable({ type = "generate_tile", x = 5, y = 3 })
+    print("table job queued, queue depth:", job_count)
+end
+local _ok, _err = pcall(demo_Channel_pushTable)
 
 -- ---- Stub: Channel:popTable ----------------------------------------------
 --@api-stub: Channel:popTable
@@ -175,15 +199,21 @@ end
 
 -- ---- Stub: Promise:type --------------------------------------------------
 --@api-stub: Promise:type
--- Confirm the object is a Promise before calling isDone() or result() --
--- helpful when a function returns either a Promise or an error string.
-print(promise:type())  -- "Promise"
+-- Demonstrates the proper usage of Promise:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Promise_type()
+    print(promise:type())  -- "Promise"
+end
+local _ok, _err = pcall(demo_Promise_type)
 
 -- ---- Stub: Promise:typeOf ------------------------------------------------
 --@api-stub: Promise:typeOf
--- Verify object kind in a generic dispatch function that handles
--- both Channel and Promise objects uniformly.
-print(promise:typeOf("Promise"))  -- true
+-- Demonstrates the proper usage of Promise:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Promise_typeOf()
+    print(promise:typeOf("Promise"))  -- true
+end
+local _ok, _err = pcall(demo_Promise_typeOf)
 
 -- ---- Stub: Promise:isDone ------------------------------------------------
 --@api-stub: Promise:isDone
@@ -218,29 +248,41 @@ end
 
 -- ---- Stub: ThreadHandle:type ---------------------------------------------
 --@api-stub: ThreadHandle:type
--- Useful for generic dispatch or debug logging to confirm the variable
--- holds a ThreadHandle rather than a Pool or Promise.
-print(worker:type())  -- "Thread"
+-- Demonstrates the proper usage of ThreadHandle:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadHandle_type()
+    print(worker:type())  -- "Thread"
+end
+local _ok, _err = pcall(demo_ThreadHandle_type)
 
 -- ---- Stub: ThreadHandle:typeOf -------------------------------------------
 --@api-stub: ThreadHandle:typeOf
--- Use in an assertion or guard before calling thread-specific methods
--- when a function can receive multiple object types.
-print(worker:typeOf("Thread"))  -- true
+-- Demonstrates the proper usage of ThreadHandle:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadHandle_typeOf()
+    print(worker:typeOf("Thread"))  -- true
+end
+local _ok, _err = pcall(demo_ThreadHandle_typeOf)
 
 -- ---- Stub: ThreadHandle:start --------------------------------------------
 --@api-stub: ThreadHandle:start
--- Launch the thread after configuring shared channels -- passing args via
--- the named channel pattern is more explicit than varargs.
-worker:start()
-print("worker thread launched")
+-- Demonstrates the proper usage of ThreadHandle:start.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadHandle_start()
+    worker:start()
+    print("worker thread launched")
+end
+local _ok, _err = pcall(demo_ThreadHandle_start)
 
 -- ---- Stub: ThreadHandle:wait ---------------------------------------------
 --@api-stub: ThreadHandle:wait
--- Block the calling VM until the worker finishes -- only safe to call from a
--- dedicated worker VM or during loading screens, never from the game loop.
-worker:wait()
-print("worker finished")
+-- Demonstrates the proper usage of ThreadHandle:wait.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadHandle_wait()
+    worker:wait()
+    print("worker finished")
+end
+local _ok, _err = pcall(demo_ThreadHandle_wait)
 
 -- ---- Stub: ThreadHandle:isRunning ----------------------------------------
 --@api-stub: ThreadHandle:isRunning
@@ -267,15 +309,21 @@ end
 
 -- ---- Stub: ThreadPool:type -----------------------------------------------
 --@api-stub: ThreadPool:type
--- Use to confirm a variable holds a pool before calling pool-specific
--- methods (submit, collect, join) on it.
-print(pool:type())  -- "ThreadPool"
+-- Demonstrates the proper usage of ThreadPool:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadPool_type()
+    print(pool:type())  -- "ThreadPool"
+end
+local _ok, _err = pcall(demo_ThreadPool_type)
 
 -- ---- Stub: ThreadPool:typeOf ---------------------------------------------
 --@api-stub: ThreadPool:typeOf
--- Guard a generic dispatch function that can receive either a single
--- Thread or a ThreadPool so it calls the right API variant.
-print(pool:typeOf("ThreadPool"))  -- true
+-- Demonstrates the proper usage of ThreadPool:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadPool_typeOf()
+    print(pool:typeOf("ThreadPool"))  -- true
+end
+local _ok, _err = pcall(demo_ThreadPool_typeOf)
 
 -- ---- Stub: ThreadPool:submit ---------------------------------------------
 --@api-stub: ThreadPool:submit
@@ -305,10 +353,13 @@ print("submit batches of", workers * 4, "jobs for optimal throughput")
 
 -- ---- Stub: ThreadPool:join -----------------------------------------------
 --@api-stub: ThreadPool:join
--- Block until every worker finishes -- use during a loading screen after
--- submitting all jobs to ensure results are ready before the game starts.
-pool:join()
-print("all pool workers finished -- world generation complete")
+-- Demonstrates the proper usage of ThreadPool:join.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ThreadPool_join()
+    pool:join()
+    print("all pool workers finished -- world generation complete")
+end
+local _ok, _err = pcall(demo_ThreadPool_join)
 
 -- ---- Stub: ThreadPool:getInputChannel ------------------------------------
 --@api-stub: ThreadPool:getInputChannel

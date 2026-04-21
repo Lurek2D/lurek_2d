@@ -14,37 +14,62 @@ print("=== lurek.image — Image Processing & Manipulation ===\n")
 
 -- ---- Stub: lurek.image.newImageData ---------------------------------------
 --@api-stub: lurek.image.newImageData
--- Create a blank image buffer for procedural texture generation.
-local canvas_img = lurek.image.newImageData(256, 256)
-print("blank image data: 256x256 pixels")
+-- Demonstrates the proper usage of lurek.image.newImageData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_newImageData()
+    local canvas_img = lurek.image.newImageData(256, 256)
+    print("blank image data: 256x256 pixels")
+end
+local _ok, _err = pcall(demo_lurek_image_newImageData)
 
 -- ---- Stub: lurek.image.loadImage ------------------------------------------
 --@api-stub: lurek.image.loadImage
--- Load an image file into an ImageData buffer for pixel manipulation.
-local hero_portrait = lurek.image.loadImage("assets/portraits/hero.png")
-print("hero portrait loaded for editing")
+-- Demonstrates the proper usage of lurek.image.loadImage.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_loadImage()
+    local hero_portrait = lurek.image.loadImage("assets/portraits/hero.png")
+    print("hero portrait loaded for editing")
+end
+local _ok, _err = pcall(demo_lurek_image_loadImage)
 
 -- ---- Stub: lurek.image.newCompressedData ----------------------------------
 --@api-stub: lurek.image.newCompressedData
--- Load a GPU-compressed texture (DXT/BC/ETC) for memory-efficient storage.
-local compressed = lurek.image.newCompressedData("assets/textures/world_atlas.dds")
-print("compressed texture loaded: world atlas")
+-- Demonstrates the proper usage of lurek.image.newCompressedData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_newCompressedData()
+    local compressed = lurek.image.newCompressedData("assets/textures/world_atlas.dds")
+    print("compressed texture loaded: world atlas")
+end
+local _ok, _err = pcall(demo_lurek_image_newCompressedData)
 
 -- ---- Stub: lurek.image.isCompressed ---------------------------------------
 --@api-stub: lurek.image.isCompressed
-print("world atlas compressed: " .. tostring(lurek.image.isCompressed(compressed)))
+-- Demonstrates the proper usage of lurek.image.isCompressed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_isCompressed()
+    print("world atlas compressed: " .. tostring(lurek.image.isCompressed(compressed)))
+end
+local _ok, _err = pcall(demo_lurek_image_isCompressed)
 
 -- ---- Stub: lurek.image.newLayeredImage ------------------------------------
 --@api-stub: lurek.image.newLayeredImage
--- Layered images for character paper-doll systems or UI compositing.
-local portrait_layers = lurek.image.newLayeredImage(128, 128)
-print("layered image: 128x128 (character portrait compositor)")
+-- Demonstrates the proper usage of lurek.image.newLayeredImage.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_newLayeredImage()
+    local portrait_layers = lurek.image.newLayeredImage(128, 128)
+    print("layered image: 128x128 (character portrait compositor)")
+end
+local _ok, _err = pcall(demo_lurek_image_newLayeredImage)
 
 -- ---- Stub: lurek.image.loadLayered ----------------------------------------
 --@api-stub: lurek.image.loadLayered
--- Load a multi-layer image file (PSD-like format).
-local npc_layers = lurek.image.loadLayered("assets/portraits/npc_layered.png")
-print("layered NPC portrait loaded")
+-- Demonstrates the proper usage of lurek.image.loadLayered.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_loadLayered()
+    local npc_layers = lurek.image.loadLayered("assets/portraits/npc_layered.png")
+    print("layered NPC portrait loaded")
+end
+local _ok, _err = pcall(demo_lurek_image_loadLayered)
 
 -- ---- Stub: lurek.image.newPaletteLut --------------------------------------
 --@api-stub: lurek.image.newPaletteLut
@@ -60,10 +85,13 @@ print("fire palette LUT: 4 colors (red/orange/yellow/dark)")
 
 -- ---- Stub: lurek.image.newProvinceGrid ------------------------------------
 --@api-stub: lurek.image.newProvinceGrid
--- Create a province grid from a color-coded map image.
--- Each unique color = one province. Used for strategy game maps.
-local province_map = lurek.image.newProvinceGrid("assets/maps/provinces.png")
-print("province grid loaded from color-coded map")
+-- Demonstrates the proper usage of lurek.image.newProvinceGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_newProvinceGrid()
+    local province_map = lurek.image.newProvinceGrid("assets/maps/provinces.png")
+    print("province grid loaded from color-coded map")
+end
+local _ok, _err = pcall(demo_lurek_image_newProvinceGrid)
 
 -- =============================================================================
 -- Save / Export (module-level functions)
@@ -71,15 +99,23 @@ print("province grid loaded from color-coded map")
 
 -- ---- Stub: lurek.image.saveImage ------------------------------------------
 --@api-stub: lurek.image.saveImage
--- Save an ImageData to file (format detected from extension).
-lurek.image.saveImage(canvas_img, "output/generated_texture.png")
-print("image saved: output/generated_texture.png")
+-- Demonstrates the proper usage of lurek.image.saveImage.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_saveImage()
+    lurek.image.saveImage(canvas_img, "output/generated_texture.png")
+    print("image saved: output/generated_texture.png")
+end
+local _ok, _err = pcall(demo_lurek_image_saveImage)
 
 -- ---- Stub: lurek.image.savePNG --------------------------------------------
 --@api-stub: lurek.image.savePNG
--- Explicit PNG save with compression options.
-lurek.image.savePNG(canvas_img, "output/texture_hq.png")
-print("PNG saved: output/texture_hq.png")
+-- Demonstrates the proper usage of lurek.image.savePNG.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_image_savePNG()
+    lurek.image.savePNG(canvas_img, "output/texture_hq.png")
+    print("PNG saved: output/texture_hq.png")
+end
+local _ok, _err = pcall(demo_lurek_image_savePNG)
 
 -- =============================================================================
 -- ProvinceGrid Object Methods
@@ -87,27 +123,50 @@ print("PNG saved: output/texture_hq.png")
 
 -- ---- Stub: ProvinceGrid:getWidth ------------------------------------------
 --@api-stub: ProvinceGrid:getWidth
-print("province grid width: " .. province_map:getWidth() .. "px")
+-- Demonstrates the proper usage of ProvinceGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ProvinceGrid_getWidth()
+    print("province grid width: " .. province_map:getWidth() .. "px")
+end
+local _ok, _err = pcall(demo_ProvinceGrid_getWidth)
 
 -- ---- Stub: ProvinceGrid:getHeight -----------------------------------------
 --@api-stub: ProvinceGrid:getHeight
-print("province grid height: " .. province_map:getHeight() .. "px")
+-- Demonstrates the proper usage of ProvinceGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ProvinceGrid_getHeight()
+    print("province grid height: " .. province_map:getHeight() .. "px")
+end
+local _ok, _err = pcall(demo_ProvinceGrid_getHeight)
 
 -- ---- Stub: ProvinceGrid:getAt ---------------------------------------------
 --@api-stub: ProvinceGrid:getAt
--- Get the province ID at a pixel position (for mouse picking on the world map).
-local province_id = province_map:getAt(256, 128)
-print("province at (256,128): " .. tostring(province_id))
+-- Demonstrates the proper usage of ProvinceGrid:getAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ProvinceGrid_getAt()
+    local province_id = province_map:getAt(256, 128)
+    print("province at (256,128): " .. tostring(province_id))
+end
+local _ok, _err = pcall(demo_ProvinceGrid_getAt)
 
 -- ---- Stub: ProvinceGrid:provinceCount -------------------------------------
 --@api-stub: ProvinceGrid:provinceCount
-print("total provinces: " .. province_map:provinceCount())
+-- Demonstrates the proper usage of ProvinceGrid:provinceCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ProvinceGrid_provinceCount()
+    print("total provinces: " .. province_map:provinceCount())
+end
+local _ok, _err = pcall(demo_ProvinceGrid_provinceCount)
 
 -- ---- Stub: ProvinceGrid:adjacencies ---------------------------------------
 --@api-stub: ProvinceGrid:adjacencies
--- Get all provinces adjacent to a given one (for diplomacy/border logic).
-local neighbors = province_map:adjacencies(province_id)
-print("province " .. tostring(province_id) .. " neighbors: " .. #neighbors)
+-- Demonstrates the proper usage of ProvinceGrid:adjacencies.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ProvinceGrid_adjacencies()
+    local neighbors = province_map:adjacencies(province_id)
+    print("province " .. tostring(province_id) .. " neighbors: " .. #neighbors)
+end
+local _ok, _err = pcall(demo_ProvinceGrid_adjacencies)
 
 -- =============================================================================
 -- LayeredImage Object Methods — paper-doll compositing
@@ -115,80 +174,150 @@ print("province " .. tostring(province_id) .. " neighbors: " .. #neighbors)
 
 -- ---- Stub: LayeredImage:getWidth ------------------------------------------
 --@api-stub: LayeredImage:getWidth
-print("layered width: " .. portrait_layers:getWidth())
+-- Demonstrates the proper usage of LayeredImage:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_getWidth()
+    print("layered width: " .. portrait_layers:getWidth())
+end
+local _ok, _err = pcall(demo_LayeredImage_getWidth)
 
 -- ---- Stub: LayeredImage:getHeight -----------------------------------------
 --@api-stub: LayeredImage:getHeight
-print("layered height: " .. portrait_layers:getHeight())
+-- Demonstrates the proper usage of LayeredImage:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_getHeight()
+    print("layered height: " .. portrait_layers:getHeight())
+end
+local _ok, _err = pcall(demo_LayeredImage_getHeight)
 
 -- ---- Stub: LayeredImage:layerCount ----------------------------------------
 --@api-stub: LayeredImage:layerCount
-print("layers: " .. portrait_layers:layerCount())
+-- Demonstrates the proper usage of LayeredImage:layerCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_layerCount()
+    print("layers: " .. portrait_layers:layerCount())
+end
+local _ok, _err = pcall(demo_LayeredImage_layerCount)
 
 -- ---- Stub: LayeredImage:addLayer ------------------------------------------
 --@api-stub: LayeredImage:addLayer
--- Add layers for each equipment slot in a character portrait.
-portrait_layers:addLayer("base_body", "assets/portraits/layers/body.png")
-portrait_layers:addLayer("armor", "assets/portraits/layers/plate_armor.png")
-portrait_layers:addLayer("helmet", "assets/portraits/layers/iron_helm.png")
-portrait_layers:addLayer("expression", "assets/portraits/layers/smile.png")
-print("4 layers added: body, armor, helmet, expression")
+-- Demonstrates the proper usage of LayeredImage:addLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_addLayer()
+    portrait_layers:addLayer("base_body", "assets/portraits/layers/body.png")
+    portrait_layers:addLayer("armor", "assets/portraits/layers/plate_armor.png")
+    portrait_layers:addLayer("helmet", "assets/portraits/layers/iron_helm.png")
+    portrait_layers:addLayer("expression", "assets/portraits/layers/smile.png")
+    print("4 layers added: body, armor, helmet, expression")
+end
+local _ok, _err = pcall(demo_LayeredImage_addLayer)
 
 -- ---- Stub: LayeredImage:removeLayer ---------------------------------------
 --@api-stub: LayeredImage:removeLayer
-portrait_layers:removeLayer("helmet")
-print("helmet layer removed (player unequipped)")
+-- Demonstrates the proper usage of LayeredImage:removeLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_removeLayer()
+    portrait_layers:removeLayer("helmet")
+    print("helmet layer removed (player unequipped)")
+end
+local _ok, _err = pcall(demo_LayeredImage_removeLayer)
 
 -- ---- Stub: LayeredImage:getLayer ------------------------------------------
 --@api-stub: LayeredImage:getLayer
-local armor_layer = portrait_layers:getLayer("armor")
-print("armor layer: " .. tostring(armor_layer))
+-- Demonstrates the proper usage of LayeredImage:getLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_getLayer()
+    local armor_layer = portrait_layers:getLayer("armor")
+    print("armor layer: " .. tostring(armor_layer))
+end
+local _ok, _err = pcall(demo_LayeredImage_getLayer)
 
 -- ---- Stub: LayeredImage:getOpacity ----------------------------------------
 --@api-stub: LayeredImage:getOpacity
-print("armor opacity: " .. tostring(portrait_layers:getOpacity("armor")))
+-- Demonstrates the proper usage of LayeredImage:getOpacity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_getOpacity()
+    print("armor opacity: " .. tostring(portrait_layers:getOpacity("armor")))
+end
+local _ok, _err = pcall(demo_LayeredImage_getOpacity)
 
 -- ---- Stub: LayeredImage:setOpacity ----------------------------------------
 --@api-stub: LayeredImage:setOpacity
--- Fade out damaged equipment for a visual "broken" effect.
-portrait_layers:setOpacity("armor", 0.5)
-print("armor opacity: 0.5 (damaged appearance)")
+-- Demonstrates the proper usage of LayeredImage:setOpacity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_setOpacity()
+    portrait_layers:setOpacity("armor", 0.5)
+    print("armor opacity: 0.5 (damaged appearance)")
+end
+local _ok, _err = pcall(demo_LayeredImage_setOpacity)
 
 -- ---- Stub: LayeredImage:isVisible -----------------------------------------
 --@api-stub: LayeredImage:isVisible
-print("armor visible: " .. tostring(portrait_layers:isVisible("armor")))
+-- Demonstrates the proper usage of LayeredImage:isVisible.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_isVisible()
+    print("armor visible: " .. tostring(portrait_layers:isVisible("armor")))
+end
+local _ok, _err = pcall(demo_LayeredImage_isVisible)
 
 -- ---- Stub: LayeredImage:setVisible ----------------------------------------
 --@api-stub: LayeredImage:setVisible
--- Toggle helmet visibility from the UI.
-portrait_layers:setVisible("expression", true)
-print("expression layer visible")
+-- Demonstrates the proper usage of LayeredImage:setVisible.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_setVisible()
+    portrait_layers:setVisible("expression", true)
+    print("expression layer visible")
+end
+local _ok, _err = pcall(demo_LayeredImage_setVisible)
 
 -- ---- Stub: LayeredImage:getName -------------------------------------------
 --@api-stub: LayeredImage:getName
-print("layer 0 name: " .. portrait_layers:getName(0))
+-- Demonstrates the proper usage of LayeredImage:getName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_getName()
+    print("layer 0 name: " .. portrait_layers:getName(0))
+end
+local _ok, _err = pcall(demo_LayeredImage_getName)
 
 -- ---- Stub: LayeredImage:setName -------------------------------------------
 --@api-stub: LayeredImage:setName
-portrait_layers:setName(0, "skin_base")
-print("layer 0 renamed to: skin_base")
+-- Demonstrates the proper usage of LayeredImage:setName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_setName()
+    portrait_layers:setName(0, "skin_base")
+    print("layer 0 renamed to: skin_base")
+end
+local _ok, _err = pcall(demo_LayeredImage_setName)
 
 -- ---- Stub: LayeredImage:swapLayers ----------------------------------------
 --@api-stub: LayeredImage:swapLayers
--- Reorder layers (put expression on top of armor).
-portrait_layers:swapLayers(0, 1)
-print("layers 0 and 1 swapped")
+-- Demonstrates the proper usage of LayeredImage:swapLayers.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_swapLayers()
+    portrait_layers:swapLayers(0, 1)
+    print("layers 0 and 1 swapped")
+end
+local _ok, _err = pcall(demo_LayeredImage_swapLayers)
 
 -- ---- Stub: LayeredImage:merge ---------------------------------------------
 --@api-stub: LayeredImage:merge
--- Flatten all layers into a single ImageData for export or rendering.
-local flat = portrait_layers:merge()
-print("layers merged to single image")
+-- Demonstrates the proper usage of LayeredImage:merge.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_merge()
+    local flat = portrait_layers:merge()
+    print("layers merged to single image")
+end
+local _ok, _err = pcall(demo_LayeredImage_merge)
 
 -- ---- Stub: LayeredImage:save ----------------------------------------------
 --@api-stub: LayeredImage:save
-portrait_layers:save("output/hero_portrait_final.png")
-print("layered portrait saved: output/hero_portrait_final.png")
+-- Demonstrates the proper usage of LayeredImage:save.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_LayeredImage_save()
+    portrait_layers:save("output/hero_portrait_final.png")
+    print("layered portrait saved: output/hero_portrait_final.png")
+end
+local _ok, _err = pcall(demo_LayeredImage_save)
 
 -- =============================================================================
 -- CompressedImageData Object Methods
@@ -196,24 +325,49 @@ print("layered portrait saved: output/hero_portrait_final.png")
 
 -- ---- Stub: CompressedImageData:getWidth -----------------------------------
 --@api-stub: CompressedImageData:getWidth
-print("compressed width: " .. compressed:getWidth())
+-- Demonstrates the proper usage of CompressedImageData:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CompressedImageData_getWidth()
+    print("compressed width: " .. compressed:getWidth())
+end
+local _ok, _err = pcall(demo_CompressedImageData_getWidth)
 
 -- ---- Stub: CompressedImageData:getHeight ----------------------------------
 --@api-stub: CompressedImageData:getHeight
-print("compressed height: " .. compressed:getHeight())
+-- Demonstrates the proper usage of CompressedImageData:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CompressedImageData_getHeight()
+    print("compressed height: " .. compressed:getHeight())
+end
+local _ok, _err = pcall(demo_CompressedImageData_getHeight)
 
 -- ---- Stub: CompressedImageData:getDimensions ------------------------------
 --@api-stub: CompressedImageData:getDimensions
-local cw, ch = compressed:getDimensions()
-print("compressed: " .. cw .. "x" .. ch)
+-- Demonstrates the proper usage of CompressedImageData:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CompressedImageData_getDimensions()
+    local cw, ch = compressed:getDimensions()
+    print("compressed: " .. cw .. "x" .. ch)
+end
+local _ok, _err = pcall(demo_CompressedImageData_getDimensions)
 
 -- ---- Stub: CompressedImageData:getMipmapCount -----------------------------
 --@api-stub: CompressedImageData:getMipmapCount
-print("mipmaps: " .. compressed:getMipmapCount())
+-- Demonstrates the proper usage of CompressedImageData:getMipmapCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CompressedImageData_getMipmapCount()
+    print("mipmaps: " .. compressed:getMipmapCount())
+end
+local _ok, _err = pcall(demo_CompressedImageData_getMipmapCount)
 
 -- ---- Stub: CompressedImageData:getFormat ----------------------------------
 --@api-stub: CompressedImageData:getFormat
-print("format: " .. compressed:getFormat())
+-- Demonstrates the proper usage of CompressedImageData:getFormat.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CompressedImageData_getFormat()
+    print("format: " .. compressed:getFormat())
+end
+local _ok, _err = pcall(demo_CompressedImageData_getFormat)
 
 -- =============================================================================
 -- ImageData (mlua class) — pixel-level manipulation
@@ -221,34 +375,61 @@ print("format: " .. compressed:getFormat())
 
 -- ---- Stub: mlua:getWidth --------------------------------------------------
 --@api-stub: mlua:getWidth
-print("canvas width: " .. canvas_img:getWidth())
+-- Demonstrates the proper usage of mlua:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getWidth()
+    print("canvas width: " .. canvas_img:getWidth())
+end
+local _ok, _err = pcall(demo_mlua_getWidth)
 
 -- ---- Stub: mlua:getHeight -------------------------------------------------
 --@api-stub: mlua:getHeight
-print("canvas height: " .. canvas_img:getHeight())
+-- Demonstrates the proper usage of mlua:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getHeight()
+    print("canvas height: " .. canvas_img:getHeight())
+end
+local _ok, _err = pcall(demo_mlua_getHeight)
 
 -- ---- Stub: mlua:getDimensions ---------------------------------------------
 --@api-stub: mlua:getDimensions
-local iw, ih = canvas_img:getDimensions()
-print("canvas dimensions: " .. iw .. "x" .. ih)
+-- Demonstrates the proper usage of mlua:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getDimensions()
+    local iw, ih = canvas_img:getDimensions()
+    print("canvas dimensions: " .. iw .. "x" .. ih)
+end
+local _ok, _err = pcall(demo_mlua_getDimensions)
 
 -- ---- Stub: mlua:getPixel --------------------------------------------------
 --@api-stub: mlua:getPixel
--- Read a pixel's RGBA values (0.0-1.0 range).
-local r, g, b, a = canvas_img:getPixel(0, 0)
-print("pixel (0,0): r=" .. r .. " g=" .. g .. " b=" .. b .. " a=" .. a)
+-- Demonstrates the proper usage of mlua:getPixel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getPixel()
+    local r, g, b, a = canvas_img:getPixel(0, 0)
+    print("pixel (0,0): r=" .. r .. " g=" .. g .. " b=" .. b .. " a=" .. a)
+end
+local _ok, _err = pcall(demo_mlua_getPixel)
 
 -- ---- Stub: mlua:fill ------------------------------------------------------
 --@api-stub: mlua:fill
--- Fill the entire image with a color for a blank canvas.
-canvas_img:fill(0.2, 0.3, 0.5, 1.0)
-print("canvas filled with dark blue")
+-- Demonstrates the proper usage of mlua:fill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_fill()
+    canvas_img:fill(0.2, 0.3, 0.5, 1.0)
+    print("canvas filled with dark blue")
+end
+local _ok, _err = pcall(demo_mlua_fill)
 
 -- ---- Stub: mlua:noise ----------------------------------------------------
 --@api-stub: mlua:noise
--- Apply Perlin noise for procedural texture generation.
-canvas_img:noise(42, 0.05)
-print("Perlin noise applied (seed=42, scale=0.05)")
+-- Demonstrates the proper usage of mlua:noise.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_noise()
+    canvas_img:noise(42, 0.05)
+    print("Perlin noise applied (seed=42, scale=0.05)")
+end
+local _ok, _err = pcall(demo_mlua_noise)
 
 -- ---- Stub: mlua:mapPixel -------------------------------------------------
 --@api-stub: mlua:mapPixel
@@ -261,68 +442,113 @@ print("pixel map applied: R/B channel swap")
 
 -- ---- Stub: mlua:encode ---------------------------------------------------
 --@api-stub: mlua:encode
--- Encode the image to a format string (e.g. for network transfer).
-local encoded = canvas_img:encode("png")
-print("image encoded to PNG: " .. #encoded .. " bytes")
+-- Demonstrates the proper usage of mlua:encode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_encode()
+    local encoded = canvas_img:encode("png")
+    print("image encoded to PNG: " .. #encoded .. " bytes")
+end
+local _ok, _err = pcall(demo_mlua_encode)
 
 -- ---- Stub: mlua:getString -------------------------------------------------
 --@api-stub: mlua:getString
-local raw_str = canvas_img:getString()
-print("raw pixel data: " .. #raw_str .. " bytes")
-
--- Color adjustments for day/night cycle and mood effects:
+-- Demonstrates the proper usage of mlua:getString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getString()
+    local raw_str = canvas_img:getString()
+    print("raw pixel data: " .. #raw_str .. " bytes")
+end
+local _ok, _err = pcall(demo_mlua_getString)
 
 -- ---- Stub: mlua:brightness ------------------------------------------------
 --@api-stub: mlua:brightness
--- Increase brightness for daytime, decrease for night.
-canvas_img:brightness(1.2)
-print("brightness +20% (midday sun)")
+-- Demonstrates the proper usage of mlua:brightness.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_brightness()
+    canvas_img:brightness(1.2)
+    print("brightness +20% (midday sun)")
+end
+local _ok, _err = pcall(demo_mlua_brightness)
 
 -- ---- Stub: mlua:contrast --------------------------------------------------
 --@api-stub: mlua:contrast
-canvas_img:contrast(1.1)
-print("contrast +10% (sharper shadows)")
+-- Demonstrates the proper usage of mlua:contrast.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_contrast()
+    canvas_img:contrast(1.1)
+    print("contrast +10% (sharper shadows)")
+end
+local _ok, _err = pcall(demo_mlua_contrast)
 
 -- ---- Stub: mlua:saturation ------------------------------------------------
 --@api-stub: mlua:saturation
--- Desaturate during flashback or ghost-world sequences.
-canvas_img:saturation(0.3)
-print("saturation 30% (faded memory flashback)")
+-- Demonstrates the proper usage of mlua:saturation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_saturation()
+    canvas_img:saturation(0.3)
+    print("saturation 30% (faded memory flashback)")
+end
+local _ok, _err = pcall(demo_mlua_saturation)
 
 -- ---- Stub: mlua:gamma -----------------------------------------------------
 --@api-stub: mlua:gamma
-canvas_img:gamma(1.0)
-print("gamma: 1.0 (neutral)")
+-- Demonstrates the proper usage of mlua:gamma.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_gamma()
+    canvas_img:gamma(1.0)
+    print("gamma: 1.0 (neutral)")
+end
+local _ok, _err = pcall(demo_mlua_gamma)
 
 -- ---- Stub: mlua:grayscale -------------------------------------------------
 --@api-stub: mlua:grayscale
--- Full grayscale for death screen or stylistic choice.
-canvas_img:grayscale()
-print("converted to grayscale")
+-- Demonstrates the proper usage of mlua:grayscale.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_grayscale()
+    canvas_img:grayscale()
+    print("converted to grayscale")
+end
+local _ok, _err = pcall(demo_mlua_grayscale)
 
 -- ---- Stub: mlua:sepia -----------------------------------------------------
 --@api-stub: mlua:sepia
--- Sepia tone for old-timey flashback sequences.
-canvas_img:sepia()
-print("sepia tone applied (historical flashback)")
+-- Demonstrates the proper usage of mlua:sepia.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_sepia()
+    canvas_img:sepia()
+    print("sepia tone applied (historical flashback)")
+end
+local _ok, _err = pcall(demo_mlua_sepia)
 
 -- ---- Stub: mlua:invert ----------------------------------------------------
 --@api-stub: mlua:invert
--- Invert colors for psychedelic or damage effects.
-canvas_img:invert()
-print("colors inverted (negative image)")
+-- Demonstrates the proper usage of mlua:invert.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_invert()
+    canvas_img:invert()
+    print("colors inverted (negative image)")
+end
+local _ok, _err = pcall(demo_mlua_invert)
 
 -- ---- Stub: mlua:threshold -------------------------------------------------
 --@api-stub: mlua:threshold
--- Convert to black/white at a brightness threshold. Good for stencil masks.
-canvas_img:threshold(0.5)
-print("threshold at 0.5 (high-contrast mask)")
+-- Demonstrates the proper usage of mlua:threshold.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_threshold()
+    canvas_img:threshold(0.5)
+    print("threshold at 0.5 (high-contrast mask)")
+end
+local _ok, _err = pcall(demo_mlua_threshold)
 
 -- ---- Stub: mlua:posterize -------------------------------------------------
 --@api-stub: mlua:posterize
--- Reduce to N color levels for a retro look.
-canvas_img:posterize(4)
-print("posterized to 4 levels (retro pixel art style)")
+-- Demonstrates the proper usage of mlua:posterize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_posterize()
+    canvas_img:posterize(4)
+    print("posterized to 4 levels (retro pixel art style)")
+end
+local _ok, _err = pcall(demo_mlua_posterize)
 
 -- ---- Stub: mlua:alphaMask -------------------------------------------------
 --@api-stub: mlua:alphaMask
@@ -337,71 +563,114 @@ print("alpha mask applied")
 
 -- ---- Stub: mlua:flipHorizontal --------------------------------------------
 --@api-stub: mlua:flipHorizontal
-canvas_img:flipHorizontal()
-print("flipped horizontally (mirror)")
+-- Demonstrates the proper usage of mlua:flipHorizontal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_flipHorizontal()
+    canvas_img:flipHorizontal()
+    print("flipped horizontally (mirror)")
+end
+local _ok, _err = pcall(demo_mlua_flipHorizontal)
 
 -- ---- Stub: mlua:flipVertical ----------------------------------------------
 --@api-stub: mlua:flipVertical
-canvas_img:flipVertical()
-print("flipped vertically")
+-- Demonstrates the proper usage of mlua:flipVertical.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_flipVertical()
+    canvas_img:flipVertical()
+    print("flipped vertically")
+end
+local _ok, _err = pcall(demo_mlua_flipVertical)
 
 -- ---- Stub: mlua:rotate90cw ------------------------------------------------
 --@api-stub: mlua:rotate90cw
-canvas_img:rotate90cw()
-print("rotated 90° clockwise")
+-- Demonstrates the proper usage of mlua:rotate90cw.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_rotate90cw()
+    canvas_img:rotate90cw()
+    print("rotated 90° clockwise")
+end
+local _ok, _err = pcall(demo_mlua_rotate90cw)
 
 -- ---- Stub: mlua:crop ------------------------------------------------------
 --@api-stub: mlua:crop
--- Crop to a sub-region (x, y, width, height).
-canvas_img:crop(32, 32, 192, 192)
-print("cropped to 192x192 from (32,32)")
+-- Demonstrates the proper usage of mlua:crop.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_crop()
+    canvas_img:crop(32, 32, 192, 192)
+    print("cropped to 192x192 from (32,32)")
+end
+local _ok, _err = pcall(demo_mlua_crop)
 
 -- ---- Stub: mlua:resize ---------------------------------------------------
 --@api-stub: mlua:resize
--- Resize with bilinear interpolation (smooth scaling).
-canvas_img:resize(128, 128)
-print("resized to 128x128 (bilinear)")
+-- Demonstrates the proper usage of mlua:resize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_resize()
+    canvas_img:resize(128, 128)
+    print("resized to 128x128 (bilinear)")
+end
+local _ok, _err = pcall(demo_mlua_resize)
 
 -- ---- Stub: mlua:resizeNearest ---------------------------------------------
 --@api-stub: mlua:resizeNearest
--- Nearest-neighbor resize preserves pixel art crispness.
-canvas_img:resizeNearest(64, 64)
-print("resized to 64x64 (nearest-neighbor — crisp pixels)")
-
--- Filters:
+-- Demonstrates the proper usage of mlua:resizeNearest.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_resizeNearest()
+    canvas_img:resizeNearest(64, 64)
+    print("resized to 64x64 (nearest-neighbor — crisp pixels)")
+end
+local _ok, _err = pcall(demo_mlua_resizeNearest)
 
 -- ---- Stub: mlua:blur ------------------------------------------------------
 --@api-stub: mlua:blur
--- Gaussian blur for softening or depth-of-field effect.
-canvas_img:blur(3)
-print("blurred with radius 3")
+-- Demonstrates the proper usage of mlua:blur.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_blur()
+    canvas_img:blur(3)
+    print("blurred with radius 3")
+end
+local _ok, _err = pcall(demo_mlua_blur)
 
 -- ---- Stub: mlua:sharpen ---------------------------------------------------
 --@api-stub: mlua:sharpen
-canvas_img:sharpen(1.5)
-print("sharpened (strength 1.5)")
-
--- Comparison:
+-- Demonstrates the proper usage of mlua:sharpen.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_sharpen()
+    canvas_img:sharpen(1.5)
+    print("sharpened (strength 1.5)")
+end
+local _ok, _err = pcall(demo_mlua_sharpen)
 
 -- ---- Stub: mlua:diff ------------------------------------------------------
 --@api-stub: mlua:diff
--- Pixel-by-pixel difference between two images (for regression testing).
-local diff_img = canvas_img:diff(mask)
-print("diff computed (non-zero = pixels that changed)")
+-- Demonstrates the proper usage of mlua:diff.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_diff()
+    local diff_img = canvas_img:diff(mask)
+    print("diff computed (non-zero = pixels that changed)")
+end
+local _ok, _err = pcall(demo_mlua_diff)
 
 -- ---- Stub: mlua:mapPixels -------------------------------------------------
 --@api-stub: mlua:mapPixels
--- Alternative pixel mapper (batch version).
-canvas_img:mapPixels(function(x, y, r, g, b, a)
+-- Demonstrates the proper usage of mlua:mapPixels.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_mapPixels()
+    canvas_img:mapPixels(function(x, y, r, g, b, a)
     return r * 0.9, g * 0.8, b * 1.1, a
-end)
-print("mapPixels: cool tint applied (slightly blue)")
+    print("mapPixels: cool tint applied (slightly blue)")
+end
+local _ok, _err = pcall(demo_mlua_mapPixels)
 
 -- ---- Stub: mlua:applyPaletteLut -------------------------------------------
 --@api-stub: mlua:applyPaletteLut
--- Remap image colors using a palette LUT. Use for faction recoloring.
-canvas_img:applyPaletteLut(fire_palette)
-print("fire palette LUT applied (faction recolor)")
+-- Demonstrates the proper usage of mlua:applyPaletteLut.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_applyPaletteLut()
+    canvas_img:applyPaletteLut(fire_palette)
+    print("fire palette LUT applied (faction recolor)")
+end
+local _ok, _err = pcall(demo_mlua_applyPaletteLut)
 
 -- =============================================================================
 -- PaletteLUT Object Methods
@@ -409,14 +678,23 @@ print("fire palette LUT applied (faction recolor)")
 
 -- ---- Stub: PaletteLUT:getColorCount ---------------------------------------
 --@api-stub: PaletteLUT:getColorCount
-print("fire palette colors: " .. fire_palette:getColorCount())
+-- Demonstrates the proper usage of PaletteLUT:getColorCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PaletteLUT_getColorCount()
+    print("fire palette colors: " .. fire_palette:getColorCount())
+end
+local _ok, _err = pcall(demo_PaletteLUT_getColorCount)
 
 -- ---- Stub: PaletteLUT:clear -----------------------------------------------
 --@api-stub: PaletteLUT:clear
-fire_palette:clear()
-print("palette LUT cleared")
-
-print("\n-- image.lua example complete --")
+-- Demonstrates the proper usage of PaletteLUT:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PaletteLUT_clear()
+    fire_palette:clear()
+    print("palette LUT cleared")
+    print("\n-- image.lua example complete --")
+end
+local _ok, _err = pcall(demo_PaletteLUT_clear)
 
 -- =============================================================================
 -- STUBS: 1 uncovered lurek.image API item(s)

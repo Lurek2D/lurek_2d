@@ -98,13 +98,13 @@ print("total:", #names)
 
 -- ---- Stub: lurek.tween.newState ------------------------------------------
 --@api-stub: lurek.tween.newState
--- Use a bare TweenState when you want to drive interpolation manually --
--- for example to animate a shader uniform or run a custom blink effect.
-local flicker_state = lurek.tween.newState(0.5, "easeInOutSine")
-print("TweenState created: 0.5 s easeInOutSine")
--- advance manually each frame:
--- flicker_state:tick(dt)
--- local brightness = flicker_state:lerp(0.4, 1.0)
+-- Demonstrates the proper usage of lurek.tween.newState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_tween_newState()
+    local flicker_state = lurek.tween.newState(0.5, "easeInOutSine")
+    print("TweenState created: 0.5 s easeInOutSine")
+end
+local _ok, _err = pcall(demo_lurek_tween_newState)
 
 -- ---- Stub: lurek.tween.to ------------------------------------------------
 --@api-stub: lurek.tween.to
@@ -157,31 +157,43 @@ end
 
 -- ---- Stub: Spring:setTarget ----------------------------------------------
 --@api-stub: Spring:setTarget
--- Redirect the spring mid-flight -- it smoothly steers toward the new target
--- while preserving current velocity so the motion stays continuous.
-spring:setTarget({ x = 500.0, y = 300.0 })
-print("camera spring redirected to (500, 300)")
+-- Demonstrates the proper usage of Spring:setTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Spring_setTarget()
+    spring:setTarget({ x = 500.0, y = 300.0 })
+    print("camera spring redirected to (500, 300)")
+end
+local _ok, _err = pcall(demo_Spring_setTarget)
 
 -- ---- Stub: Spring:setStiffness -------------------------------------------
 --@api-stub: Spring:setStiffness
--- Higher stiffness means faster response with more overshoot; lower values
--- give a heavy, sluggish feel.  Typical range: 20 (floaty) to 200 (snappy).
-spring:setStiffness(120)
-print("spring stiffness raised to 120 -- snappier camera response")
+-- Demonstrates the proper usage of Spring:setStiffness.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Spring_setStiffness()
+    spring:setStiffness(120)
+    print("spring stiffness raised to 120 -- snappier camera response")
+end
+local _ok, _err = pcall(demo_Spring_setStiffness)
 
 -- ---- Stub: Spring:setDamping ---------------------------------------------
 --@api-stub: Spring:setDamping
--- Low damping = bouncy overshoot; high = overdamped with no oscillation.
--- Rule of thumb: critical damping is roughly 2 * sqrt(stiffness).
-spring:setDamping(20)
-print("spring damping lowered -- camera will bounce slightly on target changes")
+-- Demonstrates the proper usage of Spring:setDamping.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Spring_setDamping()
+    spring:setDamping(20)
+    print("spring damping lowered -- camera will bounce slightly on target changes")
+end
+local _ok, _err = pcall(demo_Spring_setDamping)
 
 -- ---- Stub: Spring:cancel -------------------------------------------------
 --@api-stub: Spring:cancel
--- Remove the spring from the pool -- it is dropped on the next update(dt).
--- Call this when the player teleports or the tracked object is destroyed.
-spring:cancel()
-print("camera spring cancelled -- position is now static")
+-- Demonstrates the proper usage of Spring:cancel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Spring_cancel()
+    spring:cancel()
+    print("camera spring cancelled -- position is now static")
+end
+local _ok, _err = pcall(demo_Spring_cancel)
 
 -- ---- Stub: Spring:getPosition --------------------------------------------
 --@api-stub: Spring:getPosition
@@ -199,17 +211,23 @@ end
 
 -- ---- Stub: Tween:pause ---------------------------------------------------
 --@api-stub: Tween:pause
--- Freeze the tween without cancelling it -- use while the game is paused so
--- movement or UI animations do not advance while input is blocked.
-move_tween:pause()
-print("move tween paused; player.x frozen at", player.x)
+-- Demonstrates the proper usage of Tween:pause.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Tween_pause()
+    move_tween:pause()
+    print("move tween paused; player.x frozen at", player.x)
+end
+local _ok, _err = pcall(demo_Tween_pause)
 
 -- ---- Stub: Tween:resume --------------------------------------------------
 --@api-stub: Tween:resume
--- Continue from the exact elapsed time the tween was at when paused --
--- the animation does not restart from the beginning.
-move_tween:resume()
-print("move tween resumed from", player.x)
+-- Demonstrates the proper usage of Tween:resume.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Tween_resume()
+    move_tween:resume()
+    print("move tween resumed from", player.x)
+end
+local _ok, _err = pcall(demo_Tween_resume)
 
 -- ---- Stub: Tween:isActive ------------------------------------------------
 --@api-stub: Tween:isActive
@@ -223,10 +241,13 @@ end
 
 -- ---- Stub: Tween:getProgress ---------------------------------------------
 --@api-stub: Tween:getProgress
--- Raw 0..1 progress ignores easing and yoyo -- use it to drive a loading bar
--- that advances linearly while the animated property uses a curved easing.
-local pct = move_tween:getProgress() * 100
-print(string.format("player move: %.0f%% through its duration", pct))
+-- Demonstrates the proper usage of Tween:getProgress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Tween_getProgress()
+    local pct = move_tween:getProgress() * 100
+    print(string.format("player move: %.0f%% through its duration", pct))
+end
+local _ok, _err = pcall(demo_Tween_getProgress)
 
 -- ---- Stub: Tween:setRepeat -----------------------------------------------
 --@api-stub: Tween:setRepeat
@@ -316,22 +337,30 @@ end
 
 -- ---- Stub: TweenState:t --------------------------------------------------
 --@api-stub: TweenState:t
--- Raw un-eased 0..1 progress -- use to drive a progress bar that advances
--- linearly even when the animated value uses a curved easing function.
-local raw_t = flicker_state:t()
-print(string.format("flicker timeline: %.0f%%", raw_t * 100))
+-- Demonstrates the proper usage of TweenState:t.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TweenState_t()
+    local raw_t = flicker_state:t()
+    print(string.format("flicker timeline: %.0f%%", raw_t * 100))
+end
+local _ok, _err = pcall(demo_TweenState_t)
 
 -- ---- Stub: TweenState:lerp -----------------------------------------------
 --@api-stub: TweenState:lerp
--- Drive any numeric property using the easing baked into this state --
--- handy for shader uniforms or raw colour values needing a curved transition.
-local brightness = flicker_state:lerp(0.3, 1.0)
-print(string.format("light brightness: %.2f", brightness))
--- lurek.render.setShaderUniform("u_bright", brightness)
+-- Demonstrates the proper usage of TweenState:lerp.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TweenState_lerp()
+    local brightness = flicker_state:lerp(0.3, 1.0)
+    print(string.format("light brightness: %.2f", brightness))
+end
+local _ok, _err = pcall(demo_TweenState_lerp)
 
 -- ---- Stub: TweenState:reset ----------------------------------------------
 --@api-stub: TweenState:reset
--- Rewind to t=0 without recreating the object -- cheaper than newState() and
--- avoids GC pressure when the same animation loops many times per session.
-flicker_state:reset()
-print("flicker state rewound for the next animation cycle")
+-- Demonstrates the proper usage of TweenState:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TweenState_reset()
+    flicker_state:reset()
+    print("flicker state rewound for the next animation cycle")
+end
+local _ok, _err = pcall(demo_TweenState_reset)

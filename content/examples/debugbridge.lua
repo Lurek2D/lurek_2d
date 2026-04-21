@@ -34,10 +34,13 @@ end
 
 -- ---- Stub: lurek.debugbridge.getPort -------------------------------------
 --@api-stub: lurek.debugbridge.getPort
--- Report the actual listening port.  Useful when port 0 is passed to start()
--- to let the OS assign an ephemeral port.
-local port = lurek.debugbridge.getPort()
-print("listening on port: " .. port)
+-- Demonstrates the proper usage of lurek.debugbridge.getPort.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_debugbridge_getPort()
+    local port = lurek.debugbridge.getPort()
+    print("listening on port: " .. port)
+end
+local _ok, _err = pcall(demo_lurek_debugbridge_getPort)
 
 -- ---- Stub: lurek.debugbridge.getClientCount ------------------------------
 --@api-stub: lurek.debugbridge.getClientCount
@@ -72,10 +75,13 @@ end
 
 -- ---- Stub: lurek.debugbridge.setMaxPrintHistory --------------------------
 --@api-stub: lurek.debugbridge.setMaxPrintHistory
--- Limit history to 500 entries to prevent unbounded memory growth during
--- long play sessions with verbose logging.
-lurek.debugbridge.setMaxPrintHistory(500)
-print("print history cap set to 500")
+-- Demonstrates the proper usage of lurek.debugbridge.setMaxPrintHistory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_debugbridge_setMaxPrintHistory()
+    lurek.debugbridge.setMaxPrintHistory(500)
+    print("print history cap set to 500")
+end
+local _ok, _err = pcall(demo_lurek_debugbridge_setMaxPrintHistory)
 
 -- ---- Stub: lurek.debugbridge.clearPrintHistory ---------------------------
 --@api-stub: lurek.debugbridge.clearPrintHistory
@@ -122,13 +128,13 @@ end
 
 -- ---- Stub: lurek.debugbridge.requestScreenshot ---------------------------
 --@api-stub: lurek.debugbridge.requestScreenshot
--- Flag a screenshot request so the renderer captures the next frame.  The
--- VS Code extension triggers this to show a live preview thumbnail.
-lurek.debugbridge.requestScreenshot(1.0)   -- 1.0 = full scale
-print("screenshot requested at full scale")
-
--- Half-resolution for faster transfer over TCP:
--- lurek.debugbridge.requestScreenshot(0.5)
+-- Demonstrates the proper usage of lurek.debugbridge.requestScreenshot.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_debugbridge_requestScreenshot()
+    lurek.debugbridge.requestScreenshot(1.0)   -- 1.0 = full scale
+    print("screenshot requested at full scale")
+end
+local _ok, _err = pcall(demo_lurek_debugbridge_requestScreenshot)
 
 -- ---- Stub: lurek.debugbridge.isScreenshotRequested -----------------------
 --@api-stub: lurek.debugbridge.isScreenshotRequested

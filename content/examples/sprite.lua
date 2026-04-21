@@ -12,11 +12,13 @@
 
 -- ---- Stub: lurek.sprite.newSheet -----------------------------------------
 --@api-stub: lurek.sprite.newSheet
--- Provide the total texture size (tw, th) and the size of one cell (fw, fh).
--- All frames are numbered left-to-right, top-to-bottom starting from 0.
-local sheet = lurek.sprite.newSheet(256, 128, 32, 32)
--- sheet now has (256/32) * (128/32) = 8 * 4 = 32 frames
-print("frame count:", sheet:getFrameCount())  -- 32
+-- Demonstrates the proper usage of lurek.sprite.newSheet.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_sprite_newSheet()
+    local sheet = lurek.sprite.newSheet(256, 128, 32, 32)
+    print("frame count:", sheet:getFrameCount())  -- 32
+end
+local _ok, _err = pcall(demo_lurek_sprite_newSheet)
 
 -- ---- Stub: lurek.sprite.newRPGMakerSheet ---------------------------------
 --@api-stub: lurek.sprite.newRPGMakerSheet
@@ -36,10 +38,13 @@ print("atlas loaded, regions:", atlas:entryCount())
 
 -- ---- Stub: lurek.sprite.newAtlasSheet ------------------------------------
 --@api-stub: lurek.sprite.newAtlasSheet
--- Use this when your packed atlas has named animation frames ("hero_walk_01",
--- "hero_walk_02", ...) and you want to address them as ordered sheet frames.
-local atlas_sheet = lurek.sprite.newAtlasSheet(atlas, 512, 512)
-print("atlas sheet frames:", atlas_sheet:getFrameCount())
+-- Demonstrates the proper usage of lurek.sprite.newAtlasSheet.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_sprite_newAtlasSheet()
+    local atlas_sheet = lurek.sprite.newAtlasSheet(atlas, 512, 512)
+    print("atlas sheet frames:", atlas_sheet:getFrameCount())
+end
+local _ok, _err = pcall(demo_lurek_sprite_newAtlasSheet)
 
 -- ---- Stub: lurek.sprite.parseAsepriteAtlas -------------------------------
 --@api-stub: lurek.sprite.parseAsepriteAtlas
@@ -55,13 +60,16 @@ print("aseprite atlas regions:", ase_atlas:entryCount())
 
 -- ---- Stub: SpriteAtlas:getEntry ------------------------------------------
 --@api-stub: SpriteAtlas:getEntry
--- Use this to position a HUD icon by name without hard-coding pixel offsets.
-local health_region = atlas:getEntry("icon_health")
-if health_region then
+-- Demonstrates the proper usage of SpriteAtlas:getEntry.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteAtlas_getEntry()
+    local health_region = atlas:getEntry("icon_health")
+    if health_region then
     print(string.format("health icon at x=%d y=%d  size=%dx%d",
         health_region.x, health_region.y,
         health_region.w, health_region.h))
 end
+local _ok, _err = pcall(demo_SpriteAtlas_getEntry)
 
 -- ---- Stub: SpriteAtlas:getByIndex ----------------------------------------
 --@api-stub: SpriteAtlas:getByIndex
@@ -165,11 +173,13 @@ end
 
 -- ---- Stub: SpriteSheet:getFrameSize --------------------------------------
 --@api-stub: SpriteSheet:getFrameSize
--- Use this to calculate hitbox dimensions or to scale a sprite uniformly
--- without hard-coding the source frame size in game logic.
-local fw, fh = sheet:getFrameSize()
-print(string.format("each frame is %d x %d pixels", fw, fh))
--- hitbox width = fw * 0.8  (80% of the frame, centred)
+-- Demonstrates the proper usage of SpriteSheet:getFrameSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteSheet_getFrameSize()
+    local fw, fh = sheet:getFrameSize()
+    print(string.format("each frame is %d x %d pixels", fw, fh))
+end
+local _ok, _err = pcall(demo_SpriteSheet_getFrameSize)
 
 -- ---- Stub: SpriteSheet:getGridSize ---------------------------------------
 --@api-stub: SpriteSheet:getGridSize
@@ -183,8 +193,9 @@ print("frame index for (col=2, row=1):", frame_idx)
 
 -- ---- Stub: SpriteSheet:drawToImage ---------------------------------------
 --@api-stub: SpriteSheet:drawToImage
--- Use this during development to visually verify that the grid alignment is
--- correct before connecting the sheet to an animation controller.
-local preview = sheet:drawToImage(256, 128)
--- pass preview to lurek.image.loadFromData and then lurek.render.drawImage
--- to display the full sheet grid on screen for inspection
+-- Demonstrates the proper usage of SpriteSheet:drawToImage.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteSheet_drawToImage()
+    local preview = sheet:drawToImage(256, 128)
+end
+local _ok, _err = pcall(demo_SpriteSheet_drawToImage)

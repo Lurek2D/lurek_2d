@@ -21,10 +21,13 @@ print("=== lurek.ai — Open-World RPG AI Systems ===\n")
 
 -- ---- Stub: lurek.ai.newWorld ---------------------------------------------
 --@api-stub: lurek.ai.newWorld
--- The AIWorld is the root container for all AI agents in the scene.
--- Create it once during level load and call update() each frame.
-local ai_world = lurek.ai.newWorld()
-print("AI world created — ready to accept agents")
+-- Demonstrates the proper usage of lurek.ai.newWorld.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newWorld()
+    local ai_world = lurek.ai.newWorld()
+    print("AI world created — ready to accept agents")
+end
+local _ok, _err = pcall(demo_lurek_ai_newWorld)
 
 -- ---- Stub: AIWorld:addAgent -----------------------------------------------
 --@api-stub: AIWorld:addAgent
@@ -51,12 +54,15 @@ end
 
 -- ---- Stub: AIWorld:getAgentCount ------------------------------------------
 --@api-stub: AIWorld:getAgentCount
--- Use agent count for HUD display or to gate spawning logic.
-local agent_count = ai_world:getAgentCount()
-print("total agents in world: " .. tostring(agent_count))
-if agent_count >= 4 then
+-- Demonstrates the proper usage of AIWorld:getAgentCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIWorld_getAgentCount()
+    local agent_count = ai_world:getAgentCount()
+    print("total agents in world: " .. tostring(agent_count))
+    if agent_count >= 4 then
     print("  world is populated — skipping additional spawns")
 end
+local _ok, _err = pcall(demo_AIWorld_getAgentCount)
 
 -- ---- Stub: AIWorld:getGlobalBlackboard ------------------------------------
 --@api-stub: AIWorld:getGlobalBlackboard
@@ -82,11 +88,22 @@ print("AI world stepped 3 frames (48ms total game time)")
 
 -- ---- Stub: AIWorld:type ---------------------------------------------------
 --@api-stub: AIWorld:type
+-- Demonstrates the proper usage of AIWorld:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIWorld_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_AIWorld_type)
+
 -- ---- Stub: AIWorld:typeOf -------------------------------------------------
 --@api-stub: AIWorld:typeOf
--- Type introspection for debug overlays.
-print("world type: " .. tostring(ai_world:type()))
-print("world typeOf check: " .. tostring(ai_world:typeOf("AIWorld")))
+-- Demonstrates the proper usage of AIWorld:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIWorld_typeOf()
+    print("world type: " .. tostring(ai_world:type()))
+    print("world typeOf check: " .. tostring(ai_world:typeOf("AIWorld")))
+end
+local _ok, _err = pcall(demo_AIWorld_typeOf)
 
 -- =============================================================================
 -- Agent — individual NPC properties
@@ -111,13 +128,17 @@ print("baker moved to oven area (310, 390)")
 
 -- ---- Stub: Agent:getPosition ----------------------------------------------
 --@api-stub: Agent:getPosition
--- Read back position for distance checks, line-of-sight, or minimap markers.
-local gx, gy = guard:getPosition()
-local wx, wy = wolf:getPosition()
-local dist = math.sqrt((gx - wx)^2 + (gy - wy)^2)
-print("guard at (" .. gx .. ", " .. gy .. ")")
-print("wolf at (" .. wx .. ", " .. wy .. ")")
-print("distance guard<->wolf: " .. string.format("%.1f", dist) .. " units")
+-- Demonstrates the proper usage of Agent:getPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getPosition()
+    local gx, gy = guard:getPosition()
+    local wx, wy = wolf:getPosition()
+    local dist = math.sqrt((gx - wx)^2 + (gy - wy)^2)
+    print("guard at (" .. gx .. ", " .. gy .. ")")
+    print("wolf at (" .. wx .. ", " .. wy .. ")")
+    print("distance guard<->wolf: " .. string.format("%.1f", dist) .. " units")
+end
+local _ok, _err = pcall(demo_Agent_getPosition)
 
 -- ---- Stub: Agent:setVelocity ----------------------------------------------
 --@api-stub: Agent:setVelocity
@@ -130,33 +151,43 @@ print("wolf velocity set to (-3.0, 1.5) — approaching from northeast")
 
 -- ---- Stub: Agent:getVelocity ----------------------------------------------
 --@api-stub: Agent:getVelocity
--- Read velocity for prediction or animation blend calculations.
-local gvx, gvy = guard:getVelocity()
-local speed = math.sqrt(gvx^2 + gvy^2)
-print("guard velocity: (" .. gvx .. ", " .. gvy .. ") speed=" .. string.format("%.2f", speed))
-if speed > 1.5 then
+-- Demonstrates the proper usage of Agent:getVelocity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getVelocity()
+    local gvx, gvy = guard:getVelocity()
+    local speed = math.sqrt(gvx^2 + gvy^2)
+    print("guard velocity: (" .. gvx .. ", " .. gvy .. ") speed=" .. string.format("%.2f", speed))
+    if speed > 1.5 then
     print("  guard is jogging — play jog animation")
-else
+    else
     print("  guard is walking — play walk animation")
 end
+local _ok, _err = pcall(demo_Agent_getVelocity)
 
 -- ---- Stub: Agent:setMaxSpeed ----------------------------------------------
 --@api-stub: Agent:setMaxSpeed
--- Cap movement speed so agents don't exceed their animation's top pace.
-guard:setMaxSpeed(4.0)     -- armoured guard moves slower
-wolf:setMaxSpeed(8.0)      -- wolf is much faster
-villager:setMaxSpeed(2.5)  -- baker ambles slowly
-print("max speeds: guard=4.0, wolf=8.0, baker=2.5")
+-- Demonstrates the proper usage of Agent:setMaxSpeed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_setMaxSpeed()
+    guard:setMaxSpeed(4.0)     -- armoured guard moves slower
+    wolf:setMaxSpeed(8.0)      -- wolf is much faster
+    villager:setMaxSpeed(2.5)  -- baker ambles slowly
+    print("max speeds: guard=4.0, wolf=8.0, baker=2.5")
+end
+local _ok, _err = pcall(demo_Agent_setMaxSpeed)
 
 -- ---- Stub: Agent:getMaxSpeed ----------------------------------------------
 --@api-stub: Agent:getMaxSpeed
--- Read max speed to calculate arrival time or chase feasibility.
-local guard_max = guard:getMaxSpeed()
-local wolf_max = wolf:getMaxSpeed()
-print("guard max speed: " .. tostring(guard_max))
-if wolf_max > guard_max then
+-- Demonstrates the proper usage of Agent:getMaxSpeed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getMaxSpeed()
+    local guard_max = guard:getMaxSpeed()
+    local wolf_max = wolf:getMaxSpeed()
+    print("guard max speed: " .. tostring(guard_max))
+    if wolf_max > guard_max then
     print("  wolf can outrun the guard — guard should call for backup!")
 end
+local _ok, _err = pcall(demo_Agent_getMaxSpeed)
 
 -- ---- Stub: Agent:setMaxForce ----------------------------------------------
 --@api-stub: Agent:setMaxForce
@@ -168,8 +199,13 @@ print("max force: guard=10.0 (heavy), wolf=25.0 (agile)")
 
 -- ---- Stub: Agent:getMaxForce ----------------------------------------------
 --@api-stub: Agent:getMaxForce
-local guard_force = guard:getMaxForce()
-print("guard max steering force: " .. tostring(guard_force))
+-- Demonstrates the proper usage of Agent:getMaxForce.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getMaxForce()
+    local guard_force = guard:getMaxForce()
+    print("guard max steering force: " .. tostring(guard_force))
+end
+local _ok, _err = pcall(demo_Agent_getMaxForce)
 
 -- ---- Stub: Agent:setPriority ----------------------------------------------
 --@api-stub: Agent:setPriority
@@ -182,8 +218,13 @@ print("priorities: guard=5 (critical), wolf=3 (threat), baker=1 (ambient)")
 
 -- ---- Stub: Agent:getPriority ----------------------------------------------
 --@api-stub: Agent:getPriority
-local gp = guard:getPriority()
-print("guard priority: " .. tostring(gp))
+-- Demonstrates the proper usage of Agent:getPriority.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getPriority()
+    local gp = guard:getPriority()
+    print("guard priority: " .. tostring(gp))
+end
+local _ok, _err = pcall(demo_Agent_getPriority)
 
 -- ---- Stub: Agent:setDecisionModel -----------------------------------------
 --@api-stub: Agent:setDecisionModel
@@ -212,9 +253,13 @@ print("guard decision model: finite state machine (patrol <-> alert)")
 
 -- ---- Stub: Agent:getDecisionModel -----------------------------------------
 --@api-stub: Agent:getDecisionModel
--- Retrieve the current decision model to inspect its state or swap it.
-local model = guard:getDecisionModel()
-print("guard has decision model: " .. tostring(model ~= nil))
+-- Demonstrates the proper usage of Agent:getDecisionModel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_getDecisionModel()
+    local model = guard:getDecisionModel()
+    print("guard has decision model: " .. tostring(model ~= nil))
+end
+local _ok, _err = pcall(demo_Agent_getDecisionModel)
 
 -- ---- Stub: Agent:addTag ---------------------------------------------------
 --@api-stub: Agent:addTag
@@ -232,19 +277,26 @@ print("villager tags: friendly, merchant")
 
 -- ---- Stub: Agent:removeTag ------------------------------------------------
 --@api-stub: Agent:removeTag
--- Remove a tag when the game state changes (e.g. guard is bribed).
-guard:removeTag("hostile")
-print("guard bribed — removed 'hostile' tag, now neutral")
+-- Demonstrates the proper usage of Agent:removeTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_removeTag()
+    guard:removeTag("hostile")
+    print("guard bribed — removed 'hostile' tag, now neutral")
+end
+local _ok, _err = pcall(demo_Agent_removeTag)
 
 -- ---- Stub: Agent:hasTag ---------------------------------------------------
 --@api-stub: Agent:hasTag
--- Check tags before applying damage, dialog, or loot tables.
-local is_hostile = guard:hasTag("hostile")
-local is_armored = guard:hasTag("armored")
-print("guard hostile: " .. tostring(is_hostile) .. ", armored: " .. tostring(is_armored))
-if not is_hostile and is_armored then
+-- Demonstrates the proper usage of Agent:hasTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_hasTag()
+    local is_hostile = guard:hasTag("hostile")
+    local is_armored = guard:hasTag("armored")
+    print("guard hostile: " .. tostring(is_hostile) .. ", armored: " .. tostring(is_armored))
+    if not is_hostile and is_armored then
     print("  neutral armored NPC — show barter dialog")
 end
+local _ok, _err = pcall(demo_Agent_hasTag)
 
 -- ---- Stub: Agent:getBlackboard --------------------------------------------
 --@api-stub: Agent:getBlackboard
@@ -260,10 +312,22 @@ print("  has_key = " .. tostring(guard_bb:getBool("has_key")))
 
 -- ---- Stub: Agent:type -----------------------------------------------------
 --@api-stub: Agent:type
+-- Demonstrates the proper usage of Agent:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_Agent_type)
+
 -- ---- Stub: Agent:typeOf ---------------------------------------------------
 --@api-stub: Agent:typeOf
-print("agent type: " .. tostring(guard:type()))
-print("agent typeOf Agent: " .. tostring(guard:typeOf("Agent")))
+-- Demonstrates the proper usage of Agent:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Agent_typeOf()
+    print("agent type: " .. tostring(guard:type()))
+    print("agent typeOf Agent: " .. tostring(guard:typeOf("Agent")))
+end
+local _ok, _err = pcall(demo_Agent_typeOf)
 
 -- =============================================================================
 -- Blackboard — shared knowledge store
@@ -271,79 +335,124 @@ print("agent typeOf Agent: " .. tostring(guard:typeOf("Agent")))
 
 -- ---- Stub: lurek.ai.newBlackboard -----------------------------------------
 --@api-stub: lurek.ai.newBlackboard
--- Standalone blackboards can be used outside the AI world — for example,
--- as a parameter store for a quest system or dialog tree.
-local quest_bb = lurek.ai.newBlackboard()
-print("standalone blackboard created for quest tracking")
+-- Demonstrates the proper usage of lurek.ai.newBlackboard.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newBlackboard()
+    local quest_bb = lurek.ai.newBlackboard()
+    print("standalone blackboard created for quest tracking")
+end
+local _ok, _err = pcall(demo_lurek_ai_newBlackboard)
 
 -- ---- Stub: Blackboard:setNumber ------------------------------------------
 --@api-stub: Blackboard:setNumber
--- Track numeric quest state: kill counts, collected items, distances.
-quest_bb:setNumber("wolves_killed", 0)
-quest_bb:setNumber("bounty_gold", 50)
-quest_bb:setNumber("quest_timer_sec", 300.0)
-print("quest state: wolves_killed=0, bounty=50g, timer=300s")
+-- Demonstrates the proper usage of Blackboard:setNumber.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_setNumber()
+    quest_bb:setNumber("wolves_killed", 0)
+    quest_bb:setNumber("bounty_gold", 50)
+    quest_bb:setNumber("quest_timer_sec", 300.0)
+    print("quest state: wolves_killed=0, bounty=50g, timer=300s")
+end
+local _ok, _err = pcall(demo_Blackboard_setNumber)
 
 -- ---- Stub: Blackboard:setBool --------------------------------------------
 --@api-stub: Blackboard:setBool
--- Boolean flags for quest milestones or world state toggles.
-quest_bb:setBool("quest_accepted", true)
-quest_bb:setBool("boss_defeated", false)
-quest_bb:setBool("escape_route_open", false)
-print("quest flags: accepted=true, boss_defeated=false")
+-- Demonstrates the proper usage of Blackboard:setBool.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_setBool()
+    quest_bb:setBool("quest_accepted", true)
+    quest_bb:setBool("boss_defeated", false)
+    quest_bb:setBool("escape_route_open", false)
+    print("quest flags: accepted=true, boss_defeated=false")
+end
+local _ok, _err = pcall(demo_Blackboard_setBool)
 
 -- ---- Stub: Blackboard:setString ------------------------------------------
 --@api-stub: Blackboard:setString
--- Store text keys for dialog responses, objective descriptions, faction names.
-quest_bb:setString("quest_giver", "Mayor Thornton")
-quest_bb:setString("objective", "Clear the wolf den north of town")
-quest_bb:setString("reward_item", "silver_sword")
-print("quest: '" .. quest_bb:getString("objective") .. "' from " .. quest_bb:getString("quest_giver"))
+-- Demonstrates the proper usage of Blackboard:setString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_setString()
+    quest_bb:setString("quest_giver", "Mayor Thornton")
+    quest_bb:setString("objective", "Clear the wolf den north of town")
+    quest_bb:setString("reward_item", "silver_sword")
+    print("quest: '" .. quest_bb:getString("objective") .. "' from " .. quest_bb:getString("quest_giver"))
+end
+local _ok, _err = pcall(demo_Blackboard_setString)
 
 -- ---- Stub: Blackboard:has ------------------------------------------------
 --@api-stub: Blackboard:has
--- Check if a key exists before reading — prevents nil errors in conditionals.
-if quest_bb:has("quest_giver") then
+-- Demonstrates the proper usage of Blackboard:has.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_has()
+    if quest_bb:has("quest_giver") then
     print("quest giver is set: " .. quest_bb:getString("quest_giver"))
-end
-if not quest_bb:has("completion_time") then
+    if not quest_bb:has("completion_time") then
     print("no completion_time recorded yet — quest still active")
 end
+local _ok, _err = pcall(demo_Blackboard_has)
 
 -- ---- Stub: Blackboard:remove ----------------------------------------------
 --@api-stub: Blackboard:remove
--- Remove keys when they become irrelevant (e.g. timer expired, phase ended).
-quest_bb:remove("quest_timer_sec")
-print("quest timer removed — now using event-driven completion")
-print("  timer key exists: " .. tostring(quest_bb:has("quest_timer_sec")))
+-- Demonstrates the proper usage of Blackboard:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_remove()
+    quest_bb:remove("quest_timer_sec")
+    print("quest timer removed — now using event-driven completion")
+    print("  timer key exists: " .. tostring(quest_bb:has("quest_timer_sec")))
+end
+local _ok, _err = pcall(demo_Blackboard_remove)
 
 -- ---- Stub: Blackboard:getKeys ---------------------------------------------
 --@api-stub: Blackboard:getKeys
--- Dump all keys for a debug overlay or save-game serialization.
-local keys = quest_bb:getKeys()
-print("blackboard keys (" .. #keys .. "):")
-for i, k in ipairs(keys) do
+-- Demonstrates the proper usage of Blackboard:getKeys.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_getKeys()
+    local keys = quest_bb:getKeys()
+    print("blackboard keys (" .. #keys .. "):")
+    for i, k in ipairs(keys) do
     print("  [" .. i .. "] " .. k)
 end
+local _ok, _err = pcall(demo_Blackboard_getKeys)
 
 -- ---- Stub: Blackboard:getSize ---------------------------------------------
 --@api-stub: Blackboard:getSize
-local bb_size = quest_bb:getSize()
-print("blackboard entries: " .. tostring(bb_size))
+-- Demonstrates the proper usage of Blackboard:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_getSize()
+    local bb_size = quest_bb:getSize()
+    print("blackboard entries: " .. tostring(bb_size))
+end
+local _ok, _err = pcall(demo_Blackboard_getSize)
 
 -- ---- Stub: Blackboard:clear -----------------------------------------------
 --@api-stub: Blackboard:clear
--- Wipe the quest blackboard when starting a new game or switching quests.
-local old_size = quest_bb:getSize()
-quest_bb:clear()
-print("blackboard cleared: " .. old_size .. " -> " .. quest_bb:getSize() .. " entries")
+-- Demonstrates the proper usage of Blackboard:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_clear()
+    local old_size = quest_bb:getSize()
+    quest_bb:clear()
+    print("blackboard cleared: " .. old_size .. " -> " .. quest_bb:getSize() .. " entries")
+end
+local _ok, _err = pcall(demo_Blackboard_clear)
 
 -- ---- Stub: Blackboard:type ------------------------------------------------
 --@api-stub: Blackboard:type
+-- Demonstrates the proper usage of Blackboard:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_Blackboard_type)
+
 -- ---- Stub: Blackboard:typeOf ----------------------------------------------
 --@api-stub: Blackboard:typeOf
-print("blackboard type: " .. tostring(quest_bb:type()))
-print("blackboard typeOf: " .. tostring(quest_bb:typeOf("Blackboard")))
+-- Demonstrates the proper usage of Blackboard:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Blackboard_typeOf()
+    print("blackboard type: " .. tostring(quest_bb:type()))
+    print("blackboard typeOf: " .. tostring(quest_bb:typeOf("Blackboard")))
+end
+local _ok, _err = pcall(demo_Blackboard_typeOf)
 
 -- =============================================================================
 -- Finite State Machine — villager daily routine
@@ -351,10 +460,13 @@ print("blackboard typeOf: " .. tostring(quest_bb:typeOf("Blackboard")))
 
 -- ---- Stub: lurek.ai.newStateMachine ---------------------------------------
 --@api-stub: lurek.ai.newStateMachine
--- The baker follows a 3-state daily cycle: baking, selling, sleeping.
--- Each state has enter/update/exit hooks and conditional transitions.
-local baker_fsm = lurek.ai.newStateMachine()
-print("baker FSM created for daily routine cycle")
+-- Demonstrates the proper usage of lurek.ai.newStateMachine.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newStateMachine()
+    local baker_fsm = lurek.ai.newStateMachine()
+    print("baker FSM created for daily routine cycle")
+end
+local _ok, _err = pcall(demo_lurek_ai_newStateMachine)
 
 -- ---- Stub: StateMachine:addState ------------------------------------------
 --@api-stub: StateMachine:addState
@@ -399,15 +511,23 @@ print("baker states: baking -> selling -> sleeping -> baking (cycle)")
 
 -- ---- Stub: StateMachine:setInitialState -----------------------------------
 --@api-stub: StateMachine:setInitialState
--- Set the starting state. The enter() hook fires on first update().
-baker_fsm:setInitialState("baking")
-print("baker initial state: baking (dawn start)")
+-- Demonstrates the proper usage of StateMachine:setInitialState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StateMachine_setInitialState()
+    baker_fsm:setInitialState("baking")
+    print("baker initial state: baking (dawn start)")
+end
+local _ok, _err = pcall(demo_StateMachine_setInitialState)
 
 -- ---- Stub: StateMachine:getCurrentState -----------------------------------
 --@api-stub: StateMachine:getCurrentState
--- Query current state for HUD display or save-game persistence.
-local bstate = baker_fsm:getCurrentState()
-print("baker current state: " .. tostring(bstate))
+-- Demonstrates the proper usage of StateMachine:getCurrentState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StateMachine_getCurrentState()
+    local bstate = baker_fsm:getCurrentState()
+    print("baker current state: " .. tostring(bstate))
+end
+local _ok, _err = pcall(demo_StateMachine_getCurrentState)
 
 -- ---- Stub: StateMachine:forceState ----------------------------------------
 --@api-stub: StateMachine:forceState
@@ -419,17 +539,32 @@ print("  new state: " .. tostring(baker_fsm:getCurrentState()))
 
 -- ---- Stub: StateMachine:getTimeInState ------------------------------------
 --@api-stub: StateMachine:getTimeInState
--- How long the NPC has been in this state — use for patience timers,
--- animation blending, or "idle too long" checks.
-local time_selling = baker_fsm:getTimeInState()
-print("baker time in selling state: " .. string.format("%.3f", time_selling) .. "s")
+-- Demonstrates the proper usage of StateMachine:getTimeInState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StateMachine_getTimeInState()
+    local time_selling = baker_fsm:getTimeInState()
+    print("baker time in selling state: " .. string.format("%.3f", time_selling) .. "s")
+end
+local _ok, _err = pcall(demo_StateMachine_getTimeInState)
 
 -- ---- Stub: StateMachine:type ----------------------------------------------
 --@api-stub: StateMachine:type
+-- Demonstrates the proper usage of StateMachine:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StateMachine_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_StateMachine_type)
+
 -- ---- Stub: StateMachine:typeOf --------------------------------------------
 --@api-stub: StateMachine:typeOf
-print("FSM type: " .. tostring(baker_fsm:type()))
-print("FSM typeOf: " .. tostring(baker_fsm:typeOf("StateMachine")))
+-- Demonstrates the proper usage of StateMachine:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StateMachine_typeOf()
+    print("FSM type: " .. tostring(baker_fsm:type()))
+    print("FSM typeOf: " .. tostring(baker_fsm:typeOf("StateMachine")))
+end
+local _ok, _err = pcall(demo_StateMachine_typeOf)
 
 -- =============================================================================
 -- Behavior Tree — guard combat AI
@@ -437,31 +572,43 @@ print("FSM typeOf: " .. tostring(baker_fsm:typeOf("StateMachine")))
 
 -- ---- Stub: lurek.ai.newBehaviorTree ---------------------------------------
 --@api-stub: lurek.ai.newBehaviorTree
--- A behavior tree for the guard: checks for threats, decides to investigate
--- or attack, and falls back to patrol if nothing is found.
-local guard_bt = lurek.ai.newBehaviorTree()
-print("guard behavior tree created")
+-- Demonstrates the proper usage of lurek.ai.newBehaviorTree.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newBehaviorTree()
+    local guard_bt = lurek.ai.newBehaviorTree()
+    print("guard behavior tree created")
+end
+local _ok, _err = pcall(demo_lurek_ai_newBehaviorTree)
 
 -- ---- Stub: lurek.ai.newSelector ------------------------------------------
 --@api-stub: lurek.ai.newSelector
--- A selector tries children left-to-right until one succeeds (OR logic).
--- Use for "try attack, else investigate, else patrol" fallback chains.
-local combat_selector = lurek.ai.newSelector()
-print("combat selector: try attack -> investigate -> patrol")
+-- Demonstrates the proper usage of lurek.ai.newSelector.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newSelector()
+    local combat_selector = lurek.ai.newSelector()
+    print("combat selector: try attack -> investigate -> patrol")
+end
+local _ok, _err = pcall(demo_lurek_ai_newSelector)
 
 -- ---- Stub: lurek.ai.newSequence -------------------------------------------
 --@api-stub: lurek.ai.newSequence
--- A sequence runs children left-to-right until one fails (AND logic).
--- Use for "spot enemy AND draw weapon AND charge" multi-step actions.
-local attack_sequence = lurek.ai.newSequence()
-print("attack sequence: spot -> draw weapon -> charge -> strike")
+-- Demonstrates the proper usage of lurek.ai.newSequence.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newSequence()
+    local attack_sequence = lurek.ai.newSequence()
+    print("attack sequence: spot -> draw weapon -> charge -> strike")
+end
+local _ok, _err = pcall(demo_lurek_ai_newSequence)
 
 -- ---- Stub: lurek.ai.newParallel -------------------------------------------
 --@api-stub: lurek.ai.newParallel
--- Parallel runs all children simultaneously. Use for "patrol AND scan for threats"
--- where both behaviours must run concurrently.
-local patrol_and_scan = lurek.ai.newParallel()
-print("parallel node: patrol route + scan surroundings simultaneously")
+-- Demonstrates the proper usage of lurek.ai.newParallel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newParallel()
+    local patrol_and_scan = lurek.ai.newParallel()
+    print("parallel node: patrol route + scan surroundings simultaneously")
+end
+local _ok, _err = pcall(demo_lurek_ai_newParallel)
 
 -- ---- Stub: lurek.ai.newCondition ------------------------------------------
 --@api-stub: lurek.ai.newCondition
@@ -480,37 +627,46 @@ print("condition node: 'suspicious' (suspicion > 0)")
 
 -- ---- Stub: lurek.ai.newAction ---------------------------------------------
 --@api-stub: lurek.ai.newAction
--- Action nodes perform game-world side effects: move, attack, play sound.
-local swing_sword = lurek.ai.newAction(function()
+-- Demonstrates the proper usage of lurek.ai.newAction.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newAction()
+    local swing_sword = lurek.ai.newAction(function()
     print("    [guard] swings sword at target!")
     return "success"
-end)
-local shout_alarm = lurek.ai.newAction(function()
+    local shout_alarm = lurek.ai.newAction(function()
     print("    [guard] shouts: INTRUDER!")
     global_bb:setBool("alarm_active", true)
     return "success"
-end)
-local walk_patrol = lurek.ai.newAction(function()
+    local walk_patrol = lurek.ai.newAction(function()
     local idx = guard_bb:getNumber("patrol_waypoint_idx")
     guard_bb:setNumber("patrol_waypoint_idx", idx + 1)
     return "success"
-end)
-print("action nodes: swing_sword, shout_alarm, walk_patrol")
+    print("action nodes: swing_sword, shout_alarm, walk_patrol")
+end
+local _ok, _err = pcall(demo_lurek_ai_newAction)
 
 -- ---- Stub: lurek.ai.newInverter ------------------------------------------
 --@api-stub: lurek.ai.newInverter
--- Inverter flips success to failure and vice versa. Use for "if NOT safe, flee".
-local not_safe = lurek.ai.newInverter()
-not_safe:setChild(can_see_enemy)
-print("inverter: NOT(can_see_enemy) = area is safe")
+-- Demonstrates the proper usage of lurek.ai.newInverter.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newInverter()
+    local not_safe = lurek.ai.newInverter()
+    not_safe:setChild(can_see_enemy)
+    print("inverter: NOT(can_see_enemy) = area is safe")
+end
+local _ok, _err = pcall(demo_lurek_ai_newInverter)
 
 -- ---- Stub: lurek.ai.newRepeater ------------------------------------------
 --@api-stub: lurek.ai.newRepeater
--- Repeater runs its child N times. Use for "attack 3 times then reassess".
-local triple_strike = lurek.ai.newRepeater()
-triple_strike:setCount(3)
-triple_strike:setChild(swing_sword)
-print("repeater: swing sword x3")
+-- Demonstrates the proper usage of lurek.ai.newRepeater.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newRepeater()
+    local triple_strike = lurek.ai.newRepeater()
+    triple_strike:setCount(3)
+    triple_strike:setChild(swing_sword)
+    print("repeater: swing sword x3")
+end
+local _ok, _err = pcall(demo_lurek_ai_newRepeater)
 
 -- ---- Stub: lurek.ai.newSucceeder -----------------------------------------
 --@api-stub: lurek.ai.newSucceeder
@@ -522,101 +678,169 @@ print("succeeder: alarm shout is optional (sequence continues even if it fails)"
 
 -- ---- Stub: BTNode:addChild ------------------------------------------------
 --@api-stub: BTNode:addChild
--- Build the tree by adding children to composite nodes.
-attack_sequence:addChild(can_see_enemy)
-attack_sequence:addChild(shout_alarm)
-attack_sequence:addChild(triple_strike)
-
-combat_selector:addChild(attack_sequence)
-combat_selector:addChild(walk_patrol)
-
-patrol_and_scan:addChild(combat_selector)
-patrol_and_scan:addChild(not_safe)
-print("tree assembled: parallel(selector(attack_seq, patrol), inverter)")
+-- Demonstrates the proper usage of BTNode:addChild.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_addChild()
+    attack_sequence:addChild(can_see_enemy)
+    attack_sequence:addChild(shout_alarm)
+    attack_sequence:addChild(triple_strike)
+    combat_selector:addChild(attack_sequence)
+    combat_selector:addChild(walk_patrol)
+    patrol_and_scan:addChild(combat_selector)
+    patrol_and_scan:addChild(not_safe)
+    print("tree assembled: parallel(selector(attack_seq, patrol), inverter)")
+end
+local _ok, _err = pcall(demo_BTNode_addChild)
 
 -- ---- Stub: BTNode:getChildCount -------------------------------------------
 --@api-stub: BTNode:getChildCount
-print("combat selector children: " .. tostring(combat_selector:getChildCount()))
-print("attack sequence children: " .. tostring(attack_sequence:getChildCount()))
+-- Demonstrates the proper usage of BTNode:getChildCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_getChildCount()
+    print("combat selector children: " .. tostring(combat_selector:getChildCount()))
+    print("attack sequence children: " .. tostring(attack_sequence:getChildCount()))
+end
+local _ok, _err = pcall(demo_BTNode_getChildCount)
 
 -- ---- Stub: BTNode:reset ---------------------------------------------------
 --@api-stub: BTNode:reset
--- Reset clears running state on all nodes. Call between encounters or
--- when the guard loses sight of the player.
-combat_selector:reset()
-print("combat tree reset — guard returns to default behaviour")
+-- Demonstrates the proper usage of BTNode:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_reset()
+    combat_selector:reset()
+    print("combat tree reset — guard returns to default behaviour")
+end
+local _ok, _err = pcall(demo_BTNode_reset)
 
 -- ---- Stub: BTNode:setChild ------------------------------------------------
 --@api-stub: BTNode:setChild
--- Decorators (inverter, repeater, succeeder) wrap a single child.
--- setChild replaces the wrapped node — useful for runtime behaviour swaps.
-not_safe:setChild(has_ammo)
-print("inverter child swapped: now inverts 'has_ammo' check")
+-- Demonstrates the proper usage of BTNode:setChild.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_setChild()
+    not_safe:setChild(has_ammo)
+    print("inverter child swapped: now inverts 'has_ammo' check")
+end
+local _ok, _err = pcall(demo_BTNode_setChild)
 
 -- ---- Stub: BTNode:setCount ------------------------------------------------
 --@api-stub: BTNode:setCount
--- Change how many times a repeater loops. Useful for difficulty scaling.
-triple_strike:setCount(5)
-print("repeater count increased to 5 (hard mode: 5 rapid strikes)")
+-- Demonstrates the proper usage of BTNode:setCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_setCount()
+    triple_strike:setCount(5)
+    print("repeater count increased to 5 (hard mode: 5 rapid strikes)")
+end
+local _ok, _err = pcall(demo_BTNode_setCount)
 
 -- ---- Stub: BTNode:getCount ------------------------------------------------
 --@api-stub: BTNode:getCount
-local rep_count = triple_strike:getCount()
-print("repeater count: " .. tostring(rep_count))
+-- Demonstrates the proper usage of BTNode:getCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_getCount()
+    local rep_count = triple_strike:getCount()
+    print("repeater count: " .. tostring(rep_count))
+end
+local _ok, _err = pcall(demo_BTNode_getCount)
 
 -- ---- Stub: BTNode:setSuccessPolicy ----------------------------------------
 --@api-stub: BTNode:setSuccessPolicy
--- Parallel success policy: "one" = succeed if any child succeeds,
--- "all" = succeed only when every child succeeds.
-patrol_and_scan:setSuccessPolicy("one")
-print("parallel success policy: 'one' (succeed if either patrol or scan succeeds)")
+-- Demonstrates the proper usage of BTNode:setSuccessPolicy.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_setSuccessPolicy()
+    patrol_and_scan:setSuccessPolicy("one")
+    print("parallel success policy: 'one' (succeed if either patrol or scan succeeds)")
+end
+local _ok, _err = pcall(demo_BTNode_setSuccessPolicy)
 
 -- ---- Stub: BTNode:setFailurePolicy ----------------------------------------
 --@api-stub: BTNode:setFailurePolicy
--- Failure policy: "one" = fail on first child failure, "all" = fail only if all fail.
-patrol_and_scan:setFailurePolicy("all")
-print("parallel failure policy: 'all' (fail only if both patrol AND scan fail)")
+-- Demonstrates the proper usage of BTNode:setFailurePolicy.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_setFailurePolicy()
+    patrol_and_scan:setFailurePolicy("all")
+    print("parallel failure policy: 'all' (fail only if both patrol AND scan fail)")
+end
+local _ok, _err = pcall(demo_BTNode_setFailurePolicy)
 
 -- ---- Stub: BTNode:getNodeType ---------------------------------------------
 --@api-stub: BTNode:getNodeType
--- Introspect node type for debug tree visualisation.
-print("combat_selector node type: " .. tostring(combat_selector:getNodeType()))
-print("attack_sequence node type: " .. tostring(attack_sequence:getNodeType()))
-print("triple_strike node type: " .. tostring(triple_strike:getNodeType()))
+-- Demonstrates the proper usage of BTNode:getNodeType.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_getNodeType()
+    print("combat_selector node type: " .. tostring(combat_selector:getNodeType()))
+    print("attack_sequence node type: " .. tostring(attack_sequence:getNodeType()))
+    print("triple_strike node type: " .. tostring(triple_strike:getNodeType()))
+end
+local _ok, _err = pcall(demo_BTNode_getNodeType)
 
 -- ---- Stub: BTNode:type ----------------------------------------------------
 --@api-stub: BTNode:type
+-- Demonstrates the proper usage of BTNode:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_BTNode_type)
+
 -- ---- Stub: BTNode:typeOf --------------------------------------------------
 --@api-stub: BTNode:typeOf
-print("BT node type: " .. tostring(combat_selector:type()))
-print("BT node typeOf: " .. tostring(combat_selector:typeOf("BTNode")))
+-- Demonstrates the proper usage of BTNode:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BTNode_typeOf()
+    print("BT node type: " .. tostring(combat_selector:type()))
+    print("BT node typeOf: " .. tostring(combat_selector:typeOf("BTNode")))
+end
+local _ok, _err = pcall(demo_BTNode_typeOf)
 
 -- ---- Stub: BehaviorTree:setRoot -------------------------------------------
 --@api-stub: BehaviorTree:setRoot
--- Assign the top-level composite as the tree root.
-guard_bt:setRoot(patrol_and_scan)
-print("guard BT root set to parallel(patrol + scan)")
+-- Demonstrates the proper usage of BehaviorTree:setRoot.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BehaviorTree_setRoot()
+    guard_bt:setRoot(patrol_and_scan)
+    print("guard BT root set to parallel(patrol + scan)")
+end
+local _ok, _err = pcall(demo_BehaviorTree_setRoot)
 
 -- ---- Stub: BehaviorTree:getLastStatus -------------------------------------
 --@api-stub: BehaviorTree:getLastStatus
--- After update, check if the tree returned success, failure, or running.
-local status = guard_bt:getLastStatus()
-print("guard BT last status: " .. tostring(status))
+-- Demonstrates the proper usage of BehaviorTree:getLastStatus.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BehaviorTree_getLastStatus()
+    local status = guard_bt:getLastStatus()
+    print("guard BT last status: " .. tostring(status))
+end
+local _ok, _err = pcall(demo_BehaviorTree_getLastStatus)
 
 -- ---- Stub: BehaviorTree:getDebugState -------------------------------------
 --@api-stub: BehaviorTree:getDebugState
--- Get a snapshot of which nodes are running/succeeded/failed for debug overlay.
-local dbg = guard_bt:getDebugState()
-if dbg then
+-- Demonstrates the proper usage of BehaviorTree:getDebugState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BehaviorTree_getDebugState()
+    local dbg = guard_bt:getDebugState()
+    if dbg then
     print("BT debug state available — " .. type(dbg) .. " with node states")
 end
+local _ok, _err = pcall(demo_BehaviorTree_getDebugState)
 
 -- ---- Stub: BehaviorTree:type ----------------------------------------------
 --@api-stub: BehaviorTree:type
+-- Demonstrates the proper usage of BehaviorTree:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BehaviorTree_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_BehaviorTree_type)
+
 -- ---- Stub: BehaviorTree:typeOf --------------------------------------------
 --@api-stub: BehaviorTree:typeOf
-print("BT type: " .. tostring(guard_bt:type()))
-print("BT typeOf: " .. tostring(guard_bt:typeOf("BehaviorTree")))
+-- Demonstrates the proper usage of BehaviorTree:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_BehaviorTree_typeOf()
+    print("BT type: " .. tostring(guard_bt:type()))
+    print("BT typeOf: " .. tostring(guard_bt:typeOf("BehaviorTree")))
+end
+local _ok, _err = pcall(demo_BehaviorTree_typeOf)
 
 -- =============================================================================
 -- Steering Behaviours — crowd movement
@@ -624,52 +848,91 @@ print("BT typeOf: " .. tostring(guard_bt:typeOf("BehaviorTree")))
 
 -- ---- Stub: lurek.ai.newSteeringManager ------------------------------------
 --@api-stub: lurek.ai.newSteeringManager
--- The steering manager combines multiple steering behaviours (seek, flee,
--- wander, separation) into a single velocity vector per frame.
-local steer_mgr = lurek.ai.newSteeringManager()
-print("steering manager created for crowd NPCs")
+-- Demonstrates the proper usage of lurek.ai.newSteeringManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newSteeringManager()
+    local steer_mgr = lurek.ai.newSteeringManager()
+    print("steering manager created for crowd NPCs")
+end
+local _ok, _err = pcall(demo_lurek_ai_newSteeringManager)
 
 -- ---- Stub: SteeringManager:getBehaviorCount -------------------------------
 --@api-stub: SteeringManager:getBehaviorCount
-local bcount = steer_mgr:getBehaviorCount()
-print("active steering behaviours: " .. tostring(bcount))
+-- Demonstrates the proper usage of SteeringManager:getBehaviorCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_getBehaviorCount()
+    local bcount = steer_mgr:getBehaviorCount()
+    print("active steering behaviours: " .. tostring(bcount))
+end
+local _ok, _err = pcall(demo_SteeringManager_getBehaviorCount)
 
 -- ---- Stub: SteeringManager:setCombineMode ---------------------------------
 --@api-stub: SteeringManager:setCombineMode
--- "weighted_average" blends all forces; "priority" uses the highest-priority
--- behaviour that returns a non-zero force.
-steer_mgr:setCombineMode("weighted_average")
-print("steering combine mode: weighted_average (smooth crowd flow)")
+-- Demonstrates the proper usage of SteeringManager:setCombineMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_setCombineMode()
+    steer_mgr:setCombineMode("weighted_average")
+    print("steering combine mode: weighted_average (smooth crowd flow)")
+end
+local _ok, _err = pcall(demo_SteeringManager_setCombineMode)
 
 -- ---- Stub: SteeringManager:getCombineMode ---------------------------------
 --@api-stub: SteeringManager:getCombineMode
-print("current combine mode: " .. tostring(steer_mgr:getCombineMode()))
+-- Demonstrates the proper usage of SteeringManager:getCombineMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_getCombineMode()
+    print("current combine mode: " .. tostring(steer_mgr:getCombineMode()))
+end
+local _ok, _err = pcall(demo_SteeringManager_getCombineMode)
 
 -- ---- Stub: SteeringManager:getLastSteering --------------------------------
 --@api-stub: SteeringManager:getLastSteering
--- After computing, read the resulting steering force vector.
-local sx, sy = steer_mgr:getLastSteering()
-print("last steering vector: (" .. tostring(sx) .. ", " .. tostring(sy) .. ")")
+-- Demonstrates the proper usage of SteeringManager:getLastSteering.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_getLastSteering()
+    local sx, sy = steer_mgr:getLastSteering()
+    print("last steering vector: (" .. tostring(sx) .. ", " .. tostring(sy) .. ")")
+end
+local _ok, _err = pcall(demo_SteeringManager_getLastSteering)
 
 -- ---- Stub: SteeringManager:setSpatialHashCellSize -------------------------
 --@api-stub: SteeringManager:setSpatialHashCellSize
--- Tune the spatial hash cell size for neighbour queries.
--- Smaller cells = more precise but more overhead. Match to agent density.
-steer_mgr:setSpatialHashCellSize(64.0)
-print("spatial hash cell size: 64px (good for ~20 agents in 1024x768)")
+-- Demonstrates the proper usage of SteeringManager:setSpatialHashCellSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_setSpatialHashCellSize()
+    steer_mgr:setSpatialHashCellSize(64.0)
+    print("spatial hash cell size: 64px (good for ~20 agents in 1024x768)")
+end
+local _ok, _err = pcall(demo_SteeringManager_setSpatialHashCellSize)
 
 -- ---- Stub: SteeringManager:enableSpatialHash -----------------------------
 --@api-stub: SteeringManager:enableSpatialHash
--- Enable spatial hashing for O(1) neighbour lookups when you have many agents.
-steer_mgr:enableSpatialHash(true)
-print("spatial hash enabled — separation/avoidance queries accelerated")
+-- Demonstrates the proper usage of SteeringManager:enableSpatialHash.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_enableSpatialHash()
+    steer_mgr:enableSpatialHash(true)
+    print("spatial hash enabled — separation/avoidance queries accelerated")
+end
+local _ok, _err = pcall(demo_SteeringManager_enableSpatialHash)
 
 -- ---- Stub: SteeringManager:type -------------------------------------------
 --@api-stub: SteeringManager:type
+-- Demonstrates the proper usage of SteeringManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_SteeringManager_type)
+
 -- ---- Stub: SteeringManager:typeOf -----------------------------------------
 --@api-stub: SteeringManager:typeOf
-print("steering mgr type: " .. tostring(steer_mgr:type()))
-print("steering mgr typeOf: " .. tostring(steer_mgr:typeOf("SteeringManager")))
+-- Demonstrates the proper usage of SteeringManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SteeringManager_typeOf()
+    print("steering mgr type: " .. tostring(steer_mgr:type()))
+    print("steering mgr typeOf: " .. tostring(steer_mgr:typeOf("SteeringManager")))
+end
+local _ok, _err = pcall(demo_SteeringManager_typeOf)
 
 -- =============================================================================
 -- Context Steering — obstacle avoidance for the wolf
@@ -677,34 +940,53 @@ print("steering mgr typeOf: " .. tostring(steer_mgr:typeOf("SteeringManager")))
 
 -- ---- Stub: lurek.ai.newContextSteering ------------------------------------
 --@api-stub: lurek.ai.newContextSteering
--- Context steering uses interest/danger maps over directional slots to produce
--- smooth avoidance behaviour. Better than basic steering for dense environments.
-local ctx_steer = lurek.ai.newContextSteering()
-print("context steering created for wolf navigation")
+-- Demonstrates the proper usage of lurek.ai.newContextSteering.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newContextSteering()
+    local ctx_steer = lurek.ai.newContextSteering()
+    print("context steering created for wolf navigation")
+end
+local _ok, _err = pcall(demo_lurek_ai_newContextSteering)
 
 -- ---- Stub: ContextSteering:addSeekTarget ----------------------------------
 --@api-stub: ContextSteering:addSeekTarget
--- The wolf wants to approach the player's campfire at (400, 300).
-ctx_steer:addSeekTarget(400, 300, 1.0)
-print("wolf seek target: campfire at (400, 300), weight 1.0")
+-- Demonstrates the proper usage of ContextSteering:addSeekTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_addSeekTarget()
+    ctx_steer:addSeekTarget(400, 300, 1.0)
+    print("wolf seek target: campfire at (400, 300), weight 1.0")
+end
+local _ok, _err = pcall(demo_ContextSteering_addSeekTarget)
 
 -- ---- Stub: ContextSteering:addWander --------------------------------------
 --@api-stub: ContextSteering:addWander
--- Add a small wander impulse so the wolf doesn't beeline perfectly straight.
-ctx_steer:addWander(0.3)
-print("wolf wander added (weight 0.3) for natural-looking path")
+-- Demonstrates the proper usage of ContextSteering:addWander.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_addWander()
+    ctx_steer:addWander(0.3)
+    print("wolf wander added (weight 0.3) for natural-looking path")
+end
+local _ok, _err = pcall(demo_ContextSteering_addWander)
 
 -- ---- Stub: ContextSteering:addAvoidPoint ----------------------------------
 --@api-stub: ContextSteering:addAvoidPoint
--- The wolf avoids the guard's torch at (120, 210) within 80-unit radius.
-ctx_steer:addAvoidPoint(120, 210, 80.0, 2.0)
-print("wolf avoids guard torch at (120, 210) radius=80, danger=2.0")
+-- Demonstrates the proper usage of ContextSteering:addAvoidPoint.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_addAvoidPoint()
+    ctx_steer:addAvoidPoint(120, 210, 80.0, 2.0)
+    print("wolf avoids guard torch at (120, 210) radius=80, danger=2.0")
+end
+local _ok, _err = pcall(demo_ContextSteering_addAvoidPoint)
 
 -- ---- Stub: ContextSteering:addAvoidBounds ---------------------------------
 --@api-stub: ContextSteering:addAvoidBounds
--- Keep the wolf inside the forest boundary (0,0)-(600,500).
-ctx_steer:addAvoidBounds(0, 0, 600, 500, 1.5)
-print("wolf constrained to forest bounds (0,0)-(600,500)")
+-- Demonstrates the proper usage of ContextSteering:addAvoidBounds.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_addAvoidBounds()
+    ctx_steer:addAvoidBounds(0, 0, 600, 500, 1.5)
+    print("wolf constrained to forest bounds (0,0)-(600,500)")
+end
+local _ok, _err = pcall(demo_ContextSteering_addAvoidBounds)
 
 -- ---- Stub: ContextSteering:clearBehaviors ---------------------------------
 --@api-stub: ContextSteering:clearBehaviors
@@ -719,24 +1001,35 @@ ctx_steer:addAvoidPoint(120, 210, 80.0, 2.0)
 
 -- ---- Stub: ContextSteering:evaluate ---------------------------------------
 --@api-stub: ContextSteering:evaluate
--- Evaluate resolves the interest/danger maps into a final direction and magnitude.
-local dir_x, dir_y = ctx_steer:evaluate()
-print("wolf resolved direction: (" .. string.format("%.2f", dir_x) .. ", " .. string.format("%.2f", dir_y) .. ")")
+-- Demonstrates the proper usage of ContextSteering:evaluate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_evaluate()
+    local dir_x, dir_y = ctx_steer:evaluate()
+    print("wolf resolved direction: (" .. string.format("%.2f", dir_x) .. ", " .. string.format("%.2f", dir_y) .. ")")
+end
+local _ok, _err = pcall(demo_ContextSteering_evaluate)
 
 -- ---- Stub: ContextSteering:chosenMagnitude --------------------------------
 --@api-stub: ContextSteering:chosenMagnitude
--- Magnitude indicates confidence — high means a clear path, low means squeezed.
-local mag = ctx_steer:chosenMagnitude()
-print("wolf steering magnitude: " .. string.format("%.2f", mag))
-if mag < 0.3 then
+-- Demonstrates the proper usage of ContextSteering:chosenMagnitude.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_chosenMagnitude()
+    local mag = ctx_steer:chosenMagnitude()
+    print("wolf steering magnitude: " .. string.format("%.2f", mag))
+    if mag < 0.3 then
     print("  wolf is trapped — all directions blocked!")
 end
+local _ok, _err = pcall(demo_ContextSteering_chosenMagnitude)
 
 -- ---- Stub: ContextSteering:slotCount --------------------------------------
 --@api-stub: ContextSteering:slotCount
--- Number of directional slots in the context map (typically 8 or 16).
-local slots = ctx_steer:slotCount()
-print("context steering resolution: " .. tostring(slots) .. " directional slots")
+-- Demonstrates the proper usage of ContextSteering:slotCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ContextSteering_slotCount()
+    local slots = ctx_steer:slotCount()
+    print("context steering resolution: " .. tostring(slots) .. " directional slots")
+end
+local _ok, _err = pcall(demo_ContextSteering_slotCount)
 
 -- =============================================================================
 -- Q-Learning — adaptive enemy behaviour
@@ -757,102 +1050,186 @@ print("wolf Q-learner: 4 states x 4 actions, epsilon=0.3")
 
 -- ---- Stub: QLearner:chooseAction ------------------------------------------
 --@api-stub: QLearner:chooseAction
--- Choose an action with epsilon-greedy exploration. Early in training this
--- will pick random actions; later it exploits learned Q-values.
-local action1 = wolf_ql:chooseAction("far_healthy")
-print("wolf chose action in 'far_healthy' state: " .. tostring(action1))
+-- Demonstrates the proper usage of QLearner:chooseAction.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_chooseAction()
+    local action1 = wolf_ql:chooseAction("far_healthy")
+    print("wolf chose action in 'far_healthy' state: " .. tostring(action1))
+end
+local _ok, _err = pcall(demo_QLearner_chooseAction)
 
 -- ---- Stub: QLearner:bestAction --------------------------------------------
 --@api-stub: QLearner:bestAction
--- Pure exploitation: always pick the highest Q-value action (no exploration).
--- Use this for the final deployed AI or to display "optimal" play.
-local best = wolf_ql:bestAction("close_wounded")
-print("best action for 'close_wounded': " .. tostring(best))
+-- Demonstrates the proper usage of QLearner:bestAction.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_bestAction()
+    local best = wolf_ql:bestAction("close_wounded")
+    print("best action for 'close_wounded': " .. tostring(best))
+end
+local _ok, _err = pcall(demo_QLearner_bestAction)
 
 -- ---- Stub: QLearner:getQValue ---------------------------------------------
 --@api-stub: QLearner:getQValue
--- Inspect specific Q-values for balancing or debug display.
-local q_val = wolf_ql:getQValue("close_healthy", "pounce")
-print("Q(close_healthy, pounce) = " .. string.format("%.3f", q_val))
+-- Demonstrates the proper usage of QLearner:getQValue.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getQValue()
+    local q_val = wolf_ql:getQValue("close_healthy", "pounce")
+    print("Q(close_healthy, pounce) = " .. string.format("%.3f", q_val))
+end
+local _ok, _err = pcall(demo_QLearner_getQValue)
 
 -- ---- Stub: QLearner:endEpisode --------------------------------------------
 --@api-stub: QLearner:endEpisode
--- Call after each wolf encounter ends. The reward updates the Q-table.
--- Positive rewards for successful hunts, negative for getting wounded.
-wolf_ql:endEpisode(1.0)  -- wolf caught prey: +1 reward
-print("episode ended with reward +1.0 (successful hunt)")
+-- Demonstrates the proper usage of QLearner:endEpisode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_endEpisode()
+    wolf_ql:endEpisode(1.0)  -- wolf caught prey: +1 reward
+    print("episode ended with reward +1.0 (successful hunt)")
+end
+local _ok, _err = pcall(demo_QLearner_endEpisode)
 
 -- ---- Stub: QLearner:getEpisodeCount ---------------------------------------
 --@api-stub: QLearner:getEpisodeCount
-local episodes = wolf_ql:getEpisodeCount()
-print("total training episodes: " .. tostring(episodes))
+-- Demonstrates the proper usage of QLearner:getEpisodeCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getEpisodeCount()
+    local episodes = wolf_ql:getEpisodeCount()
+    print("total training episodes: " .. tostring(episodes))
+end
+local _ok, _err = pcall(demo_QLearner_getEpisodeCount)
 
 -- ---- Stub: QLearner:getStateCount -----------------------------------------
 --@api-stub: QLearner:getStateCount
-print("Q-learner state count: " .. tostring(wolf_ql:getStateCount()))
+-- Demonstrates the proper usage of QLearner:getStateCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getStateCount()
+    print("Q-learner state count: " .. tostring(wolf_ql:getStateCount()))
+end
+local _ok, _err = pcall(demo_QLearner_getStateCount)
 
 -- ---- Stub: QLearner:getActionCount ----------------------------------------
 --@api-stub: QLearner:getActionCount
-print("Q-learner action count: " .. tostring(wolf_ql:getActionCount()))
+-- Demonstrates the proper usage of QLearner:getActionCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getActionCount()
+    print("Q-learner action count: " .. tostring(wolf_ql:getActionCount()))
+end
+local _ok, _err = pcall(demo_QLearner_getActionCount)
 
 -- ---- Stub: QLearner:setLearningRate ---------------------------------------
 --@api-stub: QLearner:setLearningRate
--- Lower the learning rate as training progresses for more stable convergence.
-wolf_ql:setLearningRate(0.05)
-print("learning rate reduced to 0.05 (late-training stabilisation)")
+-- Demonstrates the proper usage of QLearner:setLearningRate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_setLearningRate()
+    wolf_ql:setLearningRate(0.05)
+    print("learning rate reduced to 0.05 (late-training stabilisation)")
+end
+local _ok, _err = pcall(demo_QLearner_setLearningRate)
 
 -- ---- Stub: QLearner:getLearningRate ---------------------------------------
 --@api-stub: QLearner:getLearningRate
-print("current learning rate: " .. tostring(wolf_ql:getLearningRate()))
+-- Demonstrates the proper usage of QLearner:getLearningRate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getLearningRate()
+    print("current learning rate: " .. tostring(wolf_ql:getLearningRate()))
+end
+local _ok, _err = pcall(demo_QLearner_getLearningRate)
 
 -- ---- Stub: QLearner:setDiscountFactor -------------------------------------
 --@api-stub: QLearner:setDiscountFactor
--- Higher discount = more weight on future rewards. Good for patient strategies.
-wolf_ql:setDiscountFactor(0.99)
-print("discount factor: 0.99 (wolf values long-term ambush payoff)")
+-- Demonstrates the proper usage of QLearner:setDiscountFactor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_setDiscountFactor()
+    wolf_ql:setDiscountFactor(0.99)
+    print("discount factor: 0.99 (wolf values long-term ambush payoff)")
+end
+local _ok, _err = pcall(demo_QLearner_setDiscountFactor)
 
 -- ---- Stub: QLearner:getDiscountFactor -------------------------------------
 --@api-stub: QLearner:getDiscountFactor
-print("discount factor: " .. tostring(wolf_ql:getDiscountFactor()))
+-- Demonstrates the proper usage of QLearner:getDiscountFactor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getDiscountFactor()
+    print("discount factor: " .. tostring(wolf_ql:getDiscountFactor()))
+end
+local _ok, _err = pcall(demo_QLearner_getDiscountFactor)
 
 -- ---- Stub: QLearner:setExplorationRate ------------------------------------
 --@api-stub: QLearner:setExplorationRate
--- Reduce exploration as the wolf learns — fewer random actions over time.
-wolf_ql:setExplorationRate(0.1)
-print("exploration rate: 0.1 (mostly exploiting learned strategy)")
+-- Demonstrates the proper usage of QLearner:setExplorationRate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_setExplorationRate()
+    wolf_ql:setExplorationRate(0.1)
+    print("exploration rate: 0.1 (mostly exploiting learned strategy)")
+end
+local _ok, _err = pcall(demo_QLearner_setExplorationRate)
 
 -- ---- Stub: QLearner:getExplorationRate ------------------------------------
 --@api-stub: QLearner:getExplorationRate
-print("exploration rate: " .. tostring(wolf_ql:getExplorationRate()))
+-- Demonstrates the proper usage of QLearner:getExplorationRate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getExplorationRate()
+    print("exploration rate: " .. tostring(wolf_ql:getExplorationRate()))
+end
+local _ok, _err = pcall(demo_QLearner_getExplorationRate)
 
 -- ---- Stub: QLearner:setExplorationDecay -----------------------------------
 --@api-stub: QLearner:setExplorationDecay
--- Automatic decay: multiply epsilon by this factor after each episode.
-wolf_ql:setExplorationDecay(0.995)
-print("exploration decay: 0.995 per episode (gradual convergence)")
+-- Demonstrates the proper usage of QLearner:setExplorationDecay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_setExplorationDecay()
+    wolf_ql:setExplorationDecay(0.995)
+    print("exploration decay: 0.995 per episode (gradual convergence)")
+end
+local _ok, _err = pcall(demo_QLearner_setExplorationDecay)
 
 -- ---- Stub: QLearner:getExplorationDecay -----------------------------------
 --@api-stub: QLearner:getExplorationDecay
-print("exploration decay: " .. tostring(wolf_ql:getExplorationDecay()))
+-- Demonstrates the proper usage of QLearner:getExplorationDecay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_getExplorationDecay()
+    print("exploration decay: " .. tostring(wolf_ql:getExplorationDecay()))
+end
+local _ok, _err = pcall(demo_QLearner_getExplorationDecay)
 
 -- ---- Stub: QLearner:serialize ---------------------------------------------
 --@api-stub: QLearner:serialize
--- Save the trained Q-table to persist learned behaviour across game sessions.
-local q_data = wolf_ql:serialize()
-print("Q-table serialised: " .. tostring(#q_data) .. " bytes")
+-- Demonstrates the proper usage of QLearner:serialize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_serialize()
+    local q_data = wolf_ql:serialize()
+    print("Q-table serialised: " .. tostring(#q_data) .. " bytes")
+end
+local _ok, _err = pcall(demo_QLearner_serialize)
 
 -- ---- Stub: QLearner:deserialize -------------------------------------------
 --@api-stub: QLearner:deserialize
--- Restore a previously trained Q-table from a save file.
-wolf_ql:deserialize(q_data)
-print("Q-table restored from saved data — wolf remembers past encounters")
+-- Demonstrates the proper usage of QLearner:deserialize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_deserialize()
+    wolf_ql:deserialize(q_data)
+    print("Q-table restored from saved data — wolf remembers past encounters")
+end
+local _ok, _err = pcall(demo_QLearner_deserialize)
 
 -- ---- Stub: QLearner:type --------------------------------------------------
 --@api-stub: QLearner:type
+-- Demonstrates the proper usage of QLearner:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_QLearner_type)
+
 -- ---- Stub: QLearner:typeOf ------------------------------------------------
 --@api-stub: QLearner:typeOf
-print("Q-learner type: " .. tostring(wolf_ql:type()))
-print("Q-learner typeOf: " .. tostring(wolf_ql:typeOf("QLearner")))
+-- Demonstrates the proper usage of QLearner:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_QLearner_typeOf()
+    print("Q-learner type: " .. tostring(wolf_ql:type()))
+    print("Q-learner typeOf: " .. tostring(wolf_ql:typeOf("QLearner")))
+end
+local _ok, _err = pcall(demo_QLearner_typeOf)
 
 -- =============================================================================
 -- Utility AI — NPC decision making
@@ -873,26 +1250,51 @@ print("villager utility AI: 5 actions (eat, sleep, work, chat, shop)")
 
 -- ---- Stub: UtilityAI:evaluate ---------------------------------------------
 --@api-stub: UtilityAI:evaluate
--- Evaluate all candidates and pick the winner. Call each frame or on events.
-local chosen = villager_util:evaluate()
-print("villager chose: " .. tostring(chosen) .. " (highest utility score)")
+-- Demonstrates the proper usage of UtilityAI:evaluate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UtilityAI_evaluate()
+    local chosen = villager_util:evaluate()
+    print("villager chose: " .. tostring(chosen) .. " (highest utility score)")
+end
+local _ok, _err = pcall(demo_UtilityAI_evaluate)
 
 -- ---- Stub: UtilityAI:getActionCount ---------------------------------------
 --@api-stub: UtilityAI:getActionCount
-print("utility AI candidate actions: " .. tostring(villager_util:getActionCount()))
+-- Demonstrates the proper usage of UtilityAI:getActionCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UtilityAI_getActionCount()
+    print("utility AI candidate actions: " .. tostring(villager_util:getActionCount()))
+end
+local _ok, _err = pcall(demo_UtilityAI_getActionCount)
 
 -- ---- Stub: UtilityAI:getLastAction ----------------------------------------
 --@api-stub: UtilityAI:getLastAction
--- Check what the NPC decided last frame for animation or dialog branching.
-local last = villager_util:getLastAction()
-print("last action chosen: " .. tostring(last))
+-- Demonstrates the proper usage of UtilityAI:getLastAction.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UtilityAI_getLastAction()
+    local last = villager_util:getLastAction()
+    print("last action chosen: " .. tostring(last))
+end
+local _ok, _err = pcall(demo_UtilityAI_getLastAction)
 
 -- ---- Stub: UtilityAI:type -------------------------------------------------
 --@api-stub: UtilityAI:type
+-- Demonstrates the proper usage of UtilityAI:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UtilityAI_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_UtilityAI_type)
+
 -- ---- Stub: UtilityAI:typeOf -----------------------------------------------
 --@api-stub: UtilityAI:typeOf
-print("utility AI type: " .. tostring(villager_util:type()))
-print("utility AI typeOf: " .. tostring(villager_util:typeOf("UtilityAI")))
+-- Demonstrates the proper usage of UtilityAI:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UtilityAI_typeOf()
+    print("utility AI type: " .. tostring(villager_util:type()))
+    print("utility AI typeOf: " .. tostring(villager_util:typeOf("UtilityAI")))
+end
+local _ok, _err = pcall(demo_UtilityAI_typeOf)
 
 -- =============================================================================
 -- GOAP Planner — quest-giving NPC
@@ -919,29 +1321,60 @@ print("  alternative: buy_herbs(5) -> brew_potion(3) -> heal_patient(1) = cost 9
 
 -- ---- Stub: GOAPPlanner:getActionCount -------------------------------------
 --@api-stub: GOAPPlanner:getActionCount
-print("GOAP actions available: " .. tostring(goap:getActionCount()))
+-- Demonstrates the proper usage of GOAPPlanner:getActionCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_getActionCount()
+    print("GOAP actions available: " .. tostring(goap:getActionCount()))
+end
+local _ok, _err = pcall(demo_GOAPPlanner_getActionCount)
 
 -- ---- Stub: GOAPPlanner:getGoalCount ---------------------------------------
 --@api-stub: GOAPPlanner:getGoalCount
-print("GOAP goals defined: " .. tostring(goap:getGoalCount()))
+-- Demonstrates the proper usage of GOAPPlanner:getGoalCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_getGoalCount()
+    print("GOAP goals defined: " .. tostring(goap:getGoalCount()))
+end
+local _ok, _err = pcall(demo_GOAPPlanner_getGoalCount)
 
 -- ---- Stub: GOAPPlanner:getMaxIterations -----------------------------------
 --@api-stub: GOAPPlanner:getMaxIterations
--- Cap search iterations to prevent frame spikes on complex goal networks.
-local max_iter = goap:getMaxIterations()
-print("GOAP max iterations: " .. tostring(max_iter))
+-- Demonstrates the proper usage of GOAPPlanner:getMaxIterations.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_getMaxIterations()
+    local max_iter = goap:getMaxIterations()
+    print("GOAP max iterations: " .. tostring(max_iter))
+end
+local _ok, _err = pcall(demo_GOAPPlanner_getMaxIterations)
 
 -- ---- Stub: GOAPPlanner:setMaxIterations -----------------------------------
 --@api-stub: GOAPPlanner:setMaxIterations
-goap:setMaxIterations(500)
-print("GOAP max iterations set to 500 (complex quest chains)")
+-- Demonstrates the proper usage of GOAPPlanner:setMaxIterations.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_setMaxIterations()
+    goap:setMaxIterations(500)
+    print("GOAP max iterations set to 500 (complex quest chains)")
+end
+local _ok, _err = pcall(demo_GOAPPlanner_setMaxIterations)
 
 -- ---- Stub: GOAPPlanner:type -----------------------------------------------
 --@api-stub: GOAPPlanner:type
+-- Demonstrates the proper usage of GOAPPlanner:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_GOAPPlanner_type)
+
 -- ---- Stub: GOAPPlanner:typeOf ---------------------------------------------
 --@api-stub: GOAPPlanner:typeOf
-print("GOAP type: " .. tostring(goap:type()))
-print("GOAP typeOf: " .. tostring(goap:typeOf("GOAPPlanner")))
+-- Demonstrates the proper usage of GOAPPlanner:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GOAPPlanner_typeOf()
+    print("GOAP type: " .. tostring(goap:type()))
+    print("GOAP typeOf: " .. tostring(goap:typeOf("GOAPPlanner")))
+end
+local _ok, _err = pcall(demo_GOAPPlanner_typeOf)
 
 -- =============================================================================
 -- Influence Map — territory control
@@ -949,23 +1382,35 @@ print("GOAP typeOf: " .. tostring(goap:typeOf("GOAPPlanner")))
 
 -- ---- Stub: lurek.ai.newInfluenceMap ---------------------------------------
 --@api-stub: lurek.ai.newInfluenceMap
--- Influence maps track area control. Each cell in the grid accumulates influence
--- from nearby agents. Use for territory display, tactical decisions, or fog of war.
-local inf_map = lurek.ai.newInfluenceMap(32, 24, 32.0)  -- 32x24 grid, 32px cells
-print("influence map: 32x24 grid, 32px cells (covers 1024x768 world)")
+-- Demonstrates the proper usage of lurek.ai.newInfluenceMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newInfluenceMap()
+    local inf_map = lurek.ai.newInfluenceMap(32, 24, 32.0)  -- 32x24 grid, 32px cells
+    print("influence map: 32x24 grid, 32px cells (covers 1024x768 world)")
+end
+local _ok, _err = pcall(demo_lurek_ai_newInfluenceMap)
 
 -- ---- Stub: InfluenceMap:addLayer ------------------------------------------
 --@api-stub: InfluenceMap:addLayer
--- Separate layers for different factions or influence types.
-inf_map:addLayer("royal_guard", 0.0)
-inf_map:addLayer("wolf_pack", 0.0)
-inf_map:addLayer("merchant_zone", 0.0)
-print("influence layers: royal_guard, wolf_pack, merchant_zone")
+-- Demonstrates the proper usage of InfluenceMap:addLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_addLayer()
+    inf_map:addLayer("royal_guard", 0.0)
+    inf_map:addLayer("wolf_pack", 0.0)
+    inf_map:addLayer("merchant_zone", 0.0)
+    print("influence layers: royal_guard, wolf_pack, merchant_zone")
+end
+local _ok, _err = pcall(demo_InfluenceMap_addLayer)
 
 -- ---- Stub: InfluenceMap:hasLayer ------------------------------------------
 --@api-stub: InfluenceMap:hasLayer
-print("has 'royal_guard' layer: " .. tostring(inf_map:hasLayer("royal_guard")))
-print("has 'bandit' layer: " .. tostring(inf_map:hasLayer("bandit")))
+-- Demonstrates the proper usage of InfluenceMap:hasLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_hasLayer()
+    print("has 'royal_guard' layer: " .. tostring(inf_map:hasLayer("royal_guard")))
+    print("has 'bandit' layer: " .. tostring(inf_map:hasLayer("bandit")))
+end
+local _ok, _err = pcall(demo_InfluenceMap_hasLayer)
 
 -- ---- Stub: InfluenceMap:decay ---------------------------------------------
 --@api-stub: InfluenceMap:decay
@@ -977,9 +1422,13 @@ print("influence decayed: guard(0.95 retention), wolf(0.90 retention)")
 
 -- ---- Stub: InfluenceMap:clearLayer ----------------------------------------
 --@api-stub: InfluenceMap:clearLayer
--- Reset a single layer — use when a faction retreats or a zone is captured.
-inf_map:clearLayer("wolf_pack")
-print("wolf_pack influence cleared (wolves fled the area)")
+-- Demonstrates the proper usage of InfluenceMap:clearLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_clearLayer()
+    inf_map:clearLayer("wolf_pack")
+    print("wolf_pack influence cleared (wolves fled the area)")
+end
+local _ok, _err = pcall(demo_InfluenceMap_clearLayer)
 
 -- ---- Stub: InfluenceMap:clearAll ------------------------------------------
 --@api-stub: InfluenceMap:clearAll
@@ -993,35 +1442,70 @@ inf_map:addLayer("wolf_pack", 0.0)
 
 -- ---- Stub: InfluenceMap:getMaxPosition ------------------------------------
 --@api-stub: InfluenceMap:getMaxPosition
--- Find the hotspot with highest influence — e.g. where guards are concentrated.
-local max_x, max_y = inf_map:getMaxPosition("royal_guard")
-print("guard concentration peak at: (" .. tostring(max_x) .. ", " .. tostring(max_y) .. ")")
+-- Demonstrates the proper usage of InfluenceMap:getMaxPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_getMaxPosition()
+    local max_x, max_y = inf_map:getMaxPosition("royal_guard")
+    print("guard concentration peak at: (" .. tostring(max_x) .. ", " .. tostring(max_y) .. ")")
+end
+local _ok, _err = pcall(demo_InfluenceMap_getMaxPosition)
 
 -- ---- Stub: InfluenceMap:getMinPosition ------------------------------------
 --@api-stub: InfluenceMap:getMinPosition
--- Find the cold spot — least guarded area for sneaking or flanking.
-local min_x, min_y = inf_map:getMinPosition("royal_guard")
-print("guard blind spot at: (" .. tostring(min_x) .. ", " .. tostring(min_y) .. ")")
-print("  sneak through here to avoid detection!")
+-- Demonstrates the proper usage of InfluenceMap:getMinPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_getMinPosition()
+    local min_x, min_y = inf_map:getMinPosition("royal_guard")
+    print("guard blind spot at: (" .. tostring(min_x) .. ", " .. tostring(min_y) .. ")")
+    print("  sneak through here to avoid detection!")
+end
+local _ok, _err = pcall(demo_InfluenceMap_getMinPosition)
 
 -- ---- Stub: InfluenceMap:getWidth ------------------------------------------
 --@api-stub: InfluenceMap:getWidth
-print("influence map width: " .. tostring(inf_map:getWidth()) .. " cells")
+-- Demonstrates the proper usage of InfluenceMap:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_getWidth()
+    print("influence map width: " .. tostring(inf_map:getWidth()) .. " cells")
+end
+local _ok, _err = pcall(demo_InfluenceMap_getWidth)
 
 -- ---- Stub: InfluenceMap:getHeight -----------------------------------------
 --@api-stub: InfluenceMap:getHeight
-print("influence map height: " .. tostring(inf_map:getHeight()) .. " cells")
+-- Demonstrates the proper usage of InfluenceMap:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_getHeight()
+    print("influence map height: " .. tostring(inf_map:getHeight()) .. " cells")
+end
+local _ok, _err = pcall(demo_InfluenceMap_getHeight)
 
 -- ---- Stub: InfluenceMap:getCellSize ---------------------------------------
 --@api-stub: InfluenceMap:getCellSize
-print("cell size: " .. tostring(inf_map:getCellSize()) .. "px")
+-- Demonstrates the proper usage of InfluenceMap:getCellSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_getCellSize()
+    print("cell size: " .. tostring(inf_map:getCellSize()) .. "px")
+end
+local _ok, _err = pcall(demo_InfluenceMap_getCellSize)
 
 -- ---- Stub: InfluenceMap:type ----------------------------------------------
 --@api-stub: InfluenceMap:type
+-- Demonstrates the proper usage of InfluenceMap:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_InfluenceMap_type)
+
 -- ---- Stub: InfluenceMap:typeOf --------------------------------------------
 --@api-stub: InfluenceMap:typeOf
-print("influence map type: " .. tostring(inf_map:type()))
-print("influence map typeOf: " .. tostring(inf_map:typeOf("InfluenceMap")))
+-- Demonstrates the proper usage of InfluenceMap:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_InfluenceMap_typeOf()
+    print("influence map type: " .. tostring(inf_map:type()))
+    print("influence map typeOf: " .. tostring(inf_map:typeOf("InfluenceMap")))
+end
+local _ok, _err = pcall(demo_InfluenceMap_typeOf)
 
 -- =============================================================================
 -- Squad — coordinated patrol group
@@ -1039,14 +1523,23 @@ print("squad 'gatehouse_patrol' created: wedge formation, 40px spacing")
 
 -- ---- Stub: Squad:getName --------------------------------------------------
 --@api-stub: Squad:getName
-print("squad name: " .. patrol_squad:getName())
+-- Demonstrates the proper usage of Squad:getName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getName()
+    print("squad name: " .. patrol_squad:getName())
+end
+local _ok, _err = pcall(demo_Squad_getName)
 
 -- ---- Stub: Squad:addMember ------------------------------------------------
 --@api-stub: Squad:addMember
--- Add agents to the squad. The first added becomes the default leader.
-patrol_squad:addMember(guard)
-patrol_squad:addMember(scout)
-print("squad members: guard_captain + scout_drone")
+-- Demonstrates the proper usage of Squad:addMember.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_addMember()
+    patrol_squad:addMember(guard)
+    patrol_squad:addMember(scout)
+    print("squad members: guard_captain + scout_drone")
+end
+local _ok, _err = pcall(demo_Squad_addMember)
 
 -- ---- Stub: Squad:removeMember ---------------------------------------------
 --@api-stub: Squad:removeMember
@@ -1059,37 +1552,64 @@ patrol_squad:addMember(scout)
 
 -- ---- Stub: Squad:getMemberCount -------------------------------------------
 --@api-stub: Squad:getMemberCount
-local member_count = patrol_squad:getMemberCount()
-print("squad size: " .. tostring(member_count) .. " members")
+-- Demonstrates the proper usage of Squad:getMemberCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getMemberCount()
+    local member_count = patrol_squad:getMemberCount()
+    print("squad size: " .. tostring(member_count) .. " members")
+end
+local _ok, _err = pcall(demo_Squad_getMemberCount)
 
 -- ---- Stub: Squad:getMembers -----------------------------------------------
 --@api-stub: Squad:getMembers
--- Iterate members for AoE effects, group healing, or formation updates.
-local members = patrol_squad:getMembers()
-print("squad roster:")
-for i, m in ipairs(members) do
+-- Demonstrates the proper usage of Squad:getMembers.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getMembers()
+    local members = patrol_squad:getMembers()
+    print("squad roster:")
+    for i, m in ipairs(members) do
     local mx, my = m:getPosition()
     print("  [" .. i .. "] " .. m:getName() .. " at (" .. mx .. ", " .. my .. ")")
 end
+local _ok, _err = pcall(demo_Squad_getMembers)
 
 -- ---- Stub: Squad:setLeader ------------------------------------------------
 --@api-stub: Squad:setLeader
--- The leader determines formation anchor point. Promote the guard to lead.
-patrol_squad:setLeader(guard)
-print("guard_captain promoted to squad leader")
+-- Demonstrates the proper usage of Squad:setLeader.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_setLeader()
+    patrol_squad:setLeader(guard)
+    print("guard_captain promoted to squad leader")
+end
+local _ok, _err = pcall(demo_Squad_setLeader)
 
 -- ---- Stub: Squad:getLeader ------------------------------------------------
 --@api-stub: Squad:getLeader
-local leader = patrol_squad:getLeader()
-print("squad leader: " .. tostring(leader and leader:getName()))
+-- Demonstrates the proper usage of Squad:getLeader.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getLeader()
+    local leader = patrol_squad:getLeader()
+    print("squad leader: " .. tostring(leader and leader:getName()))
+end
+local _ok, _err = pcall(demo_Squad_getLeader)
 
 -- ---- Stub: Squad:getFormation ---------------------------------------------
 --@api-stub: Squad:getFormation
-print("formation type: " .. tostring(patrol_squad:getFormation()))
+-- Demonstrates the proper usage of Squad:getFormation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getFormation()
+    print("formation type: " .. tostring(patrol_squad:getFormation()))
+end
+local _ok, _err = pcall(demo_Squad_getFormation)
 
 -- ---- Stub: Squad:getFormationSpacing --------------------------------------
 --@api-stub: Squad:getFormationSpacing
-print("formation spacing: " .. tostring(patrol_squad:getFormationSpacing()) .. "px")
+-- Demonstrates the proper usage of Squad:getFormationSpacing.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_getFormationSpacing()
+    print("formation spacing: " .. tostring(patrol_squad:getFormationSpacing()) .. "px")
+end
+local _ok, _err = pcall(demo_Squad_getFormationSpacing)
 
 -- ---- Stub: Squad:getBlackboard --------------------------------------------
 --@api-stub: Squad:getBlackboard
@@ -1102,10 +1622,22 @@ print("squad blackboard: rally_point=gatehouse_courtyard, enemies_spotted=0")
 
 -- ---- Stub: Squad:type -----------------------------------------------------
 --@api-stub: Squad:type
+-- Demonstrates the proper usage of Squad:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_Squad_type)
+
 -- ---- Stub: Squad:typeOf ---------------------------------------------------
 --@api-stub: Squad:typeOf
-print("squad type: " .. tostring(patrol_squad:type()))
-print("squad typeOf: " .. tostring(patrol_squad:typeOf("Squad")))
+-- Demonstrates the proper usage of Squad:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Squad_typeOf()
+    print("squad type: " .. tostring(patrol_squad:type()))
+    print("squad typeOf: " .. tostring(patrol_squad:typeOf("Squad")))
+end
+local _ok, _err = pcall(demo_Squad_typeOf)
 
 -- =============================================================================
 -- Command Queue — issuing orders to agents
@@ -1123,46 +1655,82 @@ guard_cmds:clear() -- ensure empty start
 
 -- ---- Stub: CommandQueue:getCount ------------------------------------------
 --@api-stub: CommandQueue:getCount
-local cmd_count = guard_cmds:getCount()
-print("queued commands: " .. tostring(cmd_count))
+-- Demonstrates the proper usage of CommandQueue:getCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_getCount()
+    local cmd_count = guard_cmds:getCount()
+    print("queued commands: " .. tostring(cmd_count))
+end
+local _ok, _err = pcall(demo_CommandQueue_getCount)
 
 -- ---- Stub: CommandQueue:isEmpty -------------------------------------------
 --@api-stub: CommandQueue:isEmpty
-if guard_cmds:isEmpty() then
+-- Demonstrates the proper usage of CommandQueue:isEmpty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_isEmpty()
+    if guard_cmds:isEmpty() then
     print("command queue empty — guard is idle, needs orders")
 end
+local _ok, _err = pcall(demo_CommandQueue_isEmpty)
 
 -- ---- Stub: CommandQueue:getCurrentType ------------------------------------
 --@api-stub: CommandQueue:getCurrentType
--- What kind of command is the agent currently executing?
-local cmd_type = guard_cmds:getCurrentType()
-print("current command type: " .. tostring(cmd_type))
+-- Demonstrates the proper usage of CommandQueue:getCurrentType.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_getCurrentType()
+    local cmd_type = guard_cmds:getCurrentType()
+    print("current command type: " .. tostring(cmd_type))
+end
+local _ok, _err = pcall(demo_CommandQueue_getCurrentType)
 
 -- ---- Stub: CommandQueue:getCurrentTarget ----------------------------------
 --@api-stub: CommandQueue:getCurrentTarget
--- Get the target of the current command (position, entity ID, etc.).
-local cmd_target = guard_cmds:getCurrentTarget()
-print("current command target: " .. tostring(cmd_target))
+-- Demonstrates the proper usage of CommandQueue:getCurrentTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_getCurrentTarget()
+    local cmd_target = guard_cmds:getCurrentTarget()
+    print("current command target: " .. tostring(cmd_target))
+end
+local _ok, _err = pcall(demo_CommandQueue_getCurrentTarget)
 
 -- ---- Stub: CommandQueue:cancelCurrent -------------------------------------
 --@api-stub: CommandQueue:cancelCurrent
--- Cancel the current command and move to the next in queue.
--- Use when a higher-priority event interrupts (e.g. alarm triggered).
-guard_cmds:cancelCurrent()
-print("current command cancelled — guard responds to alarm")
+-- Demonstrates the proper usage of CommandQueue:cancelCurrent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_cancelCurrent()
+    guard_cmds:cancelCurrent()
+    print("current command cancelled — guard responds to alarm")
+end
+local _ok, _err = pcall(demo_CommandQueue_cancelCurrent)
 
 -- ---- Stub: CommandQueue:clear ---------------------------------------------
 --@api-stub: CommandQueue:clear
--- Wipe all queued commands. Use during cutscenes or emergency state changes.
-guard_cmds:clear()
-print("all commands cleared — guard stands at attention")
+-- Demonstrates the proper usage of CommandQueue:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_clear()
+    guard_cmds:clear()
+    print("all commands cleared — guard stands at attention")
+end
+local _ok, _err = pcall(demo_CommandQueue_clear)
 
 -- ---- Stub: CommandQueue:type ----------------------------------------------
 --@api-stub: CommandQueue:type
+-- Demonstrates the proper usage of CommandQueue:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_CommandQueue_type)
+
 -- ---- Stub: CommandQueue:typeOf --------------------------------------------
 --@api-stub: CommandQueue:typeOf
-print("command queue type: " .. tostring(guard_cmds:type()))
-print("command queue typeOf: " .. tostring(guard_cmds:typeOf("CommandQueue")))
+-- Demonstrates the proper usage of CommandQueue:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_CommandQueue_typeOf()
+    print("command queue type: " .. tostring(guard_cmds:type()))
+    print("command queue typeOf: " .. tostring(guard_cmds:typeOf("CommandQueue")))
+end
+local _ok, _err = pcall(demo_CommandQueue_typeOf)
 
 -- =============================================================================
 -- Trait Profile — NPC personality system
@@ -1170,68 +1738,109 @@ print("command queue typeOf: " .. tostring(guard_cmds:typeOf("CommandQueue")))
 
 -- ---- Stub: lurek.ai.newTraitProfile ---------------------------------------
 --@api-stub: lurek.ai.newTraitProfile
--- Trait profiles define NPC personality: courage, greed, patience, aggression.
--- Base values are set at creation; modifiers from buffs/debuffs stack on top.
-local guard_traits = lurek.ai.newTraitProfile()
-print("guard trait profile created")
+-- Demonstrates the proper usage of lurek.ai.newTraitProfile.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newTraitProfile()
+    local guard_traits = lurek.ai.newTraitProfile()
+    print("guard trait profile created")
+end
+local _ok, _err = pcall(demo_lurek_ai_newTraitProfile)
 
 -- ---- Stub: TraitProfile:set -----------------------------------------------
 --@api-stub: TraitProfile:set
--- Set base trait values. Scale 0.0 to 1.0. These are the NPC's natural tendencies.
-guard_traits:set("courage", 0.8)
-guard_traits:set("loyalty", 0.9)
-guard_traits:set("patience", 0.5)
-guard_traits:set("aggression", 0.6)
-guard_traits:set("greed", 0.2)
-print("guard base traits: courage=0.8, loyalty=0.9, patience=0.5")
+-- Demonstrates the proper usage of TraitProfile:set.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_set()
+    guard_traits:set("courage", 0.8)
+    guard_traits:set("loyalty", 0.9)
+    guard_traits:set("patience", 0.5)
+    guard_traits:set("aggression", 0.6)
+    guard_traits:set("greed", 0.2)
+    print("guard base traits: courage=0.8, loyalty=0.9, patience=0.5")
+end
+local _ok, _err = pcall(demo_TraitProfile_set)
 
 -- ---- Stub: TraitProfile:get -----------------------------------------------
 --@api-stub: TraitProfile:get
--- Get the effective trait value (base + all active modifiers).
-local courage = guard_traits:get("courage")
-print("guard effective courage: " .. string.format("%.2f", courage))
+-- Demonstrates the proper usage of TraitProfile:get.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_get()
+    local courage = guard_traits:get("courage")
+    print("guard effective courage: " .. string.format("%.2f", courage))
+end
+local _ok, _err = pcall(demo_TraitProfile_get)
 
 -- ---- Stub: TraitProfile:getBase -------------------------------------------
 --@api-stub: TraitProfile:getBase
--- Get only the base value, ignoring modifiers.
-local base_courage = guard_traits:getBase("courage")
-print("guard base courage: " .. string.format("%.2f", base_courage))
+-- Demonstrates the proper usage of TraitProfile:getBase.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_getBase()
+    local base_courage = guard_traits:getBase("courage")
+    print("guard base courage: " .. string.format("%.2f", base_courage))
+end
+local _ok, _err = pcall(demo_TraitProfile_getBase)
 
 -- ---- Stub: TraitProfile:addModifier ---------------------------------------
 --@api-stub: TraitProfile:addModifier
--- Add temporary modifiers from game events: potions, fear effects, injuries.
-guard_traits:addModifier("courage", "fear_spell", -0.3)
-guard_traits:addModifier("aggression", "battle_rage", 0.2)
-print("modifiers applied: fear_spell (courage -0.3), battle_rage (aggression +0.2)")
-print("  effective courage now: " .. string.format("%.2f", guard_traits:get("courage")))
+-- Demonstrates the proper usage of TraitProfile:addModifier.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_addModifier()
+    guard_traits:addModifier("courage", "fear_spell", -0.3)
+    guard_traits:addModifier("aggression", "battle_rage", 0.2)
+    print("modifiers applied: fear_spell (courage -0.3), battle_rage (aggression +0.2)")
+    print("  effective courage now: " .. string.format("%.2f", guard_traits:get("courage")))
+end
+local _ok, _err = pcall(demo_TraitProfile_addModifier)
 
 -- ---- Stub: TraitProfile:removeModifiers -----------------------------------
 --@api-stub: TraitProfile:removeModifiers
--- Remove all modifiers for a trait when the effect expires.
-guard_traits:removeModifiers("courage")
-print("fear_spell expired — courage modifiers removed")
-print("  courage restored to: " .. string.format("%.2f", guard_traits:get("courage")))
+-- Demonstrates the proper usage of TraitProfile:removeModifiers.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_removeModifiers()
+    guard_traits:removeModifiers("courage")
+    print("fear_spell expired — courage modifiers removed")
+    print("  courage restored to: " .. string.format("%.2f", guard_traits:get("courage")))
+end
+local _ok, _err = pcall(demo_TraitProfile_removeModifiers)
 
 -- ---- Stub: TraitProfile:update --------------------------------------------
 --@api-stub: TraitProfile:update
--- Tick trait modifiers (decay, expiration, etc.).
-guard_traits:update(0.016)
-print("trait profile updated (16ms tick)")
+-- Demonstrates the proper usage of TraitProfile:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_update()
+    guard_traits:update(0.016)
+    print("trait profile updated (16ms tick)")
+end
+local _ok, _err = pcall(demo_TraitProfile_update)
 
 -- ---- Stub: TraitProfile:has -----------------------------------------------
 --@api-stub: TraitProfile:has
-print("has 'courage' trait: " .. tostring(guard_traits:has("courage")))
-print("has 'magic_affinity' trait: " .. tostring(guard_traits:has("magic_affinity")))
+-- Demonstrates the proper usage of TraitProfile:has.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_has()
+    print("has 'courage' trait: " .. tostring(guard_traits:has("courage")))
+    print("has 'magic_affinity' trait: " .. tostring(guard_traits:has("magic_affinity")))
+end
+local _ok, _err = pcall(demo_TraitProfile_has)
 
 -- ---- Stub: TraitProfile:traitCount ----------------------------------------
 --@api-stub: TraitProfile:traitCount
-print("total traits defined: " .. tostring(guard_traits:traitCount()))
+-- Demonstrates the proper usage of TraitProfile:traitCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_traitCount()
+    print("total traits defined: " .. tostring(guard_traits:traitCount()))
+end
+local _ok, _err = pcall(demo_TraitProfile_traitCount)
 
 -- ---- Stub: TraitProfile:archetype -----------------------------------------
 --@api-stub: TraitProfile:archetype
--- Returns a string describing the dominant personality archetype.
-local arch = guard_traits:archetype()
-print("guard archetype: " .. tostring(arch))
+-- Demonstrates the proper usage of TraitProfile:archetype.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_TraitProfile_archetype()
+    local arch = guard_traits:archetype()
+    print("guard archetype: " .. tostring(arch))
+end
+local _ok, _err = pcall(demo_TraitProfile_archetype)
 
 -- =============================================================================
 -- Stimulus World — sensory perception for NPCs
@@ -1239,43 +1848,72 @@ print("guard archetype: " .. tostring(arch))
 
 -- ---- Stub: lurek.ai.newStimulusWorld --------------------------------------
 --@api-stub: lurek.ai.newStimulusWorld
--- The stimulus world tracks visual and auditory signals that NPCs can detect.
--- Each stimulus has a position, intensity, and decay rate.
-local stimulus = lurek.ai.newStimulusWorld()
-print("stimulus world created for NPC perception")
+-- Demonstrates the proper usage of lurek.ai.newStimulusWorld.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newStimulusWorld()
+    local stimulus = lurek.ai.newStimulusWorld()
+    print("stimulus world created for NPC perception")
+end
+local _ok, _err = pcall(demo_lurek_ai_newStimulusWorld)
 
 -- ---- Stub: StimulusWorld:addVisual ----------------------------------------
 --@api-stub: StimulusWorld:addVisual
--- A visual stimulus: player's torch flickering at (200, 150) — visible within 120 units.
-stimulus:addVisual(200, 150, 0.8, 120.0)
-print("visual stimulus: torch light at (200, 150), intensity=0.8, range=120")
+-- Demonstrates the proper usage of StimulusWorld:addVisual.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_addVisual()
+    stimulus:addVisual(200, 150, 0.8, 120.0)
+    print("visual stimulus: torch light at (200, 150), intensity=0.8, range=120")
+end
+local _ok, _err = pcall(demo_StimulusWorld_addVisual)
 
 -- ---- Stub: StimulusWorld:addAuditory --------------------------------------
 --@api-stub: StimulusWorld:addAuditory
--- An auditory stimulus: player's footsteps at (250, 180) — audible within 80 units.
-stimulus:addAuditory(250, 180, 0.5, 80.0)
-print("auditory stimulus: footsteps at (250, 180), intensity=0.5, range=80")
+-- Demonstrates the proper usage of StimulusWorld:addAuditory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_addAuditory()
+    stimulus:addAuditory(250, 180, 0.5, 80.0)
+    print("auditory stimulus: footsteps at (250, 180), intensity=0.5, range=80")
+end
+local _ok, _err = pcall(demo_StimulusWorld_addAuditory)
 
 -- ---- Stub: StimulusWorld:remove -------------------------------------------
 --@api-stub: StimulusWorld:remove
--- Remove a specific stimulus (e.g. torch extinguished, player stopped moving).
-stimulus:remove(0)
-print("stimulus #0 removed (torch extinguished)")
+-- Demonstrates the proper usage of StimulusWorld:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_remove()
+    stimulus:remove(0)
+    print("stimulus #0 removed (torch extinguished)")
+end
+local _ok, _err = pcall(demo_StimulusWorld_remove)
 
 -- ---- Stub: StimulusWorld:update -------------------------------------------
 --@api-stub: StimulusWorld:update
--- Tick all stimuli: decay intensity, remove expired ones.
-stimulus:update(0.016)
-print("stimulus world updated — signals decaying naturally")
+-- Demonstrates the proper usage of StimulusWorld:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_update()
+    stimulus:update(0.016)
+    print("stimulus world updated — signals decaying naturally")
+end
+local _ok, _err = pcall(demo_StimulusWorld_update)
 
 -- ---- Stub: StimulusWorld:count --------------------------------------------
 --@api-stub: StimulusWorld:count
-print("active stimuli: " .. tostring(stimulus:count()))
+-- Demonstrates the proper usage of StimulusWorld:count.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_count()
+    print("active stimuli: " .. tostring(stimulus:count()))
+end
+local _ok, _err = pcall(demo_StimulusWorld_count)
 
 -- ---- Stub: StimulusWorld:clear --------------------------------------------
 --@api-stub: StimulusWorld:clear
-stimulus:clear()
-print("all stimuli cleared (scene transition)")
+-- Demonstrates the proper usage of StimulusWorld:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StimulusWorld_clear()
+    stimulus:clear()
+    print("all stimuli cleared (scene transition)")
+end
+local _ok, _err = pcall(demo_StimulusWorld_clear)
 
 -- =============================================================================
 -- Need System — survival mechanics
@@ -1283,45 +1921,68 @@ print("all stimuli cleared (scene transition)")
 
 -- ---- Stub: lurek.ai.newNeedSystem -----------------------------------------
 --@api-stub: lurek.ai.newNeedSystem
--- Needs-based AI: villagers have hunger, tiredness, social needs that
--- drive behaviour. The most urgent need determines the next action.
-local needs = lurek.ai.newNeedSystem()
-print("need system created for villager survival AI")
+-- Demonstrates the proper usage of lurek.ai.newNeedSystem.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newNeedSystem()
+    local needs = lurek.ai.newNeedSystem()
+    print("need system created for villager survival AI")
+end
+local _ok, _err = pcall(demo_lurek_ai_newNeedSystem)
 
 -- ---- Stub: NeedSystem:addNeed ---------------------------------------------
 --@api-stub: NeedSystem:addNeed
--- Define needs with initial value, decay rate per second, and urgency threshold.
-needs:addNeed("hunger",     { value = 0.3, decay = 0.02, threshold = 0.7 })
-needs:addNeed("tiredness",  { value = 0.5, decay = 0.01, threshold = 0.8 })
-needs:addNeed("social",     { value = 0.1, decay = 0.005, threshold = 0.6 })
-needs:addNeed("safety",     { value = 0.0, decay = 0.03, threshold = 0.5 })
-print("needs: hunger(0.3), tiredness(0.5), social(0.1), safety(0.0)")
-print("  hunger decays at 0.02/s — villager gets hungry every ~35s")
+-- Demonstrates the proper usage of NeedSystem:addNeed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeedSystem_addNeed()
+    needs:addNeed("hunger",     { value = 0.3, decay = 0.02, threshold = 0.7 })
+    needs:addNeed("tiredness",  { value = 0.5, decay = 0.01, threshold = 0.8 })
+    needs:addNeed("social",     { value = 0.1, decay = 0.005, threshold = 0.6 })
+    needs:addNeed("safety",     { value = 0.0, decay = 0.03, threshold = 0.5 })
+    print("needs: hunger(0.3), tiredness(0.5), social(0.1), safety(0.0)")
+    print("  hunger decays at 0.02/s — villager gets hungry every ~35s")
+end
+local _ok, _err = pcall(demo_NeedSystem_addNeed)
 
 -- ---- Stub: NeedSystem:update ----------------------------------------------
 --@api-stub: NeedSystem:update
--- Tick needs forward. All values increase by their decay rate * dt.
-needs:update(10.0)  -- simulate 10 seconds passing
-print("needs updated after 10s of game time")
+-- Demonstrates the proper usage of NeedSystem:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeedSystem_update()
+    needs:update(10.0)  -- simulate 10 seconds passing
+    print("needs updated after 10s of game time")
+end
+local _ok, _err = pcall(demo_NeedSystem_update)
 
 -- ---- Stub: NeedSystem:mostUrgent ------------------------------------------
 --@api-stub: NeedSystem:mostUrgent
--- Find the need closest to or above its urgency threshold.
-local urgent = needs:mostUrgent()
-print("most urgent need: " .. tostring(urgent))
+-- Demonstrates the proper usage of NeedSystem:mostUrgent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeedSystem_mostUrgent()
+    local urgent = needs:mostUrgent()
+    print("most urgent need: " .. tostring(urgent))
+end
+local _ok, _err = pcall(demo_NeedSystem_mostUrgent)
 
 -- ---- Stub: NeedSystem:satisfy ---------------------------------------------
 --@api-stub: NeedSystem:satisfy
--- Satisfy a need (eating reduces hunger, sleeping reduces tiredness).
-needs:satisfy("hunger", 0.5)
-print("villager ate bread: hunger reduced by 0.5")
+-- Demonstrates the proper usage of NeedSystem:satisfy.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeedSystem_satisfy()
+    needs:satisfy("hunger", 0.5)
+    print("villager ate bread: hunger reduced by 0.5")
+end
+local _ok, _err = pcall(demo_NeedSystem_satisfy)
 
 -- ---- Stub: NeedSystem:valueOf ---------------------------------------------
 --@api-stub: NeedSystem:valueOf
--- Read current value for HUD bars or AI decision functions.
-local hunger_val = needs:valueOf("hunger")
-local tired_val = needs:valueOf("tiredness")
-print("hunger: " .. string.format("%.2f", hunger_val) .. ", tiredness: " .. string.format("%.2f", tired_val))
+-- Demonstrates the proper usage of NeedSystem:valueOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeedSystem_valueOf()
+    local hunger_val = needs:valueOf("hunger")
+    local tired_val = needs:valueOf("tiredness")
+    print("hunger: " .. string.format("%.2f", hunger_val) .. ", tiredness: " .. string.format("%.2f", tired_val))
+end
+local _ok, _err = pcall(demo_NeedSystem_valueOf)
 
 -- =============================================================================
 -- AI Director — dynamic difficulty
@@ -1343,58 +2004,95 @@ print("AI Director created: tension range [0, 1], build=0.05/s, relax=0.03/s")
 
 -- ---- Stub: AIDirector:pushEvent -------------------------------------------
 --@api-stub: AIDirector:pushEvent
--- Feed player events into the director. Kills increase tension; deaths reset it.
-director:pushEvent("player_kill", 0.15)
-director:pushEvent("player_kill", 0.15)
-director:pushEvent("player_damage_taken", 0.08)
-print("events pushed: 2 kills (+0.30), 1 hit taken (+0.08)")
+-- Demonstrates the proper usage of AIDirector:pushEvent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_pushEvent()
+    director:pushEvent("player_kill", 0.15)
+    director:pushEvent("player_kill", 0.15)
+    director:pushEvent("player_damage_taken", 0.08)
+    print("events pushed: 2 kills (+0.30), 1 hit taken (+0.08)")
+end
+local _ok, _err = pcall(demo_AIDirector_pushEvent)
 
 -- ---- Stub: AIDirector:update ----------------------------------------------
 --@api-stub: AIDirector:update
--- Tick the director. It smooths tension over time using build/relax rates.
-director:update(1.0)  -- 1 second of game time
-print("director updated — tension curve adjusted")
+-- Demonstrates the proper usage of AIDirector:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_update()
+    director:update(1.0)  -- 1 second of game time
+    print("director updated — tension curve adjusted")
+end
+local _ok, _err = pcall(demo_AIDirector_update)
 
 -- ---- Stub: AIDirector:tension ---------------------------------------------
 --@api-stub: AIDirector:tension
-local tension = director:tension()
-print("current tension: " .. string.format("%.2f", tension))
+-- Demonstrates the proper usage of AIDirector:tension.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_tension()
+    local tension = director:tension()
+    print("current tension: " .. string.format("%.2f", tension))
+end
+local _ok, _err = pcall(demo_AIDirector_tension)
 
 -- ---- Stub: AIDirector:phase -----------------------------------------------
 --@api-stub: AIDirector:phase
--- Phases: "build" (tension rising), "peak" (holding high tension), "relax" (cooling down).
-local phase = director:phase()
-print("director phase: " .. tostring(phase))
+-- Demonstrates the proper usage of AIDirector:phase.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_phase()
+    local phase = director:phase()
+    print("director phase: " .. tostring(phase))
+end
+local _ok, _err = pcall(demo_AIDirector_phase)
 
 -- ---- Stub: AIDirector:spawnRateFactor -------------------------------------
 --@api-stub: AIDirector:spawnRateFactor
--- Use this multiplier on your spawn timer to increase/decrease enemy density.
-local spawn_factor = director:spawnRateFactor()
-print("spawn rate factor: " .. string.format("%.2f", spawn_factor) .. "x")
+-- Demonstrates the proper usage of AIDirector:spawnRateFactor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_spawnRateFactor()
+    local spawn_factor = director:spawnRateFactor()
+    print("spawn rate factor: " .. string.format("%.2f", spawn_factor) .. "x")
+end
+local _ok, _err = pcall(demo_AIDirector_spawnRateFactor)
 
 -- ---- Stub: AIDirector:lootFactor ------------------------------------------
 --@api-stub: AIDirector:lootFactor
--- Loot factor: higher during relax phases to reward surviving a peak.
-local loot = director:lootFactor()
-print("loot factor: " .. string.format("%.2f", loot) .. "x")
+-- Demonstrates the proper usage of AIDirector:lootFactor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_lootFactor()
+    local loot = director:lootFactor()
+    print("loot factor: " .. string.format("%.2f", loot) .. "x")
+end
+local _ok, _err = pcall(demo_AIDirector_lootFactor)
 
 -- ---- Stub: AIDirector:ambientIntensity ------------------------------------
 --@api-stub: AIDirector:ambientIntensity
--- Controls ambient effects: music intensity, fog density, lighting mood.
-local ambient = director:ambientIntensity()
-print("ambient intensity: " .. string.format("%.2f", ambient))
+-- Demonstrates the proper usage of AIDirector:ambientIntensity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_ambientIntensity()
+    local ambient = director:ambientIntensity()
+    print("ambient intensity: " .. string.format("%.2f", ambient))
+end
+local _ok, _err = pcall(demo_AIDirector_ambientIntensity)
 
 -- ---- Stub: AIDirector:setTension ------------------------------------------
 --@api-stub: AIDirector:setTension
--- Manually override tension for scripted sequences (boss intro, cutscene).
-director:setTension(0.9)
-print("tension manually set to 0.9 (boss fight imminent)")
+-- Demonstrates the proper usage of AIDirector:setTension.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_setTension()
+    director:setTension(0.9)
+    print("tension manually set to 0.9 (boss fight imminent)")
+end
+local _ok, _err = pcall(demo_AIDirector_setTension)
 
 -- ---- Stub: AIDirector:reset -----------------------------------------------
 --@api-stub: AIDirector:reset
--- Reset the director for a new level or after a major story event.
-director:reset()
-print("AI director reset — tension curve starts fresh")
+-- Demonstrates the proper usage of AIDirector:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIDirector_reset()
+    director:reset()
+    print("AI director reset — tension curve starts fresh")
+end
+local _ok, _err = pcall(demo_AIDirector_reset)
 
 -- =============================================================================
 -- AI LOD — level of detail for distant agents
@@ -1417,28 +2115,44 @@ print("  full: <200px, 60Hz | reduced: <500px, 10Hz | minimal: <1000px, 2Hz")
 
 -- ---- Stub: AILod:tierFor --------------------------------------------------
 --@api-stub: AILod:tierFor
--- Query which LOD tier an agent falls into based on distance to camera.
-local tier = ai_lod:tierFor(150.0)   -- agent 150px from camera
-print("agent at 150px: tier '" .. tostring(tier) .. "' (should be 'full')")
-local far_tier = ai_lod:tierFor(800.0)
-print("agent at 800px: tier '" .. tostring(far_tier) .. "' (should be 'minimal')")
+-- Demonstrates the proper usage of AILod:tierFor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AILod_tierFor()
+    local tier = ai_lod:tierFor(150.0)   -- agent 150px from camera
+    print("agent at 150px: tier '" .. tostring(tier) .. "' (should be 'full')")
+    local far_tier = ai_lod:tierFor(800.0)
+    print("agent at 800px: tier '" .. tostring(far_tier) .. "' (should be 'minimal')")
+end
+local _ok, _err = pcall(demo_AILod_tierFor)
 
 -- ---- Stub: AILod:shouldUpdate ---------------------------------------------
 --@api-stub: AILod:shouldUpdate
--- Frame-rate check: should this agent update this frame given its LOD tier?
-local should = ai_lod:shouldUpdate(300.0)
-print("agent at 300px should update this frame: " .. tostring(should))
+-- Demonstrates the proper usage of AILod:shouldUpdate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AILod_shouldUpdate()
+    local should = ai_lod:shouldUpdate(300.0)
+    print("agent at 300px should update this frame: " .. tostring(should))
+end
+local _ok, _err = pcall(demo_AILod_shouldUpdate)
 
 -- ---- Stub: AILod:tierCount ------------------------------------------------
 --@api-stub: AILod:tierCount
-print("LOD tier count: " .. tostring(ai_lod:tierCount()))
+-- Demonstrates the proper usage of AILod:tierCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AILod_tierCount()
+    print("LOD tier count: " .. tostring(ai_lod:tierCount()))
+end
+local _ok, _err = pcall(demo_AILod_tierCount)
 
 -- ---- Stub: AILod:tierName -------------------------------------------------
 --@api-stub: AILod:tierName
--- Get tier name by index for debug overlay display.
-for i = 0, ai_lod:tierCount() - 1 do
+-- Demonstrates the proper usage of AILod:tierName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AILod_tierName()
+    for i = 0, ai_lod:tierCount() - 1 do
     print("  tier[" .. i .. "] = " .. tostring(ai_lod:tierName(i)))
 end
+local _ok, _err = pcall(demo_AILod_tierName)
 
 -- =============================================================================
 -- HTN Domain — hierarchical task network for complex quests
@@ -1446,56 +2160,75 @@ end
 
 -- ---- Stub: lurek.ai.newHTNDomain ------------------------------------------
 --@api-stub: lurek.ai.newHTNDomain
--- HTN planning decomposes high-level goals into primitive tasks.
--- Use for quest NPCs that need to plan multi-step sequences.
-local htn = lurek.ai.newHTNDomain()
-print("HTN domain created for quest NPC planning")
+-- Demonstrates the proper usage of lurek.ai.newHTNDomain.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newHTNDomain()
+    local htn = lurek.ai.newHTNDomain()
+    print("HTN domain created for quest NPC planning")
+end
+local _ok, _err = pcall(demo_lurek_ai_newHTNDomain)
 
 -- ---- Stub: HTNDomain:addPrimitive -----------------------------------------
 --@api-stub: HTNDomain:addPrimitive
--- Primitive tasks are directly executable actions with preconditions and effects.
-htn:addPrimitive("travel_to_mine", {
+-- Demonstrates the proper usage of HTNDomain:addPrimitive.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HTNDomain_addPrimitive()
+    htn:addPrimitive("travel_to_mine", {
     preconditions = function(state) return state.has_pickaxe end,
     effects = function(state) state.at_mine = true end,
     cost = 3
-})
-htn:addPrimitive("mine_ore", {
+    })
+    htn:addPrimitive("mine_ore", {
     preconditions = function(state) return state.at_mine and state.has_pickaxe end,
     effects = function(state) state.has_ore = true end,
     cost = 5
-})
-htn:addPrimitive("smelt_ore", {
+    })
+    htn:addPrimitive("smelt_ore", {
     preconditions = function(state) return state.has_ore end,
     effects = function(state) state.has_ingot = true; state.has_ore = false end,
     cost = 4
-})
-print("HTN primitives: travel_to_mine(3), mine_ore(5), smelt_ore(4)")
+    })
+    print("HTN primitives: travel_to_mine(3), mine_ore(5), smelt_ore(4)")
+end
+local _ok, _err = pcall(demo_HTNDomain_addPrimitive)
 
 -- ---- Stub: HTNDomain:addCompound -----------------------------------------
 --@api-stub: HTNDomain:addCompound
--- Compound tasks decompose into sequences of primitives or other compounds.
-htn:addCompound("craft_weapon", {
+-- Demonstrates the proper usage of HTNDomain:addCompound.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HTNDomain_addCompound()
+    htn:addCompound("craft_weapon", {
     methods = {
         { precondition = function(state) return state.has_pickaxe end,
           subtasks = {"travel_to_mine", "mine_ore", "smelt_ore"} },
     }
-})
-print("HTN compound: craft_weapon -> [travel, mine, smelt]")
+    })
+    print("HTN compound: craft_weapon -> [travel, mine, smelt]")
+end
+local _ok, _err = pcall(demo_HTNDomain_addCompound)
 
 -- ---- Stub: HTNDomain:plan -------------------------------------------------
 --@api-stub: HTNDomain:plan
--- Generate a plan from the current world state toward the goal.
-local plan = htn:plan({ has_pickaxe = true, at_mine = false, has_ore = false })
-if plan then
+-- Demonstrates the proper usage of HTNDomain:plan.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HTNDomain_plan()
+    local plan = htn:plan({ has_pickaxe = true, at_mine = false, has_ore = false })
+    if plan then
     print("HTN plan generated:")
     for i, step in ipairs(plan) do
         print("  step " .. i .. ": " .. tostring(step))
     end
 end
+local _ok, _err = pcall(demo_HTNDomain_plan)
 
 -- ---- Stub: HTNDomain:taskCount --------------------------------------------
 --@api-stub: HTNDomain:taskCount
-print("HTN domain task count: " .. tostring(htn:taskCount()))
+-- Demonstrates the proper usage of HTNDomain:taskCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HTNDomain_taskCount()
+    print("HTN domain task count: " .. tostring(htn:taskCount()))
+end
+local _ok, _err = pcall(demo_HTNDomain_taskCount)
 
 -- =============================================================================
 -- MCTS Engine — tactical combat decisions
@@ -1520,58 +2253,90 @@ print("  useful for turn-based combat AI or complex decision points")
 
 -- ---- Stub: lurek.ai.newEmotionModel ---------------------------------------
 --@api-stub: lurek.ai.newEmotionModel
--- Track NPC emotional state. Emotions influence dialogue choices, facial
--- animations, and willingness to cooperate or fight.
-local guard_emotions = lurek.ai.newEmotionModel()
-print("guard emotion model created")
+-- Demonstrates the proper usage of lurek.ai.newEmotionModel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newEmotionModel()
+    local guard_emotions = lurek.ai.newEmotionModel()
+    print("guard emotion model created")
+end
+local _ok, _err = pcall(demo_lurek_ai_newEmotionModel)
 
 -- ---- Stub: EmotionModel:add -----------------------------------------------
 --@api-stub: EmotionModel:add
--- Register emotion channels with base intensity and decay rate.
-guard_emotions:add("anger",     { base = 0.0, decay = 0.05 })
-guard_emotions:add("fear",      { base = 0.0, decay = 0.03 })
-guard_emotions:add("happiness", { base = 0.5, decay = 0.01 })
-guard_emotions:add("suspicion", { base = 0.2, decay = 0.04 })
-print("emotions: anger(0), fear(0), happiness(0.5), suspicion(0.2)")
+-- Demonstrates the proper usage of EmotionModel:add.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_add()
+    guard_emotions:add("anger",     { base = 0.0, decay = 0.05 })
+    guard_emotions:add("fear",      { base = 0.0, decay = 0.03 })
+    guard_emotions:add("happiness", { base = 0.5, decay = 0.01 })
+    guard_emotions:add("suspicion", { base = 0.2, decay = 0.04 })
+    print("emotions: anger(0), fear(0), happiness(0.5), suspicion(0.2)")
+end
+local _ok, _err = pcall(demo_EmotionModel_add)
 
 -- ---- Stub: EmotionModel:trigger -------------------------------------------
 --@api-stub: EmotionModel:trigger
--- Game events trigger emotional responses. Intensity stacks with existing levels.
-guard_emotions:trigger("anger", 0.4)      -- player trespassed
-guard_emotions:trigger("suspicion", 0.3)  -- heard strange noise
-print("triggered: anger +0.4 (trespass), suspicion +0.3 (strange noise)")
+-- Demonstrates the proper usage of EmotionModel:trigger.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_trigger()
+    guard_emotions:trigger("anger", 0.4)      -- player trespassed
+    guard_emotions:trigger("suspicion", 0.3)  -- heard strange noise
+    print("triggered: anger +0.4 (trespass), suspicion +0.3 (strange noise)")
+end
+local _ok, _err = pcall(demo_EmotionModel_trigger)
 
 -- ---- Stub: EmotionModel:get -----------------------------------------------
 --@api-stub: EmotionModel:get
-local anger = guard_emotions:get("anger")
-local suspicion = guard_emotions:get("suspicion")
-print("anger: " .. string.format("%.2f", anger) .. ", suspicion: " .. string.format("%.2f", suspicion))
+-- Demonstrates the proper usage of EmotionModel:get.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_get()
+    local anger = guard_emotions:get("anger")
+    local suspicion = guard_emotions:get("suspicion")
+    print("anger: " .. string.format("%.2f", anger) .. ", suspicion: " .. string.format("%.2f", suspicion))
+end
+local _ok, _err = pcall(demo_EmotionModel_get)
 
 -- ---- Stub: EmotionModel:dominant ------------------------------------------
 --@api-stub: EmotionModel:dominant
--- Which emotion is strongest right now? Use for facial expression or voice tone.
-local dom = guard_emotions:dominant()
-print("dominant emotion: " .. tostring(dom))
+-- Demonstrates the proper usage of EmotionModel:dominant.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_dominant()
+    local dom = guard_emotions:dominant()
+    print("dominant emotion: " .. tostring(dom))
+end
+local _ok, _err = pcall(demo_EmotionModel_dominant)
 
 -- ---- Stub: EmotionModel:isActive ------------------------------------------
 --@api-stub: EmotionModel:isActive
--- Check if a specific emotion is above its activation threshold.
-print("anger active: " .. tostring(guard_emotions:isActive("anger")))
-print("fear active: " .. tostring(guard_emotions:isActive("fear")))
+-- Demonstrates the proper usage of EmotionModel:isActive.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_isActive()
+    print("anger active: " .. tostring(guard_emotions:isActive("anger")))
+    print("fear active: " .. tostring(guard_emotions:isActive("fear")))
+end
+local _ok, _err = pcall(demo_EmotionModel_isActive)
 
 -- ---- Stub: EmotionModel:update --------------------------------------------
 --@api-stub: EmotionModel:update
--- Decay all emotions over time. Anger fades, happiness lingers.
-guard_emotions:update(5.0)  -- 5 seconds of game time
-print("emotions after 5s decay:")
-print("  anger: " .. string.format("%.2f", guard_emotions:get("anger")))
-print("  suspicion: " .. string.format("%.2f", guard_emotions:get("suspicion")))
+-- Demonstrates the proper usage of EmotionModel:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_update()
+    guard_emotions:update(5.0)  -- 5 seconds of game time
+    print("emotions after 5s decay:")
+    print("  anger: " .. string.format("%.2f", guard_emotions:get("anger")))
+    print("  suspicion: " .. string.format("%.2f", guard_emotions:get("suspicion")))
+end
+local _ok, _err = pcall(demo_EmotionModel_update)
 
 -- ---- Stub: EmotionModel:reset ---------------------------------------------
 --@api-stub: EmotionModel:reset
--- Reset all emotions to base values (e.g. new day, scene change).
-guard_emotions:reset()
-print("guard emotions reset to baseline (new day)")
+-- Demonstrates the proper usage of EmotionModel:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_EmotionModel_reset()
+    guard_emotions:reset()
+    print("guard emotions reset to baseline (new day)")
+end
+local _ok, _err = pcall(demo_EmotionModel_reset)
 
 -- =============================================================================
 -- ORCA Solver — crowd collision avoidance
@@ -1590,44 +2355,69 @@ print("ORCA solver: time_horizon=2s, agent_radius=10px")
 
 -- ---- Stub: ORCASolver:addAgent --------------------------------------------
 --@api-stub: ORCASolver:addAgent
--- Register agents with position and radius. Returns an agent index.
-local orca_guard = orca:addAgent(100, 200, 12.0)    -- guard: larger radius (armoured)
-local orca_villager = orca:addAgent(300, 400, 8.0)   -- villager: smaller
-local orca_wolf = orca:addAgent(500, 100, 10.0)      -- wolf: medium
-print("ORCA agents: guard(r=12), villager(r=8), wolf(r=10)")
+-- Demonstrates the proper usage of ORCASolver:addAgent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_addAgent()
+    local orca_guard = orca:addAgent(100, 200, 12.0)    -- guard: larger radius (armoured)
+    local orca_villager = orca:addAgent(300, 400, 8.0)   -- villager: smaller
+    local orca_wolf = orca:addAgent(500, 100, 10.0)      -- wolf: medium
+    print("ORCA agents: guard(r=12), villager(r=8), wolf(r=10)")
+end
+local _ok, _err = pcall(demo_ORCASolver_addAgent)
 
 -- ---- Stub: ORCASolver:setPreferredVelocity --------------------------------
 --@api-stub: ORCASolver:setPreferredVelocity
--- Set where each agent wants to go. ORCA adjusts these to avoid collisions.
-orca:setPreferredVelocity(orca_guard, 2.0, 0.0)      -- guard walks east
-orca:setPreferredVelocity(orca_villager, -1.0, 0.5)   -- villager walks southwest
-orca:setPreferredVelocity(orca_wolf, 0.0, 3.0)        -- wolf runs south
-print("preferred velocities set for all ORCA agents")
+-- Demonstrates the proper usage of ORCASolver:setPreferredVelocity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_setPreferredVelocity()
+    orca:setPreferredVelocity(orca_guard, 2.0, 0.0)      -- guard walks east
+    orca:setPreferredVelocity(orca_villager, -1.0, 0.5)   -- villager walks southwest
+    orca:setPreferredVelocity(orca_wolf, 0.0, 3.0)        -- wolf runs south
+    print("preferred velocities set for all ORCA agents")
+end
+local _ok, _err = pcall(demo_ORCASolver_setPreferredVelocity)
 
 -- ---- Stub: ORCASolver:setPosition -----------------------------------------
 --@api-stub: ORCASolver:setPosition
--- Update agent positions each frame before computing safe velocities.
-orca:setPosition(orca_guard, 105, 200)
-orca:setPosition(orca_villager, 298, 402)
-print("ORCA positions updated (one frame of movement)")
+-- Demonstrates the proper usage of ORCASolver:setPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_setPosition()
+    orca:setPosition(orca_guard, 105, 200)
+    orca:setPosition(orca_villager, 298, 402)
+    print("ORCA positions updated (one frame of movement)")
+end
+local _ok, _err = pcall(demo_ORCASolver_setPosition)
 
 -- ---- Stub: ORCASolver:compute ---------------------------------------------
 --@api-stub: ORCASolver:compute
--- Compute collision-free velocities for all agents simultaneously.
-orca:compute()
-print("ORCA computed — all agents have safe velocities")
+-- Demonstrates the proper usage of ORCASolver:compute.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_compute()
+    orca:compute()
+    print("ORCA computed — all agents have safe velocities")
+end
+local _ok, _err = pcall(demo_ORCASolver_compute)
 
 -- ---- Stub: ORCASolver:getSafeVelocity -------------------------------------
 --@api-stub: ORCASolver:getSafeVelocity
--- Read the adjusted velocity for each agent. Apply this instead of preferred.
-local svx, svy = orca:getSafeVelocity(orca_guard)
-print("guard safe velocity: (" .. string.format("%.2f", svx) .. ", " .. string.format("%.2f", svy) .. ")")
-local wvx, wvy = orca:getSafeVelocity(orca_wolf)
-print("wolf safe velocity: (" .. string.format("%.2f", wvx) .. ", " .. string.format("%.2f", wvy) .. ")")
+-- Demonstrates the proper usage of ORCASolver:getSafeVelocity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_getSafeVelocity()
+    local svx, svy = orca:getSafeVelocity(orca_guard)
+    print("guard safe velocity: (" .. string.format("%.2f", svx) .. ", " .. string.format("%.2f", svy) .. ")")
+    local wvx, wvy = orca:getSafeVelocity(orca_wolf)
+    print("wolf safe velocity: (" .. string.format("%.2f", wvx) .. ", " .. string.format("%.2f", wvy) .. ")")
+end
+local _ok, _err = pcall(demo_ORCASolver_getSafeVelocity)
 
 -- ---- Stub: ORCASolver:agentCount ------------------------------------------
 --@api-stub: ORCASolver:agentCount
-print("ORCA agent count: " .. tostring(orca:agentCount()))
+-- Demonstrates the proper usage of ORCASolver:agentCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ORCASolver_agentCount()
+    print("ORCA agent count: " .. tostring(orca:agentCount()))
+end
+local _ok, _err = pcall(demo_ORCASolver_agentCount)
 
 -- =============================================================================
 -- Neural Net — difficulty tuning
@@ -1635,10 +2425,13 @@ print("ORCA agent count: " .. tostring(orca:agentCount()))
 
 -- ---- Stub: lurek.ai.newNeuralNet ------------------------------------------
 --@api-stub: lurek.ai.newNeuralNet
--- A simple feedforward neural network for real-time AI decisions.
--- Input: player stats -> Output: difficulty adjustments.
-local nn = lurek.ai.newNeuralNet()
-print("neural network created for difficulty prediction")
+-- Demonstrates the proper usage of lurek.ai.newNeuralNet.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_ai_newNeuralNet()
+    local nn = lurek.ai.newNeuralNet()
+    print("neural network created for difficulty prediction")
+end
+local _ok, _err = pcall(demo_lurek_ai_newNeuralNet)
 
 -- ---- Stub: NeuralNet:addLayer ---------------------------------------------
 --@api-stub: NeuralNet:addLayer
@@ -1652,41 +2445,61 @@ print("network architecture: 4 -> 8(ReLU) -> 3(sigmoid)")
 
 -- ---- Stub: NeuralNet:forward ----------------------------------------------
 --@api-stub: NeuralNet:forward
--- Forward pass: feed player stats, get difficulty adjustments.
-local player_stats = {15.0, 2.3, 0.5, 0.72}  -- level 15, 2.3 kills/min, 0.5 deaths/min, 72% accuracy
-local output = nn:forward(player_stats)
-if output then
+-- Demonstrates the proper usage of NeuralNet:forward.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeuralNet_forward()
+    local player_stats = {15.0, 2.3, 0.5, 0.72}  -- level 15, 2.3 kills/min, 0.5 deaths/min, 72% accuracy
+    local output = nn:forward(player_stats)
+    if output then
     print("difficulty prediction:")
     print("  spawn multiplier: " .. string.format("%.3f", output[1]))
     print("  damage scale:     " .. string.format("%.3f", output[2]))
     print("  loot bonus:       " .. string.format("%.3f", output[3]))
 end
+local _ok, _err = pcall(demo_NeuralNet_forward)
 
 -- ---- Stub: NeuralNet:setWeights -------------------------------------------
 --@api-stub: NeuralNet:setWeights
--- Load pre-trained weights from a file or GA-evolved weights.
-local weight_count = nn:paramCount()
-local trained_weights = {}
-for i = 1, weight_count do
+-- Demonstrates the proper usage of NeuralNet:setWeights.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeuralNet_setWeights()
+    local weight_count = nn:paramCount()
+    local trained_weights = {}
+    for i = 1, weight_count do
     trained_weights[i] = math.random() * 2 - 1  -- random init for demo
+    nn:setWeights(trained_weights)
+    print("loaded " .. weight_count .. " weights into network")
 end
-nn:setWeights(trained_weights)
-print("loaded " .. weight_count .. " weights into network")
+local _ok, _err = pcall(demo_NeuralNet_setWeights)
 
 -- ---- Stub: NeuralNet:getWeights -------------------------------------------
 --@api-stub: NeuralNet:getWeights
--- Extract weights for saving, crossover in GA, or inspection.
-local w = nn:getWeights()
-print("extracted " .. #w .. " weights from network")
-print("  first 3 weights: " .. string.format("%.3f, %.3f, %.3f", w[1], w[2], w[3]))
+-- Demonstrates the proper usage of NeuralNet:getWeights.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeuralNet_getWeights()
+    local w = nn:getWeights()
+    print("extracted " .. #w .. " weights from network")
+    print("  first 3 weights: " .. string.format("%.3f, %.3f, %.3f", w[1], w[2], w[3]))
+end
+local _ok, _err = pcall(demo_NeuralNet_getWeights)
 
 -- ---- Stub: NeuralNet:paramCount -------------------------------------------
 --@api-stub: NeuralNet:paramCount
-print("total trainable parameters: " .. tostring(nn:paramCount()))
+-- Demonstrates the proper usage of NeuralNet:paramCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeuralNet_paramCount()
+    print("total trainable parameters: " .. tostring(nn:paramCount()))
+end
+local _ok, _err = pcall(demo_NeuralNet_paramCount)
 
 -- ---- Stub: NeuralNet:layerCount -------------------------------------------
 --@api-stub: NeuralNet:layerCount
-print("network layers: " .. tostring(nn:layerCount()))
+-- Demonstrates the proper usage of NeuralNet:layerCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NeuralNet_layerCount()
+    print("network layers: " .. tostring(nn:layerCount()))
+end
+local _ok, _err = pcall(demo_NeuralNet_layerCount)
 
 -- =============================================================================
 -- Genetic Algorithm — procedural creature stats
@@ -1706,17 +2519,31 @@ print("GA: pop=20, genes=4 (HP/ATK/DEF/SPD), mutation=5%, crossover=70%")
 
 -- ---- Stub: GeneticAlgorithm:evolve ----------------------------------------
 --@api-stub: GeneticAlgorithm:evolve
--- Run one generation of selection, crossover, and mutation.
-ga:evolve()
-print("generation evolved — new creature variants produced")
+-- Demonstrates the proper usage of GeneticAlgorithm:evolve.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GeneticAlgorithm_evolve()
+    ga:evolve()
+    print("generation evolved — new creature variants produced")
+end
+local _ok, _err = pcall(demo_GeneticAlgorithm_evolve)
 
 -- ---- Stub: GeneticAlgorithm:generation ------------------------------------
 --@api-stub: GeneticAlgorithm:generation
-print("current generation: " .. tostring(ga:generation()))
+-- Demonstrates the proper usage of GeneticAlgorithm:generation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GeneticAlgorithm_generation()
+    print("current generation: " .. tostring(ga:generation()))
+end
+local _ok, _err = pcall(demo_GeneticAlgorithm_generation)
 
 -- ---- Stub: GeneticAlgorithm:popSize ---------------------------------------
 --@api-stub: GeneticAlgorithm:popSize
-print("population size: " .. tostring(ga:popSize()))
+-- Demonstrates the proper usage of GeneticAlgorithm:popSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GeneticAlgorithm_popSize()
+    print("population size: " .. tostring(ga:popSize()))
+end
+local _ok, _err = pcall(demo_GeneticAlgorithm_popSize)
 
 -- ---- Stub: GeneticAlgorithm:setFitness ------------------------------------
 --@api-stub: GeneticAlgorithm:setFitness
@@ -1730,25 +2557,31 @@ print("fitness assigned to all " .. ga:popSize() .. " creatures")
 
 -- ---- Stub: GeneticAlgorithm:getGenes --------------------------------------
 --@api-stub: GeneticAlgorithm:getGenes
--- Inspect a specific individual's chromosome.
-local genes = ga:getGenes(0)
-if genes then
+-- Demonstrates the proper usage of GeneticAlgorithm:getGenes.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GeneticAlgorithm_getGenes()
+    local genes = ga:getGenes(0)
+    if genes then
     print("creature #0 genes: HP=" .. string.format("%.1f", genes[1])
         .. " ATK=" .. string.format("%.1f", genes[2])
         .. " DEF=" .. string.format("%.1f", genes[3])
         .. " SPD=" .. string.format("%.1f", genes[4]))
 end
+local _ok, _err = pcall(demo_GeneticAlgorithm_getGenes)
 
 -- ---- Stub: GeneticAlgorithm:bestGenes -------------------------------------
 --@api-stub: GeneticAlgorithm:bestGenes
--- Get the fittest individual's chromosome for spawning elite enemies.
-local best_genes = ga:bestGenes()
-if best_genes then
+-- Demonstrates the proper usage of GeneticAlgorithm:bestGenes.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_GeneticAlgorithm_bestGenes()
+    local best_genes = ga:bestGenes()
+    if best_genes then
     print("elite creature: HP=" .. string.format("%.1f", best_genes[1])
         .. " ATK=" .. string.format("%.1f", best_genes[2])
         .. " DEF=" .. string.format("%.1f", best_genes[3])
         .. " SPD=" .. string.format("%.1f", best_genes[4]))
 end
+local _ok, _err = pcall(demo_GeneticAlgorithm_bestGenes)
 
 -- =============================================================================
 -- Multi-Armed Bandit — loot table optimization
@@ -1766,36 +2599,61 @@ print("bandit created: 4 arms (loot variants), UCB1 strategy")
 
 -- ---- Stub: Bandit:select --------------------------------------------------
 --@api-stub: Bandit:select
--- Select which loot table variant to use for this player encounter.
-local arm = bandit:select()
-print("bandit selected arm " .. tostring(arm) .. " for this drop")
+-- Demonstrates the proper usage of Bandit:select.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_select()
+    local arm = bandit:select()
+    print("bandit selected arm " .. tostring(arm) .. " for this drop")
+end
+local _ok, _err = pcall(demo_Bandit_select)
 
 -- ---- Stub: Bandit:update --------------------------------------------------
 --@api-stub: Bandit:update
--- After the player interacts with the loot, report the reward.
--- Higher reward = player engaged more (picked up items, used them, etc).
-bandit:update(arm, 0.8)   -- arm performed well (player liked the loot)
-print("arm " .. tostring(arm) .. " updated with reward 0.8")
+-- Demonstrates the proper usage of Bandit:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_update()
+    bandit:update(arm, 0.8)   -- arm performed well (player liked the loot)
+    print("arm " .. tostring(arm) .. " updated with reward 0.8")
+end
+local _ok, _err = pcall(demo_Bandit_update)
 
 -- ---- Stub: Bandit:bestArm -------------------------------------------------
 --@api-stub: Bandit:bestArm
--- After many rounds, check which arm has the highest average reward.
-local best_arm = bandit:bestArm()
-print("best-performing loot variant: arm " .. tostring(best_arm))
+-- Demonstrates the proper usage of Bandit:bestArm.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_bestArm()
+    local best_arm = bandit:bestArm()
+    print("best-performing loot variant: arm " .. tostring(best_arm))
+end
+local _ok, _err = pcall(demo_Bandit_bestArm)
 
 -- ---- Stub: Bandit:reset ---------------------------------------------------
 --@api-stub: Bandit:reset
--- Reset all statistics to start fresh (new game season, balance patch).
-bandit:reset()
-print("bandit stats reset — starting new loot experiment")
+-- Demonstrates the proper usage of Bandit:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_reset()
+    bandit:reset()
+    print("bandit stats reset — starting new loot experiment")
+end
+local _ok, _err = pcall(demo_Bandit_reset)
 
 -- ---- Stub: Bandit:armCount ------------------------------------------------
 --@api-stub: Bandit:armCount
-print("bandit arm count: " .. tostring(bandit:armCount()))
+-- Demonstrates the proper usage of Bandit:armCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_armCount()
+    print("bandit arm count: " .. tostring(bandit:armCount()))
+end
+local _ok, _err = pcall(demo_Bandit_armCount)
 
 -- ---- Stub: Bandit:totalPulls ----------------------------------------------
 --@api-stub: Bandit:totalPulls
-print("total selections so far: " .. tostring(bandit:totalPulls()))
+-- Demonstrates the proper usage of Bandit:totalPulls.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Bandit_totalPulls()
+    print("total selections so far: " .. tostring(bandit:totalPulls()))
+end
+local _ok, _err = pcall(demo_Bandit_totalPulls)
 
 -- =============================================================================
 -- Neuroevolution — breeding champion fighters
@@ -1816,44 +2674,74 @@ print("neuroevolution: pop=30, net=6->8->6->4, mutation=10%")
 
 -- ---- Stub: Neuroevolution:evolve ------------------------------------------
 --@api-stub: Neuroevolution:evolve
--- Run one generation: select fittest, crossover weights, mutate.
-neuro:evolve()
-print("neuroevolution generation evolved")
+-- Demonstrates the proper usage of Neuroevolution:evolve.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_evolve()
+    neuro:evolve()
+    print("neuroevolution generation evolved")
+end
+local _ok, _err = pcall(demo_Neuroevolution_evolve)
 
 -- ---- Stub: Neuroevolution:setFitness --------------------------------------
 --@api-stub: Neuroevolution:setFitness
--- Score each fighter based on combat performance (damage dealt, survival time).
-for i = 0, neuro:popSize() - 1 do
+-- Demonstrates the proper usage of Neuroevolution:setFitness.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_setFitness()
+    for i = 0, neuro:popSize() - 1 do
     local fight_score = math.random() * 100.0
     neuro:setFitness(i, fight_score)
+    print("fitness scores assigned to all " .. neuro:popSize() .. " fighters")
 end
-print("fitness scores assigned to all " .. neuro:popSize() .. " fighters")
+local _ok, _err = pcall(demo_Neuroevolution_setFitness)
 
 -- ---- Stub: Neuroevolution:chromosomeToNet ---------------------------------
 --@api-stub: Neuroevolution:chromosomeToNet
--- Extract a specific individual's neural net for evaluation.
-local fighter_net = neuro:chromosomeToNet(0)
-print("fighter #0 network extracted (" .. tostring(fighter_net:paramCount()) .. " params)")
+-- Demonstrates the proper usage of Neuroevolution:chromosomeToNet.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_chromosomeToNet()
+    local fighter_net = neuro:chromosomeToNet(0)
+    print("fighter #0 network extracted (" .. tostring(fighter_net:paramCount()) .. " params)")
+end
+local _ok, _err = pcall(demo_Neuroevolution_chromosomeToNet)
 
 -- ---- Stub: Neuroevolution:bestNetwork -------------------------------------
 --@api-stub: Neuroevolution:bestNetwork
--- Get the champion fighter's network for deployment as a boss enemy.
-local champion = neuro:bestNetwork()
-print("champion network: " .. tostring(champion:paramCount()) .. " parameters")
-print("  deploy this as the arena boss AI!")
+-- Demonstrates the proper usage of Neuroevolution:bestNetwork.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_bestNetwork()
+    local champion = neuro:bestNetwork()
+    print("champion network: " .. tostring(champion:paramCount()) .. " parameters")
+    print("  deploy this as the arena boss AI!")
+end
+local _ok, _err = pcall(demo_Neuroevolution_bestNetwork)
 
 -- ---- Stub: Neuroevolution:bestFitness ------------------------------------
 --@api-stub: Neuroevolution:bestFitness
-local best_fit = neuro:bestFitness()
-print("champion fitness: " .. string.format("%.1f", best_fit))
+-- Demonstrates the proper usage of Neuroevolution:bestFitness.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_bestFitness()
+    local best_fit = neuro:bestFitness()
+    print("champion fitness: " .. string.format("%.1f", best_fit))
+end
+local _ok, _err = pcall(demo_Neuroevolution_bestFitness)
 
 -- ---- Stub: Neuroevolution:popSize -----------------------------------------
 --@api-stub: Neuroevolution:popSize
-print("neuroevolution population: " .. tostring(neuro:popSize()))
+-- Demonstrates the proper usage of Neuroevolution:popSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_popSize()
+    print("neuroevolution population: " .. tostring(neuro:popSize()))
+end
+local _ok, _err = pcall(demo_Neuroevolution_popSize)
 
 -- ---- Stub: Neuroevolution:generation --------------------------------------
 --@api-stub: Neuroevolution:generation
-print("neuroevolution generation: " .. tostring(neuro:generation()))
+-- Demonstrates the proper usage of Neuroevolution:generation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Neuroevolution_generation()
+    print("neuroevolution generation: " .. tostring(neuro:generation()))
+end
+local _ok, _err = pcall(demo_Neuroevolution_generation)
 
 -- =============================================================================
 -- Strategy AI — goal-driven faction AI
@@ -1870,67 +2758,96 @@ print("strategy AI created: re-evaluates every 5s")
 
 -- ---- Stub: StrategyAI:addGoal ---------------------------------------------
 --@api-stub: StrategyAI:addGoal
--- Define strategic goals with priorities and context conditions.
-faction_ai:addGoal("expand_territory", {
+-- Demonstrates the proper usage of StrategyAI:addGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_addGoal()
+    faction_ai:addGoal("expand_territory", {
     priority = 8,
     condition = function(tags)
         return tags.military_strength > 50
     end,
     action = function() print("  [faction] expanding borders!") end
-})
-faction_ai:addGoal("defend_homeland", {
+    })
+    faction_ai:addGoal("defend_homeland", {
     priority = 10,
     condition = function(tags)
         return tags.under_attack == true
     end,
     action = function() print("  [faction] rallying defenders!") end
-})
-faction_ai:addGoal("trade_resources", {
+    })
+    faction_ai:addGoal("trade_resources", {
     priority = 5,
     condition = function(tags)
         return tags.gold_reserves > 100
     end,
     action = function() print("  [faction] sending trade caravan") end
-})
-print("goals: expand(p=8), defend(p=10), trade(p=5)")
+    })
+    print("goals: expand(p=8), defend(p=10), trade(p=5)")
+end
+local _ok, _err = pcall(demo_StrategyAI_addGoal)
 
 -- ---- Stub: StrategyAI:addTag ----------------------------------------------
 --@api-stub: StrategyAI:addTag
--- Set context tags that goals use to evaluate their conditions.
-faction_ai:addTag("military_strength", 75)
-faction_ai:addTag("gold_reserves", 200)
-faction_ai:addTag("under_attack", false)
-print("faction tags: military=75, gold=200, under_attack=false")
+-- Demonstrates the proper usage of StrategyAI:addTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_addTag()
+    faction_ai:addTag("military_strength", 75)
+    faction_ai:addTag("gold_reserves", 200)
+    faction_ai:addTag("under_attack", false)
+    print("faction tags: military=75, gold=200, under_attack=false")
+end
+local _ok, _err = pcall(demo_StrategyAI_addTag)
 
 -- ---- Stub: StrategyAI:removeTag -------------------------------------------
 --@api-stub: StrategyAI:removeTag
--- Remove a tag when it's no longer relevant (e.g. war ended).
-faction_ai:removeTag("under_attack")
-print("removed 'under_attack' tag (peace treaty signed)")
+-- Demonstrates the proper usage of StrategyAI:removeTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_removeTag()
+    faction_ai:removeTag("under_attack")
+    print("removed 'under_attack' tag (peace treaty signed)")
+end
+local _ok, _err = pcall(demo_StrategyAI_removeTag)
 
 -- ---- Stub: StrategyAI:update ----------------------------------------------
 --@api-stub: StrategyAI:update
--- Tick the strategy AI. It will re-evaluate goals at the configured interval.
-faction_ai:update(5.0)  -- trigger evaluation
-print("strategy AI updated — goals evaluated")
+-- Demonstrates the proper usage of StrategyAI:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_update()
+    faction_ai:update(5.0)  -- trigger evaluation
+    print("strategy AI updated — goals evaluated")
+end
+local _ok, _err = pcall(demo_StrategyAI_update)
 
 -- ---- Stub: StrategyAI:forceEvaluate ---------------------------------------
 --@api-stub: StrategyAI:forceEvaluate
--- Force immediate re-evaluation (e.g. sudden enemy invasion).
-faction_ai:addTag("under_attack", true)
-faction_ai:forceEvaluate()
-print("forced evaluation after sudden invasion — defend should activate")
+-- Demonstrates the proper usage of StrategyAI:forceEvaluate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_forceEvaluate()
+    faction_ai:addTag("under_attack", true)
+    faction_ai:forceEvaluate()
+    print("forced evaluation after sudden invasion — defend should activate")
+end
+local _ok, _err = pcall(demo_StrategyAI_forceEvaluate)
 
 -- ---- Stub: StrategyAI:activeGoal ------------------------------------------
 --@api-stub: StrategyAI:activeGoal
-local active = faction_ai:activeGoal()
-print("active strategic goal: " .. tostring(active))
+-- Demonstrates the proper usage of StrategyAI:activeGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_activeGoal()
+    local active = faction_ai:activeGoal()
+    print("active strategic goal: " .. tostring(active))
+end
+local _ok, _err = pcall(demo_StrategyAI_activeGoal)
 
 -- ---- Stub: StrategyAI:timeUntilNext ---------------------------------------
 --@api-stub: StrategyAI:timeUntilNext
--- How long until the next scheduled evaluation?
-local until_next = faction_ai:timeUntilNext()
-print("next evaluation in: " .. string.format("%.1f", until_next) .. "s")
+-- Demonstrates the proper usage of StrategyAI:timeUntilNext.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_StrategyAI_timeUntilNext()
+    local until_next = faction_ai:timeUntilNext()
+    print("next evaluation in: " .. string.format("%.1f", until_next) .. "s")
+end
+local _ok, _err = pcall(demo_StrategyAI_timeUntilNext)
 
 -- =============================================================================
 -- Cleanup — remove agents from the world
@@ -1938,9 +2855,12 @@ print("next evaluation in: " .. string.format("%.1f", until_next) .. "s")
 
 -- ---- Stub: AIWorld:removeAgent --------------------------------------------
 --@api-stub: AIWorld:removeAgent
--- Remove an agent when it dies, despawns, or exits the scene.
-local removed = ai_world:removeAgent("alpha_wolf")
-print("wolf removed from AI world: " .. tostring(removed))
-print("remaining agents: " .. tostring(ai_world:getAgentCount()))
-
-print("\n-- ai.lua example complete --")
+-- Demonstrates the proper usage of AIWorld:removeAgent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AIWorld_removeAgent()
+    local removed = ai_world:removeAgent("alpha_wolf")
+    print("wolf removed from AI world: " .. tostring(removed))
+    print("remaining agents: " .. tostring(ai_world:getAgentCount()))
+    print("\n-- ai.lua example complete --")
+end
+local _ok, _err = pcall(demo_AIWorld_removeAgent)

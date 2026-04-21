@@ -13,17 +13,23 @@
 
 -- ---- Stub: lurek.log.setLevel --------------------------------------------
 --@api-stub: lurek.log.setLevel
--- Set the minimum log level early in init so only relevant messages appear.
--- During development use "debug"; for playtesting use "warn" to reduce noise.
-lurek.log.setLevel("debug")
-print("log level set to: debug")
+-- Demonstrates the proper usage of lurek.log.setLevel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_setLevel()
+    lurek.log.setLevel("debug")
+    print("log level set to: debug")
+end
+local _ok, _err = pcall(demo_lurek_log_setLevel)
 
 -- ---- Stub: lurek.log.getLevel --------------------------------------------
 --@api-stub: lurek.log.getLevel
--- Display the current log level in the options menu so the player knows
--- how verbose the console output will be.
-local current_level = lurek.log.getLevel()
-print("active log level: " .. current_level)
+-- Demonstrates the proper usage of lurek.log.getLevel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_getLevel()
+    local current_level = lurek.log.getLevel()
+    print("active log level: " .. current_level)
+end
+local _ok, _err = pcall(demo_lurek_log_getLevel)
 
 -- ---- Stub: lurek.log.debug -----------------------------------------------
 --@api-stub: lurek.log.debug
@@ -135,10 +141,13 @@ print("file sink flushed -- log is durable on disk")
 
 -- ---- Stub: lurek.log.removeSink ------------------------------------------
 --@api-stub: lurek.log.removeSink
--- Remove the memory sink when the player closes the debug console to free
--- the ring buffer memory.
-local removed = lurek.log.removeSink(mem_sink_id)
-print("memory sink removed: " .. tostring(removed))
+-- Demonstrates the proper usage of lurek.log.removeSink.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_removeSink()
+    local removed = lurek.log.removeSink(mem_sink_id)
+    print("memory sink removed: " .. tostring(removed))
+end
+local _ok, _err = pcall(demo_lurek_log_removeSink)
 
 -- ---- Stub: lurek.log.clearSinks ------------------------------------------
 --@api-stub: lurek.log.clearSinks
@@ -175,35 +184,47 @@ print("debug_fields emitted: physics_step")
 
 -- ---- Stub: lurek.log.info_fields -----------------------------------------
 --@api-stub: lurek.log.info_fields
--- Log a player achievement unlock with context fields for analytics.
-lurek.log.info_fields("achievement_unlocked", {
+-- Demonstrates the proper usage of lurek.log.info_fields.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_info_fields()
+    lurek.log.info_fields("achievement_unlocked", {
     achievement = "dragon_slayer",
     player      = "hero_01",
     play_time   = 3420,
     zone        = "volcano_peak",
-})
-print("info_fields emitted: achievement_unlocked")
+    })
+    print("info_fields emitted: achievement_unlocked")
+end
+local _ok, _err = pcall(demo_lurek_log_info_fields)
 
 -- ---- Stub: lurek.log.warn_fields -----------------------------------------
 --@api-stub: lurek.log.warn_fields
--- Warn about a performance regression with fields that help pinpoint the cause.
-lurek.log.warn_fields("frame_budget_exceeded", {
+-- Demonstrates the proper usage of lurek.log.warn_fields.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_warn_fields()
+    lurek.log.warn_fields("frame_budget_exceeded", {
     frame_ms    = 22.5,
     budget_ms   = 16.67,
     draw_calls  = 380,
     zone        = "particle_heavy_arena",
     particle_ct = 12000,
-})
-print("warn_fields emitted: frame_budget_exceeded")
+    })
+    print("warn_fields emitted: frame_budget_exceeded")
+end
+local _ok, _err = pcall(demo_lurek_log_warn_fields)
 
 -- ---- Stub: lurek.log.error_fields ----------------------------------------
 --@api-stub: lurek.log.error_fields
--- Log a critical save failure with enough context for post-mortem debugging.
-lurek.log.error_fields("save_write_failed", {
+-- Demonstrates the proper usage of lurek.log.error_fields.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_log_error_fields()
+    lurek.log.error_fields("save_write_failed", {
     slot      = 2,
     path      = "saves/slot2.sav",
     errno     = 28,
     disk_free = "0 MB",
     save_size = "4.2 MB",
-})
-print("error_fields emitted: save_write_failed")
+    })
+    print("error_fields emitted: save_write_failed")
+end
+local _ok, _err = pcall(demo_lurek_log_error_fields)

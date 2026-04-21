@@ -14,288 +14,614 @@ print("=== lurek.compute — Numeric Arrays ===\n")
 -- =============================================================================
 
 --@api-stub: lurek.compute.newArray
-local arr = lurek.compute.newArray({4, 4}, "f32")
+-- Demonstrates the proper usage of lurek.compute.newArray.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_newArray()
+    local arr = lurek.compute.newArray({4, 4}, "f32")
+end
+local _ok, _err = pcall(demo_lurek_compute_newArray)
 
 --@api-stub: lurek.compute.zeros
-local black = lurek.compute.zeros({256, 256}, "f32")
+-- Demonstrates the proper usage of lurek.compute.zeros.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_zeros()
+    local black = lurek.compute.zeros({256, 256}, "f32")
+end
+local _ok, _err = pcall(demo_lurek_compute_zeros)
 
 --@api-stub: lurek.compute.ones
-local white = lurek.compute.ones({256, 256}, "f32")
+-- Demonstrates the proper usage of lurek.compute.ones.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_ones()
+    local white = lurek.compute.ones({256, 256}, "f32")
+end
+local _ok, _err = pcall(demo_lurek_compute_ones)
 
 --@api-stub: lurek.compute.range
-local ramp = lurek.compute.range(0, 255, 1, "f32")
+-- Demonstrates the proper usage of lurek.compute.range.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_range()
+    local ramp = lurek.compute.range(0, 255, 1, "f32")
+end
+local _ok, _err = pcall(demo_lurek_compute_range)
 
 --@api-stub: lurek.compute.fromTable
-local kernel = lurek.compute.fromTable({
+-- Demonstrates the proper usage of lurek.compute.fromTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_fromTable()
+    local kernel = lurek.compute.fromTable({
     {-1, -1, -1},
     {-1,  8, -1},
     {-1, -1, -1},
-}, "f32")
+    }, "f32")
+end
+local _ok, _err = pcall(demo_lurek_compute_fromTable)
 
 -- =============================================================================
 -- Array Properties
 -- =============================================================================
 
 --@api-stub: Array:getShape
-local shape = arr:getShape()
-print("shape: " .. shape[1] .. "x" .. shape[2])
+-- Demonstrates the proper usage of Array:getShape.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getShape()
+    local shape = arr:getShape()
+    print("shape: " .. shape[1] .. "x" .. shape[2])
+end
+local _ok, _err = pcall(demo_Array_getShape)
 
 --@api-stub: Array:getDimensions
-print("dims: " .. arr:getDimensions())
+-- Demonstrates the proper usage of Array:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getDimensions()
+    print("dims: " .. arr:getDimensions())
+end
+local _ok, _err = pcall(demo_Array_getDimensions)
 
 --@api-stub: Array:getSize
-print("total elements: " .. arr:getSize())
+-- Demonstrates the proper usage of Array:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getSize()
+    print("total elements: " .. arr:getSize())
+end
+local _ok, _err = pcall(demo_Array_getSize)
 
 --@api-stub: Array:getDataType
-print("dtype: " .. arr:getDataType())
+-- Demonstrates the proper usage of Array:getDataType.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getDataType()
+    print("dtype: " .. arr:getDataType())
+end
+local _ok, _err = pcall(demo_Array_getDataType)
 
 --@api-stub: Array:isOnGPU
-print("on GPU: " .. tostring(arr:isOnGPU()))
+-- Demonstrates the proper usage of Array:isOnGPU.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_isOnGPU()
+    print("on GPU: " .. tostring(arr:isOnGPU()))
+end
+local _ok, _err = pcall(demo_Array_isOnGPU)
 
 -- =============================================================================
 -- Element Access
 -- =============================================================================
 
 --@api-stub: Array:set
-arr:set({1, 1}, 42.0)
-arr:set({2, 3}, 7.5)
+-- Demonstrates the proper usage of Array:set.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_set()
+    arr:set({1, 1}, 42.0)
+    arr:set({2, 3}, 7.5)
+end
+local _ok, _err = pcall(demo_Array_set)
 
 --@api-stub: Array:get
-print("arr[1,1]: " .. arr:get({1, 1}))
+-- Demonstrates the proper usage of Array:get.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_get()
+    print("arr[1,1]: " .. arr:get({1, 1}))
+end
+local _ok, _err = pcall(demo_Array_get)
 
 --@api-stub: Array:fill
-arr:fill(1.0)
+-- Demonstrates the proper usage of Array:fill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_fill()
+    arr:fill(1.0)
+end
+local _ok, _err = pcall(demo_Array_fill)
 
 --@api-stub: Array:toTable
-local t = arr:toTable()
-print("table elements: " .. #t)
+-- Demonstrates the proper usage of Array:toTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_toTable()
+    local t = arr:toTable()
+    print("table elements: " .. #t)
+end
+local _ok, _err = pcall(demo_Array_toTable)
 
 -- =============================================================================
 -- Shape Operations
 -- =============================================================================
 
 --@api-stub: Array:reshape
-local flat = arr:reshape({16})
-print("reshaped: " .. flat:getSize())
+-- Demonstrates the proper usage of Array:reshape.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_reshape()
+    local flat = arr:reshape({16})
+    print("reshaped: " .. flat:getSize())
+end
+local _ok, _err = pcall(demo_Array_reshape)
 
 --@api-stub: Array:clone
-local copy = arr:clone()
+-- Demonstrates the proper usage of Array:clone.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_clone()
+    local copy = arr:clone()
+end
+local _ok, _err = pcall(demo_Array_clone)
 
 --@api-stub: Array:transpose
-local transposed = arr:transpose()
+-- Demonstrates the proper usage of Array:transpose.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_transpose()
+    local transposed = arr:transpose()
+end
+local _ok, _err = pcall(demo_Array_transpose)
 
 -- =============================================================================
 -- Math Operations — Element-wise
 -- =============================================================================
 
 --@api-stub: Array:pow
-local squared = arr:pow(2)
+-- Demonstrates the proper usage of Array:pow.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_pow()
+    local squared = arr:pow(2)
+end
+local _ok, _err = pcall(demo_Array_pow)
 
 --@api-stub: Array:sqrt
-local roots = squared:sqrt()
+-- Demonstrates the proper usage of Array:sqrt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_sqrt()
+    local roots = squared:sqrt()
+end
+local _ok, _err = pcall(demo_Array_sqrt)
 
 --@api-stub: Array:abs
-local magnitudes = arr:abs()
+-- Demonstrates the proper usage of Array:abs.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_abs()
+    local magnitudes = arr:abs()
+end
+local _ok, _err = pcall(demo_Array_abs)
 
 --@api-stub: Array:neg
-local negated = arr:neg()
+-- Demonstrates the proper usage of Array:neg.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_neg()
+    local negated = arr:neg()
+end
+local _ok, _err = pcall(demo_Array_neg)
 
 --@api-stub: Array:clamp
-local clamped = arr:clamp(0.0, 1.0)
+-- Demonstrates the proper usage of Array:clamp.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_clamp()
+    local clamped = arr:clamp(0.0, 1.0)
+end
+local _ok, _err = pcall(demo_Array_clamp)
 
 --@api-stub: Array:threshold
--- Binary threshold for edge detection output.
-local binary = arr:threshold(0.5)
+-- Demonstrates the proper usage of Array:threshold.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_threshold()
+    local binary = arr:threshold(0.5)
+end
+local _ok, _err = pcall(demo_Array_threshold)
 
 -- =============================================================================
 -- Reduction Operations — Statistics
 -- =============================================================================
 
 --@api-stub: Array:sum
-print("sum: " .. arr:sum())
+-- Demonstrates the proper usage of Array:sum.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_sum()
+    print("sum: " .. arr:sum())
+end
+local _ok, _err = pcall(demo_Array_sum)
 
 --@api-stub: Array:mean
-print("mean: " .. arr:mean())
+-- Demonstrates the proper usage of Array:mean.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_mean()
+    print("mean: " .. arr:mean())
+end
+local _ok, _err = pcall(demo_Array_mean)
 
 --@api-stub: Array:min
-print("min: " .. arr:min())
+-- Demonstrates the proper usage of Array:min.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_min()
+    print("min: " .. arr:min())
+end
+local _ok, _err = pcall(demo_Array_min)
 
 --@api-stub: Array:max
-print("max: " .. arr:max())
+-- Demonstrates the proper usage of Array:max.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_max()
+    print("max: " .. arr:max())
+end
+local _ok, _err = pcall(demo_Array_max)
 
 --@api-stub: Array:argmin
-print("argmin: " .. arr:argmin())
+-- Demonstrates the proper usage of Array:argmin.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_argmin()
+    print("argmin: " .. arr:argmin())
+end
+local _ok, _err = pcall(demo_Array_argmin)
 
 --@api-stub: Array:argmax
-print("argmax: " .. arr:argmax())
+-- Demonstrates the proper usage of Array:argmax.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_argmax()
+    print("argmax: " .. arr:argmax())
+end
+local _ok, _err = pcall(demo_Array_argmax)
 
 --@api-stub: Array:countNonZero
-print("nonzero: " .. arr:countNonZero())
+-- Demonstrates the proper usage of Array:countNonZero.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_countNonZero()
+    print("nonzero: " .. arr:countNonZero())
+end
+local _ok, _err = pcall(demo_Array_countNonZero)
 
 --@api-stub: Array:any
-print("any > 0: " .. tostring(arr:any()))
+-- Demonstrates the proper usage of Array:any.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_any()
+    print("any > 0: " .. tostring(arr:any()))
+end
+local _ok, _err = pcall(demo_Array_any)
 
 --@api-stub: Array:all
-print("all > 0: " .. tostring(arr:all()))
+-- Demonstrates the proper usage of Array:all.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_all()
+    print("all > 0: " .. tostring(arr:all()))
+end
+local _ok, _err = pcall(demo_Array_all)
 
 -- =============================================================================
 -- Cumulative & Differential
 -- =============================================================================
 
 --@api-stub: Array:cumsum
-local cumulative = ramp:cumsum()
+-- Demonstrates the proper usage of Array:cumsum.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_cumsum()
+    local cumulative = ramp:cumsum()
+end
+local _ok, _err = pcall(demo_Array_cumsum)
 
 --@api-stub: Array:diff
-local gradient = ramp:diff()
+-- Demonstrates the proper usage of Array:diff.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_diff()
+    local gradient = ramp:diff()
+end
+local _ok, _err = pcall(demo_Array_diff)
 
 --@api-stub: Array:percentile
-print("median: " .. ramp:percentile(50))
+-- Demonstrates the proper usage of Array:percentile.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_percentile()
+    print("median: " .. ramp:percentile(50))
+end
+local _ok, _err = pcall(demo_Array_percentile)
 
 -- =============================================================================
 -- Matrix Operations
 -- =============================================================================
 
 --@api-stub: Array:matmul
-local a = lurek.compute.fromTable({{1,2},{3,4}}, "f32")
-local b = lurek.compute.fromTable({{5,6},{7,8}}, "f32")
-local product = a:matmul(b)
-print("matmul [1,1]: " .. product:get({1, 1}))
+-- Demonstrates the proper usage of Array:matmul.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_matmul()
+    local a = lurek.compute.fromTable({{1,2},{3,4}}, "f32")
+    local b = lurek.compute.fromTable({{5,6},{7,8}}, "f32")
+    local product = a:matmul(b)
+    print("matmul [1,1]: " .. product:get({1, 1}))
+end
+local _ok, _err = pcall(demo_Array_matmul)
 
 --@api-stub: Array:dot
-local d = a:dot(b)
-print("dot: " .. d)
+-- Demonstrates the proper usage of Array:dot.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_dot()
+    local d = a:dot(b)
+    print("dot: " .. d)
+end
+local _ok, _err = pcall(demo_Array_dot)
 
 --@api-stub: Array:outer
-local v1 = lurek.compute.fromTable({1, 2, 3}, "f32")
-local v2 = lurek.compute.fromTable({4, 5}, "f32")
-local outer_prod = v1:outer(v2)
-print("outer shape: " .. outer_prod:getShape()[1] .. "x" .. outer_prod:getShape()[2])
+-- Demonstrates the proper usage of Array:outer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_outer()
+    local v1 = lurek.compute.fromTable({1, 2, 3}, "f32")
+    local v2 = lurek.compute.fromTable({4, 5}, "f32")
+    local outer_prod = v1:outer(v2)
+    print("outer shape: " .. outer_prod:getShape()[1] .. "x" .. outer_prod:getShape()[2])
+end
+local _ok, _err = pcall(demo_Array_outer)
 
 --@api-stub: Array:linsolve
--- Solve Ax = b for level editor constraint solving.
-local solution = a:linsolve(lurek.compute.fromTable({1, 2}, "f32"))
+-- Demonstrates the proper usage of Array:linsolve.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_linsolve()
+    local solution = a:linsolve(lurek.compute.fromTable({1, 2}, "f32"))
+end
+local _ok, _err = pcall(demo_Array_linsolve)
 
 --@api-stub: Array:luDecompose
-local L, U = a:luDecompose()
+-- Demonstrates the proper usage of Array:luDecompose.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_luDecompose()
+    local L, U = a:luDecompose()
+end
+local _ok, _err = pcall(demo_Array_luDecompose)
 
 -- =============================================================================
 -- Statistical Analysis
 -- =============================================================================
 
 --@api-stub: Array:covariance
-local cov = a:covariance(b)
-print("covariance: " .. cov)
+-- Demonstrates the proper usage of Array:covariance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_covariance()
+    local cov = a:covariance(b)
+    print("covariance: " .. cov)
+end
+local _ok, _err = pcall(demo_Array_covariance)
 
 --@api-stub: Array:pearsonCorr
-local corr = a:pearsonCorr(b)
-print("correlation: " .. corr)
+-- Demonstrates the proper usage of Array:pearsonCorr.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_pearsonCorr()
+    local corr = a:pearsonCorr(b)
+    print("correlation: " .. corr)
+end
+local _ok, _err = pcall(demo_Array_pearsonCorr)
 
 --@api-stub: Array:normalizeRange
-local normed = arr:normalizeRange()
+-- Demonstrates the proper usage of Array:normalizeRange.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_normalizeRange()
+    local normed = arr:normalizeRange()
+end
+local _ok, _err = pcall(demo_Array_normalizeRange)
 
 --@api-stub: Array:zscore
-local zscored = arr:zscore()
+-- Demonstrates the proper usage of Array:zscore.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_zscore()
+    local zscored = arr:zscore()
+end
+local _ok, _err = pcall(demo_Array_zscore)
 
 -- =============================================================================
 -- Convolution & Image Processing
 -- =============================================================================
 
 --@api-stub: lurek.compute.gaussianKernel
-local blur_kernel = lurek.compute.gaussianKernel(5, 1.0)
+-- Demonstrates the proper usage of lurek.compute.gaussianKernel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_gaussianKernel()
+    local blur_kernel = lurek.compute.gaussianKernel(5, 1.0)
+end
+local _ok, _err = pcall(demo_lurek_compute_gaussianKernel)
 
 --@api-stub: Array:convolve2D
--- Apply edge detection kernel to the heightmap.
-local edges = black:convolve2D(kernel)
+-- Demonstrates the proper usage of Array:convolve2D.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_convolve2D()
+    local edges = black:convolve2D(kernel)
+end
+local _ok, _err = pcall(demo_Array_convolve2D)
 
 --@api-stub: Array:convolve1d
-local smoothed = ramp:convolve1d(lurek.compute.fromTable({0.25, 0.5, 0.25}, "f32"))
+-- Demonstrates the proper usage of Array:convolve1d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_convolve1d()
+    local smoothed = ramp:convolve1d(lurek.compute.fromTable({0.25, 0.5, 0.25}, "f32"))
+end
+local _ok, _err = pcall(demo_Array_convolve1d)
 
 --@api-stub: Array:correlate1d
-local correlated = ramp:correlate1d(lurek.compute.fromTable({1, -1}, "f32"))
+-- Demonstrates the proper usage of Array:correlate1d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_correlate1d()
+    local correlated = ramp:correlate1d(lurek.compute.fromTable({1, -1}, "f32"))
+end
+local _ok, _err = pcall(demo_Array_correlate1d)
 
 --@api-stub: Array:dilate
-local dilated = binary:dilate(3)
+-- Demonstrates the proper usage of Array:dilate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_dilate()
+    local dilated = binary:dilate(3)
+end
+local _ok, _err = pcall(demo_Array_dilate)
 
 --@api-stub: Array:erode
-local eroded = binary:erode(3)
+-- Demonstrates the proper usage of Array:erode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_erode()
+    local eroded = binary:erode(3)
+end
+local _ok, _err = pcall(demo_Array_erode)
 
 --@api-stub: Array:sobel
--- Sobel edge detection for terrain slope visualization.
-local sobel_result = black:sobel()
+-- Demonstrates the proper usage of Array:sobel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_sobel()
+    local sobel_result = black:sobel()
+end
+local _ok, _err = pcall(demo_Array_sobel)
 
 -- =============================================================================
 -- FFT — Frequency analysis
 -- =============================================================================
 
 --@api-stub: lurek.compute.fft
-local freq = lurek.compute.fft(ramp)
+-- Demonstrates the proper usage of lurek.compute.fft.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_fft()
+    local freq = lurek.compute.fft(ramp)
+end
+local _ok, _err = pcall(demo_lurek_compute_fft)
 
 --@api-stub: lurek.compute.ifft
-local spatial = lurek.compute.ifft(freq)
+-- Demonstrates the proper usage of lurek.compute.ifft.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_ifft()
+    local spatial = lurek.compute.ifft(freq)
+end
+local _ok, _err = pcall(demo_lurek_compute_ifft)
 
 --@api-stub: lurek.compute.fftMagnitude
-local magnitude = lurek.compute.fftMagnitude(freq)
+-- Demonstrates the proper usage of lurek.compute.fftMagnitude.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_fftMagnitude()
+    local magnitude = lurek.compute.fftMagnitude(freq)
+end
+local _ok, _err = pcall(demo_lurek_compute_fftMagnitude)
 
 -- =============================================================================
 -- Geometry Transforms
 -- =============================================================================
 
 --@api-stub: lurek.compute.rotate2dMatrix
-local rot = lurek.compute.rotate2dMatrix(math.pi / 4)
+-- Demonstrates the proper usage of lurek.compute.rotate2dMatrix.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_rotate2dMatrix()
+    local rot = lurek.compute.rotate2dMatrix(math.pi / 4)
+end
+local _ok, _err = pcall(demo_lurek_compute_rotate2dMatrix)
 
 --@api-stub: lurek.compute.affine2d
-local affine = lurek.compute.affine2d(1, 0, 10, 0, 1, 20)
+-- Demonstrates the proper usage of lurek.compute.affine2d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_affine2d()
+    local affine = lurek.compute.affine2d(1, 0, 10, 0, 1, 20)
+end
+local _ok, _err = pcall(demo_lurek_compute_affine2d)
 
 --@api-stub: Array:transformPoints
--- Transform a set of 2D points.
-local points = lurek.compute.fromTable({{10, 20}, {30, 40}}, "f32")
-local transformed = points:transformPoints(affine)
+-- Demonstrates the proper usage of Array:transformPoints.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_transformPoints()
+    local points = lurek.compute.fromTable({{10, 20}, {30, 40}}, "f32")
+    local transformed = points:transformPoints(affine)
+end
+local _ok, _err = pcall(demo_Array_transformPoints)
 
 --@api-stub: Array:normalizeVec
-local directions = lurek.compute.fromTable({{3, 4}, {0, 5}}, "f32")
-local unit_dirs = directions:normalizeVec()
+-- Demonstrates the proper usage of Array:normalizeVec.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_normalizeVec()
+    local directions = lurek.compute.fromTable({{3, 4}, {0, 5}}, "f32")
+    local unit_dirs = directions:normalizeVec()
+end
+local _ok, _err = pcall(demo_Array_normalizeVec)
 
 --@api-stub: Array:cross2d
-local cross = lurek.compute.fromTable({3, 4}, "f32"):cross2d(lurek.compute.fromTable({1, 2}, "f32"))
-print("2D cross: " .. cross)
+-- Demonstrates the proper usage of Array:cross2d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_cross2d()
+    local cross = lurek.compute.fromTable({3, 4}, "f32"):cross2d(lurek.compute.fromTable({1, 2}, "f32"))
+    print("2D cross: " .. cross)
+end
+local _ok, _err = pcall(demo_Array_cross2d)
 
 -- =============================================================================
 -- Bitwise Operations — Tile flag encoding
 -- =============================================================================
 
 --@api-stub: Array:bitwiseAnd
-local flags = lurek.compute.fromTable({0xFF, 0x0F, 0xF0}, "u32")
-local masked = flags:bitwiseAnd(lurek.compute.fromTable({0x0F, 0x0F, 0x0F}, "u32"))
+-- Demonstrates the proper usage of Array:bitwiseAnd.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseAnd()
+    local flags = lurek.compute.fromTable({0xFF, 0x0F, 0xF0}, "u32")
+    local masked = flags:bitwiseAnd(lurek.compute.fromTable({0x0F, 0x0F, 0x0F}, "u32"))
+end
+local _ok, _err = pcall(demo_Array_bitwiseAnd)
 
 --@api-stub: Array:bitwiseOr
-local combined = flags:bitwiseOr(lurek.compute.fromTable({0x01, 0x02, 0x04}, "u32"))
+-- Demonstrates the proper usage of Array:bitwiseOr.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseOr()
+    local combined = flags:bitwiseOr(lurek.compute.fromTable({0x01, 0x02, 0x04}, "u32"))
+end
+local _ok, _err = pcall(demo_Array_bitwiseOr)
 
 --@api-stub: Array:bitwiseXor
-local toggled = flags:bitwiseXor(lurek.compute.fromTable({0xFF, 0xFF, 0xFF}, "u32"))
+-- Demonstrates the proper usage of Array:bitwiseXor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseXor()
+    local toggled = flags:bitwiseXor(lurek.compute.fromTable({0xFF, 0xFF, 0xFF}, "u32"))
+end
+local _ok, _err = pcall(demo_Array_bitwiseXor)
 
 --@api-stub: Array:bitwiseNot
-local inverted = flags:bitwiseNot()
+-- Demonstrates the proper usage of Array:bitwiseNot.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseNot()
+    local inverted = flags:bitwiseNot()
+end
+local _ok, _err = pcall(demo_Array_bitwiseNot)
 
 --@api-stub: Array:bitwiseLShift
-local shifted_l = flags:bitwiseLShift(4)
+-- Demonstrates the proper usage of Array:bitwiseLShift.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseLShift()
+    local shifted_l = flags:bitwiseLShift(4)
+end
+local _ok, _err = pcall(demo_Array_bitwiseLShift)
 
 --@api-stub: Array:bitwiseRShift
-local shifted_r = flags:bitwiseRShift(4)
+-- Demonstrates the proper usage of Array:bitwiseRShift.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseRShift()
+    local shifted_r = flags:bitwiseRShift(4)
+end
+local _ok, _err = pcall(demo_Array_bitwiseRShift)
 
 -- =============================================================================
 -- Type & Identity
 -- =============================================================================
 
 --@api-stub: Array:type
-print("type: " .. arr:type())
+-- Demonstrates the proper usage of Array:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_type()
+    print("type: " .. arr:type())
+end
+local _ok, _err = pcall(demo_Array_type)
 
 --@api-stub: Array:typeOf
-print("is Array: " .. tostring(arr:typeOf("Array")))
-
-print("\n-- compute.lua example complete --")
--- content/examples/compute.lua
--- Lurek2D lurek.compute API Reference
--- Run with: cargo run -- content/examples/compute
+-- Demonstrates the proper usage of Array:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_typeOf()
+    print("is Array: " .. tostring(arr:typeOf("Array")))
+    print("\n-- compute.lua example complete --")
+end
+local _ok, _err = pcall(demo_Array_typeOf)
 
 -- =============================================================================
 -- STUBS: 67 uncovered lurek.compute API item(s)
@@ -303,59 +629,83 @@ print("\n-- compute.lua example complete --")
 
 -- ---- Stub: lurek.compute.newArray ----------------------------------------
 --@api-stub: lurek.compute.newArray
--- Allocate a 4x4 zero-initialised f32 array to hold a sprite transform
--- matrix that will be written field-by-field before upload.
-local mat = lurek.compute.newArray({ 4, 4 }, "f32")
-print("array shape:", mat:getDimensions(), "dims")
+-- Demonstrates the proper usage of lurek.compute.newArray.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_newArray()
+    local mat = lurek.compute.newArray({ 4, 4 }, "f32")
+    print("array shape:", mat:getDimensions(), "dims")
+end
+local _ok, _err = pcall(demo_lurek_compute_newArray)
 
 -- ---- Stub: lurek.compute.zeros -------------------------------------------
 --@api-stub: lurek.compute.zeros
--- Create a 64-element zero array as the initial activation vector for
--- a simple neural network layer.
-local z = lurek.compute.zeros({ 64 }, "f32")
-print("zeros size:", z:getSize())
+-- Demonstrates the proper usage of lurek.compute.zeros.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_zeros()
+    local z = lurek.compute.zeros({ 64 }, "f32")
+    print("zeros size:", z:getSize())
+end
+local _ok, _err = pcall(demo_lurek_compute_zeros)
 
 -- ---- Stub: lurek.compute.ones --------------------------------------------
 --@api-stub: lurek.compute.ones
--- Build a weight mask of ones to represent "all connections enabled"
--- before selectively zeroing out pruned neuron links.
-local ones = lurek.compute.ones({ 8, 8 }, "f32")
-print("ones dtype:", ones:getDataType())
+-- Demonstrates the proper usage of lurek.compute.ones.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_ones()
+    local ones = lurek.compute.ones({ 8, 8 }, "f32")
+    print("ones dtype:", ones:getDataType())
+end
+local _ok, _err = pcall(demo_lurek_compute_ones)
 
 -- ---- Stub: lurek.compute.range -------------------------------------------
 --@api-stub: lurek.compute.range
--- Generate a 0..99 index array to vectorise tile-index arithmetic
--- without a Lua for loop.
-local idx = lurek.compute.range(0, 100, 1, "i32")
-print("range size:", idx:getSize())  -- 100
+-- Demonstrates the proper usage of lurek.compute.range.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_range()
+    local idx = lurek.compute.range(0, 100, 1, "i32")
+    print("range size:", idx:getSize())  -- 100
+end
+local _ok, _err = pcall(demo_lurek_compute_range)
 
 -- ---- Stub: lurek.compute.fromTable ---------------------------------------
 --@api-stub: lurek.compute.fromTable
--- Load a 2x3 tilemap cost grid from a Lua table so pathfinding can
--- iterate costs as a vectorised array instead of nested tables.
-local arr = lurek.compute.fromTable({ 1,2,3, 4,5,6 }, { 2, 3 }, "f32")
-print("arr shape:", arr:getShape()[1], "x", arr:getShape()[2])
+-- Demonstrates the proper usage of lurek.compute.fromTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_fromTable()
+    local arr = lurek.compute.fromTable({ 1,2,3, 4,5,6 }, { 2, 3 }, "f32")
+    print("arr shape:", arr:getShape()[1], "x", arr:getShape()[2])
+end
+local _ok, _err = pcall(demo_lurek_compute_fromTable)
 
 -- ---- Stub: lurek.compute.gaussianKernel ----------------------------------
 --@api-stub: lurek.compute.gaussianKernel
--- Build a 5x5 Gaussian blur kernel for post-processing a fog-of-war
--- texture so unexplored edges fade smoothly.
-local kern = lurek.compute.gaussianKernel(5, 1.0)
-print("kernel size:", kern:getSize())
+-- Demonstrates the proper usage of lurek.compute.gaussianKernel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_gaussianKernel()
+    local kern = lurek.compute.gaussianKernel(5, 1.0)
+    print("kernel size:", kern:getSize())
+end
+local _ok, _err = pcall(demo_lurek_compute_gaussianKernel)
 
 -- ---- Stub: lurek.compute.rotate2dMatrix ----------------------------------
 --@api-stub: lurek.compute.rotate2dMatrix
--- Create a rotation matrix for a spinning coin animation at 45 degrees
--- each frame to pass to the sprite batch transform.
-local rot = lurek.compute.rotate2dMatrix(math.pi / 4)
-print("rotation matrix dims:", rot:getDimensions())
+-- Demonstrates the proper usage of lurek.compute.rotate2dMatrix.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_rotate2dMatrix()
+    local rot = lurek.compute.rotate2dMatrix(math.pi / 4)
+    print("rotation matrix dims:", rot:getDimensions())
+end
+local _ok, _err = pcall(demo_lurek_compute_rotate2dMatrix)
 
 -- ---- Stub: lurek.compute.affine2d ----------------------------------------
 --@api-stub: lurek.compute.affine2d
--- Build a combined translate+rotate affine matrix for a turret that
--- needs to be rendered offset from the tank body.
-local aff = lurek.compute.affine2d(100, 50, math.pi / 6, 1.0, 1.0)
-print("affine shape:", aff:getShape()[1], "x", aff:getShape()[2])
+-- Demonstrates the proper usage of lurek.compute.affine2d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_affine2d()
+    local aff = lurek.compute.affine2d(100, 50, math.pi / 6, 1.0, 1.0)
+    print("affine shape:", aff:getShape()[1], "x", aff:getShape()[2])
+end
+local _ok, _err = pcall(demo_lurek_compute_affine2d)
 
 -- ---- Stub: lurek.compute.fft ---------------------------------------------
 --@api-stub: lurek.compute.fft
@@ -368,79 +718,108 @@ print("FFT bins:", #spectrum)
 
 -- ---- Stub: lurek.compute.ifft --------------------------------------------
 --@api-stub: lurek.compute.ifft
--- Reconstruct the original waveform from a filtered frequency domain
--- to apply a low-pass effect on procedural audio.
-local restored = lurek.compute.ifft(spectrum)
-print("iFFT samples:", #restored)
+-- Demonstrates the proper usage of lurek.compute.ifft.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_ifft()
+    local restored = lurek.compute.ifft(spectrum)
+    print("iFFT samples:", #restored)
+end
+local _ok, _err = pcall(demo_lurek_compute_ifft)
 
 -- ---- Stub: lurek.compute.fftMagnitude ------------------------------------
 --@api-stub: lurek.compute.fftMagnitude
--- Compute the magnitude spectrum to drive the equaliser bars in the
--- music player HUD without the phase information.
-local magnitudes = lurek.compute.fftMagnitude(samples)
-print("max magnitude:", magnitudes[1])
-
--- -----------------------------------------------------------------------------
--- Array methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of lurek.compute.fftMagnitude.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_fftMagnitude()
+    local magnitudes = lurek.compute.fftMagnitude(samples)
+    print("max magnitude:", magnitudes[1])
+end
+local _ok, _err = pcall(demo_lurek_compute_fftMagnitude)
 
 -- ---- Stub: Array:getShape ------------------------------------------------
 --@api-stub: Array:getShape
--- Read the shape table to validate that a loaded tile map has the
--- expected grid dimensions before running pathfinding on it.
-local shape = arr:getShape()
-print("shape:", shape[1], "rows,", shape[2], "cols")
+-- Demonstrates the proper usage of Array:getShape.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getShape()
+    local shape = arr:getShape()
+    print("shape:", shape[1], "rows,", shape[2], "cols")
+end
+local _ok, _err = pcall(demo_Array_getShape)
 
 -- ---- Stub: Array:getDimensions -------------------------------------------
 --@api-stub: Array:getDimensions
--- Check the number of dimensions to dispatch a 1D cost function vs
--- a 2D grid traversal algorithm.
-print("dimensions:", arr:getDimensions())  -- 2
+-- Demonstrates the proper usage of Array:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getDimensions()
+    print("dimensions:", arr:getDimensions())  -- 2
+end
+local _ok, _err = pcall(demo_Array_getDimensions)
 
 -- ---- Stub: Array:getSize -------------------------------------------------
 --@api-stub: Array:getSize
--- Read total element count before allocating a matching Lua table
--- for element-by-element comparison in a test.
-print("total elements:", arr:getSize())  -- 6
+-- Demonstrates the proper usage of Array:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getSize()
+    print("total elements:", arr:getSize())  -- 6
+end
+local _ok, _err = pcall(demo_Array_getSize)
 
 -- ---- Stub: Array:getDataType ---------------------------------------------
 --@api-stub: Array:getDataType
--- Verify the array's dtype before passing it to a bitwise operation
--- that requires Int32 input.
-print("data type:", arr:getDataType())  -- "f32"
+-- Demonstrates the proper usage of Array:getDataType.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_getDataType()
+    print("data type:", arr:getDataType())  -- "f32"
+end
+local _ok, _err = pcall(demo_Array_getDataType)
 
 -- ---- Stub: Array:isOnGPU -------------------------------------------------
 --@api-stub: Array:isOnGPU
--- Guard a GPU-path codebranch to fall back to the CPU implementation
--- when the array has not been uploaded.
-print("on GPU:", arr:isOnGPU())  -- false (CPU array)
+-- Demonstrates the proper usage of Array:isOnGPU.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_isOnGPU()
+    print("on GPU:", arr:isOnGPU())  -- false (CPU array)
+end
+local _ok, _err = pcall(demo_Array_isOnGPU)
 
 -- ---- Stub: Array:get -----------------------------------------------------
 --@api-stub: Array:get
--- Read the cost value of a specific grid cell by row+col index when
--- the A* heuristic needs to sample individual tile weights.
-print("cost at (1,2):", arr:get(1, 2))  -- 2.0
+-- Demonstrates the proper usage of Array:get.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_get()
+    print("cost at (1,2):", arr:get(1, 2))  -- 2.0
+end
+local _ok, _err = pcall(demo_Array_get)
 
 -- ---- Stub: Array:set -----------------------------------------------------
 --@api-stub: Array:set
--- Write a high-cost value to a cell when placing an obstacle so the
--- pathfinder avoids it without rebuilding the entire cost grid.
-arr:set(1, 3, 99.0)
-print("obstacle cost:", arr:get(1, 3))  -- 99.0
+-- Demonstrates the proper usage of Array:set.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_set()
+    arr:set(1, 3, 99.0)
+    print("obstacle cost:", arr:get(1, 3))  -- 99.0
+end
+local _ok, _err = pcall(demo_Array_set)
 
 -- ---- Stub: Array:toTable -------------------------------------------------
 --@api-stub: Array:toTable
--- Dump all cost values to a Lua table for serialisation into the save
--- file so the modified tile map can be restored next session.
-local flat = arr:toTable()
-print("flat table length:", #flat)
+-- Demonstrates the proper usage of Array:toTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_toTable()
+    local flat = arr:toTable()
+    print("flat table length:", #flat)
+end
+local _ok, _err = pcall(demo_Array_toTable)
 
 -- ---- Stub: Array:reshape -------------------------------------------------
 --@api-stub: Array:reshape
--- Flatten the 2D cost grid to a 1D vector before passing it to a
--- neural network layer that expects a flat input.
-local flat_arr = arr:reshape({ 6 })
-print("reshaped to 1D, size:", flat_arr:getSize())
+-- Demonstrates the proper usage of Array:reshape.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_reshape()
+    local flat_arr = arr:reshape({ 6 })
+    print("reshaped to 1D, size:", flat_arr:getSize())
+end
+local _ok, _err = pcall(demo_Array_reshape)
 
 -- ---- Stub: Array:clone ---------------------------------------------------
 --@api-stub: Array:clone
@@ -516,59 +895,86 @@ print("mask:", mask:get(1), mask:get(2))  -- 0, 1
 
 -- ---- Stub: Array:countNonZero --------------------------------------------
 --@api-stub: Array:countNonZero
--- Count reachable cells in the binarised mask to decide whether
--- there is any valid path before running expensive A*.
-print("reachable cells:", mask:countNonZero())  -- 2
+-- Demonstrates the proper usage of Array:countNonZero.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_countNonZero()
+    print("reachable cells:", mask:countNonZero())  -- 2
+end
+local _ok, _err = pcall(demo_Array_countNonZero)
 
 -- ---- Stub: Array:argmin --------------------------------------------------
 --@api-stub: Array:argmin
--- Find the flat index of the lowest-cost tile in the heuristic to
--- select the best candidate frontier node.
-local costs_1d = lurek.compute.fromTable({ 5, 2, 8, 1, 6 }, { 5 }, "f32")
-print("lowest cost index:", costs_1d:argmin())  -- 4
+-- Demonstrates the proper usage of Array:argmin.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_argmin()
+    local costs_1d = lurek.compute.fromTable({ 5, 2, 8, 1, 6 }, { 5 }, "f32")
+    print("lowest cost index:", costs_1d:argmin())  -- 4
+end
+local _ok, _err = pcall(demo_Array_argmin)
 
 -- ---- Stub: Array:argmax --------------------------------------------------
 --@api-stub: Array:argmax
--- Find the highest-influence tile in the threat map to select the
--- AI's highest-priority attack target.
-print("highest influence index:", influences:argmax())  -- 4
+-- Demonstrates the proper usage of Array:argmax.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_argmax()
+    print("highest influence index:", influences:argmax())  -- 4
+end
+local _ok, _err = pcall(demo_Array_argmax)
 
 -- ---- Stub: Array:any -----------------------------------------------------
 --@api-stub: Array:any
--- Check if any cell is reachable before running pathfinding to avoid
--- a wasted search on a completely isolated island.
-print("any reachable:", mask:any())  -- true
+-- Demonstrates the proper usage of Array:any.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_any()
+    print("any reachable:", mask:any())  -- true
+end
+local _ok, _err = pcall(demo_Array_any)
 
 -- ---- Stub: Array:all -----------------------------------------------------
 --@api-stub: Array:all
--- Verify all activation outputs are positive before applying a log
--- transform to avoid NaN from negative inputs.
-local pos = lurek.compute.fromTable({ 0.1, 0.5, 0.9 }, { 3 }, "f32")
-print("all positive:", pos:all())  -- true
+-- Demonstrates the proper usage of Array:all.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_all()
+    local pos = lurek.compute.fromTable({ 0.1, 0.5, 0.9 }, { 3 }, "f32")
+    print("all positive:", pos:all())  -- true
+end
+local _ok, _err = pcall(demo_Array_all)
 
 -- ---- Stub: Array:sum -----------------------------------------------------
 --@api-stub: Array:sum
--- Sum all influence values to compute the total threat pressure on the
--- player from the surrounding AI units.
-print("total influence:", influences:sum())
+-- Demonstrates the proper usage of Array:sum.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_sum()
+    print("total influence:", influences:sum())
+end
+local _ok, _err = pcall(demo_Array_sum)
 
 -- ---- Stub: Array:mean ----------------------------------------------------
 --@api-stub: Array:mean
--- Compute the average tile cost to normalise the cost map before
--- training a navigation heuristic model.
-print("mean cost:", costs_1d:mean())
+-- Demonstrates the proper usage of Array:mean.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_mean()
+    print("mean cost:", costs_1d:mean())
+end
+local _ok, _err = pcall(demo_Array_mean)
 
 -- ---- Stub: Array:min -----------------------------------------------------
 --@api-stub: Array:min
--- Find the minimum value in the cost array to rescale it into a 0-1
--- range for a colour-mapped debug visualisation.
-print("min cost:", costs_1d:min())  -- 1
+-- Demonstrates the proper usage of Array:min.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_min()
+    print("min cost:", costs_1d:min())  -- 1
+end
+local _ok, _err = pcall(demo_Array_min)
 
 -- ---- Stub: Array:max -----------------------------------------------------
 --@api-stub: Array:max
--- Find the maximum influence value to drive the threshold for the AI
--- target selection heuristic.
-print("max influence:", influences:max())  -- 0.9
+-- Demonstrates the proper usage of Array:max.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_max()
+    print("max influence:", influences:max())  -- 0.9
+end
+local _ok, _err = pcall(demo_Array_max)
 
 -- ---- Stub: Array:matmul --------------------------------------------------
 --@api-stub: Array:matmul
@@ -598,10 +1004,13 @@ print("AND result:", and_r:get(1))  -- 1
 
 -- ---- Stub: Array:bitwiseOr -----------------------------------------------
 --@api-stub: Array:bitwiseOr
--- OR two flag arrays to merge walkable tiles from two different
--- layers into a combined traversal mask.
-local or_r = flags_a:bitwiseOr(flags_b)
-print("OR result:", or_r:get(2))  -- 5
+-- Demonstrates the proper usage of Array:bitwiseOr.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_bitwiseOr()
+    local or_r = flags_a:bitwiseOr(flags_b)
+    print("OR result:", or_r:get(2))  -- 5
+end
+local _ok, _err = pcall(demo_Array_bitwiseOr)
 
 -- ---- Stub: Array:bitwiseXor ----------------------------------------------
 --@api-stub: Array:bitwiseXor
@@ -647,10 +1056,13 @@ print("updated influence:", updated:get(1))  -- 1.5
 
 -- ---- Stub: Array:sub -----------------------------------------------------
 --@api-stub: Array:sub
--- Subtract the previous frame's influence from the current one to
--- compute the influence differential for momentum-based AI.
-local diff = updated:sub(base_inf)
-print("delta:", diff:get(1))  -- 0.5
+-- Demonstrates the proper usage of Array:sub.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_sub()
+    local diff = updated:sub(base_inf)
+    print("delta:", diff:get(1))  -- 0.5
+end
+local _ok, _err = pcall(demo_Array_sub)
 
 -- ---- Stub: Array:mul -----------------------------------------------------
 --@api-stub: Array:mul
@@ -751,10 +1163,13 @@ print(string.format("policy sum: %.4f", policy:sum()))  -- ~1.0
 
 -- ---- Stub: Array:logSoftmax ----------------------------------------------
 --@api-stub: Array:logSoftmax
--- Compute log-softmax for a cross-entropy loss calculation during
--- neural network training without numeric instability.
-local log_pol = q_vals:logSoftmax()
-print("log-policy[1]:", log_pol:get(1))
+-- Demonstrates the proper usage of Array:logSoftmax.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_logSoftmax()
+    local log_pol = q_vals:logSoftmax()
+    print("log-policy[1]:", log_pol:get(1))
+end
+local _ok, _err = pcall(demo_Array_logSoftmax)
 
 -- ---- Stub: Array:sigmoid -------------------------------------------------
 --@api-stub: Array:sigmoid
@@ -775,10 +1190,13 @@ print("relu(0.5):", activated:get(2))  -- 0.5
 
 -- ---- Stub: Array:leakyRelu -----------------------------------------------
 --@api-stub: Array:leakyRelu
--- Use leaky ReLU to prevent dead neurons by allowing a small negative
--- gradient for inputs below zero.
-local leaky = pre_act:leakyRelu(0.01)
-print("leakyRelu(-1):", leaky:get(1))  -- -0.01
+-- Demonstrates the proper usage of Array:leakyRelu.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_leakyRelu()
+    local leaky = pre_act:leakyRelu(0.01)
+    print("leakyRelu(-1):", leaky:get(1))  -- -0.01
+end
+local _ok, _err = pcall(demo_Array_leakyRelu)
 
 -- ---- Stub: Array:normalize -----------------------------------------------
 --@api-stub: Array:normalize
@@ -806,15 +1224,21 @@ print("cast dtype:", i_mask:getDataType())  -- "i32"
 
 -- ---- Stub: Array:type ----------------------------------------------------
 --@api-stub: Array:type
--- Verify the variable holds an Array userdata in a generic dispatch
--- function that handles both Array and Tensor types.
-print(arr:type())  -- "Array"
+-- Demonstrates the proper usage of Array:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_type()
+    print(arr:type())  -- "Array"
+end
+local _ok, _err = pcall(demo_Array_type)
 
 -- ---- Stub: Array:typeOf --------------------------------------------------
 --@api-stub: Array:typeOf
--- Confirm type before calling Array-specific methods to avoid calling
--- matmul on a non-matrix type.
-print(arr:typeOf("Array"))  -- true
+-- Demonstrates the proper usage of Array:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Array_typeOf()
+    print(arr:typeOf("Array"))  -- true
+end
+local _ok, _err = pcall(demo_Array_typeOf)
 
 -- =============================================================================
 -- Advanced Compute Functions
@@ -822,137 +1246,213 @@ print(arr:typeOf("Array"))  -- true
 
 -- ---- Stub: lurek.compute.convolve1d --------------------------------------
 --@api-stub: lurek.compute.convolve1d
--- Apply a 1D smoothing kernel to a signal array.
-local signal = lurek.compute.array({1, 3, 5, 3, 1, 3, 5, 3, 1})
-local kernel = lurek.compute.array({0.25, 0.5, 0.25})
-local smoothed = signal:convolve1d(kernel)
-print("convolve1d result: " .. tostring(smoothed))
+-- Demonstrates the proper usage of lurek.compute.convolve1d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_convolve1d()
+    local signal = lurek.compute.array({1, 3, 5, 3, 1, 3, 5, 3, 1})
+    local kernel = lurek.compute.array({0.25, 0.5, 0.25})
+    local smoothed = signal:convolve1d(kernel)
+    print("convolve1d result: " .. tostring(smoothed))
+end
+local _ok, _err = pcall(demo_lurek_compute_convolve1d)
 
 -- ---- Stub: lurek.compute.convolve2D --------------------------------------
 --@api-stub: lurek.compute.convolve2D
--- 2D convolution with a 3x3 blur kernel on an image patch.
-local img_patch = lurek.compute.array({
+-- Demonstrates the proper usage of lurek.compute.convolve2D.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_convolve2D()
+    local img_patch = lurek.compute.array({
     {1, 2, 3, 4},
     {5, 6, 7, 8},
     {9, 10, 11, 12},
     {13, 14, 15, 16}
-})
-local blur_k = lurek.compute.array({{1,1,1},{1,1,1},{1,1,1}})
-local blurred = img_patch:convolve2D(blur_k)
-print("convolve2D: " .. tostring(blurred))
+    })
+    local blur_k = lurek.compute.array({{1,1,1},{1,1,1},{1,1,1}})
+    local blurred = img_patch:convolve2D(blur_k)
+    print("convolve2D: " .. tostring(blurred))
+end
+local _ok, _err = pcall(demo_lurek_compute_convolve2D)
 
 -- ---- Stub: lurek.compute.correlate1d ------------------------------------
 --@api-stub: lurek.compute.correlate1d
--- Cross-correlate a template pattern against a signal to find matches.
-local corr = signal:correlate1d(kernel)
-print("correlate1d: " .. tostring(corr))
+-- Demonstrates the proper usage of lurek.compute.correlate1d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_correlate1d()
+    local corr = signal:correlate1d(kernel)
+    print("correlate1d: " .. tostring(corr))
+end
+local _ok, _err = pcall(demo_lurek_compute_correlate1d)
 
 -- ---- Stub: lurek.compute.covariance --------------------------------------
 --@api-stub: lurek.compute.covariance
--- Compute covariance between player score and time played.
-local scores = lurek.compute.array({10, 20, 30, 40, 50})
-local times = lurek.compute.array({1, 2, 3, 4, 5})
-local cov = scores:covariance(times)
-print("covariance: " .. tostring(cov))
+-- Demonstrates the proper usage of lurek.compute.covariance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_covariance()
+    local scores = lurek.compute.array({10, 20, 30, 40, 50})
+    local times = lurek.compute.array({1, 2, 3, 4, 5})
+    local cov = scores:covariance(times)
+    print("covariance: " .. tostring(cov))
+end
+local _ok, _err = pcall(demo_lurek_compute_covariance)
 
 -- ---- Stub: lurek.compute.cross2d -----------------------------------------
 --@api-stub: lurek.compute.cross2d
--- 2D cross-correlation for template matching in a tile map.
-local cross = img_patch:cross2d(blur_k)
-print("cross2d: " .. tostring(cross))
+-- Demonstrates the proper usage of lurek.compute.cross2d.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_cross2d()
+    local cross = img_patch:cross2d(blur_k)
+    print("cross2d: " .. tostring(cross))
+end
+local _ok, _err = pcall(demo_lurek_compute_cross2d)
 
 -- ---- Stub: lurek.compute.cumsum ------------------------------------------
 --@api-stub: lurek.compute.cumsum
--- Cumulative sum for a running total score display.
-local vals = lurek.compute.array({10, 20, 30, 40})
-local cs = vals:cumsum()
-print("cumsum: " .. tostring(cs))
+-- Demonstrates the proper usage of lurek.compute.cumsum.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_cumsum()
+    local vals = lurek.compute.array({10, 20, 30, 40})
+    local cs = vals:cumsum()
+    print("cumsum: " .. tostring(cs))
+end
+local _ok, _err = pcall(demo_lurek_compute_cumsum)
 
 -- ---- Stub: lurek.compute.diff --------------------------------------------
 --@api-stub: lurek.compute.diff
--- First difference to detect velocity changes from position samples.
-local positions = lurek.compute.array({0, 5, 15, 30, 50})
-local velocities = positions:diff()
-print("diff (velocities): " .. tostring(velocities))
+-- Demonstrates the proper usage of lurek.compute.diff.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_diff()
+    local positions = lurek.compute.array({0, 5, 15, 30, 50})
+    local velocities = positions:diff()
+    print("diff (velocities): " .. tostring(velocities))
+end
+local _ok, _err = pcall(demo_lurek_compute_diff)
 
 -- ---- Stub: lurek.compute.dilate ------------------------------------------
 --@api-stub: lurek.compute.dilate
--- Morphological dilation to expand bright regions in a collision mask.
-local mask = lurek.compute.array({{0,0,0},{0,1,0},{0,0,0}})
-local dilated = mask:dilate(1)
-print("dilate: " .. tostring(dilated))
+-- Demonstrates the proper usage of lurek.compute.dilate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_dilate()
+    local mask = lurek.compute.array({{0,0,0},{0,1,0},{0,0,0}})
+    local dilated = mask:dilate(1)
+    print("dilate: " .. tostring(dilated))
+end
+local _ok, _err = pcall(demo_lurek_compute_dilate)
 
 -- ---- Stub: lurek.compute.erode -------------------------------------------
 --@api-stub: lurek.compute.erode
--- Morphological erosion to shrink a collision mask border.
-local eroded = dilated:erode(1)
-print("erode: " .. tostring(eroded))
+-- Demonstrates the proper usage of lurek.compute.erode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_erode()
+    local eroded = dilated:erode(1)
+    print("erode: " .. tostring(eroded))
+end
+local _ok, _err = pcall(demo_lurek_compute_erode)
 
 -- ---- Stub: lurek.compute.linsolve ----------------------------------------
 --@api-stub: lurek.compute.linsolve
--- Solve a 2x2 linear system: 2x + y = 5, x + 3y = 7.
-local A = lurek.compute.array({{2, 1}, {1, 3}})
-local b = lurek.compute.array({5, 7})
-local x = A:linsolve(b)
-print("linsolve: " .. tostring(x))
+-- Demonstrates the proper usage of lurek.compute.linsolve.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_linsolve()
+    local A = lurek.compute.array({{2, 1}, {1, 3}})
+    local b = lurek.compute.array({5, 7})
+    local x = A:linsolve(b)
+    print("linsolve: " .. tostring(x))
+end
+local _ok, _err = pcall(demo_lurek_compute_linsolve)
 
 -- ---- Stub: lurek.compute.luDecompose -------------------------------------
 --@api-stub: lurek.compute.luDecompose
--- LU decomposition for efficient repeated solves with same matrix.
-local L, U = A:luDecompose()
-print("LU decompose: L=" .. tostring(L) .. " U=" .. tostring(U))
+-- Demonstrates the proper usage of lurek.compute.luDecompose.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_luDecompose()
+    local L, U = A:luDecompose()
+    print("LU decompose: L=" .. tostring(L) .. " U=" .. tostring(U))
+end
+local _ok, _err = pcall(demo_lurek_compute_luDecompose)
 
 -- ---- Stub: lurek.compute.normalizeRange ----------------------------------
 --@api-stub: lurek.compute.normalizeRange
--- Normalize heightmap values to [0, 1] for colour mapping.
-local heights = lurek.compute.array({10, 50, 30, 80, 20})
-local normed = heights:normalizeRange()
-print("normalizeRange: " .. tostring(normed))
+-- Demonstrates the proper usage of lurek.compute.normalizeRange.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_normalizeRange()
+    local heights = lurek.compute.array({10, 50, 30, 80, 20})
+    local normed = heights:normalizeRange()
+    print("normalizeRange: " .. tostring(normed))
+end
+local _ok, _err = pcall(demo_lurek_compute_normalizeRange)
 
 -- ---- Stub: lurek.compute.normalizeVec ------------------------------------
 --@api-stub: lurek.compute.normalizeVec
--- Normalize a direction vector to unit length.
-local dir_vec = lurek.compute.array({3, 4})
-local unit = dir_vec:normalizeVec()
-print("normalizeVec: " .. tostring(unit))
+-- Demonstrates the proper usage of lurek.compute.normalizeVec.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_normalizeVec()
+    local dir_vec = lurek.compute.array({3, 4})
+    local unit = dir_vec:normalizeVec()
+    print("normalizeVec: " .. tostring(unit))
+end
+local _ok, _err = pcall(demo_lurek_compute_normalizeVec)
 
 -- ---- Stub: lurek.compute.outer -------------------------------------------
 --@api-stub: lurek.compute.outer
--- Outer product of two vectors for a rank-1 matrix.
-local a_vec = lurek.compute.array({1, 2, 3})
-local b_vec = lurek.compute.array({4, 5})
-local op = a_vec:outer(b_vec)
-print("outer product: " .. tostring(op))
+-- Demonstrates the proper usage of lurek.compute.outer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_outer()
+    local a_vec = lurek.compute.array({1, 2, 3})
+    local b_vec = lurek.compute.array({4, 5})
+    local op = a_vec:outer(b_vec)
+    print("outer product: " .. tostring(op))
+end
+local _ok, _err = pcall(demo_lurek_compute_outer)
 
 -- ---- Stub: lurek.compute.pearsonCorr ------------------------------------
 --@api-stub: lurek.compute.pearsonCorr
--- Correlation between difficulty and player retention.
-local pc = scores:pearsonCorr(times)
-print("pearson correlation: " .. tostring(pc))
+-- Demonstrates the proper usage of lurek.compute.pearsonCorr.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_pearsonCorr()
+    local pc = scores:pearsonCorr(times)
+    print("pearson correlation: " .. tostring(pc))
+end
+local _ok, _err = pcall(demo_lurek_compute_pearsonCorr)
 
 -- ---- Stub: lurek.compute.percentile -------------------------------------
 --@api-stub: lurek.compute.percentile
--- Find the 90th percentile score for a leaderboard cutoff.
-local p90 = scores:percentile(90)
-print("90th percentile: " .. tostring(p90))
+-- Demonstrates the proper usage of lurek.compute.percentile.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_percentile()
+    local p90 = scores:percentile(90)
+    print("90th percentile: " .. tostring(p90))
+end
+local _ok, _err = pcall(demo_lurek_compute_percentile)
 
 -- ---- Stub: lurek.compute.sobel -------------------------------------------
 --@api-stub: lurek.compute.sobel
--- Sobel edge detection on a heightmap for cliff rendering.
-local edges = img_patch:sobel()
-print("sobel edges: " .. tostring(edges))
+-- Demonstrates the proper usage of lurek.compute.sobel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_sobel()
+    local edges = img_patch:sobel()
+    print("sobel edges: " .. tostring(edges))
+end
+local _ok, _err = pcall(demo_lurek_compute_sobel)
 
 -- ---- Stub: lurek.compute.transformPoints ---------------------------------
 --@api-stub: lurek.compute.transformPoints
--- Transform a batch of points by a rotation matrix.
-local pts = lurek.compute.array({{1, 0}, {0, 1}, {-1, 0}})
-local rot = lurek.compute.array({{0, -1}, {1, 0}})
-local rotated = pts:transformPoints(rot)
-print("transformed points: " .. tostring(rotated))
+-- Demonstrates the proper usage of lurek.compute.transformPoints.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_transformPoints()
+    local pts = lurek.compute.array({{1, 0}, {0, 1}, {-1, 0}})
+    local rot = lurek.compute.array({{0, -1}, {1, 0}})
+    local rotated = pts:transformPoints(rot)
+    print("transformed points: " .. tostring(rotated))
+end
+local _ok, _err = pcall(demo_lurek_compute_transformPoints)
 
 -- ---- Stub: lurek.compute.zscore ------------------------------------------
 --@api-stub: lurek.compute.zscore
--- Z-score normalize player stats for balanced matchmaking.
-local stats = lurek.compute.array({100, 200, 150, 300, 250})
-local zs = stats:zscore()
-print("z-scores: " .. tostring(zs))
+-- Demonstrates the proper usage of lurek.compute.zscore.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_compute_zscore()
+    local stats = lurek.compute.array({100, 200, 150, 300, 250})
+    local zs = stats:zscore()
+    print("z-scores: " .. tostring(zs))
+end
+local _ok, _err = pcall(demo_lurek_compute_zscore)

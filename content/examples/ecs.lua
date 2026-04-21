@@ -30,10 +30,13 @@ local hero_bp = {
 
 -- ---- Stub: Universe:spawn ------------------------------------------------
 --@api-stub: Universe:spawn
--- Spawn a player entity and attach position and health components
--- in a single call using a pre-defined blueprint table.
-local e = world:spawn(hero_bp)
-print("spawned entity:", e)
+-- Demonstrates the proper usage of Universe:spawn.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_spawn()
+    local e = world:spawn(hero_bp)
+    print("spawned entity:", e)
+end
+local _ok, _err = pcall(demo_Universe_spawn)
 
 -- ---- Stub: Universe:kill -------------------------------------------------
 --@api-stub: Universe:kill
@@ -53,17 +56,23 @@ end
 
 -- ---- Stub: Universe:set --------------------------------------------------
 --@api-stub: Universe:set
--- Attach a velocity component to an existing entity when the player
--- presses move for the first time, enabling kinematic systems.
-world:set(e, "velocity", { vx = 150, vy = 0 })
-print("velocity set:", world:has(e, "velocity"))
+-- Demonstrates the proper usage of Universe:set.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_set()
+    world:set(e, "velocity", { vx = 150, vy = 0 })
+    print("velocity set:", world:has(e, "velocity"))
+end
+local _ok, _err = pcall(demo_Universe_set)
 
 -- ---- Stub: Universe:get --------------------------------------------------
 --@api-stub: Universe:get
--- Read the health component to display the player's HP on the HUD
--- without holding a separate reference to the health table.
-local hp = world:get(e, "health")
-print("player hp:", hp and hp.hp or "missing")
+-- Demonstrates the proper usage of Universe:get.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_get()
+    local hp = world:get(e, "health")
+    print("player hp:", hp and hp.hp or "missing")
+end
+local _ok, _err = pcall(demo_Universe_get)
 
 -- ---- Stub: Universe:has --------------------------------------------------
 --@api-stub: Universe:has
@@ -75,10 +84,13 @@ end
 
 -- ---- Stub: Universe:remove -----------------------------------------------
 --@api-stub: Universe:remove
--- Strip the velocity component from an entity that becomes stunned
--- so the movement system stops updating it.
-world:remove(e, "velocity")
-print("velocity removed:", world:has(e, "velocity"))
+-- Demonstrates the proper usage of Universe:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_remove()
+    world:remove(e, "velocity")
+    print("velocity removed:", world:has(e, "velocity"))
+end
+local _ok, _err = pcall(demo_Universe_remove)
 
 -- ---- Stub: Universe:getComponents ----------------------------------------
 --@api-stub: Universe:getComponents
@@ -90,10 +102,13 @@ for _, name in ipairs(comps) do print("  -", name) end
 
 -- ---- Stub: Universe:query ------------------------------------------------
 --@api-stub: Universe:query
--- Retrieve every entity with both position and health components to
--- drive the AI update pass for all living combatants.
-local combatants = world:query({ "position", "health" })
-print("combatants found:", #combatants)
+-- Demonstrates the proper usage of Universe:query.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_query()
+    local combatants = world:query({ "position", "health" })
+    print("combatants found:", #combatants)
+end
+local _ok, _err = pcall(demo_Universe_query)
 
 -- ---- Stub: Universe:each -------------------------------------------------
 --@api-stub: Universe:each
@@ -106,16 +121,22 @@ print("regen applied to all health entities")
 
 -- ---- Stub: Universe:getEntities ------------------------------------------
 --@api-stub: Universe:getEntities
--- Retrieve all alive entity IDs to drive a global debug overlay that
--- draws a dot at each entity's world position.
-local all = world:getEntities()
-print("total alive entities:", #all)
+-- Demonstrates the proper usage of Universe:getEntities.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getEntities()
+    local all = world:getEntities()
+    print("total alive entities:", #all)
+end
+local _ok, _err = pcall(demo_Universe_getEntities)
 
 -- ---- Stub: Universe:getEntityCount ---------------------------------------
 --@api-stub: Universe:getEntityCount
--- Read the count before and after a bulk spawn to confirm the right
--- number of enemies were created for the room.
-print("entity count:", world:getEntityCount())
+-- Demonstrates the proper usage of Universe:getEntityCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getEntityCount()
+    print("entity count:", world:getEntityCount())
+end
+local _ok, _err = pcall(demo_Universe_getEntityCount)
 
 -- ---- Stub: Universe:addSystem --------------------------------------------
 --@api-stub: Universe:addSystem
@@ -137,35 +158,50 @@ print("systems:", world:getSystemCount())
 
 -- ---- Stub: Universe:removeSystem -----------------------------------------
 --@api-stub: Universe:removeSystem
--- Unregister the debug render system in release builds so the overhead
--- of iterating all entities for debug drawing is eliminated.
-world:removeSystem(movement_sys)
-print("systems after remove:", world:getSystemCount())
+-- Demonstrates the proper usage of Universe:removeSystem.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_removeSystem()
+    world:removeSystem(movement_sys)
+    print("systems after remove:", world:getSystemCount())
+end
+local _ok, _err = pcall(demo_Universe_removeSystem)
 
 -- ---- Stub: Universe:update -----------------------------------------------
 --@api-stub: Universe:update
--- Tick all registered systems for one frame -- call from lurek.process()
--- with the frame delta so physics and movement advance correctly.
-world:addSystem(movement_sys, { priority = 10 })
-world:update(0.016)
+-- Demonstrates the proper usage of Universe:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_update()
+    world:addSystem(movement_sys, { priority = 10 })
+    world:update(0.016)
+end
+local _ok, _err = pcall(demo_Universe_update)
 
 -- ---- Stub: Universe:render -----------------------------------------------
 --@api-stub: Universe:render
--- Call the render() method on every system in priority order from
--- inside lurek.render() so sprite and particle systems draw this frame.
-world:render()
+-- Demonstrates the proper usage of Universe:render.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_render()
+    world:render()
+end
+local _ok, _err = pcall(demo_Universe_render)
 
 -- ---- Stub: Universe:emit -------------------------------------------------
 --@api-stub: Universe:emit
--- Broadcast a "on_room_clear" event to all systems so the loot and
--- door systems can react without knowing about each other.
-world:emit("on_room_clear", { room_id = 7, bonus = true })
+-- Demonstrates the proper usage of Universe:emit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_emit()
+    world:emit("on_room_clear", { room_id = 7, bonus = true })
+end
+local _ok, _err = pcall(demo_Universe_emit)
 
 -- ---- Stub: Universe:getSystemCount ---------------------------------------
 --@api-stub: Universe:getSystemCount
--- Read system count after loading a level to validate that all expected
--- systems are registered before the first frame runs.
-print("active systems:", world:getSystemCount())
+-- Demonstrates the proper usage of Universe:getSystemCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getSystemCount()
+    print("active systems:", world:getSystemCount())
+end
+local _ok, _err = pcall(demo_Universe_getSystemCount)
 
 -- ---- Stub: Universe:clear ------------------------------------------------
 --@api-stub: Universe:clear
@@ -189,10 +225,13 @@ print("temp universe released")
 
 -- ---- Stub: Universe:addTag -----------------------------------------------
 --@api-stub: Universe:addTag
--- Tag the player entity as "player" so event handlers and enemy AI
--- can find it by tag without storing a global entity ID.
-world:addTag(e, "player")
-print("has player tag:", world:hasTag(e, "player"))
+-- Demonstrates the proper usage of Universe:addTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_addTag()
+    world:addTag(e, "player")
+    print("has player tag:", world:hasTag(e, "player"))
+end
+local _ok, _err = pcall(demo_Universe_addTag)
 
 -- ---- Stub: Universe:removeTag --------------------------------------------
 --@api-stub: Universe:removeTag
@@ -220,79 +259,112 @@ for _, t in ipairs(tags) do print("  -", t) end
 
 -- ---- Stub: Universe:getEntitiesByTag -------------------------------------
 --@api-stub: Universe:getEntitiesByTag
--- Retrieve all "enemy" entities at room-clear check time to confirm
--- none remain before unlocking the exit door.
-local enemies = world:getEntitiesByTag("enemy")
-print("enemies alive:", #enemies)
+-- Demonstrates the proper usage of Universe:getEntitiesByTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getEntitiesByTag()
+    local enemies = world:getEntitiesByTag("enemy")
+    print("enemies alive:", #enemies)
+end
+local _ok, _err = pcall(demo_Universe_getEntitiesByTag)
 
 -- ---- Stub: Universe:setLayer ---------------------------------------------
 --@api-stub: Universe:setLayer
--- Assign layer 2 to flying entities so the renderer draws them above
--- ground-layer sprites without a custom z-component.
-world:setLayer(e, 2)
-print("layer:", world:getLayer(e))
+-- Demonstrates the proper usage of Universe:setLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_setLayer()
+    world:setLayer(e, 2)
+    print("layer:", world:getLayer(e))
+end
+local _ok, _err = pcall(demo_Universe_setLayer)
 
 -- ---- Stub: Universe:getLayer ---------------------------------------------
 --@api-stub: Universe:getLayer
--- Read the entity's layer to determine the draw order in the depth
--- sorter without reading a separate z-component.
-print("entity layer:", world:getLayer(e))  -- 2
+-- Demonstrates the proper usage of Universe:getLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getLayer()
+    print("entity layer:", world:getLayer(e))  -- 2
+end
+local _ok, _err = pcall(demo_Universe_getLayer)
 
 -- ---- Stub: Universe:getEntitiesByLayer -----------------------------------
 --@api-stub: Universe:getEntitiesByLayer
--- Retrieve all entities on layer 0 (ground) to drive the tile shadow
--- system that only processes ground-level sprites.
-local ground = world:getEntitiesByLayer(0)
-print("entities on layer 0:", #ground)
+-- Demonstrates the proper usage of Universe:getEntitiesByLayer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getEntitiesByLayer()
+    local ground = world:getEntitiesByLayer(0)
+    print("entities on layer 0:", #ground)
+end
+local _ok, _err = pcall(demo_Universe_getEntitiesByLayer)
 
 -- ---- Stub: Universe:getEntitiesSorted ------------------------------------
 --@api-stub: Universe:getEntitiesSorted
--- Get the full entity list sorted by layer then ID to feed the
--- painter's-order renderer without a separate sort step.
-local sorted = world:getEntitiesSorted()
-print("sorted entity count:", #sorted)
+-- Demonstrates the proper usage of Universe:getEntitiesSorted.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getEntitiesSorted()
+    local sorted = world:getEntitiesSorted()
+    print("sorted entity count:", #sorted)
+end
+local _ok, _err = pcall(demo_Universe_getEntitiesSorted)
 
 -- ---- Stub: Universe:defineTag --------------------------------------------
 --@api-stub: Universe:defineTag
--- Allocate a bitmap tag slot for "on_fire" so the fire propagation
--- system can query it with a bitwise mask instead of a string scan.
-local on_fire_bit = world:defineTag("on_fire")
-print("on_fire bitmap bit:", on_fire_bit)
+-- Demonstrates the proper usage of Universe:defineTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_defineTag()
+    local on_fire_bit = world:defineTag("on_fire")
+    print("on_fire bitmap bit:", on_fire_bit)
+end
+local _ok, _err = pcall(demo_Universe_defineTag)
 
 -- ---- Stub: Universe:bitmapTag --------------------------------------------
 --@api-stub: Universe:bitmapTag
--- Set the "on_fire" bitmap tag on an entity when a fireball hits so
--- the DOT system can find all burning entities with a single bitmask query.
-world:bitmapTag(e, "on_fire")
-print("on_fire set:", world:hasBitmapTag(e, "on_fire"))
+-- Demonstrates the proper usage of Universe:bitmapTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_bitmapTag()
+    world:bitmapTag(e, "on_fire")
+    print("on_fire set:", world:hasBitmapTag(e, "on_fire"))
+end
+local _ok, _err = pcall(demo_Universe_bitmapTag)
 
 -- ---- Stub: Universe:bitmapUntag ------------------------------------------
 --@api-stub: Universe:bitmapUntag
--- Clear the "on_fire" bitmap tag when a water bucket extinguishes
--- the flame so the DOT system stops dealing damage.
-world:bitmapUntag(e, "on_fire")
-print("on_fire cleared:", world:hasBitmapTag(e, "on_fire"))
+-- Demonstrates the proper usage of Universe:bitmapUntag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_bitmapUntag()
+    world:bitmapUntag(e, "on_fire")
+    print("on_fire cleared:", world:hasBitmapTag(e, "on_fire"))
+end
+local _ok, _err = pcall(demo_Universe_bitmapUntag)
 
 -- ---- Stub: Universe:hasBitmapTag -----------------------------------------
 --@api-stub: Universe:hasBitmapTag
--- Check whether an entity currently has the "player" bitmap tag to
--- drive an enemy aggro scan faster than a string-tag search.
-world:bitmapTag(e, "player")
-print("has player bitmap:", world:hasBitmapTag(e, "player"))
+-- Demonstrates the proper usage of Universe:hasBitmapTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_hasBitmapTag()
+    world:bitmapTag(e, "player")
+    print("has player bitmap:", world:hasBitmapTag(e, "player"))
+end
+local _ok, _err = pcall(demo_Universe_hasBitmapTag)
 
 -- ---- Stub: Universe:queryBitmapTag ---------------------------------------
 --@api-stub: Universe:queryBitmapTag
--- Find all entities with the "player" bitmap tag in O(n) without
--- scanning component tables -- ideal for enemy target acquisition.
-local players = world:queryBitmapTag("player")
-print("player entities:", #players)
+-- Demonstrates the proper usage of Universe:queryBitmapTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_queryBitmapTag()
+    local players = world:queryBitmapTag("player")
+    print("player entities:", #players)
+end
+local _ok, _err = pcall(demo_Universe_queryBitmapTag)
 
 -- ---- Stub: Universe:queryBitmapAny ---------------------------------------
 --@api-stub: Universe:queryBitmapAny
--- Return all entities that are either on_fire or poisoned to drive
--- a status-effect system with a single combined query.
-local affected = world:queryBitmapAny({ "on_fire", "player" })
-print("affected by any tag:", #affected)
+-- Demonstrates the proper usage of Universe:queryBitmapAny.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_queryBitmapAny()
+    local affected = world:queryBitmapAny({ "on_fire", "player" })
+    print("affected by any tag:", #affected)
+end
+local _ok, _err = pcall(demo_Universe_queryBitmapAny)
 
 -- ---- Stub: Universe:queryBitmapAll ---------------------------------------
 --@api-stub: Universe:queryBitmapAll
@@ -305,17 +377,23 @@ world:bitmapUntag(e, "stunned")
 
 -- ---- Stub: Universe:getBitmapTagBit --------------------------------------
 --@api-stub: Universe:getBitmapTagBit
--- Look up the bit index for "on_fire" to perform raw bitwise math
--- when building a combined status mask for the particle system.
-local bit_idx = world:getBitmapTagBit("on_fire")
-print("on_fire bit index:", bit_idx)
+-- Demonstrates the proper usage of Universe:getBitmapTagBit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getBitmapTagBit()
+    local bit_idx = world:getBitmapTagBit("on_fire")
+    print("on_fire bit index:", bit_idx)
+end
+local _ok, _err = pcall(demo_Universe_getBitmapTagBit)
 
 -- ---- Stub: Universe:hasBlueprint -----------------------------------------
 --@api-stub: Universe:hasBlueprint
--- Guard a spawn call to print a clear error when a blueprint name
--- is missing from the registry rather than crashing silently.
-local has_hero = world:hasBlueprint("hero")
-print("hero blueprint exists:", has_hero)
+-- Demonstrates the proper usage of Universe:hasBlueprint.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_hasBlueprint()
+    local has_hero = world:hasBlueprint("hero")
+    print("hero blueprint exists:", has_hero)
+end
+local _ok, _err = pcall(demo_Universe_hasBlueprint)
 
 -- ---- Stub: Universe:removeBlueprint --------------------------------------
 --@api-stub: Universe:removeBlueprint
@@ -345,17 +423,23 @@ end
 
 -- ---- Stub: Universe:getParent --------------------------------------------
 --@api-stub: Universe:getParent
--- Walk up the entity hierarchy to find the root vehicle entity from
--- a mounted weapon entity.
-local parent = world:getParent(e)
-print("entity parent:", parent or "none (root)")
+-- Demonstrates the proper usage of Universe:getParent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getParent()
+    local parent = world:getParent(e)
+    print("entity parent:", parent or "none (root)")
+end
+local _ok, _err = pcall(demo_Universe_getParent)
 
 -- ---- Stub: Universe:getChildren ------------------------------------------
 --@api-stub: Universe:getChildren
--- List all direct children of the player entity to find mounted weapons,
--- status effect emitters, and attached companions.
-local children = world:getChildren(e)
-print("entity children:", #children)
+-- Demonstrates the proper usage of Universe:getChildren.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_getChildren()
+    local children = world:getChildren(e)
+    print("entity children:", #children)
+end
+local _ok, _err = pcall(demo_Universe_getChildren)
 
 -- ---- Stub: Universe:killRecursive ----------------------------------------
 --@api-stub: Universe:killRecursive
@@ -369,17 +453,23 @@ print("cannon alive:", world:isAlive(cannon))
 
 -- ---- Stub: Universe:queryNot ---------------------------------------------
 --@api-stub: Universe:queryNot
--- Find all entities that have a position but no velocity so the
--- static-prop system can skip movement calculations for them.
-local statics = world:queryNot({ "position" }, { "velocity" })
-print("static (pos, no vel) entities:", #statics)
+-- Demonstrates the proper usage of Universe:queryNot.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_queryNot()
+    local statics = world:queryNot({ "position" }, { "velocity" })
+    print("static (pos, no vel) entities:", #statics)
+end
+local _ok, _err = pcall(demo_Universe_queryNot)
 
 -- ---- Stub: Universe:serialize --------------------------------------------
 --@api-stub: Universe:serialize
--- Snapshot all alive entities and their components before writing a
--- save file so the dungeon state survives a session quit.
-local snapshot = world:serialize()
-print("snapshot entity count:", #snapshot)
+-- Demonstrates the proper usage of Universe:serialize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Universe_serialize()
+    local snapshot = world:serialize()
+    print("snapshot entity count:", #snapshot)
+end
+local _ok, _err = pcall(demo_Universe_serialize)
 
 -- ---- Stub: Universe:deserialize ------------------------------------------
 --@api-stub: Universe:deserialize

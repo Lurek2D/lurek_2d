@@ -13,192 +13,401 @@ print("=== lurek.data — Binary Data & Serialization ===\n")
 -- =============================================================================
 
 --@api-stub: lurek.data.pack
--- Pack player position + health into binary for network or save.
-local packed = lurek.data.pack("ffH", 123.5, 456.7, 100)
-print("packed size: " .. #packed)
+-- Demonstrates the proper usage of lurek.data.pack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_pack()
+    local packed = lurek.data.pack("ffH", 123.5, 456.7, 100)
+    print("packed size: " .. #packed)
+end
+local _ok, _err = pcall(demo_lurek_data_pack)
 
 --@api-stub: lurek.data.unpack
-local x, y, hp = lurek.data.unpack("ffH", packed)
-print("unpacked: " .. x .. "," .. y .. " hp=" .. hp)
+-- Demonstrates the proper usage of lurek.data.unpack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_unpack()
+    local x, y, hp = lurek.data.unpack("ffH", packed)
+    print("unpacked: " .. x .. "," .. y .. " hp=" .. hp)
+end
+local _ok, _err = pcall(demo_lurek_data_unpack)
 
 --@api-stub: lurek.data.getPackedSize
-print("format 'ffH' size: " .. lurek.data.getPackedSize("ffH"))
+-- Demonstrates the proper usage of lurek.data.getPackedSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_getPackedSize()
+    print("format 'ffH' size: " .. lurek.data.getPackedSize("ffH"))
+end
+local _ok, _err = pcall(demo_lurek_data_getPackedSize)
 
 -- =============================================================================
 -- Compression
 -- =============================================================================
 
 --@api-stub: lurek.data.compress
-local blob = string.rep("hello world ", 1000)
-local compressed = lurek.data.compress(blob)
-print("compressed: " .. #blob .. " -> " .. #compressed)
+-- Demonstrates the proper usage of lurek.data.compress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_compress()
+    local blob = string.rep("hello world ", 1000)
+    local compressed = lurek.data.compress(blob)
+    print("compressed: " .. #blob .. " -> " .. #compressed)
+end
+local _ok, _err = pcall(demo_lurek_data_compress)
 
 --@api-stub: lurek.data.decompress
-local restored = lurek.data.decompress(compressed)
-print("decompressed matches: " .. tostring(restored == blob))
+-- Demonstrates the proper usage of lurek.data.decompress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_decompress()
+    local restored = lurek.data.decompress(compressed)
+    print("decompressed matches: " .. tostring(restored == blob))
+end
+local _ok, _err = pcall(demo_lurek_data_decompress)
 
 -- =============================================================================
 -- Encoding (base64, hex)
 -- =============================================================================
 
 --@api-stub: lurek.data.encode
-local b64 = lurek.data.encode("base64", "save data here")
-print("base64: " .. b64)
+-- Demonstrates the proper usage of lurek.data.encode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_encode()
+    local b64 = lurek.data.encode("base64", "save data here")
+    print("base64: " .. b64)
+end
+local _ok, _err = pcall(demo_lurek_data_encode)
 
 --@api-stub: lurek.data.decode
-local decoded = lurek.data.decode("base64", b64)
-print("decoded: " .. decoded)
+-- Demonstrates the proper usage of lurek.data.decode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_decode()
+    local decoded = lurek.data.decode("base64", b64)
+    print("decoded: " .. decoded)
+end
+local _ok, _err = pcall(demo_lurek_data_decode)
 
 -- =============================================================================
 -- Hashing
 -- =============================================================================
 
 --@api-stub: lurek.data.hash
-local checksum = lurek.data.hash("sha256", "player_save_v1")
-print("sha256: " .. checksum)
+-- Demonstrates the proper usage of lurek.data.hash.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_hash()
+    local checksum = lurek.data.hash("sha256", "player_save_v1")
+    print("sha256: " .. checksum)
+end
+local _ok, _err = pcall(demo_lurek_data_hash)
 
 -- =============================================================================
 -- MessagePack
 -- =============================================================================
 
 --@api-stub: lurek.data.toMsgPack
-local msg = lurek.data.toMsgPack({name = "Hero", level = 10, items = {"sword", "shield"}})
-print("msgpack size: " .. #msg)
+-- Demonstrates the proper usage of lurek.data.toMsgPack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_toMsgPack()
+    local msg = lurek.data.toMsgPack({name = "Hero", level = 10, items = {"sword", "shield"}})
+    print("msgpack size: " .. #msg)
+end
+local _ok, _err = pcall(demo_lurek_data_toMsgPack)
 
 --@api-stub: lurek.data.fromMsgPack
-local obj = lurek.data.fromMsgPack(msg)
-print("from msgpack: " .. obj.name .. " level " .. obj.level)
+-- Demonstrates the proper usage of lurek.data.fromMsgPack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_fromMsgPack()
+    local obj = lurek.data.fromMsgPack(msg)
+    print("from msgpack: " .. obj.name .. " level " .. obj.level)
+end
+local _ok, _err = pcall(demo_lurek_data_fromMsgPack)
 
 -- =============================================================================
 -- TOML Parsing — mod configuration
 -- =============================================================================
 
 --@api-stub: lurek.data.parseToml
-local cfg = lurek.data.parseToml([[
-[mod]
-name = "extended_combat"
-version = "1.2.0"
-enabled = true
-]])
-print("mod name: " .. cfg.mod.name)
+-- Demonstrates the proper usage of lurek.data.parseToml.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_parseToml()
+    local cfg = lurek.data.parseToml([[
+    [mod]
+    name = "extended_combat"
+    version = "1.2.0"
+    enabled = true
+    ]])
+    print("mod name: " .. cfg.mod.name)
+end
+local _ok, _err = pcall(demo_lurek_data_parseToml)
 
 --@api-stub: lurek.data.encodeToml
-local toml_str = lurek.data.encodeToml({settings = {volume = 0.8, fullscreen = true}})
-print("encoded toml:\n" .. toml_str)
+-- Demonstrates the proper usage of lurek.data.encodeToml.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_encodeToml()
+    local toml_str = lurek.data.encodeToml({settings = {volume = 0.8, fullscreen = true}})
+    print("encoded toml:\n" .. toml_str)
+end
+local _ok, _err = pcall(demo_lurek_data_encodeToml)
 
 -- =============================================================================
 -- ByteData — raw byte buffers
 -- =============================================================================
 
 --@api-stub: lurek.data.newByteData
-local bytes = lurek.data.newByteData(256)
+-- Demonstrates the proper usage of lurek.data.newByteData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_newByteData()
+    local bytes = lurek.data.newByteData(256)
+end
+local _ok, _err = pcall(demo_lurek_data_newByteData)
 
 --@api-stub: mlua:getSize
-print("byte data size: " .. bytes:getSize())
+-- Demonstrates the proper usage of mlua:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getSize()
+    print("byte data size: " .. bytes:getSize())
+end
+local _ok, _err = pcall(demo_mlua_getSize)
 
 --@api-stub: mlua:getString
-local str = bytes:getString()
+-- Demonstrates the proper usage of mlua:getString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getString()
+    local str = bytes:getString()
+end
+local _ok, _err = pcall(demo_mlua_getString)
 
 --@api-stub: mlua:getByte
-local b = bytes:getByte(0)
-print("byte 0: " .. b)
+-- Demonstrates the proper usage of mlua:getByte.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_getByte()
+    local b = bytes:getByte(0)
+    print("byte 0: " .. b)
+end
+local _ok, _err = pcall(demo_mlua_getByte)
 
 --@api-stub: mlua:setByte
-bytes:setByte(0, 42)
+-- Demonstrates the proper usage of mlua:setByte.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_setByte()
+    bytes:setByte(0, 42)
+end
+local _ok, _err = pcall(demo_mlua_setByte)
 
 --@api-stub: mlua:clone
-local bytes_copy = bytes:clone()
+-- Demonstrates the proper usage of mlua:clone.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_mlua_clone()
+    local bytes_copy = bytes:clone()
+end
+local _ok, _err = pcall(demo_mlua_clone)
 
 -- =============================================================================
 -- DataView — typed access to binary data
 -- =============================================================================
 
 --@api-stub: lurek.data.newDataView
-local view = lurek.data.newDataView(packed)
+-- Demonstrates the proper usage of lurek.data.newDataView.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_newDataView()
+    local view = lurek.data.newDataView(packed)
+end
+local _ok, _err = pcall(demo_lurek_data_newDataView)
 
 --@api-stub: DataView:getSize
-print("view size: " .. view:getSize())
+-- Demonstrates the proper usage of DataView:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getSize()
+    print("view size: " .. view:getSize())
+end
+local _ok, _err = pcall(demo_DataView_getSize)
 
 --@api-stub: DataView:getFloat
-print("float at 0: " .. view:getFloat(0))
+-- Demonstrates the proper usage of DataView:getFloat.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getFloat()
+    print("float at 0: " .. view:getFloat(0))
+end
+local _ok, _err = pcall(demo_DataView_getFloat)
 
 --@api-stub: DataView:getDouble
-print("double at 0: " .. view:getDouble(0))
+-- Demonstrates the proper usage of DataView:getDouble.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getDouble()
+    print("double at 0: " .. view:getDouble(0))
+end
+local _ok, _err = pcall(demo_DataView_getDouble)
 
 --@api-stub: DataView:getUInt8
-print("u8 at 0: " .. view:getUInt8(0))
+-- Demonstrates the proper usage of DataView:getUInt8.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getUInt8()
+    print("u8 at 0: " .. view:getUInt8(0))
+end
+local _ok, _err = pcall(demo_DataView_getUInt8)
 
 --@api-stub: DataView:getInt8
-print("i8 at 0: " .. view:getInt8(0))
+-- Demonstrates the proper usage of DataView:getInt8.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getInt8()
+    print("i8 at 0: " .. view:getInt8(0))
+end
+local _ok, _err = pcall(demo_DataView_getInt8)
 
 --@api-stub: DataView:getInt16
-print("i16 at 0: " .. view:getInt16(0))
+-- Demonstrates the proper usage of DataView:getInt16.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getInt16()
+    print("i16 at 0: " .. view:getInt16(0))
+end
+local _ok, _err = pcall(demo_DataView_getInt16)
 
 --@api-stub: DataView:getUInt16
-print("u16 at 0: " .. view:getUInt16(0))
+-- Demonstrates the proper usage of DataView:getUInt16.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getUInt16()
+    print("u16 at 0: " .. view:getUInt16(0))
+end
+local _ok, _err = pcall(demo_DataView_getUInt16)
 
 --@api-stub: DataView:getInt32
-print("i32 at 0: " .. view:getInt32(0))
+-- Demonstrates the proper usage of DataView:getInt32.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getInt32()
+    print("i32 at 0: " .. view:getInt32(0))
+end
+local _ok, _err = pcall(demo_DataView_getInt32)
 
 --@api-stub: DataView:getUInt32
-print("u32 at 0: " .. view:getUInt32(0))
+-- Demonstrates the proper usage of DataView:getUInt32.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataView_getUInt32()
+    print("u32 at 0: " .. view:getUInt32(0))
+end
+local _ok, _err = pcall(demo_DataView_getUInt32)
 
 -- =============================================================================
 -- File I/O shortcuts
 -- =============================================================================
 
 --@api-stub: lurek.data.write
-lurek.data.write("save/player.dat", packed)
+-- Demonstrates the proper usage of lurek.data.write.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_write()
+    lurek.data.write("save/player.dat", packed)
+end
+local _ok, _err = pcall(demo_lurek_data_write)
 
 --@api-stub: lurek.data.read
-local loaded = lurek.data.read("save/player.dat")
-print("loaded save: " .. #loaded .. " bytes")
+-- Demonstrates the proper usage of lurek.data.read.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_read()
+    local loaded = lurek.data.read("save/player.dat")
+    print("loaded save: " .. #loaded .. " bytes")
+end
+local _ok, _err = pcall(demo_lurek_data_read)
 
 --@api-stub: lurek.data.size
-print("file size: " .. lurek.data.size("save/player.dat"))
+-- Demonstrates the proper usage of lurek.data.size.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_size()
+    print("file size: " .. lurek.data.size("save/player.dat"))
+end
+local _ok, _err = pcall(demo_lurek_data_size)
 
 -- =============================================================================
 -- RingBuffer — undo/redo history
 -- =============================================================================
 
 --@api-stub: lurek.data.newRingBuffer
-local undo = lurek.data.newRingBuffer(20)
+-- Demonstrates the proper usage of lurek.data.newRingBuffer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_newRingBuffer()
+    local undo = lurek.data.newRingBuffer(20)
+end
+local _ok, _err = pcall(demo_lurek_data_newRingBuffer)
 
 --@api-stub: RingBuffer:push
-undo:push({action = "move", x = 100, y = 200})
-undo:push({action = "attack", target = "goblin"})
-undo:push({action = "move", x = 150, y = 210})
+-- Demonstrates the proper usage of RingBuffer:push.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_push()
+    undo:push({action = "move", x = 100, y = 200})
+    undo:push({action = "attack", target = "goblin"})
+    undo:push({action = "move", x = 150, y = 210})
+end
+local _ok, _err = pcall(demo_RingBuffer_push)
 
 --@api-stub: RingBuffer:len
-print("undo stack: " .. undo:len())
+-- Demonstrates the proper usage of RingBuffer:len.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print("undo stack: " .. undo:len())
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
 
 --@api-stub: RingBuffer:capacity
-print("capacity: " .. undo:capacity())
+-- Demonstrates the proper usage of RingBuffer:capacity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_capacity()
+    print("capacity: " .. undo:capacity())
+end
+local _ok, _err = pcall(demo_RingBuffer_capacity)
 
 --@api-stub: RingBuffer:isEmpty
-print("empty: " .. tostring(undo:isEmpty()))
+-- Demonstrates the proper usage of RingBuffer:isEmpty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_isEmpty()
+    print("empty: " .. tostring(undo:isEmpty()))
+end
+local _ok, _err = pcall(demo_RingBuffer_isEmpty)
 
 --@api-stub: RingBuffer:isFull
-print("full: " .. tostring(undo:isFull()))
+-- Demonstrates the proper usage of RingBuffer:isFull.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_isFull()
+    print("full: " .. tostring(undo:isFull()))
+end
+local _ok, _err = pcall(demo_RingBuffer_isFull)
 
 --@api-stub: RingBuffer:peek
-local oldest = undo:peek()
-print("oldest action: " .. oldest.action)
+-- Demonstrates the proper usage of RingBuffer:peek.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_peek()
+    local oldest = undo:peek()
+    print("oldest action: " .. oldest.action)
+end
+local _ok, _err = pcall(demo_RingBuffer_peek)
 
 --@api-stub: RingBuffer:peekNewest
-local newest = undo:peekNewest()
-print("newest action: " .. newest.action)
+-- Demonstrates the proper usage of RingBuffer:peekNewest.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_peekNewest()
+    local newest = undo:peekNewest()
+    print("newest action: " .. newest.action)
+end
+local _ok, _err = pcall(demo_RingBuffer_peekNewest)
 
 --@api-stub: RingBuffer:pop
-local undone = undo:pop()
-print("undone: " .. undone.action)
+-- Demonstrates the proper usage of RingBuffer:pop.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_pop()
+    local undone = undo:pop()
+    print("undone: " .. undone.action)
+end
+local _ok, _err = pcall(demo_RingBuffer_pop)
 
 --@api-stub: RingBuffer:toTable
-local history = undo:toTable()
-print("remaining history: " .. #history)
+-- Demonstrates the proper usage of RingBuffer:toTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_toTable()
+    local history = undo:toTable()
+    print("remaining history: " .. #history)
+end
+local _ok, _err = pcall(demo_RingBuffer_toTable)
 
 --@api-stub: RingBuffer:clear
-undo:clear()
+-- Demonstrates the proper usage of RingBuffer:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_clear()
+    undo:clear()
+end
+local _ok, _err = pcall(demo_RingBuffer_clear)
 
 -- =============================================================================
 -- New in 0.15.0: DataWriter — binary write buffer

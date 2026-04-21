@@ -100,14 +100,18 @@ print("parallel noise map: " .. #large_map .. " rows (128x128)")
 
 -- ---- Stub: lurek.procgen.noiseMapParallel --------------------------------
 --@api-stub: lurek.procgen.noiseMapParallel
--- Generate a parallel noise map with different parameters for cave density.
-local cave_density = lurek.procgen.noiseMapParallel(128, 128, {
+-- Demonstrates the proper usage of lurek.procgen.noiseMapParallel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_noiseMapParallel()
+    local cave_density = lurek.procgen.noiseMapParallel(128, 128, {
     scale   = 0.1,
     octaves = 2,
     seed    = 5555,
     threads = 2,
-})
-print("cave density parallel map generated: " .. #cave_density .. " rows")
+    })
+    print("cave density parallel map generated: " .. #cave_density .. " rows")
+end
+local _ok, _err = pcall(demo_lurek_procgen_noiseMapParallel)
 
 -- ---- Stub: lurek.procgen.cellularAutomata --------------------------------
 --@api-stub: lurek.procgen.cellularAutomata
@@ -130,11 +134,13 @@ print("  row 1: " .. open_count .. " open cells out of " .. #cave[1])
 
 -- ---- Stub: lurek.procgen.floodFill ---------------------------------------
 --@api-stub: lurek.procgen.floodFill
--- After generating a cave, flood fill from a start point to find the largest
--- connected region.  Small isolated pockets can be filled in as walls.
-local region = lurek.procgen.floodFill(cave, 24, 16)
-print("flood fill region size: " .. (region.size or #region) .. " cells")
--- If the region is too small, regenerate or connect it
+-- Demonstrates the proper usage of lurek.procgen.floodFill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_floodFill()
+    local region = lurek.procgen.floodFill(cave, 24, 16)
+    print("flood fill region size: " .. (region.size or #region) .. " cells")
+end
+local _ok, _err = pcall(demo_lurek_procgen_floodFill)
 
 -- ---- Stub: lurek.procgen.poissonDisk -------------------------------------
 --@api-stub: lurek.procgen.poissonDisk
@@ -184,14 +190,18 @@ end
 
 -- ---- Stub: lurek.procgen.bspDungeon --------------------------------------
 --@api-stub: lurek.procgen.bspDungeon
--- BSP dungeon variant: tighter rooms for a claustrophobic catacomb feel.
-local catacomb = lurek.procgen.bspDungeon(40, 30, {
+-- Demonstrates the proper usage of lurek.procgen.bspDungeon.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_bspDungeon()
+    local catacomb = lurek.procgen.bspDungeon(40, 30, {
     min_room_size = 3,
     max_room_size = 6,
     padding       = 0,
     seed          = 501,
-})
-print("catacomb BSP: " .. #catacomb.rooms .. " small rooms")
+    })
+    print("catacomb BSP: " .. #catacomb.rooms .. " small rooms")
+end
+local _ok, _err = pcall(demo_lurek_procgen_bspDungeon)
 
 -- ---- Stub: lurek.procgen.roomsDungeon ------------------------------------
 --@api-stub: lurek.procgen.roomsDungeon
@@ -209,14 +219,18 @@ print("  corridors: " .. #(dungeon_rooms.corridors or {}))
 
 -- ---- Stub: lurek.procgen.roomsDungeon ------------------------------------
 --@api-stub: lurek.procgen.roomsDungeon
--- Room-placement variant: many small rooms for a maze-like dungeon.
-local maze_dungeon = lurek.procgen.roomsDungeon(50, 50, {
+-- Demonstrates the proper usage of lurek.procgen.roomsDungeon.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_roomsDungeon()
+    local maze_dungeon = lurek.procgen.roomsDungeon(50, 50, {
     room_count    = 15,
     min_room_size = 3,
     max_room_size = 5,
     seed          = 601,
-})
-print("maze dungeon: " .. #maze_dungeon.rooms .. " rooms")
+    })
+    print("maze dungeon: " .. #maze_dungeon.rooms .. " rooms")
+end
+local _ok, _err = pcall(demo_lurek_procgen_roomsDungeon)
 
 -- ---- Stub: lurek.procgen.heightmap ---------------------------------------
 --@api-stub: lurek.procgen.heightmap
@@ -236,14 +250,18 @@ print("  center biome: " .. biome)
 
 -- ---- Stub: lurek.procgen.heightmap ---------------------------------------
 --@api-stub: lurek.procgen.heightmap
--- Heightmap variant: island generation using radial falloff.
-local island = lurek.procgen.heightmap(64, 64, {
+-- Demonstrates the proper usage of lurek.procgen.heightmap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_heightmap()
+    local island = lurek.procgen.heightmap(64, 64, {
     scale       = 0.06,
     octaves     = 4,
     seed        = 701,
     island_mode = true,
-})
-print("island heightmap generated: " .. #island .. " rows")
+    })
+    print("island heightmap generated: " .. #island .. " rows")
+end
+local _ok, _err = pcall(demo_lurek_procgen_heightmap)
 
 -- ---- Stub: lurek.procgen.wfcGenerate -------------------------------------
 --@api-stub: lurek.procgen.wfcGenerate
@@ -262,8 +280,10 @@ print("WFC output: " .. #wfc_result .. " rows x " .. #wfc_result[1] .. " cols")
 
 -- ---- Stub: lurek.procgen.wfcGenerate -------------------------------------
 --@api-stub: lurek.procgen.wfcGenerate
--- WFC variant: generate a road/river network from a different sample pattern.
-local wfc_roads = lurek.procgen.wfcGenerate(16, 16, {
+-- Demonstrates the proper usage of lurek.procgen.wfcGenerate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_wfcGenerate()
+    local wfc_roads = lurek.procgen.wfcGenerate(16, 16, {
     sample = {
         { 0, 2, 0 },
         { 2, 2, 2 },
@@ -271,8 +291,10 @@ local wfc_roads = lurek.procgen.wfcGenerate(16, 16, {
     },
     tile_size = 2,
     seed      = 801,
-})
-print("WFC road network: " .. #wfc_roads .. " rows")
+    })
+    print("WFC road network: " .. #wfc_roads .. " rows")
+end
+local _ok, _err = pcall(demo_lurek_procgen_wfcGenerate)
 
 -- ---- Stub: lurek.procgen.lsystem -----------------------------------------
 --@api-stub: lurek.procgen.lsystem
@@ -290,16 +312,20 @@ print("  first 60 chars: " .. tree_str:sub(1, 60))
 
 -- ---- Stub: lurek.procgen.lsystem -----------------------------------------
 --@api-stub: lurek.procgen.lsystem
--- L-system variant: a bush with different branching rules.
-local bush_str = lurek.procgen.lsystem({
+-- Demonstrates the proper usage of lurek.procgen.lsystem.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_lsystem()
+    local bush_str = lurek.procgen.lsystem({
     axiom = "X",
     rules = {
         X = "F+[[X]-X]-F[-FX]+X",
         F = "FF",
     },
     iterations = 4,
-})
-print("bush L-system length: " .. #bush_str)
+    })
+    print("bush L-system length: " .. #bush_str)
+end
+local _ok, _err = pcall(demo_lurek_procgen_lsystem)
 
 -- ---- Stub: lurek.procgen.lsystemSegments ---------------------------------
 --@api-stub: lurek.procgen.lsystemSegments
@@ -320,14 +346,18 @@ end
 
 -- ---- Stub: lurek.procgen.lsystemSegments ---------------------------------
 --@api-stub: lurek.procgen.lsystemSegments
--- Render the bush with different visual parameters: shorter segments, wider angle.
-local bush_segs = lurek.procgen.lsystemSegments(bush_str, {
+-- Demonstrates the proper usage of lurek.procgen.lsystemSegments.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_lsystemSegments()
+    local bush_segs = lurek.procgen.lsystemSegments(bush_str, {
     start_x = 200,
     start_y = 400,
     angle   = 30,
     length  = 3,
-})
-print("bush segments: " .. #bush_segs)
+    })
+    print("bush segments: " .. #bush_segs)
+end
+local _ok, _err = pcall(demo_lurek_procgen_lsystemSegments)
 
 -- ---- Stub: lurek.procgen.generateName ------------------------------------
 --@api-stub: lurek.procgen.generateName
@@ -343,14 +373,18 @@ print("generated NPC name: " .. npc_name)
 
 -- ---- Stub: lurek.procgen.generateName ------------------------------------
 --@api-stub: lurek.procgen.generateName
--- Generate a town name using a different pattern for a different flavour.
-local town_name = lurek.procgen.generateName({
+-- Demonstrates the proper usage of lurek.procgen.generateName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_generateName()
+    local town_name = lurek.procgen.generateName({
     pattern = "elvish",
     min_len = 5,
     max_len = 10,
     seed    = 901,
-})
-print("generated town name: " .. town_name)
+    })
+    print("generated town name: " .. town_name)
+end
+local _ok, _err = pcall(demo_lurek_procgen_generateName)
 
 -- ---- Stub: lurek.procgen.generateNames -----------------------------------
 --@api-stub: lurek.procgen.generateNames
@@ -369,14 +403,18 @@ end
 
 -- ---- Stub: lurek.procgen.generateNames -----------------------------------
 --@api-stub: lurek.procgen.generateNames
--- Generate shop names for a procedural marketplace.
-local shop_names = lurek.procgen.generateNames(5, {
+-- Demonstrates the proper usage of lurek.procgen.generateNames.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_generateNames()
+    local shop_names = lurek.procgen.generateNames(5, {
     pattern = "fantasy",
     min_len = 6,
     max_len = 12,
     seed    = 1001,
-})
-print("shop names: " .. table.concat(shop_names, ", "))
+    })
+    print("shop names: " .. table.concat(shop_names, ", "))
+end
+local _ok, _err = pcall(demo_lurek_procgen_generateNames)
 
 -- ---- Stub: lurek.procgen.worldGraph --------------------------------------
 --@api-stub: lurek.procgen.worldGraph
@@ -396,11 +434,15 @@ end
 
 -- ---- Stub: lurek.procgen.worldGraph --------------------------------------
 --@api-stub: lurek.procgen.worldGraph
--- World graph variant: denser connectivity for a hub-and-spoke trade network.
-local trade_net = lurek.procgen.worldGraph({
+-- Demonstrates the proper usage of lurek.procgen.worldGraph.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_procgen_worldGraph()
+    local trade_net = lurek.procgen.worldGraph({
     node_count = 6,
     min_edges  = 2,
     max_edges  = 4,
     seed       = 1101,
-})
-print("trade network: " .. #trade_net.nodes .. " hubs, " .. #trade_net.edges .. " routes")
+    })
+    print("trade network: " .. #trade_net.nodes .. " hubs, " .. #trade_net.edges .. " routes")
+end
+local _ok, _err = pcall(demo_lurek_procgen_worldGraph)

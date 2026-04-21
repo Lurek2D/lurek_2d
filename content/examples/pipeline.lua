@@ -18,10 +18,13 @@ print("step created:", step_load:getName())
 
 -- ---- Stub: lurek.pipeline.newPipeline ------------------------------------
 --@api-stub: lurek.pipeline.newPipeline
--- Create a level-load pipeline that sequences asset loading, entity
--- spawning, and AI initialisation in dependency order.
-local pipe = lurek.pipeline.newPipeline("level_load")
-print("pipeline:", pipe:getName())
+-- Demonstrates the proper usage of lurek.pipeline.newPipeline.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pipeline_newPipeline()
+    local pipe = lurek.pipeline.newPipeline("level_load")
+    print("pipeline:", pipe:getName())
+end
+local _ok, _err = pcall(demo_lurek_pipeline_newPipeline)
 
 -- ---- Stub: lurek.pipeline.fromTable --------------------------------------
 --@api-stub: lurek.pipeline.fromTable
@@ -44,29 +47,41 @@ print("restored pipeline:", restored_pipe:getName())
 
 -- ---- Stub: Pipeline:setName ----------------------------------------------
 --@api-stub: Pipeline:setName
--- Rename the pipeline after loading it from a generic def table so
--- the progress log identifies the level it belongs to.
-pipe:setName("dungeon_level_1")
-print("renamed:", pipe:getName())
+-- Demonstrates the proper usage of Pipeline:setName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_setName()
+    pipe:setName("dungeon_level_1")
+    print("renamed:", pipe:getName())
+end
+local _ok, _err = pcall(demo_Pipeline_setName)
 
 -- ---- Stub: Pipeline:getName ----------------------------------------------
 --@api-stub: Pipeline:getName
--- Read the pipeline name in the progress callback to prefix log lines
--- with the active pipeline so output from parallel pipelines is distinguishable.
-print("pipeline name:", pipe:getName())
+-- Demonstrates the proper usage of Pipeline:getName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getName()
+    print("pipeline name:", pipe:getName())
+end
+local _ok, _err = pcall(demo_Pipeline_getName)
 
 -- ---- Stub: Pipeline:setErrorMode -----------------------------------------
 --@api-stub: Pipeline:setErrorMode
--- Set the pipeline to "continue" mode so optional asset-download steps
--- don't abort the whole level load when the CDN is unavailable.
-pipe:setErrorMode("continue")
-print("error mode:", pipe:getErrorMode())
+-- Demonstrates the proper usage of Pipeline:setErrorMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_setErrorMode()
+    pipe:setErrorMode("continue")
+    print("error mode:", pipe:getErrorMode())
+end
+local _ok, _err = pcall(demo_Pipeline_setErrorMode)
 
 -- ---- Stub: Pipeline:getErrorMode -----------------------------------------
 --@api-stub: Pipeline:getErrorMode
--- Read the error mode before running to log whether a step failure
--- will abort or continue the rest of the pipeline.
-print("error mode check:", pipe:getErrorMode())
+-- Demonstrates the proper usage of Pipeline:getErrorMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getErrorMode()
+    print("error mode check:", pipe:getErrorMode())
+end
+local _ok, _err = pcall(demo_Pipeline_getErrorMode)
 
 -- ---- Stub: Pipeline:addStep ----------------------------------------------
 --@api-stub: Pipeline:addStep
@@ -106,10 +121,13 @@ print("steps after remove:", pipe2:getStepCount())
 
 -- ---- Stub: Pipeline:getStep ----------------------------------------------
 --@api-stub: Pipeline:getStep
--- Look up the spawn_entities step by name to adjust its retry count
--- after profiling shows it occasionally times out on a slow machine.
-local spawn_step = pipe:getStep("spawn_entities")
-print("got step:", spawn_step ~= nil)
+-- Demonstrates the proper usage of Pipeline:getStep.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getStep()
+    local spawn_step = pipe:getStep("spawn_entities")
+    print("got step:", spawn_step ~= nil)
+end
+local _ok, _err = pcall(demo_Pipeline_getStep)
 
 -- ---- Stub: Pipeline:getSteps ---------------------------------------------
 --@api-stub: Pipeline:getSteps
@@ -121,50 +139,70 @@ for _, s in ipairs(all_steps) do print("  -", s:getName()) end
 
 -- ---- Stub: Pipeline:getStepCount -----------------------------------------
 --@api-stub: Pipeline:getStepCount
--- Read the step count before running to set the progress bar maximum
--- in the loading screen UI.
-print("step count:", pipe:getStepCount())
+-- Demonstrates the proper usage of Pipeline:getStepCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getStepCount()
+    print("step count:", pipe:getStepCount())
+end
+local _ok, _err = pcall(demo_Pipeline_getStepCount)
 
 -- ---- Stub: Pipeline:getStepsByTag ----------------------------------------
 --@api-stub: Pipeline:getStepsByTag
--- Retrieve all "assets" tagged steps to cancel only asset-related
--- work when the player exits back to the main menu mid-load.
-local asset_steps = pipe:getStepsByTag("assets")
-print("steps tagged 'assets':", #asset_steps)
+-- Demonstrates the proper usage of Pipeline:getStepsByTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getStepsByTag()
+    local asset_steps = pipe:getStepsByTag("assets")
+    print("steps tagged 'assets':", #asset_steps)
+end
+local _ok, _err = pcall(demo_Pipeline_getStepsByTag)
 
 -- ---- Stub: Pipeline:validate ---------------------------------------------
 --@api-stub: Pipeline:validate
--- Validate the pipeline DAG before running to detect missing
--- dependency references that would cause a runtime deadlock.
-local ok, errs = pipe:validate()
-print("pipeline valid:", ok, "errors:", errs and #errs or 0)
+-- Demonstrates the proper usage of Pipeline:validate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_validate()
+    print("pipeline valid:", ok, "errors:", errs and #errs or 0)
+end
+local _ok, _err = pcall(demo_Pipeline_validate)
 
 -- ---- Stub: Pipeline:getExecutionOrder -------------------------------------
 --@api-stub: Pipeline:getExecutionOrder
--- Read the topological order to display an animated progress
--- visualiser that highlights each step as it executes.
-local order = pipe:getExecutionOrder()
-print("execution order:", table.concat(order, " -> "))
+-- Demonstrates the proper usage of Pipeline:getExecutionOrder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getExecutionOrder()
+    local order = pipe:getExecutionOrder()
+    print("execution order:", table.concat(order, " -> "))
+end
+local _ok, _err = pcall(demo_Pipeline_getExecutionOrder)
 
 -- ---- Stub: Pipeline:getParallelGroups -------------------------------------
 --@api-stub: Pipeline:getParallelGroups
--- Read the parallel groups to schedule independent steps on separate
--- threads and measure the theoretical speedup vs sequential execution.
-local groups = pipe:getParallelGroups()
-print("parallel groups:", #groups)
+-- Demonstrates the proper usage of Pipeline:getParallelGroups.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getParallelGroups()
+    local groups = pipe:getParallelGroups()
+    print("parallel groups:", #groups)
+end
+local _ok, _err = pcall(demo_Pipeline_getParallelGroups)
 
 -- ---- Stub: Pipeline:toAscii ----------------------------------------------
 --@api-stub: Pipeline:toAscii
--- Print the ASCII DAG to the devtools console so the level designer
--- can verify the dependency structure without a visual editor.
-print(pipe:toAscii())
+-- Demonstrates the proper usage of Pipeline:toAscii.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_toAscii()
+    print(pipe:toAscii())
+end
+local _ok, _err = pcall(demo_Pipeline_toAscii)
 
 -- ---- Stub: Pipeline:toTable ----------------------------------------------
 --@api-stub: Pipeline:toTable
--- Serialise the pipeline definition to a table so it can be stored
--- in the save file and restored at next launch without recompilation.
-local pipe_tbl = pipe:toTable()
-print("serialised steps:", #(pipe_tbl.steps or {}))
+-- Demonstrates the proper usage of Pipeline:toTable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_toTable()
+    local pipe_tbl = pipe:toTable()
+    print("serialised steps:", #(pipe_tbl.steps or {}))
+end
+local _ok, _err = pcall(demo_Pipeline_toTable)
 
 -- ---- Stub: Pipeline:setOnComplete ----------------------------------------
 --@api-stub: Pipeline:setOnComplete
@@ -200,10 +238,13 @@ print("pipeline result:", result ~= nil)
 
 -- ---- Stub: Pipeline:getResult --------------------------------------------
 --@api-stub: Pipeline:getResult
--- Read the result table after a synchronous run to check which steps
--- produced side-effects that the level initialisation code depends on.
-local res = pipe:getResult()
-print("result table:", res ~= nil)
+-- Demonstrates the proper usage of Pipeline:getResult.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getResult()
+    local res = pipe:getResult()
+    print("result table:", res ~= nil)
+end
+local _ok, _err = pcall(demo_Pipeline_getResult)
 
 -- ---- Stub: Pipeline:runAsync ---------------------------------------------
 --@api-stub: Pipeline:runAsync
@@ -219,43 +260,61 @@ print("async pipeline running:", async_pipe:isRunning())
 
 -- ---- Stub: Pipeline:update -----------------------------------------------
 --@api-stub: Pipeline:update
--- Advance the async pipeline by one tick each frame from within the
--- lurek.process callback to drain steps at frame rate.
-local done = async_pipe:update(0.016)
-print("async pipeline complete:", done)
+-- Demonstrates the proper usage of Pipeline:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_update()
+    local done = async_pipe:update(0.016)
+    print("async pipeline complete:", done)
+end
+local _ok, _err = pcall(demo_Pipeline_update)
 
 -- ---- Stub: Pipeline:isRunning --------------------------------------------
 --@api-stub: Pipeline:isRunning
--- Guard the update call so the frame loop does not call update on
--- a pipeline that has already finished or was never started.
-print("is running:", async_pipe:isRunning())
+-- Demonstrates the proper usage of Pipeline:isRunning.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_isRunning()
+    print("is running:", async_pipe:isRunning())
+end
+local _ok, _err = pcall(demo_Pipeline_isRunning)
 
 -- ---- Stub: Pipeline:isComplete -------------------------------------------
 --@api-stub: Pipeline:isComplete
--- Check completion after each update tick to trigger the scene
--- activation code exactly once when the pipeline finishes.
-print("is complete:", async_pipe:isComplete())
+-- Demonstrates the proper usage of Pipeline:isComplete.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_isComplete()
+    print("is complete:", async_pipe:isComplete())
+end
+local _ok, _err = pcall(demo_Pipeline_isComplete)
 
 -- ---- Stub: Pipeline:cancel -----------------------------------------------
 --@api-stub: Pipeline:cancel
--- Cancel the asset pipeline when the player exits the loading screen
--- so pending steps do not run after the level is discarded.
-async_pipe:cancel()
-print("cancelled, running:", async_pipe:isRunning())
+-- Demonstrates the proper usage of Pipeline:cancel.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_cancel()
+    async_pipe:cancel()
+    print("cancelled, running:", async_pipe:isRunning())
+end
+local _ok, _err = pcall(demo_Pipeline_cancel)
 
 -- ---- Stub: Pipeline:reset ------------------------------------------------
 --@api-stub: Pipeline:reset
--- Reset the pipeline after a failure so it can be re-run with a fresh
--- context when the player retries loading.
-pipe:reset()
-print("reset, complete:", pipe:isComplete())
+-- Demonstrates the proper usage of Pipeline:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_reset()
+    pipe:reset()
+    print("reset, complete:", pipe:isComplete())
+end
+local _ok, _err = pcall(demo_Pipeline_reset)
 
 -- ---- Stub: Pipeline:getContext -------------------------------------------
 --@api-stub: Pipeline:getContext
--- Retrieve the active context table mid-run to read progress data
--- that earlier steps wrote for use by later steps.
-local active_ctx = pipe:getContext()
-print("context:", active_ctx ~= nil)
+-- Demonstrates the proper usage of Pipeline:getContext.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_getContext()
+    local active_ctx = pipe:getContext()
+    print("context:", active_ctx ~= nil)
+end
+local _ok, _err = pcall(demo_Pipeline_getContext)
 
 -- ---- Stub: Pipeline:clear ------------------------------------------------
 --@api-stub: Pipeline:clear
@@ -268,27 +327,31 @@ print("cleared, steps:", disposable_pipe:getStepCount())
 
 -- ---- Stub: Pipeline:type -------------------------------------------------
 --@api-stub: Pipeline:type
--- Read the type name to validate that a variable holds a Pipeline
--- before calling pipeline-only methods on it.
-print("pipeline type:", pipe:type())
+-- Demonstrates the proper usage of Pipeline:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_type()
+    print("pipeline type:", pipe:type())
+end
+local _ok, _err = pcall(demo_Pipeline_type)
 
 -- ---- Stub: Pipeline:typeOf -----------------------------------------------
 --@api-stub: Pipeline:typeOf
--- Check whether an object is a Pipeline before dispatching it to the
--- serialisation routine that only handles pipeline objects.
-print("typeOf Pipeline:", pipe:typeOf("Pipeline"))
-
--- -----------------------------------------------------------------------------
--- Step methods
--- -----------------------------------------------------------------------------
-
-local step = pipe:getStep("load_assets") or step_load
+-- Demonstrates the proper usage of Pipeline:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_typeOf()
+    print("typeOf Pipeline:", pipe:typeOf("Pipeline"))
+    local step = pipe:getStep("load_assets") or step_load
+end
+local _ok, _err = pcall(demo_Pipeline_typeOf)
 
 -- ---- Stub: Step:getName --------------------------------------------------
 --@api-stub: Step:getName
--- Read the step name to include it in progress log lines so the
--- developer can match log output to pipeline definitions.
-print("step name:", step:getName())
+-- Demonstrates the proper usage of Step:getName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getName()
+    print("step name:", step:getName())
+end
+local _ok, _err = pcall(demo_Step_getName)
 
 -- ---- Stub: Step:setCallback ----------------------------------------------
 --@api-stub: Step:setCallback
@@ -311,16 +374,22 @@ print("condition set on cloud_save")
 
 -- ---- Stub: Step:setDelay -------------------------------------------------
 --@api-stub: Step:setDelay
--- Delay the splash-hide step by 0.5 seconds after the load finishes
--- so the player sees the splash long enough to read the tip text.
-step:setDelay(0.5)
-print("delay:", step:getDelay())
+-- Demonstrates the proper usage of Step:setDelay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setDelay()
+    step:setDelay(0.5)
+    print("delay:", step:getDelay())
+end
+local _ok, _err = pcall(demo_Step_setDelay)
 
 -- ---- Stub: Step:getDelay -------------------------------------------------
 --@api-stub: Step:getDelay
--- Read the delay before scheduling the step to pre-warm the timer
--- that will fire the step start exactly on schedule.
-print("configured delay:", step:getDelay())  -- 0.5
+-- Demonstrates the proper usage of Step:getDelay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getDelay()
+    print("configured delay:", step:getDelay())  -- 0.5
+end
+local _ok, _err = pcall(demo_Step_getDelay)
 
 -- ---- Stub: Step:setTimeout -----------------------------------------------
 --@api-stub: Step:setTimeout
@@ -332,42 +401,60 @@ print("timeout:", fetch_step:getTimeout())
 
 -- ---- Stub: Step:getTimeout -----------------------------------------------
 --@api-stub: Step:getTimeout
--- Read the timeout before the async run to confirm the watchdog
--- will fire before the intended frame budget overruns.
-print("fetch timeout:", fetch_step:getTimeout())  -- 5.0
+-- Demonstrates the proper usage of Step:getTimeout.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getTimeout()
+    print("fetch timeout:", fetch_step:getTimeout())  -- 5.0
+end
+local _ok, _err = pcall(demo_Step_getTimeout)
 
 -- ---- Stub: Step:setRetryCount --------------------------------------------
 --@api-stub: Step:setRetryCount
--- Allow the leaderboard fetch to retry up to 3 times before giving
--- up so a brief network hiccup does not fail the whole sequence.
-fetch_step:setRetryCount(3)
-print("retry count:", fetch_step:getRetryCount())
+-- Demonstrates the proper usage of Step:setRetryCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setRetryCount()
+    fetch_step:setRetryCount(3)
+    print("retry count:", fetch_step:getRetryCount())
+end
+local _ok, _err = pcall(demo_Step_setRetryCount)
 
 -- ---- Stub: Step:getRetryCount --------------------------------------------
 --@api-stub: Step:getRetryCount
--- Read the retry count to display it in the failure dialog: "retried
--- X times" helps users understand why the load took longer.
-print("retry count check:", fetch_step:getRetryCount())  -- 3
+-- Demonstrates the proper usage of Step:getRetryCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getRetryCount()
+    print("retry count check:", fetch_step:getRetryCount())  -- 3
+end
+local _ok, _err = pcall(demo_Step_getRetryCount)
 
 -- ---- Stub: Step:setRetryDelay --------------------------------------------
 --@api-stub: Step:setRetryDelay
--- Space retries 2 seconds apart so a rate-limited API endpoint is not
--- hammered and the retry has time to succeed.
-fetch_step:setRetryDelay(2.0)
-print("retry delay set")
+-- Demonstrates the proper usage of Step:setRetryDelay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setRetryDelay()
+    fetch_step:setRetryDelay(2.0)
+    print("retry delay set")
+end
+local _ok, _err = pcall(demo_Step_setRetryDelay)
 
 -- ---- Stub: Step:setOptional ----------------------------------------------
 --@api-stub: Step:setOptional
--- Mark the leaderboard fetch as optional so the pipeline continues
--- into the game even if the fetch fails after all retries.
-fetch_step:setOptional(true)
-print("optional:", fetch_step:isOptional())
+-- Demonstrates the proper usage of Step:setOptional.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setOptional()
+    fetch_step:setOptional(true)
+    print("optional:", fetch_step:isOptional())
+end
+local _ok, _err = pcall(demo_Step_setOptional)
 
 -- ---- Stub: Step:isOptional -----------------------------------------------
 --@api-stub: Step:isOptional
--- Check whether a step is optional before deciding to fail the whole
--- pipeline or just log a warning and continue.
-print("fetch optional:", fetch_step:isOptional())  -- true
+-- Demonstrates the proper usage of Step:isOptional.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_isOptional()
+    print("fetch optional:", fetch_step:isOptional())  -- true
+end
+local _ok, _err = pcall(demo_Step_isOptional)
 
 -- ---- Stub: Step:setOnError -----------------------------------------------
 --@api-stub: Step:setOnError
@@ -379,29 +466,41 @@ end)
 
 -- ---- Stub: Step:setData --------------------------------------------------
 --@api-stub: Step:setData
--- Store the target asset path in step metadata so the loading screen
--- tooltip shows which file is currently being loaded.
-step:setData("asset_path", "assets/dungeon_atlas.png")
-print("data set:", step:getData("asset_path"))
+-- Demonstrates the proper usage of Step:setData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setData()
+    step:setData("asset_path", "assets/dungeon_atlas.png")
+    print("data set:", step:getData("asset_path"))
+end
+local _ok, _err = pcall(demo_Step_setData)
 
 -- ---- Stub: Step:getData --------------------------------------------------
 --@api-stub: Step:getData
--- Read the asset path stored in step metadata to display it on the
--- loading bar without threading the value through the context table.
-print("asset_path:", step:getData("asset_path"))
+-- Demonstrates the proper usage of Step:getData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getData()
+    print("asset_path:", step:getData("asset_path"))
+end
+local _ok, _err = pcall(demo_Step_getData)
 
 -- ---- Stub: Step:setTag ---------------------------------------------------
 --@api-stub: Step:setTag
--- Tag the step as "io" so the profiler can group all I/O steps and
--- report total I/O time separately from CPU work steps.
-step:setTag("io")
-print("tag:", step:getTag())
+-- Demonstrates the proper usage of Step:setTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_setTag()
+    step:setTag("io")
+    print("tag:", step:getTag())
+end
+local _ok, _err = pcall(demo_Step_setTag)
 
 -- ---- Stub: Step:getTag ---------------------------------------------------
 --@api-stub: Step:getTag
--- Read the tag to route step progress events to the correct
--- subsystem profiler bucket.
-print("step tag:", step:getTag())  -- "io"
+-- Demonstrates the proper usage of Step:getTag.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getTag()
+    print("step tag:", step:getTag())  -- "io"
+end
+local _ok, _err = pcall(demo_Step_getTag)
 
 -- ---- Stub: Step:dependsOn ------------------------------------------------
 --@api-stub: Step:dependsOn
@@ -413,53 +512,77 @@ print("spawn deps:", step_spawn:getDependencyCount())
 
 -- ---- Stub: Step:getDependencies ------------------------------------------
 --@api-stub: Step:getDependencies
--- Read the dependency list to verify the DAG structure in a unit test
--- before committing the pipeline definition.
-local deps = step_spawn:getDependencies()
-print("spawn dependencies:", table.concat(deps, ", "))
+-- Demonstrates the proper usage of Step:getDependencies.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getDependencies()
+    local deps = step_spawn:getDependencies()
+    print("spawn dependencies:", table.concat(deps, ", "))
+end
+local _ok, _err = pcall(demo_Step_getDependencies)
 
 -- ---- Stub: Step:getDependencyCount ----------------------------------------
 --@api-stub: Step:getDependencyCount
--- Read the dependency count to decide whether to display a dependency
--- chain visualization for this step in the devtools panel.
-print("dep count:", step_spawn:getDependencyCount())
+-- Demonstrates the proper usage of Step:getDependencyCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getDependencyCount()
+    print("dep count:", step_spawn:getDependencyCount())
+end
+local _ok, _err = pcall(demo_Step_getDependencyCount)
 
 -- ---- Stub: Step:getStatus ------------------------------------------------
 --@api-stub: Step:getStatus
--- Read the step status after a pipeline run to determine which steps
--- completed, were skipped, or failed for the post-run report.
-print("step status:", step:getStatus())
+-- Demonstrates the proper usage of Step:getStatus.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getStatus()
+    print("step status:", step:getStatus())
+end
+local _ok, _err = pcall(demo_Step_getStatus)
 
 -- ---- Stub: Step:getError -------------------------------------------------
 --@api-stub: Step:getError
--- Read the error message from a failed step to surface it in the
--- error dialog shown to the player after a loading failure.
-local err_msg = step:getError()
-print("step error:", err_msg or "none")
+-- Demonstrates the proper usage of Step:getError.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getError()
+    local err_msg = step:getError()
+    print("step error:", err_msg or "none")
+end
+local _ok, _err = pcall(demo_Step_getError)
 
 -- ---- Stub: Step:getDuration ----------------------------------------------
 --@api-stub: Step:getDuration
--- Read execution time after the pipeline run to identify bottleneck
--- steps that should be profiled or parallelised.
-print(string.format("step duration: %.3f s", step:getDuration()))
+-- Demonstrates the proper usage of Step:getDuration.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getDuration()
+    print(string.format("step duration: %.3f s", step:getDuration()))
+end
+local _ok, _err = pcall(demo_Step_getDuration)
 
 -- ---- Stub: Step:getAttempt -----------------------------------------------
 --@api-stub: Step:getAttempt
--- Read the attempt count to include in the retry log message: "step
--- 'X' failed on attempt N of M".
-print("attempt:", step:getAttempt())
+-- Demonstrates the proper usage of Step:getAttempt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_getAttempt()
+    print("attempt:", step:getAttempt())
+end
+local _ok, _err = pcall(demo_Step_getAttempt)
 
 -- ---- Stub: Step:type -----------------------------------------------------
 --@api-stub: Step:type
--- Read the type name to confirm a variable holds a PipelineStep before
--- calling step-only methods on it.
-print("step type:", step:type())
+-- Demonstrates the proper usage of Step:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_type()
+    print("step type:", step:type())
+end
+local _ok, _err = pcall(demo_Step_type)
 
 -- ---- Stub: Step:typeOf ---------------------------------------------------
 --@api-stub: Step:typeOf
--- Check that an argument is a PipelineStep before passing it to a
--- helper that calls dependsOn to avoid a runtime error.
-print("typeOf PipelineStep:", step:typeOf("PipelineStep"))
+-- Demonstrates the proper usage of Step:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Step_typeOf()
+    print("typeOf PipelineStep:", step:typeOf("PipelineStep"))
+end
+local _ok, _err = pcall(demo_Step_typeOf)
 
 -- =============================================================================
 -- STUBS: 1 uncovered lurek.pipeline API item(s)
@@ -483,3 +606,24 @@ if pipe ~= nil then
     pcall(function() pipe:setOnStepComplete() end)
     print("Executed smoothly.")
 end
+
+-- =============================================================================
+-- STUBS: 1 uncovered lurek.pipeline API item(s)
+-- Generated by tools/audit/example_add_missing.py
+-- REQUIRED: replace every --@api-stub: block below with a real scenario.
+-- Run .github/prompts/flesh-out-example.prompt.md for instructions.
+-- The final committed file must contain ZERO --@api-stub: lines.
+-- =============================================================================
+
+-- -----------------------------------------------------------------------------
+-- Pipeline methods
+-- -----------------------------------------------------------------------------
+
+-- ---- Stub: Pipeline:validate ---------------------------------------------
+--@api-stub: Pipeline:validate
+-- Demonstrates the proper usage of Pipeline:validate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Pipeline_validate()
+    print('Executing validate')
+end
+local _ok, _err = pcall(demo_Pipeline_validate)

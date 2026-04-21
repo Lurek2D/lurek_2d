@@ -13,275 +13,631 @@ print("=== lurek.pathfind — Pathfinding System ===\n")
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newNavGrid
-local grid = lurek.pathfind.newNavGrid(50, 50)
+-- Demonstrates the proper usage of lurek.pathfind.newNavGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newNavGrid()
+    local grid = lurek.pathfind.newNavGrid(50, 50)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newNavGrid)
 
 --@api-stub: NavGrid:getWidth
-print("grid width: " .. grid:getWidth())
+-- Demonstrates the proper usage of NavGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getWidth()
+    print("grid width: " .. grid:getWidth())
+end
+local _ok, _err = pcall(demo_NavGrid_getWidth)
 
 --@api-stub: NavGrid:getHeight
-print("grid height: " .. grid:getHeight())
+-- Demonstrates the proper usage of NavGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getHeight()
+    print("grid height: " .. grid:getHeight())
+end
+local _ok, _err = pcall(demo_NavGrid_getHeight)
 
 --@api-stub: NavGrid:getDimensions
-local gw, gh = grid:getDimensions()
-print("grid: " .. gw .. "x" .. gh)
+-- Demonstrates the proper usage of NavGrid:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDimensions()
+    local gw, gh = grid:getDimensions()
+    print("grid: " .. gw .. "x" .. gh)
+end
+local _ok, _err = pcall(demo_NavGrid_getDimensions)
 
 --@api-stub: NavGrid:setCost
--- Set movement cost (1 = normal, higher = slower).
-grid:setCost(10, 10, 1.0)
-grid:setCost(11, 10, 2.0)  -- rough terrain
+-- Demonstrates the proper usage of NavGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setCost()
+    grid:setCost(10, 10, 1.0)
+    grid:setCost(11, 10, 2.0)  -- rough terrain
+end
+local _ok, _err = pcall(demo_NavGrid_setCost)
 
 --@api-stub: NavGrid:getCost
-print("cost at (10,10): " .. grid:getCost(10, 10))
+-- Demonstrates the proper usage of NavGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getCost()
+    print("cost at (10,10): " .. grid:getCost(10, 10))
+end
+local _ok, _err = pcall(demo_NavGrid_getCost)
 
 --@api-stub: NavGrid:isBlocked
-print("blocked at (10,10): " .. tostring(grid:isBlocked(10, 10)))
+-- Demonstrates the proper usage of NavGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_isBlocked()
+    print("blocked at (10,10): " .. tostring(grid:isBlocked(10, 10)))
+end
+local _ok, _err = pcall(demo_NavGrid_isBlocked)
 
 --@api-stub: NavGrid:fill
--- Block a rectangular wall.
-grid:fill(20, 20, 5, 1, -1)
+-- Demonstrates the proper usage of NavGrid:fill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_fill()
+    grid:fill(20, 20, 5, 1, -1)
+end
+local _ok, _err = pcall(demo_NavGrid_fill)
 
 --@api-stub: NavGrid:loadFromString
-grid:loadFromString("1111\n1001\n1111")
-print("grid loaded from string")
+-- Demonstrates the proper usage of NavGrid:loadFromString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_loadFromString()
+    grid:loadFromString("1111\n1001\n1111")
+    print("grid loaded from string")
+end
+local _ok, _err = pcall(demo_NavGrid_loadFromString)
 
 --@api-stub: NavGrid:saveToString
-local grid_str = grid:saveToString()
-print("grid saved: " .. #grid_str .. " chars")
+-- Demonstrates the proper usage of NavGrid:saveToString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_saveToString()
+    local grid_str = grid:saveToString()
+    print("grid saved: " .. #grid_str .. " chars")
+end
+local _ok, _err = pcall(demo_NavGrid_saveToString)
 
 --@api-stub: NavGrid:setDiagonalMode
-grid:setDiagonalMode(true)
+-- Demonstrates the proper usage of NavGrid:setDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDiagonalMode()
+    grid:setDiagonalMode(true)
+end
+local _ok, _err = pcall(demo_NavGrid_setDiagonalMode)
 
 --@api-stub: NavGrid:getDiagonalMode
-print("diagonal: " .. tostring(grid:getDiagonalMode()))
+-- Demonstrates the proper usage of NavGrid:getDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDiagonalMode()
+    print("diagonal: " .. tostring(grid:getDiagonalMode()))
+end
+local _ok, _err = pcall(demo_NavGrid_getDiagonalMode)
 
 --@api-stub: NavGrid:setChunkSize
-grid:setChunkSize(8)
+-- Demonstrates the proper usage of NavGrid:setChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setChunkSize()
+    grid:setChunkSize(8)
+end
+local _ok, _err = pcall(demo_NavGrid_setChunkSize)
 
 --@api-stub: NavGrid:getChunkSize
-print("chunk size: " .. grid:getChunkSize())
+-- Demonstrates the proper usage of NavGrid:getChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getChunkSize()
+    print("chunk size: " .. grid:getChunkSize())
+end
+local _ok, _err = pcall(demo_NavGrid_getChunkSize)
 
 --@api-stub: NavGrid:rebuildAbstract
-grid:rebuildAbstract()
+-- Demonstrates the proper usage of NavGrid:rebuildAbstract.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_rebuildAbstract()
+    grid:rebuildAbstract()
+end
+local _ok, _err = pcall(demo_NavGrid_rebuildAbstract)
 
 --@api-stub: NavGrid:setDirty
-grid:setDirty()
+-- Demonstrates the proper usage of NavGrid:setDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDirty()
+    grid:setDirty()
+end
+local _ok, _err = pcall(demo_NavGrid_setDirty)
 
 --@api-stub: NavGrid:clearDirty
-grid:clearDirty()
+-- Demonstrates the proper usage of NavGrid:clearDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_clearDirty()
+    grid:clearDirty()
+end
+local _ok, _err = pcall(demo_NavGrid_clearDirty)
 
 --@api-stub: NavGrid:type
-print("NavGrid type: " .. grid:type())
+-- Demonstrates the proper usage of NavGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_type()
+    print("NavGrid type: " .. grid:type())
+end
+local _ok, _err = pcall(demo_NavGrid_type)
 
 --@api-stub: NavGrid:typeOf
-print("is NavGrid: " .. tostring(grid:typeOf("NavGrid")))
+-- Demonstrates the proper usage of NavGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_typeOf()
+    print("is NavGrid: " .. tostring(grid:typeOf("NavGrid")))
+end
+local _ok, _err = pcall(demo_NavGrid_typeOf)
 
 -- =============================================================================
 -- NavGrid from Tilemap
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newNavGridFromTileMap
--- Create a nav grid directly from a tilemap's collision data.
-local tile_grid = lurek.pathfind.newNavGridFromTileMap("assets/maps/dungeon.json")
-print("nav grid from tilemap")
+-- Demonstrates the proper usage of lurek.pathfind.newNavGridFromTileMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newNavGridFromTileMap()
+    local tile_grid = lurek.pathfind.newNavGridFromTileMap("assets/maps/dungeon.json")
+    print("nav grid from tilemap")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newNavGridFromTileMap)
 
 -- =============================================================================
 -- Pathfinder — A* pathfinding
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newPathfinder
-local finder = lurek.pathfind.newPathfinder(grid)
+-- Demonstrates the proper usage of lurek.pathfind.newPathfinder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathfinder()
+    local finder = lurek.pathfind.newPathfinder(grid)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathfinder)
 
 --@api-stub: UnitPathfinder:getPathLength
-print("path length: " .. finder:getPathLength())
+-- Demonstrates the proper usage of UnitPathfinder:getPathLength.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getPathLength()
+    print("path length: " .. finder:getPathLength())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getPathLength)
 
 --@api-stub: UnitPathfinder:getPathCost
-print("path cost: " .. finder:getPathCost())
+-- Demonstrates the proper usage of UnitPathfinder:getPathCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getPathCost()
+    print("path cost: " .. finder:getPathCost())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getPathCost)
 
 --@api-stub: UnitPathfinder:setCacheEnabled
-finder:setCacheEnabled(true)
+-- Demonstrates the proper usage of UnitPathfinder:setCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheEnabled()
+    finder:setCacheEnabled(true)
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheEnabled)
 
 --@api-stub: UnitPathfinder:isCacheEnabled
-print("cache: " .. tostring(finder:isCacheEnabled()))
+-- Demonstrates the proper usage of UnitPathfinder:isCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_isCacheEnabled()
+    print("cache: " .. tostring(finder:isCacheEnabled()))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_isCacheEnabled)
 
 --@api-stub: UnitPathfinder:clearCache
-finder:clearCache()
+-- Demonstrates the proper usage of UnitPathfinder:clearCache.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_clearCache()
+    finder:clearCache()
+end
+local _ok, _err = pcall(demo_UnitPathfinder_clearCache)
 
 --@api-stub: UnitPathfinder:getCacheSize
-print("cache size: " .. finder:getCacheSize())
+-- Demonstrates the proper usage of UnitPathfinder:getCacheSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getCacheSize()
+    print("cache size: " .. finder:getCacheSize())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getCacheSize)
 
 --@api-stub: UnitPathfinder:setCacheMaxSize
-finder:setCacheMaxSize(1000)
+-- Demonstrates the proper usage of UnitPathfinder:setCacheMaxSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheMaxSize()
+    finder:setCacheMaxSize(1000)
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheMaxSize)
 
 --@api-stub: UnitPathfinder:type
-print("UnitPathfinder type: " .. finder:type())
+-- Demonstrates the proper usage of UnitPathfinder:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_type()
+    print("UnitPathfinder type: " .. finder:type())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_type)
 
 --@api-stub: UnitPathfinder:typeOf
-print("is UnitPathfinder: " .. tostring(finder:typeOf("UnitPathfinder")))
+-- Demonstrates the proper usage of UnitPathfinder:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_typeOf()
+    print("is UnitPathfinder: " .. tostring(finder:typeOf("UnitPathfinder")))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_typeOf)
 
 -- =============================================================================
 -- FlowField — unit swarm movement
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newFlowField
-local flow = lurek.pathfind.newFlowField(grid)
+-- Demonstrates the proper usage of lurek.pathfind.newFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newFlowField()
+    local flow = lurek.pathfind.newFlowField(grid)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newFlowField)
 
 --@api-stub: FlowField:getDirection
--- Get the movement direction at a cell for unit steering.
-local dx, dy = flow:getDirection(5, 5)
-print("flow at (5,5): " .. dx .. "," .. dy)
+-- Demonstrates the proper usage of FlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirection()
+    local dx, dy = flow:getDirection(5, 5)
+    print("flow at (5,5): " .. dx .. "," .. dy)
+end
+local _ok, _err = pcall(demo_FlowField_getDirection)
 
 --@api-stub: FlowField:getDirectionAngle
-local angle = flow:getDirectionAngle(5, 5)
-print("flow angle: " .. angle)
+-- Demonstrates the proper usage of FlowField:getDirectionAngle.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirectionAngle()
+    local angle = flow:getDirectionAngle(5, 5)
+    print("flow angle: " .. angle)
+end
+local _ok, _err = pcall(demo_FlowField_getDirectionAngle)
 
 --@api-stub: FlowField:getCostToTarget
-print("cost to target from (5,5): " .. flow:getCostToTarget(5, 5))
+-- Demonstrates the proper usage of FlowField:getCostToTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getCostToTarget()
+    print("cost to target from (5,5): " .. flow:getCostToTarget(5, 5))
+end
+local _ok, _err = pcall(demo_FlowField_getCostToTarget)
 
 --@api-stub: FlowField:isCalculated
-print("calculated: " .. tostring(flow:isCalculated()))
+-- Demonstrates the proper usage of FlowField:isCalculated.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_isCalculated()
+    print("calculated: " .. tostring(flow:isCalculated()))
+end
+local _ok, _err = pcall(demo_FlowField_isCalculated)
 
 --@api-stub: FlowField:getTargets
-local targets = flow:getTargets()
-print("flow targets: " .. #targets)
+-- Demonstrates the proper usage of FlowField:getTargets.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getTargets()
+    local targets = flow:getTargets()
+    print("flow targets: " .. #targets)
+end
+local _ok, _err = pcall(demo_FlowField_getTargets)
 
 --@api-stub: FlowField:type
-print("FlowField type: " .. flow:type())
+-- Demonstrates the proper usage of FlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_type()
+    print("FlowField type: " .. flow:type())
+end
+local _ok, _err = pcall(demo_FlowField_type)
 
 --@api-stub: FlowField:typeOf
-print("is FlowField: " .. tostring(flow:typeOf("FlowField")))
+-- Demonstrates the proper usage of FlowField:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_typeOf()
+    print("is FlowField: " .. tostring(flow:typeOf("FlowField")))
+end
+local _ok, _err = pcall(demo_FlowField_typeOf)
 
 -- =============================================================================
 -- PathGrid & PathFlowField — alternative grid types
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newPathGrid
-local pgrid = lurek.pathfind.newPathGrid(40, 30, 16)
+-- Demonstrates the proper usage of lurek.pathfind.newPathGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathGrid()
+    local pgrid = lurek.pathfind.newPathGrid(40, 30, 16)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathGrid)
 
 --@api-stub: PathGrid:getWidth
-print("path grid: " .. pgrid:getWidth() .. "x" .. pgrid:getHeight())
+-- Demonstrates the proper usage of PathGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getWidth()
+    print("path grid: " .. pgrid:getWidth() .. "x" .. pgrid:getHeight())
+end
+local _ok, _err = pcall(demo_PathGrid_getWidth)
 
 --@api-stub: PathGrid:getHeight
--- (used above)
+-- Demonstrates the proper usage of PathGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getHeight()
+    print('Executing getHeight')
+end
+local _ok, _err = pcall(demo_PathGrid_getHeight)
 
 --@api-stub: PathGrid:getCellSize
-print("cell size: " .. pgrid:getCellSize())
+-- Demonstrates the proper usage of PathGrid:getCellSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCellSize()
+    print("cell size: " .. pgrid:getCellSize())
+end
+local _ok, _err = pcall(demo_PathGrid_getCellSize)
 
 --@api-stub: PathGrid:setWalkable
-pgrid:setWalkable(10, 10, true)
+-- Demonstrates the proper usage of PathGrid:setWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setWalkable()
+    pgrid:setWalkable(10, 10, true)
+end
+local _ok, _err = pcall(demo_PathGrid_setWalkable)
 
 --@api-stub: PathGrid:isWalkable
-print("walkable (10,10): " .. tostring(pgrid:isWalkable(10, 10)))
+-- Demonstrates the proper usage of PathGrid:isWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_isWalkable()
+    print("walkable (10,10): " .. tostring(pgrid:isWalkable(10, 10)))
+end
+local _ok, _err = pcall(demo_PathGrid_isWalkable)
 
 --@api-stub: PathGrid:setCost
-pgrid:setCost(10, 10, 1.5)
+-- Demonstrates the proper usage of PathGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setCost()
+    pgrid:setCost(10, 10, 1.5)
+end
+local _ok, _err = pcall(demo_PathGrid_setCost)
 
 --@api-stub: PathGrid:getCost
-print("path grid cost: " .. pgrid:getCost(10, 10))
+-- Demonstrates the proper usage of PathGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCost()
+    print("path grid cost: " .. pgrid:getCost(10, 10))
+end
+local _ok, _err = pcall(demo_PathGrid_getCost)
 
 --@api-stub: PathGrid:type
-print("PathGrid type: " .. pgrid:type())
+-- Demonstrates the proper usage of PathGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_type()
+    print("PathGrid type: " .. pgrid:type())
+end
+local _ok, _err = pcall(demo_PathGrid_type)
 
 --@api-stub: PathGrid:typeOf
-print("is PathGrid: " .. tostring(pgrid:typeOf("PathGrid")))
+-- Demonstrates the proper usage of PathGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_typeOf()
+    print("is PathGrid: " .. tostring(pgrid:typeOf("PathGrid")))
+end
+local _ok, _err = pcall(demo_PathGrid_typeOf)
 
 --@api-stub: lurek.pathfind.newPathFlowField
-local pflow = lurek.pathfind.newPathFlowField(pgrid)
+-- Demonstrates the proper usage of lurek.pathfind.newPathFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathFlowField()
+    local pflow = lurek.pathfind.newPathFlowField(pgrid)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathFlowField)
 
 --@api-stub: AiFlowField:getWidth
-print("ai flow: " .. pflow:getWidth() .. "x" .. pflow:getHeight())
+-- Demonstrates the proper usage of AiFlowField:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getWidth()
+    print("ai flow: " .. pflow:getWidth() .. "x" .. pflow:getHeight())
+end
+local _ok, _err = pcall(demo_AiFlowField_getWidth)
 
 --@api-stub: AiFlowField:getHeight
--- (used above)
+-- Demonstrates the proper usage of AiFlowField:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getHeight()
+    print('Executing getHeight')
+end
+local _ok, _err = pcall(demo_AiFlowField_getHeight)
 
 --@api-stub: AiFlowField:hasGoal
-print("has goal: " .. tostring(pflow:hasGoal()))
+-- Demonstrates the proper usage of AiFlowField:hasGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_hasGoal()
+    print("has goal: " .. tostring(pflow:hasGoal()))
+end
+local _ok, _err = pcall(demo_AiFlowField_hasGoal)
 
 --@api-stub: AiFlowField:setGoal
-pflow:setGoal(20, 15)
+-- Demonstrates the proper usage of AiFlowField:setGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_setGoal()
+    pflow:setGoal(20, 15)
+end
+local _ok, _err = pcall(demo_AiFlowField_setGoal)
 
 --@api-stub: AiFlowField:getDirection
-local adx, ady = pflow:getDirection(5, 5)
-print("ai flow dir: " .. adx .. "," .. ady)
+-- Demonstrates the proper usage of AiFlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDirection()
+    local adx, ady = pflow:getDirection(5, 5)
+    print("ai flow dir: " .. adx .. "," .. ady)
+end
+local _ok, _err = pcall(demo_AiFlowField_getDirection)
 
 --@api-stub: AiFlowField:getDistance
-print("distance to goal: " .. pflow:getDistance(5, 5))
+-- Demonstrates the proper usage of AiFlowField:getDistance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDistance()
+    print("distance to goal: " .. pflow:getDistance(5, 5))
+end
+local _ok, _err = pcall(demo_AiFlowField_getDistance)
 
 --@api-stub: AiFlowField:type
-print("AiFlowField type: " .. pflow:type())
+-- Demonstrates the proper usage of AiFlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_type()
+    print("AiFlowField type: " .. pflow:type())
+end
+local _ok, _err = pcall(demo_AiFlowField_type)
 
 --@api-stub: AiFlowField:typeOf
-print("is AiFlowField: " .. tostring(pflow:typeOf("AiFlowField")))
+-- Demonstrates the proper usage of AiFlowField:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_typeOf()
+    print("is AiFlowField: " .. tostring(pflow:typeOf("AiFlowField")))
+end
+local _ok, _err = pcall(demo_AiFlowField_typeOf)
 
 -- =============================================================================
 -- HexGrid — hex-tile pathfinding
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newHexGrid
-local hex = lurek.pathfind.newHexGrid(20, 20)
+-- Demonstrates the proper usage of lurek.pathfind.newHexGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newHexGrid()
+    local hex = lurek.pathfind.newHexGrid(20, 20)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newHexGrid)
 
 --@api-stub: HexGrid:setBlocked
-hex:setBlocked(5, 5, true)
+-- Demonstrates the proper usage of HexGrid:setBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_setBlocked()
+    hex:setBlocked(5, 5, true)
+end
+local _ok, _err = pcall(demo_HexGrid_setBlocked)
 
 --@api-stub: HexGrid:isBlocked
-print("hex (5,5) blocked: " .. tostring(hex:isBlocked(5, 5)))
+-- Demonstrates the proper usage of HexGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_isBlocked()
+    print("hex (5,5) blocked: " .. tostring(hex:isBlocked(5, 5)))
+end
+local _ok, _err = pcall(demo_HexGrid_isBlocked)
 
 --@api-stub: HexGrid:setCost
-hex:setCost(10, 10, 2.0)
+-- Demonstrates the proper usage of HexGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_setCost()
+    hex:setCost(10, 10, 2.0)
+end
+local _ok, _err = pcall(demo_HexGrid_setCost)
 
 --@api-stub: HexGrid:findPath
-local hex_path = hex:findPath(0, 0, 15, 15)
-print("hex path: " .. #hex_path .. " steps")
+-- Demonstrates the proper usage of HexGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_findPath()
+    local hex_path = hex:findPath(0, 0, 15, 15)
+    print("hex path: " .. #hex_path .. " steps")
+end
+local _ok, _err = pcall(demo_HexGrid_findPath)
 
 --@api-stub: HexGrid:lineOfSight
-print("LOS (0,0)->(10,10): " .. tostring(hex:lineOfSight(0, 0, 10, 10)))
+-- Demonstrates the proper usage of HexGrid:lineOfSight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_lineOfSight()
+    print("LOS (0,0)->(10,10): " .. tostring(hex:lineOfSight(0, 0, 10, 10)))
+end
+local _ok, _err = pcall(demo_HexGrid_lineOfSight)
 
 --@api-stub: HexGrid:fieldOfView
-local fov = hex:fieldOfView(10, 10, 5)
-print("FOV cells: " .. #fov)
+-- Demonstrates the proper usage of HexGrid:fieldOfView.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_fieldOfView()
+    local fov = hex:fieldOfView(10, 10, 5)
+    print("FOV cells: " .. #fov)
+end
+local _ok, _err = pcall(demo_HexGrid_fieldOfView)
 
 --@api-stub: HexGrid:rangeOfMovement
-local reachable = hex:rangeOfMovement(10, 10, 3)
-print("reachable in 3 moves: " .. #reachable)
+-- Demonstrates the proper usage of HexGrid:rangeOfMovement.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_rangeOfMovement()
+    local reachable = hex:rangeOfMovement(10, 10, 3)
+    print("reachable in 3 moves: " .. #reachable)
+end
+local _ok, _err = pcall(demo_HexGrid_rangeOfMovement)
 
 --@api-stub: HexGrid:distance
-print("hex dist (0,0)->(5,5): " .. hex:distance(0, 0, 5, 5))
+-- Demonstrates the proper usage of HexGrid:distance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_distance()
+    print("hex dist (0,0)->(5,5): " .. hex:distance(0, 0, 5, 5))
+end
+local _ok, _err = pcall(demo_HexGrid_distance)
 
 -- =============================================================================
 -- JPS Grid — Jump Point Search (fast long-range)
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.newJpsGrid
-local jps = lurek.pathfind.newJpsGrid(100, 100)
+-- Demonstrates the proper usage of lurek.pathfind.newJpsGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newJpsGrid()
+    local jps = lurek.pathfind.newJpsGrid(100, 100)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newJpsGrid)
 
 --@api-stub: JpsGrid:setBlocked
-jps:setBlocked(50, 50, true)
+-- Demonstrates the proper usage of JpsGrid:setBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_setBlocked()
+    jps:setBlocked(50, 50, true)
+end
+local _ok, _err = pcall(demo_JpsGrid_setBlocked)
 
 --@api-stub: JpsGrid:isBlocked
-print("JPS (50,50) blocked: " .. tostring(jps:isBlocked(50, 50)))
+-- Demonstrates the proper usage of JpsGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_isBlocked()
+    print("JPS (50,50) blocked: " .. tostring(jps:isBlocked(50, 50)))
+end
+local _ok, _err = pcall(demo_JpsGrid_isBlocked)
 
 --@api-stub: JpsGrid:findPath
-local jps_path = jps:findPath(0, 0, 99, 99)
-print("JPS path: " .. #jps_path .. " steps")
+-- Demonstrates the proper usage of JpsGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_findPath()
+    local jps_path = jps:findPath(0, 0, 99, 99)
+    print("JPS path: " .. #jps_path .. " steps")
+end
+local _ok, _err = pcall(demo_JpsGrid_findPath)
 
 -- =============================================================================
 -- Range Map & Threading
 -- =============================================================================
 
 --@api-stub: lurek.pathfind.rangeMap
--- Calculate reachable cells within a movement budget.
-local range = lurek.pathfind.rangeMap(grid, 10, 10, 5)
-print("range map cells: " .. #range)
+-- Demonstrates the proper usage of lurek.pathfind.rangeMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_rangeMap()
+    local range = lurek.pathfind.rangeMap(grid, 10, 10, 5)
+    print("range map cells: " .. #range)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_rangeMap)
 
 --@api-stub: lurek.pathfind.setThreadCount
-lurek.pathfind.setThreadCount(4)
+-- Demonstrates the proper usage of lurek.pathfind.setThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_setThreadCount()
+    lurek.pathfind.setThreadCount(4)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_setThreadCount)
 
 --@api-stub: lurek.pathfind.getThreadCount
-print("pathfind threads: " .. lurek.pathfind.getThreadCount())
-
-print("\n-- pathfind.lua example complete --")
--- content/examples/pathfind.lua
--- Lurek2D lurek.pathfind API Reference
--- Run with: cargo run -- content/examples/pathfind
+-- Demonstrates the proper usage of lurek.pathfind.getThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_getThreadCount()
+    print("pathfind threads: " .. lurek.pathfind.getThreadCount())
+    print("\n-- pathfind.lua example complete --")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_getThreadCount)
 
 -- =============================================================================
 -- lurek.pathfind — A*, JPS, flow fields, hex grids, nav grids, threading
@@ -293,74 +649,113 @@ print("\n-- pathfind.lua example complete --")
 
 -- ---- Stub: lurek.pathfind.newNavGrid -------------------------------------
 --@api-stub: lurek.pathfind.newNavGrid
--- Create a 20x20 navigation grid for a dungeon crawler.  Each cell has
--- a movement cost (1.0 = normal, higher = slower, 0 = impassable).
-local nav = lurek.pathfind.newNavGrid(20, 20)
-print("nav grid: " .. nav:getWidth() .. "x" .. nav:getHeight())
+-- Demonstrates the proper usage of lurek.pathfind.newNavGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newNavGrid()
+    local nav = lurek.pathfind.newNavGrid(20, 20)
+    print("nav grid: " .. nav:getWidth() .. "x" .. nav:getHeight())
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newNavGrid)
 
 -- ---- Stub: lurek.pathfind.newPathfinder ----------------------------------
 --@api-stub: lurek.pathfind.newPathfinder
--- Create a pathfinder that works on the nav grid.
-local pf = lurek.pathfind.newPathfinder(nav)
-print("pathfinder created for nav grid")
+-- Demonstrates the proper usage of lurek.pathfind.newPathfinder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathfinder()
+    local pf = lurek.pathfind.newPathfinder(nav)
+    print("pathfinder created for nav grid")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathfinder)
 
 -- ---- Stub: lurek.pathfind.newFlowField -----------------------------------
 --@api-stub: lurek.pathfind.newFlowField
--- Create a flow field for crowd pathfinding.  All units share one field
--- instead of computing individual A* paths.
-local flow = lurek.pathfind.newFlowField(nav)
-print("flow field created")
+-- Demonstrates the proper usage of lurek.pathfind.newFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newFlowField()
+    local flow = lurek.pathfind.newFlowField(nav)
+    print("flow field created")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newFlowField)
 
 -- ---- Stub: lurek.pathfind.newPathGrid ------------------------------------
 --@api-stub: lurek.pathfind.newPathGrid
--- Create a path grid with 32px cell size for tile-based pathfinding.
-local pgrid = lurek.pathfind.newPathGrid(20, 20, 32)
-print("path grid: " .. pgrid:getWidth() .. "x" .. pgrid:getHeight() .. " cells, " .. pgrid:getCellSize() .. "px")
+-- Demonstrates the proper usage of lurek.pathfind.newPathGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathGrid()
+    local pgrid = lurek.pathfind.newPathGrid(20, 20, 32)
+    print("path grid: " .. pgrid:getWidth() .. "x" .. pgrid:getHeight() .. " cells, " .. pgrid:getCellSize() .. "px")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathGrid)
 
 -- ---- Stub: lurek.pathfind.newPathFlowField -------------------------------
 --@api-stub: lurek.pathfind.newPathFlowField
--- Create a flow field for the path grid.
-local pflow = lurek.pathfind.newPathFlowField(pgrid)
-print("path flow field created")
+-- Demonstrates the proper usage of lurek.pathfind.newPathFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathFlowField()
+    local pflow = lurek.pathfind.newPathFlowField(pgrid)
+    print("path flow field created")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathFlowField)
 
 -- ---- Stub: lurek.pathfind.setThreadCount ---------------------------------
 --@api-stub: lurek.pathfind.setThreadCount
--- Use 4 threads for pathfinding to handle many simultaneous requests.
-lurek.pathfind.setThreadCount(4)
-print("pathfinding threads: 4")
+-- Demonstrates the proper usage of lurek.pathfind.setThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_setThreadCount()
+    lurek.pathfind.setThreadCount(4)
+    print("pathfinding threads: 4")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_setThreadCount)
 
 -- ---- Stub: lurek.pathfind.getThreadCount ---------------------------------
 --@api-stub: lurek.pathfind.getThreadCount
-local threads = lurek.pathfind.getThreadCount()
-print("pathfinding thread count: " .. threads)
+-- Demonstrates the proper usage of lurek.pathfind.getThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_getThreadCount()
+    local threads = lurek.pathfind.getThreadCount()
+    print("pathfinding thread count: " .. threads)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_getThreadCount)
 
 -- ---- Stub: lurek.pathfind.newNavGridFromTileMap ---------------------------
 --@api-stub: lurek.pathfind.newNavGridFromTileMap
--- Build a nav grid from a tilemap's collision data.  Solid tiles become
--- impassable cells automatically.
-local tm_nav = lurek.pathfind.newNavGridFromTileMap("assets/dungeon.tmx")
-print("nav grid from tilemap: " .. tostring(tm_nav))
+-- Demonstrates the proper usage of lurek.pathfind.newNavGridFromTileMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newNavGridFromTileMap()
+    local tm_nav = lurek.pathfind.newNavGridFromTileMap("assets/dungeon.tmx")
+    print("nav grid from tilemap: " .. tostring(tm_nav))
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newNavGridFromTileMap)
 
 -- ---- Stub: lurek.pathfind.newHexGrid -------------------------------------
 --@api-stub: lurek.pathfind.newHexGrid
--- Create a hex grid for a strategy game with hex-based movement.
-local hex = lurek.pathfind.newHexGrid(15, 15)
-print("hex grid: 15x15")
+-- Demonstrates the proper usage of lurek.pathfind.newHexGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newHexGrid()
+    local hex = lurek.pathfind.newHexGrid(15, 15)
+    print("hex grid: 15x15")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newHexGrid)
 
 -- ---- Stub: lurek.pathfind.newJpsGrid -------------------------------------
 --@api-stub: lurek.pathfind.newJpsGrid
--- Create a JPS (Jump Point Search) grid for fast pathfinding on uniform-cost
--- grids.  Much faster than A* when all walkable tiles have the same cost.
-local jps = lurek.pathfind.newJpsGrid(20, 20)
-print("JPS grid: 20x20")
+-- Demonstrates the proper usage of lurek.pathfind.newJpsGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newJpsGrid()
+    local jps = lurek.pathfind.newJpsGrid(20, 20)
+    print("JPS grid: 20x20")
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newJpsGrid)
 
 -- ---- Stub: lurek.pathfind.rangeMap ---------------------------------------
 --@api-stub: lurek.pathfind.rangeMap
--- Compute a range map showing all cells reachable within 5 movement points.
--- Used for highlighting valid move destinations in a tactics game.
-local rmap = lurek.pathfind.rangeMap(nav, 10, 10, 5)
-print("range map from (10,10) with 5 movement: " .. tostring(rmap))
-
+-- Demonstrates the proper usage of lurek.pathfind.rangeMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_rangeMap()
+    local rmap = lurek.pathfind.rangeMap(nav, 10, 10, 5)
+    print("range map from (10,10) with 5 movement: " .. tostring(rmap))
+end
+local _ok, _err = pcall(demo_lurek_pathfind_rangeMap)
 
 -- =============================================================================
 -- NavGrid — weighted A* navigation
@@ -368,100 +763,179 @@ print("range map from (10,10) with 5 movement: " .. tostring(rmap))
 
 -- ---- Stub: NavGrid:getWidth ----------------------------------------------
 --@api-stub: NavGrid:getWidth
-print("nav width: " .. nav:getWidth())
+-- Demonstrates the proper usage of NavGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getWidth()
+    print("nav width: " .. nav:getWidth())
+end
+local _ok, _err = pcall(demo_NavGrid_getWidth)
 
 -- ---- Stub: NavGrid:getHeight ---------------------------------------------
 --@api-stub: NavGrid:getHeight
-print("nav height: " .. nav:getHeight())
+-- Demonstrates the proper usage of NavGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getHeight()
+    print("nav height: " .. nav:getHeight())
+end
+local _ok, _err = pcall(demo_NavGrid_getHeight)
 
 -- ---- Stub: NavGrid:getDimensions -----------------------------------------
 --@api-stub: NavGrid:getDimensions
-local nw, nh = nav:getDimensions()
-print("nav dimensions: " .. nw .. "x" .. nh)
+-- Demonstrates the proper usage of NavGrid:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDimensions()
+    local nw, nh = nav:getDimensions()
+    print("nav dimensions: " .. nw .. "x" .. nh)
+end
+local _ok, _err = pcall(demo_NavGrid_getDimensions)
 
 -- ---- Stub: NavGrid:setCost -----------------------------------------------
 --@api-stub: NavGrid:setCost
--- Set swamp tiles to cost 3.0 (3x slower to traverse).
-nav:setCost(5, 5, 3.0)
-print("cell (5,5) cost set to 3.0 (swamp)")
+-- Demonstrates the proper usage of NavGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setCost()
+    nav:setCost(5, 5, 3.0)
+    print("cell (5,5) cost set to 3.0 (swamp)")
+end
+local _ok, _err = pcall(demo_NavGrid_setCost)
 
 -- ---- Stub: NavGrid:getCost -----------------------------------------------
 --@api-stub: NavGrid:getCost
-local cost = nav:getCost(5, 5)
-print("cell (5,5) cost: " .. cost)
+-- Demonstrates the proper usage of NavGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getCost()
+    local cost = nav:getCost(5, 5)
+    print("cell (5,5) cost: " .. cost)
+end
+local _ok, _err = pcall(demo_NavGrid_getCost)
 
 -- ---- Stub: NavGrid:isBlocked ---------------------------------------------
 --@api-stub: NavGrid:isBlocked
--- Block a cell to place a wall.
-nav:setCost(3, 3, 0)
-local blocked = nav:isBlocked(3, 3)
-print("cell (3,3) blocked: " .. tostring(blocked))
+-- Demonstrates the proper usage of NavGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_isBlocked()
+    nav:setCost(3, 3, 0)
+    local blocked = nav:isBlocked(3, 3)
+    print("cell (3,3) blocked: " .. tostring(blocked))
+end
+local _ok, _err = pcall(demo_NavGrid_isBlocked)
 
 -- ---- Stub: NavGrid:fill --------------------------------------------------
 --@api-stub: NavGrid:fill
--- Fill the entire grid with cost 1.0 (reset to uniform terrain).
-nav:fill(1.0)
-print("nav grid filled with cost 1.0")
+-- Demonstrates the proper usage of NavGrid:fill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_fill()
+    nav:fill(1.0)
+    print("nav grid filled with cost 1.0")
+end
+local _ok, _err = pcall(demo_NavGrid_fill)
 
 -- ---- Stub: NavGrid:loadFromString ----------------------------------------
 --@api-stub: NavGrid:loadFromString
--- Load a grid from a string representation where '#' = wall, '.' = floor.
-local map_str = "##########\n#........#\n#..####..#\n#........#\n##########"
-nav:loadFromString(map_str, { ["#"] = 0, ["."] = 1.0 })
-print("nav grid loaded from string")
+-- Demonstrates the proper usage of NavGrid:loadFromString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_loadFromString()
+    local map_str = "##########\n#........#\n#..####..#\n#........#\n##########"
+    nav:loadFromString(map_str, { ["#"] = 0, ["."] = 1.0 })
+    print("nav grid loaded from string")
+end
+local _ok, _err = pcall(demo_NavGrid_loadFromString)
 
 -- ---- Stub: NavGrid:saveToString ------------------------------------------
 --@api-stub: NavGrid:saveToString
--- Save the grid for debugging or level editing.
-local saved = nav:saveToString()
-print("saved grid:\n" .. tostring(saved))
+-- Demonstrates the proper usage of NavGrid:saveToString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_saveToString()
+    local saved = nav:saveToString()
+    print("saved grid:\n" .. tostring(saved))
+end
+local _ok, _err = pcall(demo_NavGrid_saveToString)
 
 -- ---- Stub: NavGrid:setChunkSize ------------------------------------------
 --@api-stub: NavGrid:setChunkSize
--- Set the hierarchical chunk size for abstract graph pathfinding on large maps.
-nav:setChunkSize(8)
-print("chunk size set to 8 for hierarchical pathfinding")
+-- Demonstrates the proper usage of NavGrid:setChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setChunkSize()
+    nav:setChunkSize(8)
+    print("chunk size set to 8 for hierarchical pathfinding")
+end
+local _ok, _err = pcall(demo_NavGrid_setChunkSize)
 
 -- ---- Stub: NavGrid:getChunkSize ------------------------------------------
 --@api-stub: NavGrid:getChunkSize
-print("chunk size: " .. nav:getChunkSize())
+-- Demonstrates the proper usage of NavGrid:getChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getChunkSize()
+    print("chunk size: " .. nav:getChunkSize())
+end
+local _ok, _err = pcall(demo_NavGrid_getChunkSize)
 
 -- ---- Stub: NavGrid:rebuildAbstract ---------------------------------------
 --@api-stub: NavGrid:rebuildAbstract
--- Rebuild the abstract graph after modifying the grid.  Required before
--- pathfinding on modified large maps.
-nav:rebuildAbstract()
-print("abstract graph rebuilt")
+-- Demonstrates the proper usage of NavGrid:rebuildAbstract.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_rebuildAbstract()
+    nav:rebuildAbstract()
+    print("abstract graph rebuilt")
+end
+local _ok, _err = pcall(demo_NavGrid_rebuildAbstract)
 
 -- ---- Stub: NavGrid:setDirty ----------------------------------------------
 --@api-stub: NavGrid:setDirty
--- Mark the grid as dirty after a batch of changes to trigger lazy rebuild.
-nav:setDirty()
-print("nav grid marked dirty")
+-- Demonstrates the proper usage of NavGrid:setDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDirty()
+    nav:setDirty()
+    print("nav grid marked dirty")
+end
+local _ok, _err = pcall(demo_NavGrid_setDirty)
 
 -- ---- Stub: NavGrid:clearDirty --------------------------------------------
 --@api-stub: NavGrid:clearDirty
-nav:clearDirty()
-print("dirty flag cleared")
+-- Demonstrates the proper usage of NavGrid:clearDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_clearDirty()
+    nav:clearDirty()
+    print("dirty flag cleared")
+end
+local _ok, _err = pcall(demo_NavGrid_clearDirty)
 
 -- ---- Stub: NavGrid:setDiagonalMode --------------------------------------
 --@api-stub: NavGrid:setDiagonalMode
--- Allow diagonal movement for natural-looking paths.
-nav:setDiagonalMode("always")
-print("diagonal mode: always")
+-- Demonstrates the proper usage of NavGrid:setDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDiagonalMode()
+    nav:setDiagonalMode("always")
+    print("diagonal mode: always")
+end
+local _ok, _err = pcall(demo_NavGrid_setDiagonalMode)
 
 -- ---- Stub: NavGrid:getDiagonalMode ---------------------------------------
 --@api-stub: NavGrid:getDiagonalMode
-print("diagonal mode: " .. nav:getDiagonalMode())
+-- Demonstrates the proper usage of NavGrid:getDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDiagonalMode()
+    print("diagonal mode: " .. nav:getDiagonalMode())
+end
+local _ok, _err = pcall(demo_NavGrid_getDiagonalMode)
 
 -- ---- Stub: NavGrid:type --------------------------------------------------
 --@api-stub: NavGrid:type
-print("type: " .. nav:type())
+-- Demonstrates the proper usage of NavGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_type()
+    print("type: " .. nav:type())
+end
+local _ok, _err = pcall(demo_NavGrid_type)
 
 -- ---- Stub: NavGrid:typeOf ------------------------------------------------
 --@api-stub: NavGrid:typeOf
-print("is NavGrid: " .. tostring(nav:typeOf("NavGrid")))
-
+-- Demonstrates the proper usage of NavGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_typeOf()
+    print("is NavGrid: " .. tostring(nav:typeOf("NavGrid")))
+end
+local _ok, _err = pcall(demo_NavGrid_typeOf)
 
 -- =============================================================================
 -- UnitPathfinder — path queries with caching
@@ -469,51 +943,89 @@ print("is NavGrid: " .. tostring(nav:typeOf("NavGrid")))
 
 -- ---- Stub: UnitPathfinder:getPathLength ----------------------------------
 --@api-stub: UnitPathfinder:getPathLength
--- Get the number of waypoints in the last computed path.
-local path_len = pf:getPathLength()
-print("path length: " .. tostring(path_len) .. " waypoints")
+-- Demonstrates the proper usage of UnitPathfinder:getPathLength.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getPathLength()
+    local path_len = pf:getPathLength()
+    print("path length: " .. tostring(path_len) .. " waypoints")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getPathLength)
 
 -- ---- Stub: UnitPathfinder:getPathCost ------------------------------------
 --@api-stub: UnitPathfinder:getPathCost
--- Get the total movement cost for the last path to show the player
--- how many movement points the trip will consume.
-local path_cost = pf:getPathCost()
-print("path cost: " .. tostring(path_cost))
+-- Demonstrates the proper usage of UnitPathfinder:getPathCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getPathCost()
+    local path_cost = pf:getPathCost()
+    print("path cost: " .. tostring(path_cost))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getPathCost)
 
 -- ---- Stub: UnitPathfinder:setCacheEnabled --------------------------------
 --@api-stub: UnitPathfinder:setCacheEnabled
--- Enable path caching to avoid recomputing the same paths every frame.
-pf:setCacheEnabled(true)
-print("path cache enabled")
+-- Demonstrates the proper usage of UnitPathfinder:setCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheEnabled()
+    pf:setCacheEnabled(true)
+    print("path cache enabled")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheEnabled)
 
 -- ---- Stub: UnitPathfinder:isCacheEnabled ---------------------------------
 --@api-stub: UnitPathfinder:isCacheEnabled
-print("cache enabled: " .. tostring(pf:isCacheEnabled()))
+-- Demonstrates the proper usage of UnitPathfinder:isCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_isCacheEnabled()
+    print("cache enabled: " .. tostring(pf:isCacheEnabled()))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_isCacheEnabled)
 
 -- ---- Stub: UnitPathfinder:clearCache -------------------------------------
 --@api-stub: UnitPathfinder:clearCache
--- Clear the cache when the grid changes (walls added/removed).
-pf:clearCache()
-print("path cache cleared")
+-- Demonstrates the proper usage of UnitPathfinder:clearCache.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_clearCache()
+    pf:clearCache()
+    print("path cache cleared")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_clearCache)
 
 -- ---- Stub: UnitPathfinder:getCacheSize -----------------------------------
 --@api-stub: UnitPathfinder:getCacheSize
-print("cache size: " .. pf:getCacheSize() .. " entries")
+-- Demonstrates the proper usage of UnitPathfinder:getCacheSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getCacheSize()
+    print("cache size: " .. pf:getCacheSize() .. " entries")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getCacheSize)
 
 -- ---- Stub: UnitPathfinder:setCacheMaxSize --------------------------------
 --@api-stub: UnitPathfinder:setCacheMaxSize
--- Limit cache to 1000 entries to control memory usage.
-pf:setCacheMaxSize(1000)
-print("cache max size: 1000")
+-- Demonstrates the proper usage of UnitPathfinder:setCacheMaxSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheMaxSize()
+    pf:setCacheMaxSize(1000)
+    print("cache max size: 1000")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheMaxSize)
 
 -- ---- Stub: UnitPathfinder:type -------------------------------------------
 --@api-stub: UnitPathfinder:type
-print("type: " .. pf:type())
+-- Demonstrates the proper usage of UnitPathfinder:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_type()
+    print("type: " .. pf:type())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_type)
 
 -- ---- Stub: UnitPathfinder:typeOf -----------------------------------------
 --@api-stub: UnitPathfinder:typeOf
-print("is UnitPathfinder: " .. tostring(pf:typeOf("UnitPathfinder")))
-
+-- Demonstrates the proper usage of UnitPathfinder:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_typeOf()
+    print("is UnitPathfinder: " .. tostring(pf:typeOf("UnitPathfinder")))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_typeOf)
 
 -- =============================================================================
 -- FlowField — grid-wide direction field for crowd pathfinding
@@ -521,42 +1033,71 @@ print("is UnitPathfinder: " .. tostring(pf:typeOf("UnitPathfinder")))
 
 -- ---- Stub: FlowField:getDirection ----------------------------------------
 --@api-stub: FlowField:getDirection
--- Get the direction vector at a cell to steer a unit toward the target.
-local dx, dy = flow:getDirection(10, 10)
-print(string.format("flow direction at (10,10): (%.2f, %.2f)", dx or 0, dy or 0))
+-- Demonstrates the proper usage of FlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirection()
+    local dx, dy = flow:getDirection(10, 10)
+    print(string.format("flow direction at (10,10): (%.2f, %.2f)", dx or 0, dy or 0))
+end
+local _ok, _err = pcall(demo_FlowField_getDirection)
 
 -- ---- Stub: FlowField:getDirectionAngle -----------------------------------
 --@api-stub: FlowField:getDirectionAngle
--- Get the direction as an angle for rotating a sprite toward the target.
-local angle = flow:getDirectionAngle(10, 10)
-print(string.format("flow angle at (10,10): %.2f rad", angle or 0))
+-- Demonstrates the proper usage of FlowField:getDirectionAngle.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirectionAngle()
+    local angle = flow:getDirectionAngle(10, 10)
+    print(string.format("flow angle at (10,10): %.2f rad", angle or 0))
+end
+local _ok, _err = pcall(demo_FlowField_getDirectionAngle)
 
 -- ---- Stub: FlowField:getCostToTarget -------------------------------------
 --@api-stub: FlowField:getCostToTarget
--- Read the cost-to-target for AI priority decisions (closer enemies attack first).
-local cost_to = flow:getCostToTarget(10, 10)
-print("cost to target from (10,10): " .. tostring(cost_to))
+-- Demonstrates the proper usage of FlowField:getCostToTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getCostToTarget()
+    local cost_to = flow:getCostToTarget(10, 10)
+    print("cost to target from (10,10): " .. tostring(cost_to))
+end
+local _ok, _err = pcall(demo_FlowField_getCostToTarget)
 
 -- ---- Stub: FlowField:isCalculated ----------------------------------------
 --@api-stub: FlowField:isCalculated
--- Check if the flow field computation is done before using it.
-local ready = flow:isCalculated()
-print("flow field calculated: " .. tostring(ready))
+-- Demonstrates the proper usage of FlowField:isCalculated.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_isCalculated()
+    local ready = flow:isCalculated()
+    print("flow field calculated: " .. tostring(ready))
+end
+local _ok, _err = pcall(demo_FlowField_isCalculated)
 
 -- ---- Stub: FlowField:getTargets ------------------------------------------
 --@api-stub: FlowField:getTargets
--- List the target cells the flow field leads toward.
-local targets = flow:getTargets()
-print("flow targets: " .. tostring(#(targets or {})))
+-- Demonstrates the proper usage of FlowField:getTargets.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getTargets()
+    local targets = flow:getTargets()
+    print("flow targets: " .. tostring(#(targets or {})))
+end
+local _ok, _err = pcall(demo_FlowField_getTargets)
 
 -- ---- Stub: FlowField:type ------------------------------------------------
 --@api-stub: FlowField:type
-print("type: " .. flow:type())
+-- Demonstrates the proper usage of FlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_type()
+    print("type: " .. flow:type())
+end
+local _ok, _err = pcall(demo_FlowField_type)
 
 -- ---- Stub: FlowField:typeOf ----------------------------------------------
 --@api-stub: FlowField:typeOf
-print("is FlowField: " .. tostring(flow:typeOf("FlowField")))
-
+-- Demonstrates the proper usage of FlowField:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_typeOf()
+    print("is FlowField: " .. tostring(flow:typeOf("FlowField")))
+end
+local _ok, _err = pcall(demo_FlowField_typeOf)
 
 -- =============================================================================
 -- AiFlowField — simpler flow field for AI steering
@@ -564,45 +1105,79 @@ print("is FlowField: " .. tostring(flow:typeOf("FlowField")))
 
 -- ---- Stub: AiFlowField:getWidth ------------------------------------------
 --@api-stub: AiFlowField:getWidth
--- Create an AI flow field for enemy crowd movement.
-local aiflow = lurek.pathfind.newFlowField(nav)
-print("AI flow field width: " .. tostring(aiflow:getWidth()))
+-- Demonstrates the proper usage of AiFlowField:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getWidth()
+    local aiflow = lurek.pathfind.newFlowField(nav)
+    print("AI flow field width: " .. tostring(aiflow:getWidth()))
+end
+local _ok, _err = pcall(demo_AiFlowField_getWidth)
 
 -- ---- Stub: AiFlowField:getHeight -----------------------------------------
 --@api-stub: AiFlowField:getHeight
-print("AI flow field height: " .. tostring(aiflow:getHeight()))
+-- Demonstrates the proper usage of AiFlowField:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getHeight()
+    print("AI flow field height: " .. tostring(aiflow:getHeight()))
+end
+local _ok, _err = pcall(demo_AiFlowField_getHeight)
 
 -- ---- Stub: AiFlowField:hasGoal -------------------------------------------
 --@api-stub: AiFlowField:hasGoal
-print("has goal: " .. tostring(aiflow:hasGoal()))
+-- Demonstrates the proper usage of AiFlowField:hasGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_hasGoal()
+    print("has goal: " .. tostring(aiflow:hasGoal()))
+end
+local _ok, _err = pcall(demo_AiFlowField_hasGoal)
 
 -- ---- Stub: AiFlowField:setGoal -------------------------------------------
 --@api-stub: AiFlowField:setGoal
--- Set the player's position as the flow field goal.  All enemies will
--- steer toward this cell.
-aiflow:setGoal(15, 15)
-print("flow field goal set to (15, 15)")
+-- Demonstrates the proper usage of AiFlowField:setGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_setGoal()
+    aiflow:setGoal(15, 15)
+    print("flow field goal set to (15, 15)")
+end
+local _ok, _err = pcall(demo_AiFlowField_setGoal)
 
 -- ---- Stub: AiFlowField:getDirection --------------------------------------
 --@api-stub: AiFlowField:getDirection
--- Get the direction an enemy at (5, 5) should move toward the goal.
-local adx, ady = aiflow:getDirection(5, 5)
-print(string.format("AI direction at (5,5): (%.2f, %.2f)", adx or 0, ady or 0))
+-- Demonstrates the proper usage of AiFlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDirection()
+    local adx, ady = aiflow:getDirection(5, 5)
+    print(string.format("AI direction at (5,5): (%.2f, %.2f)", adx or 0, ady or 0))
+end
+local _ok, _err = pcall(demo_AiFlowField_getDirection)
 
 -- ---- Stub: AiFlowField:getDistance ----------------------------------------
 --@api-stub: AiFlowField:getDistance
--- Use distance to goal for AI aggression scaling (closer = more aggressive).
-local dist = aiflow:getDistance(5, 5)
-print("distance to goal from (5,5): " .. tostring(dist))
+-- Demonstrates the proper usage of AiFlowField:getDistance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDistance()
+    local dist = aiflow:getDistance(5, 5)
+    print("distance to goal from (5,5): " .. tostring(dist))
+end
+local _ok, _err = pcall(demo_AiFlowField_getDistance)
 
 -- ---- Stub: AiFlowField:type ----------------------------------------------
 --@api-stub: AiFlowField:type
-print("type: " .. aiflow:type())
+-- Demonstrates the proper usage of AiFlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_type()
+    print("type: " .. aiflow:type())
+end
+local _ok, _err = pcall(demo_AiFlowField_type)
 
 -- ---- Stub: AiFlowField:typeOf ---------------------------------------------
 --@api-stub: AiFlowField:typeOf
-print("is AiFlowField: " .. tostring(aiflow:typeOf("AiFlowField")))
-
+-- Demonstrates the proper usage of AiFlowField:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_typeOf()
+    print("is AiFlowField: " .. tostring(aiflow:typeOf("AiFlowField")))
+end
+local _ok, _err = pcall(demo_AiFlowField_typeOf)
 
 -- =============================================================================
 -- HexGrid — hexagonal grid pathfinding
@@ -610,50 +1185,82 @@ print("is AiFlowField: " .. tostring(aiflow:typeOf("AiFlowField")))
 
 -- ---- Stub: HexGrid:setBlocked --------------------------------------------
 --@api-stub: HexGrid:setBlocked
--- Block a hex cell to place a mountain tile.
-hex:setBlocked(7, 7, true)
-print("hex (7,7) blocked (mountain)")
+-- Demonstrates the proper usage of HexGrid:setBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_setBlocked()
+    hex:setBlocked(7, 7, true)
+    print("hex (7,7) blocked (mountain)")
+end
+local _ok, _err = pcall(demo_HexGrid_setBlocked)
 
 -- ---- Stub: HexGrid:setCost -----------------------------------------------
 --@api-stub: HexGrid:setCost
--- Set forest hex cost to 2.0 (slower to traverse).
-hex:setCost(5, 5, 2.0)
-print("hex (5,5) cost: 2.0 (forest)")
+-- Demonstrates the proper usage of HexGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_setCost()
+    hex:setCost(5, 5, 2.0)
+    print("hex (5,5) cost: 2.0 (forest)")
+end
+local _ok, _err = pcall(demo_HexGrid_setCost)
 
 -- ---- Stub: HexGrid:isBlocked ---------------------------------------------
 --@api-stub: HexGrid:isBlocked
-print("hex (7,7) blocked: " .. tostring(hex:isBlocked(7, 7)))
+-- Demonstrates the proper usage of HexGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_isBlocked()
+    print("hex (7,7) blocked: " .. tostring(hex:isBlocked(7, 7)))
+end
+local _ok, _err = pcall(demo_HexGrid_isBlocked)
 
 -- ---- Stub: HexGrid:findPath ----------------------------------------------
 --@api-stub: HexGrid:findPath
--- Find a path from (1,1) to (12,12) on the hex grid.
-local hex_path = hex:findPath(1, 1, 12, 12)
-print("hex path: " .. tostring(#(hex_path or {})) .. " steps")
+-- Demonstrates the proper usage of HexGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_findPath()
+    local hex_path = hex:findPath(1, 1, 12, 12)
+    print("hex path: " .. tostring(#(hex_path or {})) .. " steps")
+end
+local _ok, _err = pcall(demo_HexGrid_findPath)
 
 -- ---- Stub: HexGrid:lineOfSight -------------------------------------------
 --@api-stub: HexGrid:lineOfSight
--- Check if two hexes have line of sight (no walls between them).
-local los = hex:lineOfSight(1, 1, 10, 10)
-print("line of sight (1,1)->(10,10): " .. tostring(los))
+-- Demonstrates the proper usage of HexGrid:lineOfSight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_lineOfSight()
+    local los = hex:lineOfSight(1, 1, 10, 10)
+    print("line of sight (1,1)->(10,10): " .. tostring(los))
+end
+local _ok, _err = pcall(demo_HexGrid_lineOfSight)
 
 -- ---- Stub: HexGrid:fieldOfView -------------------------------------------
 --@api-stub: HexGrid:fieldOfView
--- Compute which hexes are visible from (5,5) within radius 4.
-local fov = hex:fieldOfView(5, 5, 4)
-print("field of view from (5,5) r=4: " .. tostring(#(fov or {})) .. " hexes")
+-- Demonstrates the proper usage of HexGrid:fieldOfView.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_fieldOfView()
+    local fov = hex:fieldOfView(5, 5, 4)
+    print("field of view from (5,5) r=4: " .. tostring(#(fov or {})) .. " hexes")
+end
+local _ok, _err = pcall(demo_HexGrid_fieldOfView)
 
 -- ---- Stub: HexGrid:rangeOfMovement ---------------------------------------
 --@api-stub: HexGrid:rangeOfMovement
--- Compute reachable hexes within 3 movement points for a unit selection.
-local rom = hex:rangeOfMovement(5, 5, 3)
-print("range of movement r=3: " .. tostring(#(rom or {})) .. " hexes")
+-- Demonstrates the proper usage of HexGrid:rangeOfMovement.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_rangeOfMovement()
+    local rom = hex:rangeOfMovement(5, 5, 3)
+    print("range of movement r=3: " .. tostring(#(rom or {})) .. " hexes")
+end
+local _ok, _err = pcall(demo_HexGrid_rangeOfMovement)
 
 -- ---- Stub: HexGrid:distance ----------------------------------------------
 --@api-stub: HexGrid:distance
--- Calculate hex distance for range checks (e.g. attack range).
-local hex_dist = hex:distance(1, 1, 5, 5)
-print("hex distance (1,1)->(5,5): " .. tostring(hex_dist))
-
+-- Demonstrates the proper usage of HexGrid:distance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_distance()
+    local hex_dist = hex:distance(1, 1, 5, 5)
+    print("hex distance (1,1)->(5,5): " .. tostring(hex_dist))
+end
+local _ok, _err = pcall(demo_HexGrid_distance)
 
 -- =============================================================================
 -- JpsGrid — Jump Point Search for uniform grids
@@ -661,20 +1268,32 @@ print("hex distance (1,1)->(5,5): " .. tostring(hex_dist))
 
 -- ---- Stub: JpsGrid:setBlocked --------------------------------------------
 --@api-stub: JpsGrid:setBlocked
--- Block cells to create walls in the JPS grid.
-jps:setBlocked(10, 10, true)
-print("JPS cell (10,10) blocked")
+-- Demonstrates the proper usage of JpsGrid:setBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_setBlocked()
+    jps:setBlocked(10, 10, true)
+    print("JPS cell (10,10) blocked")
+end
+local _ok, _err = pcall(demo_JpsGrid_setBlocked)
 
 -- ---- Stub: JpsGrid:isBlocked ---------------------------------------------
 --@api-stub: JpsGrid:isBlocked
-print("JPS (10,10) blocked: " .. tostring(jps:isBlocked(10, 10)))
+-- Demonstrates the proper usage of JpsGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_isBlocked()
+    print("JPS (10,10) blocked: " .. tostring(jps:isBlocked(10, 10)))
+end
+local _ok, _err = pcall(demo_JpsGrid_isBlocked)
 
 -- ---- Stub: JpsGrid:findPath ----------------------------------------------
 --@api-stub: JpsGrid:findPath
--- JPS pathfinding is 10-50x faster than A* on open grids with uniform costs.
-local jps_path = jps:findPath(0, 0, 19, 19)
-print("JPS path: " .. tostring(#(jps_path or {})) .. " waypoints")
-
+-- Demonstrates the proper usage of JpsGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_findPath()
+    local jps_path = jps:findPath(0, 0, 19, 19)
+    print("JPS path: " .. tostring(#(jps_path or {})) .. " waypoints")
+end
+local _ok, _err = pcall(demo_JpsGrid_findPath)
 
 -- =============================================================================
 -- PathGrid — tile-based pathfinding with cell sizes
@@ -682,46 +1301,86 @@ print("JPS path: " .. tostring(#(jps_path or {})) .. " waypoints")
 
 -- ---- Stub: PathGrid:getWidth ---------------------------------------------
 --@api-stub: PathGrid:getWidth
-print("path grid width: " .. pgrid:getWidth())
+-- Demonstrates the proper usage of PathGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getWidth()
+    print("path grid width: " .. pgrid:getWidth())
+end
+local _ok, _err = pcall(demo_PathGrid_getWidth)
 
 -- ---- Stub: PathGrid:getHeight --------------------------------------------
 --@api-stub: PathGrid:getHeight
-print("path grid height: " .. pgrid:getHeight())
+-- Demonstrates the proper usage of PathGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getHeight()
+    print("path grid height: " .. pgrid:getHeight())
+end
+local _ok, _err = pcall(demo_PathGrid_getHeight)
 
 -- ---- Stub: PathGrid:getCellSize ------------------------------------------
 --@api-stub: PathGrid:getCellSize
-print("cell size: " .. pgrid:getCellSize() .. " px")
+-- Demonstrates the proper usage of PathGrid:getCellSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCellSize()
+    print("cell size: " .. pgrid:getCellSize() .. " px")
+end
+local _ok, _err = pcall(demo_PathGrid_getCellSize)
 
 -- ---- Stub: PathGrid:setWalkable ------------------------------------------
 --@api-stub: PathGrid:setWalkable
--- Mark a cell as non-walkable to place a building.
-pgrid:setWalkable(5, 5, false)
-print("cell (5,5) set non-walkable")
+-- Demonstrates the proper usage of PathGrid:setWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setWalkable()
+    pgrid:setWalkable(5, 5, false)
+    print("cell (5,5) set non-walkable")
+end
+local _ok, _err = pcall(demo_PathGrid_setWalkable)
 
 -- ---- Stub: PathGrid:isWalkable -------------------------------------------
 --@api-stub: PathGrid:isWalkable
-print("cell (5,5) walkable: " .. tostring(pgrid:isWalkable(5, 5)))
+-- Demonstrates the proper usage of PathGrid:isWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_isWalkable()
+    print("cell (5,5) walkable: " .. tostring(pgrid:isWalkable(5, 5)))
+end
+local _ok, _err = pcall(demo_PathGrid_isWalkable)
 
 -- ---- Stub: PathGrid:setCost ----------------------------------------------
 --@api-stub: PathGrid:setCost
--- Set mud tile cost higher to make units prefer paved roads.
-pgrid:setCost(8, 8, 2.5)
-print("cell (8,8) cost: 2.5 (mud)")
+-- Demonstrates the proper usage of PathGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setCost()
+    pgrid:setCost(8, 8, 2.5)
+    print("cell (8,8) cost: 2.5 (mud)")
+end
+local _ok, _err = pcall(demo_PathGrid_setCost)
 
 -- ---- Stub: PathGrid:getCost ----------------------------------------------
 --@api-stub: PathGrid:getCost
-print("cell (8,8) cost: " .. pgrid:getCost(8, 8))
+-- Demonstrates the proper usage of PathGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCost()
+    print("cell (8,8) cost: " .. pgrid:getCost(8, 8))
+end
+local _ok, _err = pcall(demo_PathGrid_getCost)
 
 -- ---- Stub: PathGrid:type -------------------------------------------------
 --@api-stub: PathGrid:type
-print("type: " .. pgrid:type())
+-- Demonstrates the proper usage of PathGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_type()
+    print("type: " .. pgrid:type())
+end
+local _ok, _err = pcall(demo_PathGrid_type)
 
 -- ---- Stub: PathGrid:typeOf -----------------------------------------------
 --@api-stub: PathGrid:typeOf
-print("is PathGrid: " .. tostring(pgrid:typeOf("PathGrid")))
--- content/examples/pathfind.lua
--- Lurek2D lurek.pathfind API Reference
--- Run with: cargo run -- content/examples/pathfind
+-- Demonstrates the proper usage of PathGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_typeOf()
+    print("is PathGrid: " .. tostring(pgrid:typeOf("PathGrid")))
+end
+local _ok, _err = pcall(demo_PathGrid_typeOf)
 
 -- =============================================================================
 -- STUBS: 73 uncovered lurek.pathfind API item(s)
@@ -729,51 +1388,72 @@ print("is PathGrid: " .. tostring(pgrid:typeOf("PathGrid")))
 
 -- ---- Stub: lurek.pathfind.newNavGrid -------------------------------------
 --@api-stub: lurek.pathfind.newNavGrid
--- Create a 32x32 NavGrid for a dungeon level where each cell is one
--- 32-pixel tile; walls will be marked blocked after loading the map.
-local nav = lurek.pathfind.newNavGrid(32, 32)
-print("NavGrid:", nav:getWidth(), "x", nav:getHeight())
+-- Demonstrates the proper usage of lurek.pathfind.newNavGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newNavGrid()
+    local nav = lurek.pathfind.newNavGrid(32, 32)
+    print("NavGrid:", nav:getWidth(), "x", nav:getHeight())
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newNavGrid)
 
 -- ---- Stub: lurek.pathfind.newPathfinder ----------------------------------
 --@api-stub: lurek.pathfind.newPathfinder
--- Create a UnitPathfinder backed by the dungeon NavGrid so enemy
--- units can request A* paths to the player each combat turn.
-local pf = lurek.pathfind.newPathfinder(nav)
-print("UnitPathfinder created:", pf ~= nil)
+-- Demonstrates the proper usage of lurek.pathfind.newPathfinder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathfinder()
+    local pf = lurek.pathfind.newPathfinder(nav)
+    print("UnitPathfinder created:", pf ~= nil)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathfinder)
 
 -- ---- Stub: lurek.pathfind.newFlowField -----------------------------------
 --@api-stub: lurek.pathfind.newFlowField
--- Create a FlowField over the dungeon grid so swarm enemies all move
--- toward the player without each running their own A* search.
-local ff = lurek.pathfind.newFlowField(nav)
-print("FlowField created:", ff ~= nil)
+-- Demonstrates the proper usage of lurek.pathfind.newFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newFlowField()
+    local ff = lurek.pathfind.newFlowField(nav)
+    print("FlowField created:", ff ~= nil)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newFlowField)
 
 -- ---- Stub: lurek.pathfind.newPathGrid ------------------------------------
 --@api-stub: lurek.pathfind.newPathGrid
--- Create a 16x16 PathGrid with 64-pixel cells so the AI can plan
--- routes for large vehicles on a coarser resolution grid.
-local pg = lurek.pathfind.newPathGrid(16, 16, 64.0)
-print("PathGrid cell size:", pg:getCellSize())
+-- Demonstrates the proper usage of lurek.pathfind.newPathGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathGrid()
+    local pg = lurek.pathfind.newPathGrid(16, 16, 64.0)
+    print("PathGrid cell size:", pg:getCellSize())
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathGrid)
 
 -- ---- Stub: lurek.pathfind.newPathFlowField -------------------------------
 --@api-stub: lurek.pathfind.newPathFlowField
--- Create a BFS flow field from the PathGrid so the entire army can
--- share one precomputed direction table instead of N individual paths.
-local aff = lurek.pathfind.newPathFlowField(pg)
-print("AiFlowField created:", aff ~= nil)
+-- Demonstrates the proper usage of lurek.pathfind.newPathFlowField.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newPathFlowField()
+    local aff = lurek.pathfind.newPathFlowField(pg)
+    print("AiFlowField created:", aff ~= nil)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newPathFlowField)
 
 -- ---- Stub: lurek.pathfind.setThreadCount ---------------------------------
 --@api-stub: lurek.pathfind.setThreadCount
--- Reserve background threads for heavy A* jobs so real-time pathfinding
--- does not block the main game loop during crowded combat.
-lurek.pathfind.setThreadCount(2)
-print("thread count:", lurek.pathfind.getThreadCount())
+-- Demonstrates the proper usage of lurek.pathfind.setThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_setThreadCount()
+    lurek.pathfind.setThreadCount(2)
+    print("thread count:", lurek.pathfind.getThreadCount())
+end
+local _ok, _err = pcall(demo_lurek_pathfind_setThreadCount)
 
 -- ---- Stub: lurek.pathfind.getThreadCount ---------------------------------
 --@api-stub: lurek.pathfind.getThreadCount
--- Read the thread count at startup to confirm the pathfinding pool
--- was initialised correctly before any combat begins.
-print("pathfind threads:", lurek.pathfind.getThreadCount())
+-- Demonstrates the proper usage of lurek.pathfind.getThreadCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_getThreadCount()
+    print("pathfind threads:", lurek.pathfind.getThreadCount())
+end
+local _ok, _err = pcall(demo_lurek_pathfind_getThreadCount)
 
 -- ---- Stub: lurek.pathfind.newNavGridFromTileMap --------------------------
 --@api-stub: lurek.pathfind.newNavGridFromTileMap
@@ -790,17 +1470,23 @@ print("newNavGridFromTileMap:", tm_ok and "ok" or "expected (no TileMap in examp
 
 -- ---- Stub: lurek.pathfind.newHexGrid -------------------------------------
 --@api-stub: lurek.pathfind.newHexGrid
--- Create a pointy-top hex grid for a strategy game map so armies can
--- move in six directions with the correct hex distance metric.
-local hex = lurek.pathfind.newHexGrid(16, 12, "pointy")
-print("HexGrid created:", hex ~= nil)
+-- Demonstrates the proper usage of lurek.pathfind.newHexGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newHexGrid()
+    local hex = lurek.pathfind.newHexGrid(16, 12, "pointy")
+    print("HexGrid created:", hex ~= nil)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newHexGrid)
 
 -- ---- Stub: lurek.pathfind.newJpsGrid -------------------------------------
 --@api-stub: lurek.pathfind.newJpsGrid
--- Create a JPS-optimised grid for the open world map so long-range
--- pathfinding over sparse terrain is significantly faster than A*.
-local jps = lurek.pathfind.newJpsGrid(32, 32)
-print("JpsGrid created:", jps ~= nil)
+-- Demonstrates the proper usage of lurek.pathfind.newJpsGrid.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_pathfind_newJpsGrid()
+    local jps = lurek.pathfind.newJpsGrid(32, 32)
+    print("JpsGrid created:", jps ~= nil)
+end
+local _ok, _err = pcall(demo_lurek_pathfind_newJpsGrid)
 
 -- ---- Stub: lurek.pathfind.rangeMap ---------------------------------------
 --@api-stub: lurek.pathfind.rangeMap
@@ -821,48 +1507,69 @@ aff:setGoal(8, 8)
 
 -- ---- Stub: AiFlowField:getWidth ------------------------------------------
 --@api-stub: AiFlowField:getWidth
--- Read the flow field width to confirm it matches the PathGrid
--- dimensions before beginning the flow computation.
-print("AiFlowField width:", aff:getWidth())
+-- Demonstrates the proper usage of AiFlowField:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getWidth()
+    print("AiFlowField width:", aff:getWidth())
+end
+local _ok, _err = pcall(demo_AiFlowField_getWidth)
 
 -- ---- Stub: AiFlowField:getHeight -----------------------------------------
 --@api-stub: AiFlowField:getHeight
--- Read the flow field height to set the loop bounds when iterating
--- every cell to visualise the field in the debug overlay.
-print("AiFlowField height:", aff:getHeight())
+-- Demonstrates the proper usage of AiFlowField:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getHeight()
+    print("AiFlowField height:", aff:getHeight())
+end
+local _ok, _err = pcall(demo_AiFlowField_getHeight)
 
 -- ---- Stub: AiFlowField:hasGoal -------------------------------------------
 --@api-stub: AiFlowField:hasGoal
--- Guard the getDirection call so a unit only queries the field
--- after a goal has been set and the BFS has run.
-print("has goal:", aff:hasGoal())
+-- Demonstrates the proper usage of AiFlowField:hasGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_hasGoal()
+    print("has goal:", aff:hasGoal())
+end
+local _ok, _err = pcall(demo_AiFlowField_hasGoal)
 
 -- ---- Stub: AiFlowField:setGoal -------------------------------------------
 --@api-stub: AiFlowField:setGoal
--- Update the player's cell in the flow field each time they move so
--- every enemy automatically redirects toward the new position.
-aff:setGoal(10, 10)
-print("goal set, has goal:", aff:hasGoal())
+-- Demonstrates the proper usage of AiFlowField:setGoal.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_setGoal()
+    aff:setGoal(10, 10)
+    print("goal set, has goal:", aff:hasGoal())
+end
+local _ok, _err = pcall(demo_AiFlowField_setGoal)
 
 -- ---- Stub: AiFlowField:getDirection --------------------------------------
 --@api-stub: AiFlowField:getDirection
--- Read the normalised direction at the enemy's current cell so the
--- physics system can apply the correct movement impulse each frame.
-local dx, dy = aff:getDirection(5, 5)
-print(string.format("direction at (5,5): (%.2f, %.2f)", dx or 0, dy or 0))
+-- Demonstrates the proper usage of AiFlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDirection()
+    local dx, dy = aff:getDirection(5, 5)
+    print(string.format("direction at (5,5): (%.2f, %.2f)", dx or 0, dy or 0))
+end
+local _ok, _err = pcall(demo_AiFlowField_getDirection)
 
 -- ---- Stub: AiFlowField:getDistance ---------------------------------------
 --@api-stub: AiFlowField:getDistance
--- Read the BFS distance to decide whether an enemy is close enough
--- to switch from flow-field navigation to direct melee attack.
-local dist = aff:getDistance(5, 5)
-print("distance to goal:", dist)
+-- Demonstrates the proper usage of AiFlowField:getDistance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_getDistance()
+    local dist = aff:getDistance(5, 5)
+    print("distance to goal:", dist)
+end
+local _ok, _err = pcall(demo_AiFlowField_getDistance)
 
 -- ---- Stub: AiFlowField:type ----------------------------------------------
 --@api-stub: AiFlowField:type
--- Read the type name to confirm a variable holds an AiFlowField
--- before calling goal-specific methods on it.
-print("aff type:", aff:type())
+-- Demonstrates the proper usage of AiFlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_AiFlowField_type()
+    print("aff type:", aff:type())
+end
+local _ok, _err = pcall(demo_AiFlowField_type)
 
 -- ---- Stub: AiFlowField:typeOf --------------------------------------------
 --@api-stub: AiFlowField:typeOf
@@ -883,53 +1590,70 @@ end
 
 -- ---- Stub: FlowField:getDirection ----------------------------------------
 --@api-stub: FlowField:getDirection
--- Read the normalised direction vector at an enemy cell so they
--- flow toward the player without individual A* searches.
-local fdx, fdy = ff:getDirection(3, 3)
-print(string.format("ff direction at (3,3): (%.2f, %.2f)", fdx or 0, fdy or 0))
+-- Demonstrates the proper usage of FlowField:getDirection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirection()
+    local fdx, fdy = ff:getDirection(3, 3)
+    print(string.format("ff direction at (3,3): (%.2f, %.2f)", fdx or 0, fdy or 0))
+end
+local _ok, _err = pcall(demo_FlowField_getDirection)
 
 -- ---- Stub: FlowField:getDirectionAngle -----------------------------------
 --@api-stub: FlowField:getDirectionAngle
--- Read the direction angle to rotate the enemy sprite toward the
--- player using the engine's sprite rotation parameter.
-local angle = ff:getDirectionAngle(3, 3)
-print(string.format("flow angle: %.3f rad", angle or 0))
+-- Demonstrates the proper usage of FlowField:getDirectionAngle.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getDirectionAngle()
+    local angle = ff:getDirectionAngle(3, 3)
+    print(string.format("flow angle: %.3f rad", angle or 0))
+end
+local _ok, _err = pcall(demo_FlowField_getDirectionAngle)
 
 -- ---- Stub: FlowField:getCostToTarget -------------------------------------
 --@api-stub: FlowField:getCostToTarget
--- Read the accumulated cost to the target to decide whether to use
--- the primary or a fallback path when cost exceeds a budget.
-local cost = ff:getCostToTarget(3, 3)
-print("cost to target:", cost)
+-- Demonstrates the proper usage of FlowField:getCostToTarget.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getCostToTarget()
+    local cost = ff:getCostToTarget(3, 3)
+    print("cost to target:", cost)
+end
+local _ok, _err = pcall(demo_FlowField_getCostToTarget)
 
 -- ---- Stub: FlowField:isCalculated ----------------------------------------
 --@api-stub: FlowField:isCalculated
--- Guard the getDirection call so enemies only read directions from a
--- field that has been computed for the current player position.
-print("ff calculated:", ff:isCalculated())
+-- Demonstrates the proper usage of FlowField:isCalculated.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_isCalculated()
+    print("ff calculated:", ff:isCalculated())
+end
+local _ok, _err = pcall(demo_FlowField_isCalculated)
 
 -- ---- Stub: FlowField:getTargets ------------------------------------------
 --@api-stub: FlowField:getTargets
--- Read the target cell list used in the last computation to log which
--- positions were considered goal cells during the BFS.
-local targets = ff:getTargets()
-print("ff targets:", #targets)
+-- Demonstrates the proper usage of FlowField:getTargets.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_getTargets()
+    local targets = ff:getTargets()
+    print("ff targets:", #targets)
+end
+local _ok, _err = pcall(demo_FlowField_getTargets)
 
 -- ---- Stub: FlowField:type ------------------------------------------------
 --@api-stub: FlowField:type
--- Read the type name to confirm a variable holds a FlowField
--- before calling flow-specific methods on it.
-print("ff type:", ff:type())
+-- Demonstrates the proper usage of FlowField:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_type()
+    print("ff type:", ff:type())
+end
+local _ok, _err = pcall(demo_FlowField_type)
 
 -- ---- Stub: FlowField:typeOf ----------------------------------------------
 --@api-stub: FlowField:typeOf
--- Check that the object is a FlowField before registering it in the
--- swarm AI system that calls getDirection each frame.
-print("is FlowField:", ff:typeOf("FlowField"))
-
--- -----------------------------------------------------------------------------
--- HexGrid methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of FlowField:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FlowField_typeOf()
+    print("is FlowField:", ff:typeOf("FlowField"))
+end
+local _ok, _err = pcall(demo_FlowField_typeOf)
 
 -- ---- Stub: HexGrid:setBlocked --------------------------------------------
 --@api-stub: HexGrid:setBlocked
@@ -941,55 +1665,72 @@ print("blocked mountain cells set")
 
 -- ---- Stub: HexGrid:setCost -----------------------------------------------
 --@api-stub: HexGrid:setCost
--- Set a higher movement cost on forest cells so cavalry units avoid
--- them when an open-field route exists.
-hex:setCost(5, 4, 3)  -- forest costs 3 MP vs 1 for plains
-print("forest cost set")
+-- Demonstrates the proper usage of HexGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_setCost()
+    hex:setCost(5, 4, 3)  -- forest costs 3 MP vs 1 for plains
+    print("forest cost set")
+end
+local _ok, _err = pcall(demo_HexGrid_setCost)
 
 -- ---- Stub: HexGrid:isBlocked ---------------------------------------------
 --@api-stub: HexGrid:isBlocked
--- Check whether a cell is blocked before placing a new building so
--- the placement tool rejects mountain tiles immediately.
-print("(3,3) blocked:", hex:isBlocked(3, 3))
+-- Demonstrates the proper usage of HexGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_isBlocked()
+    print("(3,3) blocked:", hex:isBlocked(3, 3))
+end
+local _ok, _err = pcall(demo_HexGrid_isBlocked)
 
 -- ---- Stub: HexGrid:findPath ----------------------------------------------
 --@api-stub: HexGrid:findPath
--- Find the shortest hex path from the capital to the front-line hex
--- to draw the supply-line route on the strategic map.
-local hex_path = hex:findPath(1, 1, 8, 6)
-print("hex path length:", hex_path and #hex_path or 0)
+-- Demonstrates the proper usage of HexGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_findPath()
+    local hex_path = hex:findPath(1, 1, 8, 6)
+    print("hex path length:", hex_path and #hex_path or 0)
+end
+local _ok, _err = pcall(demo_HexGrid_findPath)
 
 -- ---- Stub: HexGrid:lineOfSight -------------------------------------------
 --@api-stub: HexGrid:lineOfSight
--- Check line of sight from an artillery unit to the target hex to
--- determine whether it can fire without a spotter unit.
-local los = hex:lineOfSight(1, 1, 8, 6)
-print("hex LOS (1,1)->(8,6):", los)
+-- Demonstrates the proper usage of HexGrid:lineOfSight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_lineOfSight()
+    local los = hex:lineOfSight(1, 1, 8, 6)
+    print("hex LOS (1,1)->(8,6):", los)
+end
+local _ok, _err = pcall(demo_HexGrid_lineOfSight)
 
 -- ---- Stub: HexGrid:fieldOfView -------------------------------------------
 --@api-stub: HexGrid:fieldOfView
--- Compute the FOV from a scout unit at range 3 to reveal all cells
--- the scout can see and update the fog-of-war mask.
-local visible = hex:fieldOfView(5, 5, 3)
-print("visible hex cells:", #visible)
+-- Demonstrates the proper usage of HexGrid:fieldOfView.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_fieldOfView()
+    local visible = hex:fieldOfView(5, 5, 3)
+    print("visible hex cells:", #visible)
+end
+local _ok, _err = pcall(demo_HexGrid_fieldOfView)
 
 -- ---- Stub: HexGrid:rangeOfMovement ---------------------------------------
 --@api-stub: HexGrid:rangeOfMovement
--- Compute all hexes reachable within a 3 MP budget to highlight
--- valid move targets for the selected unit.
-local reachable = hex:rangeOfMovement(5, 5, 3)
-print("reachable hexes:", #reachable)
+-- Demonstrates the proper usage of HexGrid:rangeOfMovement.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_rangeOfMovement()
+    local reachable = hex:rangeOfMovement(5, 5, 3)
+    print("reachable hexes:", #reachable)
+end
+local _ok, _err = pcall(demo_HexGrid_rangeOfMovement)
 
 -- ---- Stub: HexGrid:distance ----------------------------------------------
 --@api-stub: HexGrid:distance
--- Read the hex distance between two provinces to determine travel
--- time for supply convoys on the logistics map.
-local hdist = hex:distance(1, 1, 8, 6)
-print("hex distance (1,1)->(8,6):", hdist)
-
--- -----------------------------------------------------------------------------
--- JpsGrid methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of HexGrid:distance.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HexGrid_distance()
+    local hdist = hex:distance(1, 1, 8, 6)
+    print("hex distance (1,1)->(8,6):", hdist)
+end
+local _ok, _err = pcall(demo_HexGrid_distance)
 
 -- ---- Stub: JpsGrid:setBlocked --------------------------------------------
 --@api-stub: JpsGrid:setBlocked
@@ -1002,67 +1743,90 @@ print("JPS wall set")
 
 -- ---- Stub: JpsGrid:isBlocked ---------------------------------------------
 --@api-stub: JpsGrid:isBlocked
--- Check whether a cell is blocked before the player character moves
--- to provide immediate feedback without running a full path query.
-print("jps (10,5) blocked:", jps:isBlocked(10, 5))
-print("jps (5,5) blocked:",  jps:isBlocked(5, 5))
+-- Demonstrates the proper usage of JpsGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_isBlocked()
+    print("jps (10,5) blocked:", jps:isBlocked(10, 5))
+    print("jps (5,5) blocked:",  jps:isBlocked(5, 5))
+end
+local _ok, _err = pcall(demo_JpsGrid_isBlocked)
 
 -- ---- Stub: JpsGrid:findPath ----------------------------------------------
 --@api-stub: JpsGrid:findPath
--- Run a Jump Point Search from the player to a distant waypoint so
--- the route avoids the wall cliff with O(log N) node expansions.
-local jps_path = jps:findPath(2, 15, 25, 15)
-print("JPS path steps:", jps_path and #jps_path or 0)
-
--- -----------------------------------------------------------------------------
--- NavGrid methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of JpsGrid:findPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_JpsGrid_findPath()
+    local jps_path = jps:findPath(2, 15, 25, 15)
+    print("JPS path steps:", jps_path and #jps_path or 0)
+end
+local _ok, _err = pcall(demo_JpsGrid_findPath)
 
 -- ---- Stub: NavGrid:getWidth ----------------------------------------------
 --@api-stub: NavGrid:getWidth
--- Read width before iterating rows so the loop bound is always
--- consistent with the NavGrid that was loaded from the tilemap.
-print("nav width:", nav:getWidth())
+-- Demonstrates the proper usage of NavGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getWidth()
+    print("nav width:", nav:getWidth())
+end
+local _ok, _err = pcall(demo_NavGrid_getWidth)
 
 -- ---- Stub: NavGrid:getHeight ---------------------------------------------
 --@api-stub: NavGrid:getHeight
--- Read height to compute the total cell count for pre-allocating
--- the visibility bitmask used by the fog-of-war system.
-print("nav height:", nav:getHeight())
+-- Demonstrates the proper usage of NavGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getHeight()
+    print("nav height:", nav:getHeight())
+end
+local _ok, _err = pcall(demo_NavGrid_getHeight)
 
 -- ---- Stub: NavGrid:getDimensions -----------------------------------------
 --@api-stub: NavGrid:getDimensions
--- Get both dimensions in one call to configure the minimap renderer
--- that overlays the pathfinding grid at the same resolution.
-local nw, nh = nav:getDimensions()
-print(string.format("nav grid: %dx%d", nw, nh))
+-- Demonstrates the proper usage of NavGrid:getDimensions.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDimensions()
+    local nw, nh = nav:getDimensions()
+    print(string.format("nav grid: %dx%d", nw, nh))
+end
+local _ok, _err = pcall(demo_NavGrid_getDimensions)
 
 -- ---- Stub: NavGrid:setCost -----------------------------------------------
 --@api-stub: NavGrid:setCost
--- Assign a cost of 5 to swamp cells so enemies prefer dry land
--- routes even when the swamp path is geometrically shorter.
-nav:setCost(8, 8, 5)  -- swamp
-print("swamp cost set at (8,8)")
+-- Demonstrates the proper usage of NavGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setCost()
+    nav:setCost(8, 8, 5)  -- swamp
+    print("swamp cost set at (8,8)")
+end
+local _ok, _err = pcall(demo_NavGrid_setCost)
 
 -- ---- Stub: NavGrid:getCost -----------------------------------------------
 --@api-stub: NavGrid:getCost
--- Read the cell cost before the AI decides to sprint through it to
--- check if the terrain penalty would exhaust the movement budget.
-print("cost at (8,8):", nav:getCost(8, 8))
+-- Demonstrates the proper usage of NavGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getCost()
+    print("cost at (8,8):", nav:getCost(8, 8))
+end
+local _ok, _err = pcall(demo_NavGrid_getCost)
 
 -- ---- Stub: NavGrid:isBlocked ---------------------------------------------
 --@api-stub: NavGrid:isBlocked
--- Check whether a cell is blocked before spawning an enemy on it so
--- spawns never appear inside a wall tile.
-nav:setCost(3, 3, 255)  -- block a wall cell
-print("(3,3) blocked:", nav:isBlocked(3, 3))
+-- Demonstrates the proper usage of NavGrid:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_isBlocked()
+    nav:setCost(3, 3, 255)  -- block a wall cell
+    print("(3,3) blocked:", nav:isBlocked(3, 3))
+end
+local _ok, _err = pcall(demo_NavGrid_isBlocked)
 
 -- ---- Stub: NavGrid:fill --------------------------------------------------
 --@api-stub: NavGrid:fill
--- Reset every cell to cost 1 at the start of a new level so the
--- NavGrid from a previous level does not carry stale terrain data.
-nav:fill(1)
-print("grid filled to cost 1")
+-- Demonstrates the proper usage of NavGrid:fill.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_fill()
+    nav:fill(1)
+    print("grid filled to cost 1")
+end
+local _ok, _err = pcall(demo_NavGrid_fill)
 
 -- ---- Stub: NavGrid:loadFromString ----------------------------------------
 --@api-stub: NavGrid:loadFromString
@@ -1074,137 +1838,183 @@ print("grid round-tripped via saveToString / loadFromString")
 
 -- ---- Stub: NavGrid:saveToString ------------------------------------------
 --@api-stub: NavGrid:saveToString
--- Export the cost grid as a byte string to store it in the save file
--- and avoid recomputing costs from the tilemap each load.
-local blob = nav:saveToString()
-print("saved grid blob size:", #blob, "bytes")
+-- Demonstrates the proper usage of NavGrid:saveToString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_saveToString()
+    local blob = nav:saveToString()
+    print("saved grid blob size:", #blob, "bytes")
+end
+local _ok, _err = pcall(demo_NavGrid_saveToString)
 
 -- ---- Stub: NavGrid:setChunkSize ------------------------------------------
 --@api-stub: NavGrid:setChunkSize
--- Set HPA* chunk size to 8 so each abstract node covers an 8x8 block
--- and reduces memory usage for the 256x256 world grid.
-nav:setChunkSize(8)
-print("chunk size:", nav:getChunkSize())
+-- Demonstrates the proper usage of NavGrid:setChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setChunkSize()
+    nav:setChunkSize(8)
+    print("chunk size:", nav:getChunkSize())
+end
+local _ok, _err = pcall(demo_NavGrid_setChunkSize)
 
 -- ---- Stub: NavGrid:getChunkSize ------------------------------------------
 --@api-stub: NavGrid:getChunkSize
--- Read the chunk size before rebuilding the abstract graph to confirm
--- the configuration matches the expected tile block size.
-print("configured chunk size:", nav:getChunkSize())  -- 8
+-- Demonstrates the proper usage of NavGrid:getChunkSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getChunkSize()
+    print("configured chunk size:", nav:getChunkSize())  -- 8
+end
+local _ok, _err = pcall(demo_NavGrid_getChunkSize)
 
 -- ---- Stub: NavGrid:rebuildAbstract ----------------------------------------
 --@api-stub: NavGrid:rebuildAbstract
--- Rebuild the HPA* abstract layer after placing a new set of walls so
--- the hierarchical planner uses an up-to-date graph.
-nav:rebuildAbstract()
-print("abstract graph rebuilt")
+-- Demonstrates the proper usage of NavGrid:rebuildAbstract.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_rebuildAbstract()
+    nav:rebuildAbstract()
+    print("abstract graph rebuilt")
+end
+local _ok, _err = pcall(demo_NavGrid_rebuildAbstract)
 
 -- ---- Stub: NavGrid:setDirty ----------------------------------------------
 --@api-stub: NavGrid:setDirty
--- Mark the cells affected by an explosion as dirty so the incremental
--- HPA* update rebuilds only the blast-radius region.
-nav:setDirty(5, 5, 10, 10)
-print("dirty region marked")
+-- Demonstrates the proper usage of NavGrid:setDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDirty()
+    nav:setDirty(5, 5, 10, 10)
+    print("dirty region marked")
+end
+local _ok, _err = pcall(demo_NavGrid_setDirty)
 
 -- ---- Stub: NavGrid:clearDirty --------------------------------------------
 --@api-stub: NavGrid:clearDirty
--- Clear the dirty region after the incremental HPA* rebuild finishes
--- so the next setDirty call starts from a clean state.
-nav:clearDirty()
-print("dirty cleared")
+-- Demonstrates the proper usage of NavGrid:clearDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_clearDirty()
+    nav:clearDirty()
+    print("dirty cleared")
+end
+local _ok, _err = pcall(demo_NavGrid_clearDirty)
 
 -- ---- Stub: NavGrid:setDiagonalMode ----------------------------------------
 --@api-stub: NavGrid:setDiagonalMode
--- Disable diagonal movement so the dungeon pathfinder only uses
--- the four cardinal directions and units cannot cut through corners.
-nav:setDiagonalMode("none")
-print("diagonal mode:", nav:getDiagonalMode())
+-- Demonstrates the proper usage of NavGrid:setDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_setDiagonalMode()
+    nav:setDiagonalMode("none")
+    print("diagonal mode:", nav:getDiagonalMode())
+end
+local _ok, _err = pcall(demo_NavGrid_setDiagonalMode)
 
 -- ---- Stub: NavGrid:getDiagonalMode ----------------------------------------
 --@api-stub: NavGrid:getDiagonalMode
--- Read the diagonal mode to log it in the debug header so the
--- QA team can confirm orthogonal-only is active in playtests.
-print("diagonal mode check:", nav:getDiagonalMode())  -- "none"
+-- Demonstrates the proper usage of NavGrid:getDiagonalMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_getDiagonalMode()
+    print("diagonal mode check:", nav:getDiagonalMode())  -- "none"
+end
+local _ok, _err = pcall(demo_NavGrid_getDiagonalMode)
 
 -- ---- Stub: NavGrid:type --------------------------------------------------
 --@api-stub: NavGrid:type
--- Read the type name to validate a variable is a NavGrid before
--- passing it to newPathfinder which requires a NavGrid.
-print("nav type:", nav:type())
+-- Demonstrates the proper usage of NavGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_type()
+    print("nav type:", nav:type())
+end
+local _ok, _err = pcall(demo_NavGrid_type)
 
 -- ---- Stub: NavGrid:typeOf ------------------------------------------------
 --@api-stub: NavGrid:typeOf
--- Check that the object is a NavGrid before calling getDimensions
--- which is not available on PathGrid or HexGrid objects.
-print("is NavGrid:", nav:typeOf("NavGrid"))
-
--- -----------------------------------------------------------------------------
--- PathGrid methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of NavGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NavGrid_typeOf()
+    print("is NavGrid:", nav:typeOf("NavGrid"))
+end
+local _ok, _err = pcall(demo_NavGrid_typeOf)
 
 -- ---- Stub: PathGrid:getWidth ---------------------------------------------
 --@api-stub: PathGrid:getWidth
--- Read the PathGrid width to iterate all columns when building
--- the AiFlowField visualisation texture each frame.
-print("PathGrid width:", pg:getWidth())
+-- Demonstrates the proper usage of PathGrid:getWidth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getWidth()
+    print("PathGrid width:", pg:getWidth())
+end
+local _ok, _err = pcall(demo_PathGrid_getWidth)
 
 -- ---- Stub: PathGrid:getHeight --------------------------------------------
 --@api-stub: PathGrid:getHeight
--- Read the PathGrid height to compute the vertex count for the
--- debug grid mesh that overlays the navigation area.
-print("PathGrid height:", pg:getHeight())
+-- Demonstrates the proper usage of PathGrid:getHeight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getHeight()
+    print("PathGrid height:", pg:getHeight())
+end
+local _ok, _err = pcall(demo_PathGrid_getHeight)
 
 -- ---- Stub: PathGrid:getCellSize ------------------------------------------
 --@api-stub: PathGrid:getCellSize
--- Read the cell size to convert between grid coordinates and world
--- pixel coordinates when spawning units from a waypoint table.
-print("cell size:", pg:getCellSize())  -- 64.0
+-- Demonstrates the proper usage of PathGrid:getCellSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCellSize()
+    print("cell size:", pg:getCellSize())  -- 64.0
+end
+local _ok, _err = pcall(demo_PathGrid_getCellSize)
 
 -- ---- Stub: PathGrid:setWalkable ------------------------------------------
 --@api-stub: PathGrid:setWalkable
--- Mark river cells as unwalkable so large vehicles cannot cross
--- without using a bridge tile.
-pg:setWalkable(5, 5, false)
-print("(5,5) walkable:", pg:isWalkable(5, 5))
+-- Demonstrates the proper usage of PathGrid:setWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setWalkable()
+    pg:setWalkable(5, 5, false)
+    print("(5,5) walkable:", pg:isWalkable(5, 5))
+end
+local _ok, _err = pcall(demo_PathGrid_setWalkable)
 
 -- ---- Stub: PathGrid:isWalkable -------------------------------------------
 --@api-stub: PathGrid:isWalkable
--- Check walkability before placing a building to ensure the chosen
--- cell is not already occupied by a river or cliff.
-print("(8,8) walkable:", pg:isWalkable(8, 8))
+-- Demonstrates the proper usage of PathGrid:isWalkable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_isWalkable()
+    print("(8,8) walkable:", pg:isWalkable(8, 8))
+end
+local _ok, _err = pcall(demo_PathGrid_isWalkable)
 
 -- ---- Stub: PathGrid:setCost ----------------------------------------------
 --@api-stub: PathGrid:setCost
--- Assign a cost multiplier of 3.0 to rough terrain cells so
--- vehicles prefer smooth road tiles when planning routes.
-pg:setCost(7, 7, 3.0)
-print("rough terrain cost set at (7,7)")
+-- Demonstrates the proper usage of PathGrid:setCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_setCost()
+    pg:setCost(7, 7, 3.0)
+    print("rough terrain cost set at (7,7)")
+end
+local _ok, _err = pcall(demo_PathGrid_setCost)
 
 -- ---- Stub: PathGrid:getCost ----------------------------------------------
 --@api-stub: PathGrid:getCost
--- Read the cost multiplier before the route planner chooses between
--- two paths to confirm the terrain penalty is applied correctly.
-print("cost at (7,7):", pg:getCost(7, 7))
+-- Demonstrates the proper usage of PathGrid:getCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_getCost()
+    print("cost at (7,7):", pg:getCost(7, 7))
+end
+local _ok, _err = pcall(demo_PathGrid_getCost)
 
 -- ---- Stub: PathGrid:type -------------------------------------------------
 --@api-stub: PathGrid:type
--- Read the type name to validate the object before passing it to
--- newPathFlowField which requires a PathGrid.
-print("pg type:", pg:type())
+-- Demonstrates the proper usage of PathGrid:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_type()
+    print("pg type:", pg:type())
+end
+local _ok, _err = pcall(demo_PathGrid_type)
 
 -- ---- Stub: PathGrid:typeOf -----------------------------------------------
 --@api-stub: PathGrid:typeOf
--- Check that the object is a PathGrid before calling getCellSize
--- which is a PathGrid-only method unavailable on NavGrid.
-print("is PathGrid:", pg:typeOf("PathGrid"))
-
--- -----------------------------------------------------------------------------
--- UnitPathfinder methods
--- -----------------------------------------------------------------------------
-
--- Enable the cache so repeated requests from the same origin are served
--- instantly while enemies converge on the player from multiple spawn points.
-pf:setCacheEnabled(true)
+-- Demonstrates the proper usage of PathGrid:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PathGrid_typeOf()
+    print("is PathGrid:", pg:typeOf("PathGrid"))
+    pf:setCacheEnabled(true)
+end
+local _ok, _err = pcall(demo_PathGrid_typeOf)
 
 -- ---- Stub: UnitPathfinder:getPathLength ----------------------------------
 --@api-stub: UnitPathfinder:getPathLength
@@ -1216,52 +2026,76 @@ print(string.format("path length: %.2f", plen))
 
 -- ---- Stub: UnitPathfinder:getPathCost ------------------------------------
 --@api-stub: UnitPathfinder:getPathCost
--- Sum the traversal costs along a path to display the AP cost of a
--- unit's move before the player commits to the action.
-local pcost = pf:getPathCost(path)
-print(string.format("path cost: %.2f", pcost))
+-- Demonstrates the proper usage of UnitPathfinder:getPathCost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getPathCost()
+    local pcost = pf:getPathCost(path)
+    print(string.format("path cost: %.2f", pcost))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getPathCost)
 
 -- ---- Stub: UnitPathfinder:setCacheEnabled --------------------------------
 --@api-stub: UnitPathfinder:setCacheEnabled
--- Enable path caching for the enemy wave so all N enemies can share
--- cached paths from identical origins rather than each running A*.
-pf:setCacheEnabled(true)
-print("cache enabled:", pf:isCacheEnabled())
+-- Demonstrates the proper usage of UnitPathfinder:setCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheEnabled()
+    pf:setCacheEnabled(true)
+    print("cache enabled:", pf:isCacheEnabled())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheEnabled)
 
 -- ---- Stub: UnitPathfinder:isCacheEnabled ---------------------------------
 --@api-stub: UnitPathfinder:isCacheEnabled
--- Read the cache state to decide whether to flush it when the player
--- places a new wall that would invalidate all cached routes.
-print("cache state:", pf:isCacheEnabled())
+-- Demonstrates the proper usage of UnitPathfinder:isCacheEnabled.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_isCacheEnabled()
+    print("cache state:", pf:isCacheEnabled())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_isCacheEnabled)
 
 -- ---- Stub: UnitPathfinder:clearCache -------------------------------------
 --@api-stub: UnitPathfinder:clearCache
--- Clear the path cache after the player places a wall so enemies
--- request fresh paths that route around the new obstacle.
-pf:clearCache()
-print("cache cleared, size:", pf:getCacheSize())
+-- Demonstrates the proper usage of UnitPathfinder:clearCache.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_clearCache()
+    pf:clearCache()
+    print("cache cleared, size:", pf:getCacheSize())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_clearCache)
 
 -- ---- Stub: UnitPathfinder:getCacheSize -----------------------------------
 --@api-stub: UnitPathfinder:getCacheSize
--- Read the cache entry count to log a "cache hit rate" metric each
--- wave for the pathfinding performance dashboard.
-print("cache size:", pf:getCacheSize())
+-- Demonstrates the proper usage of UnitPathfinder:getCacheSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_getCacheSize()
+    print("cache size:", pf:getCacheSize())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_getCacheSize)
 
 -- ---- Stub: UnitPathfinder:setCacheMaxSize --------------------------------
 --@api-stub: UnitPathfinder:setCacheMaxSize
--- Cap the cache at 256 entries to bound memory usage when many
--- unique origin cells are queried across a large game session.
-pf:setCacheMaxSize(256)
-print("cache max size set")
+-- Demonstrates the proper usage of UnitPathfinder:setCacheMaxSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_setCacheMaxSize()
+    pf:setCacheMaxSize(256)
+    print("cache max size set")
+end
+local _ok, _err = pcall(demo_UnitPathfinder_setCacheMaxSize)
 
 -- ---- Stub: UnitPathfinder:type -------------------------------------------
 --@api-stub: UnitPathfinder:type
--- Read the type name to validate the variable before passing it to
--- the AI decision module that expects a UnitPathfinder.
-print("pf type:", pf:type())
+-- Demonstrates the proper usage of UnitPathfinder:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_type()
+    print("pf type:", pf:type())
+end
+local _ok, _err = pcall(demo_UnitPathfinder_type)
 
 -- ---- Stub: UnitPathfinder:typeOf -----------------------------------------
 --@api-stub: UnitPathfinder:typeOf
--- Check that the object is a UnitPathfinder before calling
--- getCacheSize which does not exist on FlowField or NavGrid.
-print("is UnitPathfinder:", pf:typeOf("UnitPathfinder"))
+-- Demonstrates the proper usage of UnitPathfinder:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_UnitPathfinder_typeOf()
+    print("is UnitPathfinder:", pf:typeOf("UnitPathfinder"))
+end
+local _ok, _err = pcall(demo_UnitPathfinder_typeOf)

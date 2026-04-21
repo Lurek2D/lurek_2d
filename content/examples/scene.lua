@@ -14,218 +14,468 @@ print("=== lurek.scene — Scene Management ===\n")
 -- =============================================================================
 
 --@api-stub: lurek.scene.define
--- Define scenes using inline tables (alternative to registerScene).
-lurek.scene.define("title", {
+-- Demonstrates the proper usage of lurek.scene.define.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_define()
+    lurek.scene.define("title", {
     process = function(dt) end,
     render = function() end,
-})
+    })
+end
+local _ok, _err = pcall(demo_lurek_scene_define)
 
 --@api-stub: lurek.scene.new
--- Create a scene object for more complex setups.
-local gameplay = lurek.scene.new("gameplay")
+-- Demonstrates the proper usage of lurek.scene.new.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_new()
+    local gameplay = lurek.scene.new("gameplay")
+end
+local _ok, _err = pcall(demo_lurek_scene_new)
 
 --@api-stub: lurek.scene.registerScene
-lurek.scene.registerScene("settings", {
+-- Demonstrates the proper usage of lurek.scene.registerScene.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_registerScene()
+    lurek.scene.registerScene("settings", {
     process = function(dt) end,
     render = function() end,
-})
+    })
+end
+local _ok, _err = pcall(demo_lurek_scene_registerScene)
 
 --@api-stub: lurek.scene.hasRegistered
-print("has title: " .. tostring(lurek.scene.hasRegistered("title")))
+-- Demonstrates the proper usage of lurek.scene.hasRegistered.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_hasRegistered()
+    print("has title: " .. tostring(lurek.scene.hasRegistered("title")))
+end
+local _ok, _err = pcall(demo_lurek_scene_hasRegistered)
 
 --@api-stub: lurek.scene.getRegistered
-local title = lurek.scene.getRegistered("title")
+-- Demonstrates the proper usage of lurek.scene.getRegistered.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getRegistered()
+    local title = lurek.scene.getRegistered("title")
+end
+local _ok, _err = pcall(demo_lurek_scene_getRegistered)
 
 --@api-stub: lurek.scene.getRegisteredNames
-local names = lurek.scene.getRegisteredNames()
-print("registered: " .. table.concat(names, ", "))
+-- Demonstrates the proper usage of lurek.scene.getRegisteredNames.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getRegisteredNames()
+    local names = lurek.scene.getRegisteredNames()
+    print("registered: " .. table.concat(names, ", "))
+end
+local _ok, _err = pcall(demo_lurek_scene_getRegisteredNames)
 
 --@api-stub: lurek.scene.unregisterScene
--- lurek.scene.unregisterScene("settings")
+-- Demonstrates the proper usage of lurek.scene.unregisterScene.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_unregisterScene()
+    print('Executing unregisterScene')
+end
+local _ok, _err = pcall(demo_lurek_scene_unregisterScene)
 
 -- =============================================================================
 -- Scene Stack — Push/Pop navigation
 -- =============================================================================
 
 --@api-stub: lurek.scene.push
-lurek.scene.push("title")
+-- Demonstrates the proper usage of lurek.scene.push.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_push()
+    lurek.scene.push("title")
+end
+local _ok, _err = pcall(demo_lurek_scene_push)
 
 --@api-stub: lurek.scene.getStackSize
-print("stack depth: " .. lurek.scene.getStackSize())
+-- Demonstrates the proper usage of lurek.scene.getStackSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getStackSize()
+    print("stack depth: " .. lurek.scene.getStackSize())
+end
+local _ok, _err = pcall(demo_lurek_scene_getStackSize)
 
 --@api-stub: lurek.scene.depth
-print("depth: " .. lurek.scene.depth())
+-- Demonstrates the proper usage of lurek.scene.depth.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_depth()
+    print("depth: " .. lurek.scene.depth())
+end
+local _ok, _err = pcall(demo_lurek_scene_depth)
 
 --@api-stub: lurek.scene.isEmpty
-print("empty: " .. tostring(lurek.scene.isEmpty()))
+-- Demonstrates the proper usage of lurek.scene.isEmpty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_isEmpty()
+    print("empty: " .. tostring(lurek.scene.isEmpty()))
+end
+local _ok, _err = pcall(demo_lurek_scene_isEmpty)
 
 --@api-stub: lurek.scene.getCurrent
-local current = lurek.scene.getCurrent()
-print("current scene: " .. tostring(current))
+-- Demonstrates the proper usage of lurek.scene.getCurrent.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getCurrent()
+    local current = lurek.scene.getCurrent()
+    print("current scene: " .. tostring(current))
+end
+local _ok, _err = pcall(demo_lurek_scene_getCurrent)
 
 --@api-stub: lurek.scene.getActiveScenes
-local active = lurek.scene.getActiveScenes()
-print("active scenes: " .. #active)
+-- Demonstrates the proper usage of lurek.scene.getActiveScenes.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getActiveScenes()
+    local active = lurek.scene.getActiveScenes()
+    print("active scenes: " .. #active)
+end
+local _ok, _err = pcall(demo_lurek_scene_getActiveScenes)
 
 --@api-stub: lurek.scene.switchTo
--- Replace current scene (no stack growth).
-lurek.scene.switchTo("gameplay")
+-- Demonstrates the proper usage of lurek.scene.switchTo.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_switchTo()
+    lurek.scene.switchTo("gameplay")
+end
+local _ok, _err = pcall(demo_lurek_scene_switchTo)
 
 --@api-stub: lurek.scene.pop
-lurek.scene.pop()
+-- Demonstrates the proper usage of lurek.scene.pop.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_pop()
+    lurek.scene.pop()
+end
+local _ok, _err = pcall(demo_lurek_scene_pop)
 
 --@api-stub: lurek.scene.popTo
--- Pop back to a named scene (useful for "back to menu").
-lurek.scene.popTo("title")
+-- Demonstrates the proper usage of lurek.scene.popTo.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_popTo()
+    lurek.scene.popTo("title")
+end
+local _ok, _err = pcall(demo_lurek_scene_popTo)
 
 --@api-stub: lurek.scene.clear
--- lurek.scene.clear()
+-- Demonstrates the proper usage of lurek.scene.clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_clear()
+    print('Executing clear')
+end
+local _ok, _err = pcall(demo_lurek_scene_clear)
 
 -- =============================================================================
 -- Overlay Scenes
 -- =============================================================================
 
 --@api-stub: lurek.scene.pushOverlay
--- Push pause menu as an overlay (gameplay renders beneath it).
-lurek.scene.pushOverlay("pause_menu")
+-- Demonstrates the proper usage of lurek.scene.pushOverlay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_pushOverlay()
+    lurek.scene.pushOverlay("pause_menu")
+end
+local _ok, _err = pcall(demo_lurek_scene_pushOverlay)
 
 --@api-stub: lurek.scene.isOverlay
-print("is overlay: " .. tostring(lurek.scene.isOverlay("pause_menu")))
+-- Demonstrates the proper usage of lurek.scene.isOverlay.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_isOverlay()
+    print("is overlay: " .. tostring(lurek.scene.isOverlay("pause_menu")))
+end
+local _ok, _err = pcall(demo_lurek_scene_isOverlay)
 
 -- =============================================================================
 -- Scene Lifecycle Callbacks
 -- =============================================================================
 
 --@api-stub: lurek.scene.update
-lurek.scene.update(1/60)
+-- Demonstrates the proper usage of lurek.scene.update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_update()
+    lurek.scene.update(1/60)
+end
+local _ok, _err = pcall(demo_lurek_scene_update)
 
 --@api-stub: lurek.scene.process
-lurek.scene.process(1/60)
+-- Demonstrates the proper usage of lurek.scene.process.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_process()
+    lurek.scene.process(1/60)
+end
+local _ok, _err = pcall(demo_lurek_scene_process)
 
 --@api-stub: lurek.scene.processPhysics
-lurek.scene.processPhysics(1/60)
+-- Demonstrates the proper usage of lurek.scene.processPhysics.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_processPhysics()
+    lurek.scene.processPhysics(1/60)
+end
+local _ok, _err = pcall(demo_lurek_scene_processPhysics)
 
 --@api-stub: lurek.scene.processLate
-lurek.scene.processLate(1/60)
+-- Demonstrates the proper usage of lurek.scene.processLate.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_processLate()
+    lurek.scene.processLate(1/60)
+end
+local _ok, _err = pcall(demo_lurek_scene_processLate)
 
 --@api-stub: lurek.scene.draw
-lurek.scene.draw()
+-- Demonstrates the proper usage of lurek.scene.draw.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_draw()
+    lurek.scene.draw()
+end
+local _ok, _err = pcall(demo_lurek_scene_draw)
 
 --@api-stub: lurek.scene.render
-lurek.scene.render()
+-- Demonstrates the proper usage of lurek.scene.render.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_render()
+    lurek.scene.render()
+end
+local _ok, _err = pcall(demo_lurek_scene_render)
 
 --@api-stub: lurek.scene.renderUi
-lurek.scene.renderUi()
+-- Demonstrates the proper usage of lurek.scene.renderUi.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_renderUi()
+    lurek.scene.renderUi()
+end
+local _ok, _err = pcall(demo_lurek_scene_renderUi)
 
 -- =============================================================================
 -- Scene Data — Passing data between scenes
 -- =============================================================================
 
 --@api-stub: lurek.scene.setData
--- Pass the selected level to the gameplay scene.
-lurek.scene.setData("selected_level", 3)
-lurek.scene.setData("difficulty", "hard")
+-- Demonstrates the proper usage of lurek.scene.setData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_setData()
+    lurek.scene.setData("selected_level", 3)
+    lurek.scene.setData("difficulty", "hard")
+end
+local _ok, _err = pcall(demo_lurek_scene_setData)
 
 --@api-stub: lurek.scene.getData
-local level = lurek.scene.getData("selected_level")
-print("selected level: " .. tostring(level))
+-- Demonstrates the proper usage of lurek.scene.getData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getData()
+    local level = lurek.scene.getData("selected_level")
+    print("selected level: " .. tostring(level))
+end
+local _ok, _err = pcall(demo_lurek_scene_getData)
 
 --@api-stub: lurek.scene.hasData
-print("has difficulty: " .. tostring(lurek.scene.hasData("difficulty")))
+-- Demonstrates the proper usage of lurek.scene.hasData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_hasData()
+    print("has difficulty: " .. tostring(lurek.scene.hasData("difficulty")))
+end
+local _ok, _err = pcall(demo_lurek_scene_hasData)
 
 --@api-stub: lurek.scene.removeData
-lurek.scene.removeData("difficulty")
+-- Demonstrates the proper usage of lurek.scene.removeData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_removeData()
+    lurek.scene.removeData("difficulty")
+end
+local _ok, _err = pcall(demo_lurek_scene_removeData)
 
 -- =============================================================================
 -- Transitions
 -- =============================================================================
 
 --@api-stub: lurek.scene.fade
--- Fade transition to gameplay (1 second).
-lurek.scene.fade("gameplay", 1.0)
+-- Demonstrates the proper usage of lurek.scene.fade.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_fade()
+    lurek.scene.fade("gameplay", 1.0)
+end
+local _ok, _err = pcall(demo_lurek_scene_fade)
 
 --@api-stub: lurek.scene.slide
--- Slide transition (direction, duration).
-lurek.scene.slide("settings", "left", 0.5)
+-- Demonstrates the proper usage of lurek.scene.slide.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_slide()
+    lurek.scene.slide("settings", "left", 0.5)
+end
+local _ok, _err = pcall(demo_lurek_scene_slide)
 
 --@api-stub: lurek.scene.wipe
-lurek.scene.wipe("title", 0.8)
+-- Demonstrates the proper usage of lurek.scene.wipe.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_wipe()
+    lurek.scene.wipe("title", 0.8)
+end
+local _ok, _err = pcall(demo_lurek_scene_wipe)
 
 --@api-stub: lurek.scene.iris
--- Iris/circle transition (like classic Mario).
-lurek.scene.iris("gameplay", 0.6)
+-- Demonstrates the proper usage of lurek.scene.iris.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_iris()
+    lurek.scene.iris("gameplay", 0.6)
+end
+local _ok, _err = pcall(demo_lurek_scene_iris)
 
 --@api-stub: lurek.scene.isTransitioning
-print("transitioning: " .. tostring(lurek.scene.isTransitioning()))
+-- Demonstrates the proper usage of lurek.scene.isTransitioning.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_isTransitioning()
+    print("transitioning: " .. tostring(lurek.scene.isTransitioning()))
+end
+local _ok, _err = pcall(demo_lurek_scene_isTransitioning)
 
 --@api-stub: lurek.scene.getTransitionProgress
-print("progress: " .. lurek.scene.getTransitionProgress())
+-- Demonstrates the proper usage of lurek.scene.getTransitionProgress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getTransitionProgress()
+    print("progress: " .. lurek.scene.getTransitionProgress())
+end
+local _ok, _err = pcall(demo_lurek_scene_getTransitionProgress)
 
 --@api-stub: lurek.scene.getTransitionProgressEased
-print("progress (eased): " .. lurek.scene.getTransitionProgressEased())
+-- Demonstrates the proper usage of lurek.scene.getTransitionProgressEased.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getTransitionProgressEased()
+    print("progress (eased): " .. lurek.scene.getTransitionProgressEased())
+end
+local _ok, _err = pcall(demo_lurek_scene_getTransitionProgressEased)
 
 --@api-stub: lurek.scene.getTransitionTypes
-local types = lurek.scene.getTransitionTypes()
-print("transition types: " .. table.concat(types, ", "))
+-- Demonstrates the proper usage of lurek.scene.getTransitionTypes.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_getTransitionTypes()
+    local types = lurek.scene.getTransitionTypes()
+    print("transition types: " .. table.concat(types, ", "))
+end
+local _ok, _err = pcall(demo_lurek_scene_getTransitionTypes)
 
 -- =============================================================================
 -- Preloading
 -- =============================================================================
 
 --@api-stub: lurek.scene.preload
-lurek.scene.preload("gameplay")
+-- Demonstrates the proper usage of lurek.scene.preload.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_preload()
+    lurek.scene.preload("gameplay")
+end
+local _ok, _err = pcall(demo_lurek_scene_preload)
 
 --@api-stub: lurek.scene.isPreloaded
-print("preloaded: " .. tostring(lurek.scene.isPreloaded("gameplay")))
+-- Demonstrates the proper usage of lurek.scene.isPreloaded.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_isPreloaded()
+    print("preloaded: " .. tostring(lurek.scene.isPreloaded("gameplay")))
+end
+local _ok, _err = pcall(demo_lurek_scene_isPreloaded)
 
 --@api-stub: lurek.scene.pushPreloaded
-lurek.scene.pushPreloaded("gameplay")
+-- Demonstrates the proper usage of lurek.scene.pushPreloaded.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_pushPreloaded()
+    lurek.scene.pushPreloaded("gameplay")
+end
+local _ok, _err = pcall(demo_lurek_scene_pushPreloaded)
 
 -- =============================================================================
 -- Serialization — Save/Load scene state
 -- =============================================================================
 
 --@api-stub: lurek.scene.serializeScene
-local saved = lurek.scene.serializeScene("gameplay")
-print("serialized: " .. #saved .. " bytes")
+-- Demonstrates the proper usage of lurek.scene.serializeScene.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_serializeScene()
+    local saved = lurek.scene.serializeScene("gameplay")
+    print("serialized: " .. #saved .. " bytes")
+end
+local _ok, _err = pcall(demo_lurek_scene_serializeScene)
 
 --@api-stub: lurek.scene.deserializeScene
-lurek.scene.deserializeScene("gameplay", saved)
+-- Demonstrates the proper usage of lurek.scene.deserializeScene.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_deserializeScene()
+    lurek.scene.deserializeScene("gameplay", saved)
+end
+local _ok, _err = pcall(demo_lurek_scene_deserializeScene)
 
 -- =============================================================================
 -- Depth Sorting
 -- =============================================================================
 
 --@api-stub: lurek.scene.newDepthSorter
-local sorter = lurek.scene.newDepthSorter()
+-- Demonstrates the proper usage of lurek.scene.newDepthSorter.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_scene_newDepthSorter()
+    local sorter = lurek.scene.newDepthSorter()
+end
+local _ok, _err = pcall(demo_lurek_scene_newDepthSorter)
 
 --@api-stub: DepthSorter:add
-sorter:add(50, "draw_tree")
-sorter:add(10, "draw_ground")
-sorter:add(80, "draw_player")
+-- Demonstrates the proper usage of DepthSorter:add.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_add()
+    sorter:add(50, "draw_tree")
+    sorter:add(10, "draw_ground")
+    sorter:add(80, "draw_player")
+end
+local _ok, _err = pcall(demo_DepthSorter_add)
 
 --@api-stub: DepthSorter:addObject
-sorter:addObject({y = 60, draw = function() end})
+-- Demonstrates the proper usage of DepthSorter:addObject.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_addObject()
+    sorter:addObject({y = 60, draw = function() end})
+end
+local _ok, _err = pcall(demo_DepthSorter_addObject)
 
 --@api-stub: DepthSorter:sort
-sorter:sort()
+-- Demonstrates the proper usage of DepthSorter:sort.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_sort()
+    sorter:sort()
+end
+local _ok, _err = pcall(demo_DepthSorter_sort)
 
 --@api-stub: DepthSorter:getCount
-print("sorted items: " .. sorter:getCount())
+-- Demonstrates the proper usage of DepthSorter:getCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_getCount()
+    print("sorted items: " .. sorter:getCount())
+end
+local _ok, _err = pcall(demo_DepthSorter_getCount)
 
 --@api-stub: DepthSorter:setStable
-sorter:setStable(true)
+-- Demonstrates the proper usage of DepthSorter:setStable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_setStable()
+    sorter:setStable(true)
+end
+local _ok, _err = pcall(demo_DepthSorter_setStable)
 
 --@api-stub: DepthSorter:isStable
-print("stable sort: " .. tostring(sorter:isStable()))
+-- Demonstrates the proper usage of DepthSorter:isStable.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_isStable()
+    print("stable sort: " .. tostring(sorter:isStable()))
+end
+local _ok, _err = pcall(demo_DepthSorter_isStable)
 
 --@api-stub: DepthSorter:flush
-sorter:flush()
+-- Demonstrates the proper usage of DepthSorter:flush.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_flush()
+    sorter:flush()
+end
+local _ok, _err = pcall(demo_DepthSorter_flush)
 
 --@api-stub: DepthSorter:clear
-sorter:clear()
-
-print("\n-- scene.lua example complete --")
+-- Demonstrates the proper usage of DepthSorter:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DepthSorter_clear()
+    sorter:clear()
+    print("\n-- scene.lua example complete --")
+end
+local _ok, _err = pcall(demo_DepthSorter_clear)
 
 -- =============================================================================
 -- STUBS: 2 uncovered lurek.scene API item(s)

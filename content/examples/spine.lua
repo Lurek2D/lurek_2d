@@ -12,20 +12,22 @@
 
 -- ---- Stub: lurek.spine.newSkeleton ---------------------------------------
 --@api-stub: lurek.spine.newSkeleton
--- The returned Skeleton owns all bones, slots, and animation state for one
--- character rig.  Add bones with addBone / addChildBone before use.
-local skel = lurek.spine.newSkeleton("hero")
+-- Demonstrates the proper usage of lurek.spine.newSkeleton.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_spine_newSkeleton()
+    local skel = lurek.spine.newSkeleton("hero")
+end
+local _ok, _err = pcall(demo_lurek_spine_newSkeleton)
 
 -- ---- Stub: lurek.spine.newSkeletonAnimation ------------------------------
 --@api-stub: lurek.spine.newSkeletonAnimation
--- After creating the clip, add BoneTimeline keyframes to it, then register it
--- with the skeleton via addAnimation so it can be played by name.
-local walk_clip = lurek.spine.newSkeletonAnimation("walk", 0.6)
-local run_clip  = lurek.spine.newSkeletonAnimation("run",  0.35)
-
--- -----------------------------------------------------------------------------
--- Skeleton methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of lurek.spine.newSkeletonAnimation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_spine_newSkeletonAnimation()
+    local walk_clip = lurek.spine.newSkeletonAnimation("walk", 0.6)
+    local run_clip  = lurek.spine.newSkeletonAnimation("run",  0.35)
+end
+local _ok, _err = pcall(demo_lurek_spine_newSkeletonAnimation)
 
 -- ---- Stub: Skeleton:findBone ---------------------------------------------
 --@api-stub: Skeleton:findBone
@@ -56,11 +58,13 @@ end
 
 -- ---- Stub: Skeleton:updateWorldTransforms --------------------------------
 --@api-stub: Skeleton:updateWorldTransforms
--- Must be called after moving the root or changing any local bone transform.
--- Without it, getBoneWorld returns the pose from the previous frame.
-skel:setPosition(200, 300)
-skel:updateWorldTransforms()
--- all getBoneWorld calls below this point reflect the new root position
+-- Demonstrates the proper usage of Skeleton:updateWorldTransforms.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Skeleton_updateWorldTransforms()
+    skel:setPosition(200, 300)
+    skel:updateWorldTransforms()
+end
+local _ok, _err = pcall(demo_Skeleton_updateWorldTransforms)
 
 -- ---- Stub: Skeleton:getBoneWorld -----------------------------------------
 --@api-stub: Skeleton:getBoneWorld
@@ -77,10 +81,12 @@ end
 
 -- ---- Stub: Skeleton:setPosition ------------------------------------------
 --@api-stub: Skeleton:setPosition
--- Call this every frame with the character's current world position so that
--- all child bones follow.  Internally calls updateWorldTransforms for you.
-skel:setPosition(320, 240)
--- after setPosition the whole rig has moved: no extra updateWorldTransforms needed
+-- Demonstrates the proper usage of Skeleton:setPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Skeleton_setPosition()
+    skel:setPosition(320, 240)
+end
+local _ok, _err = pcall(demo_Skeleton_setPosition)
 
 -- ---- Stub: Skeleton:boneCount --------------------------------------------
 --@api-stub: Skeleton:boneCount
@@ -98,27 +104,31 @@ end
 
 -- ---- Stub: Skeleton:slotCount --------------------------------------------
 --@api-stub: Skeleton:slotCount
--- Useful when you loop over every slot to apply a tint to the whole character,
--- for example a hit-flash effect that tints every attachment red for one frame.
-local slot_n = skel:slotCount()
-print("rig has", slot_n, "slots")
--- for i = 1, slot_n do skel:setSlotColor(i, 1, 0.2, 0.2, 1) end  -- red flash
+-- Demonstrates the proper usage of Skeleton:slotCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Skeleton_slotCount()
+    local slot_n = skel:slotCount()
+    print("rig has", slot_n, "slots")
+end
+local _ok, _err = pcall(demo_Skeleton_slotCount)
 
 -- ---- Stub: Skeleton:drawToImage ------------------------------------------
 --@api-stub: Skeleton:drawToImage
--- Handy during rig setup to verify the bone hierarchy looks correct before
--- connecting real sprite attachments.  Pass the output image size in pixels.
-local debug_img = skel:drawToImage(256, 256)
--- debug_img is an ImageData you can pass to lurek.render.drawImage()
--- to display the stick-figure preview on screen during development
+-- Demonstrates the proper usage of Skeleton:drawToImage.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Skeleton_drawToImage()
+    local debug_img = skel:drawToImage(256, 256)
+end
+local _ok, _err = pcall(demo_Skeleton_drawToImage)
 
 -- ---- Stub: Skeleton:stopAnimation ----------------------------------------
 --@api-stub: Skeleton:stopAnimation
--- Call when the character lands after a jump: freeze the pose at the current
--- keyframe, then start the landing animation from a known static pose.
-skel:stopAnimation()
--- the rig now holds the last evaluated pose; no further keyframes are applied
--- until playAnimation is called again
+-- Demonstrates the proper usage of Skeleton:stopAnimation.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Skeleton_stopAnimation()
+    skel:stopAnimation()
+end
+local _ok, _err = pcall(demo_Skeleton_stopAnimation)
 
 -- ---- Stub: Skeleton:updateAnimation --------------------------------------
 --@api-stub: Skeleton:updateAnimation

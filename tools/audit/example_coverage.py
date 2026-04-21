@@ -199,28 +199,34 @@ def load_entries(jp: Path) -> list[ApiEntry]:
 def load_texts(d: Path) -> dict[str, dict]:
     """Load all .lua files.
 
-    Returns dict: filename -> { 'real_code': str, 'stub_ids': set, 'lines': int, 'comments': int }
+    Returns dict: filename -> { 'blocks': dict, 'lines': int, 'comments': int }
     """
     out: dict[str, dict] = {}
     for p in d.glob('*.lua'):
         raw = p.read_text(encoding='utf-8', errors='replace')
-        code_lines = []
-        stub_ids: set[str] = set()
         file_lines = raw.splitlines()
         comments = 0
+        blocks = {}
+        
+        current_stub = None
         for ln in file_lines:
-            stripped = ln.lstrip()
+            stripped = ln.strip()
             if stripped.startswith('--'):
                 comments += 1
+            
             if stripped.startswith('--@api-stub:'):
-                # Extract the api id: --@api-stub: Owner:name  or  lurek.ns.name
                 marker = stripped[len('--@api-stub:'):].strip()
-                stub_ids.add(marker)
-            elif not stripped.startswith('--'):
-                code_lines.append(ln)
+                current_stub = marker
+                if current_stub not in blocks:
+                    blocks[current_stub] = {'lua': 0, 'comment': 0}
+            elif current_stub is not None:
+                if stripped.startswith('--'):
+                    blocks[current_stub]['comment'] += 1
+                elif bool(stripped) and not stripped.startswith('--'):
+                    blocks[current_stub]['lua'] += 1
+                    
         out[p.name] = {
-            'real_code': '\n'.join(code_lines),
-            'stub_ids': stub_ids,
+            'blocks': blocks,
             'lines': len(file_lines),
             'comments': comments
         }
@@ -251,32 +257,36 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, Modu
 
         data = texts.get(mc.example_file)
         if not data:
-            mc.missing.append(e.name)
+            mc.missing.append(f"{e.name} <No File>")
             continue
 
         mc.line_count = data['lines']
         mc.comment_count = data['comments']
 
-        real_code = data['real_code']
-        stub_ids = data['stub_ids']
+        blocks = data['blocks']
 
         # Build the stub marker id for this entry
         if e.is_method:
-            stub_id = f'{e.owner_type}:{e.name}'
+            stub_id = f"{e.owner_type}:{e.name}"
         else:
-            stub_id = f'lurek.{NAMESPACE_MAP.get(key, key)}.{e.name}'
+            stub_id = f"lurek.{NAMESPACE_MAP.get(key, key)}.{e.name}"
 
-        if _match_name(e, real_code):
-            mc.covered += 1
-            if len(e.description.strip()) > 0:
-                mc.docstring_count += 1
-        elif stub_id in stub_ids:
-            mc.stub_covered += 1
-            mc.stub_items.append(e.name)
-            if len(e.description.strip()) > 0:
-                mc.docstring_count += 1
+        if stub_id in blocks:
+            b = blocks[stub_id]
+            if b['lua'] >= 3 and b['comment'] >= 2:
+                mc.covered += 1
+                if len(e.description.strip()) > 0:
+                    mc.docstring_count += 1
+            else:
+                reasons = []
+                if b['lua'] < 3: reasons.append(f"<{b['lua']}L/3L>")
+                if b['comment'] < 2: reasons.append(f"<{b['comment']}C/2C>")
+                mc.missing.append(f"{e.name} " + " ".join(reasons))
+                mc.stub_covered += 1
+                mc.stub_items.append(f"{e.name} " + " ".join(reasons))
         else:
-            mc.missing.append(e.name)
+            mc.missing.append(f"{e.name} <No Marker>")
+            
     return bk
 
 

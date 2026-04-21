@@ -31,17 +31,23 @@ print("steps: " .. #tutorial_script.steps)
 
 -- ---- Stub: lurek.automation.loadFromToml ---------------------------------
 --@api-stub: lurek.automation.loadFromToml
--- Load a test script from a TOML file authored by QA.  TOML is more readable
--- than Lua tables for non-programmers writing test plans.
-lurek.automation.loadFromToml("tests/automation/smoke_test.toml")
-print("loaded TOML automation script")
+-- Demonstrates the proper usage of lurek.automation.loadFromToml.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_loadFromToml()
+    lurek.automation.loadFromToml("tests/automation/smoke_test.toml")
+    print("loaded TOML automation script")
+end
+local _ok, _err = pcall(demo_lurek_automation_loadFromToml)
 
 -- ---- Stub: lurek.automation.hasScript ------------------------------------
 --@api-stub: lurek.automation.hasScript
--- Check whether a named script is loaded before attempting to start it.
--- Prevents runtime errors when a test plan references a missing script.
-local has_tutorial = lurek.automation.hasScript("tutorial_walkthrough")
-print("tutorial script loaded: " .. tostring(has_tutorial))
+-- Demonstrates the proper usage of lurek.automation.hasScript.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_hasScript()
+    local has_tutorial = lurek.automation.hasScript("tutorial_walkthrough")
+    print("tutorial script loaded: " .. tostring(has_tutorial))
+end
+local _ok, _err = pcall(demo_lurek_automation_hasScript)
 
 -- ---- Stub: lurek.automation.getScripts -----------------------------------
 --@api-stub: lurek.automation.getScripts
@@ -65,10 +71,13 @@ lurek.automation.load(tutorial_script)
 
 -- ---- Stub: lurek.automation.start ----------------------------------------
 --@api-stub: lurek.automation.start
--- Begin playback of the tutorial automation.  The script will execute steps
--- sequentially, advancing on each update() call.
-lurek.automation.start("tutorial_walkthrough")
-print("automation playback started")
+-- Demonstrates the proper usage of lurek.automation.start.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_start()
+    lurek.automation.start("tutorial_walkthrough")
+    print("automation playback started")
+end
+local _ok, _err = pcall(demo_lurek_automation_start)
 
 -- ---- Stub: lurek.automation.isRunning ------------------------------------
 --@api-stub: lurek.automation.isRunning
@@ -90,130 +99,196 @@ print("automation advanced by " .. dt .. " seconds")
 
 -- ---- Stub: lurek.automation.getCurrentStep -------------------------------
 --@api-stub: lurek.automation.getCurrentStep
--- Display which step is currently executing in the QA overlay.
-local step = lurek.automation.getCurrentStep()
-print("current step index: " .. tostring(step))
+-- Demonstrates the proper usage of lurek.automation.getCurrentStep.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getCurrentStep()
+    local step = lurek.automation.getCurrentStep()
+    print("current step index: " .. tostring(step))
+end
+local _ok, _err = pcall(demo_lurek_automation_getCurrentStep)
 
 -- ---- Stub: lurek.automation.getStepCount ---------------------------------
 --@api-stub: lurek.automation.getStepCount
--- Show progress as "step 2 of 5" in the automation overlay.
-local total = lurek.automation.getStepCount()
-local current = lurek.automation.getCurrentStep()
-print(string.format("progress: step %d of %d", current or 0, total or 0))
+-- Demonstrates the proper usage of lurek.automation.getStepCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getStepCount()
+    local total = lurek.automation.getStepCount()
+    local current = lurek.automation.getCurrentStep()
+    print(string.format("progress: step %d of %d", current or 0, total or 0))
+end
+local _ok, _err = pcall(demo_lurek_automation_getStepCount)
 
 -- ---- Stub: lurek.automation.getCurrentScript -----------------------------
 --@api-stub: lurek.automation.getCurrentScript
--- Log which script is playing for the test report header.
-local script_name = lurek.automation.getCurrentScript()
-print("active script: " .. (script_name or "none"))
+-- Demonstrates the proper usage of lurek.automation.getCurrentScript.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getCurrentScript()
+    local script_name = lurek.automation.getCurrentScript()
+    print("active script: " .. (script_name or "none"))
+end
+local _ok, _err = pcall(demo_lurek_automation_getCurrentScript)
 
 -- ---- Stub: lurek.automation.getElapsedTime -------------------------------
 --@api-stub: lurek.automation.getElapsedTime
--- Record total playback time for performance benchmarking.  If the tutorial
--- takes longer than 30 seconds the test is flagged as slow.
-local elapsed = lurek.automation.getElapsedTime()
-print(string.format("elapsed playback time: %.2f sec", elapsed or 0))
+-- Demonstrates the proper usage of lurek.automation.getElapsedTime.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getElapsedTime()
+    local elapsed = lurek.automation.getElapsedTime()
+    print(string.format("elapsed playback time: %.2f sec", elapsed or 0))
+end
+local _ok, _err = pcall(demo_lurek_automation_getElapsedTime)
 
 -- ---- Stub: lurek.automation.pause ----------------------------------------
 --@api-stub: lurek.automation.pause
--- Pause automation when the game hits a loading screen so timed steps do
--- not advance while assets are streaming.
-lurek.automation.pause()
-print("automation paused during loading screen")
+-- Demonstrates the proper usage of lurek.automation.pause.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_pause()
+    lurek.automation.pause()
+    print("automation paused during loading screen")
+end
+local _ok, _err = pcall(demo_lurek_automation_pause)
 
 -- ---- Stub: lurek.automation.isPaused -------------------------------------
 --@api-stub: lurek.automation.isPaused
--- Check the paused state to decide whether to show a "PAUSED" badge
--- alongside the "REPLAY" indicator.
-local paused = lurek.automation.isPaused()
-print("automation paused: " .. tostring(paused))
+-- Demonstrates the proper usage of lurek.automation.isPaused.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_isPaused()
+    local paused = lurek.automation.isPaused()
+    print("automation paused: " .. tostring(paused))
+end
+local _ok, _err = pcall(demo_lurek_automation_isPaused)
 
 -- ---- Stub: lurek.automation.resume ---------------------------------------
 --@api-stub: lurek.automation.resume
--- Resume automation after the loading screen finishes.
-lurek.automation.resume()
-print("automation resumed after loading")
+-- Demonstrates the proper usage of lurek.automation.resume.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_resume()
+    lurek.automation.resume()
+    print("automation resumed after loading")
+end
+local _ok, _err = pcall(demo_lurek_automation_resume)
 
 -- ---- Stub: lurek.automation.stop -----------------------------------------
 --@api-stub: lurek.automation.stop
--- Abort automation early if a critical assertion fails mid-sequence.
-lurek.automation.stop()
-print("automation stopped -- all steps cancelled")
+-- Demonstrates the proper usage of lurek.automation.stop.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_stop()
+    lurek.automation.stop()
+    print("automation stopped -- all steps cancelled")
+end
+local _ok, _err = pcall(demo_lurek_automation_stop)
 
 -- ---- Stub: lurek.automation.isComplete -----------------------------------
 --@api-stub: lurek.automation.isComplete
--- After stopping, check whether the script ran to completion or was aborted.
-local complete = lurek.automation.isComplete()
-print("script completed naturally: " .. tostring(complete))
+-- Demonstrates the proper usage of lurek.automation.isComplete.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_isComplete()
+    local complete = lurek.automation.isComplete()
+    print("script completed naturally: " .. tostring(complete))
+end
+local _ok, _err = pcall(demo_lurek_automation_isComplete)
 
 -- ---- Stub: lurek.automation.getStepLimit ---------------------------------
 --@api-stub: lurek.automation.getStepLimit
--- Read the maximum step limit to display in the QA dashboard.
-local limit = lurek.automation.getStepLimit()
-print("step limit: " .. tostring(limit or "unlimited"))
+-- Demonstrates the proper usage of lurek.automation.getStepLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getStepLimit()
+    local limit = lurek.automation.getStepLimit()
+    print("step limit: " .. tostring(limit or "unlimited"))
+end
+local _ok, _err = pcall(demo_lurek_automation_getStepLimit)
 
 -- ---- Stub: lurek.automation.setStepLimit ---------------------------------
 --@api-stub: lurek.automation.setStepLimit
--- Cap automation at 100 steps for smoke tests.  If the script has more, it
--- will stop after reaching the limit to keep test runs short.
-lurek.automation.setStepLimit(100)
-print("step limit set to 100")
+-- Demonstrates the proper usage of lurek.automation.setStepLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_setStepLimit()
+    lurek.automation.setStepLimit(100)
+    print("step limit set to 100")
+end
+local _ok, _err = pcall(demo_lurek_automation_setStepLimit)
 
 -- ---- Stub: lurek.automation.setPlaybackSpeed -----------------------------
 --@api-stub: lurek.automation.setPlaybackSpeed
--- Speed up automation to 4x for fast regression testing.  At 4x a 30-second
--- test completes in 7.5 seconds of real time.
-lurek.automation.setPlaybackSpeed(4.0)
-print("playback speed: 4.0x")
+-- Demonstrates the proper usage of lurek.automation.setPlaybackSpeed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_setPlaybackSpeed()
+    lurek.automation.setPlaybackSpeed(4.0)
+    print("playback speed: 4.0x")
+end
+local _ok, _err = pcall(demo_lurek_automation_setPlaybackSpeed)
 
 -- ---- Stub: lurek.automation.getPlaybackSpeed -----------------------------
 --@api-stub: lurek.automation.getPlaybackSpeed
--- Display the current playback multiplier in the QA toolbar.
-local speed = lurek.automation.getPlaybackSpeed()
-print("current playback speed: " .. speed .. "x")
+-- Demonstrates the proper usage of lurek.automation.getPlaybackSpeed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_getPlaybackSpeed()
+    local speed = lurek.automation.getPlaybackSpeed()
+    print("current playback speed: " .. speed .. "x")
+end
+local _ok, _err = pcall(demo_lurek_automation_getPlaybackSpeed)
 
 -- ---- Stub: lurek.automation.saveMacro ------------------------------------
 --@api-stub: lurek.automation.saveMacro
--- Record the player's input during a gameplay session and save it as a
--- named macro.  QA can replay it later to test the same sequence.
-lurek.automation.saveMacro("boss_fight_attempt_1")
-print("macro saved: boss_fight_attempt_1")
+-- Demonstrates the proper usage of lurek.automation.saveMacro.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_saveMacro()
+    lurek.automation.saveMacro("boss_fight_attempt_1")
+    print("macro saved: boss_fight_attempt_1")
+end
+local _ok, _err = pcall(demo_lurek_automation_saveMacro)
 
 -- ---- Stub: lurek.automation.hasMacro -------------------------------------
 --@api-stub: lurek.automation.hasMacro
--- Check if a macro exists before trying to play it.
-local has_macro = lurek.automation.hasMacro("boss_fight_attempt_1")
-print("boss fight macro exists: " .. tostring(has_macro))
+-- Demonstrates the proper usage of lurek.automation.hasMacro.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_hasMacro()
+    local has_macro = lurek.automation.hasMacro("boss_fight_attempt_1")
+    print("boss fight macro exists: " .. tostring(has_macro))
+end
+local _ok, _err = pcall(demo_lurek_automation_hasMacro)
 
 -- ---- Stub: lurek.automation.listMacros -----------------------------------
 --@api-stub: lurek.automation.listMacros
--- Show all saved macros in a dropdown so the tester can pick one to replay.
-local macros = lurek.automation.listMacros()
-print("saved macros:")
-for i, name in ipairs(macros) do
+-- Demonstrates the proper usage of lurek.automation.listMacros.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_listMacros()
+    local macros = lurek.automation.listMacros()
+    print("saved macros:")
+    for i, name in ipairs(macros) do
     print(string.format("  [%d] %s", i, name))
 end
+local _ok, _err = pcall(demo_lurek_automation_listMacros)
 
 -- ---- Stub: lurek.automation.playMacro ------------------------------------
 --@api-stub: lurek.automation.playMacro
--- Replay a saved macro to reproduce a bug.  The macro feeds the exact same
--- input sequence the player originally performed.
-lurek.automation.playMacro("boss_fight_attempt_1")
-print("replaying macro: boss_fight_attempt_1")
+-- Demonstrates the proper usage of lurek.automation.playMacro.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_playMacro()
+    lurek.automation.playMacro("boss_fight_attempt_1")
+    print("replaying macro: boss_fight_attempt_1")
+end
+local _ok, _err = pcall(demo_lurek_automation_playMacro)
 
 -- ---- Stub: lurek.automation.setHighlightMode -----------------------------
 --@api-stub: lurek.automation.setHighlightMode
--- Enable highlight mode to draw a visual indicator (e.g. a yellow circle)
--- on the element that automation is currently interacting with.  Useful for
--- demo recordings and tutorial videos.
-lurek.automation.setHighlightMode(true)
-print("highlight mode enabled -- active element will be visually marked")
+-- Demonstrates the proper usage of lurek.automation.setHighlightMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_setHighlightMode()
+    lurek.automation.setHighlightMode(true)
+    print("highlight mode enabled -- active element will be visually marked")
+end
+local _ok, _err = pcall(demo_lurek_automation_setHighlightMode)
 
 -- ---- Stub: lurek.automation.isHighlightMode ------------------------------
 --@api-stub: lurek.automation.isHighlightMode
--- Read highlight state to update a toggle checkbox in the QA toolbar.
-local highlight = lurek.automation.isHighlightMode()
-print("highlight mode: " .. tostring(highlight))
+-- Demonstrates the proper usage of lurek.automation.isHighlightMode.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_automation_isHighlightMode()
+    local highlight = lurek.automation.isHighlightMode()
+    print("highlight mode: " .. tostring(highlight))
+end
+local _ok, _err = pcall(demo_lurek_automation_isHighlightMode)
 
 -- ---- Stub: lurek.automation.waitUntil ------------------------------------
 --@api-stub: lurek.automation.waitUntil

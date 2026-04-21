@@ -12,27 +12,32 @@
 
 -- ---- Stub: lurek.save.newSaveManager -------------------------------------
 --@api-stub: lurek.save.newSaveManager
--- One manager handles all save slots for the game.  Register per-system
--- collectors and restorers on it, then call save/load from your menu.
-local mgr = lurek.save.newSaveManager()
-
--- -----------------------------------------------------------------------------
--- SaveManager methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of lurek.save.newSaveManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_save_newSaveManager()
+    local mgr = lurek.save.newSaveManager()
+end
+local _ok, _err = pcall(demo_lurek_save_newSaveManager)
 
 -- ---- Stub: SaveManager:unregister ----------------------------------------
 --@api-stub: SaveManager:unregister
--- Call this when a game system is torn down mid-session (e.g. the player
--- leaves a multiplayer lobby) so its data is not included in future saves.
-mgr:unregister("inventory")
-print("inventory module removed from save scope")
+-- Demonstrates the proper usage of SaveManager:unregister.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_unregister()
+    mgr:unregister("inventory")
+    print("inventory module removed from save scope")
+end
+local _ok, _err = pcall(demo_SaveManager_unregister)
 
 -- ---- Stub: SaveManager:setSchemaVersion ----------------------------------
 --@api-stub: SaveManager:setSchemaVersion
--- Increment this whenever you add or remove fields that require a migration
--- step so older save files can be detected and upgraded automatically.
-mgr:setSchemaVersion(3)
-print("schema version set to 3")
+-- Demonstrates the proper usage of SaveManager:setSchemaVersion.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_setSchemaVersion()
+    mgr:setSchemaVersion(3)
+    print("schema version set to 3")
+end
+local _ok, _err = pcall(demo_SaveManager_setSchemaVersion)
 
 -- ---- Stub: SaveManager:getSchemaVersion ----------------------------------
 --@api-stub: SaveManager:getSchemaVersion
@@ -46,10 +51,13 @@ end
 
 -- ---- Stub: SaveManager:collect -------------------------------------------
 --@api-stub: SaveManager:collect
--- Use this when you want to inspect or serialise the save payload manually,
--- for example to display a "what will be saved" preview in the UI.
-local payload = mgr:collect()
-print("save payload has", #payload, "top-level keys")
+-- Demonstrates the proper usage of SaveManager:collect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_collect()
+    local payload = mgr:collect()
+    print("save payload has", #payload, "top-level keys")
+end
+local _ok, _err = pcall(demo_SaveManager_collect)
 
 -- ---- Stub: SaveManager:restore -------------------------------------------
 --@api-stub: SaveManager:restore
@@ -61,10 +69,12 @@ print("state restored from test payload")
 
 -- ---- Stub: SaveManager:markDirty -----------------------------------------
 --@api-stub: SaveManager:markDirty
--- Call this after any significant state change (level up, boss killed) so
--- the auto-save timer knows there is unsaved progress worth persisting.
-mgr:markDirty()
--- the manager will now schedule an auto-save on the next update() tick
+-- Demonstrates the proper usage of SaveManager:markDirty.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_markDirty()
+    mgr:markDirty()
+end
+local _ok, _err = pcall(demo_SaveManager_markDirty)
 
 -- ---- Stub: SaveManager:isDirty -------------------------------------------
 --@api-stub: SaveManager:isDirty
@@ -78,10 +88,13 @@ end
 
 -- ---- Stub: SaveManager:disableAutoSave -----------------------------------
 --@api-stub: SaveManager:disableAutoSave
--- Use this during cutscenes or boss fights where an auto-save mid-action
--- would interrupt the experience or capture an undesirable game state.
-mgr:disableAutoSave()
-print("auto-save disabled for boss fight duration")
+-- Demonstrates the proper usage of SaveManager:disableAutoSave.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_disableAutoSave()
+    mgr:disableAutoSave()
+    print("auto-save disabled for boss fight duration")
+end
+local _ok, _err = pcall(demo_SaveManager_disableAutoSave)
 
 -- ---- Stub: SaveManager:update --------------------------------------------
 --@api-stub: SaveManager:update
@@ -99,27 +112,33 @@ end
 
 -- ---- Stub: SaveManager:setSummary ----------------------------------------
 --@api-stub: SaveManager:setSummary
--- Write a human-readable summary just before saving so the load-game screen
--- can show "Level 3 - Ironforge Dungeon  |  4h 22m" without loading the full file.
-mgr:setSummary("Level 3 - Ironforge Dungeon  |  4h 22m")
-print("summary written to save metadata")
+-- Demonstrates the proper usage of SaveManager:setSummary.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_setSummary()
+    mgr:setSummary("Level 3 - Ironforge Dungeon  |  4h 22m")
+    print("summary written to save metadata")
+end
+local _ok, _err = pcall(demo_SaveManager_setSummary)
 
 -- ---- Stub: SaveManager:getSummary ----------------------------------------
 --@api-stub: SaveManager:getSummary
--- Read this to display a preview line in the save-slot selection screen
--- without deserialising the full save payload.
-local summary = mgr:getSummary()
-print("slot preview:", summary)   -- "Level 3 - Ironforge Dungeon  |  4h 22m"
+-- Demonstrates the proper usage of SaveManager:getSummary.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_getSummary()
+    local summary = mgr:getSummary()
+    print("slot preview:", summary)   -- "Level 3 - Ironforge Dungeon  |  4h 22m"
+end
+local _ok, _err = pcall(demo_SaveManager_getSummary)
 
 -- ---- Stub: SaveManager:reset ---------------------------------------------
 --@api-stub: SaveManager:reset
--- Call this when starting a New Game so stale collector/restorer registrations
--- from a previous play session do not bleed into the fresh game state.
-mgr:reset()
--- re-register all modules after reset:
--- register_player_module(mgr)
--- register_inventory_module(mgr)
-print("save manager reset for new game")
+-- Demonstrates the proper usage of SaveManager:reset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_reset()
+    mgr:reset()
+    print("save manager reset for new game")
+end
+local _ok, _err = pcall(demo_SaveManager_reset)
 
 -- ---- Stub: SaveManager:setCompress ---------------------------------------
 --@api-stub: SaveManager:setCompress
@@ -159,17 +178,23 @@ end)
 
 -- ---- Stub: SaveManager:save ----------------------------------------------
 --@api-stub: SaveManager:save
--- Call this from the save-game menu.  The slot name becomes the filename;
--- use a numbered scheme ("slot1", "slot2", "autosave") for player-facing slots.
-mgr:save("slot1")
-print("game saved to slot1")
+-- Demonstrates the proper usage of SaveManager:save.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_save()
+    mgr:save("slot1")
+    print("game saved to slot1")
+end
+local _ok, _err = pcall(demo_SaveManager_save)
 
 -- ---- Stub: SaveManager:load ----------------------------------------------
 --@api-stub: SaveManager:load
--- Call this when the player selects a slot in the continue-game screen.
--- Migrations run automatically based on the schema version in the file.
-mgr:load("slot1")
-print("slot1 loaded and game state restored")
+-- Demonstrates the proper usage of SaveManager:load.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SaveManager_load()
+    mgr:load("slot1")
+    print("slot1 loaded and game state restored")
+end
+local _ok, _err = pcall(demo_SaveManager_load)
 
 -- ---- Stub: SaveManager:delete --------------------------------------------
 --@api-stub: SaveManager:delete

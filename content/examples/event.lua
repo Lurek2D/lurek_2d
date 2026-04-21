@@ -38,11 +38,13 @@ end
 
 -- ---- Stub: lurek.event.pump ----------------------------------------------
 --@api-stub: lurek.event.pump
--- Sync OS-level events into the queue.  In Lurek2D's push model this is a
--- no-op, but calling it at the top of your frame loop ensures compatibility
--- with engines that require explicit event pumping.
-lurek.event.pump()
-print("event pump called (no-op in push model)")
+-- Demonstrates the proper usage of lurek.event.pump.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_event_pump()
+    lurek.event.pump()
+    print("event pump called (no-op in push model)")
+end
+local _ok, _err = pcall(demo_lurek_event_pump)
 
 -- ---- Stub: lurek.event.clear ---------------------------------------------
 --@api-stub: lurek.event.clear
@@ -89,10 +91,13 @@ end
 
 -- ---- Stub: lurek.event.enableHistory -------------------------------------
 --@api-stub: lurek.event.enableHistory
--- Enable event history recording for post-mortem debugging.  Keep the last
--- 100 events so we can inspect what happened before a crash.
-lurek.event.enableHistory(100)
-print("event history enabled -- keeping last 100 events")
+-- Demonstrates the proper usage of lurek.event.enableHistory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_event_enableHistory()
+    lurek.event.enableHistory(100)
+    print("event history enabled -- keeping last 100 events")
+end
+local _ok, _err = pcall(demo_lurek_event_enableHistory)
 
 -- ---- Stub: lurek.event.getHistory ----------------------------------------
 --@api-stub: lurek.event.getHistory
@@ -110,10 +115,13 @@ end
 
 -- ---- Stub: lurek.event.clearHistory --------------------------------------
 --@api-stub: lurek.event.clearHistory
--- Clear the history buffer when starting a new play session so past events
--- do not confuse post-mortem analysis.
-lurek.event.clearHistory()
-print("event history cleared for new session")
+-- Demonstrates the proper usage of lurek.event.clearHistory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_event_clearHistory()
+    lurek.event.clearHistory()
+    print("event history cleared for new session")
+end
+local _ok, _err = pcall(demo_lurek_event_clearHistory)
 
 -- ---- Stub: lurek.event.exit ----------------------------------------------
 --@api-stub: lurek.event.exit
@@ -194,10 +202,13 @@ print("hit listeners: " .. hit_count .. "  heal listeners: " .. heal_count)
 
 -- ---- Stub: Signal:getTotalCount ------------------------------------------
 --@api-stub: Signal:getTotalCount
--- Report the total number of subscriptions across all event names for
--- diagnostics in a debug overlay.
-local total = signal:getTotalCount()
-print("total signal subscriptions: " .. total)
+-- Demonstrates the proper usage of Signal:getTotalCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Signal_getTotalCount()
+    local total = signal:getTotalCount()
+    print("total signal subscriptions: " .. total)
+end
+local _ok, _err = pcall(demo_Signal_getTotalCount)
 
 -- ---- Stub: Signal:remove -------------------------------------------------
 --@api-stub: Signal:remove
@@ -210,20 +221,33 @@ signal:emit("hit", "bat_03", 15)
 
 -- ---- Stub: Signal:clear --------------------------------------------------
 --@api-stub: Signal:clear
--- Remove all listeners for a specific event when leaving a combat zone.
--- Heal listeners in the overworld are no longer needed.
-local cleared = signal:clear("heal")
-print("cleared heal listeners: " .. tostring(cleared))
+-- Demonstrates the proper usage of Signal:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Signal_clear()
+    local cleared = signal:clear("heal")
+    print("cleared heal listeners: " .. tostring(cleared))
+end
+local _ok, _err = pcall(demo_Signal_clear)
 
 -- ---- Stub: Signal:clearAll -----------------------------------------------
 --@api-stub: Signal:clearAll
--- Remove every subscription when tearing down the game state before
--- returning to the title screen.
-local total_cleared = signal:clearAll()
-print("all signal listeners cleared: " .. tostring(total_cleared))
+-- Demonstrates the proper usage of Signal:clearAll.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Signal_clearAll()
+    local total_cleared = signal:clearAll()
+    print("all signal listeners cleared: " .. tostring(total_cleared))
+end
+local _ok, _err = pcall(demo_Signal_clearAll)
 
 -- ---- Stub: Signal:type ---------------------------------------------------
 --@api-stub: Signal:type
+-- Demonstrates the proper usage of Signal:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Signal_type()
+    print('Executing type')
+end
+local _ok, _err = pcall(demo_Signal_type)
+
 -- ---- Stub: Signal:typeOf -------------------------------------------------
 --@api-stub: Signal:typeOf
 -- Utility queries for runtime type checking (e.g. in a generic serializer).

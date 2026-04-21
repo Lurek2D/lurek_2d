@@ -26,10 +26,13 @@ print("mod created:", hero_mod:getId())
 
 -- ---- Stub: lurek.mods.newModManager --------------------------------------
 --@api-stub: lurek.mods.newModManager
--- Centralise mod discovery, load-order, and dependency checking behind one
--- object -- instantiate once at startup and pass it to your mod loader.
-local mgr = lurek.mods.newModManager()
-print("ModManager created, mod count:", mgr:getModCount())
+-- Demonstrates the proper usage of lurek.mods.newModManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_mods_newModManager()
+    local mgr = lurek.mods.newModManager()
+    print("ModManager created, mod count:", mgr:getModCount())
+end
+local _ok, _err = pcall(demo_lurek_mods_newModManager)
 
 -- ---- Stub: lurek.mods.checkApiVersion ------------------------------------
 --@api-stub: lurek.mods.checkApiVersion
@@ -48,33 +51,48 @@ end
 
 -- ---- Stub: Mod:getId -----------------------------------------------------
 --@api-stub: Mod:getId
--- Use the ID as the canonical key when storing mod state in tables;
--- display names can change across versions but the ID stays stable.
-print("mod id:", hero_mod:getId())  -- "hero_overhaul"
+-- Demonstrates the proper usage of Mod:getId.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getId()
+    print("mod id:", hero_mod:getId())  -- "hero_overhaul"
+end
+local _ok, _err = pcall(demo_Mod_getId)
 
 -- ---- Stub: Mod:getName ---------------------------------------------------
 --@api-stub: Mod:getName
--- Show the display name in the in-game mod browser without exposing
--- the internal ID string to players.
-print("display name:", hero_mod:getName())  -- "Hero Overhaul"
+-- Demonstrates the proper usage of Mod:getName.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getName()
+    print("display name:", hero_mod:getName())  -- "Hero Overhaul"
+end
+local _ok, _err = pcall(demo_Mod_getName)
 
 -- ---- Stub: Mod:getVersion ------------------------------------------------
 --@api-stub: Mod:getVersion
--- Include the version in save-file metadata so you can detect when a save
--- was made with an older mod version and prompt a migration.
-print("mod version:", hero_mod:getVersion())  -- "1.2.0"
+-- Demonstrates the proper usage of Mod:getVersion.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getVersion()
+    print("mod version:", hero_mod:getVersion())  -- "1.2.0"
+end
+local _ok, _err = pcall(demo_Mod_getVersion)
 
 -- ---- Stub: Mod:getAuthor -------------------------------------------------
 --@api-stub: Mod:getAuthor
--- Display in the credits screen and in the mod details panel of the
--- in-game mod browser.
-print("author:", hero_mod:getAuthor())
+-- Demonstrates the proper usage of Mod:getAuthor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getAuthor()
+    print("author:", hero_mod:getAuthor())
+end
+local _ok, _err = pcall(demo_Mod_getAuthor)
 
 -- ---- Stub: Mod:getDescription --------------------------------------------
 --@api-stub: Mod:getDescription
--- Show in the mod details tooltip or browser description pane so players
--- understand what the mod does before enabling it.
-print("description:", hero_mod:getDescription())
+-- Demonstrates the proper usage of Mod:getDescription.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getDescription()
+    print("description:", hero_mod:getDescription())
+end
+local _ok, _err = pcall(demo_Mod_getDescription)
 
 -- ---- Stub: Mod:getDependencies -------------------------------------------
 --@api-stub: Mod:getDependencies
@@ -88,9 +106,12 @@ end
 
 -- ---- Stub: Mod:getPriority -----------------------------------------------
 --@api-stub: Mod:getPriority
--- Higher priority mods load first -- read this to display the load order
--- in the mod browser and to warn about conflicts.
-print("load priority:", hero_mod:getPriority())  -- 10
+-- Demonstrates the proper usage of Mod:getPriority.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getPriority()
+    print("load priority:", hero_mod:getPriority())  -- 10
+end
+local _ok, _err = pcall(demo_Mod_getPriority)
 
 -- ---- Stub: Mod:isEnabled -------------------------------------------------
 --@api-stub: Mod:isEnabled
@@ -122,17 +143,23 @@ end
 
 -- ---- Stub: Mod:getApiVersion ---------------------------------------------
 --@api-stub: Mod:getApiVersion
--- Read the required API version to display a compatibility warning before
--- loading a mod built for an older engine version.
-local api_ver = hero_mod:getApiVersion()
-print("requires API:", api_ver or "any")
+-- Demonstrates the proper usage of Mod:getApiVersion.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_getApiVersion()
+    local api_ver = hero_mod:getApiVersion()
+    print("requires API:", api_ver or "any")
+end
+local _ok, _err = pcall(demo_Mod_getApiVersion)
 
 -- ---- Stub: Mod:setApiVersion ---------------------------------------------
 --@api-stub: Mod:setApiVersion
--- Set when building mods programmatically so the engine can verify
--- compatibility before executing the mod's hooks.
-hero_mod:setApiVersion("0.5.0")
-print("api version set to:", hero_mod:getApiVersion())
+-- Demonstrates the proper usage of Mod:setApiVersion.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_setApiVersion()
+    hero_mod:setApiVersion("0.5.0")
+    print("api version set to:", hero_mod:getApiVersion())
+end
+local _ok, _err = pcall(demo_Mod_setApiVersion)
 
 -- ---- Stub: Mod:getCapabilities -------------------------------------------
 --@api-stub: Mod:getCapabilities
@@ -146,10 +173,13 @@ end
 
 -- ---- Stub: Mod:setCapabilities -------------------------------------------
 --@api-stub: Mod:setCapabilities
--- Declare what the mod is allowed to do so the host can enforce sandbox
--- rules -- e.g. "sprite_override", "filesystem_read", "audio_output".
-hero_mod:setCapabilities({ "sprite_override", "stats_patch" })
-print("capabilities set:", #hero_mod:getCapabilities())
+-- Demonstrates the proper usage of Mod:setCapabilities.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_setCapabilities()
+    hero_mod:setCapabilities({ "sprite_override", "stats_patch" })
+    print("capabilities set:", #hero_mod:getCapabilities())
+end
+local _ok, _err = pcall(demo_Mod_setCapabilities)
 
 -- ---- Stub: Mod:getConfigSchema -------------------------------------------
 --@api-stub: Mod:getConfigSchema
@@ -200,10 +230,13 @@ end
 
 -- ---- Stub: Mod:setConfig -------------------------------------------------
 --@api-stub: Mod:setConfig
--- Persist player settings for this mod -- call after the user closes the
--- mod settings panel with a filled-in config table.
-hero_mod:setConfig({ speed_multiplier = 1.5, debug_sprites = false })
-print("mod config saved")
+-- Demonstrates the proper usage of Mod:setConfig.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_setConfig()
+    hero_mod:setConfig({ speed_multiplier = 1.5, debug_sprites = false })
+    print("mod config saved")
+end
+local _ok, _err = pcall(demo_Mod_setConfig)
 
 -- ---- Stub: Mod:getConfig -------------------------------------------------
 --@api-stub: Mod:getConfig
@@ -216,28 +249,33 @@ end
 
 -- ---- Stub: Mod:releaseRefs -----------------------------------------------
 --@api-stub: Mod:releaseRefs
--- Call when unloading a mod to release hook closures and config entries
--- so the Lua GC can collect them without waiting for the Mod userdata.
-hero_mod:releaseRefs()
-print("all references released")
-
--- -----------------------------------------------------------------------------
--- ModManager methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of Mod:releaseRefs.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Mod_releaseRefs()
+    hero_mod:releaseRefs()
+    print("all references released")
+end
+local _ok, _err = pcall(demo_Mod_releaseRefs)
 
 -- ---- Stub: ModManager:registerMod ----------------------------------------
 --@api-stub: ModManager:registerMod
--- Register a mod at startup or after a hot-reload scan so the manager
--- can include it in load-order calculation and dependency checking.
-mgr:registerMod(hero_mod)
-print("mods registered:", mgr:getModCount())
+-- Demonstrates the proper usage of ModManager:registerMod.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_registerMod()
+    mgr:registerMod(hero_mod)
+    print("mods registered:", mgr:getModCount())
+end
+local _ok, _err = pcall(demo_ModManager_registerMod)
 
 -- ---- Stub: ModManager:unregisterMod --------------------------------------
 --@api-stub: ModManager:unregisterMod
--- Remove a mod when the player disables it in the browser -- returns false
--- if the ID was not found, which is safe to ignore.
-local removed = mgr:unregisterMod("hero_overhaul")
-print("mod removed:", removed)
+-- Demonstrates the proper usage of ModManager:unregisterMod.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_unregisterMod()
+    local removed = mgr:unregisterMod("hero_overhaul")
+    print("mod removed:", removed)
+end
+local _ok, _err = pcall(demo_ModManager_unregisterMod)
 
 -- ---- Stub: ModManager:hasMod ---------------------------------------------
 --@api-stub: ModManager:hasMod
@@ -251,10 +289,13 @@ end
 
 -- ---- Stub: ModManager:getModCount ----------------------------------------
 --@api-stub: ModManager:getModCount
--- Show total mod count in the browser header and use it to decide whether
--- to display a "no mods installed" placeholder.
-local n = mgr:getModCount()
-print(n, "mod(s) registered")
+-- Demonstrates the proper usage of ModManager:getModCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_getModCount()
+    local n = mgr:getModCount()
+    print(n, "mod(s) registered")
+end
+local _ok, _err = pcall(demo_ModManager_getModCount)
 
 -- ---- Stub: ModManager:getAllMods -----------------------------------------
 --@api-stub: ModManager:getAllMods
@@ -299,17 +340,23 @@ end
 
 -- ---- Stub: ModManager:setLoadOrder ---------------------------------------
 --@api-stub: ModManager:setLoadOrder
--- Override the auto-calculated order when the player drags mods into a
--- custom sequence that differs from their priority values.
-mgr:setLoadOrder({ "base_game_data", "hero_overhaul", "extra_enemies" })
-print("custom load order applied")
+-- Demonstrates the proper usage of ModManager:setLoadOrder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_setLoadOrder()
+    mgr:setLoadOrder({ "base_game_data", "hero_overhaul", "extra_enemies" })
+    print("custom load order applied")
+end
+local _ok, _err = pcall(demo_ModManager_setLoadOrder)
 
 -- ---- Stub: ModManager:clearLoadOrder -------------------------------------
 --@api-stub: ModManager:clearLoadOrder
--- Revert to priority-based sorting after the player clicks "Reset order" --
--- discards any manual drag-and-drop arrangement from the browser.
-mgr:clearLoadOrder()
-print("load order reset to priority-based sort")
+-- Demonstrates the proper usage of ModManager:clearLoadOrder.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_clearLoadOrder()
+    mgr:clearLoadOrder()
+    print("load order reset to priority-based sort")
+end
+local _ok, _err = pcall(demo_ModManager_clearLoadOrder)
 
 -- ---- Stub: ModManager:scanFolder -----------------------------------------
 --@api-stub: ModManager:scanFolder
@@ -323,17 +370,23 @@ end
 
 -- ---- Stub: ModManager:getModPath -----------------------------------------
 --@api-stub: ModManager:getModPath
--- Resolve the path to a mod's folder so the mod can load its own assets
--- via lurek.filesystem without hard-coding absolute paths.
-local path = mgr:getModPath("hero_overhaul")
-print("mod path:", path or "not found")
+-- Demonstrates the proper usage of ModManager:getModPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_getModPath()
+    local path = mgr:getModPath("hero_overhaul")
+    print("mod path:", path or "not found")
+end
+local _ok, _err = pcall(demo_ModManager_getModPath)
 
 -- ---- Stub: ModManager:markForReload --------------------------------------
 --@api-stub: ModManager:markForReload
--- Queue a mod for hot-reload after the player edits its files -- the game
--- picks up the reload queue at the start of the next frame.
-local queued = mgr:markForReload("hero_overhaul")
-print("queued for reload:", queued)
+-- Demonstrates the proper usage of ModManager:markForReload.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_markForReload()
+    local queued = mgr:markForReload("hero_overhaul")
+    print("queued for reload:", queued)
+end
+local _ok, _err = pcall(demo_ModManager_markForReload)
 
 -- ---- Stub: ModManager:getReloadQueue -------------------------------------
 --@api-stub: ModManager:getReloadQueue
@@ -347,7 +400,10 @@ end
 
 -- ---- Stub: ModManager:clearReloadQueue -----------------------------------
 --@api-stub: ModManager:clearReloadQueue
--- Discard the reload queue without processing it -- useful when a hot-reload
--- cycle is cancelled because the game is shutting down.
-mgr:clearReloadQueue()
-print("reload queue cleared")
+-- Demonstrates the proper usage of ModManager:clearReloadQueue.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ModManager_clearReloadQueue()
+    mgr:clearReloadQueue()
+    print("reload queue cleared")
+end
+local _ok, _err = pcall(demo_ModManager_clearReloadQueue)

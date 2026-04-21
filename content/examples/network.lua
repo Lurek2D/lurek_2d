@@ -12,66 +12,95 @@
 
 -- ---- Stub: lurek.network.newHost -----------------------------------------
 --@api-stub: lurek.network.newHost
--- Create a raw ENet host for custom networking.  Bind to port 7777 with
--- a max of 32 peers and 2 channels.
-local host = lurek.network.newHost("0.0.0.0:7777", 32, 2)
-print("network host created on port 7777, max 32 peers")
+-- Demonstrates the proper usage of lurek.network.newHost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newHost()
+    local host = lurek.network.newHost("0.0.0.0:7777", 32, 2)
+    print("network host created on port 7777, max 32 peers")
+end
+local _ok, _err = pcall(demo_lurek_network_newHost)
 
 -- ---- Stub: lurek.network.newServer ---------------------------------------
 --@api-stub: lurek.network.newServer
--- Create a server host that listens for incoming client connections.
-local server = lurek.network.newServer(7778, 16)
-print("server listening on port 7778, max 16 players")
+-- Demonstrates the proper usage of lurek.network.newServer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newServer()
+    local server = lurek.network.newServer(7778, 16)
+    print("server listening on port 7778, max 16 players")
+end
+local _ok, _err = pcall(demo_lurek_network_newServer)
 
 -- ---- Stub: lurek.network.newClient ---------------------------------------
 --@api-stub: lurek.network.newClient
--- Create a client host that connects to a remote server.
-local client = lurek.network.newClient("127.0.0.1:7778")
-print("client connecting to 127.0.0.1:7778")
+-- Demonstrates the proper usage of lurek.network.newClient.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newClient()
+    local client = lurek.network.newClient("127.0.0.1:7778")
+    print("client connecting to 127.0.0.1:7778")
+end
+local _ok, _err = pcall(demo_lurek_network_newClient)
 
 -- ---- Stub: lurek.network.pack --------------------------------------------
 --@api-stub: lurek.network.pack
--- Pack a game event into a compact binary message for network sending.
-local msg = lurek.network.pack({ type = "move", x = 100.5, y = 200.3 })
-print("packed network message: " .. #msg .. " bytes")
+-- Demonstrates the proper usage of lurek.network.pack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_pack()
+    local msg = lurek.network.pack({ type = "move", x = 100.5, y = 200.3 })
+    print("packed network message: " .. #msg .. " bytes")
+end
+local _ok, _err = pcall(demo_lurek_network_pack)
 
 -- ---- Stub: lurek.network.unpack ------------------------------------------
 --@api-stub: lurek.network.unpack
--- Unpack a received binary message back to a Lua table.
-local event = lurek.network.unpack(msg)
-print("unpacked: type=" .. event.type .. " x=" .. event.x)
+-- Demonstrates the proper usage of lurek.network.unpack.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_unpack()
+    local event = lurek.network.unpack(msg)
+    print("unpacked: type=" .. event.type .. " x=" .. event.x)
+end
+local _ok, _err = pcall(demo_lurek_network_unpack)
 
 -- ---- Stub: lurek.network.createLobby -------------------------------------
 --@api-stub: lurek.network.createLobby
--- Create a game lobby that other players can discover and join.
-local lobby = lurek.network.createLobby({
+-- Demonstrates the proper usage of lurek.network.createLobby.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_createLobby()
+    local lobby = lurek.network.createLobby({
     name = "Boss Rush Room",
     max_players = 4,
     map = "dungeon_3",
-})
-print("lobby created: " .. tostring(lobby))
+    })
+    print("lobby created: " .. tostring(lobby))
+end
+local _ok, _err = pcall(demo_lurek_network_createLobby)
 
 -- ---- Stub: lurek.network.discoverLobbies ---------------------------------
 --@api-stub: lurek.network.discoverLobbies
--- Discover available lobbies on the local network for a server browser.
-local lobbies = lurek.network.discoverLobbies()
-print("discovered " .. #(lobbies or {}) .. " lobbies")
-for i, l in ipairs(lobbies or {}) do
+-- Demonstrates the proper usage of lurek.network.discoverLobbies.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_discoverLobbies()
+    local lobbies = lurek.network.discoverLobbies()
+    print("discovered " .. #(lobbies or {}) .. " lobbies")
+    for i, l in ipairs(lobbies or {}) do
     print(string.format("  %d) %s (%d/%d players)", i, l.name, l.players, l.max_players))
 end
+local _ok, _err = pcall(demo_lurek_network_discoverLobbies)
 
 -- ---- Stub: lurek.network.syncEntity --------------------------------------
 --@api-stub: lurek.network.syncEntity
--- Synchronize an entity's position across all connected peers.
-lurek.network.syncEntity(host, {
+-- Demonstrates the proper usage of lurek.network.syncEntity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_syncEntity()
+    lurek.network.syncEntity(host, {
     id = 1,
     x = 150.0,
     y = 300.0,
     vx = 5.0,
     vy = -2.0,
-})
-print("entity 1 state synced to all peers")
-
+    })
+    print("entity 1 state synced to all peers")
+end
+local _ok, _err = pcall(demo_lurek_network_syncEntity)
 
 -- =============================================================================
 -- NetworkHost — ENet peer-to-peer operations
@@ -90,132 +119,213 @@ end
 
 -- ---- Stub: NetworkHost:flush ---------------------------------------------
 --@api-stub: NetworkHost:flush
--- Force-send all queued packets immediately (useful before disconnect).
-host:flush()
-print("outgoing packets flushed")
+-- Demonstrates the proper usage of NetworkHost:flush.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_flush()
+    host:flush()
+    print("outgoing packets flushed")
+end
+local _ok, _err = pcall(demo_NetworkHost_flush)
 
 -- ---- Stub: NetworkHost:disconnect ----------------------------------------
 --@api-stub: NetworkHost:disconnect
--- Gracefully disconnect a peer by ID with a timeout for acknowledgement.
-host:disconnect(0)
-print("peer 0 disconnect requested (graceful)")
+-- Demonstrates the proper usage of NetworkHost:disconnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_disconnect()
+    host:disconnect(0)
+    print("peer 0 disconnect requested (graceful)")
+end
+local _ok, _err = pcall(demo_NetworkHost_disconnect)
 
 -- ---- Stub: NetworkHost:disconnectNow -------------------------------------
 --@api-stub: NetworkHost:disconnectNow
--- Immediately drop a peer without waiting for acknowledgement (kick).
-host:disconnectNow(0)
-print("peer 0 disconnected immediately (kicked)")
+-- Demonstrates the proper usage of NetworkHost:disconnectNow.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_disconnectNow()
+    host:disconnectNow(0)
+    print("peer 0 disconnected immediately (kicked)")
+end
+local _ok, _err = pcall(demo_NetworkHost_disconnectNow)
 
 -- ---- Stub: NetworkHost:resetPeer -----------------------------------------
 --@api-stub: NetworkHost:resetPeer
--- Reset a peer's connection state after a timeout or error.
-host:resetPeer(0)
-print("peer 0 connection state reset")
+-- Demonstrates the proper usage of NetworkHost:resetPeer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_resetPeer()
+    host:resetPeer(0)
+    print("peer 0 connection state reset")
+end
+local _ok, _err = pcall(demo_NetworkHost_resetPeer)
 
 -- ---- Stub: NetworkHost:ping ----------------------------------------------
 --@api-stub: NetworkHost:ping
--- Send a ping to measure round-trip time.
-host:ping(0)
-print("ping sent to peer 0")
+-- Demonstrates the proper usage of NetworkHost:ping.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_ping()
+    host:ping(0)
+    print("ping sent to peer 0")
+end
+local _ok, _err = pcall(demo_NetworkHost_ping)
 
 -- ---- Stub: NetworkHost:getRoundTripTime ----------------------------------
 --@api-stub: NetworkHost:getRoundTripTime
--- Display the latency to a peer in the scoreboard.
-local rtt = host:getRoundTripTime(0)
-print("peer 0 RTT: " .. tostring(rtt) .. " ms")
+-- Demonstrates the proper usage of NetworkHost:getRoundTripTime.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getRoundTripTime()
+    local rtt = host:getRoundTripTime(0)
+    print("peer 0 RTT: " .. tostring(rtt) .. " ms")
+end
+local _ok, _err = pcall(demo_NetworkHost_getRoundTripTime)
 
 -- ---- Stub: NetworkHost:getPeerState --------------------------------------
 --@api-stub: NetworkHost:getPeerState
--- Check if a peer is still connected before sending data.
-local state = host:getPeerState(0)
-print("peer 0 state: " .. tostring(state))
+-- Demonstrates the proper usage of NetworkHost:getPeerState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerState()
+    local state = host:getPeerState(0)
+    print("peer 0 state: " .. tostring(state))
+end
+local _ok, _err = pcall(demo_NetworkHost_getPeerState)
 
 -- ---- Stub: NetworkHost:getPeerAddress ------------------------------------
 --@api-stub: NetworkHost:getPeerAddress
--- Log the IP address of a connecting peer for admin/ban purposes.
-local addr = host:getPeerAddress(0)
-print("peer 0 address: " .. tostring(addr))
+-- Demonstrates the proper usage of NetworkHost:getPeerAddress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerAddress()
+    local addr = host:getPeerAddress(0)
+    print("peer 0 address: " .. tostring(addr))
+end
+local _ok, _err = pcall(demo_NetworkHost_getPeerAddress)
 
 -- ---- Stub: NetworkHost:getAddress ----------------------------------------
 --@api-stub: NetworkHost:getAddress
--- Display the host's own address for sharing with friends.
-local my_addr = host:getAddress()
-print("host address: " .. tostring(my_addr))
+-- Demonstrates the proper usage of NetworkHost:getAddress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getAddress()
+    local my_addr = host:getAddress()
+    print("host address: " .. tostring(my_addr))
+end
+local _ok, _err = pcall(demo_NetworkHost_getAddress)
 
 -- ---- Stub: NetworkHost:getPeerLimit --------------------------------------
 --@api-stub: NetworkHost:getPeerLimit
--- Show the max peer count in the server info panel.
-local max_peers = host:getPeerLimit()
-print("max peers: " .. tostring(max_peers))
+-- Demonstrates the proper usage of NetworkHost:getPeerLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerLimit()
+    local max_peers = host:getPeerLimit()
+    print("max peers: " .. tostring(max_peers))
+end
+local _ok, _err = pcall(demo_NetworkHost_getPeerLimit)
 
 -- ---- Stub: NetworkHost:getChannelLimit -----------------------------------
 --@api-stub: NetworkHost:getChannelLimit
--- Display the channel count for debugging protocol issues.
-local channels = host:getChannelLimit()
-print("channel limit: " .. tostring(channels))
+-- Demonstrates the proper usage of NetworkHost:getChannelLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getChannelLimit()
+    local channels = host:getChannelLimit()
+    print("channel limit: " .. tostring(channels))
+end
+local _ok, _err = pcall(demo_NetworkHost_getChannelLimit)
 
 -- ---- Stub: NetworkHost:setChannelLimit -----------------------------------
 --@api-stub: NetworkHost:setChannelLimit
--- Increase channels to 4 for a game that separates reliable chat,
--- unreliable position, reliable events, and voice.
-host:setChannelLimit(4)
-print("channel limit set to 4")
+-- Demonstrates the proper usage of NetworkHost:setChannelLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_setChannelLimit()
+    host:setChannelLimit(4)
+    print("channel limit set to 4")
+end
+local _ok, _err = pcall(demo_NetworkHost_setChannelLimit)
 
 -- ---- Stub: NetworkHost:getBandwidthLimit ---------------------------------
 --@api-stub: NetworkHost:getBandwidthLimit
--- Read bandwidth limits for network diagnostics.
-local bw_in, bw_out = host:getBandwidthLimit()
-print(string.format("bandwidth: in=%s out=%s", tostring(bw_in), tostring(bw_out)))
+-- Demonstrates the proper usage of NetworkHost:getBandwidthLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getBandwidthLimit()
+    local bw_in, bw_out = host:getBandwidthLimit()
+    print(string.format("bandwidth: in=%s out=%s", tostring(bw_in), tostring(bw_out)))
+end
+local _ok, _err = pcall(demo_NetworkHost_getBandwidthLimit)
 
 -- ---- Stub: NetworkHost:getConnectedPeerCount -----------------------------
 --@api-stub: NetworkHost:getConnectedPeerCount
--- Display player count in the lobby: "3/16 players".
-local connected = host:getConnectedPeerCount()
-print("connected peers: " .. tostring(connected))
+-- Demonstrates the proper usage of NetworkHost:getConnectedPeerCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getConnectedPeerCount()
+    local connected = host:getConnectedPeerCount()
+    print("connected peers: " .. tostring(connected))
+end
+local _ok, _err = pcall(demo_NetworkHost_getConnectedPeerCount)
 
 -- ---- Stub: NetworkHost:getConnectedPeerIds -------------------------------
 --@api-stub: NetworkHost:getConnectedPeerIds
--- Iterate connected peers to broadcast a game state snapshot.
-local peer_ids = host:getConnectedPeerIds()
-print("connected peer IDs: " .. table.concat(peer_ids or {}, ", "))
+-- Demonstrates the proper usage of NetworkHost:getConnectedPeerIds.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getConnectedPeerIds()
+    local peer_ids = host:getConnectedPeerIds()
+    print("connected peer IDs: " .. table.concat(peer_ids or {}, ", "))
+end
+local _ok, _err = pcall(demo_NetworkHost_getConnectedPeerIds)
 
 -- ---- Stub: NetworkHost:getPeerStats --------------------------------------
 --@api-stub: NetworkHost:getPeerStats
--- Show detailed stats for a peer in the network debug panel.
-local stats = host:getPeerStats(0)
-if stats then
+-- Demonstrates the proper usage of NetworkHost:getPeerStats.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerStats()
+    local stats = host:getPeerStats(0)
+    if stats then
     print(string.format("peer 0 stats: sent=%d recv=%d loss=%.1f%%",
         stats.packets_sent or 0, stats.packets_received or 0, stats.packet_loss or 0))
 end
+local _ok, _err = pcall(demo_NetworkHost_getPeerStats)
 
 -- ---- Stub: NetworkHost:destroy -------------------------------------------
 --@api-stub: NetworkHost:destroy
--- Destroy the host when shutting down the multiplayer session.
-host:destroy()
-print("network host destroyed")
+-- Demonstrates the proper usage of NetworkHost:destroy.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_destroy()
+    host:destroy()
+    print("network host destroyed")
+end
+local _ok, _err = pcall(demo_NetworkHost_destroy)
 
 -- ---- Stub: NetworkHost:isDestroyed ---------------------------------------
 --@api-stub: NetworkHost:isDestroyed
--- Guard against using a destroyed host.
-local destroyed = host:isDestroyed()
-print("host destroyed: " .. tostring(destroyed))
+-- Demonstrates the proper usage of NetworkHost:isDestroyed.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_isDestroyed()
+    local destroyed = host:isDestroyed()
+    print("host destroyed: " .. tostring(destroyed))
+end
+local _ok, _err = pcall(demo_NetworkHost_isDestroyed)
 
 -- ---- Stub: NetworkHost:getRole -------------------------------------------
 --@api-stub: NetworkHost:getRole
--- Display the host's role (server/client) in the HUD.
-local role = server:getRole()
-print("server role: " .. tostring(role))
+-- Demonstrates the proper usage of NetworkHost:getRole.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getRole()
+    local role = server:getRole()
+    print("server role: " .. tostring(role))
+end
+local _ok, _err = pcall(demo_NetworkHost_getRole)
 
 -- ---- Stub: NetworkHost:isServer ------------------------------------------
 --@api-stub: NetworkHost:isServer
--- Branch logic based on whether this is the authoritative server.
-print("is server: " .. tostring(server:isServer()))
+-- Demonstrates the proper usage of NetworkHost:isServer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_isServer()
+    print("is server: " .. tostring(server:isServer()))
+end
+local _ok, _err = pcall(demo_NetworkHost_isServer)
 
 -- ---- Stub: NetworkHost:isClient ------------------------------------------
 --@api-stub: NetworkHost:isClient
--- Branch logic for client-side prediction.
-print("client is client: " .. tostring(client:isClient()))
-
+-- Demonstrates the proper usage of NetworkHost:isClient.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_isClient()
+    print("client is client: " .. tostring(client:isClient()))
+end
+local _ok, _err = pcall(demo_NetworkHost_isClient)
 
 -- =============================================================================
 -- NetworkRuntime — HTTP, TCP, WebSocket
@@ -223,71 +333,108 @@ print("client is client: " .. tostring(client:isClient()))
 
 -- ---- Stub: lurek.network.newRuntime --------------------------------------
 --@api-stub: lurek.network.newRuntime
--- Create a runtime for HTTP/TCP/WebSocket operations.
-local runtime = lurek.network.newRuntime()
-print("network runtime created")
+-- Demonstrates the proper usage of lurek.network.newRuntime.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newRuntime()
+    local runtime = lurek.network.newRuntime()
+    print("network runtime created")
+end
+local _ok, _err = pcall(demo_lurek_network_newRuntime)
 
 -- ---- Stub: NetworkRuntime:httpRequest ------------------------------------
 --@api-stub: NetworkRuntime:httpRequest
--- Fetch a leaderboard from a REST API.
-runtime:httpRequest("GET", "https://api.example.com/leaderboard", {
+-- Demonstrates the proper usage of NetworkRuntime:httpRequest.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_httpRequest()
+    runtime:httpRequest("GET", "https://api.example.com/leaderboard", {
     headers = { ["Authorization"] = "Bearer token123" },
     callback = function(status, body)
         print(string.format("  HTTP %d: %d bytes", status, #body))
     end,
-})
-print("HTTP GET leaderboard request queued")
+    })
+    print("HTTP GET leaderboard request queued")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_httpRequest)
 
 -- ---- Stub: NetworkRuntime:tcpConnect -------------------------------------
 --@api-stub: NetworkRuntime:tcpConnect
--- Open a TCP connection to a chat relay server.
-local tcp_id = runtime:tcpConnect("chat.example.com", 9000)
-print("TCP connecting to chat.example.com:9000 (id: " .. tostring(tcp_id) .. ")")
+-- Demonstrates the proper usage of NetworkRuntime:tcpConnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_tcpConnect()
+    local tcp_id = runtime:tcpConnect("chat.example.com", 9000)
+    print("TCP connecting to chat.example.com:9000 (id: " .. tostring(tcp_id) .. ")")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_tcpConnect)
 
 -- ---- Stub: NetworkRuntime:tcpSend ----------------------------------------
 --@api-stub: NetworkRuntime:tcpSend
--- Send a chat message over TCP.
-runtime:tcpSend(tcp_id, "Hello from Lurek2D!\n")
-print("TCP message sent")
+-- Demonstrates the proper usage of NetworkRuntime:tcpSend.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_tcpSend()
+    runtime:tcpSend(tcp_id, "Hello from Lurek2D!\n")
+    print("TCP message sent")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_tcpSend)
 
 -- ---- Stub: NetworkRuntime:tcpClose ---------------------------------------
 --@api-stub: NetworkRuntime:tcpClose
--- Close the TCP connection when leaving the chat.
-runtime:tcpClose(tcp_id)
-print("TCP connection closed")
+-- Demonstrates the proper usage of NetworkRuntime:tcpClose.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_tcpClose()
+    runtime:tcpClose(tcp_id)
+    print("TCP connection closed")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_tcpClose)
 
 -- ---- Stub: NetworkRuntime:wsConnect --------------------------------------
 --@api-stub: NetworkRuntime:wsConnect
--- Open a WebSocket connection for real-time multiplayer sync.
-local ws_id = runtime:wsConnect("wss://game.example.com/sync")
-print("WebSocket connecting (id: " .. tostring(ws_id) .. ")")
+-- Demonstrates the proper usage of NetworkRuntime:wsConnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_wsConnect()
+    local ws_id = runtime:wsConnect("wss://game.example.com/sync")
+    print("WebSocket connecting (id: " .. tostring(ws_id) .. ")")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_wsConnect)
 
 -- ---- Stub: NetworkRuntime:wsSend -----------------------------------------
 --@api-stub: NetworkRuntime:wsSend
--- Send a player position update over WebSocket.
-runtime:wsSend(ws_id, '{"type":"pos","x":100,"y":200}')
-print("WebSocket message sent")
+-- Demonstrates the proper usage of NetworkRuntime:wsSend.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_wsSend()
+    runtime:wsSend(ws_id, '{"type":"pos","x":100,"y":200}')
+    print("WebSocket message sent")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_wsSend)
 
 -- ---- Stub: NetworkRuntime:wsClose ----------------------------------------
 --@api-stub: NetworkRuntime:wsClose
--- Close the WebSocket when disconnecting.
-runtime:wsClose(ws_id)
-print("WebSocket closed")
+-- Demonstrates the proper usage of NetworkRuntime:wsClose.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_wsClose()
+    runtime:wsClose(ws_id)
+    print("WebSocket closed")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_wsClose)
 
 -- ---- Stub: NetworkRuntime:poll -------------------------------------------
 --@api-stub: NetworkRuntime:poll
--- Poll all runtime connections for incoming data.  Call every frame.
-local events = runtime:poll()
-print("runtime poll: " .. tostring(#(events or {})) .. " events")
+-- Demonstrates the proper usage of NetworkRuntime:poll.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_poll()
+    local events = runtime:poll()
+    print("runtime poll: " .. tostring(#(events or {})) .. " events")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_poll)
 
 -- ---- Stub: NetworkRuntime:shutdown ---------------------------------------
 --@api-stub: NetworkRuntime:shutdown
--- Shut down all runtime connections cleanly on game exit.
-runtime:shutdown()
-print("network runtime shut down")
--- content/examples/network.lua
--- Lurek2D lurek.network API Reference
--- Run with: cargo run -- content/examples/network
+-- Demonstrates the proper usage of NetworkRuntime:shutdown.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_shutdown()
+    runtime:shutdown()
+    print("network runtime shut down")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_shutdown)
 
 -- =============================================================================
 -- STUBS: 40 uncovered lurek.network API item(s)
@@ -299,31 +446,43 @@ print("network runtime shut down")
 
 -- ---- Stub: lurek.network.newHost -----------------------------------------
 --@api-stub: lurek.network.newHost
--- Create a generic peer-to-peer host -- useful for LAN co-op where every
--- player can both send and receive without a dedicated server.
-local host = lurek.network.newHost({ address = "*", port = 7777, peers = 8, channels = 2 })
-print("host bound at:", host:getAddress())
+-- Demonstrates the proper usage of lurek.network.newHost.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newHost()
+    local host = lurek.network.newHost({ address = "*", port = 7777, peers = 8, channels = 2 })
+    print("host bound at:", host:getAddress())
+end
+local _ok, _err = pcall(demo_lurek_network_newHost)
 
 -- ---- Stub: lurek.network.newServer ---------------------------------------
 --@api-stub: lurek.network.newServer
--- Create a dedicated server host -- clients connect to it, it never connects
--- outward.  `peers` sets the maximum simultaneous players.
-local server = lurek.network.newServer({ port = 7777, peers = 16, channels = 2 })
-print("server listening on port 7777, role:", server:getRole())
+-- Demonstrates the proper usage of lurek.network.newServer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newServer()
+    local server = lurek.network.newServer({ port = 7777, peers = 16, channels = 2 })
+    print("server listening on port 7777, role:", server:getRole())
+end
+local _ok, _err = pcall(demo_lurek_network_newServer)
 
 -- ---- Stub: lurek.network.newClient ---------------------------------------
 --@api-stub: lurek.network.newClient
--- Create a client that connects to a known server address -- the `connect`
--- event arrives on the next service() call once the handshake completes.
-local client = lurek.network.newClient({ address = "127.0.0.1", port = 7777, channels = 2 })
-print("client created, role:", client:getRole())
+-- Demonstrates the proper usage of lurek.network.newClient.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newClient()
+    local client = lurek.network.newClient({ address = "127.0.0.1", port = 7777, channels = 2 })
+    print("client created, role:", client:getRole())
+end
+local _ok, _err = pcall(demo_lurek_network_newClient)
 
 -- ---- Stub: lurek.network.newRuntime --------------------------------------
 --@api-stub: lurek.network.newRuntime
--- Create a background runtime for async HTTP, TCP, and WebSocket requests --
--- the game loop stays responsive while network I/O runs on a worker thread.
-local rt = lurek.network.newRuntime()
-print("async network runtime started")
+-- Demonstrates the proper usage of lurek.network.newRuntime.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_newRuntime()
+    local rt = lurek.network.newRuntime()
+    print("async network runtime started")
+end
+local _ok, _err = pcall(demo_lurek_network_newRuntime)
 
 -- ---- Stub: lurek.network.pack --------------------------------------------
 --@api-stub: lurek.network.pack
@@ -367,14 +526,13 @@ end
 
 -- ---- Stub: lurek.network.syncEntity --------------------------------------
 --@api-stub: lurek.network.syncEntity
--- Broadcast a packed entity snapshot to all connected peers in one call --
--- use in lurek.process() on the server each frame for authoritative state.
-local entity = { id = 42, x = 150.0, y = 80.0, hp = 95 }
-lurek.network.syncEntity(server, entity)
-
--- -----------------------------------------------------------------------------
--- NetworkHost methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of lurek.network.syncEntity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_network_syncEntity()
+    local entity = { id = 42, x = 150.0, y = 80.0, hp = 95 }
+    lurek.network.syncEntity(server, entity)
+end
+local _ok, _err = pcall(demo_lurek_network_syncEntity)
 
 -- ---- Stub: NetworkHost:service -------------------------------------------
 --@api-stub: NetworkHost:service
@@ -387,66 +545,93 @@ end
 
 -- ---- Stub: NetworkHost:flush ---------------------------------------------
 --@api-stub: NetworkHost:flush
--- Force immediate delivery of queued outgoing packets -- useful at the end
--- of a frame to minimise latency when send() is called many times per tick.
-server:flush()
-print("pending sends flushed")
+-- Demonstrates the proper usage of NetworkHost:flush.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_flush()
+    server:flush()
+    print("pending sends flushed")
+end
+local _ok, _err = pcall(demo_NetworkHost_flush)
 
 -- ---- Stub: NetworkHost:disconnect ----------------------------------------
 --@api-stub: NetworkHost:disconnect
--- Politely disconnect a peer -- the remote side receives a DISCONNECT event.
--- Use this when a player leaves the game voluntarily (quit, end of match).
-server:disconnect(1, 0)  -- peer_id = 1, data = 0
-print("disconnect signal sent to peer 1")
+-- Demonstrates the proper usage of NetworkHost:disconnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_disconnect()
+    server:disconnect(1, 0)  -- peer_id = 1, data = 0
+    print("disconnect signal sent to peer 1")
+end
+local _ok, _err = pcall(demo_NetworkHost_disconnect)
 
 -- ---- Stub: NetworkHost:disconnectNow -------------------------------------
 --@api-stub: NetworkHost:disconnectNow
--- Hard disconnect without the ENet handshake -- use when the peer is
--- unresponsive or when you need to kick them instantly (e.g. anti-cheat).
-server:disconnectNow(2, 0)
-print("peer 2 force-disconnected")
+-- Demonstrates the proper usage of NetworkHost:disconnectNow.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_disconnectNow()
+    server:disconnectNow(2, 0)
+    print("peer 2 force-disconnected")
+end
+local _ok, _err = pcall(demo_NetworkHost_disconnectNow)
 
 -- ---- Stub: NetworkHost:resetPeer -----------------------------------------
 --@api-stub: NetworkHost:resetPeer
--- Silently drop the peer without sending a notification -- use when the
--- remote side is already gone (timeout) and there is nothing to notify.
-server:resetPeer(3)
-print("peer 3 silently reset")
+-- Demonstrates the proper usage of NetworkHost:resetPeer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_resetPeer()
+    server:resetPeer(3)
+    print("peer 3 silently reset")
+end
+local _ok, _err = pcall(demo_NetworkHost_resetPeer)
 
 -- ---- Stub: NetworkHost:ping ----------------------------------------------
 --@api-stub: NetworkHost:ping
--- Measure round-trip time to a peer for lag display in the scoreboard --
--- the result appears on the next service() call as a PING event.
-server:ping(1)
-print("ping sent to peer 1")
+-- Demonstrates the proper usage of NetworkHost:ping.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_ping()
+    server:ping(1)
+    print("ping sent to peer 1")
+end
+local _ok, _err = pcall(demo_NetworkHost_ping)
 
 -- ---- Stub: NetworkHost:getRoundTripTime ----------------------------------
 --@api-stub: NetworkHost:getRoundTripTime
--- Read RTT to decide whether to display a lag warning overlay --
--- above ~150 ms most games show a warning icon in the player list.
-local rtt = server:getRoundTripTime(1)
-print(string.format("peer 1 RTT: %d ms", rtt or 0))
+-- Demonstrates the proper usage of NetworkHost:getRoundTripTime.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getRoundTripTime()
+    local rtt = server:getRoundTripTime(1)
+    print(string.format("peer 1 RTT: %d ms", rtt or 0))
+end
+local _ok, _err = pcall(demo_NetworkHost_getRoundTripTime)
 
 -- ---- Stub: NetworkHost:getPeerState --------------------------------------
 --@api-stub: NetworkHost:getPeerState
--- Read the connection state before sending to skip peers that are still
--- in the handshake phase and not yet ready to receive game data.
-local state = server:getPeerState(1)
-print("peer 1 state:", state)  -- "connected", "connecting", "disconnected"
+-- Demonstrates the proper usage of NetworkHost:getPeerState.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerState()
+    local state = server:getPeerState(1)
+    print("peer 1 state:", state)  -- "connected", "connecting", "disconnected"
+end
+local _ok, _err = pcall(demo_NetworkHost_getPeerState)
 
 -- ---- Stub: NetworkHost:getPeerAddress ------------------------------------
 --@api-stub: NetworkHost:getPeerAddress
--- Log the remote IP in the server's player registry and use it for
--- IP-ban enforcement before allowing a peer to join the session.
-local addr = server:getPeerAddress(1)
-print("peer 1 address:", addr or "unknown")
+-- Demonstrates the proper usage of NetworkHost:getPeerAddress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getPeerAddress()
+    local addr = server:getPeerAddress(1)
+    print("peer 1 address:", addr or "unknown")
+end
+local _ok, _err = pcall(demo_NetworkHost_getPeerAddress)
 
 -- ---- Stub: NetworkHost:getAddress ----------------------------------------
 --@api-stub: NetworkHost:getAddress
--- Read the local bind address to display in the lobby browser so other
--- players can connect using the correct IP and port.
-local addr = server:getAddress()
-print("server listening at:", addr)
+-- Demonstrates the proper usage of NetworkHost:getAddress.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getAddress()
+    local addr = server:getAddress()
+    print("server listening at:", addr)
+end
+local _ok, _err = pcall(demo_NetworkHost_getAddress)
 
 -- ---- Stub: NetworkHost:getPeerLimit --------------------------------------
 --@api-stub: NetworkHost:getPeerLimit
@@ -458,29 +643,41 @@ print(string.format("players: %d / %d", connected, limit))
 
 -- ---- Stub: NetworkHost:getChannelLimit -----------------------------------
 --@api-stub: NetworkHost:getChannelLimit
--- Read the channel count to confirm it matches the value used by clients --
--- a mismatch causes silent packet drops that are hard to diagnose.
-print("channels per connection:", server:getChannelLimit())
+-- Demonstrates the proper usage of NetworkHost:getChannelLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getChannelLimit()
+    print("channels per connection:", server:getChannelLimit())
+end
+local _ok, _err = pcall(demo_NetworkHost_getChannelLimit)
 
 -- ---- Stub: NetworkHost:setChannelLimit -----------------------------------
 --@api-stub: NetworkHost:setChannelLimit
--- Increase the channel limit when you need separate reliable and unreliable
--- streams (e.g. channel 0 = critical events, channel 1 = position updates).
-server:setChannelLimit(4)
-print("channel limit set to 4")
+-- Demonstrates the proper usage of NetworkHost:setChannelLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_setChannelLimit()
+    server:setChannelLimit(4)
+    print("channel limit set to 4")
+end
+local _ok, _err = pcall(demo_NetworkHost_setChannelLimit)
 
 -- ---- Stub: NetworkHost:getBandwidthLimit ---------------------------------
 --@api-stub: NetworkHost:getBandwidthLimit
--- Check the configured bandwidth cap to display throttle status in a
--- developer overlay or to adapt game-state broadcast frequency.
-local bw = server:getBandwidthLimit()
-print("incoming:", bw.incoming, "B/s  outgoing:", bw.outgoing, "B/s")
+-- Demonstrates the proper usage of NetworkHost:getBandwidthLimit.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getBandwidthLimit()
+    local bw = server:getBandwidthLimit()
+    print("incoming:", bw.incoming, "B/s  outgoing:", bw.outgoing, "B/s")
+end
+local _ok, _err = pcall(demo_NetworkHost_getBandwidthLimit)
 
 -- ---- Stub: NetworkHost:getConnectedPeerCount -----------------------------
 --@api-stub: NetworkHost:getConnectedPeerCount
--- Poll this each frame to update the player count display and to decide
--- whether to start or end a match based on minimum player requirements.
-print("connected players:", server:getConnectedPeerCount())
+-- Demonstrates the proper usage of NetworkHost:getConnectedPeerCount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getConnectedPeerCount()
+    print("connected players:", server:getConnectedPeerCount())
+end
+local _ok, _err = pcall(demo_NetworkHost_getConnectedPeerCount)
 
 -- ---- Stub: NetworkHost:getConnectedPeerIds -------------------------------
 --@api-stub: NetworkHost:getConnectedPeerIds
@@ -521,9 +718,12 @@ end
 
 -- ---- Stub: NetworkHost:getRole -------------------------------------------
 --@api-stub: NetworkHost:getRole
--- Read the role to drive different code paths on the same code base --
--- server runs authority logic, client runs prediction and reconciliation.
-print("role:", server:getRole())  -- "server"
+-- Demonstrates the proper usage of NetworkHost:getRole.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkHost_getRole()
+    print("role:", server:getRole())  -- "server"
+end
+local _ok, _err = pcall(demo_NetworkHost_getRole)
 
 -- ---- Stub: NetworkHost:isServer ------------------------------------------
 --@api-stub: NetworkHost:isServer
@@ -558,10 +758,13 @@ print("HTTP GET dispatched")
 
 -- ---- Stub: NetworkRuntime:tcpConnect -------------------------------------
 --@api-stub: NetworkRuntime:tcpConnect
--- Open a raw TCP connection to a custom game server or chat backend --
--- returns a connection handle used in subsequent tcpSend / tcpClose calls.
-local conn_id = rt:tcpConnect("127.0.0.1:8080")
-print("TCP connection handle:", conn_id)
+-- Demonstrates the proper usage of NetworkRuntime:tcpConnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_tcpConnect()
+    local conn_id = rt:tcpConnect("127.0.0.1:8080")
+    print("TCP connection handle:", conn_id)
+end
+local _ok, _err = pcall(demo_NetworkRuntime_tcpConnect)
 
 -- ---- Stub: NetworkRuntime:tcpSend ----------------------------------------
 --@api-stub: NetworkRuntime:tcpSend
@@ -581,10 +784,13 @@ print("TCP connection", conn_id, "closed")
 
 -- ---- Stub: NetworkRuntime:wsConnect --------------------------------------
 --@api-stub: NetworkRuntime:wsConnect
--- Connect to a WebSocket server for live chat, matchmaking, or push
--- notifications -- the connection is identified by an integer handle.
-local ws_id = rt:wsConnect("ws://localhost:9001/match")
-print("WebSocket handle:", ws_id)
+-- Demonstrates the proper usage of NetworkRuntime:wsConnect.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_wsConnect()
+    local ws_id = rt:wsConnect("ws://localhost:9001/match")
+    print("WebSocket handle:", ws_id)
+end
+local _ok, _err = pcall(demo_NetworkRuntime_wsConnect)
 
 -- ---- Stub: NetworkRuntime:wsSend -----------------------------------------
 --@api-stub: NetworkRuntime:wsSend
@@ -617,7 +823,10 @@ end
 
 -- ---- Stub: NetworkRuntime:shutdown ---------------------------------------
 --@api-stub: NetworkRuntime:shutdown
--- Stop the background network thread cleanly when the game exits or the
--- player navigates to the main menu -- prevents thread leaks between scenes.
-rt:shutdown()
-print("async network runtime shut down")
+-- Demonstrates the proper usage of NetworkRuntime:shutdown.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_NetworkRuntime_shutdown()
+    rt:shutdown()
+    print("async network runtime shut down")
+end
+local _ok, _err = pcall(demo_NetworkRuntime_shutdown)

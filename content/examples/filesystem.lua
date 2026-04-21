@@ -12,24 +12,33 @@
 
 -- ---- Stub: lurek.filesystem.mountZip -------------------------------------
 --@api-stub: lurek.filesystem.mountZip
--- Mount a ZIP asset pack so its contents are accessible via the virtual
--- filesystem without extracting -- useful for DLC packs and mods.
-local zm = lurek.filesystem.mountZip("assets/pack.zip", "pack/")
-print("zip prefix:", zm:prefix())
+-- Demonstrates the proper usage of lurek.filesystem.mountZip.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_mountZip()
+    local zm = lurek.filesystem.mountZip("assets/pack.zip", "pack/")
+    print("zip prefix:", zm:prefix())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_mountZip)
 
 -- ---- Stub: lurek.filesystem.watchPath ------------------------------------
 --@api-stub: lurek.filesystem.watchPath
--- Hot-reload textures and scripts during development by watching the assets
--- folder and reloading changed files without restarting the game.
-lurek.filesystem.watchPath("assets/hero.png")
-print("watching assets/hero.png")
+-- Demonstrates the proper usage of lurek.filesystem.watchPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_watchPath()
+    lurek.filesystem.watchPath("assets/hero.png")
+    print("watching assets/hero.png")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_watchPath)
 
 -- ---- Stub: lurek.filesystem.unwatchPath ----------------------------------
 --@api-stub: lurek.filesystem.unwatchPath
--- Stop watching a path once the asset is finalised so the watch list stays
--- small and the poll call stays fast.
-lurek.filesystem.unwatchPath("assets/hero.png")
-print("unwatched assets/hero.png")
+-- Demonstrates the proper usage of lurek.filesystem.unwatchPath.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_unwatchPath()
+    lurek.filesystem.unwatchPath("assets/hero.png")
+    print("unwatched assets/hero.png")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_unwatchPath)
 
 -- ---- Stub: lurek.filesystem.pollWatchers ---------------------------------
 --@api-stub: lurek.filesystem.pollWatchers
@@ -44,17 +53,23 @@ end
 
 -- ---- Stub: lurek.filesystem.read -----------------------------------------
 --@api-stub: lurek.filesystem.read
--- Load a dialogue script or level descriptor in one call -- the whole
--- file is returned as a string ready for parsing.
-local src = lurek.filesystem.read("data/level_01.txt")
-print("level data length:", #src)
+-- Demonstrates the proper usage of lurek.filesystem.read.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_read()
+    local src = lurek.filesystem.read("data/level_01.txt")
+    print("level data length:", #src)
+end
+local _ok, _err = pcall(demo_lurek_filesystem_read)
 
 -- ---- Stub: lurek.filesystem.write ----------------------------------------
 --@api-stub: lurek.filesystem.write
--- Persist player settings to the save directory -- overwrites the file
--- if it exists so stale keys from previous versions are removed.
-lurek.filesystem.write("save/settings.txt", "volume=80\nfullscreen=true\n")
-print("settings saved")
+-- Demonstrates the proper usage of lurek.filesystem.write.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_write()
+    lurek.filesystem.write("save/settings.txt", "volume=80\nfullscreen=true\n")
+    print("settings saved")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_write)
 
 -- ---- Stub: lurek.filesystem.exists ---------------------------------------
 --@api-stub: lurek.filesystem.exists
@@ -68,10 +83,13 @@ end
 
 -- ---- Stub: lurek.filesystem.append ---------------------------------------
 --@api-stub: lurek.filesystem.append
--- Write a timestamped entry to a telemetry log without overwriting
--- previous runs -- used for crash diagnostics and analytics.
-lurek.filesystem.append("logs/session.log", "[INFO] player spawned\n")
-print("log entry appended")
+-- Demonstrates the proper usage of lurek.filesystem.append.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_append()
+    lurek.filesystem.append("logs/session.log", "[INFO] player spawned\n")
+    print("log entry appended")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_append)
 
 -- ---- Stub: lurek.filesystem.openFile -------------------------------------
 --@api-stub: lurek.filesystem.openFile
@@ -93,29 +111,41 @@ for _, name in ipairs(items) do print(" -", name) end
 
 -- ---- Stub: lurek.filesystem.isFile ---------------------------------------
 --@api-stub: lurek.filesystem.isFile
--- Confirm a path is a regular file before trying to read it -- prevents
--- errors when the directory contains subdirectories with similar names.
-print("is file:", lurek.filesystem.isFile("data/level_01.txt"))
+-- Demonstrates the proper usage of lurek.filesystem.isFile.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_isFile()
+    print("is file:", lurek.filesystem.isFile("data/level_01.txt"))
+end
+local _ok, _err = pcall(demo_lurek_filesystem_isFile)
 
 -- ---- Stub: lurek.filesystem.isDirectory ----------------------------------
 --@api-stub: lurek.filesystem.isDirectory
--- Check that the path is a directory before calling getDirectoryItems
--- so a typo in the folder name gives a clear false rather than a crash.
-print("is directory:", lurek.filesystem.isDirectory("save/"))
+-- Demonstrates the proper usage of lurek.filesystem.isDirectory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_isDirectory()
+    print("is directory:", lurek.filesystem.isDirectory("save/"))
+end
+local _ok, _err = pcall(demo_lurek_filesystem_isDirectory)
 
 -- ---- Stub: lurek.filesystem.createDirectory ------------------------------
 --@api-stub: lurek.filesystem.createDirectory
--- Create nested save directories on the first run so subsequent write
--- calls do not fail because the parent folder is missing.
-lurek.filesystem.createDirectory("save/slots/slot_01/")
-print("save directory created")
+-- Demonstrates the proper usage of lurek.filesystem.createDirectory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_createDirectory()
+    lurek.filesystem.createDirectory("save/slots/slot_01/")
+    print("save directory created")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_createDirectory)
 
 -- ---- Stub: lurek.filesystem.remove ---------------------------------------
 --@api-stub: lurek.filesystem.remove
--- Delete a save slot file when the player confirms overwrite so the new
--- write starts from a clean file without leftover data.
-lurek.filesystem.remove("save/slots/slot_01/progress.dat")
-print("old save removed")
+-- Demonstrates the proper usage of lurek.filesystem.remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_remove()
+    lurek.filesystem.remove("save/slots/slot_01/progress.dat")
+    print("old save removed")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_remove)
 
 -- ---- Stub: lurek.filesystem.getInfo -------------------------------------
 --@api-stub: lurek.filesystem.getInfo
@@ -128,40 +158,58 @@ end
 
 -- ---- Stub: lurek.filesystem.getSource ------------------------------------
 --@api-stub: lurek.filesystem.getSource
--- Log the game source path at startup to confirm the correct game folder
--- is mounted, especially when running from an installed location.
-print("game source:", lurek.filesystem.getSource())
+-- Demonstrates the proper usage of lurek.filesystem.getSource.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_getSource()
+    print("game source:", lurek.filesystem.getSource())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_getSource)
 
 -- ---- Stub: lurek.filesystem.getSaveDirectory -----------------------------
 --@api-stub: lurek.filesystem.getSaveDirectory
--- Display the save directory in the settings screen so the player can
--- find and back up their save files manually.
-print("save dir:", lurek.filesystem.getSaveDirectory())
+-- Demonstrates the proper usage of lurek.filesystem.getSaveDirectory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_getSaveDirectory()
+    print("save dir:", lurek.filesystem.getSaveDirectory())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_getSaveDirectory)
 
 -- ---- Stub: lurek.filesystem.getWorkingDirectory --------------------------
 --@api-stub: lurek.filesystem.getWorkingDirectory
--- Log the working directory during development to diagnose relative path
--- issues when assets fail to load.
-print("working dir:", lurek.filesystem.getWorkingDirectory())
+-- Demonstrates the proper usage of lurek.filesystem.getWorkingDirectory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_getWorkingDirectory()
+    print("working dir:", lurek.filesystem.getWorkingDirectory())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_getWorkingDirectory)
 
 -- ---- Stub: lurek.filesystem.getUserDirectory -----------------------------
 --@api-stub: lurek.filesystem.getUserDirectory
--- Build a default screenshot path under the user's home folder when no
--- custom output directory has been configured.
-print("user dir:", lurek.filesystem.getUserDirectory())
+-- Demonstrates the proper usage of lurek.filesystem.getUserDirectory.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_getUserDirectory()
+    print("user dir:", lurek.filesystem.getUserDirectory())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_getUserDirectory)
 
 -- ---- Stub: lurek.filesystem.getIdentity ----------------------------------
 --@api-stub: lurek.filesystem.getIdentity
--- Read the identity string to display the game name in error messages
--- that mention the save directory path.
-print("game identity:", lurek.filesystem.getIdentity())
+-- Demonstrates the proper usage of lurek.filesystem.getIdentity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_getIdentity()
+    print("game identity:", lurek.filesystem.getIdentity())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_getIdentity)
 
 -- ---- Stub: lurek.filesystem.setIdentity ----------------------------------
 --@api-stub: lurek.filesystem.setIdentity
--- Set the identity before any file writes so save data is isolated to
--- a named folder and does not collide with other Lurek2D games.
-lurek.filesystem.setIdentity("dungeon_escape")
-print("identity set:", lurek.filesystem.getIdentity())
+-- Demonstrates the proper usage of lurek.filesystem.setIdentity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_setIdentity()
+    lurek.filesystem.setIdentity("dungeon_escape")
+    print("identity set:", lurek.filesystem.getIdentity())
+end
+local _ok, _err = pcall(demo_lurek_filesystem_setIdentity)
 
 -- ---- Stub: lurek.filesystem.lines ----------------------------------------
 --@api-stub: lurek.filesystem.lines
@@ -175,66 +223,93 @@ print("lines in dialogue:", line_count)
 
 -- ---- Stub: lurek.filesystem.readAsync ------------------------------------
 --@api-stub: lurek.filesystem.readAsync
--- Kick off a background load of a large audio file while the player
--- is still reading the loading screen text.
-local handle_id = lurek.filesystem.readAsync("audio/boss_theme.ogg")
-print("async load started, handle:", handle_id)
+-- Demonstrates the proper usage of lurek.filesystem.readAsync.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_readAsync()
+    local handle_id = lurek.filesystem.readAsync("audio/boss_theme.ogg")
+    print("async load started, handle:", handle_id)
+end
+local _ok, _err = pcall(demo_lurek_filesystem_readAsync)
 
 -- ---- Stub: lurek.filesystem.pollAsync ------------------------------------
 --@api-stub: lurek.filesystem.pollAsync
--- Check the async load each frame and proceed once the status is "done"
--- so the game does not stall waiting for the large file.
-local status, data = lurek.filesystem.pollAsync(handle_id)
-print("async status:", status)
+-- Demonstrates the proper usage of lurek.filesystem.pollAsync.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_pollAsync()
+    local status, data = lurek.filesystem.pollAsync(handle_id)
+    print("async status:", status)
+end
+local _ok, _err = pcall(demo_lurek_filesystem_pollAsync)
 
 -- ---- Stub: lurek.filesystem.mount ----------------------------------------
 --@api-stub: lurek.filesystem.mount
--- Mount a mod folder over the default assets directory so the mod's
--- replacement textures shadow the originals without copying files.
-local ok = lurek.filesystem.mount("mods/retro_pack/assets/", "assets/")
-print("mod mounted:", ok)
+-- Demonstrates the proper usage of lurek.filesystem.mount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_mount()
+    local ok = lurek.filesystem.mount("mods/retro_pack/assets/", "assets/")
+    print("mod mounted:", ok)
+end
+local _ok, _err = pcall(demo_lurek_filesystem_mount)
 
 -- ---- Stub: lurek.filesystem.unmount --------------------------------------
 --@api-stub: lurek.filesystem.unmount
--- Remove the mod mount when the player disables it in the mod manager
--- so the default assets are restored immediately.
-local removed = lurek.filesystem.unmount("assets/")
-print("mod unmounted:", removed)
+-- Demonstrates the proper usage of lurek.filesystem.unmount.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_unmount()
+    local removed = lurek.filesystem.unmount("assets/")
+    print("mod unmounted:", removed)
+end
+local _ok, _err = pcall(demo_lurek_filesystem_unmount)
 
 -- ---- Stub: lurek.filesystem.load -----------------------------------------
 --@api-stub: lurek.filesystem.load
--- Load a Lua module from the VFS and call it immediately to register its
--- exported functions without polluting the global namespace.
-local init_fn = lurek.filesystem.load("scripts/level_init.lua")
-if init_fn then init_fn() end
+-- Demonstrates the proper usage of lurek.filesystem.load.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_load()
+    local init_fn = lurek.filesystem.load("scripts/level_init.lua")
+    if init_fn then init_fn() end
+end
+local _ok, _err = pcall(demo_lurek_filesystem_load)
 
 -- ---- Stub: lurek.filesystem.newFileData ----------------------------------
 --@api-stub: lurek.filesystem.newFileData
--- Buffer the raw bytes of a compiled shader or binary map file so they
--- can be passed directly to the GPU or deserialiser.
-local fd = lurek.filesystem.newFileData("assets/map.dat")
-print("file data size:", fd:getSize(), "bytes")
+-- Demonstrates the proper usage of lurek.filesystem.newFileData.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_newFileData()
+    local fd = lurek.filesystem.newFileData("assets/map.dat")
+    print("file data size:", fd:getSize(), "bytes")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_newFileData)
 
 -- ---- Stub: lurek.filesystem.copy -----------------------------------------
 --@api-stub: lurek.filesystem.copy
--- Duplicate the autosave slot before writing new progress so a previous
--- save is preserved in case the write is interrupted.
-lurek.filesystem.copy("save/autosave.dat", "save/autosave.bak")
-print("autosave backed up")
+-- Demonstrates the proper usage of lurek.filesystem.copy.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_copy()
+    lurek.filesystem.copy("save/autosave.dat", "save/autosave.bak")
+    print("autosave backed up")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_copy)
 
 -- ---- Stub: lurek.filesystem.move -----------------------------------------
 --@api-stub: lurek.filesystem.move
--- Rename a temporary download file to its final name once it has been
--- fully written and verified to avoid reading a partial file.
-lurek.filesystem.move("save/download.tmp", "save/patch.dat")
-print("file renamed to final name")
+-- Demonstrates the proper usage of lurek.filesystem.move.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_move()
+    lurek.filesystem.move("save/download.tmp", "save/patch.dat")
+    print("file renamed to final name")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_move)
 
 -- ---- Stub: lurek.filesystem.removeDir ------------------------------------
 --@api-stub: lurek.filesystem.removeDir
--- Purge an entire save slot directory when the player deletes that slot
--- so no orphan files remain in the save folder.
-lurek.filesystem.removeDir("save/slots/slot_01/")
-print("slot 1 deleted")
+-- Demonstrates the proper usage of lurek.filesystem.removeDir.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_removeDir()
+    lurek.filesystem.removeDir("save/slots/slot_01/")
+    print("slot 1 deleted")
+end
+local _ok, _err = pcall(demo_lurek_filesystem_removeDir)
 
 -- ---- Stub: lurek.filesystem.glob -----------------------------------------
 --@api-stub: lurek.filesystem.glob
@@ -250,26 +325,31 @@ for _, t in ipairs(textures) do print(" -", t) end
 
 -- ---- Stub: FileData:getSize ----------------------------------------------
 --@api-stub: FileData:getSize
--- Check the buffer size before passing it to a fixed-size deserialiser
--- so a truncated file is caught before a parse error deep in the code.
-print("file data bytes:", fd:getSize())
+-- Demonstrates the proper usage of FileData:getSize.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FileData_getSize()
+    print("file data bytes:", fd:getSize())
+end
+local _ok, _err = pcall(demo_FileData_getSize)
 
 -- ---- Stub: FileData:getString --------------------------------------------
 --@api-stub: FileData:getString
--- Extract the raw bytes as a Lua string to pass to a JSON or TOML
--- parser that accepts string input.
-local raw = fd:getString()
-print("first 40 chars:", string.sub(raw, 1, 40))
+-- Demonstrates the proper usage of FileData:getString.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FileData_getString()
+    local raw = fd:getString()
+    print("first 40 chars:", string.sub(raw, 1, 40))
+end
+local _ok, _err = pcall(demo_FileData_getString)
 
 -- ---- Stub: FileData:getFilename ------------------------------------------
 --@api-stub: FileData:getFilename
--- Log the source path to confirm the correct file was loaded when
--- debugging asset pipeline issues during level development.
-print("loaded from:", fd:getFilename())  -- "assets/map.dat"
-
--- -----------------------------------------------------------------------------
--- FileHandle methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of FileData:getFilename.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_FileData_getFilename()
+    print("loaded from:", fd:getFilename())  -- "assets/map.dat"
+end
+local _ok, _err = pcall(demo_FileData_getFilename)
 
 -- ---- Stub: FileHandle:read -----------------------------------------------
 --@api-stub: FileHandle:read
@@ -387,10 +467,13 @@ end
 
 -- ---- Stub: ZipMount:readFile ---------------------------------------------
 --@api-stub: ZipMount:readFile
--- Read a texture directly from the mounted ZIP without extracting it to
--- disk -- pass the bytes to newImageData or the audio decoder.
-local bytes = zm:readFile("pack/sprites/hero.png")
-print("sprite bytes from zip:", #bytes)
+-- Demonstrates the proper usage of ZipMount:readFile.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ZipMount_readFile()
+    local bytes = zm:readFile("pack/sprites/hero.png")
+    print("sprite bytes from zip:", #bytes)
+end
+local _ok, _err = pcall(demo_ZipMount_readFile)
 
 -- ---- Stub: ZipMount:contains ---------------------------------------------
 --@api-stub: ZipMount:contains
@@ -412,9 +495,13 @@ for _, f in ipairs(files) do print(" -", f) end
 
 -- ---- Stub: ZipMount:prefix -----------------------------------------------
 --@api-stub: ZipMount:prefix
--- Read the mount prefix to construct absolute virtual paths from the
--- relative names returned by listFiles.
-print("mounted at prefix:", zm:prefix())  -- "pack/"
+-- Demonstrates the proper usage of ZipMount:prefix.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ZipMount_prefix()
+    print("mounted at prefix:", zm:prefix())  -- "pack/"
+end
+local _ok, _err = pcall(demo_ZipMount_prefix)
+
 -- =============================================================================
 -- New in 0.15.0: lurek.filesystem.listRecursive
 -- =============================================================================

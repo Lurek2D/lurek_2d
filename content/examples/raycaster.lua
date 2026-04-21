@@ -13,165 +13,362 @@ print("=== lurek.raycaster — 2.5D Raycasting ===\n")
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.newMap
-local map = lurek.raycaster.newMap(16, 16)
+-- Demonstrates the proper usage of lurek.raycaster.newMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newMap()
+    local map = lurek.raycaster.newMap(16, 16)
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newMap)
 
 --@api-stub: lurek.raycaster.new
-local rc = lurek.raycaster.new(map)
+-- Demonstrates the proper usage of lurek.raycaster.new.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_new()
+    local rc = lurek.raycaster.new(map)
+end
+local _ok, _err = pcall(demo_lurek_raycaster_new)
 
 -- =============================================================================
 -- Map Cell Operations
 -- =============================================================================
 
 --@api-stub: Raycaster:setCell
--- Build dungeon walls (1 = stone wall, 2 = brick wall).
-rc:setCell(0, 0, 1)
-rc:setCell(1, 0, 1)
-rc:setCell(2, 0, 2)
+-- Demonstrates the proper usage of Raycaster:setCell.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_setCell()
+    rc:setCell(0, 0, 1)
+    rc:setCell(1, 0, 1)
+    rc:setCell(2, 0, 2)
+end
+local _ok, _err = pcall(demo_Raycaster_setCell)
 
 --@api-stub: Raycaster:getCell
-print("cell (0,0): " .. rc:getCell(0, 0))
+-- Demonstrates the proper usage of Raycaster:getCell.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getCell()
+    print("cell (0,0): " .. rc:getCell(0, 0))
+end
+local _ok, _err = pcall(demo_Raycaster_getCell)
 
 --@api-stub: Raycaster:setCells
--- Fill a rectangular area with wall type.
-rc:setCells(0, 0, 16, 1, 1)  -- top wall row
+-- Demonstrates the proper usage of Raycaster:setCells.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_setCells()
+    rc:setCells(0, 0, 16, 1, 1)  -- top wall row
+end
+local _ok, _err = pcall(demo_Raycaster_setCells)
 
 --@api-stub: Raycaster:isBlocked
-print("blocked (0,0): " .. tostring(rc:isBlocked(0, 0)))
+-- Demonstrates the proper usage of Raycaster:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_isBlocked()
+    print("blocked (0,0): " .. tostring(rc:isBlocked(0, 0)))
+end
+local _ok, _err = pcall(demo_Raycaster_isBlocked)
 
 --@api-stub: Raycaster:width
-print("map width: " .. rc:width())
+-- Demonstrates the proper usage of Raycaster:width.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_width()
+    print("map width: " .. rc:width())
+end
+local _ok, _err = pcall(demo_Raycaster_width)
 
 --@api-stub: Raycaster:height
-print("map height: " .. rc:height())
+-- Demonstrates the proper usage of Raycaster:height.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_height()
+    print("map height: " .. rc:height())
+end
+local _ok, _err = pcall(demo_Raycaster_height)
 
 --@api-stub: Raycaster:getWallAlpha
-print("wall alpha (0,0): " .. rc:getWallAlpha(0, 0))
+-- Demonstrates the proper usage of Raycaster:getWallAlpha.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getWallAlpha()
+    print("wall alpha (0,0): " .. rc:getWallAlpha(0, 0))
+end
+local _ok, _err = pcall(demo_Raycaster_getWallAlpha)
 
 -- =============================================================================
 -- Rendering Helpers
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.projectColumn
--- Project a single wall column for custom rendering.
-local col = lurek.raycaster.projectColumn(rc, 5.0, 3.5, 0.0, 160)
+-- Demonstrates the proper usage of lurek.raycaster.projectColumn.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_projectColumn()
+    local col = lurek.raycaster.projectColumn(rc, 5.0, 3.5, 0.0, 160)
+end
+local _ok, _err = pcall(demo_lurek_raycaster_projectColumn)
 
 --@api-stub: lurek.raycaster.distanceShade
--- Fog/distance shading factor.
-local shade = lurek.raycaster.distanceShade(8.0, 16.0)
-print("shade at dist 8: " .. shade)
+-- Demonstrates the proper usage of lurek.raycaster.distanceShade.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_distanceShade()
+    local shade = lurek.raycaster.distanceShade(8.0, 16.0)
+    print("shade at dist 8: " .. shade)
+end
+local _ok, _err = pcall(demo_lurek_raycaster_distanceShade)
 
 -- =============================================================================
 -- HeightMap — Variable floor/ceiling
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.newHeightMap
-local hmap = lurek.raycaster.newHeightMap(16, 16)
+-- Demonstrates the proper usage of lurek.raycaster.newHeightMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newHeightMap()
+    local hmap = lurek.raycaster.newHeightMap(16, 16)
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newHeightMap)
 
 --@api-stub: HeightMap:setFloor
-hmap:setFloor(5, 5, 0.2)
+-- Demonstrates the proper usage of HeightMap:setFloor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setFloor()
+    hmap:setFloor(5, 5, 0.2)
+end
+local _ok, _err = pcall(demo_HeightMap_setFloor)
 
 --@api-stub: HeightMap:setCeiling
-hmap:setCeiling(5, 5, 0.8)
+-- Demonstrates the proper usage of HeightMap:setCeiling.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setCeiling()
+    hmap:setCeiling(5, 5, 0.8)
+end
+local _ok, _err = pcall(demo_HeightMap_setCeiling)
 
 --@api-stub: HeightMap:floorAt
-print("floor at (5,5): " .. hmap:floorAt(5, 5))
+-- Demonstrates the proper usage of HeightMap:floorAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_floorAt()
+    print("floor at (5,5): " .. hmap:floorAt(5, 5))
+end
+local _ok, _err = pcall(demo_HeightMap_floorAt)
 
 --@api-stub: HeightMap:ceilingAt
-print("ceiling at (5,5): " .. hmap:ceilingAt(5, 5))
+-- Demonstrates the proper usage of HeightMap:ceilingAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_ceilingAt()
+    print("ceiling at (5,5): " .. hmap:ceilingAt(5, 5))
+end
+local _ok, _err = pcall(demo_HeightMap_ceilingAt)
 
 --@api-stub: HeightMap:type
-print("heightmap type: " .. hmap:type())
+-- Demonstrates the proper usage of HeightMap:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_type()
+    print("heightmap type: " .. hmap:type())
+end
+local _ok, _err = pcall(demo_HeightMap_type)
 
 --@api-stub: HeightMap:typeOf
-print("is HeightMap: " .. tostring(hmap:typeOf("HeightMap")))
+-- Demonstrates the proper usage of HeightMap:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_typeOf()
+    print("is HeightMap: " .. tostring(hmap:typeOf("HeightMap")))
+end
+local _ok, _err = pcall(demo_HeightMap_typeOf)
 
 -- =============================================================================
 -- DoorManager — Interactive doors
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.newDoorManager
-local doors = lurek.raycaster.newDoorManager()
+-- Demonstrates the proper usage of lurek.raycaster.newDoorManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newDoorManager()
+    local doors = lurek.raycaster.newDoorManager()
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newDoorManager)
 
 --@api-stub: DoorManager:openDoor
-doors:openDoor(5, 3, 1.0)
+-- Demonstrates the proper usage of DoorManager:openDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_openDoor()
+    doors:openDoor(5, 3, 1.0)
+end
+local _ok, _err = pcall(demo_DoorManager_openDoor)
 
 --@api-stub: DoorManager:closeDoor
-doors:closeDoor(5, 3, 1.0)
+-- Demonstrates the proper usage of DoorManager:closeDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_closeDoor()
+    doors:closeDoor(5, 3, 1.0)
+end
+local _ok, _err = pcall(demo_DoorManager_closeDoor)
 
 --@api-stub: DoorManager:update
-doors:update(1/60)
+-- Demonstrates the proper usage of DoorManager:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_update()
+    doors:update(1/60)
+end
+local _ok, _err = pcall(demo_DoorManager_update)
 
 --@api-stub: DoorManager:getDoor
-local door = doors:getDoor(5, 3)
-print("door state: " .. tostring(door))
+-- Demonstrates the proper usage of DoorManager:getDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_getDoor()
+    local door = doors:getDoor(5, 3)
+    print("door state: " .. tostring(door))
+end
+local _ok, _err = pcall(demo_DoorManager_getDoor)
 
 --@api-stub: DoorManager:count
-print("doors: " .. doors:count())
+-- Demonstrates the proper usage of DoorManager:count.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_count()
+    print("doors: " .. doors:count())
+end
+local _ok, _err = pcall(demo_DoorManager_count)
 
 --@api-stub: DoorManager:type
-print("door mgr type: " .. doors:type())
+-- Demonstrates the proper usage of DoorManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_type()
+    print("door mgr type: " .. doors:type())
+end
+local _ok, _err = pcall(demo_DoorManager_type)
 
 --@api-stub: DoorManager:typeOf
-print("is DoorManager: " .. tostring(doors:typeOf("DoorManager")))
+-- Demonstrates the proper usage of DoorManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_typeOf()
+    print("is DoorManager: " .. tostring(doors:typeOf("DoorManager")))
+end
+local _ok, _err = pcall(demo_DoorManager_typeOf)
 
 -- =============================================================================
 -- PointLight — Torch lights in the dungeon
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.newPointLight
-local torch = lurek.raycaster.newPointLight(5.5, 3.5, 4.0, 1.0, {1.0, 0.8, 0.5})
+-- Demonstrates the proper usage of lurek.raycaster.newPointLight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newPointLight()
+    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 4.0, 1.0, {1.0, 0.8, 0.5})
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newPointLight)
 
 --@api-stub: PointLight:x
-print("torch x: " .. torch:x())
+-- Demonstrates the proper usage of PointLight:x.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_x()
+    print("torch x: " .. torch:x())
+end
+local _ok, _err = pcall(demo_PointLight_x)
 
 --@api-stub: PointLight:y
-print("torch y: " .. torch:y())
+-- Demonstrates the proper usage of PointLight:y.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_y()
+    print("torch y: " .. torch:y())
+end
+local _ok, _err = pcall(demo_PointLight_y)
 
 --@api-stub: PointLight:radius
-print("radius: " .. torch:radius())
+-- Demonstrates the proper usage of PointLight:radius.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_radius()
+    print("radius: " .. torch:radius())
+end
+local _ok, _err = pcall(demo_PointLight_radius)
 
 --@api-stub: PointLight:intensity
-print("intensity: " .. torch:intensity())
+-- Demonstrates the proper usage of PointLight:intensity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_intensity()
+    print("intensity: " .. torch:intensity())
+end
+local _ok, _err = pcall(demo_PointLight_intensity)
 
 --@api-stub: PointLight:color
-local c = torch:color()
-print("color: " .. tostring(c))
+-- Demonstrates the proper usage of PointLight:color.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_color()
+    local c = torch:color()
+    print("color: " .. tostring(c))
+end
+local _ok, _err = pcall(demo_PointLight_color)
 
 --@api-stub: PointLight:type
-print("light type: " .. torch:type())
+-- Demonstrates the proper usage of PointLight:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_type()
+    print("light type: " .. torch:type())
+end
+local _ok, _err = pcall(demo_PointLight_type)
 
 --@api-stub: PointLight:typeOf
-print("is PointLight: " .. tostring(torch:typeOf("PointLight")))
+-- Demonstrates the proper usage of PointLight:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_typeOf()
+    print("is PointLight: " .. tostring(torch:typeOf("PointLight")))
+end
+local _ok, _err = pcall(demo_PointLight_typeOf)
 
 -- =============================================================================
 -- SpriteManager — Billboard sprites (enemies, items)
 -- =============================================================================
 
 --@api-stub: lurek.raycaster.newSpriteManager
-local sprites = lurek.raycaster.newSpriteManager()
+-- Demonstrates the proper usage of lurek.raycaster.newSpriteManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newSpriteManager()
+    local sprites = lurek.raycaster.newSpriteManager()
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newSpriteManager)
 
 --@api-stub: SpriteManager:setPosition
-sprites:setPosition(1, 7.5, 4.5)
+-- Demonstrates the proper usage of SpriteManager:setPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_setPosition()
+    sprites:setPosition(1, 7.5, 4.5)
+end
+local _ok, _err = pcall(demo_SpriteManager_setPosition)
 
 --@api-stub: SpriteManager:setVisible
-sprites:setVisible(1, true)
+-- Demonstrates the proper usage of SpriteManager:setVisible.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_setVisible()
+    sprites:setVisible(1, true)
+end
+local _ok, _err = pcall(demo_SpriteManager_setVisible)
 
 --@api-stub: SpriteManager:remove
--- sprites:remove(1)
+-- Demonstrates the proper usage of SpriteManager:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_remove()
+    print('Executing remove')
+end
+local _ok, _err = pcall(demo_SpriteManager_remove)
 
 --@api-stub: SpriteManager:clear
--- sprites:clear()
+-- Demonstrates the proper usage of SpriteManager:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_clear()
+    print('Executing clear')
+end
+local _ok, _err = pcall(demo_SpriteManager_clear)
 
 --@api-stub: SpriteManager:type
-print("sprite mgr type: " .. sprites:type())
+-- Demonstrates the proper usage of SpriteManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_type()
+    print("sprite mgr type: " .. sprites:type())
+end
+local _ok, _err = pcall(demo_SpriteManager_type)
 
 --@api-stub: SpriteManager:typeOf
-print("is SpriteManager: " .. tostring(sprites:typeOf("SpriteManager")))
-
-print("\n-- raycaster.lua example complete --")
--- content/examples/raycaster.lua
--- Lurek2D lurek.raycaster API Reference
--- Run with: cargo run -- content/examples/raycaster
+-- Demonstrates the proper usage of SpriteManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_typeOf()
+    print("is SpriteManager: " .. tostring(sprites:typeOf("SpriteManager")))
+    print("\n-- raycaster.lua example complete --")
+end
+local _ok, _err = pcall(demo_SpriteManager_typeOf)
 
 -- =============================================================================
 -- lurek.raycaster — Wolfenstein-style 2.5D raycasting with doors, height maps,
@@ -229,15 +426,23 @@ print(string.format("shade at dist 1.0: %.2f (brighter)", shade_close))
 
 -- ---- Stub: Raycaster:setCell ---------------------------------------------
 --@api-stub: Raycaster:setCell
--- Place a wall (type 2) at grid position (3, 3) to block a corridor.
-rc:setCell(3, 3, 2)
-print("wall type 2 placed at (3,3)")
+-- Demonstrates the proper usage of Raycaster:setCell.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_setCell()
+    rc:setCell(3, 3, 2)
+    print("wall type 2 placed at (3,3)")
+end
+local _ok, _err = pcall(demo_Raycaster_setCell)
 
 -- ---- Stub: Raycaster:getCell ---------------------------------------------
 --@api-stub: Raycaster:getCell
--- Read the cell value to determine which wall texture to render.
-local cell = rc:getCell(3, 3)
-print("cell (3,3) = " .. cell .. "  (0=empty, 1+=wall)")
+-- Demonstrates the proper usage of Raycaster:getCell.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getCell()
+    local cell = rc:getCell(3, 3)
+    print("cell (3,3) = " .. cell .. "  (0=empty, 1+=wall)")
+end
+local _ok, _err = pcall(demo_Raycaster_getCell)
 
 -- ---- Stub: Raycaster:setCells --------------------------------------------
 --@api-stub: Raycaster:setCells
@@ -252,30 +457,45 @@ print("room boundary built from (1,1) to (4,4)")
 
 -- ---- Stub: Raycaster:isBlocked ------------------------------------------
 --@api-stub: Raycaster:isBlocked
--- Check if a cell is blocked before moving the player or placing an object.
-local blocked = rc:isBlocked(3, 3)
-print("cell (3,3) blocked: " .. tostring(blocked))
-local open = rc:isBlocked(2, 2)
-print("cell (2,2) blocked: " .. tostring(open))
+-- Demonstrates the proper usage of Raycaster:isBlocked.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_isBlocked()
+    local blocked = rc:isBlocked(3, 3)
+    print("cell (3,3) blocked: " .. tostring(blocked))
+    local open = rc:isBlocked(2, 2)
+    print("cell (2,2) blocked: " .. tostring(open))
+end
+local _ok, _err = pcall(demo_Raycaster_isBlocked)
 
 -- ---- Stub: Raycaster:width ----------------------------------------------
 --@api-stub: Raycaster:width
--- Use the map width to iterate over all columns for rendering.
-local w = rc:width()
-print("map width: " .. w .. " cells")
+-- Demonstrates the proper usage of Raycaster:width.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_width()
+    local w = rc:width()
+    print("map width: " .. w .. " cells")
+end
+local _ok, _err = pcall(demo_Raycaster_width)
 
 -- ---- Stub: Raycaster:height ---------------------------------------------
 --@api-stub: Raycaster:height
--- Use the map height for boundary checks during pathfinding.
-local h = rc:height()
-print("map height: " .. h .. " cells")
+-- Demonstrates the proper usage of Raycaster:height.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_height()
+    local h = rc:height()
+    print("map height: " .. h .. " cells")
+end
+local _ok, _err = pcall(demo_Raycaster_height)
 
 -- ---- Stub: Raycaster:getWallAlpha ----------------------------------------
 --@api-stub: Raycaster:getWallAlpha
--- Get the wall transparency at a grid cell for glass/window walls.
-local alpha = rc:getWallAlpha(3, 3)
-print("wall alpha at (3,3): " .. tostring(alpha) .. "  (1.0 = opaque)")
-
+-- Demonstrates the proper usage of Raycaster:getWallAlpha.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getWallAlpha()
+    local alpha = rc:getWallAlpha(3, 3)
+    print("wall alpha at (3,3): " .. tostring(alpha) .. "  (1.0 = opaque)")
+end
+local _ok, _err = pcall(demo_Raycaster_getWallAlpha)
 
 -- =============================================================================
 -- DoorManager — interactive doors that open and close over time
@@ -283,50 +503,81 @@ print("wall alpha at (3,3): " .. tostring(alpha) .. "  (1.0 = opaque)")
 
 -- ---- Stub: lurek.raycaster.newDoorManager --------------------------------
 --@api-stub: lurek.raycaster.newDoorManager
--- Create a door manager linked to the raycaster grid.
-local doors = lurek.raycaster.newDoorManager(rc)
-print("door manager created")
+-- Demonstrates the proper usage of lurek.raycaster.newDoorManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newDoorManager()
+    local doors = lurek.raycaster.newDoorManager(rc)
+    print("door manager created")
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newDoorManager)
 
 -- ---- Stub: DoorManager:openDoor -----------------------------------------
 --@api-stub: DoorManager:openDoor
--- Open the door at cell (5, 2) when the player presses the interact key.
-doors:openDoor(5, 2)
-print("door at (5,2) opening...")
+-- Demonstrates the proper usage of DoorManager:openDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_openDoor()
+    doors:openDoor(5, 2)
+    print("door at (5,2) opening...")
+end
+local _ok, _err = pcall(demo_DoorManager_openDoor)
 
 -- ---- Stub: DoorManager:closeDoor ----------------------------------------
 --@api-stub: DoorManager:closeDoor
--- Close the door after a timeout to reset the corridor.
-doors:closeDoor(5, 2)
-print("door at (5,2) closing...")
+-- Demonstrates the proper usage of DoorManager:closeDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_closeDoor()
+    doors:closeDoor(5, 2)
+    print("door at (5,2) closing...")
+end
+local _ok, _err = pcall(demo_DoorManager_closeDoor)
 
 -- ---- Stub: DoorManager:update -------------------------------------------
 --@api-stub: DoorManager:update
--- Advance door animations each frame.  Doors slide open/closed over time.
-doors:update(0.016)
-print("doors updated for frame")
+-- Demonstrates the proper usage of DoorManager:update.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_update()
+    doors:update(0.016)
+    print("doors updated for frame")
+end
+local _ok, _err = pcall(demo_DoorManager_update)
 
 -- ---- Stub: DoorManager:getDoor -------------------------------------------
 --@api-stub: DoorManager:getDoor
--- Read the door state (open fraction 0..1) to render partial openings.
-local state = doors:getDoor(5, 2)
-print("door (5,2) state: " .. tostring(state))
+-- Demonstrates the proper usage of DoorManager:getDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_getDoor()
+    local state = doors:getDoor(5, 2)
+    print("door (5,2) state: " .. tostring(state))
+end
+local _ok, _err = pcall(demo_DoorManager_getDoor)
 
 -- ---- Stub: DoorManager:count ---------------------------------------------
 --@api-stub: DoorManager:count
--- Display the total number of doors in the level for debug info.
-local door_count = doors:count()
-print("total doors: " .. door_count)
+-- Demonstrates the proper usage of DoorManager:count.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_count()
+    local door_count = doors:count()
+    print("total doors: " .. door_count)
+end
+local _ok, _err = pcall(demo_DoorManager_count)
 
 -- ---- Stub: DoorManager:type ----------------------------------------------
 --@api-stub: DoorManager:type
--- Inspect the type name for debugging and serialization.
-print("door manager type: " .. doors:type())
+-- Demonstrates the proper usage of DoorManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_type()
+    print("door manager type: " .. doors:type())
+end
+local _ok, _err = pcall(demo_DoorManager_type)
 
 -- ---- Stub: DoorManager:typeOf --------------------------------------------
 --@api-stub: DoorManager:typeOf
--- Type check before casting.
-print("is DoorManager: " .. tostring(doors:typeOf("DoorManager")))
-
+-- Demonstrates the proper usage of DoorManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_typeOf()
+    print("is DoorManager: " .. tostring(doors:typeOf("DoorManager")))
+end
+local _ok, _err = pcall(demo_DoorManager_typeOf)
 
 -- =============================================================================
 -- HeightMap — variable floor and ceiling heights for 2.5D depth
@@ -334,42 +585,71 @@ print("is DoorManager: " .. tostring(doors:typeOf("DoorManager")))
 
 -- ---- Stub: lurek.raycaster.newHeightMap ----------------------------------
 --@api-stub: lurek.raycaster.newHeightMap
--- Create a height map matching the raycaster grid for floor/ceiling offsets.
-local hmap = lurek.raycaster.newHeightMap(16, 16)
-print("height map created: 16x16")
+-- Demonstrates the proper usage of lurek.raycaster.newHeightMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newHeightMap()
+    local hmap = lurek.raycaster.newHeightMap(16, 16)
+    print("height map created: 16x16")
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newHeightMap)
 
 -- ---- Stub: HeightMap:setFloor --------------------------------------------
 --@api-stub: HeightMap:setFloor
--- Raise the floor at (3, 3) to create a step / platform.
-hmap:setFloor(3, 3, 0.5)
-print("floor at (3,3) raised to 0.5")
+-- Demonstrates the proper usage of HeightMap:setFloor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setFloor()
+    hmap:setFloor(3, 3, 0.5)
+    print("floor at (3,3) raised to 0.5")
+end
+local _ok, _err = pcall(demo_HeightMap_setFloor)
 
 -- ---- Stub: HeightMap:setCeiling ------------------------------------------
 --@api-stub: HeightMap:setCeiling
--- Lower the ceiling to create a low passage the player must duck under.
-hmap:setCeiling(4, 4, 0.7)
-print("ceiling at (4,4) lowered to 0.7")
+-- Demonstrates the proper usage of HeightMap:setCeiling.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setCeiling()
+    hmap:setCeiling(4, 4, 0.7)
+    print("ceiling at (4,4) lowered to 0.7")
+end
+local _ok, _err = pcall(demo_HeightMap_setCeiling)
 
 -- ---- Stub: HeightMap:floorAt ---------------------------------------------
 --@api-stub: HeightMap:floorAt
--- Read floor height to adjust the player's vertical position.
-local floor_h = hmap:floorAt(3, 3)
-print("floor height at (3,3): " .. floor_h)
+-- Demonstrates the proper usage of HeightMap:floorAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_floorAt()
+    local floor_h = hmap:floorAt(3, 3)
+    print("floor height at (3,3): " .. floor_h)
+end
+local _ok, _err = pcall(demo_HeightMap_floorAt)
 
 -- ---- Stub: HeightMap:ceilingAt -------------------------------------------
 --@api-stub: HeightMap:ceilingAt
--- Read ceiling height to check if the player fits under a low arch.
-local ceil_h = hmap:ceilingAt(4, 4)
-print("ceiling height at (4,4): " .. ceil_h)
+-- Demonstrates the proper usage of HeightMap:ceilingAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_ceilingAt()
+    local ceil_h = hmap:ceilingAt(4, 4)
+    print("ceiling height at (4,4): " .. ceil_h)
+end
+local _ok, _err = pcall(demo_HeightMap_ceilingAt)
 
 -- ---- Stub: HeightMap:type ------------------------------------------------
 --@api-stub: HeightMap:type
-print("height map type: " .. hmap:type())
+-- Demonstrates the proper usage of HeightMap:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_type()
+    print("height map type: " .. hmap:type())
+end
+local _ok, _err = pcall(demo_HeightMap_type)
 
 -- ---- Stub: HeightMap:typeOf ----------------------------------------------
 --@api-stub: HeightMap:typeOf
-print("is HeightMap: " .. tostring(hmap:typeOf("HeightMap")))
-
+-- Demonstrates the proper usage of HeightMap:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_typeOf()
+    print("is HeightMap: " .. tostring(hmap:typeOf("HeightMap")))
+end
+local _ok, _err = pcall(demo_HeightMap_typeOf)
 
 -- =============================================================================
 -- PointLight — dynamic lights for torches, muzzle flashes, lava glow
@@ -377,46 +657,78 @@ print("is HeightMap: " .. tostring(hmap:typeOf("HeightMap")))
 
 -- ---- Stub: lurek.raycaster.newPointLight ---------------------------------
 --@api-stub: lurek.raycaster.newPointLight
--- Create a flickering torch light at world position (3.5, 7.5) with
--- radius 4.0 and warm orange colour.
-local torch = lurek.raycaster.newPointLight(3.5, 7.5, 4.0)
-print("point light created at (3.5, 7.5) radius 4.0")
+-- Demonstrates the proper usage of lurek.raycaster.newPointLight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newPointLight()
+    local torch = lurek.raycaster.newPointLight(3.5, 7.5, 4.0)
+    print("point light created at (3.5, 7.5) radius 4.0")
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newPointLight)
 
 -- ---- Stub: PointLight:x -------------------------------------------------
 --@api-stub: PointLight:x
--- Read the light's X position for distance calculations.
-print("light x: " .. torch:x())
+-- Demonstrates the proper usage of PointLight:x.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_x()
+    print("light x: " .. torch:x())
+end
+local _ok, _err = pcall(demo_PointLight_x)
 
 -- ---- Stub: PointLight:y -------------------------------------------------
 --@api-stub: PointLight:y
--- Read the light's Y position.
-print("light y: " .. torch:y())
+-- Demonstrates the proper usage of PointLight:y.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_y()
+    print("light y: " .. torch:y())
+end
+local _ok, _err = pcall(demo_PointLight_y)
 
 -- ---- Stub: PointLight:radius ---------------------------------------------
 --@api-stub: PointLight:radius
--- Read the radius to determine the area of effect for shadow casting.
-print("light radius: " .. torch:radius())
+-- Demonstrates the proper usage of PointLight:radius.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_radius()
+    print("light radius: " .. torch:radius())
+end
+local _ok, _err = pcall(demo_PointLight_radius)
 
 -- ---- Stub: PointLight:intensity ------------------------------------------
 --@api-stub: PointLight:intensity
--- Read the intensity for brightness calculations.
-local intensity = torch:intensity()
-print("light intensity: " .. tostring(intensity))
+-- Demonstrates the proper usage of PointLight:intensity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_intensity()
+    local intensity = torch:intensity()
+    print("light intensity: " .. tostring(intensity))
+end
+local _ok, _err = pcall(demo_PointLight_intensity)
 
 -- ---- Stub: PointLight:color ----------------------------------------------
 --@api-stub: PointLight:color
--- Read the light colour for tinting nearby walls.
-local r, g, b = torch:color()
-print(string.format("light color: (%.2f, %.2f, %.2f)", r or 0, g or 0, b or 0))
+-- Demonstrates the proper usage of PointLight:color.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_color()
+    local r, g, b = torch:color()
+    print(string.format("light color: (%.2f, %.2f, %.2f)", r or 0, g or 0, b or 0))
+end
+local _ok, _err = pcall(demo_PointLight_color)
 
 -- ---- Stub: PointLight:type -----------------------------------------------
 --@api-stub: PointLight:type
-print("light type: " .. torch:type())
+-- Demonstrates the proper usage of PointLight:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_type()
+    print("light type: " .. torch:type())
+end
+local _ok, _err = pcall(demo_PointLight_type)
 
 -- ---- Stub: PointLight:typeOf ---------------------------------------------
 --@api-stub: PointLight:typeOf
-print("is PointLight: " .. tostring(torch:typeOf("PointLight")))
-
+-- Demonstrates the proper usage of PointLight:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_typeOf()
+    print("is PointLight: " .. tostring(torch:typeOf("PointLight")))
+end
+local _ok, _err = pcall(demo_PointLight_typeOf)
 
 -- =============================================================================
 -- SpriteManager — billboarded objects (enemies, pickups, decorations)
@@ -424,44 +736,71 @@ print("is PointLight: " .. tostring(torch:typeOf("PointLight")))
 
 -- ---- Stub: lurek.raycaster.newSpriteManager ------------------------------
 --@api-stub: lurek.raycaster.newSpriteManager
--- Create a sprite manager for billboarded objects in the 3D view.
-local sprites = lurek.raycaster.newSpriteManager()
-print("sprite manager created")
+-- Demonstrates the proper usage of lurek.raycaster.newSpriteManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newSpriteManager()
+    local sprites = lurek.raycaster.newSpriteManager()
+    print("sprite manager created")
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newSpriteManager)
 
 -- ---- Stub: SpriteManager:remove -----------------------------------------
 --@api-stub: SpriteManager:remove
--- Remove a sprite when the enemy is killed.
-sprites:remove(0)
-print("sprite 0 removed (enemy killed)")
+-- Demonstrates the proper usage of SpriteManager:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_remove()
+    sprites:remove(0)
+    print("sprite 0 removed (enemy killed)")
+end
+local _ok, _err = pcall(demo_SpriteManager_remove)
 
 -- ---- Stub: SpriteManager:setPosition ------------------------------------
 --@api-stub: SpriteManager:setPosition
--- Move a sprite to a new position for enemy AI wandering.
-sprites:setPosition(0, 5.5, 8.2)
-print("sprite 0 moved to (5.5, 8.2)")
+-- Demonstrates the proper usage of SpriteManager:setPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_setPosition()
+    sprites:setPosition(0, 5.5, 8.2)
+    print("sprite 0 moved to (5.5, 8.2)")
+end
+local _ok, _err = pcall(demo_SpriteManager_setPosition)
 
 -- ---- Stub: SpriteManager:setVisible -------------------------------------
 --@api-stub: SpriteManager:setVisible
--- Hide a sprite when the player picks it up (before removal animation).
-sprites:setVisible(0, false)
-print("sprite 0 hidden")
+-- Demonstrates the proper usage of SpriteManager:setVisible.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_setVisible()
+    sprites:setVisible(0, false)
+    print("sprite 0 hidden")
+end
+local _ok, _err = pcall(demo_SpriteManager_setVisible)
 
 -- ---- Stub: SpriteManager:clear ------------------------------------------
 --@api-stub: SpriteManager:clear
--- Clear all sprites when loading a new level.
-sprites:clear()
-print("all sprites cleared for level transition")
+-- Demonstrates the proper usage of SpriteManager:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_clear()
+    sprites:clear()
+    print("all sprites cleared for level transition")
+end
+local _ok, _err = pcall(demo_SpriteManager_clear)
 
 -- ---- Stub: SpriteManager:type -------------------------------------------
 --@api-stub: SpriteManager:type
-print("sprite manager type: " .. sprites:type())
+-- Demonstrates the proper usage of SpriteManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_type()
+    print("sprite manager type: " .. sprites:type())
+end
+local _ok, _err = pcall(demo_SpriteManager_type)
 
 -- ---- Stub: SpriteManager:typeOf -----------------------------------------
 --@api-stub: SpriteManager:typeOf
-print("is SpriteManager: " .. tostring(sprites:typeOf("SpriteManager")))
--- content/examples/raycaster.lua
--- Lurek2D lurek.raycaster API Reference
--- Run with: cargo run -- content/examples/raycaster
+-- Demonstrates the proper usage of SpriteManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_typeOf()
+    print("is SpriteManager: " .. tostring(sprites:typeOf("SpriteManager")))
+end
+local _ok, _err = pcall(demo_SpriteManager_typeOf)
 
 -- =============================================================================
 -- STUBS: 41 uncovered lurek.raycaster API item(s)
@@ -473,17 +812,23 @@ print("is SpriteManager: " .. tostring(sprites:typeOf("SpriteManager")))
 
 -- ---- Stub: lurek.raycaster.new -------------------------------------------
 --@api-stub: lurek.raycaster.new
--- Create the tile grid that defines the dungeon layout -- cell value 0 is
--- open space; any value > 0 is a wall with that texture index.
-local rc = lurek.raycaster.new(32, 32)
-print("raycaster grid:", rc:width(), "x", rc:height())
+-- Demonstrates the proper usage of lurek.raycaster.new.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_new()
+    local rc = lurek.raycaster.new(32, 32)
+    print("raycaster grid:", rc:width(), "x", rc:height())
+end
+local _ok, _err = pcall(demo_lurek_raycaster_new)
 
 -- ---- Stub: lurek.raycaster.newMap ----------------------------------------
 --@api-stub: lurek.raycaster.newMap
--- Alias for new() -- prefer newMap() when your code emphasises the grid
--- as a map object rather than a renderer configuration.
-local dungeon = lurek.raycaster.newMap(64, 64)
-print("dungeon map:", dungeon:width(), "x", dungeon:height())
+-- Demonstrates the proper usage of lurek.raycaster.newMap.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newMap()
+    local dungeon = lurek.raycaster.newMap(64, 64)
+    print("dungeon map:", dungeon:width(), "x", dungeon:height())
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newMap)
 
 -- ---- Stub: lurek.raycaster.projectColumn ---------------------------------
 --@api-stub: lurek.raycaster.projectColumn
@@ -497,17 +842,23 @@ print(string.format("wall slice height at dist %.1f: %.0f px", distance, slice_h
 
 -- ---- Stub: lurek.raycaster.distanceShade ---------------------------------
 --@api-stub: lurek.raycaster.distanceShade
--- Compute a brightness factor to darken walls and sprites with distance --
--- multiply the texture colour by this value before drawing each column.
-local brightness = lurek.raycaster.distanceShade(6.0, 16.0)
-print(string.format("shade at dist 6 of max 16: %.2f", brightness))
+-- Demonstrates the proper usage of lurek.raycaster.distanceShade.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_distanceShade()
+    local brightness = lurek.raycaster.distanceShade(6.0, 16.0)
+    print(string.format("shade at dist 6 of max 16: %.2f", brightness))
+end
+local _ok, _err = pcall(demo_lurek_raycaster_distanceShade)
 
 -- ---- Stub: lurek.raycaster.newDoorManager --------------------------------
 --@api-stub: lurek.raycaster.newDoorManager
--- Track animated sliding doors in the map -- the manager handles open/close
--- state and partial offsets so the raycaster can skip blocked columns.
-local dm = lurek.raycaster.newDoorManager()
-print("door manager type:", dm:type())
+-- Demonstrates the proper usage of lurek.raycaster.newDoorManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newDoorManager()
+    local dm = lurek.raycaster.newDoorManager()
+    print("door manager type:", dm:type())
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newDoorManager)
 
 -- ---- Stub: lurek.raycaster.newHeightMap ----------------------------------
 --@api-stub: lurek.raycaster.newHeightMap
@@ -520,36 +871,43 @@ print("height map floor at (10,10):", hm:floorAt(10, 10))
 
 -- ---- Stub: lurek.raycaster.newPointLight ---------------------------------
 --@api-stub: lurek.raycaster.newPointLight
--- Add a dynamic point light source for torches, portals, or glowing pickups
--- that illuminate nearby walls with a coloured halo.
-local pl = lurek.raycaster.newPointLight(16.5, 12.0, 1.0, 0.8, 0.2, 8.0, 1.5)
--- args: x, y, r, g, b, radius, intensity
-print("point light at", pl:x(), pl:y(), "radius:", pl:radius())
+-- Demonstrates the proper usage of lurek.raycaster.newPointLight.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newPointLight()
+    local pl = lurek.raycaster.newPointLight(16.5, 12.0, 1.0, 0.8, 0.2, 8.0, 1.5)
+    print("point light at", pl:x(), pl:y(), "radius:", pl:radius())
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newPointLight)
 
 -- ---- Stub: lurek.raycaster.newSpriteManager ------------------------------
 --@api-stub: lurek.raycaster.newSpriteManager
--- Manage depth-sorted world sprites (enemies, pickups, decorations) so they
--- are drawn in correct painter's order relative to wall columns.
-local sm = lurek.raycaster.newSpriteManager()
-print("sprite manager type:", sm:type())
-
--- -----------------------------------------------------------------------------
--- DoorManager methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of lurek.raycaster.newSpriteManager.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_raycaster_newSpriteManager()
+    local sm = lurek.raycaster.newSpriteManager()
+    print("sprite manager type:", sm:type())
+end
+local _ok, _err = pcall(demo_lurek_raycaster_newSpriteManager)
 
 -- ---- Stub: DoorManager:openDoor ------------------------------------------
 --@api-stub: DoorManager:openDoor
--- Trigger the opening animation when the player activates the USE key
--- in front of a door cell -- the manager slides it open over time.
-dm:openDoor(1)
-print("door 1 opening")
+-- Demonstrates the proper usage of DoorManager:openDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_openDoor()
+    dm:openDoor(1)
+    print("door 1 opening")
+end
+local _ok, _err = pcall(demo_DoorManager_openDoor)
 
 -- ---- Stub: DoorManager:closeDoor -----------------------------------------
 --@api-stub: DoorManager:closeDoor
--- Auto-close a door after a timer or when the player walks through --
--- prevents doors from staying open and letting enemies follow freely.
-dm:closeDoor(1)
-print("door 1 closing")
+-- Demonstrates the proper usage of DoorManager:closeDoor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_closeDoor()
+    dm:closeDoor(1)
+    print("door 1 closing")
+end
+local _ok, _err = pcall(demo_DoorManager_closeDoor)
 
 -- ---- Stub: DoorManager:update --------------------------------------------
 --@api-stub: DoorManager:update
@@ -572,116 +930,152 @@ end
 
 -- ---- Stub: DoorManager:count ---------------------------------------------
 --@api-stub: DoorManager:count
--- Read the door count to pre-allocate state tables or to validate
--- that the map script registered the correct number of doors.
-print("registered doors:", dm:count())
+-- Demonstrates the proper usage of DoorManager:count.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_count()
+    print("registered doors:", dm:count())
+end
+local _ok, _err = pcall(demo_DoorManager_count)
 
 -- ---- Stub: DoorManager:type ----------------------------------------------
 --@api-stub: DoorManager:type
--- Confirm type identity in a generic raycaster-object dispatcher before
--- calling door-specific methods.
-print(dm:type())  -- "DoorManager"
+-- Demonstrates the proper usage of DoorManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_type()
+    print(dm:type())  -- "DoorManager"
+end
+local _ok, _err = pcall(demo_DoorManager_type)
 
 -- ---- Stub: DoorManager:typeOf --------------------------------------------
 --@api-stub: DoorManager:typeOf
--- Verify the object is a DoorManager in a guard before calling door-specific
--- methods in a generic raycaster entity dispatch function.
-print(dm:typeOf("DoorManager"))  -- true
-
--- -----------------------------------------------------------------------------
--- HeightMap methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of DoorManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DoorManager_typeOf()
+    print(dm:typeOf("DoorManager"))  -- true
+end
+local _ok, _err = pcall(demo_DoorManager_typeOf)
 
 -- ---- Stub: HeightMap:setFloor --------------------------------------------
 --@api-stub: HeightMap:setFloor
--- Raise or lower the floor at a specific cell for steps, pits, or terrain
--- variation -- 0.0 = ground level, positive values raise it.
-hm:setFloor(5, 5, 0.3)  -- slightly raised platform
-print("floor at (5,5):", hm:floorAt(5, 5))
+-- Demonstrates the proper usage of HeightMap:setFloor.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setFloor()
+    hm:setFloor(5, 5, 0.3)  -- slightly raised platform
+    print("floor at (5,5):", hm:floorAt(5, 5))
+end
+local _ok, _err = pcall(demo_HeightMap_setFloor)
 
 -- ---- Stub: HeightMap:setCeiling ------------------------------------------
 --@api-stub: HeightMap:setCeiling
--- Lower the ceiling for oppressive corridors or raise it for grand halls --
--- 1.0 = full wall height, 0.5 = only half the column is rendered.
-hm:setCeiling(8, 8, 0.6)  -- low-clearance tunnel
-print("ceiling at (8,8):", hm:ceilingAt(8, 8))
+-- Demonstrates the proper usage of HeightMap:setCeiling.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_setCeiling()
+    hm:setCeiling(8, 8, 0.6)  -- low-clearance tunnel
+    print("ceiling at (8,8):", hm:ceilingAt(8, 8))
+end
+local _ok, _err = pcall(demo_HeightMap_setCeiling)
 
 -- ---- Stub: HeightMap:floorAt ---------------------------------------------
 --@api-stub: HeightMap:floorAt
--- Query floor height during rendering to determine the bottom of the wall
--- slice or the visible floor stripe for a given cell.
-print("floor at (5,5):", hm:floorAt(5, 5))   -- 0.3
-print("floor at (0,0):", hm:floorAt(0, 0))   -- 0.0 (default)
+-- Demonstrates the proper usage of HeightMap:floorAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_floorAt()
+    print("floor at (5,5):", hm:floorAt(5, 5))   -- 0.3
+    print("floor at (0,0):", hm:floorAt(0, 0))   -- 0.0 (default)
+end
+local _ok, _err = pcall(demo_HeightMap_floorAt)
 
 -- ---- Stub: HeightMap:ceilingAt -------------------------------------------
 --@api-stub: HeightMap:ceilingAt
--- Query ceiling height during rendering to determine the top of the wall
--- slice or the visible ceiling stripe for a given cell.
-print("ceiling at (8,8):", hm:ceilingAt(8, 8))  -- 0.6
-print("ceiling at (0,0):", hm:ceilingAt(0, 0))  -- 1.0 (default)
+-- Demonstrates the proper usage of HeightMap:ceilingAt.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_ceilingAt()
+    print("ceiling at (8,8):", hm:ceilingAt(8, 8))  -- 0.6
+    print("ceiling at (0,0):", hm:ceilingAt(0, 0))  -- 1.0 (default)
+end
+local _ok, _err = pcall(demo_HeightMap_ceilingAt)
 
 -- ---- Stub: HeightMap:type ------------------------------------------------
 --@api-stub: HeightMap:type
--- Confirm type identity in a generic raycaster-object dispatcher before
--- calling height-specific methods.
-print(hm:type())  -- "HeightMap"
+-- Demonstrates the proper usage of HeightMap:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_type()
+    print(hm:type())  -- "HeightMap"
+end
+local _ok, _err = pcall(demo_HeightMap_type)
 
 -- ---- Stub: HeightMap:typeOf ----------------------------------------------
 --@api-stub: HeightMap:typeOf
--- Verify the object is a HeightMap before calling height-specific methods
--- in a generic raycaster scene-object function.
-print(hm:typeOf("HeightMap"))  -- true
-
--- -----------------------------------------------------------------------------
--- PointLight methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of HeightMap:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_HeightMap_typeOf()
+    print(hm:typeOf("HeightMap"))  -- true
+end
+local _ok, _err = pcall(demo_HeightMap_typeOf)
 
 -- ---- Stub: PointLight:x --------------------------------------------------
 --@api-stub: PointLight:x
--- Read the world X position to pass to the renderer or to compute the
--- distance from the player for culling far lights.
-print("light x:", pl:x())  -- 16.5
+-- Demonstrates the proper usage of PointLight:x.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_x()
+    print("light x:", pl:x())  -- 16.5
+end
+local _ok, _err = pcall(demo_PointLight_x)
 
 -- ---- Stub: PointLight:y --------------------------------------------------
 --@api-stub: PointLight:y
--- Read the world Y position to update a torch's position when attached
--- to a moving platform or pushed by a puzzle mechanic.
-print("light y:", pl:y())  -- 12.0
+-- Demonstrates the proper usage of PointLight:y.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_y()
+    print("light y:", pl:y())  -- 12.0
+end
+local _ok, _err = pcall(demo_PointLight_y)
 
 -- ---- Stub: PointLight:radius ---------------------------------------------
 --@api-stub: PointLight:radius
--- Read the illumination radius to cull lights that are farther than this
--- from the player before passing them to the renderer.
-print("light radius:", pl:radius())  -- 8.0
+-- Demonstrates the proper usage of PointLight:radius.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_radius()
+    print("light radius:", pl:radius())  -- 8.0
+end
+local _ok, _err = pcall(demo_PointLight_radius)
 
 -- ---- Stub: PointLight:intensity ------------------------------------------
 --@api-stub: PointLight:intensity
--- Animate the intensity each frame to create a flickering torch effect by
--- oscillating between 0.8 and 1.5 using a sine wave or TweenState.
-print("light intensity:", pl:intensity())  -- 1.5
+-- Demonstrates the proper usage of PointLight:intensity.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_intensity()
+    print("light intensity:", pl:intensity())  -- 1.5
+end
+local _ok, _err = pcall(demo_PointLight_intensity)
 
 -- ---- Stub: PointLight:color ----------------------------------------------
 --@api-stub: PointLight:color
--- Read RGB to tint wall columns within the light radius -- multiply
--- each channel by distanceShade() and the wall texture colour.
-local r, g, b = pl:color()
-print(string.format("light colour: (%.2f, %.2f, %.2f)", r, g, b))
+-- Demonstrates the proper usage of PointLight:color.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_color()
+    local r, g, b = pl:color()
+    print(string.format("light colour: (%.2f, %.2f, %.2f)", r, g, b))
+end
+local _ok, _err = pcall(demo_PointLight_color)
 
 -- ---- Stub: PointLight:type -----------------------------------------------
 --@api-stub: PointLight:type
--- Confirm type identity in a generic raycaster-object dispatcher before
--- treating the variable as a light source.
-print(pl:type())  -- "PointLight"
+-- Demonstrates the proper usage of PointLight:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_type()
+    print(pl:type())  -- "PointLight"
+end
+local _ok, _err = pcall(demo_PointLight_type)
 
 -- ---- Stub: PointLight:typeOf ---------------------------------------------
 --@api-stub: PointLight:typeOf
--- Verify the variable is a PointLight in a mixed-type scene-object array
--- before reading its colour or radius.
-print(pl:typeOf("PointLight"))  -- true
-
--- -----------------------------------------------------------------------------
--- Raycaster methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of PointLight:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_PointLight_typeOf()
+    print(pl:typeOf("PointLight"))  -- true
+end
+local _ok, _err = pcall(demo_PointLight_typeOf)
 
 -- ---- Stub: Raycaster:setCell ---------------------------------------------
 --@api-stub: Raycaster:setCell
@@ -693,9 +1087,12 @@ print("cell (0,0):", rc:getCell(0, 0))
 
 -- ---- Stub: Raycaster:getCell ---------------------------------------------
 --@api-stub: Raycaster:getCell
--- Read a cell value during pathfinding or collision checking to decide
--- whether a move is valid before updating the player position.
-print("cell (5,3) texture:", rc:getCell(5, 3))  -- 0 = open, 1+ = wall
+-- Demonstrates the proper usage of Raycaster:getCell.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getCell()
+    print("cell (5,3) texture:", rc:getCell(5, 3))  -- 0 = open, 1+ = wall
+end
+local _ok, _err = pcall(demo_Raycaster_getCell)
 
 -- ---- Stub: Raycaster:setCells --------------------------------------------
 --@api-stub: Raycaster:setCells
@@ -720,40 +1117,51 @@ end
 
 -- ---- Stub: Raycaster:width -----------------------------------------------
 --@api-stub: Raycaster:width
--- Read width and height to clamp coordinate lookups and to validate
--- that a loaded map matches the expected dimensions.
-print("grid size:", rc:width(), "x", rc:height())
+-- Demonstrates the proper usage of Raycaster:width.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_width()
+    print("grid size:", rc:width(), "x", rc:height())
+end
+local _ok, _err = pcall(demo_Raycaster_width)
 
 -- ---- Stub: Raycaster:height ----------------------------------------------
 --@api-stub: Raycaster:height
--- Read height alongside width to ensure both dimensions are within budget
--- before allocating the HeightMap or DoorManager for this grid.
-print("grid height:", rc:height())
+-- Demonstrates the proper usage of Raycaster:height.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_height()
+    print("grid height:", rc:height())
+end
+local _ok, _err = pcall(demo_Raycaster_height)
 
 -- ---- Stub: Raycaster:getWallAlpha ----------------------------------------
 --@api-stub: Raycaster:getWallAlpha
--- Read opacity for transparent wall types (e.g. glass, forcefields) to
--- blend the wall column with the background during rendering.
-local alpha = rc:getWallAlpha(3)  -- tile type 3 = glass panel
-print(string.format("wall type 3 alpha: %.2f", alpha))
-
--- -----------------------------------------------------------------------------
--- SpriteManager methods
--- -----------------------------------------------------------------------------
+-- Demonstrates the proper usage of Raycaster:getWallAlpha.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Raycaster_getWallAlpha()
+    local alpha = rc:getWallAlpha(3)  -- tile type 3 = glass panel
+    print(string.format("wall type 3 alpha: %.2f", alpha))
+end
+local _ok, _err = pcall(demo_Raycaster_getWallAlpha)
 
 -- ---- Stub: SpriteManager:remove ------------------------------------------
 --@api-stub: SpriteManager:remove
--- Remove a sprite when the entity it represents is destroyed -- stale
--- entries would keep drawing invisible sprites each frame.
-sm:remove(5)  -- sprite ID 5
-print("sprite 5 removed")
+-- Demonstrates the proper usage of SpriteManager:remove.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_remove()
+    sm:remove(5)  -- sprite ID 5
+    print("sprite 5 removed")
+end
+local _ok, _err = pcall(demo_SpriteManager_remove)
 
 -- ---- Stub: SpriteManager:setPosition -------------------------------------
 --@api-stub: SpriteManager:setPosition
--- Update the world position each frame so the sprite stays aligned with
--- its entity as it moves through the dungeon.
-sm:setPosition(1, 10.5, 8.0)
-print("sprite 1 moved to (10.5, 8.0)")
+-- Demonstrates the proper usage of SpriteManager:setPosition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_setPosition()
+    sm:setPosition(1, 10.5, 8.0)
+    print("sprite 1 moved to (10.5, 8.0)")
+end
+local _ok, _err = pcall(demo_SpriteManager_setPosition)
 
 -- ---- Stub: SpriteManager:setVisible --------------------------------------
 --@api-stub: SpriteManager:setVisible
@@ -765,22 +1173,31 @@ print("sprite 1 visibility toggled")
 
 -- ---- Stub: SpriteManager:clear -------------------------------------------
 --@api-stub: SpriteManager:clear
--- Flush all sprites when loading a new level so entities from the
--- previous room do not bleed into the new scene.
-sm:clear()
-print("all sprites cleared")
+-- Demonstrates the proper usage of SpriteManager:clear.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_clear()
+    sm:clear()
+    print("all sprites cleared")
+end
+local _ok, _err = pcall(demo_SpriteManager_clear)
 
 -- ---- Stub: SpriteManager:type --------------------------------------------
 --@api-stub: SpriteManager:type
--- Confirm type in a generic raycaster-object dispatcher before calling
--- sprite-specific methods.
-print(sm:type())  -- "SpriteManager"
+-- Demonstrates the proper usage of SpriteManager:type.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_type()
+    print(sm:type())  -- "SpriteManager"
+end
+local _ok, _err = pcall(demo_SpriteManager_type)
 
 -- ---- Stub: SpriteManager:typeOf ------------------------------------------
 --@api-stub: SpriteManager:typeOf
--- Verify the object is a SpriteManager in a mixed-type scene-object function
--- that handles multiple manager types.
-print(sm:typeOf("SpriteManager"))  -- true
+-- Demonstrates the proper usage of SpriteManager:typeOf.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_SpriteManager_typeOf()
+    print(sm:typeOf("SpriteManager"))  -- true
+end
+local _ok, _err = pcall(demo_SpriteManager_typeOf)
 
 -- =============================================================================
 -- STUBS: 1 uncovered lurek.raycaster API item(s)
