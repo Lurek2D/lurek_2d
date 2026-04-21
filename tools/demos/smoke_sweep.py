@@ -149,10 +149,8 @@ def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Res
     cmd = [
         str(binary),
         str(target.path),
-        "--screenshot",
-        str(target.screenshot),
-        "--screenshot-frames",
-        str(frames),
+        f"--screenshot={target.screenshot}",
+        f"--screenshot-frames={frames}",
     ]
     start = time.monotonic()
     # Clear any stale screenshot so we don't misread an old file as PASS.
