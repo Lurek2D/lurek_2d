@@ -4,6 +4,10 @@ All notable changes to Lurek2D are recorded here.
 
 ## [0.20.5] — 2026-04-22
 
+### Example Quality Sweep (session example-quality-sweep)
+
+- **chore(plan): create example quality sweep plan** — Created multi-phase plan in work/example-quality-sweep/reports/plan.md to expand 56 API stubs in content/examples/ and build a new quality coverage tool in 	ools/audit/. Handed over to Manager.
+
 ### Engine recovery — Phase 1 fixes (session engine-recovery-20260421)
 
 - **refactor(tests/lua): TST-06 verified — one file per module per layer** — Custom audit work/engine-recovery-20260421/scripts/tst06_audit.py walked 	ests/lua/{unit,evidence,golden,stress,security,config}/, grouped files by (layer, inferred-module), and confirmed **zero TST-06 violations** across 134 (layer,module) groups. No file merges or deletions required — the prior lua-test-restructure-20260421 work already brought every layer into canonical 	est_<module>_<layer>.lua form. See work/engine-recovery-20260421/logs/tst06.log and work/engine-recovery-20260421/reports/tst06_violations.txt.
