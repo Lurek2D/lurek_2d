@@ -20,6 +20,14 @@ use crate::runtime::log_messages::LA08_PATHFINDING_THREAD_UNIMPL;
 // Helpers
 // -------------------------------------------------------------------------------
 
+/// Convert a 1-based Lua index to a 0-based engine index, returning a Lua
+/// error (not a panic) when the caller passes `0` or a negative value.
+fn to_zero_based(name: &str, val: u32) -> LuaResult<u32> {
+    val.checked_sub(1).ok_or_else(|| {
+        mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})"))
+    })
+}
+
 /// Convert a slice of 0-based `Waypoint`s to a 1-based Lua table of `{x, y}`.
 fn waypoints_to_lua<'a>(lua: &'a Lua, path: &[Waypoint]) -> LuaResult<LuaTable<'a>> {
     let tbl = lua.create_table()?;
@@ -290,11 +298,15 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "findPath",
             |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+                let x1 = to_zero_based("x1", x1)?;
+                let y1 = to_zero_based("y1", y1)?;
+                let x2 = to_zero_based("x2", x2)?;
+                let y2 = to_zero_based("y2", y2)?;
                 let result = this.inner.borrow_mut().find_path(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
                     unit_size.unwrap_or(1),
                 );
                 match result {
@@ -315,11 +327,15 @@ impl LuaUserData for LuaUnitPathfinder {
         methods.add_method(
             "findPathSmooth",
             |lua, this, (x1, y1, x2, y2, unit_size): (u32, u32, u32, u32, Option<u32>)| {
+                let x1 = to_zero_based("x1", x1)?;
+                let y1 = to_zero_based("y1", y1)?;
+                let x2 = to_zero_based("x2", x2)?;
+                let y2 = to_zero_based("y2", y2)?;
                 let result = this.inner.borrow_mut().find_path_smooth(
-                    x1 - 1,
-                    y1 - 1,
-                    x2 - 1,
-                    y2 - 1,
+                    x1,
+                    y1,
+                    x2,
+                    y2,
                     unit_size.unwrap_or(1),
                 );
                 match result {

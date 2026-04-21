@@ -184,7 +184,8 @@ impl LuaUserData for LuaObjectPool {
         /// Acquires an available object from the pool; returns nil if empty.
         /// @return string|number|boolean|table|nil
         methods.add_method("acquire", |lua, this, ()| {
-            if let Some(id) = this.pool.borrow_mut().acquire() {
+            let maybe_id = this.pool.borrow_mut().acquire();
+            if let Some(id) = maybe_id {
                 if let Some(key) = this.idle_objects.borrow_mut().remove(&id) {
                     let val: LuaValue = lua.registry_value(&key)?;
                     lua.remove_registry_value(key)?;
@@ -1623,11 +1624,16 @@ impl LuaUserData for LuaRelationshipManager {
                 let lvs: Vec<String> = levels
                     .sequence_values::<String>()
                     .collect::<LuaResult<_>>()?;
-                this.rm.borrow_mut().define_type(
-                    &name,
-                    lvs,
-                    default_level.as_deref().unwrap_or(""),
-                );
+                if lvs.is_empty() {
+                    return Err(mlua::Error::RuntimeError(
+                        "defineType: 'levels' must contain at least one level".to_string(),
+                    ));
+                }
+                let default = match default_level {
+                    Some(s) if !s.is_empty() => s,
+                    _ => lvs[0].clone(),
+                };
+                this.rm.borrow_mut().define_type(&name, lvs, &default);
                 Ok(())
             },
         );

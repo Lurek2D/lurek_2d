@@ -19,6 +19,22 @@ use crate::tilemap::mapgen::{
 use crate::tilemap::tilemap::TileMap;
 use crate::tilemap::tileset::{TileAnimFrame, TileSet};
 
+/// Convert a 1-based `usize` Lua index to a 0-based engine index, returning a
+/// Lua error (not a panic) when the caller passes `0`.
+fn one_based_usize(name: &str, val: usize) -> LuaResult<usize> {
+    val.checked_sub(1).ok_or_else(|| {
+        mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})"))
+    })
+}
+
+/// Convert a 1-based `u32` Lua index to a 0-based engine index, returning a
+/// Lua error (not a panic) when the caller passes `0`.
+fn one_based_u32(name: &str, val: u32) -> LuaResult<u32> {
+    val.checked_sub(1).ok_or_else(|| {
+        mlua::Error::RuntimeError(format!("{name} must be >= 1 (got {val})"))
+    })
+}
+
 // -------------------------------------------------------------------------------
 // LuaTileSet UserData
 // -------------------------------------------------------------------------------
@@ -1319,7 +1335,8 @@ impl LuaUserData for LuaIsoMap {
         /// @param visible : boolean
         /// @return nil
         methods.add_method("setLevelVisible", |_, this, (z, visible): (usize, bool)| {
-            this.inner.borrow_mut().set_level_visible(z - 1, visible);
+            let z = one_based_usize("z", z)?;
+            this.inner.borrow_mut().set_level_visible(z, visible);
             Ok(())
         });
 
@@ -1328,7 +1345,8 @@ impl LuaUserData for LuaIsoMap {
         /// @param z : integer
         /// @return boolean
         methods.add_method("isLevelVisible", |_, this, z: usize| {
-            Ok(this.inner.borrow().get_level_visible(z - 1))
+            let z = one_based_usize("z", z)?;
+            Ok(this.inner.borrow().get_level_visible(z))
         });
 
         // -- setTilePart --
@@ -1342,9 +1360,12 @@ impl LuaUserData for LuaIsoMap {
         methods.add_method(
             "setTilePart",
             |_, this, (z, x, y, part, gid): (usize, u32, u32, u32, u32)| {
+                let z = one_based_usize("z", z)?;
+                let x = one_based_u32("x", x)?;
+                let y = one_based_u32("y", y)?;
                 this.inner
                     .borrow_mut()
-                    .set_tile_part(z - 1, x - 1, y - 1, part, gid);
+                    .set_tile_part(z, x, y, part, gid);
                 Ok(())
             },
         );
@@ -1359,7 +1380,10 @@ impl LuaUserData for LuaIsoMap {
         methods.add_method(
             "getTilePart",
             |_, this, (z, x, y, part): (usize, u32, u32, u32)| {
-                Ok(this.inner.borrow().get_tile_part(z - 1, x - 1, y - 1, part))
+                let z = one_based_usize("z", z)?;
+                let x = one_based_u32("x", x)?;
+                let y = one_based_u32("y", y)?;
+                Ok(this.inner.borrow().get_tile_part(z, x, y, part))
             },
         );
 

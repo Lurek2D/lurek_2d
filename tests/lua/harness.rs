@@ -358,6 +358,26 @@ fn lua_test_patterns() {
 }
 
 #[test]
+fn lua_test_pathfind_regress_zero_index() {
+    run_lua_test("unit/test_pathfind_regress_zero_index.lua");
+}
+
+#[test]
+fn lua_test_tilemap_regress_zero_index() {
+    run_lua_test("unit/test_tilemap_regress_zero_index.lua");
+}
+
+#[test]
+fn lua_test_patterns_regress_acquire_borrow() {
+    run_lua_test("unit/test_patterns_regress_acquire_borrow.lua");
+}
+
+#[test]
+fn lua_test_ecs_regress_relationship_default() {
+    run_lua_test("unit/test_ecs_regress_relationship_default.lua");
+}
+
+#[test]
 fn lua_test_light() {
     run_lua_test("unit/test_light.lua");
 }

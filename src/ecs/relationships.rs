@@ -38,24 +38,32 @@ pub struct RelationType {
 }
 
 impl RelationType {
-    /// Create a new relation type. Panics in debug if `default_level` is not in `levels`.
+    /// Create a new relation type.
+    ///
+    /// If `default_level` is not in `levels` but `levels` is non-empty, the first
+    /// declared level is used as the effective default. This avoids panicking on
+    /// user-supplied (e.g. Lua-side) inputs while still coercing to a valid state.
+    /// When `levels` is empty, `default_level` is stored verbatim.
     ///
     /// # Parameters
-    /// - `name` â€” `&str`.
-    /// - `levels` â€” `Vec<String>`.
-    /// - `default_level` â€” `&str`.
+    /// - `name` — `&str`.
+    /// - `levels` — `Vec<String>`.
+    /// - `default_level` — `&str`.
     ///
     /// # Returns
     /// `Self`.
     pub fn new(name: &str, levels: Vec<String>, default_level: &str) -> Self {
-        debug_assert!(
-            levels.iter().any(|l| l == default_level),
-            "default_level '{default_level}' must be one of the declared levels"
-        );
+        let effective_default = if levels.iter().any(|l| l == default_level) {
+            default_level.to_string()
+        } else if let Some(first) = levels.first() {
+            first.clone()
+        } else {
+            default_level.to_string()
+        };
         Self {
             name: name.to_string(),
             levels,
-            default_level: default_level.to_string(),
+            default_level: effective_default,
         }
     }
 
