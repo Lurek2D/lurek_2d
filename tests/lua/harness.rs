@@ -335,6 +335,11 @@ fn lua_test_globe() {
 }
 
 #[test]
+fn lua_test_globe_demo() {
+    run_lua_test("unit/test_globe_demo.lua");
+}
+
+#[test]
 fn lua_test_pipeline() {
     run_lua_test("unit/test_pipeline.lua");
 }
@@ -1757,4 +1762,26 @@ fn lua_test_integration_combat_physics() {
 #[test]
 fn lua_test_integration_cardgame_tween() {
     run_lua_test("integration/test_integration_cardgame_tween.lua");
+}
+
+// ─── New Cross-Module Integration Tests ──────────────────────────────────────
+
+#[test]
+fn lua_test_integration_serial_filesystem() {
+    run_lua_test("integration/test_serial_filesystem.lua");
+}
+
+#[test]
+fn lua_test_integration_timer_event() {
+    run_lua_test("integration/test_timer_event.lua");
+}
+
+#[test]
+fn lua_test_integration_image_dataframe() {
+    run_lua_test("integration/test_image_dataframe.lua");
+}
+
+#[test]
+fn lua_test_integration_animation_tween() {
+    run_lua_test("integration/test_animation_tween.lua");
 }
