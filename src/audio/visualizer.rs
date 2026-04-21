@@ -14,6 +14,17 @@ use std::{fs::File, io::BufReader};
 use image::{ImageBuffer, Rgba};
 use rodio::{Decoder, Source};
 
+/// Create the parent directory of `path` if it does not already exist.
+fn ensure_parent_dir(path: &str) -> Result<(), String> {
+    if let Some(parent) = std::path::Path::new(path).parent() {
+        if !parent.as_os_str().is_empty() && !parent.exists() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("cannot create output directory '{}': {}", parent.display(), e))?;
+        }
+    }
+    Ok(())
+}
+
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Public API
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -72,6 +83,7 @@ pub fn waveform_to_png(
         }
     }
 
+    ensure_parent_dir(output_png)?;
     img.save(output_png)
         .map_err(|e| format!("cannot save PNG '{}': {}", output_png, e))
 }
@@ -172,6 +184,7 @@ pub fn spectrogram_to_png(
         }
     }
 
+    ensure_parent_dir(output_png)?;
     img.save(output_png)
         .map_err(|e| format!("cannot save PNG '{}': {}", output_png, e))
 }

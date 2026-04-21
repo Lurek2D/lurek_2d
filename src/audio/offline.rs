@@ -18,6 +18,20 @@ use rodio::{Decoder, Source};
 
 use crate::audio::dsp::{ActiveEffect, AtomicParam, EffectParams, EffectType};
 
+/// Create the parent directory of `path` if it does not already exist.
+///
+/// Returns `Ok(())` when `path` has no parent component (e.g. a bare file name),
+/// or when the directory already exists.
+fn ensure_parent_dir(path: &str) -> Result<(), String> {
+    if let Some(parent) = std::path::Path::new(path).parent() {
+        if !parent.as_os_str().is_empty() && !parent.exists() {
+            std::fs::create_dir_all(parent)
+                .map_err(|e| format!("cannot create output directory '{}': {}", parent.display(), e))?;
+        }
+    }
+    Ok(())
+}
+
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Public types
 // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -168,6 +182,7 @@ fn write_wav_i16(
     sample_rate: u32,
     channels: u16,
 ) -> Result<(), String> {
+    ensure_parent_dir(path)?;
     let pcm: Vec<i16> = samples
         .iter()
         .map(|s| (s.clamp(-1.0, 1.0) * i16::MAX as f32) as i16)

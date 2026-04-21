@@ -281,6 +281,18 @@ pub fn render_to_image(
         fill_rect(&mut pixels, width, height, &rect, color);
     }
 
+    if let Some(parent) = std::path::Path::new(path).parent() {
+        if !parent.as_os_str().is_empty() && !parent.exists() {
+            std::fs::create_dir_all(parent).map_err(|e| {
+                format!(
+                    "render_to_image: cannot create output directory '{}': {}",
+                    parent.display(),
+                    e
+                )
+            })?;
+        }
+    }
+
     image::save_buffer(path, &pixels, width, height, image::ColorType::Rgba8)
         .map_err(|e| format!("render_to_image: failed to save '{path}': {e}"))
 }
