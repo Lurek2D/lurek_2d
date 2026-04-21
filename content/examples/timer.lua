@@ -466,3 +466,43 @@ for i = 1, 6 do
   local fired_count = sched:updateFrames()
   print(string.format("tick %d: %d event(s) fired", i, fired_count))
 end
+-- ---- Stub: Scheduler:afterFrames -----------------------------------------------------
+--@api-stub: Scheduler:afterFrames
+-- Schedules a callback to fire once after `n` frames.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Scheduler_afterFrames()
+    print('Executing afterFrames')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Scheduler_afterFrames)
+
+-- ---- Stub: Scheduler:updateFrames -----------------------------------------------------
+--@api-stub: Scheduler:updateFrames
+-- Advances frame-based events by one frame, firing due callbacks.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Scheduler_updateFrames()
+    print('Executing updateFrames')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Scheduler_updateFrames)
+
+-- ---- Stub: Scheduler:afterFrames -----------------------------------------------------
+--@api-stub: Scheduler:afterFrames
+-- Schedules a callback to fire once after `n` frames.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Scheduler_afterFrames()
+    print('Executing afterFrames')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Scheduler_afterFrames)
+
+-- ---- Stub: Scheduler:updateFrames -----------------------------------------------------
+--@api-stub: Scheduler:updateFrames
+-- Advances frame-based events by one frame, firing due callbacks.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Scheduler_updateFrames()
+    print('Executing updateFrames')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Scheduler_updateFrames)
+

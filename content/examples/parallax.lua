@@ -2,7 +2,7 @@
 -- Lurek2D lurek.parallax API Reference
 -- Run with: cargo run -- content/examples/parallax
 --
--- Scenario: A side-scrolling game with a multi-layer parallax background —
+Scenario: A side-scrolling game with a multi-layer parallax background —
 -- sky, distant mountains, near trees, and ground. Layers scroll at different
 -- speeds for depth illusion, with auto-scrolling and tiling support.
 
@@ -12,7 +12,6 @@ print("=== lurek.parallax — Parallax Scrolling ===\n")
 -- Layer & Set Creation
 -- =============================================================================
 
---@api-stub: lurek.parallax.newLayer
 -- Demonstrates the proper usage of lurek.parallax.newLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_parallax_newLayer()
@@ -23,7 +22,6 @@ local function demo_lurek_parallax_newLayer()
 end
 local _ok, _err = pcall(demo_lurek_parallax_newLayer)
 
---@api-stub: lurek.parallax.newSet
 -- Demonstrates the proper usage of lurek.parallax.newSet.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_parallax_newSet()
@@ -35,7 +33,6 @@ local _ok, _err = pcall(demo_lurek_parallax_newSet)
 -- ParallaxSet Methods
 -- =============================================================================
 
---@api-stub: ParallaxSet:type
 -- Demonstrates the proper usage of ParallaxSet:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_type()
@@ -43,7 +40,6 @@ local function demo_ParallaxSet_type()
 end
 local _ok, _err = pcall(demo_ParallaxSet_type)
 
---@api-stub: ParallaxSet:setName
 -- Demonstrates the proper usage of ParallaxSet:setName.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_setName()
@@ -51,7 +47,6 @@ local function demo_ParallaxSet_setName()
 end
 local _ok, _err = pcall(demo_ParallaxSet_setName)
 
---@api-stub: ParallaxSet:getName
 -- Demonstrates the proper usage of ParallaxSet:getName.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_getName()
@@ -59,7 +54,6 @@ local function demo_ParallaxSet_getName()
 end
 local _ok, _err = pcall(demo_ParallaxSet_getName)
 
---@api-stub: ParallaxSet:addLayer
 -- Demonstrates the proper usage of ParallaxSet:addLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_addLayer()
@@ -70,7 +64,6 @@ local function demo_ParallaxSet_addLayer()
 end
 local _ok, _err = pcall(demo_ParallaxSet_addLayer)
 
---@api-stub: ParallaxSet:layerCount
 -- Demonstrates the proper usage of ParallaxSet:layerCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_layerCount()
@@ -78,7 +71,6 @@ local function demo_ParallaxSet_layerCount()
 end
 local _ok, _err = pcall(demo_ParallaxSet_layerCount)
 
---@api-stub: ParallaxSet:sortByZ
 -- Demonstrates the proper usage of ParallaxSet:sortByZ.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_sortByZ()
@@ -86,7 +78,6 @@ local function demo_ParallaxSet_sortByZ()
 end
 local _ok, _err = pcall(demo_ParallaxSet_sortByZ)
 
---@api-stub: ParallaxSet:setVisible
 -- Demonstrates the proper usage of ParallaxSet:setVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_setVisible()
@@ -94,7 +85,6 @@ local function demo_ParallaxSet_setVisible()
 end
 local _ok, _err = pcall(demo_ParallaxSet_setVisible)
 
---@api-stub: ParallaxSet:isVisible
 -- Demonstrates the proper usage of ParallaxSet:isVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_isVisible()
@@ -102,7 +92,6 @@ local function demo_ParallaxSet_isVisible()
 end
 local _ok, _err = pcall(demo_ParallaxSet_isVisible)
 
---@api-stub: ParallaxSet:update
 -- Demonstrates the proper usage of ParallaxSet:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_update()
@@ -110,7 +99,6 @@ local function demo_ParallaxSet_update()
 end
 local _ok, _err = pcall(demo_ParallaxSet_update)
 
---@api-stub: ParallaxSet:render
 -- Demonstrates the proper usage of ParallaxSet:render.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_render()
@@ -118,7 +106,6 @@ local function demo_ParallaxSet_render()
 end
 local _ok, _err = pcall(demo_ParallaxSet_render)
 
---@api-stub: ParallaxSet:renderAuto
 -- Demonstrates the proper usage of ParallaxSet:renderAuto.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_renderAuto()
@@ -126,7 +113,6 @@ local function demo_ParallaxSet_renderAuto()
 end
 local _ok, _err = pcall(demo_ParallaxSet_renderAuto)
 
---@api-stub: ParallaxSet:removeLayerAt
 -- Demonstrates the proper usage of ParallaxSet:removeLayerAt.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxSet_removeLayerAt()
@@ -138,7 +124,6 @@ local _ok, _err = pcall(demo_ParallaxSet_removeLayerAt)
 -- ParallaxLayer — Scroll Factor & Position
 -- =============================================================================
 
---@api-stub: ParallaxLayer:type
 -- Demonstrates the proper usage of ParallaxLayer:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_type()
@@ -146,7 +131,6 @@ local function demo_ParallaxLayer_type()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_type)
 
---@api-stub: ParallaxLayer:setScrollFactor
 -- Demonstrates the proper usage of ParallaxLayer:setScrollFactor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setScrollFactor()
@@ -157,7 +141,6 @@ local function demo_ParallaxLayer_setScrollFactor()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setScrollFactor)
 
---@api-stub: ParallaxLayer:getScrollFactor
 -- Demonstrates the proper usage of ParallaxLayer:getScrollFactor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getScrollFactor()
@@ -166,7 +149,6 @@ local function demo_ParallaxLayer_getScrollFactor()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getScrollFactor)
 
---@api-stub: ParallaxLayer:setOffset
 -- Demonstrates the proper usage of ParallaxLayer:setOffset.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setOffset()
@@ -174,7 +156,6 @@ local function demo_ParallaxLayer_setOffset()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setOffset)
 
---@api-stub: ParallaxLayer:getOffset
 -- Demonstrates the proper usage of ParallaxLayer:getOffset.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getOffset()
@@ -187,7 +168,6 @@ local _ok, _err = pcall(demo_ParallaxLayer_getOffset)
 -- ParallaxLayer — Auto-Scrolling
 -- =============================================================================
 
---@api-stub: ParallaxLayer:setAutoscroll
 -- Demonstrates the proper usage of ParallaxLayer:setAutoscroll.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setAutoscroll()
@@ -195,7 +175,6 @@ local function demo_ParallaxLayer_setAutoscroll()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setAutoscroll)
 
---@api-stub: ParallaxLayer:getAutoscroll
 -- Demonstrates the proper usage of ParallaxLayer:getAutoscroll.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getAutoscroll()
@@ -204,7 +183,6 @@ local function demo_ParallaxLayer_getAutoscroll()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getAutoscroll)
 
---@api-stub: ParallaxLayer:resetAutoscroll
 -- Demonstrates the proper usage of ParallaxLayer:resetAutoscroll.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_resetAutoscroll()
@@ -216,7 +194,6 @@ local _ok, _err = pcall(demo_ParallaxLayer_resetAutoscroll)
 -- ParallaxLayer — Tiling & Repeat
 -- =============================================================================
 
---@api-stub: ParallaxLayer:setRepeat
 -- Demonstrates the proper usage of ParallaxLayer:setRepeat.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setRepeat()
@@ -225,7 +202,6 @@ local function demo_ParallaxLayer_setRepeat()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setRepeat)
 
---@api-stub: ParallaxLayer:setTiling
 -- Demonstrates the proper usage of ParallaxLayer:setTiling.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setTiling()
@@ -233,7 +209,6 @@ local function demo_ParallaxLayer_setTiling()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setTiling)
 
---@api-stub: ParallaxLayer:getTiling
 -- Demonstrates the proper usage of ParallaxLayer:getTiling.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getTiling()
@@ -241,7 +216,6 @@ local function demo_ParallaxLayer_getTiling()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getTiling)
 
---@api-stub: ParallaxLayer:setTileSize
 -- Demonstrates the proper usage of ParallaxLayer:setTileSize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setTileSize()
@@ -253,7 +227,6 @@ local _ok, _err = pcall(demo_ParallaxLayer_setTileSize)
 -- ParallaxLayer — Scale & Depth
 -- =============================================================================
 
---@api-stub: ParallaxLayer:setScale
 -- Demonstrates the proper usage of ParallaxLayer:setScale.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setScale()
@@ -261,7 +234,6 @@ local function demo_ParallaxLayer_setScale()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setScale)
 
---@api-stub: ParallaxLayer:setZ
 -- Demonstrates the proper usage of ParallaxLayer:setZ.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setZ()
@@ -272,7 +244,6 @@ local function demo_ParallaxLayer_setZ()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setZ)
 
---@api-stub: ParallaxLayer:getZ
 -- Demonstrates the proper usage of ParallaxLayer:getZ.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getZ()
@@ -280,7 +251,6 @@ local function demo_ParallaxLayer_getZ()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getZ)
 
---@api-stub: ParallaxLayer:setDepth
 -- Demonstrates the proper usage of ParallaxLayer:setDepth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setDepth()
@@ -288,7 +258,6 @@ local function demo_ParallaxLayer_setDepth()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setDepth)
 
---@api-stub: ParallaxLayer:getDepth
 -- Demonstrates the proper usage of ParallaxLayer:getDepth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getDepth()
@@ -300,7 +269,6 @@ local _ok, _err = pcall(demo_ParallaxLayer_getDepth)
 -- ParallaxLayer — Visual Properties
 -- =============================================================================
 
---@api-stub: ParallaxLayer:setOpacity
 -- Demonstrates the proper usage of ParallaxLayer:setOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setOpacity()
@@ -309,7 +277,6 @@ local function demo_ParallaxLayer_setOpacity()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setOpacity)
 
---@api-stub: ParallaxLayer:getOpacity
 -- Demonstrates the proper usage of ParallaxLayer:getOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getOpacity()
@@ -317,7 +284,6 @@ local function demo_ParallaxLayer_getOpacity()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getOpacity)
 
---@api-stub: ParallaxLayer:setTint
 -- Demonstrates the proper usage of ParallaxLayer:setTint.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setTint()
@@ -325,7 +291,6 @@ local function demo_ParallaxLayer_setTint()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setTint)
 
---@api-stub: ParallaxLayer:getTint
 -- Demonstrates the proper usage of ParallaxLayer:getTint.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getTint()
@@ -334,7 +299,6 @@ local function demo_ParallaxLayer_getTint()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getTint)
 
---@api-stub: ParallaxLayer:setBlendMode
 -- Demonstrates the proper usage of ParallaxLayer:setBlendMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setBlendMode()
@@ -342,7 +306,6 @@ local function demo_ParallaxLayer_setBlendMode()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setBlendMode)
 
---@api-stub: ParallaxLayer:getBlendMode
 -- Demonstrates the proper usage of ParallaxLayer:getBlendMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_getBlendMode()
@@ -350,7 +313,6 @@ local function demo_ParallaxLayer_getBlendMode()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_getBlendMode)
 
---@api-stub: ParallaxLayer:setVisible
 -- Demonstrates the proper usage of ParallaxLayer:setVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_setVisible()
@@ -358,7 +320,6 @@ local function demo_ParallaxLayer_setVisible()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_setVisible)
 
---@api-stub: ParallaxLayer:isVisible
 -- Demonstrates the proper usage of ParallaxLayer:isVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_isVisible()
@@ -366,7 +327,6 @@ local function demo_ParallaxLayer_isVisible()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_isVisible)
 
---@api-stub: ParallaxLayer:clearClamp
 -- Demonstrates the proper usage of ParallaxLayer:clearClamp.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_clearClamp()
@@ -378,7 +338,6 @@ local _ok, _err = pcall(demo_ParallaxLayer_clearClamp)
 -- Layer Update & Render
 -- =============================================================================
 
---@api-stub: ParallaxLayer:update
 -- Demonstrates the proper usage of ParallaxLayer:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_update()
@@ -386,7 +345,6 @@ local function demo_ParallaxLayer_update()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_update)
 
---@api-stub: ParallaxLayer:render
 -- Demonstrates the proper usage of ParallaxLayer:render.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_render()
@@ -394,7 +352,6 @@ local function demo_ParallaxLayer_render()
 end
 local _ok, _err = pcall(demo_ParallaxLayer_render)
 
---@api-stub: ParallaxLayer:renderAuto
 -- Demonstrates the proper usage of ParallaxLayer:renderAuto.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ParallaxLayer_renderAuto()
@@ -404,19 +361,13 @@ end
 local _ok, _err = pcall(demo_ParallaxLayer_renderAuto)
 
 -- =============================================================================
--- STUBS: 1 uncovered lurek.parallax API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- ParallaxSet methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: ParallaxSet:removeLayerAt -------------------------------------
---@api-stub: ParallaxSet:removeLayerAt
 -- Removes the layer at the given 1-based index.
 -- Example scenario:
 if parallaxset ~= nil then

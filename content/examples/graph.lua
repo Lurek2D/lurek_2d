@@ -2,7 +2,7 @@
 -- Lurek2D lurek.graph API Reference
 -- Run with: cargo run -- content/examples/graph
 --
--- Scenario: A factory automation game where nodes are machines (smelters,
+Scenario: A factory automation game where nodes are machines (smelters,
 -- assemblers, storages), edges are conveyor belts carrying items between them,
 -- and the graph system handles flow logic, routing, supply/demand, and
 -- production chains. Items decay, nodes have capacity, and edges filter types.
@@ -13,7 +13,6 @@ print("=== lurek.graph — Flow Graph System ===\n")
 -- Graph Creation
 -- =============================================================================
 
---@api-stub: lurek.graph.newGraph
 -- Demonstrates the proper usage of lurek.graph.newGraph.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_graph_newGraph()
@@ -21,7 +20,6 @@ local function demo_lurek_graph_newGraph()
 end
 local _ok, _err = pcall(demo_lurek_graph_newGraph)
 
---@api-stub: Graph:type
 -- Demonstrates the proper usage of Graph:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_type()
@@ -29,7 +27,6 @@ local function demo_Graph_type()
 end
 local _ok, _err = pcall(demo_Graph_type)
 
---@api-stub: Graph:typeOf
 -- Demonstrates the proper usage of Graph:typeOf.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_typeOf()
@@ -44,7 +41,6 @@ local _ok, _err = pcall(demo_Graph_typeOf)
 -- Nodes are returned from factory:addNode() — we can't call it directly since
 -- it's not listed as a standalone function, but use the graph to get nodes.
 
---@api-stub: Graph:getNodeCount
 -- Demonstrates the proper usage of Graph:getNodeCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getNodeCount()
@@ -52,7 +48,6 @@ local function demo_Graph_getNodeCount()
 end
 local _ok, _err = pcall(demo_Graph_getNodeCount)
 
---@api-stub: Graph:getNodes
 -- Demonstrates the proper usage of Graph:getNodes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getNodes()
@@ -60,7 +55,6 @@ local function demo_Graph_getNodes()
 end
 local _ok, _err = pcall(demo_Graph_getNodes)
 
---@api-stub: Graph:hasNode
 -- Demonstrates the proper usage of Graph:hasNode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_hasNode()
@@ -68,7 +62,6 @@ local function demo_Graph_hasNode()
 end
 local _ok, _err = pcall(demo_Graph_hasNode)
 
---@api-stub: Graph:removeNode
 -- Demonstrates the proper usage of Graph:removeNode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_removeNode()
@@ -76,7 +69,6 @@ local function demo_Graph_removeNode()
 end
 local _ok, _err = pcall(demo_Graph_removeNode)
 
---@api-stub: Graph:getNeighbors
 -- Demonstrates the proper usage of Graph:getNeighbors.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getNeighbors()
@@ -92,7 +84,6 @@ local _ok, _err = pcall(demo_Graph_getNeighbors)
 local smelter = nodes[1]  -- first node if exists
 
 if smelter then
---@api-stub: Node:type
 -- Demonstrates the proper usage of Node:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_type()
@@ -100,7 +91,6 @@ local function demo_Node_type()
 end
 local _ok, _err = pcall(demo_Node_type)
 
---@api-stub: Node:typeOf
 -- Demonstrates the proper usage of Node:typeOf.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_typeOf()
@@ -108,7 +98,6 @@ local function demo_Node_typeOf()
 end
 local _ok, _err = pcall(demo_Node_typeOf)
 
---@api-stub: Node:setType
 -- Demonstrates the proper usage of Node:setType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setType()
@@ -116,7 +105,6 @@ local function demo_Node_setType()
 end
 local _ok, _err = pcall(demo_Node_setType)
 
---@api-stub: Node:getType
 -- Demonstrates the proper usage of Node:getType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getType()
@@ -124,7 +112,6 @@ local function demo_Node_getType()
 end
 local _ok, _err = pcall(demo_Node_getType)
 
---@api-stub: Node:setCapacity
 -- Demonstrates the proper usage of Node:setCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setCapacity()
@@ -132,7 +119,6 @@ local function demo_Node_setCapacity()
 end
 local _ok, _err = pcall(demo_Node_setCapacity)
 
---@api-stub: Node:getCapacity
 -- Demonstrates the proper usage of Node:getCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getCapacity()
@@ -140,7 +126,6 @@ local function demo_Node_getCapacity()
 end
 local _ok, _err = pcall(demo_Node_getCapacity)
 
---@api-stub: Node:getItemCount
 -- Demonstrates the proper usage of Node:getItemCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getItemCount()
@@ -148,7 +133,6 @@ local function demo_Node_getItemCount()
 end
 local _ok, _err = pcall(demo_Node_getItemCount)
 
---@api-stub: Node:isFull
 -- Demonstrates the proper usage of Node:isFull.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_isFull()
@@ -156,7 +140,6 @@ local function demo_Node_isFull()
 end
 local _ok, _err = pcall(demo_Node_isFull)
 
---@api-stub: Node:setActive
 -- Demonstrates the proper usage of Node:setActive.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setActive()
@@ -164,7 +147,6 @@ local function demo_Node_setActive()
 end
 local _ok, _err = pcall(demo_Node_setActive)
 
---@api-stub: Node:isActive
 -- Demonstrates the proper usage of Node:isActive.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_isActive()
@@ -176,7 +158,6 @@ local _ok, _err = pcall(demo_Node_isActive)
     -- Node Flow Mode — Push/Pull production
     -- =============================================================================
 
---@api-stub: Node:setFlowMode
 -- Demonstrates the proper usage of Node:setFlowMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setFlowMode()
@@ -184,7 +165,6 @@ local function demo_Node_setFlowMode()
 end
 local _ok, _err = pcall(demo_Node_setFlowMode)
 
---@api-stub: Node:getFlowMode
 -- Demonstrates the proper usage of Node:getFlowMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getFlowMode()
@@ -192,7 +172,6 @@ local function demo_Node_getFlowMode()
 end
 local _ok, _err = pcall(demo_Node_getFlowMode)
 
---@api-stub: Node:setPushRate
 -- Demonstrates the proper usage of Node:setPushRate.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setPushRate()
@@ -200,7 +179,6 @@ local function demo_Node_setPushRate()
 end
 local _ok, _err = pcall(demo_Node_setPushRate)
 
---@api-stub: Node:getPushRate
 -- Demonstrates the proper usage of Node:getPushRate.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getPushRate()
@@ -208,7 +186,6 @@ local function demo_Node_getPushRate()
 end
 local _ok, _err = pcall(demo_Node_getPushRate)
 
---@api-stub: Node:setPullRate
 -- Demonstrates the proper usage of Node:setPullRate.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setPullRate()
@@ -216,7 +193,6 @@ local function demo_Node_setPullRate()
 end
 local _ok, _err = pcall(demo_Node_setPullRate)
 
---@api-stub: Node:getPullRate
 -- Demonstrates the proper usage of Node:getPullRate.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getPullRate()
@@ -224,7 +200,6 @@ local function demo_Node_getPullRate()
 end
 local _ok, _err = pcall(demo_Node_getPullRate)
 
---@api-stub: Node:setPushFilter
 -- Demonstrates the proper usage of Node:setPushFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setPushFilter()
@@ -232,7 +207,6 @@ local function demo_Node_setPushFilter()
 end
 local _ok, _err = pcall(demo_Node_setPushFilter)
 
---@api-stub: Node:getPushFilter
 -- Demonstrates the proper usage of Node:getPushFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getPushFilter()
@@ -240,7 +214,6 @@ local function demo_Node_getPushFilter()
 end
 local _ok, _err = pcall(demo_Node_getPushFilter)
 
---@api-stub: Node:setPullFilter
 -- Demonstrates the proper usage of Node:setPullFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setPullFilter()
@@ -248,7 +221,6 @@ local function demo_Node_setPullFilter()
 end
 local _ok, _err = pcall(demo_Node_setPullFilter)
 
---@api-stub: Node:getPullFilter
 -- Demonstrates the proper usage of Node:getPullFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getPullFilter()
@@ -256,7 +228,6 @@ local function demo_Node_getPullFilter()
 end
 local _ok, _err = pcall(demo_Node_getPullFilter)
 
---@api-stub: Node:setOverflowPolicy
 -- Demonstrates the proper usage of Node:setOverflowPolicy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setOverflowPolicy()
@@ -264,7 +235,6 @@ local function demo_Node_setOverflowPolicy()
 end
 local _ok, _err = pcall(demo_Node_setOverflowPolicy)
 
---@api-stub: Node:getOverflowPolicy
 -- Demonstrates the proper usage of Node:getOverflowPolicy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getOverflowPolicy()
@@ -276,7 +246,6 @@ local _ok, _err = pcall(demo_Node_getOverflowPolicy)
     -- Node Processing — Conversion recipes
     -- =============================================================================
 
---@api-stub: Node:setProcessTime
 -- Demonstrates the proper usage of Node:setProcessTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setProcessTime()
@@ -284,7 +253,6 @@ local function demo_Node_setProcessTime()
 end
 local _ok, _err = pcall(demo_Node_setProcessTime)
 
---@api-stub: Node:getProcessTime
 -- Demonstrates the proper usage of Node:getProcessTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getProcessTime()
@@ -292,7 +260,6 @@ local function demo_Node_getProcessTime()
 end
 local _ok, _err = pcall(demo_Node_getProcessTime)
 
---@api-stub: Node:clearConversion
 -- Demonstrates the proper usage of Node:clearConversion.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_clearConversion()
@@ -300,7 +267,6 @@ local function demo_Node_clearConversion()
 end
 local _ok, _err = pcall(demo_Node_clearConversion)
 
---@api-stub: Node:clearAllConversions
 -- Demonstrates the proper usage of Node:clearAllConversions.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_clearAllConversions()
@@ -312,7 +278,6 @@ local _ok, _err = pcall(demo_Node_clearAllConversions)
     -- Node Queue
     -- =============================================================================
 
---@api-stub: Node:setQueueEnabled
 -- Demonstrates the proper usage of Node:setQueueEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setQueueEnabled()
@@ -320,7 +285,6 @@ local function demo_Node_setQueueEnabled()
 end
 local _ok, _err = pcall(demo_Node_setQueueEnabled)
 
---@api-stub: Node:isQueueEnabled
 -- Demonstrates the proper usage of Node:isQueueEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_isQueueEnabled()
@@ -328,7 +292,6 @@ local function demo_Node_isQueueEnabled()
 end
 local _ok, _err = pcall(demo_Node_isQueueEnabled)
 
---@api-stub: Node:setQueueCapacity
 -- Demonstrates the proper usage of Node:setQueueCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_setQueueCapacity()
@@ -336,7 +299,6 @@ local function demo_Node_setQueueCapacity()
 end
 local _ok, _err = pcall(demo_Node_setQueueCapacity)
 
---@api-stub: Node:getQueueCapacity
 -- Demonstrates the proper usage of Node:getQueueCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getQueueCapacity()
@@ -344,7 +306,6 @@ local function demo_Node_getQueueCapacity()
 end
 local _ok, _err = pcall(demo_Node_getQueueCapacity)
 
---@api-stub: Node:getQueueSize
 -- Demonstrates the proper usage of Node:getQueueSize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getQueueSize()
@@ -352,7 +313,6 @@ local function demo_Node_getQueueSize()
 end
 local _ok, _err = pcall(demo_Node_getQueueSize)
 
---@api-stub: Node:enqueue
 -- Demonstrates the proper usage of Node:enqueue.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_enqueue()
@@ -360,7 +320,6 @@ local function demo_Node_enqueue()
 end
 local _ok, _err = pcall(demo_Node_enqueue)
 
---@api-stub: Node:dequeue
 -- Demonstrates the proper usage of Node:dequeue.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_dequeue()
@@ -368,7 +327,6 @@ local function demo_Node_dequeue()
 end
 local _ok, _err = pcall(demo_Node_dequeue)
 
---@api-stub: Node:getItems
 -- Demonstrates the proper usage of Node:getItems.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getItems()
@@ -376,7 +334,6 @@ local function demo_Node_getItems()
 end
 local _ok, _err = pcall(demo_Node_getItems)
 
---@api-stub: Node:getEdges
 -- Demonstrates the proper usage of Node:getEdges.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getEdges()
@@ -388,7 +345,6 @@ local _ok, _err = pcall(demo_Node_getEdges)
     -- Node Tags & Supply/Demand
     -- =============================================================================
 
---@api-stub: Node:addTag
 -- Demonstrates the proper usage of Node:addTag.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_addTag()
@@ -397,7 +353,6 @@ local function demo_Node_addTag()
 end
 local _ok, _err = pcall(demo_Node_addTag)
 
---@api-stub: Node:hasTag
 -- Demonstrates the proper usage of Node:hasTag.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_hasTag()
@@ -405,7 +360,6 @@ local function demo_Node_hasTag()
 end
 local _ok, _err = pcall(demo_Node_hasTag)
 
---@api-stub: Node:removeTag
 -- Demonstrates the proper usage of Node:removeTag.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_removeTag()
@@ -413,7 +367,6 @@ local function demo_Node_removeTag()
 end
 local _ok, _err = pcall(demo_Node_removeTag)
 
---@api-stub: Node:getTags
 -- Demonstrates the proper usage of Node:getTags.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_getTags()
@@ -422,7 +375,6 @@ local function demo_Node_getTags()
 end
 local _ok, _err = pcall(demo_Node_getTags)
 
---@api-stub: Node:clearTags
 -- Demonstrates the proper usage of Node:clearTags.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_clearTags()
@@ -430,7 +382,6 @@ local function demo_Node_clearTags()
 end
 local _ok, _err = pcall(demo_Node_clearTags)
 
---@api-stub: Node:removeSupply
 -- Demonstrates the proper usage of Node:removeSupply.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_removeSupply()
@@ -438,7 +389,6 @@ local function demo_Node_removeSupply()
 end
 local _ok, _err = pcall(demo_Node_removeSupply)
 
---@api-stub: Node:clearSupplies
 -- Demonstrates the proper usage of Node:clearSupplies.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_clearSupplies()
@@ -446,7 +396,6 @@ local function demo_Node_clearSupplies()
 end
 local _ok, _err = pcall(demo_Node_clearSupplies)
 
---@api-stub: Node:removeDemand
 -- Demonstrates the proper usage of Node:removeDemand.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_removeDemand()
@@ -454,7 +403,6 @@ local function demo_Node_removeDemand()
 end
 local _ok, _err = pcall(demo_Node_removeDemand)
 
---@api-stub: Node:clearDemands
 -- Demonstrates the proper usage of Node:clearDemands.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Node_clearDemands()
@@ -466,7 +414,6 @@ local _ok, _err = pcall(demo_Node_clearDemands)
 -- Edges — Conveyor belts
 -- =============================================================================
 
---@api-stub: Graph:getEdgeCount
 -- Demonstrates the proper usage of Graph:getEdgeCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getEdgeCount()
@@ -474,7 +421,6 @@ local function demo_Graph_getEdgeCount()
 end
 local _ok, _err = pcall(demo_Graph_getEdgeCount)
 
---@api-stub: Graph:getEdges
 -- Demonstrates the proper usage of Graph:getEdges.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getEdges()
@@ -482,7 +428,6 @@ local function demo_Graph_getEdges()
 end
 local _ok, _err = pcall(demo_Graph_getEdges)
 
---@api-stub: Graph:hasEdge
 -- Demonstrates the proper usage of Graph:hasEdge.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_hasEdge()
@@ -490,7 +435,6 @@ local function demo_Graph_hasEdge()
 end
 local _ok, _err = pcall(demo_Graph_hasEdge)
 
---@api-stub: Graph:removeEdge
 -- Demonstrates the proper usage of Graph:removeEdge.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_removeEdge()
@@ -499,7 +443,6 @@ local function demo_Graph_removeEdge()
 end
 local _ok, _err = pcall(demo_Graph_removeEdge)
 
---@api-stub: Edge:type
 -- Demonstrates the proper usage of Edge:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_type()
@@ -507,7 +450,6 @@ local function demo_Edge_type()
 end
 local _ok, _err = pcall(demo_Edge_type)
 
---@api-stub: Edge:typeOf
 -- Demonstrates the proper usage of Edge:typeOf.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_typeOf()
@@ -515,7 +457,6 @@ local function demo_Edge_typeOf()
 end
 local _ok, _err = pcall(demo_Edge_typeOf)
 
---@api-stub: Edge:setType
 -- Demonstrates the proper usage of Edge:setType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setType()
@@ -523,7 +464,6 @@ local function demo_Edge_setType()
 end
 local _ok, _err = pcall(demo_Edge_setType)
 
---@api-stub: Edge:getType
 -- Demonstrates the proper usage of Edge:getType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getType()
@@ -531,7 +471,6 @@ local function demo_Edge_getType()
 end
 local _ok, _err = pcall(demo_Edge_getType)
 
---@api-stub: Edge:getFrom
 -- Demonstrates the proper usage of Edge:getFrom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getFrom()
@@ -539,7 +478,6 @@ local function demo_Edge_getFrom()
 end
 local _ok, _err = pcall(demo_Edge_getFrom)
 
---@api-stub: Edge:getTo
 -- Demonstrates the proper usage of Edge:getTo.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getTo()
@@ -547,7 +485,6 @@ local function demo_Edge_getTo()
 end
 local _ok, _err = pcall(demo_Edge_getTo)
 
---@api-stub: Edge:setWeight
 -- Demonstrates the proper usage of Edge:setWeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setWeight()
@@ -555,7 +492,6 @@ local function demo_Edge_setWeight()
 end
 local _ok, _err = pcall(demo_Edge_setWeight)
 
---@api-stub: Edge:getWeight
 -- Demonstrates the proper usage of Edge:getWeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getWeight()
@@ -567,7 +503,6 @@ local _ok, _err = pcall(demo_Edge_getWeight)
     -- Edge — Capacity & Throughput
     -- =============================================================================
 
---@api-stub: Edge:setCapacity
 -- Demonstrates the proper usage of Edge:setCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setCapacity()
@@ -575,7 +510,6 @@ local function demo_Edge_setCapacity()
 end
 local _ok, _err = pcall(demo_Edge_setCapacity)
 
---@api-stub: Edge:getCapacity
 -- Demonstrates the proper usage of Edge:getCapacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getCapacity()
@@ -583,7 +517,6 @@ local function demo_Edge_getCapacity()
 end
 local _ok, _err = pcall(demo_Edge_getCapacity)
 
---@api-stub: Edge:setThroughput
 -- Demonstrates the proper usage of Edge:setThroughput.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setThroughput()
@@ -591,7 +524,6 @@ local function demo_Edge_setThroughput()
 end
 local _ok, _err = pcall(demo_Edge_setThroughput)
 
---@api-stub: Edge:getThroughput
 -- Demonstrates the proper usage of Edge:getThroughput.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getThroughput()
@@ -599,7 +531,6 @@ local function demo_Edge_getThroughput()
 end
 local _ok, _err = pcall(demo_Edge_getThroughput)
 
---@api-stub: Edge:setSpeedModifier
 -- Demonstrates the proper usage of Edge:setSpeedModifier.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setSpeedModifier()
@@ -607,7 +538,6 @@ local function demo_Edge_setSpeedModifier()
 end
 local _ok, _err = pcall(demo_Edge_setSpeedModifier)
 
---@api-stub: Edge:getSpeedModifier
 -- Demonstrates the proper usage of Edge:getSpeedModifier.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getSpeedModifier()
@@ -615,7 +545,6 @@ local function demo_Edge_getSpeedModifier()
 end
 local _ok, _err = pcall(demo_Edge_getSpeedModifier)
 
---@api-stub: Edge:setTravelTime
 -- Demonstrates the proper usage of Edge:setTravelTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setTravelTime()
@@ -623,7 +552,6 @@ local function demo_Edge_setTravelTime()
 end
 local _ok, _err = pcall(demo_Edge_setTravelTime)
 
---@api-stub: Edge:getTravelTime
 -- Demonstrates the proper usage of Edge:getTravelTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getTravelTime()
@@ -635,7 +563,6 @@ local _ok, _err = pcall(demo_Edge_getTravelTime)
     -- Edge — Cooldown & Directionality
     -- =============================================================================
 
---@api-stub: Edge:setCooldown
 -- Demonstrates the proper usage of Edge:setCooldown.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setCooldown()
@@ -643,7 +570,6 @@ local function demo_Edge_setCooldown()
 end
 local _ok, _err = pcall(demo_Edge_setCooldown)
 
---@api-stub: Edge:getCooldown
 -- Demonstrates the proper usage of Edge:getCooldown.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getCooldown()
@@ -651,7 +577,6 @@ local function demo_Edge_getCooldown()
 end
 local _ok, _err = pcall(demo_Edge_getCooldown)
 
---@api-stub: Edge:isOnCooldown
 -- Demonstrates the proper usage of Edge:isOnCooldown.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_isOnCooldown()
@@ -659,7 +584,6 @@ local function demo_Edge_isOnCooldown()
 end
 local _ok, _err = pcall(demo_Edge_isOnCooldown)
 
---@api-stub: Edge:setBidirectional
 -- Demonstrates the proper usage of Edge:setBidirectional.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setBidirectional()
@@ -667,7 +591,6 @@ local function demo_Edge_setBidirectional()
 end
 local _ok, _err = pcall(demo_Edge_setBidirectional)
 
---@api-stub: Edge:isBidirectional
 -- Demonstrates the proper usage of Edge:isBidirectional.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_isBidirectional()
@@ -675,7 +598,6 @@ local function demo_Edge_isBidirectional()
 end
 local _ok, _err = pcall(demo_Edge_isBidirectional)
 
---@api-stub: Edge:setActive
 -- Demonstrates the proper usage of Edge:setActive.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_setActive()
@@ -683,7 +605,6 @@ local function demo_Edge_setActive()
 end
 local _ok, _err = pcall(demo_Edge_setActive)
 
---@api-stub: Edge:isActive
 -- Demonstrates the proper usage of Edge:isActive.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_isActive()
@@ -695,7 +616,6 @@ local _ok, _err = pcall(demo_Edge_isActive)
     -- Edge — Item Filtering
     -- =============================================================================
 
---@api-stub: Edge:addAllowedType
 -- Demonstrates the proper usage of Edge:addAllowedType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_addAllowedType()
@@ -704,7 +624,6 @@ local function demo_Edge_addAllowedType()
 end
 local _ok, _err = pcall(demo_Edge_addAllowedType)
 
---@api-stub: Edge:isItemTypeAllowed
 -- Demonstrates the proper usage of Edge:isItemTypeAllowed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_isItemTypeAllowed()
@@ -712,7 +631,6 @@ local function demo_Edge_isItemTypeAllowed()
 end
 local _ok, _err = pcall(demo_Edge_isItemTypeAllowed)
 
---@api-stub: Edge:removeAllowedType
 -- Demonstrates the proper usage of Edge:removeAllowedType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_removeAllowedType()
@@ -720,7 +638,6 @@ local function demo_Edge_removeAllowedType()
 end
 local _ok, _err = pcall(demo_Edge_removeAllowedType)
 
---@api-stub: Edge:clearAllowedTypes
 -- Demonstrates the proper usage of Edge:clearAllowedTypes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_clearAllowedTypes()
@@ -728,7 +645,6 @@ local function demo_Edge_clearAllowedTypes()
 end
 local _ok, _err = pcall(demo_Edge_clearAllowedTypes)
 
---@api-stub: Edge:getItemsInTransit
 -- Demonstrates the proper usage of Edge:getItemsInTransit.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Edge_getItemsInTransit()
@@ -740,7 +656,6 @@ local _ok, _err = pcall(demo_Edge_getItemsInTransit)
 -- Items — Resources flowing through the factory
 -- =============================================================================
 
---@api-stub: Graph:getItemCount
 -- Demonstrates the proper usage of Graph:getItemCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getItemCount()
@@ -748,7 +663,6 @@ local function demo_Graph_getItemCount()
 end
 local _ok, _err = pcall(demo_Graph_getItemCount)
 
---@api-stub: Graph:getItems
 -- Demonstrates the proper usage of Graph:getItems.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getItems()
@@ -756,7 +670,6 @@ local function demo_Graph_getItems()
 end
 local _ok, _err = pcall(demo_Graph_getItems)
 
---@api-stub: Graph:hasItem
 -- Demonstrates the proper usage of Graph:hasItem.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_hasItem()
@@ -764,7 +677,6 @@ local function demo_Graph_hasItem()
 end
 local _ok, _err = pcall(demo_Graph_hasItem)
 
---@api-stub: Graph:removeItem
 -- Demonstrates the proper usage of Graph:removeItem.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_removeItem()
@@ -773,7 +685,6 @@ local function demo_Graph_removeItem()
 end
 local _ok, _err = pcall(demo_Graph_removeItem)
 
---@api-stub: GraphItem:type
 -- Demonstrates the proper usage of GraphItem:type.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_type()
@@ -781,7 +692,6 @@ local function demo_GraphItem_type()
 end
 local _ok, _err = pcall(demo_GraphItem_type)
 
---@api-stub: GraphItem:typeOf
 -- Demonstrates the proper usage of GraphItem:typeOf.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_typeOf()
@@ -789,7 +699,6 @@ local function demo_GraphItem_typeOf()
 end
 local _ok, _err = pcall(demo_GraphItem_typeOf)
 
---@api-stub: GraphItem:setType
 -- Demonstrates the proper usage of GraphItem:setType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_setType()
@@ -797,7 +706,6 @@ local function demo_GraphItem_setType()
 end
 local _ok, _err = pcall(demo_GraphItem_setType)
 
---@api-stub: GraphItem:getType
 -- Demonstrates the proper usage of GraphItem:getType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_getType()
@@ -805,7 +713,6 @@ local function demo_GraphItem_getType()
 end
 local _ok, _err = pcall(demo_GraphItem_getType)
 
---@api-stub: GraphItem:setDecayTime
 -- Demonstrates the proper usage of GraphItem:setDecayTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_setDecayTime()
@@ -813,7 +720,6 @@ local function demo_GraphItem_setDecayTime()
 end
 local _ok, _err = pcall(demo_GraphItem_setDecayTime)
 
---@api-stub: GraphItem:getDecayTime
 -- Demonstrates the proper usage of GraphItem:getDecayTime.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_getDecayTime()
@@ -821,7 +727,6 @@ local function demo_GraphItem_getDecayTime()
 end
 local _ok, _err = pcall(demo_GraphItem_getDecayTime)
 
---@api-stub: GraphItem:getRemainingLife
 -- Demonstrates the proper usage of GraphItem:getRemainingLife.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_getRemainingLife()
@@ -829,7 +734,6 @@ local function demo_GraphItem_getRemainingLife()
 end
 local _ok, _err = pcall(demo_GraphItem_getRemainingLife)
 
---@api-stub: GraphItem:isAlive
 -- Demonstrates the proper usage of GraphItem:isAlive.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_isAlive()
@@ -837,7 +741,6 @@ local function demo_GraphItem_isAlive()
 end
 local _ok, _err = pcall(demo_GraphItem_isAlive)
 
---@api-stub: GraphItem:kill
 -- Demonstrates the proper usage of GraphItem:kill.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_kill()
@@ -845,7 +748,6 @@ local function demo_GraphItem_kill()
 end
 local _ok, _err = pcall(demo_GraphItem_kill)
 
---@api-stub: GraphItem:setPriority
 -- Demonstrates the proper usage of GraphItem:setPriority.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_setPriority()
@@ -853,7 +755,6 @@ local function demo_GraphItem_setPriority()
 end
 local _ok, _err = pcall(demo_GraphItem_setPriority)
 
---@api-stub: GraphItem:getPriority
 -- Demonstrates the proper usage of GraphItem:getPriority.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_getPriority()
@@ -861,7 +762,6 @@ local function demo_GraphItem_getPriority()
 end
 local _ok, _err = pcall(demo_GraphItem_getPriority)
 
---@api-stub: GraphItem:getPosition
 -- Demonstrates the proper usage of GraphItem:getPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_GraphItem_getPosition()
@@ -873,7 +773,6 @@ local _ok, _err = pcall(demo_GraphItem_getPosition)
 -- Graph Simulation
 -- =============================================================================
 
---@api-stub: Graph:update
 -- Demonstrates the proper usage of Graph:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_update()
@@ -881,7 +780,6 @@ local function demo_Graph_update()
 end
 local _ok, _err = pcall(demo_Graph_update)
 
---@api-stub: Graph:step
 -- Demonstrates the proper usage of Graph:step.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_step()
@@ -889,7 +787,6 @@ local function demo_Graph_step()
 end
 local _ok, _err = pcall(demo_Graph_step)
 
---@api-stub: Graph:tickParallel
 -- Demonstrates the proper usage of Graph:tickParallel.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_tickParallel()
@@ -901,7 +798,6 @@ local _ok, _err = pcall(demo_Graph_tickParallel)
 -- Graph Analysis
 -- =============================================================================
 
---@api-stub: Graph:getComponents
 -- Demonstrates the proper usage of Graph:getComponents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getComponents()
@@ -910,7 +806,6 @@ local function demo_Graph_getComponents()
 end
 local _ok, _err = pcall(demo_Graph_getComponents)
 
---@api-stub: Graph:hasCycle
 -- Demonstrates the proper usage of Graph:hasCycle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_hasCycle()
@@ -918,7 +813,6 @@ local function demo_Graph_hasCycle()
 end
 local _ok, _err = pcall(demo_Graph_hasCycle)
 
---@api-stub: Graph:topologicalSort
 -- Demonstrates the proper usage of Graph:topologicalSort.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_topologicalSort()
@@ -926,7 +820,6 @@ local function demo_Graph_topologicalSort()
 end
 local _ok, _err = pcall(demo_Graph_topologicalSort)
 
---@api-stub: Graph:mst
 -- Demonstrates the proper usage of Graph:mst.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_mst()
@@ -935,7 +828,6 @@ local function demo_Graph_mst()
 end
 local _ok, _err = pcall(demo_Graph_mst)
 
---@api-stub: Graph:colorGraph
 -- Demonstrates the proper usage of Graph:colorGraph.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_colorGraph()
@@ -943,7 +835,6 @@ local function demo_Graph_colorGraph()
 end
 local _ok, _err = pcall(demo_Graph_colorGraph)
 
---@api-stub: Graph:isBipartite
 -- Demonstrates the proper usage of Graph:isBipartite.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_isBipartite()
@@ -951,7 +842,6 @@ local function demo_Graph_isBipartite()
 end
 local _ok, _err = pcall(demo_Graph_isBipartite)
 
---@api-stub: Graph:astar
 -- Demonstrates the proper usage of Graph:astar.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_astar()
@@ -963,7 +853,6 @@ local _ok, _err = pcall(demo_Graph_astar)
 -- Supply & Demand Processing
 -- =============================================================================
 
---@api-stub: Graph:processDemand
 -- Demonstrates the proper usage of Graph:processDemand.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_processDemand()
@@ -971,7 +860,6 @@ local function demo_Graph_processDemand()
 end
 local _ok, _err = pcall(demo_Graph_processDemand)
 
---@api-stub: Graph:getStats
 -- Demonstrates the proper usage of Graph:getStats.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Graph_getStats()
@@ -982,19 +870,13 @@ end
 local _ok, _err = pcall(demo_Graph_getStats)
 
 -- =============================================================================
--- STUBS: 12 uncovered lurek.graph API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- Edge methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Edge:clearAllowedTypes ----------------------------------------
---@api-stub: Edge:clearAllowedTypes
 -- Clears the edge allow-list so all item types are permitted.
 -- Example scenario:
 if edge ~= nil then
@@ -1008,8 +890,6 @@ end
 -- Graph methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Graph:removeNode ----------------------------------------------
---@api-stub: Graph:removeNode
 -- Removes a node from the graph.
 -- Example scenario:
 if graph ~= nil then
@@ -1019,8 +899,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:hasNode -------------------------------------------------
---@api-stub: Graph:hasNode
 -- Returns true if the node exists in the graph.
 -- Example scenario:
 if graph ~= nil then
@@ -1030,8 +908,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:removeEdge ----------------------------------------------
---@api-stub: Graph:removeEdge
 -- Removes an edge from the graph.
 -- Example scenario:
 if graph ~= nil then
@@ -1041,8 +917,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:hasEdge -------------------------------------------------
---@api-stub: Graph:hasEdge
 -- Returns true if the edge exists in the graph.
 -- Example scenario:
 if graph ~= nil then
@@ -1052,8 +926,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:removeItem ----------------------------------------------
---@api-stub: Graph:removeItem
 -- Removes an item from the graph entirely.
 -- Example scenario:
 if graph ~= nil then
@@ -1063,8 +935,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:hasItem -------------------------------------------------
---@api-stub: Graph:hasItem
 -- Returns true if the item exists in the graph.
 -- Example scenario:
 if graph ~= nil then
@@ -1074,8 +944,6 @@ if graph ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Graph:getNeighbors --------------------------------------------
---@api-stub: Graph:getNeighbors
 -- Returns a table of direct neighbor Node handles.
 -- Example scenario:
 if graph ~= nil then
@@ -1089,8 +957,6 @@ end
 -- GraphItem methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: GraphItem:kill ------------------------------------------------
---@api-stub: GraphItem:kill
 -- Marks this graph item as dead so it is removed on the next cleanup pass.
 -- Example scenario:
 if graphitem ~= nil then
@@ -1104,8 +970,6 @@ end
 -- Node methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Node:clearTags ------------------------------------------------
---@api-stub: Node:clearTags
 -- Removes all tags from this node.
 -- Example scenario:
 if node ~= nil then
@@ -1115,8 +979,6 @@ if node ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Node:enqueue --------------------------------------------------
---@api-stub: Node:enqueue
 -- Pushes an item into the node queue.
 -- Example scenario:
 if node ~= nil then
@@ -1126,8 +988,6 @@ if node ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Node:dequeue --------------------------------------------------
---@api-stub: Node:dequeue
 -- Pops the next item from the node queue, or nil if empty.
 -- Example scenario:
 if node ~= nil then

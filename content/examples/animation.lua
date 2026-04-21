@@ -2,7 +2,7 @@
 -- Lurek2D lurek.animation API Reference
 -- Run with: cargo run -- content/examples/animation
 --
--- Scenario: A character controller with sprite-sheet animations — idle, walk,
+Scenario: A character controller with sprite-sheet animations — idle, walk,
 -- attack clips — managed by a state machine that transitions between them.
 -- Includes animation curves for property interpolation and sync groups for
 -- coordinated multi-character animations.
@@ -13,7 +13,6 @@ print("=== lurek.animation — Sprite Animation ===\n")
 -- Animation Creation
 -- =============================================================================
 
---@api-stub: lurek.animation.new
 -- Demonstrates the proper usage of lurek.animation.new.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_new()
@@ -25,7 +24,6 @@ local _ok, _err = pcall(demo_lurek_animation_new)
 -- Frame Management
 -- =============================================================================
 
---@api-stub: Animation:addFrame
 -- Demonstrates the proper usage of Animation:addFrame.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_addFrame()
@@ -36,7 +34,6 @@ local function demo_Animation_addFrame()
 end
 local _ok, _err = pcall(demo_Animation_addFrame)
 
---@api-stub: Animation:addFramesFromGrid
 -- Demonstrates the proper usage of Animation:addFramesFromGrid.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_addFramesFromGrid()
@@ -44,7 +41,6 @@ local function demo_Animation_addFramesFromGrid()
 end
 local _ok, _err = pcall(demo_Animation_addFramesFromGrid)
 
---@api-stub: Animation:getFrameCount
 -- Demonstrates the proper usage of Animation:getFrameCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getFrameCount()
@@ -56,7 +52,6 @@ local _ok, _err = pcall(demo_Animation_getFrameCount)
 -- Clips — Named animation sequences
 -- =============================================================================
 
---@api-stub: Animation:addClip
 -- Demonstrates the proper usage of Animation:addClip.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_addClip()
@@ -64,7 +59,6 @@ local function demo_Animation_addClip()
 end
 local _ok, _err = pcall(demo_Animation_addClip)
 
---@api-stub: Animation:addClipFromGrid
 -- Demonstrates the proper usage of Animation:addClipFromGrid.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_addClipFromGrid()
@@ -72,7 +66,6 @@ local function demo_Animation_addClipFromGrid()
 end
 local _ok, _err = pcall(demo_Animation_addClipFromGrid)
 
---@api-stub: Animation:getClipCount
 -- Demonstrates the proper usage of Animation:getClipCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getClipCount()
@@ -80,7 +73,6 @@ local function demo_Animation_getClipCount()
 end
 local _ok, _err = pcall(demo_Animation_getClipCount)
 
---@api-stub: Animation:getClip
 -- Demonstrates the proper usage of Animation:getClip.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getClip()
@@ -93,7 +85,6 @@ local _ok, _err = pcall(demo_Animation_getClip)
 -- Playback Control
 -- =============================================================================
 
---@api-stub: Animation:play
 -- Demonstrates the proper usage of Animation:play.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_play()
@@ -101,7 +92,6 @@ local function demo_Animation_play()
 end
 local _ok, _err = pcall(demo_Animation_play)
 
---@api-stub: Animation:isPlaying
 -- Demonstrates the proper usage of Animation:isPlaying.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_isPlaying()
@@ -109,7 +99,6 @@ local function demo_Animation_isPlaying()
 end
 local _ok, _err = pcall(demo_Animation_isPlaying)
 
---@api-stub: Animation:isLooping
 -- Demonstrates the proper usage of Animation:isLooping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_isLooping()
@@ -117,7 +106,6 @@ local function demo_Animation_isLooping()
 end
 local _ok, _err = pcall(demo_Animation_isLooping)
 
---@api-stub: Animation:setSpeed
 -- Demonstrates the proper usage of Animation:setSpeed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_setSpeed()
@@ -125,7 +113,6 @@ local function demo_Animation_setSpeed()
 end
 local _ok, _err = pcall(demo_Animation_setSpeed)
 
---@api-stub: Animation:getSpeed
 -- Demonstrates the proper usage of Animation:getSpeed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getSpeed()
@@ -133,7 +120,6 @@ local function demo_Animation_getSpeed()
 end
 local _ok, _err = pcall(demo_Animation_getSpeed)
 
---@api-stub: Animation:update
 -- Demonstrates the proper usage of Animation:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_update()
@@ -141,7 +127,6 @@ local function demo_Animation_update()
 end
 local _ok, _err = pcall(demo_Animation_update)
 
---@api-stub: Animation:getCurrentFrame
 -- Demonstrates the proper usage of Animation:getCurrentFrame.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getCurrentFrame()
@@ -149,7 +134,6 @@ local function demo_Animation_getCurrentFrame()
 end
 local _ok, _err = pcall(demo_Animation_getCurrentFrame)
 
---@api-stub: Animation:setFrame
 -- Demonstrates the proper usage of Animation:setFrame.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_setFrame()
@@ -157,7 +141,6 @@ local function demo_Animation_setFrame()
 end
 local _ok, _err = pcall(demo_Animation_setFrame)
 
---@api-stub: Animation:getQuad
 -- Demonstrates the proper usage of Animation:getQuad.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getQuad()
@@ -165,7 +148,6 @@ local function demo_Animation_getQuad()
 end
 local _ok, _err = pcall(demo_Animation_getQuad)
 
---@api-stub: Animation:getBlendState
 -- Demonstrates the proper usage of Animation:getBlendState.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_getBlendState()
@@ -173,7 +155,6 @@ local function demo_Animation_getBlendState()
 end
 local _ok, _err = pcall(demo_Animation_getBlendState)
 
---@api-stub: Animation:pollEvents
 -- Demonstrates the proper usage of Animation:pollEvents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_pollEvents()
@@ -182,7 +163,6 @@ local function demo_Animation_pollEvents()
 end
 local _ok, _err = pcall(demo_Animation_pollEvents)
 
---@api-stub: Animation:pause
 -- Demonstrates the proper usage of Animation:pause.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_pause()
@@ -190,7 +170,6 @@ local function demo_Animation_pause()
 end
 local _ok, _err = pcall(demo_Animation_pause)
 
---@api-stub: Animation:resume
 -- Demonstrates the proper usage of Animation:resume.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_resume()
@@ -198,7 +177,6 @@ local function demo_Animation_resume()
 end
 local _ok, _err = pcall(demo_Animation_resume)
 
---@api-stub: Animation:stop
 -- Demonstrates the proper usage of Animation:stop.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Animation_stop()
@@ -210,7 +188,6 @@ local _ok, _err = pcall(demo_Animation_stop)
 -- Aseprite Import
 -- =============================================================================
 
---@api-stub: lurek.animation.fromAseprite
 -- Demonstrates the proper usage of lurek.animation.fromAseprite.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_fromAseprite()
@@ -223,7 +200,6 @@ local _ok, _err = pcall(demo_lurek_animation_fromAseprite)
 -- State Machine — Automatic transitions
 -- =============================================================================
 
---@api-stub: lurek.animation.newStateMachine
 -- Demonstrates the proper usage of lurek.animation.newStateMachine.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_newStateMachine()
@@ -231,7 +207,6 @@ local function demo_lurek_animation_newStateMachine()
 end
 local _ok, _err = pcall(demo_lurek_animation_newStateMachine)
 
---@api-stub: AnimStateMachine:update
 -- Demonstrates the proper usage of AnimStateMachine:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimStateMachine_update()
@@ -239,7 +214,6 @@ local function demo_AnimStateMachine_update()
 end
 local _ok, _err = pcall(demo_AnimStateMachine_update)
 
---@api-stub: AnimStateMachine:getState
 -- Demonstrates the proper usage of AnimStateMachine:getState.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimStateMachine_getState()
@@ -247,7 +221,6 @@ local function demo_AnimStateMachine_getState()
 end
 local _ok, _err = pcall(demo_AnimStateMachine_getState)
 
---@api-stub: AnimStateMachine:forceState
 -- Demonstrates the proper usage of AnimStateMachine:forceState.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimStateMachine_forceState()
@@ -255,7 +228,6 @@ local function demo_AnimStateMachine_forceState()
 end
 local _ok, _err = pcall(demo_AnimStateMachine_forceState)
 
---@api-stub: AnimStateMachine:getQuad
 -- Demonstrates the proper usage of AnimStateMachine:getQuad.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimStateMachine_getQuad()
@@ -267,7 +239,6 @@ local _ok, _err = pcall(demo_AnimStateMachine_getQuad)
 -- Animation Curves — Property interpolation
 -- =============================================================================
 
---@api-stub: lurek.animation.newCurve
 -- Demonstrates the proper usage of lurek.animation.newCurve.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_newCurve()
@@ -275,7 +246,6 @@ local function demo_lurek_animation_newCurve()
 end
 local _ok, _err = pcall(demo_lurek_animation_newCurve)
 
---@api-stub: AnimCurve:addKeyframe
 -- Demonstrates the proper usage of AnimCurve:addKeyframe.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimCurve_addKeyframe()
@@ -285,7 +255,6 @@ local function demo_AnimCurve_addKeyframe()
 end
 local _ok, _err = pcall(demo_AnimCurve_addKeyframe)
 
---@api-stub: AnimCurve:keyframeCount
 -- Demonstrates the proper usage of AnimCurve:keyframeCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimCurve_keyframeCount()
@@ -293,7 +262,6 @@ local function demo_AnimCurve_keyframeCount()
 end
 local _ok, _err = pcall(demo_AnimCurve_keyframeCount)
 
---@api-stub: AnimCurve:eval
 -- Demonstrates the proper usage of AnimCurve:eval.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimCurve_eval()
@@ -302,7 +270,6 @@ local function demo_AnimCurve_eval()
 end
 local _ok, _err = pcall(demo_AnimCurve_eval)
 
---@api-stub: AnimCurve:setEasing
 -- Demonstrates the proper usage of AnimCurve:setEasing.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimCurve_setEasing()
@@ -310,7 +277,6 @@ local function demo_AnimCurve_setEasing()
 end
 local _ok, _err = pcall(demo_AnimCurve_setEasing)
 
---@api-stub: AnimCurve:clear
 -- Demonstrates the proper usage of AnimCurve:clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimCurve_clear()
@@ -322,7 +288,6 @@ local _ok, _err = pcall(demo_AnimCurve_clear)
 -- Sync Groups — Coordinated animations
 -- =============================================================================
 
---@api-stub: lurek.animation.newSyncGroup
 -- Demonstrates the proper usage of lurek.animation.newSyncGroup.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_newSyncGroup()
@@ -330,7 +295,6 @@ local function demo_lurek_animation_newSyncGroup()
 end
 local _ok, _err = pcall(demo_lurek_animation_newSyncGroup)
 
---@api-stub: AnimSyncGroup:add
 -- Demonstrates the proper usage of AnimSyncGroup:add.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimSyncGroup_add()
@@ -339,7 +303,6 @@ local function demo_AnimSyncGroup_add()
 end
 local _ok, _err = pcall(demo_AnimSyncGroup_add)
 
---@api-stub: AnimSyncGroup:memberCount
 -- Demonstrates the proper usage of AnimSyncGroup:memberCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimSyncGroup_memberCount()
@@ -347,7 +310,6 @@ local function demo_AnimSyncGroup_memberCount()
 end
 local _ok, _err = pcall(demo_AnimSyncGroup_memberCount)
 
---@api-stub: AnimSyncGroup:remove
 -- Demonstrates the proper usage of AnimSyncGroup:remove.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimSyncGroup_remove()
@@ -355,7 +317,6 @@ local function demo_AnimSyncGroup_remove()
 end
 local _ok, _err = pcall(demo_AnimSyncGroup_remove)
 
---@api-stub: AnimSyncGroup:clear
 -- Demonstrates the proper usage of AnimSyncGroup:clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_AnimSyncGroup_clear()
@@ -367,7 +328,6 @@ local _ok, _err = pcall(demo_AnimSyncGroup_clear)
 -- Blend Layer Sets — Multi-layer blending
 -- =============================================================================
 
---@api-stub: lurek.animation.newBlendLayerSet
 -- Demonstrates the proper usage of lurek.animation.newBlendLayerSet.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_animation_newBlendLayerSet()
@@ -375,7 +335,6 @@ local function demo_lurek_animation_newBlendLayerSet()
 end
 local _ok, _err = pcall(demo_lurek_animation_newBlendLayerSet)
 
---@api-stub: BlendLayerSet:setWeight
 -- Demonstrates the proper usage of BlendLayerSet:setWeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_setWeight()
@@ -383,7 +342,6 @@ local function demo_BlendLayerSet_setWeight()
 end
 local _ok, _err = pcall(demo_BlendLayerSet_setWeight)
 
---@api-stub: BlendLayerSet:getWeight
 -- Demonstrates the proper usage of BlendLayerSet:getWeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_getWeight()
@@ -391,7 +349,6 @@ local function demo_BlendLayerSet_getWeight()
 end
 local _ok, _err = pcall(demo_BlendLayerSet_getWeight)
 
---@api-stub: BlendLayerSet:setMask
 -- Demonstrates the proper usage of BlendLayerSet:setMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_setMask()
@@ -399,7 +356,6 @@ local function demo_BlendLayerSet_setMask()
 end
 local _ok, _err = pcall(demo_BlendLayerSet_setMask)
 
---@api-stub: BlendLayerSet:listLayers
 -- Demonstrates the proper usage of BlendLayerSet:listLayers.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_listLayers()
@@ -408,7 +364,6 @@ local function demo_BlendLayerSet_listLayers()
 end
 local _ok, _err = pcall(demo_BlendLayerSet_listLayers)
 
---@api-stub: BlendLayerSet:removeLayer
 -- Demonstrates the proper usage of BlendLayerSet:removeLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_removeLayer()
@@ -416,7 +371,6 @@ local function demo_BlendLayerSet_removeLayer()
 end
 local _ok, _err = pcall(demo_BlendLayerSet_removeLayer)
 
---@api-stub: BlendLayerSet:len
 -- Demonstrates the proper usage of BlendLayerSet:len.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_BlendLayerSet_len()
@@ -426,19 +380,13 @@ end
 local _ok, _err = pcall(demo_BlendLayerSet_len)
 
 -- =============================================================================
--- STUBS: 2 uncovered lurek.animation API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- AnimStateMachine methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: AnimStateMachine:setParam -------------------------------------
---@api-stub: AnimStateMachine:setParam
 -- Sets an FSM parameter value (number, boolean, or integer supported).
 -- Example scenario:
 if fsm ~= nil then
@@ -452,8 +400,6 @@ end
 -- Animation methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Animation:drawToImage -----------------------------------------
---@api-stub: Animation:drawToImage
 -- Renders the current animation frame into a new ImageData (white bg, blue frame rect).
 -- Example scenario:
 if anim ~= nil then

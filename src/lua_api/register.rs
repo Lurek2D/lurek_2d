@@ -11,7 +11,7 @@ use crate::runtime::config::ModulesConfig;
 use crate::runtime::SharedState;
 
 use super::{
-    ai_api, animation_api, audio_api, automation_api, camera_api, collision_api, compute_api,
+    ai_api, animation_api, audio_api, automation_api, camera_api, compute_api,
     data_api, dataframe_api, debugbridge_api, devtools_api, docs_api, ecs_api, effect_api,
     engine_api, event_api, filesystem_api, globe_api, graph_api, i18n_api, image_api, input_api,
     light_api, log_api, math_api, minimap_api, mods_api, network_api, parallax_api, particle_api,
@@ -267,8 +267,6 @@ pub fn create_lua_vm(state: Rc<RefCell<SharedState>>, modules: &ModulesConfig) -
         physics_api::register(&lua, &lurek, state.clone())?;
     }
 
-    // collision: lurek.physics (always on â€” pure math, no world needed)
-    collision_api::register(&lua, &lurek, state.clone())?;
 
     // graphics: lurek.render
     if modules.render {

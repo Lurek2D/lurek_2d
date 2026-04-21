@@ -2,7 +2,7 @@
 -- Lurek2D lurek.image API Reference
 -- Run with: cargo run -- content/examples/image
 --
--- Scenario: A pixel art RPG with a map editor that loads, manipulates, and exports
+Scenario: A pixel art RPG with a map editor that loads, manipulates, and exports
 -- images — applying color grading for day/night, generating province maps,
 -- layered character portraits, palette swaps, and screenshot post-processing.
 
@@ -12,8 +12,6 @@ print("=== lurek.image — Image Processing & Manipulation ===\n")
 -- Image Data Creation (module-level functions)
 -- =============================================================================
 
--- ---- Stub: lurek.image.newImageData ---------------------------------------
---@api-stub: lurek.image.newImageData
 -- Demonstrates the proper usage of lurek.image.newImageData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_newImageData()
@@ -22,8 +20,6 @@ local function demo_lurek_image_newImageData()
 end
 local _ok, _err = pcall(demo_lurek_image_newImageData)
 
--- ---- Stub: lurek.image.loadImage ------------------------------------------
---@api-stub: lurek.image.loadImage
 -- Demonstrates the proper usage of lurek.image.loadImage.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_loadImage()
@@ -32,8 +28,6 @@ local function demo_lurek_image_loadImage()
 end
 local _ok, _err = pcall(demo_lurek_image_loadImage)
 
--- ---- Stub: lurek.image.newCompressedData ----------------------------------
---@api-stub: lurek.image.newCompressedData
 -- Demonstrates the proper usage of lurek.image.newCompressedData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_newCompressedData()
@@ -42,8 +36,6 @@ local function demo_lurek_image_newCompressedData()
 end
 local _ok, _err = pcall(demo_lurek_image_newCompressedData)
 
--- ---- Stub: lurek.image.isCompressed ---------------------------------------
---@api-stub: lurek.image.isCompressed
 -- Demonstrates the proper usage of lurek.image.isCompressed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_isCompressed()
@@ -51,8 +43,6 @@ local function demo_lurek_image_isCompressed()
 end
 local _ok, _err = pcall(demo_lurek_image_isCompressed)
 
--- ---- Stub: lurek.image.newLayeredImage ------------------------------------
---@api-stub: lurek.image.newLayeredImage
 -- Demonstrates the proper usage of lurek.image.newLayeredImage.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_newLayeredImage()
@@ -61,8 +51,6 @@ local function demo_lurek_image_newLayeredImage()
 end
 local _ok, _err = pcall(demo_lurek_image_newLayeredImage)
 
--- ---- Stub: lurek.image.loadLayered ----------------------------------------
---@api-stub: lurek.image.loadLayered
 -- Demonstrates the proper usage of lurek.image.loadLayered.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_loadLayered()
@@ -71,8 +59,6 @@ local function demo_lurek_image_loadLayered()
 end
 local _ok, _err = pcall(demo_lurek_image_loadLayered)
 
--- ---- Stub: lurek.image.newPaletteLut --------------------------------------
---@api-stub: lurek.image.newPaletteLut
 -- Create a palette look-up table for color swaps (e.g. faction recoloring).
 -- Maps source colors to replacement colors.
 local fire_palette = lurek.image.newPaletteLut({
@@ -83,8 +69,6 @@ local fire_palette = lurek.image.newPaletteLut({
 })
 print("fire palette LUT: 4 colors (red/orange/yellow/dark)")
 
--- ---- Stub: lurek.image.newProvinceGrid ------------------------------------
---@api-stub: lurek.image.newProvinceGrid
 -- Demonstrates the proper usage of lurek.image.newProvinceGrid.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_newProvinceGrid()
@@ -97,8 +81,6 @@ local _ok, _err = pcall(demo_lurek_image_newProvinceGrid)
 -- Save / Export (module-level functions)
 -- =============================================================================
 
--- ---- Stub: lurek.image.saveImage ------------------------------------------
---@api-stub: lurek.image.saveImage
 -- Demonstrates the proper usage of lurek.image.saveImage.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_saveImage()
@@ -107,8 +89,6 @@ local function demo_lurek_image_saveImage()
 end
 local _ok, _err = pcall(demo_lurek_image_saveImage)
 
--- ---- Stub: lurek.image.savePNG --------------------------------------------
---@api-stub: lurek.image.savePNG
 -- Demonstrates the proper usage of lurek.image.savePNG.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_image_savePNG()
@@ -121,8 +101,6 @@ local _ok, _err = pcall(demo_lurek_image_savePNG)
 -- ProvinceGrid Object Methods
 -- =============================================================================
 
--- ---- Stub: ProvinceGrid:getWidth ------------------------------------------
---@api-stub: ProvinceGrid:getWidth
 -- Demonstrates the proper usage of ProvinceGrid:getWidth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ProvinceGrid_getWidth()
@@ -130,8 +108,6 @@ local function demo_ProvinceGrid_getWidth()
 end
 local _ok, _err = pcall(demo_ProvinceGrid_getWidth)
 
--- ---- Stub: ProvinceGrid:getHeight -----------------------------------------
---@api-stub: ProvinceGrid:getHeight
 -- Demonstrates the proper usage of ProvinceGrid:getHeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ProvinceGrid_getHeight()
@@ -139,8 +115,6 @@ local function demo_ProvinceGrid_getHeight()
 end
 local _ok, _err = pcall(demo_ProvinceGrid_getHeight)
 
--- ---- Stub: ProvinceGrid:getAt ---------------------------------------------
---@api-stub: ProvinceGrid:getAt
 -- Demonstrates the proper usage of ProvinceGrid:getAt.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ProvinceGrid_getAt()
@@ -149,8 +123,6 @@ local function demo_ProvinceGrid_getAt()
 end
 local _ok, _err = pcall(demo_ProvinceGrid_getAt)
 
--- ---- Stub: ProvinceGrid:provinceCount -------------------------------------
---@api-stub: ProvinceGrid:provinceCount
 -- Demonstrates the proper usage of ProvinceGrid:provinceCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ProvinceGrid_provinceCount()
@@ -158,8 +130,6 @@ local function demo_ProvinceGrid_provinceCount()
 end
 local _ok, _err = pcall(demo_ProvinceGrid_provinceCount)
 
--- ---- Stub: ProvinceGrid:adjacencies ---------------------------------------
---@api-stub: ProvinceGrid:adjacencies
 -- Demonstrates the proper usage of ProvinceGrid:adjacencies.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_ProvinceGrid_adjacencies()
@@ -172,8 +142,6 @@ local _ok, _err = pcall(demo_ProvinceGrid_adjacencies)
 -- LayeredImage Object Methods — paper-doll compositing
 -- =============================================================================
 
--- ---- Stub: LayeredImage:getWidth ------------------------------------------
---@api-stub: LayeredImage:getWidth
 -- Demonstrates the proper usage of LayeredImage:getWidth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_getWidth()
@@ -181,8 +149,6 @@ local function demo_LayeredImage_getWidth()
 end
 local _ok, _err = pcall(demo_LayeredImage_getWidth)
 
--- ---- Stub: LayeredImage:getHeight -----------------------------------------
---@api-stub: LayeredImage:getHeight
 -- Demonstrates the proper usage of LayeredImage:getHeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_getHeight()
@@ -190,8 +156,6 @@ local function demo_LayeredImage_getHeight()
 end
 local _ok, _err = pcall(demo_LayeredImage_getHeight)
 
--- ---- Stub: LayeredImage:layerCount ----------------------------------------
---@api-stub: LayeredImage:layerCount
 -- Demonstrates the proper usage of LayeredImage:layerCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_layerCount()
@@ -199,8 +163,6 @@ local function demo_LayeredImage_layerCount()
 end
 local _ok, _err = pcall(demo_LayeredImage_layerCount)
 
--- ---- Stub: LayeredImage:addLayer ------------------------------------------
---@api-stub: LayeredImage:addLayer
 -- Demonstrates the proper usage of LayeredImage:addLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_addLayer()
@@ -212,8 +174,6 @@ local function demo_LayeredImage_addLayer()
 end
 local _ok, _err = pcall(demo_LayeredImage_addLayer)
 
--- ---- Stub: LayeredImage:removeLayer ---------------------------------------
---@api-stub: LayeredImage:removeLayer
 -- Demonstrates the proper usage of LayeredImage:removeLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_removeLayer()
@@ -222,8 +182,6 @@ local function demo_LayeredImage_removeLayer()
 end
 local _ok, _err = pcall(demo_LayeredImage_removeLayer)
 
--- ---- Stub: LayeredImage:getLayer ------------------------------------------
---@api-stub: LayeredImage:getLayer
 -- Demonstrates the proper usage of LayeredImage:getLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_getLayer()
@@ -232,8 +190,6 @@ local function demo_LayeredImage_getLayer()
 end
 local _ok, _err = pcall(demo_LayeredImage_getLayer)
 
--- ---- Stub: LayeredImage:getOpacity ----------------------------------------
---@api-stub: LayeredImage:getOpacity
 -- Demonstrates the proper usage of LayeredImage:getOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_getOpacity()
@@ -241,8 +197,6 @@ local function demo_LayeredImage_getOpacity()
 end
 local _ok, _err = pcall(demo_LayeredImage_getOpacity)
 
--- ---- Stub: LayeredImage:setOpacity ----------------------------------------
---@api-stub: LayeredImage:setOpacity
 -- Demonstrates the proper usage of LayeredImage:setOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_setOpacity()
@@ -251,8 +205,6 @@ local function demo_LayeredImage_setOpacity()
 end
 local _ok, _err = pcall(demo_LayeredImage_setOpacity)
 
--- ---- Stub: LayeredImage:isVisible -----------------------------------------
---@api-stub: LayeredImage:isVisible
 -- Demonstrates the proper usage of LayeredImage:isVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_isVisible()
@@ -260,8 +212,6 @@ local function demo_LayeredImage_isVisible()
 end
 local _ok, _err = pcall(demo_LayeredImage_isVisible)
 
--- ---- Stub: LayeredImage:setVisible ----------------------------------------
---@api-stub: LayeredImage:setVisible
 -- Demonstrates the proper usage of LayeredImage:setVisible.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_setVisible()
@@ -270,8 +220,6 @@ local function demo_LayeredImage_setVisible()
 end
 local _ok, _err = pcall(demo_LayeredImage_setVisible)
 
--- ---- Stub: LayeredImage:getName -------------------------------------------
---@api-stub: LayeredImage:getName
 -- Demonstrates the proper usage of LayeredImage:getName.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_getName()
@@ -279,8 +227,6 @@ local function demo_LayeredImage_getName()
 end
 local _ok, _err = pcall(demo_LayeredImage_getName)
 
--- ---- Stub: LayeredImage:setName -------------------------------------------
---@api-stub: LayeredImage:setName
 -- Demonstrates the proper usage of LayeredImage:setName.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_setName()
@@ -289,8 +235,6 @@ local function demo_LayeredImage_setName()
 end
 local _ok, _err = pcall(demo_LayeredImage_setName)
 
--- ---- Stub: LayeredImage:swapLayers ----------------------------------------
---@api-stub: LayeredImage:swapLayers
 -- Demonstrates the proper usage of LayeredImage:swapLayers.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_swapLayers()
@@ -299,8 +243,6 @@ local function demo_LayeredImage_swapLayers()
 end
 local _ok, _err = pcall(demo_LayeredImage_swapLayers)
 
--- ---- Stub: LayeredImage:merge ---------------------------------------------
---@api-stub: LayeredImage:merge
 -- Demonstrates the proper usage of LayeredImage:merge.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_merge()
@@ -309,8 +251,6 @@ local function demo_LayeredImage_merge()
 end
 local _ok, _err = pcall(demo_LayeredImage_merge)
 
--- ---- Stub: LayeredImage:save ----------------------------------------------
---@api-stub: LayeredImage:save
 -- Demonstrates the proper usage of LayeredImage:save.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_LayeredImage_save()
@@ -323,8 +263,6 @@ local _ok, _err = pcall(demo_LayeredImage_save)
 -- CompressedImageData Object Methods
 -- =============================================================================
 
--- ---- Stub: CompressedImageData:getWidth -----------------------------------
---@api-stub: CompressedImageData:getWidth
 -- Demonstrates the proper usage of CompressedImageData:getWidth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_CompressedImageData_getWidth()
@@ -332,8 +270,6 @@ local function demo_CompressedImageData_getWidth()
 end
 local _ok, _err = pcall(demo_CompressedImageData_getWidth)
 
--- ---- Stub: CompressedImageData:getHeight ----------------------------------
---@api-stub: CompressedImageData:getHeight
 -- Demonstrates the proper usage of CompressedImageData:getHeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_CompressedImageData_getHeight()
@@ -341,8 +277,6 @@ local function demo_CompressedImageData_getHeight()
 end
 local _ok, _err = pcall(demo_CompressedImageData_getHeight)
 
--- ---- Stub: CompressedImageData:getDimensions ------------------------------
---@api-stub: CompressedImageData:getDimensions
 -- Demonstrates the proper usage of CompressedImageData:getDimensions.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_CompressedImageData_getDimensions()
@@ -351,8 +285,6 @@ local function demo_CompressedImageData_getDimensions()
 end
 local _ok, _err = pcall(demo_CompressedImageData_getDimensions)
 
--- ---- Stub: CompressedImageData:getMipmapCount -----------------------------
---@api-stub: CompressedImageData:getMipmapCount
 -- Demonstrates the proper usage of CompressedImageData:getMipmapCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_CompressedImageData_getMipmapCount()
@@ -360,8 +292,6 @@ local function demo_CompressedImageData_getMipmapCount()
 end
 local _ok, _err = pcall(demo_CompressedImageData_getMipmapCount)
 
--- ---- Stub: CompressedImageData:getFormat ----------------------------------
---@api-stub: CompressedImageData:getFormat
 -- Demonstrates the proper usage of CompressedImageData:getFormat.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_CompressedImageData_getFormat()
@@ -373,8 +303,6 @@ local _ok, _err = pcall(demo_CompressedImageData_getFormat)
 -- ImageData (mlua class) — pixel-level manipulation
 -- =============================================================================
 
--- ---- Stub: mlua:getWidth --------------------------------------------------
---@api-stub: mlua:getWidth
 -- Demonstrates the proper usage of mlua:getWidth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getWidth()
@@ -382,8 +310,6 @@ local function demo_mlua_getWidth()
 end
 local _ok, _err = pcall(demo_mlua_getWidth)
 
--- ---- Stub: mlua:getHeight -------------------------------------------------
---@api-stub: mlua:getHeight
 -- Demonstrates the proper usage of mlua:getHeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getHeight()
@@ -391,8 +317,6 @@ local function demo_mlua_getHeight()
 end
 local _ok, _err = pcall(demo_mlua_getHeight)
 
--- ---- Stub: mlua:getDimensions ---------------------------------------------
---@api-stub: mlua:getDimensions
 -- Demonstrates the proper usage of mlua:getDimensions.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getDimensions()
@@ -401,8 +325,6 @@ local function demo_mlua_getDimensions()
 end
 local _ok, _err = pcall(demo_mlua_getDimensions)
 
--- ---- Stub: mlua:getPixel --------------------------------------------------
---@api-stub: mlua:getPixel
 -- Demonstrates the proper usage of mlua:getPixel.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getPixel()
@@ -411,8 +333,6 @@ local function demo_mlua_getPixel()
 end
 local _ok, _err = pcall(demo_mlua_getPixel)
 
--- ---- Stub: mlua:fill ------------------------------------------------------
---@api-stub: mlua:fill
 -- Demonstrates the proper usage of mlua:fill.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_fill()
@@ -421,8 +341,6 @@ local function demo_mlua_fill()
 end
 local _ok, _err = pcall(demo_mlua_fill)
 
--- ---- Stub: mlua:noise ----------------------------------------------------
---@api-stub: mlua:noise
 -- Demonstrates the proper usage of mlua:noise.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_noise()
@@ -431,17 +349,13 @@ local function demo_mlua_noise()
 end
 local _ok, _err = pcall(demo_mlua_noise)
 
--- ---- Stub: mlua:mapPixel -------------------------------------------------
---@api-stub: mlua:mapPixel
 -- Transform every pixel with a custom function.
--- Example: swap red and blue channels.
+Example: swap red and blue channels.
 canvas_img:mapPixel(function(x, y, r, g, b, a)
     return b, g, r, a  -- swap R <-> B
 end)
 print("pixel map applied: R/B channel swap")
 
--- ---- Stub: mlua:encode ---------------------------------------------------
---@api-stub: mlua:encode
 -- Demonstrates the proper usage of mlua:encode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_encode()
@@ -450,8 +364,6 @@ local function demo_mlua_encode()
 end
 local _ok, _err = pcall(demo_mlua_encode)
 
--- ---- Stub: mlua:getString -------------------------------------------------
---@api-stub: mlua:getString
 -- Demonstrates the proper usage of mlua:getString.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getString()
@@ -460,8 +372,6 @@ local function demo_mlua_getString()
 end
 local _ok, _err = pcall(demo_mlua_getString)
 
--- ---- Stub: mlua:brightness ------------------------------------------------
---@api-stub: mlua:brightness
 -- Demonstrates the proper usage of mlua:brightness.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_brightness()
@@ -470,8 +380,6 @@ local function demo_mlua_brightness()
 end
 local _ok, _err = pcall(demo_mlua_brightness)
 
--- ---- Stub: mlua:contrast --------------------------------------------------
---@api-stub: mlua:contrast
 -- Demonstrates the proper usage of mlua:contrast.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_contrast()
@@ -480,8 +388,6 @@ local function demo_mlua_contrast()
 end
 local _ok, _err = pcall(demo_mlua_contrast)
 
--- ---- Stub: mlua:saturation ------------------------------------------------
---@api-stub: mlua:saturation
 -- Demonstrates the proper usage of mlua:saturation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_saturation()
@@ -490,8 +396,6 @@ local function demo_mlua_saturation()
 end
 local _ok, _err = pcall(demo_mlua_saturation)
 
--- ---- Stub: mlua:gamma -----------------------------------------------------
---@api-stub: mlua:gamma
 -- Demonstrates the proper usage of mlua:gamma.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_gamma()
@@ -500,8 +404,6 @@ local function demo_mlua_gamma()
 end
 local _ok, _err = pcall(demo_mlua_gamma)
 
--- ---- Stub: mlua:grayscale -------------------------------------------------
---@api-stub: mlua:grayscale
 -- Demonstrates the proper usage of mlua:grayscale.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_grayscale()
@@ -510,8 +412,6 @@ local function demo_mlua_grayscale()
 end
 local _ok, _err = pcall(demo_mlua_grayscale)
 
--- ---- Stub: mlua:sepia -----------------------------------------------------
---@api-stub: mlua:sepia
 -- Demonstrates the proper usage of mlua:sepia.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_sepia()
@@ -520,8 +420,6 @@ local function demo_mlua_sepia()
 end
 local _ok, _err = pcall(demo_mlua_sepia)
 
--- ---- Stub: mlua:invert ----------------------------------------------------
---@api-stub: mlua:invert
 -- Demonstrates the proper usage of mlua:invert.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_invert()
@@ -530,8 +428,6 @@ local function demo_mlua_invert()
 end
 local _ok, _err = pcall(demo_mlua_invert)
 
--- ---- Stub: mlua:threshold -------------------------------------------------
---@api-stub: mlua:threshold
 -- Demonstrates the proper usage of mlua:threshold.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_threshold()
@@ -540,8 +436,6 @@ local function demo_mlua_threshold()
 end
 local _ok, _err = pcall(demo_mlua_threshold)
 
--- ---- Stub: mlua:posterize -------------------------------------------------
---@api-stub: mlua:posterize
 -- Demonstrates the proper usage of mlua:posterize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_posterize()
@@ -550,8 +444,6 @@ local function demo_mlua_posterize()
 end
 local _ok, _err = pcall(demo_mlua_posterize)
 
--- ---- Stub: mlua:alphaMask -------------------------------------------------
---@api-stub: mlua:alphaMask
 -- Apply a grayscale mask image as the alpha channel.
 -- White areas become opaque, black becomes transparent.
 local mask = lurek.image.newImageData(256, 256)
@@ -561,8 +453,6 @@ print("alpha mask applied")
 
 -- Geometric transforms:
 
--- ---- Stub: mlua:flipHorizontal --------------------------------------------
---@api-stub: mlua:flipHorizontal
 -- Demonstrates the proper usage of mlua:flipHorizontal.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_flipHorizontal()
@@ -571,8 +461,6 @@ local function demo_mlua_flipHorizontal()
 end
 local _ok, _err = pcall(demo_mlua_flipHorizontal)
 
--- ---- Stub: mlua:flipVertical ----------------------------------------------
---@api-stub: mlua:flipVertical
 -- Demonstrates the proper usage of mlua:flipVertical.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_flipVertical()
@@ -581,8 +469,6 @@ local function demo_mlua_flipVertical()
 end
 local _ok, _err = pcall(demo_mlua_flipVertical)
 
--- ---- Stub: mlua:rotate90cw ------------------------------------------------
---@api-stub: mlua:rotate90cw
 -- Demonstrates the proper usage of mlua:rotate90cw.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_rotate90cw()
@@ -591,8 +477,6 @@ local function demo_mlua_rotate90cw()
 end
 local _ok, _err = pcall(demo_mlua_rotate90cw)
 
--- ---- Stub: mlua:crop ------------------------------------------------------
---@api-stub: mlua:crop
 -- Demonstrates the proper usage of mlua:crop.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_crop()
@@ -601,8 +485,6 @@ local function demo_mlua_crop()
 end
 local _ok, _err = pcall(demo_mlua_crop)
 
--- ---- Stub: mlua:resize ---------------------------------------------------
---@api-stub: mlua:resize
 -- Demonstrates the proper usage of mlua:resize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_resize()
@@ -611,8 +493,6 @@ local function demo_mlua_resize()
 end
 local _ok, _err = pcall(demo_mlua_resize)
 
--- ---- Stub: mlua:resizeNearest ---------------------------------------------
---@api-stub: mlua:resizeNearest
 -- Demonstrates the proper usage of mlua:resizeNearest.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_resizeNearest()
@@ -621,8 +501,6 @@ local function demo_mlua_resizeNearest()
 end
 local _ok, _err = pcall(demo_mlua_resizeNearest)
 
--- ---- Stub: mlua:blur ------------------------------------------------------
---@api-stub: mlua:blur
 -- Demonstrates the proper usage of mlua:blur.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_blur()
@@ -631,8 +509,6 @@ local function demo_mlua_blur()
 end
 local _ok, _err = pcall(demo_mlua_blur)
 
--- ---- Stub: mlua:sharpen ---------------------------------------------------
---@api-stub: mlua:sharpen
 -- Demonstrates the proper usage of mlua:sharpen.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_sharpen()
@@ -641,8 +517,6 @@ local function demo_mlua_sharpen()
 end
 local _ok, _err = pcall(demo_mlua_sharpen)
 
--- ---- Stub: mlua:diff ------------------------------------------------------
---@api-stub: mlua:diff
 -- Demonstrates the proper usage of mlua:diff.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_diff()
@@ -651,8 +525,6 @@ local function demo_mlua_diff()
 end
 local _ok, _err = pcall(demo_mlua_diff)
 
--- ---- Stub: mlua:mapPixels -------------------------------------------------
---@api-stub: mlua:mapPixels
 -- Demonstrates the proper usage of mlua:mapPixels.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_mapPixels()
@@ -662,8 +534,6 @@ local function demo_mlua_mapPixels()
 end
 local _ok, _err = pcall(demo_mlua_mapPixels)
 
--- ---- Stub: mlua:applyPaletteLut -------------------------------------------
---@api-stub: mlua:applyPaletteLut
 -- Demonstrates the proper usage of mlua:applyPaletteLut.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_applyPaletteLut()
@@ -676,8 +546,6 @@ local _ok, _err = pcall(demo_mlua_applyPaletteLut)
 -- PaletteLUT Object Methods
 -- =============================================================================
 
--- ---- Stub: PaletteLUT:getColorCount ---------------------------------------
---@api-stub: PaletteLUT:getColorCount
 -- Demonstrates the proper usage of PaletteLUT:getColorCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PaletteLUT_getColorCount()
@@ -685,8 +553,6 @@ local function demo_PaletteLUT_getColorCount()
 end
 local _ok, _err = pcall(demo_PaletteLUT_getColorCount)
 
--- ---- Stub: PaletteLUT:clear -----------------------------------------------
---@api-stub: PaletteLUT:clear
 -- Demonstrates the proper usage of PaletteLUT:clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PaletteLUT_clear()
@@ -697,19 +563,13 @@ end
 local _ok, _err = pcall(demo_PaletteLUT_clear)
 
 -- =============================================================================
--- STUBS: 1 uncovered lurek.image API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- mlua methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: mlua:setRawData -----------------------------------------------
---@api-stub: mlua:setRawData
 -- Replaces all pixel data from a raw RGBA byte string.
 -- Example scenario:
 if mlua ~= nil then

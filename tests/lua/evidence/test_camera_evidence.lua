@@ -7,7 +7,7 @@ local PI  = math.pi
 -- â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 --- Draw a mini world onto an ImageData then apply camera transforms for a viewport.
---- Returns an ImageData of size vwĂ—vh.
+--- Returns an ImageData of size vwxvh.
 local function render_world_through_cam(cam, world_w, world_h, vw, vh)
     local img = lurek.image.newImageData(vw, vh)
     img:fill(15, 20, 35, 255)
@@ -66,21 +66,21 @@ describe("Evidence: lurek.camera zoom and coordinate transforms", function()
     -- @covers Camera:getZoom
     -- @covers Camera:toWorld
     -- @description Renders the same world through zoom 1x and zoom 2x cameras so the viewport magnification is visible in one PNG.
-    it("zoom 2Ă— makes objects appear closer â€” PNG evidence: zoom_compare", function()
+    it("zoom 2x makes objects appear closer -” PNG evidence: zoom_compare", function()
         local VW, VH = 160, 120
         local WW, WH = 320, 240
 
         local img = lurek.image.newImageData(VW * 2 + 4, VH)
         img:fill(8, 8, 16, 255)
 
-        -- Zoom 1Ă—
+        -- Zoom 1x
         local cam1 = lurek.camera.newCamera()
         cam1:setViewport(0, 0, VW, VH)
         cam1:setPosition(WW / 2, WH / 2)
         cam1:setZoom(1.0)
         local left = render_world_through_cam(cam1, WW, WH, VW, VH)
 
-        -- Zoom 2Ă—
+        -- Zoom 2x
         local cam2 = lurek.camera.newCamera()
         cam2:setViewport(0, 0, VW, VH)
         cam2:setPosition(WW / 2, WH / 2)
@@ -116,7 +116,7 @@ describe("Evidence: lurek.camera rotation", function()
     -- @covers lurek.camera.newCamera
     -- @covers Camera:getRotation
     -- @description Renders a grid through a rotated camera so the rotated screen-space projection can be inspected visually.
-    it("rotation 45Â° â€” PNG evidence: rotation", function()
+    it("rotation 45 ° -” PNG evidence: rotation", function()
         local VW, VH = 160, 120
         local WW, WH = 320, 240
 
@@ -124,7 +124,7 @@ describe("Evidence: lurek.camera rotation", function()
         cam:setViewport(0, 0, VW, VH)
         cam:setPosition(WW / 2, WH / 2)
         cam:setZoom(1.0)
-        cam:setRotation(PI / 6)  -- 30Â°
+        cam:setRotation(PI / 6)  -- 30 °
 
         local img = render_world_through_cam(cam, WW, WH, VW, VH)
         lurek.image.savePNG(img, OUT .. "evidence_camera_rotation.png")
@@ -142,7 +142,7 @@ describe("Evidence: lurek.camera follow behaviour", function()
     -- @covers lurek.camera.newCamera
     -- @covers Camera:setBounds
     -- @description Moves a synthetic target along a path and records the camera trail to show smooth follow behavior over time.
-    it("setTarget causes camera to track â€” PNG evidence: follow_trail", function()
+    it("setTarget causes camera to track -” PNG evidence: follow_trail", function()
         local VW, VH = 200, 80
         local img = lurek.image.newImageData(VW, VH)
         img:fill(12, 15, 25, 255)
@@ -181,7 +181,7 @@ describe("Evidence: lurek.camera shake", function()
     -- @evidence file
     -- @covers lurek.camera.newCamera
     -- @description Applies a short shake effect and plots the resulting camera offsets into a PNG trail.
-    it("shake causes non-zero offset â€” PNG evidence: shake_trail", function()
+    it("shake causes non-zero offset -” PNG evidence: shake_trail", function()
         local VW, VH = 200, 60
         local img = lurek.image.newImageData(VW, VH)
         img:fill(10, 10, 20, 255)

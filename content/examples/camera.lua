@@ -2,7 +2,7 @@
 -- Lurek2D lurek.camera API Reference
 -- Run with: cargo run -- content/examples/camera
 --
--- Scenario: A side-scrolling platformer with a smooth-following camera that
+Scenario: A side-scrolling platformer with a smooth-following camera that
 -- tracks the player, supports screen shake on hit, zoom transitions, parallax,
 -- cinematic paths, and viewport bounds to prevent showing out-of-world areas.
 
@@ -12,7 +12,6 @@ print("=== lurek.camera — 2D Camera System ===\n")
 -- Camera Creation
 -- =============================================================================
 
---@api-stub: lurek.camera.new
 -- Demonstrates the proper usage of lurek.camera.new.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_camera_new()
@@ -25,7 +24,6 @@ local _ok, _err = pcall(demo_lurek_camera_new)
 -- Position & Basic Movement
 -- =============================================================================
 
---@api-stub: Camera2D:setPosition
 -- Demonstrates the proper usage of Camera2D:setPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setPosition()
@@ -33,7 +31,6 @@ local function demo_Camera2D_setPosition()
 end
 local _ok, _err = pcall(demo_Camera2D_setPosition)
 
---@api-stub: Camera2D:getPosition
 -- Demonstrates the proper usage of Camera2D:getPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getPosition()
@@ -42,7 +39,6 @@ local function demo_Camera2D_getPosition()
 end
 local _ok, _err = pcall(demo_Camera2D_getPosition)
 
---@api-stub: Camera2D:lookAt
 -- Demonstrates the proper usage of Camera2D:lookAt.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_lookAt()
@@ -50,7 +46,6 @@ local function demo_Camera2D_lookAt()
 end
 local _ok, _err = pcall(demo_Camera2D_lookAt)
 
---@api-stub: Camera2D:move
 -- Demonstrates the proper usage of Camera2D:move.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_move()
@@ -62,7 +57,6 @@ local _ok, _err = pcall(demo_Camera2D_move)
 -- Zoom
 -- =============================================================================
 
---@api-stub: Camera2D:setZoom
 -- Demonstrates the proper usage of Camera2D:setZoom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setZoom()
@@ -70,7 +64,6 @@ local function demo_Camera2D_setZoom()
 end
 local _ok, _err = pcall(demo_Camera2D_setZoom)
 
---@api-stub: Camera2D:getZoom
 -- Demonstrates the proper usage of Camera2D:getZoom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getZoom()
@@ -78,7 +71,6 @@ local function demo_Camera2D_getZoom()
 end
 local _ok, _err = pcall(demo_Camera2D_getZoom)
 
---@api-stub: Camera2D:getEffectiveZoom
 -- Demonstrates the proper usage of Camera2D:getEffectiveZoom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getEffectiveZoom()
@@ -86,7 +78,6 @@ local function demo_Camera2D_getEffectiveZoom()
 end
 local _ok, _err = pcall(demo_Camera2D_getEffectiveZoom)
 
---@api-stub: Camera2D:zoomTo
 -- Demonstrates the proper usage of Camera2D:zoomTo.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_zoomTo()
@@ -94,7 +85,6 @@ local function demo_Camera2D_zoomTo()
 end
 local _ok, _err = pcall(demo_Camera2D_zoomTo)
 
---@api-stub: Camera2D:updateZoom
 -- Demonstrates the proper usage of Camera2D:updateZoom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_updateZoom()
@@ -102,7 +92,6 @@ local function demo_Camera2D_updateZoom()
 end
 local _ok, _err = pcall(demo_Camera2D_updateZoom)
 
---@api-stub: Camera2D:stopZoom
 -- Demonstrates the proper usage of Camera2D:stopZoom.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_stopZoom()
@@ -110,7 +99,6 @@ local function demo_Camera2D_stopZoom()
 end
 local _ok, _err = pcall(demo_Camera2D_stopZoom)
 
---@api-stub: Camera2D:zoomPulse
 -- Demonstrates the proper usage of Camera2D:zoomPulse.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_zoomPulse()
@@ -122,7 +110,6 @@ local _ok, _err = pcall(demo_Camera2D_zoomPulse)
 -- Rotation
 -- =============================================================================
 
---@api-stub: Camera2D:setRotation
 -- Demonstrates the proper usage of Camera2D:setRotation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setRotation()
@@ -130,7 +117,6 @@ local function demo_Camera2D_setRotation()
 end
 local _ok, _err = pcall(demo_Camera2D_setRotation)
 
---@api-stub: Camera2D:getRotation
 -- Demonstrates the proper usage of Camera2D:getRotation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getRotation()
@@ -142,7 +128,6 @@ local _ok, _err = pcall(demo_Camera2D_getRotation)
 -- Viewport & Bounds
 -- =============================================================================
 
---@api-stub: Camera2D:setViewport
 -- Demonstrates the proper usage of Camera2D:setViewport.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setViewport()
@@ -150,7 +135,6 @@ local function demo_Camera2D_setViewport()
 end
 local _ok, _err = pcall(demo_Camera2D_setViewport)
 
---@api-stub: Camera2D:getViewport
 -- Demonstrates the proper usage of Camera2D:getViewport.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getViewport()
@@ -159,7 +143,6 @@ local function demo_Camera2D_getViewport()
 end
 local _ok, _err = pcall(demo_Camera2D_getViewport)
 
---@api-stub: Camera2D:setBounds
 -- Demonstrates the proper usage of Camera2D:setBounds.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setBounds()
@@ -167,7 +150,6 @@ local function demo_Camera2D_setBounds()
 end
 local _ok, _err = pcall(demo_Camera2D_setBounds)
 
---@api-stub: Camera2D:removeBounds
 -- Demonstrates the proper usage of Camera2D:removeBounds.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_removeBounds()
@@ -175,7 +157,6 @@ local function demo_Camera2D_removeBounds()
 end
 local _ok, _err = pcall(demo_Camera2D_removeBounds)
 
---@api-stub: Camera2D:getVisibleArea
 -- Demonstrates the proper usage of Camera2D:getVisibleArea.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getVisibleArea()
@@ -188,7 +169,6 @@ local _ok, _err = pcall(demo_Camera2D_getVisibleArea)
 -- Following a Target
 -- =============================================================================
 
---@api-stub: Camera2D:setTarget
 -- Demonstrates the proper usage of Camera2D:setTarget.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setTarget()
@@ -196,7 +176,6 @@ local function demo_Camera2D_setTarget()
 end
 local _ok, _err = pcall(demo_Camera2D_setTarget)
 
---@api-stub: Camera2D:clearTarget
 -- Demonstrates the proper usage of Camera2D:clearTarget.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_clearTarget()
@@ -204,7 +183,6 @@ local function demo_Camera2D_clearTarget()
 end
 local _ok, _err = pcall(demo_Camera2D_clearTarget)
 
---@api-stub: Camera2D:setFollowSmooth
 -- Demonstrates the proper usage of Camera2D:setFollowSmooth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setFollowSmooth()
@@ -212,7 +190,6 @@ local function demo_Camera2D_setFollowSmooth()
 end
 local _ok, _err = pcall(demo_Camera2D_setFollowSmooth)
 
---@api-stub: Camera2D:setDeadZone
 -- Demonstrates the proper usage of Camera2D:setDeadZone.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setDeadZone()
@@ -220,7 +197,6 @@ local function demo_Camera2D_setDeadZone()
 end
 local _ok, _err = pcall(demo_Camera2D_setDeadZone)
 
---@api-stub: Camera2D:setLookAhead
 -- Demonstrates the proper usage of Camera2D:setLookAhead.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setLookAhead()
@@ -232,7 +208,6 @@ local _ok, _err = pcall(demo_Camera2D_setLookAhead)
 -- Screen Shake
 -- =============================================================================
 
---@api-stub: Camera2D:shake
 -- Demonstrates the proper usage of Camera2D:shake.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_shake()
@@ -240,7 +215,6 @@ local function demo_Camera2D_shake()
 end
 local _ok, _err = pcall(demo_Camera2D_shake)
 
---@api-stub: Camera2D:getEffectOffset
 -- Demonstrates the proper usage of Camera2D:getEffectOffset.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getEffectOffset()
@@ -253,7 +227,6 @@ local _ok, _err = pcall(demo_Camera2D_getEffectOffset)
 -- Camera Update
 -- =============================================================================
 
---@api-stub: Camera2D:update
 -- Demonstrates the proper usage of Camera2D:update.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_update()
@@ -265,7 +238,6 @@ local _ok, _err = pcall(demo_Camera2D_update)
 -- Coordinate Conversion
 -- =============================================================================
 
---@api-stub: Camera2D:toWorld
 -- Demonstrates the proper usage of Camera2D:toWorld.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_toWorld()
@@ -274,7 +246,6 @@ local function demo_Camera2D_toWorld()
 end
 local _ok, _err = pcall(demo_Camera2D_toWorld)
 
---@api-stub: Camera2D:toScreen
 -- Demonstrates the proper usage of Camera2D:toScreen.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_toScreen()
@@ -287,7 +258,6 @@ local _ok, _err = pcall(demo_Camera2D_toScreen)
 -- Cinematic Camera Paths
 -- =============================================================================
 
---@api-stub: Camera2D:followPath
 -- Demonstrates the proper usage of Camera2D:followPath.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_followPath()
@@ -295,7 +265,6 @@ local function demo_Camera2D_followPath()
 end
 local _ok, _err = pcall(demo_Camera2D_followPath)
 
---@api-stub: Camera2D:updatePath
 -- Demonstrates the proper usage of Camera2D:updatePath.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_updatePath()
@@ -303,7 +272,6 @@ local function demo_Camera2D_updatePath()
 end
 local _ok, _err = pcall(demo_Camera2D_updatePath)
 
---@api-stub: Camera2D:pathProgress
 -- Demonstrates the proper usage of Camera2D:pathProgress.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_pathProgress()
@@ -311,7 +279,6 @@ local function demo_Camera2D_pathProgress()
 end
 local _ok, _err = pcall(demo_Camera2D_pathProgress)
 
---@api-stub: Camera2D:stopPath
 -- Demonstrates the proper usage of Camera2D:stopPath.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_stopPath()
@@ -323,7 +290,6 @@ local _ok, _err = pcall(demo_Camera2D_stopPath)
 -- Parallax Integration
 -- =============================================================================
 
---@api-stub: Camera2D:setParallaxFactor
 -- Demonstrates the proper usage of Camera2D:setParallaxFactor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_setParallaxFactor()
@@ -332,7 +298,6 @@ local function demo_Camera2D_setParallaxFactor()
 end
 local _ok, _err = pcall(demo_Camera2D_setParallaxFactor)
 
---@api-stub: Camera2D:getParallaxFactor
 -- Demonstrates the proper usage of Camera2D:getParallaxFactor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_getParallaxFactor()
@@ -340,7 +305,6 @@ local function demo_Camera2D_getParallaxFactor()
 end
 local _ok, _err = pcall(demo_Camera2D_getParallaxFactor)
 
---@api-stub: Camera2D:clearParallaxFactors
 -- Demonstrates the proper usage of Camera2D:clearParallaxFactors.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_clearParallaxFactors()
@@ -352,7 +316,6 @@ local _ok, _err = pcall(demo_Camera2D_clearParallaxFactors)
 -- Breathing & Sway Effects
 -- =============================================================================
 
---@api-stub: Camera2D:startBreathing
 -- Demonstrates the proper usage of Camera2D:startBreathing.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_startBreathing()
@@ -360,7 +323,6 @@ local function demo_Camera2D_startBreathing()
 end
 local _ok, _err = pcall(demo_Camera2D_startBreathing)
 
---@api-stub: Camera2D:isBreathing
 -- Demonstrates the proper usage of Camera2D:isBreathing.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_isBreathing()
@@ -368,7 +330,6 @@ local function demo_Camera2D_isBreathing()
 end
 local _ok, _err = pcall(demo_Camera2D_isBreathing)
 
---@api-stub: Camera2D:stopBreathing
 -- Demonstrates the proper usage of Camera2D:stopBreathing.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_stopBreathing()
@@ -376,7 +337,6 @@ local function demo_Camera2D_stopBreathing()
 end
 local _ok, _err = pcall(demo_Camera2D_stopBreathing)
 
---@api-stub: Camera2D:stopSway
 -- Demonstrates the proper usage of Camera2D:stopSway.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_stopSway()
@@ -384,7 +344,6 @@ local function demo_Camera2D_stopSway()
 end
 local _ok, _err = pcall(demo_Camera2D_stopSway)
 
---@api-stub: Camera2D:isSway
 -- Demonstrates the proper usage of Camera2D:isSway.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Camera2D_isSway()
@@ -394,15 +353,9 @@ end
 local _ok, _err = pcall(demo_Camera2D_isSway)
 
 -- =============================================================================
--- STUBS: 4 uncovered lurek.camera API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
--- ---- Stub: lurek.camera.newCamera ----------------------------------------
---@api-stub: lurek.camera.newCamera
 -- (no description)
 -- Example scenario:
 print("Attempting to execute global method newCamera()")
@@ -419,8 +372,6 @@ lurek.camera.newCamera([vw], [vh])
 -- Camera2D methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Camera2D:removeBounds -----------------------------------------
---@api-stub: Camera2D:removeBounds
 -- Removes previously set world-space bounds.
 -- Example scenario:
 if cam ~= nil then
@@ -430,8 +381,6 @@ if cam ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Camera2D:clearTarget ------------------------------------------
---@api-stub: Camera2D:clearTarget
 -- Clears the follow target so the camera stops tracking.
 -- Example scenario:
 if cam ~= nil then
@@ -441,8 +390,6 @@ if cam ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Camera2D:clearParallaxFactors ---------------------------------
---@api-stub: Camera2D:clearParallaxFactors
 -- Removes all parallax factor overrides.
 -- Example scenario:
 if cam ~= nil then

@@ -2,7 +2,7 @@
 -- Lurek2D lurek.physics API Reference
 -- Run with: cargo run -- content/examples/physics
 --
--- Scenario: A 2D platformer with rigid body physics — a player character,
+Scenario: A 2D platformer with rigid body physics — a player character,
 -- platforms, projectiles, destructible terrain, cellular automata for cave
 -- generation, gravity zones, joints, and collision event handling.
 
@@ -12,7 +12,6 @@ print("=== lurek.physics — 2D Physics Simulation ===\n")
 -- World Creation & Configuration
 -- =============================================================================
 
---@api-stub: lurek.physics.newWorld
 -- Demonstrates the proper usage of lurek.physics.newWorld.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newWorld()
@@ -25,7 +24,6 @@ local _ok, _err = pcall(demo_lurek_physics_newWorld)
 -- World Methods — simulation control
 -- =============================================================================
 
---@api-stub: World:setGravity
 -- Demonstrates the proper usage of World:setGravity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setGravity()
@@ -33,7 +31,6 @@ local function demo_World_setGravity()
 end
 local _ok, _err = pcall(demo_World_setGravity)
 
---@api-stub: World:getGravity
 -- Demonstrates the proper usage of World:getGravity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getGravity()
@@ -42,7 +39,6 @@ local function demo_World_getGravity()
 end
 local _ok, _err = pcall(demo_World_getGravity)
 
---@api-stub: World:setMeter
 -- Demonstrates the proper usage of World:setMeter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setMeter()
@@ -50,7 +46,6 @@ local function demo_World_setMeter()
 end
 local _ok, _err = pcall(demo_World_setMeter)
 
---@api-stub: World:getMeter
 -- Demonstrates the proper usage of World:getMeter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getMeter()
@@ -58,7 +53,6 @@ local function demo_World_getMeter()
 end
 local _ok, _err = pcall(demo_World_getMeter)
 
---@api-stub: World:toPhysics
 -- Demonstrates the proper usage of World:toPhysics.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_toPhysics()
@@ -67,7 +61,6 @@ local function demo_World_toPhysics()
 end
 local _ok, _err = pcall(demo_World_toPhysics)
 
---@api-stub: World:toPixels
 -- Demonstrates the proper usage of World:toPixels.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_toPixels()
@@ -80,7 +73,6 @@ local _ok, _err = pcall(demo_World_toPixels)
 -- Body Creation & Management
 -- =============================================================================
 
---@api-stub: World:newBody
 -- Dynamic body for the player character.
 local player_body = world:newBody("dynamic", 200, 100)
 
@@ -90,7 +82,6 @@ local platform = world:newBody("static", 400, 500)
 -- Kinematic moving platform.
 local elevator = world:newBody("kinematic", 600, 400)
 
---@api-stub: lurek.physics.newBody
 -- Demonstrates the proper usage of lurek.physics.newBody.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newBody()
@@ -98,7 +89,6 @@ local function demo_lurek_physics_newBody()
 end
 local _ok, _err = pcall(demo_lurek_physics_newBody)
 
---@api-stub: lurek.physics.getBody
 -- Demonstrates the proper usage of lurek.physics.getBody.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_getBody()
@@ -107,7 +97,6 @@ local function demo_lurek_physics_getBody()
 end
 local _ok, _err = pcall(demo_lurek_physics_getBody)
 
---@api-stub: World:getBodyCount
 -- Demonstrates the proper usage of World:getBodyCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyCount()
@@ -115,7 +104,6 @@ local function demo_World_getBodyCount()
 end
 local _ok, _err = pcall(demo_World_getBodyCount)
 
---@api-stub: World:getBodyIds
 -- Demonstrates the proper usage of World:getBodyIds.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyIds()
@@ -128,7 +116,6 @@ local _ok, _err = pcall(demo_World_getBodyIds)
 -- Body Properties
 -- =============================================================================
 
---@api-stub: Body:getId
 -- Demonstrates the proper usage of Body:getId.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getId()
@@ -136,7 +123,6 @@ local function demo_Body_getId()
 end
 local _ok, _err = pcall(demo_Body_getId)
 
---@api-stub: Body:getPosition
 -- Demonstrates the proper usage of Body:getPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getPosition()
@@ -145,7 +131,6 @@ local function demo_Body_getPosition()
 end
 local _ok, _err = pcall(demo_Body_getPosition)
 
---@api-stub: Body:setPosition
 -- Demonstrates the proper usage of Body:setPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setPosition()
@@ -153,7 +138,6 @@ local function demo_Body_setPosition()
 end
 local _ok, _err = pcall(demo_Body_setPosition)
 
---@api-stub: Body:getX
 -- Demonstrates the proper usage of Body:getX.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getX()
@@ -161,7 +145,6 @@ local function demo_Body_getX()
 end
 local _ok, _err = pcall(demo_Body_getX)
 
---@api-stub: Body:getY
 -- Demonstrates the proper usage of Body:getY.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getY()
@@ -169,7 +152,6 @@ local function demo_Body_getY()
 end
 local _ok, _err = pcall(demo_Body_getY)
 
---@api-stub: Body:getVelocity
 -- Demonstrates the proper usage of Body:getVelocity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getVelocity()
@@ -178,7 +160,6 @@ local function demo_Body_getVelocity()
 end
 local _ok, _err = pcall(demo_Body_getVelocity)
 
---@api-stub: Body:setVelocity
 -- Demonstrates the proper usage of Body:setVelocity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setVelocity()
@@ -186,7 +167,6 @@ local function demo_Body_setVelocity()
 end
 local _ok, _err = pcall(demo_Body_setVelocity)
 
---@api-stub: lurek.physics.setBodyVelocity
 -- Demonstrates the proper usage of lurek.physics.setBodyVelocity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_setBodyVelocity()
@@ -194,7 +174,6 @@ local function demo_lurek_physics_setBodyVelocity()
 end
 local _ok, _err = pcall(demo_lurek_physics_setBodyVelocity)
 
---@api-stub: Body:getAngle
 -- Demonstrates the proper usage of Body:getAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getAngle()
@@ -202,7 +181,6 @@ local function demo_Body_getAngle()
 end
 local _ok, _err = pcall(demo_Body_getAngle)
 
---@api-stub: Body:setAngle
 -- Demonstrates the proper usage of Body:setAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setAngle()
@@ -210,7 +188,6 @@ local function demo_Body_setAngle()
 end
 local _ok, _err = pcall(demo_Body_setAngle)
 
---@api-stub: Body:getAngularVelocity
 -- Demonstrates the proper usage of Body:getAngularVelocity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getAngularVelocity()
@@ -218,7 +195,6 @@ local function demo_Body_getAngularVelocity()
 end
 local _ok, _err = pcall(demo_Body_getAngularVelocity)
 
---@api-stub: Body:setAngularVelocity
 -- Demonstrates the proper usage of Body:setAngularVelocity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setAngularVelocity()
@@ -226,7 +202,6 @@ local function demo_Body_setAngularVelocity()
 end
 local _ok, _err = pcall(demo_Body_setAngularVelocity)
 
---@api-stub: Body:getMass
 -- Demonstrates the proper usage of Body:getMass.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getMass()
@@ -234,7 +209,6 @@ local function demo_Body_getMass()
 end
 local _ok, _err = pcall(demo_Body_getMass)
 
---@api-stub: Body:setMass
 -- Demonstrates the proper usage of Body:setMass.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setMass()
@@ -242,7 +216,6 @@ local function demo_Body_setMass()
 end
 local _ok, _err = pcall(demo_Body_setMass)
 
---@api-stub: Body:getType
 -- Demonstrates the proper usage of Body:getType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getType()
@@ -250,7 +223,6 @@ local function demo_Body_getType()
 end
 local _ok, _err = pcall(demo_Body_getType)
 
---@api-stub: Body:setType
 -- Demonstrates the proper usage of Body:setType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setType()
@@ -258,7 +230,6 @@ local function demo_Body_setType()
 end
 local _ok, _err = pcall(demo_Body_setType)
 
---@api-stub: Body:getWidth
 -- Demonstrates the proper usage of Body:getWidth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getWidth()
@@ -266,7 +237,6 @@ local function demo_Body_getWidth()
 end
 local _ok, _err = pcall(demo_Body_getWidth)
 
---@api-stub: Body:getHeight
 -- Demonstrates the proper usage of Body:getHeight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getHeight()
@@ -278,7 +248,6 @@ local _ok, _err = pcall(demo_Body_getHeight)
 -- Body Material Properties
 -- =============================================================================
 
---@api-stub: Body:getFriction
 -- Demonstrates the proper usage of Body:getFriction.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getFriction()
@@ -286,7 +255,6 @@ local function demo_Body_getFriction()
 end
 local _ok, _err = pcall(demo_Body_getFriction)
 
---@api-stub: Body:setFriction
 -- Demonstrates the proper usage of Body:setFriction.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setFriction()
@@ -294,7 +262,6 @@ local function demo_Body_setFriction()
 end
 local _ok, _err = pcall(demo_Body_setFriction)
 
---@api-stub: Body:getRestitution
 -- Demonstrates the proper usage of Body:getRestitution.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getRestitution()
@@ -302,7 +269,6 @@ local function demo_Body_getRestitution()
 end
 local _ok, _err = pcall(demo_Body_getRestitution)
 
---@api-stub: Body:setRestitution
 -- Demonstrates the proper usage of Body:setRestitution.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setRestitution()
@@ -314,7 +280,6 @@ local _ok, _err = pcall(demo_Body_setRestitution)
 -- Collision Layers & Masks
 -- =============================================================================
 
---@api-stub: Body:getLayer
 -- Demonstrates the proper usage of Body:getLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getLayer()
@@ -322,7 +287,6 @@ local function demo_Body_getLayer()
 end
 local _ok, _err = pcall(demo_Body_getLayer)
 
---@api-stub: Body:setLayer
 -- Demonstrates the proper usage of Body:setLayer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setLayer()
@@ -330,7 +294,6 @@ local function demo_Body_setLayer()
 end
 local _ok, _err = pcall(demo_Body_setLayer)
 
---@api-stub: Body:getMask
 -- Demonstrates the proper usage of Body:getMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getMask()
@@ -338,7 +301,6 @@ local function demo_Body_getMask()
 end
 local _ok, _err = pcall(demo_Body_getMask)
 
---@api-stub: Body:setMask
 -- Demonstrates the proper usage of Body:setMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setMask()
@@ -350,7 +312,6 @@ local _ok, _err = pcall(demo_Body_setMask)
 -- Forces & Impulses
 -- =============================================================================
 
---@api-stub: Body:applyImpulse
 -- Demonstrates the proper usage of Body:applyImpulse.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_applyImpulse()
@@ -358,7 +319,6 @@ local function demo_Body_applyImpulse()
 end
 local _ok, _err = pcall(demo_Body_applyImpulse)
 
---@api-stub: Body:applyForce
 -- Demonstrates the proper usage of Body:applyForce.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_applyForce()
@@ -366,7 +326,6 @@ local function demo_Body_applyForce()
 end
 local _ok, _err = pcall(demo_Body_applyForce)
 
---@api-stub: Body:applyTorque
 -- Demonstrates the proper usage of Body:applyTorque.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_applyTorque()
@@ -374,7 +333,6 @@ local function demo_Body_applyTorque()
 end
 local _ok, _err = pcall(demo_Body_applyTorque)
 
---@api-stub: Body:applyAngularImpulse
 -- Demonstrates the proper usage of Body:applyAngularImpulse.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_applyAngularImpulse()
@@ -386,7 +344,6 @@ local _ok, _err = pcall(demo_Body_applyAngularImpulse)
 -- Body Advanced Properties
 -- =============================================================================
 
---@api-stub: Body:getGravityScale
 -- Demonstrates the proper usage of Body:getGravityScale.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getGravityScale()
@@ -394,7 +351,6 @@ local function demo_Body_getGravityScale()
 end
 local _ok, _err = pcall(demo_Body_getGravityScale)
 
---@api-stub: Body:setGravityScale
 -- Demonstrates the proper usage of Body:setGravityScale.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setGravityScale()
@@ -402,7 +358,6 @@ local function demo_Body_setGravityScale()
 end
 local _ok, _err = pcall(demo_Body_setGravityScale)
 
---@api-stub: Body:isFixedRotation
 -- Demonstrates the proper usage of Body:isFixedRotation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_isFixedRotation()
@@ -410,7 +365,6 @@ local function demo_Body_isFixedRotation()
 end
 local _ok, _err = pcall(demo_Body_isFixedRotation)
 
---@api-stub: Body:setFixedRotation
 -- Demonstrates the proper usage of Body:setFixedRotation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setFixedRotation()
@@ -418,7 +372,6 @@ local function demo_Body_setFixedRotation()
 end
 local _ok, _err = pcall(demo_Body_setFixedRotation)
 
---@api-stub: Body:getLinearDamping
 -- Demonstrates the proper usage of Body:getLinearDamping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getLinearDamping()
@@ -426,7 +379,6 @@ local function demo_Body_getLinearDamping()
 end
 local _ok, _err = pcall(demo_Body_getLinearDamping)
 
---@api-stub: Body:setLinearDamping
 -- Demonstrates the proper usage of Body:setLinearDamping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setLinearDamping()
@@ -434,7 +386,6 @@ local function demo_Body_setLinearDamping()
 end
 local _ok, _err = pcall(demo_Body_setLinearDamping)
 
---@api-stub: Body:getAngularDamping
 -- Demonstrates the proper usage of Body:getAngularDamping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_getAngularDamping()
@@ -442,7 +393,6 @@ local function demo_Body_getAngularDamping()
 end
 local _ok, _err = pcall(demo_Body_getAngularDamping)
 
---@api-stub: Body:setAngularDamping
 -- Demonstrates the proper usage of Body:setAngularDamping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setAngularDamping()
@@ -450,7 +400,6 @@ local function demo_Body_setAngularDamping()
 end
 local _ok, _err = pcall(demo_Body_setAngularDamping)
 
---@api-stub: Body:isBullet
 -- Demonstrates the proper usage of Body:isBullet.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_isBullet()
@@ -458,7 +407,6 @@ local function demo_Body_isBullet()
 end
 local _ok, _err = pcall(demo_Body_isBullet)
 
---@api-stub: Body:setBullet
 -- Demonstrates the proper usage of Body:setBullet.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setBullet()
@@ -470,7 +418,6 @@ local _ok, _err = pcall(demo_Body_setBullet)
 -- Body Sleep State
 -- =============================================================================
 
---@api-stub: Body:isSleepingAllowed
 -- Demonstrates the proper usage of Body:isSleepingAllowed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_isSleepingAllowed()
@@ -478,7 +425,6 @@ local function demo_Body_isSleepingAllowed()
 end
 local _ok, _err = pcall(demo_Body_isSleepingAllowed)
 
---@api-stub: Body:setSleepingAllowed
 -- Demonstrates the proper usage of Body:setSleepingAllowed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_setSleepingAllowed()
@@ -486,7 +432,6 @@ local function demo_Body_setSleepingAllowed()
 end
 local _ok, _err = pcall(demo_Body_setSleepingAllowed)
 
---@api-stub: Body:isSleeping
 -- Demonstrates the proper usage of Body:isSleeping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_isSleeping()
@@ -494,7 +439,6 @@ local function demo_Body_isSleeping()
 end
 local _ok, _err = pcall(demo_Body_isSleeping)
 
---@api-stub: Body:wakeUp
 -- Demonstrates the proper usage of Body:wakeUp.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_wakeUp()
@@ -502,7 +446,6 @@ local function demo_Body_wakeUp()
 end
 local _ok, _err = pcall(demo_Body_wakeUp)
 
---@api-stub: Body:sleep
 -- Demonstrates the proper usage of Body:sleep.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_sleep()
@@ -510,7 +453,6 @@ local function demo_Body_sleep()
 end
 local _ok, _err = pcall(demo_Body_sleep)
 
---@api-stub: Body:destroy
 -- Demonstrates the proper usage of Body:destroy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Body_destroy()
@@ -522,7 +464,6 @@ local _ok, _err = pcall(demo_Body_destroy)
 -- World Body Management
 -- =============================================================================
 
---@api-stub: World:setBodyType
 -- Demonstrates the proper usage of World:setBodyType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setBodyType()
@@ -530,7 +471,6 @@ local function demo_World_setBodyType()
 end
 local _ok, _err = pcall(demo_World_setBodyType)
 
---@api-stub: World:getBodyType
 -- Demonstrates the proper usage of World:getBodyType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyType()
@@ -538,7 +478,6 @@ local function demo_World_getBodyType()
 end
 local _ok, _err = pcall(demo_World_getBodyType)
 
---@api-stub: World:setBodyData
 -- Demonstrates the proper usage of World:setBodyData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setBodyData()
@@ -546,7 +485,6 @@ local function demo_World_setBodyData()
 end
 local _ok, _err = pcall(demo_World_setBodyData)
 
---@api-stub: World:getBodyData
 -- Demonstrates the proper usage of World:getBodyData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyData()
@@ -555,7 +493,6 @@ local function demo_World_getBodyData()
 end
 local _ok, _err = pcall(demo_World_getBodyData)
 
---@api-stub: World:clearBodyData
 -- Demonstrates the proper usage of World:clearBodyData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_clearBodyData()
@@ -563,7 +500,6 @@ local function demo_World_clearBodyData()
 end
 local _ok, _err = pcall(demo_World_clearBodyData)
 
---@api-stub: World:setBodyCCD
 -- Demonstrates the proper usage of World:setBodyCCD.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setBodyCCD()
@@ -571,7 +507,6 @@ local function demo_World_setBodyCCD()
 end
 local _ok, _err = pcall(demo_World_setBodyCCD)
 
---@api-stub: World:getBodyCCD
 -- Demonstrates the proper usage of World:getBodyCCD.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyCCD()
@@ -579,7 +514,6 @@ local function demo_World_getBodyCCD()
 end
 local _ok, _err = pcall(demo_World_getBodyCCD)
 
---@api-stub: World:setBodyOneWay
 -- Demonstrates the proper usage of World:setBodyOneWay.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setBodyOneWay()
@@ -587,7 +521,6 @@ local function demo_World_setBodyOneWay()
 end
 local _ok, _err = pcall(demo_World_setBodyOneWay)
 
---@api-stub: World:getBodyOneWay
 -- Demonstrates the proper usage of World:getBodyOneWay.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyOneWay()
@@ -595,7 +528,6 @@ local function demo_World_getBodyOneWay()
 end
 local _ok, _err = pcall(demo_World_getBodyOneWay)
 
---@api-stub: World:clearBodyOneWay
 -- Demonstrates the proper usage of World:clearBodyOneWay.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_clearBodyOneWay()
@@ -603,7 +535,6 @@ local function demo_World_clearBodyOneWay()
 end
 local _ok, _err = pcall(demo_World_clearBodyOneWay)
 
---@api-stub: World:isBodySleeping
 -- Demonstrates the proper usage of World:isBodySleeping.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_isBodySleeping()
@@ -611,7 +542,6 @@ local function demo_World_isBodySleeping()
 end
 local _ok, _err = pcall(demo_World_isBodySleeping)
 
---@api-stub: World:wakeUpBody
 -- Demonstrates the proper usage of World:wakeUpBody.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_wakeUpBody()
@@ -619,7 +549,6 @@ local function demo_World_wakeUpBody()
 end
 local _ok, _err = pcall(demo_World_wakeUpBody)
 
---@api-stub: World:sleepBody
 -- Demonstrates the proper usage of World:sleepBody.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_sleepBody()
@@ -627,7 +556,6 @@ local function demo_World_sleepBody()
 end
 local _ok, _err = pcall(demo_World_sleepBody)
 
---@api-stub: World:destroyBody
 -- Demonstrates the proper usage of World:destroyBody.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_destroyBody()
@@ -635,7 +563,6 @@ local function demo_World_destroyBody()
 end
 local _ok, _err = pcall(demo_World_destroyBody)
 
---@api-stub: World:newBodies
 -- Demonstrates the proper usage of World:newBodies.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_newBodies()
@@ -652,7 +579,6 @@ local _ok, _err = pcall(demo_World_newBodies)
 -- Shapes & Fixtures
 -- =============================================================================
 
---@api-stub: lurek.physics.newRectangleShape
 -- Demonstrates the proper usage of lurek.physics.newRectangleShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newRectangleShape()
@@ -660,7 +586,6 @@ local function demo_lurek_physics_newRectangleShape()
 end
 local _ok, _err = pcall(demo_lurek_physics_newRectangleShape)
 
---@api-stub: lurek.physics.newCircleShape
 -- Demonstrates the proper usage of lurek.physics.newCircleShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newCircleShape()
@@ -668,7 +593,6 @@ local function demo_lurek_physics_newCircleShape()
 end
 local _ok, _err = pcall(demo_lurek_physics_newCircleShape)
 
---@api-stub: lurek.physics.newEdgeShape
 -- Demonstrates the proper usage of lurek.physics.newEdgeShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newEdgeShape()
@@ -676,7 +600,6 @@ local function demo_lurek_physics_newEdgeShape()
 end
 local _ok, _err = pcall(demo_lurek_physics_newEdgeShape)
 
---@api-stub: lurek.physics.newPolygonShape
 -- Demonstrates the proper usage of lurek.physics.newPolygonShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newPolygonShape()
@@ -684,7 +607,6 @@ local function demo_lurek_physics_newPolygonShape()
 end
 local _ok, _err = pcall(demo_lurek_physics_newPolygonShape)
 
---@api-stub: lurek.physics.newChainShape
 -- Demonstrates the proper usage of lurek.physics.newChainShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newChainShape()
@@ -692,7 +614,6 @@ local function demo_lurek_physics_newChainShape()
 end
 local _ok, _err = pcall(demo_lurek_physics_newChainShape)
 
---@api-stub: lurek.physics.attachShape
 -- Demonstrates the proper usage of lurek.physics.attachShape.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_attachShape()
@@ -704,7 +625,6 @@ local _ok, _err = pcall(demo_lurek_physics_attachShape)
 -- PhysicsShape Methods
 -- =============================================================================
 
---@api-stub: PhysicsShape:getType
 -- Demonstrates the proper usage of PhysicsShape:getType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_getType()
@@ -712,7 +632,6 @@ local function demo_PhysicsShape_getType()
 end
 local _ok, _err = pcall(demo_PhysicsShape_getType)
 
---@api-stub: PhysicsShape:getRadius
 -- Demonstrates the proper usage of PhysicsShape:getRadius.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_getRadius()
@@ -720,7 +639,6 @@ local function demo_PhysicsShape_getRadius()
 end
 local _ok, _err = pcall(demo_PhysicsShape_getRadius)
 
---@api-stub: PhysicsShape:getBoundingBox
 -- Demonstrates the proper usage of PhysicsShape:getBoundingBox.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_getBoundingBox()
@@ -729,7 +647,6 @@ local function demo_PhysicsShape_getBoundingBox()
 end
 local _ok, _err = pcall(demo_PhysicsShape_getBoundingBox)
 
---@api-stub: PhysicsShape:setDensity
 -- Demonstrates the proper usage of PhysicsShape:setDensity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_setDensity()
@@ -737,7 +654,6 @@ local function demo_PhysicsShape_setDensity()
 end
 local _ok, _err = pcall(demo_PhysicsShape_setDensity)
 
---@api-stub: PhysicsShape:setFriction
 -- Demonstrates the proper usage of PhysicsShape:setFriction.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_setFriction()
@@ -745,7 +661,6 @@ local function demo_PhysicsShape_setFriction()
 end
 local _ok, _err = pcall(demo_PhysicsShape_setFriction)
 
---@api-stub: PhysicsShape:setRestitution
 -- Demonstrates the proper usage of PhysicsShape:setRestitution.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_setRestitution()
@@ -753,7 +668,6 @@ local function demo_PhysicsShape_setRestitution()
 end
 local _ok, _err = pcall(demo_PhysicsShape_setRestitution)
 
---@api-stub: PhysicsShape:setSensor
 -- Demonstrates the proper usage of PhysicsShape:setSensor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_setSensor()
@@ -761,7 +675,6 @@ local function demo_PhysicsShape_setSensor()
 end
 local _ok, _err = pcall(demo_PhysicsShape_setSensor)
 
---@api-stub: PhysicsShape:destroy
 -- Demonstrates the proper usage of PhysicsShape:destroy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_PhysicsShape_destroy()
@@ -773,7 +686,6 @@ local _ok, _err = pcall(demo_PhysicsShape_destroy)
 -- Simulation
 -- =============================================================================
 
---@api-stub: World:step
 -- Demonstrates the proper usage of World:step.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_step()
@@ -781,7 +693,6 @@ local function demo_World_step()
 end
 local _ok, _err = pcall(demo_World_step)
 
---@api-stub: lurek.physics.step
 -- Demonstrates the proper usage of lurek.physics.step.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_step()
@@ -789,7 +700,6 @@ local function demo_lurek_physics_step()
 end
 local _ok, _err = pcall(demo_lurek_physics_step)
 
---@api-stub: World:stepFixed
 -- Demonstrates the proper usage of World:stepFixed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_stepFixed()
@@ -797,7 +707,6 @@ local function demo_World_stepFixed()
 end
 local _ok, _err = pcall(demo_World_stepFixed)
 
---@api-stub: World:setSolverIterations
 -- Demonstrates the proper usage of World:setSolverIterations.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setSolverIterations()
@@ -805,7 +714,6 @@ local function demo_World_setSolverIterations()
 end
 local _ok, _err = pcall(demo_World_setSolverIterations)
 
---@api-stub: World:getSolverIterations
 -- Demonstrates the proper usage of World:getSolverIterations.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getSolverIterations()
@@ -817,7 +725,6 @@ local _ok, _err = pcall(demo_World_getSolverIterations)
 -- Sleeping Configuration (module-level)
 -- =============================================================================
 
---@api-stub: lurek.physics.isSleepingAllowed
 -- Demonstrates the proper usage of lurek.physics.isSleepingAllowed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_isSleepingAllowed()
@@ -825,7 +732,6 @@ local function demo_lurek_physics_isSleepingAllowed()
 end
 local _ok, _err = pcall(demo_lurek_physics_isSleepingAllowed)
 
---@api-stub: lurek.physics.setSleepingAllowed
 -- Demonstrates the proper usage of lurek.physics.setSleepingAllowed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_setSleepingAllowed()
@@ -837,7 +743,6 @@ local _ok, _err = pcall(demo_lurek_physics_setSleepingAllowed)
 -- Collision Detection
 -- =============================================================================
 
---@api-stub: lurek.physics.getCollisions
 -- Demonstrates the proper usage of lurek.physics.getCollisions.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_getCollisions()
@@ -846,7 +751,6 @@ local function demo_lurek_physics_getCollisions()
 end
 local _ok, _err = pcall(demo_lurek_physics_getCollisions)
 
---@api-stub: World:getCollisionEvents
 -- Demonstrates the proper usage of World:getCollisionEvents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getCollisionEvents()
@@ -855,7 +759,6 @@ local function demo_World_getCollisionEvents()
 end
 local _ok, _err = pcall(demo_World_getCollisionEvents)
 
---@api-stub: World:getBeginContactEvents
 -- Demonstrates the proper usage of World:getBeginContactEvents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBeginContactEvents()
@@ -864,7 +767,6 @@ local function demo_World_getBeginContactEvents()
 end
 local _ok, _err = pcall(demo_World_getBeginContactEvents)
 
---@api-stub: World:getEndContactEvents
 -- Demonstrates the proper usage of World:getEndContactEvents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getEndContactEvents()
@@ -873,7 +775,6 @@ local function demo_World_getEndContactEvents()
 end
 local _ok, _err = pcall(demo_World_getEndContactEvents)
 
---@api-stub: World:getContacts
 -- Demonstrates the proper usage of World:getContacts.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getContacts()
@@ -882,7 +783,6 @@ local function demo_World_getContacts()
 end
 local _ok, _err = pcall(demo_World_getContacts)
 
---@api-stub: World:getBodyContacts
 -- Demonstrates the proper usage of World:getBodyContacts.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyContacts()
@@ -891,7 +791,6 @@ local function demo_World_getBodyContacts()
 end
 local _ok, _err = pcall(demo_World_getBodyContacts)
 
---@api-stub: World:getBodyAtPoint
 -- Demonstrates the proper usage of World:getBodyAtPoint.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getBodyAtPoint()
@@ -904,7 +803,6 @@ local _ok, _err = pcall(demo_World_getBodyAtPoint)
 -- Collision Callbacks
 -- =============================================================================
 
---@api-stub: World:setBeginContact
 -- Demonstrates the proper usage of World:setBeginContact.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setBeginContact()
@@ -913,7 +811,6 @@ local function demo_World_setBeginContact()
 end
 local _ok, _err = pcall(demo_World_setBeginContact)
 
---@api-stub: World:clearBeginContact
 -- Demonstrates the proper usage of World:clearBeginContact.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_clearBeginContact()
@@ -921,7 +818,6 @@ local function demo_World_clearBeginContact()
 end
 local _ok, _err = pcall(demo_World_clearBeginContact)
 
---@api-stub: World:setEndContact
 -- Demonstrates the proper usage of World:setEndContact.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setEndContact()
@@ -930,7 +826,6 @@ local function demo_World_setEndContact()
 end
 local _ok, _err = pcall(demo_World_setEndContact)
 
---@api-stub: World:clearEndContact
 -- Demonstrates the proper usage of World:clearEndContact.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_clearEndContact()
@@ -942,7 +837,6 @@ local _ok, _err = pcall(demo_World_clearEndContact)
 -- Joints
 -- =============================================================================
 
---@api-stub: World:fixtureCount
 -- Demonstrates the proper usage of World:fixtureCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_fixtureCount()
@@ -950,7 +844,6 @@ local function demo_World_fixtureCount()
 end
 local _ok, _err = pcall(demo_World_fixtureCount)
 
---@api-stub: World:jointCount
 -- Demonstrates the proper usage of World:jointCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_jointCount()
@@ -958,7 +851,6 @@ local function demo_World_jointCount()
 end
 local _ok, _err = pcall(demo_World_jointCount)
 
---@api-stub: World:getJointIds
 -- Demonstrates the proper usage of World:getJointIds.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointIds()
@@ -967,7 +859,6 @@ local function demo_World_getJointIds()
 end
 local _ok, _err = pcall(demo_World_getJointIds)
 
---@api-stub: World:getJointBodies
 -- Demonstrates the proper usage of World:getJointBodies.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointBodies()
@@ -975,7 +866,6 @@ local function demo_World_getJointBodies()
 end
 local _ok, _err = pcall(demo_World_getJointBodies)
 
---@api-stub: World:getJointType
 -- Demonstrates the proper usage of World:getJointType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointType()
@@ -983,7 +873,6 @@ local function demo_World_getJointType()
 end
 local _ok, _err = pcall(demo_World_getJointType)
 
---@api-stub: World:getJointMotorSpeed
 -- Demonstrates the proper usage of World:getJointMotorSpeed.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointMotorSpeed()
@@ -991,7 +880,6 @@ local function demo_World_getJointMotorSpeed()
 end
 local _ok, _err = pcall(demo_World_getJointMotorSpeed)
 
---@api-stub: World:getJointLimits
 -- Demonstrates the proper usage of World:getJointLimits.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointLimits()
@@ -999,7 +887,6 @@ local function demo_World_getJointLimits()
 end
 local _ok, _err = pcall(demo_World_getJointLimits)
 
---@api-stub: World:destroyJoint
 -- Demonstrates the proper usage of World:destroyJoint.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_destroyJoint()
@@ -1007,7 +894,6 @@ local function demo_World_destroyJoint()
 end
 local _ok, _err = pcall(demo_World_destroyJoint)
 
---@api-stub: World:setJointBreakForce
 -- Demonstrates the proper usage of World:setJointBreakForce.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_setJointBreakForce()
@@ -1015,7 +901,6 @@ local function demo_World_setJointBreakForce()
 end
 local _ok, _err = pcall(demo_World_setJointBreakForce)
 
---@api-stub: World:getJointBreakForce
 -- Demonstrates the proper usage of World:getJointBreakForce.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getJointBreakForce()
@@ -1027,7 +912,6 @@ local _ok, _err = pcall(demo_World_getJointBreakForce)
 -- Gravity Zones
 -- =============================================================================
 
---@api-stub: World:addZone
 -- Demonstrates the proper usage of World:addZone.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_addZone()
@@ -1036,7 +920,6 @@ local function demo_World_addZone()
 end
 local _ok, _err = pcall(demo_World_addZone)
 
---@api-stub: World:getZoneEvents
 -- Demonstrates the proper usage of World:getZoneEvents.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_getZoneEvents()
@@ -1045,7 +928,6 @@ local function demo_World_getZoneEvents()
 end
 local _ok, _err = pcall(demo_World_getZoneEvents)
 
---@api-stub: Zone:getId
 -- Demonstrates the proper usage of Zone:getId.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_getId()
@@ -1053,7 +935,6 @@ local function demo_Zone_getId()
 end
 local _ok, _err = pcall(demo_Zone_getId)
 
---@api-stub: Zone:setEnabled
 -- Demonstrates the proper usage of Zone:setEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setEnabled()
@@ -1061,7 +942,6 @@ local function demo_Zone_setEnabled()
 end
 local _ok, _err = pcall(demo_Zone_setEnabled)
 
---@api-stub: Zone:setPriority
 -- Demonstrates the proper usage of Zone:setPriority.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setPriority()
@@ -1069,7 +949,6 @@ local function demo_Zone_setPriority()
 end
 local _ok, _err = pcall(demo_Zone_setPriority)
 
---@api-stub: Zone:setLayerMask
 -- Demonstrates the proper usage of Zone:setLayerMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setLayerMask()
@@ -1077,7 +956,6 @@ local function demo_Zone_setLayerMask()
 end
 local _ok, _err = pcall(demo_Zone_setLayerMask)
 
---@api-stub: Zone:setCircle
 -- Demonstrates the proper usage of Zone:setCircle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setCircle()
@@ -1085,7 +963,6 @@ local function demo_Zone_setCircle()
 end
 local _ok, _err = pcall(demo_Zone_setCircle)
 
---@api-stub: Zone:setGravityDirectional
 -- Demonstrates the proper usage of Zone:setGravityDirectional.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setGravityDirectional()
@@ -1093,7 +970,6 @@ local function demo_Zone_setGravityDirectional()
 end
 local _ok, _err = pcall(demo_Zone_setGravityDirectional)
 
---@api-stub: Zone:setGravityPoint
 -- Demonstrates the proper usage of Zone:setGravityPoint.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setGravityPoint()
@@ -1101,7 +977,6 @@ local function demo_Zone_setGravityPoint()
 end
 local _ok, _err = pcall(demo_Zone_setGravityPoint)
 
---@api-stub: Zone:setGravityRepulsor
 -- Demonstrates the proper usage of Zone:setGravityRepulsor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setGravityRepulsor()
@@ -1109,7 +984,6 @@ local function demo_Zone_setGravityRepulsor()
 end
 local _ok, _err = pcall(demo_Zone_setGravityRepulsor)
 
---@api-stub: Zone:setGravityZero
 -- Demonstrates the proper usage of Zone:setGravityZero.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setGravityZero()
@@ -1117,7 +991,6 @@ local function demo_Zone_setGravityZero()
 end
 local _ok, _err = pcall(demo_Zone_setGravityZero)
 
---@api-stub: Zone:setLinearDampingOverride
 -- Demonstrates the proper usage of Zone:setLinearDampingOverride.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setLinearDampingOverride()
@@ -1125,7 +998,6 @@ local function demo_Zone_setLinearDampingOverride()
 end
 local _ok, _err = pcall(demo_Zone_setLinearDampingOverride)
 
---@api-stub: Zone:setAngularDampingOverride
 -- Demonstrates the proper usage of Zone:setAngularDampingOverride.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_setAngularDampingOverride()
@@ -1133,7 +1005,6 @@ local function demo_Zone_setAngularDampingOverride()
 end
 local _ok, _err = pcall(demo_Zone_setAngularDampingOverride)
 
---@api-stub: Zone:destroy
 -- Demonstrates the proper usage of Zone:destroy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Zone_destroy()
@@ -1145,7 +1016,6 @@ local _ok, _err = pcall(demo_Zone_destroy)
 -- Debug Rendering
 -- =============================================================================
 
---@api-stub: lurek.physics.debugDraw
 -- Demonstrates the proper usage of lurek.physics.debugDraw.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_debugDraw()
@@ -1153,7 +1023,6 @@ local function demo_lurek_physics_debugDraw()
 end
 local _ok, _err = pcall(demo_lurek_physics_debugDraw)
 
---@api-stub: lurek.physics.drawDebugGpu
 -- Demonstrates the proper usage of lurek.physics.drawDebugGpu.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_drawDebugGpu()
@@ -1165,7 +1034,6 @@ local _ok, _err = pcall(demo_lurek_physics_drawDebugGpu)
 -- Terrain — destructible voxel-like terrain
 -- =============================================================================
 
---@api-stub: lurek.physics.newTerrain
 -- Demonstrates the proper usage of lurek.physics.newTerrain.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newTerrain()
@@ -1173,7 +1041,6 @@ local function demo_lurek_physics_newTerrain()
 end
 local _ok, _err = pcall(demo_lurek_physics_newTerrain)
 
---@api-stub: Terrain:setCell
 -- Demonstrates the proper usage of Terrain:setCell.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_setCell()
@@ -1181,7 +1048,6 @@ local function demo_Terrain_setCell()
 end
 local _ok, _err = pcall(demo_Terrain_setCell)
 
---@api-stub: Terrain:getCell
 -- Demonstrates the proper usage of Terrain:getCell.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_getCell()
@@ -1189,7 +1055,6 @@ local function demo_Terrain_getCell()
 end
 local _ok, _err = pcall(demo_Terrain_getCell)
 
---@api-stub: Terrain:fillCircle
 -- Demonstrates the proper usage of Terrain:fillCircle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_fillCircle()
@@ -1197,7 +1062,6 @@ local function demo_Terrain_fillCircle()
 end
 local _ok, _err = pcall(demo_Terrain_fillCircle)
 
---@api-stub: Terrain:fillRect
 -- Demonstrates the proper usage of Terrain:fillRect.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_fillRect()
@@ -1205,7 +1069,6 @@ local function demo_Terrain_fillRect()
 end
 local _ok, _err = pcall(demo_Terrain_fillRect)
 
---@api-stub: Terrain:fillAll
 -- Demonstrates the proper usage of Terrain:fillAll.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_fillAll()
@@ -1213,7 +1076,6 @@ local function demo_Terrain_fillAll()
 end
 local _ok, _err = pcall(demo_Terrain_fillAll)
 
---@api-stub: Terrain:flush
 -- Demonstrates the proper usage of Terrain:flush.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_flush()
@@ -1221,7 +1083,6 @@ local function demo_Terrain_flush()
 end
 local _ok, _err = pcall(demo_Terrain_flush)
 
---@api-stub: Terrain:isDirty
 -- Demonstrates the proper usage of Terrain:isDirty.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_isDirty()
@@ -1229,7 +1090,6 @@ local function demo_Terrain_isDirty()
 end
 local _ok, _err = pcall(demo_Terrain_isDirty)
 
---@api-stub: Terrain:collapseColumns
 -- Demonstrates the proper usage of Terrain:collapseColumns.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_collapseColumns()
@@ -1237,7 +1097,6 @@ local function demo_Terrain_collapseColumns()
 end
 local _ok, _err = pcall(demo_Terrain_collapseColumns)
 
---@api-stub: Terrain:solidPositions
 -- Demonstrates the proper usage of Terrain:solidPositions.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_solidPositions()
@@ -1246,7 +1105,6 @@ local function demo_Terrain_solidPositions()
 end
 local _ok, _err = pcall(demo_Terrain_solidPositions)
 
---@api-stub: Terrain:spawnDebris
 -- Demonstrates the proper usage of Terrain:spawnDebris.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_spawnDebris()
@@ -1254,7 +1112,6 @@ local function demo_Terrain_spawnDebris()
 end
 local _ok, _err = pcall(demo_Terrain_spawnDebris)
 
---@api-stub: Terrain:toImageData
 -- Demonstrates the proper usage of Terrain:toImageData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_toImageData()
@@ -1263,7 +1120,6 @@ local function demo_Terrain_toImageData()
 end
 local _ok, _err = pcall(demo_Terrain_toImageData)
 
---@api-stub: Terrain:toBytes
 -- Demonstrates the proper usage of Terrain:toBytes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_toBytes()
@@ -1272,7 +1128,6 @@ local function demo_Terrain_toBytes()
 end
 local _ok, _err = pcall(demo_Terrain_toBytes)
 
---@api-stub: Terrain:loadFromBytes
 -- Demonstrates the proper usage of Terrain:loadFromBytes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Terrain_loadFromBytes()
@@ -1284,7 +1139,6 @@ local _ok, _err = pcall(demo_Terrain_loadFromBytes)
 -- Cellular Automata — cave generation
 -- =============================================================================
 
---@api-stub: lurek.physics.newCellular
 -- Demonstrates the proper usage of lurek.physics.newCellular.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_newCellular()
@@ -1292,7 +1146,6 @@ local function demo_lurek_physics_newCellular()
 end
 local _ok, _err = pcall(demo_lurek_physics_newCellular)
 
---@api-stub: Cellular:setCell
 -- Demonstrates the proper usage of Cellular:setCell.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_setCell()
@@ -1300,7 +1153,6 @@ local function demo_Cellular_setCell()
 end
 local _ok, _err = pcall(demo_Cellular_setCell)
 
---@api-stub: Cellular:getCell
 -- Demonstrates the proper usage of Cellular:getCell.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_getCell()
@@ -1308,7 +1160,6 @@ local function demo_Cellular_getCell()
 end
 local _ok, _err = pcall(demo_Cellular_getCell)
 
---@api-stub: Cellular:fillRect
 -- Demonstrates the proper usage of Cellular:fillRect.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_fillRect()
@@ -1316,7 +1167,6 @@ local function demo_Cellular_fillRect()
 end
 local _ok, _err = pcall(demo_Cellular_fillRect)
 
---@api-stub: Cellular:fillCircle
 -- Demonstrates the proper usage of Cellular:fillCircle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_fillCircle()
@@ -1324,7 +1174,6 @@ local function demo_Cellular_fillCircle()
 end
 local _ok, _err = pcall(demo_Cellular_fillCircle)
 
---@api-stub: Cellular:step
 -- Demonstrates the proper usage of Cellular:step.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_step()
@@ -1332,7 +1181,6 @@ local function demo_Cellular_step()
 end
 local _ok, _err = pcall(demo_Cellular_step)
 
---@api-stub: Cellular:stepN
 -- Demonstrates the proper usage of Cellular:stepN.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_stepN()
@@ -1340,7 +1188,6 @@ local function demo_Cellular_stepN()
 end
 local _ok, _err = pcall(demo_Cellular_stepN)
 
---@api-stub: Cellular:toImageData
 -- Demonstrates the proper usage of Cellular:toImageData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_toImageData()
@@ -1349,7 +1196,6 @@ local function demo_Cellular_toImageData()
 end
 local _ok, _err = pcall(demo_Cellular_toImageData)
 
---@api-stub: Cellular:toImageDataRegion
 -- Demonstrates the proper usage of Cellular:toImageDataRegion.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_toImageDataRegion()
@@ -1358,7 +1204,6 @@ local function demo_Cellular_toImageDataRegion()
 end
 local _ok, _err = pcall(demo_Cellular_toImageDataRegion)
 
---@api-stub: Cellular:countCells
 -- Demonstrates the proper usage of Cellular:countCells.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_countCells()
@@ -1366,7 +1211,6 @@ local function demo_Cellular_countCells()
 end
 local _ok, _err = pcall(demo_Cellular_countCells)
 
---@api-stub: Cellular:findCells
 -- Demonstrates the proper usage of Cellular:findCells.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_findCells()
@@ -1375,7 +1219,6 @@ local function demo_Cellular_findCells()
 end
 local _ok, _err = pcall(demo_Cellular_findCells)
 
---@api-stub: Cellular:toBytes
 -- Demonstrates the proper usage of Cellular:toBytes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_toBytes()
@@ -1384,7 +1227,6 @@ local function demo_Cellular_toBytes()
 end
 local _ok, _err = pcall(demo_Cellular_toBytes)
 
---@api-stub: Cellular:loadFromBytes
 -- Demonstrates the proper usage of Cellular:loadFromBytes.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Cellular_loadFromBytes()
@@ -1396,7 +1238,6 @@ local _ok, _err = pcall(demo_Cellular_loadFromBytes)
 -- World Cleanup
 -- =============================================================================
 
---@api-stub: World:clear
 -- Demonstrates the proper usage of World:clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_World_clear()
@@ -1404,7 +1245,6 @@ local function demo_World_clear()
 end
 local _ok, _err = pcall(demo_World_clear)
 
---@api-stub: lurek.physics.destroyWorld
 -- Demonstrates the proper usage of lurek.physics.destroyWorld.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_physics_destroyWorld()
@@ -1414,19 +1254,13 @@ end
 local _ok, _err = pcall(demo_lurek_physics_destroyWorld)
 
 -- =============================================================================
--- STUBS: 18 uncovered lurek.physics API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- Body methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Body:destroy --------------------------------------------------
---@api-stub: Body:destroy
 -- Removes this body from the world.
 -- Example scenario:
 if body ~= nil then
@@ -1440,8 +1274,6 @@ end
 -- PhysicsShape methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: PhysicsShape:destroy ------------------------------------------
---@api-stub: PhysicsShape:destroy
 -- Releases this shape handle (GC handles cleanup).
 -- Example scenario:
 if physicsshape ~= nil then
@@ -1455,8 +1287,6 @@ end
 -- World methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: World:destroyBody ---------------------------------------------
---@api-stub: World:destroyBody
 -- Removes a body from the world.
 -- Example scenario:
 if world ~= nil then
@@ -1466,8 +1296,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:getJointBodies ------------------------------------------
---@api-stub: World:getJointBodies
 -- Returns the two body IDs connected by a joint.
 -- Example scenario:
 if world ~= nil then
@@ -1477,8 +1305,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:destroyJoint --------------------------------------------
---@api-stub: World:destroyJoint
 -- Removes a joint from the world.
 -- Example scenario:
 if world ~= nil then
@@ -1488,8 +1314,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:getJointType --------------------------------------------
---@api-stub: World:getJointType
 -- Returns the type name of a joint.
 -- Example scenario:
 if world ~= nil then
@@ -1499,8 +1323,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:getJointMotorSpeed --------------------------------------
---@api-stub: World:getJointMotorSpeed
 -- Returns the motor speed on a joint's angular axis.
 -- Example scenario:
 if world ~= nil then
@@ -1510,8 +1332,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:getJointLimits ------------------------------------------
---@api-stub: World:getJointLimits
 -- Returns the angular limits on a joint.
 -- Example scenario:
 if world ~= nil then
@@ -1521,8 +1341,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:setJointBreakForce --------------------------------------
---@api-stub: World:setJointBreakForce
 -- Sets the relative-velocity threshold above which a joint breaks.
 -- Example scenario:
 if world ~= nil then
@@ -1532,8 +1350,6 @@ if world ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: World:getJointBreakForce --------------------------------------
---@api-stub: World:getJointBreakForce
 -- Returns the break threshold for a joint, or nil if not set.
 -- Example scenario:
 if world ~= nil then
@@ -1547,8 +1363,6 @@ end
 -- Zone methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Zone:setEnabled -----------------------------------------------
---@api-stub: Zone:setEnabled
 -- Enables or disables the zone.
 -- Example scenario:
 if zone ~= nil then
@@ -1558,8 +1372,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setPriority ----------------------------------------------
---@api-stub: Zone:setPriority
 -- Sets the zone priority; higher values win over lower when zones overlap.
 -- Example scenario:
 if zone ~= nil then
@@ -1569,8 +1381,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setLayerMask ---------------------------------------------
---@api-stub: Zone:setLayerMask
 -- Sets the layer bitmask; only bodies whose `layer & mask != 0` are affected.
 -- Example scenario:
 if zone ~= nil then
@@ -1580,8 +1390,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setCircle ------------------------------------------------
---@api-stub: Zone:setCircle
 -- Replaces the zone boundary with a circle.
 -- Example scenario:
 if zone ~= nil then
@@ -1591,8 +1399,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setGravityDirectional ------------------------------------
---@api-stub: Zone:setGravityDirectional
 -- Sets directional gravity inside the zone.
 -- Example scenario:
 if zone ~= nil then
@@ -1602,8 +1408,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setGravityZero -------------------------------------------
---@api-stub: Zone:setGravityZero
 -- Suppresses gravity inside the zone (zero-g pocket).
 -- Example scenario:
 if zone ~= nil then
@@ -1613,8 +1417,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:setLinearDampingOverride ---------------------------------
---@api-stub: Zone:setLinearDampingOverride
 -- Sets an optional linear damping override for bodies inside the zone.
 -- Example scenario:
 if zone ~= nil then
@@ -1624,8 +1426,6 @@ if zone ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: Zone:destroy --------------------------------------------------
---@api-stub: Zone:destroy
 -- Removes the zone from the world.
 -- Example scenario:
 if zone ~= nil then
@@ -1639,8 +1439,6 @@ end
 -- Advanced Edge Cases and Extra API Demonstrations (Stateless Collision)
 -- =============================================================================
 
--- ---- Stub: lurek.collision.testAABB --------------------------------------
---@api-stub: lurek.collision.testAABB
 -- Returns true when two axis-aligned bounding boxes overlap.
 -- Example scenario:
 local ok, val = pcall(function()
@@ -1648,8 +1446,6 @@ local ok, val = pcall(function()
 end)
 if ok then print("lurek.collision.testAABB ran safely.") end
 
--- ---- Stub: lurek.collision.testCircles -----------------------------------
---@api-stub: lurek.collision.testCircles
 -- Returns true when two circles overlap.
 -- Example scenario:
 local ok, val = pcall(function()
@@ -1657,8 +1453,6 @@ local ok, val = pcall(function()
 end)
 if ok then print("lurek.collision.testCircles ran safely.") end
 
--- ---- Stub: lurek.collision.testPoint -------------------------------------
---@api-stub: lurek.collision.testPoint
 -- Returns true when point (px, py) lies inside the AABB.
 -- Example scenario:
 local ok, val = pcall(function()
@@ -1666,8 +1460,6 @@ local ok, val = pcall(function()
 end)
 if ok then print("lurek.collision.testPoint ran safely.") end
 
--- ---- Stub: lurek.collision.testCircleAABB --------------------------------
---@api-stub: lurek.collision.testCircleAABB
 -- Returns true when a circle overlaps an AABB.
 -- Example scenario:
 local ok, val = pcall(function()

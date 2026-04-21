@@ -492,8 +492,6 @@ print("All 53 globe API calls exercised.")
 -- Demonstrating full and complete real usage paths of lurek.globe & Globe methods
 -- =============================================================================
 
--- ---- Stub: Globe:addProvince -----------------------------------------------------
---@api-stub: Globe:addProvince
 -- Example scenario for Globe:addProvince
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_addProvince()
@@ -502,8 +500,6 @@ local function demo_Globe_addProvince()
 end
 local _ok, _err = pcall(demo_Globe_addProvince)
 
--- ---- Stub: Globe:findPath -----------------------------------------------------
---@api-stub: Globe:findPath
 -- Example scenario for Globe:findPath
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_findPath()
@@ -514,8 +510,6 @@ local function demo_Globe_findPath()
 end
 local _ok, _err = pcall(demo_Globe_findPath)
 
--- ---- Stub: GlobeRegistry:get -----------------------------------------------------
---@api-stub: GlobeRegistry:get
 -- Example scenario for GlobeRegistry:get
 -- This provides a realistic sequence for the API method.
 local function demo_GlobeRegistry_get()
@@ -524,8 +518,6 @@ local function demo_GlobeRegistry_get()
 end
 local _ok, _err = pcall(demo_GlobeRegistry_get)
 
--- ---- Stub: Globe:getCamera -----------------------------------------------------
---@api-stub: Globe:getCamera
 -- Example scenario for Globe:getCamera
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getCamera()
@@ -535,8 +527,6 @@ local function demo_Globe_getCamera()
 end
 local _ok, _err = pcall(demo_Globe_getCamera)
 
--- ---- Stub: Globe:getLod -----------------------------------------------------
---@api-stub: Globe:getLod
 -- Example scenario for Globe:getLod
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getLod()
@@ -546,8 +536,6 @@ local function demo_Globe_getLod()
 end
 local _ok, _err = pcall(demo_Globe_getLod)
 
--- ---- Stub: Globe:getMarkerAttr -----------------------------------------------------
---@api-stub: Globe:getMarkerAttr
 -- Example scenario for Globe:getMarkerAttr
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getMarkerAttr()
@@ -558,8 +546,6 @@ local function demo_Globe_getMarkerAttr()
 end
 local _ok, _err = pcall(demo_Globe_getMarkerAttr)
 
--- ---- Stub: Globe:getName -----------------------------------------------------
---@api-stub: Globe:getName
 -- Example scenario for Globe:getName
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getName()
@@ -568,8 +554,6 @@ local function demo_Globe_getName()
 end
 local _ok, _err = pcall(demo_Globe_getName)
 
--- ---- Stub: Globe:getNeighbors -----------------------------------------------------
---@api-stub: Globe:getNeighbors
 -- Example scenario for Globe:getNeighbors
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getNeighbors()
@@ -579,8 +563,6 @@ local function demo_Globe_getNeighbors()
 end
 local _ok, _err = pcall(demo_Globe_getNeighbors)
 
--- ---- Stub: Globe:getProvinceAttr -----------------------------------------------------
---@api-stub: Globe:getProvinceAttr
 -- Example scenario for Globe:getProvinceAttr
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getProvinceAttr()
@@ -591,8 +573,6 @@ local function demo_Globe_getProvinceAttr()
 end
 local _ok, _err = pcall(demo_Globe_getProvinceAttr)
 
--- ---- Stub: Globe:getTimeOfDay -----------------------------------------------------
---@api-stub: Globe:getTimeOfDay
 -- Example scenario for Globe:getTimeOfDay
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_getTimeOfDay()
@@ -602,8 +582,6 @@ local function demo_Globe_getTimeOfDay()
 end
 local _ok, _err = pcall(demo_Globe_getTimeOfDay)
 
--- ---- Stub: lurek.globe.greatCircleDistance -----------------------------------------------------
---@api-stub: lurek.globe.greatCircleDistance
 -- Example scenario for lurek.globe.greatCircleDistance
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_greatCircleDistance()
@@ -612,8 +590,6 @@ local function demo_lurek_globe_greatCircleDistance()
 end
 local _ok, _err = pcall(demo_lurek_globe_greatCircleDistance)
 
--- ---- Stub: lurek.globe.greatCirclePath -----------------------------------------------------
---@api-stub: lurek.globe.greatCirclePath
 -- Example scenario for lurek.globe.greatCirclePath
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_greatCirclePath()
@@ -622,8 +598,6 @@ local function demo_lurek_globe_greatCirclePath()
 end
 local _ok, _err = pcall(demo_lurek_globe_greatCirclePath)
 
--- ---- Stub: Globe:hideProvince -----------------------------------------------------
---@api-stub: Globe:hideProvince
 -- Example scenario for Globe:hideProvince
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_hideProvince()
@@ -634,8 +608,6 @@ local function demo_Globe_hideProvince()
 end
 local _ok, _err = pcall(demo_Globe_hideProvince)
 
--- ---- Stub: Globe:isVisible -----------------------------------------------------
---@api-stub: Globe:isVisible
 -- Example scenario for Globe:isVisible
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_isVisible()
@@ -646,8 +618,6 @@ local function demo_Globe_isVisible()
 end
 local _ok, _err = pcall(demo_Globe_isVisible)
 
--- ---- Stub: lurek.globe.latLonToUnit -----------------------------------------------------
---@api-stub: lurek.globe.latLonToUnit
 -- Example scenario for lurek.globe.latLonToUnit
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_latLonToUnit()
@@ -656,8 +626,6 @@ local function demo_lurek_globe_latLonToUnit()
 end
 local _ok, _err = pcall(demo_lurek_globe_latLonToUnit)
 
--- ---- Stub: lurek.globe.loadFromTOML -----------------------------------------------------
---@api-stub: lurek.globe.loadFromTOML
 -- Example scenario for lurek.globe.loadFromTOML
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_loadFromTOML()
@@ -666,8 +634,6 @@ local function demo_lurek_globe_loadFromTOML()
 end
 local _ok, _err = pcall(demo_lurek_globe_loadFromTOML)
 
--- ---- Stub: Globe:moveMarker -----------------------------------------------------
---@api-stub: Globe:moveMarker
 -- Example scenario for Globe:moveMarker
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_moveMarker()
@@ -677,8 +643,6 @@ local function demo_Globe_moveMarker()
 end
 local _ok, _err = pcall(demo_Globe_moveMarker)
 
--- ---- Stub: GlobeRegistry:names -----------------------------------------------------
---@api-stub: GlobeRegistry:names
 -- Example scenario for GlobeRegistry:names
 -- This provides a realistic sequence for the API method.
 local function demo_GlobeRegistry_names()
@@ -687,8 +651,6 @@ local function demo_GlobeRegistry_names()
 end
 local _ok, _err = pcall(demo_GlobeRegistry_names)
 
--- ---- Stub: lurek.globe.new -----------------------------------------------------
---@api-stub: lurek.globe.new
 -- Example scenario for lurek.globe.new
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_new()
@@ -697,8 +659,6 @@ local function demo_lurek_globe_new()
 end
 local _ok, _err = pcall(demo_lurek_globe_new)
 
--- ---- Stub: Globe:pan -----------------------------------------------------
---@api-stub: Globe:pan
 -- Example scenario for Globe:pan
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_pan()
@@ -707,8 +667,6 @@ local function demo_Globe_pan()
 end
 local _ok, _err = pcall(demo_Globe_pan)
 
--- ---- Stub: Globe:pick -----------------------------------------------------
---@api-stub: Globe:pick
 -- Example scenario for Globe:pick
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_pick()
@@ -717,8 +675,6 @@ local function demo_Globe_pick()
 end
 local _ok, _err = pcall(demo_Globe_pick)
 
--- ---- Stub: Globe:pickLatLon -----------------------------------------------------
---@api-stub: Globe:pickLatLon
 -- Example scenario for Globe:pickLatLon
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_pickLatLon()
@@ -727,8 +683,6 @@ local function demo_Globe_pickLatLon()
 end
 local _ok, _err = pcall(demo_Globe_pickLatLon)
 
--- ---- Stub: Globe:provinceCount -----------------------------------------------------
---@api-stub: Globe:provinceCount
 -- Example scenario for Globe:provinceCount
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_provinceCount()
@@ -738,8 +692,6 @@ local function demo_Globe_provinceCount()
 end
 local _ok, _err = pcall(demo_Globe_provinceCount)
 
--- ---- Stub: GlobeRegistry:remove -----------------------------------------------------
---@api-stub: GlobeRegistry:remove
 -- Example scenario for GlobeRegistry:remove
 -- This provides a realistic sequence for the API method.
 local function demo_GlobeRegistry_remove()
@@ -748,8 +700,6 @@ local function demo_GlobeRegistry_remove()
 end
 local _ok, _err = pcall(demo_GlobeRegistry_remove)
 
--- ---- Stub: Globe:removeArc -----------------------------------------------------
---@api-stub: Globe:removeArc
 -- Example scenario for Globe:removeArc
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_removeArc()
@@ -759,8 +709,6 @@ local function demo_Globe_removeArc()
 end
 local _ok, _err = pcall(demo_Globe_removeArc)
 
--- ---- Stub: Globe:removeLabel -----------------------------------------------------
---@api-stub: Globe:removeLabel
 -- Example scenario for Globe:removeLabel
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_removeLabel()
@@ -770,8 +718,6 @@ local function demo_Globe_removeLabel()
 end
 local _ok, _err = pcall(demo_Globe_removeLabel)
 
--- ---- Stub: Globe:removeLayer -----------------------------------------------------
---@api-stub: Globe:removeLayer
 -- Example scenario for Globe:removeLayer
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_removeLayer()
@@ -781,8 +727,6 @@ local function demo_Globe_removeLayer()
 end
 local _ok, _err = pcall(demo_Globe_removeLayer)
 
--- ---- Stub: Globe:removeMarker -----------------------------------------------------
---@api-stub: Globe:removeMarker
 -- Example scenario for Globe:removeMarker
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_removeMarker()
@@ -792,8 +736,6 @@ local function demo_Globe_removeMarker()
 end
 local _ok, _err = pcall(demo_Globe_removeMarker)
 
--- ---- Stub: Globe:removeProvince -----------------------------------------------------
---@api-stub: Globe:removeProvince
 -- Example scenario for Globe:removeProvince
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_removeProvince()
@@ -803,8 +745,6 @@ local function demo_Globe_removeProvince()
 end
 local _ok, _err = pcall(demo_Globe_removeProvince)
 
--- ---- Stub: Globe:revealAll -----------------------------------------------------
---@api-stub: Globe:revealAll
 -- Example scenario for Globe:revealAll
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_revealAll()
@@ -813,8 +753,6 @@ local function demo_Globe_revealAll()
 end
 local _ok, _err = pcall(demo_Globe_revealAll)
 
--- ---- Stub: Globe:revealProvince -----------------------------------------------------
---@api-stub: Globe:revealProvince
 -- Example scenario for Globe:revealProvince
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_revealProvince()
@@ -824,8 +762,6 @@ local function demo_Globe_revealProvince()
 end
 local _ok, _err = pcall(demo_Globe_revealProvince)
 
--- ---- Stub: Globe:setActiveViewer -----------------------------------------------------
---@api-stub: Globe:setActiveViewer
 -- Example scenario for Globe:setActiveViewer
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setActiveViewer()
@@ -834,8 +770,6 @@ local function demo_Globe_setActiveViewer()
 end
 local _ok, _err = pcall(demo_Globe_setActiveViewer)
 
--- ---- Stub: Globe:setBorders -----------------------------------------------------
---@api-stub: Globe:setBorders
 -- Example scenario for Globe:setBorders
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setBorders()
@@ -844,8 +778,6 @@ local function demo_Globe_setBorders()
 end
 local _ok, _err = pcall(demo_Globe_setBorders)
 
--- ---- Stub: Globe:setCamera -----------------------------------------------------
---@api-stub: Globe:setCamera
 -- Example scenario for Globe:setCamera
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setCamera()
@@ -854,8 +786,6 @@ local function demo_Globe_setCamera()
 end
 local _ok, _err = pcall(demo_Globe_setCamera)
 
--- ---- Stub: Globe:setLabelText -----------------------------------------------------
---@api-stub: Globe:setLabelText
 -- Example scenario for Globe:setLabelText
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setLabelText()
@@ -865,8 +795,6 @@ local function demo_Globe_setLabelText()
 end
 local _ok, _err = pcall(demo_Globe_setLabelText)
 
--- ---- Stub: Globe:setLabelVisible -----------------------------------------------------
---@api-stub: Globe:setLabelVisible
 -- Example scenario for Globe:setLabelVisible
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setLabelVisible()
@@ -876,8 +804,6 @@ local function demo_Globe_setLabelVisible()
 end
 local _ok, _err = pcall(demo_Globe_setLabelVisible)
 
--- ---- Stub: Globe:setLayerAlpha -----------------------------------------------------
---@api-stub: Globe:setLayerAlpha
 -- Example scenario for Globe:setLayerAlpha
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setLayerAlpha()
@@ -887,8 +813,6 @@ local function demo_Globe_setLayerAlpha()
 end
 local _ok, _err = pcall(demo_Globe_setLayerAlpha)
 
--- ---- Stub: Globe:setLayerVisible -----------------------------------------------------
---@api-stub: Globe:setLayerVisible
 -- Example scenario for Globe:setLayerVisible
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setLayerVisible()
@@ -898,8 +822,6 @@ local function demo_Globe_setLayerVisible()
 end
 local _ok, _err = pcall(demo_Globe_setLayerVisible)
 
--- ---- Stub: Globe:setMarkerVisible -----------------------------------------------------
---@api-stub: Globe:setMarkerVisible
 -- Example scenario for Globe:setMarkerVisible
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setMarkerVisible()
@@ -909,8 +831,6 @@ local function demo_Globe_setMarkerVisible()
 end
 local _ok, _err = pcall(demo_Globe_setMarkerVisible)
 
--- ---- Stub: Globe:setRotation -----------------------------------------------------
---@api-stub: Globe:setRotation
 -- Example scenario for Globe:setRotation
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setRotation()
@@ -919,8 +839,6 @@ local function demo_Globe_setRotation()
 end
 local _ok, _err = pcall(demo_Globe_setRotation)
 
--- ---- Stub: Globe:setTimeOfDay -----------------------------------------------------
---@api-stub: Globe:setTimeOfDay
 -- Example scenario for Globe:setTimeOfDay
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_setTimeOfDay()
@@ -929,8 +847,6 @@ local function demo_Globe_setTimeOfDay()
 end
 local _ok, _err = pcall(demo_Globe_setTimeOfDay)
 
--- ---- Stub: Globe:update -----------------------------------------------------
---@api-stub: Globe:update
 -- Example scenario for Globe:update
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_update()
@@ -939,8 +855,6 @@ local function demo_Globe_update()
 end
 local _ok, _err = pcall(demo_Globe_update)
 
--- ---- Stub: Globe:zoom -----------------------------------------------------
---@api-stub: Globe:zoom
 -- Example scenario for Globe:zoom
 -- This provides a realistic sequence for the API method.
 local function demo_Globe_zoom()
@@ -949,8 +863,6 @@ local function demo_Globe_zoom()
 end
 local _ok, _err = pcall(demo_Globe_zoom)
 
--- ---- Stub: lurek.globe.get -----------------------------------------------------
---@api-stub: lurek.globe.get
 -- Example scenario for lurek.globe.get
 -- This provides a realistic sequence for the API method.
 local function demo_lurek_globe_get()

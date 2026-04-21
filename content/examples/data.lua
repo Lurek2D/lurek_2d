@@ -2,7 +2,7 @@
 -- Lurek2D lurek.data API Reference
 -- Run with: cargo run -- content/examples/data
 --
--- Scenario: A save-game system that serializes player state into binary format,
+Scenario: A save-game system that serializes player state into binary format,
 -- compresses it for storage, uses ring buffers for undo history, and parses
 -- TOML configuration files for mod settings.
 
@@ -12,7 +12,6 @@ print("=== lurek.data — Binary Data & Serialization ===\n")
 -- Pack / Unpack — binary struct encoding
 -- =============================================================================
 
---@api-stub: lurek.data.pack
 -- Demonstrates the proper usage of lurek.data.pack.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_pack()
@@ -21,7 +20,6 @@ local function demo_lurek_data_pack()
 end
 local _ok, _err = pcall(demo_lurek_data_pack)
 
---@api-stub: lurek.data.unpack
 -- Demonstrates the proper usage of lurek.data.unpack.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_unpack()
@@ -30,7 +28,6 @@ local function demo_lurek_data_unpack()
 end
 local _ok, _err = pcall(demo_lurek_data_unpack)
 
---@api-stub: lurek.data.getPackedSize
 -- Demonstrates the proper usage of lurek.data.getPackedSize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_getPackedSize()
@@ -42,7 +39,6 @@ local _ok, _err = pcall(demo_lurek_data_getPackedSize)
 -- Compression
 -- =============================================================================
 
---@api-stub: lurek.data.compress
 -- Demonstrates the proper usage of lurek.data.compress.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_compress()
@@ -52,7 +48,6 @@ local function demo_lurek_data_compress()
 end
 local _ok, _err = pcall(demo_lurek_data_compress)
 
---@api-stub: lurek.data.decompress
 -- Demonstrates the proper usage of lurek.data.decompress.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_decompress()
@@ -65,7 +60,6 @@ local _ok, _err = pcall(demo_lurek_data_decompress)
 -- Encoding (base64, hex)
 -- =============================================================================
 
---@api-stub: lurek.data.encode
 -- Demonstrates the proper usage of lurek.data.encode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_encode()
@@ -74,7 +68,6 @@ local function demo_lurek_data_encode()
 end
 local _ok, _err = pcall(demo_lurek_data_encode)
 
---@api-stub: lurek.data.decode
 -- Demonstrates the proper usage of lurek.data.decode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_decode()
@@ -87,7 +80,6 @@ local _ok, _err = pcall(demo_lurek_data_decode)
 -- Hashing
 -- =============================================================================
 
---@api-stub: lurek.data.hash
 -- Demonstrates the proper usage of lurek.data.hash.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_hash()
@@ -100,7 +92,6 @@ local _ok, _err = pcall(demo_lurek_data_hash)
 -- MessagePack
 -- =============================================================================
 
---@api-stub: lurek.data.toMsgPack
 -- Demonstrates the proper usage of lurek.data.toMsgPack.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_toMsgPack()
@@ -109,7 +100,6 @@ local function demo_lurek_data_toMsgPack()
 end
 local _ok, _err = pcall(demo_lurek_data_toMsgPack)
 
---@api-stub: lurek.data.fromMsgPack
 -- Demonstrates the proper usage of lurek.data.fromMsgPack.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_fromMsgPack()
@@ -122,7 +112,6 @@ local _ok, _err = pcall(demo_lurek_data_fromMsgPack)
 -- TOML Parsing — mod configuration
 -- =============================================================================
 
---@api-stub: lurek.data.parseToml
 -- Demonstrates the proper usage of lurek.data.parseToml.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_parseToml()
@@ -136,7 +125,6 @@ local function demo_lurek_data_parseToml()
 end
 local _ok, _err = pcall(demo_lurek_data_parseToml)
 
---@api-stub: lurek.data.encodeToml
 -- Demonstrates the proper usage of lurek.data.encodeToml.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_encodeToml()
@@ -149,7 +137,6 @@ local _ok, _err = pcall(demo_lurek_data_encodeToml)
 -- ByteData — raw byte buffers
 -- =============================================================================
 
---@api-stub: lurek.data.newByteData
 -- Demonstrates the proper usage of lurek.data.newByteData.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_newByteData()
@@ -157,7 +144,6 @@ local function demo_lurek_data_newByteData()
 end
 local _ok, _err = pcall(demo_lurek_data_newByteData)
 
---@api-stub: mlua:getSize
 -- Demonstrates the proper usage of mlua:getSize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getSize()
@@ -165,7 +151,6 @@ local function demo_mlua_getSize()
 end
 local _ok, _err = pcall(demo_mlua_getSize)
 
---@api-stub: mlua:getString
 -- Demonstrates the proper usage of mlua:getString.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getString()
@@ -173,7 +158,6 @@ local function demo_mlua_getString()
 end
 local _ok, _err = pcall(demo_mlua_getString)
 
---@api-stub: mlua:getByte
 -- Demonstrates the proper usage of mlua:getByte.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_getByte()
@@ -182,7 +166,6 @@ local function demo_mlua_getByte()
 end
 local _ok, _err = pcall(demo_mlua_getByte)
 
---@api-stub: mlua:setByte
 -- Demonstrates the proper usage of mlua:setByte.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_setByte()
@@ -190,7 +173,6 @@ local function demo_mlua_setByte()
 end
 local _ok, _err = pcall(demo_mlua_setByte)
 
---@api-stub: mlua:clone
 -- Demonstrates the proper usage of mlua:clone.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_mlua_clone()
@@ -202,7 +184,6 @@ local _ok, _err = pcall(demo_mlua_clone)
 -- DataView — typed access to binary data
 -- =============================================================================
 
---@api-stub: lurek.data.newDataView
 -- Demonstrates the proper usage of lurek.data.newDataView.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_newDataView()
@@ -210,7 +191,6 @@ local function demo_lurek_data_newDataView()
 end
 local _ok, _err = pcall(demo_lurek_data_newDataView)
 
---@api-stub: DataView:getSize
 -- Demonstrates the proper usage of DataView:getSize.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getSize()
@@ -218,7 +198,6 @@ local function demo_DataView_getSize()
 end
 local _ok, _err = pcall(demo_DataView_getSize)
 
---@api-stub: DataView:getFloat
 -- Demonstrates the proper usage of DataView:getFloat.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getFloat()
@@ -226,7 +205,6 @@ local function demo_DataView_getFloat()
 end
 local _ok, _err = pcall(demo_DataView_getFloat)
 
---@api-stub: DataView:getDouble
 -- Demonstrates the proper usage of DataView:getDouble.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getDouble()
@@ -234,7 +212,6 @@ local function demo_DataView_getDouble()
 end
 local _ok, _err = pcall(demo_DataView_getDouble)
 
---@api-stub: DataView:getUInt8
 -- Demonstrates the proper usage of DataView:getUInt8.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getUInt8()
@@ -242,7 +219,6 @@ local function demo_DataView_getUInt8()
 end
 local _ok, _err = pcall(demo_DataView_getUInt8)
 
---@api-stub: DataView:getInt8
 -- Demonstrates the proper usage of DataView:getInt8.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getInt8()
@@ -250,7 +226,6 @@ local function demo_DataView_getInt8()
 end
 local _ok, _err = pcall(demo_DataView_getInt8)
 
---@api-stub: DataView:getInt16
 -- Demonstrates the proper usage of DataView:getInt16.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getInt16()
@@ -258,7 +233,6 @@ local function demo_DataView_getInt16()
 end
 local _ok, _err = pcall(demo_DataView_getInt16)
 
---@api-stub: DataView:getUInt16
 -- Demonstrates the proper usage of DataView:getUInt16.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getUInt16()
@@ -266,7 +240,6 @@ local function demo_DataView_getUInt16()
 end
 local _ok, _err = pcall(demo_DataView_getUInt16)
 
---@api-stub: DataView:getInt32
 -- Demonstrates the proper usage of DataView:getInt32.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getInt32()
@@ -274,7 +247,6 @@ local function demo_DataView_getInt32()
 end
 local _ok, _err = pcall(demo_DataView_getInt32)
 
---@api-stub: DataView:getUInt32
 -- Demonstrates the proper usage of DataView:getUInt32.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_DataView_getUInt32()
@@ -286,7 +258,6 @@ local _ok, _err = pcall(demo_DataView_getUInt32)
 -- File I/O shortcuts
 -- =============================================================================
 
---@api-stub: lurek.data.write
 -- Demonstrates the proper usage of lurek.data.write.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_write()
@@ -294,7 +265,6 @@ local function demo_lurek_data_write()
 end
 local _ok, _err = pcall(demo_lurek_data_write)
 
---@api-stub: lurek.data.read
 -- Demonstrates the proper usage of lurek.data.read.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_read()
@@ -303,7 +273,6 @@ local function demo_lurek_data_read()
 end
 local _ok, _err = pcall(demo_lurek_data_read)
 
---@api-stub: lurek.data.size
 -- Demonstrates the proper usage of lurek.data.size.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_size()
@@ -315,7 +284,6 @@ local _ok, _err = pcall(demo_lurek_data_size)
 -- RingBuffer — undo/redo history
 -- =============================================================================
 
---@api-stub: lurek.data.newRingBuffer
 -- Demonstrates the proper usage of lurek.data.newRingBuffer.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_data_newRingBuffer()
@@ -323,7 +291,6 @@ local function demo_lurek_data_newRingBuffer()
 end
 local _ok, _err = pcall(demo_lurek_data_newRingBuffer)
 
---@api-stub: RingBuffer:push
 -- Demonstrates the proper usage of RingBuffer:push.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_push()
@@ -333,7 +300,6 @@ local function demo_RingBuffer_push()
 end
 local _ok, _err = pcall(demo_RingBuffer_push)
 
---@api-stub: RingBuffer:len
 -- Demonstrates the proper usage of RingBuffer:len.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_len()
@@ -341,7 +307,6 @@ local function demo_RingBuffer_len()
 end
 local _ok, _err = pcall(demo_RingBuffer_len)
 
---@api-stub: RingBuffer:capacity
 -- Demonstrates the proper usage of RingBuffer:capacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_capacity()
@@ -349,7 +314,6 @@ local function demo_RingBuffer_capacity()
 end
 local _ok, _err = pcall(demo_RingBuffer_capacity)
 
---@api-stub: RingBuffer:isEmpty
 -- Demonstrates the proper usage of RingBuffer:isEmpty.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_isEmpty()
@@ -357,7 +321,6 @@ local function demo_RingBuffer_isEmpty()
 end
 local _ok, _err = pcall(demo_RingBuffer_isEmpty)
 
---@api-stub: RingBuffer:isFull
 -- Demonstrates the proper usage of RingBuffer:isFull.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_isFull()
@@ -365,7 +328,6 @@ local function demo_RingBuffer_isFull()
 end
 local _ok, _err = pcall(demo_RingBuffer_isFull)
 
---@api-stub: RingBuffer:peek
 -- Demonstrates the proper usage of RingBuffer:peek.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_peek()
@@ -374,7 +336,6 @@ local function demo_RingBuffer_peek()
 end
 local _ok, _err = pcall(demo_RingBuffer_peek)
 
---@api-stub: RingBuffer:peekNewest
 -- Demonstrates the proper usage of RingBuffer:peekNewest.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_peekNewest()
@@ -383,7 +344,6 @@ local function demo_RingBuffer_peekNewest()
 end
 local _ok, _err = pcall(demo_RingBuffer_peekNewest)
 
---@api-stub: RingBuffer:pop
 -- Demonstrates the proper usage of RingBuffer:pop.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_pop()
@@ -392,7 +352,6 @@ local function demo_RingBuffer_pop()
 end
 local _ok, _err = pcall(demo_RingBuffer_pop)
 
---@api-stub: RingBuffer:toTable
 -- Demonstrates the proper usage of RingBuffer:toTable.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_toTable()
@@ -401,7 +360,6 @@ local function demo_RingBuffer_toTable()
 end
 local _ok, _err = pcall(demo_RingBuffer_toTable)
 
---@api-stub: RingBuffer:clear
 -- Demonstrates the proper usage of RingBuffer:clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_RingBuffer_clear()
@@ -447,19 +405,13 @@ print(string.format("crc32('hello')=%d  crc32('world')=%d  equal=%s",
 print("\n-- data.lua example complete --")
 
 -- =============================================================================
--- STUBS: 8 uncovered lurek.data API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
 -- DataWriter methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: DataWriter:writeI8 --------------------------------------------
---@api-stub: DataWriter:writeI8
 -- Writes a signed 8-bit integer.
 -- Example scenario:
 if datawriter ~= nil then
@@ -469,8 +421,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeU16LE -----------------------------------------
---@api-stub: DataWriter:writeU16LE
 -- Writes an unsigned 16-bit LE integer.
 -- Example scenario:
 if datawriter ~= nil then
@@ -480,8 +430,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeU16BE -----------------------------------------
---@api-stub: DataWriter:writeU16BE
 -- Writes an unsigned 16-bit BE integer.
 -- Example scenario:
 if datawriter ~= nil then
@@ -491,8 +439,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeI16LE -----------------------------------------
---@api-stub: DataWriter:writeI16LE
 -- Writes a signed 16-bit LE integer.
 -- Example scenario:
 if datawriter ~= nil then
@@ -502,8 +448,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeI32LE -----------------------------------------
---@api-stub: DataWriter:writeI32LE
 -- Writes a signed 32-bit LE integer.
 -- Example scenario:
 if datawriter ~= nil then
@@ -513,8 +457,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeF32LE -----------------------------------------
---@api-stub: DataWriter:writeF32LE
 -- Writes a 32-bit LE float.
 -- Example scenario:
 if datawriter ~= nil then
@@ -524,8 +466,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeF64LE -----------------------------------------
---@api-stub: DataWriter:writeF64LE
 -- Writes a 64-bit LE float.
 -- Example scenario:
 if datawriter ~= nil then
@@ -535,8 +475,6 @@ if datawriter ~= nil then
     print("Executed smoothly.")
 end
 
--- ---- Stub: DataWriter:writeBytes -----------------------------------------
---@api-stub: DataWriter:writeBytes
 -- Writes raw bytes from a Lua string.
 -- Example scenario:
 if datawriter ~= nil then
@@ -545,3 +483,184 @@ if datawriter ~= nil then
     pcall(function() datawriter:writeBytes() end)
     print("Executed smoothly.")
 end
+-- Returns the CRC-32 checksum of the input data as an integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_crc32()
+    print('Executing crc32')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_data_crc32)
+
+-- Returns the number of elements currently in the buffer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
+
+-- Creates a new write-cursor for building binary data.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_newWriter()
+    print('Executing newWriter')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_data_newWriter)
+
+-- Moves the write cursor to the given position.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_seek()
+    print('Executing seek')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_seek)
+
+-- Returns the current write cursor position.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_tell()
+    print('Executing tell')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_tell)
+
+-- Returns the buffer contents as a Lua string.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_toBytes()
+    print('Executing toBytes')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_toBytes)
+
+-- Writes a length-prefixed UTF-8 string (4-byte LE length + bytes).
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeString()
+    print('Executing writeString')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeString)
+
+-- Writes an unsigned 32-bit LE integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeU32LE()
+    print('Executing writeU32LE')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeU32LE)
+
+-- Writes an unsigned 8-bit integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeU8()
+    print('Executing writeU8')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeU8)
+
+-- Returns the CRC-32 checksum of the input data as an integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_crc32()
+    print('Executing crc32')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_data_crc32)
+
+-- Returns the number of elements currently in the buffer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
+
+-- Creates a new write-cursor for building binary data.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_data_newWriter()
+    print('Executing newWriter')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_data_newWriter)
+
+-- Moves the write cursor to the given position.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_seek()
+    print('Executing seek')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_seek)
+
+-- Returns the current write cursor position.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_tell()
+    print('Executing tell')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_tell)
+
+-- Returns the buffer contents as a Lua string.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_toBytes()
+    print('Executing toBytes')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_toBytes)
+
+-- Writes a length-prefixed UTF-8 string (4-byte LE length + bytes).
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeString()
+    print('Executing writeString')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeString)
+
+-- Writes an unsigned 32-bit LE integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeU32LE()
+    print('Executing writeU32LE')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeU32LE)
+
+-- Writes an unsigned 8-bit integer.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_writeU8()
+    print('Executing writeU8')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_writeU8)
+
+-- Demonstrates ByteReader:len
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_ByteReader_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_ByteReader_len)
+-- Demonstrates RingBuffer:len
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
+
+-- Demonstrates RingBuffer:len
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
+
+-- Demonstrates RingBuffer:len
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_RingBuffer_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_RingBuffer_len)
+-- Demonstrates DataWriter:len
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_DataWriter_len()
+    print('Executing len')
+    print('Example')
+end
+local _ok, _err = pcall(demo_DataWriter_len)

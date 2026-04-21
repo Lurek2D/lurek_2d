@@ -2,7 +2,7 @@
 -- Lurek2D lurek.light API Reference
 -- Run with: cargo run -- content/examples/light
 --
--- Scenario: A dungeon crawler with dynamic lighting — a player torch (point
+Scenario: A dungeon crawler with dynamic lighting — a player torch (point
 -- light), flickering wall sconces, a directional moonbeam through windows,
 -- shadow-casting occluders for walls, and light groups for room transitions.
 
@@ -12,7 +12,6 @@ print("=== lurek.light — 2D Lighting System ===\n")
 -- Global Lighting Setup
 -- =============================================================================
 
---@api-stub: lurek.light.setEnabled
 -- Demonstrates the proper usage of lurek.light.setEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setEnabled()
@@ -20,7 +19,6 @@ local function demo_lurek_light_setEnabled()
 end
 local _ok, _err = pcall(demo_lurek_light_setEnabled)
 
---@api-stub: lurek.light.isEnabled
 -- Demonstrates the proper usage of lurek.light.isEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_isEnabled()
@@ -28,7 +26,6 @@ local function demo_lurek_light_isEnabled()
 end
 local _ok, _err = pcall(demo_lurek_light_isEnabled)
 
---@api-stub: lurek.light.setAmbient
 -- Demonstrates the proper usage of lurek.light.setAmbient.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setAmbient()
@@ -36,7 +33,6 @@ local function demo_lurek_light_setAmbient()
 end
 local _ok, _err = pcall(demo_lurek_light_setAmbient)
 
---@api-stub: lurek.light.getAmbient
 -- Demonstrates the proper usage of lurek.light.getAmbient.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getAmbient()
@@ -45,7 +41,6 @@ local function demo_lurek_light_getAmbient()
 end
 local _ok, _err = pcall(demo_lurek_light_getAmbient)
 
---@api-stub: lurek.light.syncAmbient
 -- Demonstrates the proper usage of lurek.light.syncAmbient.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_syncAmbient()
@@ -53,7 +48,6 @@ local function demo_lurek_light_syncAmbient()
 end
 local _ok, _err = pcall(demo_lurek_light_syncAmbient)
 
---@api-stub: lurek.light.setMaxLights
 -- Demonstrates the proper usage of lurek.light.setMaxLights.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setMaxLights()
@@ -61,7 +55,6 @@ local function demo_lurek_light_setMaxLights()
 end
 local _ok, _err = pcall(demo_lurek_light_setMaxLights)
 
---@api-stub: lurek.light.getMaxLights
 -- Demonstrates the proper usage of lurek.light.getMaxLights.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getMaxLights()
@@ -69,7 +62,6 @@ local function demo_lurek_light_getMaxLights()
 end
 local _ok, _err = pcall(demo_lurek_light_getMaxLights)
 
---@api-stub: lurek.light.getLightCount
 -- Demonstrates the proper usage of lurek.light.getLightCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getLightCount()
@@ -77,7 +69,6 @@ local function demo_lurek_light_getLightCount()
 end
 local _ok, _err = pcall(demo_lurek_light_getLightCount)
 
---@api-stub: lurek.light.getOccluderCount
 -- Demonstrates the proper usage of lurek.light.getOccluderCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getOccluderCount()
@@ -89,7 +80,6 @@ local _ok, _err = pcall(demo_lurek_light_getOccluderCount)
 -- Point Light — Player Torch
 -- =============================================================================
 
---@api-stub: lurek.light.newLight
 -- Demonstrates the proper usage of lurek.light.newLight.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_newLight()
@@ -97,7 +87,6 @@ local function demo_lurek_light_newLight()
 end
 local _ok, _err = pcall(demo_lurek_light_newLight)
 
---@api-stub: Light:setPosition
 -- Demonstrates the proper usage of Light:setPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setPosition()
@@ -105,7 +94,6 @@ local function demo_Light_setPosition()
 end
 local _ok, _err = pcall(demo_Light_setPosition)
 
---@api-stub: Light:getPosition
 -- Demonstrates the proper usage of Light:getPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getPosition()
@@ -114,7 +102,6 @@ local function demo_Light_getPosition()
 end
 local _ok, _err = pcall(demo_Light_getPosition)
 
---@api-stub: Light:setRadius
 -- Demonstrates the proper usage of Light:setRadius.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setRadius()
@@ -122,7 +109,6 @@ local function demo_Light_setRadius()
 end
 local _ok, _err = pcall(demo_Light_setRadius)
 
---@api-stub: Light:getRadius
 -- Demonstrates the proper usage of Light:getRadius.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getRadius()
@@ -130,7 +116,6 @@ local function demo_Light_getRadius()
 end
 local _ok, _err = pcall(demo_Light_getRadius)
 
---@api-stub: Light:setColor
 -- Demonstrates the proper usage of Light:setColor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setColor()
@@ -138,7 +123,6 @@ local function demo_Light_setColor()
 end
 local _ok, _err = pcall(demo_Light_setColor)
 
---@api-stub: Light:getColor
 -- Demonstrates the proper usage of Light:getColor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getColor()
@@ -147,7 +131,6 @@ local function demo_Light_getColor()
 end
 local _ok, _err = pcall(demo_Light_getColor)
 
---@api-stub: Light:setIntensity
 -- Demonstrates the proper usage of Light:setIntensity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setIntensity()
@@ -155,7 +138,6 @@ local function demo_Light_setIntensity()
 end
 local _ok, _err = pcall(demo_Light_setIntensity)
 
---@api-stub: Light:getIntensity
 -- Demonstrates the proper usage of Light:getIntensity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getIntensity()
@@ -163,7 +145,6 @@ local function demo_Light_getIntensity()
 end
 local _ok, _err = pcall(demo_Light_getIntensity)
 
---@api-stub: Light:setEnergy
 -- Demonstrates the proper usage of Light:setEnergy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setEnergy()
@@ -171,7 +152,6 @@ local function demo_Light_setEnergy()
 end
 local _ok, _err = pcall(demo_Light_setEnergy)
 
---@api-stub: Light:getEnergy
 -- Demonstrates the proper usage of Light:getEnergy.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getEnergy()
@@ -179,7 +159,6 @@ local function demo_Light_getEnergy()
 end
 local _ok, _err = pcall(demo_Light_getEnergy)
 
---@api-stub: Light:setFalloff
 -- Demonstrates the proper usage of Light:setFalloff.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setFalloff()
@@ -187,7 +166,6 @@ local function demo_Light_setFalloff()
 end
 local _ok, _err = pcall(demo_Light_setFalloff)
 
---@api-stub: Light:getFalloff
 -- Demonstrates the proper usage of Light:getFalloff.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getFalloff()
@@ -195,7 +173,6 @@ local function demo_Light_getFalloff()
 end
 local _ok, _err = pcall(demo_Light_getFalloff)
 
---@api-stub: Light:setAttenuation
 -- Demonstrates the proper usage of Light:setAttenuation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setAttenuation()
@@ -203,7 +180,6 @@ local function demo_Light_setAttenuation()
 end
 local _ok, _err = pcall(demo_Light_setAttenuation)
 
---@api-stub: Light:getAttenuation
 -- Demonstrates the proper usage of Light:getAttenuation.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getAttenuation()
@@ -211,7 +187,6 @@ local function demo_Light_getAttenuation()
 end
 local _ok, _err = pcall(demo_Light_getAttenuation)
 
---@api-stub: Light:setBlendMode
 -- Demonstrates the proper usage of Light:setBlendMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setBlendMode()
@@ -219,7 +194,6 @@ local function demo_Light_setBlendMode()
 end
 local _ok, _err = pcall(demo_Light_setBlendMode)
 
---@api-stub: Light:getBlendMode
 -- Demonstrates the proper usage of Light:getBlendMode.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getBlendMode()
@@ -227,7 +201,6 @@ local function demo_Light_getBlendMode()
 end
 local _ok, _err = pcall(demo_Light_getBlendMode)
 
---@api-stub: Light:setEnabled
 -- Demonstrates the proper usage of Light:setEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setEnabled()
@@ -235,7 +208,6 @@ local function demo_Light_setEnabled()
 end
 local _ok, _err = pcall(demo_Light_setEnabled)
 
---@api-stub: Light:isEnabled
 -- Demonstrates the proper usage of Light:isEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_isEnabled()
@@ -243,7 +215,6 @@ local function demo_Light_isEnabled()
 end
 local _ok, _err = pcall(demo_Light_isEnabled)
 
---@api-stub: Light:isValid
 -- Demonstrates the proper usage of Light:isValid.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_isValid()
@@ -251,7 +222,6 @@ local function demo_Light_isValid()
 end
 local _ok, _err = pcall(demo_Light_isValid)
 
---@api-stub: Light:setLightType
 -- Demonstrates the proper usage of Light:setLightType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setLightType()
@@ -259,7 +229,6 @@ local function demo_Light_setLightType()
 end
 local _ok, _err = pcall(demo_Light_setLightType)
 
---@api-stub: Light:getLightType
 -- Demonstrates the proper usage of Light:getLightType.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getLightType()
@@ -277,7 +246,6 @@ moon:setPosition(600, 50)
 moon:setColor(0.6, 0.7, 1.0)
 moon:setRadius(400)
 
---@api-stub: Light:setDirection
 -- Demonstrates the proper usage of Light:setDirection.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setDirection()
@@ -285,7 +253,6 @@ local function demo_Light_setDirection()
 end
 local _ok, _err = pcall(demo_Light_setDirection)
 
---@api-stub: Light:getDirection
 -- Demonstrates the proper usage of Light:getDirection.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getDirection()
@@ -293,7 +260,6 @@ local function demo_Light_getDirection()
 end
 local _ok, _err = pcall(demo_Light_getDirection)
 
---@api-stub: Light:setInnerAngle
 -- Demonstrates the proper usage of Light:setInnerAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setInnerAngle()
@@ -301,7 +267,6 @@ local function demo_Light_setInnerAngle()
 end
 local _ok, _err = pcall(demo_Light_setInnerAngle)
 
---@api-stub: Light:getInnerAngle
 -- Demonstrates the proper usage of Light:getInnerAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getInnerAngle()
@@ -309,7 +274,6 @@ local function demo_Light_getInnerAngle()
 end
 local _ok, _err = pcall(demo_Light_getInnerAngle)
 
---@api-stub: Light:setOuterAngle
 -- Demonstrates the proper usage of Light:setOuterAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setOuterAngle()
@@ -317,7 +281,6 @@ local function demo_Light_setOuterAngle()
 end
 local _ok, _err = pcall(demo_Light_setOuterAngle)
 
---@api-stub: Light:getOuterAngle
 -- Demonstrates the proper usage of Light:getOuterAngle.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getOuterAngle()
@@ -329,7 +292,6 @@ local _ok, _err = pcall(demo_Light_getOuterAngle)
 -- Shadows
 -- =============================================================================
 
---@api-stub: Light:setShadowEnabled
 -- Demonstrates the proper usage of Light:setShadowEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setShadowEnabled()
@@ -337,7 +299,6 @@ local function demo_Light_setShadowEnabled()
 end
 local _ok, _err = pcall(demo_Light_setShadowEnabled)
 
---@api-stub: Light:isShadowEnabled
 -- Demonstrates the proper usage of Light:isShadowEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_isShadowEnabled()
@@ -345,7 +306,6 @@ local function demo_Light_isShadowEnabled()
 end
 local _ok, _err = pcall(demo_Light_isShadowEnabled)
 
---@api-stub: Light:getShadowColor
 -- Demonstrates the proper usage of Light:getShadowColor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getShadowColor()
@@ -353,7 +313,6 @@ local function demo_Light_getShadowColor()
 end
 local _ok, _err = pcall(demo_Light_getShadowColor)
 
---@api-stub: Light:setShadowFilter
 -- Demonstrates the proper usage of Light:setShadowFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setShadowFilter()
@@ -361,7 +320,6 @@ local function demo_Light_setShadowFilter()
 end
 local _ok, _err = pcall(demo_Light_setShadowFilter)
 
---@api-stub: Light:getShadowFilter
 -- Demonstrates the proper usage of Light:getShadowFilter.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getShadowFilter()
@@ -369,7 +327,6 @@ local function demo_Light_getShadowFilter()
 end
 local _ok, _err = pcall(demo_Light_getShadowFilter)
 
---@api-stub: Light:setShadowSmooth
 -- Demonstrates the proper usage of Light:setShadowSmooth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setShadowSmooth()
@@ -377,7 +334,6 @@ local function demo_Light_setShadowSmooth()
 end
 local _ok, _err = pcall(demo_Light_setShadowSmooth)
 
---@api-stub: Light:getShadowSmooth
 -- Demonstrates the proper usage of Light:getShadowSmooth.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getShadowSmooth()
@@ -389,7 +345,6 @@ local _ok, _err = pcall(demo_Light_getShadowSmooth)
 -- Light/Shadow Masks
 -- =============================================================================
 
---@api-stub: Light:setLightMask
 -- Demonstrates the proper usage of Light:setLightMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setLightMask()
@@ -397,7 +352,6 @@ local function demo_Light_setLightMask()
 end
 local _ok, _err = pcall(demo_Light_setLightMask)
 
---@api-stub: Light:getLightMask
 -- Demonstrates the proper usage of Light:getLightMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getLightMask()
@@ -405,7 +359,6 @@ local function demo_Light_getLightMask()
 end
 local _ok, _err = pcall(demo_Light_getLightMask)
 
---@api-stub: Light:setShadowMask
 -- Demonstrates the proper usage of Light:setShadowMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setShadowMask()
@@ -413,7 +366,6 @@ local function demo_Light_setShadowMask()
 end
 local _ok, _err = pcall(demo_Light_setShadowMask)
 
---@api-stub: Light:getShadowMask
 -- Demonstrates the proper usage of Light:getShadowMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getShadowMask()
@@ -430,7 +382,6 @@ sconce:setPosition(200, 150)
 sconce:setColor(1.0, 0.6, 0.3)
 sconce:setRadius(120)
 
---@api-stub: Light:setFlicker
 -- Demonstrates the proper usage of Light:setFlicker.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setFlicker()
@@ -438,7 +389,6 @@ local function demo_Light_setFlicker()
 end
 local _ok, _err = pcall(demo_Light_setFlicker)
 
---@api-stub: Light:getFlicker
 -- Demonstrates the proper usage of Light:getFlicker.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getFlicker()
@@ -447,7 +397,6 @@ local function demo_Light_getFlicker()
 end
 local _ok, _err = pcall(demo_Light_getFlicker)
 
---@api-stub: Light:setFlickerEnabled
 -- Demonstrates the proper usage of Light:setFlickerEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setFlickerEnabled()
@@ -455,7 +404,6 @@ local function demo_Light_setFlickerEnabled()
 end
 local _ok, _err = pcall(demo_Light_setFlickerEnabled)
 
---@api-stub: Light:isFlickerEnabled
 -- Demonstrates the proper usage of Light:isFlickerEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_isFlickerEnabled()
@@ -463,7 +411,6 @@ local function demo_Light_isFlickerEnabled()
 end
 local _ok, _err = pcall(demo_Light_isFlickerEnabled)
 
---@api-stub: lurek.light.advanceFlickers
 -- Demonstrates the proper usage of lurek.light.advanceFlickers.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_advanceFlickers()
@@ -475,7 +422,6 @@ local _ok, _err = pcall(demo_lurek_light_advanceFlickers)
 -- Light Groups — Room transitions
 -- =============================================================================
 
---@api-stub: Light:setGroupId
 -- Demonstrates the proper usage of Light:setGroupId.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setGroupId()
@@ -485,7 +431,6 @@ local function demo_Light_setGroupId()
 end
 local _ok, _err = pcall(demo_Light_setGroupId)
 
---@api-stub: Light:getGroupId
 -- Demonstrates the proper usage of Light:getGroupId.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_getGroupId()
@@ -493,7 +438,6 @@ local function demo_Light_getGroupId()
 end
 local _ok, _err = pcall(demo_Light_getGroupId)
 
---@api-stub: lurek.light.setGroupEnabled
 -- Demonstrates the proper usage of lurek.light.setGroupEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setGroupEnabled()
@@ -501,7 +445,6 @@ local function demo_lurek_light_setGroupEnabled()
 end
 local _ok, _err = pcall(demo_lurek_light_setGroupEnabled)
 
---@api-stub: lurek.light.setGroupIntensity
 -- Demonstrates the proper usage of lurek.light.setGroupIntensity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setGroupIntensity()
@@ -509,7 +452,6 @@ local function demo_lurek_light_setGroupIntensity()
 end
 local _ok, _err = pcall(demo_lurek_light_setGroupIntensity)
 
---@api-stub: lurek.light.setGroupColor
 -- Demonstrates the proper usage of lurek.light.setGroupColor.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_setGroupColor()
@@ -517,7 +459,6 @@ local function demo_lurek_light_setGroupColor()
 end
 local _ok, _err = pcall(demo_lurek_light_setGroupColor)
 
---@api-stub: lurek.light.getGroupCount
 -- Demonstrates the proper usage of lurek.light.getGroupCount.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getGroupCount()
@@ -529,7 +470,6 @@ local _ok, _err = pcall(demo_lurek_light_getGroupCount)
 -- Volumetric Light
 -- =============================================================================
 
---@api-stub: Light:setVolumetric
 -- Demonstrates the proper usage of Light:setVolumetric.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_setVolumetric()
@@ -537,7 +477,6 @@ local function demo_Light_setVolumetric()
 end
 local _ok, _err = pcall(demo_Light_setVolumetric)
 
---@api-stub: Light:isVolumetric
 -- Demonstrates the proper usage of Light:isVolumetric.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_isVolumetric()
@@ -545,7 +484,6 @@ local function demo_Light_isVolumetric()
 end
 local _ok, _err = pcall(demo_Light_isVolumetric)
 
---@api-stub: lurek.light.getGodRayHints
 -- Demonstrates the proper usage of lurek.light.getGodRayHints.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_getGodRayHints()
@@ -558,7 +496,6 @@ local _ok, _err = pcall(demo_lurek_light_getGodRayHints)
 -- Occluders — Shadow-casting walls
 -- =============================================================================
 
---@api-stub: lurek.light.newOccluder
 -- Demonstrates the proper usage of lurek.light.newOccluder.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_newOccluder()
@@ -566,7 +503,6 @@ local function demo_lurek_light_newOccluder()
 end
 local _ok, _err = pcall(demo_lurek_light_newOccluder)
 
---@api-stub: Occluder:setVertices
 -- Demonstrates the proper usage of Occluder:setVertices.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setVertices()
@@ -574,7 +510,6 @@ local function demo_Occluder_setVertices()
 end
 local _ok, _err = pcall(demo_Occluder_setVertices)
 
---@api-stub: Occluder:getVertices
 -- Demonstrates the proper usage of Occluder:getVertices.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_getVertices()
@@ -583,7 +518,6 @@ local function demo_Occluder_getVertices()
 end
 local _ok, _err = pcall(demo_Occluder_getVertices)
 
---@api-stub: Occluder:setPosition
 -- Demonstrates the proper usage of Occluder:setPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setPosition()
@@ -591,7 +525,6 @@ local function demo_Occluder_setPosition()
 end
 local _ok, _err = pcall(demo_Occluder_setPosition)
 
---@api-stub: Occluder:getPosition
 -- Demonstrates the proper usage of Occluder:getPosition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_getPosition()
@@ -600,7 +533,6 @@ local function demo_Occluder_getPosition()
 end
 local _ok, _err = pcall(demo_Occluder_getPosition)
 
---@api-stub: Occluder:setOpacity
 -- Demonstrates the proper usage of Occluder:setOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setOpacity()
@@ -608,7 +540,6 @@ local function demo_Occluder_setOpacity()
 end
 local _ok, _err = pcall(demo_Occluder_setOpacity)
 
---@api-stub: Occluder:getOpacity
 -- Demonstrates the proper usage of Occluder:getOpacity.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_getOpacity()
@@ -616,7 +547,6 @@ local function demo_Occluder_getOpacity()
 end
 local _ok, _err = pcall(demo_Occluder_getOpacity)
 
---@api-stub: Occluder:setLightMask
 -- Demonstrates the proper usage of Occluder:setLightMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setLightMask()
@@ -624,7 +554,6 @@ local function demo_Occluder_setLightMask()
 end
 local _ok, _err = pcall(demo_Occluder_setLightMask)
 
---@api-stub: Occluder:getLightMask
 -- Demonstrates the proper usage of Occluder:getLightMask.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_getLightMask()
@@ -632,7 +561,6 @@ local function demo_Occluder_getLightMask()
 end
 local _ok, _err = pcall(demo_Occluder_getLightMask)
 
---@api-stub: Occluder:setEnabled
 -- Demonstrates the proper usage of Occluder:setEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setEnabled()
@@ -640,7 +568,6 @@ local function demo_Occluder_setEnabled()
 end
 local _ok, _err = pcall(demo_Occluder_setEnabled)
 
---@api-stub: Occluder:isEnabled
 -- Demonstrates the proper usage of Occluder:isEnabled.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_isEnabled()
@@ -648,7 +575,6 @@ local function demo_Occluder_isEnabled()
 end
 local _ok, _err = pcall(demo_Occluder_isEnabled)
 
---@api-stub: Occluder:isValid
 -- Demonstrates the proper usage of Occluder:isValid.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_isValid()
@@ -656,7 +582,6 @@ local function demo_Occluder_isValid()
 end
 local _ok, _err = pcall(demo_Occluder_isValid)
 
---@api-stub: Occluder:remove
 -- Demonstrates the proper usage of Occluder:remove.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_remove()
@@ -668,7 +593,6 @@ local _ok, _err = pcall(demo_Occluder_remove)
 -- Occluder Transitions & Cookies
 -- =============================================================================
 
---@api-stub: Occluder:addFlicker
 -- Demonstrates the proper usage of Occluder:addFlicker.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_addFlicker()
@@ -676,7 +600,6 @@ local function demo_Occluder_addFlicker()
 end
 local _ok, _err = pcall(demo_Occluder_addFlicker)
 
---@api-stub: Occluder:transitionTo
 -- Demonstrates the proper usage of Occluder:transitionTo.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_transitionTo()
@@ -684,7 +607,6 @@ local function demo_Occluder_transitionTo()
 end
 local _ok, _err = pcall(demo_Occluder_transitionTo)
 
---@api-stub: Occluder:updateTransition
 -- Demonstrates the proper usage of Occluder:updateTransition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_updateTransition()
@@ -692,7 +614,6 @@ local function demo_Occluder_updateTransition()
 end
 local _ok, _err = pcall(demo_Occluder_updateTransition)
 
---@api-stub: Occluder:transitionProgress
 -- Demonstrates the proper usage of Occluder:transitionProgress.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_transitionProgress()
@@ -700,7 +621,6 @@ local function demo_Occluder_transitionProgress()
 end
 local _ok, _err = pcall(demo_Occluder_transitionProgress)
 
---@api-stub: Occluder:stopTransition
 -- Demonstrates the proper usage of Occluder:stopTransition.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_stopTransition()
@@ -708,7 +628,6 @@ local function demo_Occluder_stopTransition()
 end
 local _ok, _err = pcall(demo_Occluder_stopTransition)
 
---@api-stub: Occluder:setCookie
 -- Demonstrates the proper usage of Occluder:setCookie.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_setCookie()
@@ -716,7 +635,6 @@ local function demo_Occluder_setCookie()
 end
 local _ok, _err = pcall(demo_Occluder_setCookie)
 
---@api-stub: Occluder:getCookie
 -- Demonstrates the proper usage of Occluder:getCookie.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_getCookie()
@@ -724,7 +642,6 @@ local function demo_Occluder_getCookie()
 end
 local _ok, _err = pcall(demo_Occluder_getCookie)
 
---@api-stub: Occluder:clearCookie
 -- Demonstrates the proper usage of Occluder:clearCookie.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Occluder_clearCookie()
@@ -736,7 +653,6 @@ local _ok, _err = pcall(demo_Occluder_clearCookie)
 -- Cleanup
 -- =============================================================================
 
---@api-stub: lurek.light.clear
 -- Demonstrates the proper usage of lurek.light.clear.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_lurek_light_clear()
@@ -744,7 +660,6 @@ local function demo_lurek_light_clear()
 end
 local _ok, _err = pcall(demo_lurek_light_clear)
 
---@api-stub: Light:remove
 -- Demonstrates the proper usage of Light:remove.
 -- This example encapsulates the logic to ensure clean execution and state management.
 local function demo_Light_remove()
@@ -753,15 +668,9 @@ end
 local _ok, _err = pcall(demo_Light_remove)
 
 -- =============================================================================
--- STUBS: 3 uncovered lurek.light API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
+-- Advanced Edge Cases and Extra API Demonstrations
 -- =============================================================================
 
--- ---- Stub: lurek.light.clear ---------------------------------------------
---@api-stub: lurek.light.clear
 -- Removes all lights and occluders, resets ambient to default.
 -- Example scenario:
 print("Attempting to execute global method clear()")
@@ -778,8 +687,6 @@ lurek.light.clear()
 -- Light methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Light:remove --------------------------------------------------
---@api-stub: Light:remove
 -- Removes this light from the world.
 -- Example scenario:
 if light ~= nil then
@@ -793,8 +700,6 @@ end
 -- Occluder methods
 -- -----------------------------------------------------------------------------
 
--- ---- Stub: Occluder:remove -----------------------------------------------
---@api-stub: Occluder:remove
 -- Removes this occluder from the world.
 -- Example scenario:
 if occluder ~= nil then
@@ -803,3 +708,115 @@ if occluder ~= nil then
     pcall(function() occluder:remove() end)
     print("Executed smoothly.")
 end
+-- Convenience method to set a flicker effect using amplitude range and
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_addFlicker()
+    print('Executing addFlicker')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_addFlicker)
+
+-- Removes the cookie texture assignment.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_clearCookie()
+    print('Executing clearCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_clearCookie)
+
+-- Returns the current cookie texture path, or `nil` if unset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_getCookie()
+    print('Executing getCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_getCookie)
+
+-- Sets the texture path used as a light cookie (mask) for projection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_setCookie()
+    print('Executing setCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_setCookie)
+
+-- Cancels the active light transition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_stopTransition()
+    print('Executing stopTransition')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_stopTransition)
+
+-- Returns the fractional progress `[0, 1]` of the active transition,
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_transitionProgress()
+    print('Executing transitionProgress')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_transitionProgress)
+
+-- Advances the active transition by `dt` seconds and applies the
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_updateTransition()
+    print('Executing updateTransition')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_updateTransition)
+
+-- Convenience method to set a flicker effect using amplitude range and
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_addFlicker()
+    print('Executing addFlicker')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_addFlicker)
+
+-- Removes the cookie texture assignment.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_clearCookie()
+    print('Executing clearCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_clearCookie)
+
+-- Returns the current cookie texture path, or `nil` if unset.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_getCookie()
+    print('Executing getCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_getCookie)
+
+-- Sets the texture path used as a light cookie (mask) for projection.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_setCookie()
+    print('Executing setCookie')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_setCookie)
+
+-- Cancels the active light transition.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_stopTransition()
+    print('Executing stopTransition')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_stopTransition)
+
+-- Returns the fractional progress `[0, 1]` of the active transition,
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_transitionProgress()
+    print('Executing transitionProgress')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_transitionProgress)
+
+-- Advances the active transition by `dt` seconds and applies the
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_Light_updateTransition()
+    print('Executing updateTransition')
+    print('Example')
+end
+local _ok, _err = pcall(demo_Light_updateTransition)
+

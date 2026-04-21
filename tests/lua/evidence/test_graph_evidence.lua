@@ -80,7 +80,7 @@ describe("Evidence: lurek.graph visual network PNG", function()
     -- @covers Graph:addNode
     -- @covers Graph:addEdge
     -- @description Builds an eight-node ring, finds a path across it, and saves a PNG showing the highlighted route.
-    it("ring topology â€” PNG evidence: ring_graph", function()
+    it("ring topology -” PNG evidence: ring_graph", function()
         -- 8-node ring
         local N = 8
         local R = 90
@@ -110,7 +110,7 @@ describe("Evidence: lurek.graph visual network PNG", function()
     -- @covers Graph:findPath
     -- @evidence file
     -- @description Builds a hub-and-spoke graph with extra spoke links and saves a PNG that highlights the chosen path.
-    it("hub-and-spoke topology â€” PNG evidence: hub_graph", function()
+    it("hub-and-spoke topology -” PNG evidence: hub_graph", function()
         local CX, CY = 120, 120
         local R = 80
         local SPOKES = 6

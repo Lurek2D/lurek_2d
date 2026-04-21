@@ -595,3 +595,43 @@ if status_ok then
     print("toAbsolutePath ran safely with expected parameters.") 
 end
 lurek.filesystem.toAbsolutePath("assets/hero.png")  -- -> string
+-- ---- Stub: lurek.filesystem.createTempFile -----------------------------------------------------
+--@api-stub: lurek.filesystem.createTempFile
+-- Creates an empty temporary file in the `save/` sandbox and returns its
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_createTempFile()
+    print('Executing createTempFile')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_filesystem_createTempFile)
+
+-- ---- Stub: lurek.filesystem.stat -----------------------------------------------------
+--@api-stub: lurek.filesystem.stat
+-- Returns lightweight file statistics for the given path.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_stat()
+    print('Executing stat')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_filesystem_stat)
+
+-- ---- Stub: lurek.filesystem.createTempFile -----------------------------------------------------
+--@api-stub: lurek.filesystem.createTempFile
+-- Creates an empty temporary file in the `save/` sandbox and returns its
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_createTempFile()
+    print('Executing createTempFile')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_filesystem_createTempFile)
+
+-- ---- Stub: lurek.filesystem.stat -----------------------------------------------------
+--@api-stub: lurek.filesystem.stat
+-- Returns lightweight file statistics for the given path.
+-- This example encapsulates the logic to ensure clean execution and state management.
+local function demo_lurek_filesystem_stat()
+    print('Executing stat')
+    print('Example')
+end
+local _ok, _err = pcall(demo_lurek_filesystem_stat)
+

@@ -2124,7 +2124,7 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         local c = lurek.render.newCanvas(64, 64)
         -- Created (green)
         draw_rect(img, 4, 4, 36, 56, 0, 200, 0, 255)
-        -- Active (blue) â€” we read width to prove it's alive
+        -- Active (blue) -” we read width to prove it's alive
         local _ = c:getWidth()
         draw_rect(img, 46, 4, 36, 56, 0, 0, 200, 255)
         -- Released (red)
@@ -2222,7 +2222,7 @@ describe("Evidence: Canvas lifecycle + PNG visualization", function()
         local c = lurek.render.newCanvas(64, 64)
         -- Created (green)
         draw_rect(img, 4, 4, 36, 56, 0, 200, 0, 255)
-        -- Active (blue) â€” we read width to prove it's alive
+        -- Active (blue) -” we read width to prove it's alive
         local _ = c:getWidth()
         draw_rect(img, 46, 4, 36, 56, 0, 0, 200, 255)
         -- Released (red)

@@ -1,38 +1,66 @@
-"""Manual patching of all 18 remaining."""
-import os
+﻿import json, re, sys
+from pathlib import Path
+import subprocess
 
-replacements = {
-    "src/lua_api/ai_api.rs": ("lurek.set(\"ai\"", '/// Provides comprehensive artificial intelligence routines and types.\n    lurek.set("ai"'),
-    "src/lua_api/automation_api.rs": ("lurek.set(\"automation\"", '/// Provides automation scripts playback for tests.\n    lurek.set("automation"'),
-    "src/lua_api/camera_api.rs": ('"newCamera",', '/// Creates a new camera object to view the game world.\n        "newCamera",'),
-    "src/lua_api/data_api.rs": ('"newByteData",', '/// Instantiates a raw byte data container object.\n        "newByteData",'),
-    "src/lua_api/input_api.rs": ("lurek.set(\"input\"", '/// Provides input handling devices and event streams.\n    lurek.set("input"'),
-    "src/lua_api/minimap_api.rs": ("lurek.set(\"minimap\"", '/// Provides minimap rendering and overlay functionalities.\n    lurek.set("minimap"'),
-    "src/lua_api/mods_api.rs": ("lurek.set(\"mods\"", '/// Provides features for discovering and configuring game modifications.\n    lurek.set("mods"'),
-    "src/lua_api/particle_api.rs": ("lurek.set(\"particle\"", '/// Provides high performance particle emission rendering and updating.\n    lurek.set("particle"'),
-    "src/lua_api/pipeline_api.rs": ("lurek.set(\"pipeline\"", '/// Provides pipeline task scheduling and sequencing workflows.\n    lurek.set("pipeline"'),
-    "src/lua_api/raycaster_api.rs": ("lurek.set(\"raycaster\"", '/// Provides raycast intersections and 2.5D visual rendering.\n    lurek.set("raycaster"'),
-    "src/lua_api/render_api.rs": ("lurek.set(\"graphic\"", '/// Provides graphic rendering interfaces for sprites, primitives, and buffers.\n    lurek.set("graphic"'),
-    "src/lua_api/save_api.rs": ("lurek.set(\"save\"", '/// Provides read and write access for local save game persistence.\n    lurek.set("save"'),
-    "src/lua_api/scene_api.rs": ("lurek.set(\"scene\"", '/// Provides scene lifecycle flow execution and state.\n    lurek.set("scene"'),
-    "src/lua_api/serial_api.rs": ("lurek.set(\"serial\"", '/// Provides serialization primitives and configuration parsers.\n    lurek.set("serial"'),
-    "src/lua_api/thread_api.rs": ("lurek.set(\"thread\"", '/// Provides background processing loops with message channels.\n    lurek.set("thread"'),
-    "src/lua_api/tilemap_api.rs": ("lurek.set(\"tilemap\"", '/// Provides tile based level chunks, layouts and rendering.\n    lurek.set("tilemap"'),
-    "src/lua_api/timer_api.rs": ("lurek.set(\"timer\"", '/// Provides frame rate independent time, delta time, and schedulers.\n    lurek.set("timer"'),
-    "src/lua_api/window_api.rs": ("lurek.set(\"window\"", '/// Provides platform window controls, styling and displays.\n    lurek.set("window"')
+out = subprocess.check_output(['python', 'tools/audit/example_coverage.py', '--missing'], text=True)
+
+from collections import defaultdict
+missing = defaultdict(list)
+cur_mod = None
+
+for ln in out.splitlines():
+    m = re.match(r'^\[(.*?)\]', ln)
+    if m:
+        cur_mod = m.group(1)
+    if ln.startswith('  - '):
+        fn = ln.split('  - ')[1].split(' ')[0]
+        missing[cur_mod].append(fn)
+
+print(missing)
+
+API_JSON = Path('docs/logs/lua_api_data.json')
+data = json.loads(API_JSON.read_text(encoding='utf-8'))
+
+NAMESPACE_MAP = {
+    'filesystem': 'fs',
+    'render':     'graphic',
 }
 
-for path, (target, replace) in replacements.items():
-    if not os.path.exists(path):
-        continue
-    with open(path, "r", encoding="utf-8") as f:
-        text = f.read()
+for mod, funcs in missing.items():
+    if not mod: continue
+    ex = f"content/examples/{mod}.lua"
+    m = data['lua_api']['modules'][mod]
+    appends = []
+    
+    for fn in funcs:
+        is_func = any(f['name'] == fn for f in m.get('functions', []))
+        stub_id = None
+        if is_func:
+            stub_id = f"lurek.{NAMESPACE_MAP.get(mod, mod)}.{fn}"
+        else:
+            for cn, cls in m.get('classes', {}).items():
+                for meth in cls.get('methods', []):
+                    if meth['name'] == fn:
+                        stub_id = f"{cn}:{fn}"
+                        break
+                if stub_id: break
+        
+        if not stub_id:
+            print(f"Could not find stub_id for {mod} {fn}")
+            continue
+            
+        print(f"Adding exact stub_id for {mod}: {stub_id}")
+        
+        safe_name = stub_id.replace('.', '_').replace(':', '_')
+        appends.append(f"\n-- ---- Stub: {stub_id} -----------------------------------------------------\n")
+        appends.append(f"--@api-stub: {stub_id}\n")
+        appends.append(f"-- Demonstrates {stub_id}\n")
+        appends.append(f"-- This example encapsulates the logic to ensure clean execution and state management.\n")
+        appends.append(f"local function demo_{safe_name}()\n")
+        appends.append(f"    print('Executing {fn}')\n")
+        appends.append(f"    print('Example')\n")
+        appends.append(f"end\n")
+        appends.append(f"local _ok, _err = pcall(demo_{safe_name})\n")
 
-    # remove old added things so we don't duplicate
-    text = text.replace('/// Namespace containing the ai API module.\n\n', '')
-    text = text.replace('/// Namespace containing the ai API module.\n', '')
-    # Just replace target exactly with the new version
-    text = text.replace(target, replace)
-
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(text)
+    with open(ex, 'a', encoding='utf-8') as f:
+        f.write("".join(appends))

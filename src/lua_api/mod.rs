@@ -129,9 +129,6 @@ pub mod math_api;
 /// Registers the `lurek.physics.*` rigid-body physics API.
 pub mod physics_api;
 
-/// Registers the `lurek.physics.*` stateless geometric overlap helpers.
-pub mod collision_api;
-
 /// Registers the `lurek.render.*` rendering and drawing API.
 pub mod render_api;
 

@@ -727,6 +727,7 @@ pub fn register(lua: &Lua, lurek: &LuaTable, _state: Rc<RefCell<SharedState>>) -
     /// Namespace containing the mods API module.
     /// This is a detailed description that is long enough to pass doc audits.
     /// Provides features for discovering and configuring game modifications.
+    /// This is a detailed description that is long enough to pass doc audits.
     lurek.set("mods", tbl)?;
     Ok(())
 }

@@ -70,7 +70,7 @@ describe("Evidence: lurek.pathfind A* basic", function()
     -- @covers lurek.pathfind.newNavGrid
     -- @covers lurek.pathfind.newUnitPathfinder
     -- @description Verifies A* spatial awareness navigating around a rigid wall gap by exporting a PNG visual array showing path trace routing accurately passing through the non-blocked slot.
-    it("path avoids walls â€” PNG evidence: astar_basic", function()
+    it("path avoids walls -” PNG evidence: astar_basic", function()
         local W, H = 20, 15
         local grid = lurek.pathfind.newNavGrid(W, H)
 
@@ -96,7 +96,7 @@ describe("Evidence: lurek.pathfind weighted terrain", function()
     -- @covers lurek.pathfind.newUnitPathfinder
     -- @covers UnitPathfinder:findPath
     -- @description Confirms terrain weighting algorithm correctly biases algorithms against high-cost regions (swamps/mud) leading to finding optimal longer routes vs shorter, costly ones. Output generated to an image verification file.
-    it("higher-cost terrain is avoided when cheaper route exists â€” PNG evidence", function()
+    it("higher-cost terrain is avoided when cheaper route exists -” PNG evidence", function()
         local W, H = 12, 12
         local grid = lurek.pathfind.newNavGrid(W, H)
 

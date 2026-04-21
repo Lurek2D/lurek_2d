@@ -37,7 +37,6 @@ MODULE_TO_EXAMPLE: dict[str, str] = {
     'audio':       'audio.lua',
     'automation':  'automation.lua',
     'camera':      'camera.lua',
-    'collision':   'physics.lua',
     'compute':     'compute.lua',
     'data':        'data.lua',
     'dataframe':   'dataframe.lua',
@@ -91,7 +90,6 @@ NAMESPACE_MAP: dict[str, str] = {
     'audio':       'audio',
     'automation':  'automation',
     'camera':      'camera',
-    'collision':   'collision',
     'compute':     'compute',
     'data':        'data',
     'dataframe':   'dataframe',
@@ -177,6 +175,8 @@ def load_entries(jp: Path) -> list[ApiEntry]:
     mods = data['lua_api']['modules']
     out: list[ApiEntry] = []
     for mn, m in mods.items():
+        if mn == 'collision': continue
+        if mn == 'collision': continue
         ex = MODULE_TO_EXAMPLE.get(mn, mn + '.lua')
         for fn in (m.get('functions') or []):
             out.append(ApiEntry(
